@@ -1,0 +1,831 @@
+START jobs=201 workers=12
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+[1/201] VideoPlaceOrder_xhard2 seed=9092202 ok=False SceneGenerationError Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.3 t=22s
+[2/201] VideoPlaceOrder_xhard3 seed=9093202 ok=False SceneGenerationError Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.0 t=24s
+[3/201] VideoPlaceButton_xhard1 seed=9081202 ok=False SceneGenerationError Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.2 t=25s
+screw plan failed
+screw plan failed
+screw plan failed
+[4/201] VideoUnmask_xhard1 seed=9111101 ok=True   es=324 h5=324 nd=258 wall=25.6 t=38s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[5/201] ButtonUnmask_xhard1 seed=9011101 ok=True   es=373 h5=373 nd=373 wall=30.3 t=43s
+screw plan failed
+screw plan failed
+screw plan failed
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[6/201] VideoUnmask_xhard2 seed=9112101 ok=True   es=481 h5=481 nd=415 wall=34.4 t=47s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[7/201] VideoUnmask_xhard3 seed=9113101 ok=True   es=486 h5=486 nd=420 wall=38.6 t=51s
+[8/201] ButtonUnmask_xhard2 seed=9012101 ok=True   es=505 h5=505 nd=505 wall=39.4 t=52s
+[9/201] ButtonUnmask_xhard3 seed=9013101 ok=True   es=539 h5=539 nd=539 wall=41.0 t=54s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+screw plan failed
+screw plan failed
+screw plan failed
+[10/201] VideoRepick_xhard1 seed=9101202 ok=True   es=904 h5=868 nd=448 wall=47.6 t=70s
+[11/201] VideoPlaceOrder_xhard1 seed=9091202 ok=True   es=1123 h5=1087 nd=197 wall=57.0 t=77s
+[12/201] VideoRepick_xhard3 seed=9103202 ok=True   es=1198 h5=1162 nd=631 wall=69.2 t=92s
+[13/201] PatternLock_xhard1 seed=9031202 ok=True   es=824 h5=680 nd=340 wall=55.4 t=94s
+[14/201] VideoRepick_xhard2 seed=9102202 ok=True   es=1200 h5=1164 nd=523 wall=72.8 t=96s
+[15/201] VideoPlaceButton_xhard2 seed=9082202 ok=True   es=1542 h5=1506 nd=193 wall=80.5 t=105s
+[16/201] VideoPlaceButton_xhard3 seed=9083202 ok=True   es=1553 h5=1517 nd=183 wall=84.5 t=110s
+[17/201] BinFill_xhard1 seed=9001202 ok=True   es=830 h5=830 nd=830 wall=55.3 t=126s
+[18/201] PatternLock_xhard2 seed=9032202 ok=True   es=1148 h5=1004 nd=502 wall=84.1 t=127s
+[19/201] RouteStick_xhard1 seed=9061202 ok=True   es=1316 h5=1000 nd=500 wall=86.1 t=138s
+[20/201] PatternLock_xhard3 seed=9033202 ok=True   es=1288 h5=1142 nd=571 wall=90.4 t=138s
+[21/201] BinFill_xhard2 seed=9002202 ok=True   es=1115 h5=1115 nd=1115 wall=76.3 t=153s
+[22/201] RouteStick_xhard2 seed=9062202 ok=True   es=1522 h5=1200 nd=600 wall=102.8 t=155s
+[23/201] PickXtimes_xhard1 seed=9051202 ok=True   es=986 h5=986 nd=986 wall=62.4 t=156s
+[24/201] PickHighlight_xhard1 seed=9041202 ok=True   es=672 h5=672 nd=672 wall=48.2 t=158s
+[25/201] BinFill_xhard3 seed=9003202 ok=False DatasetGenerationError BinFill/episode_9: 环境报告失败 es=963 h5=None nd=None wall=67.4 t=160s
+[26/201] VideoUnmaskSwap_xhard1 seed=9121202 ok=True   es=534 h5=534 nd=270 wall=35.2 t=173s
+[27/201] RouteStick_xhard3 seed=9063202 ok=True   es=1720 h5=1400 nd=700 wall=121.0 t=175s
+[28/201] PickXtimes_xhard3 seed=9053202 ok=True   es=1078 h5=1078 nd=1078 wall=73.9 t=179s
+[29/201] PickXtimes_xhard2 seed=9052202 ok=True   es=1271 h5=1271 nd=1271 wall=85.8 t=182s
+[30/201] VideoUnmaskSwap_xhard2 seed=9122202 ok=True   es=665 h5=665 nd=431 wall=44.5 t=182s
+[31/201] PickHighlight_xhard3 seed=9043202 ok=True   es=794 h5=794 nd=794 wall=61.0 t=188s
+[32/201] PickHighlight_xhard2 seed=9042202 ok=True   es=818 h5=818 nd=818 wall=64.7 t=191s
+[33/201] ButtonUnmaskSwap_xhard1 seed=9021202 ok=True   es=514 h5=514 nd=514 wall=37.8 t=193s
+[34/201] SwingXtimes_xhard1 seed=9071202 ok=True   es=480 h5=480 nd=480 wall=34.1 t=194s
+[35/201] VideoPlaceOrder_xhard1 seed=9091303 ok=False SceneGenerationError Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=1.9 t=196s
+[36/201] VideoPlaceOrder_xhard2 seed=9092303 ok=False SceneGenerationError Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.1 t=198s
+[37/201] ButtonUnmaskSwap_xhard2 seed=9022202 ok=True   es=619 h5=619 nd=619 wall=42.4 t=199s
+[38/201] VideoPlaceOrder_xhard3 seed=9093303 ok=False SceneGenerationError Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=1.7 t=200s
+[39/201] VideoRepick_xhard1 seed=9101303 ok=False SceneGenerationError xhard: 第 0 次交换的发起者 bin_0（槽位 0）没有扫掠可行的搭档 es=None h5=None nd=None wall=2.4 t=201s
+[40/201] VideoRepick_xhard2 seed=9102303 ok=False SceneGenerationError xhard: 第 0 次交换的发起者 bin_1（槽位 1）没有扫掠可行的搭档 es=None h5=None nd=None wall=2.1 t=202s
+[41/201] VideoUnmaskSwap_xhard3 seed=9123202 ok=True   es=756 h5=756 nd=390 wall=50.0 t=204s
+[42/201] ButtonUnmaskSwap_xhard3 seed=9023202 ok=True   es=668 h5=668 nd=668 wall=47.4 t=206s
+[43/201] ButtonUnmask_xhard1 seed=9011202 ok=True   es=376 h5=376 nd=376 wall=27.7 t=207s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+screw plan failed
+screw plan failed
+screw plan failed
+[44/201] VideoUnmask_xhard1 seed=9111202 ok=True   es=332 h5=332 nd=266 wall=25.1 t=214s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[45/201] ButtonUnmask_xhard3 seed=9013202 ok=True   es=500 h5=500 nd=500 wall=36.3 t=219s
+[46/201] ButtonUnmask_xhard2 seed=9012202 ok=True   es=514 h5=514 nd=514 wall=38.3 t=220s
+[47/201] SwingXtimes_xhard2 seed=9072202 ok=True   es=669 h5=669 nd=669 wall=49.4 t=222s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[48/201] VideoUnmask_xhard2 seed=9112202 ok=True   es=462 h5=462 nd=396 wall=33.8 t=225s
+[49/201] VideoUnmask_xhard3 seed=9113202 ok=True   es=478 h5=478 nd=412 wall=32.6 t=226s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+screw plan failed
+screw plan failed
+screw plan failed
+[50/201] SwingXtimes_xhard3 seed=9073202 ok=True   es=865 h5=865 nd=865 wall=62.8 t=238s
+screw plan failed
+screw plan failed
+screw plan failed
+[51/201] VideoPlaceButton_xhard1 seed=9081303 ok=True   es=950 h5=914 nd=213 wall=51.2 t=253s
+[52/201] PatternLock_xhard1 seed=9031303 ok=True   es=860 h5=718 nd=359 wall=56.8 t=264s
+screw plan failed
+screw plan failed
+screw plan failed
+[53/201] PatternLock_xhard2 seed=9032303 ok=True   es=929 h5=790 nd=395 wall=64.8 t=279s
+[54/201] BinFill_xhard1 seed=9001303 ok=True   es=851 h5=851 nd=851 wall=53.1 t=279s
+[55/201] VideoRepick_xhard3 seed=9103303 ok=True   es=1462 h5=1426 nd=778 wall=88.5 t=290s
+[56/201] VideoPlaceButton_xhard2 seed=9082303 ok=True   es=1580 h5=1544 nd=198 wall=87.2 t=291s
+[57/201] VideoPlaceButton_xhard3 seed=9083303 ok=True   es=1574 h5=1538 nd=175 wall=87.4 t=294s
+[58/201] RouteStick_xhard1 seed=9061303 ok=True   es=1317 h5=1000 nd=500 wall=84.7 t=305s
+[59/201] BinFill_xhard2 seed=9002303 ok=True   es=997 h5=997 nd=997 wall=68.8 t=307s
+[60/201] RouteStick_xhard2 seed=9062303 ok=True   es=1426 h5=1100 nd=550 wall=96.5 t=319s
+[61/201] BinFill_xhard3 seed=9003303 ok=True   es=947 h5=947 nd=947 wall=67.1 t=321s
+[62/201] PatternLock_xhard3 seed=9033303 ok=True   es=1424 h5=1258 nd=629 wall=104.0 t=323s
+[63/201] PickHighlight_xhard1 seed=9041303 ok=True   es=670 h5=670 nd=670 wall=48.4 t=339s
+[64/201] VideoUnmaskSwap_xhard1 seed=9121303 ok=True   es=528 h5=528 nd=264 wall=33.7 t=339s
+screw plan failed
+screw plan failed
+screw plan failed
+[65/201] RouteStick_xhard3 seed=9063303 ok=True   es=1617 h5=1300 nd=650 wall=117.9 t=343s
+[66/201] PickXtimes_xhard1 seed=9051303 ok=True   es=1155 h5=1155 nd=1155 wall=79.6 t=344s
+screw plan failed
+screw plan failed
+screw plan failed
+[67/201] ButtonUnmaskSwap_xhard1 seed=9021303 ok=True   es=474 h5=474 nd=474 wall=31.6 t=353s
+[68/201] VideoUnmaskSwap_xhard2 seed=9122303 ok=True   es=706 h5=706 nd=406 wall=48.3 t=356s
+[69/201] PickHighlight_xhard2 seed=9042303 ok=True   es=907 h5=907 nd=907 wall=65.2 t=357s
+[70/201] ButtonUnmaskSwap_xhard2 seed=9022303 ok=True   es=601 h5=601 nd=601 wall=42.8 t=366s
+[71/201] PickXtimes_xhard2 seed=9052303 ok=True   es=1223 h5=1223 nd=1223 wall=88.1 t=367s
+[72/201] VideoUnmaskSwap_xhard3 seed=9123303 ok=True   es=695 h5=695 nd=395 wall=48.5 t=368s
+[73/201] PickHighlight_xhard3 seed=9043303 ok=True   es=1037 h5=1037 nd=1037 wall=76.3 t=370s
+screw plan failed
+screw plan failed
+screw plan failed
+[74/201] ButtonUnmask_xhard1 seed=9011303 ok=True   es=382 h5=382 nd=382 wall=27.2 t=380s
+[75/201] VideoPlaceOrder_xhard2 seed=9092404 ok=False SceneGenerationError Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.2 t=382s
+[76/201] SwingXtimes_xhard1 seed=9071303 ok=True   es=622 h5=622 nd=622 wall=45.4 t=385s
+[77/201] VideoPlaceOrder_xhard3 seed=9093404 ok=False SceneGenerationError Target 2 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.9 t=385s
+[78/201] SwingXtimes_xhard2 seed=9072303 ok=True   es=586 h5=586 nd=586 wall=44.5 t=388s
+[79/201] VideoRepick_xhard1 seed=9101404 ok=False SceneGenerationError xhard: 第 2 次交换的发起者 bin_3（槽位 3）没有扫掠可行的搭档 es=None h5=None nd=None wall=2.9 t=388s
+[80/201] VideoUnmask_xhard1 seed=9111303 ok=True   es=307 h5=307 nd=241 wall=22.8 t=389s
+[81/201] ButtonUnmaskSwap_xhard3 seed=9023303 ok=True   es=659 h5=659 nd=659 wall=50.8 t=390s
+[82/201] PickXtimes_xhard3 seed=9053303 ok=True   es=1656 h5=1656 nd=1656 wall=112.9 t=393s
+[83/201] ButtonUnmask_xhard3 seed=9013303 ok=True   es=503 h5=503 nd=503 wall=40.7 t=398s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[84/201] SwingXtimes_xhard3 seed=9073303 ok=True   es=715 h5=715 nd=715 wall=54.0 t=398s
+[85/201] ButtonUnmask_xhard2 seed=9012303 ok=True   es=552 h5=552 nd=552 wall=43.0 t=399s
+[86/201] VideoUnmask_xhard2 seed=9112303 ok=True   es=457 h5=457 nd=391 wall=33.5 t=401s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[87/201] VideoUnmask_xhard3 seed=9113303 ok=True   es=479 h5=479 nd=413 wall=36.0 t=404s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[88/201] VideoPlaceOrder_xhard1 seed=9091404 ok=True   es=1277 h5=1241 nd=187 wall=70.6 t=441s
+[89/201] PatternLock_xhard1 seed=9031404 ok=True   es=823 h5=670 nd=335 wall=52.1 t=445s
+[90/201] VideoPlaceButton_xhard1 seed=9081404 ok=True   es=1063 h5=1027 nd=219 wall=60.3 t=448s
+[91/201] VideoRepick_xhard2 seed=9102404 ok=True   es=1355 h5=1319 nd=838 wall=76.4 t=462s
+[92/201] PatternLock_xhard2 seed=9032404 ok=True   es=1067 h5=922 nd=461 wall=72.1 t=470s
+screw plan failed
+screw plan failed
+screw plan failed
+[93/201] VideoPlaceButton_xhard2 seed=9082404 ok=True   es=1518 h5=1482 nd=205 wall=84.4 t=474s
+[94/201] VideoPlaceButton_xhard3 seed=9083404 ok=True   es=1604 h5=1568 nd=202 wall=88.7 t=479s
+[95/201] RouteStick_xhard1 seed=9061404 ok=True   es=1219 h5=900 nd=450 wall=80.5 t=479s
+[96/201] PatternLock_xhard3 seed=9033404 ok=True   es=1341 h5=1192 nd=596 wall=98.1 t=496s
+[97/201] VideoRepick_xhard3 seed=9103404 ok=True   es=1624 h5=1588 nd=818 wall=107.9 t=497s
+[98/201] RouteStick_xhard2 seed=9062404 ok=True   es=1413 h5=1100 nd=550 wall=97.0 t=498s
+[99/201] BinFill_xhard2 seed=9002404 ok=True   es=767 h5=767 nd=767 wall=56.1 t=501s
+[100/201] BinFill_xhard1 seed=9001404 ok=False DatasetGenerationError BinFill/episode_9: 环境报告失败 es=819 h5=None nd=None wall=60.7 t=502s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[101/201] VideoUnmaskSwap_xhard1 seed=9121404 ok=True   es=498 h5=498 nd=234 wall=30.0 t=527s
+[102/201] PickXtimes_xhard1 seed=9051404 ok=True   es=924 h5=924 nd=924 wall=66.6 t=529s
+[103/201] RouteStick_xhard3 seed=9063404 ok=True   es=1715 h5=1400 nd=700 wall=124.5 t=529s
+[104/201] BinFill_xhard3 seed=9003404 ok=False DatasetGenerationError BinFill/episode_9: 环境报告失败 es=1083 h5=None nd=None wall=80.7 t=529s
+[105/201] PickHighlight_xhard1 seed=9041404 ok=True   es=733 h5=733 nd=733 wall=52.5 t=532s
+[106/201] PickXtimes_xhard2 seed=9052404 ok=True   es=1041 h5=1041 nd=1041 wall=69.6 t=540s
+[107/201] VideoUnmaskSwap_xhard2 seed=9122404 ok=True   es=718 h5=718 nd=418 wall=45.5 t=544s
+[108/201] ButtonUnmaskSwap_xhard1 seed=9021404 ok=True   es=518 h5=518 nd=518 wall=42.9 t=545s
+[109/201] PickHighlight_xhard2 seed=9042404 ok=True   es=915 h5=915 nd=915 wall=67.8 t=548s
+screw plan failed
+screw plan failed
+screw plan failed
+[110/201] VideoUnmaskSwap_xhard3 seed=9123404 ok=True   es=714 h5=714 nd=384 wall=46.3 t=548s
+[111/201] PickHighlight_xhard3 seed=9043404 ok=True   es=806 h5=806 nd=806 wall=59.4 t=556s
+[112/201] SwingXtimes_xhard1 seed=9071404 ok=True   es=454 h5=454 nd=454 wall=32.4 t=562s
+[113/201] VideoPlaceOrder_xhard1 seed=9091505 ok=False SceneGenerationError Target 2 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.2 t=564s
+[114/201] ButtonUnmask_xhard1 seed=9011404 ok=True   es=388 h5=388 nd=388 wall=26.3 t=566s
+[115/201] VideoPlaceOrder_xhard2 seed=9092505 ok=False SceneGenerationError Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.8 t=567s
+[116/201] VideoPlaceOrder_xhard3 seed=9093505 ok=False SceneGenerationError Target 2 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.4 t=569s
+[117/201] ButtonUnmaskSwap_xhard2 seed=9022404 ok=True   es=611 h5=611 nd=611 wall=42.2 t=569s
+[118/201] VideoUnmask_xhard1 seed=9111404 ok=True   es=332 h5=332 nd=266 wall=22.7 t=570s
+[119/201] VideoRepick_xhard2 seed=9102505 ok=False SceneGenerationError xhard: 第 0 次交换的发起者 bin_4（槽位 4）没有扫掠可行的搭档 es=None h5=None nd=None wall=2.0 t=571s
+[120/201] SwingXtimes_xhard2 seed=9072404 ok=True   es=620 h5=620 nd=620 wall=43.5 t=573s
+[121/201] ButtonUnmaskSwap_xhard3 seed=9023404 ok=True   es=680 h5=680 nd=680 wall=51.8 t=581s
+[122/201] VideoUnmask_xhard2 seed=9112404 ok=True   es=486 h5=486 nd=420 wall=34.8 t=583s
+[123/201] ButtonUnmask_xhard2 seed=9012404 ok=True   es=503 h5=503 nd=503 wall=39.5 t=583s
+[124/201] ButtonUnmask_xhard3 seed=9013404 ok=True   es=517 h5=517 nd=517 wall=38.3 t=583s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[125/201] PickXtimes_xhard3 seed=9053404 ok=True   es=1703 h5=1703 nd=1703 wall=114.7 t=589s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[126/201] SwingXtimes_xhard3 seed=9073404 ok=True   es=817 h5=817 nd=817 wall=58.7 t=591s
+[127/201] VideoUnmask_xhard3 seed=9113404 ok=True   es=459 h5=459 nd=393 wall=35.1 t=591s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[128/201] VideoRepick_xhard1 seed=9101505 ok=True   es=924 h5=888 nd=505 wall=57.1 t=624s
+[129/201] PatternLock_xhard1 seed=9031505 ok=True   es=717 h5=578 nd=289 wall=51.0 t=632s
+[130/201] VideoPlaceButton_xhard1 seed=9081505 ok=True   es=1044 h5=1008 nd=220 wall=63.1 t=634s
+screw plan failed
+screw plan failed
+screw plan failed
+[131/201] BinFill_xhard1 seed=9001505 ok=True   es=833 h5=833 nd=833 wall=51.3 t=643s
+[132/201] VideoRepick_xhard3 seed=9103505 ok=True   es=1419 h5=1383 nd=792 wall=98.3 t=668s
+[133/201] VideoPlaceButton_xhard2 seed=9082505 ok=True   es=1614 h5=1578 nd=200 wall=98.2 t=670s
+[134/201] PatternLock_xhard2 seed=9032505 ok=True   es=1185 h5=1046 nd=523 wall=87.2 t=670s
+screw plan failed
+screw plan failed
+screw plan failed
+[135/201] RouteStick_xhard1 seed=9061505 ok=True   es=1331 h5=1000 nd=500 wall=86.8 t=671s
+[136/201] VideoPlaceButton_xhard3 seed=9083505 ok=True   es=1539 h5=1503 nd=208 wall=97.9 t=671s
+[137/201] BinFill_xhard2 seed=9002505 ok=True   es=784 h5=784 nd=784 wall=57.5 t=682s
+[138/201] RouteStick_xhard2 seed=9062505 ok=True   es=1527 h5=1200 nd=600 wall=96.3 t=686s
+[139/201] PatternLock_xhard3 seed=9033505 ok=True   es=1487 h5=1338 nd=669 wall=116.4 t=700s
+[140/201] PickXtimes_xhard1 seed=9051505 ok=True   es=1002 h5=1002 nd=1002 wall=67.2 t=701s
+[141/201] RouteStick_xhard3 seed=9063505 ok=True   es=1613 h5=1300 nd=650 wall=111.8 t=703s
+[142/201] BinFill_xhard3 seed=9003505 ok=True   es=1078 h5=1078 nd=1078 wall=75.0 t=707s
+[143/201] VideoUnmaskSwap_xhard1 seed=9121505 ok=True   es=601 h5=601 nd=283 wall=37.0 t=708s
+[144/201] PickXtimes_xhard2 seed=9052505 ok=True   es=1060 h5=1060 nd=1060 wall=73.2 t=716s
+[145/201] PickHighlight_xhard1 seed=9041505 ok=True   es=770 h5=770 nd=770 wall=54.2 t=724s
+[146/201] VideoUnmaskSwap_xhard2 seed=9122505 ok=True   es=674 h5=674 nd=410 wall=42.9 t=725s
+[147/201] PickHighlight_xhard2 seed=9042505 ok=True   es=880 h5=880 nd=880 wall=62.9 t=733s
+[148/201] VideoUnmaskSwap_xhard3 seed=9123505 ok=True   es=705 h5=705 nd=405 wall=47.5 t=733s
+[149/201] SwingXtimes_xhard1 seed=9071505 ok=True   es=451 h5=451 nd=451 wall=29.6 t=737s
+[150/201] ButtonUnmaskSwap_xhard1 seed=9021505 ok=True   es=518 h5=518 nd=518 wall=37.3 t=738s
+[151/201] ButtonUnmaskSwap_xhard2 seed=9022505 ok=True   es=596 h5=596 nd=596 wall=46.0 t=748s
+[152/201] ButtonUnmaskSwap_xhard3 seed=9023505 ok=True   es=618 h5=618 nd=618 wall=44.6 t=748s
+[153/201] PickHighlight_xhard3 seed=9043505 ok=True   es=1084 h5=1084 nd=1084 wall=77.8 t=749s
+[154/201] VideoPlaceOrder_xhard seed=9094000 ok=False SceneGenerationError Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.1 t=750s
+[155/201] VideoPlaceButton_xhard seed=9084000 ok=False SceneGenerationError Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.1 t=751s
+[156/201] ButtonUnmask_xhard1 seed=9011505 ok=True   es=395 h5=395 nd=395 wall=28.7 t=753s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[157/201] VideoUnmask_xhard1 seed=9111505 ok=True   es=317 h5=317 nd=251 wall=23.8 t=757s
+[158/201] SwingXtimes_xhard2 seed=9072505 ok=True   es=709 h5=709 nd=709 wall=50.1 t=759s
+[159/201] SwingXtimes_xhard3 seed=9073505 ok=True   es=654 h5=654 nd=654 wall=45.4 t=762s
+[160/201] ButtonUnmask_xhard2 seed=9012505 ok=True   es=557 h5=557 nd=557 wall=39.5 t=764s
+[161/201] VideoUnmask_xhard2 seed=9112505 ok=True   es=463 h5=463 nd=397 wall=32.4 t=769s
+[162/201] ButtonUnmask_xhard3 seed=9013505 ok=True   es=509 h5=509 nd=509 wall=38.9 t=772s
+[163/201] VideoUnmask_xhard3 seed=9113505 ok=True   es=478 h5=478 nd=412 wall=34.7 t=773s
+[164/201] PickXtimes_xhard3 seed=9053505 ok=True   es=1714 h5=1714 nd=1714 wall=116.1 t=784s
+screw plan failed
+screw plan failed
+screw plan failed
+[165/201] VideoUnmask_xhard seed=9114000 ok=True   es=471 h5=471 nd=405 wall=30.4 t=803s
+[166/201] ButtonUnmask_xhard seed=9014000 ok=True   es=545 h5=545 nd=545 wall=32.3 t=805s
+[167/201] VideoPlaceButton_xhard seed=9084101 ok=False SceneGenerationError Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=2.5 t=807s
+[168/201] ButtonUnmaskSwap_xhard seed=9024000 ok=True   es=692 h5=692 nd=692 wall=44.8 t=809s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[169/201] VideoUnmaskSwap_xhard seed=9124000 ok=True   es=879 h5=879 nd=417 wall=53.9 t=816s
+[170/201] PickXtimes_xhard seed=9054000 ok=True   es=929 h5=929 nd=929 wall=59.0 t=816s
+[171/201] BinFill_xhard seed=9004000 ok=True   es=954 h5=954 nd=954 wall=63.5 t=817s
+[172/201] PickHighlight_xhard seed=9044101 ok=False SceneGenerationError PickHighlight xhard: 方块放不满，请求 10 实际 9（第 9 块失败：spawn_random_cube: Region crowded or constraints too tight, no feasible po es=None h5=None nd=None wall=2.5 t=819s
+[173/201] SwingXtimes_xhard seed=9074000 ok=True   es=1001 h5=1001 nd=1001 wall=59.5 t=829s
+[174/201] PickHighlight_xhard seed=9044000 ok=True   es=1041 h5=1041 nd=1041 wall=78.9 t=838s
+[175/201] VideoRepick_xhard seed=9104000 ok=True   es=1515 h5=1479 nd=774 wall=93.2 t=841s
+[176/201] VideoUnmaskSwap_xhard seed=9124101 ok=True   es=733 h5=733 nd=403 wall=42.2 t=861s
+[177/201] ButtonUnmask_xhard seed=9014101 ok=True   es=541 h5=541 nd=541 wall=33.2 t=875s
+[178/201] ButtonUnmaskSwap_xhard seed=9024101 ok=True   es=688 h5=688 nd=688 wall=46.0 t=875s
+[179/201] VideoPlaceOrder_xhard seed=9094202 ok=False SceneGenerationError Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: es=None h5=None nd=None wall=3.3 t=878s
+[180/201] BinFill_xhard seed=9004101 ok=True   es=993 h5=993 nd=993 wall=63.2 t=879s
+[181/201] SwingXtimes_xhard seed=9074101 ok=True   es=701 h5=701 nd=701 wall=45.6 t=884s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[182/201] PatternLock_xhard seed=9034000 ok=True   es=1720 h5=1574 nd=787 wall=134.5 t=885s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+[183/201] VideoUnmask_xhard seed=9114101 ok=True   es=462 h5=462 nd=396 wall=33.3 t=895s
+[184/201] VideoPlaceOrder_xhard seed=9094101 ok=True   es=2048 h5=2012 nd=204 wall=116.0 t=901s
+[185/201] RouteStick_xhard seed=9064000 ok=True   es=2317 h5=2000 nd=1000 wall=160.7 t=912s
+[186/201] VideoUnmaskSwap_xhard seed=9124202 ok=False SceneGenerationError xhard 内环对内环扫掠在 reset 预判被拒（L20）：碰撞排除[contact] inner_prejudge#1 对象 bin_0(形状1) 与 bin_2(形状1) g=-0.00399999792428 s=0.625 中点判 es=None h5=None nd=None wall=2.7 t=915s
+[187/201] VideoRepick_xhard seed=9104101 ok=True   es=1774 h5=1738 nd=876 wall=116.8 t=920s
+[188/201] PatternLock_xhard seed=9034101 ok=True   es=1702 h5=1534 nd=767 wall=127.3 t=935s
+[189/201] PickXtimes_xhard seed=9054101 ok=True   es=1955 h5=1955 nd=1955 wall=120.0 t=937s
+[190/201] RouteStick_xhard seed=9064101 ok=True   es=1822 h5=1500 nd=750 wall=131.8 t=942s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[191/201] BinFill_xhard seed=9004202 ok=False DatasetGenerationError BinFill/episode_9: 环境报告失败 es=1081 h5=None nd=None wall=76.7 t=961s
+[192/201] SwingXtimes_xhard seed=9074202 ok=True   es=560 h5=560 nd=560 wall=41.2 t=962s
+screw plan failed
+screw plan failed
+screw plan failed
+[193/201] ButtonUnmaskSwap_xhard seed=9024202 ok=True   es=711 h5=711 nd=711 wall=52.0 t=967s
+screw plan failed
+screw plan failed
+screw plan failed
+[194/201] ButtonUnmask_xhard seed=9014202 ok=True   es=503 h5=503 nd=503 wall=34.4 t=970s
+[195/201] VideoUnmask_xhard seed=9114202 ok=True   es=496 h5=496 nd=430 wall=32.5 t=970s
+[196/201] VideoPlaceButton_xhard seed=9084202 ok=True   es=1537 h5=1501 nd=197 wall=92.8 t=971s
+screw plan failed
+screw plan failed
+screw plan failed
+[197/201] VideoRepick_xhard seed=9104202 ok=True   es=1625 h5=1589 nd=848 wall=101.6 t=977s
+[198/201] PickHighlight_xhard seed=9044202 ok=True   es=1251 h5=1251 nd=1251 wall=85.5 t=986s
+[199/201] PatternLock_xhard seed=9034202 ok=True   es=1843 h5=1692 nd=846 wall=130.6 t=1010s
+[200/201] PickXtimes_xhard seed=9054202 ok=True   es=2163 h5=2163 nd=2163 wall=117.7 t=1013s
+[201/201] RouteStick_xhard seed=9064202 ok=True   es=2220 h5=1900 nd=950 wall=139.7 t=1024s
+DONE jobs=201 ok=176 t=1026s
+EXIT_CODE=0

@@ -1,0 +1,1057 @@
+.................F....FFFF.F...FFF.FFF.....FF........................... [ 39%]
+..............ssssss..............................FFF.F................. [ 78%]
+...........................F..F.........                                 [100%]
+=================================== FAILURES ===================================
+____________ test_candidate_entry_blocked_until_migration_complete _____________
+
+    def test_candidate_entry_blocked_until_migration_complete():
+        root, _ = fixture()
+        path = root / "candidates/candidates.jsonl"
+        path.parent.mkdir()
+        shutil.copyfile(ROOT / "artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl", path)
+        state = root / "rollout/logs/migration/state.json"
+        state.parent.mkdir(parents=True)
+        state.write_text('{"state":"in_progress"}')
+        with pytest.raises(CandidateError, match="迁移"):
+            load_candidates(path, repo_root=ROOT)
+>       assert len(load_candidates(path, repo_root=ROOT, allow_migrating=True)[1]) == 3400
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_injection_migration.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/io.py:191: in load_candidates
+    validate_candidates(header, rows, repo_root=repo_root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 3400, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+____________________ test_check_config_matches_working_tree ____________________
+
+    def test_check_config_matches_working_tree() -> None:
+        """快照与当前工作树源码逐项一致（防漂移检查针对实际运行的源码）。"""
+>       report = generator.run_extract_config(CONFIG_PATH, REPO_ROOT, check_only=True, source_ref=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_native_sampling_config.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config_path = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json')
+repo_root = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask')
+check_only = True, source_ref = None
+
+    def run_extract_config(
+        config_path: str | Path,
+        repo_root: Path,
+        check_only: bool,
+        source_ref: str | None,
+    ) -> dict[str, Any]:
+        """``--extract-config`` 分支：只读源码，导出或核对原值快照。"""
+        target = Path(config_path).expanduser()
+        extracted = extract_native_sampling(repo_root)
+        existing: dict[str, Any] | None = None
+        if target.is_file():
+            existing = json.loads(target.read_text(encoding="utf-8"))
+    
+        report: dict[str, Any] = {
+            "mode": "check" if check_only else "write",
+            "config": str(target),
+            "tasks": list(SAMPLING_TASKS),
+            "source_ref": source_ref,
+        }
+    
+        if check_only:
+            if existing is None:
+                raise SamplingConfigError(f"--check-config 需要既有快照：{target}")
+            differences: list[str] = []
+            for block in SAMPLING_EXTRACTED_BLOCKS:
+                flat_native = _flatten(extracted[block], block)
+                flat_existing = _flatten(existing.get(block, {}), block)
+                for key in sorted(set(flat_native) | set(flat_existing)):
+                    if flat_native.get(key, "<缺失>") != flat_existing.get(key, "<缺失>"):
+                        differences.append(
+                            f"{key}: 源码={flat_native.get(key, '<缺失>')!r} 快照={flat_existing.get(key, '<缺失>')!r}"
+                        )
+            if differences:
+>               raise SamplingConfigError(
+                    f"{target}: 快照与当前工作树源码不一致，共 {len(differences)} 处：\n  "
+                    + "\n  ".join(differences[:20])
+                )
+E               generate_dataset_newseed.SamplingConfigError: /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json: 快照与当前工作树源码不一致，共 23 处：
+E                 parameters.BinFill.put_in_color: 源码='FROM_CLASS_CONFIGS' 快照='<缺失>'
+E                 parameters.RouteStick.configs.xhard.backtrack: 源码='<缺失>' 快照=True
+E                 parameters.RouteStick.configs.xhard.length: 源码='<缺失>' 快照=[8, 10]
+E                 parameters.VideoRepick.configs.xhard.cube: 源码='<缺失>' 快照=3
+E                 parameters.VideoRepick.configs.xhard.swap_max: 源码='<缺失>' 快照=5
+E                 parameters.VideoRepick.configs.xhard.swap_min: 源码='<缺失>' 快照=4
+E                 parameters.VideoUnmaskSwap.configs.xhard.bin: 源码='<缺失>' 快照=4
+E                 parameters.VideoUnmaskSwap.configs.xhard.pick_max: 源码='<缺失>' 快照=2
+E                 parameters.VideoUnmaskSwap.configs.xhard.pick_min: 源码='<缺失>' 快照=2
+E                 parameters.VideoUnmaskSwap.configs.xhard.swap_max: 源码='<缺失>' 快照=5
+E                 parameters.VideoUnmaskSwap.configs.xhard.swap_min: 源码='<缺失>' 快照=4
+E                 positions.RouteStick.button_highlight.disk_radius_scale: 源码=1.002 快照='<缺失>'
+E                 positions.RouteStick.button_highlight.end_offset_steps: 源码=40 快照='<缺失>'
+E                 positions.RouteStick.button_highlight.native_note: 源码='官方与现行一致，未改动' 快照='<缺失>'
+E                 positions.RouteStick.tcp_trail.disk_radius: 源码=0.005 快照='<缺失>'
+E                 positions.RouteStick.tcp_trail.end_offset_steps: 源码=40 快照='<缺失>'
+E                 positions.RouteStick.tcp_trail.native_note: 源码='官方 dataset-gen d53f21a 的 highlight_position 尾迹存活 40 步' 快照='<缺失>'
+E                 sources.BinFill.anchors: 源码=['config_easy', 'config_medium', 'config_hard', 'config_xhard', '__init__', '_load_scene', '_initialize_episode'] 快照=['config_easy', 'config_medium', 'config_hard', '__init__', '_load_scene', '_initialize_episode']
+E                 sources.BinFill.sha256: 源码='2847e6771d4790207858b0d453e362436ad4fd966baeda63bb6cbb90f9d68183' 快照='88d21612a03e3ba4a7fe3efa1989df796bf0ed1e407c8cd95388550ea29cd74a'
+E                 sources.RouteStick.sha256: 源码='b44cc6974a4d528e212bba6ba99c6d4945309cf11ac2819a14d92c75b808a391' 快照='7dced06e589a59bc3c06b806d87e872886a841ddb1f7f37aadd02ec7b7e61aef'
+
+scripts/generate_dataset_newseed.py:1174: SamplingConfigError
+______________ test_check_config_matches_fixed_baseline_operands _______________
+
+    def test_check_config_matches_fixed_baseline_operands() -> None:
+        """与固定基线的原版操作元逐项一致：证明接入没有改动任何原值。"""
+        if subprocess.run(["git", "-C", str(REPO_ROOT), "cat-file", "-e", BASELINE_COMMIT]).returncode:
+            pytest.skip("固定基线提交不可达")
+>       report = generator.run_extract_config(
+            CONFIG_PATH, REPO_ROOT, check_only=True, source_ref=BASELINE_COMMIT
+        )
+
+tests/lightweight/test_native_sampling_config.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config_path = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json')
+repo_root = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask')
+check_only = True, source_ref = '94449db0a068a6b454b55a13ebd48f0394d89cc8'
+
+    def run_extract_config(
+        config_path: str | Path,
+        repo_root: Path,
+        check_only: bool,
+        source_ref: str | None,
+    ) -> dict[str, Any]:
+        """``--extract-config`` 分支：只读源码，导出或核对原值快照。"""
+        target = Path(config_path).expanduser()
+        extracted = extract_native_sampling(repo_root)
+        existing: dict[str, Any] | None = None
+        if target.is_file():
+            existing = json.loads(target.read_text(encoding="utf-8"))
+    
+        report: dict[str, Any] = {
+            "mode": "check" if check_only else "write",
+            "config": str(target),
+            "tasks": list(SAMPLING_TASKS),
+            "source_ref": source_ref,
+        }
+    
+        if check_only:
+            if existing is None:
+                raise SamplingConfigError(f"--check-config 需要既有快照：{target}")
+            differences: list[str] = []
+            for block in SAMPLING_EXTRACTED_BLOCKS:
+                flat_native = _flatten(extracted[block], block)
+                flat_existing = _flatten(existing.get(block, {}), block)
+                for key in sorted(set(flat_native) | set(flat_existing)):
+                    if flat_native.get(key, "<缺失>") != flat_existing.get(key, "<缺失>"):
+                        differences.append(
+                            f"{key}: 源码={flat_native.get(key, '<缺失>')!r} 快照={flat_existing.get(key, '<缺失>')!r}"
+                        )
+            if differences:
+>               raise SamplingConfigError(
+                    f"{target}: 快照与当前工作树源码不一致，共 {len(differences)} 处：\n  "
+                    + "\n  ".join(differences[:20])
+                )
+E               generate_dataset_newseed.SamplingConfigError: /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json: 快照与当前工作树源码不一致，共 23 处：
+E                 parameters.BinFill.put_in_color: 源码='FROM_CLASS_CONFIGS' 快照='<缺失>'
+E                 parameters.RouteStick.configs.xhard.backtrack: 源码='<缺失>' 快照=True
+E                 parameters.RouteStick.configs.xhard.length: 源码='<缺失>' 快照=[8, 10]
+E                 parameters.VideoRepick.configs.xhard.cube: 源码='<缺失>' 快照=3
+E                 parameters.VideoRepick.configs.xhard.swap_max: 源码='<缺失>' 快照=5
+E                 parameters.VideoRepick.configs.xhard.swap_min: 源码='<缺失>' 快照=4
+E                 parameters.VideoUnmaskSwap.configs.xhard.bin: 源码='<缺失>' 快照=4
+E                 parameters.VideoUnmaskSwap.configs.xhard.pick_max: 源码='<缺失>' 快照=2
+E                 parameters.VideoUnmaskSwap.configs.xhard.pick_min: 源码='<缺失>' 快照=2
+E                 parameters.VideoUnmaskSwap.configs.xhard.swap_max: 源码='<缺失>' 快照=5
+E                 parameters.VideoUnmaskSwap.configs.xhard.swap_min: 源码='<缺失>' 快照=4
+E                 positions.RouteStick.button_highlight.disk_radius_scale: 源码=1.002 快照='<缺失>'
+E                 positions.RouteStick.button_highlight.end_offset_steps: 源码=40 快照='<缺失>'
+E                 positions.RouteStick.button_highlight.native_note: 源码='官方与现行一致，未改动' 快照='<缺失>'
+E                 positions.RouteStick.tcp_trail.disk_radius: 源码=0.005 快照='<缺失>'
+E                 positions.RouteStick.tcp_trail.end_offset_steps: 源码=40 快照='<缺失>'
+E                 positions.RouteStick.tcp_trail.native_note: 源码='官方 dataset-gen d53f21a 的 highlight_position 尾迹存活 40 步' 快照='<缺失>'
+E                 sources.BinFill.anchors: 源码=['config_easy', 'config_medium', 'config_hard', 'config_xhard', '__init__', '_load_scene', '_initialize_episode'] 快照=['config_easy', 'config_medium', 'config_hard', '__init__', '_load_scene', '_initialize_episode']
+E                 sources.BinFill.sha256: 源码='2847e6771d4790207858b0d453e362436ad4fd966baeda63bb6cbb90f9d68183' 快照='88d21612a03e3ba4a7fe3efa1989df796bf0ed1e407c8cd95388550ea29cd74a'
+E                 sources.RouteStick.sha256: 源码='b44cc6974a4d528e212bba6ba99c6d4945309cf11ac2819a14d92c75b808a391' 快照='7dced06e589a59bc3c06b806d87e872886a841ddb1f7f37aadd02ec7b7e61aef'
+
+scripts/generate_dataset_newseed.py:1174: SamplingConfigError
+______________________ test_extract_config_is_repeatable _______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-hongzefu/pytest-861/test_extract_config_is_repeata0')
+snapshot = {'extraction_note': '难度字典由类属性 config_easy/medium/hard 的 AST 字面量提取；其余原值来自各任务模块顶层的 NATIVE_SAMPLING 字面量，该字典同时是不传配置时的运行默认值...e': {'high_exclusive': 2, 'low': 0, 'order': ['region3_tri', 'region3_line'], 'sampler': 'torch.randint'}, ...}}}, ...}
+
+    def test_extract_config_is_repeatable(tmp_path: Path, snapshot: dict) -> None:
+        """重复导出得到相同原值；说明性块从既有文件原样带过。"""
+        target = tmp_path / "native_sampling.json"
+        target.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        generator.run_extract_config(target, REPO_ROOT, check_only=False, source_ref=None)
+        first = json.loads(target.read_text(encoding="utf-8"))
+        generator.run_extract_config(target, REPO_ROOT, check_only=False, source_ref=None)
+        second = json.loads(target.read_text(encoding="utf-8"))
+        assert first == second
+        for block in generator.SAMPLING_EXTRACTED_BLOCKS:
+>           assert first[block] == snapshot[block]
+E           AssertionError: assert {'BinFill': {...al_targets'}}} == {'BinFill': {...al_targets'}}}
+E             
+E             Differing items:
+E             {'RouteStick': {'configs': {'easy': {'backtrack': False, 'length': [2, 3]}, 'hard': {'backtrack': True, 'length': [4, ...hape': [1], ...}, 'force_reverse_at_endpoint': True, 'neighbor_order': [-1, 1], 'node_indices': [0, 2, 4, 6, 8], ...}}} != {'RouteStick': {'configs': {'easy': {'backtrack': False, 'length': [2, 3]}, 'hard': {'backtrack': True, 'length': [4, ...hape': [1], ...}, 'force_reverse_at_endpoint': True, 'neighbor_order': [-1, 1], 'node_indices': [0, 2, 4, 6, 8], ...}}}
+E             {'VideoUnmaskSwap': {'configs': {'easy': {'bin': 3, 'pick_max': 2, 'pick_min...
+E             
+E             ...Full output truncated (4 lines hidden), use '-vv' to show
+
+tests/lightweight/test_native_sampling_config.py:89: AssertionError
+_________________ test_load_sampling_config_slices_four_tasks __________________
+
+    def test_load_sampling_config_slices_four_tasks() -> None:
+        """父进程读一次配置，按任务切好；其余 12 个任务不出现在结果里。"""
+>       configs = generator.load_sampling_config(CONFIG_PATH, REPO_ROOT)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_native_sampling_config.py:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/generate_dataset_newseed.py:1065: in load_sampling_config
+    return validate_sampling_config(payload, repo_root, config_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/generate_dataset_newseed.py:1089: in validate_sampling_config
+    _same_shape(native["parameters"], payload["parameters"], "parameters")
+scripts/generate_dataset_newseed.py:1020: in _same_shape
+    _same_shape(native[key], candidate[key], f"{path}.{key}" if path else key)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+native = {'configs': {'easy': {'color': 1, 'put_in_color': [1, 1], 'put_in_numbers': [1, 3], 'spawn_cubes': [4, 6]}, 'hard': {'...{'cast': 'bool', 'high_exclusive': 2, 'low': 0, 'sampler': 'torch.randint', ...}, 'put_in_color': 'FROM_CLASS_CONFIGS'}
+candidate = {'configs': {'easy': {'color': 1, 'put_in_color': [1, 1], 'put_in_numbers': [1, 3], 'spawn_cubes': [4, 6]}, 'hard': {'... 'spawn_cubes': [8, 10]}}, 'dynamic': {'cast': 'bool', 'high_exclusive': 2, 'low': 0, 'sampler': 'torch.randint', ...}}
+path = 'parameters.BinFill'
+
+    def _same_shape(native: Any, candidate: Any, path: str) -> None:
+        """逐字段核对结构、字段名与类型；数值可以不同，形状与类型不能变。"""
+        if isinstance(native, dict):
+            if not isinstance(candidate, dict):
+                raise SamplingConfigError(f"{path}: 应为对象，实际为 {type(candidate).__name__}")
+            missing = sorted(set(native) - set(candidate))
+            unknown = sorted(set(candidate) - set(native))
+            if missing:
+>               raise SamplingConfigError(f"{path}: 缺少字段 {missing}")
+E               generate_dataset_newseed.SamplingConfigError: parameters.BinFill: 缺少字段 ['put_in_color']
+
+scripts/generate_dataset_newseed.py:1016: SamplingConfigError
+______ test_invalid_config_is_rejected[<lambda>-\u672a\u77e5\u5b57\u6bb5] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-hongzefu/pytest-861/test_invalid_config_is_rejecte1')
+snapshot = {'extraction_note': '难度字典由类属性 config_easy/medium/hard 的 AST 字面量提取；其余原值来自各任务模块顶层的 NATIVE_SAMPLING 字面量，该字典同时是不传配置时的运行默认值...e': {'high_exclusive': 2, 'low': 0, 'order': ['region3_tri', 'region3_line'], 'sampler': 'torch.randint'}, ...}}}, ...}
+mutate = <function <lambda> at 0x76b492f513a0>, expected = '未知字段'
+
+    @pytest.mark.parametrize(
+        "mutate, expected",
+        [
+            (lambda p: p["parameters"]["BinFill"].pop("dynamic"), "缺少字段"),
+            (lambda p: p["parameters"]["BinFill"].update({"新字段": 1}), "未知字段"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].pop("region_center"), "缺少字段"),
+            (lambda p: p["positions"].pop("RouteStick"), "缺少任务"),
+            (lambda p: p["parameters"].update({"NotATask": {}}), "未知任务名"),
+            (lambda p: p["positions"]["BinFill"]["button"].update({"scale": "1.5"}), "应为数值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].update({"random_yaw": 1}), "应为布尔值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"]["region_center"].append(0.0), "数组长度"),
+            (lambda p: p.update({"schema_version": 1}), "schema_version"),
+            (lambda p: p["sources"]["BinFill"].update({"sha256": "0" * 64}), "SHA-256 与快照不符"),
+            (lambda p: p.pop("sources"), "缺少 sources"),
+        ],
+    )
+    def test_invalid_config_is_rejected(tmp_path: Path, snapshot: dict, mutate, expected: str) -> None:
+        """未知字段、缺失字段、类型或单位不符、来源指纹不符一律拒绝，不静默放行。"""
+        payload = copy.deepcopy(snapshot)
+        mutate(payload)
+        with pytest.raises(generator.SamplingConfigError) as excinfo:
+            generator.load_sampling_config(_write(tmp_path, payload), REPO_ROOT)
+>       assert expected in str(excinfo.value)
+E       assert '未知字段' in "parameters.BinFill: 缺少字段 ['put_in_color']"
+E        +  where "parameters.BinFill: 缺少字段 ['put_in_color']" = str(SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']"))
+E        +    where SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") = <ExceptionInfo SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") tblen=5>.value
+
+tests/lightweight/test_native_sampling_config.py:136: AssertionError
+______ test_invalid_config_is_rejected[<lambda>-\u5e94\u4e3a\u6570\u503c] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-hongzefu/pytest-861/test_invalid_config_is_rejecte5')
+snapshot = {'extraction_note': '难度字典由类属性 config_easy/medium/hard 的 AST 字面量提取；其余原值来自各任务模块顶层的 NATIVE_SAMPLING 字面量，该字典同时是不传配置时的运行默认值...e': {'high_exclusive': 2, 'low': 0, 'order': ['region3_tri', 'region3_line'], 'sampler': 'torch.randint'}, ...}}}, ...}
+mutate = <function <lambda> at 0x76b492f51620>, expected = '应为数值'
+
+    @pytest.mark.parametrize(
+        "mutate, expected",
+        [
+            (lambda p: p["parameters"]["BinFill"].pop("dynamic"), "缺少字段"),
+            (lambda p: p["parameters"]["BinFill"].update({"新字段": 1}), "未知字段"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].pop("region_center"), "缺少字段"),
+            (lambda p: p["positions"].pop("RouteStick"), "缺少任务"),
+            (lambda p: p["parameters"].update({"NotATask": {}}), "未知任务名"),
+            (lambda p: p["positions"]["BinFill"]["button"].update({"scale": "1.5"}), "应为数值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].update({"random_yaw": 1}), "应为布尔值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"]["region_center"].append(0.0), "数组长度"),
+            (lambda p: p.update({"schema_version": 1}), "schema_version"),
+            (lambda p: p["sources"]["BinFill"].update({"sha256": "0" * 64}), "SHA-256 与快照不符"),
+            (lambda p: p.pop("sources"), "缺少 sources"),
+        ],
+    )
+    def test_invalid_config_is_rejected(tmp_path: Path, snapshot: dict, mutate, expected: str) -> None:
+        """未知字段、缺失字段、类型或单位不符、来源指纹不符一律拒绝，不静默放行。"""
+        payload = copy.deepcopy(snapshot)
+        mutate(payload)
+        with pytest.raises(generator.SamplingConfigError) as excinfo:
+            generator.load_sampling_config(_write(tmp_path, payload), REPO_ROOT)
+>       assert expected in str(excinfo.value)
+E       assert '应为数值' in "parameters.BinFill: 缺少字段 ['put_in_color']"
+E        +  where "parameters.BinFill: 缺少字段 ['put_in_color']" = str(SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']"))
+E        +    where SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") = <ExceptionInfo SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") tblen=5>.value
+
+tests/lightweight/test_native_sampling_config.py:136: AssertionError
+___ test_invalid_config_is_rejected[<lambda>-\u5e94\u4e3a\u5e03\u5c14\u503c] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-hongzefu/pytest-861/test_invalid_config_is_rejecte6')
+snapshot = {'extraction_note': '难度字典由类属性 config_easy/medium/hard 的 AST 字面量提取；其余原值来自各任务模块顶层的 NATIVE_SAMPLING 字面量，该字典同时是不传配置时的运行默认值...e': {'high_exclusive': 2, 'low': 0, 'order': ['region3_tri', 'region3_line'], 'sampler': 'torch.randint'}, ...}}}, ...}
+mutate = <function <lambda> at 0x76b492f516c0>, expected = '应为布尔值'
+
+    @pytest.mark.parametrize(
+        "mutate, expected",
+        [
+            (lambda p: p["parameters"]["BinFill"].pop("dynamic"), "缺少字段"),
+            (lambda p: p["parameters"]["BinFill"].update({"新字段": 1}), "未知字段"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].pop("region_center"), "缺少字段"),
+            (lambda p: p["positions"].pop("RouteStick"), "缺少任务"),
+            (lambda p: p["parameters"].update({"NotATask": {}}), "未知任务名"),
+            (lambda p: p["positions"]["BinFill"]["button"].update({"scale": "1.5"}), "应为数值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].update({"random_yaw": 1}), "应为布尔值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"]["region_center"].append(0.0), "数组长度"),
+            (lambda p: p.update({"schema_version": 1}), "schema_version"),
+            (lambda p: p["sources"]["BinFill"].update({"sha256": "0" * 64}), "SHA-256 与快照不符"),
+            (lambda p: p.pop("sources"), "缺少 sources"),
+        ],
+    )
+    def test_invalid_config_is_rejected(tmp_path: Path, snapshot: dict, mutate, expected: str) -> None:
+        """未知字段、缺失字段、类型或单位不符、来源指纹不符一律拒绝，不静默放行。"""
+        payload = copy.deepcopy(snapshot)
+        mutate(payload)
+        with pytest.raises(generator.SamplingConfigError) as excinfo:
+            generator.load_sampling_config(_write(tmp_path, payload), REPO_ROOT)
+>       assert expected in str(excinfo.value)
+E       assert '应为布尔值' in "parameters.BinFill: 缺少字段 ['put_in_color']"
+E        +  where "parameters.BinFill: 缺少字段 ['put_in_color']" = str(SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']"))
+E        +    where SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") = <ExceptionInfo SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") tblen=5>.value
+
+tests/lightweight/test_native_sampling_config.py:136: AssertionError
+______ test_invalid_config_is_rejected[<lambda>-\u6570\u7ec4\u957f\u5ea6] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-hongzefu/pytest-861/test_invalid_config_is_rejecte7')
+snapshot = {'extraction_note': '难度字典由类属性 config_easy/medium/hard 的 AST 字面量提取；其余原值来自各任务模块顶层的 NATIVE_SAMPLING 字面量，该字典同时是不传配置时的运行默认值...e': {'high_exclusive': 2, 'low': 0, 'order': ['region3_tri', 'region3_line'], 'sampler': 'torch.randint'}, ...}}}, ...}
+mutate = <function <lambda> at 0x76b492f51760>, expected = '数组长度'
+
+    @pytest.mark.parametrize(
+        "mutate, expected",
+        [
+            (lambda p: p["parameters"]["BinFill"].pop("dynamic"), "缺少字段"),
+            (lambda p: p["parameters"]["BinFill"].update({"新字段": 1}), "未知字段"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].pop("region_center"), "缺少字段"),
+            (lambda p: p["positions"].pop("RouteStick"), "缺少任务"),
+            (lambda p: p["parameters"].update({"NotATask": {}}), "未知任务名"),
+            (lambda p: p["positions"]["BinFill"]["button"].update({"scale": "1.5"}), "应为数值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].update({"random_yaw": 1}), "应为布尔值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"]["region_center"].append(0.0), "数组长度"),
+            (lambda p: p.update({"schema_version": 1}), "schema_version"),
+            (lambda p: p["sources"]["BinFill"].update({"sha256": "0" * 64}), "SHA-256 与快照不符"),
+            (lambda p: p.pop("sources"), "缺少 sources"),
+        ],
+    )
+    def test_invalid_config_is_rejected(tmp_path: Path, snapshot: dict, mutate, expected: str) -> None:
+        """未知字段、缺失字段、类型或单位不符、来源指纹不符一律拒绝，不静默放行。"""
+        payload = copy.deepcopy(snapshot)
+        mutate(payload)
+        with pytest.raises(generator.SamplingConfigError) as excinfo:
+            generator.load_sampling_config(_write(tmp_path, payload), REPO_ROOT)
+>       assert expected in str(excinfo.value)
+E       assert '数组长度' in "parameters.BinFill: 缺少字段 ['put_in_color']"
+E        +  where "parameters.BinFill: 缺少字段 ['put_in_color']" = str(SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']"))
+E        +    where SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") = <ExceptionInfo SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") tblen=5>.value
+
+tests/lightweight/test_native_sampling_config.py:136: AssertionError
+_ test_invalid_config_is_rejected[<lambda>-SHA-256 \u4e0e\u5feb\u7167\u4e0d\u7b26] _
+
+tmp_path = PosixPath('/tmp/pytest-of-hongzefu/pytest-861/test_invalid_config_is_rejecte9')
+snapshot = {'extraction_note': '难度字典由类属性 config_easy/medium/hard 的 AST 字面量提取；其余原值来自各任务模块顶层的 NATIVE_SAMPLING 字面量，该字典同时是不传配置时的运行默认值...e': {'high_exclusive': 2, 'low': 0, 'order': ['region3_tri', 'region3_line'], 'sampler': 'torch.randint'}, ...}}}, ...}
+mutate = <function <lambda> at 0x76b492f518a0>, expected = 'SHA-256 与快照不符'
+
+    @pytest.mark.parametrize(
+        "mutate, expected",
+        [
+            (lambda p: p["parameters"]["BinFill"].pop("dynamic"), "缺少字段"),
+            (lambda p: p["parameters"]["BinFill"].update({"新字段": 1}), "未知字段"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].pop("region_center"), "缺少字段"),
+            (lambda p: p["positions"].pop("RouteStick"), "缺少任务"),
+            (lambda p: p["parameters"].update({"NotATask": {}}), "未知任务名"),
+            (lambda p: p["positions"]["BinFill"]["button"].update({"scale": "1.5"}), "应为数值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].update({"random_yaw": 1}), "应为布尔值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"]["region_center"].append(0.0), "数组长度"),
+            (lambda p: p.update({"schema_version": 1}), "schema_version"),
+            (lambda p: p["sources"]["BinFill"].update({"sha256": "0" * 64}), "SHA-256 与快照不符"),
+            (lambda p: p.pop("sources"), "缺少 sources"),
+        ],
+    )
+    def test_invalid_config_is_rejected(tmp_path: Path, snapshot: dict, mutate, expected: str) -> None:
+        """未知字段、缺失字段、类型或单位不符、来源指纹不符一律拒绝，不静默放行。"""
+        payload = copy.deepcopy(snapshot)
+        mutate(payload)
+        with pytest.raises(generator.SamplingConfigError) as excinfo:
+            generator.load_sampling_config(_write(tmp_path, payload), REPO_ROOT)
+>       assert expected in str(excinfo.value)
+E       assert 'SHA-256 与快照不符' in "parameters.BinFill: 缺少字段 ['put_in_color']"
+E        +  where "parameters.BinFill: 缺少字段 ['put_in_color']" = str(SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']"))
+E        +    where SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") = <ExceptionInfo SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") tblen=5>.value
+
+tests/lightweight/test_native_sampling_config.py:136: AssertionError
+________ test_invalid_config_is_rejected[<lambda>-\u7f3a\u5c11 sources] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-hongzefu/pytest-861/test_invalid_config_is_rejecte10')
+snapshot = {'extraction_note': '难度字典由类属性 config_easy/medium/hard 的 AST 字面量提取；其余原值来自各任务模块顶层的 NATIVE_SAMPLING 字面量，该字典同时是不传配置时的运行默认值...e': {'high_exclusive': 2, 'low': 0, 'order': ['region3_tri', 'region3_line'], 'sampler': 'torch.randint'}, ...}}}, ...}
+mutate = <function <lambda> at 0x76b492f51940>, expected = '缺少 sources'
+
+    @pytest.mark.parametrize(
+        "mutate, expected",
+        [
+            (lambda p: p["parameters"]["BinFill"].pop("dynamic"), "缺少字段"),
+            (lambda p: p["parameters"]["BinFill"].update({"新字段": 1}), "未知字段"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].pop("region_center"), "缺少字段"),
+            (lambda p: p["positions"].pop("RouteStick"), "缺少任务"),
+            (lambda p: p["parameters"].update({"NotATask": {}}), "未知任务名"),
+            (lambda p: p["positions"]["BinFill"]["button"].update({"scale": "1.5"}), "应为数值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"].update({"random_yaw": 1}), "应为布尔值"),
+            (lambda p: p["positions"]["BinFill"]["cubes"]["region_center"].append(0.0), "数组长度"),
+            (lambda p: p.update({"schema_version": 1}), "schema_version"),
+            (lambda p: p["sources"]["BinFill"].update({"sha256": "0" * 64}), "SHA-256 与快照不符"),
+            (lambda p: p.pop("sources"), "缺少 sources"),
+        ],
+    )
+    def test_invalid_config_is_rejected(tmp_path: Path, snapshot: dict, mutate, expected: str) -> None:
+        """未知字段、缺失字段、类型或单位不符、来源指纹不符一律拒绝，不静默放行。"""
+        payload = copy.deepcopy(snapshot)
+        mutate(payload)
+        with pytest.raises(generator.SamplingConfigError) as excinfo:
+            generator.load_sampling_config(_write(tmp_path, payload), REPO_ROOT)
+>       assert expected in str(excinfo.value)
+E       assert '缺少 sources' in "parameters.BinFill: 缺少字段 ['put_in_color']"
+E        +  where "parameters.BinFill: 缺少字段 ['put_in_color']" = str(SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']"))
+E        +    where SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") = <ExceptionInfo SamplingConfigError("parameters.BinFill: 缺少字段 ['put_in_color']") tblen=5>.value
+
+tests/lightweight/test_native_sampling_config.py:136: AssertionError
+_________________ test_config_branch_does_not_load_simulation __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-hongzefu/pytest-861/test_config_branch_does_not_lo0')
+
+    def test_config_branch_does_not_load_simulation(tmp_path: Path) -> None:
+        """提取分支必须不导入 torch / sapien / cv2 / robomme（spawn 子进程会重跑主模块顶层）。"""
+        script = (
+            "import sys, json, pathlib\n"
+            f"sys.path.insert(0, {str(SCRIPTS_DIR)!r})\n"
+            "import generate_dataset_newseed as g\n"
+            f"g.run_extract_config({str(CONFIG_PATH)!r}, pathlib.Path({str(REPO_ROOT)!r}), True, None)\n"
+            "print(json.dumps(sorted(m for m in sys.modules "
+            "if m.split('.')[0] in {'torch','sapien','cv2','robomme','gymnasium','mani_skill'})))\n"
+        )
+        completed = subprocess.run(
+            [sys.executable, "-c", script], capture_output=True, text=True, cwd=str(REPO_ROOT)
+        )
+>       assert completed.returncode == 0, completed.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 4, in <module>
+E           File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/generate_dataset_newseed.py", line 1174, in run_extract_config
+E             raise SamplingConfigError(
+E         generate_dataset_newseed.SamplingConfigError: /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v2/native_sampling.json: 快照与当前工作树源码不一致，共 23 处：
+E           parameters.BinFill.put_in_color: 源码='FROM_CLASS_CONFIGS' 快照='<缺失>'
+E           parameters.RouteStick.configs.xhard.backtrack: 源码='<缺失>' 快照=True
+E           parameters.RouteStick.configs.xhard.length: 源码='<缺失>' 快照=[8, 10]
+E           parameters.VideoRepick.configs.xhard.cube: 源码='<缺失>' 快照=3
+E           parameters.VideoRepick.configs.xhard.swap_max: 源码='<缺失>' 快照=5
+E           parameters.VideoRepick.configs.xhard.swap_min: 源码='<缺失>' 快照=4
+E           parameters.VideoUnmaskSwap.configs.xhard.bin: 源码='<缺失>' 快照=4
+E           parameters.VideoUnmaskSwap.configs.xhard.pick_max: 源码='<缺失>' 快照=2
+E           parameters.VideoUnmaskSwap.configs.xhard.pick_min: 源码='<缺失>' 快照=2
+E           parameters.VideoUnmaskSwap.configs.xhard.swap_max: 源码='<缺失>' 快照=5
+E           parameters.VideoUnmaskSwap.configs.xhard.swap_min: 源码='<缺失>' 快照=4
+E           positions.RouteStick.button_highlight.disk_radius_scale: 源码=1.002 快照='<缺失>'
+E           positions.RouteStick.button_highlight.end_offset_steps: 源码=40 快照='<缺失>'
+E           positions.RouteStick.button_highlight.native_note: 源码='官方与现行一致，未改动' 快照='<缺失>'
+E           positions.RouteStick.tcp_trail.disk_radius: 源码=0.005 快照='<缺失>'
+E           positions.RouteStick.tcp_trail.end_offset_steps: 源码=40 快照='<缺失>'
+E           positions.RouteStick.tcp_trail.native_note: 源码='官方 dataset-gen d53f21a 的 highlight_position 尾迹存活 40 步' 快照='<缺失>'
+E           sources.BinFill.anchors: 源码=['config_easy', 'config_medium', 'config_hard', 'config_xhard', '__init__', '_load_scene', '_initialize_episode'] 快照=['config_easy', 'config_medium', 'config_hard', '__init__', '_load_scene', '_initialize_episode']
+E           sources.BinFill.sha256: 源码='2847e6771d4790207858b0d453e362436ad4fd966baeda63bb6cbb90f9d68183' 快照='88d21612a03e3ba4a7fe3efa1989df796bf0ed1e407c8cd95388550ea29cd74a'
+E           sources.RouteStick.sha256: 源码='b44cc6974a4d528e212bba6ba99c6d4945309cf11ac2819a14d92c75b808a391' 快照='7dced06e589a59bc3c06b806d87e872886a841ddb1f7f37aadd02ec7b7e61aef'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3', '-c', "import sys, json...ba99c6d4945309cf11ac2819a14d92c75b808a391\' 快照=\'7dced06e589a59bc3c06b806d87e872886a841ddb1f7f37aadd02ec7b7e61aef\'\n').returncode
+
+tests/lightweight/test_native_sampling_config.py:152: AssertionError
+______________ test_episode_job_carries_independent_config_copies ______________
+
+    def test_episode_job_carries_independent_config_copies() -> None:
+        """每个 job 拿一份独立副本；改一份不影响另一份，也不回写父进程配置。"""
+>       configs = generator.load_sampling_config(CONFIG_PATH, REPO_ROOT)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_native_sampling_config.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/generate_dataset_newseed.py:1065: in load_sampling_config
+    return validate_sampling_config(payload, repo_root, config_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/generate_dataset_newseed.py:1089: in validate_sampling_config
+    _same_shape(native["parameters"], payload["parameters"], "parameters")
+scripts/generate_dataset_newseed.py:1020: in _same_shape
+    _same_shape(native[key], candidate[key], f"{path}.{key}" if path else key)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+native = {'configs': {'easy': {'color': 1, 'put_in_color': [1, 1], 'put_in_numbers': [1, 3], 'spawn_cubes': [4, 6]}, 'hard': {'...{'cast': 'bool', 'high_exclusive': 2, 'low': 0, 'sampler': 'torch.randint', ...}, 'put_in_color': 'FROM_CLASS_CONFIGS'}
+candidate = {'configs': {'easy': {'color': 1, 'put_in_color': [1, 1], 'put_in_numbers': [1, 3], 'spawn_cubes': [4, 6]}, 'hard': {'... 'spawn_cubes': [8, 10]}}, 'dynamic': {'cast': 'bool', 'high_exclusive': 2, 'low': 0, 'sampler': 'torch.randint', ...}}
+path = 'parameters.BinFill'
+
+    def _same_shape(native: Any, candidate: Any, path: str) -> None:
+        """逐字段核对结构、字段名与类型；数值可以不同，形状与类型不能变。"""
+        if isinstance(native, dict):
+            if not isinstance(candidate, dict):
+                raise SamplingConfigError(f"{path}: 应为对象，实际为 {type(candidate).__name__}")
+            missing = sorted(set(native) - set(candidate))
+            unknown = sorted(set(candidate) - set(native))
+            if missing:
+>               raise SamplingConfigError(f"{path}: 缺少字段 {missing}")
+E               generate_dataset_newseed.SamplingConfigError: parameters.BinFill: 缺少字段 ['put_in_color']
+
+scripts/generate_dataset_newseed.py:1016: SamplingConfigError
+_______________________ test_bumped_job_keeps_its_config _______________________
+
+    def test_bumped_job_keeps_its_config() -> None:
+        """attempt 重试沿用同一份配置，只换 seed。"""
+>       configs = generator.load_sampling_config(CONFIG_PATH, REPO_ROOT)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_native_sampling_config.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/generate_dataset_newseed.py:1065: in load_sampling_config
+    return validate_sampling_config(payload, repo_root, config_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/generate_dataset_newseed.py:1089: in validate_sampling_config
+    _same_shape(native["parameters"], payload["parameters"], "parameters")
+scripts/generate_dataset_newseed.py:1020: in _same_shape
+    _same_shape(native[key], candidate[key], f"{path}.{key}" if path else key)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+native = {'configs': {'easy': {'color': 1, 'put_in_color': [1, 1], 'put_in_numbers': [1, 3], 'spawn_cubes': [4, 6]}, 'hard': {'...{'cast': 'bool', 'high_exclusive': 2, 'low': 0, 'sampler': 'torch.randint', ...}, 'put_in_color': 'FROM_CLASS_CONFIGS'}
+candidate = {'configs': {'easy': {'color': 1, 'put_in_color': [1, 1], 'put_in_numbers': [1, 3], 'spawn_cubes': [4, 6]}, 'hard': {'... 'spawn_cubes': [8, 10]}}, 'dynamic': {'cast': 'bool', 'high_exclusive': 2, 'low': 0, 'sampler': 'torch.randint', ...}}
+path = 'parameters.BinFill'
+
+    def _same_shape(native: Any, candidate: Any, path: str) -> None:
+        """逐字段核对结构、字段名与类型；数值可以不同，形状与类型不能变。"""
+        if isinstance(native, dict):
+            if not isinstance(candidate, dict):
+                raise SamplingConfigError(f"{path}: 应为对象，实际为 {type(candidate).__name__}")
+            missing = sorted(set(native) - set(candidate))
+            unknown = sorted(set(candidate) - set(native))
+            if missing:
+>               raise SamplingConfigError(f"{path}: 缺少字段 {missing}")
+E               generate_dataset_newseed.SamplingConfigError: parameters.BinFill: 缺少字段 ['put_in_color']
+
+scripts/generate_dataset_newseed.py:1016: SamplingConfigError
+______ test_interrupted_candidate_rewrite_recovers_without_losing_results ______
+
+store = <scripts.injection.rollout.state.RunStore object at 0x76b310bbd390>
+
+    def test_interrupted_candidate_rewrite_recovers_without_losing_results(store):
+        with store.locked():
+>           _, candidates, _ = store.load()
+                               ^^^^^^^^^^^^
+
+tests/lightweight/test_rollout_state.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/rollout/state.py:199: in load
+    header, candidates = load_candidates(self.candidates, repo_root=ROOT)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/injection/candidates/io.py:191: in load_candidates
+    validate_candidates(header, rows, repo_root=repo_root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 3400, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+__________ test_duplicate_table_and_conflicting_terminal_are_rejected __________
+
+store = <scripts.injection.rollout.state.RunStore object at 0x76b319486010>
+
+    def test_duplicate_table_and_conflicting_terminal_are_rejected(store):
+        with store.locked():
+>           _, candidates, _ = store.load()
+                               ^^^^^^^^^^^^
+
+tests/lightweight/test_rollout_state.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/rollout/state.py:199: in load
+    header, candidates = load_candidates(self.candidates, repo_root=ROOT)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/injection/candidates/io.py:191: in load_candidates
+    validate_candidates(header, rows, repo_root=repo_root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 3400, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+___________________ test_unused_only_after_full_reset_quota ____________________
+
+store = <scripts.injection.rollout.state.RunStore object at 0x76b3114aa9d0>
+
+    def test_unused_only_after_full_reset_quota(store):
+>       header, candidates, _ = store.load()
+                                ^^^^^^^^^^^^
+
+tests/lightweight/test_rollout_state.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/rollout/state.py:199: in load
+    header, candidates = load_candidates(self.candidates, repo_root=ROOT)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/injection/candidates/io.py:191: in load_candidates
+    validate_candidates(header, rows, repo_root=repo_root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 3400, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+__________________ test_wrong_split_or_reset_outcome_rejected __________________
+
+store = <scripts.injection.rollout.state.RunStore object at 0x76b31a3b26d0>
+
+    def test_wrong_split_or_reset_outcome_rejected(store):
+>       header, candidates, _ = store.load()
+                                ^^^^^^^^^^^^
+
+tests/lightweight/test_rollout_state.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/rollout/state.py:199: in load
+    header, candidates = load_candidates(self.candidates, repo_root=ROOT)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/injection/candidates/io.py:191: in load_candidates
+    validate_candidates(header, rows, repo_root=repo_root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 3400, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+_____________________ test_step_error_returns_status_error _____________________
+
+    def test_step_error_returns_status_error() -> None:
+        """
+        Construct a minimal Mock environment to make super().step() inside _step_batch() throw an exception,
+        verifying that DemonstrationWrapper.step() does not propagate upwards, but returns "error" via info["status"].
+        """
+        source = _load_step_source()
+        tree = ast.parse(source, filename=str(_demo_wrapper_path()))
+    
+        # Find step() method, verify try/except structure exists
+        step_method = None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name == "DemonstrationWrapper":
+                for item in node.body:
+                    if isinstance(item, ast.FunctionDef) and item.name == "step":
+                        step_method = item
+                        break
+                break
+    
+        assert step_method is not None, "DemonstrationWrapper.step method not found"
+    
+        # Verify that the step method body contains try/except
+        has_try = any(isinstance(n, ast.Try) for n in ast.walk(step_method))
+>       assert has_try, "DemonstrationWrapper.step() should contain a try/except block"
+E       AssertionError: DemonstrationWrapper.step() should contain a try/except block
+E       assert False
+
+tests/lightweight/test_step_error_handling.py:76: AssertionError
+______________ test_scripts_use_status_check_not_bare_try_except _______________
+
+    def test_scripts_use_status_check_not_bare_try_except() -> None:
+        """
+        Parse run_example.py and dataset_replay.py, verify:
+        1. There is an info.get("status") or status == "error" check in the script
+        2. env.step(action) calls are no longer directly wrapped by try/except Exception
+        """
+        scripts = ["run_example.py", "dataset_replay.py"]
+    
+        for script_name in scripts:
+            script_path = _script_path(script_name)
+            source = script_path.read_text(encoding="utf-8")
+            tree = ast.parse(source, filename=str(script_path))
+    
+            # ---- Check 1: Contains status related checks ----
+            has_status_check = (
+                'info.get("status")' in source
+                or "status == \"error\"" in source
+                or "status==" in source.replace(" ", "")
+            )
+>           assert has_status_check, (
+                f"{script_name}: Should have info.get('status') or status==\"error\" check"
+            )
+E           AssertionError: dataset_replay.py: Should have info.get('status') or status=="error" check
+E           assert False
+
+tests/lightweight/test_step_error_handling.py:231: AssertionError
+----------------------------- Captured stdout call -----------------------------
+  ✓ run_example.py: Use status check, no bare try/except wrapping env.step
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/lightweight/test_injection_migration.py::test_candidate_entry_blocked_until_migration_complete
+FAILED tests/lightweight/test_native_sampling_config.py::test_check_config_matches_working_tree
+FAILED tests/lightweight/test_native_sampling_config.py::test_check_config_matches_fixed_baseline_operands
+FAILED tests/lightweight/test_native_sampling_config.py::test_extract_config_is_repeatable
+FAILED tests/lightweight/test_native_sampling_config.py::test_load_sampling_config_slices_four_tasks
+FAILED tests/lightweight/test_native_sampling_config.py::test_invalid_config_is_rejected[<lambda>-\u672a\u77e5\u5b57\u6bb5]
+FAILED tests/lightweight/test_native_sampling_config.py::test_invalid_config_is_rejected[<lambda>-\u5e94\u4e3a\u6570\u503c]
+FAILED tests/lightweight/test_native_sampling_config.py::test_invalid_config_is_rejected[<lambda>-\u5e94\u4e3a\u5e03\u5c14\u503c]
+FAILED tests/lightweight/test_native_sampling_config.py::test_invalid_config_is_rejected[<lambda>-\u6570\u7ec4\u957f\u5ea6]
+FAILED tests/lightweight/test_native_sampling_config.py::test_invalid_config_is_rejected[<lambda>-SHA-256 \u4e0e\u5feb\u7167\u4e0d\u7b26]
+FAILED tests/lightweight/test_native_sampling_config.py::test_invalid_config_is_rejected[<lambda>-\u7f3a\u5c11 sources]
+FAILED tests/lightweight/test_native_sampling_config.py::test_config_branch_does_not_load_simulation
+FAILED tests/lightweight/test_native_sampling_config.py::test_episode_job_carries_independent_config_copies
+FAILED tests/lightweight/test_native_sampling_config.py::test_bumped_job_keeps_its_config
+FAILED tests/lightweight/test_rollout_state.py::test_interrupted_candidate_rewrite_recovers_without_losing_results
+FAILED tests/lightweight/test_rollout_state.py::test_duplicate_table_and_conflicting_terminal_are_rejected
+FAILED tests/lightweight/test_rollout_state.py::test_unused_only_after_full_reset_quota
+FAILED tests/lightweight/test_rollout_state.py::test_wrong_split_or_reset_outcome_rejected
+FAILED tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error
+FAILED tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except
+20 failed, 158 passed, 6 skipped, 1 deselected, 2 warnings in 25.86s
+EXIT_CODE=123

@@ -1,0 +1,1175 @@
+{
+  "schema": 1,
+  "run_name": "v6-s2-20260926-01",
+  "attempt_budget": 144,
+  "retries": 0,
+  "timeout_s": 600,
+  "sampling_snapshot_sha256": "6ab3b0c218ad77e29f765f98f2e670c7462d386db9f23257e282242094a5dab3",
+  "movecube_seed_source": "artifacts/newtask-v6/plan-probes/impl-movecube/reset_2000.jsonl.gz",
+  "identities": [
+    {
+      "id": "BinFill-xhard1-8400000",
+      "task": "BinFill",
+      "difficulty": "xhard1",
+      "seed": 8400000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json"
+    },
+    {
+      "id": "BinFill-xhard1-8400100",
+      "task": "BinFill",
+      "difficulty": "xhard1",
+      "seed": 8400100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json"
+    },
+    {
+      "id": "BinFill-xhard2-10400000",
+      "task": "BinFill",
+      "difficulty": "xhard2",
+      "seed": 10400000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json"
+    },
+    {
+      "id": "BinFill-xhard2-10400100",
+      "task": "BinFill",
+      "difficulty": "xhard2",
+      "seed": 10400100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json"
+    },
+    {
+      "id": "BinFill-xhard3-12400000",
+      "task": "BinFill",
+      "difficulty": "xhard3",
+      "seed": 12400000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json"
+    },
+    {
+      "id": "BinFill-xhard3-12400100",
+      "task": "BinFill",
+      "difficulty": "xhard3",
+      "seed": 12400100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json"
+    },
+    {
+      "id": "PickXtimes-xhard1-8100000",
+      "task": "PickXtimes",
+      "difficulty": "xhard1",
+      "seed": 8100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json"
+    },
+    {
+      "id": "PickXtimes-xhard1-8100100",
+      "task": "PickXtimes",
+      "difficulty": "xhard1",
+      "seed": 8100100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json"
+    },
+    {
+      "id": "PickXtimes-xhard2-10100000",
+      "task": "PickXtimes",
+      "difficulty": "xhard2",
+      "seed": 10100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json"
+    },
+    {
+      "id": "PickXtimes-xhard2-10100100",
+      "task": "PickXtimes",
+      "difficulty": "xhard2",
+      "seed": 10100100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json"
+    },
+    {
+      "id": "PickXtimes-xhard3-12100000",
+      "task": "PickXtimes",
+      "difficulty": "xhard3",
+      "seed": 12100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json"
+    },
+    {
+      "id": "PickXtimes-xhard3-12100100",
+      "task": "PickXtimes",
+      "difficulty": "xhard3",
+      "seed": 12100100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json"
+    },
+    {
+      "id": "SwingXtimes-xhard1-8300000",
+      "task": "SwingXtimes",
+      "difficulty": "xhard1",
+      "seed": 8300000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json"
+    },
+    {
+      "id": "SwingXtimes-xhard1-8300100",
+      "task": "SwingXtimes",
+      "difficulty": "xhard1",
+      "seed": 8300100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json"
+    },
+    {
+      "id": "SwingXtimes-xhard2-10300000",
+      "task": "SwingXtimes",
+      "difficulty": "xhard2",
+      "seed": 10300000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json"
+    },
+    {
+      "id": "SwingXtimes-xhard2-10300100",
+      "task": "SwingXtimes",
+      "difficulty": "xhard2",
+      "seed": 10300100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json"
+    },
+    {
+      "id": "SwingXtimes-xhard3-12300000",
+      "task": "SwingXtimes",
+      "difficulty": "xhard3",
+      "seed": 12300000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json"
+    },
+    {
+      "id": "SwingXtimes-xhard3-12300100",
+      "task": "SwingXtimes",
+      "difficulty": "xhard3",
+      "seed": 12300100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json"
+    },
+    {
+      "id": "PickHighlight-xhard1-9200000",
+      "task": "PickHighlight",
+      "difficulty": "xhard1",
+      "seed": 9200000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json"
+    },
+    {
+      "id": "PickHighlight-xhard1-9200100",
+      "task": "PickHighlight",
+      "difficulty": "xhard1",
+      "seed": 9200100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json"
+    },
+    {
+      "id": "PickHighlight-xhard2-11200000",
+      "task": "PickHighlight",
+      "difficulty": "xhard2",
+      "seed": 11200000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json"
+    },
+    {
+      "id": "PickHighlight-xhard2-11200100",
+      "task": "PickHighlight",
+      "difficulty": "xhard2",
+      "seed": 11200100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json"
+    },
+    {
+      "id": "PickHighlight-xhard3-13200000",
+      "task": "PickHighlight",
+      "difficulty": "xhard3",
+      "seed": 13200000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json"
+    },
+    {
+      "id": "PickHighlight-xhard3-13200100",
+      "task": "PickHighlight",
+      "difficulty": "xhard3",
+      "seed": 13200100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json"
+    },
+    {
+      "id": "VideoUnmask-xhard1-8600000",
+      "task": "VideoUnmask",
+      "difficulty": "xhard1",
+      "seed": 8600000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json"
+    },
+    {
+      "id": "VideoUnmask-xhard1-8600100",
+      "task": "VideoUnmask",
+      "difficulty": "xhard1",
+      "seed": 8600100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json"
+    },
+    {
+      "id": "VideoUnmask-xhard2-10600000",
+      "task": "VideoUnmask",
+      "difficulty": "xhard2",
+      "seed": 10600000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json"
+    },
+    {
+      "id": "VideoUnmask-xhard2-10600100",
+      "task": "VideoUnmask",
+      "difficulty": "xhard2",
+      "seed": 10600100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json"
+    },
+    {
+      "id": "VideoUnmask-xhard3-12600000",
+      "task": "VideoUnmask",
+      "difficulty": "xhard3",
+      "seed": 12600000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json"
+    },
+    {
+      "id": "VideoUnmask-xhard3-12600100",
+      "task": "VideoUnmask",
+      "difficulty": "xhard3",
+      "seed": 12600100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json"
+    },
+    {
+      "id": "ButtonUnmask-xhard1-8800000",
+      "task": "ButtonUnmask",
+      "difficulty": "xhard1",
+      "seed": 8800000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json"
+    },
+    {
+      "id": "ButtonUnmask-xhard1-8800100",
+      "task": "ButtonUnmask",
+      "difficulty": "xhard1",
+      "seed": 8800100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json"
+    },
+    {
+      "id": "ButtonUnmask-xhard2-10800000",
+      "task": "ButtonUnmask",
+      "difficulty": "xhard2",
+      "seed": 10800000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json"
+    },
+    {
+      "id": "ButtonUnmask-xhard2-10800100",
+      "task": "ButtonUnmask",
+      "difficulty": "xhard2",
+      "seed": 10800100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json"
+    },
+    {
+      "id": "ButtonUnmask-xhard3-12800000",
+      "task": "ButtonUnmask",
+      "difficulty": "xhard3",
+      "seed": 12800000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json"
+    },
+    {
+      "id": "ButtonUnmask-xhard3-12800100",
+      "task": "ButtonUnmask",
+      "difficulty": "xhard3",
+      "seed": 12800100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard1-8500000",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard1",
+      "seed": 8500000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard1-8500100",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard1",
+      "seed": 8500100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard1-8500200",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard1",
+      "seed": 8500200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard1-8500300",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard1",
+      "seed": 8500300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard2-10500000",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard2",
+      "seed": 10500000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard2-10500100",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard2",
+      "seed": 10500100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard2-10500200",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard2",
+      "seed": 10500200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard2-10500300",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard2",
+      "seed": 10500300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard3-12500000",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard3",
+      "seed": 12500000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard3-12500100",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard3",
+      "seed": 12500100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard3-12500200",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard3",
+      "seed": 12500200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard3-12500300",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard3",
+      "seed": 12500300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard1-8700000",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard1",
+      "seed": 8700000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard1-8700100",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard1",
+      "seed": 8700100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard1-8700200",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard1",
+      "seed": 8700200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard1-8700300",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard1",
+      "seed": 8700300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard2-10700000",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard2",
+      "seed": 10700000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard2-10700100",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard2",
+      "seed": 10700100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard2-10700200",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard2",
+      "seed": 10700200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard2-10700300",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard2",
+      "seed": 10700300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard3-12700000",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard3",
+      "seed": 12700000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard3-12700100",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard3",
+      "seed": 12700100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard3-12700200",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard3",
+      "seed": 12700200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard3-12700300",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard3",
+      "seed": 12700300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "VideoRepick-xhard1-8900000",
+      "task": "VideoRepick",
+      "difficulty": "xhard1",
+      "seed": 8900000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard1-8900100",
+      "task": "VideoRepick",
+      "difficulty": "xhard1",
+      "seed": 8900100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard1-8900200",
+      "task": "VideoRepick",
+      "difficulty": "xhard1",
+      "seed": 8900200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard1-8900300",
+      "task": "VideoRepick",
+      "difficulty": "xhard1",
+      "seed": 8900300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard2-10900000",
+      "task": "VideoRepick",
+      "difficulty": "xhard2",
+      "seed": 10900000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard2-10900100",
+      "task": "VideoRepick",
+      "difficulty": "xhard2",
+      "seed": 10900100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard2-10900200",
+      "task": "VideoRepick",
+      "difficulty": "xhard2",
+      "seed": 10900200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard2-10900300",
+      "task": "VideoRepick",
+      "difficulty": "xhard2",
+      "seed": 10900300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard3-12900000",
+      "task": "VideoRepick",
+      "difficulty": "xhard3",
+      "seed": 12900000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard3-12900100",
+      "task": "VideoRepick",
+      "difficulty": "xhard3",
+      "seed": 12900100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard3-12900200",
+      "task": "VideoRepick",
+      "difficulty": "xhard3",
+      "seed": 12900200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard3-12900300",
+      "task": "VideoRepick",
+      "difficulty": "xhard3",
+      "seed": 12900300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "PatternLock-xhard1-9500000",
+      "task": "PatternLock",
+      "difficulty": "xhard1",
+      "seed": 9500000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json"
+    },
+    {
+      "id": "PatternLock-xhard1-9500100",
+      "task": "PatternLock",
+      "difficulty": "xhard1",
+      "seed": 9500100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json"
+    },
+    {
+      "id": "PatternLock-xhard2-11500000",
+      "task": "PatternLock",
+      "difficulty": "xhard2",
+      "seed": 11500000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json"
+    },
+    {
+      "id": "PatternLock-xhard2-11500100",
+      "task": "PatternLock",
+      "difficulty": "xhard2",
+      "seed": 11500100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json"
+    },
+    {
+      "id": "PatternLock-xhard3-13500000",
+      "task": "PatternLock",
+      "difficulty": "xhard3",
+      "seed": 13500000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json"
+    },
+    {
+      "id": "PatternLock-xhard3-13500100",
+      "task": "PatternLock",
+      "difficulty": "xhard3",
+      "seed": 13500100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json"
+    },
+    {
+      "id": "RouteStick-xhard1-9600000",
+      "task": "RouteStick",
+      "difficulty": "xhard1",
+      "seed": 9600000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json"
+    },
+    {
+      "id": "RouteStick-xhard1-9600100",
+      "task": "RouteStick",
+      "difficulty": "xhard1",
+      "seed": 9600100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json"
+    },
+    {
+      "id": "RouteStick-xhard2-11600000",
+      "task": "RouteStick",
+      "difficulty": "xhard2",
+      "seed": 11600000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json"
+    },
+    {
+      "id": "RouteStick-xhard2-11600100",
+      "task": "RouteStick",
+      "difficulty": "xhard2",
+      "seed": 11600100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json"
+    },
+    {
+      "id": "RouteStick-xhard3-13600000",
+      "task": "RouteStick",
+      "difficulty": "xhard3",
+      "seed": 13600000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json"
+    },
+    {
+      "id": "RouteStick-xhard3-13600100",
+      "task": "RouteStick",
+      "difficulty": "xhard3",
+      "seed": 13600100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json"
+    },
+    {
+      "id": "VideoPlaceButton-xhard1-9000000",
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard1",
+      "seed": 9000000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json"
+    },
+    {
+      "id": "VideoPlaceButton-xhard1-9000100",
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard1",
+      "seed": 9000100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json"
+    },
+    {
+      "id": "VideoPlaceButton-xhard2-11000000",
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard2",
+      "seed": 11000000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json"
+    },
+    {
+      "id": "VideoPlaceButton-xhard2-11000100",
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard2",
+      "seed": 11000100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json"
+    },
+    {
+      "id": "VideoPlaceButton-xhard3-13000000",
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard3",
+      "seed": 13000000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json"
+    },
+    {
+      "id": "VideoPlaceButton-xhard3-13000100",
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard3",
+      "seed": 13000100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json"
+    },
+    {
+      "id": "VideoPlaceOrder-xhard1-9100000",
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard1",
+      "seed": 9100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json"
+    },
+    {
+      "id": "VideoPlaceOrder-xhard1-9100100",
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard1",
+      "seed": 9100100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json"
+    },
+    {
+      "id": "VideoPlaceOrder-xhard2-11100000",
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard2",
+      "seed": 11100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json"
+    },
+    {
+      "id": "VideoPlaceOrder-xhard2-11100100",
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard2",
+      "seed": 11100100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json"
+    },
+    {
+      "id": "VideoPlaceOrder-xhard3-13100000",
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard3",
+      "seed": 13100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json"
+    },
+    {
+      "id": "VideoPlaceOrder-xhard3-13100100",
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard3",
+      "seed": 13100100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json"
+    },
+    {
+      "id": "PickXtimes-xhard4-6100000",
+      "task": "PickXtimes",
+      "difficulty": "xhard4",
+      "seed": 6100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json"
+    },
+    {
+      "id": "PickXtimes-xhard4-6100100",
+      "task": "PickXtimes",
+      "difficulty": "xhard4",
+      "seed": 6100100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json"
+    },
+    {
+      "id": "StopCube-xhard4-6200000",
+      "task": "StopCube",
+      "difficulty": "xhard4",
+      "seed": 6200000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/StopCube.json"
+    },
+    {
+      "id": "StopCube-xhard4-6200100",
+      "task": "StopCube",
+      "difficulty": "xhard4",
+      "seed": 6200100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/StopCube.json"
+    },
+    {
+      "id": "SwingXtimes-xhard4-6300000",
+      "task": "SwingXtimes",
+      "difficulty": "xhard4",
+      "seed": 6300000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json"
+    },
+    {
+      "id": "SwingXtimes-xhard4-6300100",
+      "task": "SwingXtimes",
+      "difficulty": "xhard4",
+      "seed": 6300100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json"
+    },
+    {
+      "id": "BinFill-xhard4-6400000",
+      "task": "BinFill",
+      "difficulty": "xhard4",
+      "seed": 6400000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json"
+    },
+    {
+      "id": "BinFill-xhard4-6400100",
+      "task": "BinFill",
+      "difficulty": "xhard4",
+      "seed": 6400100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard4-6500000",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard4",
+      "seed": 6500000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard4-6500100",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard4",
+      "seed": 6500100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard4-6500200",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard4",
+      "seed": 6500200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmaskSwap-xhard4-6500300",
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard4",
+      "seed": 6500300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json"
+    },
+    {
+      "id": "VideoUnmask-xhard4-6600000",
+      "task": "VideoUnmask",
+      "difficulty": "xhard4",
+      "seed": 6600000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json"
+    },
+    {
+      "id": "VideoUnmask-xhard4-6600100",
+      "task": "VideoUnmask",
+      "difficulty": "xhard4",
+      "seed": 6600100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard4-6700000",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard4",
+      "seed": 6700000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard4-6700100",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard4",
+      "seed": 6700100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard4-6700200",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard4",
+      "seed": 6700200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmaskSwap-xhard4-6700300",
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard4",
+      "seed": 6700300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json"
+    },
+    {
+      "id": "ButtonUnmask-xhard4-6800000",
+      "task": "ButtonUnmask",
+      "difficulty": "xhard4",
+      "seed": 6800000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json"
+    },
+    {
+      "id": "ButtonUnmask-xhard4-6800100",
+      "task": "ButtonUnmask",
+      "difficulty": "xhard4",
+      "seed": 6800100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json"
+    },
+    {
+      "id": "VideoRepick-xhard4-6900000",
+      "task": "VideoRepick",
+      "difficulty": "xhard4",
+      "seed": 6900000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard4-6900100",
+      "task": "VideoRepick",
+      "difficulty": "xhard4",
+      "seed": 6900100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard4-6900200",
+      "task": "VideoRepick",
+      "difficulty": "xhard4",
+      "seed": 6900200,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoRepick-xhard4-6900300",
+      "task": "VideoRepick",
+      "difficulty": "xhard4",
+      "seed": 6900300,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json"
+    },
+    {
+      "id": "VideoPlaceButton-xhard4-7000000",
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard4",
+      "seed": 7000000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json"
+    },
+    {
+      "id": "VideoPlaceButton-xhard4-7000100",
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard4",
+      "seed": 7000100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json"
+    },
+    {
+      "id": "VideoPlaceOrder-xhard4-7100000",
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard4",
+      "seed": 7100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json"
+    },
+    {
+      "id": "VideoPlaceOrder-xhard4-7100100",
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard4",
+      "seed": 7100100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json"
+    },
+    {
+      "id": "PickHighlight-xhard4-7200000",
+      "task": "PickHighlight",
+      "difficulty": "xhard4",
+      "seed": 7200000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json"
+    },
+    {
+      "id": "PickHighlight-xhard4-7200100",
+      "task": "PickHighlight",
+      "difficulty": "xhard4",
+      "seed": 7200100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json"
+    },
+    {
+      "id": "InsertPeg-xhard4-7300000",
+      "task": "InsertPeg",
+      "difficulty": "xhard4",
+      "seed": 7300000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/InsertPeg.json"
+    },
+    {
+      "id": "InsertPeg-xhard4-7300100",
+      "task": "InsertPeg",
+      "difficulty": "xhard4",
+      "seed": 7300100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/InsertPeg.json"
+    },
+    {
+      "id": "MoveCube-xhard4-6100001",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100001,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "peg_push"
+    },
+    {
+      "id": "MoveCube-xhard4-6100002",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100002,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "peg_push"
+    },
+    {
+      "id": "MoveCube-xhard4-6100004",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100004,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "peg_push"
+    },
+    {
+      "id": "MoveCube-xhard4-6100006",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100006,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "peg_push"
+    },
+    {
+      "id": "MoveCube-xhard4-6100000",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "gripper_push"
+    },
+    {
+      "id": "MoveCube-xhard4-6100007",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100007,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "gripper_push"
+    },
+    {
+      "id": "MoveCube-xhard4-6100011",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100011,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "gripper_push"
+    },
+    {
+      "id": "MoveCube-xhard4-6100012",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100012,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "gripper_push"
+    },
+    {
+      "id": "MoveCube-xhard4-6100003",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100003,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "grasp_putdown"
+    },
+    {
+      "id": "MoveCube-xhard4-6100005",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100005,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "grasp_putdown"
+    },
+    {
+      "id": "MoveCube-xhard4-6100008",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100008,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "grasp_putdown"
+    },
+    {
+      "id": "MoveCube-xhard4-6100009",
+      "task": "MoveCube",
+      "difficulty": "xhard4",
+      "seed": 6100009,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "expected_method": "grasp_putdown"
+    },
+    {
+      "id": "PatternLock-xhard4-7500000",
+      "task": "PatternLock",
+      "difficulty": "xhard4",
+      "seed": 7500000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json"
+    },
+    {
+      "id": "PatternLock-xhard4-7500100",
+      "task": "PatternLock",
+      "difficulty": "xhard4",
+      "seed": 7500100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json"
+    },
+    {
+      "id": "RouteStick-xhard4-7600000",
+      "task": "RouteStick",
+      "difficulty": "xhard4",
+      "seed": 7600000,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json"
+    },
+    {
+      "id": "RouteStick-xhard4-7600100",
+      "task": "RouteStick",
+      "difficulty": "xhard4",
+      "seed": 7600100,
+      "episode": 9,
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json"
+    }
+  ]
+}

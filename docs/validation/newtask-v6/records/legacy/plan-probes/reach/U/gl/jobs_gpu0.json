@@ -1,0 +1,1010 @@
+[
+ {
+  "task": "MoveCube",
+  "episode": 400,
+  "seed": 7400000,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_400"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 401,
+  "seed": 7400001,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_401"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 402,
+  "seed": 7400002,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_402"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 403,
+  "seed": 7400003,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_403"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 404,
+  "seed": 7400004,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_404"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 405,
+  "seed": 7400005,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_405"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 406,
+  "seed": 7400006,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_406"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 407,
+  "seed": 7400007,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_407"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 408,
+  "seed": 7400008,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_408"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 409,
+  "seed": 7400009,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_409"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 410,
+  "seed": 7400010,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_410"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 411,
+  "seed": 7400011,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_411"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 412,
+  "seed": 7400012,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_412"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 413,
+  "seed": 7400013,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_413"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 414,
+  "seed": 7400014,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_414"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 415,
+  "seed": 7400015,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_415"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 416,
+  "seed": 7400016,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_416"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 417,
+  "seed": 7400017,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_417"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 418,
+  "seed": 7400018,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_418"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 419,
+  "seed": 7400019,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_419"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 420,
+  "seed": 7400020,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_420"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 421,
+  "seed": 7400021,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_421"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 422,
+  "seed": 7400022,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_422"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 423,
+  "seed": 7400023,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_423"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 424,
+  "seed": 7400024,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_424"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 425,
+  "seed": 7400025,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_425"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 426,
+  "seed": 7400026,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_426"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 427,
+  "seed": 7400027,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_427"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 428,
+  "seed": 7400028,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_428"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 429,
+  "seed": 7400029,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_429"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 430,
+  "seed": 7400030,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_430"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 431,
+  "seed": 7400031,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_431"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 432,
+  "seed": 7400032,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_432"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 433,
+  "seed": 7400033,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_433"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 434,
+  "seed": 7400034,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_434"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 435,
+  "seed": 7400035,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_435"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 436,
+  "seed": 7400036,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_436"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 437,
+  "seed": 7400037,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_437"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 438,
+  "seed": 7400038,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_438"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 439,
+  "seed": 7400039,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_439"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 440,
+  "seed": 7400040,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_440"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 441,
+  "seed": 7400041,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_441"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 442,
+  "seed": 7400042,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_442"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 443,
+  "seed": 7400043,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_443"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 444,
+  "seed": 7400044,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_444"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 445,
+  "seed": 7400045,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_445"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 446,
+  "seed": 7400046,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_446"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 447,
+  "seed": 7400047,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_447"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 448,
+  "seed": 7400048,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_448"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 449,
+  "seed": 7400049,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_449"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 450,
+  "seed": 7400050,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_450"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 451,
+  "seed": 7400051,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_451"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 452,
+  "seed": 7400052,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_452"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 453,
+  "seed": 7400053,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_453"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 454,
+  "seed": 7400054,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_454"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 455,
+  "seed": 7400055,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_455"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 456,
+  "seed": 7400056,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_456"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 457,
+  "seed": 7400057,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_457"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 458,
+  "seed": 7400058,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_458"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 459,
+  "seed": 7400059,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_459"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 460,
+  "seed": 7400060,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_460"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 461,
+  "seed": 7400061,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_461"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 462,
+  "seed": 7400062,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_462"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 463,
+  "seed": 7400063,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_463"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 464,
+  "seed": 7400064,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_464"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 465,
+  "seed": 7400065,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_465"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 466,
+  "seed": 7400066,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_466"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 467,
+  "seed": 7400067,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_467"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 468,
+  "seed": 7400068,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_468"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 469,
+  "seed": 7400069,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_469"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 470,
+  "seed": 7400070,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_470"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 471,
+  "seed": 7400071,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_471"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 472,
+  "seed": 7400072,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_472"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 473,
+  "seed": 7400073,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_473"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 474,
+  "seed": 7400074,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_474"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 475,
+  "seed": 7400075,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_475"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 476,
+  "seed": 7400076,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_476"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 477,
+  "seed": 7400077,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_477"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 478,
+  "seed": 7400078,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_478"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 479,
+  "seed": 7400079,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_479"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 480,
+  "seed": 7400080,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_480"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 481,
+  "seed": 7400081,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_481"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 482,
+  "seed": 7400082,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_482"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 483,
+  "seed": 7400083,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_483"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 484,
+  "seed": 7400084,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_484"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 485,
+  "seed": 7400085,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_485"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 486,
+  "seed": 7400086,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_486"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 487,
+  "seed": 7400087,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_487"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 488,
+  "seed": 7400088,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_488"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 489,
+  "seed": 7400089,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_489"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 490,
+  "seed": 7400090,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_490"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 491,
+  "seed": 7400091,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_491"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 492,
+  "seed": 7400092,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_492"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 493,
+  "seed": 7400093,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_493"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 494,
+  "seed": 7400094,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_494"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 495,
+  "seed": 7400095,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_495"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 496,
+  "seed": 7400096,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_496"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 497,
+  "seed": 7400097,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_497"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 498,
+  "seed": 7400098,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_498"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 499,
+  "seed": 7400099,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_499"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 500,
+  "seed": 7400100,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_500"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 501,
+  "seed": 7400101,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_501"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 502,
+  "seed": 7400102,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_502"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 503,
+  "seed": 7400103,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_503"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 504,
+  "seed": 7400104,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_504"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 505,
+  "seed": 7400105,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_505"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 506,
+  "seed": 7400106,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_506"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 507,
+  "seed": 7400107,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_507"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 508,
+  "seed": 7400108,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_508"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 509,
+  "seed": 7400109,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_509"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 510,
+  "seed": 7400110,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_510"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 511,
+  "seed": 7400111,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_511"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 512,
+  "seed": 7400112,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_512"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 513,
+  "seed": 7400113,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_513"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 514,
+  "seed": 7400114,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_514"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 515,
+  "seed": 7400115,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_515"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 516,
+  "seed": 7400116,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_516"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 517,
+  "seed": 7400117,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_517"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 518,
+  "seed": 7400118,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_518"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 519,
+  "seed": 7400119,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_519"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 520,
+  "seed": 7400120,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_520"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 521,
+  "seed": 7400121,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_521"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 522,
+  "seed": 7400122,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_522"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 523,
+  "seed": 7400123,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_523"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 524,
+  "seed": 7400124,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_524"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 525,
+  "seed": 7400125,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_525"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 526,
+  "seed": 7400126,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_526"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 527,
+  "seed": 7400127,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_527"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 528,
+  "seed": 7400128,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_528"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 529,
+  "seed": 7400129,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_529"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 530,
+  "seed": 7400130,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_530"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 531,
+  "seed": 7400131,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_531"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 532,
+  "seed": 7400132,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_532"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 533,
+  "seed": 7400133,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_533"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 534,
+  "seed": 7400134,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_534"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 535,
+  "seed": 7400135,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_535"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 536,
+  "seed": 7400136,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_536"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 537,
+  "seed": 7400137,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_537"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 538,
+  "seed": 7400138,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_538"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 539,
+  "seed": 7400139,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_539"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 540,
+  "seed": 7400140,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_540"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 541,
+  "seed": 7400141,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_541"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 542,
+  "seed": 7400142,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_542"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 543,
+  "seed": 7400143,
+  "difficulty": "xhard",
+  "worker_dir": "/tmp/hongzefu-reachU/episodes/MoveCube_episode_543"
+ }
+]

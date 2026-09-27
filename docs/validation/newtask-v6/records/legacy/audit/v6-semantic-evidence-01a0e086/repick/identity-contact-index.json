@@ -1,0 +1,86 @@
+[
+  {
+    "difficulty": "xhard2",
+    "seed": 10900000,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_0/videos/VideoRepick_ep0_seed10900000_xhard2_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_three_times_finally_put_it_down_and_press_the_bu__HASH__b89853c0f8fd.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard2-seed10900000-identity.png",
+    "pick_segments": 4
+  },
+  {
+    "difficulty": "xhard2",
+    "seed": 10900301,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_3/videos/VideoRepick_ep3_seed10900301_xhard2_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_three_times_finally_put_it_down_and_press_the_bu__HASH__b89853c0f8fd.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard2-seed10900301-identity.png",
+    "pick_segments": 4
+  },
+  {
+    "difficulty": "xhard2",
+    "seed": 10900601,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_6/videos/VideoRepick_ep6_seed10900601_xhard2_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_three_times_finally_put_it_down_and_press_the_bu__HASH__b89853c0f8fd.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard2-seed10900601-identity.png",
+    "pick_segments": 4
+  },
+  {
+    "difficulty": "xhard3",
+    "seed": 12900002,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_0/videos/VideoRepick_ep0_seed12900002_xhard3_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_four_times_finally_put_it_down_and_press_the_but__HASH__ac1437c8c935.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard3-seed12900002-identity.png",
+    "pick_segments": 5
+  },
+  {
+    "difficulty": "xhard3",
+    "seed": 12900302,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_3/videos/VideoRepick_ep3_seed12900302_xhard3_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_four_times_finally_put_it_down_and_press_the_but__HASH__ac1437c8c935.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard3-seed12900302-identity.png",
+    "pick_segments": 5
+  },
+  {
+    "difficulty": "xhard3",
+    "seed": 12900600,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_6/videos/VideoRepick_ep6_seed12900600_xhard3_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_four_times_finally_put_it_down_and_press_the_but__HASH__ac1437c8c935.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard3-seed12900600-identity.png",
+    "pick_segments": 5
+  },
+  {
+    "difficulty": "xhard1",
+    "seed": 8900000,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_0/videos/VideoRepick_ep0_seed8900000_xhard1_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard1-seed8900000-identity.png",
+    "pick_segments": 3
+  },
+  {
+    "difficulty": "xhard1",
+    "seed": 8900302,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_3/videos/VideoRepick_ep3_seed8900302_xhard1_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard1-seed8900302-identity.png",
+    "pick_segments": 3
+  },
+  {
+    "difficulty": "xhard1",
+    "seed": 8900600,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_6/videos/VideoRepick_ep6_seed8900600_xhard1_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard1-seed8900600-identity.png",
+    "pick_segments": 3
+  },
+  {
+    "difficulty": "xhard4",
+    "seed": 6900003,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_0/videos/VideoRepick_ep0_seed6900003_xhard4_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_five_times_finally_put_it_down_and_press_the_but__HASH__ca4dcbd02e55.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard4-seed6900003-identity.png",
+    "pick_segments": 6
+  },
+  {
+    "difficulty": "xhard4",
+    "seed": 6900300,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_3/videos/VideoRepick_ep3_seed6900300_xhard4_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_six_times_finally_put_it_down_and_press_the_butt__HASH__602087e43d57.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard4-seed6900300-identity.png",
+    "pick_segments": 7
+  },
+  {
+    "difficulty": "xhard4",
+    "seed": 6900600,
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_6/videos/VideoRepick_ep6_seed6900600_xhard4_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_five_times_finally_put_it_down_and_press_the_but__HASH__ca4dcbd02e55.mp4",
+    "contact_sheet": "artifacts/audit/v6-semantic-evidence-01a0e086/repick/xhard4-seed6900600-identity.png",
+    "pick_segments": 6
+  }
+]

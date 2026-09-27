@@ -1,0 +1,1432 @@
+{
+  "new_tier": {
+    "xhard1": [
+      {
+        "difficulty": "xhard1",
+        "task_goal": [
+          "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion four times, finally press the button to stop",
+          "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion four times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the green cube"
+          ],
+          [
+            118,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            152,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            196,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            240,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            290,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            339,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            387,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            436,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            484,
+            "put the green cube on the table"
+          ],
+          [
+            521,
+            "press the button"
+          ],
+          [
+            590,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed8300000.h5"
+      },
+      {
+        "difficulty": "xhard1",
+        "task_goal": [
+          "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion four times, finally press the button to stop",
+          "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion four times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the green cube"
+          ],
+          [
+            118,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            140,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            176,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            212,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            248,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            284,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            320,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            356,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            392,
+            "put the green cube on the table"
+          ],
+          [
+            427,
+            "press the button"
+          ],
+          [
+            484,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed8300300.h5"
+      },
+      {
+        "difficulty": "xhard1",
+        "task_goal": [
+          "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop",
+          "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion five times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the red cube"
+          ],
+          [
+            125,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            165,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            206,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            247,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            288,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            329,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            370,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            411,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            452,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            493,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            534,
+            "put the red cube on the table"
+          ],
+          [
+            570,
+            "press the button"
+          ],
+          [
+            645,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed8300600.h5"
+      }
+    ],
+    "xhard2": [
+      {
+        "difficulty": "xhard2",
+        "task_goal": [
+          "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion six times, finally press the button to stop",
+          "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion six times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the blue cube"
+          ],
+          [
+            149,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            198,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            236,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            278,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            318,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            359,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            400,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            441,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            482,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            523,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            564,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            605,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            646,
+            "put the blue cube on the table"
+          ],
+          [
+            681,
+            "press the button"
+          ],
+          [
+            738,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed10300000.h5"
+      },
+      {
+        "difficulty": "xhard2",
+        "task_goal": [
+          "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion seven times, finally press the button to stop",
+          "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion seven times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the green cube"
+          ],
+          [
+            106,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            147,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            188,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            234,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            279,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            324,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            369,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            414,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            459,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            504,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            549,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            594,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            639,
+            "move to the top of the right-side target for the seventh time"
+          ],
+          [
+            684,
+            "move to the top of the left-side target for the seventh time"
+          ],
+          [
+            729,
+            "put the green cube on the table"
+          ],
+          [
+            764,
+            "press the button"
+          ],
+          [
+            822,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed10300300.h5"
+      },
+      {
+        "difficulty": "xhard2",
+        "task_goal": [
+          "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion six times, finally press the button to stop",
+          "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion six times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the green cube"
+          ],
+          [
+            102,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            133,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            170,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            206,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            242,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            278,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            314,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            350,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            386,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            422,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            458,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            494,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            531,
+            "put the green cube on the table"
+          ],
+          [
+            565,
+            "press the button"
+          ],
+          [
+            619,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed10300600.h5"
+      }
+    ],
+    "xhard3": [
+      {
+        "difficulty": "xhard3",
+        "task_goal": [
+          "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+          "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the blue cube"
+          ],
+          [
+            103,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            143,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            186,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            229,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            272,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            315,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            358,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            401,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            444,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            487,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            530,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            573,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            616,
+            "move to the top of the right-side target for the seventh time"
+          ],
+          [
+            659,
+            "move to the top of the left-side target for the seventh time"
+          ],
+          [
+            702,
+            "move to the top of the right-side target for the eighth time"
+          ],
+          [
+            745,
+            "move to the top of the left-side target for the eighth time"
+          ],
+          [
+            788,
+            "put the blue cube on the table"
+          ],
+          [
+            822,
+            "press the button"
+          ],
+          [
+            880,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed12300000.h5"
+      },
+      {
+        "difficulty": "xhard3",
+        "task_goal": [
+          "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+          "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the blue cube"
+          ],
+          [
+            110,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            145,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            180,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            216,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            252,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            288,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            324,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            360,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            396,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            432,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            468,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            504,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            540,
+            "move to the top of the right-side target for the seventh time"
+          ],
+          [
+            576,
+            "move to the top of the left-side target for the seventh time"
+          ],
+          [
+            612,
+            "move to the top of the right-side target for the eighth time"
+          ],
+          [
+            648,
+            "move to the top of the left-side target for the eighth time"
+          ],
+          [
+            684,
+            "put the blue cube on the table"
+          ],
+          [
+            719,
+            "press the button"
+          ],
+          [
+            801,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed12300300.h5"
+      },
+      {
+        "difficulty": "xhard3",
+        "task_goal": [
+          "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+          "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the green cube"
+          ],
+          [
+            137,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            171,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            212,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            255,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            297,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            339,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            381,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            423,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            465,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            507,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            549,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            591,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            633,
+            "move to the top of the right-side target for the seventh time"
+          ],
+          [
+            676,
+            "move to the top of the left-side target for the seventh time"
+          ],
+          [
+            718,
+            "move to the top of the right-side target for the eighth time"
+          ],
+          [
+            761,
+            "move to the top of the left-side target for the eighth time"
+          ],
+          [
+            804,
+            "put the green cube on the table"
+          ],
+          [
+            840,
+            "press the button"
+          ],
+          [
+            909,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed12300600.h5"
+      }
+    ],
+    "xhard4": [
+      {
+        "difficulty": "xhard4",
+        "task_goal": [
+          "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eleven times, finally press the button to stop",
+          "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eleven times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the red cube"
+          ],
+          [
+            114,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            138,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            185,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            231,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            277,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            322,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            368,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            413,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            459,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            504,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            550,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            595,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            641,
+            "move to the top of the right-side target for the seventh time"
+          ],
+          [
+            686,
+            "move to the top of the left-side target for the seventh time"
+          ],
+          [
+            732,
+            "move to the top of the right-side target for the eighth time"
+          ],
+          [
+            776,
+            "move to the top of the left-side target for the eighth time"
+          ],
+          [
+            822,
+            "move to the top of the right-side target for the ninth time"
+          ],
+          [
+            866,
+            "move to the top of the left-side target for the ninth time"
+          ],
+          [
+            911,
+            "move to the top of the right-side target for the tenth time"
+          ],
+          [
+            955,
+            "move to the top of the left-side target for the tenth time"
+          ],
+          [
+            1000,
+            "move to the top of the right-side target for the 11th time"
+          ],
+          [
+            1044,
+            "move to the top of the left-side target for the 11th time"
+          ],
+          [
+            1089,
+            "put the red cube on the table"
+          ],
+          [
+            1129,
+            "press the button"
+          ],
+          [
+            1205,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed6300000.h5"
+      },
+      {
+        "difficulty": "xhard4",
+        "task_goal": [
+          "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion ten times, finally press the button to stop",
+          "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion ten times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the red cube"
+          ],
+          [
+            102,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            137,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            178,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            217,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            256,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            295,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            334,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            373,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            412,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            451,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            490,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            529,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            568,
+            "move to the top of the right-side target for the seventh time"
+          ],
+          [
+            607,
+            "move to the top of the left-side target for the seventh time"
+          ],
+          [
+            646,
+            "move to the top of the right-side target for the eighth time"
+          ],
+          [
+            685,
+            "move to the top of the left-side target for the eighth time"
+          ],
+          [
+            724,
+            "move to the top of the right-side target for the ninth time"
+          ],
+          [
+            763,
+            "move to the top of the left-side target for the ninth time"
+          ],
+          [
+            802,
+            "move to the top of the right-side target for the tenth time"
+          ],
+          [
+            841,
+            "move to the top of the left-side target for the tenth time"
+          ],
+          [
+            880,
+            "put the red cube on the table"
+          ],
+          [
+            915,
+            "press the button"
+          ],
+          [
+            968,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed6300300.h5"
+      },
+      {
+        "difficulty": "xhard4",
+        "task_goal": [
+          "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eleven times, finally press the button to stop",
+          "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eleven times, then put down the cube and press the button to stop"
+        ],
+        "subgoal_chain": [
+          [
+            0,
+            "pick up the green cube"
+          ],
+          [
+            111,
+            "move to the top of the right-side target for the first time"
+          ],
+          [
+            153,
+            "move to the top of the left-side target for the first time"
+          ],
+          [
+            193,
+            "move to the top of the right-side target for the second time"
+          ],
+          [
+            232,
+            "move to the top of the left-side target for the second time"
+          ],
+          [
+            271,
+            "move to the top of the right-side target for the third time"
+          ],
+          [
+            310,
+            "move to the top of the left-side target for the third time"
+          ],
+          [
+            349,
+            "move to the top of the right-side target for the fourth time"
+          ],
+          [
+            388,
+            "move to the top of the left-side target for the fourth time"
+          ],
+          [
+            427,
+            "move to the top of the right-side target for the fifth time"
+          ],
+          [
+            466,
+            "move to the top of the left-side target for the fifth time"
+          ],
+          [
+            505,
+            "move to the top of the right-side target for the sixth time"
+          ],
+          [
+            544,
+            "move to the top of the left-side target for the sixth time"
+          ],
+          [
+            583,
+            "move to the top of the right-side target for the seventh time"
+          ],
+          [
+            622,
+            "move to the top of the left-side target for the seventh time"
+          ],
+          [
+            661,
+            "move to the top of the right-side target for the eighth time"
+          ],
+          [
+            700,
+            "move to the top of the left-side target for the eighth time"
+          ],
+          [
+            739,
+            "move to the top of the right-side target for the ninth time"
+          ],
+          [
+            778,
+            "move to the top of the left-side target for the ninth time"
+          ],
+          [
+            817,
+            "move to the top of the right-side target for the tenth time"
+          ],
+          [
+            856,
+            "move to the top of the left-side target for the tenth time"
+          ],
+          [
+            895,
+            "move to the top of the right-side target for the 11th time"
+          ],
+          [
+            934,
+            "move to the top of the left-side target for the 11th time"
+          ],
+          [
+            973,
+            "put the green cube on the table"
+          ],
+          [
+            1010,
+            "press the button"
+          ],
+          [
+            1068,
+            "All tasks completed"
+          ]
+        ],
+        "path": "artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed6300600.h5"
+      }
+    ]
+  },
+  "native": [
+    {
+      "difficulty": "easy",
+      "task_goal": [
+        "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion two times, finally press the button to stop",
+        "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion two times, then put down the cube and press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the red cube"
+        ],
+        [
+          191,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          217,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          259,
+          "move to the top of the right-side target for the second time"
+        ],
+        [
+          302,
+          "move to the top of the left-side target for the second time"
+        ],
+        [
+          344,
+          "put the red cube on the table"
+        ],
+        [
+          379,
+          "press the button"
+        ],
+        [
+          445,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed3000.h5"
+    },
+    {
+      "difficulty": "easy",
+      "task_goal": [
+        "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+        "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the green cube"
+        ],
+        [
+          169,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          222,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          265,
+          "move to the top of the right-side target for the second time"
+        ],
+        [
+          313,
+          "move to the top of the left-side target for the second time"
+        ],
+        [
+          360,
+          "move to the top of the right-side target for the third time"
+        ],
+        [
+          407,
+          "move to the top of the left-side target for the third time"
+        ],
+        [
+          454,
+          "put the green cube on the table"
+        ],
+        [
+          489,
+          "press the button"
+        ],
+        [
+          573,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_1/hdf5_files/SwingXtimes_ep1_seed3100.h5"
+    },
+    {
+      "difficulty": "medium",
+      "task_goal": [
+        "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion two times, finally press the button to stop",
+        "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion two times, then put down the cube and press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the green cube"
+        ],
+        [
+          112,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          134,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          175,
+          "move to the top of the right-side target for the second time"
+        ],
+        [
+          216,
+          "move to the top of the left-side target for the second time"
+        ],
+        [
+          257,
+          "put the green cube on the table"
+        ],
+        [
+          292,
+          "press the button"
+        ],
+        [
+          345,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_10/hdf5_files/SwingXtimes_ep10_seed4000.h5"
+    },
+    {
+      "difficulty": "hard",
+      "task_goal": [
+        "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+        "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the blue cube"
+        ],
+        [
+          102,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          128,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          168,
+          "move to the top of the right-side target for the second time"
+        ],
+        [
+          208,
+          "move to the top of the left-side target for the second time"
+        ],
+        [
+          253,
+          "move to the top of the right-side target for the third time"
+        ],
+        [
+          297,
+          "move to the top of the left-side target for the third time"
+        ],
+        [
+          341,
+          "put the blue cube on the table"
+        ],
+        [
+          376,
+          "press the button"
+        ],
+        [
+          449,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_11/hdf5_files/SwingXtimes_ep11_seed4101.h5"
+    },
+    {
+      "difficulty": "medium",
+      "task_goal": [
+        "pick up the green cube, move it to the top of the right-side target, then put it down on the left-side target, finally press the button to stop",
+        "pick up the green cube, move it to the right-side target and then put it down on the left-side target, then press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the green cube"
+        ],
+        [
+          185,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          209,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          247,
+          "put the green cube on the table"
+        ],
+        [
+          282,
+          "press the button"
+        ],
+        [
+          352,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_2/hdf5_files/SwingXtimes_ep2_seed3200.h5"
+    },
+    {
+      "difficulty": "hard",
+      "task_goal": [
+        "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+        "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the red cube"
+        ],
+        [
+          179,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          214,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          252,
+          "move to the top of the right-side target for the second time"
+        ],
+        [
+          290,
+          "move to the top of the left-side target for the second time"
+        ],
+        [
+          328,
+          "move to the top of the right-side target for the third time"
+        ],
+        [
+          366,
+          "move to the top of the left-side target for the third time"
+        ],
+        [
+          404,
+          "put the red cube on the table"
+        ],
+        [
+          440,
+          "press the button"
+        ],
+        [
+          499,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed3301.h5"
+    },
+    {
+      "difficulty": "easy",
+      "task_goal": [
+        "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion two times, finally press the button to stop",
+        "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion two times, then put down the cube and press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the blue cube"
+        ],
+        [
+          198,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          226,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          266,
+          "move to the top of the right-side target for the second time"
+        ],
+        [
+          306,
+          "move to the top of the left-side target for the second time"
+        ],
+        [
+          346,
+          "put the blue cube on the table"
+        ],
+        [
+          386,
+          "press the button"
+        ],
+        [
+          443,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_4/hdf5_files/SwingXtimes_ep4_seed3400.h5"
+    },
+    {
+      "difficulty": "medium",
+      "task_goal": [
+        "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion two times, finally press the button to stop",
+        "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion two times, then put down the cube and press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the red cube"
+        ],
+        [
+          109,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          155,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          191,
+          "move to the top of the right-side target for the second time"
+        ],
+        [
+          225,
+          "move to the top of the left-side target for the second time"
+        ],
+        [
+          260,
+          "put the red cube on the table"
+        ],
+        [
+          295,
+          "press the button"
+        ],
+        [
+          355,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed3600.h5"
+    },
+    {
+      "difficulty": "hard",
+      "task_goal": [
+        "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+        "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+      ],
+      "subgoal_chain": [
+        [
+          0,
+          "pick up the blue cube"
+        ],
+        [
+          106,
+          "move to the top of the right-side target for the first time"
+        ],
+        [
+          139,
+          "move to the top of the left-side target for the first time"
+        ],
+        [
+          177,
+          "move to the top of the right-side target for the second time"
+        ],
+        [
+          220,
+          "move to the top of the left-side target for the second time"
+        ],
+        [
+          262,
+          "move to the top of the right-side target for the third time"
+        ],
+        [
+          304,
+          "move to the top of the left-side target for the third time"
+        ],
+        [
+          346,
+          "put the blue cube on the table"
+        ],
+        [
+          381,
+          "press the button"
+        ],
+        [
+          462,
+          "All tasks completed"
+        ]
+      ],
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_7/hdf5_files/SwingXtimes_ep7_seed3700.h5"
+    }
+  ]
+}

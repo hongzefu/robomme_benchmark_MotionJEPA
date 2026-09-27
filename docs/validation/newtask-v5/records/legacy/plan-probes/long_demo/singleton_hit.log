@@ -1,0 +1,16 @@
+5x5 n=23: p_single=0.00750 P_hit_1000(analytic)=0.999 loop_hits=40/40 median_attempts=132
+5x5 n=24: p_single=0.00200 P_hit_1000(analytic)=0.865 loop_hits=38/40 median_attempts=266
+5x5 n=25: p_single=0.00050 P_hit_1000(analytic)=0.394 loop_hits=12/40 median_attempts=449
+5x6 n=27: p_single=0.00780 P_hit_1000(analytic)=1.000 loop_hits=40/40 median_attempts=103
+5x6 n=28: p_single=0.00290 P_hit_1000(analytic)=0.945 loop_hits=39/40 median_attempts=176
+5x6 n=29: p_single=0.00120 P_hit_1000(analytic)=0.699 loop_hits=23/40 median_attempts=449
+5x6 n=30: p_single=0.00005 P_hit_1000(analytic)=0.049 loop_hits=2/40 median_attempts=959
+6x6 n=31: p_single=0.00995 P_hit_1000(analytic)=1.000 loop_hits=40/40 median_attempts=57
+6x6 n=32: p_single=0.00545 P_hit_1000(analytic)=0.996 loop_hits=40/40 median_attempts=130
+6x6 n=33: p_single=0.00255 P_hit_1000(analytic)=0.922 loop_hits=36/40 median_attempts=269
+6x6 n=34: p_single=0.00100 P_hit_1000(analytic)=0.632 loop_hits=24/40 median_attempts=235
+6x6 n=35: p_single=0.00020 P_hit_1000(analytic)=0.181 loop_hits=6/40 median_attempts=669
+7x7 n=40: p_single=0.00905 P_hit_1000(analytic)=1.000 loop_hits=40/40 median_attempts=73
+7x7 n=42: p_single=0.00530 P_hit_1000(analytic)=0.995 loop_hits=40/40 median_attempts=118
+7x7 n=43: p_single=0.00315 P_hit_1000(analytic)=0.957 loop_hits=38/40 median_attempts=140
+7x7 n=44: p_single=0.00135 P_hit_1000(analytic)=0.741 loop_hits=33/40 median_attempts=331

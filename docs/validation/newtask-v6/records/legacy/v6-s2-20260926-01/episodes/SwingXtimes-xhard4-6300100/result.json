@@ -1,0 +1,34 @@
+{
+  "id": "SwingXtimes-xhard4-6300100",
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "seed": 6300100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 62.122,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "SwingXtimes",
+      "seed": 6300100,
+      "difficulty": "xhard4",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 57.7,
+      "timesteps": 1084
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/SwingXtimes-xhard4-6300100/hdf5_files/SwingXtimes_ep9_seed6300100.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/SwingXtimes-xhard4-6300100/videos/SwingXtimes_ep9_seed6300100_xhard4_pick_up_the_red_cube_move_it_to_the_top_of_the_right-side_target_then_move_it_to_the_top_of_the_left-side_target_repeating_this_back-and-forth_motion_ten_times___HASH__2b685c49ab37.mp4"
+  ]
+}

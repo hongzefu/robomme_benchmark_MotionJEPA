@@ -1,0 +1,30 @@
+
+| 编号 | 问题 | 选项 | 建议 | 结论（用户答复） |
+|---|---|---|---|---|
+| L47 | 「所有 cube 都 swap」指什么 | (a) 每块都当发起者：目标每 3 次一轮，其余 5 块按 randperm 顺序轮转。<br>(a') 纯 k%6 轮转。<br>(b) 只要求覆盖。<br>(c) 每次随机一对 | (a) | **(a') 纯 k%6 轮转，目标块不特殊**；用户接受目标块被换�
+| L48 | 搭档规则 | 最近邻 / 在 2 个最近且扫掠可行的候选中均匀选、不立即重复上一对 / 3 个最近或任一可行 | 2 个最近可行、不立即重复 | **3 个最近且扫掠可行的候选里均匀选，都不可行则任一可行**；用户接受路径更长 |
+| L49 | 搭档在哪决定 | reset 时规划，留 5 mm 余量 / 运行时按实际状态 | reset 规划 | **reset 时规划** |
+| L50 | 摆放的最小中心距 | 0.10 / 0.12 / 0.13 / 0.14 m | 0.12 | **0.12** |
+| L51 | 是否改区域或按钮，让方块铺满更多画面 | 不改 / 向 +x 扩 / 移动或缩小按钮禁区 | 不改 | **不改** |
+====
+12:| LIGHTWEIGHT | 最终 46 failed / 1347 passed / 12 errors，失败集合与 S0 基线 58 条逐条相同 | PASS |
+15:| FROZEN_FILES | 录像器与 12.116 无差异；`scripts/*.py` 恰 5 个 | PASS |
+65:- **两侧**：基线 = `13e5151`（V4 V1 所用的改动前基线，即最原始基线），V5 = `17867d2`（12.130，全部 V5 代码 + 新快照）；各自在独立 worktree、本机、单 worker、B 路、默认 144 条身份（`scripts/configs/newtask-v3/subset_manifest.json`，16 任务 × easy/medium/hard × 3 局）。
+68:- **运行过程**：基线侧 04:27 起跑（与 S2/S3 各 agent 的测试和演示并行，负载较高），约 3 小时跑完。V5 侧 05:43 起跑，主进程按清单顺序跑完前 12 个任务（至 PickHighlight）；为缩短等待，RouteStick / PatternLock / MoveCube / InsertPeg 由同一 worktree、同一命令的 `--env` 单任务运行在 GPU 0 上分担，结果以符号链接并入 `v1/v5/B`。
+69:- **一处插曲**：停主进程时 PickHighlight 第 11 局的 h5 已关闭、但视频尚未写完，这份 h5 与基线散列不同（`5d326e08…`）。已挪到 `v1/v5_PH11_killed_partial` 留档，并单独重跑该局，重跑结果 `cabc333c…` 与基线逐位相同，采用重跑结果。
+====
+956:| **V1** | `H5_PARITY pair=base.B\|v5.B compared=144 sha_equal=144 field_mismatch=0`（基线 `13e5151` vs V5 `17867d2`）⇒ `NATIVE_REGRESSION=PASS` |
+====
+commit
+13e51512907d2bdfa1f845a847de79c8500864cb Tue Sep 22 19:46:01 2026 -0400 12.63 V4 计划：吸收 Codex 审计八条，落实 H1~H4 四项用户决策
+  newtaskRelease-v3
+  newtaskRelease-v4
+* newtaskRelease-v5
++ v6-draft-movecube
++ v6-draft-pipeline
++ v6-draft-swap
++ v6-draft-vp
+  remotes/origin/newtaskRelease-v3
+  remotes/origin/newtaskRelease-v4
+  remotes/origin/newtaskRelease-v5
+ancestor

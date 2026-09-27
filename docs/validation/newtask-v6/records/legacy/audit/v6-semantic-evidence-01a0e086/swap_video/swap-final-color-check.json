@@ -1,0 +1,563 @@
+[
+  {
+    "tier": "xhard1",
+    "seed": 8500000,
+    "pick_index": 0,
+    "frame": 365,
+    "color": "red",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      160.0011850142849,
+      96.97165463240212
+    ],
+    "actual_color_centroid_xy": [
+      159.0751879699248,
+      95.97744360902256
+    ],
+    "error_px": 1.3586486246167953
+  },
+  {
+    "tier": "xhard1",
+    "seed": 8500000,
+    "pick_index": 1,
+    "frame": 514,
+    "color": "green",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      140.55554113978707,
+      127.53745171102241
+    ],
+    "actual_color_centroid_xy": [
+      140.0,
+      127.0
+    ],
+    "error_px": 0.7729684985022568
+  },
+  {
+    "tier": "xhard1",
+    "seed": 8500300,
+    "pick_index": 0,
+    "frame": 369,
+    "color": "blue",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      162.77115375087723,
+      93.85235113168419
+    ],
+    "actual_color_centroid_xy": [
+      162.4179104477612,
+      93.03731343283582
+    ],
+    "error_px": 0.8882945917545501
+  },
+  {
+    "tier": "xhard1",
+    "seed": 8500300,
+    "pick_index": 1,
+    "frame": 519,
+    "color": "green",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      148.7298647311546,
+      143.2470538991973
+    ],
+    "actual_color_centroid_xy": [
+      146.71140939597316,
+      141.94630872483222
+    ],
+    "error_px": 2.401270486379346
+  },
+  {
+    "tier": "xhard1",
+    "seed": 8500601,
+    "pick_index": 0,
+    "frame": 360,
+    "color": "blue",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      140.0374668756148,
+      134.0142885582436
+    ],
+    "actual_color_centroid_xy": [
+      139.77464788732394,
+      133.5
+    ],
+    "error_px": 0.5775521982873225
+  },
+  {
+    "tier": "xhard1",
+    "seed": 8500601,
+    "pick_index": 1,
+    "frame": 495,
+    "color": "green",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      107.05574982194436,
+      101.90943077513123
+    ],
+    "actual_color_centroid_xy": [
+      106.4921875,
+      100.96875
+    ],
+    "error_px": 1.096577772625729
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500000,
+    "pick_index": 0,
+    "frame": 403,
+    "color": "blue",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      85.43110606820869,
+      95.21544876964425
+    ],
+    "actual_color_centroid_xy": [
+      84.70542635658914,
+      94.52713178294573
+    ],
+    "error_px": 1.0001956398795024
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500000,
+    "pick_index": 1,
+    "frame": 551,
+    "color": "green",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      120.33514663220987,
+      136.58530694499225
+    ],
+    "actual_color_centroid_xy": [
+      119.50757575757575,
+      136.33333333333334
+    ],
+    "error_px": 0.8650804896164966
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500000,
+    "pick_index": 2,
+    "frame": 716,
+    "color": "red",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      122.07425357243055,
+      71.35100980837818
+    ],
+    "actual_color_centroid_xy": [
+      121.5,
+      70.5
+    ],
+    "error_px": 1.0266376475685641
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500300,
+    "pick_index": 0,
+    "frame": 405,
+    "color": "blue",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      99.83409370321435,
+      119.0448392720624
+    ],
+    "actual_color_centroid_xy": [
+      99.09032258064516,
+      118.48387096774194
+    ],
+    "error_px": 0.9316012672919719
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500300,
+    "pick_index": 1,
+    "frame": 554,
+    "color": "red",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      148.78278802630152,
+      80.35272972442884
+    ],
+    "actual_color_centroid_xy": [
+      148.33636363636364,
+      79.6
+    ],
+    "error_px": 0.8751552856322872
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500300,
+    "pick_index": 2,
+    "frame": 696,
+    "color": "green",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      121.07026925265127,
+      78.25405719134625
+    ],
+    "actual_color_centroid_xy": [
+      120.5,
+      77.5
+    ],
+    "error_px": 0.9454148657284976
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500600,
+    "pick_index": 0,
+    "frame": 400,
+    "color": "red",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      137.56199408356395,
+      142.75710253850482
+    ],
+    "actual_color_centroid_xy": [
+      136.45045045045046,
+      143.45045045045046
+    ],
+    "error_px": 1.3100612868543589
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500600,
+    "pick_index": 1,
+    "frame": 555,
+    "color": "green",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      125.3626285263563,
+      83.44687110930862
+    ],
+    "actual_color_centroid_xy": [
+      124.89473684210526,
+      82.86842105263158
+    ],
+    "error_px": 0.74399401628034
+  },
+  {
+    "tier": "xhard2",
+    "seed": 10500600,
+    "pick_index": 2,
+    "frame": 709,
+    "color": "blue",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      104.95991903647234,
+      118.90275355747426
+    ],
+    "actual_color_centroid_xy": [
+      104.46153846153847,
+      118.02097902097903
+    ],
+    "error_px": 1.0128719221514613
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500000,
+    "pick_index": 0,
+    "frame": 474,
+    "color": "green",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      159.6450521715021,
+      106.68139543975661
+    ],
+    "actual_color_centroid_xy": [
+      158.04347826086956,
+      105.0072463768116
+    ],
+    "error_px": 2.316854349366505
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500000,
+    "pick_index": 1,
+    "frame": 643,
+    "color": "blue",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      88.00503749503234,
+      90.25153553465427
+    ],
+    "actual_color_centroid_xy": [
+      86.97619047619048,
+      89.5
+    ],
+    "error_px": 1.2741004073572277
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500000,
+    "pick_index": 2,
+    "frame": 783,
+    "color": "red",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      122.46826449582413,
+      77.17960477049843
+    ],
+    "actual_color_centroid_xy": [
+      122.0754716981132,
+      76.40566037735849
+    ],
+    "error_px": 0.8679148031957565
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500300,
+    "pick_index": 0,
+    "frame": 456,
+    "color": "green",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      128.20711652578098,
+      74.29891474088222
+    ],
+    "actual_color_centroid_xy": [
+      127.5,
+      73.5
+    ],
+    "error_px": 1.0669013751193075
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500300,
+    "pick_index": 1,
+    "frame": 615,
+    "color": "red",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      133.07516143242177,
+      135.25629729337865
+    ],
+    "actual_color_centroid_xy": [
+      132.87692307692308,
+      135.25384615384615
+    ],
+    "error_px": 0.19825350860913418
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500300,
+    "pick_index": 2,
+    "frame": 756,
+    "color": "blue",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      101.8601673302028,
+      95.6732040058895
+    ],
+    "actual_color_centroid_xy": [
+      101.29457364341086,
+      95.01550387596899
+    ],
+    "error_px": 0.867447796375299
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500600,
+    "pick_index": 0,
+    "frame": 445,
+    "color": "red",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      115.22461639773537,
+      77.52677918810848
+    ],
+    "actual_color_centroid_xy": [
+      114.20388349514563,
+      77.37864077669903
+    ],
+    "error_px": 1.0314265108887763
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500600,
+    "pick_index": 1,
+    "frame": 605,
+    "color": "blue",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      140.1395650336395,
+      125.47919885047172
+    ],
+    "actual_color_centroid_xy": [
+      139.9290780141844,
+      124.92198581560284
+    ],
+    "error_px": 0.5956434769112191
+  },
+  {
+    "tier": "xhard3",
+    "seed": 12500600,
+    "pick_index": 2,
+    "frame": 739,
+    "color": "green",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      97.24797257892136,
+      104.07459215707578
+    ],
+    "actual_color_centroid_xy": [
+      96.53488372093024,
+      103.45736434108527
+    ],
+    "error_px": 0.9431149962881038
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500000,
+    "pick_index": 0,
+    "frame": 535,
+    "color": "blue",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      164.9612945854182,
+      94.88144912332423
+    ],
+    "actual_color_centroid_xy": [
+      164.69924812030075,
+      94.01503759398496
+    ],
+    "error_px": 0.9051725183922472
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500000,
+    "pick_index": 1,
+    "frame": 679,
+    "color": "green",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      99.98932359797584,
+      88.04946282626813
+    ],
+    "actual_color_centroid_xy": [
+      99.28205128205128,
+      87.47008547008546
+    ],
+    "error_px": 0.9142823687081002
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500000,
+    "pick_index": 2,
+    "frame": 840,
+    "color": "red",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      139.68251802515184,
+      71.91956289097932
+    ],
+    "actual_color_centroid_xy": [
+      138.46315789473684,
+      70.4421052631579
+    ],
+    "error_px": 1.9156513695485895
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500300,
+    "pick_index": 0,
+    "frame": 533,
+    "color": "green",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      91.38199105931587,
+      109.17041685672915
+    ],
+    "actual_color_centroid_xy": [
+      90.75172413793103,
+      108.97931034482758
+    ],
+    "error_px": 0.6586031362536132
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500300,
+    "pick_index": 1,
+    "frame": 684,
+    "color": "red",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      119.54193823331846,
+      81.72752287653212
+    ],
+    "actual_color_centroid_xy": [
+      119.0754716981132,
+      81.40566037735849
+    ],
+    "error_px": 0.5667331795833858
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500300,
+    "pick_index": 2,
+    "frame": 825,
+    "color": "blue",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      144.8748152548907,
+      95.27593251823075
+    ],
+    "actual_color_centroid_xy": [
+      144.464,
+      94.968
+    ],
+    "error_px": 0.5134117348043804
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500601,
+    "pick_index": 0,
+    "frame": 563,
+    "color": "blue",
+    "bin_id": 1,
+    "predicted_pixel_xy": [
+      153.50408027360484,
+      144.6954631792071
+    ],
+    "actual_color_centroid_xy": [
+      152.6969696969697,
+      144.90151515151516
+    ],
+    "error_px": 0.8329975379365572
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500601,
+    "pick_index": 1,
+    "frame": 705,
+    "color": "green",
+    "bin_id": 2,
+    "predicted_pixel_xy": [
+      110.0034735240933,
+      111.07375173574438
+    ],
+    "actual_color_centroid_xy": [
+      109.26241134751773,
+      110.60992907801419
+    ],
+    "error_px": 0.8742451643416826
+  },
+  {
+    "tier": "xhard4",
+    "seed": 6500601,
+    "pick_index": 2,
+    "frame": 862,
+    "color": "red",
+    "bin_id": 0,
+    "predicted_pixel_xy": [
+      158.7204926515487,
+      91.85306818924526
+    ],
+    "actual_color_centroid_xy": [
+      158.07874015748033,
+      90.98425196850394
+    ],
+    "error_px": 1.0801332737520066
+  }
+]

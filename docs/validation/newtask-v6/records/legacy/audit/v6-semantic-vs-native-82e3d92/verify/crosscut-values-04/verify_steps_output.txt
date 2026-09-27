@@ -1,0 +1,4 @@
+PickXtimes xhard2 ep0: n_steps=1390 n_demo=0 first_completed_t=1350 exec_steps_to_completion=1350
+PickHighlight xhard4 ep0: n_steps=1257 n_demo=0 first_completed_t=1241 exec_steps_to_completion=1241
+PickHighlight xhard4 ep3: n_steps=1156 n_demo=0 first_completed_t=1143 exec_steps_to_completion=1143
+PickHighlight xhard4 ep6: n_steps=1139 n_demo=0 first_completed_t=1125 exec_steps_to_completion=1125

@@ -1,0 +1,165 @@
+{
+  "wall_s": 29.99920892715454,
+  "samples": 31,
+  "threads": {
+    "1843953": {
+      "samples": 31,
+      "state_counts": {
+        "D": 22,
+        "R": 8,
+        "S": 1
+      },
+      "wchan_counts": {
+        "os_acquire_rwlock_write": 21,
+        "0": 8,
+        "pipe_write": 1,
+        "os_acquire_rwlock_read": 1
+      },
+      "cpu_s": 6.841848377,
+      "runnable_wait_s": 0.008283521
+    },
+    "1844091": {
+      "samples": 31,
+      "state_counts": {
+        "S": 31
+      },
+      "wchan_counts": {
+        "do_poll.constprop.0": 31
+      },
+      "cpu_s": 0.0,
+      "runnable_wait_s": 0.0
+    },
+    "1844348": {
+      "samples": 31,
+      "state_counts": {
+        "S": 31
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 31
+      },
+      "cpu_s": 0.001930305,
+      "runnable_wait_s": 0.0
+    },
+    "1844349": {
+      "samples": 31,
+      "state_counts": {
+        "S": 31
+      },
+      "wchan_counts": {
+        "do_poll.constprop.0": 31
+      },
+      "cpu_s": 0.038395694,
+      "runnable_wait_s": 0.000115313
+    },
+    "2083477": {
+      "samples": 15,
+      "state_counts": {
+        "S": 15
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 15
+      }
+    },
+    "2083478": {
+      "samples": 14,
+      "state_counts": {
+        "S": 14
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 14
+      }
+    },
+    "2083479": {
+      "samples": 14,
+      "state_counts": {
+        "S": 14
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 14
+      }
+    },
+    "2083480": {
+      "samples": 14,
+      "state_counts": {
+        "S": 14
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 14
+      }
+    },
+    "2083497": {
+      "samples": 14,
+      "state_counts": {
+        "S": 14
+      },
+      "wchan_counts": {
+        "do_poll.constprop.0": 14
+      }
+    },
+    "2083540": {
+      "samples": 14,
+      "state_counts": {
+        "S": 13,
+        "R": 1
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 14
+      }
+    },
+    "2085934": {
+      "samples": 14,
+      "state_counts": {
+        "S": 14
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 14
+      }
+    },
+    "2085935": {
+      "samples": 14,
+      "state_counts": {
+        "S": 14
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 14
+      }
+    },
+    "2085936": {
+      "samples": 14,
+      "state_counts": {
+        "S": 14
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 14
+      }
+    },
+    "2085937": {
+      "samples": 14,
+      "state_counts": {
+        "S": 14
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 14
+      }
+    },
+    "2085958": {
+      "samples": 13,
+      "state_counts": {
+        "S": 13
+      },
+      "wchan_counts": {
+        "do_poll.constprop.0": 13
+      }
+    },
+    "2086008": {
+      "samples": 12,
+      "state_counts": {
+        "S": 12
+      },
+      "wchan_counts": {
+        "futex_wait_queue": 12
+      }
+    }
+  },
+  "limitation": "离散等待点采样不是连续调用栈；不能识别锁持有者，也不能证明整轮慢因。"
+}

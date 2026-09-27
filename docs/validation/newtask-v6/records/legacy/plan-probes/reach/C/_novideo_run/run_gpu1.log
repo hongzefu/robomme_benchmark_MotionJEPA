@@ -1,0 +1,55 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[1/18] ep=101 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_101/hdf5_files/MoveCube_ep101_se steps=318 wall=8.5 t=14s
+[2/18] ep=105 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_105/hdf5_files/MoveCube_ep105_se steps=520 wall=12.1 t=17s
+[3/18] ep=107 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_107/hdf5_files/MoveCube_ep107_se steps=316 wall=8.0 t=22s
+screw plan failed
+screw plan failed
+screw plan failed
+[4/18] ep=109 ok=False DatasetGenerationError MoveCube/episode_109: did not succeed after the complete task_list steps=538 wall=12.1 t=29s
+[5/18] ep=111 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_111/hdf5_files/MoveCube_ep111_se steps=496 wall=9.7 t=32s
+screw plan failed
+screw plan failed
+screw plan failed
+[6/18] ep=113 ok=False DatasetGenerationError MoveCube/episode_113: did not succeed after the complete task_list steps=339 wall=7.8 t=36s
+[7/18] ep=103 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_103/hdf5_files/MoveCube_ep103_se steps=1673 wall=30.8 t=36s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.075641 is greater than threshold 0.001000.
+IK Failed! Distance 0.082358 is greater than threshold 0.001000.
+IK Failed! Distance 0.163479 is greater than threshold 0.001000.
+[8/18] ep=115 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=500 wall=11.0 t=43s
+[9/18] ep=117 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_117/hdf5_files/MoveCube_ep117_se steps=495 wall=10.3 t=47s
+screw plan failed
+screw plan failed
+screw plan failed
+[10/18] ep=119 ok=False DatasetGenerationError MoveCube/episode_119: did not succeed after the complete task_list steps=648 wall=15.0 t=52s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.046158 is greater than threshold 0.001000.
+IK Failed! Distance 0.047187 is greater than threshold 0.001000.
+IK Failed! Distance 0.052665 is greater than threshold 0.001000.
+[11/18] ep=123 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_123/hdf5_files/MoveCube_ep123_se steps=540 wall=11.0 t=58s
+[12/18] ep=121 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=740 wall=15.2 t=58s
+[13/18] ep=125 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_125/hdf5_files/MoveCube_ep125_se steps=319 wall=7.7 t=59s
+screw plan failed
+screw plan failed
+screw plan failed
+[14/18] ep=131 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_131/hdf5_files/MoveCube_ep131_se steps=300 wall=7.3 t=66s
+[15/18] ep=129 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_129/hdf5_files/MoveCube_ep129_se steps=524 wall=10.9 t=69s
+[16/18] ep=127 ok=False DatasetGenerationError MoveCube/episode_127: did not succeed after the complete task_list steps=543 wall=11.8 t=69s
+[17/18] ep=133 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_133/hdf5_files/MoveCube_ep133_se steps=527 wall=7.9 t=74s
+[18/18] ep=135 ok=False DatasetGenerationError /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_135/hdf5_files/MoveCube_ep135_se steps=475 wall=6.4 t=75s
+DONE gpu=1 jobs=18 t=76s

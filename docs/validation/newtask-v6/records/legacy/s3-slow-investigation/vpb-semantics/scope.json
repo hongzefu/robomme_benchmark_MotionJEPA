@@ -1,0 +1,814 @@
+{
+  "summary": {
+    "xhard1": {
+      "candidates": 10,
+      "conflicts": 0,
+      "delivered": 3,
+      "delivered_conflicts": 0
+    },
+    "xhard2": {
+      "candidates": 10,
+      "conflicts": 3,
+      "delivered": 3,
+      "delivered_conflicts": 0
+    },
+    "xhard3": {
+      "candidates": 10,
+      "conflicts": 2,
+      "delivered": 3,
+      "delivered_conflicts": 2
+    },
+    "xhard4": {
+      "candidates": 10,
+      "conflicts": 1,
+      "delivered": 3,
+      "delivered_conflicts": 0
+    }
+  },
+  "rows": [
+    {
+      "tier": "xhard1",
+      "episode": 0,
+      "seed": 9000000,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed9000000.h5"
+      ]
+    },
+    {
+      "tier": "xhard1",
+      "episode": 1,
+      "seed": 9000101,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard1",
+      "episode": 2,
+      "seed": 9000200,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard1",
+      "episode": 3,
+      "seed": 9000300,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed9000300.h5"
+      ]
+    },
+    {
+      "tier": "xhard1",
+      "episode": 4,
+      "seed": 9000400,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard1",
+      "episode": 5,
+      "seed": 9000501,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard1",
+      "episode": 6,
+      "seed": 9000601,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed9000601.h5"
+      ]
+    },
+    {
+      "tier": "xhard1",
+      "episode": 7,
+      "seed": 9000700,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard1",
+      "episode": 8,
+      "seed": 9000800,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard1",
+      "episode": 9,
+      "seed": 9000900,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [],
+      "before_target_ids": {},
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard1/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard2",
+      "episode": 0,
+      "seed": 11000000,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 2
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed11000000.h5"
+      ]
+    },
+    {
+      "tier": "xhard2",
+      "episode": 1,
+      "seed": 11000100,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard2",
+      "episode": 2,
+      "seed": 11000200,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard2",
+      "episode": 3,
+      "seed": 11000301,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed11000301.h5"
+      ]
+    },
+    {
+      "tier": "xhard2",
+      "episode": 4,
+      "seed": 11000400,
+      "selected": false,
+      "delivered": false,
+      "conflict": true,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 1
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard2",
+      "episode": 5,
+      "seed": 11000500,
+      "selected": false,
+      "delivered": false,
+      "conflict": true,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 2
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard2",
+      "episode": 6,
+      "seed": 11000600,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed11000600.h5"
+      ]
+    },
+    {
+      "tier": "xhard2",
+      "episode": 7,
+      "seed": 11000700,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 2
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard2",
+      "episode": 8,
+      "seed": 11000801,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 2
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard2",
+      "episode": 9,
+      "seed": 11000900,
+      "selected": false,
+      "delivered": false,
+      "conflict": true,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard2/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard3",
+      "episode": 0,
+      "seed": 13000001,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed13000001.h5"
+      ]
+    },
+    {
+      "tier": "xhard3",
+      "episode": 1,
+      "seed": 13000100,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 1,
+      "answer_target": 3,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 1
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard3",
+      "episode": 2,
+      "seed": 13000200,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard3",
+      "episode": 3,
+      "seed": 13000300,
+      "selected": true,
+      "delivered": true,
+      "conflict": true,
+      "question": "before",
+      "answer_demo_index": 1,
+      "answer_target": 2,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed13000300.h5"
+      ]
+    },
+    {
+      "tier": "xhard3",
+      "episode": 4,
+      "seed": 13000400,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 1,
+      "answer_target": 2,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard3",
+      "episode": 5,
+      "seed": 13000500,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 1,
+      "answer_target": 2,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard3",
+      "episode": 6,
+      "seed": 13000600,
+      "selected": true,
+      "delivered": true,
+      "conflict": true,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 1
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed13000600.h5"
+      ]
+    },
+    {
+      "tier": "xhard3",
+      "episode": 7,
+      "seed": 13000700,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 1,
+      "answer_target": 2,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 1
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard3",
+      "episode": 8,
+      "seed": 13000800,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard3",
+      "episode": 9,
+      "seed": 13000900,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 1,
+      "answer_target": 2,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard3/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard4",
+      "episode": 0,
+      "seed": 7000000,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed7000000.h5"
+      ]
+    },
+    {
+      "tier": "xhard4",
+      "episode": 1,
+      "seed": 7000100,
+      "selected": false,
+      "delivered": false,
+      "conflict": true,
+      "question": "before",
+      "answer_demo_index": 1,
+      "answer_target": 2,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard4",
+      "episode": 2,
+      "seed": 7000200,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard4",
+      "episode": 3,
+      "seed": 7000302,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed7000302.h5"
+      ]
+    },
+    {
+      "tier": "xhard4",
+      "episode": 4,
+      "seed": 7000400,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard4",
+      "episode": 5,
+      "seed": 7000500,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 1
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard4",
+      "episode": 6,
+      "seed": 7000600,
+      "selected": true,
+      "delivered": true,
+      "conflict": false,
+      "question": "before",
+      "answer_demo_index": 0,
+      "answer_target": 0,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": [
+        "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed7000600.h5"
+      ]
+    },
+    {
+      "tier": "xhard4",
+      "episode": 7,
+      "seed": 7000700,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 1,
+      "answer_target": 3,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 1
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard4",
+      "episode": 8,
+      "seed": 7000800,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 0,
+      "answer_target": 1,
+      "base_before_target": 0,
+      "before_owner_ids": [
+        0
+      ],
+      "before_target_ids": {
+        "0": 3
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": []
+    },
+    {
+      "tier": "xhard4",
+      "episode": 9,
+      "seed": 7000900,
+      "selected": false,
+      "delivered": false,
+      "conflict": false,
+      "question": "after",
+      "answer_demo_index": 1,
+      "answer_target": 3,
+      "base_before_target": 2,
+      "before_owner_ids": [
+        1
+      ],
+      "before_target_ids": {
+        "0": 1
+      },
+      "spec_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v6/v6-01/xhard4/specs.jsonl",
+      "h5_paths": []
+    }
+  ]
+}

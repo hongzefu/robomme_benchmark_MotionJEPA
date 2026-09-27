@@ -1,0 +1,112 @@
+[
+ {
+  "label": "V5_rectgap>=0.03_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9529,
+   0.8557,
+   0.7642,
+   0.6776
+  ],
+  "p_accept_min": [
+   0.92871,
+   0.78711,
+   0.6543,
+   0.55664
+  ],
+  "attempts_mean": [
+   1.05,
+   1.17,
+   1.32,
+   1.47
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   3,
+   3
+  ],
+  "attempts_max": [
+   4,
+   6,
+   8,
+   11
+  ],
+  "sec": 71.7,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0,
+  "target_axisdist_lt_0p02": 0.0,
+  "min_pair_gap_p05": 0.0335,
+  "target_gap_median": 0.1056,
+  "target_nn_root_median": 0.1748,
+  "target_nn_root_p10": 0.1009,
+  "finger_full_random_end": 0.0336,
+  "finger_full_either_end": 0.0562,
+  "finger_tip_random_end": 0.0169,
+  "finger_tip_either_end": 0.0295,
+  "target_box_overlap": 0.0575,
+  "any_box_overlap": 0.2137,
+  "grasp_dist_from_base_p50": 0.639,
+  "grasp_dist_gt_0p78": 0.1421
+ },
+ {
+  "label": "V5_rectgap>=0.04_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9529,
+   0.8361,
+   0.727,
+   0.6262
+  ],
+  "p_accept_min": [
+   0.92773,
+   0.75684,
+   0.61133,
+   0.49512
+  ],
+  "attempts_mean": [
+   1.05,
+   1.2,
+   1.39,
+   1.6
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "attempts_max": [
+   4,
+   6,
+   8,
+   9
+  ],
+  "sec": 67.6,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0,
+  "target_axisdist_lt_0p02": 0.0,
+  "min_pair_gap_p05": 0.0434,
+  "target_gap_median": 0.1105,
+  "target_nn_root_median": 0.1802,
+  "target_nn_root_p10": 0.1096,
+  "finger_full_random_end": 0.0127,
+  "finger_full_either_end": 0.0263,
+  "finger_tip_random_end": 0.0027,
+  "finger_tip_either_end": 0.006,
+  "target_box_overlap": 0.0556,
+  "any_box_overlap": 0.2106,
+  "grasp_dist_from_base_p50": 0.6428,
+  "grasp_dist_gt_0p78": 0.1479
+ }
+]

@@ -1,0 +1,12 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[1/1] InsertPeg seed=7300000 ok=False DatasetGenerationError InsertPeg/episode_9: 跑完整个 task_list 仍未成功 48s
+DEMO_PROBE task=InsertPeg difficulty=xhard4 ok=0/1 by_class={'task:DatasetGenerationError': 1}

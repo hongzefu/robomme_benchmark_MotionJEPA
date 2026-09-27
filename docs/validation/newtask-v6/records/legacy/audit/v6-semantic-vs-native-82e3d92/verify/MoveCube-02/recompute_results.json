@@ -1,0 +1,170 @@
+{
+ "xhard4_ep0_run1": {
+  "tag": "xhard4_ep0_run1",
+  "n_steps": 286,
+  "static_range": [
+   120,
+   179
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 104,
+  "front_red_max": 104,
+  "wrist_red_min": 11325,
+  "wrist_red_max": 11326,
+  "n_static_frames": 60
+ },
+ "xhard4_ep3_run1": {
+  "tag": "xhard4_ep3_run1",
+  "n_steps": 263,
+  "static_range": [
+   98,
+   157
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 0,
+  "front_red_max": 0,
+  "wrist_red_min": 3166,
+  "wrist_red_max": 3168,
+  "n_static_frames": 60
+ },
+ "xhard4_ep6_run1": {
+  "tag": "xhard4_ep6_run1",
+  "n_steps": 479,
+  "static_range": [
+   213,
+   272
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 199,
+  "front_red_max": 199,
+  "wrist_red_min": 893,
+  "wrist_red_max": 894,
+  "n_static_frames": 60
+ },
+ "s2_MoveCube-xhard4-6100001": {
+  "tag": "s2_MoveCube-xhard4-6100001",
+  "n_steps": 543,
+  "static_range": [
+   241,
+   270
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 154,
+  "front_red_max": 154,
+  "wrist_red_min": 2999,
+  "wrist_red_max": 3002,
+  "n_static_frames": 30
+ },
+ "s2_MoveCube-xhard4-6100002": {
+  "tag": "s2_MoveCube-xhard4-6100002",
+  "n_steps": 508,
+  "static_range": [
+   229,
+   258
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 178,
+  "front_red_max": 178,
+  "wrist_red_min": 8236,
+  "wrist_red_max": 8237,
+  "n_static_frames": 30
+ },
+ "s2_MoveCube-xhard4-6100003": {
+  "tag": "s2_MoveCube-xhard4-6100003",
+  "n_steps": 462,
+  "static_range": [
+   217,
+   276
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 127,
+  "front_red_max": 127,
+  "wrist_red_min": 891,
+  "wrist_red_max": 895,
+  "n_static_frames": 60
+ },
+ "s2_MoveCube-xhard4-6100005": {
+  "tag": "s2_MoveCube-xhard4-6100005",
+  "n_steps": 458,
+  "static_range": [
+   221,
+   280
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 149,
+  "front_red_max": 149,
+  "wrist_red_min": 895,
+  "wrist_red_max": 930,
+  "n_static_frames": 60
+ },
+ "s2_MoveCube-xhard4-6100006": {
+  "tag": "s2_MoveCube-xhard4-6100006",
+  "n_steps": 504,
+  "static_range": [
+   208,
+   237
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 176,
+  "front_red_max": 176,
+  "wrist_red_min": 9232,
+  "wrist_red_max": 9243,
+  "n_static_frames": 30
+ },
+ "s2_MoveCube-xhard4-6100008": {
+  "tag": "s2_MoveCube-xhard4-6100008",
+  "n_steps": 478,
+  "static_range": [
+   210,
+   269
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 200,
+  "front_red_max": 200,
+  "wrist_red_min": 844,
+  "wrist_red_max": 867,
+  "n_static_frames": 60
+ },
+ "s2_MoveCube-xhard4-6100009": {
+  "tag": "s2_MoveCube-xhard4-6100009",
+  "n_steps": 475,
+  "static_range": [
+   201,
+   260
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 194,
+  "front_red_max": 194,
+  "wrist_red_min": 892,
+  "wrist_red_max": 892,
+  "n_static_frames": 60
+ },
+ "s2_MoveCube-xhard4-6100011": {
+  "tag": "s2_MoveCube-xhard4-6100011",
+  "n_steps": 272,
+  "static_range": [
+   98,
+   157
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 46,
+  "front_red_max": 49,
+  "wrist_red_min": 3336,
+  "wrist_red_max": 3358,
+  "n_static_frames": 60
+ },
+ "s2_MoveCube-xhard4-6100012": {
+  "tag": "s2_MoveCube-xhard4-6100012",
+  "n_steps": 282,
+  "static_range": [
+   106,
+   165
+  ],
+  "subgoal_at_static_start": "static",
+  "front_red_min": 102,
+  "front_red_max": 102,
+  "wrist_red_min": 11944,
+  "wrist_red_max": 11950,
+  "n_static_frames": 60
+ }
+}

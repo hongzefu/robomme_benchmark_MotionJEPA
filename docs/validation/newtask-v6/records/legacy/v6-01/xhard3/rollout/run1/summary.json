@@ -1,0 +1,85 @@
+{
+  "specs": "/tmp/v6-s4-v6-01/xhard3/specs.jsonl",
+  "identity_sha256": "b9e8bcbbd4c75d6b8c31d14fc60a8557e03ba7fb00d5022c0b84149a4f7c2afc",
+  "label": "run1",
+  "per_env": {
+    "PickXtimes": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "SwingXtimes": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "BinFill": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoUnmaskSwap": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoUnmask": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "ButtonUnmaskSwap": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "ButtonUnmask": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoRepick": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoPlaceButton": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoPlaceOrder": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "PickHighlight": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "PatternLock": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "RouteStick": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    }
+  }
+}

@@ -1,0 +1,240 @@
+[
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 6,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.09499137494440194,
+  "kw": {},
+  "sec": 18.3
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 7,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.09093174430600175,
+  "kw": {},
+  "sec": 26.3
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 8,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08807854019252218,
+  "kw": {},
+  "sec": 32.9
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 9,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08629327878761632,
+  "kw": {},
+  "sec": 33.8
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 10,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08509347297710505,
+  "kw": {},
+  "sec": 28.6
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 11,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08409008446663177,
+  "kw": {},
+  "sec": 73.1
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 12,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08317490843510483,
+  "kw": {},
+  "sec": 114.3
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 13,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08269672408912676,
+  "kw": {},
+  "sec": 92.3
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 14,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08198292595978897,
+  "kw": {},
+  "sec": 95.6
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 15,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08168899100048574,
+  "kw": {},
+  "sec": 102.9
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 16,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08157474525913633,
+  "kw": {},
+  "sec": 62.3
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 10,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.0880868784394718,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 26.5
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 12,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08551656612367389,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 36.4
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 14,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08406818872592932,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 48.3
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 16,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08281739096417265,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 62.0
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 18,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08213912050597741,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 77.6
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "0.25 d=0.07",
+  "N": 8,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.08168090655702248,
+  "kw": {
+   "dist": 0.07
+  },
+  "sec": 17.9
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "0.25 d=0.07",
+  "N": 10,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.07831623390229094,
+  "kw": {
+   "dist": 0.07
+  },
+  "sec": 26.9
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "0.25 d=0.07",
+  "N": 12,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.0757704985870595,
+  "kw": {
+   "dist": 0.07
+  },
+  "sec": 36.8
+ },
+ {
+  "env": "PickXtimes",
+  "variant": "0.25 d=0.07",
+  "N": 14,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.07428068641697097,
+  "kw": {
+   "dist": 0.07
+  },
+  "sec": 48.2
+ }
+]

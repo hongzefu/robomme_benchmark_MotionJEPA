@@ -1,0 +1,144 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.rotation_deg",
+      "drawn": 12.715330123901367,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.obstacle_rgb.0",
+      "drawn": [
+        0.9281507134437561,
+        0.32818126678466797,
+        0.016189932823181152
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.obstacle_rgb.1",
+      "drawn": [
+        0.24504154920578003,
+        0.07040739059448242,
+        0.7444623112678528
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.obstacle_rgb.2",
+      "drawn": [
+        0.9344099164009094,
+        0.06619209051132202,
+        0.005915224552154541
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.obstacle_rgb.3",
+      "drawn": [
+        0.23804950714111328,
+        0.9312494993209839,
+        0.046907246112823486
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "objects.L",
+      "drawn": 11,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "actions.nodes",
+      "drawn": [
+        8,
+        6,
+        4,
+        2,
+        0,
+        2,
+        0,
+        2,
+        0,
+        2,
+        0,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "actions.directions.0",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "actions.directions.1",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "actions.directions.2",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "actions.directions.3",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "actions.directions.4",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "actions.directions.5",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "actions.directions.6",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "actions.directions.7",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "actions.directions.8",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "actions.directions.9",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "actions.directions.10",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {}
+}

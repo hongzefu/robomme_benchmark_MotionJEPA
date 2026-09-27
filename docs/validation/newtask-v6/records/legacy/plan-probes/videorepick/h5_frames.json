@@ -1,0 +1,187 @@
+{
+ "artifacts/newtask-v5/v5-01/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed4900001.h5": {
+  "total": 1324,
+  "demo": 655,
+  "nondemo": 669,
+  "segs": [
+   [
+    "pick up the cube",
+    112
+   ],
+   [
+    "drop the cube on the table",
+    50
+   ],
+   [
+    "static",
+    493
+   ],
+   [
+    "pick up the correct cube for the first time",
+    109
+   ],
+   [
+    "put it down",
+    52
+   ],
+   [
+    "pick up the correct cube for the second time",
+    78
+   ],
+   [
+    "put it down",
+    52
+   ],
+   [
+    "pick up the correct cube for the third time",
+    78
+   ],
+   [
+    "put it down",
+    52
+   ],
+   [
+    "pick up the correct cube for the fourth time",
+    78
+   ],
+   [
+    "put it down",
+    52
+   ],
+   [
+    "press the button to finish",
+    76
+   ],
+   [
+    "All tasks completed",
+    42
+   ]
+  ]
+ },
+ "artifacts/newtask-v5/v5-01/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed4900300.h5": {
+  "total": 1696,
+  "demo": 851,
+  "nondemo": 845,
+  "segs": [
+   [
+    "pick up the cube",
+    106
+   ],
+   [
+    "drop the cube on the table",
+    44
+   ],
+   [
+    "static",
+    701
+   ],
+   [
+    "pick up the correct cube for the first time",
+    121
+   ],
+   [
+    "put it down",
+    58
+   ],
+   [
+    "pick up the correct cube for the second time",
+    81
+   ],
+   [
+    "put it down",
+    58
+   ],
+   [
+    "pick up the correct cube for the third time",
+    76
+   ],
+   [
+    "put it down",
+    58
+   ],
+   [
+    "pick up the correct cube for the fourth time",
+    74
+   ],
+   [
+    "put it down",
+    61
+   ],
+   [
+    "pick up the correct cube for the fifth time",
+    81
+   ],
+   [
+    "put it down",
+    59
+   ],
+   [
+    "press the button to finish",
+    70
+   ],
+   [
+    "All tasks completed",
+    48
+   ]
+  ]
+ },
+ "artifacts/newtask-v5/v5-01/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed4900601.h5": {
+  "total": 1346,
+  "demo": 699,
+  "nondemo": 647,
+  "segs": [
+   [
+    "pick up the cube",
+    108
+   ],
+   [
+    "drop the cube on the table",
+    48
+   ],
+   [
+    "static",
+    543
+   ],
+   [
+    "pick up the correct cube for the first time",
+    107
+   ],
+   [
+    "put it down",
+    60
+   ],
+   [
+    "pick up the correct cube for the second time",
+    69
+   ],
+   [
+    "put it down",
+    60
+   ],
+   [
+    "pick up the correct cube for the third time",
+    70
+   ],
+   [
+    "put it down",
+    60
+   ],
+   [
+    "pick up the correct cube for the fourth time",
+    69
+   ],
+   [
+    "put it down",
+    60
+   ],
+   [
+    "press the button to finish",
+    57
+   ],
+   [
+    "All tasks completed",
+    35
+   ]
+  ]
+ }
+}

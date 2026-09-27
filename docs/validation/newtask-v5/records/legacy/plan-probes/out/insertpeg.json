@@ -1,0 +1,417 @@
+{
+ "marker": "[内部产出，英文] 以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。",
+ "topic_key": "insertpeg",
+ "summary": "How V4 builds the 4 pegs today: pegs 0..2 come from the native uniform rejection sampler. Each attempt draws x and y, and a candidate is rejected if its root is within 0.06 m of the box centre or within 0.075 m of any placed root. There are at most 512 attempts, and yaw (±180°) is drawn once after acceptance. obj and dir are drawn next. Only after that is peg_3 drawn, by a different sampler: a radius/azimuth band of (0.075, 0.085] m around the target peg_0. I rebuilt this draw order in pure torch and it matches all 10 frozen V4 spec rows bit for bit.\n\nKeeping the pegs apart by centre distance does not stop them overlapping. The sampled 'root' is the head-link centre, and each peg's 0.10 m × 0.02 m footprint reaches from 0.075 m behind the root to 0.025 m in front of it. A root distance of 0.075 m therefore allows interpenetration. In V4 xhard, 28.1% of layouts have the target's visual footprint overlapping another peg (26% overlap on the collision boxes; the V4 I2 metric reproduces as 31.7%). In the physics check, the target moves 2.5–69 mm and turns up to 56° when it overlaps; non-overlapping pegs move 0.0 mm.\n\nV4's 2/10 formal demo success is multi-causal. Of the 8 failures, 3 had the target overlapping another peg, 2 had a neighbour inside the grasping gripper's finger zone, 1 also had the target overlapping the box, 2 had the grasp point about 0.81 m from the robot base (near its reach limit), and 2 are unexplained.\n\nRecommended V5 (xhard only): place all 4 pegs with ONE sampler in a single loop, before obj/dir. Keep both native rules. Draw yaw inside the attempt, only after the native rules pass. Add one new rule, the same for every peg: the exact 2D footprint distance (oriented rectangles) to every placed peg must be > 0.03 m (new key decision.xhard.peg_min_pair_gap_m). Optionally, and also recommended, apply the same check with 0.01 m against the box footprint (peg_box_min_gap_m). Delete _xhard_place_near_target_peg and xhard.near_target_distractor.\n\nMeasured for the recommended setting (10000 simulated layouts, exact footprints): peg-peg and peg-box overlap are 0. Per-attempt acceptance for pegs 0..3 averages [0.875, 0.779, 0.688, 0.603], with a worst case of 0.475, so the chance of running out of 512 attempts is effectively 0 (0/10000 observed; a torch prototype on 1000 seeds had 0 failures and a minimum gap of 0.0301 m). No neighbour can sit between the open fingers and the target: that rate was 21.5% in V4 and is 0 by construction for any gap of at least 0.03 m. Open fingers landing on a neighbour drop from 29.5% to 2.1%; a gap of 0.055 m would bring that to 0.\n\nThe cost is the V4 'distractor near the target' difficulty. The median distance from the target to its nearest distractor rises from 0.080 m to 0.178 m, versus 0.198 m for the native 3-peg layout.\n\nEasy/medium/hard stay byte-identical: all changes sit inside the xhard branch and the native loop is untouched. The xhard random stream changes, so the v4-01 specs and sampling_config snapshot cannot be replayed with V5 code and must be re-drawn. This overturns V4 decisions B6, I2 and K3 and the 'target stick 更近' part of the V4 request; A1, B11, C5, A4/A6 and peg_count=4 are kept.",
+ "current_mechanism": [
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/InsertPeg.py :: InsertPeg.config_native / config_xhard / configs",
+   "behavior": "easy/medium/hard share config_native {peg_count 3, peg_offsets [0.1,0,-0.1], near_target_distractor None, peg_yaw_range ±45°}. xhard = {peg_count 4, peg_offsets [0.1,0,-0.1,-0.2], near_target_distractor {anchor_peg_index 0, max_center_distance_m 0.085}, peg_yaw_range ±180°}. _native_decision copies configs['xhard'] under decision.xhard; the top-level four keys are the V3 native snapshot and must never change (V0, assert_native_decision)."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/InsertPeg.py :: NATIVE_SAMPLING['positions']['peg_sampling'] / ['box']",
+   "behavior": "Peg root region x∈[-0.2,0.2] (x_offset -0.2, x_span 0.4), y∈[-0.3,0.3]. min_distance_to_box_factor 6 → root-to-box-centre > radius*6 = 0.06 m. min_distance_between_pegs_factor 1.5 → root-to-root > length*1.5 = 0.075 m. max_attempts 512. Box: jitter ±0.1 in x and y, yaw 90°±20°, inner 1.7r, outer 4r, depth = length."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/InsertPeg.py :: InsertPeg._load_scene",
+   "behavior": "Runs once per env. Draws in order: rand(1) length (multiplied by 0 → 0.05), rand(1) radius (multiplied by 0 → 0.01), rand(3) head_rgb (spec objects.head_rgb; one colour shared by ALL pegs, tail = 1-head). It then builds len(peg_offsets) identical articulations peg_0..peg_3 at temporary poses (x=length/2, y=-0.15-offset, yaw 0). It draws randint(0, peg_count) (spec objects.sampling_trace.random_peg_idx, decision_key xhard.peg_count), which is immediately overridden to 0 → the target is ALWAYS peg_0. It builds the kinematic box."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/InsertPeg.py :: InsertPeg._initialize_episode",
+   "behavior": "Runs twice per episode: once inside gym.make (spec initializations.0) and once at env.reset() (initializations.1). Only the last layout is used. Draw order: box x-jitter, box y-jitter, box yaw. Then, for uniform_pegs = pegs[:-1] (xhard) or all pegs (native): each attempt draws rand x and rand y; skip if the root is within 0.06 of the box centre; skip if within 0.075 of any placed root. After acceptance, one rand yaw (±180° xhard, ±45° native). Exhausting 512 attempts raises SceneGenerationError (xhard) or RuntimeError (native). spec value initializations.k.pegs.i=[[x,y],yaw] (decision_key xhard.peg_yaw_range); pose z=0 (half-embedded, pops up on the first physics step, all tiers). Then peg_init_poses is stored for all pegs, with peg_3 still at its construction pose. Then obj randint(0,2) and dir randint(0,2). Then, xhard only, _xhard_place_near_target_peg. Finally the task_list is built."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/InsertPeg.py :: InsertPeg._xhard_place_near_target_peg",
+   "behavior": "V4 4th-peg sampler, drawn AFTER obj/dir (N5). Each attempt draws rand r∈[0.075, 0.085] and rand θ∈[0,2π); candidate = root_0 + r(cosθ, sinθ). It is rejected if outside the region, within 0.06 of the box, or within 0.075 of any placed root. At most 512 attempts. Records peg_placement {requested 4, placed 4}; raises SceneGenerationError on exhaustion. Then rand yaw ±180°; spec value pegs.3 (decision_key xhard.near_target_distractor); records near_target_distance and near_target_attempts; sets the pose and overwrites peg_init_poses[3]. Verified: a pure-torch replica of this order reproduces all 10 frozen v4-01 InsertPeg spec rows exactly (REPLICATION=PASS rows=10 exact=10)."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/utils/object_generation.py :: build_peg",
+   "behavior": "Articulation root = head link. The head visual box is centred on the root with half extents (length/2, r, r) = (0.025, 0.01, 0.01); the tail link sits at -length along the axis (centre at root-0.05u). Whole visual footprint = rectangle 0.10×0.02 m centred at root-0.025u, axis segment from root-0.075u to root+0.025u. The collision boxes are 0.9×length/2 long (0.0225 half) per link, with a 5 mm gap between them. So the sampled 'centre distance' is a head-to-head distance. Guaranteeing no overlap needs root distance > 0.1513 m, or geometric-centre distance > 0.102 m."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/utils/object_generation.py :: build_box_with_hole",
+   "behavior": "Kinematic box. Footprint rectangle half extents (depth=0.05, outer_radius=0.04), rotated by box_yaw, bottom at z=0. Only the peg ROOT is kept 0.06 m from the box centre, so peg footprints can overlap the box. MC: target 5.4%, any peg 16% (native) to 21% (xhard). Overlapping pegs get shoved or ejected, since the box is kinematic."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/InsertPeg.py :: InsertPeg.step + utils/subgoal_planner_func.py :: solve_strong_reset",
+   "behavior": "Demo and execution share ONE initial layout. After the demo subgoals (grasp, insert), the 'reset pegs' subgoal runs solve_strong_reset for 30 steps with reset_in_proecess=True. During that time InsertPeg.step teleports every peg to peg_init_poses[i] and zeroes velocities each step. Then a 100-step static hold, then the execution subgoals. Overlapping initial poses are therefore re-imposed and physically re-resolved after the demo."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/utils/subgoal_planner_func.py :: grasp_and_lift_peg_side",
+   "behavior": "Opens the gripper (0.04 per finger) and does a top-down screw move to the grasped link centre (head or tail by obj_flag). Grasp orientation = link_q ⊗ Rx(π), so the fingers close perpendicular to the peg axis. With the xhard _xhard_peg_yaw_reduction flag, an Rz(π) flip (B11) is applied. Panda v3 finger geometry: rubber tip spans y∈[q, q+0.0152], 17.5 mm wide along the peg axis, reaching the table; the diagonal part reaches y≈q+0.0248 down to about 4.7 mm above the TCP. With fingers open, a neighbour whose footprint is within 0.01–0.04 m of the target axis sits between the fingers and the target (pinch zone). A neighbour 0.04–0.0648 m from the axis gets landed on by the finger pads (landing zone)."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/InsertPeg.py :: task_list failure_func + utils/subgoal_evaluate_func.py :: is_any_obj_pickup / is_obj_pickup",
+   "behavior": "Execution subgoals only (not demo): failure if any NON-target peg head or tail is 'picked up', i.e. z > 0.05 AND agent.is_grasping(link). Demo subgoals only check is_A_pickup_notB(insert_target, grasp_target)."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/utils/vqa_options.py :: _options_insertpeg + utils/choice_action_mapping.py :: select_target_with_pixel",
+   "behavior": "Option 'a' available = env.peg_heads + env.peg_tails, which grows automatically to 8 links with 4 pegs (no code change in V4). A clicked pixel maps to the link whose projected centre is nearest (front camera 256×256, fx=fy=128)."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/utils/episode_spec.py :: SpecRecorder.value / record",
+   "behavior": "In export mode, the drawn value is written. In replay mode, the frozen value is ALWAYS returned, even though the rejection loops still consume the RNG; mismatches are only logged, attributed by decision_key. record() stores derived values; in replay it compares them and logs mismatches. Frozen layouts are not re-checked against the placement rules on replay."
+  },
+  {
+   "env": "InsertPeg",
+   "anchor": "src/robomme/robomme_env/utils/sampling_config.py :: assert_native_decision / _xhard_shape",
+   "behavior": "The decision with all xhard keys stripped must equal the native snapshot. The xhard subtree key paths must equal the source-declared ones exactly; values may differ. Any V5 key change makes the V4 snapshot (scripts/configs/newtask-v4/sampling_config.json and the specs.jsonl header) be rejected by V5 code."
+  }
+ ],
+ "user_question_answers": [
+  {
+   "question": "insertpeg现在是怎么生成4个的 (how are the 4 pegs generated now?)",
+   "answer": "Step by step, xhard. (0) _load_scene runs once. It draws the length rand and radius rand (both multiplied by 0), then head_rgb rand(3); one colour is used for all 4 pegs, tail = 1-head. It builds 4 identical pegs from the 4 entries of peg_offsets at temporary poses. randint(0,4) is drawn and discarded, so the target is always peg_0. (1) Each _initialize_episode (twice: gym.make → initializations.0, reset → initializations.1; only the last counts, and demo and execution share it) draws box x/y jitter (±0.1) and box yaw (90°±20°). (2) pegs 0,1,2: the native uniform rejection sampler. Each attempt draws x∈[-0.2,0.2] and y∈[-0.3,0.3]; the candidate is rejected if its root is ≤0.06 m from the box centre or ≤0.075 m from any placed root. At most 512 attempts, else SceneGenerationError. After acceptance, one yaw draw in ±180°; pose z=0. (3) obj randint and dir randint. (4) peg_3 is drawn by a DIFFERENT sampler, _xhard_place_near_target_peg. Each attempt draws radius r∈[0.075,0.085] and azimuth θ uniform around the target peg_0's root. It is rejected if outside the region, ≤0.06 from the box, or ≤0.075 from any placed root. At most 512 attempts, then a yaw draw; it records near_target_distance and near_target_attempts and overwrites peg_init_poses[3]. So pegs 0..2 are uniform, while peg 3 is forced into a 1 cm ring just outside the 0.075 limit around the target.",
+   "evidence": "Code: InsertPeg.py::_load_scene, ::_initialize_episode, ::_xhard_place_near_target_peg. Scratch replicate_v4.py rebuilds this exact order in pure torch and reproduces all 10 frozen v4-01 rows (both initializations) bit-exactly: REPLICATION=PASS rows=10 exact=10. V4 per-attempt acceptance for peg 3 averages 0.68 but can be 0 in cornered layouts; direct exhaustion was 1/10000 layouts (V4 report: 1/20000)."
+  },
+  {
+   "question": "Does the current 0.075 m inter-peg criterion guarantee spacing?",
+   "answer": "No. It measures head-link-centre (root) distance, but each peg footprint reaches 0.075 m behind the root and 0.025 m ahead, 0.10 m × 0.02 m in total. Two pegs at 0.075 m can cross. A pure centre-distance guarantee needs root distance > 0.1513 m, or geometric-centre distance > 0.102 m. Measured overlap rates (visual footprint, exact oriented-rectangle test): native 3 pegs ±45°: target 1.5%, any pair 2.5%. V4 xhard: target 28.1%, any 30.7%. Collision-box overlap in V4: target 25.9%, any 28.2%. The V4 I2 metric (axis distance < 0.02) reproduces as 2.4% native and 31.7% V4 (reported 2.4% and 31.6%).",
+   "evidence": "peggeom.py footprint model from build_peg; mc.py, 10000 layouts per config (table rows native3_root0.075_yaw45_after and V4_3uniform+near0.085_yaw180)."
+  },
+  {
+   "question": "改为同样的生成逻辑 不要为第四个增加不同的约束 (same logic for all, nothing special for the 4th) — what does that mean concretely and what happens?",
+   "answer": "The xhard branch runs one loop over all 4 pegs, i=0..3, before the obj/dir draws, and every peg gets exactly the same rules. The native rules stay: root >0.06 from the box and >0.075 from other roots. One new pairwise footprint-gap rule is added (next answer). _xhard_place_near_target_peg and decision.xhard.near_target_distractor are deleted. peg_0 stays the target (native overridden_to=0); it is simply the first peg drawn and has no special rule. Doing only this, with no new gap rule, already cuts target overlap from 28.1% to 3.4% (any pair from 30.7% to 7.2%), but it does not guarantee spacing. As a side effect, the V4 'distractor near the target' difficulty disappears: the median distance from the target to its nearest distractor root goes from 0.080 m (V4) to about 0.17 m (native 3-peg: 0.198 m).",
+   "evidence": "mc.py row V5_root>0.075_after: tgtVisOvl 0.0342, anyVisOvl 0.0718, target_nn_root_median 0.1659; V4 row 0.0798."
+  },
+  {
+   "question": "但是要确保两两之间的间隔 (guarantee spacing between every pair) — which criterion and value?",
+   "answer": "Recommended: the exact 2D footprint distance (oriented rectangles, visual 0.10×0.02 footprint) between the candidate and every placed peg must be > g. The inequality must be strict: a '≥ 0' test is vacuous, and the MC showed 25% overlap for rectgap>=0.0. Recommended g = 0.03 m, measured for all pegs 0..3 with the native rules kept. g=0.005: last-peg acceptance mean 0.80, pinch 1.5%, finger landing 4.2%. g=0.02: acceptance 0.70 (min 0.58), pinch 0.57%, landing 2.7%. g=0.03: acceptance 0.665 (min 0.55), pinch 0 (guaranteed by geometry, since 0.01+g ≥ 0.04), landing 2.1%. g=0.04: 0.62, landing 1.2%. g=0.045: 0.60, landing 0.9% (finger-tip landing 0.03%). g=0.055: 0.547 (min 0.37), pinch and landing both 0 (fully finger-safe). Every value has overlap 0 and a 512-attempt exhaustion chance of about 0 (0/10000 observed; worst per-state acceptance 0.37 gives (0.63)^512 ≈ 1e-103). With the optional box gap of 0.01 m added to g=0.03: acceptance [0.875,0.779,0.688,0.603] (min [0.83,0.70,0.58,0.47]), mean attempts [1.15,1.28,1.45,1.66], max [4,7,9,10], peg-box overlap 0. Alternatives: a capsule check (axis-segment distance ≥ 2r+g), which is conservative and slightly lower acceptance (0.70 vs 0.73 at g=0.02); or a pure centre-distance check (needs root >0.152 m, acceptance down to 0.40, clutter lost); not recommended.",
+   "evidence": "mc.py (35 configs × 10000 layouts, K=1024 candidates per state) and finger_hazard.py (6000 layouts per gap). v5_prototype.py with exact torch draw order on 1000 seeds (5300000+100k): g=0.03 + box 0.01 → reset_fail 0, min pair gap 0.0301, min box gap 0.0100, attempts max [4,6,6,8]; g=0.055 → 0 failures, max attempts 11."
+  },
+  {
+   "question": "What did V4 InsertPeg actually achieve, and are failures related to peg proximity/overlap?",
+   "answer": "Formal run: 10 candidates tried, 2 succeeded (eps 4 and 5, both backfilled), selected_shortfall=1. PlannerExhausted in eps 0,1,2,6; 'did not succeed after the complete task_list' in eps 3,7,8,9. The step3b local sample was 6/10 and V6 was 5/5, pooling to 13/25. From the frozen effective layouts: the target overlapped another peg in eps 3,4,6,7 (3 of them failed; ep4 still succeeded). A neighbour was inside the finger zone of the grasped end in eps 0 and 8. The target overlapped the box in ep6. The grasp point was ≥0.81 m from the robot base (reach limit) in eps 0 and 1 (ep4 succeeded at 0.79 m). Eps 2 and 9 have no geometric explanation. The failed videos show eps 0,1,6 died at frames 55–70 (the first demo grasp) and ep2 at 206 frames. Eps 3,7,8,9 ran 508–697 frames and failed. Physics settle test (GPU, 20 control steps, robot holding home pose): in the 4 V4 layouts with target overlap, the target moved 2.5 / 5.4 / 11.8 / 68.8 mm and turned +1.7° / +2.1° / -4.7° / +55.8° (ep6 also overlapped the box). In every non-overlapping layout, all pegs moved 0.0 mm. Conclusion: overlap and finger crowding plausibly explain 4–5 of 8 failures; reach and planning explain others. n=10 is not statistically significant.",
+   "evidence": "v4_spec_geometry.py (specs.jsonl + results.jsonl), h5_phase.py / cv2 frame counts of FAILED_*.mp4, settle_test.py --mode v4 (10 resets, CUDA 0). Grasp-distance calculation shown in the measurements."
+  },
+  {
+   "question": "Implications for vqa_options._options_insertpeg and the failure_func 'touching any non-target peg fails'",
+   "answer": "_options_insertpeg needs no code change (still 8 links = 4 heads + 4 tails). Spacing removes point-choice ambiguity: in V4, 19.3% of layouts had a non-target link centre within 10 px of the target's grasped link in the 256×256 front image (2.1% within 5 px); V5 at g≥0.02 has 0%. The execution failure_func fires only if a non-target link is lifted above 0.05 AND grasped. The realistic way that happens is a neighbour sitting between the open fingers and the target (pinch zone). That was 21.5% of V4 layouts and is 0 by construction for g ≥ 0.03 m. Finger pads landing on a neighbour (shove, not lift) drop from 29.5% (V4) to 2.1% (g=0.03) and 0 (g=0.055).",
+   "evidence": "pixel_ambiguity.py (4000 layouts/config, camera K and extrinsic read from the V4 h5); finger_hazard.py (6000 layouts/config)."
+  },
+  {
+   "question": "How do demo vs execution initializations differ (initializations[].pegs[])?",
+   "answer": "They do not differ. initializations.0 is the layout drawn during gym.make construction and is overwritten; initializations.1 (reset) is the one used. The demo and the execution both start from it: after the demo, solve_strong_reset plus InsertPeg.step teleport every peg back to peg_init_poses for 30 steps. Unlike MoveCube, there is no separate execution layout. Consequence: any initial overlap is re-imposed after the demo and re-resolved by physics, so the execution scene can differ from what the video showed. With spacing, pegs only settle vertically (0.0 mm lateral movement measured).",
+   "evidence": "InsertPeg.py::step (reset_in_proecess loop), subgoal_planner_func.py::solve_strong_reset, spec_replay.json of InsertPeg_episode_4 (consumed initializations.0.* and .1.*), settle test."
+  }
+ ],
+ "measurements": [
+  {
+   "name": "V4 draw-order replication",
+   "script_or_command": "cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask && uv run --no-sync python <scratch>/insertpeg/replicate_v4.py",
+   "settings": "Pure torch.Generator(seed) replica of _load_scene + 2×_initialize_episode (xhard); compared with the 10 InsertPeg rows of scripts/configs/newtask-v4/v4-01/specs.jsonl (objects + initializations.0/1).",
+   "result": "REPLICATION=PASS rows=10 exact=10 (bit-exact, all fields including near_target_distance/attempts)",
+   "conclusion": "The draw order described in current_mechanism is exactly right, so pure-geometry replicas of the sampler are trustworthy."
+  },
+  {
+   "name": "Placement Monte Carlo grid (acceptance, exhaustion, overlap, finger zone, box overlap)",
+   "script_or_command": "<scratch>/insertpeg/run_mc.sh (runs mc.py --n 10000 --K 1024 --configs <idx> in 12 parallel groups); table via table.py",
+   "settings": "10000 layouts per config, numpy default_rng(1000+idx). Per placement step, 1024 iid candidates: the first accepted among the first 512 = the actual draw, and all 1024 give the state's acceptance p. P(fail) estimated as 1-Π(1-(1-p)^512). Exact oriented-rectangle footprints from build_peg; box footprint 0.1×0.08; finger zone ±8.75 mm along the axis, 0.04–0.0648 m perpendicular.",
+   "result": "(1) native3 ±45°: fail 0; target/any visual overlap 1.53%/2.49%; I2-metric 2.38%; target-box overlap 5.5%, any-box 16.1%. (2) V4: fail 1/10000; last-peg acceptance mean 0.680, min 0.0; target/any overlap 28.1%/30.7%; collision 25.9%/28.2%; I2-metric 31.7%; finger zone (random end) 30.0%; target nearest root median 0.0798. (3) V5 all-uniform with native rules only: overlap 3.4%/7.2%. (4) root-distance only: >0.10: 1.0%/1.9%; >0.12: 0.4%/0.9%; >0.152: 0/0 with last-peg acceptance 0.40 (min 0.19). (5) geometric-centre >0.11: 0 overlap, acceptance 0.617. (6) capsule ≥2r+g (g=0/0.01/0.02/0.03/0.04): 0 overlap, last-peg acceptance 0.80/0.75/0.70/0.65/0.60. (7) native rules + footprint gap g=0.01/0.02/0.03/0.04/0.055: last-peg acceptance mean 0.723/0.698/0.665/0.623/0.547, min 0.627/0.582/0.549/0.481/0.369; overlap 0; finger zone 4.1%/2.9%/2.1%/1.1%/0.0%; target nearest root median 0.169/0.172/0.175/0.181/0.190. (8) plus box gap 0.01: box overlap 0; peg-0 acceptance 0.953→0.875; g=0.03 row [0.875,0.779,0.688,0.603], min [0.827,0.700,0.585,0.475], attempts max [4,7,9,10]. All V5 configs: fail_direct 0/10000, fail_est about 0. NOTE: rectgap>=0.0 rows are vacuous (overlap 25%) because the distance is 0 when rectangles overlap, so a strict '>' is required.",
+   "conclusion": "Any footprint-gap rule applied equally to all 4 pegs removes overlap completely with negligible generation-failure risk. Pure centre-distance rules either leave overlap or waste a lot of clutter. The box-overlap problem is independent of peg-peg spacing and persists (about 21% of layouts) unless a box footprint rule is added."
+  },
+  {
+   "name": "Finger pinch / landing hazard vs gap",
+   "script_or_command": "cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask && uv run --no-sync python <scratch>/insertpeg/finger_hazard.py",
+   "settings": "6000 layouts per config, K=512, random grasped end (50/50). Pinch zone: perpendicular 0.0101–0.04 m, |along| ≤ 8.75 mm. Landing zone: 0.04–0.0648 m (tip only: 0.04–0.0552). Panda v3 URDF finger boxes, fully open (0.04 per finger).",
+   "result": "V4: pinch 21.45%, landing 29.47% (tip 22.75%), any 36.48%. V5 (native rules + gap) g=0.005: 1.52/4.17; 0.01: 1.20/4.37; 0.02: 0.57/2.70; 0.025: 0.23/2.40; 0.03: 0.00/2.10 (tip 1.03); 0.04: 0/1.18 (tip 0.25); 0.045: 0/0.87 (tip 0.03); 0.055: 0/0.",
+   "conclusion": "g = 0.03 m is the smallest gap that guarantees no neighbour inside the closing span (the wrong-peg-grasp route to the failure_func). g = 0.055 m makes both fingers fully neighbour-free."
+  },
+  {
+   "name": "Physics settle test (simulator)",
+   "script_or_command": "CUDA_VISIBLE_DEVICES=0 timeout 290 uv run --no-sync python <scratch>/insertpeg/settle_test.py --mode v4 ; ... --mode v5 --gap 0.02",
+   "settings": "gym.make('InsertPeg', difficulty=xhard, obs_mode=state, sampling_config from the v4-01 header, native_episode_spec = frozen row); reset; 20 env.step with reset_panda 'action' (home pose, gripper open). v5 mode: same box/obj/dir, but pegs.0..3 in both initializations replaced by the prototype sampler (native rules + gap 0.02, no box rule, rng 20260924), injected through spec replay. 21 resets total, local RTX 6000 Ada (not A40). Box overlap re-checked with settle_boxcheck.py.",
+   "result": "V4: overlap episodes 3/4/6/7 → target moved 11.8/2.5/68.8/5.4 mm and turned -4.7/+1.7/+55.8/+2.1°; ep2 (non-target pair overlap) peg1 moved 1.9 mm, 6.7°. All other V4 pegs 0.0 mm. V5 (no peg-peg overlap): 8/10 layouts had 0.0 mm for every peg. ep5 target turned 5.1° (the target footprint overlapped the BOX). ep7 peg1 was EJECTED 7986 mm (peg1 footprint overlapped the box). All pegs settle at z=10.0 mm (the pop-up from z=0 is purely vertical).",
+   "conclusion": "Peg-peg overlap is the direct cause of targets being displaced before the demo. Peg-box overlap is an equally real, pre-existing hazard, even with peg spacing, so a box footprint rule is advisable."
+  },
+  {
+   "name": "V4 candidates: geometry vs rollout outcome",
+   "script_or_command": "uv run --no-sync python <scratch>/insertpeg/v4_spec_geometry.py ; <scratch>/insertpeg/h5_phase.py ; cv2 frame counts of artifacts/newtask-v4/v4-01/rollout/run1/episodes/InsertPeg_episode_*/videos/*.mp4",
+   "settings": "10 frozen rows (effective initialization 1) joined with rollout run1 results.jsonl; the failed h5 files are empty (800 B), so videos were used for failure timing.",
+   "result": "ok = eps 4,5. Target overlap: eps 3,4,6,7. Finger intrusion at the grasped end: 0 (peg3), 8 (peg2). Target-box overlap: 6. Grasp-point distance from base (-0.615,0): ep0 0.812, ep1 0.818, ep4 0.793 (ok), others 0.475–0.771. Video frames: ep0 55, ep1 62, ep6 70, ep2 206, ep3 590, ep7 697, ep8 508, ep9 561, ep4 448 (ok), ep5 556 (ok).",
+   "conclusion": "The failure causes are mixed. Spacing plus the box rule address the overlap and finger-crowding classes (about 4–5 of 8); reach-limit cases (about 2) are outside this topic."
+  },
+  {
+   "name": "Point-choice pixel ambiguity",
+   "script_or_command": "timeout 290 uv run --no-sync python <scratch>/insertpeg/pixel_ambiguity.py",
+   "settings": "4000 layouts per config; the target's grasped-link centre and all non-target link centres projected with K=[[128,0,128],[0,128,128]] and the extrinsic read from the V4 ep4 h5.",
+   "result": "native3: nearest non-target link <10 px in 1.1% of layouts. V4: <10 px in 19.3%, <5 px in 2.1%, 5th percentile 6.4 px. V5 gap 0.02/0.04/0.055: 0% under 10 px, 5th percentile 18.5/21.1/23.9 px.",
+   "conclusion": "Spacing also makes the oracle/VQA point→object mapping unambiguous."
+  },
+  {
+   "name": "V5 prototype with exact torch draw order",
+   "script_or_command": "timeout 280 uv run --no-sync python <scratch>/insertpeg/v5_prototype.py --pair-gap {0.02,0.03,0.055} --box-gap 0.01 --n 1000",
+   "settings": "Seeds 5300000+100k, k<1000. Full xhard stream (_load_scene draws, then 2 initializations). Lazy yaw (drawn after the native checks pass); strict '>' gap rules.",
+   "result": "g=0.02: reset_fail 0, attempts mean [1.14,1.25,1.40,1.58], max [4,6,5,8], min pair gap 0.0200, min box gap 0.0100. g=0.03: 0 failures, [1.14,1.27,1.47,1.66], max [4,6,6,8], min pair gap 0.0301. g=0.055: 0 failures, [1.14,1.35,1.67,2.02], max [4,7,7,11], min pair gap 0.0551.",
+   "conclusion": "The proposed algorithm, in the env's real draw order, always places 4 pegs with the guaranteed gap within a handful of attempts."
+  }
+ ],
+ "proposals": [
+  {
+   "title": "P1 (recommended): one sampler for all 4 pegs = native rules + strict footprint gap to every placed peg (g=0.03 m) + footprint gap to the box (0.01 m), lazy yaw, single loop before obj/dir",
+   "recommended": true,
+   "envs": "InsertPeg (xhard only)",
+   "anchors_to_change": "InsertPeg.py::InsertPeg.config_xhard: remove near_target_distractor; add peg_min_pair_gap_m=0.03 and peg_box_min_gap_m=0.01. _native_decision picks this up automatically; the top-level near_target_distractor=None stays untouched. InsertPeg.py::InsertPeg._initialize_episode: the xhard branch calls a new InsertPeg._xhard_sample_pegs(box_xy, box_yaw, xhard_cfg) for all pegs instead of the pegs[:-1] loop; the native loop text stays literally unchanged; the trailing self._xhard_place_near_target_peg call after obj/dir is removed. Delete InsertPeg.py::InsertPeg._xhard_place_near_target_peg. Add pure-numpy helpers peg_footprint / box_footprint / footprint_gap to utils/xhard.py (or a new utils/peg_layout.py). Tests in tests/lightweight/test_v4_xhard_insertpeg.py (or a new test_v5_xhard_insertpeg.py). scripts/README.md §1.14; new snapshot scripts/configs/newtask-v5/sampling_config.json; combos (InsertPeg stays 'default').",
+   "design": "Config: config_xhard = {peg_count: 4, peg_offsets: [0.1,0,-0.1,-0.2], peg_yaw_range: {half_span_deg: 180}, peg_min_pair_gap_m: 0.03, peg_box_min_gap_m: 0.01 (None disables)}. Footprints, from build_peg/build_box_with_hole, float64: peg = rectangle centred at root-(length/2)u with half extents (length, radius) = (0.05, 0.01); box = centred at box_xy with half extents (length, outer_radius_factor*radius) = (0.05, 0.04), rotated by box_yaw. footprint_gap = exact 2D oriented-rectangle distance: 0 if the separating-axis test finds overlap, else the minimum of the 32 vertex-to-edge distances. Sampler, per peg i=0..3 (identical rule for all, target peg_0 simply first): for attempt in 1..max_attempts: x = rand*x_span+x_offset, y = rand*y_span+y_offset (float32 array as native); reject if |xy-box| <= radius*min_distance_to_box_factor; reject if any |xy-root_j| <= length*min_distance_between_pegs_factor; yaw = (rand*2-1)*radians(half_span_deg) (drawn only now); reject if box gap enabled and footprint_gap(peg, box) <= peg_box_min_gap_m; reject if any footprint_gap(peg, peg_j) <= peg_min_pair_gap_m (STRICT; '>= 0' would be vacuous); accept. Exhaustion raises SceneGenerationError (existing xhard behaviour). Then xy, yaw = _spec.value(f'initializations.{k}.pegs.{i}', [[x,y],yaw], decision_key='xhard.peg_min_pair_gap_m') and set_pose(z=0). After the loop, xhard records: peg_placement {requested 4, placed 4} (kept), peg_attempts [a0..a3], min_pair_gap_m, min_box_gap_m. Optional replay guard: if the frozen layout violates either gap, raise (stops V4 or hand-edited specs silently bringing overlap back). Then, unchanged: the peg_init_poses loop (all 4 now correct, no index-3 fix-up), obj randint, dir randint, task_list.",
+   "rationale": "This fulfils the user's words literally: all 4 pegs use the same sampler, the 4th gets no special rule, and every pair has a guaranteed spacing. The footprint metric is exact for what the camera sees, and a single number means 'outlines at least g apart'. g=0.03 is the smallest gap that geometrically guarantees no neighbour inside the open gripper's closing span (0.01+g ≥ 0.04), so the wrong-peg-lift route to the failure_func is gone. It still leaves 4-peg clutter (nearest distractor median 0.178 m vs native 3-peg 0.198 m). Keeping the native root>0.075 rule changes the least conceptually and lowers finger crowding (2.9% vs 4.6% at g=0.02). The box rule removes a measured ejection/shove hazard that peg spacing does not cover (target-box 5.4%, any-box 21%). Lazy yaw keeps the V4 order (x, y, then yaw) whenever the new rules accept on the first try, and it samples uniformly over the feasible (x, y, yaw) set.",
+   "rng_impact": "Easy/medium/hard: none. All code sits behind `if self.difficulty == 'xhard'`; the native loop, _load_scene and obj/dir draws are untouched; config_native and the top-level decision keys are unchanged. Must be verified by NATIVE_DEFS_UNCHANGED, the InsertPeg reset probe (diff=0) and V1. xhard: _load_scene draws are unchanged (length, radius, head_rgb(3), randint(0,4)), and so are the 3 box draws. The peg stream changes in three ways: (a) a yaw is now drawn inside the attempt whenever the native rules pass (V4: once per peg after acceptance), so the stream diverges at the first gap or box rejection; (b) peg_3 is drawn before obj/dir instead of after, so obj/dir take new stream positions; (c) the V4 near-band draws (r, θ per attempt, plus yaw) are removed. This is an xhard-only reorder with a precedent (PickXtimes G1 'only reorder inside the xhard branch'), but it is not 'appended after' in the literal N5 sense for xhard. Any yaw-dependent spacing rule makes that unavoidable. Only the effective layout's peg_0 matches V4 for a given seed in about 25% of seeds (51/200 in the prototype). Consequence: v4-01 specs and the V4 sampling_config snapshot cannot be replayed with V5 code (the shape guard rejects them), so a fresh V5 spec draw is required.",
+   "overturned_v4_decisions": "Overturned: B6 (spacing rule 'unchanged' → a new footprint-gap rule is added; the 0.075 root rule itself is kept); I2 (keep the 2.4%→31.6% overlap → overlap removed); K3 (0.085 m band → removed along with near_target_distractor); the plan 2.18 design 'wire up near_target_distractor' and the V4 request phrase 'target stick 更近' (the 4th peg is no longer near the target). Kept: A1 (±180° yaw), B11 (equivalent-orientation grasp reduction), A4/A6/A7 (configs structure), C5 (target identified by the video), peg_count 4 / peg_offsets 4, H2/N12 (fixes only in xhard), I3 (no recovery), N2 (recorder frozen). The box rule is new (no V4 decision covered peg-box overlap; the plan only mentioned it for MoveCube).",
+   "spec_and_test_changes": "Spec (native-newvalue/1): keep path and format initializations.<k>.pegs.<i> = [[x,y],yaw] for i=0..3, with decision_key 'xhard.peg_min_pair_gap_m' for all 4. Delete records near_target_distance and near_target_attempts. Keep peg_placement; add records peg_attempts, min_pair_gap_m, min_box_gap_m (xhard only). Native specs are unchanged. Re-export scripts/configs/newtask-v5/sampling_config.json, then a new run-id (v5-01) spec draw; README §1.14 field table updated (5 → xhard keys, spec field list). Tests: test_configs_three_tiers_identical_to_native → assert xhard has peg_min_pair_gap_m == 0.03, peg_box_min_gap_m == 0.01 and no near_target_distractor; test_decision_visible_part_unchanged_and_guard → narrow peg_min_pair_gap_m instead of near_target_distractor.max_center_distance_m, keep the guard cases. New CPU tests: footprint_gap exact cases (parallel side by side with lateral offset 0.05 → gap 0.03; crossing → 0; collinear end to end; box case); sampler as a pure function with a torch.Generator (1000 seeds: all 6 pair gaps > 0.03, box gaps > 0.01, 4/4 placed; draw order pinned by a replica like replicate_v4.py; an impossible config such as gap 0.5 raises SceneGenerationError). test_vqa_insertpeg_available_scales_with_peg_count unchanged (8). The B11 tests are unchanged.",
+   "expected_numbers": "Per-attempt acceptance pegs 0..3: mean [0.875, 0.779, 0.688, 0.603], worst state [0.827, 0.700, 0.585, 0.475]. Mean attempts [1.15, 1.28, 1.45, 1.66], max [4, 7, 9, 10]. P(512 exhausted) ≈ 0 (0/10000 MC, 0/1000 torch prototype). Peg-peg visual and collision overlap 0 (V4 28.1% target). Peg-box overlap 0 (V4 5.4% target / 20% any). Pinch hazard 0 (V4 21.5%). Finger landing 2.0% (tip 0.9%) vs V4 30%. Pixel ambiguity <10 px: 0% (V4 19.3%). Settle: expected 0.0 mm lateral movement (measured for every layout without peg-peg or peg-box overlap). Median nearest-distractor root distance 0.178 m (V4 0.080). Demo success is NOT measured; expected to beat V4's 2/10, but reach-limit failures (about 16% of layouts have the grasp point >0.78 m from the base) remain."
+  },
+  {
+   "title": "P2 (alternative threshold): g = 0.055 m (finger-safe) or g = 0.02 m (one peg width), same algorithm as P1",
+   "recommended": false,
+   "envs": "InsertPeg (xhard only)",
+   "anchors_to_change": "Same as P1; only the default of decision.xhard.peg_min_pair_gap_m changes.",
+   "design": "Identical to P1 with peg_min_pair_gap_m = 0.055 (neither open finger can ever touch a neighbour at either end) or 0.02 (= 2×radius, visible gap only).",
+   "rationale": "0.055 makes the grasp clearance a hard guarantee, at the cost of clutter: the scene is about as sparse as native, with nearest-distractor median 0.190 m. 0.02 keeps the most clutter but still allows 0.57% pinch and 2.7% finger landing.",
+   "rng_impact": "Same as P1: native none; xhard stream as in P1.",
+   "overturned_v4_decisions": "Same as P1.",
+   "spec_and_test_changes": "Same as P1, with different constants.",
+   "expected_numbers": "g=0.055: last-peg acceptance mean 0.547 (min 0.369), attempts max about 11–14, exhaustion ≈ 0, pinch and landing 0, overlap 0. g=0.02: last-peg acceptance 0.698 (min 0.582), pinch 0.57%, landing 2.7%, overlap 0."
+  },
+  {
+   "title": "P3 (alternative metric): capsule check (axis-segment distance ≥ 2·radius + g) instead of the exact rectangle distance",
+   "recommended": false,
+   "envs": "InsertPeg (xhard only)",
+   "anchors_to_change": "Same as P1; footprint_gap is replaced by a segment-segment distance between root-0.075u..root+0.025u, i.e. root-(1.5·length)u..root+(length/2)u.",
+   "design": "Accept if seg_dist(peg_i, peg_j) >= 2r + g for all placed j. Each rectangle lies inside its capsule, so the rectangle gap is at least g as well (conservative).",
+   "rationale": "Simpler maths (about 15 lines), smooth in yaw, the same guarantee. Slightly stricter than needed near corners (up to about 4 mm), so a little less acceptance and clutter. The box rule would still need a rectangle distance, so P1 needs one primitive for both.",
+   "rng_impact": "Same as P1.",
+   "overturned_v4_decisions": "Same as P1.",
+   "spec_and_test_changes": "Same as P1, with capsule unit tests.",
+   "expected_numbers": "g=0.02: last-peg acceptance 0.703 (min 0.59), overlap 0, finger zone 4.3%. g=0.03: 0.652 (min 0.52), finger 2.7%. g=0.04: 0.599, finger 1.2%."
+  },
+  {
+   "title": "P4 (ordering variant): keep the 4th peg's draws after obj/dir (call the same sampler twice: pegs 0..2 in place, peg 3 after obj/dir)",
+   "recommended": false,
+   "envs": "InsertPeg (xhard only)",
+   "anchors_to_change": "As P1, but _initialize_episode calls _xhard_sample_pegs(indices 0..2) before obj/dir and _xhard_sample_pegs(index 3) after.",
+   "design": "Same rules and code; only the call site of peg 3 differs, so it mimics the literal N5 'append after' for peg 3.",
+   "rationale": "It keeps obj/dir closer to their V4 stream positions. But it gives no real parity benefit: pegs 1–2 already shift because of the lazy yaw and the gap rule, and V4 specs are invalid anyway. The code becomes less obviously 'one logic', and it keeps the V4 peg_init_poses[3] fix-up. Not recommended.",
+   "rng_impact": "Native none. xhard: obj/dir sit at V4-like positions only when pegs 0..2 needed no extra rejections; otherwise same as P1.",
+   "overturned_v4_decisions": "Same as P1.",
+   "spec_and_test_changes": "Same as P1 plus keeping the peg_init_poses[3] overwrite.",
+   "expected_numbers": "Same placement statistics as P1 (same distribution)."
+  },
+  {
+   "title": "P5 (rejected): pure centre-distance rule (root distance > 0.152 m, or geometric-centre distance > 0.102+g)",
+   "recommended": false,
+   "envs": "InsertPeg (xhard only)",
+   "anchors_to_change": "config_xhard gets a larger min distance (e.g. an xhard override of min_distance_between_pegs_factor).",
+   "design": "Raise the root-distance threshold to 0.152 m (or use the geometric centre root-0.025u with threshold 0.102+g); yaw stays after acceptance, as in V4.",
+   "rationale": "It keeps the V4 draw order the most (no yaw inside the loop), but it is very wasteful: it excludes all near-but-separated layouts. At root 0.152: last-peg acceptance 0.40 (min 0.19), and the nearest-distractor median 0.207 m exceeds native. Root 0.10/0.12 still leaves 1.9%/0.9% overlap, so there is no guarantee.",
+   "rng_impact": "Native none. xhard: the peg loop's draw pattern is identical in form to native (x, y per attempt; yaw once), so only acceptance changes the stream.",
+   "overturned_v4_decisions": "B6, I2, K3.",
+   "spec_and_test_changes": "Minor (a threshold key).",
+   "expected_numbers": "root>0.152: overlap 0, last-peg acceptance 0.40 (min 0.19), attempts max 21. root>0.12: target overlap 0.42%, any 0.86%."
+  }
+ ],
+ "risks": [
+  {
+   "risk": "The V4 difficulty intent 'target stick 更近' is lost: the median nearest-distractor distance to the target roughly doubles (0.080 → 0.178 m at g=0.03).",
+   "mitigation": "This is explicit in the user's new words (no special rule for the 4th). Record it as the overturned V4 intent and have the user confirm. Difficulty still comes from 4 identical-looking pegs, ±180° yaw and 2% finger crowding."
+  },
+  {
+   "risk": "A non-strict test ('gap >= 0') is vacuous (the MC showed 25% overlap), because the rectangle distance is 0 for overlapping shapes.",
+   "mitigation": "Implement as 'reject if gap <= g', like the native '<= ... continue' pattern, and unit-test an overlapping pair."
+  },
+  {
+   "risk": "Spec replay returns frozen values without re-checking them, so V4 specs or hand-edited specs replayed on V5 code would silently reintroduce overlap.",
+   "mitigation": "Add an xhard replay guard (re-check the gaps on the frozen layout and raise) and record min_pair_gap_m / min_box_gap_m in each spec. The V4 snapshot is rejected by the shape guard anyway."
+  },
+  {
+   "risk": "V4 artifacts (v4-01 specs.jsonl, sampling_config.json, specs.selected.jsonl, eval) can no longer be replayed or evaluated with V5 source.",
+   "mitigation": "Keep V4 evaluation pinned to the V4 commit (0baff09 or a tag). V5 gets its own newtask-v5 snapshot and run-id. State this in the V5 plan."
+  },
+  {
+   "risk": "Demo success under V5 is unmeasured. Reach-limit failures (V4 eps 0/1, grasp point ≥0.81 m from the base; about 16% of layouts have >0.78 m) and planner failures are not addressed by spacing.",
+   "mitigation": "Run a V5 demo probe (at least 10 seeds) before freezing and report it next to V4's 2/10 and 6/10. Reach is a separate topic (region or reach filter)."
+  },
+  {
+   "risk": "Lazy or joint yaw sampling biases the accepted yaw slightly toward orientations that fit (not quantified).",
+   "mitigation": "If an exactly uniform yaw marginal matters, use yaw-first (one yaw per peg before its position loop); its acceptance is identical (0.7272 vs 0.7277 at g=0.02) and its failure risk is also about 0."
+  },
+  {
+   "risk": "Pegs spawn at z=0, half inside the table (pre-existing, all tiers). The pop-up is harmless only when footprints are separated from each other and from the box.",
+   "mitigation": "With P1 the settle test shows purely vertical settling (0.0 mm lateral). Changing z is not proposed (it would be a behaviour change beyond scope)."
+  },
+  {
+   "risk": "Adding the box rule goes beyond the literal user request ('两两之间' = between pegs).",
+   "mitigation": "Present it as a separate decision with evidence: a V5 layout ejected a peg by 8 m and V4 ep6's target was shoved 69 mm / 56° by box overlap."
+  },
+  {
+   "risk": "Local sim evidence came from an RTX 6000 Ada, not an A40, with obs_mode=state and the robot idle. Contact resolution may differ on the formal machine or during demos.",
+   "mitigation": "Repeat the settle and demo checks in the formal V5 validation (A40 / spgpu), per project rules."
+  }
+ ],
+ "pending_decisions": [
+  {
+   "question": "Gap threshold g for every pair (decision.xhard.peg_min_pair_gap_m)",
+   "options": "0.02 m (one peg width; pinch 0.57%, landing 2.7%) / 0.03 m (pinch 0 guaranteed, landing 2.1%) / 0.045 m (finger tips never land, 0.03%) / 0.055 m (both fingers fully clear, sparsest)",
+   "recommendation": "0.03 m",
+   "reason": "It is the smallest value that guarantees no neighbour inside the open gripper's closing span (so no wrong-peg lift, which is exactly what the execution failure_func punishes) while keeping the most clutter. Every option has overlap 0 and exhaustion risk about 0."
+  },
+  {
+   "question": "Spacing metric",
+   "options": "Exact 2D footprint (oriented-rectangle) distance / capsule (axis-segment distance ≥ 2r+g) / centre distance (root >0.152 or geometric centre >0.102+g)",
+   "recommendation": "Exact footprint distance",
+   "reason": "It matches what is visible, one primitive also serves the box rule, and it gives the most clutter for a given guarantee. The capsule is a fine conservative fallback; centre distance wastes clutter."
+  },
+  {
+   "question": "Keep the native root-distance rule (>0.075 m) in addition to the gap rule?",
+   "options": "Keep both / use the gap rule only",
+   "recommendation": "Keep both",
+   "reason": "'Same logic' = native rules + one added rule. It reduces finger crowding (2.9% vs 4.6% at g=0.02) and costs little acceptance (0.698 vs 0.728)."
+  },
+  {
+   "question": "Also apply a footprint gap between every peg and the box (decision.xhard.peg_box_min_gap_m)?",
+   "options": "No (keep root >0.06 m only) / yes 0.0 (strict non-overlap) / yes 0.01 m",
+   "recommendation": "Yes, 0.01 m (xhard only)",
+   "reason": "The box is kinematic. Box overlap happens in about 21% of layouts (5.4% involve the target). Measured effects: a peg ejected 8 m, a target shoved 69 mm / 56°. Peg-0 acceptance only drops from 0.953 to 0.875."
+  },
+  {
+   "question": "Draw order in the xhard stream",
+   "options": "(a) one loop of 4 pegs before obj/dir (P1) / (b) pegs 0..2, then obj/dir, then peg 3 through the same function (P4)",
+   "recommendation": "(a)",
+   "reason": "It is literally 'one logic' and removes the peg_init_poses[3] fix-up. The xhard stream changes either way, so (b) buys no parity. Native tiers are unaffected either way, but the user must knowingly accept this xhard-only departure from the literal N5 wording."
+  },
+  {
+   "question": "Yaw draw policy for the gap rule",
+   "options": "Lazy (draw yaw only after the native rules pass, inside the attempt) / joint (x, y, yaw every attempt) / yaw-first (one yaw per peg before its position attempts)",
+   "recommendation": "Lazy",
+   "reason": "Same distribution as joint with fewer draws, and it keeps the V4 x,y→yaw order when the first candidate passes. Choose yaw-first only if an exactly uniform yaw marginal is required."
+  },
+  {
+   "question": "Remove decision.xhard.near_target_distractor entirely?",
+   "options": "Remove (recommended) / keep as null",
+   "recommendation": "Remove from the xhard subtree; the top-level native near_target_distractor=None must stay",
+   "reason": "Otherwise it is a dead key (the plan already flagged dead keys). The native visible decision must stay byte-identical (V0), and the V4 snapshot is incompatible either way."
+  },
+  {
+   "question": "Confirm abandoning the V4 intent that the extra stick sits closer to the target",
+   "options": "Confirm / keep some 'near target' pressure in another form",
+   "recommendation": "Confirm",
+   "reason": "The user's new instruction forbids a special rule for the 4th peg. The measured consequence (nearest-distractor median 0.080 → 0.178 m) should be acknowledged."
+  },
+  {
+   "question": "Add a replay guard that re-checks spacing on frozen specs (xhard)?",
+   "options": "Yes / No",
+   "recommendation": "Yes",
+   "reason": "The replay path returns frozen values unchecked; the guard stops the old V4 overlapping layouts from coming back."
+  }
+ ],
+ "verification_checks": [
+  {
+   "check": "Native definitions unchanged",
+   "how": "The existing V0 script over the 16 envs: config_native and the stripped decision equal the V3 snapshot.",
+   "judgement_line": "NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0"
+  },
+  {
+   "check": "InsertPeg native reset regression",
+   "how": "uv run --no-sync python -m scripts.parity.v4_reset_probe probe --tasks InsertPeg --out <v5.json>; then diff against artifacts/newtask-v4/probe/base-13e.json (InsertPeg rows only).",
+   "judgement_line": "INSERTPEG_NATIVE_RESET=PASS compared=9 diff=0"
+  },
+  {
+   "check": "V1 native regression (local rule)",
+   "how": "Existing V1 procedure for the InsertPeg native rows (144-row suite or InsertPeg subset).",
+   "judgement_line": "NATIVE_REGRESSION=PASS task=InsertPeg diff=0"
+  },
+  {
+   "check": "Spacing guarantee on real resets",
+   "how": "20 xhard seeds: gym.make + reset in export mode. From spec initializations.<last>.pegs.0..3 compute all 6 footprint gaps and the peg-box gaps; also check peg_placement.",
+   "judgement_line": "INSERTPEG_V5_SPACING=PASS resets=20 min_pair_gap_m>0.03 min_box_gap_m>0.01 placed=4/4"
+  },
+  {
+   "check": "RNG order pinned",
+   "how": "A pure-torch replica of the V5 order (as in scratch v5_prototype.py) versus the env's exported spec for 20 seeds (all fields, both initializations).",
+   "judgement_line": "INSERTPEG_V5_RNG_ORDER=PASS seeds=20 exact=20"
+  },
+  {
+   "check": "Generation failure risk",
+   "how": "mc.py-style Monte Carlo with the final config, 10000 layouts.",
+   "judgement_line": "INSERTPEG_V5_PLACEMENT_MC=PASS layouts=10000 fail=0 p_accept_min_peg3>=0.4"
+  },
+  {
+   "check": "No lateral disturbance at spawn",
+   "how": "settle_test-style: 10 V5 resets, 20 steps with the robot holding home pose; measure peg xy displacement and yaw change.",
+   "judgement_line": "INSERTPEG_V5_SETTLE=PASS layouts=10 max_dxy_mm<1.0 max_dyaw_deg<1.0"
+  },
+  {
+   "check": "Every decision leaf consumed",
+   "how": "uv run --no-sync python scripts/parity/train_split_audit.py config-map",
+   "judgement_line": "SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0"
+  },
+  {
+   "check": "Spec binding of V5 specs",
+   "how": "Replay the freshly drawn v5 specs for InsertPeg (consumed paths vs leaves).",
+   "judgement_line": "SPEC_BINDING=PASS task=InsertPeg mismatch=0 unused=0"
+  },
+  {
+   "check": "Old V4 specs refused",
+   "how": "Construct InsertPeg with the V4 sampling_config header and a v4-01 spec on V5 code.",
+   "judgement_line": "INSERTPEG_V4_SPEC_REJECTED=PASS error=SamplingConfigError"
+  },
+  {
+   "check": "Generable at demo level (rule 14 / H3)",
+   "how": "V6 combo coverage, InsertPeg 'default' combo, 5 demos.",
+   "judgement_line": "COMBO_COVERAGE=PASS task=InsertPeg zero_success_combinations=0"
+  },
+  {
+   "check": "Demo success report",
+   "how": "v4_demo_probe-style run of 10 xhard seeds with V5 code; failure classes listed; compared with V4 formal 2/10 and step3b 6/10.",
+   "judgement_line": "INSERTPEG_V5_DEMO=REPORT n=10 ok=<k>"
+  },
+  {
+   "check": "Lightweight tests",
+   "how": "uv run --no-sync pytest tests/lightweight/test_v4_xhard_insertpeg.py (updated) plus the new geometry and sampler tests.",
+   "judgement_line": "LIGHTWEIGHT_INSERTPEG=PASS failed=0"
+  },
+  {
+   "check": "Recorder frozen",
+   "how": "git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py",
+   "judgement_line": "RECORDER_FROZEN=PASS"
+  }
+ ],
+ "blind_spots": [
+  "No demos were run with V5 layouts: demo success and failure classes under V5 are unmeasured. Only resets and a 20-step settle were simulated (21 resets, local RTX 6000 Ada, obs_mode=state).",
+  "The finger hazard model uses panda_v3.urdf collision boxes with fully open fingers (0.04 per finger) and a TCP at the grasped link centre; actual finger contact during the planner's screw motion was not simulated.",
+  "Probabilities below about 1e-4 (exhaustion) are inferred from per-state acceptance estimates, not observed directly (10000 layouts per config).",
+  "The V4 geometry-to-outcome correlation uses n=10 frozen candidates and is not statistically significant; the failed h5 files are empty, so failure timing came from video frame counts.",
+  "The bias of the accepted yaw distribution under lazy or joint sampling was not quantified.",
+  "The pixel-ambiguity calculation assumes a fixed front-camera extrinsic (read from one V4 episode) and projects link centres at z=0.01.",
+  "Reach-limit and planner failures (a separate issue from spacing) were not analysed beyond the grasp-distance calculation.",
+  "It is not known whether the user wants peg-box spacing to count as part of '两两之间的间隔'."
+ ],
+ "scratch_files": [
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/replicate_v4.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/peggeom.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/mc.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/run_mc.sh",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/table.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/mc_a.json ... mc_l.json (+ .log; mc_g1.* is a superseded partial run)",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/finger_hazard.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/pixel_ambiguity.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/v4_spec_geometry.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/h5_phase.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/settle_test.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/settle_v4.json",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/settle_v5.json",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/settle_boxcheck.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/v5_prototype.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/v4_first_frames.jpg",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/insertpeg/v4_last_frames.jpg"
+ ]
+}

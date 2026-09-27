@@ -1,0 +1,27 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+DEMOR2 seed=5400002 way=grasp_putdown ok=True steps=489    22.1s
+DEMOR2 seed=5400003 way=peg_push ok=True steps=440    19.4s
+DEMOR2 seed=5400004 way=peg_push ok=True steps=456    21.2s
+DEMOR2 seed=5400006 way=peg_push ok=True steps=448    19.5s
+DEMOR2 seed=5400007 way=gripper_push ok=True steps=439    18.7s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 2.174648 is greater than threshold 0.001000.
+IK Failed! Distance 2.269017 is greater than threshold 0.001000.
+IK Failed! Cannot find valid solution.
+DEMOR2 seed=5400008 way=grasp_putdown ok=False steps=None task PlannerExhausted screw 三次与 RRTStar 三次均失败: screw plan failed 12.5s
+DEMOR2 seed=5400009 way=peg_push ok=True steps=262    12.4s
+DEMOR2 seed=5400010 way=peg_push ok=True steps=942    40.3s
+screw plan failed
+screw plan failed
+screw plan failed
+DEMOR2 seed=5400011 way=peg_push ok=True steps=257    13.1s
+DEMOR2 seed=5400012 way=peg_push ok=True steps=433    18.9s
+DEMOR2 seed=5400013 way=gripper_push ok=True steps=441    19.7s
+DEMOR2 seed=5400014 way=gripper_push ok=True steps=246    30.5s
+DEMOR2_DONE
+EXIT_CODE=0

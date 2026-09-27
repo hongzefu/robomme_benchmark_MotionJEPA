@@ -1,0 +1,310 @@
+################ scripts/parity/train_split_config.py --help
+usage: train_split_config.py [-h] {extract} ...
+
+提取 sampling_config 原值快照
+
+positional arguments:
+  {extract}
+    extract   提取并写出快照
+
+options:
+  -h, --help  show this help message and exit
+rc=0
+################ scripts/parity/train_split_config.py extract --help
+usage: train_split_config.py extract [-h] [--env ENV]
+                                     [--release {newtask-v4,newtask-v5}]
+                                     [--output OUTPUT] [--verify]
+
+options:
+  -h, --help            show this help message and exit
+  --env ENV             all 或逗号分隔的环境名
+  --release {newtask-v4,newtask-v5}
+                        发布版本：决定默认落点
+                        scripts/configs/<release>/sampling_config.json 与快照说明文字
+  --output OUTPUT       显式落点，缺省按 --release 推导
+  --verify              只比对既有文件字节，不写盘
+rc=0
+################ scripts/parity/v4_specs.py --help
+usage: v4_specs.py [-h] {draw,freeze,reselect} ...
+
+V4 新值规格的抽签／冻结／读取（NEWTASK_RELEASE_V4_PLAN 第三节 3.2～3.4，步 4）。
+
+三件事、两个文件：
+
+* ``draw``（占 GPU）：拿 xhard 的范围开环境，**只 reset、不 step、不录像**，把 ``SpecRecorder`` 导出的
+  每局规格写进 ``drafts.jsonl``（含失败尝试）。每环境攒够 ``--candidates-per-env`` 条 reset 成功
+  或尝试满 ``--max-reset-attempts`` 次为止。**来源在抽签时就封存**进 header（Codex 审计 #7）：
+  ``sampling_config`` 全文、源码指纹、runtime 四项、seed 规则。
+* ``freeze``（纯 CPU）：先核验 drafts header 封存的来源与当前磁盘**逐项一致**（不一致拒绝），
+  只留 reset 成功的行，每环境按 index ``--select`` 标 ``selected=true``，算每行 ``spec_sha256`` 与
+  整文件 ``identity_sha256``，写出 ``specs.jsonl``；已存在拒绝覆盖。
+* ``load_specs()``：实跑段与推理侧唯一的读取入口，校验全部封套后返回
+  ``(header, sampling_by_task, specs_by_identity)``（后者只含 ``selected=true``）。
+
+封套沿用链路甲的纯函数（``scripts/injection/candidates/io.py`` 的 ``canonical_json`` / ``digest``），
+**不复用甲的 identity_sha256**：甲的 ``_MUTABLE`` 不含 ``selected``，直接用会让「改选择就改身份」
+（Codex 审计 #6）。本模块先剔除管理字段再调 ``digest``。
+
+    uv run --no-sync python -m scripts.parity.v4_specs draw --run-id <id> --out artifacts/newtask-v4/<id>/draft/drafts.jsonl
+    uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts <drafts.jsonl> --out scripts/configs/newtask-v4/<id>/specs.jsonl
+
+V5（NEWTASK_RELEASE_V5_PLAN 3.1②③）沿用同一套封套与 seed 规则，只换配置与落点，并可多 worker 抽签：
+
+    uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v5-01         --sampling-config scripts/configs/newtask-v5/sampling_config.json --workers 8         --out artifacts/newtask-v5/v5-01/draft/drafts.jsonl
+    uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl         --sampling-config scripts/configs/newtask-v5/sampling_config.json --out scripts/configs/newtask-v5/v5-01/specs.jsonl
+
+``--workers N``（默认 1，行为与改动前逐字相同）按环境把抽签分给 N 个 spawn 子进程，各进程独立起 gym 环境；
+每个环境的 (episode, attempt, seed) 序列只由 ``SEED_RULE`` 决定、与 worker 数无关，合并时按 header 的任务序、
+每环境内按抽签先后拼接，因此 drafts.jsonl 的 header 与行序和单 worker 完全一致（只有 ``wall_s`` 这种墙钟量不同）。
+
+positional arguments:
+  {draw,freeze,reselect}
+    draw                抽签：xhard 只 reset，导出规格到 drafts.jsonl
+    freeze              冻结：核验来源后写出 specs.jsonl（纯 CPU）
+    reselect            H4 递补后按实跑结果重标 selected（身份散列不变，另写新文件）
+
+options:
+  -h, --help            show this help message and exit
+rc=0
+################ scripts/parity/v4_specs.py draw --help
+usage: v4_specs.py draw [-h] --run-id RUN_ID [--tasks TASKS]
+                        [--sampling-config SAMPLING_CONFIG]
+                        [--candidates-per-env CANDIDATES_PER_ENV]
+                        [--max-reset-attempts MAX_RESET_ATTEMPTS]
+                        [--workers WORKERS] [--gpus GPUS] --out OUT
+
+options:
+  -h, --help            show this help message and exit
+  --run-id RUN_ID
+  --tasks TASKS
+  --sampling-config SAMPLING_CONFIG
+  --candidates-per-env CANDIDATES_PER_ENV
+  --max-reset-attempts MAX_RESET_ATTEMPTS
+  --workers WORKERS     并行进程数；默认 1 与改动前逐字相同，>1 时按环境分给 spawn 子进程，合并后行序不变
+  --gpus GPUS           逗号分隔的物理 GPU 号，子进程按轮转领取并写进
+                        CUDA_VISIBLE_DEVICES；缺省沿用当前环境
+  --out OUT
+rc=0
+################ scripts/parity/v4_specs.py freeze --help
+usage: v4_specs.py freeze [-h] --drafts DRAFTS
+                          [--sampling-config SAMPLING_CONFIG]
+                          [--select SELECT]
+                          [--candidates-per-env CANDIDATES_PER_ENV] --out OUT
+
+options:
+  -h, --help            show this help message and exit
+  --drafts DRAFTS
+  --sampling-config SAMPLING_CONFIG
+  --select SELECT
+  --candidates-per-env CANDIDATES_PER_ENV
+  --out OUT
+rc=0
+################ scripts/parity/v4_rollout.py --help
+usage: v4_rollout.py [-h] {run,compare} ...
+
+V4 实跑段：读冻结的 ``specs.jsonl`` 回注规格跑演示，落 ``results.jsonl``；并做 V2 两遍对拍（步 5 / 步 7）。
+
+调用链与 V3 的 C／D 路完全相同：本文件只负责**组织身份与输入**，真正起环境、录 h5、跑规划的是
+``train_split_runner.py``（``--identity-source formula`` 分叉，seed 按 V4 公式硬校验）→
+``train_split_worker.run_one``（``gym.make(..., sampling_config=, native_episode_spec=)``，往下一行都不改）。
+
+子命令：
+
+* ``run``：先跑每环境 ``selected=true`` 的正式局；演示失败的环境按 H4 在**本环境剩余候选**里按 index 顺序
+  （``1,2,4,5,7,8,9``）逐条递补，直到凑满正式局数或候选耗尽；**不追加抽签**，失败局保留在分母里。
+  ``--identities-from <另一轮 results.jsonl>`` 时不做递补，严格重放那一轮跑过的全部身份（V2 第二遍用）。
+* ``compare``：两轮结果做 V2——**V2a** 全部身份的终态与失败类别逐条一致；**V2b** 两轮都成功的局
+  HDF5 全字段零容差比较（复用 ``train_split_parity.compare_h5_pair``），比较前先查文件有效非空、
+  并补比根属性（``compare_h5_pair`` 用 ``visititems`` 不访问根节点，两个空 HDF5 会被误判相同）。
+
+⚠ 用户 2026-09-23 定（K4/K5）：全量在本机跑、实跑用多 worker（``--workers``），允许两遍之间有少量不同——
+多 worker 下 mplib RRT 的墙钟预算随负载变化，部分局轨迹会分叉；因此 ``compare`` 的 V2 结论只作报告
+（``--report-only``），不作硬闸门。
+
+    uv run --no-sync python -m scripts.parity.v4_rollout run --specs <specs.jsonl> --label run1         --official-root artifacts/train-parity/local-smoke-01/official-src --output artifacts/newtask-v4/<id>/rollout
+    uv run --no-sync python -m scripts.parity.v4_rollout run --specs <specs.jsonl> --label run2         --identities-from artifacts/newtask-v4/<id>/rollout/run1/results.jsonl ...
+    uv run --no-sync python -m scripts.parity.v4_rollout compare artifacts/newtask-v4/<id>/rollout/run1 artifacts/newtask-v4/<id>/rollout/run2
+
+V5（NEWTASK_RELEASE_V5_PLAN 3.1④）只跑 ``run`` 一遍（口径 12），不跑 run2 / compare；本文件没有写死 V4 的路径或 run id，
+换 ``--specs`` 与 ``--output`` 即可：
+
+    uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v5/v5-01/specs.jsonl         --label run1 --workers 8 --official-root artifacts/train-parity/local-smoke-01/official-src         --output artifacts/newtask-v5/v5-01/rollout
+
+生成报告见 ``scripts/parity/v5_generation.py report``。
+
+positional arguments:
+  {run,compare}
+    run          回注规格跑演示，落 results.jsonl（含 H4 递补）
+    compare      V2：两轮终态一致 + 成功局 HDF5 逐位
+
+options:
+  -h, --help     show this help message and exit
+rc=0
+################ scripts/parity/v4_rollout.py run --help
+usage: v4_rollout.py run [-h] --specs SPECS --label LABEL [--tasks TASKS]
+                         --official-root OFFICIAL_ROOT
+                         [--identities-from IDENTITIES_FROM]
+                         [--workers WORKERS] [--gpu GPU] --output OUTPUT
+
+options:
+  -h, --help            show this help message and exit
+  --specs SPECS
+  --label LABEL         本轮标签，如 run1 / run2
+  --tasks TASKS
+  --official-root OFFICIAL_ROOT
+                        官方隔离源码树（提供编排代码）
+  --identities-from IDENTITIES_FROM
+                        严格重放另一轮 results.jsonl 的全部身份
+  --workers WORKERS     runner 并行 worker 数（K5：本机多 worker）
+  --gpu GPU             交给 runner 的 GPU 号（worker 把它写进
+                        CUDA_VISIBLE_DEVICES，即物理编号）；默认 0 与改动前相同
+  --output OUTPUT
+rc=0
+################ scripts/parity/v4_rollout.py probe --help
+usage: v4_rollout.py [-h] {run,compare} ...
+v4_rollout.py: error: argument command: invalid choice: 'probe' (choose from 'run', 'compare')
+rc=2
+################ scripts/parity/train_split_parity.py --help
+usage: train_split_parity.py [-h]
+                             {freeze-identities,freeze-history,run,merge,compare}
+                             ...
+
+原始 train 五路对拍编排（freeze-identities / run / compare）
+
+positional arguments:
+  {freeze-identities,freeze-history,run,merge,compare}
+    freeze-identities   冻结官方 1600 条来源身份与 144 条运行子集（步 0）
+    freeze-history      冻结官方历史生成报告并按子集投影 R1a 可比字段（步 1a）
+    run                 按五路运行选定身份（步 1b 起实现）
+    merge               把某一路的逐 episode 产物合并成官方格式（步 5e 前置）
+    compare             只读比较五路产物：HDF5 全字段逐位对拍
+
+options:
+  -h, --help            show this help message and exit
+rc=0
+################ scripts/parity/train_split_parity.py compare --help
+usage: train_split_parity.py compare [-h] --run RUN [--pair PAIR]
+                                     [--history HISTORY]
+                                     [--history-path HISTORY_PATH]
+                                     [--gate GATE] [--output OUTPUT]
+
+options:
+  -h, --help            show this help message and exit
+  --run RUN             运行目录，可重复；写成 <标签>=<目录> 可自定义标签（跨 job 比较用）
+  --pair PAIR           比较对 LEFT:RIGHT，可重复；跨运行写 <标签>/<路径>。默认
+                        A1:A2,A1:B,B:C,C:D,A1:D
+  --history HISTORY     历史投影 JSON（步 1a 产物），给出后按 R1a 可比字段比对并输出
+                        DATASET_GEN_REPORT_PARITY
+  --history-path HISTORY_PATH
+                        与历史投影比对的路径名，默认 A1
+  --gate GATE           额外输出闸门判定行：BASELINE_REPEAT / NODE_PARITY / SPEC_BINDING
+                        / VIDEO_PARITY / RECOVERY_PARITY / WORKER_ISOLATION /
+                        RNG_PARITY
+  --output OUTPUT       比较结果目录，默认 <第一个运行目录>/compare
+rc=0
+################ scripts/parity/v5_generation.py --help
+usage: v5_generation.py [-h] {report,pipeline} ...
+
+V5 一次多 worker 生成：一条命令串起抽签 → 冻结 → 实跑 → 报告（NEWTASK_RELEASE_V5_PLAN 3.1、3.2「生成报告」、3.3 S6）。
+
+两个子命令：
+
+* ``pipeline``：按 ``--release``／``--run-id`` 推导全部落点，依次以子进程调用
+  ``v4_specs draw``（``--workers``）→ ``v4_specs freeze`` → ``v4_rollout run``（``--workers``，H4 递补，只跑一遍）
+  → 本文件 ``report``。任一步非零退出即停，不做任何中间比对。``--resume`` 时已有产物的步骤跳过
+  （drafts／specs 本来就禁止覆盖，freeze 与 run 会重新核验上游来源，陈旧产物会被拒而不是被悄悄沿用）。
+* ``report``：只读 drafts.jsonl、specs.jsonl、rollout 的 results.jsonl、各局 h5 与 rng_trace.json，输出判定行
+  ``V5_GENERATION=REPORT tasks=… draft_ok=… rollout_ok=… backfilled=… selected_shortfall=…
+  demo_frames_out_of_band=… outer_swap_mismatch=… bin_collision=… vr_min_participants=…``，
+  外加逐环境表的 markdown 与 JSON。报告不设门槛（N10），取不到的量一律记 ``N/A`` 而不是崩溃。
+
+落点（``<R>`` = ``--release``，``<id>`` = ``--run-id``）：
+
+    快照      scripts/configs/<R>/sampling_config.json          （S4 用 train_split_config extract --release 生成）
+    抽签      artifacts/<R>/<id>/draft/drafts.jsonl
+    冻结      scripts/configs/<R>/<id>/specs.jsonl
+    实跑      artifacts/<R>/<id>/rollout/<label>/               （results.jsonl、summary.json、episodes/）
+    报告      artifacts/<R>/<id>/report/generation_report.{md,json}
+
+    uv run --no-sync python -m scripts.parity.v5_generation pipeline --run-id v5-01 --draw-workers 8 --workers 8 \
+        --official-root artifacts/train-parity/local-smoke-01/official-src
+    uv run --no-sync python -m scripts.parity.v5_generation report \
+        --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl --specs scripts/configs/newtask-v5/v5-01/specs.jsonl \
+        --rollout artifacts/newtask-v5/v5-01/rollout/run1 --out artifacts/newtask-v5/v5-01/report
+
+规格字段名（外环交换、VideoRepick 搭档）由环境侧实现决定，本文件把路径集中在下面的常量里；
+字段缺失或形状认不出时对应项记 ``N/A`` 并在 ``warnings`` 里写明原因。
+
+positional arguments:
+  {report,pipeline}
+    report           只读产物，输出 V5_GENERATION 判定行、markdown 与 JSON
+    pipeline         一条命令：draw → freeze → run → report
+
+options:
+  -h, --help         show this help message and exit
+rc=0
+################ scripts/parity/v5_generation.py pipeline --help
+usage: v5_generation.py pipeline [-h] --run-id RUN_ID [--release RELEASE]
+                                 [--label LABEL] [--tasks TASKS]
+                                 [--candidates-per-env CANDIDATES_PER_ENV]
+                                 [--max-reset-attempts MAX_RESET_ATTEMPTS]
+                                 [--select SELECT]
+                                 [--draw-workers DRAW_WORKERS]
+                                 [--draw-gpus DRAW_GPUS] [--workers WORKERS]
+                                 [--rollout-gpu ROLLOUT_GPU]
+                                 [--official-root OFFICIAL_ROOT] [--resume]
+                                 [--dry-run]
+
+options:
+  -h, --help            show this help message and exit
+  --run-id RUN_ID
+  --release RELEASE
+  --label LABEL
+  --tasks TASKS
+  --candidates-per-env CANDIDATES_PER_ENV
+  --max-reset-attempts MAX_RESET_ATTEMPTS
+  --select SELECT
+  --draw-workers DRAW_WORKERS
+                        抽签并行进程数（v4_specs draw --workers）
+  --draw-gpus DRAW_GPUS
+                        抽签子进程轮转使用的物理 GPU，如 0,1
+  --workers WORKERS     实跑并行 worker 数（v4_rollout run --workers）
+  --rollout-gpu ROLLOUT_GPU
+                        实跑 GPU 号（v4_rollout run --gpu）
+  --official-root OFFICIAL_ROOT
+  --resume              已有产物的步骤跳过（下游步骤仍会重新核验来源）
+  --dry-run             只打印四步命令，不执行
+rc=0
+################ scripts/parity/v4_demo_probe.py --help
+usage: v4_demo_probe.py [-h] --task TASK [--difficulty DIFFICULTY] [--n N]
+                        [--seed-base SEED_BASE] [--seeds SEEDS]
+                        [--episode EPISODE]
+                        [--sampling-config SAMPLING_CONFIG] [--gpu GPU] --out
+                        OUT
+
+V4 本机演示探针：按给定难度（默认 xhard）跑若干 seed 的完整演示，报 reset 级与演示级成败。
+
+用途：步 3b 实施中快速看「某环境 xhard 能不能真生成成功」（口径 14 的两级判据：reset 级＋演示级），
+以及 G3 / V6 前期的小样本摸底。它**直接调用主入口 ``generate_dataset_newseed._worker``**，
+gym.make 参数、录像器、规划器、失败分类都与正式生成逐字相同；只是不走进程池、不做 seed 重试。
+
+⚠ 本机（sm_89）结果只用于调试，不进判据（口径 10）；正式的 V4f / V6 在 A40 上跑。
+
+    uv run --no-sync python -m scripts.parity.v4_demo_probe --task PickXtimes --n 4         --out artifacts/newtask-v4/demo-probe/pickx-01
+    # 用外部配置收窄 xhard 范围（守卫只允许改已申报的 xhard 条目）：
+    uv run --no-sync python -m scripts.parity.v4_demo_probe --task MoveCube --n 4         --sampling-config my_cfg.json --out ...
+
+options:
+  -h, --help            show this help message and exit
+  --task TASK
+  --difficulty DIFFICULTY
+  --n N                 跑几个 seed
+  --seed-base SEED_BASE
+                        第 i 条用 seed-base + 101*i
+  --seeds SEEDS         显式 seed 列表（逗号分隔），给了就忽略 --n/--seed-base
+  --episode EPISODE     episode 号只决定 recovery 分档：≤2 z，≤5 xy，其余无
+  --sampling-config SAMPLING_CONFIG
+                        单任务 {decision, native} JSON，用于收窄 xhard 范围
+  --gpu GPU
+  --out OUT             仓库内输出目录（h5/视频/summary.jsonl）
+rc=0

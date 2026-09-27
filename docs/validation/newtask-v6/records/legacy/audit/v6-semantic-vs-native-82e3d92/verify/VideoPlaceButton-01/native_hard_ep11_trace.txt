@@ -1,0 +1,13 @@
+n_steps 946
+0 'pick up the cube at <99, 148>'
+107 'drop the cube onto target at <124, 162>'
+187 'press the button at <122, 121>'
+272 'pick up the cube at <123, 163>'
+373 'drop the cube onto target at <96, 160>'
+469 'pick up the cube at <93, 166>'
+539 'drop the cube onto table'
+618 'static'
+674 'static'
+734 'pick up the cube at <82, 131>'
+847 'place the cube onto the correct target at <140, 81>'
+932 'place the cube onto the correct target at <140, 81>'

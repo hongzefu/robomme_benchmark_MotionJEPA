@@ -1,0 +1,233 @@
+{
+ "task": "VideoRepick",
+ "tier": "xhard1",
+ "overrides": {
+  "xhard.layout.cube_count": 4,
+  "swap.xhard": {
+   "swap_min": 3,
+   "swap_max": 5
+  },
+  "num_repeats_range.xhard": {
+   "low": 2,
+   "high_exclusive": 4
+  }
+ },
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "layout_mode": "native_by_difficulty",
+   "num_repeats_range": {
+    "low": 1,
+    "high_exclusive": 4,
+    "xhard": {
+     "low": 2,
+     "high_exclusive": 4
+    }
+   },
+   "block_color_policy": "native_by_difficulty",
+   "swap": {
+    "hard": {
+     "swap_min": 0,
+     "swap_max": 0
+    },
+    "easy": {
+     "swap_min": 1,
+     "swap_max": 2
+    },
+    "medium": {
+     "swap_min": 2,
+     "swap_max": 3
+    },
+    "xhard": {
+     "swap_min": 3,
+     "swap_max": 5
+    }
+   },
+   "xhard": {
+    "layout": {
+     "mode": "clutter",
+     "cube_count": 4,
+     "region_center": [
+      -0.1,
+      0.0
+     ],
+     "region_half_size": [
+      0.2,
+      0.25
+     ],
+     "min_center_dist_m": 0.12
+    },
+    "block_color": {
+     "policy": "same_color_hsv_floor",
+     "sampler": "torch.rand",
+     "h_range": [
+      0.0,
+      1.0
+     ],
+     "s_range": [
+      0.5,
+      1.0
+     ],
+     "v_range": [
+      0.4,
+      1.0
+     ]
+    },
+    "swap_plan": {
+     "initiator_rule": "target_then_randperm_k_mod_cube_count",
+     "partner_rule": "reset_plan_nearest_feasible",
+     "nearest_k": 3,
+     "sweep_margin_m": 0.005,
+     "button_obstacle": true
+    }
+   }
+  },
+  "native": {
+   "parameters": {
+    "num_repeats": {
+     "sampler": "torch.randint",
+     "low": 1,
+     "high_exclusive": 4,
+     "shape": [
+      1
+     ]
+    },
+    "hard_spawn_rounds": 5,
+    "object_selection": {
+     "easy_medium_target_count": 1,
+     "hard_target_low": 0,
+     "swap_remaining_count": 2
+    },
+    "swap_selection": {
+     "initiator_mapping": "target_then_permuted_remaining_spawned_indices",
+     "remaining_selection": "randperm_without_target",
+     "partner": {
+      "selection": "nearest",
+      "position_axes": [
+       0,
+       1
+      ],
+      "resolve_at": "swap_start",
+      "exclude_self": true,
+      "tie_break": "first_in_spawn_order"
+     }
+    }
+   },
+   "positions": {
+    "button": {
+     "center_xy": [
+      -0.2,
+      0
+     ],
+     "randomize": true,
+     "randomize_range": [
+      0.1,
+      0.1
+     ],
+     "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+     "scale": 1.5,
+     "randomize_range_origin": "VideoRepick 调用点显式传入"
+    },
+    "easy_medium_cubes": {
+     "region3_tri": [
+      [
+       -0.05,
+       -0.1
+      ],
+      [
+       -0.05,
+       0.1
+      ],
+      [
+       0.1,
+       0
+      ]
+     ],
+     "region3_line": [
+      [
+       0,
+       -0.15
+      ],
+      [
+       0,
+       0.15
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "region4": [
+      [
+       -0.05,
+       -0.1
+      ],
+      [
+       -0.05,
+       0.1
+      ],
+      [
+       0.1,
+       0.1
+      ],
+      [
+       0.1,
+       -0.1
+      ]
+     ],
+     "region3_choice": {
+      "sampler": "torch.randint",
+      "low": 0,
+      "high_exclusive": 2,
+      "order": [
+       "region3_tri",
+       "region3_line"
+      ]
+     },
+     "layout_rotation_range_rad": [
+      0,
+      180
+     ],
+     "region_half_size": 0.07,
+     "random_yaw": true,
+     "yaw_range_rad": [
+      0,
+      6.283185307179586
+     ],
+     "yaw_expression": "yaw_sample * 2 * np.pi",
+     "rotation_center": [
+      0,
+      0
+     ],
+     "min_gap": "self.cube_half_size",
+     "min_gap_value": 0.02,
+     "include_existing": true,
+     "include_goal": true,
+     "include_flags_origin": "原值取自 spawn_random_cube 形参默认 True；原调用点未传，现由本快照显式传入",
+     "region4_reachable": false
+    },
+    "hard_cubes": {
+     "region_center": [
+      -0.1,
+      0
+     ],
+     "region_half_size": [
+      0.2,
+      0.25
+     ],
+     "random_yaw": true,
+     "yaw_range_rad": [
+      0,
+      6.283185307179586
+     ],
+     "yaw_expression": "yaw_sample * 2 * np.pi",
+     "min_gap": "self.cube_half_size",
+     "min_gap_value": 0.02,
+     "include_existing": false,
+     "include_goal": false
+    }
+   }
+  }
+ }
+}

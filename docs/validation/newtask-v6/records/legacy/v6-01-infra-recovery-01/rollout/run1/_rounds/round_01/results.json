@@ -1,0 +1,153 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src",
+  "src_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl",
+  "official_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/__init__.py",
+  "removed_sys_path_entries": [],
+  "workers": 8,
+  "gpu": "0",
+  "sampling_config": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/_rounds/round_01/sampling.json",
+  "episode_specs": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/_rounds/round_01/specs.json",
+  "worker": "train_split_worker.run_one",
+  "elapsed_seconds": 176.882,
+  "results": [
+    {
+      "task": "InsertPeg",
+      "episode": 1,
+      "seed": 7300100,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "1d6952238ab320ba844e173d4a36b45ce46522fd93f47179f7bf1ccbe58c2cba",
+        "episode_spec_sha256": "34b59393e6b22143477d3950cd83e6c189a74c793cde8313a44dc7af8e3338d8",
+        "spec_mode": "replay"
+      },
+      "ok": false,
+      "error_type": "FailsafeTimeout",
+      "error": "Episode exceeded failsafe limit (5000 >= 5000)",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 112, in run_one\n    official._execute_tasks(record_env, planner, torch, job)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py\", line 189, in _execute_tasks\n    result = solve(record_env, planner)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/InsertPeg.py\", line 620, in <lambda>\n    \"solve\": lambda env, planner: insert_peg(env, planner,  direction=self.direction,obj=self.obj_flag,insert_obj=self.insert_target),\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/utils/subgoal_planner_func.py\", line 462, in insert_peg\n    _move_with_offset([0.15 , 0, 0])\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/utils/subgoal_planner_func.py\", line 410, in _move_with_offset\n    planner.move_to_pose_with_screw(target_pose)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py\", line 154, in move_to_pose_with_screw\n    result = super().move_to_pose_with_screw(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/utils/planner_fail_safe.py\", line 20, in move_to_pose_with_screw\n    result = super().move_to_pose_with_screw(*args, **kwargs)  # type: ignore[misc]\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/examples/motionplanning/base_motionplanner/motionplanner.py\", line 171, in move_to_pose_with_screw\n    return self.follow_path(result, refine_steps=refine_steps)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/examples/motionplanning/two_finger_gripper/motionplanner.py\", line 52, in follow_path\n    obs, reward, terminated, truncated, info = self.env.step(action)\n                                               ^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/env_record_wrapper/RecordWrapper.py\", line 1129, in step\n    raise FailsafeTimeout(f\"Episode exceeded failsafe limit ({env_steps} >= {fail_safe_limit})\")\nrobomme.env_record_wrapper.RecordWrapper.FailsafeTimeout: Episode exceeded failsafe limit (5000 >= 5000)\n"
+    },
+    {
+      "task": "StopCube",
+      "episode": 6,
+      "seed": 6200600,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": null,
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "b888e9841d3dfbca2549688c2f1aab29153bc7ce060acae31b4f76dd1e18b18a",
+        "episode_spec_sha256": "3f65d7a48152dc274fac935a6dd89cc70afda9f900999400a7639735c635be51",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/StopCube_episode_6/hdf5_files/StopCube_ep6_seed6200600.h5",
+      "timestep_count": 902
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 0,
+      "seed": 6300000,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "907f4e0b39ca66adec37152ceba55d0f393a47f16a1371134021f1ad36d4e9b2",
+        "episode_spec_sha256": "cb908c93478a274c750233e0848397b23aa4d7aa60d0c1bab16e529cbfe3f4ce",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed6300000.h5",
+      "timestep_count": 1261
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 0,
+      "seed": 7000000,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "1044950cce907b4939a9db3dc1140cf1410b11bdb509bd880d196845e7e8fed2",
+        "episode_spec_sha256": "066c4595fd8f4c265d73720ac8ff043ded8d41817a133bad132bae9b9d963388",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed7000000.h5",
+      "timestep_count": 1930
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 0,
+      "seed": 7100000,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "45c6e4ed3e63e71d1db0267f91a1bd61a347c6cb2adf748cdadfe567eff453c3",
+        "episode_spec_sha256": "e67701b6fcca64988d287fc8bee7d89efa67d421f98d3b1fd1e3f63c8b871911",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed7100000.h5",
+      "timestep_count": 2166
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "seed": 6900003,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "4343d2c96c70999fd296250b81c75cd5e477b67ab01700e692ec5b4991f17a1c",
+        "episode_spec_sha256": "d81ac8bd5da3c588237d4f5a3f5ed2c19a1c3d36297a82e68f1fcc9b8f778b54",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed6900003.h5",
+      "timestep_count": 1621
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 0,
+      "seed": 6600000,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "4f730668f3ca4cc413c1ccc1b26cf4dcc3a781c1164b19e071c6bb5b1317fa7b",
+        "episode_spec_sha256": "33001e20195dde266a886335152030b1faa4d3bd6b928c33401f27ccdf0754e2",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed6600000.h5",
+      "timestep_count": 461
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 0,
+      "seed": 6500000,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "9119a7aaa0e9e7662d2df9d7df9bba483877783c774d751c31abe0a74cd593f3",
+        "episode_spec_sha256": "c48db71a29e51b31bb8cb5bcaf7f4efa71c8708008b4317be054594bd59a162a",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed6500000.h5",
+      "timestep_count": 841
+    }
+  ]
+}

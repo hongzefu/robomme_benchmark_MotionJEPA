@@ -1,0 +1,1606 @@
+{
+  "rows": [
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 0,
+      "recovery_mode": null,
+      "seed": 6900000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 1,
+      "recovery_mode": null,
+      "seed": 6900100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 2,
+      "recovery_mode": null,
+      "seed": 6900200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 3,
+      "recovery_mode": null,
+      "seed": 6900300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 4,
+      "recovery_mode": null,
+      "seed": 6900400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 5,
+      "recovery_mode": null,
+      "seed": 6900500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 6,
+      "recovery_mode": null,
+      "seed": 6900600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 7,
+      "recovery_mode": null,
+      "seed": 6900700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 8,
+      "recovery_mode": null,
+      "seed": 6900800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 9,
+      "recovery_mode": null,
+      "seed": 6900900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 10,
+      "recovery_mode": null,
+      "seed": 6901000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 11,
+      "recovery_mode": null,
+      "seed": 6901100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 12,
+      "recovery_mode": null,
+      "seed": 6901200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 13,
+      "recovery_mode": null,
+      "seed": 6901300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 14,
+      "recovery_mode": null,
+      "seed": 6901400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 15,
+      "recovery_mode": null,
+      "seed": 6901500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 16,
+      "recovery_mode": null,
+      "seed": 6901600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 17,
+      "recovery_mode": null,
+      "seed": 6901700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 18,
+      "recovery_mode": null,
+      "seed": 6901800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 19,
+      "recovery_mode": null,
+      "seed": 6901900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 20,
+      "recovery_mode": null,
+      "seed": 6902000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 21,
+      "recovery_mode": null,
+      "seed": 6902100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 22,
+      "recovery_mode": null,
+      "seed": 6902200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 23,
+      "recovery_mode": null,
+      "seed": 6902300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 24,
+      "recovery_mode": null,
+      "seed": 6902400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 25,
+      "recovery_mode": null,
+      "seed": 6902500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 26,
+      "recovery_mode": null,
+      "seed": 6902600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 27,
+      "recovery_mode": null,
+      "seed": 6902700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 28,
+      "recovery_mode": null,
+      "seed": 6902800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 29,
+      "recovery_mode": null,
+      "seed": 6902900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 30,
+      "recovery_mode": null,
+      "seed": 6903000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 31,
+      "recovery_mode": null,
+      "seed": 6903100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 32,
+      "recovery_mode": null,
+      "seed": 6903200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 33,
+      "recovery_mode": null,
+      "seed": 6903300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 34,
+      "recovery_mode": null,
+      "seed": 6903400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 35,
+      "recovery_mode": null,
+      "seed": 6903500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 36,
+      "recovery_mode": null,
+      "seed": 6903600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 37,
+      "recovery_mode": null,
+      "seed": 6903700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 38,
+      "recovery_mode": null,
+      "seed": 6903800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 39,
+      "recovery_mode": null,
+      "seed": 6903900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 40,
+      "recovery_mode": null,
+      "seed": 6904000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 41,
+      "recovery_mode": null,
+      "seed": 6904100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 42,
+      "recovery_mode": null,
+      "seed": 6904200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 43,
+      "recovery_mode": null,
+      "seed": 6904300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 44,
+      "recovery_mode": null,
+      "seed": 6904400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 45,
+      "recovery_mode": null,
+      "seed": 6904500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 46,
+      "recovery_mode": null,
+      "seed": 6904600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 47,
+      "recovery_mode": null,
+      "seed": 6904700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 48,
+      "recovery_mode": null,
+      "seed": 6904800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 49,
+      "recovery_mode": null,
+      "seed": 6904900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 50,
+      "recovery_mode": null,
+      "seed": 6905000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 51,
+      "recovery_mode": null,
+      "seed": 6905100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 52,
+      "recovery_mode": null,
+      "seed": 6905200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 53,
+      "recovery_mode": null,
+      "seed": 6905300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 54,
+      "recovery_mode": null,
+      "seed": 6905400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 55,
+      "recovery_mode": null,
+      "seed": 6905500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 56,
+      "recovery_mode": null,
+      "seed": 6905600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 57,
+      "recovery_mode": null,
+      "seed": 6905700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 58,
+      "recovery_mode": null,
+      "seed": 6905800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 59,
+      "recovery_mode": null,
+      "seed": 6905900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 60,
+      "recovery_mode": null,
+      "seed": 6906000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 61,
+      "recovery_mode": null,
+      "seed": 6906100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 62,
+      "recovery_mode": null,
+      "seed": 6906200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 63,
+      "recovery_mode": null,
+      "seed": 6906300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 64,
+      "recovery_mode": null,
+      "seed": 6906400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 65,
+      "recovery_mode": null,
+      "seed": 6906500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 66,
+      "recovery_mode": null,
+      "seed": 6906600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 67,
+      "recovery_mode": null,
+      "seed": 6906700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 68,
+      "recovery_mode": null,
+      "seed": 6906800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 69,
+      "recovery_mode": null,
+      "seed": 6906900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 70,
+      "recovery_mode": null,
+      "seed": 6907000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 71,
+      "recovery_mode": null,
+      "seed": 6907100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 72,
+      "recovery_mode": null,
+      "seed": 6907200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 73,
+      "recovery_mode": null,
+      "seed": 6907300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 74,
+      "recovery_mode": null,
+      "seed": 6907400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 75,
+      "recovery_mode": null,
+      "seed": 6907500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 76,
+      "recovery_mode": null,
+      "seed": 6907600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 77,
+      "recovery_mode": null,
+      "seed": 6907700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 78,
+      "recovery_mode": null,
+      "seed": 6907800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 79,
+      "recovery_mode": null,
+      "seed": 6907900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 80,
+      "recovery_mode": null,
+      "seed": 6908000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 81,
+      "recovery_mode": null,
+      "seed": 6908100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 82,
+      "recovery_mode": null,
+      "seed": 6908200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 83,
+      "recovery_mode": null,
+      "seed": 6908300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 84,
+      "recovery_mode": null,
+      "seed": 6908400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 85,
+      "recovery_mode": null,
+      "seed": 6908500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 86,
+      "recovery_mode": null,
+      "seed": 6908600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 87,
+      "recovery_mode": null,
+      "seed": 6908700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 88,
+      "recovery_mode": null,
+      "seed": 6908800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 89,
+      "recovery_mode": null,
+      "seed": 6908900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 90,
+      "recovery_mode": null,
+      "seed": 6909000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 91,
+      "recovery_mode": null,
+      "seed": 6909100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 92,
+      "recovery_mode": null,
+      "seed": 6909200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 93,
+      "recovery_mode": null,
+      "seed": 6909300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 94,
+      "recovery_mode": null,
+      "seed": 6909400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 95,
+      "recovery_mode": null,
+      "seed": 6909500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 96,
+      "recovery_mode": null,
+      "seed": 6909600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 97,
+      "recovery_mode": null,
+      "seed": 6909700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 98,
+      "recovery_mode": null,
+      "seed": 6909800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 99,
+      "recovery_mode": null,
+      "seed": 6909900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 100,
+      "recovery_mode": null,
+      "seed": 6910000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 101,
+      "recovery_mode": null,
+      "seed": 6910100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 102,
+      "recovery_mode": null,
+      "seed": 6910200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 103,
+      "recovery_mode": null,
+      "seed": 6910300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 104,
+      "recovery_mode": null,
+      "seed": 6910400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 105,
+      "recovery_mode": null,
+      "seed": 6910500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 106,
+      "recovery_mode": null,
+      "seed": 6910600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 107,
+      "recovery_mode": null,
+      "seed": 6910700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 108,
+      "recovery_mode": null,
+      "seed": 6910800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 109,
+      "recovery_mode": null,
+      "seed": 6910900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 110,
+      "recovery_mode": null,
+      "seed": 6911000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 111,
+      "recovery_mode": null,
+      "seed": 6911100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 112,
+      "recovery_mode": null,
+      "seed": 6911200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 113,
+      "recovery_mode": null,
+      "seed": 6911300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 114,
+      "recovery_mode": null,
+      "seed": 6911400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 115,
+      "recovery_mode": null,
+      "seed": 6911500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 116,
+      "recovery_mode": null,
+      "seed": 6911600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 117,
+      "recovery_mode": null,
+      "seed": 6911700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 118,
+      "recovery_mode": null,
+      "seed": 6911800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 119,
+      "recovery_mode": null,
+      "seed": 6911900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 120,
+      "recovery_mode": null,
+      "seed": 6912000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 121,
+      "recovery_mode": null,
+      "seed": 6912100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 122,
+      "recovery_mode": null,
+      "seed": 6912200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 123,
+      "recovery_mode": null,
+      "seed": 6912300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 124,
+      "recovery_mode": null,
+      "seed": 6912400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 125,
+      "recovery_mode": null,
+      "seed": 6912500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 126,
+      "recovery_mode": null,
+      "seed": 6912600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 127,
+      "recovery_mode": null,
+      "seed": 6912700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 128,
+      "recovery_mode": null,
+      "seed": 6912800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 129,
+      "recovery_mode": null,
+      "seed": 6912900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 130,
+      "recovery_mode": null,
+      "seed": 6913000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 131,
+      "recovery_mode": null,
+      "seed": 6913100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 132,
+      "recovery_mode": null,
+      "seed": 6913200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 133,
+      "recovery_mode": null,
+      "seed": 6913300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 134,
+      "recovery_mode": null,
+      "seed": 6913400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 135,
+      "recovery_mode": null,
+      "seed": 6913500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 136,
+      "recovery_mode": null,
+      "seed": 6913600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 137,
+      "recovery_mode": null,
+      "seed": 6913700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 138,
+      "recovery_mode": null,
+      "seed": 6913800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 139,
+      "recovery_mode": null,
+      "seed": 6913900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 140,
+      "recovery_mode": null,
+      "seed": 6914000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 141,
+      "recovery_mode": null,
+      "seed": 6914100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 142,
+      "recovery_mode": null,
+      "seed": 6914200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 143,
+      "recovery_mode": null,
+      "seed": 6914300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 144,
+      "recovery_mode": null,
+      "seed": 6914400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 145,
+      "recovery_mode": null,
+      "seed": 6914500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 146,
+      "recovery_mode": null,
+      "seed": 6914600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 147,
+      "recovery_mode": null,
+      "seed": 6914700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 148,
+      "recovery_mode": null,
+      "seed": 6914800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 149,
+      "recovery_mode": null,
+      "seed": 6914900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 150,
+      "recovery_mode": null,
+      "seed": 6915000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 151,
+      "recovery_mode": null,
+      "seed": 6915100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 152,
+      "recovery_mode": null,
+      "seed": 6915200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 153,
+      "recovery_mode": null,
+      "seed": 6915300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 154,
+      "recovery_mode": null,
+      "seed": 6915400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 155,
+      "recovery_mode": null,
+      "seed": 6915500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 156,
+      "recovery_mode": null,
+      "seed": 6915600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 157,
+      "recovery_mode": null,
+      "seed": 6915700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 158,
+      "recovery_mode": null,
+      "seed": 6915800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 159,
+      "recovery_mode": null,
+      "seed": 6915900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 160,
+      "recovery_mode": null,
+      "seed": 6916000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 161,
+      "recovery_mode": null,
+      "seed": 6916100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 162,
+      "recovery_mode": null,
+      "seed": 6916200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 163,
+      "recovery_mode": null,
+      "seed": 6916300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 164,
+      "recovery_mode": null,
+      "seed": 6916400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 165,
+      "recovery_mode": null,
+      "seed": 6916500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 166,
+      "recovery_mode": null,
+      "seed": 6916600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 167,
+      "recovery_mode": null,
+      "seed": 6916700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 168,
+      "recovery_mode": null,
+      "seed": 6916800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 169,
+      "recovery_mode": null,
+      "seed": 6916900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 170,
+      "recovery_mode": null,
+      "seed": 6917000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 171,
+      "recovery_mode": null,
+      "seed": 6917100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 172,
+      "recovery_mode": null,
+      "seed": 6917200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 173,
+      "recovery_mode": null,
+      "seed": 6917300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 174,
+      "recovery_mode": null,
+      "seed": 6917400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 175,
+      "recovery_mode": null,
+      "seed": 6917500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 176,
+      "recovery_mode": null,
+      "seed": 6917600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 177,
+      "recovery_mode": null,
+      "seed": 6917700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 178,
+      "recovery_mode": null,
+      "seed": 6917800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 179,
+      "recovery_mode": null,
+      "seed": 6917900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 180,
+      "recovery_mode": null,
+      "seed": 6918000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 181,
+      "recovery_mode": null,
+      "seed": 6918100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 182,
+      "recovery_mode": null,
+      "seed": 6918200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 183,
+      "recovery_mode": null,
+      "seed": 6918300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 184,
+      "recovery_mode": null,
+      "seed": 6918400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 185,
+      "recovery_mode": null,
+      "seed": 6918500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 186,
+      "recovery_mode": null,
+      "seed": 6918600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 187,
+      "recovery_mode": null,
+      "seed": 6918700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 188,
+      "recovery_mode": null,
+      "seed": 6918800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 189,
+      "recovery_mode": null,
+      "seed": 6918900,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 190,
+      "recovery_mode": null,
+      "seed": 6919000,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 191,
+      "recovery_mode": null,
+      "seed": 6919100,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 192,
+      "recovery_mode": null,
+      "seed": 6919200,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 193,
+      "recovery_mode": null,
+      "seed": 6919300,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 194,
+      "recovery_mode": null,
+      "seed": 6919400,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 195,
+      "recovery_mode": null,
+      "seed": 6919500,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 196,
+      "recovery_mode": null,
+      "seed": 6919600,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 197,
+      "recovery_mode": null,
+      "seed": 6919700,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 198,
+      "recovery_mode": null,
+      "seed": 6919800,
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 199,
+      "recovery_mode": null,
+      "seed": 6919900,
+      "task": "VideoRepick"
+    }
+  ],
+  "schema": "v6-s2-videorepick-reset-manifest/1",
+  "seed_rule": "6000000 + 9*100000 + episode*100 + attempt"
+}

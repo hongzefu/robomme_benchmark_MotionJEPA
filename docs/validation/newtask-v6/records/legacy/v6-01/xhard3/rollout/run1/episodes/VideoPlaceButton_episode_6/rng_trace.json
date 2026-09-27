@@ -1,0 +1,184 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.goal_xy",
+      "drawn": [
+        -0.09005989074707033,
+        0.03421698570251465
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.button_xy",
+      "drawn": [
+        0.10048427283763886,
+        -0.056529575586318964
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_order",
+      "drawn": [
+        2,
+        0,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.green_0",
+      "drawn": [
+        -0.16509814023971559,
+        0.02540210723876954,
+        1.4348866027065024
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.red_0",
+      "drawn": [
+        -0.009642927646636962,
+        0.03438883781433105,
+        5.520932052637636
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.blue_0",
+      "drawn": [
+        0.0986136889457703,
+        0.15967025041580205,
+        0.6373929858162947
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.targets.0",
+      "drawn": [
+        -0.10583990097045898,
+        -0.09264684677124023
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.targets.1",
+      "drawn": [
+        -0.05791980743408204,
+        0.153719596862793
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.targets.2",
+      "drawn": [
+        0.15182254791259767,
+        0.06818981170654298
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.targets.3",
+      "drawn": [
+        -0.01656791687011719,
+        -0.15591238021850587
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.demo_ids",
+      "drawn": [
+        2,
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "objects.swap_pair_ids",
+      "drawn": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.task_flag",
+      "drawn": true,
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.answer_demo_index",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "actions.target_target_id",
+      "drawn": 0,
+      "source": "record"
+    },
+    {
+      "index": 15,
+      "path": "objects.extra_place_owner_ids",
+      "drawn": [
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.extra_place_target_ids.before.0",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "actions.target_placement_count",
+      "drawn": 5,
+      "source": "record"
+    },
+    {
+      "index": 18,
+      "path": "actions.return_pose_by_object_id",
+      "drawn": {
+        "cube_blue_0": [
+          0.0986136868596077,
+          0.15967024862766266,
+          0.019999999552965164,
+          0.9496446251869202,
+          0.0,
+          0.0,
+          0.31332898139953613
+        ],
+        "cube_green_0": [
+          -0.1650981456041336,
+          0.02540210634469986,
+          0.019999999552965164,
+          0.7534891366958618,
+          0.0,
+          0.0,
+          0.6574603319168091
+        ]
+      },
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {}
+}

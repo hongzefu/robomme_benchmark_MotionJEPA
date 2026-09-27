@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """轻量测试：步 2 恢复的原值不得再被改回（源码级断言，不导入仿真栈）。
 
-对应 0921-newtask-release-v3-plan.md 第五节步 2 与口径 8：`RouteStick.py::step` 的白球尾迹
+对应 docs/plans/0921-newtask-release-v3-plan.md 第五节步 2 与口径 8：`RouteStick.py::step` 的白球尾迹
 必须是官方 dataset-gen 的 40 步，且不得写死——它会渲进 front/wrist 的 rgb 与 depth，
 写死就让 A↔B 永远不可能逐位相同。
 

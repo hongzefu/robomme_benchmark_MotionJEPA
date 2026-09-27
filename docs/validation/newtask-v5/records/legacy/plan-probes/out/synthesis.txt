@@ -1,0 +1,1014 @@
+- marker: [内部产出，英文] 以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。
+## cross_topic_conflicts
+  [0]
+    - topics: unmask_ring x unmask_swap (count/ring vs outer-swap lane geometry)
+    - conflict: unmask_ring recommends a dense band that hugs the inner area. For VUS it holds 15 bins with centres at max-norm [0.2539,0.3403]; for BUS it holds 16 bins in a rectangle band [0.0425,0.1289] outside a rectangle that includes the buttons. unmask_swap measured outer swaps only with the V4 ring [0.2675,0.45] and counts 3/6/10/15/20, and recommended at least 6 and ideally 10 distractors in the V4 ring. The two cases differ in one important way. In a narrow band, the nearest partner is a neighbour along the band, so the chord runs tangentially and the two +-0.07 m lanes bulge radially: one mover heads toward the inner bins and the other toward the camera border. unmask_swap's own 'tight' ring failed placement at 15 (BUS 297/299), so it gave no answer for 15-16 bins. My pilot joint probe (synthesis/joint_probe.py) reuses the unmask_swap replica, fallback planner and joint sweep proof, with ring A, exact 8-corner visibility, about 0.088 m centre spacing, 1024 trials and the evc criterion. Over 300 layouts per env: VUS 15 bins gave 99.67% of episodes feasible on the first layout attempt (0 placement failures); BUS 16 bins gave 96.99%. Only 44% (VUS) and 29% (BUS) of windows were solved by the first-choice initiator, though. Rejection reasons were exact sweep collision (1581/2010), visibility (1483/802), BUS button keep-out (1352) and inner clearance (898/958).
+    - resolution: The two proposals can be combined. With whole-layout redraws (B=16), residual failure is below 1e-20. The price is that the permutation-cycle initiator semantics are diluted: most windows fall back to a later initiator. Before freezing counts, re-run the joint study as gate V5_SWAP_JOINT_FEASIBILITY with the final implemented sampler (unified OBB rule, not my circle approximation) and at least 300 layouts per env. If the first-attempt rate falls below 0.95, or the user dislikes the heavy fallback, go back to the user (L16) with three levers: ring C (g=0.04, 16/16), outer lane 0.05, or letting only a subset of distractors swap. The counts are decided once for both topics (L16 supersedes unmask_swap D4/D5).
+  [1]
+    - topics: unmask_ring P2 x unmask_swap P1/P4 (both rewrite utils/unmask_swap_xhard.py)
+    - conflict: Both proposals rewrite sample_distractors, build_distractors and XHARD_DISTRACTOR. They disagree in four places. (1) Cube placement: unmask_ring uses cube_bins = randperm(count)[:n] with balanced colour cycling and names distractor_cube_<j>_<colour>; unmask_swap assumes cube i sits in bin i (as in V4 build_distractors) and builds distractor_cube_bin_pairs from that. (2) unmask_swap adds a whole-layout attempt loop plus an appended randperm(count) for initiators; unmask_ring adds a unified OBB rule, exact visibility and 1024 trials. (3) Draw order within the dedicated stream is unspecified in both. (4) V4 names cubes distractor_cube_<colour>, which crashes with a duplicate-name error once colours repeat.
+    - resolution: Use one owner and one implementation, with this frozen order on the dedicated stream Generator(seed+0x5D157AC7). For each layout attempt: placements (x, y, yaw per trial; unified OBB rule, exact visibility, H1 inner-sweep rejection), then n_cube randint, colour randperm(3) cycled, cube_bins randperm(count), swap perm randperm(count), then the deterministic plan. Call recorder.value only for the accepted attempt and record the attempt count. Build distractor_cube_bin_pairs from cube_bins, never from the index. Use indexed names everywhere. Keep the main stream untouched (N5) and pin the order with a replica-vs-env parity test.
+  [2]
+    - topics: unmask_ring P7 x unmask_swap P5 (two different sweep pre-filters)
+    - conflict: unmask_ring proposes an XY lane-capsule pre-filter inside unmask_swap_xhard, before check_swap_sweep, to cut the extra 10-50 s of reset time. unmask_swap proposes a certified bounding-circle/sphere pre-filter inside bin_collision (new check_multi_swap_sweep) and measured 4.75 s -> 0.0025 s on 40/40 identical decisions. VideoRepick's reset planner (R) also calls check_swap_sweep repeatedly.
+    - resolution: Build one certified pre-filter in bin_collision, used only by the new check_multi_swap_sweep and an opt-in wrapper. Leave check_swap_sweep's decisions unchanged; it runs only on xhard and on the retired 甲 path, so V1 is not exposed. Gate: PREFILTER_EQUIV (at least 1000 randomised cases, 0 disagreements), plus MULTI_SWEEP_EQUIV (equal to check_swap_sweep for one pair). VideoRepick may use the same wrapper for planning.
+  [3]
+    - topics: unmask_ring P6 x unmask_swap P1 (parking pile-up at (10,10,10))
+    - conflict: statechange.lift_and_drop_objects_back_to_original (reveal, steps 0-31) and lift_and_drop_objectA_onto_objectB (hidden cubes for the whole swap span) both teleport to the same point (10,10,10). With V5 about 22-24 bins overlap during the reveal; unmask_ring measured those steps 3-10x slower. The outer-swap design adds up to 8 outer cubes on top of the 3 inner cubes, all overlapping at (10,10,10) for the whole swap span (about 264-396 steps). This was not measured.
+    - resolution: Do not change statechange.py: it is shared with the original tiers and VideoPlace*. Add one xhard-only parking helper in utils/unmask_distractors.py that gives each distractor bin and each hidden cube (inner and outer) its own off-camera point, keeping the same windows and drop steps. Gate V5_UNMASK_REVEAL reports step time over the reveal and swap spans. This refines J1 and needs user confirmation (L14).
+  [4]
+    - topics: binfill_cluster x pick_swing_cluster x movecube x videorepick (cube 2D-OBB degeneracy fixed four different ways)
+    - conflict: _trimesh_box_to_obb2d projects R[:2,0] and R[:2,1]. For a cube, trimesh's axis order is arbitrary, so a placed cube often degenerates into a 4 cm segment and min_gap is not enforced. Rate: 66% on the investigators' float32 path, 50% in my float64 trimesh replica, 5/11 in the real simulator. Four fixes were proposed: BinFill passes pre-made true OBB tuples in avoid; PickXtimes/SwingXtimes add a _cube_avoid_obb helper plus an 8 cm extra_reject; MoveCube passes include_existing=False for the exec cube; VideoRepick adds a min_center_dist/center_ref_xy kwarg (a 0.12 m hard core that masks the bug). The untouched xhard envs PickHighlight and VideoPlaceButton/Order keep the bug.
+    - resolution: Add one pure helper, utils/xhard.py::cube_obb2d_exact(pose, half), with no RNG, and pass its (c, A, h) tuples through the existing pre-made-tuple branch of avoid in the xhard paths of the touched envs only. Never edit _trimesh_box_to_obb2d or _safe_unit: that would change all tiers and fail V1 (H2/N12). Extending the fix to the untouched envs is a separate user decision (L2), because it would force those envs to be re-frozen too.
+  [5]
+    - topics: movecube x pick_swing_cluster x videorepick (hooks on shared spawn_random_cube / spawn_random_target)
+    - conflict: Three different new kwargs are proposed on object_generation.spawn_random_cube and spawn_random_target, which all 12 layout envs and all tiers call: reject_xy (MoveCube), extra_reject (Pick/Swing), and min_center_dist + center_ref_xy (VideoRepick). Three variants of the same hook in a shared function triple the V1 exposure and invite drift.
+    - resolution: Add a single additive kwarg extra_reject=None (callable (x, y, yaw) -> bool) to both functions. It is evaluated after the existing OBB/circle tests and before recorder.value, and draws no RNG. The default None skips it entirely, following the V4 corner_bias precedent. Each topic expresses its rule as a closure: MoveCube zone, 8 cm or 0.12 m centre distance, PickXtimes quadrant. Gates: RESET_REGRESSION diff=0, V5_UNTOUCHED_XHARD_PARITY (the 40 untouched-env xhard rows reproduce bit-exact), V1.
+  [6]
+    - topics: videorepick x long_demo x unmask_swap x pick_swing_cluster (SceneGenerationError shadowing)
+    - conflict: I checked every env module. The global name SceneGenerationError is the utils submodule, not the class, in VideoRepick, SwingXtimes, PatternLock, RouteStick, StopCube, VideoUnmaskSwap and ButtonUnmaskSwap; VideoPlaceOrder already has the K2 alias. As a result, xhard failures that V5 adds or relies on turn into TypeError, and generate_dataset classifies TypeError as a non-retryable code failure. Affected paths: VideoRepick placement and plan failures (8.4% plan rejections); the SwingXtimes disk failures (1.9% -> 3.6% under pick_swing P2, raised and caught through the shadowed name); PatternLock PL-E 'raise SceneGenerationError on exhaustion'; any env-level raise from unmask_swap P4. The V4 draw loop caught every Exception, so draws still redrew, but the fail_class was wrong.
+    - resolution: Apply the K2 pattern to the xhard paths of VideoRepick, SwingXtimes, PatternLock, VideoUnmaskSwap and ButtonUnmaskSwap: a _RealSceneGenerationError alias, with the class chosen by difficulty at both the raise and except sites. Leave the original tiers as they are (H2). Gate: V5_SCENEGEN_CLASS. Decision L3.
+  [7]
+    - topics: all topics (N5 red line)
+    - conflict: The topics read N5 differently. unmask_ring appends after existing draws or uses the dedicated stream. VideoRepick appends one torch.rand. InsertPeg moves peg_3 before obj/dir and draws yaw lazily. MoveCube redraws in place. PickXtimes, SwingXtimes, BinFill and VideoRepick change trial counts. RouteStick and PatternLock change only ranges. Every one of these shifts xhard stream positions for a given seed; none touches easy/medium/hard.
+    - resolution: Make one global decision (L1): N5 protects the original tiers and frozen artifacts, and the xhard stream may shift in place (V4 corner_bias precedent), so all touched xhard envs are re-frozen under v5-01. Under a strict literal reading, InsertPeg P1, MoveCube P1 and the Pick/Swing/VideoRepick spacing rules would be blocked, and RNG-neutral maps (MoveCube P5) would be needed.
+  [8]
+    - topics: movecube x pick_swing_cluster (bias vs rejection philosophy)
+    - conflict: MoveCube V5 removes corner_bias and replaces it with hard central-zone rejection ('rejection instead of bias'). pick_swing keeps J5 corner_bias 0.5 on PickXtimes and adds a distinct-quadrant rule. movecube's pending question 7 asks whether the rejection principle should apply to PickXtimes as well.
+    - resolution: There is no code conflict: corner_push is unchanged and each env has its own config value. Treat it as one user question inside L43 (PickXtimes corner semantics), with pick_swing P1 recommended.
+  [9]
+    - topics: videorepick x unmask_swap (swap semantics and planning infrastructure)
+    - conflict: VideoRepick R changes the xhard partner to 'uniform among the 2 nearest sweep-feasible slots, planned at reset with a 5 mm margin'. Unmask Swap keeps the inner nearest neighbour resolved at runtime and plans the outer nearest neighbour at reset against nominal states, without a margin; runtime start states are about 0.7 mm off nominal. Both touch the step() swap loop, which test_real_swap_resolution_matches_baseline_and_preserves_ties extracts through the AST (it covers VideoUnmaskSwap and VideoRepick).
+    - resolution: Keep the per-env semantics the user asked for. Share the infrastructure: check_multi_swap_sweep, the certified pre-filter, and reset-time planning with deferred recorder.value. Borrow VideoRepick's small planning margin for the Unmask outer plan (checked with inflated shapes) to absorb the 0.7 mm start deviation. Put the xhard branches in step() behind getattr(self,'difficulty',None)=='xhard' and getattr defaults, and put the outer swap loops outside the AST-locked loop. Run the AST test on every commit.
+  [10]
+    - topics: all topics (sampling_config snapshot, specs header, V6 combos)
+    - conflict: Each topic adds or removes decision.xhard keys and changes combo loops. The snapshot is one file for 16 envs and is embedded in the specs header. V4 frozen rows for the touched envs become non-replayable. RouteStick is an extra case: its L range is read from the class and not frozen in the header, so its V4 specs raise ValueError under V5 code even though its snapshot shape does not change.
+    - resolution: Re-export the snapshot once, after all env groups are merged (scripts/configs/newtask-v5/sampling_config.json), under a single run id v5-01 and one new combos.json. Add an xhard decision key for the RouteStick length so the header freezes it (L38). Pin V4 evaluation to commit 0baff09 or a tag.
+## shared_code_touchpoints
+  [0]
+    - anchor: src/robomme/robomme_env/utils/object_generation.py::spawn_random_cube / spawn_random_target
+    - touched_by: movecube (goal/cube zone), pick_swing_cluster (8 cm + quadrant), videorepick (0.12 m hard core), binfill_cluster (fixed_xy reuse only)
+    - native_tier_risk: HIGH if edited in place: 12 envs in every tier call it, and V1 byte identity depends on its draw sequence
+    - handling: Add one additive kwarg extra_reject=None, evaluated after the existing tests and before recorder.value, drawing no RNG; the default path is literally skipped. Verify with RESET_REGRESSION (144 original-tier rows), V5_UNTOUCHED_XHARD_PARITY and V1.
+  [1]
+    - anchor: src/robomme/robomme_env/utils/object_generation.py::_trimesh_box_to_obb2d / _safe_unit / _push_actor_as_obb2d
+    - touched_by: bug found by binfill_cluster, pick_swing_cluster, movecube (exec cube vs demo cube) and videorepick (G2 note)
+    - native_tier_risk: HIGH: fixing it here changes the rejection outcomes of every tier, and V1 fails
+    - handling: Do not edit. Add utils/xhard.py::cube_obb2d_exact and pass pre-made tuples in avoid only in the xhard branches; MoveCube xhard also passes include_existing=False for cube_2.
+  [2]
+    - anchor: src/robomme/robomme_env/utils/object_generation.py::spawn_random_bin (Unmask inner bins; G2 double min_gap)
+    - touched_by: unmask_ring (context only); ButtonUnmaskSwap's call site has `except RuntimeError: break`
+    - native_tier_risk: None if left untouched
+    - handling: No change in the util. Fix the silent truncation at the ButtonUnmaskSwap call site for xhard only (raise the real SceneGenerationError), per 2.2④ and L15.
+  [3]
+    - anchor: src/robomme/robomme_env/utils/xhard.py (corner_push, CORNER_GAIN, DISTRACTOR_COLORS, HSV_FLOOR_COLOR)
+    - touched_by: movecube (MoveCube bias to 0 through config), pick_swing (keeps 0.5), unmask_ring (colour rule), new helpers from insertpeg (footprint_gap), movecube (center_zone), binfill (component/colour-mix), pick/binfill (cube_obb2d_exact)
+    - native_tier_risk: Low: MoveCube's original tiers call corner_push with bias 0, which returns u without any float operation
+    - handling: Existing functions and DISTRACTOR_COLORS stay unchanged (PickXtimes/SwingXtimes import them). Add new pure functions only, each with unit tests.
+  [4]
+    - anchor: src/robomme/robomme_env/utils/unmask_swap_xhard.py (XHARD_DISTRACTOR, sample_distractors, build_distractors, predict_swap_sweeps, visible_on_camera, DISTRACTOR_MAX_TRIALS)
+    - touched_by: unmask_ring P2/P3/P7 and unmask_swap P1/P4/P5
+    - native_tier_risk: None, since the module is xhard-only; the risk is drift between the two proposals
+    - handling: One implementation with the frozen dedicated-stream order (see conflict 2), deferred recorder.value, indexed names, cube_bins-based cube/bin pairs and exact visibility. Replica parity test on at least 10 seeds per env.
+  [5]
+    - anchor: src/robomme/robomme_env/utils/unmask_distractors.py (spawn_ring_distractor_bins, reveal_distractor_bins, add_distractor_misgrasp_failure)
+    - touched_by: unmask_ring P1/P3/P6, unmask_swap (parking of outer cubes)
+    - native_tier_risk: None (xhard-only module)
+    - handling: Change the colour validation from `high > len(DISTRACTOR_COLORS)` to lo<=hi<=count, use balanced cycling, raise max_trials to 1024, and add a new xhard parking helper; the misgrasp wrapper is unchanged.
+  [6]
+    - anchor: src/robomme/robomme_env/utils/bin_collision.py (check_swap_sweep, _prove_pair, LANE_OFFSET; new check_multi_swap_sweep and pre-filter)
+    - touched_by: unmask_swap P1/P4/P5, unmask_ring P7, videorepick R (planning)
+    - native_tier_risk: Low: only VideoRepick, VideoUnmaskSwap and ButtonUnmaskSwap import it, on xhard or retired 甲 paths (V1 uses native_episode_spec, so _episode_spec is None)
+    - handling: Additive new function; check_swap_sweep semantics unchanged; gates MULTI_SWEEP_EQUIV and PREFILTER_EQUIV; a test that LANE_OFFSET equals the call-site literal.
+  [7]
+    - anchor: src/robomme/robomme_env/utils/statechange.py (swap_flat_two_lane, lift_and_drop_objectA_onto_objectB, lift_and_drop_objects_back_to_original)
+    - touched_by: unmask_swap (reuses for outer swaps and cubes), unmask_ring P6 (parking)
+    - native_tier_risk: HIGH if edited: all Unmask tiers and VideoPlaceButton/Order use it
+    - handling: Reuse unchanged; put the distinct parking points in a new xhard-only helper in unmask_distractors.py.
+  [8]
+    - anchor: VideoUnmaskSwap.py / ButtonUnmaskSwap.py / VideoRepick.py :: step (the `for i in range(len(self.swap_schedule))` loop) + tests/lightweight/test_episode_action_sampling.py::test_real_swap_resolution_matches_baseline_and_preserves_ties
+    - touched_by: unmask_swap P1 (outer loops, joint runtime check), videorepick R (planned partner)
+    - native_tier_risk: Medium: the loop is shared by all tiers and locked by an AST test that executes it on a SimpleNamespace with difficulty easy
+    - handling: Guard the xhard branches with getattr(self,'difficulty',None)=='xhard' and use getattr defaults; put the outer swap and outer cube loops outside the locked loop; run the AST test and the reset probe on every commit.
+  [9]
+    - anchor: Env module globals `from .utils.SceneGenerationError import SceneGenerationError` shadowed by `from .utils import *` (VideoRepick, SwingXtimes, PatternLock, RouteStick, StopCube, VideoUnmaskSwap, ButtonUnmaskSwap)
+    - touched_by: videorepick (found it), long_demo PL-E, pick_swing P2 (Swing redraws), unmask_swap P4
+    - native_tier_risk: None if the fix is xhard-only (H2); the original tiers keep the TypeError
+    - handling: K2 alias (_RealSceneGenerationError), chosen by difficulty at the raise and except sites; gate V5_SCENEGEN_CLASS.
+  [10]
+    - anchor: src/robomme/robomme_env/utils/sampling_config.py::assert_native_decision + scripts/configs/newtask-v5/sampling_config.json + scripts/parity/train_split_audit.py (decision-leaf consumption rule)
+    - touched_by: all 8 topics (new or removed decision.xhard keys)
+    - native_tier_risk: V0: the stripped decision must still equal the native snapshot
+    - handling: Put new keys only under decision.xhard or {xhard: ...} leaves; give every new leaf a consuming decision_key; re-export the snapshot once, then run test_snapshot_matches_source and the config-map audit.
+  [11]
+    - anchor: src/robomme/robomme_env/utils/episode_spec.py::SpecRecorder.value/record
+    - touched_by: unmask_swap (layout attempts), videorepick (reset plan), binfill (slot phase), insertpeg (replay guard)
+    - native_tier_risk: None, because it is not modified
+    - handling: Call value() only on accepted draws; add xhard replay guards in env code (InsertPeg gaps, MoveCube zones); record attempts and plans with record().
+  [12]
+    - anchor: PatternLock.NATIVE_SAMPLING.positions.grid_spacing (shared by all tiers) / RouteStick.config_xhard (L range read from the class, not the header)
+    - touched_by: long_demo
+    - native_tier_risk: Medium if grid_spacing is edited in place
+    - handling: New xhard-only decision key grid_spacing {xhard: 0.08} with fallback to the native 0.1; new xhard decision key for the RouteStick length so the specs header freezes it.
+  [13]
+    - anchor: scripts/parity/v4_combos.py / v4_specs.py / v4_rollout.py / v4_reset_probe.py / scripts/eval/v4_eval.py
+    - touched_by: all topics (new combos: Unmask cubes {7,8}/{7}/{8}, RouteStick 15..21, PatternLock 30..33)
+    - native_tier_risk: None
+    - handling: Parameterise by config dir and run id (newtask-v5, v5-01); rebuild combos.json. The V4 files stay frozen.
+  [14]
+    - anchor: src/robomme/env_record_wrapper/RecordWrapper.py (frozen, fail_safe 5000) + scripts/evaluation.py (max_steps=1300)
+    - touched_by: long_demo (longer demos and executions)
+    - native_tier_risk: None as long as they are left untouched
+    - handling: No edits. Gates RECORDER_FROZEN, EVAL_PY_UPSTREAM, FAILSAFE_MARGIN and EXEC_BUDGET.
+## overturned_v4_decisions
+  [0]
+    - v4_id: B13
+    - v4_content: Distractor outer ring max(|x|,|y|) in [0.2675,0.45]; 1-2 of the 3 bins hold a cube
+    - v5_change: A band hugging each env's generation range, one inner-density cell wide: VU/BU [0.2425,0.3289]; VUS max-norm [0.2539,0.3403]; BUS rectangle band [0.0425,0.1289] around a rectangle that includes the buttons. Density-derived counts 15/14/15/16; cubes in [floor(N/2), ceil(N/2)]; exact visibility in all four envs.
+    - triggered_by: unmask_ring P1/P2 (user: surround the current range in one lap at the same density)
+  [1]
+    - v4_id: B3 (and plan 2.7①, implicit count 3)
+    - v4_content: Distractors are extra bins outside the region, visible, some with cubes, not part of swaps; 3 of them
+    - v5_change: Counts come from density (15/14/15/16). In VUS/BUS the distractors swap among themselves, one outer swap per inner window; they still never partner an inner bin and never enter spawned_bins.
+    - triggered_by: unmask_ring + unmask_swap
+  [2]
+    - v4_id: J1 (clause 'still not in swap')
+    - v4_content: Distractors join the 64-step reveal, a misgrasp fails the episode, and they are not swapped
+    - v5_change: Reveal and misgrasp are kept. In the Swap envs distractors are now swapped. Optional refinement (P6): distinct off-camera parking points for distractor bins and hidden cubes, xhard only.
+    - triggered_by: unmask_swap P1; unmask_ring P6
+  [3]
+    - v4_id: H1
+    - v4_content: Distractors are not swap partners but enter the collision checks as static bystanders (initial state plus continuous sweep)
+    - v5_change: Distractors become movers in the outer pairs. The collision check becomes a joint two-pair continuous proof (check_multi_swap_sweep) at reset (planning) and at runtime. Inner-vs-inner sweep collisions are also rejected at reset (P4) instead of failing the demo.
+    - triggered_by: unmask_swap P1/P4
+  [4]
+    - v4_id: impl (not lettered): V4 distractor colour and Swap sampler constants
+    - v4_content: Colours drawn without replacement (so at most 3 cubes); Swap envs use circle spacing min_gap 0.04, a linear camera approximation and 512 trials; cubes named distractor_cube_<colour>
+    - v5_change: Balanced cycling over the 3 B2 colours (B2/A5 kept); unified OBB rule, exact 8-corner visibility, 1024 trials; indexed cube names
+    - triggered_by: unmask_ring P2/P3
+  [5]
+    - v4_id: B6
+    - v4_content: InsertPeg peg spacing rule unchanged; the new peg sits close to the 0.075 lower bound
+    - v5_change: All 4 pegs share one sampler: the native rules plus a strict exact-footprint gap > 0.03 m to every placed peg (and optionally > 0.01 m to the box). The native 0.075 root rule is kept as well.
+    - triggered_by: insertpeg P1 (user: same logic for all pegs, guaranteed pairwise spacing)
+  [6]
+    - v4_id: I2
+    - v4_content: Keep the starting overlap rate of 2.4% -> 31.6% (no new rule)
+    - v5_change: Overlap is removed (0 in 10000 MC layouts)
+    - triggered_by: insertpeg P1
+  [7]
+    - v4_id: K3 (+ the 1.2 InsertPeg text 'new peg near the target', plan 2.18 near_target_distractor)
+    - v4_content: The 4th peg lies in a band of 0.075-0.085 m around the target peg
+    - v5_change: The band sampler _xhard_place_near_target_peg and decision.xhard.near_target_distractor are deleted, and the near-target intent is dropped. The median nearest-distractor distance rises from 0.080 m to 0.178 m.
+    - triggered_by: insertpeg P1
+  [8]
+    - v4_id: B7
+    - v4_content: MoveCube corners via corner_bias in [0,1] plus a success-rate sweep
+    - v5_change: Per object, reject a central square covering 30% of the area of its own sampling box: peg 2.74 cm, demo goal 6.02 cm, exec goal 3.29 cm, cube 5.48 cm on both the candidate and the final position.
+    - triggered_by: movecube P1
+  [9]
+    - v4_id: G3
+    - v4_content: MoveCube corner_bias = 0.5
+    - v5_change: corner_bias = 0.0 (key kept, deprecated); the central-zone rule replaces it
+    - triggered_by: movecube P1
+  [10]
+    - v4_id: plan 2.17 row 'native.goal_regions 不动' (partial)
+    - v4_content: MoveCube goal regions untouched
+    - v5_change: Region sizes are unchanged, but the goal gets an exclusion zone through xhard sub-keys. A new D-class fix (xhard only) stops the exec cube avoiding the demo cube; this failure was confirmed in the simulator for seeds 1000442 and 1000446.
+    - triggered_by: movecube P1
+  [11]
+    - v4_id: A2 (range)
+    - v4_content: 20-30 s at the 30 fps recorder rate (600-900 frames)
+    - v5_change: 25-35 s (750-1050 frames); the 30 fps / h5 is_video_demo convention is kept
+    - triggered_by: long_demo (user: 30±5 s)
+  [12]
+    - v4_id: B8 (layout part)
+    - v4_content: PatternLock: layout unchanged, only more steps; search strategy unchanged
+    - v5_change: Under PL-A (recommended): a 6x6 grid at an xhard-only spacing of 0.08, the same footprint as V4's 5x5 at 0.1; the DFS search is unchanged. Under PL-C, B8 is kept and only the demo motion is slowed.
+    - triggered_by: long_demo PL-A
+  [13]
+    - v4_id: K1
+    - v4_content: PatternLock xhard node count [20,24]
+    - v5_change: [30,33] on 6x6. In xhard, exhausting the attempts raises the real SceneGenerationError instead of silently keeping the last path (PL-E).
+    - triggered_by: long_demo PL-A/PL-E
+  [14]
+    - v4_id: B9
+    - v4_content: RouteStick layout unchanged, L = [12,15]
+    - v5_change: L = [15,21], i.e. 750-1050 demo frames; the layout is unchanged
+    - triggered_by: long_demo RS-1
+  [15]
+    - v4_id: plan 2.20 / risk #6 (statement, not a decision)
+    - v4_content: exec = L×50+200; L > ~22 gets truncated
+    - v5_change: Corrected: the strong reset is a demonstration NO RECORD step and is not charged to the budget; exec = 50·L (+1 init frame); the cut-off is L >= 27
+    - triggered_by: long_demo
+  [16]
+    - v4_id: B1 (modified, not overturned)
+    - v4_content: BinFill region and spacing unchanged
+    - v5_change: Region and spacing values are kept, but the nominal 2 cm min_gap is now actually enforced in xhard through the exact cube OBB. A same-colour cluster cap is added through colour reassignment (T=3, 0.09 m linkage).
+    - triggered_by: binfill_cluster A/B
+  [17]
+    - v4_id: J5 (modified under P1; overturned under P3/P4)
+    - v4_content: PickXtimes corner_bias 0.5 pushes all 3 coloured cubes
+    - v5_change: corner_bias 0.5 is kept, plus a distinct-quadrant rule for the coloured cubes, an 8 cm centre distance for all 6 cubes, the exact OBB and max_trials 1024 (xhard)
+    - triggered_by: pick_swing_cluster P1
+  [18]
+    - v4_id: B12
+    - v4_content: VideoRepick keeps 3 initiators; only the count rises to 8-12
+    - v5_change: All 6 cubes initiate: the target every 3rd swap, the other 5 cycling in randperm order
+    - triggered_by: videorepick R
+  [19]
+    - v4_id: J2
+    - v4_content: Accept that D5 rejects about 45% of VideoRepick xhard demos; rely on H4; no mechanism change
+    - v5_change: The mechanism changes: a 0.12 m minimum centre distance plus partners planned at reset (uniform among the 2 nearest sweep-feasible slots, 5 mm margin, no immediate repeat). D5 stays as a runtime guard and H4 stays as the fallback.
+    - triggered_by: videorepick R
+  [20]
+    - v4_id: impl (inherited native rule): VideoRepick xhard partner = nearest at swap start
+    - v4_content: Nearest neighbour in XY at runtime
+    - v5_change: Planned at reset and recorded in actions.swap_pairs.<k> through value(); the runtime record cross-checks it
+    - triggered_by: videorepick R
+  [21]
+    - v4_id: K2 (extended)
+    - v4_content: Fix the VideoPlaceOrder SceneGenerationError shadowing in xhard only
+    - v5_change: The same xhard-only fix goes into VideoRepick, SwingXtimes, PatternLock, VideoUnmaskSwap and ButtonUnmaskSwap
+    - triggered_by: synthesis spot-check (videorepick found it for VideoRepick)
+  [22]
+    - v4_id: H4 practice for Unmask Swap inner-inner sweeps (J2-style)
+    - v4_content: Inner-vs-inner sweep collisions show up at runtime as BinCollisionError, and H4 backfills
+    - v5_change: Rejected at reset (P4); runtime collisions remain only as a guard
+    - triggered_by: unmask_swap P4
+## claim_spot_checks
+  [0]
+    - topic: unmask_ring
+    - claim: Counts derived from density: V4 ring ≈24.3 bins at ρ=50; ring A gives VU 15.14 → 15 and VUS 15.40 → 15; ring C (g=0.04) ≈15.65
+    - verdict: confirmed
+    - evidence: Independent 2 mm grid (synthesis/sc_density.py) using the repo's visible_in_camera and bin_corners with bin_geometry(0.02)=(0.0275, 0.042426, 0.054). V4 ring footprint area 0.4852 m² → 24.26. VU ring A [0.2425,0.3289] 0.3052 → 15.26. VUS ring A [0.2539,0.3403] 0.3064 → 15.32. Ring C 0.3132 → 15.66. All round to the same integers; VUS stays at 15, though only 0.3-0.5 above the rounding boundary. ButtonUnmask (14) was not recomputed because it needs the button-blocking average.
+  [1]
+    - topic: unmask_ring
+    - claim: VU/BU draw colours without replacement (ValueError if hi>3); the Swap envs truncate colours to 3 and name cubes distractor_cube_<colour>, so repeated colours collide
+    - verdict: confirmed
+    - evidence: unmask_distractors.spawn_ring_distractor_bins raises ValueError when `high > len(DISTRACTOR_COLORS)` and uses randperm(3)[:n_cubes]. unmask_swap_xhard.sample_distractors slices the colour order with [pool[i] for i in order][: n_with_cube]. build_distractors uses name_prefix=f'distractor_cube_{color}'.
+  [2]
+    - topic: unmask_ring
+    - claim: The Swap envs' linear visibility approximation is looser than the exact 8-corner check (2358 of 20000 points accepted only by the approximation)
+    - verdict: confirmed
+    - evidence: My rerun with the same sampling (seed 0, 20000 points in x∈[-0.8,0.5], y∈[-0.9,0.9], radius = bin_footprint_radius(0.02) = 0.03889) gives approximation 10710, exact 8352, approximation-only 2358. This is identical to the investigator's figures.
+  [3]
+    - topic: unmask_ring
+    - claim: ButtonUnmaskSwap inner bins silently truncate on spawn failure even in xhard
+    - verdict: confirmed
+    - evidence: ButtonUnmaskSwap._load_scene wraps spawn_random_bin in `except RuntimeError as e: break` with no difficulty gate.
+  [4]
+    - topic: unmask_swap
+    - claim: 最近2邻 means the single nearest neighbour measured on 2 axes (XY), not the 2 nearest neighbours; the 2-nearest helper is dead code
+    - verdict: confirmed
+    - evidence: VideoUnmaskSwap.step keeps the minimum np.linalg.norm(reference_pos[axes]-candidate_pos[axes]) with axes=swap_selection.partner.position_axes=[0,1] and strict <. ButtonUnmaskSwap uses reference_pos[:2]-candidate_pos[:2]. _compute_dynamic_swap_candidates (distances[:2]) is called only from inside _select_swap_pair_from_positions, which has no caller in src/scripts/tests (grep), and scripts/configs/newtask-v2/native_sampling.json marks it as dead code. Initiators cycle through swap_indices[k % 3].
+  [5]
+    - topic: unmask_swap
+    - claim: All 8 V4 runtime BinCollisionErrors in the Unmask Swap envs are inner-vs-inner; none involves a distractor
+    - verdict: confirmed
+    - evidence: Rollout run1: VUS ep3 seed 4500300 sweep#1 bin_2 vs bin_1, g=-0.00207219. In combos/v6-01, all 7 Unmask-swap BinCollision samples (BUS 7700100/7700102/7700401/7700201/7700001/7700504, VUS 7500004) are bin_* vs bin_* pairs; no distractor_bin appears. VideoRepick has 23 further V6 BinCollision samples (the J2 context).
+  [6]
+    - topic: unmask_swap
+    - claim: Hidden cubes do not travel with their bins; they are parked at (10,10,10) for the whole swap span
+    - verdict: confirmed
+    - evidence: statechange.lift_and_drop_objectA_onto_objectB caches away_pos = [10,10,10] and teleports obj_a there during [start,end). The same point is used by the reveal helper. Implication for V5: outer cubes would pile up with the inner cubes (see the parking conflict).
+  [7]
+    - topic: unmask_swap (cross-topic)
+    - claim: Outer nearest-neighbour swaps with fallback stay feasible when combined with unmask_ring's dense hug ring (VUS 15 / BUS 16)
+    - verdict: uncertain
+    - evidence: Pilot synthesis/joint_probe.py, 300 layouts per env. It reuses the unmask_swap replica, eval_window and the multi-sweep proof, with ring A, exact visibility, circle-approximated unified spacing (≈0.088 m), 1024 trials and evc at lane 0.07. VUS: 0/300 placement failures, 99.67% of episodes feasible on the first layout attempt, 44.2% of windows solved by the first initiator. BUS: 0/299 placement failures, 96.99% feasible, 29.4% first-initiator windows. The result looks positive but rests on a circle approximation of the OBB rule and is not simulated; it must be re-established with the implemented sampler (gate V5_SWAP_JOINT_FEASIBILITY).
+  [8]
+    - topic: insertpeg
+    - claim: The 4th peg comes from a separate sampler drawn after obj/dir: radius in (0.075, 0.085] and a uniform azimuth around the target peg_0, then the native rules, 512 attempts, then yaw, and it overwrites peg_init_poses[3]
+    - verdict: confirmed
+    - evidence: InsertPeg._initialize_episode: uniform_pegs = self.pegs[:-1] in xhard; the obj_sample and dir_sample randint draws; then self._xhard_place_near_target_peg(...). That method draws radius=d_min+u·(d_max-d_min) and theta=u·2π per attempt, checks region/box/peg distance, raises SceneGenerationError on exhaustion, draws yaw, records near_target_distance/attempts, and sets peg_init_poses[idx].
+  [9]
+    - topic: insertpeg
+    - claim: Root distance > 0.075 does not prevent overlap (footprint from root-0.075u to root+0.025u); a guarantee needs a root distance > 0.1513; V4 target overlap is about 28%
+    - verdict: confirmed
+    - evidence: build_peg: the head visual half size is (length/2, r, r) centred at the root, and the tail is at -length (length 0.05, r 0.01). My SAT Monte Carlo (synthesis/sc_peg.py, 200k samples): P(peg0 overlaps peg3 | V4 band, yaws ±180°) = 26.15% (the investigator's 28.1% counts overlap with any peg). At root distance 0.10 → 8.6%, 0.15 → 0.48%, 0.152 → 0.
+  [10]
+    - topic: movecube
+    - claim: V4 corner_bias acts on the peg jitter, the cube candidate and the cube local offset, but not on the goal
+    - verdict: confirmed
+    - evidence: The corner_push call sites in MoveCube._load_scene are peg x/y jitter, cube candidate x/y, and corner_bias passed into spawn_random_cube. The goal comes from spawn_random_target, which has no corner_bias parameter.
+  [11]
+    - topic: movecube
+    - claim: A pre-existing defect: the exec cube's spawn still avoids the demo cube and can exhaust all trials (SceneGenerationError in xhard)
+    - verdict: confirmed
+    - evidence: The cube_2 spawn_random_cube call uses the default include_existing=True, so self.cube's OBB enters the obstacle list. A real simulator reset (synthesis/sc_movecube_reset.py, CUDA 1, V4 sampling_config, xhard): seeds 1000442 and 1000446 raise SceneGenerationError 'Region crowded or constraints too tight'; seed 1000000 resets fine.
+  [12]
+    - topic: movecube
+    - claim: The 30%-area zone half-widths are peg 0.0274, demo goal 0.0602, exec goal 0.0329, cube 0.0548
+    - verdict: confirmed
+    - evidence: √0.3 = 0.5477 times the own-box half sizes: jitter 0.05; goal half 0.15-0.04 = 0.11 and 0.10-0.04 = 0.06; cube candidate half 0.1.
+  [13]
+    - topic: long_demo
+    - claim: V4 demo frames: PatternLock 649/683/757 and RouteStick 650/600/600; executions equal the demos
+    - verdict: confirmed
+    - evidence: Counting info/is_video_demo in the run1 h5 files (synthesis/sc_demo_frames.py): PL ep0 1298/649, ep3 1366/683, ep6 1514/757; RS ep0 1300/650, ep3 1200/600, ep6 1200/600.
+  [14]
+    - topic: long_demo
+    - claim: The 200-step strong reset is a demonstration=True NO RECORD task and is not charged to the eval budget; the policy gets 1301 steps; RouteStick uses exactly 50 frames per segment
+    - verdict: confirmed
+    - evidence: RouteStick task list: name 'NO RECORD', demonstration True, solve_strong_reset(timestep=200). DemonstrationWrapper.step increments steps_without_demonstration only when current_task_demonstration is False. The builder sets max_steps_without_demonstration = max_steps+2, and scripts/evaluation.py sets max_steps=1300. solve_swingonto_withDirection uses np.linspace with 45 points plus 5 repeated end poses.
+  [15]
+    - topic: long_demo
+    - claim: PatternLock upper bound: 5×5 simple-path DFS gives at most 25 nodes, so the 25-35 s band cannot be filled on 5×5 at ~34 frames per segment
+    - verdict: confirmed
+    - evidence: adjacent.dfs_path keeps a visited set (simple paths), so at most 25 nodes = 24 segments ≈ 24×34.25 = 822 frames = 27.4 s on average. The measured h5 rate is 32.5-36.1 frames per segment (649/20, 683/20, 757/21). The for/else in PatternLock._load_scene silently keeps the last path. NATIVE_SAMPLING.positions.grid_spacing=0.1 is shared by all tiers, so PL-A needs an xhard-only key. 6×6 at 0.08 spans x∈[-0.3,0.1], y∈[-0.2,0.2], the same footprint as 5×5 at 0.1. The VQA neighbour pick (align first, then distance, radius 0.2) still picks the adjacent node at spacing 0.08.
+  [16]
+    - topic: long_demo
+    - claim: The RouteStick L range is not frozen in the V4 specs header
+    - verdict: confirmed
+    - evidence: In the specs.jsonl header, sampling_config.RouteStick.native.parameters has only the keys [configs_fallback_difficulty, walk], and the decision has only demo_duration placeholders.
+  [17]
+    - topic: binfill_cluster
+    - claim: The red cluster in ep3 is chance, not bias: colours are fixed before placement, spawn order is a random permutation, and P(majority colour ≥ 7) ≈ 22%
+    - verdict: confirmed
+    - evidence: BinFill._load_scene builds cube_tasks grouped by colour and permutes them with objects.spawn_order = randperm(12); each placed actor is appended to avoid. My quota replica gives P(majority ≥ 7) = 21.2% (investigator 22.1%). For ep3 (seed 4400300, 7 red / 1 blue / 4 green): red nearest-neighbour mean 0.0796 m vs a permutation null of 0.1012 m, p = 0.027 (investigator 0.028); red mean x = -0.195 vs -0.048 for the others (far edge). I did not recompute the multiplicity-corrected 4.0% tail.
+  [18]
+    - topic: binfill_cluster
+    - claim: A placed cube's 2D obstacle box often collapses to a line (the 66.45% degeneracy bug), so min_gap is not enforced
+    - verdict: confirmed
+    - evidence: The mechanism is in the code: _trimesh_box_to_obb2d uses R[:2,0] and R[:2,1], and _safe_unit leaves a near-zero vector unchanged. My float64 trimesh check (synthesis/sc_obb.py) finds 997/2000 = 49.8% degenerate. The investigators' bit-exact float32 sapien path gives 66%, and the real simulator gave 5/11. The rate depends on the numeric path, but the bug is real.
+  [19]
+    - topic: pick_swing_cluster
+    - claim: corner_bias=0.5 on all 3 coloured cubes explains most of PickXtimes' same-corner piling (44.5% vs 14.3% uniform)
+    - verdict: confirmed
+    - evidence: PickXtimes._spawn_scene_objects_xhard passes corner_bias only for the coloured cubes; _spawn_distractors_xhard does not. corner_push has p = 1/(1+4b). My Monte Carlo without obstacles (synthesis/sc_corner.py, 200k): in a corner cell 0.927 vs 0.444, and ≥ 2 sharing a corner cell 54.5% (b=0.5) vs 13.7% (b=0). Rejection by the button and disk lowers that to the investigator's 44.5%.
+  [20]
+    - topic: pick_swing_cluster
+    - claim: SwingXtimes xhard reset failures (disk placement, 1.9% in V4 → 3.6% under P2) surface as SceneGenerationError and are redrawn
+    - verdict: refuted
+    - evidence: In the SwingXtimes module the global SceneGenerationError is the utils submodule (import check in synthesis/sc_sge.py). `raise SceneGenerationError('First target sampling failed')` and `except SceneGenerationError:` in _load_scene therefore raise TypeError. The V4 draw loop caught every Exception, so the attempts were still redrawn, but the failure class is wrong and generate_dataset treats TypeError as a code failure. The K2-style fix is needed (L3).
+  [21]
+    - topic: videorepick
+    - claim: B12 initiators cycle as k % 3, and ep3's pairs repeat, with bin_1 never moving
+    - verdict: confirmed
+    - evidence: _load_cubes_xhard: selected_remaining = randperm(5)[:swap_remaining_count=2], and swap_pair{k+1}_idx1 = spawned[swap_indices[k % 3]]. The ep3 rng_trace.json actions.swap_pairs are (5,2),(4,3),(0,2),(5,0),(4,3),(0,5),(5,0),(4,3),(0,5),(5,0),(4,3),(0,5), exactly as claimed.
+  [22]
+    - topic: videorepick
+    - claim: In VideoRepick, SceneGenerationError is the submodule, so xhard failures become TypeError
+    - verdict: confirmed
+    - evidence: The import check shows it is a module in VideoRepick, and also in SwingXtimes, PatternLock, RouteStick, StopCube, VideoUnmaskSwap and ButtonUnmaskSwap. It is a class in VideoUnmask, ButtonUnmask, InsertPeg, MoveCube, BinFill, PickXtimes, PickHighlight and VideoPlaceButton. VideoPlaceOrder has the _RealSceneGenerationError alias (K2). VideoRepick._load_cubes_xhard raises SceneGenerationError('Not enough cubes for swapping'), and _load_scene has `except SceneGenerationError:`.
+## consolidated_pending_decisions
+  [0]
+    - id: L1
+    - topic: cross-topic
+    - question: How to read N5 for V5: may xhard draws shift in place (in-place rejection, reorder, changed trial counts), given that the original tiers stay byte-identical?
+    - options: (a) Accept xhard-only in-place shifts and re-freeze every touched env under v5-01 (V4 corner_bias precedent). (b) Strict literal N5: only appended draws, which needs RNG-neutral maps (MoveCube P5) and blocks InsertPeg P1 and the spacing rules in Pick/Swing/VideoRepick/BinFill.
+    - recommendation: (a)
+    - reason: Every topic's recommended design needs it. The original tiers are protected by V0, V1 and RESET_REGRESSION, and V4 xhard specs cannot be replayed under V5 anyway.
+  [1]
+    - id: L2
+    - topic: cross-topic
+    - question: Scope of the fix for the cube 2D-OBB degeneracy (min_gap not enforced)
+    - options: (a) xhard only, in the envs V5 touches (BinFill, PickXtimes, SwingXtimes; MoveCube via include_existing=False; VideoRepick is masked by its 0.12 m hard core). (b) Also PickHighlight, VideoPlaceButton and VideoPlaceOrder xhard, which forces those to be re-frozen. (c) A global fix, which breaks V1 and is forbidden by H2/N12.
+    - recommendation: (a); record (b) as a follow-up
+    - reason: It removes near-touching cubes where the user complained, and the 4 untouched envs keep their V4 artifacts.
+  [2]
+    - id: L3
+    - topic: cross-topic
+    - question: Extend the K2 SceneGenerationError fix (xhard only) to VideoRepick, SwingXtimes, PatternLock, VideoUnmaskSwap and ButtonUnmaskSwap?
+    - options: yes / no
+    - recommendation: yes
+    - reason: Without it, V5's new xhard rejections (VideoRepick plan 8.4%, SwingXtimes 3.6%, PatternLock PL-E, Unmask P4) surface as TypeError, i.e. code failures.
+  [3]
+    - id: L4
+    - topic: cross-topic
+    - question: API for the new placement rules in the shared spawn_random_cube / spawn_random_target
+    - options: (a) One additive kwarg extra_reject=None (a callable, no RNG, default skipped). (b) Per-topic kwargs (reject_xy, min_center_dist + center_ref_xy, extra_reject).
+    - recommendation: (a)
+    - reason: One inert default path to verify for V1 instead of three; all rules become closures.
+  [4]
+    - id: L5
+    - topic: cross-topic
+    - question: Snapshot, run id and how to treat the V4 artifacts
+    - options: (a) A new newtask-v5 config dir and run id v5-01, all 16 envs re-drawn (the 4 untouched envs must reproduce the v4-01 rows bit-exactly), V4 evaluation pinned to commit 0baff09 or a tag. (b) Version gates so V4 snapshots stay replayable on V5 code.
+    - recommendation: (a)
+    - reason: The touched envs change their xhard streams and decision shapes, and version gates add complexity with no benchmark value.
+  [5]
+    - id: L6
+    - topic: unmask_ring
+    - question: What does 'one lap' (环绕一圈) mean for the ring width?
+    - options: (a) W = 1/√ρ = 0.1414 m → 15/14/15/16. (b) A single bin row, W = 0.085 → 9/8/9/9. (c) Another W.
+    - recommendation: (a)
+    - reason: It reproduces the inner density visually, is 100% feasible, and leaves about 30% headroom.
+  [6]
+    - id: L7
+    - topic: unmask_ring
+    - question: Gap between the current range and the ring
+    - options: (a) g = 0.015, the xhard min_gap (VU/BU [0.2425,0.3289]). (b) g = 0.04, keeping the B13 inner bound ([0.2675,0.3539], one more bin each). (c) g = 0.
+    - recommendation: (a) for VU/BU; for VUS/BUS decide together with L16
+    - reason: (a) hugs the region with G2-like spacing. For the Swap envs a larger g gives outer lanes more room.
+  [7]
+    - id: L8
+    - topic: unmask_ring
+    - question: Swap envs: what counts as the 'current generation range', and which density?
+    - options: (a) The static envelope (VUS square half 0.2114; BUS anchor-box bounding box) at a per-episode density of ≈51/m² → 15/16. (b) The static-envelope density (24.8/37.9 per m²) → about 8/12. (c) A per-episode dynamic ring (P5).
+    - recommendation: (a)
+    - reason: One ρ for all four envs, a simple static config, and measured feasible.
+  [8]
+    - id: L9
+    - topic: unmask_ring
+    - question: ButtonUnmaskSwap: should the buttons count as part of the inner range?
+    - options: (a) Yes: inner rectangle x from -0.2625 → count 16. (b) No → count 10 and the ring runs through the buttons (21.5% blocked).
+    - recommendation: (a)
+    - reason: It gives a clean lap around everything that is generated.
+  [9]
+    - id: L10
+    - topic: unmask_ring
+    - question: Count rounding and the frozen per-env counts
+    - options: (a) Round half up on the 1 mm reference grid → 15/14/15/16. (b) floor → 15/14/15/15. (c) One N for each env pair.
+    - recommendation: (a), frozen as integers with a pinned derivation test
+    - reason: This is the literal reading of 'infer from density'. VUS sits 0.3-0.5 above the rounding boundary.
+  [10]
+    - id: L11
+    - topic: unmask_ring
+    - question: Odd N: how many bins carry a cube?
+    - options: (a) Random in [floor(N/2), ceil(N/2)]. (b) floor. (c) ceil.
+    - recommendation: (a)
+    - reason: Same semantics as V4's [1,2] for N=3.
+  [11]
+    - id: L12
+    - topic: unmask_ring
+    - question: Colours when more than 3 bins carry a cube
+    - options: (a) The 3 B2 colours, cycled in balance (one randperm(3)). (b) i.i.d. with replacement. (c) A new palette just for Unmask.
+    - recommendation: (a)
+    - reason: Keeps B2/A5 and is balanced; indexed names avoid duplicate actor names.
+  [12]
+    - id: L13
+    - topic: unmask_ring
+    - question: Unify the two distractor samplers and their spec schemas?
+    - options: (a) One V5 sampler and schema for all 4 envs, with streams kept per env. (b) Minimal: config-only for VU/BU and a patch to the Swap sampler.
+    - recommendation: (a)
+    - reason: The Swap envs need new rules anyway (spacing, exact visibility, naming, ring shape, outer swaps).
+  [13]
+    - id: L14
+    - topic: unmask_ring
+    - question: Parking: give each distractor bin and each hidden cube (inner and outer) its own off-camera away point, instead of all sharing (10,10,10)? This refines J1.
+    - options: (a) Yes, via an xhard-only helper, with step-time measurement. (b) No, accept the 3-10x slower reveal and the unmeasured pile-up during swaps.
+    - recommendation: (a)
+    - reason: With outer swaps, up to 11 cubes overlap for hundreds of steps. Windows, visuals and drop steps are unchanged, and statechange.py is not touched.
+  [14]
+    - id: L15
+    - topic: unmask_ring
+    - question: Fix the silent truncation of inner bins in ButtonUnmaskSwap (`except RuntimeError: break`) for xhard?
+    - options: yes (raise the real SceneGenerationError, per 2.2④) / no
+    - recommendation: yes
+    - reason: It happens in about 1/500 layouts; silently getting 3 bins changes the obstacle set for the ring and the swaps.
+  [15]
+    - id: L16
+    - topic: unmask_swap
+    - question: Distractor count and ring for the Swap envs now that outer swaps exist (supersedes unmask_swap D4/D5; joint with L6-L10)
+    - options: (a) unmask_ring's counts (VUS 15, BUS 16) in the hug ring, adopted if V5_SWAP_JOINT_FEASIBILITY reaches a first-attempt rate ≥ 0.95. The pilot gave 99.7% and 97.0%, with only 44% and 29% of windows solved by the first initiator. (b) The V4 ring with 10 distractors (100% measured, but below the density the user asked for). (c) The hug ring with g = 0.04 or outer lane 0.05, if (a) fails.
+    - recommendation: (a) with the gate; fall back to (c) and bring it back to the user
+    - reason: It meets both user requests. The pilot shows it is feasible, but only with heavy fallback.
+  [16]
+    - id: L17
+    - topic: unmask_swap
+    - question: Rule for choosing the outer initiator
+    - options: (a) randperm(count)[:3] cycled k%3. (b) randperm(count) cycled over all distractors. (c) A fresh randint per window.
+    - recommendation: (b)
+    - reason: Equal to (a) when count is 3; it moves almost all distractors and gives the fallback an ordered list.
+  [17]
+    - id: L18
+    - topic: unmask_swap
+    - question: What to do when a window's first-choice outer swap is infeasible
+    - options: (a) Deterministic fallback to the next initiator, then a whole-layout redraw as the last resort. (b) Redraw only. (c) Skip the outer swap.
+    - recommendation: (a)
+    - reason: (b) introduces heavy bias; (c) breaks 'every inner swap has an outer swap'.
+  [18]
+    - id: L19
+    - topic: unmask_swap
+    - question: Meaning of 'lanes do not enter the inner region'
+    - options: (a) Collision-free only. (b) Collision-free plus ≥ 0.04 m circle clearance to every inner bin, plus the BUS button keep-out of 0.122 m (evc). (c) The centre path never crosses the ring's inner boundary.
+    - recommendation: (b)
+    - reason: (c) is essentially impossible with ±0.07 m lanes; (b) is feasible in both the V4 ring and the hug ring (pilot).
+  [19]
+    - id: L20
+    - topic: unmask_swap
+    - question: Also reject inner-vs-inner sweep collisions at reset (P4)?
+    - options: yes / no
+    - recommendation: yes
+    - reason: All 8 observed V4 BinCollisionErrors are of this kind and could have been predicted at reset. It moves 1.3% (VUS) / 10.7% (BUS) of episodes from demo-level failure to candidate rejection, and it needs L3.
+  [20]
+    - id: L21
+    - topic: unmask_swap
+    - question: Outer lane offset
+    - options: 0.07 (same as inner) / 0.05
+    - recommendation: 0.07
+    - reason: The outer swaps look the same as the inner ones. 0.05 is the lever to use if L16(a) fails.
+  [21]
+    - id: L22
+    - topic: unmask_swap
+    - question: How to resolve the inner partner in xhard
+    - options: (a) Keep V4 runtime resolution, plus the runtime joint check and mismatch logging. (b) Pin it to the reset plan.
+    - recommendation: (a)
+    - reason: Keeps V4 inner behaviour; rare near-tie flips (0.08-0.18% of windows) are still caught by the runtime joint check.
+  [22]
+    - id: L23
+    - topic: unmask_swap
+    - question: Add one certified sweep pre-filter (merging unmask_swap P5 and unmask_ring P7)?
+    - options: yes (in bin_collision, opt-in, decision-identical) / no
+    - recommendation: yes
+    - reason: Otherwise the Swap-env reset takes +10-50 s and each window +0.4-1.8 s. The proof shows decisions are identical (40/40); gate PREFILTER_EQUIV.
+  [23]
+    - id: L24
+    - topic: insertpeg
+    - question: Gap g required between every pair of pegs
+    - options: 0.02 / 0.03 / 0.045 / 0.055 m
+    - recommendation: 0.03
+    - reason: The smallest gap that guarantees no neighbour sits inside the open gripper's closing span. Overlap is 0 and the risk of exhausting attempts is about 0 for every option.
+  [24]
+    - id: L25
+    - topic: insertpeg
+    - question: Spacing metric, and whether to keep the native root rule (> 0.075)
+    - options: exact footprint (oriented rectangles) + keep native / capsule + keep native / centre distance only
+    - recommendation: exact footprint, keeping the native rules
+    - reason: Matches what is visible, one primitive also serves the box rule, and it keeps the most clutter.
+  [25]
+    - id: L26
+    - topic: insertpeg
+    - question: Also require a footprint gap between every peg and the box?
+    - options: no / yes 0.0 / yes 0.01 m
+    - recommendation: yes, 0.01 m (xhard only)
+    - reason: A kinematic box overlapping a peg ejected one peg by 8 m and shoved a target 69 mm / 56°; peg-0 acceptance only drops from 0.953 to 0.875.
+  [26]
+    - id: L27
+    - topic: insertpeg
+    - question: Draw order and yaw policy in the xhard stream
+    - options: (a) One loop over the 4 pegs before obj/dir, with lazy yaw. (b) Pegs 0-2, then obj/dir, then peg 3 through the same function. Yaw: lazy / joint / yaw-first.
+    - recommendation: (a) with lazy yaw (depends on L1)
+    - reason: Literally 'one logic'; the stream changes under either option.
+  [27]
+    - id: L28
+    - topic: insertpeg
+    - question: Confirm dropping the V4 'extra peg near the target' intent and deleting decision.xhard.near_target_distractor
+    - options: confirm / keep some near-target pressure in another form
+    - recommendation: confirm (the native top-level near_target_distractor=None stays)
+    - reason: The user's new instruction forbids a special rule for the 4th peg. The median distance from the target to the nearest distractor goes from 0.080 m to 0.178 m.
+  [28]
+    - id: L29
+    - topic: insertpeg
+    - question: Add an xhard replay guard that re-checks spacing on frozen specs?
+    - options: yes / no
+    - recommendation: yes
+    - reason: Replay returns frozen values without checking them; the guard stops overlapping layouts from coming back.
+  [29]
+    - id: L30
+    - topic: movecube
+    - question: What does '30%' refer to?
+    - options: (1) A central square covering 30% of the area of each object's own sampling box. (2) 30% of the side length (9% of the area). (3) A disk of 30% area. (4) A cross, i.e. only the corners survive. (5) A common absolute centre.
+    - recommendation: (1)
+    - reason: The same 30% for peg, goal and cube; a hard guarantee; worst-case exhaustion ≤ 2.5e-20; 10/10 local demos.
+  [30]
+    - id: L31
+    - topic: movecube
+    - question: What does 'peg not in the centre' mean?
+    - options: (A) The centre of the peg's own jitter box, zone 2.74 cm. (B) Additionally, the peg body must stay out of the workspace centre (about 8.5% extra redraws). (C) Nothing extra.
+    - recommendation: (A); add (B) only if the user means the body
+    - reason: The root is always at |y| ≥ 0.15, so a workspace-centre rule does nothing for it.
+  [31]
+    - id: L32
+    - topic: movecube
+    - question: Reference box for the cube zone
+    - options: The candidate box, w = 0.0548, applied to both candidate and final / the final support box, w = 0.0712
+    - recommendation: candidate box, applied to both
+    - reason: Checking only the final position causes 6% of layouts to fail; checking only the candidate lets 9.9% leak into the zone; the larger zone raises reach risk.
+  [32]
+    - id: L33
+    - topic: movecube
+    - question: What happens to the MoveCube xhard corner_bias key?
+    - options: keep it at 0.0 (deprecated) / delete the key and the corner_push calls
+    - recommendation: keep at 0.0 in V5
+    - reason: Minimal churn: corner_push(u, 0) returns u.
+  [33]
+    - id: L34
+    - topic: movecube
+    - question: Stop the exec cube avoiding the demo cube (include_existing=False) in xhard?
+    - options: yes / no
+    - recommendation: yes
+    - reason: The failure is confirmed in the simulator; the two cubes never coexist; the zone rule would otherwise double the failure rate to about 1-1.8%.
+  [34]
+    - id: L35
+    - topic: long_demo
+    - question: Which lever gets PatternLock to 25-35 s?
+    - options: A) 6×6 at spacing 0.08 (same footprint), nodes [30,33]. B) 5×6 at 0.1, [25,28]. C) Keep 5×5 [20,24] and slow only the demo (×1.3 or an 11-frame hold). D) Allow revisits on 5×5.
+    - recommendation: A
+    - reason: It adds content while keeping pattern-lock semantics and the search: 100% in band, 3/3 simulator successes. C is the only option that keeps B8/K1.
+  [35]
+    - id: L36
+    - topic: long_demo
+    - question: Node range under A, and whether exhausting the search should raise explicitly
+    - options: [30,33] / [30,32] / [31,33]; raise on exhaustion in xhard: yes / no
+    - recommendation: [30,33] and raise (this requires L3, because PatternLock's SceneGenerationError is shadowed)
+    - reason: Closest to 30 s. An explicit failure keeps the K1-type silent fallback from hiding a wrong length in V6.
+  [36]
+    - id: L37
+    - topic: long_demo
+    - question: RouteStick L range
+    - options: [15,21] (25.0-35.0 s) / [16,20] (26.7-33.3 s)
+    - recommendation: [15,21]
+    - reason: The uniform mean is exactly 30 s, and executions of at most 1050 steps fit the 1301-step budget.
+  [37]
+    - id: L38
+    - topic: long_demo
+    - question: Freeze the RouteStick xhard length range into the decision/specs header (it is currently read from the class)?
+    - options: yes (a new xhard decision key) / no
+    - recommendation: yes
+    - reason: Otherwise a later edit to the class silently changes how frozen specs are interpreted.
+  [38]
+    - id: L39
+    - topic: long_demo
+    - question: How is '30 s' measured?
+    - options: h5 is_video_demo count / 30 fps (A2) / physical simulation time
+    - recommendation: A2 convention
+    - reason: Matches the mp4 files and V4; physical time would reverse the conclusions.
+  [39]
+    - id: L40
+    - topic: binfill_cluster
+    - question: What does 'uniform' mean for BinFill?
+    - options: (a) Uniform in free space, which already holds. (b) Well-mixed colours with no big same-colour clumps. (c) Blue-noise coverage. (d) Flat density over the whole rectangle (button/board moved).
+    - recommendation: (b), together with the OBB fix (L2)
+    - reason: The complaint is about colour clumps. (c) makes the pooled density less uniform and costs 3-6x the draws; (d) changes native geometry.
+  [40]
+    - id: L41
+    - topic: binfill_cluster
+    - question: Colour-cap parameters
+    - options: T = 3 or 2; link_m 0.08 / 0.09 / 0.10; max_redraws 64 with a best-assignment fallback
+    - recommendation: T=3, link 0.09, 64
+    - reason: Groups of 4 or more disappear with only 3.8% of layouts reshuffled and 0 fallbacks.
+  [41]
+    - id: L42
+    - topic: binfill_cluster
+    - question: Cap the number of cubes spawned per colour (to avoid 7+ majorities, 22% of episodes)?
+    - options: no cap / cap = max(target, 6)
+    - recommendation: no cap
+    - reason: It changes the native quota rule and shifts the whole stream; L41 already fixes the clumps.
+  [42]
+    - id: L43
+    - topic: pick_swing_cluster
+    - question: PickXtimes corner semantics in V5 (includes movecube's question about 'rejection instead of bias')
+    - options: (a) Keep J5 (corner_bias 0.5 on all 3) and add distinct quadrants. (b) Push only the target (overturns J5). (c) No corner bias (overturns the 1.2 text and J5). (d) Only add spacing.
+    - recommendation: (a)
+    - reason: The only option that takes corner sharing from 44.5% to 0 while keeping the '推向边角' intent (target edge median 1.63 cm).
+  [43]
+    - id: L44
+    - topic: pick_swing_cluster
+    - question: Minimum centre distance for all 6 cubes (xhard)
+    - options: 0.06 / 0.08 / 0.10
+    - recommendation: 0.08 for both envs (0.10 acceptable for Swing, and for Pick if L46 is adopted)
+    - reason: Removes every pair under 8 cm; reset failures stay at 0 (Swing, apart from disks) or 0.97% (Pick).
+  [44]
+    - id: L45
+    - topic: pick_swing_cluster
+    - question: PickXtimes xhard max_trials: 256 or 1024?
+    - options: 256 / 1024
+    - recommendation: 1024
+    - reason: With distinct quadrants, failures drop from 3.53% to 0.97%; no new draw points.
+  [45]
+    - id: L46
+    - topic: pick_swing_cluster
+    - question: Enlarge the PickXtimes xhard cube and distractor region to half-size 0.25?
+    - options: yes / no / decide after a demo probe
+    - recommendation: decide after a demo probe
+    - reason: Largest gain in spread (+36% RMS), but reach at the far corners over up to 15 pick cycles is untested.
+  [46]
+    - id: L47
+    - topic: videorepick
+    - question: What does 'all cubes swap' mean?
+    - options: (a) Interleave: the target every 3rd swap, the other 5 cycled. (a') A pure k%6 cycle. (b) Coverage constraint only. (c) A random pair each swap.
+    - recommendation: (a)
+    - reason: 100% coverage, no new draw, and P(target moves ≤ 2) = 0.
+  [47]
+    - id: L48
+    - topic: videorepick
+    - question: Partner rule
+    - options: nearest neighbour / uniform among the 2 nearest sweep-feasible, no immediate repeat / 3 nearest or any feasible
+    - recommendation: 2 nearest feasible, no immediate repeat
+    - reason: Nearest-only stays repetitive (max repeat 3.4, target back home 37%).
+  [48]
+    - id: L49
+    - topic: videorepick
+    - question: Where partners are decided
+    - options: reset plan with a 5 mm margin / at runtime from actual states
+    - recommendation: reset plan with a 5 mm margin
+    - reason: Failures move to cheap draft retries (8.4%), the runtime residual measured 0.00% for shifts ≤ 12 mm, and the pairs appear in specs (requires L3).
+  [49]
+    - id: L50
+    - topic: videorepick
+    - question: Placement minimum centre distance
+    - options: 0.10 / 0.12 / 0.13 / 0.14 m; best-candidate; grid
+    - recommendation: 0.12
+    - reason: 100% placement, no clumps, and nearest-neighbour D5 rejection falls from 39.7% to 3.3%.
+  [50]
+    - id: L51
+    - topic: videorepick
+    - question: Change the region or button so cubes fill more of the camera view?
+    - options: keep / enlarge toward +x / move or shrink the button exclusion
+    - recommendation: keep
+    - reason: Reopens G2 and reach; not measured.
+## implementation_steps
+  [0]
+    - step: S0 Approvals and baselines
+    - content: The user answers L1-L51, logged in a V5 plan section 1.3 (N3). Branch from newtaskRelease-v4 HEAD 0baff09 and tag V4 for pinned evaluation. Record the baselines: the reset probe for the original tiers (artifacts/newtask-v4/probe/base-13e.json exists), the V4 xhard reference (the 160 rows of scripts/configs/newtask-v4/v4-01/specs.jsonl), and the lightweight test failure set. The V4 V1 h5 baseline was deleted, so plan to regenerate it in S9 on the same machine and at similar load.
+    - gate: Decisions recorded; baseline failure set captured
+  [1]
+    - step: S1 Offline joint studies (CPU only, before any code)
+    - content: Build the unmask_ring × unmask_swap joint feasibility study with the final sampler rules: unified OBB spacing, exact visibility, hug ring, counts 15/16, evc, lane 0.07, fallback, at least 300 layouts per env (extending synthesis/joint_probe.py). Also re-run the per-topic MC with the final numbers (MoveCube sweep, InsertPeg mc, BinFill v5b, Pick/Swing cluster_stats2, VideoRepick final_design_sim). If any number misses its target, stop and return to the user (N11).
+    - gate: V5_SWAP_JOINT_FEASIBILITY, plus each topic's placement MC gate on the frozen numbers
+  [2]
+    - step: S2 Shared infrastructure (additive, xhard-inert)
+    - content: (1) object_generation.spawn_random_cube and spawn_random_target get extra_reject=None. (2) utils/xhard.py gets cube_obb2d_exact, footprint_gap, center_zone_half, a balanced colour cycle and a same-colour component helper. (3) bin_collision gets check_multi_swap_sweep and the certified pre-filter. (4) K2 aliases go into VideoRepick, SwingXtimes, PatternLock, VideoUnmaskSwap and ButtonUnmaskSwap. (5) A new xhard parking helper in unmask_distractors. No env behaviour is wired up yet.
+    - gate: V0; RESET_REGRESSION diff=0 (144); V5_UNTOUCHED_XHARD_PARITY over all 160 v4-01 rows (nothing wired yet); MULTI_SWEEP_EQUIV; PREFILTER_EQUIV; V5_SCENEGEN_CLASS; LIGHTWEIGHT
+  [3]
+    - step: S3a PatternLock + RouteStick
+    - content: RouteStick config_xhard length [15,21] plus an xhard decision key so the header freezes it. PatternLock grid 6, xhard grid_spacing 0.08 (fallback to native 0.1), length [30,33], and a real SceneGenerationError when the search is exhausted in xhard. Update the V5 combos loops.
+    - gate: V0 + reset probe; PL_LEN_EXACT on the replica; local oracle probe per the RS_DEMO_LEN / PL_DEMO_LEN rules (3+ seeds)
+  [4]
+    - step: S3b VideoUnmask + ButtonUnmask
+    - content: Ring P1 configs (15/14, ring [0.2425,0.3289], cube ranges [7,8]/[7,7], balanced colours, 1024 trials), validation changes, the parking helper wired into reveal (if L14), and tests (including the pinned density test).
+    - gate: V5_UNMASK_RING / DENSITY / HALF_CUBE / INNER_PARITY / REVEAL; reset probe; 2 local demos per env
+  [5]
+    - step: S3c MoveCube
+    - content: The center_exclusion config under demo_layout.xhard and execution_layout.xhard, corner_bias set to 0.0, zone checks at the peg, goal, candidate and final-cube draw points through extra_reject, include_existing=False for cube_2 in xhard, the replay zone guard, and records.
+    - gate: MOVECUBE_CENTER_EXCLUSION, MOVECUBE_REJECTION_BUDGET, MOVECUBE_EXEC_SPAWN; reset probe; V5_REPLICA_PARITY for MoveCube
+  [6]
+    - step: S3d InsertPeg
+    - content: One _xhard_sample_pegs loop over 4 pegs before obj/dir (lazy yaw, strict footprint gaps 0.03 / box 0.01), delete _xhard_place_near_target_peg and near_target_distractor, add records and the replay guard.
+    - gate: INSERTPEG_V5_SPACING, RNG_ORDER, PLACEMENT_MC, SETTLE, V4_SPEC_REJECTED; reset probe
+  [7]
+    - step: S3e BinFill
+    - content: xhard: slots placed with exact OBB tuples, then the colour assignment with an appended randperm and a cap of T=3, then build with fixed_xy. Keep layout.cubes.* as records.
+    - gate: BINFILL_MIN_GAP, COLOR_MIX, REDRAW_APPEND_ONLY, NOT_OVERMIXED; V5_REPLICA_PARITY; reset probe
+  [8]
+    - step: S3f PickXtimes + SwingXtimes
+    - content: PickXtimes: distinct-quadrant extra_reject, 8 cm spacing, exact OBB and 1024 trials for coloured cubes and distractors. SwingXtimes: an explicit difficulty branch in the shared coloured loop, 8 cm spacing and exact OBB; the disks avoid the exact squares.
+    - gate: V5_EXACT_OBB, V5_PICK_DISPERSION, V5_SWING_SPACING, V5_RESET_FEASIBILITY; reset probe
+  [9]
+    - step: S3g VideoRepick
+    - content: 0.12 m hard core through extra_reject; the full randperm(5) interleave for initiators; appended objects.swap_partner_u; _plan_swaps_xhard (2 nearest feasible, 5 mm margin, no immediate repeat) using the pre-filtered sweep; the xhard partner branch in step() with getattr defaults; the real exception class.
+    - gate: VR_MIN_CENTER_DIST, VR_ALL_CUBES_SWAP, VR_PLAN_D5, VR_RNG_ORDER, VR_UNIFORM_MC; the AST lock test; reset probe
+  [10]
+    - step: S3h VideoUnmaskSwap + ButtonUnmaskSwap
+    - content: The unified distractor sampler (hug ring, counts, exact visibility, OBB rule), the whole-layout attempt loop with deferred value(), indexed names, a cube_bins mapping, the outer plan (permutation cycle, fallback, evc, BUS button keep-out, small planning margin), P4 inner-inner rejection at reset, the runtime joint check, outer swap and cube loops outside the AST-locked loop, parking during the swap span, and the fix for ButtonUnmaskSwap's silent truncation.
+    - gate: OUTER_SWAP_PLAN, OUTER_SWAP_CERT, OUTER_SWAP_EXEC, CUBE_FOLLOW, STEP_BUDGET, INNER_SWEEP_RESET_REJECT, V5_UNMASK_NAMES, V5_UNMASK_RESET_TIME (report); AST lock and swap tests; reset probe
+  [11]
+    - step: S4 Snapshot re-export and docs
+    - content: Export scripts/configs/newtask-v5/sampling_config.json once; run the decision-leaf consumption audit; write the README section for V5 and the V5 plan and decision tables.
+    - gate: SAMPLING_SNAPSHOT (test_snapshot_matches_source + config-map audit); V0
+  [12]
+    - step: S5 V6 combo coverage
+    - content: Build the V5 combos.json (touched envs: Unmask cubes {7,8}/{7}/{7,8}x5/{8}x3, RouteStick 15..21, PatternLock 30..33, others as in V4; about 88 combos) and run 5 demos per combo, multi-worker on the local machine (J8). Any combo with zero demo successes stops the run and goes back to the user (H3/N11).
+    - gate: COMBO_COVERAGE (+ reset-level and demo-level report)
+  [13]
+    - step: S6 Draw and freeze v5-01
+    - content: All 16 envs, 10 successful candidates each, attempt cap 30, select 0/3/6; specs.jsonl plus header. The 4 untouched envs must reproduce their v4-01 rows.
+    - gate: FREEZE self-check (per_env_candidates=10, selected_total=48, shortfall reported); V5_UNTOUCHED_XHARD_PARITY on the frozen rows; spec-level topic gates (ring, spacing, plan certification, zone)
+  [14]
+    - step: S7 Rollout 48 (+H4) ×2
+    - content: Local run (K4), multi-worker allowed (K5), videos and h5 kept (J9); runtime topic checks come from the h5 and runtime_checks.
+    - gate: V2 (report), V3g SPEC_BINDING + SPEC_NEGATIVE with cases for the new leaves, V4f report, RS_DEMO_LEN, PL_DEMO_LEN, OUTER_VISIBLE, RUNTIME_COLLISION (report), VR_DEMO_D5 (report), INSERTPEG_V5_DEMO (report)
+  [15]
+    - step: S8 Eval
+    - content: Build from specs.selected via the V5 run id; 16-episode dummy smoke plus the full 48; oracle-speed budget check for RouteStick and PatternLock.
+    - gate: V5e EVAL_PIPELINE; EXEC_BUDGET
+  [16]
+    - step: S9 V1 and closeout
+    - content: Regenerate the V1 144-episode baseline (13e5151 or 0baff09) and run V5 side by side on the same machine at similar load; check the recorder and evaluation.py are untouched; write the step reports and the final report; commit per step.
+    - gate: NATIVE_REGRESSION; RECORDER_FROZEN; EVAL_PY_UPSTREAM; LIGHTWEIGHT failure set equal to the baseline
+## verification_gates
+  [0]
+    - id: V0
+    - what: Original-tier definitions unchanged (kept from V4)
+    - how: Static git diff of config_easy/medium/hard and the NATIVE_SAMPLING keys consumed by the original tiers, plus assert_native_decision on the stripped decision
+    - judgement_line: NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0
+    - why_valid: Every V5 change is supposed to live under decision.xhard or in xhard branches. Any diff in these blocks directly contradicts H2/N12.
+  [1]
+    - id: RESET_REGRESSION
+    - what: Original-tier reset values unchanged after each merge (kept)
+    - how: scripts.parity.v4_reset_probe probe over all 16 envs (easy/medium/hard), diffed against artifacts/newtask-v4/probe/base-13e.json
+    - judgement_line: RESET_REGRESSION=PASS compared=144 diff=0
+    - why_valid: The shared-function hooks (extra_reject, bin_collision) are only safe if the default path is inert. Reset-level values catch any RNG or acceptance drift cheaply.
+  [2]
+    - id: V1
+    - what: Original-tier HDF5 byte identity (kept; the baseline must be regenerated)
+    - how: The 144-episode V3 subset, single worker, locally, baseline commit vs V5, same machine at similar load
+    - judgement_line: NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0
+    - why_valid: This is the hard gate (N4). The reset probe does not cover solver or step() paths, such as the AST-locked swap loop.
+  [3]
+    - id: V5_UNTOUCHED_XHARD_PARITY
+    - what: The xhard layouts of StopCube, PickHighlight, VideoPlaceButton and VideoPlaceOrder reproduce V4 exactly
+    - how: Draw v5-01 for these 4 envs with the v4-01 seeds; compare every spec value to the v4-01 rows
+    - judgement_line: V5_UNTOUCHED_XHARD_PARITY=PASS envs=4 rows=40 diff=0
+    - why_valid: These envs call the shared spawn_random_* functions in xhard. Bit equality proves the new kwargs and helpers are inert outside the intended envs, and lets their V4 V6 evidence carry over.
+  [4]
+    - id: V5_SCENEGEN_CLASS
+    - what: xhard generation failures raise the real SceneGenerationError, not TypeError
+    - how: For each of VideoRepick, SwingXtimes, PatternLock, VideoUnmaskSwap and ButtonUnmaskSwap, force an infeasible xhard config (e.g. min_center_dist 1.0, count 99, an impossible length) and reset
+    - judgement_line: V5_SCENEGEN_CLASS=PASS envs=5 raised=SceneGenerationError typeerror=0
+    - why_valid: I confirmed the module shadowing by import introspection. Only an actual raise shows that the alias covers both the raise and the except sites.
+  [5]
+    - id: V5_REPLICA_PARITY
+    - what: Each offline replica used for V5 statistics matches the implemented env
+    - how: For each of the 12 touched envs, export specs for at least 10 xhard seeds and compare them with the updated replica (all positions, counts, plans)
+    - judgement_line: V5_REPLICA_PARITY=PASS envs=12 seeds>=120 exact=all
+    - why_valid: All the feasibility, uniformity and D5 numbers come from replicas that were bit-exact against V4. They transfer to V5 only if the new replica equals the new code.
+  [6]
+    - id: SAMPLING_SNAPSHOT
+    - what: The V5 snapshot matches the source, and every new decision leaf is consumed
+    - how: pytest tests/lightweight/test_sampling_config_split.py::test_snapshot_matches_source; train_split_audit.py config-map
+    - judgement_line: SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0
+    - why_valid: The specs header embeds the snapshot. An unconsumed key (for example a stale near_target_distractor) would make V3g attribution meaningless.
+  [7]
+    - id: V5_UNMASK_RING
+    - what: Count, ring and exact visibility of the distractors
+    - how: For every V5 candidate: requested == placed == configured count, every centre inside its band, visible_in_camera(bin_corners) true
+    - judgement_line: V5_UNMASK_RING=PASS VU=15 BU=14 VUS=15 BUS=16 out_of_ring=0 not_visible=0 shortfall=0
+    - why_valid: This directly encodes the user's ask (one lap, visible) and the removal of the V4 linear-visibility leak, which I re-measured at 2358/20000.
+  [8]
+    - id: V5_UNMASK_DENSITY
+    - what: The density derivation is pinned
+    - how: A unit test recomputes A_usable on the 1 mm reference grid and checks floor(50·A+0.5) == config.count
+    - judgement_line: V5_UNMASK_DENSITY=PASS envs=4 count_diff=0
+    - why_valid: The counts depend on conventions (VUS is only 0.3-0.5 above the rounding boundary; my 2 mm recompute gives 15.26/15.32). Pinning stops silent drift.
+  [9]
+    - id: V5_UNMASK_HALF_CUBE
+    - what: Half the bins carry cubes, colours are balanced, names are unique
+    - how: n_cube in [floor(N/2), ceil(N/2)]; per-episode colour counts differ by at most 1; cube_bins unique; all actor names unique on a reset with n_cube=8
+    - judgement_line: V5_UNMASK_HALF_CUBE=PASS range_ok=1 color_imbalance_max=1 duplicate_actor_names=0
+    - why_valid: The V4 naming crashes once colours repeat, and ValueError fires for hi>3. Both are confirmed in the code.
+  [10]
+    - id: V5_UNMASK_INNER_PARITY
+    - what: The xhard inner (main-stream) draws are unchanged relative to V4 for the same seeds
+    - how: Reset the 40 v4-01 Unmask identities under V5 code; compare every non-distractor spec path
+    - judgement_line: V5_UNMASK_INNER_PARITY=PASS rows=40 inner_diff=0
+    - why_valid: The Unmask design claims its new draws come only after existing points or on the dedicated stream. This is the direct test of that N5 claim.
+  [11]
+    - id: V5_UNMASK_REVEAL
+    - what: Reveal and parking behaviour, plus step-time cost
+    - how: 72 hold steps plus the full swap span: distractors away during [0,32) and back at 32 within 0.1 mm; hidden cubes back under their bins at last_end; report ms/step in the reveal and swap spans
+    - judgement_line: V5_UNMASK_REVEAL=PASS max_return_err_mm<=0.1 reveal_step_ms_p95=<r> swap_span_step_ms_p95=<s>
+    - why_valid: Many bodies parked at (10,10,10) made steps 3-10x slower; the outer cube pile-up is unmeasured. The return accuracy check protects J1's semantics.
+  [12]
+    - id: V5_SWAP_JOINT_FEASIBILITY
+    - what: Hug ring with density counts, together with outer nearest-neighbour swaps
+    - how: Offline replica with the final sampler and planner, at least 300 layouts per env, the evc criterion; report the first-attempt episode rate, redraw failure at B=16, the first-initiator window share and rejection reasons
+    - judgement_line: V5_SWAP_JOINT_FEASIBILITY=PASS VUS_first_attempt>=0.95 BUS_first_attempt>=0.95 redraw_fail_B16<=1e-4 first_initiator_share=<report>
+    - why_valid: This is the unmeasured cross-topic combination; my circle-approximation pilot gave 0.997 and 0.970. The gate stops counts being frozen on assumptions from either topic alone.
+  [13]
+    - id: MULTI_SWEEP_EQUIV
+    - what: The new joint sweep proof generalises check_swap_sweep
+    - how: check_multi_swap_sweep with one pair vs check_swap_sweep on randomised and known-contact cases (including seed 4500300 sweep#1)
+    - judgement_line: MULTI_SWEEP_EQUIV=PASS cases>=100 diff=0
+    - why_valid: H1 and D5 safety rests on the certified proof; a divergence would silently change which demos are rejected.
+  [14]
+    - id: PREFILTER_EQUIV
+    - what: The certified pre-filter never changes a decision
+    - how: At least 1000 randomised windows and candidates, pre-filtered vs unfiltered (accept/reject and reason), for both Unmask and VideoRepick states
+    - judgement_line: PREFILTER_EQUIV=PASS cases=1000 diff=0
+    - why_valid: The pre-filter only skips pairs proven to be separated. Equivalence is what lets it share bin_collision with D5 without changing V4-semantics decisions.
+  [15]
+    - id: OUTER_SWAP_PLAN_CERT
+    - what: Every inner window has exactly one planned outer swap, and each plan is certified
+    - how: Over 50 resets per env and every frozen row: len(actions.distractor_swap_pairs) == n_swaps; re-run the joint proof, visibility, 0.04 inner clearance and BUS button keep-out on each plan
+    - judgement_line: OUTER_SWAP_PLAN=PASS resets=100 windows_planned_eq_n_swaps=100 ; OUTER_SWAP_CERT=PASS specs=N windows=W rejected=0
+    - why_valid: This encodes the user's 'each inner swap has an outer swap' and 'support collision detection' as checkable spec facts.
+  [16]
+    - id: OUTER_SWAP_EXEC
+    - what: In simulation, outer bins end swapped, cubes follow their bins, and no steps are added
+    - how: Hold-qpos rollout, at least 1 seed per env: outer pair XY at each window end vs the partner's start; each cube's XY vs its bin at last_end+1; swap_schedule[-1][3] and episode lengths vs V4 for the same n_swaps
+    - judgement_line: OUTER_SWAP_EXEC=PASS max_err_m<1e-3 ; CUBE_FOLLOW=PASS max_err_m<2e-3 ; STEP_BUDGET=PASS added_steps=0
+    - why_valid: The plan is checked offline; this confirms the step() loops actually execute it (the loops are separate from the AST-locked loop).
+  [17]
+    - id: INNER_SWEEP_RESET_REJECT
+    - what: P4 turns predictable inner-inner collisions into reset rejections
+    - how: Reset VUS seed 4500300 (the V4 rollout failure) and a V6 BUS failure seed in xhard
+    - judgement_line: INNER_SWEEP_RESET_REJECT=PASS seeds=2 rejected_at_reset=2 class=SceneGenerationError
+    - why_valid: All 8 observed V4 BinCollisionErrors are inner-vs-inner (confirmed from results and samples), so these seeds are the ground truth.
+  [18]
+    - id: OUTER_VISIBLE
+    - what: Moving outer bins stay in frame
+    - how: front_rgb segmentation: every distractor bin id present in every frame of [64, last_end]
+    - judgement_line: OUTER_VISIBLE=PASS frames=F missing=0
+    - why_valid: The planner uses a geometric camera model; a render check catches arm occlusion and model error.
+  [19]
+    - id: INSERTPEG_V5
+    - what: Pairwise spacing guarantee, draw order and settle
+    - how: 20 real resets: all 6 footprint gaps > 0.03 and box gaps > 0.01; replica vs env for 20 seeds; a 20-step hold settle, lateral motion < 1 mm; the V4 header is refused
+    - judgement_line: INSERTPEG_V5_SPACING=PASS min_pair_gap_m>0.03 min_box_gap_m>0.01 ; INSERTPEG_V5_RNG_ORDER=PASS exact=20 ; INSERTPEG_V5_SETTLE=PASS max_dxy_mm<1.0 ; INSERTPEG_V4_SPEC_REJECTED=PASS
+    - why_valid: The root-distance rule does not prevent overlap (my MC: 26% target-4th overlap); only footprint gaps measured on real resets prove the guarantee, and settle confirms the physics consequence goes away.
+  [20]
+    - id: MOVECUBE_V5
+    - what: Central-zone exclusion, rejection budgets, exec-cube fix
+    - how: The CPU replica over at least 5000 seeds plus 10 real resets; recorded rejection counts; reset seeds 1000442 and 1000446 in xhard
+    - judgement_line: MOVECUBE_CENTER_EXCLUSION=PASS seeds=5000 zone_violations=0 layout_fail=0 ; MOVECUBE_REJECTION_BUDGET=PASS exhausted=0 ; MOVECUBE_EXEC_SPAWN=PASS seeds=2 ok=2
+    - why_valid: I reproduced the exec-cube failure on these two seeds in the real simulator, so passing them proves the fix. The zone rule is the literal user ask.
+  [21]
+    - id: LONG_DEMO
+    - what: Demo length window, exact path lengths, eval and fail-safe margins
+    - how: From the h5 is_video_demo count of every candidate; len(path_nodes) in range for every combo; oracle-speed execution in DemonstrationWrapper(max_steps=1300); max env elapsed_steps
+    - judgement_line: RS_DEMO_LEN=PASS rule=L*50 mismatches=0 min_frames=750 max_frames=1050 ; PL_DEMO_LEN=PASS in_band=all ; PL_LEN_EXACT=PASS wrong_length=0 ; EXEC_BUDGET=PASS timeouts=0 max_success_count<=1100 ; FAILSAFE_MARGIN=PASS max_elapsed<=2500
+    - why_valid: Frames and budget accounting were confirmed from h5 and code. The PatternLock numbers come from an offline model (±1.3%), so the real h5 count is the authority.
+  [22]
+    - id: BINFILL_V5
+    - what: min_gap enforced, colour cap, append-only reshuffles, no over-mixing
+    - how: Exact polygon face gaps over at least 2000 replica layouts and all candidates; largest same-colour 0.09 m component; positions identical with the cap on and off; anti-cluster permutation test
+    - judgement_line: BINFILL_MIN_GAP=PASS violations=0 ; BINFILL_COLOR_MIX=PASS T=3 violations=0 fallback=0 ; BINFILL_REDRAW_APPEND_ONLY=PASS pos_equal=2000/2000 ; BINFILL_NOT_OVERMIXED=PASS anti_p05_frac<=0.06
+    - why_valid: The clump is chance, amplified by the OBB bug (my recompute: red NN p=0.027, P(majority≥7)=21%). So the fix must be a colour constraint plus the OBB fix, and it must not move positions or over-regularise.
+  [23]
+    - id: PICK_SWING_V5
+    - what: Exact OBB, dispersion, spacing, feasibility
+    - how: Unit test of cube_obb2d_exact on 1000 yaws; replica with 3000 layouts; a 20-seed reset smoke per env
+    - judgement_line: V5_EXACT_OBB=PASS degenerate=0 ; V5_PICK_DISPERSION=PASS same_cornercell_ge2=0.000 min_pair_lt_0p08=0.000 in_corner_cell>=0.85 ; V5_SWING_SPACING=PASS min_pair_lt_0p08=0.000 ; V5_RESET_FEASIBILITY=PASS pick_fail<=0.010 swing_fail<=0.040
+    - why_valid: corner_bias drives sharing (my MC: 54.5% vs 13.7% without obstacles) and the OBB bug drives near-touching; each metric targets one mechanism while checking the corner intent is kept.
+  [24]
+    - id: VIDEOREPICK_V5
+    - what: Spacing, all-cube participation, plan feasibility, draw order, runtime D5
+    - how: Frozen rows: pairwise distance and actions.swap_pairs coverage; re-certify every planned pair; a SpecRecorder trace-order unit test; V6 and rollout BinCollisionError counts
+    - judgement_line: VR_MIN_CENTER_DIST=PASS min_d>=0.120 ; VR_ALL_CUBES_SWAP=PASS min_participants=6 ; VR_PLAN_D5=PASS rejected=0 ; VR_RNG_ORDER=PASS ; VR_DEMO_D5=REPORT d5_rejected=k
+    - why_valid: The user's complaint (bin_1 never moves in ep3, confirmed from rng_trace) and J2's 45% D5 tail are measured directly on the frozen specs and runtime.
+  [25]
+    - id: V6
+    - what: Combo coverage (kept, rebuilt for V5)
+    - how: The V5 combos.json, 5 demos per combo, reset and demo levels reported
+    - judgement_line: COMBO_COVERAGE=PASS combos=C missing_combinations=0 zero_success_combinations=0
+    - why_valid: This is rule 14 / N11 / H3. Every changed range (cube counts, L, node counts) adds or changes combos.
+  [26]
+    - id: FREEZE
+    - what: Draw and freeze integrity (kept)
+    - how: The v4_specs-equivalent freeze self-check for v5-01
+    - judgement_line: FREEZE_DONE per_env_candidates=10 selected_total=48 candidate_shortfall=s
+    - why_valid: Reset rejection rates rise in V5 (VideoRepick about 8.4%, Swing about 3.6%). The 30-attempt cap must still be met or be reported.
+  [27]
+    - id: V2
+    - what: New-value replay (kept, report-only per K5)
+    - how: Two rollouts of the same v5-01 specs
+    - judgement_line: NEWVALUE_REPLAY=REPORT identities=N terminal_mismatch=0 compared_success=k sha_equal=j field_mismatch=0 empty_or_invalid=0
+    - why_valid: Reset-time plans (VideoRepick, Unmask outer) and deferred value() must replay deterministically.
+  [28]
+    - id: V3g
+    - what: Specs are really consumed (kept; negative cases extended to new leaves)
+    - how: SPEC_BINDING on all 48; SPEC_NEGATIVE including swap_partner_u, distractor_swap_pairs, slot_assignment, center_exclusion, peg gaps
+    - judgement_line: SPEC_BINDING=PASS missing=0 unused=0 unattributed_mismatch=0 ; SPEC_NEGATIVE=PASS cases=M diff_zero=0
+    - why_valid: New value points exist only in V5; without negative cases a dead leaf could pass unnoticed.
+  [29]
+    - id: V4f
+    - what: Feasibility report (kept, no threshold)
+    - how: Draw and rollout success with failure classes
+    - judgement_line: NEWVALUE_FEASIBILITY=REPORT tasks=16 draft_attempted=A draft_ok=160-s rollout_attempted=R rollout_ok=M backfilled=b selected_shortfall=t by_class=…
+    - why_valid: N10: the difficulty changes are intentional and success rates are reported, not gated.
+  [30]
+    - id: V5e
+    - what: Eval pipeline (kept)
+    - how: The V5 eval entry on specs.selected v5-01
+    - judgement_line: EVAL_PIPELINE=PASS episodes=N runtime_ok=N join_missing=0
+    - why_valid: Longer demos and new actors must still build and be evaluated from specs.
+  [31]
+    - id: FROZEN_FILES
+    - what: Recorder frozen, evaluation.py upstream, lightweight tests
+    - how: git diff --quiet RecordWrapper.py; diff scripts/evaluation.py against the official copy; the pytest lightweight failure set vs the baseline
+    - judgement_line: RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS LIGHTWEIGHT=PASS failure_set_equal_baseline=1
+    - why_valid: N2 and the eval budget constant must not move to absorb the longer RouteStick and PatternLock episodes.
+- rerun_scope: Configs and specs: re-export scripts/configs/newtask-v5/sampling_config.json once, after all env groups (every topic changes decision.xhard keys), and rebuild combos.json (about 88 combos: VU {7,8}, BU {7}, VUS 5 swaps × {7,8}, BUS 3 × {8}, RouteStick 7, PatternLock 4, the rest as in V4). V6: re-run for the 12 touched envs. The 4 untouched envs (StopCube, PickHighlight, VideoPlaceButton, VideoPlaceOrder) may reuse the V4 V6 evidence only if V5_UNTOUCHED_XHARD_PARITY passes; a full re-run is simplest. Draw and freeze: a new run id v5-01 for all 16 envs (160 candidates, 48 selected). The touched envs' v4-01 rows cannot be replayed on V5 code: InsertPeg, VideoRepick, Unmask and MoveCube change shape or streams, and RouteStick fails because its L range is read from the class. The untouched envs must come out identical. Rollout: the 48 selected episodes plus H4 backfill, run twice (V2), with videos and h5 (J9). For a coherent snapshot, re-run all 48 rather than splice V4 episodes. V3g: SPEC_BINDING and SPEC_NEGATIVE with new-leaf cases. Eval: V5e on the new specs.selected (16-episode smoke plus the full 48). V1: the V4 V1 h5 baselines (117 GB) were deleted in the 2026-09-23 cleanup, so both sides of the 144-episode comparison must be regenerated locally at similar load. The reset probe baseline base-13e.json still exists. Tests: update test_v4_xhard_{videounmask_buttonunmask, unmaskswap, insertpeg, movecube, videorepick, pickxtimes, swingxtimes, binfill} and the swap schedule/window tests; keep the AST lock test green. V4 artifacts stay frozen, and V4 evaluation stays pinned to commit 0baff09. Offline studies to re-run before freezing: the joint Unmask ring × outer swap study with the implemented sampler, and each topic's MC with the final numbers.
+## blind_spots
+  * Demo-level success is unmeasured for most recommended V5 designs: InsertPeg P1 (resets and settle only), BinFill A+B (no simulator demos), PickXtimes/SwingXtimes P1/P2 (replica only), VideoRepick R (only the minimal variant, 3 seeds), Unmask outer swaps (1 reset, no demos, button presses during swaps in BUS). PatternLock 6×6 has 3 seeds; VideoUnmask/ButtonUnmask have 2 demos each.
+  * The joint Unmask hug ring × outer swap feasibility is a synthesis pilot, not an implementation. It uses the unmask_swap replica with circle-approximated spacing, 300 layouts per env, and inner layouts from the replica. The first-initiator window share (44% / 29%) means heavy fallback, and its effect on layout bias is not characterised.
+  * Parking pile-ups at (10,10,10): the reveal has about 22-24 bins, and with outer swaps up to 11 cubes are parked for hundreds of steps. Physics stability and step time were measured only for the reveal (9 episodes).
+  * The cube OBB degeneracy rate depends on the numeric path (my float64 trimesh check 49.8%; investigators' float32 66%; real simulator 5/11). Whether spawn_random_bin's bin OBBs also degenerate (the Unmask inner bins) was not checked.
+  * SceneGenerationError shadowing: I verified the module/class status by import, and forced raises only for MoveCube (class). The TypeError paths in VideoRepick, SwingXtimes, PatternLock and the Unmask Swap envs are inferred from the code, not executed.
+  * All simulator evidence comes from the local sm_89 / RTX 6000 Ada under variable load (one investigator saw load averages of 300-600). Wall-clock numbers (reset and reveal times, RRT budgets) are indicative; A40 behaviour and K5 load sensitivity were not re-checked.
+  * Several topics raise the reset rejection rate: VideoRepick plan about 8.4%, SwingXtimes about 3.6%, PickXtimes about 1%, VUS/BUS whole-layout redraws. The combined effect on the 30-attempt draw cap was estimated per topic but not simulated end to end.
+  * The effect on learned-policy evaluation margins is unknown. The oracle execution for RouteStick (up to 1050) and PatternLock (up to 1005) uses 77-81% of the 1301-step budget.
+  * Perception judgements (clumps, image footprint, 11 px node spacing on the 6×6 PatternLock grid, BinFill far-side compression) rest on a few frames and proxy metrics, not a systematic visual review.
+  * The untouched envs PickHighlight and VideoPlaceButton/Order keep the OBB bug in xhard. Their clutter layouts were not re-assessed.
+  * I did not recompute ButtonUnmask's density count (14, which needs the button-blocking average), BinFill's multiplicity-corrected 4.0% tail, VideoRepick's hard-core placement rate, or MoveCube's 10/10 demo result.
+  * Recovery mode is off under I3 and is modelled by no topic. Turning it on would shift the xhard streams in the Unmask and Pick envs.
+- overall_summary: [Internal output, in English] I synthesised the 8 V5 investigations and ran 24 spot-checks: 22 confirmed, 1 uncertain (a joint pilot model) and 1 refuted (a new cross-topic defect).
+
+Key answers:
+- 最近2邻 means the single nearest neighbour measured on 2 axes (XY). The only '2 nearest' helper, _compute_dynamic_swap_candidates, is dead code.
+- InsertPeg's 4th peg comes from a separate near-target band sampler, (0.075, 0.085] around peg_0, drawn after obj/dir. A root distance of 0.075 allows overlap (my MC: 26% target-vs-4th peg).
+- corner_bias 0.5 is the main cause of PickXtimes corner piling (obstacle-free MC: 54.5% vs 13.7% sharing a corner cell). The OBB-degeneracy bug adds near-touching cubes.
+- The BinFill red clump is chance, amplified by the OBB bug (recomputed p=0.027 post hoc; P(majority ≥7)=21%).
+- A 5×5 PatternLock tops out at 25 nodes, about 27.4 s on average, so it cannot be centred on 30 s. The six V4 demo frame counts are confirmed from h5.
+- The density-derived Unmask counts reproduce (V4 ring 24.3; ring A 15.3).
+- The MoveCube exec-cube spawn defect reproduces in the real simulator (seeds 1000442/1000446).
+
+Largest cross-topic issues:
+1. The dense hug ring (15/16) combined with outer nearest-neighbour swaps was never measured by either topic. My pilot joint probe gives 99.7% (VUS) and 97.0% (BUS) first-attempt feasibility, but only 44% / 29% of windows are solved by the first-choice initiator. It is gated as V5_SWAP_JOINT_FEASIBILITY, and L16 is a joint decision.
+2. SceneGenerationError is shadowed into a module in 7 envs. Beyond VideoRepick this includes SwingXtimes, PatternLock and both Unmask Swap envs, so V5's new xhard rejections would surface as TypeError. The K2 fix needs extending (L3).
+3. Four divergent OBB and spacing fixes plus three different spawn_random_* hooks should be unified into one inert extra_reject kwarg and one exact-OBB helper.
+4. Two different sweep pre-filters and a (10,10,10) parking pile-up are shared between unmask_ring and unmask_swap.
+
+Everything can stay xhard-only. The only shared-code edits are additive (spawn_random_* kwarg, a new bin_collision function, new utils/xhard helpers). statechange.py and _trimesh_box_to_obb2d must not be touched.
+
+V5 overturns B3, B6, B7, B8 (layout), B9, B12, B13, G3, I2, J2, K1 and K3. It modifies A2 (window), H1, J1, J5 and B1 (enforcement), and extends K2.
+
+Re-run: a new run id v5-01 with all 16 envs re-drawn (the 4 untouched envs must reproduce v4-01 bit-exactly), V6, the 48-episode rollout ×2, V3g, V5e, and a full V1 with a regenerated baseline, because the V4 V1 h5 were deleted.
+
+There are 51 consolidated user decisions (L1-L51). L1 (N5 reading), L3, L16 and L35 gate the most work.
+
+Scratch files: /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/synthesis/ (sc_density.py, sc_obb.py, sc_corner.py, sc_peg.py, sc_binfill_quota.py, sc_demo_frames.py, sc_sge.py, sc_movecube_reset.py, joint_probe.py, joint_probe_A.log).

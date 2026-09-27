@@ -1,0 +1,23 @@
+{
+  "finding_id": "PickXtimes-02",
+  "audit_base": "82e3d922b78d48ec1e825b168cccc0e1b8c690c1",
+  "reproduced_first_completed_step": {
+    "xhard1": {"ep0_seed8100000": 946, "ep3_seed8100300": 1034, "ep6_seed8100600": 921, "n_total_steps": [978, 1080, 965]},
+    "xhard2": {"ep0_seed10100000": 1350, "ep3_seed10100300": 1281, "ep6_seed10100600": 1275, "n_total_steps": [1390, 1317, 1313]},
+    "xhard3": {"ep0_seed12100000": 1591, "ep3_seed12100300": 1547, "ep6_seed12100600": 1614, "n_total_steps": [1627, 1593, 1663]},
+    "xhard4": {"ep0_seed6100000": 2059, "ep3_seed6100300": 2180, "ep6_seed6100600": 1952, "n_total_steps": [2105, 2215, 1995]}
+  },
+  "reproduced_native_first_completed_step": {
+    "easy": [490, 594, 610],
+    "medium": [406, 429, 441],
+    "hard": [770, 785, 860],
+    "max_total_hdf5_steps_native": 897
+  },
+  "source_confirmed": {
+    "PickXtimes.py::config_xhard1_2_3_4": "number_range xhard1=[6,7] xhard2=[8,9] xhard3=[10,12] xhard4=[13,15]; matches sampling_config.json tasks.PickXtimes.decision.number_range",
+    "scripts/evaluation.py": "max_steps=1300 confirmed at that literal value",
+    "0925-newtask-release-v6-plan.md 口径2 (D10)": "'新档取值不受 1301 限制' -- BLANKET permission for ALL new tiers (not tier-specific), confirming exceeding budget is broadly authorized regardless of the 四.7 enumerated list",
+    "0925-newtask-release-v6-plan.md 四.7": "'PickX xhard3/4、BinFill xhard3/4、PH xhard4 会超 1301 步（允许）' -- lists only xhard3/4 for PickXtimes, omits xhard2 despite xhard2 ep0 (1350) exceeding 1301"
+  },
+  "conclusion": "CONFIRMED. Independently reproduced from AUDIT_BASE source and referenced HDF5 files without relying on the audit's own recorded evidence. xhard2 ep0 (seed 10100000) first reaches is_completed=True at timestep_1350, exceeding the 1300/1301-step evaluation budget; xhard2 ep3/ep6 stay under (1281, 1275). xhard1 never exceeds (max 1034); xhard3/xhard4 always exceed (1547-2180). Native easy/medium/hard never approach the budget (max 860, total HDF5 897). The plan's blanket permission (口径2/D10: '新档取值不受 1301 限制') already covers this case in principle, so this is an incomplete enumeration in the descriptive 四.7 sentence, not a rule violation -- matching the finding's own stated interpretation. Category new_tier_only is correct: this budget-overrun mechanic is structurally impossible in native tiers (their number_range caps at 5, well within 1300-step reach) and only arises from the new xhard1-4 repeat-count mechanic; it is not a native-vs-new behavioral divergence lacking plan basis, since general plan basis (口径2) does exist -- it's simply omitted from one illustrative list."
+}

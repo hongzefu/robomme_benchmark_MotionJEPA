@@ -1,0 +1,13 @@
+{
+  "specs": "/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/specs.jsonl",
+  "identity_sha256": "bc8e8b1533f114e02e168bc4c919d0052765272a05366c8ebd2952050dfbbda1",
+  "label": "run1",
+  "per_env": {
+    "BinFill": {
+      "attempted": 1,
+      "ok": 1,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    }
+  }
+}

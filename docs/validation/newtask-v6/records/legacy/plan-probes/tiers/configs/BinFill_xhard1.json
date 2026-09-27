@@ -1,0 +1,167 @@
+{
+ "task": "BinFill",
+ "tier": "xhard1",
+ "overrides": {
+  "configs.xhard.put_in_numbers": [
+   4,
+   5
+  ]
+ },
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "layout_mode": "native_dynamic",
+   "configs": {
+    "hard": {
+     "color": 3,
+     "spawn_cubes": [
+      10,
+      12
+     ],
+     "put_in_numbers": [
+      3,
+      5
+     ]
+    },
+    "easy": {
+     "color": 1,
+     "spawn_cubes": [
+      4,
+      6
+     ],
+     "put_in_numbers": [
+      1,
+      3
+     ]
+    },
+    "medium": {
+     "color": 2,
+     "spawn_cubes": [
+      8,
+      10
+     ],
+     "put_in_numbers": [
+      2,
+      4
+     ]
+    },
+    "xhard": {
+     "color": 3,
+     "spawn_cubes": [
+      12,
+      12
+     ],
+     "put_in_numbers": [
+      4,
+      5
+     ],
+     "layout_mode": "clutter",
+     "color_mix": {
+      "max_component": 3,
+      "link_m": 0.09,
+      "max_redraws": 64
+     }
+    }
+   }
+  },
+  "native": {
+   "parameters": {
+    "put_in_color": {
+     "hard": [
+      2,
+      3
+     ],
+     "easy": [
+      1,
+      1
+     ],
+     "medium": [
+      1,
+      2
+     ],
+     "xhard": [
+      2,
+      3
+     ]
+    },
+    "dynamic": {
+     "sampler": "torch.randint",
+     "low": 0,
+     "high_exclusive": 2,
+     "shape": [
+      1
+     ],
+     "cast": "bool"
+    }
+   },
+   "positions": {
+    "button": {
+     "center_xy": [
+      -0.2,
+      0
+     ],
+     "randomize": true,
+     "randomize_range": [
+      0.1,
+      0.4
+     ],
+     "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+     "scale": 1.5,
+     "randomize_range_origin": "原值取自 build_button 形参默认值；原调用点未传，现由本快照显式传入"
+    },
+    "board": {
+     "base_position": [
+      0.15,
+      0,
+      0
+     ],
+     "x_offset": {
+      "scale": 0.2,
+      "subtract": 0.2
+     },
+     "y_offset": {
+      "scale": 0.4,
+      "subtract": 0.2
+     },
+     "yaw_deg": {
+      "scale": 40,
+      "subtract": 20
+     },
+     "x_expression": "0.15 + (u * 0.2 - 0.2)",
+     "y_expression": "u * 0.4 - 0.2",
+     "yaw_expression": "u * 40.0 - 20.0",
+     "board_side": 0.1,
+     "hole_side": 0.08,
+     "thickness": 0.05,
+     "consumer": "build_board_with_hole 只是位置接收方，内部无随机"
+    },
+    "cubes": {
+     "region_center": [
+      -0.1,
+      0
+     ],
+     "region_half_size": [
+      0.2,
+      0.25
+     ],
+     "random_yaw": true,
+     "yaw_range_rad": [
+      0,
+      6.283185307179586
+     ],
+     "yaw_expression": "yaw_sample * 2 * np.pi",
+     "min_gap": "self.cube_half_size",
+     "min_gap_value": 0.02,
+     "include_existing": false,
+     "include_goal": false,
+     "rng_per_trial": [
+      "x",
+      "y",
+      "yaw"
+     ]
+    }
+   }
+  }
+ }
+}

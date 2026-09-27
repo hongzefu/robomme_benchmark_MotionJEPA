@@ -1,0 +1,103 @@
+{
+  "specs": "scripts/configs/newtask-v4/v4-01/specs.jsonl",
+  "identity_sha256": "2e3766c93e5ab1effa57b197e43c9965b3461098f96f0a6dc4d0fafaf13553cd",
+  "label": "run1",
+  "per_env": {
+    "PickXtimes": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "StopCube": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "SwingXtimes": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "BinFill": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoUnmaskSwap": {
+      "attempted": 4,
+      "ok": 3,
+      "backfilled": 1,
+      "selected_shortfall": 0
+    },
+    "VideoUnmask": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "ButtonUnmaskSwap": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "ButtonUnmask": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoRepick": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoPlaceButton": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoPlaceOrder": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "PickHighlight": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "InsertPeg": {
+      "attempted": 10,
+      "ok": 2,
+      "backfilled": 2,
+      "selected_shortfall": 1
+    },
+    "MoveCube": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "PatternLock": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "RouteStick": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    }
+  }
+}

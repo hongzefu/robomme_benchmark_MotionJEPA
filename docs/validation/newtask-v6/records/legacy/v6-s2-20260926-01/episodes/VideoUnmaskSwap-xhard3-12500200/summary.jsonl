@@ -1,0 +1,1 @@
+{"task": "VideoUnmaskSwap", "seed": 12500200, "difficulty": "xhard3", "ok": false, "failure_class": "task", "error_type": "BinCollisionError", "error": "碰撞排除[contact] sweep#3 对象 bin_2(形状4) 与 bin_1(形状5) g=-2.57671478756e-05 s=0.5625 中点判定", "wall_s": 18.6, "timesteps": null}

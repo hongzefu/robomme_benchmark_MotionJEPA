@@ -1,0 +1,6 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[1/1] ButtonUnmaskSwap seed=10700100 ok=False SceneGenerationError xhard2 内环可行槽对图不连通（可行槽对 [(0, 3), (1, 2)]），按 V6 S5 拒绝本次布局 1s
+DEMO_PROBE task=ButtonUnmaskSwap difficulty=xhard2 ok=0/1 by_class={'task:SceneGenerationError': 1}

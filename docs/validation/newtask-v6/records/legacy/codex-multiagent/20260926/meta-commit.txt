@@ -1,0 +1,29 @@
+docs: 增加 Codex 多代理协作与模型档位规则
+
+一、用户指令原话
+「写codex特有的提示 让claude忽略这个」
+「https://learn.chatgpt.com/docs/agent-configuration/subagents?utm_source=chatgpt.com&surface=app」
+「尽可能积极调用使用multi agent来实现 但是分隔要保持清晰」
+「agents.max_concurrent_threads_per_session是否可以不设上限？」
+「agents.default_subagent_model是否可以设置？」
+「实验告诉我 注意我是codex app进行ssh的机制 不是cli」
+「并且同步到https://github.com/hongzefu/AgentMetaRules-hongzefu」
+「子agent要小于等于主要请求agent的规格」
+「只限制模型档位」
+「你试试看能不能启动超过4个？」
+「我的问题是同时已开启的能不能超过」
+「提高到 16 个子代理」
+「你先实测16个agent能并发 而且因为现在是asttra尝试用luna并发试试看」
+「开始实现 并且验收完毕前测试16并发」
+「已经退出了 开始实现该计划！」
+
+二、计划与实施
+在正本第25条之后增加第26条，规定Codex积极委派独立工作、明确任务边界、同一对象单写入负责人、主代理统一验收；Claude及其他代理忽略整条。子代理及递归子代理模型不得高于本次用户主请求，推理强度单独决定。并发按宿主实际容量，不把累计数量当同时运行，不另起顶层任务绕限。README同步规则数量，sources补来源和日期；正本提交推送后回流项目并记SHA。
+
+三、实验与验证
+实际SSH后端为远端app-server 0.157.0。本次新子代理明确指定gpt-6-luna，前轮运行元数据确认主代理gpt-6-astra/ultra和3个gpt-6-luna/low同时运行；第4个子代理报agent thread limit reached。零、负数及unlimited不是有效并发配置，1000000仅解析接受，不能代表无限。default_subagent_model字符串可以解析，但无效模型名同样通过，因此不将解析当作模型路由验证。
+个人远端配置已设max_concurrent_threads_per_session=16，未固定默认子模型；独立app-server config/read返回16，CONFIG_READ=PASS configured_subagents=16 default_model=inherited。但已有App当前回合再次触发原并发限制，16子代理同时开启尚未通过，须刷新实际连接或回合后复测，不能把此文档提交当成整项验收完成。
+正本验证：git diff --check通过；uv run --no-sync python静态核验输出RULE_DOCS=PASS changed_files=3 historical_content_preserved=1 local_links=33 model_ceiling_only=1。既有正文除规则数量外原样保留，两份Claude机制不改；本轮纯文档，不运行无关仿真。
+
+四、当前状态与边界
+本提交只包含正本AGENTS.md、README.md、docs/sources.md。个人配置不上传GitHub，未中断既有App守护进程和V6生成任务。推送本提交后同步项目规则；16并发及第17个拒绝仍待真实App验证。

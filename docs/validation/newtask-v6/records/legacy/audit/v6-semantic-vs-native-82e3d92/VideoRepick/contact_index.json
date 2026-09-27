@@ -1,0 +1,396 @@
+[
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "image": "frames/contact_new_xhard1_ep0.jpg",
+  "frames": [
+   0,
+   96,
+   445,
+   543,
+   615,
+   676,
+   444,
+   806,
+   849
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "image": "frames/contact_new_xhard1_ep3.jpg",
+  "frames": [
+   0,
+   102,
+   388,
+   484,
+   555,
+   614,
+   387,
+   737,
+   780
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "image": "frames/contact_new_xhard1_ep6.jpg",
+  "frames": [
+   0,
+   89,
+   419,
+   527,
+   602,
+   659,
+   418,
+   809,
+   848
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "image": "frames/contact_new_xhard2_ep0.jpg",
+  "frames": [
+   0,
+   94,
+   550,
+   658,
+   734,
+   795,
+   868,
+   925,
+   549,
+   1079,
+   1119
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "image": "frames/contact_new_xhard2_ep3.jpg",
+  "frames": [
+   0,
+   112,
+   589,
+   706,
+   800,
+   865,
+   969,
+   1040,
+   588,
+   1201,
+   1246
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "image": "frames/contact_new_xhard2_ep6.jpg",
+  "frames": [
+   0,
+   102,
+   569,
+   672,
+   754,
+   813,
+   894,
+   953,
+   568,
+   1084,
+   1127
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "image": "frames/contact_new_xhard3_ep0.jpg",
+  "frames": [
+   0,
+   102,
+   618,
+   707,
+   770,
+   826,
+   889,
+   945,
+   1008,
+   1064,
+   617,
+   1183,
+   1221
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "image": "frames/contact_new_xhard3_ep3.jpg",
+  "frames": [
+   0,
+   93,
+   645,
+   744,
+   816,
+   877,
+   948,
+   1009,
+   1079,
+   1139,
+   644,
+   1262,
+   1300
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "image": "frames/contact_new_xhard3_ep6.jpg",
+  "frames": [
+   0,
+   99,
+   612,
+   704,
+   767,
+   825,
+   888,
+   945,
+   1009,
+   1068,
+   611,
+   1196,
+   1233
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "image": "frames/contact_new_xhard4_ep0.jpg",
+  "frames": [
+   0,
+   102,
+   883,
+   975,
+   1038,
+   1094,
+   1157,
+   1214,
+   1277,
+   1333,
+   1396,
+   1453,
+   882,
+   1582,
+   1620
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "image": "frames/contact_new_xhard4_ep3.jpg",
+  "frames": [
+   0,
+   94,
+   816,
+   909,
+   983,
+   1044,
+   1115,
+   1176,
+   1247,
+   1306,
+   1376,
+   1434,
+   1503,
+   1561,
+   815,
+   1680,
+   1714
+  ]
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "image": "frames/contact_new_xhard4_ep6.jpg",
+  "frames": [
+   0,
+   100,
+   760,
+   858,
+   931,
+   987,
+   1061,
+   1117,
+   1191,
+   1248,
+   1317,
+   1373,
+   759,
+   1512,
+   1552
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 0,
+  "image": "frames/contact_native_easy_ep0.jpg",
+  "frames": [
+   0,
+   90,
+   321,
+   411,
+   475,
+   529,
+   320,
+   720,
+   755
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 1,
+  "image": "frames/contact_native_easy_ep1.jpg",
+  "frames": [
+   0,
+   105,
+   343,
+   437,
+   510,
+   564,
+   689,
+   749,
+   342,
+   893,
+   932
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 10,
+  "image": "frames/contact_native_medium_ep10.jpg",
+  "frames": [
+   0,
+   91,
+   363,
+   463,
+   535,
+   593,
+   665,
+   723,
+   362,
+   847,
+   886
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 11,
+  "image": "frames/contact_native_hard_ep11.jpg",
+  "frames": [
+   0,
+   100,
+   162,
+   261,
+   392,
+   433
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 2,
+  "image": "frames/contact_native_medium_ep2.jpg",
+  "frames": [
+   0,
+   94,
+   313,
+   402,
+   529,
+   586,
+   312,
+   718,
+   761
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 3,
+  "image": "frames/contact_native_hard_ep3.jpg",
+  "frames": [
+   0,
+   117,
+   214,
+   330,
+   439,
+   509,
+   622,
+   697,
+   984,
+   1026
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 4,
+  "image": "frames/contact_native_easy_ep4.jpg",
+  "frames": [
+   0,
+   89,
+   255,
+   343,
+   254,
+   570,
+   606
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 6,
+  "image": "frames/contact_native_medium_ep6.jpg",
+  "frames": [
+   0,
+   94,
+   317,
+   411,
+   316,
+   542,
+   580
+  ]
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 7,
+  "image": "frames/contact_native_hard_ep7.jpg",
+  "frames": [
+   0,
+   90,
+   159,
+   249,
+   313,
+   370,
+   433,
+   490,
+   616,
+   656
+  ]
+ }
+]

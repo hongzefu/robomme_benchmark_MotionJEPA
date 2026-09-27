@@ -1,0 +1,36 @@
+{
+  "run_name": "v6-01-infra-recovery-01",
+  "attempted": 23,
+  "max_attempts": 76,
+  "stop_reason": null,
+  "success_with_original": {
+    "StopCube": 3,
+    "SwingXtimes": 3,
+    "VideoUnmaskSwap": 3,
+    "VideoUnmask": 3,
+    "VideoRepick": 3,
+    "VideoPlaceButton": 3,
+    "VideoPlaceOrder": 3,
+    "InsertPeg": 3
+  },
+  "per_task_attempts": {
+    "StopCube": 2,
+    "SwingXtimes": 3,
+    "VideoUnmaskSwap": 3,
+    "VideoUnmask": 3,
+    "VideoRepick": 3,
+    "VideoPlaceButton": 3,
+    "VideoPlaceOrder": 3,
+    "InsertPeg": 3
+  },
+  "shortfall": {
+    "StopCube": 0,
+    "SwingXtimes": 0,
+    "VideoUnmaskSwap": 0,
+    "VideoUnmask": 0,
+    "VideoRepick": 0,
+    "VideoPlaceButton": 0,
+    "VideoPlaceOrder": 0,
+    "InsertPeg": 0
+  }
+}

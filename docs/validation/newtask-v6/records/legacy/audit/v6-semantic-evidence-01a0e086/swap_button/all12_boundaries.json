@@ -1,0 +1,461 @@
+[
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed8700000.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [63, 151]}",
+        "grounded": "press the first button at <60, 151>",
+        "online": "press the first button at <60, 151>"
+      },
+      {
+        "t": 115,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [67, 105]}",
+        "grounded": "press the second button at <64, 104>",
+        "online": "press the second button at <64, 104>"
+      },
+      {
+        "t": 265,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [93, 188]}",
+        "grounded": "pick up the container at <96, 185> that hides the red cube",
+        "online": "pick up the container at <93, 129> that hides the red cube"
+      },
+      {
+        "t": 419,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [126, 196]}",
+        "grounded": "pick up the container at <128, 192> that hides the blue cube",
+        "online": "pick up the container at <128, 192> that hides the blue cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed8700300.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [66, 149]}",
+        "grounded": "press the first button at <64, 149>",
+        "online": "press the first button at <64, 149>"
+      },
+      {
+        "t": 119,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [65, 107]}",
+        "grounded": "press the second button at <63, 105>",
+        "online": "press the second button at <63, 105>"
+      },
+      {
+        "t": 268,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [132, 182]}",
+        "grounded": "pick up the container at <135, 179> that hides the blue cube",
+        "online": "pick up the container at <126, 118> that hides the blue cube"
+      },
+      {
+        "t": 422,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [123, 119]}",
+        "grounded": "pick up the container at <126, 118> that hides the red cube",
+        "online": "pick up the container at <126, 118> that hides the red cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed8700600.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [64, 154]}",
+        "grounded": "press the first button at <61, 153>",
+        "online": "press the first button at <61, 153>"
+      },
+      {
+        "t": 114,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [63, 104]}",
+        "grounded": "press the second button at <60, 103>",
+        "online": "press the second button at <60, 103>"
+      },
+      {
+        "t": 266,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [92, 114]}",
+        "grounded": "pick up the container at <95, 114> that hides the red cube",
+        "online": "pick up the container at <95, 114> that hides the red cube"
+      },
+      {
+        "t": 417,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [131, 168]}",
+        "grounded": "pick up the container at <133, 165> that hides the green cube",
+        "online": "pick up the container at <133, 165> that hides the green cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed10700001.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [67, 154]}",
+        "grounded": "press the first button at <64, 153>",
+        "online": "press the first button at <64, 153>"
+      },
+      {
+        "t": 118,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [64, 102]}",
+        "grounded": "press the second button at <61, 101>",
+        "online": "press the second button at <61, 101>"
+      },
+      {
+        "t": 229,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [97, 154]}",
+        "grounded": "pick up the container at <100, 152> that hides the green cube",
+        "online": "pick up the container at <116, 185> that hides the green cube"
+      },
+      {
+        "t": 380,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [101, 110]}",
+        "grounded": "pick up the container at <104, 109> that hides the blue cube",
+        "online": "pick up the container at <104, 109> that hides the blue cube"
+      },
+      {
+        "t": 516,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [131, 110]}",
+        "grounded": "pick up the container at <134, 110> that hides the red cube",
+        "online": "pick up the container at <134, 110> that hides the red cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed10700300.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [69, 156]}",
+        "grounded": "press the first button at <67, 156>",
+        "online": "press the first button at <67, 156>"
+      },
+      {
+        "t": 109,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [63, 102]}",
+        "grounded": "press the second button at <60, 100>",
+        "online": "press the second button at <60, 100>"
+      },
+      {
+        "t": 234,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [87, 162]}",
+        "grounded": "pick up the container at <90, 159> that hides the blue cube",
+        "online": "pick up the container at <126, 132> that hides the blue cube"
+      },
+      {
+        "t": 378,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [128, 127]}",
+        "grounded": "pick up the container at <130, 126> that hides the red cube",
+        "online": "pick up the container at <130, 126> that hides the red cube"
+      },
+      {
+        "t": 531,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [101, 110]}",
+        "grounded": "pick up the container at <111, 114> that hides the green cube",
+        "online": "pick up the container that hides the green cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed10700600.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [65, 148]}",
+        "grounded": "press the first button at <62, 148>",
+        "online": "press the first button at <62, 148>"
+      },
+      {
+        "t": 118,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [67, 103]}",
+        "grounded": "press the second button at <64, 102>",
+        "online": "press the second button at <64, 102>"
+      },
+      {
+        "t": 233,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [103, 168]}",
+        "grounded": "pick up the container at <105, 166> that hides the blue cube",
+        "online": "pick up the container at <133, 177> that hides the blue cube"
+      },
+      {
+        "t": 389,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [126, 93]}",
+        "grounded": "pick up the container at <128, 93> that hides the red cube",
+        "online": "pick up the container at <128, 93> that hides the red cube"
+      },
+      {
+        "t": 530,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [102, 131]}",
+        "grounded": "pick up the container at <105, 130> that hides the green cube",
+        "online": "pick up the container at <104, 132> that hides the green cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed12700000.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [68, 155]}",
+        "grounded": "press the first button at <65, 155>",
+        "online": "press the first button at <65, 155>"
+      },
+      {
+        "t": 104,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [68, 110]}",
+        "grounded": "press the second button at <65, 109>",
+        "online": "press the second button at <65, 109>"
+      },
+      {
+        "t": 263,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [110, 200]}",
+        "grounded": "pick up the container at <113, 196> that hides the blue cube",
+        "online": "pick up the container at <104, 160> that hides the blue cube"
+      },
+      {
+        "t": 427,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [98, 162]}",
+        "grounded": "pick up the container at <101, 160> that hides the green cube",
+        "online": "pick up the container at <101, 160> that hides the green cube"
+      },
+      {
+        "t": 573,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [132, 136]}",
+        "grounded": "pick up the container at <134, 134> that hides the red cube",
+        "online": "pick up the container at <134, 134> that hides the red cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed12700300.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [65, 145]}",
+        "grounded": "press the first button at <62, 145>",
+        "online": "press the first button at <62, 145>"
+      },
+      {
+        "t": 119,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [65, 105]}",
+        "grounded": "press the second button at <62, 104>",
+        "online": "press the second button at <62, 104>"
+      },
+      {
+        "t": 262,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [119, 112]}",
+        "grounded": "pick up the container at <121, 112> that hides the blue cube",
+        "online": "pick up the container at <91, 105> that hides the blue cube"
+      },
+      {
+        "t": 423,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [129, 186]}",
+        "grounded": "pick up the container at <131, 183> that hides the red cube",
+        "online": "pick up the container at <131, 183> that hides the red cube"
+      },
+      {
+        "t": 553,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [88, 105]}",
+        "grounded": "pick up the container at <91, 105> that hides the green cube",
+        "online": "pick up the container at <91, 105> that hides the green cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed12700600.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [70, 147]}",
+        "grounded": "press the first button at <67, 147>",
+        "online": "press the first button at <67, 147>"
+      },
+      {
+        "t": 110,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [67, 111]}",
+        "grounded": "press the second button at <65, 109>",
+        "online": "press the second button at <65, 109>"
+      },
+      {
+        "t": 295,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [102, 115]}",
+        "grounded": "pick up the container at <105, 114> that hides the blue cube",
+        "online": "pick up the container at <126, 95> that hides the blue cube"
+      },
+      {
+        "t": 448,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [124, 180]}",
+        "grounded": "pick up the container at <127, 177> that hides the red cube",
+        "online": "pick up the container at <127, 177> that hides the red cube"
+      },
+      {
+        "t": 596,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [124, 95]}",
+        "grounded": "pick up the container at <126, 95> that hides the green cube",
+        "online": "pick up the container at <126, 95> that hides the green cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed6700000.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [63, 155]}",
+        "grounded": "press the first button at <60, 155>",
+        "online": "press the first button at <60, 155>"
+      },
+      {
+        "t": 113,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [68, 106]}",
+        "grounded": "press the second button at <65, 105>",
+        "online": "press the second button at <65, 105>"
+      },
+      {
+        "t": 333,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [92, 111]}",
+        "grounded": "pick up the container at <95, 110> that hides the blue cube",
+        "online": "pick up the container at <104, 169> that hides the blue cube"
+      },
+      {
+        "t": 476,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [121, 106]}",
+        "grounded": "pick up the container at <123, 106> that hides the green cube",
+        "online": "pick up the container at <123, 106> that hides the green cube"
+      },
+      {
+        "t": 630,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [129, 193]}",
+        "grounded": "pick up the container at <131, 190> that hides the red cube",
+        "online": "pick up the container at <131, 190> that hides the red cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed6700300.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [63, 151]}",
+        "grounded": "press the first button at <60, 150>",
+        "online": "press the first button at <60, 150>"
+      },
+      {
+        "t": 114,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [67, 103]}",
+        "grounded": "press the second button at <64, 102>",
+        "online": "press the second button at <64, 102>"
+      },
+      {
+        "t": 332,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [94, 138]}",
+        "grounded": "pick up the container at <97, 137> that hides the green cube",
+        "online": "pick up the container at <97, 137> that hides the green cube"
+      },
+      {
+        "t": 476,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [96, 190]}",
+        "grounded": "pick up the container at <99, 187> that hides the blue cube",
+        "online": "pick up the container at <99, 187> that hides the blue cube"
+      },
+      {
+        "t": 612,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [132, 179]}",
+        "grounded": "pick up the container at <134, 176> that hides the red cube",
+        "online": "pick up the container at <134, 176> that hides the red cube"
+      }
+    ]
+  },
+  {
+    "file": "artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed6700600.h5",
+    "boundaries": [
+      {
+        "t": 0,
+        "simple": "press the first button",
+        "choice": "{\"choice\": \"A\", \"point\": [63, 149]}",
+        "grounded": "press the first button at <60, 148>",
+        "online": "press the first button at <60, 148>"
+      },
+      {
+        "t": 115,
+        "simple": "press the second button",
+        "choice": "{\"choice\": \"B\", \"point\": [63, 102]}",
+        "grounded": "press the second button at <60, 100>",
+        "online": "press the second button at <60, 100>"
+      },
+      {
+        "t": 333,
+        "simple": "pick up the container that hides the blue cube",
+        "choice": "{\"choice\": \"C\", \"point\": [132, 159]}",
+        "grounded": "pick up the container at <134, 156> that hides the blue cube",
+        "online": "pick up the container at <118, 117> that hides the blue cube"
+      },
+      {
+        "t": 484,
+        "simple": "pick up the container that hides the green cube",
+        "choice": "{\"choice\": \"C\", \"point\": [98, 96]}",
+        "grounded": "pick up the container at <101, 96> that hides the green cube",
+        "online": "pick up the container at <101, 96> that hides the green cube"
+      },
+      {
+        "t": 632,
+        "simple": "pick up the container that hides the red cube",
+        "choice": "{\"choice\": \"C\", \"point\": [127, 104]}",
+        "grounded": "pick up the container at <129, 104> that hides the red cube",
+        "online": "pick up the container at <129, 104> that hides the red cube"
+      }
+    ]
+  }
+]

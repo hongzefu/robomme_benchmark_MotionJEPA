@@ -1,0 +1,39 @@
+{
+  "source": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed10800000.h5",
+  "transitions": [
+    [
+      "timestep_0",
+      "press the button"
+    ],
+    [
+      "timestep_79",
+      "pick up the container that hides the blue cube"
+    ],
+    [
+      "timestep_213",
+      "put down the container"
+    ],
+    [
+      "timestep_249",
+      "pick up the container that hides the red cube"
+    ],
+    [
+      "timestep_355",
+      "put down the container"
+    ],
+    [
+      "timestep_391",
+      "pick up the container that hides the green cube"
+    ]
+  ],
+  "sampled_frames": [
+    0,
+    16,
+    31,
+    32,
+    40,
+    64,
+    80,
+    100
+  ]
+}

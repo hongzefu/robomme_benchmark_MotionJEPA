@@ -1,0 +1,10 @@
+[
+ {
+  "task": "InsertPeg",
+  "episode": 4,
+  "seed": 5300400,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "artifacts/newtask-v5/v5-01/rollout/run1/episodes/InsertPeg_episode_4"
+ }
+]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """轻量测试：HDF5 全字段逐位对拍器的正例与反例（不加载仿真、不占 GPU）。
 
-对应 0921-newtask-release-v3-plan.md 第二部分「十一」的 `compare_h5_pair`：
+对应 docs/plans/0921-newtask-release-v3-plan.md 第二部分「十一」的 `compare_h5_pair`：
 两层比较（先整文件 SHA-256、不同再逐字段）、浮点按位模式不设容差、
 缺失／额外路径与 dtype／shape 变化必须被抓到、时间步数不同先记差异再比共有步。
 

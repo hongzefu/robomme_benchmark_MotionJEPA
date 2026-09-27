@@ -1,0 +1,1178 @@
+[
+  {
+    "tier": "xhard1",
+    "episode": 0,
+    "static_t": [
+      1235,
+      1293
+    ],
+    "execution_t": 1353,
+    "last": 1523,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed9100001.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard1-ep0.jpg",
+    "answer_actor": 2,
+    "swap_pair": [
+      1,
+      2
+    ],
+    "answer_color": "blue",
+    "final_cube_pixel": [
+      83.795,
+      105.88
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        81.77557918465787,
+        135.93132161621088
+      ],
+      "1": [
+        115.73116661189945,
+        140.25869108748796
+      ],
+      "2": [
+        87.30261823280458,
+        108.56338701065518
+      ],
+      "3": [
+        90.956727038172,
+        79.0127341319457
+      ]
+    },
+    "nearest_expected_actor": 2,
+    "distance_px": {
+      "0": 30.11909678775877,
+      "1": 46.92348174157503,
+      "2": 4.416327831587691,
+      "3": 27.80540072349253
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 186,
+      "nth": 1,
+      "object_index": 0,
+      "cube_pixel": [
+        114.11111111111111,
+        139.38425925925927
+      ],
+      "nearest_actor": 2,
+      "distances": {
+        "0": 32.5193696638397,
+        "1": 40.84876321960049,
+        "2": 1.840980947172983,
+        "3": 64.65946603549266
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "blue",
+        "t": 730,
+        "visible": true,
+        "center": [
+          106.61792452830188,
+          116.41981132075472
+        ],
+        "home_projected": [
+          106.9844458315651,
+          116.45475257382851
+        ],
+        "distance_px": 0.36818304810532876
+      },
+      {
+        "color": "green",
+        "t": 1235,
+        "visible": true,
+        "center": [
+          130.87272727272727,
+          77.92121212121212
+        ],
+        "home_projected": [
+          132.02751075818594,
+          78.84702575111918
+        ],
+        "distance_px": 1.480086408156544
+      }
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "episode": 3,
+    "static_t": [
+      1316,
+      1362
+    ],
+    "execution_t": 1422,
+    "last": 1617,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed9100302.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard1-ep3.jpg",
+    "answer_actor": 2,
+    "swap_pair": [
+      0,
+      2
+    ],
+    "answer_color": "red",
+    "final_cube_pixel": [
+      171.55102040816325,
+      101.90816326530613
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        92.03245319805171,
+        74.72047313077174
+      ],
+      "1": [
+        90.29095716382724,
+        96.05855053429732
+      ],
+      "2": [
+        169.56119807171788,
+        104.63426419015758
+      ],
+      "3": [
+        147.09904624896896,
+        128.37773468971997
+      ]
+    },
+    "nearest_expected_actor": 2,
+    "distance_px": {
+      "0": 84.0379261167271,
+      "1": 81.47033722512917,
+      "2": 3.375058396990022,
+      "3": 36.03522237580964
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 362,
+      "nth": 2,
+      "object_index": 0,
+      "cube_pixel": [
+        90.29007633587786,
+        71.59541984732824
+      ],
+      "nearest_actor": 2,
+      "distances": {
+        "0": 85.88059138576116,
+        "1": 24.463130702826778,
+        "2": 3.5779652254039256,
+        "3": 80.32116994570603
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "red",
+        "t": 540,
+        "visible": true,
+        "center": [
+          173.86904761904762,
+          134.67857142857142
+        ],
+        "home_projected": [
+          174.62217082676787,
+          134.67583297111366
+        ],
+        "distance_px": 0.7531281864039396
+      },
+      {
+        "color": "blue",
+        "t": 1316,
+        "visible": true,
+        "center": [
+          148.47029702970298,
+          102.78217821782178
+        ],
+        "home_projected": [
+          147.75861242711218,
+          104.34482578517931
+        ],
+        "distance_px": 1.7170796118215432
+      }
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "episode": 6,
+    "static_t": [
+      1300,
+      1354
+    ],
+    "execution_t": 1414,
+    "last": 1616,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed9100600.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard1-ep6.jpg",
+    "answer_actor": 3,
+    "swap_pair": [
+      3,
+      2
+    ],
+    "answer_color": "green",
+    "final_cube_pixel": [
+      81.18614718614718,
+      134.01298701298703
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        163.71504047235868,
+        119.88244846516928
+      ],
+      "1": [
+        88.43621052287244,
+        102.51563574125672
+      ],
+      "2": [
+        162.92967642419393,
+        74.7977265150842
+      ],
+      "3": [
+        83.88579542596842,
+        135.42016680689196
+      ]
+    },
+    "nearest_expected_actor": 3,
+    "distance_px": {
+      "0": 83.72986532115198,
+      "1": 32.320992489731786,
+      "2": 100.93786033063063,
+      "3": 3.044380986529817
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 1149,
+      "nth": 3,
+      "object_index": 1,
+      "cube_pixel": [
+        164.03973509933775,
+        71.69536423841059
+      ],
+      "nearest_actor": 3,
+      "distances": {
+        "0": 48.18817814441136,
+        "1": 81.64424084951334,
+        "2": 102.39875247069203,
+        "3": 3.2949782940088497
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "blue",
+        "t": 529,
+        "visible": true,
+        "center": [
+          134.96688741721854,
+          79.25165562913908
+        ],
+        "home_projected": [
+          135.98959939919482,
+          80.00984398218152
+        ],
+        "distance_px": 1.273102264850332
+      },
+      {
+        "color": "green",
+        "t": 1300,
+        "visible": true,
+        "center": [
+          168.71052631578948,
+          90.03684210526316
+        ],
+        "home_projected": [
+          168.56739656380017,
+          90.6679535075939
+        ],
+        "distance_px": 0.6471381058602425
+      }
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "episode": 0,
+    "static_t": [
+      1548,
+      1608
+    ],
+    "execution_t": 1668,
+    "last": 1885,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed11100001.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard2-ep0.jpg",
+    "answer_actor": 2,
+    "swap_pair": [
+      3,
+      0
+    ],
+    "answer_color": "green",
+    "final_cube_pixel": [
+      109.77674418604651,
+      139.03720930232558
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        88.36810652057358,
+        99.69807754640745
+      ],
+      "1": [
+        80.20873834655282,
+        140.30577862270977
+      ],
+      "2": [
+        110.58205428883406,
+        140.51047633516478
+      ],
+      "3": [
+        107.72980632938791,
+        114.16884978966101
+      ]
+    },
+    "nearest_expected_actor": 2,
+    "distance_px": {
+      "0": 44.78724208969551,
+      "1": 29.595206325433065,
+      "2": 1.6789997354682684,
+      "3": 24.95245998774783
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 373,
+      "nth": 2,
+      "object_index": 0,
+      "cube_pixel": [
+        109.87557603686636,
+        139.34101382488478
+      ],
+      "nearest_actor": 2,
+      "distances": {
+        "0": 25.26345522397412,
+        "1": 29.68252060823896,
+        "2": 1.36629209302174,
+        "3": 45.10137073054075
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "green",
+        "t": 822,
+        "visible": true,
+        "center": [
+          88.71597633136095,
+          75.27218934911242
+        ],
+        "home_projected": [
+          88.74695178904553,
+          76.30254692579129
+        ],
+        "distance_px": 1.0308230763803825
+      },
+      {
+        "color": "red",
+        "t": 1548,
+        "visible": true,
+        "center": [
+          167.71764705882353,
+          78.94117647058823
+        ],
+        "home_projected": [
+          168.39181650722156,
+          79.10434459217575
+        ],
+        "distance_px": 0.6936341118022572
+      }
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "episode": 3,
+    "static_t": [
+      1494,
+      1557
+    ],
+    "execution_t": 1617,
+    "last": 1800,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed11100304.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard2-ep3.jpg",
+    "answer_actor": 1,
+    "swap_pair": [
+      3,
+      0
+    ],
+    "answer_color": "red",
+    "final_cube_pixel": [
+      166.34031413612564,
+      101.01570680628272
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        93.60313290456794,
+        74.68640928106902
+      ],
+      "1": [
+        164.34075648298528,
+        104.13251940294126
+      ],
+      "2": [
+        175.6987968117638,
+        139.87945554231675
+      ],
+      "3": [
+        93.8478121612783,
+        107.20535135746047
+      ]
+    },
+    "nearest_expected_actor": 1,
+    "distance_px": {
+      "0": 77.35586236145063,
+      "1": 3.7030732602692975,
+      "2": 39.97464401102036,
+      "3": 72.75626806154347
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 647,
+      "nth": 3,
+      "object_index": 0,
+      "cube_pixel": [
+        166.33333333333334,
+        101.3763440860215
+      ],
+      "nearest_actor": 1,
+      "distances": {
+        "0": 72.71951667437655,
+        "1": 3.40100939165723,
+        "2": 39.625768105889236,
+        "3": 77.47279957701929
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "red",
+        "t": 788,
+        "visible": true,
+        "center": [
+          131.91534391534393,
+          92.5026455026455
+        ],
+        "home_projected": [
+          131.83561024201427,
+          93.89350259210424
+        ],
+        "distance_px": 1.3931406612256574
+      },
+      {
+        "color": "blue",
+        "t": 1494,
+        "visible": true,
+        "center": [
+          137.04294478527606,
+          68.41104294478528
+        ],
+        "home_projected": [
+          137.11342151118382,
+          69.62443113420949
+        ],
+        "distance_px": 1.2154332014260736
+      }
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "episode": 6,
+    "static_t": [
+      1543,
+      1609
+    ],
+    "execution_t": 1669,
+    "last": 1859,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed11100600.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard2-ep6.jpg",
+    "answer_actor": 2,
+    "swap_pair": [
+      0,
+      3
+    ],
+    "answer_color": "red",
+    "final_cube_pixel": [
+      167.35102040816327,
+      142.39183673469387
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        162.73734644332455,
+        74.73941656723865
+      ],
+      "1": [
+        89.50145417215364,
+        95.40973769598494
+      ],
+      "2": [
+        166.32312807625698,
+        143.43612960583175
+      ],
+      "3": [
+        168.30711692305695,
+        107.25508614414008
+      ]
+    },
+    "nearest_expected_actor": 2,
+    "distance_px": {
+      "0": 67.80955642066782,
+      "1": 90.92784278326361,
+      "2": 1.4653021008314804,
+      "3": 35.1497562240277
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 508,
+      "nth": 3,
+      "object_index": 0,
+      "cube_pixel": [
+        167.90725806451613,
+        143.16129032258064
+      ],
+      "nearest_actor": 2,
+      "distances": {
+        "0": 35.908430564570985,
+        "1": 91.80240117915295,
+        "2": 1.6077949033754024,
+        "3": 68.6169133258185
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "red",
+        "t": 792,
+        "visible": true,
+        "center": [
+          150.9815668202765,
+          120.45161290322581
+        ],
+        "home_projected": [
+          151.40100595313334,
+          121.09844658371806
+        ],
+        "distance_px": 0.7709234698663973
+      },
+      {
+        "color": "blue",
+        "t": 1543,
+        "visible": true,
+        "center": [
+          117.27044025157232,
+          67.70440251572327
+        ],
+        "home_projected": [
+          116.71065647622461,
+          68.65324421073663
+        ],
+        "distance_px": 1.101661670994483
+      }
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "episode": 0,
+    "static_t": [
+      1693,
+      1740
+    ],
+    "execution_t": 1800,
+    "last": 2004,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed13100002.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard3-ep0.jpg",
+    "answer_actor": 2,
+    "swap_pair": [
+      3,
+      0
+    ],
+    "answer_color": "green",
+    "final_cube_pixel": [
+      177.06451612903226,
+      139.3709677419355
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        90.89370469610442,
+        77.44180646136108
+      ],
+      "1": [
+        83.58447799771201,
+        121.41007559700638
+      ],
+      "2": [
+        175.16627145707278,
+        140.92679049513484
+      ],
+      "3": [
+        166.89378879897822,
+        111.60513845920627
+      ]
+    },
+    "nearest_expected_actor": 2,
+    "distance_px": {
+      "0": 106.11611451577278,
+      "1": 95.18986908108899,
+      "2": 2.4543669803017116,
+      "3": 29.570001186675174
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 1215,
+      "nth": 1,
+      "object_index": 1,
+      "cube_pixel": [
+        177.71370967741936,
+        140.2298387096774
+      ],
+      "nearest_actor": 2,
+      "distances": {
+        "0": 30.601375005790977,
+        "1": 95.99216499396746,
+        "2": 2.6410572272737367,
+        "3": 107.14499642340355
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "blue",
+        "t": 1018,
+        "visible": true,
+        "center": [
+          97.46351931330472,
+          136.74678111587983
+        ],
+        "home_projected": [
+          97.63178505740768,
+          136.89787773600213
+        ],
+        "distance_px": 0.22614939586677835
+      },
+      {
+        "color": "green",
+        "t": 1693,
+        "visible": true,
+        "center": [
+          145.75,
+          92.78191489361703
+        ],
+        "home_projected": [
+          146.0466861886192,
+          93.98111543913132
+        ],
+        "distance_px": 1.235356079387294
+      }
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "episode": 3,
+    "static_t": [
+      1707,
+      1765
+    ],
+    "execution_t": 1825,
+    "last": 2009,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed13100301.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard3-ep3.jpg",
+    "answer_actor": 3,
+    "swap_pair": [
+      0,
+      2
+    ],
+    "answer_color": "blue",
+    "final_cube_pixel": [
+      167.46979865771812,
+      77.95973154362416
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        91.26259276930453,
+        76.94340197374612
+      ],
+      "1": [
+        89.18422471541733,
+        98.1150807108049
+      ],
+      "2": [
+        146.58390397488816,
+        141.39737007069868
+      ],
+      "3": [
+        165.66592799857483,
+        81.00249103545727
+      ]
+    },
+    "nearest_expected_actor": 3,
+    "distance_px": {
+      "0": 76.21398267453071,
+      "1": 80.8385377621739,
+      "2": 66.78738337885409,
+      "3": 3.537277862998398
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 560,
+      "nth": 3,
+      "object_index": 0,
+      "cube_pixel": [
+        168.6953642384106,
+        78.05960264900662
+      ],
+      "nearest_actor": 3,
+      "distances": {
+        "0": 67.08643273382248,
+        "1": 82.00148479468025,
+        "2": 77.44081612001683,
+        "3": 4.223514648528689
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "blue",
+        "t": 990,
+        "visible": true,
+        "center": [
+          164.3781094527363,
+          99.65671641791045
+        ],
+        "home_projected": [
+          164.10094749709324,
+          100.24106143762579
+        ],
+        "distance_px": 0.6467440387989778
+      },
+      {
+        "color": "red",
+        "t": 1707,
+        "visible": true,
+        "center": [
+          165.55042016806723,
+          122.8529411764706
+        ],
+        "home_projected": [
+          164.98903334217593,
+          122.94477122302465
+        ],
+        "distance_px": 0.5688478933198513
+      }
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "episode": 6,
+    "static_t": [
+      1768,
+      1846
+    ],
+    "execution_t": 1906,
+    "last": 2128,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed13100600.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard3-ep6.jpg",
+    "answer_actor": 2,
+    "swap_pair": [
+      1,
+      0
+    ],
+    "answer_color": "blue",
+    "final_cube_pixel": [
+      109.70796460176992,
+      140.65929203539824
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        165.17834977652214,
+        102.6607063181825
+      ],
+      "1": [
+        88.35943277742214,
+        99.58120739148652
+      ],
+      "2": [
+        112.087016848025,
+        141.84562723536672
+      ],
+      "3": [
+        91.91191738638362,
+        77.27202299733315
+      ]
+    },
+    "nearest_expected_actor": 2,
+    "distance_px": {
+      "0": 67.23731217072826,
+      "1": 46.29437167807298,
+      "2": 2.6584357801338037,
+      "3": 65.83802224092324
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 227,
+      "nth": 1,
+      "object_index": 0,
+      "cube_pixel": [
+        110.05309734513274,
+        140.30088495575222
+      ],
+      "nearest_actor": 2,
+      "distances": {
+        "0": 46.13791524672638,
+        "1": 66.75010489499296,
+        "2": 2.554027653466988,
+        "3": 65.58765013376502
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "blue",
+        "t": 843,
+        "visible": true,
+        "center": [
+          147.97530864197532,
+          72.32716049382717
+        ],
+        "home_projected": [
+          148.90418668920756,
+          72.93027922691562
+        ],
+        "distance_px": 1.1075046874989776
+      },
+      {
+        "color": "green",
+        "t": 1768,
+        "visible": true,
+        "center": [
+          84.39449541284404,
+          146.27064220183487
+        ],
+        "home_projected": [
+          83.68787569035165,
+          147.70354618640053
+        ],
+        "distance_px": 1.5976624365614145
+      }
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "episode": 0,
+    "static_t": [
+      1858,
+      1910
+    ],
+    "execution_t": 1970,
+    "last": 2165,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed7100000.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard4-ep0.jpg",
+    "answer_actor": 3,
+    "swap_pair": [
+      2,
+      1
+    ],
+    "answer_color": "green",
+    "final_cube_pixel": [
+      165.86131386861314,
+      74.62043795620438
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        164.20653793200697,
+        133.5985510781781
+      ],
+      "1": [
+        93.42426054042902,
+        74.33536847875311
+      ],
+      "2": [
+        127.9595730216707,
+        135.37585125369975
+      ],
+      "3": [
+        164.4460025919526,
+        77.6073864048214
+      ]
+    },
+    "nearest_expected_actor": 3,
+    "distance_px": {
+      "0": 59.001322958292214,
+      "1": 72.4376142585961,
+      "2": 71.60839478844824,
+      "3": 3.305293790956872
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 723,
+      "nth": 4,
+      "object_index": 0,
+      "cube_pixel": [
+        166.09420289855072,
+        74.57246376811594
+      ],
+      "nearest_actor": 3,
+      "distances": {
+        "0": 59.05626353030641,
+        "1": 71.77257084408137,
+        "2": 72.67032913444777,
+        "3": 3.4535951791513337
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "green",
+        "t": 876,
+        "visible": true,
+        "center": [
+          174.734375,
+          97.91145833333333
+        ],
+        "home_projected": [
+          175.64211169555855,
+          98.54861374747904
+        ],
+        "distance_px": 1.1090324297507062
+      },
+      {
+        "color": "blue",
+        "t": 1858,
+        "visible": true,
+        "center": [
+          139.989898989899,
+          111.6969696969697
+        ],
+        "home_projected": [
+          139.81467670195678,
+          112.2954457396044
+        ],
+        "distance_px": 0.6235995700763378
+      }
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "episode": 3,
+    "static_t": [
+      1865,
+      1918
+    ],
+    "execution_t": 1978,
+    "last": 2167,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed7100301.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard4-ep3.jpg",
+    "answer_actor": 0,
+    "swap_pair": [
+      3,
+      1
+    ],
+    "answer_color": "green",
+    "final_cube_pixel": [
+      86.23295454545455,
+      101.875
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        87.9676660341259,
+        104.80070401939862
+      ],
+      "1": [
+        91.70132294790233,
+        76.08401323355876
+      ],
+      "2": [
+        114.43955752045096,
+        143.23321507593772
+      ],
+      "3": [
+        82.70269633853205,
+        133.4550706649689
+      ]
+    },
+    "nearest_expected_actor": 0,
+    "distance_px": {
+      "0": 3.4013185616836354,
+      "1": 26.36433294000886,
+      "2": 50.061106716258266,
+      "3": 31.776777467389184
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 1091,
+      "nth": 1,
+      "object_index": 1,
+      "cube_pixel": [
+        85.93785310734464,
+        101.80225988700565
+      ],
+      "nearest_actor": 0,
+      "distances": {
+        "0": 3.6208849378032126,
+        "1": 31.817709997175168,
+        "2": 50.28788325550581,
+        "3": 26.35613392610058
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "blue",
+        "t": 904,
+        "visible": true,
+        "center": [
+          169.42564102564103,
+          89.14358974358974
+        ],
+        "home_projected": [
+          168.89715328617655,
+          89.48824072037492
+        ],
+        "distance_px": 0.6309386551506037
+      },
+      {
+        "color": "green",
+        "t": 1865,
+        "visible": true,
+        "center": [
+          110.13440860215054,
+          90.38172043010752
+        ],
+        "home_projected": [
+          109.51848765313679,
+          92.11716552849076
+        ],
+        "distance_px": 1.8415016440221854
+      }
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "episode": 6,
+    "static_t": [
+      1805,
+      1853
+    ],
+    "execution_t": 1913,
+    "last": 2110,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed7100600.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-xhard4-ep6.jpg",
+    "answer_actor": 1,
+    "swap_pair": [
+      0,
+      2
+    ],
+    "answer_color": "red",
+    "final_cube_pixel": [
+      87.06806282722513,
+      100.19371727748691
+    ],
+    "expected_actor_pixels": {
+      "0": [
+        166.76121718707657,
+        98.89280227069028
+      ],
+      "1": [
+        89.8893909440381,
+        102.50783818382784
+      ],
+      "2": [
+        109.48141868949998,
+        138.06096987749595
+      ],
+      "3": [
+        92.68742216154247,
+        75.62106159879137
+      ]
+    },
+    "nearest_expected_actor": 1,
+    "distance_px": {
+      "0": 79.70377175314864,
+      "1": 3.6489790232178043,
+      "2": 44.00326511160122,
+      "3": 25.206995188477098
+    },
+    "image_answer_match": true,
+    "demo_answer_check": {
+      "t": 375,
+      "nth": 2,
+      "object_index": 0,
+      "cube_pixel": [
+        86.63874345549738,
+        100.43455497382199
+      ],
+      "nearest_actor": 1,
+      "distances": {
+        "0": 44.01743870728434,
+        "1": 3.8555430698733324,
+        "2": 80.13730590845446,
+        "3": 25.540085504196178
+      },
+      "match": true
+    },
+    "return_checks": [
+      {
+        "color": "red",
+        "t": 872,
+        "visible": true,
+        "center": [
+          115.878612716763,
+          77.27745664739885
+        ],
+        "home_projected": [
+          116.90192354704325,
+          78.43467130205792
+        ],
+        "distance_px": 1.5447688540123319
+      },
+      {
+        "color": "green",
+        "t": 1805,
+        "visible": true,
+        "center": [
+          140.16666666666666,
+          91.64367816091954
+        ],
+        "home_projected": [
+          140.95852155955902,
+          91.77538753447999
+        ],
+        "distance_px": 0.8027337855611025
+      }
+    ]
+  },
+  {
+    "tier": "hard",
+    "episode": 3,
+    "static_t": [
+      1008,
+      1064
+    ],
+    "execution_t": 1124,
+    "last": 1407,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed11305.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-hard-ep3.jpg"
+  },
+  {
+    "tier": "hard",
+    "episode": 7,
+    "static_t": [
+      814,
+      870
+    ],
+    "execution_t": 930,
+    "last": 1130,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_7/hdf5_files/VideoPlaceOrder_ep7_seed11705.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-hard-ep7.jpg"
+  },
+  {
+    "tier": "hard",
+    "episode": 11,
+    "static_t": [
+      992,
+      1054
+    ],
+    "execution_t": 1114,
+    "last": 1310,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_11/hdf5_files/VideoPlaceOrder_ep11_seed12100.h5",
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/swap-hard-ep11.jpg"
+  }
+]

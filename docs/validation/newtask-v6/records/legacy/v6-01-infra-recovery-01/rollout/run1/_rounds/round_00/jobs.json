@@ -1,0 +1,16 @@
+[
+ {
+  "task": "StopCube",
+  "episode": 3,
+  "seed": 6200300,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/StopCube_episode_3",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ }
+]

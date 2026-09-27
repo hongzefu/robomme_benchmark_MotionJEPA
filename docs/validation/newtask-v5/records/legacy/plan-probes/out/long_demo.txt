@@ -1,0 +1,350 @@
+- marker: [内部产出，英文] 以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。
+- topic_key: long_demo
+- summary: All six V4 episode numbers from the main agent are correct. PatternLock ep0/3/6: 649/683/757 demo frames (21.6/22.8/25.2 s). RouteStick ep0/3/6: 650/600/600 frames (L=13/12/12). In every episode the execution part is exactly as long as the demo, so the totals are 2×demo. RouteStick_episode_0's total of 1300 is 650+650 and was not truncated: it succeeded, and data generation has no 1300 cap. RouteStick really does run exactly 50 frames per segment, so 25–35 s means L∈[15,21]. The evaluation budget is 1301 policy steps, and only non-demo steps count against it. The 200-step solve_strong_reset is a demonstration=True NO RECORD task that runs inside reset(), so V4 plan 2.20's 'L×50+200, truncated above L≈22' is wrong. In the simulator, L=26 succeeds at budget count 1296 and L=27 is cut off at 1302. PatternLock segments are not constant: left/right ≈25.7 frames, forward/backward ≈37.4, diagonal ≈37.2, and ~46 near the far row x=0.1; the overall mean is 34.25. A 5×5 simple path therefore tops out at ~26–28 s, and the current [20,24] range puts only 11% of 300 replicated draws in 25–35 s. I built an offline mplib screw model that matches real frame counts within ~1% (−0.9…+0.1% on the 3 V4 h5, −0.9…+0.0% on 5 new simulator runs, −1.3…−1.1% on the 2 slowed runs). Recommendation for RouteStick: config_xhard length [15,21]; every L gives 25.0–35.0 s and the mean is 30.0 s. Recommendation for PatternLock: a 6×6 grid at spacing 0.08, which covers the same physical area as V4's 5×5@0.1, with nodes [30,33]. Across 300 replicated draws this gives 25.4–33.5 s, mean 29.2 s, 100% in band; 3 simulator runs gave 28.8/28.3/30.4 s and the oracle succeeded in all three. Alternatives: 5×6@0.1 with nodes [25,28] (99% in band, keeps V4 visual density), or, if B8 must be kept, slow down only the demo motion ×1.3, or add an 11-frame hold per segment (100% in band, no RNG change). Also recommended: in xhard, raise SceneGenerationError when the search budget is exhausted, instead of silently using a wrong-length path (the K1 class of bug).
+## current_mechanism
+  [0]
+    - env: PatternLock
+    - anchor: src/robomme/robomme_env/PatternLock.py :: PatternLock.config_xhard / PatternLock.configs / _native_decision
+    - behavior: config_xhard={'grid':5,'length':[20,24]} (K1). _native_decision exports decision.grid.<diff> and decision.path_length_range.<diff> from cls.configs; decision.demo_duration_seconds_range=None and demonstration_duration_policy='native' are unused placeholders ('本轮不启用'). assert_native_decision (utils/sampling_config.py) strips 'xhard' keys and requires the rest to equal the native snapshot, and requires the xhard key-shape to match the source declaration (so any NEW decision key changes the shape and makes V4 snapshots fail the check).
+  [1]
+    - env: PatternLock
+    - anchor: src/robomme/robomme_env/PatternLock.py :: PatternLock._load_scene
+    - behavior: Grid is square: num_rows=num_cols=decision.grid[difficulty]; node (r,c) at x=-0.1+(r-(R-1)/2)*0.1 (row→x, forward), y=(c-(C-1)/2)*0.1 (col→y), spacing/center from NATIVE_SAMPLING['positions'] (shared by all tiers). Path search: for attempt in range(max_attempts=1000): torch.randperm(R*C)[:2] start/end → find_path_0_to_8(diagonals=True); accept if lo<=len(path)<=hi; for/else silently keeps the LAST path when exhausted (the K1 root cause). task_list = [NO RECORD solve_swingonto(node0, record_swing_qpos) demo=True] + (N-1) demo segments 'move <dir>' (solve_swingonto) + [NO RECORD solve_strong_reset(default timestep=30) demo=True] + [NO RECORD strong reset to swing_qpos demo=True] + (N-1) exec segments demonstration=False (same solve).
+  [2]
+    - env: PatternLock
+    - anchor: src/robomme/robomme_env/utils/adjacent.py :: grid_adjacency / dfs_path / find_path_0_to_8
+    - behavior: 8-adjacency (diagonals=True). dfs_path is a randomized simple-path DFS (visited set, neighbor order from torch.randperm per visited node), returning the FIRST path found to target, so the maximum is R*C nodes. Single-attempt node-count tail on 5×5 (20000 attempts): 20:696, 21:497, 22:348, 23:150, 24:40, 25:10.
+  [3]
+    - env: PatternLock
+    - anchor: src/robomme/robomme_env/utils/subgoal_planner_func.py :: solve_swingonto
+    - behavior: Two planner.move_to_pose_with_screw calls to (x,y,0.07) with the current TCP quaternion, then close_gripper, whose AttributeError on the stick planner is swallowed (0 frames). Frames = mplib plan_screw path TOPP-parameterized at control_timestep 0.05 with joint_vel_limits×0.3 (both DemonstrationWrapper and data-gen pass 0.3) and acc×0.9, so frames depend on joint-space distance and not on Cartesian length. First call 15–59 frames (mean 30.1), second call usually 3–6 frames. Measured per segment: 21–53 frames.
+  [4]
+    - env: RouteStick
+    - anchor: src/robomme/robomme_env/RouteStick.py :: RouteStick.config_xhard / _resolve_sampling_config / _load_scene
+    - behavior: config_xhard={'length':[12,15],'backtrack':True} (B9). The L range is read from native.parameters.configs, and _resolve_sampling_config uses setdefault from cls.configs. The frozen V4 header sampling_config has NO 'configs' key (verified: native.parameters keys = ['configs_fallback_difficulty','walk']), so the L range is not frozen and always comes from the class. RNG order in _load_scene (seeded generator): theta torch.rand(1) → 4× obstacle torch.rand(3) → L=torch.randint(lo,hi+1) → generate_dynamic_walk (1 start randint + L neighbor randints) → L direction torch.rand draws. Spec replay path checks length_min<=L<=length_max and raises ValueError otherwise.
+  [5]
+    - env: RouteStick
+    - anchor: src/robomme/robomme_env/utils/subgoal_planner_func.py :: solve_swingonto_withDirection
+    - behavior: 45-point quadratic Bezier at z=0.07 plus 5 repeated end poses = 50 waypoints, IK per waypoint, followed in 2 follow_path halves, 1 env step per waypoint → exactly 50 frames per segment. Demo = 50·L and exec = 50·L; confirmed on all 3 h5 and in the simulator for L=12,15,21,26,27. Strong reset in this env: solve_strong_reset(timestep=200) as a NO RECORD demonstration=True task.
+  [6]
+    - env: both
+    - anchor: src/robomme/env_record_wrapper/DemonstrationWrapper.py :: DemonstrationWrapper.reset / get_demonstration_trajectory / _filter_no_record_from_step_batch / _step_batch
+    - behavior: reset() runs ALL demonstration=True tasks (including the NO RECORD 200/30-step strong reset and the swing_qpos reset) inside reset, using a stick planner with joint_vel_limits=0.3 (screw, then RRT* fallback). It then does 1 init step and drops NO RECORD frames from the returned demo. The policy therefore sees demo frames = segment frames + 1 init frame. Simulator check: PL seed 5500000 = 650 = 649+1; RS L=12 = 601. steps_without_demonstration increments only when current_task_demonstration is False, and truncation happens when it reaches max_steps_without_demonstration (= max_steps+2 = 1302). After reset the counter is already 1, so the policy gets 1301 env.step calls. This matches V4 dummy eval: PatternLock ep0 and RouteStick ep0 timed out at steps=1301.
+  [7]
+    - env: both
+    - anchor: scripts/evaluation.py (module-level BenchmarkEnvBuilder(..., max_steps=1300)) ; src/robomme/env_record_wrapper/episode_config_resolver.py :: BenchmarkEnvBuilder.__init__/from_v4_specs/make_env_for_episode ; scripts/eval/v4_eval.py :: main (--max-steps default 1300)
+    - behavior: scripts/evaluation.py hard-codes max_steps=1300 and is byte-identical to the official copy (diff vs artifacts/train-parity/local-smoke-01/official-src/scripts/evaluation.py is empty). The builder default is 10000, but both evaluation.py and v4_eval pass 1300, so max_steps_without_demonstration=1302. No env-level limit: gym.registry max_episode_steps=None for both envs.
+  [8]
+    - env: both
+    - anchor: src/robomme/env_record_wrapper/RecordWrapper.py :: fail_safe_limit (frozen; 5000 per I1)
+    - behavior: Data-gen fail-safe counts env.unwrapped.elapsed_steps, which includes NO RECORD steps. RecordWrapper does not save NO RECORD frames to h5/mp4 (current_task_name != 'NO RECORD'). is_video_demo = current_task_demonstration. h5 demo = segment frames only; mp4 = all saved frames at 30 fps (1298/1366/1514/1300/1200/1200 frames decoded). Data-gen elapsed ≈ 2·demo + NO RECORD overhead (RS: ≈100·L+327, since reset ends at elapsed 928 for L=12).
+  [9]
+    - env: both
+    - anchor: artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py :: _execute_tasks / _planner_classes / _raw_summary ; scripts/parity/train_split_worker.py :: run_one
+    - behavior: The data-gen worker runs every task's solve in order with a stick planner (joint_vel_limits=0.3; screw ×3, then RRT* ×3). It aborts on env 'fail' and requires a final success. 'ok' in results.jsonl = success plus final is_completed True. All 6 V4 episodes for these envs are ok=true with completed_last=True.
+## user_question_answers
+  [0]
+    - question: Q1a: For each of the 6 episodes, what are the path length, demo frames and exec frames (verifying the main agent's numbers)?
+    - answer: All verified. PatternLock ep0: 21 nodes / 20 segments, demo 649 frames (21.63 s), exec 649, total 1298, 32.45 frames/segment. ep3: 21/20, 683 (22.77 s), exec 683, total 1366, 34.15 f/seg. ep6: 22/21, 757 (25.23 s), exec 757, total 1514, 36.05 f/seg. RouteStick ep0: L=13, demo 650 (21.67 s), exec 650, total 1300. ep3: L=12, 600 (20.00 s), 600, 1200. ep6: L=12, 600/600/1200. The demo is always a contiguous prefix. Exec per-segment frame counts equal demo per-segment counts one-to-one; only the last exec segment ends early when success fires. mp4 frame count = h5 timestep count at 30 fps.
+    - evidence: scratchpad/v5/long_demo/h5_segments.py → h5_segments.json (per-boundary segment lengths; e.g. PL ep0 demo lens [29,30,31,38,30,36,50,21,46,25,41,27,24,46,34,23,31,31,30,26], and exec has the same list with the last segment 19+6). mp4_frames.py: decoded 1298/1366/1514/1300/1200/1200 at fps=30. spec_rows.py: path_nodes lengths 21/21/22 and L=13/12/12.
+  [1]
+    - question: Q1b: Is the RouteStick L×50 rule exact? Is PatternLock's frames/segment constant, and does it depend on diagonal vs straight moves?
+    - answer: RouteStick: exact. 50 frames per segment in both demo and exec, with no exceptions in the 3 h5 and in 5 simulator runs (L=12,15,21,26,27 → demo 600/750/1050/1300/1350 + 1 init frame). PatternLock: NOT constant. It depends on move direction and on how far the target is from the robot, because the screw motion is time-parameterized in joint space. Observed over 61 V4 h5 segments: left/right (y) mean 25.7 (21–32), forward/backward (x) mean 37.4 (30–50), diagonal mean 37.2 (30–53). Segments touching the far row x=0.1: forward/backward 46.6, diagonal 45.6. Overall mean 34.25 frames/segment (V4 plan assumed 31). Offline edge table for 5×5@0.1: y-moves 26.4, x-moves 35.8, diagonals 37.7, far-row edges 40.4, range 22–60.
+    - evidence: pl_dir_stats.py (61 segments from 3 h5). grid_geometry.py → grid_geometry.json (144 edges). Simulator: sim_oracle_eval.py RouteStick 5600300 L∈{12,15,21,26,27} → demo_frames_incl_init 601/751/1051/1301/1351.
+  [2]
+    - question: Q1c: Demo seconds for all 10 V4 candidates per env (formula/model)?
+    - answer: RouteStick (50·L/30 s): L=13,13,15,12,13,13,12,15,12,13 → 21.7, 21.7, 25.0, 20.0, 21.7, 21.7, 20.0, 25.0, 20.0, 21.7 s. Only 2 of 10 reach 25 s. PatternLock (offline screw model; checked against the 3 real episodes: −0.9%, −0.1%, −0.3%): ep0 643 (21.4 s), ep1 702 (23.4), ep2 698 (23.3), ep3 682 (22.7), ep4 603 (20.1), ep5 778 (25.9), ep6 755 (25.2), ep7 704 (23.5), ep8 693 (23.1), ep9 591 (19.7). Only ep5 and ep6 reach 25 s. Across 300 replicated V4-formula seeds (5500000+100k), 5×5 [20,24] gives 19.1–26.4 s, mean 22.8 s, and 11.3% in [25,35] s.
+    - evidence: pl_candidates.py (uses screw_model.py). pl_path_study.py 5 5 0.1 20 24 300 → pl_study_5x5_0.1_dfs_20_24_ts1.0.json. The first 10 replicated seeds reproduce the V4 node counts and path_attempts exactly (e.g. ep0 53 attempts).
+  [3]
+    - question: Q2a: RouteStick — required L range for 750–1050 demo frames?
+    - answer: L ∈ [15,21]: 15×50=750 (25.0 s) through 21×50=1050 (35.0 s), in steps of 1.67 s. A uniform draw over [15,21] has mean L=18, i.e. 900 frames = 30.0 s. If both edges should sit inside the band rather than on it, use [16,20] (26.7–33.3 s).
+    - evidence: 50 frames/segment rule (Q1b); simulator L=15 → 751 incl. init, L=21 → 1051 incl. init.
+  [4]
+    - question: Q2b: What are the step limits (data-gen fail_safe, evaluation.py max steps, solve_strong_reset 200, env max_episode_steps), and what is the largest L that stays within the evaluation limit?
+    - answer: (1) evaluation.py: the literal is max_steps=1300 inside BenchmarkEnvBuilder(...). The builder sets max_steps_without_demonstration=1302, and DemonstrationWrapper counts only non-demo steps. The reset's init step already counts 1, so the policy gets 1301 steps. scripts/eval/v4_eval.py uses the same builder (from_v4_specs) with --max-steps default 1300. (2) solve_strong_reset(timestep=200) is a demonstration=True NO RECORD task. It runs inside reset() at eval time, so it is NOT charged to the budget; it is not written to h5; it only adds to env elapsed_steps. V4 plan 2.20's 'exec = L×50+200, L>~22 truncated' is therefore wrong. (3) Data-gen fail_safe_limit=5000 counts all env steps. Total ≈ 100·L+327 (reset ends at elapsed 928 for L=12), so L=21 → ≈2427 and L=26 → ≈2927, both well under 5000. (4) No env-level max_episode_steps (None). Largest L an oracle-speed policy finishes within budget: L=26 (simulator: success at budget count 1296). L=27 is truncated at 1302; the oracle would have finished at 1346.
+    - evidence: sim_reset_budget.py RouteStick 3: front_rgb_list=601, elapsed_steps=928, steps_without_demo=1 after reset, max_steps_without_demo=1302. sim_oracle_eval.py RouteStick 5600300 L=12/15/21/26/27: success_at_count 596/746/1046/1296/1346, and L=27 timeout_at_count=1302. artifacts/newtask-v4/v4-01/eval-all/eval_results.jsonl: PatternLock/0 and RouteStick/0 dummy runs 'timeout' at steps=1301. gym.registry max_episode_steps=None.
+  [5]
+    - question: Q2c: Was RouteStick_episode_0 (total exactly 1300) truncated, and did it succeed?
+    - answer: Not truncated. It succeeded. The total is 650 demo + 650 exec (L=13). The 1300 is a coincidence with the evaluation constant: data-gen has no 1300 cap, only the 5000 fail-safe, and the episode is ok=true with the final timestep is_completed=True.
+    - evidence: artifacts/newtask-v4/v4-01/rollout/run1/results.jsonl: RouteStick ep0 ok=true, error=null. h5_segments.py: completed_last=True; exec segments are 12×50 + 43 + 6 (the last segment ends at success).
+  [6]
+    - question: Q3: Why is PatternLock capped at [20,24], and what are the options (a) larger grid, (b) revisits, (c) slower motion, (d) other?
+    - answer: Why capped: dfs_path is a simple-path DFS on 5×5, so at most 25 nodes (24 segments). 25-node paths are rare: 0.05% per attempt, and 12/40 seeds hit within 1000 attempts, which is why K1 dropped 25. 24 is marginal: 0.20% per attempt, 38/40 seeds. With the real ~34.3 frames/segment, even 24 segments average ≈27 s, and no range on 5×5 fills 25–35 s: [23,25] gives 21.9–28.5 s, 63% in band, attempts median 59 and max 435. (a) Larger grid, same search, 300 replicated seeds each, offline model: 6×6@0.08 (same footprint as V4: x∈[-0.3,0.1], y∈[-0.2,0.2]) nodes [30,33] → 25.4–33.5 s, mean 29.15, 100% in band, attempts median 21 / max 198. [31,33] → 26.8–33.9 s, mean 29.9, 100%, max 296 attempts. 5×6@0.1 (spacing unchanged, y∈[-0.25,0.25]) [25,28] → 24.5–33.0 s, mean 28.6, 99%. 7×7@0.07 [32,42] → 91.7% (8.3% over 35 s). 6×6@0.09 [27,34] → 96.7%, 1.58% of segments need the fallback path. 6×6@0.1 is not viable: nodes 2 and 3 at x=-0.35 can't be reached directly from the reset pose, 8 edges fail, 6.1% of segments need the fallback path, and only 24.7% land in band. Reach/camera: for 6×6@0.08 and 5×6@0.1, every node projects inside the 256×256 front image with ≥46 px margin. Minimum adjacent-node spacing: 14.1 px (5×5), 14.2 px (5×6), 11.1 px (6×6@0.08), 9.5 px (7×7@0.07); button radius ≈4.1 px at the row nearest the robot. (b) Revisits (8-adjacency random walk with no immediate backtrack, L∈[23,29] segments on 5×5): 23.6–35.9 s, mean 29.7, 95% in band. The failure rule _wrong_button_touch(expected, last) and evaluate() (achieved_list dedups only consecutive repeats; recent_achieved == selected_labels) both still work with repeated nodes, because consecutive moves stay adjacent and never pass over a third node. However, it breaks 'pattern lock' semantics (no revisit), overlapping trails make the video visually busier, and it replaces the DFS search (overturns B8 'don't change search strategy'; new draw structure). (c) Demo-only slowdown, keeping 5×5 [20,24] and V4 specs: time-stretch ×1.3 → 25.1–34.6 s, mean 30.0, 100% in band (×1.25: 98.3%; ×1.35: 96.7%). Per-segment hold H=10 → 25.5–34.0 s, 100%; H=11 → 26.1–34.7 s, 100%; H=12 → 99.3%. Exec unchanged (≤792 frames). (d) Hybrid 5×5 [22,25] + stretch ×1.2 → 25.8–33.2 s, 100%, but it inherits the 25-node singleton problem.
+    - evidence: dfs_len_dist.py (20000 single attempts per grid). singleton_hit.py (analytic + 40 real-loop seeds per value). pl_path_study.py batches 2/3 (study_batch2.log, study_batch3.log; 300 seeds each, V4 seed formula). grid_geometry.py. pixel_spacing.py. hold_calc.py. Simulator (sim_oracle_eval.py, eval DemonstrationWrapper + screw→RRT* oracle): 6×6@0.08 [30,33] seeds 5500000/5500300/5500600 → 30/30/32 nodes, demo 864/850/911 frames (28.8/28.3/30.4 s), success at 856/846/907, 0 fallback-path calls. 5×6@0.1 [25,28] seeds 5500000/5500300 → 28/27 nodes, 964/893 frames (32.1/29.8 s), success at 959/885. 5×5 stretch ×1.3 seeds 5500000/5500600 → 853/1003 frames (28.4/33.4 s; unstretched 649/757), all 23/24 demo tasks completed, exec success at 644/750.
+  [7]
+    - question: Q4: What are the execution-phase step estimates under the proposals, and would evaluation.py's limit truncate them?
+    - answer: Budget: 1301 policy steps, from the evaluation.py max_steps=1300 literal, which scripts/eval/v4_eval.py also passes as --max-steps 1300 (default). Oracle exec ≈ demo segment frames (success fires 3–8 frames before the demo total). RouteStick [15,21]: exec 750–1050 → max budget count ≈1046 (simulator L=21), margin 255 steps (19.6%). Truncation only from L≥27. PatternLock 6×6@0.08 [30,33]: exec max 1005 over 300 seeds (simulator 846–907), margin ≥296 (22.8%). 5×6@0.1 [25,28]: max 989. Demo-only stretch/hold: exec unchanged, max 792 (margin ≥509). If the stretch were also applied to exec, max ≈1030. Revisit walk [23,29]: max 1077. None of the recommended options truncates an oracle-speed policy. A policy slower than the oracle by more than ~20% would start timing out on the longest RouteStick/PatternLock episodes.
+    - evidence: sim_oracle_eval.py success_at_count values. pl_path_study exec_max fields. DemonstrationWrapper._step_batch counting. V4 dummy eval steps=1301.
+  [8]
+    - question: Q5: What V5 ranges/options do you recommend, and which V4 decisions do they overturn?
+    - answer: RouteStick: config_xhard length [15,21] (overturns B9; corrects plan 2.20; keeps A2, A7, walk rules, tcp_trail 40). PatternLock (recommended): grid 6 with xhard-only spacing 0.08 and nodes [30,33]. This overturns B8 (layout) and K1 (range); it keeps the DFS search, max_attempts=1000, the motion template and A2. Alternatives: 5×6@0.1 [25,28] (also overturns B8/K1, keeps visual density), or, if B8/K1 must stand, a demo-only time-stretch ×1.3 (or hold H=11 frames per segment) on the unchanged 5×5 [20,24] (changes only the demo motion template; keeps the V4 PatternLock specs valid). Also recommended for PatternLock xhard: when the 1000 attempts are exhausted, raise SceneGenerationError instead of silently using the last path.
+    - evidence: See proposals and measurements.
+## measurements
+  [0]
+    - name: V4 h5 segment/demo/exec extraction (6 episodes)
+    - script_or_command: cd repo && uv run --no-sync python scratchpad/v5/long_demo/h5_segments.py
+    - settings: artifacts/newtask-v4/v4-01/rollout/run1/episodes/{PatternLock,RouteStick}_episode_{0,3,6}; segments split at info/is_subgoal_boundary; demo = count(info/is_video_demo)
+    - result: PL demo 649/683/757, exec 649/683/757, totals 1298/1366/1514. RS demo 650/600/600, exec 650/600/600, totals 1300/1200/1200. All episodes: demo is a prefix and final is_completed=True.
+    - conclusion: The main agent's numbers are exact. Exec = demo per segment, so total = 2×demo.
+  [1]
+    - name: mp4 frame counts
+    - script_or_command: uv run --no-sync python scratchpad/v5/long_demo/mp4_frames.py
+    - settings: cv2 decode of all 6 videos
+    - result: 1298/1366/1514/1300/1200/1200 frames @30 fps, 1280x768
+    - conclusion: The video contains demo+exec (no NO RECORD frames). The demo seconds are the first `demo` frames /30.
+  [2]
+    - name: Offline mplib screw model validation
+    - script_or_command: uv run --no-sync python scratchpad/v5/long_demo/pl_candidates.py (imports screw_model.py)
+    - settings: panda_stick.urdf/srdf, base [-0.615,0,0], vel×0.3, acc×0.9, time_step 0.05, 2 screws per node, chained planned qpos; RRT* proxy (IK + joint-linear TOPP) when a screw fails
+    - result: Predicted vs real demo frames: PL ep0 643/649 (−0.9%), ep3 682/683 (−0.1%), ep6 755/757 (−0.3%). Simulator runs: 6×6@0.08 857/864, 846/850, 906/911; 5×6 964/964, 885/893. Stretch ×1.3: 843/853, 990/1003.
+    - conclusion: The model predicts PatternLock demo frames within about ±1.3% without the simulator. Used for all 300-seed studies.
+  [3]
+    - name: PatternLock per-direction frames (real)
+    - script_or_command: uv run --no-sync python scratchpad/v5/long_demo/pl_dir_stats.py
+    - settings: 61 demo segments from 3 V4 h5
+    - result: left/right 25.7 (21–32, n=16); forward/backward 37.4 (30–50, n=18); diagonal 37.2 (30–53, n=27); far-row x=0.1 forward/backward 46.6, diagonal 45.6; overall 34.25
+    - conclusion: Frames per segment are not constant. The V4 '31 frames/segment' assumption is low by about 10%.
+  [4]
+    - name: DFS single-attempt node-count distributions
+    - script_or_command: uv run --no-sync python scratchpad/v5/long_demo/dfs_len_dist.py
+    - settings: real find_path_0_to_8(diagonals=True), 20 seeds × 1000 attempts per grid; grids 5x5, 5x6, 6x5, 6x6, 6x7, 7x7
+    - result: 5x5 tail 23:150 24:40 25:10. 5x6 25:428 26:255 27:156 28:58 29:24 30:1. 6x6 30:302 31:199 32:109 33:51 34:20 35:4 36:1. 7x7 40:181 42:106 43:63 44:27
+    - conclusion: Random DFS naturally produces long paths, but the top 1–3 node counts of any grid are hard to hit.
+  [5]
+    - name: Singleton hit probability within max_attempts=1000 (口径14)
+    - script_or_command: uv run --no-sync python scratchpad/v5/long_demo/singleton_hit.py
+    - settings: analytic 1-(1-p)^1000 from 20000-attempt distribution + real loop with 40 seeds (7700000+100k) per value
+    - result: 5x5: 23→40/40, 24→38/40, 25→12/40. 5x6: 27→40/40, 28→39/40, 29→23/40, 30→2/40. 6x6: 31→40/40, 32→40/40, 33→36/40, 34→24/40, 35→6/40. 7x7: 40,42→40/40, 43→38/40, 44→33/40
+    - conclusion: Safe upper bounds: 5x5 ≤24 (marginal), 5x6 ≤28, 6x6 ≤33 (≤32 for a certain hit), 7x7 ≤43.
+  [6]
+    - name: Grid geometry: reach, edge frames, camera projection
+    - script_or_command: uv run --no-sync python scratchpad/v5/long_demo/grid_geometry.py ; scratchpad/v5/long_demo/pixel_spacing.py
+    - settings: direct screw from reset qpos Q0 to every node; screw between all 8-neighbour pairs; front camera K/E read from V4 h5 (eye (0.3,0,0.4) → (0,0,-0.2), fov 90°, 256x256)
+    - result: 5x5@0.1: 0 reach fails, 0/144 edge fails, edge mean 34.0. 5x6@0.1: 0 reach fails, 2/176 edge fails, mean 34.0. 6x6@0.08: 0 reach fails, 0/220 edge fails, mean 29.0. 6x6@0.09: nodes 2,3 not directly reachable, 0 edge fails, mean 32.5. 6x6@0.1: nodes 2,3 not directly reachable, 8 edge fails, mean 36.4, max 84. 7x7@0.07: nodes 44,46 not directly reachable, mean 26.5. All nodes in image, min margin ≥46 px. Min adjacent pixel distance: 14.1 / 14.2 / 11.1 / 12.2 / 9.5 px for 5x5 / 5x6 / 6x6@0.08 / 6x6@0.09 / 7x7@0.07
+    - conclusion: 6x6@0.08 has the same footprint as V4, so reach and camera behave the same; the cost is a 21% denser pixel spacing. 6x6@0.1 is not viable.
+  [7]
+    - name: PatternLock option study (300 seeds each, V4 seed formula 5500000+100k)
+    - script_or_command: uv run --no-sync python scratchpad/v5/long_demo/pl_path_study.py R C spacing lo hi 300 [dfs|walk] [ts]  (batches run_study_batch2.sh / run_study_batch3.sh)
+    - settings: exact replication of the _load_scene attempt loop; demo frames from the offline model; band [750,1050] frames
+    - result: 5x5 [20,24]: 19.1–26.4 s, mean 22.8, in band 11.3%. 5x5 [23,25]: 21.9–28.5, mean 25.3, 63%. 5x5 [20,24] ×1.3 stretch: 25.1–34.6, mean 30.0, 100%. 5x5 walk L[23,29]: 23.6–35.9, mean 29.7, 95%. 5x6@0.1 [25,28]: 24.5–33.0, mean 28.6, 99%, exec max 989. 6x6@0.08 [30,33]: 25.4–33.5, mean 29.15, 100%, attempts median 21 / max 198, exec max 1005, fallback path 0.69% of segments. 6x6@0.08 [31,33]: 26.8–33.9, mean 29.9, 100%, attempts max 296. 6x6@0.08 [29,36]: 98.7%. 6x6@0.09 [27,34]: 96.7%. 6x6@0.1 [25,32]: 24.7% (reach failures). 7x7@0.07 [32,42]: 91.7%. 5x5 [22,25] ×1.2: 100%. Fallback-path share of segments: 5x5 0.52%, 5x6 0.31%, 6x6@0.08 0.69%, 7x7 0.38%.
+    - conclusion: 6x6@0.08 [30,33] and 5x5 ×1.3 stretch both hit 100%. 5x6@0.1 [25,28] hits 99%.
+  [8]
+    - name: Hold / stretch arithmetic on 5x5 [20,24]
+    - script_or_command: uv run --no-sync python scratchpad/v5/long_demo/hold_calc.py
+    - settings: 300 model paths; hold adds H frames per demo segment; stretch multiplies the demo
+    - result: hold H=8: 98.0%. H=9: 99.7%. H=10: 100% (25.5–34.0 s). H=11: 100% (26.1–34.7 s, mean 30.2). H=12: 99.3%. Stretch ×1.25: 98.3%. ×1.3: 99.7–100%. ×1.35: 96.7–98.0%. ×1.4: 88.7%
+    - conclusion: If B8/K1 must stay, H∈[10,11] or ×1.3 fills the band.
+  [9]
+    - name: Eval budget accounting (simulator)
+    - script_or_command: CUDA_VISIBLE_DEVICES=0 timeout 290 uv run --no-sync python scratchpad/v5/long_demo/sim_reset_budget.py RouteStick 3
+    - settings: BenchmarkEnvBuilder.from_v4_specs, V4 snapshot RouteStick/3 (L=12), max_steps=1300
+    - result: front_rgb_list=601, elapsed_steps=928, steps_without_demo=1, max_steps_without_demo=1302, 15 of 27 tasks are demonstration=True
+    - conclusion: The strong reset and swing reset run inside reset() and are not charged. The policy gets 1301 steps.
+  [10]
+    - name: RouteStick L sweep with oracle exec in the eval wrapper
+    - script_or_command: CUDA_VISIBLE_DEVICES=0 timeout 290 uv run --no-sync python scratchpad/v5/long_demo/sim_oracle_eval.py RouteStick 5600300 L
+    - settings: L ∈ {12,15,21,26,27}; config_xhard monkeypatched in process only; DemonstrationWrapper(max_steps_without_demonstration=1302); oracle = env exec solves with screw→RRT* stick planner
+    - result: demo+init 601/751/1051/1301/1351. Success at budget count 596/746/1046/1296/1346. L=27 timeout at 1302.
+    - conclusion: L×50 is exact. Max L within budget = 26. [15,21] leaves ≥255 steps of margin.
+  [11]
+    - name: PatternLock option validation in the simulator (oracle exec)
+    - script_or_command: bash scratchpad/v5/long_demo/run_sim_batch.sh (sim_oracle_eval.py PatternLock seed grid lo hi spacing; V5_TS env var for stretch)
+    - settings: seeds 5500000/5500300/5500600; grid/spacing/_load_scene/solve_swingonto monkeypatched in process only; 16 simulator resets in total for this topic
+    - result: 6x6@0.08 [30,33]: 864/850/911 frames (28.8/28.3/30.4 s), success 856/846/907, 0 fallback-path calls. 6x6@0.08 [29,36] seed 5500000: 772 frames (25.7 s), 2 fallback-path calls in demo and 2 in exec, success at 764. 5x6@0.1 [25,28]: 964/893 frames (32.1/29.8 s), success 959/885. 5x5 ×1.3 stretch: 853/1003 frames (28.4/33.4 s), all demo tasks completed, exec success 644/750. 5x5 baseline seed 5500000: 650 incl. init = h5 649+1, success at 645.
+    - conclusion: The recommended options work end-to-end in the eval wrapper with the oracle. Nothing failed, nothing timed out, and no wrong touches occurred.
+## proposals
+  [0]
+    - title: RS-1: RouteStick xhard L range [15,21]
+    - recommended: True
+    - envs: RouteStick
+    - anchors_to_change: src/robomme/robomme_env/RouteStick.py :: RouteStick.config_xhard (and its comment); V5 combos (V4 equivalent scripts/parity/v4_combos.py RouteStick loop `_closed(12, 15)` → `_closed(15, 21)`, _routestick_configs); V5 plan/README text; regenerate V5 specs.jsonl.
+    - design: config_xhard = {'length': [15, 21], 'backtrack': True}. Demo = 50·L frames = 750…1050 = 25.0…35.0 s at 30 fps (A2); uniform L has mean 900 frames = 30.0 s. Optional narrower variant [16,20] = 26.7…33.3 s. Optionally record demo_frames / fps / duration_s in run records (V4 plan 2.20 row 'run record'). No walk-rule change (the native guard stays).
+    - rationale: The only lever that changes content is L, and the frame count is exactly linear in L. The measured budget cut-off is L≥27, so 21 leaves ≥255 steps (19.6%) of oracle margin. Data-gen elapsed ≈100·L+327 ≤ 2427, far under the 5000 fail-safe.
+    - rng_impact: xhard: the same draw points in the same order (theta, 4 obstacle colours, L randint, walk start, L neighbour randints, L direction rands). Only the value range of the L draw changes, so theta and colours for a given seed are unchanged, and L plus all later draws differ because the count 2L+1 changes. No new draw points (N5 satisfied). easy/medium/hard: config dicts untouched, so byte-identical (V1).
+    - overturned_v4_decisions: Overturns B9 (L=[12,15]). Corrects V4 plan 2.20 / risk #6 ('exec = L×50+200, L>~22 truncated'); the true exec is L×50+1 and the true cut-off is L≥27. Keeps A2, A7, the native walk guard, and tcp_trail end_offset_steps=40.
+    - spec_and_test_changes: The V4 RouteStick specs (L=12/13/15) will raise ValueError on replay under V5 code (L outside [15,21]), because the L range is read from the class and not from the frozen header, so the V4 snapshot is not re-evaluable with V5 code. Redraw V5 specs (10 candidates, select 0/3/6). V6 combos: 7 singletons L=15..21. No unit tests hard-code [12,15] (grep: only v4_combos.py).
+    - expected_numbers: Per-L demo seconds 25.0/26.7/28.3/30.0/31.7/33.3/35.0. 100% in band by construction. Exec max 1050 (+1 init) vs 1302; simulator L=21 success at 1046. Data-gen elapsed ≤ ≈2427/5000.
+  [1]
+    - title: PL-A: PatternLock xhard 6×6 grid at spacing 0.08 (same footprint as V4 5×5@0.1), nodes [30,33]
+    - recommended: True
+    - envs: PatternLock
+    - anchors_to_change: src/robomme/robomme_env/PatternLock.py :: PatternLock.config_xhard; _native_decision (export the new xhard-only key); _load_scene (spacing lookup). Optional: the for/else exhaustion branch (see PL-E). V5 combos PatternLock loop `_closed(30, 33)`.
+    - design: config_xhard = {'grid': 6, 'length': [30, 33], 'spacing': 0.08}. _native_decision adds decision['grid_spacing'] = {d: cfg['spacing'] for d, cfg in cls.configs.items() if 'spacing' in cfg}, which yields {'xhard': 0.08} only. In _load_scene: grid_spacing = decision_cfg.get('grid_spacing', {}).get(self.difficulty, layout_cfg['grid_spacing']) (easy/medium/hard fall back to native 0.1). Node x∈[-0.3,0.1] and y∈[-0.2,0.2] match V4 exactly, so reach and camera framing do not change. The search is unchanged (randperm + find_path_0_to_8 diagonals=True, max_attempts 1000). Variant [31,33] raises the mean to 29.9 s at the cost of median 41 / max 296 attempts. Variant [30,32] makes every singleton 100% hittable (mean ≈29.0 s).
+    - rationale: This is the PatternLock analogue of RS-1: the demo gets longer by adding path content (29–32 moves instead of 19–23), with 'retrace the same pattern' semantics and the simple-path rule intact. It fills the 25–35 s band for 100% of 300 replicated seeds and centres near 30 s. The simulator confirms 3/3 seeds (28.3–30.4 s) with oracle success well within budget.
+    - rng_impact: xhard: the draw structure is unchanged (per attempt one randperm plus DFS neighbour randperms), but the node count changes from 25 to 36, so every PatternLock xhard value differs. No new draw points (N5 satisfied). easy/medium/hard: spacing falls back to native and grid/length are untouched, so byte-identical. The decision block gains a key whose stripped form is grid_spacing:{}, which only affects snapshot/decision comparisons, not h5.
+    - overturned_v4_decisions: Overturns B8 ('不改布局') and K1 ([20,24]). Keeps B8's 'don't change the search strategy' part, max_attempts=1000, the motion template, A2 and the path_binding.
+    - spec_and_test_changes: The new decision key changes the xhard shape, so V4 PatternLock snapshots (whose header decision lacks grid_spacing) are rejected by assert_native_decision under V5 code (_strip_xhard(decision) lacks the key). V5 must export a fresh sampling_config.json and specs. V6 combos: 4 singletons (30..33); path_nodes must be checked for exact length (see PL-E). Nothing else changes: vqa_options._options_patternlock (neighbour search within 0.2 m), direction() and evaluate() are grid-size agnostic.
+    - expected_numbers: Model, 300 seeds: 25.4–33.5 s, mean 29.15, p5/p95 811/947 frames, 100% in [750,1050]; attempts median 21, max 198; exec max 1005 (margin ≥296 vs 1301); fallback path on 0.69% of segments. Singleton hits within 1000 attempts: 30–32 → 40/40, 33 → 36/40. Simulator: 864/850/911 frames, success at 856/846/907. Data-gen elapsed ≈ 124 + demo + ~60 + exec ≈ 2·1005+184 ≤ ~2200/5000.
+  [2]
+    - title: PL-B: PatternLock xhard 5 rows × 6 columns at the V4 spacing 0.1, nodes [25,28]
+    - recommended: False
+    - envs: PatternLock
+    - anchors_to_change: PatternLock.py :: config_xhard; _native_decision (export grid_cols or [R,C]); _load_scene (num_rows, num_cols are currently both decision.grid[difficulty]).
+    - design: config_xhard = {'grid': 5, 'grid_cols': 6, 'length': [25, 28]}; decision['grid_cols'] = {'xhard': 6}; _load_scene: num_cols = decision_cfg.get('grid_cols', {}).get(self.difficulty, num_rows). y extends to ±0.25 m and x stays [-0.3,0.1].
+    - rationale: Keeps the V4 button spacing and pixel density (14.2 px vs 14.1 px) and the native positions block unchanged. The fallback-path share is lower (0.31% of segments).
+    - rng_impact: Same as PL-A: node count 25→30, so all xhard values change; no new draw points; the original tiers are byte-identical.
+    - overturned_v4_decisions: Overturns B8 (layout) and K1. Keeps the search, max_attempts, the motion template and A2.
+    - spec_and_test_changes: Same snapshot-shape caveat as PL-A (new decision key). V6 singletons 25..28.
+    - expected_numbers: Model, 300 seeds: 24.5–33.0 s, mean 28.6, 99% in band (1% at 24.5–25 s), exec max 989, attempts median 17 / max 137. Singleton 28 → 39/40. Simulator: 964 / 893 frames (32.1 / 29.8 s), success 959 / 885, one fallback-path call in seed 5500000.
+  [3]
+    - title: PL-C: Keep 5×5 [20,24] and slow only the demo (time-stretch ×1.3, or hold H=11 frames at each node)
+    - recommended: False
+    - envs: PatternLock
+    - anchors_to_change: src/robomme/robomme_env/utils/subgoal_planner_func.py :: new solve_swingonto_timed(env, planner, target, time_scale=1.0, hold_steps=0) (dry_run screw → np.interp resample to ceil(n·ts) → planner.follow_path; or append hold_steps copies of the final qpos). PatternLock._load_scene: only the (N-1) demonstration=True segment tasks use it when difficulty=='xhard'. Knob location: a class constant, or native.parameters.motion_template_xhard (a decision key would break V4 snapshot shape).
+    - design: Stretch: every demo segment's screw trajectory is linearly resampled to ceil(1.3·n) steps. Hold: after each demo segment, follow_path with 11 copies of the last qpos. Exec tasks keep solve_swingonto, so exec speed is unchanged. The 'move <dir>' subgoal texts and the evaluate() logic are untouched.
+    - rationale: The only option that keeps B8 and K1 and leaves the frozen V4 PatternLock specs (path_nodes, path_attempts) valid, since no RNG changes. It fills the band 100% with ample eval margin. The cost: the demo grows in time but not in content, and demo speed no longer matches exec speed in the training data.
+    - rng_impact: None for xhard or the original tiers (no draws added or changed); V4 specs replay unchanged.
+    - overturned_v4_decisions: Keeps B8 and K1. Changes native.motion_template for xhard demo segments only; relaxes the V4 principle that 'demo and exec reuse the same motion'.
+    - spec_and_test_changes: No spec redraw is needed for PatternLock, but rollouts and videos must be regenerated. Add the knob to the sampling-config export if it is exposed.
+    - expected_numbers: Stretch ×1.3: 25.1–34.6 s, mean 30.0, 100% (300 seeds); simulator 853 / 1003 frames (28.4 / 33.4 s), all demo tasks completed, exec success 644 / 750. Hold H=10: 25.5–34.0 s, 100%; H=11: 26.1–34.7 s, mean 30.2, 100%. Exec max 792 (margin ≥509).
+  [4]
+    - title: PL-D: Allow node revisits (8-adjacency random walk, no immediate backtrack) on 5×5, L∈[23,29] segments
+    - recommended: False
+    - envs: PatternLock
+    - anchors_to_change: PatternLock._load_scene path selection (new walk sampler for xhard, e.g. modelled on utils/route.py::generate_dynamic_walk over grid_adjacency).
+    - design: L = randint(23, 30); start = randint(0, 25); each step picks uniformly among 8-neighbours excluding the previous node.
+    - rationale: Keeps the layout and gives any length. evaluate() and _wrong_button_touch still work with repeated labels.
+    - rng_impact: xhard: replaces the DFS draw structure. Appending it after the existing DFS loop would be needed to honour N5 literally. Original tiers unaffected.
+    - overturned_v4_decisions: Overturns B8 (search strategy) and K1, and breaks the 'pattern lock' no-revisit semantics.
+    - spec_and_test_changes: New spec semantics (path_nodes with repeats); V6 singletons 23..29.
+    - expected_numbers: 23.6–35.9 s, mean 29.7, 95% in band (2% below, 3% above), exec max 1077.
+  [5]
+    - title: PL-E: For xhard, make search exhaustion explicit (raise SceneGenerationError instead of silently using the last path)
+    - recommended: True
+    - envs: PatternLock
+    - anchors_to_change: PatternLock._load_scene: the `else:` branch of the `for attempt in range(max_attempts)` loop (currently only a logger.debug); NATIVE_SAMPLING['parameters']['path_selection']['exhausted_rule'] text for xhard.
+    - design: if self.difficulty == 'xhard': raise SceneGenerationError(f'no path with {lo}..{hi} nodes after {max_attempts} attempts'). The original tiers keep the silent fallback (H2 style).
+    - rationale: This is the K1 root cause: the V6 combo check was masked because a wrong-length path was silently accepted (25 nodes: only 12/40 seeds hit within 1000 attempts). An explicit failure turns this into a reset failure that the F2/H4 candidate loop already handles, and it makes the 口径14 check sound for the new upper bounds (6×6 value 33 → 36/40).
+    - rng_impact: None (raises only after all draws in the loop; the original tiers are untouched).
+    - overturned_v4_decisions: Refines the native exhausted_rule for xhard only; otherwise none.
+    - spec_and_test_changes: V6 combo coverage must count reset failures per singleton. Add a check that len(path_nodes) lies within the requested range for every candidate.
+    - expected_numbers: Chance of exhaustion with [30,33] on 6×6: per-attempt hit ≈3.3%, so P(no hit in 1000) ≈ 1e-15. For singleton 33: ≈8–10% of draws raise and are redrawn.
+## risks
+  [0]
+    - risk: Evaluation margin shrinks for learned policies: the oracle exec max is ~1050 (RouteStick L=21) and ~1005 (PatternLock 6×6 [30,33]) against 1301 policy steps, compared with 750/792 in V4. A policy more than ~20% slower than the oracle will time out on the longest episodes.
+    - mitigation: Keep upper bounds at L=21 and nodes=33 (do not use the measured maximum L=26). Report per-episode exec_frames/budget. evaluation.py stays byte-identical, and max_steps is not raised because it is the MME-VLA constant.
+  [1]
+    - risk: Fallback-path segments (screw failure → RRT*) grow with grid density (model: 0.69% of segments on 6×6@0.08 vs 0.52% on 5×5; the simulator saw 2+2 such calls in one [29,36] seed). The RRT* joint path is not a straight TCP line, could sweep over another button (wrong-touch failure), and has a wall-clock budget, so its length depends on machine load (K5).
+    - mitigation: Keep the screw→RRT* fallback as today. In data-gen a wrong touch fails the candidate, which H4 backfill handles. Watch demo_frames variance between run1 and run2 in the V2 report.
+  [2]
+    - risk: Visual density: 6×6@0.08 reduces the minimum adjacent-node spacing in the 256×256 front image from 14.1 px to 11.1 px (button radius ≈4 px at the row nearest the robot). The arm also occludes rows near the robot during the demo. The difficulty increase could partly be perceptual rather than memory-related.
+    - mitigation: If the user prefers the V4 density, choose PL-B (5×6@0.1, 14.2 px) or PL-C. Inspect sample frames (scratch pl_6x6_008_seed5500000.png / seed5500300.png).
+  [3]
+    - risk: V4 artifacts become non-replayable under V5 code: RouteStick V4 specs (L=12/13/15) raise ValueError, because the L range comes from the class and not from the frozen header. PatternLock V4 headers fail assert_native_decision if a new xhard decision key is added (PL-A/PL-B).
+    - mitigation: Treat V5 as a new snapshot (new run-id, new specs/sampling_config). If V4 must stay evaluable, gate the new values behind a version key or keep V4 code on its branch.
+  [4]
+    - risk: Model-based estimates: the offline screw model assumes perfect PD tracking and uses a joint-linear TOPP proxy for RRT*; measured error is −1.3%…+0.1% on 10 real runs. Episodes near the 25 s / 35 s edges could fall outside the band in real runs.
+    - mitigation: V5 acceptance must measure demo frames from the real h5 (is_video_demo count) for every candidate, not rely on the model.
+  [5]
+    - risk: V4 plan/report contain wrong statements that could propagate: 2.20 (exec = L×50+200, L>22 truncated), 2.19 / final report 3.15 ('31 frames/segment', '≈24.8 s' cap).
+    - mitigation: The V5 plan should cite the measured 34.25 frames/segment, exec = 50·L (+1 init), and the cut-off L≥27.
+  [6]
+    - risk: Longer demos plus longer exec raise data volume and time (~+40–50% frames per episode vs V4), and the TCP trail (40-step lifetime, rendered into rgb/depth) accumulates proportionally.
+    - mitigation: Budget disk/time for V5 rollouts; the V4 cleanup showed artifacts are large.
+## pending_decisions
+  [0]
+    - question: Which PatternLock lever should V5 use? The 25–35 s band is unreachable under B8 (5×5 layout) with the current path-length knob.
+    - options: A) 6×6 grid at spacing 0.08 (same footprint), nodes [30,33]. B) 5×6 grid at spacing 0.1, nodes [25,28]. C) Keep 5×5 [20,24] and slow only the demo (×1.3 stretch or 11-frame hold per segment). D) Allow node revisits on 5×5, L∈[23,29] segments.
+    - recommendation: A
+    - reason: A grows the demo by adding content while keeping the pattern-lock semantics and search unchanged, and it scores 100% in band (mean 29.2 s) with 3/3 simulator successes. B has the same benefits at V4 visual density with 99% in band. C is the only choice that keeps the user's own B8/K1 decisions and the V4 specs, but it lengthens the video without adding content. D breaks the semantics and fills the band only 95% of the time.
+  [1]
+    - question: If option A: which node range?
+    - options: [30,33] (mean 29.15 s, 100% in band, singleton 33 hit 36/40); [30,32] (every singleton 100%, mean ≈29.0 s); [31,33] (mean 29.9 s, attempts max 296)
+    - recommendation: [30,33] together with PL-E (explicit exhaustion)
+    - reason: Closest to the 30 s centre with a clean 口径14 story once exhaustion is explicit; [30,32] if the user wants zero singleton misses.
+  [2]
+    - question: RouteStick range: [15,21] (the band edges exactly 25.0/35.0 s) or [16,20] (26.7–33.3 s)?
+    - options: [15,21] or [16,20]
+    - recommendation: [15,21]
+    - reason: Uniform mean exactly 30.0 s, both edges inside the inclusive ±5 s band, exec ≤1050 against a 1301 budget.
+  [3]
+    - question: Should xhard PatternLock raise SceneGenerationError when 1000 attempts are exhausted (currently it silently uses a wrong-length path)?
+    - options: yes (xhard only) / no
+    - recommendation: yes
+    - reason: This silent fallback is what masked the K1 problem in V6. The change has no RNG impact and leaves the original tiers untouched.
+  [4]
+    - question: Is it acceptable that V4 frozen specs for RouteStick (and PatternLock under A/B) can no longer be replayed or evaluated with V5 code?
+    - options: accept (V5 = new snapshot) / add a version gate so V4 snapshots keep V4 values
+    - recommendation: accept, with a new run-id and specs
+    - reason: V5 redraws these envs anyway. A version gate adds complexity to a frozen-spec path that V4 already closed.
+  [5]
+    - question: How is '30 s' measured?
+    - options: h5 is_video_demo count /30 (= eval demo frames − 1 init frame) vs physical sim time (steps × 0.05 s = 1.5× longer)
+    - recommendation: keep A2: recorder frames at 30 fps, measured on the h5 is_video_demo count
+    - reason: This matches V4 A2 and the mp4 files. Physical time would make 30 s = 600 frames and invert the conclusion.
+## verification_checks
+  [0]
+    - check: RouteStick demo length rule and band
+    - how: For every V5 RouteStick candidate h5, count info/is_video_demo and compare with 50·objects.L and with [750,1050]
+    - judgement_line: RS_DEMO_LEN=PASS n=10 rule=L*50 mismatches=0 min_frames=750 max_frames=1050
+  [1]
+    - check: PatternLock demo band (real h5)
+    - how: For every V5 PatternLock candidate and selected rollout, demo_frames = count(is_video_demo) must lie in [750,1050]
+    - judgement_line: PL_DEMO_LEN=PASS n=10 in_band=10 min_s=25.x max_s=3x.x
+  [2]
+    - check: Eval budget with oracle-speed exec
+    - how: Run the eval DemonstrationWrapper (max_steps=1300) with the oracle exec for each selected episode (as scratch sim_oracle_eval.py does); record the budget count at success
+    - judgement_line: EXEC_BUDGET=PASS episodes=6 max_success_count=<=1100 limit=1302 timeouts=0
+  [3]
+    - check: No silent wrong-length paths (口径14 / K1 class)
+    - how: V6 singletons for every length value: len(actions.path_nodes) == requested value in every successful reset; exhausted draws must surface as reset failures
+    - judgement_line: PL_LEN_EXACT=PASS combos=4 wrong_length=0 zero_success_combinations=0
+  [4]
+    - check: V6 combo coverage for the new ranges
+    - how: V5 combos: RouteStick L=15..21 (7), PatternLock 30..33 (4), 5 demos each
+    - judgement_line: COMBO_COVERAGE=PASS missing_combinations=0 zero_success_combinations=0
+  [5]
+    - check: Original tiers byte-identical
+    - how: V1 on easy/medium/hard PatternLock/RouteStick subset: HDF5 sha compare before/after V5 code (same load)
+    - judgement_line: NATIVE_REGRESSION=PASS compared=N sha_equal=N field_mismatch=0
+  [6]
+    - check: Recorder frozen and evaluation.py upstream
+    - how: git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py ; diff scripts/evaluation.py <official copy>
+    - judgement_line: RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS
+  [7]
+    - check: Data-gen fail-safe margin
+    - how: max env elapsed_steps over V5 PatternLock/RouteStick rollouts (spec rng_trace/results or the h5 plus NO RECORD overhead)
+    - judgement_line: FAILSAFE_MARGIN=PASS max_elapsed=<=2500 limit=5000
+  [8]
+    - check: RNG order for the xhard tier
+    - how: rng_trace.json: same sequence of draw-point paths as V4 for RouteStick (layout.rotation_deg, obstacle_rgb.*, objects.L, actions.nodes, actions.directions.*); for PatternLock only actions.path_attempts / path_nodes
+    - judgement_line: XHARD_RNG_ORDER=PASS envs=2 new_draw_points=0
+## blind_spots
+  * Real-simulator validation is small: RouteStick 5 L values × 1 seed; PatternLock 3 seeds (6×6@0.08 [30,33]), 2 seeds (5×6), 2 seeds (×1.3 stretch), 1 seed (6×6 [29,36]), 1 baseline; 16 resets in total. The 300-seed statistics come from the offline mplib model (validated within −1.3%…+0.1%).
+  * The new configurations were validated only through the eval DemonstrationWrapper plus an oracle exec. The data-gen RecordWrapper path (h5 writing, fail_safe) was not run for them. h5 demo = eval demo − 1 was verified only on V4 configs (PL seed 5500000: 649 vs 650; RS L=12: 600 vs 601).
+  * The offline model's RRT* fallback is a proxy (IK plus joint-linear TOPP). Real RRT* lengths are wall-clock dependent (K5) and were not modelled. The machine load average was 35–165 during these runs.
+  * Learned-policy speed is unknown, so the budget margin is quantified only for oracle-speed execution.
+  * Arm occlusion of the rows nearest the robot, and whether 11 px node spacing is visually adequate, were judged only from 4 sample frames; not quantified.
+  * The hold variant of PL-C (per-segment dwell) was only computed arithmetically; only the time-stretch variant was run in the simulator.
+  * Whether the user wants more content (more nodes, PL-A/B) or just a longer duration (PL-C) cannot be determined from the request; the user's own V4 decision B8 conflicts with reaching 25–35 s via path length.
+  * Not investigated: 6-row grids with x-spacing 0.08 and y-spacing 0.1 (anisotropic), and larger-spacing 5×5 layouts (likely reach failures, by analogy with 6×6@0.1: 6.1% fallback-path segments).
+## scratch_files
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/h5_segments.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/h5_segments.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/mp4_frames.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/spec_rows.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/screw_model.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_candidates.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_dir_stats.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/dfs_len_dist.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/dfs_len_dist.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/singleton_hit.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/singleton_hit.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/grid_geometry.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/grid_geometry.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pixel_spacing.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_path_study.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/study_batch2.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/study_batch3.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_study_6x6_0.08_dfs_30_33_ts1.0.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_study_5x6_0.1_dfs_25_28_ts1.0.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_study_5x5_0.1_dfs_20_24_ts1.3.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/hold_calc.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/sim_reset_budget.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/sim_oracle_eval.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/run_sim_batch.sh
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/sim_batch.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_6x6_008_seed5500000.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_6x6_008_seed5500300.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_5x6_01_seed5500000.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/long_demo/pl_5x5_01_seed5500000.png

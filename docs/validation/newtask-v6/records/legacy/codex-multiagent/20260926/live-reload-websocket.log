@@ -1,0 +1,6 @@
+Installed 1 package in 8ms
+{"check": "live_initialize", "userAgent": "Codex Desktop/0.157.0 (Ubuntu 24.4.0; x86_64) unknown (codex_concurrency_live_reload; 1.0)"}
+{"check": "same_live_server", "current_thread_loaded": true, "loaded_count": 9}
+{"check": "live_reload", "result": {"status": "ok", "version": "sha256:e9dd5885b3bb8759911a6a59429b88d52499e44c7000c4e6b29791e2d911368d", "filePath": "/home/hongzefu/.codex/config.toml", "overriddenMetadata": null}}
+{"check": "live_read", "agents": {"enabled": null, "max_concurrent_threads_per_session": 16, "max_depth": null, "default_subagent_model": null, "default_subagent_reasoning_effort": null, "job_max_runtime_seconds": null, "interrupt_message": null}, "semantic_changes": 0}
+LIVE_RELOAD=PASS same_daemon=1 configured_subagents=16 semantic_changes=0 restart=0

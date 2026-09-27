@@ -1,0 +1,194 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.button_xy",
+      "drawn": [
+        -0.21318597793579103,
+        0.15607130527496338
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.n_cubes",
+      "drawn": 7,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_rgba.0",
+      "drawn": [
+        0.39434934581350384,
+        0.4759326219558716,
+        0.09685559466430504,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.0",
+      "drawn": [
+        0.03023895025253298,
+        -0.06713056325912477,
+        2.062934514645817
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "objects.color_rgba.1",
+      "drawn": [
+        0.46739456242754457,
+        0.4884690880775452,
+        0.22064001773076286,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.1",
+      "drawn": [
+        -0.06570604801177979,
+        -0.1406074905395508,
+        2.09875049429656
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "objects.color_rgba.2",
+      "drawn": [
+        0.4812286257743836,
+        0.05887766615474171,
+        0.22498867485513926,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.cubes.2",
+      "drawn": [
+        -0.20744071006774906,
+        -0.030891301631927492,
+        5.410567452949066
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "objects.color_rgba.3",
+      "drawn": [
+        0.7779112696647644,
+        0.7749415848451522,
+        0.17323332813173523,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.cubes.3",
+      "drawn": [
+        -0.07157742500305175,
+        -0.04982312679290771,
+        3.19842709118939
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.color_rgba.4",
+      "drawn": [
+        0.5027943954057074,
+        0.29540721238840106,
+        0.7843669176101684,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "layout.cubes.4",
+      "drawn": [
+        -0.2707252860069275,
+        -0.16870335102081302,
+        2.1140584690780115
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.color_rgba.5",
+      "drawn": [
+        0.04119775850291241,
+        0.30586213699725123,
+        0.6863337159156799,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "layout.cubes.5",
+      "drawn": [
+        -0.045440070629119866,
+        0.17828641176223756,
+        5.439025867521977
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "objects.color_rgba.6",
+      "drawn": [
+        0.2908702868904539,
+        0.07788174143241591,
+        0.421932065486908,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "layout.cubes.6",
+      "drawn": [
+        -0.03443558931350707,
+        0.07260965108871462,
+        1.2737025227997394
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.n_cubes_spawned",
+      "drawn": 7,
+      "source": "record"
+    },
+    {
+      "index": 17,
+      "path": "objects.highlight_count",
+      "drawn": 4,
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "objects.highlight_ids",
+      "drawn": [
+        5,
+        3,
+        2,
+        0
+      ],
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "f076c257ce09c3c5a4dd9aaa6060dd083acdf63240e2c5c5323925ab2fa792c6"
+  }
+}

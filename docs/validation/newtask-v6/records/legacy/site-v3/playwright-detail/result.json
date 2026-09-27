@@ -1,0 +1,83 @@
+{
+  "before": {
+    "duration": 0.033333,
+    "currentTime": 0,
+    "ended": false,
+    "paused": true,
+    "error": null,
+    "videoWidth": 1280,
+    "videoHeight": 816,
+    "readyState": 4,
+    "src": "http://127.0.0.1:8060/media/3d40f78c326c4aa3c49e1252"
+  },
+  "samples": [
+    {
+      "duration": 0.033333,
+      "currentTime": 0.033333,
+      "ended": true,
+      "paused": true,
+      "error": null,
+      "videoWidth": 1280,
+      "videoHeight": 816,
+      "readyState": 4,
+      "src": "http://127.0.0.1:8060/media/3d40f78c326c4aa3c49e1252"
+    },
+    {
+      "duration": 0.033333,
+      "currentTime": 0.033333,
+      "ended": true,
+      "paused": true,
+      "error": null,
+      "videoWidth": 1280,
+      "videoHeight": 816,
+      "readyState": 4,
+      "src": "http://127.0.0.1:8060/media/3d40f78c326c4aa3c49e1252"
+    },
+    {
+      "duration": 0.033333,
+      "currentTime": 0.033333,
+      "ended": true,
+      "paused": true,
+      "error": null,
+      "videoWidth": 1280,
+      "videoHeight": 816,
+      "readyState": 4,
+      "src": "http://127.0.0.1:8060/media/3d40f78c326c4aa3c49e1252"
+    },
+    {
+      "duration": 0.033333,
+      "currentTime": 0.033333,
+      "ended": true,
+      "paused": true,
+      "error": null,
+      "videoWidth": 1280,
+      "videoHeight": 816,
+      "readyState": 4,
+      "src": "http://127.0.0.1:8060/media/3d40f78c326c4aa3c49e1252"
+    }
+  ],
+  "events": [
+    {
+      "event": "play",
+      "at": 992.7000007629395,
+      "time": 0
+    },
+    {
+      "event": "playing",
+      "at": 992.7999992370605,
+      "time": 0
+    },
+    {
+      "event": "timeupdate",
+      "at": 1007.3999977111816,
+      "time": 0.033333
+    },
+    {
+      "event": "ended",
+      "at": 1007.3999977111816,
+      "time": 0.033333
+    }
+  ],
+  "caption": "示例 7 · 片段 2/2",
+  "claim": "能够加载但仅约0.033秒即结束，不能作为可观看轨迹通过"
+}

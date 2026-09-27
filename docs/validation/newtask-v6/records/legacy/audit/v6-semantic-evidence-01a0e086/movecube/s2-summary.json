@@ -1,0 +1,342 @@
+[
+  {
+    "id": "MoveCube-xhard4-6100001",
+    "method": "peg_push",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Pick up the peg"
+      },
+      {
+        "frame": 145,
+        "demo": true,
+        "text": "Hook the cube to the target with the peg"
+      },
+      {
+        "frame": 241,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 271,
+        "demo": false,
+        "text": "Pick up the peg"
+      },
+      {
+        "frame": 426,
+        "demo": false,
+        "text": "Hook the cube to the target with the peg"
+      },
+      {
+        "frame": 537,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "id": "MoveCube-xhard4-6100002",
+    "method": "peg_push",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Pick up the peg"
+      },
+      {
+        "frame": 105,
+        "demo": true,
+        "text": "Hook the cube to the target with the peg"
+      },
+      {
+        "frame": 229,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 259,
+        "demo": false,
+        "text": "Pick up the peg"
+      },
+      {
+        "frame": 397,
+        "demo": false,
+        "text": "Hook the cube to the target with the peg"
+      },
+      {
+        "frame": 502,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "id": "MoveCube-xhard4-6100004",
+    "method": "peg_push",
+    "ok": false,
+    "boundaries": []
+  },
+  {
+    "id": "MoveCube-xhard4-6100006",
+    "method": "peg_push",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Pick up the peg"
+      },
+      {
+        "frame": 121,
+        "demo": true,
+        "text": "Hook the cube to the target with the peg"
+      },
+      {
+        "frame": 208,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 238,
+        "demo": false,
+        "text": "Pick up the peg"
+      },
+      {
+        "frame": 394,
+        "demo": false,
+        "text": "Hook the cube to the target with the peg"
+      },
+      {
+        "frame": 498,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "id": "MoveCube-xhard4-6100000",
+    "method": "gripper_push",
+    "ok": false,
+    "boundaries": []
+  },
+  {
+    "id": "MoveCube-xhard4-6100007",
+    "method": "gripper_push",
+    "ok": false,
+    "boundaries": []
+  },
+  {
+    "id": "MoveCube-xhard4-6100011",
+    "method": "gripper_push",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Close the gripper and push the cube to the target"
+      },
+      {
+        "frame": 98,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 158,
+        "demo": false,
+        "text": "Close the gripper and push the cube to the target"
+      },
+      {
+        "frame": 267,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "id": "MoveCube-xhard4-6100012",
+    "method": "gripper_push",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Close the gripper and push the cube to the target"
+      },
+      {
+        "frame": 106,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 166,
+        "demo": false,
+        "text": "Close the gripper and push the cube to the target"
+      },
+      {
+        "frame": 277,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "id": "MoveCube-xhard4-6100003",
+    "method": "grasp_putdown",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 119,
+        "demo": true,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 217,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 277,
+        "demo": false,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 379,
+        "demo": false,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 447,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "id": "MoveCube-xhard4-6100005",
+    "method": "grasp_putdown",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 121,
+        "demo": true,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 221,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 281,
+        "demo": false,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 382,
+        "demo": false,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 445,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "id": "MoveCube-xhard4-6100008",
+    "method": "grasp_putdown",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 118,
+        "demo": true,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 210,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 270,
+        "demo": false,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 387,
+        "demo": false,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 461,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "id": "MoveCube-xhard4-6100009",
+    "method": "grasp_putdown",
+    "ok": true,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 112,
+        "demo": true,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 201,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 261,
+        "demo": false,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 379,
+        "demo": false,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 456,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  }
+]

@@ -1,0 +1,794 @@
+[
+ {
+  "task": "BinFill",
+  "combo": "put_in=5,put_in_color=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 2,
+  "failures": {
+   "task:DatasetGenerationError": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "combo": "put_in=5,put_in_color=3",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:DatasetGenerationError": 1
+  }
+ },
+ {
+  "task": "BinFill",
+  "combo": "put_in=6,put_in_color=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:DatasetGenerationError": 1
+  }
+ },
+ {
+  "task": "BinFill",
+  "combo": "put_in=6,put_in_color=3",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "BinFill",
+  "combo": "put_in=7,put_in_color=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 2,
+  "failures": {
+   "task:DatasetGenerationError": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "combo": "put_in=7,put_in_color=3",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 2,
+  "failures": {
+   "task:DatasetGenerationError": 3
+  }
+ },
+ {
+  "task": "ButtonUnmask",
+  "combo": "distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "ButtonUnmask",
+  "combo": "distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "combo": "swap=6,distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "combo": "swap=6,distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 3,
+  "failures": {
+   "task:BinCollisionError": 2
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "combo": "swap=7,distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "combo": "swap=7,distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "combo": "swap=8,distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "combo": "swap=8,distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "InsertPeg",
+  "combo": "default",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "MoveCube",
+  "combo": "default",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PatternLock",
+  "combo": "length=20",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PatternLock",
+  "combo": "length=21",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PatternLock",
+  "combo": "length=22",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PatternLock",
+  "combo": "length=23",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PatternLock",
+  "combo": "length=24",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PatternLock",
+  "combo": "length=25",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=5,spawn=8",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=5,spawn=9",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=5,spawn=10",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 3,
+  "failures": {
+   "task:DatasetGenerationError": 2
+  }
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=6,spawn=8",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=6,spawn=9",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=6,spawn=10",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=7,spawn=8",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=7,spawn=9",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickHighlight",
+  "combo": "highlight=7,spawn=10",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=6",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:DatasetGenerationError": 1
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=7",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=8",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=9",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=10",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:DatasetGenerationError": 1
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=11",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:DatasetGenerationError": 1
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=12",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=13",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=14",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "PickXtimes",
+  "combo": "num=15",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:DatasetGenerationError": 1
+  }
+ },
+ {
+  "task": "RouteStick",
+  "combo": "L=12",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "RouteStick",
+  "combo": "L=13",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "RouteStick",
+  "combo": "L=14",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "RouteStick",
+  "combo": "L=15",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=6",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=7",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=8",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=9",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=10",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=11",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=12",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=13",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=14",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "StopCube",
+  "combo": "stop_time=15",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "SwingXtimes",
+  "combo": "num=4",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "SwingXtimes",
+  "combo": "num=5",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "SwingXtimes",
+  "combo": "num=6",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:DatasetGenerationError": 1
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "combo": "num=7",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "SwingXtimes",
+  "combo": "num=8",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "SwingXtimes",
+  "combo": "num=9",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "SwingXtimes",
+  "combo": "num=10",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoPlaceButton",
+  "combo": "default",
+  "samples": 5,
+  "reset_ok": 4,
+  "demo_ok": 4,
+  "failures": {
+   "task:SceneGenerationError": 1
+  }
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "combo": "default",
+  "samples": 5,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "failures": {
+   "code:TypeError": 2
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=8,repeats=4",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 3,
+  "failures": {
+   "task:BinCollisionError": 2
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=8,repeats=5",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 2,
+  "failures": {
+   "task:BinCollisionError": 3
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=8,repeats=6",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 2,
+  "failures": {
+   "task:BinCollisionError": 3
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=9,repeats=4",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=9,repeats=5",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 2,
+  "failures": {
+   "task:DatasetGenerationError": 1,
+   "task:BinCollisionError": 2
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=9,repeats=6",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 3,
+  "failures": {
+   "task:DatasetGenerationError": 1,
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=10,repeats=4",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 3,
+  "failures": {
+   "task:BinCollisionError": 2
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=10,repeats=5",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 3,
+  "failures": {
+   "task:BinCollisionError": 2
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=10,repeats=6",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 3,
+  "failures": {
+   "task:BinCollisionError": 2
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=11,repeats=4",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=11,repeats=5",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=11,repeats=6",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=12,repeats=4",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 2,
+  "failures": {
+   "task:BinCollisionError": 3
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=12,repeats=5",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoRepick",
+  "combo": "swap=12,repeats=6",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmask",
+  "combo": "distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmask",
+  "combo": "distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=8,distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 4,
+  "failures": {
+   "task:BinCollisionError": 1
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=8,distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=9,distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=9,distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=10,distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=10,distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=11,distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=11,distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=12,distractor_cubes=1",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "combo": "swap=12,distractor_cubes=2",
+  "samples": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "failures": {}
+ }
+]

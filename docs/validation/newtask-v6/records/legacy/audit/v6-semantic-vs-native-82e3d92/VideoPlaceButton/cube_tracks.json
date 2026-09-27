@@ -1,0 +1,10706 @@
+[
+ {
+  "difficulty": "xhard1",
+  "episode": 0,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 103,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 138>",
+    "cents_end": {
+     "red": [
+      142,
+      92,
+      265
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      85,
+      163
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       138,
+       116
+      ],
+      [
+       142,
+       92
+      ],
+      24.3
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 104,
+    "end": 209,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target",
+    "cents_end": {
+     "red": [
+      153,
+      76,
+      137
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       142,
+       92
+      ],
+      [
+       153,
+       76
+      ],
+      19.4
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 210,
+    "end": 307,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <122, 86>",
+    "cents_end": {
+     "red": [
+      153,
+      76,
+      137
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      109,
+      88,
+      67
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       106,
+       84
+      ],
+      [
+       109,
+       88
+      ],
+      5.0
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 308,
+    "end": 417,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <76, 153>",
+    "cents_end": {
+     "red": [
+      159,
+      46,
+      269
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       153,
+       76
+      ],
+      [
+       159,
+       46
+      ],
+      30.6
+     ],
+     "blue": [
+      [
+       109,
+       88
+      ],
+      [
+       106,
+       84
+      ],
+      5.0
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 418,
+    "end": 516,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <78, 90>",
+    "cents_end": {
+     "red": [
+      88,
+      74,
+      157
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       159,
+       46
+      ],
+      [
+       88,
+       74
+      ],
+      76.3
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 517,
+    "end": 590,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 88>",
+    "cents_end": {
+     "red": [
+      76,
+      45,
+      288
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       88,
+       74
+      ],
+      [
+       76,
+       45
+      ],
+      31.4
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 591,
+    "end": 686,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <132, 165>",
+    "cents_end": {
+     "red": [
+      167,
+      131,
+      236
+     ],
+     "green": [
+      167,
+      104,
+      73
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       76,
+       44
+      ],
+      [
+       167,
+       131
+      ],
+      125.9
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 687,
+    "end": 755,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <131, 167>",
+    "cents_end": {
+     "red": [
+      179,
+      116,
+      242
+     ],
+     "green": [
+      161,
+      105,
+      40
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       167,
+       131
+      ],
+      [
+       179,
+       116
+      ],
+      19.2
+     ],
+     "green": [
+      [
+       167,
+       104
+      ],
+      [
+       161,
+       105
+      ],
+      6.1
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 756,
+    "end": 840,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      137,
+      116,
+      192
+     ],
+     "green": [
+      165,
+      101,
+      207
+     ],
+     "blue": [
+      106,
+      85,
+      169
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       179,
+       116
+      ],
+      [
+       137,
+       116
+      ],
+      42.0
+     ],
+     "green": [
+      [
+       161,
+       105
+      ],
+      [
+       165,
+       101
+      ],
+      5.7
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 841,
+    "end": 952,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      137,
+      116,
+      192
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 10,
+    "start": 953,
+    "end": 1056,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 137>",
+    "cents_end": {
+     "red": [
+      140,
+      93,
+      260
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      85,
+      164
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       137,
+       116
+      ],
+      [
+       140,
+       93
+      ],
+      23.2
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1057,
+    "end": 1141,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <78, 90>",
+    "cents_end": {
+     "red": [
+      88,
+      74,
+      156
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       140,
+       93
+      ],
+      [
+       88,
+       74
+      ],
+      55.4
+     ]
+    }
+   },
+   {
+    "i": 12,
+    "start": 1142,
+    "end": 1159,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <78, 90>",
+    "cents_end": {
+     "red": [
+      88,
+      74,
+      156
+     ],
+     "green": [
+      165,
+      101,
+      209
+     ],
+     "blue": [
+      106,
+      84,
+      172
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard1",
+  "episode": 3,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 117,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 163>",
+    "cents_end": {
+     "red": [
+      173,
+      41,
+      278
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       163,
+       74
+      ],
+      [
+       173,
+       41
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 118,
+    "end": 196,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <104, 133>",
+    "cents_end": {
+     "red": [
+      133,
+      102,
+      163
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       173,
+       41
+      ],
+      [
+       133,
+       102
+      ],
+      72.9
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 197,
+    "end": 281,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <123, 101>",
+    "cents_end": {
+     "red": [
+      133,
+      102,
+      163
+     ],
+     "green": null,
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 282,
+    "end": 370,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <102, 133>",
+    "cents_end": {
+     "red": [
+      136,
+      76,
+      305
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       133,
+       102
+      ],
+      [
+       136,
+       76
+      ],
+      26.2
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 371,
+    "end": 453,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <101, 159>",
+    "cents_end": {
+     "red": [
+      161,
+      99,
+      177
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       136,
+       76
+      ],
+      [
+       161,
+       99
+      ],
+      34.0
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 454,
+    "end": 524,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 161>",
+    "cents_end": {
+     "red": [
+      171,
+      72,
+      339
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       161,
+       99
+      ],
+      [
+       171,
+       72
+      ],
+      28.8
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 525,
+    "end": 620,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <74, 99>",
+    "cents_end": {
+     "red": [
+      98,
+      72,
+      144
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       171,
+       72
+      ],
+      [
+       98,
+       72
+      ],
+      73.0
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 621,
+    "end": 695,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 98>",
+    "cents_end": {
+     "red": [
+      90,
+      41,
+      269
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       98,
+       72
+      ],
+      [
+       90,
+       41
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 696,
+    "end": 792,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      164,
+      74,
+      159
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       90,
+       41
+      ],
+      [
+       164,
+       74
+      ],
+      81.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 793,
+    "end": 911,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      164,
+      74,
+      159
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 10,
+    "start": 912,
+    "end": 1030,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 164>",
+    "cents_end": {
+     "red": [
+      174,
+      42,
+      279
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       164,
+       74
+      ],
+      [
+       174,
+       42
+      ],
+      33.5
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1031,
+    "end": 1097,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <104, 133>",
+    "cents_end": {
+     "red": [
+      133,
+      102,
+      147
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       174,
+       42
+      ],
+      [
+       133,
+       102
+      ],
+      72.7
+     ]
+    }
+   },
+   {
+    "i": 12,
+    "start": 1098,
+    "end": 1109,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <104, 133>",
+    "cents_end": {
+     "red": [
+      134,
+      102,
+      154
+     ],
+     "green": [
+      93,
+      87,
+      188
+     ],
+     "blue": [
+      139,
+      127,
+      220
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard1",
+  "episode": 6,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 108,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <123, 176>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      109,
+      73,
+      150
+     ],
+     "blue": [
+      195,
+      100,
+      301
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       176,
+       123
+      ],
+      [
+       195,
+       100
+      ],
+      29.8
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 109,
+    "end": 211,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <98, 91>",
+    "cents_end": {
+     "red": [
+      163,
+      83,
+      166
+     ],
+     "green": [
+      109,
+      73,
+      150
+     ],
+     "blue": [
+      89,
+      96,
+      176
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       195,
+       101
+      ],
+      [
+       89,
+       96
+      ],
+      106.1
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 212,
+    "end": 293,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <122, 114>",
+    "cents_end": {
+     "red": [
+      163,
+      83,
+      166
+     ],
+     "green": null,
+     "blue": [
+      89,
+      99,
+      101
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 294,
+    "end": 388,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 89>",
+    "cents_end": {
+     "red": [
+      163,
+      83,
+      166
+     ],
+     "green": [
+      109,
+      73,
+      150
+     ],
+     "blue": [
+      77,
+      68,
+      344
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       89,
+       99
+      ],
+      [
+       77,
+       68
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 389,
+    "end": 477,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <138, 149>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      109,
+      72,
+      143
+     ],
+     "blue": [
+      151,
+      137,
+      226
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       77,
+       68
+      ],
+      [
+       151,
+       137
+      ],
+      101.2
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 478,
+    "end": 551,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <137, 151>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      109,
+      73,
+      150
+     ],
+     "blue": [
+      160,
+      127,
+      132
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       151,
+       137
+      ],
+      [
+       160,
+       127
+      ],
+      13.5
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 552,
+    "end": 667,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <78, 90>",
+    "cents_end": {
+     "red": [
+      163,
+      83,
+      166
+     ],
+     "green": [
+      109,
+      72,
+      149
+     ],
+     "blue": [
+      88,
+      75,
+      150
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       161,
+       127
+      ],
+      [
+       88,
+       75
+      ],
+      89.6
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 668,
+    "end": 743,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <75, 88>",
+    "cents_end": {
+     "red": [
+      163,
+      83,
+      166
+     ],
+     "green": [
+      109,
+      72,
+      149
+     ],
+     "blue": [
+      77,
+      45,
+      289
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       88,
+       75
+      ],
+      [
+       77,
+       45
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 744,
+    "end": 842,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      160,
+      88,
+      21
+     ],
+     "green": [
+      109,
+      72,
+      149
+     ],
+     "blue": [
+      176,
+      123,
+      247
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       163,
+       83
+      ],
+      [
+       160,
+       88
+      ],
+      5.8
+     ],
+     "blue": [
+      [
+       77,
+       45
+      ],
+      [
+       176,
+       123
+      ],
+      126.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 843,
+    "end": 963,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      163,
+      83,
+      166
+     ],
+     "green": [
+      109,
+      72,
+      149
+     ],
+     "blue": [
+      176,
+      123,
+      247
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       160,
+       88
+      ],
+      [
+       163,
+       83
+      ],
+      5.8
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 964,
+    "end": 1072,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <123, 176>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      109,
+      72,
+      149
+     ],
+     "blue": [
+      194,
+      102,
+      299
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       176,
+       123
+      ],
+      [
+       194,
+       102
+      ],
+      27.7
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1073,
+    "end": 1136,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <138, 149>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      111,
+      72,
+      151
+     ],
+     "blue": [
+      151,
+      142,
+      40
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       194,
+       102
+      ],
+      [
+       151,
+       142
+      ],
+      58.7
+     ]
+    }
+   },
+   {
+    "i": 12,
+    "start": 1137,
+    "end": 1150,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <138, 149>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      109,
+      72,
+      142
+     ],
+     "blue": [
+      151,
+      136,
+      214
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       151,
+       141
+      ],
+      [
+       151,
+       136
+      ],
+      5.0
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 0,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 112,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <85, 162>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      175,
+      53,
+      284
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       162,
+       85
+      ],
+      [
+       175,
+       53
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 113,
+    "end": 191,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <111, 167>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      170,
+      109,
+      205
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       175,
+       53
+      ],
+      [
+       170,
+       109
+      ],
+      56.2
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 192,
+    "end": 266,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <109, 170>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      187,
+      85,
+      261
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       170,
+       109
+      ],
+      [
+       187,
+       85
+      ],
+      29.4
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 267,
+    "end": 362,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <75, 147>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      151,
+      72,
+      153
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       187,
+       85
+      ],
+      [
+       151,
+       72
+      ],
+      38.3
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 363,
+    "end": 455,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <120, 135>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 5,
+    "start": 456,
+    "end": 565,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      160,
+      41,
+      260
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 6,
+    "start": 566,
+    "end": 653,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <102, 101>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      100,
+      100,
+      168
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       160,
+       41
+      ],
+      [
+       100,
+       100
+      ],
+      84.1
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 654,
+    "end": 723,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <100, 100>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      94,
+      72,
+      329
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       100,
+       100
+      ],
+      [
+       94,
+       72
+      ],
+      28.6
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 724,
+    "end": 817,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <75, 149>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      150,
+      72,
+      151
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       94,
+       72
+      ],
+      [
+       150,
+       72
+      ],
+      56.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 818,
+    "end": 901,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 150>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      159,
+      40,
+      265
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       150,
+       72
+      ],
+      [
+       159,
+       40
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 902,
+    "end": 982,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      162,
+      85,
+      191
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       159,
+       40
+      ],
+      [
+       162,
+       85
+      ],
+      45.1
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 983,
+    "end": 1095,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      162,
+      85,
+      191
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 12,
+    "start": 1096,
+    "end": 1208,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <85, 162>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      175,
+      53,
+      285
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       162,
+       85
+      ],
+      [
+       175,
+       53
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "i": 13,
+    "start": 1209,
+    "end": 1282,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <102, 101>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      101,
+      100,
+      159
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       175,
+       53
+      ],
+      [
+       101,
+       100
+      ],
+      87.7
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1283,
+    "end": 1295,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <102, 101>",
+    "cents_end": {
+     "red": [
+      98,
+      68,
+      156
+     ],
+     "green": [
+      100,
+      99,
+      168
+     ],
+     "blue": [
+      171,
+      145,
+      247
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 3,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 122,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <69, 153>",
+    "cents_end": {
+     "red": [
+      157,
+      36,
+      262
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       153,
+       69
+      ],
+      [
+       157,
+       36
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 123,
+    "end": 225,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <79, 93>",
+    "cents_end": {
+     "red": [
+      91,
+      75,
+      158
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       157,
+       36
+      ],
+      [
+       91,
+       75
+      ],
+      76.7
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 226,
+    "end": 299,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <75, 91>",
+    "cents_end": {
+     "red": [
+      79,
+      45,
+      218
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       91,
+       75
+      ],
+      [
+       79,
+       45
+      ],
+      32.3
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 300,
+    "end": 407,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <143, 168>",
+    "cents_end": {
+     "red": [
+      169,
+      142,
+      230
+     ],
+     "green": [
+      144,
+      90,
+      158
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       78,
+       45
+      ],
+      [
+       169,
+       142
+      ],
+      133.0
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 408,
+    "end": 503,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <129, 112>",
+    "cents_end": {
+     "red": [
+      169,
+      142,
+      230
+     ],
+     "green": null,
+     "blue": [
+      96,
+      108,
+      43
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       95,
+       102
+      ],
+      [
+       96,
+       108
+      ],
+      6.1
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 504,
+    "end": 612,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <142, 169>",
+    "cents_end": {
+     "red": [
+      178,
+      127,
+      216
+     ],
+     "green": [
+      143,
+      91,
+      133
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       169,
+       142
+      ],
+      [
+       178,
+       127
+      ],
+      17.5
+     ],
+     "blue": [
+      [
+       95,
+       109
+      ],
+      [
+       95,
+       102
+      ],
+      7.0
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 613,
+    "end": 697,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <117, 154>",
+    "cents_end": {
+     "red": [
+      155,
+      114,
+      196
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       178,
+       127
+      ],
+      [
+       155,
+       114
+      ],
+      26.4
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 698,
+    "end": 772,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <114, 155>",
+    "cents_end": {
+     "red": [
+      160,
+      89,
+      290
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       155,
+       114
+      ],
+      [
+       160,
+       89
+      ],
+      25.5
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 773,
+    "end": 862,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 168>",
+    "cents_end": {
+     "red": [
+      165,
+      87,
+      167
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       160,
+       89
+      ],
+      [
+       165,
+       87
+      ],
+      5.4
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 863,
+    "end": 931,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <87, 165>",
+    "cents_end": {
+     "red": [
+      172,
+      57,
+      314
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       165,
+       87
+      ],
+      [
+       172,
+       57
+      ],
+      30.8
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 932,
+    "end": 1022,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      153,
+      70,
+      161
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       172,
+       57
+      ],
+      [
+       153,
+       70
+      ],
+      23.0
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1023,
+    "end": 1144,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      153,
+      70,
+      161
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 12,
+    "start": 1145,
+    "end": 1268,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <70, 153>",
+    "cents_end": {
+     "red": [
+      157,
+      36,
+      264
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       153,
+       70
+      ],
+      [
+       157,
+       36
+      ],
+      34.2
+     ]
+    }
+   },
+   {
+    "i": 13,
+    "start": 1269,
+    "end": 1344,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <117, 154>",
+    "cents_end": {
+     "red": [
+      153,
+      117,
+      118
+     ],
+     "green": null,
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       157,
+       36
+      ],
+      [
+       153,
+       117
+      ],
+      81.1
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1345,
+    "end": 1357,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <117, 154>",
+    "cents_end": {
+     "red": [
+      155,
+      115,
+      193
+     ],
+     "green": [
+      144,
+      90,
+      161
+     ],
+     "blue": [
+      95,
+      102,
+      201
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 6,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 104,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 134>",
+    "cents_end": {
+     "red": [
+      105,
+      71,
+      48
+     ],
+     "green": null,
+     "blue": [
+      132,
+      92,
+      198
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       108,
+       68
+      ],
+      [
+       105,
+       71
+      ],
+      4.2
+     ],
+     "blue": [
+      [
+       134,
+       116
+      ],
+      [
+       132,
+       92
+      ],
+      24.1
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 105,
+    "end": 192,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <97, 93>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      154
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      91,
+      95,
+      180
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       105,
+       71
+      ],
+      [
+       108,
+       68
+      ],
+      4.2
+     ],
+     "blue": [
+      [
+       132,
+       92
+      ],
+      [
+       91,
+       95
+      ],
+      41.1
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 193,
+    "end": 263,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <95, 91>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      152
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      75,
+      68,
+      230
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       91,
+       95
+      ],
+      [
+       75,
+       68
+      ],
+      31.4
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 264,
+    "end": 353,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <82, 164>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      165,
+      79,
+      156
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       75,
+       68
+      ],
+      [
+       165,
+       79
+      ],
+      90.7
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 354,
+    "end": 452,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <130, 173>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": null
+    },
+    "moved": {}
+   },
+   {
+    "i": 5,
+    "start": 453,
+    "end": 566,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      174,
+      47,
+      302
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 6,
+    "start": 567,
+    "end": 670,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <138, 79>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      77,
+      138,
+      189
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       174,
+       47
+      ],
+      [
+       77,
+       138
+      ],
+      133.0
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 671,
+    "end": 739,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <138, 77>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      50,
+      120,
+      112
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       77,
+       138
+      ],
+      [
+       50,
+       120
+      ],
+      32.4
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 740,
+    "end": 838,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <103, 157>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      156,
+      100,
+      180
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       49,
+       120
+      ],
+      [
+       156,
+       100
+      ],
+      108.9
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 839,
+    "end": 906,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <100, 156>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      163,
+      72,
+      332
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       156,
+       100
+      ],
+      [
+       163,
+       72
+      ],
+      28.9
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 907,
+    "end": 981,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      105,
+      70,
+      66
+     ],
+     "green": null,
+     "blue": [
+      133,
+      116,
+      213
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       163,
+       72
+      ],
+      [
+       133,
+       116
+      ],
+      53.3
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 982,
+    "end": 1093,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      155
+     ],
+     "blue": [
+      133,
+      116,
+      213
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 12,
+    "start": 1094,
+    "end": 1198,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 133>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      130,
+      93,
+      192
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       133,
+       116
+      ],
+      [
+       130,
+       93
+      ],
+      23.2
+     ]
+    }
+   },
+   {
+    "i": 13,
+    "start": 1199,
+    "end": 1267,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <138, 79>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      72,
+      140,
+      54
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       130,
+       93
+      ],
+      [
+       72,
+       140
+      ],
+      74.7
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1268,
+    "end": 1281,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <138, 79>",
+    "cents_end": {
+     "red": [
+      108,
+      68,
+      164
+     ],
+     "green": [
+      139,
+      74,
+      160
+     ],
+     "blue": [
+      76,
+      138,
+      183
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       111,
+       72
+      ],
+      [
+       108,
+       68
+      ],
+      5.0
+     ],
+     "blue": [
+      [
+       72,
+       140
+      ],
+      [
+       76,
+       138
+      ],
+      4.5
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 0,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 121,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <145, 74>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      158,
+      102,
+      204
+     ],
+     "blue": [
+      57,
+      131,
+      298
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       74,
+       145
+      ],
+      [
+       57,
+       131
+      ],
+      22.0
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 122,
+    "end": 231,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <90, 98>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      158,
+      102,
+      204
+     ],
+     "blue": [
+      97,
+      87,
+      164
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       56,
+       130
+      ],
+      [
+       97,
+       87
+      ],
+      59.4
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 232,
+    "end": 333,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <102, 158>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      170,
+      75,
+      317
+     ],
+     "blue": [
+      97,
+      87,
+      164
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       158,
+       102
+      ],
+      [
+       170,
+       75
+      ],
+      29.5
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 334,
+    "end": 417,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <130, 166>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      169,
+      129,
+      231
+     ],
+     "blue": [
+      97,
+      87,
+      164
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       170,
+       75
+      ],
+      [
+       169,
+       129
+      ],
+      54.0
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 418,
+    "end": 491,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <129, 169>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      183,
+      113,
+      211
+     ],
+     "blue": [
+      97,
+      87,
+      164
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       169,
+       129
+      ],
+      [
+       183,
+       113
+      ],
+      21.3
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 492,
+    "end": 572,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <115, 91>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      89,
+      113,
+      201
+     ],
+     "blue": [
+      97,
+      89,
+      129
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       184,
+       113
+      ],
+      [
+       89,
+       113
+      ],
+      95.0
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 573,
+    "end": 651,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <120, 126>",
+    "cents_end": {
+     "red": [
+      131,
+      97,
+      56
+     ],
+     "green": [
+      89,
+      113,
+      201
+     ],
+     "blue": [
+      96,
+      90,
+      77
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       129,
+       93
+      ],
+      [
+       131,
+       97
+      ],
+      4.5
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 652,
+    "end": 754,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <90, 96>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      89,
+      113,
+      201
+     ],
+     "blue": [
+      90,
+      58,
+      313
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       96,
+       90
+      ],
+      [
+       90,
+       58
+      ],
+      32.6
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 755,
+    "end": 844,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <78, 164>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      89,
+      113,
+      201
+     ],
+     "blue": [
+      167,
+      74,
+      158
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       90,
+       58
+      ],
+      [
+       167,
+       74
+      ],
+      78.6
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 845,
+    "end": 947,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <113, 89>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      77,
+      88,
+      319
+     ],
+     "blue": [
+      167,
+      74,
+      158
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       89,
+       113
+      ],
+      [
+       77,
+       88
+      ],
+      27.7
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 948,
+    "end": 1002,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <115, 91>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      90,
+      113,
+      194
+     ],
+     "blue": [
+      167,
+      74,
+      158
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       77,
+       89
+      ],
+      [
+       90,
+       113
+      ],
+      27.3
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1003,
+    "end": 1107,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 167>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      90,
+      113,
+      194
+     ],
+     "blue": [
+      180,
+      45,
+      222
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       167,
+       74
+      ],
+      [
+       180,
+       45
+      ],
+      31.8
+     ]
+    }
+   },
+   {
+    "i": 12,
+    "start": 1108,
+    "end": 1221,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      90,
+      113,
+      194
+     ],
+     "blue": [
+      75,
+      144,
+      265
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       180,
+       45
+      ],
+      [
+       75,
+       144
+      ],
+      144.3
+     ]
+    }
+   },
+   {
+    "i": 13,
+    "start": 1222,
+    "end": 1328,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <113, 90>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      79,
+      88,
+      319
+     ],
+     "blue": [
+      75,
+      144,
+      265
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       90,
+       113
+      ],
+      [
+       79,
+       88
+      ],
+      27.3
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1329,
+    "end": 1411,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      159,
+      101,
+      202
+     ],
+     "blue": [
+      75,
+      144,
+      265
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       79,
+       88
+      ],
+      [
+       159,
+       101
+      ],
+      81.0
+     ]
+    }
+   },
+   {
+    "i": 15,
+    "start": 1412,
+    "end": 1525,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      159,
+      101,
+      202
+     ],
+     "blue": [
+      75,
+      144,
+      265
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 16,
+    "start": 1526,
+    "end": 1648,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <144, 75>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": [
+      159,
+      101,
+      202
+     ],
+     "blue": [
+      58,
+      130,
+      291
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       75,
+       144
+      ],
+      [
+       58,
+       130
+      ],
+      22.0
+     ]
+    }
+   },
+   {
+    "i": 17,
+    "start": 1649,
+    "end": 1722,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <130, 166>",
+    "cents_end": {
+     "red": [
+      131,
+      91,
+      175
+     ],
+     "green": [
+      155,
+      97,
+      36
+     ],
+     "blue": [
+      170,
+      131,
+      98
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       159,
+       101
+      ],
+      [
+       155,
+       97
+      ],
+      5.7
+     ],
+     "blue": [
+      [
+       58,
+       130
+      ],
+      [
+       170,
+       131
+      ],
+      112.0
+     ]
+    }
+   },
+   {
+    "i": 18,
+    "start": 1723,
+    "end": 1737,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <130, 166>",
+    "cents_end": {
+     "red": [
+      129,
+      93,
+      171
+     ],
+     "green": null,
+     "blue": [
+      168,
+      128,
+      216
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 3,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 104,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <93, 162>",
+    "cents_end": {
+     "red": [
+      170,
+      64,
+      307
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      70,
+      144,
+      287
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       162,
+       93
+      ],
+      [
+       170,
+       64
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 105,
+    "end": 195,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 91>",
+    "cents_end": {
+     "red": [
+      88,
+      94,
+      183
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      70,
+      144,
+      287
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       171,
+       64
+      ],
+      [
+       88,
+       94
+      ],
+      88.3
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 196,
+    "end": 315,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <144, 70>",
+    "cents_end": {
+     "red": [
+      90,
+      93,
+      130
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      49,
+      132,
+      267
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       70,
+       144
+      ],
+      [
+       49,
+       132
+      ],
+      24.2
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 316,
+    "end": 434,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <74, 103>",
+    "cents_end": {
+     "red": [
+      88,
+      94,
+      183
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      103,
+      71,
+      127
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       49,
+       132
+      ],
+      [
+       103,
+       71
+      ],
+      81.5
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 435,
+    "end": 520,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <71, 103>",
+    "cents_end": {
+     "red": [
+      88,
+      94,
+      183
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      99,
+      38,
+      251
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       103,
+       71
+      ],
+      [
+       99,
+       38
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 521,
+    "end": 607,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <77, 151>",
+    "cents_end": {
+     "red": [
+      88,
+      94,
+      183
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      152,
+      73,
+      151
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       99,
+       38
+      ],
+      [
+       152,
+       73
+      ],
+      63.5
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 608,
+    "end": 703,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <125, 113>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      157,
+      74,
+      35
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       152,
+       73
+      ],
+      [
+       157,
+       74
+      ],
+      5.1
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 704,
+    "end": 800,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <101, 89>",
+    "cents_end": {
+     "red": [
+      74,
+      67,
+      287
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      152,
+      73,
+      151
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       157,
+       74
+      ],
+      [
+       152,
+       73
+      ],
+      5.1
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 801,
+    "end": 878,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <115, 150>",
+    "cents_end": {
+     "red": [
+      151,
+      113,
+      179
+     ],
+     "green": [
+      123,
+      71,
+      127
+     ],
+     "blue": [
+      151,
+      78,
+      37
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       74,
+       67
+      ],
+      [
+       151,
+       113
+      ],
+      89.7
+     ],
+     "blue": [
+      [
+       152,
+       73
+      ],
+      [
+       151,
+       78
+      ],
+      5.1
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 879,
+    "end": 982,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <78, 152>",
+    "cents_end": {
+     "red": [
+      151,
+      113,
+      179
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      161,
+      42,
+      276
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       152,
+       78
+      ],
+      [
+       161,
+       42
+      ],
+      37.1
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 983,
+    "end": 1045,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <77, 151>",
+    "cents_end": {
+     "red": [
+      151,
+      113,
+      179
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      152,
+      74,
+      153
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       161,
+       42
+      ],
+      [
+       152,
+       74
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1046,
+    "end": 1154,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <113, 151>",
+    "cents_end": {
+     "red": [
+      157,
+      89,
+      284
+     ],
+     "green": [
+      123,
+      72,
+      117
+     ],
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       151,
+       113
+      ],
+      [
+       157,
+       89
+      ],
+      24.7
+     ]
+    }
+   },
+   {
+    "i": 12,
+    "start": 1155,
+    "end": 1229,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      161,
+      93,
+      170
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      152,
+      74,
+      153
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       157,
+       89
+      ],
+      [
+       161,
+       93
+      ],
+      5.7
+     ]
+    }
+   },
+   {
+    "i": 13,
+    "start": 1230,
+    "end": 1335,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 152>",
+    "cents_end": {
+     "red": [
+      161,
+      93,
+      170
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      161,
+      42,
+      284
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       152,
+       74
+      ],
+      [
+       161,
+       42
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1336,
+    "end": 1447,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      161,
+      93,
+      170
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      71,
+      144,
+      283
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       161,
+       42
+      ],
+      [
+       71,
+       144
+      ],
+      136.0
+     ]
+    }
+   },
+   {
+    "i": 15,
+    "start": 1448,
+    "end": 1584,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      161,
+      93,
+      170
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      71,
+      144,
+      283
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 16,
+    "start": 1585,
+    "end": 1703,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <144, 71>",
+    "cents_end": {
+     "red": [
+      161,
+      93,
+      170
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      52,
+      132,
+      224
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       71,
+       144
+      ],
+      [
+       52,
+       132
+      ],
+      22.5
+     ]
+    }
+   },
+   {
+    "i": 17,
+    "start": 1704,
+    "end": 1807,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <74, 103>",
+    "cents_end": {
+     "red": [
+      161,
+      93,
+      170
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      103,
+      70,
+      130
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       51,
+       132
+      ],
+      [
+       103,
+       70
+      ],
+      80.9
+     ]
+    }
+   },
+   {
+    "i": 18,
+    "start": 1808,
+    "end": 1822,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <74, 103>",
+    "cents_end": {
+     "red": [
+      161,
+      93,
+      170
+     ],
+     "green": [
+      123,
+      71,
+      134
+     ],
+     "blue": [
+      103,
+      70,
+      130
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 6,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 107,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <124, 175>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      133,
+      69,
+      139
+     ],
+     "blue": [
+      199,
+      101,
+      194
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       175,
+       124
+      ],
+      [
+       199,
+       101
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 108,
+    "end": 208,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <83, 105>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      133,
+      69,
+      139
+     ],
+     "blue": [
+      105,
+      79,
+      156
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       198,
+       101
+      ],
+      [
+       105,
+       79
+      ],
+      95.6
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 209,
+    "end": 323,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <69, 133>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      134,
+      37,
+      239
+     ],
+     "blue": [
+      105,
+      79,
+      156
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       133,
+       69
+      ],
+      [
+       134,
+       37
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 324,
+    "end": 426,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <141, 148>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      148,
+      140,
+      220
+     ],
+     "blue": [
+      104,
+      79,
+      152
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       134,
+       37
+      ],
+      [
+       148,
+       140
+      ],
+      103.9
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 427,
+    "end": 545,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <79, 104>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      148,
+      140,
+      220
+     ],
+     "blue": [
+      102,
+      49,
+      279
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       104,
+       79
+      ],
+      [
+       102,
+       49
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 546,
+    "end": 628,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <91, 165>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      148,
+      140,
+      220
+     ],
+     "blue": [
+      167,
+      88,
+      176
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       102,
+       48
+      ],
+      [
+       167,
+       88
+      ],
+      76.3
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 629,
+    "end": 717,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <124, 110>",
+    "cents_end": {
+     "red": [
+      136,
+      99,
+      181
+     ],
+     "green": [
+      148,
+      140,
+      220
+     ],
+     "blue": [
+      167,
+      88,
+      176
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 7,
+    "start": 718,
+    "end": 818,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <88, 167>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      148,
+      140,
+      220
+     ],
+     "blue": [
+      184,
+      58,
+      228
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       167,
+       88
+      ],
+      [
+       184,
+       58
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 819,
+    "end": 876,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <91, 165>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      148,
+      140,
+      220
+     ],
+     "blue": [
+      168,
+      89,
+      175
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       184,
+       59
+      ],
+      [
+       168,
+       89
+      ],
+      34.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 877,
+    "end": 980,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <140, 148>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      155,
+      131,
+      121
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       148,
+       140
+      ],
+      [
+       155,
+       131
+      ],
+      11.4
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 981,
+    "end": 1083,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <100, 87>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      84,
+      98,
+      188
+     ],
+     "blue": [
+      168,
+      89,
+      175
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       155,
+       130
+      ],
+      [
+       84,
+       98
+      ],
+      77.9
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1084,
+    "end": 1174,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <89, 168>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      84,
+      98,
+      188
+     ],
+     "blue": [
+      185,
+      59,
+      227
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       168,
+       89
+      ],
+      [
+       185,
+       59
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "i": 12,
+    "start": 1175,
+    "end": 1265,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      84,
+      98,
+      188
+     ],
+     "blue": [
+      175,
+      124,
+      230
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       185,
+       59
+      ],
+      [
+       175,
+       124
+      ],
+      65.8
+     ]
+    }
+   },
+   {
+    "i": 13,
+    "start": 1266,
+    "end": 1362,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <98, 84>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      71,
+      71,
+      331
+     ],
+     "blue": [
+      175,
+      124,
+      230
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       84,
+       98
+      ],
+      [
+       71,
+       71
+      ],
+      30.0
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1363,
+    "end": 1458,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      133,
+      70,
+      141
+     ],
+     "blue": [
+      175,
+      124,
+      230
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       71,
+       71
+      ],
+      [
+       133,
+       70
+      ],
+      62.0
+     ]
+    }
+   },
+   {
+    "i": 15,
+    "start": 1459,
+    "end": 1581,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      133,
+      70,
+      141
+     ],
+     "blue": [
+      175,
+      124,
+      230
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 16,
+    "start": 1582,
+    "end": 1689,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <124, 175>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      133,
+      70,
+      141
+     ],
+     "blue": [
+      199,
+      101,
+      189
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       175,
+       124
+      ],
+      [
+       199,
+       101
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 17,
+    "start": 1690,
+    "end": 1765,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <91, 162>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      133,
+      70,
+      141
+     ],
+     "blue": [
+      168,
+      89,
+      146
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       199,
+       101
+      ],
+      [
+       168,
+       89
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 18,
+    "start": 1766,
+    "end": 1780,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <91, 162>",
+    "cents_end": {
+     "red": [
+      136,
+      98,
+      195
+     ],
+     "green": [
+      133,
+      70,
+      141
+     ],
+     "blue": [
+      168,
+      88,
+      173
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 0,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 110,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <125, 181>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      201,
+      104,
+      284
+     ],
+     "blue": [
+      142,
+      72,
+      155
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       181,
+       125
+      ],
+      [
+       201,
+       104
+      ],
+      29.0
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 111,
+    "end": 205,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <100, 89>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      87,
+      98,
+      187
+     ],
+     "blue": [
+      142,
+      72,
+      155
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       200,
+       104
+      ],
+      [
+       87,
+       98
+      ],
+      113.2
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 206,
+    "end": 327,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 142>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      87,
+      98,
+      187
+     ],
+     "blue": [
+      145,
+      39,
+      269
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       142,
+       72
+      ],
+      [
+       145,
+       39
+      ],
+      33.1
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 328,
+    "end": 417,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <75, 92>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      87,
+      98,
+      187
+     ],
+     "blue": [
+      91,
+      72,
+      157
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       145,
+       39
+      ],
+      [
+       91,
+       72
+      ],
+      63.3
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 418,
+    "end": 491,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 91>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      87,
+      98,
+      187
+     ],
+     "blue": [
+      79,
+      41,
+      271
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       91,
+       72
+      ],
+      [
+       79,
+       41
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 492,
+    "end": 589,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <82, 161>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      87,
+      98,
+      187
+     ],
+     "blue": [
+      163,
+      79,
+      142
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       79,
+       41
+      ],
+      [
+       163,
+       79
+      ],
+      92.2
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 590,
+    "end": 690,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <128, 134>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      86,
+      99,
+      155
+     ],
+     "blue": null
+    },
+    "moved": {}
+   },
+   {
+    "i": 7,
+    "start": 691,
+    "end": 783,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 86>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      76,
+      71,
+      346
+     ],
+     "blue": [
+      163,
+      79,
+      142
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       86,
+       99
+      ],
+      [
+       76,
+       71
+      ],
+      29.7
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 784,
+    "end": 876,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <104, 168>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      170,
+      102,
+      188
+     ],
+     "blue": [
+      162,
+      80,
+      122
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       76,
+       70
+      ],
+      [
+       170,
+       102
+      ],
+      99.3
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 877,
+    "end": 972,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <80, 162>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      170,
+      102,
+      188
+     ],
+     "blue": [
+      172,
+      48,
+      278
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       162,
+       80
+      ],
+      [
+       172,
+       48
+      ],
+      33.5
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 973,
+    "end": 1030,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <82, 161>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      170,
+      102,
+      188
+     ],
+     "blue": [
+      162,
+      79,
+      143
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       172,
+       48
+      ],
+      [
+       162,
+       79
+      ],
+      32.6
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1031,
+    "end": 1125,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <102, 170>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      184,
+      76,
+      339
+     ],
+     "blue": [
+      162,
+      79,
+      143
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       170,
+       102
+      ],
+      [
+       184,
+       76
+      ],
+      29.5
+     ]
+    }
+   },
+   {
+    "i": 12,
+    "start": 1126,
+    "end": 1229,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <75, 92>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      91,
+      72,
+      154
+     ],
+     "blue": [
+      162,
+      79,
+      143
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       184,
+       76
+      ],
+      [
+       91,
+       72
+      ],
+      93.1
+     ]
+    }
+   },
+   {
+    "i": 13,
+    "start": 1230,
+    "end": 1304,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 91>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      82,
+      42,
+      273
+     ],
+     "blue": [
+      162,
+      79,
+      143
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       91,
+       72
+      ],
+      [
+       82,
+       42
+      ],
+      31.3
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1305,
+    "end": 1407,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      180,
+      126,
+      253
+     ],
+     "blue": [
+      160,
+      79,
+      91
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       82,
+       42
+      ],
+      [
+       180,
+       126
+      ],
+      129.1
+     ]
+    }
+   },
+   {
+    "i": 15,
+    "start": 1408,
+    "end": 1515,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <79, 160>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      180,
+      126,
+      253
+     ],
+     "blue": [
+      170,
+      49,
+      272
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       160,
+       79
+      ],
+      [
+       170,
+       49
+      ],
+      31.6
+     ]
+    }
+   },
+   {
+    "i": 16,
+    "start": 1516,
+    "end": 1602,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      180,
+      126,
+      253
+     ],
+     "blue": [
+      141,
+      72,
+      152
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       170,
+       49
+      ],
+      [
+       141,
+       72
+      ],
+      37.0
+     ]
+    }
+   },
+   {
+    "i": 17,
+    "start": 1603,
+    "end": 1723,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      180,
+      126,
+      253
+     ],
+     "blue": [
+      141,
+      72,
+      152
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 18,
+    "start": 1724,
+    "end": 1834,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <126, 180>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      200,
+      105,
+      276
+     ],
+     "blue": [
+      141,
+      72,
+      152
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       180,
+       126
+      ],
+      [
+       200,
+       105
+      ],
+      29.0
+     ]
+    }
+   },
+   {
+    "i": 19,
+    "start": 1835,
+    "end": 1916,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <100, 89>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      86,
+      98,
+      182
+     ],
+     "blue": [
+      141,
+      72,
+      152
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       199,
+       106
+      ],
+      [
+       86,
+       98
+      ],
+      113.3
+     ]
+    }
+   },
+   {
+    "i": 20,
+    "start": 1917,
+    "end": 1929,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <100, 89>",
+    "cents_end": {
+     "red": [
+      78,
+      143,
+      253
+     ],
+     "green": [
+      86,
+      98,
+      181
+     ],
+     "blue": [
+      141,
+      72,
+      152
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 3,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 110,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <77, 167>",
+    "cents_end": {
+     "red": [
+      180,
+      46,
+      246
+     ],
+     "green": [
+      146,
+      96,
+      191
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       167,
+       77
+      ],
+      [
+       180,
+       46
+      ],
+      33.6
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 111,
+    "end": 201,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 100>",
+    "cents_end": {
+     "red": [
+      99,
+      93,
+      165
+     ],
+     "green": [
+      146,
+      96,
+      191
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       180,
+       46
+      ],
+      [
+       99,
+       93
+      ],
+      93.6
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 202,
+    "end": 281,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <96, 146>",
+    "cents_end": {
+     "red": [
+      99,
+      93,
+      165
+     ],
+     "green": [
+      155,
+      69,
+      231
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       146,
+       96
+      ],
+      [
+       155,
+       69
+      ],
+      28.5
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 282,
+    "end": 353,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <110, 123>",
+    "cents_end": {
+     "red": [
+      100,
+      95,
+      120
+     ],
+     "green": [
+      124,
+      108,
+      189
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       155,
+       69
+      ],
+      [
+       124,
+       108
+      ],
+      49.8
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 354,
+    "end": 434,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <95, 100>",
+    "cents_end": {
+     "red": [
+      95,
+      64,
+      309
+     ],
+     "green": [
+      124,
+      108,
+      189
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       100,
+       95
+      ],
+      [
+       95,
+       64
+      ],
+      31.4
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 435,
+    "end": 535,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <142, 176>",
+    "cents_end": {
+     "red": [
+      178,
+      141,
+      205
+     ],
+     "green": [
+      124,
+      108,
+      189
+     ],
+     "blue": [
+      166,
+      109,
+      72
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       95,
+       64
+      ],
+      [
+       178,
+       141
+      ],
+      113.2
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 536,
+    "end": 617,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <125, 84>",
+    "cents_end": {
+     "red": [
+      178,
+      140,
+      238
+     ],
+     "green": [
+      124,
+      108,
+      189
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 7,
+    "start": 618,
+    "end": 708,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <140, 178>",
+    "cents_end": {
+     "red": [
+      201,
+      129,
+      97
+     ],
+     "green": [
+      124,
+      108,
+      189
+     ],
+     "blue": [
+      167,
+      109,
+      107
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       178,
+       140
+      ],
+      [
+       201,
+       129
+      ],
+      25.5
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 709,
+    "end": 786,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <135, 144>",
+    "cents_end": {
+     "red": [
+      145,
+      135,
+      222
+     ],
+     "green": null,
+     "blue": [
+      170,
+      116,
+      40
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       202,
+       129
+      ],
+      [
+       145,
+       135
+      ],
+      57.3
+     ],
+     "blue": [
+      [
+       167,
+       109
+      ],
+      [
+       170,
+       116
+      ],
+      7.6
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 787,
+    "end": 881,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube",
+    "cents_end": {
+     "red": [
+      145,
+      135,
+      222
+     ],
+     "green": [
+      127,
+      83,
+      223
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       170,
+       116
+      ],
+      [
+       169,
+       111
+      ],
+      5.1
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 882,
+    "end": 971,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <142, 176>",
+    "cents_end": {
+     "red": [
+      145,
+      135,
+      222
+     ],
+     "green": [
+      177,
+      144,
+      128
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       127,
+       83
+      ],
+      [
+       177,
+       144
+      ],
+      78.9
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 972,
+    "end": 1050,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <144, 177>",
+    "cents_end": {
+     "red": [
+      145,
+      135,
+      222
+     ],
+     "green": null,
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 12,
+    "start": 1051,
+    "end": 1155,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 100>",
+    "cents_end": {
+     "red": [
+      145,
+      135,
+      222
+     ],
+     "green": [
+      99,
+      93,
+      177
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 13,
+    "start": 1156,
+    "end": 1256,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <135, 145>",
+    "cents_end": {
+     "red": [
+      151,
+      120,
+      88
+     ],
+     "green": [
+      99,
+      93,
+      177
+     ],
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       145,
+       135
+      ],
+      [
+       151,
+       120
+      ],
+      16.2
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1257,
+    "end": 1354,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      167,
+      77,
+      183
+     ],
+     "green": [
+      99,
+      93,
+      177
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       151,
+       121
+      ],
+      [
+       167,
+       77
+      ],
+      46.8
+     ]
+    }
+   },
+   {
+    "i": 15,
+    "start": 1355,
+    "end": 1459,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <93, 99>",
+    "cents_end": {
+     "red": [
+      167,
+      77,
+      183
+     ],
+     "green": [
+      95,
+      64,
+      288
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       99,
+       93
+      ],
+      [
+       95,
+       64
+      ],
+      29.3
+     ]
+    }
+   },
+   {
+    "i": 16,
+    "start": 1460,
+    "end": 1537,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      167,
+      77,
+      183
+     ],
+     "green": [
+      147,
+      95,
+      194
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       95,
+       64
+      ],
+      [
+       147,
+       95
+      ],
+      60.5
+     ]
+    }
+   },
+   {
+    "i": 17,
+    "start": 1538,
+    "end": 1643,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      167,
+      77,
+      183
+     ],
+     "green": [
+      147,
+      95,
+      194
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 18,
+    "start": 1644,
+    "end": 1754,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <77, 167>",
+    "cents_end": {
+     "red": [
+      181,
+      46,
+      245
+     ],
+     "green": [
+      147,
+      95,
+      194
+     ],
+     "blue": [
+      169,
+      111,
+      198
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       167,
+       77
+      ],
+      [
+       181,
+       46
+      ],
+      34.0
+     ]
+    }
+   },
+   {
+    "i": 19,
+    "start": 1755,
+    "end": 1833,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <135, 144>",
+    "cents_end": {
+     "red": [
+      145,
+      124,
+      61
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       181,
+       46
+      ],
+      [
+       145,
+       124
+      ],
+      85.9
+     ]
+    }
+   },
+   {
+    "i": 20,
+    "start": 1834,
+    "end": 1848,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <135, 144>",
+    "cents_end": {
+     "red": [
+      146,
+      134,
+      220
+     ],
+     "green": null,
+     "blue": [
+      171,
+      116,
+      41
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       145,
+       129
+      ],
+      [
+       146,
+       134
+      ],
+      5.1
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 6,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 120,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <69, 142>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      177,
+      142,
+      254
+     ],
+     "blue": [
+      145,
+      36,
+      261
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       142,
+       69
+      ],
+      [
+       145,
+       36
+      ],
+      33.1
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 121,
+    "end": 211,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <112, 89>",
+    "cents_end": {
+     "red": [
+      87,
+      83,
+      24
+     ],
+     "green": [
+      177,
+      142,
+      254
+     ],
+     "blue": [
+      87,
+      110,
+      202
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       145,
+       36
+      ],
+      [
+       87,
+       110
+      ],
+      94.0
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 212,
+    "end": 331,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <142, 177>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      189,
+      124,
+      258
+     ],
+     "blue": [
+      87,
+      110,
+      202
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       177,
+       142
+      ],
+      [
+       189,
+       124
+      ],
+      21.6
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 332,
+    "end": 423,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <104, 160>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      161,
+      101,
+      189
+     ],
+     "blue": [
+      87,
+      110,
+      202
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       189,
+       124
+      ],
+      [
+       161,
+       101
+      ],
+      36.2
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 424,
+    "end": 491,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <101, 161>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      166,
+      73,
+      275
+     ],
+     "blue": [
+      87,
+      110,
+      202
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       161,
+       101
+      ],
+      [
+       166,
+       73
+      ],
+      28.4
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 492,
+    "end": 580,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <138, 83>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      82,
+      137,
+      175
+     ],
+     "blue": [
+      87,
+      110,
+      202
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       166,
+       73
+      ],
+      [
+       82,
+       137
+      ],
+      105.6
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 581,
+    "end": 675,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <126, 123>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      80,
+      136,
+      231
+     ],
+     "blue": [
+      87,
+      110,
+      202
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 7,
+    "start": 676,
+    "end": 762,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <110, 87>",
+    "cents_end": {
+     "red": [
+      91,
+      86,
+      34
+     ],
+     "green": [
+      80,
+      136,
+      231
+     ],
+     "blue": [
+      73,
+      86,
+      265
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       87,
+       110
+      ],
+      [
+       73,
+       86
+      ],
+      27.8
+     ]
+    }
+   },
+   {
+    "i": 8,
+    "start": 763,
+    "end": 853,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <84, 160>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      80,
+      136,
+      231
+     ],
+     "blue": [
+      161,
+      81,
+      144
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       91,
+       86
+      ],
+      [
+       90,
+       81
+      ],
+      5.1
+     ],
+     "blue": [
+      [
+       73,
+       86
+      ],
+      [
+       161,
+       81
+      ],
+      88.1
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 854,
+    "end": 962,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <136, 80>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      71,
+      113,
+      57
+     ],
+     "blue": [
+      161,
+      81,
+      144
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       80,
+       136
+      ],
+      [
+       71,
+       113
+      ],
+      24.7
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 963,
+    "end": 1023,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <138, 84>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      81,
+      138,
+      159
+     ],
+     "blue": [
+      161,
+      81,
+      144
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       70,
+       113
+      ],
+      [
+       81,
+       138
+      ],
+      27.3
+     ]
+    }
+   },
+   {
+    "i": 11,
+    "start": 1024,
+    "end": 1139,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <81, 161>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      79,
+      136,
+      231
+     ],
+     "blue": [
+      169,
+      49,
+      289
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       161,
+       81
+      ],
+      [
+       169,
+       49
+      ],
+      33.0
+     ]
+    }
+   },
+   {
+    "i": 12,
+    "start": 1140,
+    "end": 1216,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <104, 160>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      79,
+      136,
+      231
+     ],
+     "blue": [
+      161,
+      102,
+      167
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       169,
+       49
+      ],
+      [
+       161,
+       102
+      ],
+      53.6
+     ]
+    }
+   },
+   {
+    "i": 13,
+    "start": 1217,
+    "end": 1285,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <102, 161>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      79,
+      136,
+      231
+     ],
+     "blue": [
+      170,
+      74,
+      342
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       161,
+       102
+      ],
+      [
+       170,
+       74
+      ],
+      29.4
+     ]
+    }
+   },
+   {
+    "i": 14,
+    "start": 1286,
+    "end": 1384,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      79,
+      136,
+      231
+     ],
+     "blue": [
+      142,
+      70,
+      151
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       170,
+       74
+      ],
+      [
+       142,
+       70
+      ],
+      28.3
+     ]
+    }
+   },
+   {
+    "i": 15,
+    "start": 1385,
+    "end": 1495,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <136, 79>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      69,
+      113,
+      67
+     ],
+     "blue": [
+      142,
+      70,
+      151
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       79,
+       136
+      ],
+      [
+       69,
+       113
+      ],
+      25.1
+     ]
+    }
+   },
+   {
+    "i": 16,
+    "start": 1496,
+    "end": 1588,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      176,
+      141,
+      254
+     ],
+     "blue": [
+      142,
+      70,
+      151
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       69,
+       112
+      ],
+      [
+       176,
+       141
+      ],
+      110.9
+     ]
+    }
+   },
+   {
+    "i": 17,
+    "start": 1589,
+    "end": 1722,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      176,
+      141,
+      254
+     ],
+     "blue": [
+      143,
+      71,
+      110
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 18,
+    "start": 1723,
+    "end": 1845,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <70, 142>",
+    "cents_end": {
+     "red": [
+      90,
+      81,
+      182
+     ],
+     "green": [
+      176,
+      141,
+      254
+     ],
+     "blue": [
+      144,
+      37,
+      261
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       142,
+       70
+      ],
+      [
+       144,
+       37
+      ],
+      33.1
+     ]
+    }
+   },
+   {
+    "i": 19,
+    "start": 1846,
+    "end": 1933,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <138, 83>",
+    "cents_end": {
+     "red": [
+      90,
+      82,
+      145
+     ],
+     "green": [
+      174,
+      140,
+      257
+     ],
+     "blue": [
+      80,
+      140,
+      104
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       144,
+       37
+      ],
+      [
+       80,
+       140
+      ],
+      121.3
+     ]
+    }
+   },
+   {
+    "i": 20,
+    "start": 1934,
+    "end": 1948,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <138, 83>",
+    "cents_end": {
+     "red": [
+      90,
+      80,
+      159
+     ],
+     "green": [
+      176,
+      141,
+      254
+     ],
+     "blue": [
+      81,
+      137,
+      238
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "easy",
+  "episode": 0,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 119,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <75, 140>",
+    "cents_end": {
+     "red": [
+      144,
+      43,
+      260
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       140,
+       75
+      ],
+      [
+       144,
+       43
+      ],
+      32.2
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 120,
+    "end": 200,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <102, 162>",
+    "cents_end": {
+     "red": [
+      163,
+      99,
+      169
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       144,
+       43
+      ],
+      [
+       163,
+       99
+      ],
+      59.1
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 201,
+    "end": 289,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <131, 84>",
+    "cents_end": {
+     "red": [
+      163,
+      99,
+      169
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 290,
+    "end": 392,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 163>",
+    "cents_end": {
+     "red": [
+      173,
+      72,
+      329
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       163,
+       99
+      ],
+      [
+       173,
+       72
+      ],
+      28.8
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 393,
+    "end": 480,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <133, 174>",
+    "cents_end": {
+     "red": [
+      177,
+      133,
+      241
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       173,
+       72
+      ],
+      [
+       177,
+       133
+      ],
+      61.1
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 481,
+    "end": 549,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <133, 177>",
+    "cents_end": {
+     "red": [
+      191,
+      117,
+      281
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       177,
+       133
+      ],
+      [
+       191,
+       117
+      ],
+      21.3
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 550,
+    "end": 649,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": [
+      117,
+      84,
+      174
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       191,
+       117
+      ],
+      [
+       117,
+       84
+      ],
+      81.0
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 650,
+    "end": 764,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      117,
+      84,
+      174
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 765,
+    "end": 950,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <84, 117>",
+    "cents_end": {
+     "red": [
+      113,
+      52,
+      295
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       117,
+       84
+      ],
+      [
+       113,
+       52
+      ],
+      32.2
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 951,
+    "end": 1032,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <133, 174>",
+    "cents_end": {
+     "red": [
+      178,
+      132,
+      113
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       113,
+       52
+      ],
+      [
+       178,
+       132
+      ],
+      103.1
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 1033,
+    "end": 1047,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <133, 174>",
+    "cents_end": {
+     "red": [
+      176,
+      132,
+      235
+     ],
+     "green": null,
+     "blue": null
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "easy",
+  "episode": 1,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 108,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <92, 104>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      93,
+      63,
+      220
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       104,
+       92
+      ],
+      [
+       93,
+       63
+      ],
+      31.0
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 109,
+    "end": 188,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <118, 161>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      162,
+      116,
+      198
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       92,
+       62
+      ],
+      [
+       162,
+       116
+      ],
+      88.4
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 189,
+    "end": 287,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <129, 110>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      162,
+      116,
+      198
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 288,
+    "end": 398,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 162>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      168,
+      90,
+      282
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       162,
+       116
+      ],
+      [
+       168,
+       90
+      ],
+      26.7
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 399,
+    "end": 489,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <81, 155>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      161,
+      78,
+      158
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       168,
+       90
+      ],
+      [
+       161,
+       78
+      ],
+      13.9
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 490,
+    "end": 564,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <78, 161>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      167,
+      45,
+      282
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       161,
+       78
+      ],
+      [
+       167,
+       45
+      ],
+      33.5
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 565,
+    "end": 643,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      128,
+      88,
+      188
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       167,
+       45
+      ],
+      [
+       128,
+       88
+      ],
+      58.1
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 644,
+    "end": 756,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      128,
+      88,
+      188
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 757,
+    "end": 923,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <88, 128>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      125,
+      59,
+      254
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       128,
+       88
+      ],
+      [
+       125,
+       59
+      ],
+      29.2
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 924,
+    "end": 987,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <81, 160>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      161,
+      78,
+      156
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       125,
+       58
+      ],
+      [
+       161,
+       78
+      ],
+      41.2
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 988,
+    "end": 1001,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <81, 160>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      161,
+      78,
+      156
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "medium",
+  "episode": 10,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 110,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <141, 155>",
+    "cents_end": {
+     "red": [
+      161,
+      127,
+      63
+     ],
+     "green": [
+      108,
+      86,
+      181
+     ],
+     "blue": null
+    },
+    "moved": {
+     "red": [
+      [
+       155,
+       141
+      ],
+      [
+       161,
+       127
+      ],
+      15.2
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 111,
+    "end": 222,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target",
+    "cents_end": {
+     "red": [
+      147,
+      72,
+      150
+     ],
+     "green": [
+      108,
+      86,
+      181
+     ],
+     "blue": [
+      132,
+      95,
+      170
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       161,
+       126
+      ],
+      [
+       147,
+       72
+      ],
+      55.8
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 223,
+    "end": 314,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <120, 117>",
+    "cents_end": {
+     "red": null,
+     "green": null,
+     "blue": [
+      133,
+      96,
+      137
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 315,
+    "end": 424,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube",
+    "cents_end": {
+     "red": [
+      154,
+      41,
+      272
+     ],
+     "green": [
+      108,
+      86,
+      181
+     ],
+     "blue": [
+      132,
+      95,
+      170
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 4,
+    "start": 425,
+    "end": 510,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <105, 154>",
+    "cents_end": {
+     "red": [
+      155,
+      103,
+      192
+     ],
+     "green": [
+      108,
+      86,
+      181
+     ],
+     "blue": [
+      132,
+      95,
+      170
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       154,
+       41
+      ],
+      [
+       155,
+       103
+      ],
+      62.0
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 511,
+    "end": 581,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <103, 155>",
+    "cents_end": {
+     "red": [
+      167,
+      78,
+      287
+     ],
+     "green": [
+      108,
+      86,
+      181
+     ],
+     "blue": [
+      132,
+      95,
+      170
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       155,
+       103
+      ],
+      [
+       167,
+       78
+      ],
+      27.7
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 582,
+    "end": 668,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": [
+      117,
+      78,
+      153
+     ],
+     "green": [
+      107,
+      86,
+      171
+     ],
+     "blue": [
+      132,
+      95,
+      170
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       167,
+       78
+      ],
+      [
+       117,
+       78
+      ],
+      50.0
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 669,
+    "end": 786,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      117,
+      78,
+      153
+     ],
+     "green": [
+      107,
+      86,
+      171
+     ],
+     "blue": [
+      132,
+      95,
+      170
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 787,
+    "end": 899,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <78, 117>",
+    "cents_end": {
+     "red": [
+      116,
+      46,
+      278
+     ],
+     "green": [
+      107,
+      86,
+      171
+     ],
+     "blue": [
+      132,
+      95,
+      170
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       117,
+       78
+      ],
+      [
+       116,
+       46
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 900,
+    "end": 966,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <105, 154>",
+    "cents_end": {
+     "red": [
+      156,
+      104,
+      149
+     ],
+     "green": [
+      107,
+      86,
+      171
+     ],
+     "blue": [
+      130,
+      100,
+      38
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       116,
+       46
+      ],
+      [
+       156,
+       104
+      ],
+      70.5
+     ],
+     "blue": [
+      [
+       132,
+       95
+      ],
+      [
+       130,
+       100
+      ],
+      5.4
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 967,
+    "end": 979,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <105, 154>",
+    "cents_end": {
+     "red": [
+      156,
+      103,
+      189
+     ],
+     "green": [
+      107,
+      86,
+      171
+     ],
+     "blue": [
+      132,
+      95,
+      170
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       131,
+       99
+      ],
+      [
+       132,
+       95
+      ],
+      4.1
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "difficulty": "hard",
+  "episode": 11,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 106,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 148>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      154,
+      72,
+      302
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       148,
+       99
+      ],
+      [
+       154,
+       72
+      ],
+      27.7
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 107,
+    "end": 186,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <124, 162>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      163,
+      123,
+      207
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       154,
+       71
+      ],
+      [
+       163,
+       123
+      ],
+      52.8
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 187,
+    "end": 271,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <122, 121>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      163,
+      123,
+      207
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 272,
+    "end": 372,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <123, 163>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      176,
+      101,
+      298
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       163,
+       123
+      ],
+      [
+       176,
+       101
+      ],
+      25.6
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 373,
+    "end": 468,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 160>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      166,
+      93,
+      166
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       176,
+       101
+      ],
+      [
+       166,
+       93
+      ],
+      12.8
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 469,
+    "end": 538,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <93, 166>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      177,
+      65,
+      324
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       166,
+       93
+      ],
+      [
+       177,
+       65
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 539,
+    "end": 617,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      131,
+      82,
+      161
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       178,
+       65
+      ],
+      [
+       131,
+       82
+      ],
+      50.0
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 618,
+    "end": 733,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      131,
+      82,
+      161
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 734,
+    "end": 846,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <82, 131>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      131,
+      50,
+      292
+     ],
+     "blue": [
+      77,
+      105,
+      221
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       131,
+       82
+      ],
+      [
+       131,
+       50
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 847,
+    "end": 931,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <140, 81>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      80,
+      140,
+      113
+     ],
+     "blue": [
+      80,
+      104,
+      110
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       131,
+       50
+      ],
+      [
+       80,
+       140
+      ],
+      103.4
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 932,
+    "end": 945,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <140, 81>",
+    "cents_end": {
+     "red": [
+      155,
+      143,
+      238
+     ],
+     "green": [
+      78,
+      139,
+      248
+     ],
+     "blue": null
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "medium",
+  "episode": 2,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 103,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <96, 126>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      70,
+      152
+     ],
+     "blue": [
+      124,
+      67,
+      299
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       126,
+       96
+      ],
+      [
+       124,
+       67
+      ],
+      29.1
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 104,
+    "end": 183,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <101, 166>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      70,
+      152
+     ],
+     "blue": [
+      168,
+      98,
+      167
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       124,
+       67
+      ],
+      [
+       168,
+       98
+      ],
+      53.8
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 184,
+    "end": 274,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <118, 101>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": null,
+     "blue": [
+      168,
+      98,
+      167
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 275,
+    "end": 375,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <98, 168>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      70,
+      152
+     ],
+     "blue": [
+      179,
+      70,
+      336
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       168,
+       98
+      ],
+      [
+       179,
+       70
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 376,
+    "end": 467,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <87, 93>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      69,
+      150
+     ],
+     "blue": [
+      91,
+      84,
+      169
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       180,
+       70
+      ],
+      [
+       91,
+       84
+      ],
+      90.1
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 468,
+    "end": 548,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <84, 91>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      70,
+      150
+     ],
+     "blue": [
+      78,
+      53,
+      284
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       91,
+       84
+      ],
+      [
+       78,
+       53
+      ],
+      33.6
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 549,
+    "end": 626,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      70,
+      152
+     ],
+     "blue": [
+      123,
+      83,
+      175
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       78,
+       53
+      ],
+      [
+       123,
+       83
+      ],
+      54.1
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 627,
+    "end": 742,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      70,
+      152
+     ],
+     "blue": [
+      123,
+      83,
+      175
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 743,
+    "end": 921,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <83, 123>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      70,
+      152
+     ],
+     "blue": [
+      121,
+      51,
+      285
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       123,
+       83
+      ],
+      [
+       121,
+       51
+      ],
+      32.1
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 922,
+    "end": 986,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <87, 93>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": null,
+     "blue": [
+      92,
+      84,
+      168
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       121,
+       51
+      ],
+      [
+       92,
+       84
+      ],
+      43.9
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 987,
+    "end": 1000,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <87, 93>",
+    "cents_end": {
+     "red": [
+      148,
+      81,
+      170
+     ],
+     "green": [
+      88,
+      69,
+      150
+     ],
+     "blue": [
+      92,
+      84,
+      170
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       89,
+       75
+      ],
+      [
+       88,
+       69
+      ],
+      6.1
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "difficulty": "hard",
+  "episode": 3,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 118,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 110>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      105,
+      42,
+      265
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       110,
+       74
+      ],
+      [
+       105,
+       42
+      ],
+      32.4
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 119,
+    "end": 212,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <98, 165>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      168,
+      96,
+      181
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       104,
+       42
+      ],
+      [
+       168,
+       96
+      ],
+      83.7
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 213,
+    "end": 292,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <119, 115>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      168,
+      96,
+      181
+     ],
+     "blue": null
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 293,
+    "end": 385,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <96, 168>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      182,
+      68,
+      350
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       168,
+       96
+      ],
+      [
+       182,
+       68
+      ],
+      31.3
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 386,
+    "end": 471,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <129, 173>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      175,
+      129,
+      236
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       182,
+       68
+      ],
+      [
+       175,
+       129
+      ],
+      61.4
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 472,
+    "end": 544,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <129, 175>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      192,
+      113,
+      253
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       175,
+       129
+      ],
+      [
+       192,
+       113
+      ],
+      23.3
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 545,
+    "end": 646,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      128,
+      88,
+      155
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       193,
+       112
+      ],
+      [
+       128,
+       88
+      ],
+      69.3
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 647,
+    "end": 758,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      128,
+      88,
+      155
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 759,
+    "end": 952,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <88, 128>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      128,
+      60,
+      281
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       128,
+       88
+      ],
+      [
+       128,
+       60
+      ],
+      28.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 953,
+    "end": 1022,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <98, 165>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      167,
+      96,
+      179
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       128,
+       59
+      ],
+      [
+       167,
+       96
+      ],
+      53.8
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 1023,
+    "end": 1040,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <98, 165>",
+    "cents_end": {
+     "red": [
+      147,
+      109,
+      205
+     ],
+     "green": [
+      167,
+      96,
+      185
+     ],
+     "blue": [
+      91,
+      85,
+      188
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "easy",
+  "episode": 4,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 113,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <81, 156>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      162,
+      49,
+      292
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       156,
+       81
+      ],
+      [
+       162,
+       49
+      ],
+      32.6
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 114,
+    "end": 216,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <140, 175>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      176,
+      139,
+      229
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       162,
+       49
+      ],
+      [
+       176,
+       139
+      ],
+      91.1
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 217,
+    "end": 310,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <124, 126>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      176,
+      139,
+      229
+     ],
+     "blue": null
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 311,
+    "end": 419,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <139, 176>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      190,
+      121,
+      287
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       176,
+       139
+      ],
+      [
+       190,
+       121
+      ],
+      22.8
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 420,
+    "end": 512,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <106, 92>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      90,
+      103,
+      188
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       190,
+       121
+      ],
+      [
+       90,
+       103
+      ],
+      101.6
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 513,
+    "end": 584,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <103, 90>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      73,
+      77,
+      226
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       90,
+       103
+      ],
+      [
+       73,
+       77
+      ],
+      31.1
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 585,
+    "end": 679,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": null,
+     "green": [
+      126,
+      76,
+      175
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       73,
+       77
+      ],
+      [
+       126,
+       76
+      ],
+      53.0
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 680,
+    "end": 802,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": null,
+     "green": [
+      126,
+      76,
+      175
+     ],
+     "blue": null
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 803,
+    "end": 1007,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <76, 126>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      118,
+      47,
+      270
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       126,
+       76
+      ],
+      [
+       118,
+       47
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 1008,
+    "end": 1075,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <106, 92>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      89,
+      105,
+      146
+     ],
+     "blue": null
+    },
+    "moved": {
+     "green": [
+      [
+       117,
+       47
+      ],
+      [
+       89,
+       105
+      ],
+      64.4
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 1076,
+    "end": 1088,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <106, 92>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      89,
+      104,
+      192
+     ],
+     "blue": null
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "medium",
+  "episode": 6,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 111,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <79, 113>",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      109,
+      48,
+      273
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       113,
+       79
+      ],
+      [
+       109,
+       48
+      ],
+      31.3
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 112,
+    "end": 199,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <119, 89>",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      87,
+      117,
+      208
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       109,
+       48
+      ],
+      [
+       87,
+       117
+      ],
+      72.4
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 200,
+    "end": 274,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <125, 125>",
+    "cents_end": {
+     "red": null,
+     "green": [
+      154,
+      95,
+      19
+     ],
+     "blue": [
+      87,
+      117,
+      208
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       153,
+       89
+      ],
+      [
+       154,
+       95
+      ],
+      6.1
+     ]
+    }
+   },
+   {
+    "i": 3,
+    "start": 275,
+    "end": 366,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <117, 87>",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      71,
+      94,
+      303
+     ]
+    },
+    "moved": {
+     "green": [
+      [
+       154,
+       95
+      ],
+      [
+       153,
+       89
+      ],
+      6.1
+     ],
+     "blue": [
+      [
+       87,
+       117
+      ],
+      [
+       71,
+       94
+      ],
+      28.0
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 367,
+    "end": 459,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <91, 92>",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      88,
+      88,
+      168
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       71,
+       94
+      ],
+      [
+       88,
+       88
+      ],
+      18.0
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 460,
+    "end": 529,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <88, 88>",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      77,
+      59,
+      327
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       88,
+       88
+      ],
+      [
+       77,
+       59
+      ],
+      31.0
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 530,
+    "end": 608,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      121,
+      77,
+      147
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       77,
+       59
+      ],
+      [
+       121,
+       77
+      ],
+      47.5
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 609,
+    "end": 727,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      121,
+      77,
+      147
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 728,
+    "end": 840,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <77, 121>",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      120,
+      47,
+      255
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       121,
+       77
+      ],
+      [
+       120,
+       47
+      ],
+      30.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 841,
+    "end": 904,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <90, 90>",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      88,
+      88,
+      171
+     ]
+    },
+    "moved": {
+     "blue": [
+      [
+       120,
+       47
+      ],
+      [
+       88,
+       88
+      ],
+      52.0
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 905,
+    "end": 920,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <90, 90>",
+    "cents_end": {
+     "red": [
+      165,
+      79,
+      147
+     ],
+     "green": [
+      153,
+      89,
+      166
+     ],
+     "blue": [
+      88,
+      88,
+      171
+     ]
+    },
+    "moved": {}
+   }
+  ]
+ },
+ {
+  "difficulty": "hard",
+  "episode": 7,
+  "events": [
+   {
+    "i": 0,
+    "start": 0,
+    "end": 117,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <73, 143>",
+    "cents_end": {
+     "red": [
+      149,
+      41,
+      270
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      111,
+      77,
+      175
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       143,
+       73
+      ],
+      [
+       149,
+       41
+      ],
+      32.6
+     ]
+    }
+   },
+   {
+    "i": 1,
+    "start": 118,
+    "end": 215,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <126, 145>",
+    "cents_end": {
+     "red": [
+      146,
+      125,
+      210
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      106,
+      77,
+      27
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       149,
+       41
+      ],
+      [
+       146,
+       125
+      ],
+      84.1
+     ],
+     "blue": [
+      [
+       111,
+       77
+      ],
+      [
+       106,
+       77
+      ],
+      5.0
+     ]
+    }
+   },
+   {
+    "i": 2,
+    "start": 216,
+    "end": 289,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <123, 92>",
+    "cents_end": {
+     "red": [
+      146,
+      125,
+      210
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": null
+    },
+    "moved": {}
+   },
+   {
+    "i": 3,
+    "start": 290,
+    "end": 368,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <125, 146>",
+    "cents_end": {
+     "red": [
+      155,
+      110,
+      154
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      107,
+      77,
+      57
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       146,
+       125
+      ],
+      [
+       155,
+       110
+      ],
+      17.5
+     ]
+    }
+   },
+   {
+    "i": 4,
+    "start": 369,
+    "end": 477,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target",
+    "cents_end": {
+     "red": [
+      166,
+      77,
+      164
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      111,
+      77,
+      175
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       155,
+       109
+      ],
+      [
+       166,
+       77
+      ],
+      33.8
+     ]
+    }
+   },
+   {
+    "i": 5,
+    "start": 478,
+    "end": 552,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <77, 166>",
+    "cents_end": {
+     "red": [
+      177,
+      47,
+      283
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      111,
+      77,
+      175
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       166,
+       77
+      ],
+      [
+       177,
+       47
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "i": 6,
+    "start": 553,
+    "end": 634,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cents_end": {
+     "red": [
+      121,
+      83,
+      160
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      110,
+      77,
+      155
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       177,
+       47
+      ],
+      [
+       121,
+       83
+      ],
+      66.6
+     ]
+    }
+   },
+   {
+    "i": 7,
+    "start": 635,
+    "end": 749,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cents_end": {
+     "red": [
+      121,
+      83,
+      160
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      110,
+      77,
+      155
+     ]
+    },
+    "moved": {}
+   },
+   {
+    "i": 8,
+    "start": 750,
+    "end": 863,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <83, 121>",
+    "cents_end": {
+     "red": [
+      120,
+      51,
+      293
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      111,
+      77,
+      173
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       121,
+       83
+      ],
+      [
+       120,
+       51
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "i": 9,
+    "start": 864,
+    "end": 943,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <126, 145>",
+    "cents_end": {
+     "red": [
+      147,
+      124,
+      66
+     ],
+     "green": [
+      135,
+      145,
+      241
+     ],
+     "blue": [
+      111,
+      77,
+      173
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       120,
+       51
+      ],
+      [
+       147,
+       124
+      ],
+      77.8
+     ]
+    }
+   },
+   {
+    "i": 10,
+    "start": 944,
+    "end": 957,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <126, 145>",
+    "cents_end": {
+     "red": [
+      146,
+      125,
+      212
+     ],
+     "green": [
+      134,
+      146,
+      239
+     ],
+     "blue": [
+      106,
+      77,
+      32
+     ]
+    },
+    "moved": {
+     "red": [
+      [
+       147,
+       129
+      ],
+      [
+       146,
+       125
+      ],
+      4.1
+     ],
+     "blue": [
+      [
+       111,
+       77
+      ],
+      [
+       106,
+       77
+      ],
+      5.0
+     ]
+    }
+   }
+  ]
+ }
+]

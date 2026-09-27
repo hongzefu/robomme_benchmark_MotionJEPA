@@ -1,0 +1,34 @@
+{
+  "id": "PickXtimes-xhard3-12100100",
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "seed": 12100100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 93.127,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "PickXtimes",
+      "seed": 12100100,
+      "difficulty": "xhard3",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 88.6,
+      "timesteps": 1672
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickXtimes-xhard3-12100100/hdf5_files/PickXtimes_ep9_seed12100100.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickXtimes-xhard3-12100100/videos/PickXtimes_ep9_seed12100100_xhard3_pick_up_the_red_cube_and_place_it_on_the_target_repeating_this_action_twelve_times_then_press_the_button_to_stop__ALT__pick_up_the_red_cube_and_place_it_on_the___HASH__c88233ab61fb.mp4"
+  ]
+}

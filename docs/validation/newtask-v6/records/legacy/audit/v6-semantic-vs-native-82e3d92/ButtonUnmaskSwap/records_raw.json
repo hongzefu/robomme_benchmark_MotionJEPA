@@ -1,0 +1,2072 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "seed": 8700000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed8700000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/videos/ButtonUnmaskSwap_ep0_seed8700000_xhard1_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "difficulty_attr": "xhard1",
+  "seed_attr": 8700000,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 513,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [63, 151]}",
+    "grounded": "press the first button at <60, 151>",
+    "grounded_online": "press the first button at <60, 151>",
+    "online": "press the first button"
+   },
+   {
+    "t": 115,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [67, 105]}",
+    "grounded": "press the second button at <64, 104>",
+    "grounded_online": "press the second button at <64, 104>",
+    "online": "press the second button"
+   },
+   {
+    "t": 265,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [93, 188]}",
+    "grounded": "pick up the container at <96, 185> that hides the red cube",
+    "grounded_online": "pick up the container at <93, 129> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 369,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 419,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [126, 196]}",
+    "grounded": "pick up the container at <128, 192> that hides the blue cube",
+    "grounded_online": "pick up the container at <128, 192> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 507,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [106, 217]}",
+    "grounded": "pick up the container at <128, 192> that hides the blue cube",
+    "grounded_online": "pick up the container at <128, 192> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "seed": 8700300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed8700300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/videos/ButtonUnmaskSwap_ep3_seed8700300_xhard1_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "difficulty_attr": "xhard1",
+  "seed_attr": 8700300,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 523,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [66, 149]}",
+    "grounded": "press the first button at <64, 149>",
+    "grounded_online": "press the first button at <64, 149>",
+    "online": "press the first button"
+   },
+   {
+    "t": 119,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [65, 107]}",
+    "grounded": "press the second button at <63, 105>",
+    "grounded_online": "press the second button at <63, 105>",
+    "online": "press the second button"
+   },
+   {
+    "t": 268,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [132, 182]}",
+    "grounded": "pick up the container at <135, 179> that hides the blue cube",
+    "grounded_online": "pick up the container at <126, 118> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 381,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 422,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [123, 119]}",
+    "grounded": "pick up the container at <126, 118> that hides the red cube",
+    "grounded_online": "pick up the container at <126, 118> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 512,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [103, 117]}",
+    "grounded": "pick up the container at <126, 118> that hides the red cube",
+    "grounded_online": "pick up the container at <126, 118> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "seed": 8700600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed8700600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/videos/ButtonUnmaskSwap_ep6_seed8700600_xhard1_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "difficulty_attr": "xhard1",
+  "seed_attr": 8700600,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 515,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [64, 154]}",
+    "grounded": "press the first button at <61, 153>",
+    "grounded_online": "press the first button at <61, 153>",
+    "online": "press the first button"
+   },
+   {
+    "t": 114,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [63, 104]}",
+    "grounded": "press the second button at <60, 103>",
+    "grounded_online": "press the second button at <60, 103>",
+    "online": "press the second button"
+   },
+   {
+    "t": 266,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [92, 114]}",
+    "grounded": "pick up the container at <95, 114> that hides the red cube",
+    "grounded_online": "pick up the container at <95, 114> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 369,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 417,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [131, 168]}",
+    "grounded": "pick up the container at <133, 165> that hides the green cube",
+    "grounded_online": "pick up the container at <133, 165> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 509,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [112, 179]}",
+    "grounded": "pick up the container at <133, 165> that hides the green cube",
+    "grounded_online": "pick up the container at <133, 165> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "seed": 10700001,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed10700001.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/videos/ButtonUnmaskSwap_ep0_seed10700001_xhard2_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_anoth__HASH__40d1fafc9f7f.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "difficulty_attr": "xhard2",
+  "seed_attr": 10700001,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 610,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [67, 154]}",
+    "grounded": "press the first button at <64, 153>",
+    "grounded_online": "press the first button at <64, 153>",
+    "online": "press the first button"
+   },
+   {
+    "t": 118,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [64, 102]}",
+    "grounded": "press the second button at <61, 101>",
+    "grounded_online": "press the second button at <61, 101>",
+    "online": "press the second button"
+   },
+   {
+    "t": 229,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [97, 154]}",
+    "grounded": "pick up the container at <100, 152> that hides the green cube",
+    "grounded_online": "pick up the container at <116, 185> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 330,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 380,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [101, 110]}",
+    "grounded": "pick up the container at <104, 109> that hides the blue cube",
+    "grounded_online": "pick up the container at <104, 109> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 466,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 516,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [131, 110]}",
+    "grounded": "pick up the container at <134, 110> that hides the red cube",
+    "grounded_online": "pick up the container at <134, 110> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 604,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [113, 103]}",
+    "grounded": "pick up the container at <134, 110> that hides the red cube",
+    "grounded_online": "pick up the container at <134, 110> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "seed": 10700300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed10700300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/videos/ButtonUnmaskSwap_ep3_seed10700300_xhard2_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another__HASH__e54c20f3c3ac.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "difficulty_attr": "xhard2",
+  "seed_attr": 10700300,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 621,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [69, 156]}",
+    "grounded": "press the first button at <67, 156>",
+    "grounded_online": "press the first button at <67, 156>",
+    "online": "press the first button"
+   },
+   {
+    "t": 109,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [63, 102]}",
+    "grounded": "press the second button at <60, 100>",
+    "grounded_online": "press the second button at <60, 100>",
+    "online": "press the second button"
+   },
+   {
+    "t": 234,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [87, 162]}",
+    "grounded": "pick up the container at <90, 159> that hides the blue cube",
+    "grounded_online": "pick up the container at <126, 132> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 330,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 378,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [128, 127]}",
+    "grounded": "pick up the container at <130, 126> that hides the red cube",
+    "grounded_online": "pick up the container at <130, 126> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 490,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 531,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [101, 110]}",
+    "grounded": "pick up the container at <111, 114> that hides the green cube",
+    "grounded_online": "pick up the container that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 614,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [76, 108]}",
+    "grounded": "pick up the container at <111, 114> that hides the green cube",
+    "grounded_online": "pick up the container that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "seed": 10700600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed10700600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/videos/ButtonUnmaskSwap_ep6_seed10700600_xhard2_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another__HASH__e54c20f3c3ac.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "difficulty_attr": "xhard2",
+  "seed_attr": 10700600,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 632,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [65, 148]}",
+    "grounded": "press the first button at <62, 148>",
+    "grounded_online": "press the first button at <62, 148>",
+    "online": "press the first button"
+   },
+   {
+    "t": 118,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [67, 103]}",
+    "grounded": "press the second button at <64, 102>",
+    "grounded_online": "press the second button at <64, 102>",
+    "online": "press the second button"
+   },
+   {
+    "t": 233,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [103, 168]}",
+    "grounded": "pick up the container at <105, 166> that hides the blue cube",
+    "grounded_online": "pick up the container at <133, 177> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 338,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 389,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [126, 93]}",
+    "grounded": "pick up the container at <128, 93> that hides the red cube",
+    "grounded_online": "pick up the container at <128, 93> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 489,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 530,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [102, 131]}",
+    "grounded": "pick up the container at <105, 130> that hides the green cube",
+    "grounded_online": "pick up the container at <104, 132> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 625,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [77, 129]}",
+    "grounded": "pick up the container at <105, 130> that hides the green cube",
+    "grounded_online": "pick up the container at <104, 132> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "seed": 12700000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed12700000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/videos/ButtonUnmaskSwap_ep0_seed12700000_xhard3_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_anoth__HASH__eba41a10f72a.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "difficulty_attr": "xhard3",
+  "seed_attr": 12700000,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 681,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [68, 155]}",
+    "grounded": "press the first button at <65, 155>",
+    "grounded_online": "press the first button at <65, 155>",
+    "online": "press the first button"
+   },
+   {
+    "t": 104,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [68, 110]}",
+    "grounded": "press the second button at <65, 109>",
+    "grounded_online": "press the second button at <65, 109>",
+    "online": "press the second button"
+   },
+   {
+    "t": 263,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [110, 200]}",
+    "grounded": "pick up the container at <113, 196> that hides the blue cube",
+    "grounded_online": "pick up the container at <104, 160> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 380,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 427,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [98, 162]}",
+    "grounded": "pick up the container at <101, 160> that hides the green cube",
+    "grounded_online": "pick up the container at <101, 160> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 524,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 573,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [132, 136]}",
+    "grounded": "pick up the container at <134, 134> that hides the red cube",
+    "grounded_online": "pick up the container at <134, 134> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 669,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [113, 139]}",
+    "grounded": "pick up the container at <134, 134> that hides the red cube",
+    "grounded_online": "pick up the container at <134, 134> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "seed": 12700300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed12700300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/videos/ButtonUnmaskSwap_ep3_seed12700300_xhard3_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another__HASH__e54c20f3c3ac.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "difficulty_attr": "xhard3",
+  "seed_attr": 12700300,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 656,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [65, 145]}",
+    "grounded": "press the first button at <62, 145>",
+    "grounded_online": "press the first button at <62, 145>",
+    "online": "press the first button"
+   },
+   {
+    "t": 119,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [65, 105]}",
+    "grounded": "press the second button at <62, 104>",
+    "grounded_online": "press the second button at <62, 104>",
+    "online": "press the second button"
+   },
+   {
+    "t": 262,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [119, 112]}",
+    "grounded": "pick up the container at <121, 112> that hides the blue cube",
+    "grounded_online": "pick up the container at <91, 105> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 376,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 423,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [129, 186]}",
+    "grounded": "pick up the container at <131, 183> that hides the red cube",
+    "grounded_online": "pick up the container at <131, 183> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 512,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 553,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [88, 105]}",
+    "grounded": "pick up the container at <91, 105> that hides the green cube",
+    "grounded_online": "pick up the container at <91, 105> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 649,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [64, 99]}",
+    "grounded": "pick up the container at <91, 105> that hides the green cube",
+    "grounded_online": "pick up the container at <91, 105> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "seed": 12700600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed12700600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/videos/ButtonUnmaskSwap_ep6_seed12700600_xhard3_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another__HASH__e54c20f3c3ac.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "difficulty_attr": "xhard3",
+  "seed_attr": 12700600,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 689,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [70, 147]}",
+    "grounded": "press the first button at <67, 147>",
+    "grounded_online": "press the first button at <67, 147>",
+    "online": "press the first button"
+   },
+   {
+    "t": 110,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [67, 111]}",
+    "grounded": "press the second button at <65, 109>",
+    "grounded_online": "press the second button at <65, 109>",
+    "online": "press the second button"
+   },
+   {
+    "t": 295,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [102, 115]}",
+    "grounded": "pick up the container at <105, 114> that hides the blue cube",
+    "grounded_online": "pick up the container at <126, 95> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 398,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 448,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [124, 180]}",
+    "grounded": "pick up the container at <127, 177> that hides the red cube",
+    "grounded_online": "pick up the container at <127, 177> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 555,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 596,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [124, 95]}",
+    "grounded": "pick up the container at <126, 95> that hides the green cube",
+    "grounded_online": "pick up the container at <126, 95> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 677,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [104, 87]}",
+    "grounded": "pick up the container at <126, 95> that hides the green cube",
+    "grounded_online": "pick up the container at <126, 95> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "seed": 6700000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed6700000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/videos/ButtonUnmaskSwap_ep0_seed6700000_xhard4_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_anoth__HASH__eba41a10f72a.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "difficulty_attr": "xhard4",
+  "seed_attr": 6700000,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 717,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [63, 155]}",
+    "grounded": "press the first button at <60, 155>",
+    "grounded_online": "press the first button at <60, 155>",
+    "online": "press the first button"
+   },
+   {
+    "t": 113,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [68, 106]}",
+    "grounded": "press the second button at <65, 105>",
+    "grounded_online": "press the second button at <65, 105>",
+    "online": "press the second button"
+   },
+   {
+    "t": 333,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [92, 111]}",
+    "grounded": "pick up the container at <95, 110> that hides the blue cube",
+    "grounded_online": "pick up the container at <104, 169> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 428,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 476,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [121, 106]}",
+    "grounded": "pick up the container at <123, 106> that hides the green cube",
+    "grounded_online": "pick up the container at <123, 106> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 583,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 630,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [129, 193]}",
+    "grounded": "pick up the container at <131, 190> that hides the red cube",
+    "grounded_online": "pick up the container at <131, 190> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 711,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [108, 209]}",
+    "grounded": "pick up the container at <131, 190> that hides the red cube",
+    "grounded_online": "pick up the container at <131, 190> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "seed": 6700300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed6700300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/videos/ButtonUnmaskSwap_ep3_seed6700300_xhard4_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_anoth__HASH__40d1fafc9f7f.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "difficulty_attr": "xhard4",
+  "seed_attr": 6700300,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 712,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [63, 151]}",
+    "grounded": "press the first button at <60, 150>",
+    "grounded_online": "press the first button at <60, 150>",
+    "online": "press the first button"
+   },
+   {
+    "t": 114,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [67, 103]}",
+    "grounded": "press the second button at <64, 102>",
+    "grounded_online": "press the second button at <64, 102>",
+    "online": "press the second button"
+   },
+   {
+    "t": 332,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [94, 138]}",
+    "grounded": "pick up the container at <97, 137> that hides the green cube",
+    "grounded_online": "pick up the container at <97, 137> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 428,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 476,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [96, 190]}",
+    "grounded": "pick up the container at <99, 187> that hides the blue cube",
+    "grounded_online": "pick up the container at <99, 187> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 562,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 612,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [132, 179]}",
+    "grounded": "pick up the container at <134, 176> that hides the red cube",
+    "grounded_online": "pick up the container at <134, 176> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 706,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [111, 197]}",
+    "grounded": "pick up the container at <134, 176> that hides the red cube",
+    "grounded_online": "pick up the container at <134, 176> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "seed": 6700600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed6700600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/videos/ButtonUnmaskSwap_ep6_seed6700600_xhard4_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_anoth__HASH__eba41a10f72a.mp4",
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "difficulty_attr": "xhard4",
+  "seed_attr": 6700600,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 735,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [63, 149]}",
+    "grounded": "press the first button at <60, 148>",
+    "grounded_online": "press the first button at <60, 148>",
+    "online": "press the first button"
+   },
+   {
+    "t": 115,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [63, 102]}",
+    "grounded": "press the second button at <60, 100>",
+    "grounded_online": "press the second button at <60, 100>",
+    "online": "press the second button"
+   },
+   {
+    "t": 333,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [132, 159]}",
+    "grounded": "pick up the container at <134, 156> that hides the blue cube",
+    "grounded_online": "pick up the container at <118, 117> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 443,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 484,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [98, 96]}",
+    "grounded": "pick up the container at <101, 96> that hides the green cube",
+    "grounded_online": "pick up the container at <101, 96> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 581,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 632,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [127, 104]}",
+    "grounded": "pick up the container at <129, 104> that hides the red cube",
+    "grounded_online": "pick up the container at <129, 104> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 723,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [108, 99]}",
+    "grounded": "pick up the container at <129, 104> that hides the red cube",
+    "grounded_online": "pick up the container at <129, 104> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed7000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_0/videos/ButtonUnmaskSwap_ep0_seed7000_FailRecoverZ_easy_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "difficulty_attr": "easy",
+  "seed_attr": 7000,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 514,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [65, 146]}",
+    "grounded": "press the first button at <62, 145>",
+    "grounded_online": "press the first button at <62, 145>",
+    "online": "press the first button"
+   },
+   {
+    "t": 122,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [63, 105]}",
+    "grounded": "press the second button at <61, 104>",
+    "grounded_online": "press the second button at <61, 104>",
+    "online": "press the second button"
+   },
+   {
+    "t": 213,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [90, 166]}",
+    "grounded": "pick up the container at <93, 163> that hides the blue cube",
+    "grounded_online": "pick up the container at <93, 163> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 381,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 429,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [93, 92]}",
+    "grounded": "pick up the container at <96, 92> that hides the green cube",
+    "grounded_online": "pick up the container at <96, 92> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 507,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [68, 82]}",
+    "grounded": "pick up the container at <96, 92> that hides the green cube",
+    "grounded_online": "pick up the container at <96, 92> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_1/hdf5_files/ButtonUnmaskSwap_ep1_seed7100.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_1/videos/ButtonUnmaskSwap_ep1_seed7100_FailRecoverZ_easy_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "difficulty_attr": "easy",
+  "seed_attr": 7100,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 519,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [66, 148]}",
+    "grounded": "press the first button at <63, 147>",
+    "grounded_online": "press the first button at <63, 147>",
+    "online": "press the first button"
+   },
+   {
+    "t": 119,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [69, 101]}",
+    "grounded": "press the second button at <66, 99>",
+    "grounded_online": "press the second button at <66, 99>",
+    "online": "press the second button"
+   },
+   {
+    "t": 218,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [99, 164]}",
+    "grounded": "pick up the container at <102, 162> that hides the red cube",
+    "grounded_online": "pick up the container at <102, 162> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 384,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 435,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [87, 92]}",
+    "grounded": "pick up the container at <90, 92> that hides the green cube",
+    "grounded_online": "pick up the container at <90, 92> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 513,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [59, 81]}",
+    "grounded": "pick up the container at <90, 92> that hides the green cube",
+    "grounded_online": "pick up the container at <90, 92> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_10/hdf5_files/ButtonUnmaskSwap_ep10_seed8000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_10/videos/ButtonUnmaskSwap_ep10_seed8000_medium_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube"
+  ],
+  "difficulty_attr": "medium",
+  "seed_attr": 8000,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 321,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [65, 154]}",
+    "grounded": "press the first button at <62, 153>",
+    "grounded_online": "press the first button at <62, 153>",
+    "online": "press the first button"
+   },
+   {
+    "t": 114,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [67, 101]}",
+    "grounded": "press the second button at <64, 100>",
+    "grounded_online": "press the second button at <64, 100>",
+    "online": "press the second button"
+   },
+   {
+    "t": 207,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [96, 169]}",
+    "grounded": "pick up the container at <99, 166> that hides the blue cube",
+    "grounded_online": "pick up the container at <99, 166> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 314,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [71, 177]}",
+    "grounded": "pick up the container at <99, 166> that hides the blue cube",
+    "grounded_online": "pick up the container at <99, 166> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_11/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_11/videos/ButtonUnmaskSwap_ep11_seed8100_hard_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "difficulty_attr": "hard",
+  "seed_attr": 8100,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 454,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [69, 153]}",
+    "grounded": "press the first button at <66, 152>",
+    "grounded_online": "press the first button at <66, 152>",
+    "online": "press the first button"
+   },
+   {
+    "t": 109,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [68, 111]}",
+    "grounded": "press the second button at <65, 110>",
+    "grounded_online": "press the second button at <65, 110>",
+    "online": "press the second button"
+   },
+   {
+    "t": 203,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [95, 105]}",
+    "grounded": "pick up the container at <98, 105> that hides the green cube",
+    "grounded_online": "pick up the container at <98, 105> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 301,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 349,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [93, 153]}",
+    "grounded": "pick up the container at <95, 151> that hides the red cube",
+    "grounded_online": "pick up the container at <95, 151> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 447,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [67, 157]}",
+    "grounded": "pick up the container at <95, 151> that hides the red cube",
+    "grounded_online": "pick up the container at <95, 151> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_2/hdf5_files/ButtonUnmaskSwap_ep2_seed7200.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_2/videos/ButtonUnmaskSwap_ep2_seed7200_FailRecoverZ_medium_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_green_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the green cube"
+  ],
+  "difficulty_attr": "medium",
+  "seed_attr": 7200,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 361,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [69, 150]}",
+    "grounded": "press the first button at <66, 149>",
+    "grounded_online": "press the first button at <66, 149>",
+    "online": "press the first button"
+   },
+   {
+    "t": 109,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [65, 108]}",
+    "grounded": "press the second button at <62, 106>",
+    "grounded_online": "press the second button at <62, 106>",
+    "online": "press the second button"
+   },
+   {
+    "t": 204,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [96, 90]}",
+    "grounded": "pick up the container at <99, 91> that hides the green cube",
+    "grounded_online": "pick up the container at <99, 91> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 354,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [72, 81]}",
+    "grounded": "pick up the container at <99, 91> that hides the green cube",
+    "grounded_online": "pick up the container at <99, 91> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed7300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_3/videos/ButtonUnmaskSwap_ep3_seed7300_FailRecoverXY_hard_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "difficulty_attr": "hard",
+  "seed_attr": 7300,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 555,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [65, 151]}",
+    "grounded": "press the first button at <63, 150>",
+    "grounded_online": "press the first button at <63, 150>",
+    "online": "press the first button"
+   },
+   {
+    "t": 121,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [65, 103]}",
+    "grounded": "press the second button at <62, 102>",
+    "grounded_online": "press the second button at <62, 102>",
+    "online": "press the second button"
+   },
+   {
+    "t": 218,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [120, 162]}",
+    "grounded": "pick up the container at <123, 160> that hides the green cube",
+    "grounded_online": "pick up the container at <123, 160> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 416,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 464,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [94, 187]}",
+    "grounded": "pick up the container at <103, 181> that hides the blue cube",
+    "grounded_online": "pick up the container that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 549,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [67, 205]}",
+    "grounded": "pick up the container at <103, 181> that hides the blue cube",
+    "grounded_online": "pick up the container that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_4/hdf5_files/ButtonUnmaskSwap_ep4_seed7400.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_4/videos/ButtonUnmaskSwap_ep4_seed7400_FailRecoverXY_easy_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "difficulty_attr": "easy",
+  "seed_attr": 7400,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 532,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [68, 154]}",
+    "grounded": "press the first button at <65, 153>",
+    "grounded_online": "press the first button at <65, 153>",
+    "online": "press the first button"
+   },
+   {
+    "t": 109,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [65, 105]}",
+    "grounded": "press the second button at <62, 103>",
+    "grounded_online": "press the second button at <62, 103>",
+    "online": "press the second button"
+   },
+   {
+    "t": 206,
+    "subgoal": "pick up the container that hides the blue cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [85, 165]}",
+    "grounded": "pick up the container at <88, 162> that hides the blue cube",
+    "grounded_online": "pick up the container at <87, 162> that hides the blue cube",
+    "online": "pick up the container that hides the blue cube"
+   },
+   {
+    "t": 388,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 435,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [98, 92]}",
+    "grounded": "pick up the container at <101, 93> that hides the green cube",
+    "grounded_online": "pick up the container at <101, 93> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 525,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [74, 82]}",
+    "grounded": "pick up the container at <101, 93> that hides the green cube",
+    "grounded_online": "pick up the container at <101, 93> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed7600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_6/videos/ButtonUnmaskSwap_ep6_seed7600_medium_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_red_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the red cube"
+  ],
+  "difficulty_attr": "medium",
+  "seed_attr": 7600,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 303,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [69, 154]}",
+    "grounded": "press the first button at <66, 153>",
+    "grounded_online": "press the first button at <66, 153>",
+    "online": "press the first button"
+   },
+   {
+    "t": 109,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [65, 104]}",
+    "grounded": "press the second button at <62, 102>",
+    "grounded_online": "press the second button at <62, 102>",
+    "online": "press the second button"
+   },
+   {
+    "t": 206,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [92, 100]}",
+    "grounded": "pick up the container at <95, 99> that hides the red cube",
+    "grounded_online": "pick up the container at <95, 99> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 296,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [68, 91]}",
+    "grounded": "pick up the container at <95, 99> that hides the red cube",
+    "grounded_online": "pick up the container at <95, 99> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "seed": null,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_7/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/ButtonUnmaskSwap_episode_7/videos/ButtonUnmaskSwap_ep7_seed7700_hard_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+  "native": true,
+  "task_goal": [
+   "first press both buttons on the table, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "difficulty_attr": "hard",
+  "seed_attr": 7700,
+  "choices": [
+   {
+    "label": "a",
+    "action": "press the first button",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "press the second button",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "d",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 451,
+  "segments": [
+   {
+    "t": 0,
+    "subgoal": "press the first button",
+    "boundary": true,
+    "choice": "{\"choice\": \"A\", \"point\": [64, 147]}",
+    "grounded": "press the first button at <61, 147>",
+    "grounded_online": "press the first button at <61, 147>",
+    "online": "press the first button"
+   },
+   {
+    "t": 116,
+    "subgoal": "press the second button",
+    "boundary": true,
+    "choice": "{\"choice\": \"B\", \"point\": [66, 109]}",
+    "grounded": "press the second button at <63, 108>",
+    "grounded_online": "press the second button at <63, 108>",
+    "online": "press the second button"
+   },
+   {
+    "t": 209,
+    "subgoal": "pick up the container that hides the green cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [99, 168]}",
+    "grounded": "pick up the container at <102, 166> that hides the green cube",
+    "grounded_online": "pick up the container at <125, 166> that hides the green cube",
+    "online": "pick up the container that hides the green cube"
+   },
+   {
+    "t": 309,
+    "subgoal": "put down the container",
+    "boundary": true,
+    "choice": "{\"choice\": \"D\", \"point\": []}",
+    "grounded": "put down the container",
+    "grounded_online": "put down the container",
+    "online": "put down the container"
+   },
+   {
+    "t": 360,
+    "subgoal": "pick up the container that hides the red cube",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [126, 178]}",
+    "grounded": "pick up the container at <128, 175> that hides the red cube",
+    "grounded_online": "pick up the container at <128, 175> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   },
+   {
+    "t": 445,
+    "subgoal": "All tasks completed",
+    "boundary": true,
+    "choice": "{\"choice\": \"C\", \"point\": [106, 195]}",
+    "grounded": "pick up the container at <128, 175> that hides the red cube",
+    "grounded_online": "pick up the container at <128, 175> that hides the red cube",
+    "online": "pick up the container that hides the red cube"
+   }
+  ],
+  "video_demo_steps": 0,
+  "last_completed": true
+ }
+]

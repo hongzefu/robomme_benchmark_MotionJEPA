@@ -1,0 +1,160 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src",
+  "src_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl",
+  "official_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/__init__.py",
+  "removed_sys_path_entries": [],
+  "workers": 16,
+  "gpu": "0",
+  "sampling_config": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/_rounds/round_02/sampling.json",
+  "episode_specs": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/_rounds/round_02/specs.json",
+  "worker": "train_split_worker.run_one",
+  "elapsed_seconds": 14.268,
+  "results": [
+    {
+      "task": "InsertPeg",
+      "episode": 2,
+      "seed": 7300200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "1d6952238ab320ba844e173d4a36b45ce46522fd93f47179f7bf1ccbe58c2cba",
+        "episode_spec_sha256": "336fc10f208b2de0b5b8b39a868d6690658edb52b515d7d5067debff202423d5",
+        "spec_mode": null
+      },
+      "ok": false,
+      "error_type": "RuntimeError",
+      "error": "vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 90, in run_one\n    base_env = gym.make(job.task, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/InsertPeg.py\", line 314, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 739, in _reconfigure\n    self._setup_scene()\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 1208, in _setup_scene\n    systems.append(sapien.render.RenderSystem(self._render_device))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed\n"
+    },
+    {
+      "task": "StopCube",
+      "episode": 2,
+      "seed": 6200200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "b888e9841d3dfbca2549688c2f1aab29153bc7ce060acae31b4f76dd1e18b18a",
+        "episode_spec_sha256": "91a26c0ba8f65a70a5bf61af82f859f7aa930ceda93220e4a9e86b4fbe76d7cf",
+        "spec_mode": null
+      },
+      "ok": false,
+      "error_type": "RuntimeError",
+      "error": "vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 90, in run_one\n    base_env = gym.make(job.task, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/StopCube.py\", line 245, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 739, in _reconfigure\n    self._setup_scene()\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 1208, in _setup_scene\n    systems.append(sapien.render.RenderSystem(self._render_device))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed\n"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 2,
+      "seed": 6300200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "907f4e0b39ca66adec37152ceba55d0f393a47f16a1371134021f1ad36d4e9b2",
+        "episode_spec_sha256": "8b2a1596d6d98ca3c11295c6d58d336f7e24f127f14abebcae9b40824a2bc299",
+        "spec_mode": null
+      },
+      "ok": false,
+      "error_type": "RuntimeError",
+      "error": "vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 90, in run_one\n    base_env = gym.make(job.task, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/SwingXtimes.py\", line 329, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 739, in _reconfigure\n    self._setup_scene()\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 1208, in _setup_scene\n    systems.append(sapien.render.RenderSystem(self._render_device))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed\n"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 2,
+      "seed": 7000200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "1044950cce907b4939a9db3dc1140cf1410b11bdb509bd880d196845e7e8fed2",
+        "episode_spec_sha256": "e0433608471d4f9aaf7596348dd33cee1d917b80ced6545593365c27f2450157",
+        "spec_mode": null
+      },
+      "ok": false,
+      "error_type": "RuntimeError",
+      "error": "vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 90, in run_one\n    base_env = gym.make(job.task, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/VideoPlaceButton.py\", line 333, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 739, in _reconfigure\n    self._setup_scene()\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 1208, in _setup_scene\n    systems.append(sapien.render.RenderSystem(self._render_device))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed\n"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 2,
+      "seed": 7100200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "45c6e4ed3e63e71d1db0267f91a1bd61a347c6cb2adf748cdadfe567eff453c3",
+        "episode_spec_sha256": "139ff11a408445993fc0786e8ec704e717e2685ca4a223425ef11b46b3caaf0f",
+        "spec_mode": null
+      },
+      "ok": false,
+      "error_type": "RuntimeError",
+      "error": "vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 90, in run_one\n    base_env = gym.make(job.task, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/VideoPlaceOrder.py\", line 316, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 739, in _reconfigure\n    self._setup_scene()\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 1208, in _setup_scene\n    systems.append(sapien.render.RenderSystem(self._render_device))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed\n"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 2,
+      "seed": 6900200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "4343d2c96c70999fd296250b81c75cd5e477b67ab01700e692ec5b4991f17a1c",
+        "episode_spec_sha256": "2f37c7fc93967e960ae9de9a63e9d0a3211f5539b949e4611cbb7f66342533b7",
+        "spec_mode": null
+      },
+      "ok": false,
+      "error_type": "RuntimeError",
+      "error": "vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 90, in run_one\n    base_env = gym.make(job.task, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/VideoRepick.py\", line 615, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 739, in _reconfigure\n    self._setup_scene()\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 1208, in _setup_scene\n    systems.append(sapien.render.RenderSystem(self._render_device))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed\n"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 2,
+      "seed": 6600200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "4f730668f3ca4cc413c1ccc1b26cf4dcc3a781c1164b19e071c6bb5b1317fa7b",
+        "episode_spec_sha256": "ecd2e91fd858be4874954a151a02dafbef65b9080231032d7add72f93a6267d1",
+        "spec_mode": null
+      },
+      "ok": false,
+      "error_type": "RuntimeError",
+      "error": "vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 90, in run_one\n    base_env = gym.make(job.task, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/VideoUnmask.py\", line 279, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 739, in _reconfigure\n    self._setup_scene()\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 1208, in _setup_scene\n    systems.append(sapien.render.RenderSystem(self._render_device))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed\n"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 2,
+      "seed": 6500200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "9119a7aaa0e9e7662d2df9d7df9bba483877783c774d751c31abe0a74cd593f3",
+        "episode_spec_sha256": "6c6a32d7b287b36ce2541e376f9e2d8670b5272eae5d90d109ab55e6d8f18bec",
+        "spec_mode": null
+      },
+      "ok": false,
+      "error_type": "RuntimeError",
+      "error": "vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/scripts/parity/train_split_worker.py\", line 90, in run_one\n    base_env = gym.make(job.task, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/gymnasium/envs/registration.py\", line 802, in make\n    env = env_creator(**env_spec_kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 182, in make\n    env = env_spec.make(**kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py\", line 79, in make\n    return self.cls(**_kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/VideoUnmaskSwap.py\", line 420, in __init__\n    super().__init__(*args, robot_uids=robot_uids, **kwargs)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 327, in __init__\n    obs, _ = self.reset(seed=[2022 + i for i in range(self.num_envs)], options=dict(reconfigure=True))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 909, in reset\n    self._reconfigure(options)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 739, in _reconfigure\n    self._setup_scene()\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/mani_skill/envs/sapien_env.py\", line 1208, in _setup_scene\n    systems.append(sapien.render.RenderSystem(self._render_device))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vk::PhysicalDevice::createDeviceUnique: ErrorInitializationFailed\n"
+    }
+  ]
+}

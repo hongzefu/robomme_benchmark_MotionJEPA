@@ -1,0 +1,258 @@
+/home/hongzefu/.local/bin/uv
+CONTINUE_STATUS=WAIT_S2 pid=1707218 log=/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/run.log
+S2_RESULT id=PickHighlight-xhard2-11200000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmask-xhard3-12600000 gpu=0
+S2_RESULT id=PickHighlight-xhard2-11200100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmask-xhard3-12600100 gpu=1
+S2_RESULT id=ButtonUnmask-xhard2-10800000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard2-10500000 gpu=1
+S2_RESULT id=ButtonUnmask-xhard1-8800000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard1-8500200 gpu=1
+S2_RESULT id=ButtonUnmask-xhard1-8800100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard1-8500300 gpu=1
+S2_RESULT id=SwingXtimes-xhard3-12300100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmask-xhard1-8600100 gpu=0
+S2_RESULT id=VideoUnmask-xhard3-12600000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard1-8500000 gpu=0
+S2_RESULT id=PickHighlight-xhard1-9200000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmask-xhard2-10600000 gpu=0
+S2_RESULT id=VideoUnmask-xhard3-12600100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard1-8500100 gpu=1
+S2_RESULT id=PickHighlight-xhard1-9200100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmask-xhard2-10600100 gpu=0
+S2_RESULT id=VideoUnmaskSwap-xhard1-8500300 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard3-12500300 gpu=1
+S2_RESULT id=VideoUnmask-xhard1-8600100 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmask-xhard2-10800100 gpu=0
+S2_RESULT id=VideoUnmaskSwap-xhard1-8500200 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard3-12500200 gpu=1
+S2_RESULT id=VideoUnmaskSwap-xhard2-10500000 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard1-8700000 gpu=1
+S2_RESULT id=VideoUnmaskSwap-xhard1-8500000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard3-12500000 gpu=0
+S2_RESULT id=VideoUnmask-xhard2-10600000 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmask-xhard3-12800000 gpu=0
+S2_RESULT id=VideoUnmaskSwap-xhard1-8500100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard3-12500100 gpu=1
+S2_RESULT id=VideoUnmaskSwap-xhard3-12500200 ok=False status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard2-10700200 gpu=1
+S2_RESULT id=VideoUnmask-xhard2-10600100 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmask-xhard3-12800100 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard2-10700200 ok=False status=finished exit_code=0
+S2_START id=VideoRepick-xhard1-8900200 gpu=1
+S2_RESULT id=ButtonUnmask-xhard2-10800100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard2-10500100 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard1-8700000 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard3-12700000 gpu=1
+S2_RESULT id=VideoUnmaskSwap-xhard3-12500300 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard2-10700300 gpu=1
+S2_RESULT id=ButtonUnmask-xhard3-12800000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard2-10500200 gpu=0
+S2_RESULT id=ButtonUnmask-xhard3-12800100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard2-10500300 gpu=0
+S2_RESULT id=VideoUnmaskSwap-xhard3-12500000 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard2-10700000 gpu=0
+S2_RESULT id=VideoUnmaskSwap-xhard3-12500100 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard2-10700100 gpu=1
+S2_RESULT id=ButtonUnmaskSwap-xhard2-10700000 ok=False status=finished exit_code=0
+S2_START id=VideoRepick-xhard1-8900000 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard2-10700100 ok=False status=finished exit_code=0
+S2_START id=VideoRepick-xhard1-8900100 gpu=1
+S2_RESULT id=VideoUnmaskSwap-xhard2-10500100 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard1-8700100 gpu=0
+S2_RESULT id=VideoRepick-xhard1-8900200 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard3-12900200 gpu=1
+S2_RESULT id=ButtonUnmaskSwap-xhard2-10700300 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard1-8900300 gpu=1
+S2_RESULT id=ButtonUnmaskSwap-xhard3-12700000 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard2-10900000 gpu=1
+S2_RESULT id=VideoRepick-xhard1-8900300 ok=False status=finished exit_code=0
+S2_START id=VideoRepick-xhard3-12900300 gpu=1
+S2_RESULT id=VideoRepick-xhard3-12900300 ok=False status=finished exit_code=0
+S2_START id=RouteStick-xhard1-9600100 gpu=1
+S2_RESULT id=VideoUnmaskSwap-xhard2-10500300 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard1-8700300 gpu=0
+S2_RESULT id=VideoUnmaskSwap-xhard2-10500200 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard1-8700200 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard1-8700100 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard3-12700100 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard3-12700100 ok=False status=finished exit_code=0
+S2_START id=VideoRepick-xhard2-10900100 gpu=0
+S2_RESULT id=VideoRepick-xhard1-8900000 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard3-12900000 gpu=0
+S2_RESULT id=VideoRepick-xhard1-8900100 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard3-12900100 gpu=1
+S2_RESULT id=VideoRepick-xhard3-12900000 ok=False status=finished exit_code=0
+S2_START id=PatternLock-xhard3-13500000 gpu=0
+S2_RESULT id=VideoRepick-xhard3-12900100 ok=False status=finished exit_code=0
+S2_START id=PatternLock-xhard3-13500100 gpu=1
+S2_RESULT id=ButtonUnmaskSwap-xhard1-8700300 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard3-12700300 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard1-8700200 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard3-12700200 gpu=0
+S2_RESULT id=VideoRepick-xhard2-10900000 ok=True status=finished exit_code=0
+S2_START id=PatternLock-xhard1-9500000 gpu=1
+S2_RESULT id=VideoRepick-xhard3-12900200 ok=True status=finished exit_code=0
+S2_START id=RouteStick-xhard1-9600000 gpu=1
+S2_RESULT id=RouteStick-xhard1-9600100 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceButton-xhard2-11000100 gpu=1
+S2_RESULT id=VideoRepick-xhard2-10900100 ok=True status=finished exit_code=0
+S2_START id=PatternLock-xhard1-9500100 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard3-12700300 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard2-10900300 gpu=0
+S2_RESULT id=VideoRepick-xhard2-10900300 ok=False status=finished exit_code=0
+S2_START id=PatternLock-xhard2-11500100 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard3-12700200 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard2-10900200 gpu=0
+S2_RESULT id=PatternLock-xhard1-9500000 ok=True status=finished exit_code=0
+S2_START id=RouteStick-xhard2-11600000 gpu=1
+S2_RESULT id=PatternLock-xhard3-13500000 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceButton-xhard1-9000000 gpu=0
+S2_RESULT id=PatternLock-xhard3-13500100 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceButton-xhard1-9000100 gpu=1
+S2_RESULT id=VideoPlaceButton-xhard1-9000100 ok=False status=finished exit_code=0
+S2_START id=VideoPlaceOrder-xhard2-11100100 gpu=1
+S2_RESULT id=VideoPlaceOrder-xhard2-11100100 ok=False status=finished exit_code=0
+S2_START id=SwingXtimes-xhard4-6300100 gpu=1
+S2_RESULT id=RouteStick-xhard1-9600000 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceButton-xhard2-11000000 gpu=1
+S2_RESULT id=PatternLock-xhard1-9500100 ok=True status=finished exit_code=0
+S2_START id=RouteStick-xhard2-11600100 gpu=0
+S2_RESULT id=VideoPlaceButton-xhard2-11000100 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceOrder-xhard3-13100100 gpu=1
+S2_RESULT id=VideoRepick-xhard2-10900200 ok=True status=finished exit_code=0
+S2_START id=PatternLock-xhard2-11500000 gpu=0
+S2_RESULT id=PatternLock-xhard2-11500100 ok=True status=finished exit_code=0
+S2_START id=RouteStick-xhard3-13600100 gpu=0
+S2_RESULT id=VideoPlaceButton-xhard1-9000000 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceOrder-xhard2-11100000 gpu=0
+S2_RESULT id=VideoPlaceOrder-xhard2-11100000 ok=False status=finished exit_code=0
+S2_START id=SwingXtimes-xhard4-6300000 gpu=0
+S2_RESULT id=SwingXtimes-xhard4-6300100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmask-xhard4-6600100 gpu=1
+S2_RESULT id=RouteStick-xhard2-11600000 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceButton-xhard3-13000000 gpu=1
+S2_RESULT id=VideoPlaceButton-xhard3-13000000 ok=False status=finished exit_code=0
+S2_START id=PickXtimes-xhard4-6100000 gpu=1
+S2_RESULT id=VideoPlaceButton-xhard2-11000000 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceOrder-xhard3-13100000 gpu=1
+S2_RESULT id=VideoPlaceOrder-xhard3-13100000 ok=False status=finished exit_code=0
+S2_START id=BinFill-xhard4-6400000 gpu=1
+S2_RESULT id=RouteStick-xhard2-11600100 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceButton-xhard3-13000100 gpu=0
+S2_RESULT id=VideoUnmask-xhard4-6600100 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard4-6900100 gpu=1
+S2_RESULT id=PatternLock-xhard2-11500000 ok=True status=finished exit_code=0
+S2_START id=RouteStick-xhard3-13600000 gpu=0
+S2_RESULT id=VideoPlaceOrder-xhard3-13100100 ok=True status=finished exit_code=0
+S2_START id=BinFill-xhard4-6400100 gpu=1
+S2_RESULT id=SwingXtimes-xhard4-6300000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmask-xhard4-6600000 gpu=0
+S2_RESULT id=RouteStick-xhard3-13600100 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceOrder-xhard1-9100100 gpu=0
+S2_RESULT id=VideoPlaceOrder-xhard1-9100100 ok=False status=finished exit_code=0
+S2_START id=StopCube-xhard4-6200100 gpu=0
+S2_RESULT id=VideoUnmask-xhard4-6600000 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard4-6900000 gpu=0
+S2_RESULT id=VideoRepick-xhard4-6900000 ok=False status=finished exit_code=0
+S2_START id=PickHighlight-xhard4-7200000 gpu=0
+S2_RESULT id=StopCube-xhard4-6200100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard4-6500300 gpu=0
+S2_RESULT id=BinFill-xhard4-6400000 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard4-6700000 gpu=1
+S2_RESULT id=VideoPlaceButton-xhard3-13000100 ok=True status=finished exit_code=0
+S2_START id=PickXtimes-xhard4-6100100 gpu=0
+S2_RESULT id=PickXtimes-xhard4-6100000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard4-6500000 gpu=1
+S2_RESULT id=RouteStick-xhard3-13600000 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceOrder-xhard1-9100000 gpu=0
+S2_RESULT id=VideoPlaceOrder-xhard1-9100000 ok=False status=finished exit_code=0
+S2_START id=StopCube-xhard4-6200000 gpu=0
+S2_RESULT id=VideoRepick-xhard4-6900100 ok=True status=finished exit_code=0
+S2_START id=PickHighlight-xhard4-7200100 gpu=1
+S2_RESULT id=BinFill-xhard4-6400100 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard4-6700100 gpu=1
+S2_RESULT id=StopCube-xhard4-6200000 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard4-6500200 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard4-6700000 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard4-6900200 gpu=1
+S2_RESULT id=PickHighlight-xhard4-7200000 ok=True status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100000 gpu=0
+S2_RESULT id=VideoUnmaskSwap-xhard4-6500300 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmask-xhard4-6800100 gpu=0
+S2_RESULT id=VideoUnmaskSwap-xhard4-6500000 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard4-6700200 gpu=1
+S2_RESULT id=ButtonUnmaskSwap-xhard4-6700200 ok=False status=finished exit_code=0
+S2_START id=VideoPlaceButton-xhard4-7000000 gpu=1
+S2_RESULT id=MoveCube-xhard4-6100000 ok=False status=finished exit_code=0
+S2_START id=PatternLock-xhard4-7500000 gpu=0
+S2_RESULT id=ButtonUnmaskSwap-xhard4-6700100 ok=True status=finished exit_code=0
+S2_START id=VideoRepick-xhard4-6900300 gpu=1
+S2_RESULT id=PickHighlight-xhard4-7200100 ok=True status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100007 gpu=1
+S2_RESULT id=VideoUnmaskSwap-xhard4-6500200 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmask-xhard4-6800000 gpu=0
+S2_RESULT id=ButtonUnmask-xhard4-6800100 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceOrder-xhard4-7100100 gpu=0
+S2_RESULT id=VideoPlaceOrder-xhard4-7100100 ok=False status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100006 gpu=0
+S2_RESULT id=PickXtimes-xhard4-6100100 ok=True status=finished exit_code=0
+S2_START id=VideoUnmaskSwap-xhard4-6500100 gpu=0
+S2_RESULT id=MoveCube-xhard4-6100007 ok=False status=finished exit_code=0
+S2_START id=PatternLock-xhard4-7500100 gpu=1
+S2_RESULT id=ButtonUnmask-xhard4-6800000 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceOrder-xhard4-7100000 gpu=0
+S2_RESULT id=MoveCube-xhard4-6100006 ok=True status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100009 gpu=0
+S2_RESULT id=VideoRepick-xhard4-6900200 ok=True status=finished exit_code=0
+S2_START id=InsertPeg-xhard4-7300000 gpu=1
+S2_RESULT id=VideoUnmaskSwap-xhard4-6500100 ok=True status=finished exit_code=0
+S2_START id=ButtonUnmaskSwap-xhard4-6700300 gpu=0
+S2_RESULT id=MoveCube-xhard4-6100009 ok=True status=finished exit_code=0
+S2_RESULT id=PatternLock-xhard4-7500000 ok=True status=finished exit_code=0
+S2_RESULT id=VideoPlaceButton-xhard4-7000000 ok=True status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100001 gpu=1
+S2_RESULT id=VideoRepick-xhard4-6900300 ok=True status=finished exit_code=0
+S2_START id=InsertPeg-xhard4-7300100 gpu=1
+S2_RESULT id=InsertPeg-xhard4-7300000 ok=False status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100011 gpu=1
+S2_RESULT id=PatternLock-xhard4-7500100 ok=True status=finished exit_code=0
+S2_RESULT id=ButtonUnmaskSwap-xhard4-6700300 ok=True status=finished exit_code=0
+S2_START id=VideoPlaceButton-xhard4-7000100 gpu=0
+S2_RESULT id=MoveCube-xhard4-6100011 ok=True status=finished exit_code=0
+S2_START id=RouteStick-xhard4-7600000 gpu=1
+S2_RESULT id=MoveCube-xhard4-6100001 ok=True status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100003 gpu=1
+S2_RESULT id=MoveCube-xhard4-6100003 ok=True status=finished exit_code=0
+S2_RESULT id=VideoPlaceOrder-xhard4-7100000 ok=True status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100004 gpu=0
+S2_RESULT id=MoveCube-xhard4-6100004 ok=False status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100008 gpu=0
+S2_RESULT id=VideoPlaceButton-xhard4-7000100 ok=True status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100002 gpu=0
+S2_RESULT id=MoveCube-xhard4-6100008 ok=True status=finished exit_code=0
+S2_RESULT id=RouteStick-xhard4-7600000 ok=True status=finished exit_code=0
+S2_RESULT id=MoveCube-xhard4-6100002 ok=True status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100005 gpu=0
+S2_RESULT id=MoveCube-xhard4-6100005 ok=True status=finished exit_code=0
+S2_RESULT id=InsertPeg-xhard4-7300100 ok=False status=finished exit_code=0
+S2_START id=MoveCube-xhard4-6100012 gpu=1
+S2_RESULT id=MoveCube-xhard4-6100012 ok=True status=finished exit_code=0
+S2_START id=RouteStick-xhard4-7600100 gpu=1
+S2_RESULT id=RouteStick-xhard4-7600100 ok=True status=finished exit_code=0
+S2_ATTEMPTS=COMPLETE count=144 success=119 failed=25 unresolved=0 not_started=0 report=/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/summary-1790459930555555594.json
+EXIT_CODE=0
+S2_BUDGET_COVERAGE=PASS results=144 attempts=144 retries=0
+CONTINUE_STATUS=SUMMARIZE_S2
+# S2 固定144次演示汇总
+
+S2_ATTEMPT_COVERAGE=PASS expected=144 attempted=144 missing=0
+S2_TASK_SUCCESS=119/144 failed=25 timeout=0
+S2_SUCCESS_MEDIA=PASS successful=119 failed_checks=0
+
+失败保留在固定144分母；成功率与尝试完成、媒体核验分别报告。视频只核验首帧真实解码，不证明全帧完整。
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+KeyError: 'missing'
+CONTINUE_STATUS=STOP exit=1 line=71
+EXIT_CODE=1

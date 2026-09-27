@@ -1,0 +1,96 @@
+scripts/seed_layout.py:47:DIFFICULTY_ORDER = ("easy", "medium", "hard")
+scripts/seed_layout.py:121:    if len(text) != len(DIFFICULTY_ORDER) or not text.isdigit():
+scripts/seed_layout.py:123:            f"difficulty ratio 必须是 {len(DIFFICULTY_ORDER)} 位数字（easy/medium/hard 各一位），当前为 {ratio!r}"
+scripts/seed_layout.py:129:    for name, count in zip(DIFFICULTY_ORDER, counts):
+scripts/parity/train_split_parity.py:39:    DIFFICULTY_ORDER,
+scripts/parity/train_split_parity.py:201:        if difficulty not in DIFFICULTY_ORDER:
+scripts/parity/train_split_parity.py:310:        for difficulty in DIFFICULTY_ORDER:
+scripts/parity/train_split_parity.py:459:    subset_pass = len(subset) == len(ALL_TASKS) * len(DIFFICULTY_ORDER) * args.per_cell
+scripts/parity/results/_logs/merge__ae62661ef14712624.txt:28:{"parentUuid":"69243790-7e21-4f7b-9bfc-45bda74bcfd4","isSidechain":true,"promptId":"45a5ae4d-aa34-4fcf-bcbc-dbff730a4736","agentId":"ae62661ef14712624","type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_01DtyXCd2FGg3SQ9TigqjFtd","type":"tool_result","content":"#!/usr/bin/env python3\n\"\"\"原始 train 五路对拍编排入口（方案见 NEWTASK_RELEASE_V3_PLAN.md）。\n\n子命令与方案步骤的对应关系：\n\n* ``freeze-identities``（步 0）：从官方 ``dataset-gen`` 固定提交逐字读取十六份 train\n  metadata，冻结 1600 条来源身份与 144 条运行子集，输出 G1 的两行判定\n  ``TRAIN_IDENTITY`` 与 ``TRAIN_SUBSET``。只读、不启动仿真。\n* ``freeze-history``（步 1a）：冻结官方历史生成报告原文与散列，按 144 条子集投影 R1a 的\n  可比字段（身份／恢复模式／成功／帧数），并把历史动作逐局数值（R1c）与历史 HDF5 成品\n  （R2）登记为 ``NOT_RUN``。\n* ``run``（步 1b 起实现）：按 A1／A2／B／C／D 五路运行选定身份。\n* ``compare``（步 1b 起实现）：只读比较五路产物。\n\n红线（方案第二部分〇）：身份严格取官方 ``(task, episode, seed, difficulty)``，\n不用 ``SeedLayout.base_seed`` 公式替换实际 seed，不重编号 episode，失败不换 seed、\n不补样本。本文件只读仓库内的 Git 对象与官方 metadata，不改动 ``src/robomme/``。\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport datetime as _dt\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\nimport time\nfrom pathlib import Path\n\nfrom seed_layout import (\n    ALL_TASKS,\n    DIFFICULTY_ORDER,\n    MAX_EPISODES,\n    DatasetContractError,\n    get_layout,\n)\n\nREPO_ROOT = Path(__file__).resolve().parents[1]\n\n# 官方 dataset-gen 分支的本轮核验提交（方案第四节固定的对拍基线）。\nDEFAULT_SOURCE_REF = \"d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa\"\nDEFAULT_SOURCE_REPO = \"https://github.com/RoboMME/robomme_benchmark.git\"\n\n# 官方 train metadata 在该提交里的路径模板。\nMETADATA_TEMPLATE = \"src/robomme/env_metadata/train/record_dataset_{task}_metadata.json\"\n\n# 官方 dataset-gen 历史生成报告在该提交里的路径（步 1a 冻结对象）。\nHISTORY_REPORT_PATHS = (\n    \"scripts/data-generation/reports/generation_report.json\",\n    \"scripts/data-generation/reports/generation_report.md\",\n)\n\n# 方案 9.5 与「六、盲区诚实清单」登记的历史成品探测点；缺失即记 NOT_RUN，不冒称通过。\nHISTORY_ARTIFACT_PROBES = (\n    \"data/robomme_data_h5\",\n    \"artifacts/native-baseline\",\n    \"/data/hongzefu/robomme_benchmark-restore-DataGen\",\n)\n\n# R1a 允许投影的历史字段；历史动作数值不在其中（R1c 记 NOT_RUN）。\nHISTORY_PROJECTED_FIELDS = (\"identity\", \"recovery_mode\", \"success\", \"timestep_count\")\n\n# 冻结产物的默认落点：git 跟踪，供本机与 NFS 副本共同消费。\nDEFAULT_FROZEN_DIR = REPO_ROOT / \"scripts\" / \"configs\" / \"newtask-v3\"\nDEFAULT_OUTPUT_DIR = REPO_ROOT / \"artifacts\" / \"train-parity\" / \"v3-native\"\n\n# 方案 9.1 实读结论：十六份 metadata 串接后的 records SHA-256。\nEXPECTED_RECORDS_SHA256 = \"a57655d601c7e974c688b2b5c3602e7eb8606e2bd312dcc4ba00a1abb29d73bf\"\n# 方案 9.1 实读结论：1600 条里实际 seed 不等于 attempt 0 公式值的条数。\nEXPECTED_NON_FORMULA_SEEDS = 170\n# 方案第四节实读结论：每 task 每难度取前 3 条后，各环境固定命中的 episode 集合。\nEXPECTED_SUBSET_EPISODES = (0, 1, 2, 3, 4, 6, 7, 10, 11)\n# 方案口径 3：全量 1600 条与 144 条子集各自的 fail recover 配置计数。\nEXPECTED_FULL_RECOVERY = {\"z\": 48, \"xy\": 48, \"off\": 1504}\nEXPECTED_SUBSET_RECOVERY = {\"z\": 48, \"xy\": 32, \"off\": 64}\n\nRECORD_KEYS = (\"task\", \"episode\", \"seed\", \"difficulty\")\nPATH_NAMES = (\"A1\", \"A2\", \"B\", \"C\", \"D\")","is_error":false}]},"uuid":"9f5bed8a-6c03-48d8-9b94-6314e4b454ba","timestamp":"2026-09-22T15:18:39.469Z","sourceToolAssistantUUID":"69243790-7e21-4f7b-9bfc-45bda74bcfd4","userType":"external","entrypoint":"claude-desktop","cwd":"/data/hongzefu/robomme_benchmark_MotionJEPANewTask","sessionId":"9d8b3b4c-2eb5-49df-b9cf-71d1d84f954c","version":"2.1.275","gitBranch":"newtaskRelease-v3","slug":"twinkly-orbiting-shore"}
+    positions: dict[str, Any] = {}
+    for task in SAMPLING_TASKS:
+        tree = trees[task]
+        class_def = _class_def(tree, task)
+        native = _module_literal(tree, "NATIVE_SAMPLING")
+        if set(native) != {"parameters", "positions"}:
+            raise SamplingConfigError(f"{task}: NATIVE_SAMPLING 顶层只能有 parameters 与 positions")
+        task_parameters: dict[str, Any] = {
+            "configs": {
+                "easy": _assigned_literal(class_def, "config_easy"),
+                "medium": _assigned_literal(class_def, "config_medium"),
+                "hard": _assigned_literal(class_def, "config_hard"),
+            }
+        }
+        # 第四档 xhard：类里存在才写入（2026-09-11 起 RouteStick／VideoUnmaskSwap／VideoRepick，
+        # V4 起 BinFill 等也有）。legacy 分支（旧式源码）永远没有该属性，不改。
+        if _has_assigned(class_def, "config_xhard"):
+            task_parameters["configs"]["xhard"] = _assigned_literal(class_def, "config_xhard")
+        task_parameters.update(copy.deepcopy(native["parameters"]))
+        parameters[task] = task_parameters
+        positions[task] = copy.deepcopy(native["positions"])
+
+    _complete_action_parameters(trees, parameters)
+    _cross_check(trees, parameters, positions)
+    return {"parameters": parameters, "positions": positions, "sources": sources}
+
+
+def _require_ast(scope: ast.AST, expression: str, label: str) -> None:
+    """历史规则必须在真实 AST 中命中；忽略注释、空白与行号，不执行源码。"""
+    expected = ast.parse(expression).body[0]
+    if isinstance(expected, ast.Expr):
+        expected = expected.value
+    signature = ast.dump(expected, include_attributes=False)
+    if not any(ast.dump(node, include_attributes=False) == signature for node in ast.walk(scope)):
+        raise SamplingConfigError(f"{label}: 未识别历史规则 {expression}")
+
+candidates
+delivery.py
+hf_release.py
+__init__.py
+_migrate_run10.py
+__pycache__
+rollout
+calibrate.py
+comparator_fixtures.py
+compare_vs_original.py
+gl
+identities_16x3.txt
+__init__.py
+manifest_16x3.json
+__pycache__
+README.md
+results
+tolerance.json
+train_split_audit.py
+train_split_comparison.py
+train_split_config.py
+train_split_parity.py
+train_split_runner.py
+train_split_worker.py
+v4_combos.py
+v4_demo_probe.py
+v4_reset_probe.py
+v4_rollout.py
+v4_spec_negative.py
+v4_specs.py
+v5_generation.py
+scripts/parity/v4_combos.py:5:用与正式生成逐字相同的 ``generate_dataset_newseed._worker`` 跑 ``--samples`` 条演示，两级都报：
+scripts/parity/v4_combos.py:147:    import generate_dataset_newseed as gen
+scripts/parity/v4_combos.py:148:    from seed_layout import env_code
+scripts/parity/train_split_config.py:28:from seed_layout import ALL_TASKS  # noqa: E402
+scripts/parity/v4_specs.py:58:from seed_layout import ALL_TASKS, SeedLayout, env_code  # noqa: E402
+scripts/parity/v4_demo_probe.py:5:以及 G3 / V6 前期的小样本摸底。它**直接调用主入口 ``generate_dataset_newseed._worker``**，
+scripts/parity/v4_demo_probe.py:30:import generate_dataset_newseed as gen  # noqa: E402
+scripts/parity/train_split_audit.py:41:from seed_layout import ALL_TASKS  # noqa: E402
+scripts/injection/rollout/reset_check.py:13:⚠ 与 ``scripts/generate_dataset_newseed.py`` 同一条约束：本模块顶层**只能** import 标准库。
+scripts/injection/rollout/reset_check.py:49:#: 与 ``generate_dataset_newseed._worker`` 的 retryable 口径同源，只去掉 step 期才可能出现的几类。
+scripts/injection/rollout/reset_check.py:105:    """取池 initializer（``generate_dataset_newseed._pool_init``）记下的绑卡信息。
+scripts/injection/rollout/reset_check.py:109:    for name in ("scripts.generate_dataset_newseed", "generate_dataset_newseed", "__mp_main__"):
+scripts/injection/rollout/reset_check.py:120:    env kwargs 与 ``generate_dataset_newseed._worker`` 逐字一致（少了录像器与 recovery），
+scripts/injection/rollout/reset_check.py:311:    from scripts.seed_layout import get_layout
+scripts/injection/rollout/reset_check.py:336:    派发：每张卡一个 pebble 池（``initializer=generate_dataset_newseed._pool_init``，
+scripts/injection/rollout/reset_check.py:557:    ⚠ 这些 import 全部延迟到这里：``generate_dataset_newseed`` 顶层会 import h5py/numpy，
+scripts/injection/rollout/reset_check.py:566:    from scripts import generate_dataset_newseed as gen
+scripts/injection/rollout/reset_check.py:659:    from scripts import generate_dataset_newseed as gen
+scripts/injection/rollout/run.py:171:    write_json(call / "command.json", {"command": command, "generator": str(ROOT / "scripts/generate_dataset_newseed.py")})
+scripts/injection/rollout/run.py:208:    from scripts import generate_dataset_newseed as gen

@@ -1,0 +1,4 @@
+{"task": "MoveCube", "seed": 6100000, "difficulty": "xhard", "ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "MoveCube/episode_9: 跑完整个 task_list 仍未成功", "wall_s": 98.3, "timesteps": null}
+{"task": "MoveCube", "seed": 6100007, "difficulty": "xhard", "ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "MoveCube/episode_9: 跑完整个 task_list 仍未成功", "wall_s": 89.3, "timesteps": null}
+{"task": "MoveCube", "seed": 6100011, "difficulty": "xhard", "ok": true, "failure_class": null, "error_type": null, "error": "", "wall_s": 69.5, "timesteps": 272}
+{"task": "MoveCube", "seed": 6100012, "difficulty": "xhard", "ok": true, "failure_class": null, "error_type": null, "error": "", "wall_s": 46.5, "timesteps": 282}

@@ -1,0 +1,382 @@
+{
+  "line": "V5_GENERATION=REPORT tasks=13 draft_ok=130 rollout_ok=39 backfilled=0 selected_shortfall=0 demo_frames_out_of_band=4 outer_swap_mismatch=0 bin_collision=0 vr_min_participants=6",
+  "sources": {
+    "drafts": "/tmp/v6-s4-v6-01/xhard3/draft/drafts.jsonl",
+    "specs": "/tmp/v6-s4-v6-01/xhard3/specs.jsonl",
+    "rollout": "/tmp/v6-s4-v6-01/xhard3/rollout/run1",
+    "run_id": "/tmp/v6-s4-v6-01",
+    "identity_sha256": "b9e8bcbbd4c75d6b8c31d14fc60a8557e03ba7fb00d5022c0b84149a4f7c2afc"
+  },
+  "params": {
+    "candidates_per_env": 10,
+    "demo_band": [
+      750,
+      1050
+    ],
+    "select_indices": [
+      0,
+      3,
+      6
+    ]
+  },
+  "totals": {
+    "tasks": 13,
+    "draft_attempted": 152,
+    "draft_ok": 130,
+    "candidate_shortfall": 0,
+    "rollout_attempted": 39,
+    "rollout_ok": 39,
+    "backfilled": 0,
+    "selected_shortfall": 0,
+    "demo_frames_checked": 6,
+    "demo_frames_out_of_band": 4,
+    "outer_swap_checked": 6,
+    "outer_swap_mismatch": 0,
+    "bin_collision": 0,
+    "draft_bin_collision": 0,
+    "vr_checked": 3,
+    "vr_min_participants": 6
+  },
+  "per_env": {
+    "PickXtimes": {
+      "draft_attempted": 10,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {},
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "SwingXtimes": {
+      "draft_attempted": 11,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {
+        "SceneGenerationError": 1
+      },
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "BinFill": {
+      "draft_attempted": 10,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {},
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "VideoUnmaskSwap": {
+      "draft_attempted": 10,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {},
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "VideoUnmask": {
+      "draft_attempted": 10,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {},
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "ButtonUnmaskSwap": {
+      "draft_attempted": 11,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {
+        "SceneGenerationError": 1
+      },
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "ButtonUnmask": {
+      "draft_attempted": 10,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {},
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "VideoRepick": {
+      "draft_attempted": 20,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {
+        "SceneGenerationError": 10
+      },
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "VideoPlaceButton": {
+      "draft_attempted": 11,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {
+        "SceneGenerationError": 1
+      },
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "VideoPlaceOrder": {
+      "draft_attempted": 17,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {
+        "SceneGenerationError": 7
+      },
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "PickHighlight": {
+      "draft_attempted": 12,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {
+        "SceneGenerationError": 2
+      },
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "PatternLock": {
+      "draft_attempted": 10,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {},
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    },
+    "RouteStick": {
+      "draft_attempted": 10,
+      "draft_ok": 10,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {},
+      "selected_target": 3,
+      "rollout_attempted": 3,
+      "rollout_ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    }
+  },
+  "demo_frames": [
+    {
+      "task": "PatternLock",
+      "episode": 0,
+      "seed": 13500000,
+      "role": "selected",
+      "ok": true,
+      "h5": "/tmp/v6-s4-v6-01/xhard3/rollout/run1/episodes/PatternLock_episode_0/hdf5_files/PatternLock_ep0_seed13500000.h5",
+      "demo_frames": 571,
+      "in_band": false
+    },
+    {
+      "task": "PatternLock",
+      "episode": 3,
+      "seed": 13500300,
+      "role": "selected",
+      "ok": true,
+      "h5": "/tmp/v6-s4-v6-01/xhard3/rollout/run1/episodes/PatternLock_episode_3/hdf5_files/PatternLock_ep3_seed13500300.h5",
+      "demo_frames": 518,
+      "in_band": false
+    },
+    {
+      "task": "PatternLock",
+      "episode": 6,
+      "seed": 13500600,
+      "role": "selected",
+      "ok": true,
+      "h5": "/tmp/v6-s4-v6-01/xhard3/rollout/run1/episodes/PatternLock_episode_6/hdf5_files/PatternLock_ep6_seed13500600.h5",
+      "demo_frames": 549,
+      "in_band": false
+    },
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "seed": 13600000,
+      "role": "selected",
+      "ok": true,
+      "h5": "/tmp/v6-s4-v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed13600000.h5",
+      "demo_frames": 800,
+      "in_band": true
+    },
+    {
+      "task": "RouteStick",
+      "episode": 3,
+      "seed": 13600300,
+      "role": "selected",
+      "ok": true,
+      "h5": "/tmp/v6-s4-v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_3/hdf5_files/RouteStick_ep3_seed13600300.h5",
+      "demo_frames": 700,
+      "in_band": false
+    },
+    {
+      "task": "RouteStick",
+      "episode": 6,
+      "seed": 13600600,
+      "role": "selected",
+      "ok": true,
+      "h5": "/tmp/v6-s4-v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_6/hdf5_files/RouteStick_ep6_seed13600600.h5",
+      "demo_frames": 750,
+      "in_band": true
+    }
+  ],
+  "outer_swap": [
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 0,
+      "seed": 12500000,
+      "role": "selected",
+      "ok": true,
+      "n_swaps": 9,
+      "planned_windows": 9,
+      "executed_windows": 9,
+      "equal": true,
+      "note": null
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 3,
+      "seed": 12500300,
+      "role": "selected",
+      "ok": true,
+      "n_swaps": 8,
+      "planned_windows": 8,
+      "executed_windows": 8,
+      "equal": true,
+      "note": null
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 6,
+      "seed": 12500600,
+      "role": "selected",
+      "ok": true,
+      "n_swaps": 8,
+      "planned_windows": 8,
+      "executed_windows": 8,
+      "equal": true,
+      "note": null
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 0,
+      "seed": 12700000,
+      "role": "selected",
+      "ok": true,
+      "n_swaps": 6,
+      "planned_windows": 6,
+      "executed_windows": 6,
+      "equal": true,
+      "note": null
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 3,
+      "seed": 12700300,
+      "role": "selected",
+      "ok": true,
+      "n_swaps": 6,
+      "planned_windows": 6,
+      "executed_windows": 6,
+      "equal": true,
+      "note": null
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 6,
+      "seed": 12700600,
+      "role": "selected",
+      "ok": true,
+      "n_swaps": 7,
+      "planned_windows": 7,
+      "executed_windows": 7,
+      "equal": true,
+      "note": null
+    }
+  ],
+  "vr_participants": [
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "seed": 12900002,
+      "role": "selected",
+      "ok": true,
+      "participants": 6,
+      "n_pairs": 7,
+      "source": "spec",
+      "note": null
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "seed": 12900302,
+      "role": "selected",
+      "ok": true,
+      "participants": 6,
+      "n_pairs": 8,
+      "source": "spec",
+      "note": null
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 6,
+      "seed": 12900600,
+      "role": "selected",
+      "ok": true,
+      "participants": 6,
+      "n_pairs": 7,
+      "source": "spec",
+      "note": null
+    }
+  ],
+  "warnings": []
+}

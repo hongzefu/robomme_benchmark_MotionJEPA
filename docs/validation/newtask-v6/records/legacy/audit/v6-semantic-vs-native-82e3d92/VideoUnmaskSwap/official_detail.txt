@@ -1,0 +1,10 @@
+episode_21 [b'watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube']
+   0 static
+   114 pick up the container at <119, 99> that hides the green cube
+   224 put down the container
+   271 pick up the container that hides the red cube
+episode_81 [b'watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube']
+   0 static
+   114 pick up the container at <130, 124> that hides the blue cube
+   213 put down the container
+   254 pick up the container that hides the green cube

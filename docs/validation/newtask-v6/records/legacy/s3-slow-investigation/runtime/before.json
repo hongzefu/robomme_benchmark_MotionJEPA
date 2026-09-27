@@ -1,0 +1,65 @@
+{
+  "utc": "2026-09-27T00:12:28.484582+00:00",
+  "pid": 1843953,
+  "identity": {
+    "state": "D",
+    "ppid": 1843945,
+    "pgrp": 1843931,
+    "utime_ticks": 135696,
+    "stime_ticks": 23902,
+    "starttime": 2043179066,
+    "processor": 30
+  },
+  "clock_ticks": 100,
+  "duration_s": 30,
+  "proc_interval_s": 1,
+  "gpu_interval_s": 5,
+  "files": [
+    {
+      "identity": "VideoUnmask_episode_10",
+      "files": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_10/hdf5_files/VideoUnmask_ep10_seed7001.h5",
+          "bytes": 96,
+          "mtime": 1790467911.1972625
+        }
+      ]
+    },
+    {
+      "identity": "VideoUnmask_episode_6",
+      "files": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed6600.h5",
+          "bytes": 115349400,
+          "mtime": 1790467904.4742692
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_6/videos/VideoUnmask_ep6_seed6600_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube.mp4",
+          "bytes": 2935561,
+          "mtime": 1790467904.3692694
+        }
+      ]
+    },
+    {
+      "identity": "VideoUnmask_episode_2",
+      "files": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_2/hdf5_files/VideoUnmask_ep2_seed6200.h5",
+          "bytes": 152026232,
+          "mtime": 1790467845.7163272
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_2/videos/VideoUnmask_ep2_seed6200_FailRecoverZ_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube.mp4",
+          "bytes": 3994928,
+          "mtime": 1790467845.6153271
+        }
+      ]
+    }
+  ],
+  "cgroup": {
+    "path": "/sys/fs/cgroup/user.slice/user-114466650.slice/user@114466650.service/tmux-spawn-e4e912bc-3960-4a21-b73f-4dcafcd2a5e1.scope",
+    "cpu.max": "max 100000\n",
+    "cpu.stat": "usage_usec 2353946359\nuser_usec 2039088955\nsystem_usec 314857403\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+    "cpu.pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=3484352\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2902838\n"
+  }
+}

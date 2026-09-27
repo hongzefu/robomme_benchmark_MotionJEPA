@@ -1,0 +1,1753 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "seed": 8700000,
+  "n_swaps": 4,
+  "n_picks": 2,
+  "color_names": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "selected_bins": [
+   1,
+   2,
+   0
+  ],
+  "swap_pairs": [
+   [
+    3,
+    2
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 0,
+   "1": 1,
+   "2": 2,
+   "3": 3
+  },
+  "identity_perm": true,
+  "picked_targets_final_slot_changed": {
+   "red": false,
+   "blue": false
+  },
+  "distractor_requested": 4,
+  "distractor_placed": 4,
+  "distractor_cube_count": 2,
+  "distractor_cube_colors": [
+   "yellow",
+   "cyan"
+  ],
+  "distractor_swap_pairs": [
+   [
+    2,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "distractor_swap_balance": [
+   0,
+   2,
+   3,
+   3
+  ],
+  "swap_window": [
+   64,
+   50
+  ],
+  "swap_end": 264,
+  "inner_counts": [
+   2,
+   2,
+   2,
+   2
+  ],
+  "graph": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "layout_type": 1,
+  "bins_xy": [
+   [
+    -0.024240485131740576,
+    0.007898036539554606,
+    29.175857305526733
+   ],
+   [
+    -0.010923365056514742,
+    0.21127025425434115,
+    73.60534608364105
+   ],
+   [
+    0.11809614390134812,
+    0.20682740777730946,
+    5.596740245819092
+   ],
+   [
+    0.13991751670837405,
+    0.02725564867258072,
+    50.35766959190369
+   ]
+  ]
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "seed": 8700300,
+  "n_swaps": 4,
+  "n_picks": 2,
+  "color_names": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "selected_bins": [
+   0,
+   1,
+   2
+  ],
+  "swap_pairs": [
+   [
+    3,
+    0
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 2,
+   "1": 3,
+   "2": 0,
+   "3": 1
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "blue": true,
+   "red": true
+  },
+  "distractor_requested": 4,
+  "distractor_placed": 4,
+  "distractor_cube_count": 2,
+  "distractor_cube_colors": [
+   "magenta",
+   "cyan"
+  ],
+  "distractor_swap_pairs": [
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    3
+   ]
+  ],
+  "distractor_swap_balance": [
+   4,
+   0,
+   0,
+   4
+  ],
+  "swap_window": [
+   64,
+   50
+  ],
+  "swap_end": 264,
+  "inner_counts": [
+   2,
+   2,
+   2,
+   2
+  ],
+  "graph": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "layout_type": 0,
+  "bins_xy": [
+   [
+    -0.022320139110088354,
+    -0.018986661732196812,
+    70.19515335559845
+   ],
+   [
+    0.033464317917823796,
+    0.19311896175146104,
+    20.202800631523132
+   ],
+   [
+    0.14150991499423982,
+    0.1598512962460518,
+    10.986108183860779
+   ],
+   [
+    0.11090134143829347,
+    -0.028551416993141177,
+    82.25960075855255
+   ]
+  ]
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "seed": 8700600,
+  "n_swaps": 4,
+  "n_picks": 2,
+  "color_names": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "selected_bins": [
+   2,
+   0,
+   1
+  ],
+  "swap_pairs": [
+   [
+    3,
+    2
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 2,
+   "1": 3,
+   "2": 0,
+   "3": 1
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "red": true,
+   "green": true
+  },
+  "distractor_requested": 4,
+  "distractor_placed": 4,
+  "distractor_cube_count": 2,
+  "distractor_cube_colors": [
+   "magenta",
+   "yellow"
+  ],
+  "distractor_swap_pairs": [
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "distractor_swap_balance": [
+   0,
+   0,
+   4,
+   4
+  ],
+  "swap_window": [
+   64,
+   50
+  ],
+  "swap_end": 264,
+  "inner_counts": [
+   2,
+   2,
+   2,
+   2
+  ],
+  "graph": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "layout_type": 0,
+  "bins_xy": [
+   [
+    -0.01483082711696625,
+    -0.04911219507455826,
+    40.559377670288086
+   ],
+   [
+    0.025209686458110822,
+    0.14380819201469422,
+    21.519615054130554
+   ],
+   [
+    0.13730903774499895,
+    0.11838414102792741,
+    8.937581777572632
+   ],
+   [
+    0.13590518534183504,
+    -0.07388958662748338,
+    10.45475721359253
+   ]
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "seed": 10700001,
+  "n_swaps": 5,
+  "n_picks": 3,
+  "color_names": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "selected_bins": [
+   0,
+   2,
+   1
+  ],
+  "swap_pairs": [
+   [
+    1,
+    0
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    0
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 1,
+   "1": 3,
+   "2": 0,
+   "3": 2
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "green": true,
+   "blue": true,
+   "red": true
+  },
+  "distractor_requested": 6,
+  "distractor_placed": 6,
+  "distractor_cube_count": 3,
+  "distractor_cube_colors": [
+   "magenta",
+   "yellow",
+   "cyan"
+  ],
+  "distractor_swap_pairs": [
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    3
+   ]
+  ],
+  "distractor_swap_balance": [
+   5,
+   0,
+   0,
+   5,
+   0,
+   0
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 229,
+  "inner_counts": [
+   3,
+   2,
+   2,
+   3
+  ],
+  "graph": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "layout_type": 0,
+  "bins_xy": [
+   [
+    0.025893786549568185,
+    -0.061613846421241764,
+    21.326356530189514
+   ],
+   [
+    0.006167134940624236,
+    0.08997845351696014,
+    76.23762309551239
+   ],
+   [
+    0.07310199826955795,
+    0.19509222477674487,
+    11.166309714317322
+   ],
+   [
+    0.13826373398303987,
+    -0.05424537152051927,
+    8.413907289505005
+   ]
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "seed": 10700300,
+  "n_swaps": 5,
+  "n_picks": 3,
+  "color_names": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "selected_bins": [
+   0,
+   1,
+   2
+  ],
+  "swap_pairs": [
+   [
+    2,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    3
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 1,
+   "1": 3,
+   "2": 0,
+   "3": 2
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "blue": true,
+   "red": true,
+   "green": true
+  },
+  "distractor_requested": 6,
+  "distractor_placed": 6,
+  "distractor_cube_count": 3,
+  "distractor_cube_colors": [
+   "magenta",
+   "cyan",
+   "yellow"
+  ],
+  "distractor_swap_pairs": [
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    4,
+    5
+   ]
+  ],
+  "distractor_swap_balance": [
+   2,
+   2,
+   0,
+   2,
+   2,
+   2
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 229,
+  "inner_counts": [
+   3,
+   2,
+   2,
+   3
+  ],
+  "graph": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "layout_type": 1,
+  "bins_xy": [
+   [
+    0.023269338309764867,
+    -0.0602685222029686,
+    48.52206230163574
+   ],
+   [
+    -0.03909061014652253,
+    0.1209521558880806,
+    64.6368008852005
+   ],
+   [
+    0.1379332682490349,
+    0.19068041652441026,
+    25.202781558036804
+   ],
+   [
+    0.12697084128856662,
+    -0.0029400956630706715,
+    62.10141062736511
+   ]
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "seed": 10700600,
+  "n_swaps": 5,
+  "n_picks": 3,
+  "color_names": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "selected_bins": [
+   0,
+   1,
+   2
+  ],
+  "swap_pairs": [
+   [
+    0,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    0,
+    3
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 1,
+   "1": 3,
+   "2": 0,
+   "3": 2
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "blue": true,
+   "red": true,
+   "green": true
+  },
+  "distractor_requested": 6,
+  "distractor_placed": 6,
+  "distractor_cube_count": 3,
+  "distractor_cube_colors": [
+   "yellow",
+   "magenta",
+   "cyan"
+  ],
+  "distractor_swap_pairs": [
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    5
+   ]
+  ],
+  "distractor_swap_balance": [
+   0,
+   0,
+   0,
+   0,
+   5,
+   5
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 229,
+  "inner_counts": [
+   3,
+   2,
+   2,
+   3
+  ],
+  "graph": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "layout_type": 0,
+  "bins_xy": [
+   [
+    0.028003747463226328,
+    0.011679452061653148,
+    32.94751524925232
+   ],
+   [
+    0.031160694062709812,
+    0.13595943063497543,
+    73.2346111536026
+   ],
+   [
+    0.13502535015344622,
+    0.15662544041872026,
+    72.77533113956451
+   ],
+   [
+    0.11835084676742555,
+    -0.10784689068794252,
+    4.394407868385315
+   ]
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "seed": 12700000,
+  "n_swaps": 6,
+  "n_picks": 3,
+  "color_names": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "selected_bins": [
+   1,
+   2,
+   0
+  ],
+  "swap_pairs": [
+   [
+    1,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    0
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 3,
+   "1": 2,
+   "2": 1,
+   "3": 0
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "blue": true,
+   "green": true,
+   "red": true
+  },
+  "distractor_requested": 8,
+  "distractor_placed": 8,
+  "distractor_cube_count": 4,
+  "distractor_cube_colors": [
+   "yellow",
+   "cyan",
+   "magenta",
+   "yellow"
+  ],
+  "distractor_swap_pairs": [
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    5
+   ]
+  ],
+  "distractor_swap_balance": [
+   0,
+   0,
+   6,
+   0,
+   0,
+   6,
+   0,
+   0
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 262,
+  "inner_counts": [
+   3,
+   3,
+   3,
+   3
+  ],
+  "graph": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ]
+  ],
+  "layout_type": 0,
+  "bins_xy": [
+   [
+    0.02288481414318086,
+    -0.06823487401008606,
+    38.45115602016449
+   ],
+   [
+    0.013211126029491427,
+    0.11549912095069886,
+    63.24377954006195
+   ],
+   [
+    0.062367994785308835,
+    0.2333273079991341,
+    5.815495848655701
+   ],
+   [
+    0.13859119027853012,
+    0.023751538097858432,
+    15.801993012428284
+   ]
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "seed": 12700300,
+  "n_swaps": 6,
+  "n_picks": 3,
+  "color_names": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "selected_bins": [
+   1,
+   0,
+   2
+  ],
+  "swap_pairs": [
+   [
+    1,
+    3
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 2,
+   "1": 3,
+   "2": 0,
+   "3": 1
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "blue": true,
+   "red": true,
+   "green": true
+  },
+  "distractor_requested": 8,
+  "distractor_placed": 8,
+  "distractor_cube_count": 4,
+  "distractor_cube_colors": [
+   "cyan",
+   "magenta",
+   "yellow",
+   "cyan"
+  ],
+  "distractor_swap_pairs": [
+   [
+    1,
+    7
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    0,
+    6
+   ]
+  ],
+  "distractor_swap_balance": [
+   3,
+   3,
+   0,
+   0,
+   0,
+   0,
+   3,
+   3
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 262,
+  "inner_counts": [
+   3,
+   3,
+   3,
+   3
+  ],
+  "graph": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ]
+  ],
+  "layout_type": 1,
+  "bins_xy": [
+   [
+    -0.036083958148956305,
+    -0.08284437686204911,
+    6.794518232345581
+   ],
+   [
+    0.038467955291271214,
+    0.12280949175357819,
+    67.69752323627472
+   ],
+   [
+    0.13076172560453417,
+    0.17537484109401705,
+    54.76660430431366
+   ],
+   [
+    0.09462301492691041,
+    -0.05066402167081833,
+    66.18932247161865
+   ]
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "seed": 12700600,
+  "n_swaps": 7,
+  "n_picks": 3,
+  "color_names": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "selected_bins": [
+   1,
+   0,
+   2
+  ],
+  "swap_pairs": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    3,
+    0
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 2,
+   "1": 0,
+   "2": 3,
+   "3": 1
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "blue": true,
+   "red": true,
+   "green": true
+  },
+  "distractor_requested": 8,
+  "distractor_placed": 8,
+  "distractor_cube_count": 4,
+  "distractor_cube_colors": [
+   "magenta",
+   "cyan",
+   "yellow",
+   "magenta"
+  ],
+  "distractor_swap_pairs": [
+   [
+    4,
+    6
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    3,
+    7
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    2,
+    7
+   ],
+   [
+    4,
+    6
+   ],
+   [
+    1,
+    7
+   ]
+  ],
+  "distractor_swap_balance": [
+   0,
+   2,
+   2,
+   2,
+   2,
+   1,
+   2,
+   3
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 295,
+  "inner_counts": [
+   4,
+   3,
+   3,
+   4
+  ],
+  "graph": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "layout_type": 0,
+  "bins_xy": [
+   [
+    0.029759744703769686,
+    -0.043775962591171266,
+    45.741437673568726
+   ],
+   [
+    -0.006769422888755802,
+    0.14094014286994935,
+    43.16248834133148
+   ],
+   [
+    0.11415341973304749,
+    0.15840933442115784,
+    18.692877888679504
+   ],
+   [
+    0.11299283534288407,
+    -0.10247098863124848,
+    41.30659282207489
+   ]
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "seed": 6700000,
+  "n_swaps": 8,
+  "n_picks": 3,
+  "color_names": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "selected_bins": [
+   2,
+   1,
+   0
+  ],
+  "swap_pairs": [
+   [
+    3,
+    0
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    3
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 2,
+   "1": 3,
+   "2": 0,
+   "3": 1
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "blue": true,
+   "green": true,
+   "red": true
+  },
+  "distractor_requested": 10,
+  "distractor_placed": 10,
+  "distractor_cube_count": 5,
+  "distractor_cube_colors": [
+   "magenta",
+   "yellow",
+   "cyan",
+   "magenta",
+   "yellow"
+  ],
+  "distractor_swap_pairs": [
+   [
+    0,
+    8
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    0,
+    9
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    8,
+    9
+   ],
+   [
+    5,
+    7
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    8,
+    9
+   ]
+  ],
+  "distractor_swap_balance": [
+   2,
+   3,
+   0,
+   0,
+   0,
+   2,
+   0,
+   3,
+   3,
+   3
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 328,
+  "inner_counts": [
+   4,
+   4,
+   4,
+   4
+  ],
+  "graph": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "layout_type": 1,
+  "bins_xy": [
+   [
+    -0.015482010841369631,
+    -0.061143578886985794,
+    16.110522150993347
+   ],
+   [
+    0.0009605580568313593,
+    0.17902027606964113,
+    46.27867877483368
+   ],
+   [
+    0.13116670787334445,
+    0.19694986522197724,
+    31.887168288230896
+   ],
+   [
+    0.10172250330448152,
+    -0.0683802217245102,
+    55.158947110176086
+   ]
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "seed": 6700300,
+  "n_swaps": 8,
+  "n_picks": 3,
+  "color_names": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "selected_bins": [
+   0,
+   1,
+   2
+  ],
+  "swap_pairs": [
+   [
+    3,
+    0
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 0,
+   "1": 1,
+   "2": 2,
+   "3": 3
+  },
+  "identity_perm": true,
+  "picked_targets_final_slot_changed": {
+   "green": false,
+   "blue": false,
+   "red": false
+  },
+  "distractor_requested": 10,
+  "distractor_placed": 10,
+  "distractor_cube_count": 5,
+  "distractor_cube_colors": [
+   "magenta",
+   "cyan",
+   "yellow",
+   "magenta",
+   "cyan"
+  ],
+  "distractor_swap_pairs": [
+   [
+    1,
+    2
+   ],
+   [
+    5,
+    7
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    5,
+    7
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    5,
+    7
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    5,
+    7
+   ]
+  ],
+  "distractor_swap_balance": [
+   0,
+   4,
+   4,
+   0,
+   0,
+   4,
+   0,
+   4,
+   0,
+   0
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 328,
+  "inner_counts": [
+   4,
+   4,
+   4,
+   4
+  ],
+  "graph": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "layout_type": 1,
+  "bins_xy": [
+   [
+    -0.007645058035850527,
+    0.036468959748744964,
+    80.08171141147614
+   ],
+   [
+    0.0018637999892234802,
+    0.21446869254112247,
+    81.32138550281525
+   ],
+   [
+    0.13908377051353454,
+    0.15353964984416965,
+    40.43924152851105
+   ],
+   [
+    0.11391637831926346,
+    -0.05379235565662384,
+    34.451531767845154
+   ]
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "seed": 6700600,
+  "n_swaps": 8,
+  "n_picks": 3,
+  "color_names": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "selected_bins": [
+   0,
+   2,
+   1
+  ],
+  "swap_pairs": [
+   [
+    2,
+    3
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "final_slot_of_bin": {
+   "0": 2,
+   "1": 3,
+   "2": 0,
+   "3": 1
+  },
+  "identity_perm": false,
+  "picked_targets_final_slot_changed": {
+   "blue": true,
+   "green": true,
+   "red": true
+  },
+  "distractor_requested": 10,
+  "distractor_placed": 10,
+  "distractor_cube_count": 5,
+  "distractor_cube_colors": [
+   "magenta",
+   "yellow",
+   "cyan",
+   "magenta",
+   "yellow"
+  ],
+  "distractor_swap_pairs": [
+   [
+    6,
+    8
+   ],
+   [
+    5,
+    7
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    7,
+    9
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    5,
+    9
+   ],
+   [
+    6,
+    8
+   ]
+  ],
+  "distractor_swap_balance": [
+   2,
+   0,
+   2,
+   2,
+   0,
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "swap_window": [
+   64,
+   33
+  ],
+  "swap_end": 328,
+  "inner_counts": [
+   4,
+   4,
+   4,
+   4
+  ],
+  "graph": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "layout_type": 0,
+  "bins_xy": [
+   [
+    0.012044999003410342,
+    -0.10966133266687393,
+    72.35723912715912
+   ],
+   [
+    0.015547656118869782,
+    0.10865041673183443,
+    59.51749384403229
+   ],
+   [
+    0.1383935096859932,
+    0.09155385673046113,
+    80.8354389667511
+   ],
+   [
+    0.12421538621187211,
+    -0.07399448126554489,
+    1.5704280138015747
+   ]
+  ]
+ }
+]

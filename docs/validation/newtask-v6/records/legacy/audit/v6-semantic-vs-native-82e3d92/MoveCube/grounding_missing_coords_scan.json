@@ -1,0 +1,114 @@
+[
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100001/hdf5_files/MoveCube_ep9_seed6100001.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100002/hdf5_files/MoveCube_ep9_seed6100002.h5",
+  "n_boundary_missing_coords": 1,
+  "missing": [
+   {
+    "step": 105,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube to the target with the peg",
+    "demo": true
+   }
+  ]
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100003/hdf5_files/MoveCube_ep9_seed6100003.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100005/hdf5_files/MoveCube_ep9_seed6100005.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100006/hdf5_files/MoveCube_ep9_seed6100006.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100008/hdf5_files/MoveCube_ep9_seed6100008.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100009/hdf5_files/MoveCube_ep9_seed6100009.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100011/hdf5_files/MoveCube_ep9_seed6100011.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100012/hdf5_files/MoveCube_ep9_seed6100012.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed14000.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_1/hdf5_files/MoveCube_ep1_seed14100.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_10/hdf5_files/MoveCube_ep10_seed15000.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_11/hdf5_files/MoveCube_ep11_seed15100.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_2/hdf5_files/MoveCube_ep2_seed14200.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_3/hdf5_files/MoveCube_ep3_seed14300.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_4/hdf5_files/MoveCube_ep4_seed14400.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_6/hdf5_files/MoveCube_ep6_seed14602.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v1/base/B/MoveCube_episode_7/hdf5_files/MoveCube_ep7_seed14700.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed7400000.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_3/hdf5_files/MoveCube_ep3_seed7400300.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ },
+ {
+  "h5": "artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_6/hdf5_files/MoveCube_ep6_seed7400600.h5",
+  "n_boundary_missing_coords": 0,
+  "missing": []
+ }
+]

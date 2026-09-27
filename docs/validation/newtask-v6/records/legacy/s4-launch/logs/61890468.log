@@ -1,0 +1,599 @@
+/home/hongzefu/.local/bin/uv
+scripts/configs/newtask-v6/sampling_config.json: OK
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+IMPORT_PATH=PASS module=robomme path=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/__init__.py
+IMPORT_PATH=PASS module=BinFill path=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/robomme_env/BinFill.py
+PIPELINE_PLAN draw skip=False :: -m scripts.parity.v4_specs draw --run-id /tmp/v6-s4-v6-01 --tasks PickXtimes,SwingXtimes,BinFill,VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask,VideoRepick,VideoPlaceButton,VideoPlaceOrder,PickHighlight,PatternLock,RouteStick --sampling-config scripts/configs/newtask-v6/sampling_config.json --candidates-per-env 10 --max-reset-attempts 60 --workers 16 --out /tmp/v6-s4-v6-01/xhard3/draft/drafts.jsonl --gpus 0 --difficulty xhard3 --seed-profile v6
+PIPELINE_PLAN freeze skip=False :: -m scripts.parity.v4_specs freeze --drafts /tmp/v6-s4-v6-01/xhard3/draft/drafts.jsonl --sampling-config scripts/configs/newtask-v6/sampling_config.json --select 0,3,6 --candidates-per-env 10 --out /tmp/v6-s4-v6-01/xhard3/specs.jsonl
+PIPELINE_PLAN run skip=False :: -m scripts.parity.v4_rollout run --specs /tmp/v6-s4-v6-01/xhard3/specs.jsonl --label run1 --tasks PickXtimes,SwingXtimes,BinFill,VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask,VideoRepick,VideoPlaceButton,VideoPlaceOrder,PickHighlight,PatternLock,RouteStick --official-root artifacts/train-parity/local-smoke-01/official-src --workers 16 --gpu 0 --output /tmp/v6-s4-v6-01/xhard3/rollout
+PIPELINE_PLAN report skip=False :: -m scripts.parity.v5_generation report --drafts /tmp/v6-s4-v6-01/xhard3/draft/drafts.jsonl --specs /tmp/v6-s4-v6-01/xhard3/specs.jsonl --rollout /tmp/v6-s4-v6-01/xhard3/rollout/run1 --candidates-per-env 10 --out /tmp/v6-s4-v6-01/xhard3/report
+PIPELINE_PLAN draw skip=False :: -m scripts.parity.v4_specs draw --run-id /tmp/v6-s4-v6-01 --tasks all --sampling-config scripts/configs/newtask-v6/sampling_config.json --candidates-per-env 10 --max-reset-attempts 60 --workers 16 --out /tmp/v6-s4-v6-01/xhard4/draft/drafts.jsonl --gpus 0 --difficulty xhard4 --seed-profile v6
+PIPELINE_PLAN freeze skip=False :: -m scripts.parity.v4_specs freeze --drafts /tmp/v6-s4-v6-01/xhard4/draft/drafts.jsonl --sampling-config scripts/configs/newtask-v6/sampling_config.json --select 0,3,6 --candidates-per-env 10 --out /tmp/v6-s4-v6-01/xhard4/specs.jsonl
+PIPELINE_PLAN run skip=False :: -m scripts.parity.v4_rollout run --specs /tmp/v6-s4-v6-01/xhard4/specs.jsonl --label run1 --tasks all --official-root artifacts/train-parity/local-smoke-01/official-src --workers 16 --gpu 0 --output /tmp/v6-s4-v6-01/xhard4/rollout
+PIPELINE_PLAN report skip=False :: -m scripts.parity.v5_generation report --drafts /tmp/v6-s4-v6-01/xhard4/draft/drafts.jsonl --specs /tmp/v6-s4-v6-01/xhard4/specs.jsonl --rollout /tmp/v6-s4-v6-01/xhard4/rollout/run1 --candidates-per-env 10 --out /tmp/v6-s4-v6-01/xhard4/report
+PIPELINE_TIERS_DRY_RUN run_id=/tmp/v6-s4-v6-01 tiers=xhard3,xhard4
+PIPELINE_STEP draw start :: -m scripts.parity.v4_specs draw --run-id /tmp/v6-s4-v6-01 --tasks PickXtimes,SwingXtimes,BinFill,VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask,VideoRepick,VideoPlaceButton,VideoPlaceOrder,PickHighlight,PatternLock,RouteStick --sampling-config scripts/configs/newtask-v6/sampling_config.json --candidates-per-env 10 --max-reset-attempts 60 --workers 16 --out /tmp/v6-s4-v6-01/xhard3/draft/drafts.jsonl --gpus 0 --difficulty xhard3 --seed-profile v6
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+DRAW VideoPlaceButton ep=0 attempt=0 seed=13000000 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=0 attempt=0 seed=13100000 ok=False SceneGenerationError
+DRAW VideoRepick ep=0 attempt=0 seed=12900000 ok=False SceneGenerationError
+DRAW SwingXtimes ep=0 attempt=0 seed=12300000 ok=True 
+DRAW PickXtimes ep=0 attempt=0 seed=12100000 ok=True 
+DRAW BinFill ep=0 attempt=0 seed=12400000 ok=True 
+DRAW ButtonUnmask ep=0 attempt=0 seed=12800000 ok=True 
+DRAW ButtonUnmaskSwap ep=0 attempt=0 seed=12700000 ok=True 
+DRAW VideoPlaceOrder ep=0 attempt=1 seed=13100001 ok=False SceneGenerationError
+DRAW VideoRepick ep=0 attempt=1 seed=12900001 ok=False SceneGenerationError
+DRAW PickHighlight ep=0 attempt=0 seed=13200000 ok=True 
+DRAW PickXtimes ep=1 attempt=0 seed=12100100 ok=True 
+DRAW SwingXtimes ep=1 attempt=0 seed=12300100 ok=True 
+DRAW VideoPlaceButton ep=0 attempt=1 seed=13000001 ok=True 
+DRAW BinFill ep=1 attempt=0 seed=12400100 ok=True 
+DRAW ButtonUnmaskSwap ep=1 attempt=0 seed=12700100 ok=False SceneGenerationError
+DRAW ButtonUnmask ep=1 attempt=0 seed=12800100 ok=True 
+DRAW PickHighlight ep=1 attempt=0 seed=13200100 ok=True 
+DRAW VideoRepick ep=0 attempt=2 seed=12900002 ok=True 
+DRAW VideoPlaceOrder ep=0 attempt=2 seed=13100002 ok=True 
+DRAW VideoUnmask ep=0 attempt=0 seed=12600000 ok=True 
+DRAW SwingXtimes ep=2 attempt=0 seed=12300200 ok=True 
+DRAW PickXtimes ep=2 attempt=0 seed=12100200 ok=True 
+DRAW VideoPlaceButton ep=1 attempt=0 seed=13000100 ok=True 
+DRAW PatternLock ep=0 attempt=0 seed=13500000 ok=True 
+DRAW BinFill ep=2 attempt=0 seed=12400200 ok=True 
+DRAW ButtonUnmask ep=2 attempt=0 seed=12800200 ok=True 
+DRAW VideoUnmaskSwap ep=0 attempt=0 seed=12500000 ok=True 
+DRAW PickHighlight ep=2 attempt=0 seed=13200200 ok=False SceneGenerationError
+DRAW VideoRepick ep=1 attempt=0 seed=12900100 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=1 attempt=0 seed=13100100 ok=True 
+DRAW VideoUnmask ep=1 attempt=0 seed=12600100 ok=True 
+DRAW PickXtimes ep=3 attempt=0 seed=12100300 ok=True 
+DRAW SwingXtimes ep=3 attempt=0 seed=12300300 ok=True 
+DRAW BinFill ep=3 attempt=0 seed=12400300 ok=True 
+DRAW VideoPlaceButton ep=2 attempt=0 seed=13000200 ok=True 
+DRAW RouteStick ep=0 attempt=0 seed=13600000 ok=True 
+DRAW ButtonUnmask ep=3 attempt=0 seed=12800300 ok=True 
+DRAW PatternLock ep=1 attempt=0 seed=13500100 ok=True 
+DRAW PickHighlight ep=2 attempt=1 seed=13200201 ok=True 
+DRAW VideoRepick ep=1 attempt=1 seed=12900101 ok=True 
+DRAW VideoPlaceOrder ep=2 attempt=0 seed=13100200 ok=True 
+DRAW PickXtimes ep=4 attempt=0 seed=12100400 ok=True 
+DRAW VideoUnmask ep=2 attempt=0 seed=12600200 ok=True 
+DRAW SwingXtimes ep=4 attempt=0 seed=12300400 ok=True 
+DRAW BinFill ep=4 attempt=0 seed=12400400 ok=True 
+DRAW VideoPlaceButton ep=3 attempt=0 seed=13000300 ok=True 
+DRAW RouteStick ep=1 attempt=0 seed=13600100 ok=True 
+DRAW ButtonUnmask ep=4 attempt=0 seed=12800400 ok=True 
+DRAW PickHighlight ep=3 attempt=0 seed=13200300 ok=True 
+DRAW VideoPlaceOrder ep=3 attempt=0 seed=13100300 ok=False SceneGenerationError
+DRAW VideoRepick ep=2 attempt=0 seed=12900200 ok=True 
+DRAW PatternLock ep=2 attempt=0 seed=13500200 ok=True 
+DRAW VideoUnmaskSwap ep=1 attempt=0 seed=12500100 ok=True 
+DRAW PickXtimes ep=5 attempt=0 seed=12100500 ok=True 
+DRAW VideoUnmask ep=3 attempt=0 seed=12600300 ok=True 
+DRAW BinFill ep=5 attempt=0 seed=12400500 ok=True 
+DRAW SwingXtimes ep=5 attempt=0 seed=12300500 ok=True 
+DRAW VideoPlaceButton ep=4 attempt=0 seed=13000400 ok=True 
+DRAW RouteStick ep=2 attempt=0 seed=13600200 ok=True 
+DRAW VideoRepick ep=3 attempt=0 seed=12900300 ok=False SceneGenerationError
+DRAW ButtonUnmask ep=5 attempt=0 seed=12800500 ok=True 
+DRAW PickHighlight ep=4 attempt=0 seed=13200400 ok=True 
+DRAW VideoPlaceOrder ep=3 attempt=1 seed=13100301 ok=True 
+DRAW PickXtimes ep=6 attempt=0 seed=12100600 ok=True 
+DRAW BinFill ep=6 attempt=0 seed=12400600 ok=True 
+DRAW VideoUnmask ep=4 attempt=0 seed=12600400 ok=True 
+DRAW PatternLock ep=3 attempt=0 seed=13500300 ok=True 
+DRAW SwingXtimes ep=6 attempt=0 seed=12300600 ok=True 
+DRAW VideoRepick ep=3 attempt=1 seed=12900301 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=4 attempt=0 seed=13100400 ok=False SceneGenerationError
+DRAW VideoPlaceButton ep=5 attempt=0 seed=13000500 ok=True 
+DRAW RouteStick ep=3 attempt=0 seed=13600300 ok=True 
+DRAW ButtonUnmaskSwap ep=1 attempt=1 seed=12700101 ok=True 
+DRAW ButtonUnmask ep=6 attempt=0 seed=12800600 ok=True 
+DRAW PickHighlight ep=5 attempt=0 seed=13200500 ok=True 
+DRAW PickXtimes ep=7 attempt=0 seed=12100700 ok=True 
+DRAW BinFill ep=7 attempt=0 seed=12400700 ok=True 
+DRAW VideoPlaceOrder ep=4 attempt=1 seed=13100401 ok=False SceneGenerationError
+DRAW VideoUnmask ep=5 attempt=0 seed=12600500 ok=True 
+DRAW VideoRepick ep=3 attempt=2 seed=12900302 ok=True 
+DRAW SwingXtimes ep=7 attempt=0 seed=12300700 ok=True 
+DRAW PatternLock ep=4 attempt=0 seed=13500400 ok=True 
+DRAW VideoPlaceButton ep=6 attempt=0 seed=13000600 ok=True 
+DRAW RouteStick ep=4 attempt=0 seed=13600400 ok=True 
+DRAW ButtonUnmask ep=7 attempt=0 seed=12800700 ok=True 
+DRAW VideoPlaceOrder ep=4 attempt=2 seed=13100402 ok=False SceneGenerationError
+DRAW VideoRepick ep=4 attempt=0 seed=12900400 ok=False SceneGenerationError
+DRAW SwingXtimes ep=8 attempt=0 seed=12300800 ok=False SceneGenerationError
+DRAW PickXtimes ep=8 attempt=0 seed=12100800 ok=True 
+DRAW BinFill ep=8 attempt=0 seed=12400800 ok=True 
+DRAW VideoUnmask ep=6 attempt=0 seed=12600600 ok=True 
+DRAW VideoPlaceButton ep=7 attempt=0 seed=13000700 ok=True 
+DRAW VideoRepick ep=4 attempt=1 seed=12900401 ok=False SceneGenerationError
+DRAW RouteStick ep=5 attempt=0 seed=13600500 ok=True 
+DRAW ButtonUnmask ep=8 attempt=0 seed=12800800 ok=True 
+DRAW VideoPlaceOrder ep=4 attempt=3 seed=13100403 ok=True 
+DRAW PatternLock ep=5 attempt=0 seed=13500500 ok=True 
+DRAW SwingXtimes ep=8 attempt=1 seed=12300801 ok=True 
+DRAW BinFill ep=9 attempt=0 seed=12400900 ok=True 
+DRAW_TASK BinFill ok=10 attempted=10 shortfall=0
+DRAW PickXtimes ep=9 attempt=0 seed=12100900 ok=True 
+DRAW_TASK PickXtimes ok=10 attempted=10 shortfall=0
+DRAW VideoUnmask ep=7 attempt=0 seed=12600700 ok=True 
+DRAW VideoPlaceButton ep=8 attempt=0 seed=13000800 ok=True 
+DRAW VideoRepick ep=4 attempt=2 seed=12900402 ok=True 
+DRAW VideoUnmaskSwap ep=2 attempt=0 seed=12500200 ok=True 
+DRAW VideoPlaceOrder ep=5 attempt=0 seed=13100500 ok=True 
+DRAW ButtonUnmask ep=9 attempt=0 seed=12800900 ok=True 
+DRAW_TASK ButtonUnmask ok=10 attempted=10 shortfall=0
+DRAW RouteStick ep=6 attempt=0 seed=13600600 ok=True 
+DRAW SwingXtimes ep=9 attempt=0 seed=12300900 ok=True 
+DRAW_TASK SwingXtimes ok=10 attempted=11 shortfall=0
+DRAW ButtonUnmaskSwap ep=2 attempt=0 seed=12700200 ok=True 
+DRAW PatternLock ep=6 attempt=0 seed=13500600 ok=True 
+DRAW VideoUnmask ep=8 attempt=0 seed=12600800 ok=True 
+DRAW VideoPlaceButton ep=9 attempt=0 seed=13000900 ok=True 
+DRAW_TASK VideoPlaceButton ok=10 attempted=11 shortfall=0
+DRAW VideoRepick ep=5 attempt=0 seed=12900500 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=6 attempt=0 seed=13100600 ok=True 
+DRAW RouteStick ep=7 attempt=0 seed=13600700 ok=True 
+DRAW VideoRepick ep=5 attempt=1 seed=12900501 ok=False SceneGenerationError
+DRAW VideoUnmask ep=9 attempt=0 seed=12600900 ok=True 
+DRAW_TASK VideoUnmask ok=10 attempted=10 shortfall=0
+DRAW PatternLock ep=7 attempt=0 seed=13500700 ok=True 
+DRAW VideoPlaceOrder ep=7 attempt=0 seed=13100700 ok=True 
+DRAW RouteStick ep=8 attempt=0 seed=13600800 ok=True 
+DRAW VideoUnmaskSwap ep=3 attempt=0 seed=12500300 ok=True 
+DRAW VideoRepick ep=5 attempt=2 seed=12900502 ok=True 
+DRAW ButtonUnmaskSwap ep=3 attempt=0 seed=12700300 ok=True 
+DRAW PatternLock ep=8 attempt=0 seed=13500800 ok=True 
+DRAW VideoPlaceOrder ep=8 attempt=0 seed=13100800 ok=True 
+DRAW RouteStick ep=9 attempt=0 seed=13600900 ok=True 
+DRAW_TASK RouteStick ok=10 attempted=10 shortfall=0
+DRAW VideoRepick ep=6 attempt=0 seed=12900600 ok=True 
+DRAW VideoPlaceOrder ep=9 attempt=0 seed=13100900 ok=False SceneGenerationError
+DRAW PatternLock ep=9 attempt=0 seed=13500900 ok=True 
+DRAW_TASK PatternLock ok=10 attempted=10 shortfall=0
+DRAW VideoRepick ep=7 attempt=0 seed=12900700 ok=True 
+DRAW VideoPlaceOrder ep=9 attempt=1 seed=13100901 ok=True 
+DRAW_TASK VideoPlaceOrder ok=10 attempted=17 shortfall=0
+DRAW VideoRepick ep=8 attempt=0 seed=12900800 ok=False SceneGenerationError
+DRAW VideoRepick ep=8 attempt=1 seed=12900801 ok=True 
+DRAW VideoRepick ep=9 attempt=0 seed=12900900 ok=True 
+DRAW_TASK VideoRepick ok=10 attempted=20 shortfall=0
+DRAW VideoUnmaskSwap ep=4 attempt=0 seed=12500400 ok=True 
+DRAW PickHighlight ep=6 attempt=0 seed=13200600 ok=True 
+DRAW ButtonUnmaskSwap ep=4 attempt=0 seed=12700400 ok=True 
+DRAW PickHighlight ep=7 attempt=0 seed=13200700 ok=True 
+DRAW PickHighlight ep=8 attempt=0 seed=13200800 ok=True 
+DRAW ButtonUnmaskSwap ep=5 attempt=0 seed=12700500 ok=True 
+DRAW PickHighlight ep=9 attempt=0 seed=13200900 ok=False SceneGenerationError
+DRAW PickHighlight ep=9 attempt=1 seed=13200901 ok=True 
+DRAW_TASK PickHighlight ok=10 attempted=12 shortfall=0
+DRAW ButtonUnmaskSwap ep=6 attempt=0 seed=12700600 ok=True 
+DRAW ButtonUnmaskSwap ep=7 attempt=0 seed=12700700 ok=True 
+DRAW VideoUnmaskSwap ep=5 attempt=0 seed=12500500 ok=True 
+DRAW ButtonUnmaskSwap ep=8 attempt=0 seed=12700800 ok=True 
+DRAW VideoUnmaskSwap ep=6 attempt=0 seed=12500600 ok=True 
+DRAW ButtonUnmaskSwap ep=9 attempt=0 seed=12700900 ok=True 
+DRAW_TASK ButtonUnmaskSwap ok=10 attempted=11 shortfall=0
+DRAW VideoUnmaskSwap ep=7 attempt=0 seed=12500700 ok=True 
+DRAW VideoUnmaskSwap ep=8 attempt=0 seed=12500800 ok=True 
+DRAW VideoUnmaskSwap ep=9 attempt=0 seed=12500900 ok=True 
+DRAW_TASK VideoUnmaskSwap ok=10 attempted=10 shortfall=0
+DRAW_DONE rows=152 ok=130 out=/tmp/v6-s4-v6-01/xhard3/draft/drafts.jsonl
+PIPELINE_STEP draw done
+PIPELINE_STEP freeze start :: -m scripts.parity.v4_specs freeze --drafts /tmp/v6-s4-v6-01/xhard3/draft/drafts.jsonl --sampling-config scripts/configs/newtask-v6/sampling_config.json --select 0,3,6 --candidates-per-env 10 --out /tmp/v6-s4-v6-01/xhard3/specs.jsonl
+FREEZE_DONE rows=130 selected=39 envs=13 candidate_shortfall=0 out=/tmp/v6-s4-v6-01/xhard3/specs.jsonl
+PIPELINE_STEP freeze done
+PIPELINE_STEP run start :: -m scripts.parity.v4_rollout run --specs /tmp/v6-s4-v6-01/xhard3/specs.jsonl --label run1 --tasks PickXtimes,SwingXtimes,BinFill,VideoUnmaskSwap,VideoUnmask,ButtonUnmaskSwap,ButtonUnmask,VideoRepick,VideoPlaceButton,VideoPlaceOrder,PickHighlight,PatternLock,RouteStick --official-root artifacts/train-parity/local-smoke-01/official-src --workers 16 --gpu 0 --output /tmp/v6-s4-v6-01/xhard3/rollout
+ROUND 0 jobs=39 ok=39 wall_s=327
+ROLLOUT_DONE label=run1 rollout_attempted=39 rollout_ok=39 backfilled=0 selected_shortfall=0
+PIPELINE_STEP run done
+PIPELINE_STEP report start :: -m scripts.parity.v5_generation report --drafts /tmp/v6-s4-v6-01/xhard3/draft/drafts.jsonl --specs /tmp/v6-s4-v6-01/xhard3/specs.jsonl --rollout /tmp/v6-s4-v6-01/xhard3/rollout/run1 --candidates-per-env 10 --out /tmp/v6-s4-v6-01/xhard3/report
+V5_GENERATION=REPORT tasks=13 draft_ok=130 rollout_ok=39 backfilled=0 selected_shortfall=0 demo_frames_out_of_band=4 outer_swap_mismatch=0 bin_collision=0 vr_min_participants=6
+# 报告：/tmp/v6-s4-v6-01/xhard3/report/generation_report.md、/tmp/v6-s4-v6-01/xhard3/report/generation_report.json
+PIPELINE_STEP report done
+PIPELINE_DONE run_id=/tmp/v6-s4-v6-01 report=/tmp/v6-s4-v6-01/xhard3/report/generation_report.md
+PIPELINE_STEP draw start :: -m scripts.parity.v4_specs draw --run-id /tmp/v6-s4-v6-01 --tasks all --sampling-config scripts/configs/newtask-v6/sampling_config.json --candidates-per-env 10 --max-reset-attempts 60 --workers 16 --out /tmp/v6-s4-v6-01/xhard4/draft/drafts.jsonl --gpus 0 --difficulty xhard4 --seed-profile v6
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+DRAW VideoRepick ep=0 attempt=0 seed=6900000 ok=False SceneGenerationError
+DRAW BinFill ep=0 attempt=0 seed=6400000 ok=True 
+DRAW SwingXtimes ep=0 attempt=0 seed=6300000 ok=True 
+DRAW ButtonUnmask ep=0 attempt=0 seed=6800000 ok=True 
+DRAW PickXtimes ep=0 attempt=0 seed=6100000 ok=True 
+DRAW StopCube ep=0 attempt=0 seed=6200000 ok=True 
+DRAW VideoUnmask ep=0 attempt=0 seed=6600000 ok=True 
+DRAW VideoPlaceOrder ep=0 attempt=0 seed=7100000 ok=True 
+DRAW VideoPlaceButton ep=0 attempt=0 seed=7000000 ok=True 
+DRAW VideoRepick ep=0 attempt=1 seed=6900001 ok=False SceneGenerationError
+DRAW PickHighlight ep=0 attempt=0 seed=7200000 ok=True 
+DRAW ButtonUnmaskSwap ep=0 attempt=0 seed=6700000 ok=True 
+DRAW BinFill ep=1 attempt=0 seed=6400100 ok=True 
+DRAW VideoPlaceOrder ep=1 attempt=0 seed=7100100 ok=False SceneGenerationError
+DRAW InsertPeg ep=0 attempt=0 seed=7300000 ok=True 
+DRAW ButtonUnmask ep=1 attempt=0 seed=6800100 ok=True 
+DRAW PickXtimes ep=1 attempt=0 seed=6100100 ok=True 
+DRAW SwingXtimes ep=1 attempt=0 seed=6300100 ok=True 
+DRAW MoveCube ep=0 attempt=0 seed=7400000 ok=True 
+DRAW VideoRepick ep=0 attempt=2 seed=6900002 ok=False SceneGenerationError
+DRAW StopCube ep=1 attempt=0 seed=6200100 ok=True 
+DRAW VideoPlaceButton ep=1 attempt=0 seed=7000100 ok=True 
+DRAW RouteStick ep=0 attempt=0 seed=7600000 ok=True 
+DRAW PatternLock ep=0 attempt=0 seed=7500000 ok=True 
+DRAW VideoPlaceOrder ep=1 attempt=1 seed=7100101 ok=False SceneGenerationError
+DRAW VideoUnmask ep=1 attempt=0 seed=6600100 ok=True 
+DRAW PickHighlight ep=1 attempt=0 seed=7200100 ok=True 
+DRAW BinFill ep=2 attempt=0 seed=6400200 ok=True 
+DRAW InsertPeg ep=1 attempt=0 seed=7300100 ok=True 
+DRAW SwingXtimes ep=2 attempt=0 seed=6300200 ok=True 
+DRAW PickXtimes ep=2 attempt=0 seed=6100200 ok=True 
+DRAW ButtonUnmask ep=2 attempt=0 seed=6800200 ok=True 
+DRAW StopCube ep=2 attempt=0 seed=6200200 ok=True 
+DRAW MoveCube ep=1 attempt=0 seed=7400100 ok=True 
+DRAW VideoPlaceOrder ep=1 attempt=2 seed=7100102 ok=False SceneGenerationError
+DRAW VideoPlaceButton ep=2 attempt=0 seed=7000200 ok=True 
+DRAW VideoRepick ep=0 attempt=3 seed=6900003 ok=True 
+DRAW RouteStick ep=1 attempt=0 seed=7600100 ok=True 
+DRAW ButtonUnmaskSwap ep=1 attempt=0 seed=6700100 ok=True 
+DRAW PickHighlight ep=2 attempt=0 seed=7200200 ok=True 
+DRAW VideoUnmask ep=2 attempt=0 seed=6600200 ok=True 
+DRAW PatternLock ep=1 attempt=0 seed=7500100 ok=True 
+DRAW BinFill ep=3 attempt=0 seed=6400300 ok=True 
+DRAW InsertPeg ep=2 attempt=0 seed=7300200 ok=True 
+DRAW VideoPlaceOrder ep=1 attempt=3 seed=7100103 ok=False SceneGenerationError
+DRAW VideoPlaceButton ep=3 attempt=0 seed=7000300 ok=False SceneGenerationError
+DRAW SwingXtimes ep=3 attempt=0 seed=6300300 ok=True 
+DRAW ButtonUnmask ep=3 attempt=0 seed=6800300 ok=True 
+DRAW PickXtimes ep=3 attempt=0 seed=6100300 ok=True 
+DRAW StopCube ep=3 attempt=0 seed=6200300 ok=True 
+DRAW MoveCube ep=2 attempt=0 seed=7400200 ok=True 
+DRAW ButtonUnmaskSwap ep=2 attempt=0 seed=6700200 ok=False SceneGenerationError
+DRAW VideoRepick ep=1 attempt=0 seed=6900100 ok=True 
+DRAW RouteStick ep=2 attempt=0 seed=7600200 ok=True 
+DRAW PickHighlight ep=3 attempt=0 seed=7200300 ok=True 
+DRAW VideoUnmask ep=3 attempt=0 seed=6600300 ok=True 
+DRAW VideoPlaceButton ep=3 attempt=1 seed=7000301 ok=False SceneGenerationError
+DRAW BinFill ep=4 attempt=0 seed=6400400 ok=True 
+DRAW InsertPeg ep=3 attempt=0 seed=7300300 ok=True 
+DRAW VideoPlaceOrder ep=1 attempt=4 seed=7100104 ok=True 
+DRAW PatternLock ep=2 attempt=0 seed=7500200 ok=True 
+DRAW StopCube ep=4 attempt=0 seed=6200400 ok=True 
+DRAW PickXtimes ep=4 attempt=0 seed=6100400 ok=True 
+DRAW ButtonUnmask ep=4 attempt=0 seed=6800400 ok=True 
+DRAW MoveCube ep=3 attempt=0 seed=7400300 ok=True 
+DRAW SwingXtimes ep=4 attempt=0 seed=6300400 ok=True 
+DRAW VideoRepick ep=2 attempt=0 seed=6900200 ok=True 
+DRAW PickHighlight ep=4 attempt=0 seed=7200400 ok=False SceneGenerationError
+DRAW VideoUnmaskSwap ep=0 attempt=0 seed=6500000 ok=True 
+DRAW RouteStick ep=3 attempt=0 seed=7600300 ok=True 
+DRAW VideoUnmask ep=4 attempt=0 seed=6600400 ok=True 
+DRAW BinFill ep=5 attempt=0 seed=6400500 ok=True 
+DRAW InsertPeg ep=4 attempt=0 seed=7300400 ok=True 
+DRAW VideoPlaceButton ep=3 attempt=2 seed=7000302 ok=True 
+DRAW VideoPlaceOrder ep=2 attempt=0 seed=7100200 ok=True 
+DRAW PickXtimes ep=5 attempt=0 seed=6100500 ok=True 
+DRAW StopCube ep=5 attempt=0 seed=6200500 ok=True 
+DRAW ButtonUnmask ep=5 attempt=0 seed=6800500 ok=True 
+DRAW MoveCube ep=4 attempt=0 seed=7400400 ok=True 
+DRAW SwingXtimes ep=5 attempt=0 seed=6300500 ok=True 
+DRAW VideoRepick ep=3 attempt=0 seed=6900300 ok=True 
+DRAW PickHighlight ep=4 attempt=1 seed=7200401 ok=True 
+DRAW PatternLock ep=3 attempt=0 seed=7500300 ok=True 
+DRAW RouteStick ep=4 attempt=0 seed=7600400 ok=True 
+DRAW VideoPlaceOrder ep=3 attempt=0 seed=7100300 ok=False SceneGenerationError
+DRAW InsertPeg ep=5 attempt=0 seed=7300500 ok=True 
+DRAW BinFill ep=6 attempt=0 seed=6400600 ok=True 
+DRAW VideoPlaceButton ep=4 attempt=0 seed=7000400 ok=True 
+DRAW PickXtimes ep=6 attempt=0 seed=6100600 ok=True 
+DRAW StopCube ep=6 attempt=0 seed=6200600 ok=True 
+DRAW ButtonUnmask ep=6 attempt=0 seed=6800600 ok=True 
+DRAW VideoRepick ep=4 attempt=0 seed=6900400 ok=True 
+DRAW PickHighlight ep=5 attempt=0 seed=7200500 ok=True 
+DRAW SwingXtimes ep=6 attempt=0 seed=6300600 ok=True 
+DRAW MoveCube ep=5 attempt=0 seed=7400500 ok=True 
+DRAW RouteStick ep=5 attempt=0 seed=7600500 ok=True 
+DRAW BinFill ep=7 attempt=0 seed=6400700 ok=True 
+DRAW InsertPeg ep=6 attempt=0 seed=7300600 ok=True 
+DRAW VideoUnmaskSwap ep=1 attempt=0 seed=6500100 ok=True 
+DRAW VideoPlaceOrder ep=3 attempt=1 seed=7100301 ok=True 
+DRAW VideoPlaceButton ep=5 attempt=0 seed=7000500 ok=True 
+DRAW StopCube ep=7 attempt=0 seed=6200700 ok=True 
+DRAW PickXtimes ep=7 attempt=0 seed=6100700 ok=True 
+DRAW VideoRepick ep=5 attempt=0 seed=6900500 ok=False SceneGenerationError
+DRAW ButtonUnmask ep=7 attempt=0 seed=6800700 ok=True 
+DRAW PickHighlight ep=6 attempt=0 seed=7200600 ok=True 
+DRAW MoveCube ep=6 attempt=0 seed=7400600 ok=True 
+DRAW SwingXtimes ep=7 attempt=0 seed=6300700 ok=True 
+DRAW RouteStick ep=6 attempt=0 seed=7600600 ok=True 
+DRAW BinFill ep=8 attempt=0 seed=6400800 ok=True 
+DRAW InsertPeg ep=7 attempt=0 seed=7300700 ok=True 
+DRAW VideoPlaceOrder ep=4 attempt=0 seed=7100400 ok=True 
+DRAW VideoPlaceButton ep=6 attempt=0 seed=7000600 ok=True 
+DRAW StopCube ep=8 attempt=0 seed=6200800 ok=True 
+DRAW VideoRepick ep=5 attempt=1 seed=6900501 ok=True 
+DRAW PickXtimes ep=8 attempt=0 seed=6100800 ok=True 
+DRAW ButtonUnmask ep=8 attempt=0 seed=6800800 ok=True 
+DRAW SwingXtimes ep=8 attempt=0 seed=6300800 ok=True 
+DRAW PickHighlight ep=7 attempt=0 seed=7200700 ok=True 
+DRAW MoveCube ep=7 attempt=0 seed=7400700 ok=True 
+DRAW BinFill ep=9 attempt=0 seed=6400900 ok=True 
+DRAW_TASK BinFill ok=10 attempted=10 shortfall=0
+DRAW InsertPeg ep=8 attempt=0 seed=7300800 ok=True 
+DRAW RouteStick ep=7 attempt=0 seed=7600700 ok=True 
+DRAW ButtonUnmaskSwap ep=2 attempt=1 seed=6700201 ok=True 
+DRAW VideoPlaceButton ep=7 attempt=0 seed=7000700 ok=True 
+DRAW StopCube ep=9 attempt=0 seed=6200900 ok=True 
+DRAW_TASK StopCube ok=10 attempted=10 shortfall=0
+DRAW VideoPlaceOrder ep=5 attempt=0 seed=7100500 ok=True 
+DRAW PickXtimes ep=9 attempt=0 seed=6100900 ok=True 
+DRAW_TASK PickXtimes ok=10 attempted=10 shortfall=0
+DRAW PickHighlight ep=8 attempt=0 seed=7200800 ok=False SceneGenerationError
+DRAW VideoRepick ep=6 attempt=0 seed=6900600 ok=True 
+DRAW ButtonUnmask ep=9 attempt=0 seed=6800900 ok=True 
+DRAW_TASK ButtonUnmask ok=10 attempted=10 shortfall=0
+DRAW SwingXtimes ep=9 attempt=0 seed=6300900 ok=True 
+DRAW_TASK SwingXtimes ok=10 attempted=10 shortfall=0
+DRAW MoveCube ep=8 attempt=0 seed=7400800 ok=True 
+DRAW InsertPeg ep=9 attempt=0 seed=7300900 ok=True 
+DRAW_TASK InsertPeg ok=10 attempted=10 shortfall=0
+DRAW RouteStick ep=8 attempt=0 seed=7600800 ok=True 
+DRAW PickHighlight ep=8 attempt=1 seed=7200801 ok=False SceneGenerationError
+DRAW VideoRepick ep=7 attempt=0 seed=6900700 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=6 attempt=0 seed=7100600 ok=True 
+DRAW MoveCube ep=9 attempt=0 seed=7400900 ok=True 
+DRAW_TASK MoveCube ok=10 attempted=10 shortfall=0
+DRAW PickHighlight ep=8 attempt=2 seed=7200802 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=7 attempt=0 seed=7100700 ok=False SceneGenerationError
+DRAW VideoRepick ep=7 attempt=1 seed=6900701 ok=False SceneGenerationError
+DRAW RouteStick ep=9 attempt=0 seed=7600900 ok=True 
+DRAW_TASK RouteStick ok=10 attempted=10 shortfall=0
+DRAW VideoPlaceOrder ep=7 attempt=1 seed=7100701 ok=False SceneGenerationError
+DRAW VideoRepick ep=7 attempt=2 seed=6900702 ok=False SceneGenerationError
+DRAW PickHighlight ep=8 attempt=3 seed=7200803 ok=True 
+DRAW VideoPlaceOrder ep=7 attempt=2 seed=7100702 ok=False SceneGenerationError
+DRAW VideoRepick ep=7 attempt=3 seed=6900703 ok=False SceneGenerationError
+DRAW PickHighlight ep=9 attempt=0 seed=7200900 ok=True 
+DRAW_TASK PickHighlight ok=10 attempted=14 shortfall=0
+DRAW VideoPlaceOrder ep=7 attempt=3 seed=7100703 ok=True 
+DRAW VideoRepick ep=7 attempt=4 seed=6900704 ok=True 
+DRAW VideoRepick ep=8 attempt=0 seed=6900800 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=8 attempt=0 seed=7100800 ok=True 
+DRAW VideoPlaceOrder ep=9 attempt=0 seed=7100900 ok=False SceneGenerationError
+DRAW VideoRepick ep=8 attempt=1 seed=6900801 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=9 attempt=1 seed=7100901 ok=False SceneGenerationError
+DRAW VideoRepick ep=8 attempt=2 seed=6900802 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=9 attempt=2 seed=7100902 ok=False SceneGenerationError
+DRAW ButtonUnmaskSwap ep=3 attempt=0 seed=6700300 ok=True 
+DRAW VideoRepick ep=8 attempt=3 seed=6900803 ok=True 
+DRAW VideoPlaceOrder ep=9 attempt=3 seed=7100903 ok=True 
+DRAW_TASK VideoPlaceOrder ok=10 attempted=21 shortfall=0
+DRAW ButtonUnmaskSwap ep=4 attempt=0 seed=6700400 ok=False SceneGenerationError
+DRAW VideoRepick ep=9 attempt=0 seed=6900900 ok=False SceneGenerationError
+DRAW VideoUnmaskSwap ep=2 attempt=0 seed=6500200 ok=True 
+DRAW VideoRepick ep=9 attempt=1 seed=6900901 ok=True 
+DRAW_TASK VideoRepick ok=10 attempted=22 shortfall=0
+DRAW VideoUnmask ep=5 attempt=0 seed=6600500 ok=True 
+DRAW VideoPlaceButton ep=8 attempt=0 seed=7000800 ok=True 
+DRAW PatternLock ep=4 attempt=0 seed=7500400 ok=True 
+DRAW VideoPlaceButton ep=9 attempt=0 seed=7000900 ok=True 
+DRAW_TASK VideoPlaceButton ok=10 attempted=12 shortfall=0
+DRAW VideoUnmask ep=6 attempt=0 seed=6600600 ok=True 
+DRAW PatternLock ep=5 attempt=0 seed=7500500 ok=True 
+DRAW VideoUnmask ep=7 attempt=0 seed=6600700 ok=True 
+DRAW PatternLock ep=6 attempt=0 seed=7500600 ok=True 
+DRAW VideoUnmask ep=8 attempt=0 seed=6600800 ok=True 
+DRAW PatternLock ep=7 attempt=0 seed=7500700 ok=True 
+DRAW VideoUnmask ep=9 attempt=0 seed=6600900 ok=True 
+DRAW_TASK VideoUnmask ok=10 attempted=10 shortfall=0
+DRAW PatternLock ep=8 attempt=0 seed=7500800 ok=True 
+DRAW PatternLock ep=9 attempt=0 seed=7500900 ok=True 
+DRAW_TASK PatternLock ok=10 attempted=10 shortfall=0
+DRAW ButtonUnmaskSwap ep=4 attempt=1 seed=6700401 ok=True 
+DRAW ButtonUnmaskSwap ep=5 attempt=0 seed=6700500 ok=True 
+DRAW VideoUnmaskSwap ep=3 attempt=0 seed=6500300 ok=True 
+DRAW ButtonUnmaskSwap ep=6 attempt=0 seed=6700600 ok=True 
+DRAW ButtonUnmaskSwap ep=7 attempt=0 seed=6700700 ok=False SceneGenerationError
+DRAW VideoUnmaskSwap ep=4 attempt=0 seed=6500400 ok=True 
+DRAW ButtonUnmaskSwap ep=7 attempt=1 seed=6700701 ok=True 
+DRAW VideoUnmaskSwap ep=5 attempt=0 seed=6500500 ok=True 
+DRAW VideoUnmaskSwap ep=6 attempt=0 seed=6500600 ok=False SceneGenerationError
+DRAW ButtonUnmaskSwap ep=8 attempt=0 seed=6700800 ok=True 
+DRAW VideoUnmaskSwap ep=6 attempt=1 seed=6500601 ok=True 
+DRAW VideoUnmaskSwap ep=7 attempt=0 seed=6500700 ok=True 
+DRAW ButtonUnmaskSwap ep=9 attempt=0 seed=6700900 ok=True 
+DRAW_TASK ButtonUnmaskSwap ok=10 attempted=13 shortfall=0
+DRAW VideoUnmaskSwap ep=8 attempt=0 seed=6500800 ok=True 
+DRAW VideoUnmaskSwap ep=9 attempt=0 seed=6500900 ok=True 
+DRAW_TASK VideoUnmaskSwap ok=10 attempted=11 shortfall=0
+DRAW_DONE rows=193 ok=160 out=/tmp/v6-s4-v6-01/xhard4/draft/drafts.jsonl
+PIPELINE_STEP draw done
+PIPELINE_STEP freeze start :: -m scripts.parity.v4_specs freeze --drafts /tmp/v6-s4-v6-01/xhard4/draft/drafts.jsonl --sampling-config scripts/configs/newtask-v6/sampling_config.json --select 0,3,6 --candidates-per-env 10 --out /tmp/v6-s4-v6-01/xhard4/specs.jsonl
+FREEZE_DONE rows=160 selected=48 envs=16 candidate_shortfall=0 out=/tmp/v6-s4-v6-01/xhard4/specs.jsonl
+PIPELINE_STEP freeze done
+PIPELINE_STEP run start :: -m scripts.parity.v4_rollout run --specs /tmp/v6-s4-v6-01/xhard4/specs.jsonl --label run1 --tasks all --official-root artifacts/train-parity/local-smoke-01/official-src --workers 16 --gpu 0 --output /tmp/v6-s4-v6-01/xhard4/rollout
+ROUND 0 jobs=48 ok=26 wall_s=272
+ROUND 1 jobs=8 ok=0 wall_s=26
+ROUND 2 jobs=8 ok=0 wall_s=15
+ROUND 3 jobs=8 ok=0 wall_s=20
+ROUND 4 jobs=8 ok=0 wall_s=31
+ROUND 5 jobs=8 ok=0 wall_s=16
+[2026-09-26T18:31:14.685] error: *** STEP 61890468.10 ON gl1517 CANCELLED AT 2026-09-26T18:31:14 DUE to SIGNAL Killed ***
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+srun: error: gl1517: task 0: Killed
+EXIT_CODE=137

@@ -1,0 +1,271 @@
+{
+  "count": 38,
+  "clips": [
+    {
+      "task": "PickXtimes",
+      "difficulty": "xhard1",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickXtimes_episode_3/videos/success_NO_OBJECT_PickXtimes_ep3_seed8100300_xhard1_pick_up_the_green_cube_and_place_it_on_the_target_repeating_this_action_seven_times_then_press_the_button_to_stop__ALT__pick_up_the_green_cube_and_place_it_on_t__HASH__4a1f9140e68c.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard1",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed9000000_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard1",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed9000300_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard1",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed9000601_xhard1_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard1",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/success_NO_OBJECT_VideoPlaceOrder_ep0_seed9100001_xhard1_watch_the_video_carefully_then_place_the_blue_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__f6ffa7d6494b.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard1",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/success_NO_OBJECT_VideoPlaceOrder_ep3_seed9100302_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4ff10aa5857b.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard1",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/success_NO_OBJECT_VideoPlaceOrder_ep6_seed9100600_xhard1_watch_the_video_carefully_then_place_the_green_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__305030b69467.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "xhard2",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_6/videos/success_NO_OBJECT_PickHighlight_ep6_seed11200600_xhard2_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard2",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed11000000_xhard2_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__056b0e8138b1.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard2",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed11000301_xhard2_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard2",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed11000600_xhard2_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard2",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/success_NO_OBJECT_VideoPlaceOrder_ep0_seed11100001_xhard2_watch_the_video_carefully_then_place_the_green_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__ac314f143027.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard2",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/success_NO_OBJECT_VideoPlaceOrder_ep3_seed11100304_xhard2_watch_the_video_carefully_then_place_the_red_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the___HASH__9fc52231b86c.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard2",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/success_NO_OBJECT_VideoPlaceOrder_ep6_seed11100600_xhard2_watch_the_video_carefully_then_place_the_red_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the___HASH__9fc52231b86c.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoUnmask",
+      "difficulty": "xhard2",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmask_episode_0/videos/success_NO_OBJECT_VideoUnmask_ep0_seed10600000_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard2",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/success_NO_OBJECT_VideoUnmaskSwap_ep0_seed10500000_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard2",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/success_NO_OBJECT_VideoUnmaskSwap_ep6_seed10500600_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "xhard3",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_3/videos/success_NO_OBJECT_PickHighlight_ep3_seed13200300_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard3",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed13000001_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard3",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed13000300_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard3",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed13000600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard3",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/success_NO_OBJECT_VideoPlaceOrder_ep0_seed13100002_xhard3_watch_the_video_carefully_then_place_the_green_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__f2a1912f9e06.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard3",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/success_NO_OBJECT_VideoPlaceOrder_ep3_seed13100301_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__410e09c388eb.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard3",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/success_NO_OBJECT_VideoPlaceOrder_ep6_seed13100600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__f6ffa7d6494b.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "difficulty": "xhard3",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/success_NO_OBJECT_VideoUnmaskSwap_ep3_seed12500300_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "ButtonUnmask",
+      "difficulty": "xhard4",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/videos/success_NO_OBJECT_ButtonUnmask_ep6_seed6800600_xhard4_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "PickHighlight",
+      "difficulty": "xhard4",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_0/videos/success_NO_OBJECT_PickHighlight_ep0_seed7200000_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard4",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed7000000_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard4",
+      "episode": 0,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/success_NO_OBJECT_VideoPlaceOrder_ep0_seed7100000_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_fourth_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__5d2356e3d4bd.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard4",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed7000302_xhard4_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard4",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/success_NO_OBJECT_VideoPlaceOrder_ep3_seed7100301_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__f2a1912f9e06.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "xhard4",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_6/videos/success_NO_OBJECT_SwingXtimes_ep6_seed6300600_xhard4_pick_up_the_green_cube_move_it_to_the_top_of_the_right-side_target_then_move_it_to_the_top_of_the_left-side_target_repeating_this_back-and-forth_motion_eleven_t__HASH__cca99c95671b.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "xhard4",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed7000600_xhard4_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "xhard4",
+      "episode": 6,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/success_NO_OBJECT_VideoPlaceOrder_ep6_seed7100600_xhard4_watch_the_video_carefully_then_place_the_red_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4ff10aa5857b.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "SwingXtimes",
+      "difficulty": "hard",
+      "episode": 7,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_7/videos/success_NO_OBJECT_SwingXtimes_ep7_seed3700_hard_pick_up_the_blue_cube_move_it_to_the_top_of_the_right-side_target_then_move_it_to_the_top_of_the_left-side_target_repeating_this_back-and-forth_motion_three_tim__HASH__8dab0d9ad43a.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "difficulty": "hard",
+      "episode": 7,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_7/videos/success_NO_OBJECT_VideoPlaceButton_ep7_seed10701_hard_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "hard",
+      "episode": 3,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_3/videos/success_NO_OBJECT_VideoPlaceOrder_ep3_seed11305_FailRecoverXY_hard_watch_the_video_carefully_then_place_the_green_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__305030b69467.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "difficulty": "hard",
+      "episode": 11,
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_11/videos/success_NO_OBJECT_VideoPlaceOrder_ep11_seed12100_hard_watch_the_video_carefully_then_place_the_green_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__305030b69467.mp4",
+      "reason": "NO_OBJECT状态尾片，不作为轨迹示例"
+    }
+  ]
+}

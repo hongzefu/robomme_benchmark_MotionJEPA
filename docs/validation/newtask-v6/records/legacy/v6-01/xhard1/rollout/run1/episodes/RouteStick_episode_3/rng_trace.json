@@ -1,0 +1,130 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.rotation_deg",
+      "drawn": 15.500378608703613,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.obstacle_rgb.0",
+      "drawn": [
+        0.3554021120071411,
+        0.4766903519630432,
+        0.5498717427253723
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.obstacle_rgb.1",
+      "drawn": [
+        0.9688972234725952,
+        0.9079344272613525,
+        0.4804340600967407
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.obstacle_rgb.2",
+      "drawn": [
+        0.30504971742630005,
+        0.16479164361953735,
+        0.7909433245658875
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.obstacle_rgb.3",
+      "drawn": [
+        0.45732659101486206,
+        0.23110032081604004,
+        0.44165676832199097
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "objects.L",
+      "drawn": 9,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "actions.nodes",
+      "drawn": [
+        0,
+        2,
+        0,
+        2,
+        4,
+        6,
+        4,
+        6,
+        4,
+        6
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "actions.directions.0",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "actions.directions.1",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "actions.directions.2",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "actions.directions.3",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "actions.directions.4",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "actions.directions.5",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "actions.directions.6",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "actions.directions.7",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "actions.directions.8",
+      "drawn": "clockwise",
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {}
+}

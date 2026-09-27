@@ -1,0 +1,13 @@
+{
+  "specs": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/specs.jsonl",
+  "identity_sha256": "bd27d39b57027bcd4dc495a40721a671db8d18cfed2b37f348db6682771f4265",
+  "label": "run1",
+  "per_env": {
+    "VideoPlaceButton": {
+      "attempted": 1,
+      "ok": 0,
+      "backfilled": 0,
+      "selected_shortfall": 3
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "InsertPeg-xhard4-7300000",
+  "task": "InsertPeg",
+  "difficulty": "xhard4",
+  "seed": 7300000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/InsertPeg.json",
+  "command": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+    "-m",
+    "scripts.parity.v4_demo_probe",
+    "--task",
+    "InsertPeg",
+    "--difficulty",
+    "xhard4",
+    "--seeds",
+    "7300000",
+    "--episode",
+    "9",
+    "--sampling-config",
+    "artifacts/newtask-v6/s2-prep/sampling/InsertPeg.json",
+    "--gpu",
+    "1",
+    "--out",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/InsertPeg-xhard4-7300000"
+  ],
+  "started_at": 1790459318.0935674,
+  "gpu": "1"
+}

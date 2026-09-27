@@ -1,0 +1,42 @@
+=== ep0 seed6000: 239 steps, 3 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the blue cube' grounded='pick up the container at <129, 89> that hides the blue cube' has_coord=True
+  t=227 simple='All tasks completed' grounded='pick up the container at <129, 89> that hides the blue cube' has_coord=True
+=== ep1 seed6100: 225 steps, 3 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the green cube' grounded='pick up the container at <92, 87> that hides the green cube' has_coord=True
+  t=218 simple='All tasks completed' grounded='pick up the container at <92, 87> that hides the green cube' has_coord=True
+=== ep4 seed6400: 263 steps, 3 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the blue cube' grounded='pick up the container at <84, 156> that hides the blue cube' has_coord=True
+  t=252 simple='All tasks completed' grounded='pick up the container at <84, 156> that hides the blue cube' has_coord=True
+=== ep2 seed6200: 228 steps, 3 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the red cube' grounded='pick up the container at <94, 162> that hides the red cube' has_coord=True
+  t=221 simple='All tasks completed' grounded='pick up the container at <94, 162> that hides the red cube' has_coord=True
+=== ep6 seed6600: 173 steps, 3 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the green cube' grounded='pick up the container at <143, 165> that hides the green cube' has_coord=True
+  t=166 simple='All tasks completed' grounded='pick up the container at <143, 165> that hides the green cube' has_coord=True
+=== ep10 seed7001: 168 steps, 3 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the red cube' grounded='pick up the container at <94, 152> that hides the red cube' has_coord=True
+  t=161 simple='All tasks completed' grounded='pick up the container at <94, 152> that hides the red cube' has_coord=True
+=== ep3 seed6300: 399 steps, 5 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the green cube' grounded='pick up the container at <119, 128> that hides the green cube' has_coord=True
+  t=245 simple='put down the container' grounded='put down the container' has_coord=False
+  t=292 simple='pick up the container that hides the blue cube' grounded='pick up the container at <92, 164> that hides the blue cube' has_coord=True
+  t=389 simple='All tasks completed' grounded='pick up the container at <92, 164> that hides the blue cube' has_coord=True
+=== ep7 seed6700: 338 steps, 5 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the blue cube' grounded='pick up the container at <81, 95> that hides the blue cube' has_coord=True
+  t=178 simple='put down the container' grounded='put down the container' has_coord=False
+  t=230 simple='pick up the container that hides the red cube' grounded='pick up the container at <66, 143> that hides the red cube' has_coord=True
+  t=328 simple='All tasks completed' grounded='pick up the container at <66, 143> that hides the red cube' has_coord=True
+=== ep11 seed7100: 313 steps, 5 boundaries ===
+  t=0 simple='static' grounded='static' has_coord=False
+  t=66 simple='pick up the container that hides the green cube' grounded='pick up the container at <127, 85> that hides the green cube' has_coord=True
+  t=163 simple='put down the container' grounded='put down the container' has_coord=False
+  t=204 simple='pick up the container that hides the blue cube' grounded='pick up the container at <79, 160> that hides the blue cube' has_coord=True
+  t=304 simple='All tasks completed' grounded='pick up the container at <79, 160> that hides the blue cube' has_coord=True

@@ -1,0 +1,2370 @@
+{
+ "audit_base": "82e3d922b78d48ec1e825b168cccc0e1b8c690c1",
+ "episodes": [
+  {
+   "tier": "xhard1",
+   "episode": 0,
+   "seed": 9600000,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed9600000.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/RouteStick_episode_0/videos/RouteStick_ep0_seed9600000_xhard1_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 10,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    2,
+    7,
+    8,
+    9
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1000,
+   "demo_frames": 500,
+   "exec_frames": 500,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -2.09,
+   "theta_spec_deg": -2.2908926010131836,
+   "demo_nodes": [
+    6,
+    4,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "exec_nodes": [
+    6,
+    4,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "spec_nodes": [
+    6,
+    4,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "spec_directions": [
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise"
+   ],
+   "labels_seq": [
+    "B",
+    "B",
+    "A",
+    "A",
+    "A",
+    "B",
+    "D",
+    "C",
+    "B",
+    "A"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 993,
+   "exec_start_offset_from_demo_start_m": 0.0001673762429279453,
+   "tcp_z_range": [
+    0.06989068537950516,
+    0.07020965218544006
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     494,
+     499
+    ]
+   ]
+  },
+  {
+   "tier": "xhard1",
+   "episode": 3,
+   "seed": 9600300,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/RouteStick_episode_3/hdf5_files/RouteStick_ep3_seed9600300.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/RouteStick_episode_3/videos/RouteStick_ep3_seed9600300_xhard1_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 9,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    1,
+    5,
+    6,
+    7,
+    8
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 900,
+   "demo_frames": 450,
+   "exec_frames": 450,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 15.52,
+   "theta_spec_deg": 15.500378608703613,
+   "demo_nodes": [
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "exec_nodes": [
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "spec_nodes": [
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "spec_directions": [
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise"
+   ],
+   "labels_seq": [
+    "C",
+    "D",
+    "C",
+    "A",
+    "A",
+    "D",
+    "A",
+    "D",
+    "A"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.327,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 893,
+   "exec_start_offset_from_demo_start_m": 0.000334253283626259,
+   "tcp_z_range": [
+    0.06981076300144196,
+    0.07022230327129364
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     444,
+     449
+    ]
+   ]
+  },
+  {
+   "tier": "xhard1",
+   "episode": 6,
+   "seed": 9600600,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/RouteStick_episode_6/hdf5_files/RouteStick_ep6_seed9600600.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/RouteStick_episode_6/videos/RouteStick_ep6_seed9600600_xhard1_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 10,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    2,
+    4,
+    8
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1000,
+   "demo_frames": 500,
+   "exec_frames": 500,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 8.13,
+   "theta_spec_deg": 8.22833776473999,
+   "demo_nodes": [
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    4,
+    2
+   ],
+   "exec_nodes": [
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    4,
+    2
+   ],
+   "spec_nodes": [
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    4,
+    2
+   ],
+   "spec_directions": [
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise"
+   ],
+   "labels_seq": [
+    "D",
+    "A",
+    "B",
+    "C",
+    "B",
+    "A",
+    "A",
+    "A",
+    "B",
+    "D"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 993,
+   "exec_start_offset_from_demo_start_m": 0.0002010932651029851,
+   "tcp_z_range": [
+    0.06992769986391068,
+    0.07021522521972656
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     494,
+     499
+    ]
+   ]
+  },
+  {
+   "tier": "xhard2",
+   "episode": 0,
+   "seed": 11600000,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed11600000.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/RouteStick_episode_0/videos/RouteStick_ep0_seed11600000_xhard2_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 13,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    1,
+    3,
+    5
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1300,
+   "demo_frames": 650,
+   "exec_frames": 650,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 15.79,
+   "theta_spec_deg": 15.813868045806885,
+   "demo_nodes": [
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    2
+   ],
+   "exec_nodes": [
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    2
+   ],
+   "spec_nodes": [
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    2
+   ],
+   "spec_directions": [
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise"
+   ],
+   "labels_seq": [
+    "A",
+    "D",
+    "A",
+    "B",
+    "C",
+    "B",
+    "A",
+    "C",
+    "A",
+    "A",
+    "B",
+    "B",
+    "B"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1293,
+   "exec_start_offset_from_demo_start_m": 0.0003417624464978645,
+   "tcp_z_range": [
+    0.06978651881217957,
+    0.07022940367460251
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     644,
+     649
+    ]
+   ]
+  },
+  {
+   "tier": "xhard2",
+   "episode": 3,
+   "seed": 11600300,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/RouteStick_episode_3/hdf5_files/RouteStick_ep3_seed11600300.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/RouteStick_episode_3/videos/RouteStick_ep3_seed11600300_xhard2_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 11,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    5,
+    7,
+    9
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1100,
+   "demo_frames": 550,
+   "exec_frames": 550,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 12.63,
+   "theta_spec_deg": 12.715330123901367,
+   "demo_nodes": [
+    8,
+    6,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2
+   ],
+   "exec_nodes": [
+    8,
+    6,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2
+   ],
+   "spec_nodes": [
+    8,
+    6,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2
+   ],
+   "spec_directions": [
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise"
+   ],
+   "labels_seq": [
+    "B",
+    "B",
+    "D",
+    "B",
+    "C",
+    "D",
+    "A",
+    "D",
+    "A",
+    "D",
+    "C"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1093,
+   "exec_start_offset_from_demo_start_m": 0.00021597402733327,
+   "tcp_z_range": [
+    0.06988416612148285,
+    0.07016384601593018
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     544,
+     549
+    ]
+   ]
+  },
+  {
+   "tier": "xhard2",
+   "episode": 6,
+   "seed": 11600600,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/RouteStick_episode_6/hdf5_files/RouteStick_ep6_seed11600600.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/RouteStick_episode_6/videos/RouteStick_ep6_seed11600600_xhard2_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 13,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    1,
+    4,
+    7
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1300,
+   "demo_frames": 650,
+   "exec_frames": 650,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -2.65,
+   "theta_spec_deg": -2.5706899166107178,
+   "demo_nodes": [
+    2,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8
+   ],
+   "exec_nodes": [
+    2,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8
+   ],
+   "spec_nodes": [
+    2,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8
+   ],
+   "spec_directions": [
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise"
+   ],
+   "labels_seq": [
+    "C",
+    "B",
+    "B",
+    "C",
+    "D",
+    "C",
+    "C",
+    "D",
+    "B",
+    "A",
+    "C",
+    "C",
+    "C"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1293,
+   "exec_start_offset_from_demo_start_m": 8.487298432850551e-05,
+   "tcp_z_range": [
+    0.06949498504400253,
+    0.0702221617102623
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     644,
+     649
+    ]
+   ]
+  },
+  {
+   "tier": "xhard3",
+   "episode": 0,
+   "seed": 13600000,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed13600000.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_0/videos/RouteStick_ep0_seed13600000_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 16,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    1,
+    3,
+    5,
+    8,
+    12,
+    13,
+    14,
+    15
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1600,
+   "demo_frames": 800,
+   "exec_frames": 800,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -16.96,
+   "theta_spec_deg": -17.052444219589233,
+   "demo_nodes": [
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    6,
+    8,
+    6,
+    4,
+    6,
+    4,
+    6,
+    4
+   ],
+   "exec_nodes": [
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    6,
+    8,
+    6,
+    4,
+    6,
+    4,
+    6,
+    4
+   ],
+   "spec_nodes": [
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    6,
+    8,
+    6,
+    4,
+    6,
+    4,
+    6,
+    4
+   ],
+   "spec_directions": [
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise"
+   ],
+   "labels_seq": [
+    "B",
+    "C",
+    "D",
+    "C",
+    "D",
+    "A",
+    "D",
+    "D",
+    "C",
+    "A",
+    "B",
+    "B",
+    "C",
+    "D",
+    "A",
+    "B"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.327,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1593,
+   "exec_start_offset_from_demo_start_m": 0.00040691444776957714,
+   "tcp_z_range": [
+    0.06976646184921265,
+    0.0702202096581459
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     794,
+     799
+    ]
+   ]
+  },
+  {
+   "tier": "xhard3",
+   "episode": 3,
+   "seed": 13600300,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_3/hdf5_files/RouteStick_ep3_seed13600300.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_3/videos/RouteStick_ep3_seed13600300_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 14,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    1,
+    3,
+    4,
+    5,
+    13
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1400,
+   "demo_frames": 700,
+   "exec_frames": 700,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 22.38,
+   "theta_spec_deg": 22.328449487686157,
+   "demo_nodes": [
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    8
+   ],
+   "exec_nodes": [
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    8
+   ],
+   "spec_nodes": [
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    8
+   ],
+   "spec_directions": [
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise"
+   ],
+   "labels_seq": [
+    "D",
+    "C",
+    "A",
+    "D",
+    "C",
+    "D",
+    "B",
+    "D",
+    "A",
+    "A",
+    "A",
+    "A",
+    "D",
+    "A"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1393,
+   "exec_start_offset_from_demo_start_m": 3.106327546606425e-05,
+   "tcp_z_range": [
+    0.06943932920694351,
+    0.07024721056222916
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     694,
+     699
+    ]
+   ]
+  },
+  {
+   "tier": "xhard3",
+   "episode": 6,
+   "seed": 13600600,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_6/hdf5_files/RouteStick_ep6_seed13600600.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/RouteStick_episode_6/videos/RouteStick_ep6_seed13600600_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 15,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    2,
+    5,
+    7,
+    9,
+    11,
+    13
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1500,
+   "demo_frames": 750,
+   "exec_frames": 750,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 8.51,
+   "theta_spec_deg": 8.338977098464966,
+   "demo_nodes": [
+    8,
+    6,
+    4,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6
+   ],
+   "exec_nodes": [
+    8,
+    6,
+    4,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6
+   ],
+   "spec_nodes": [
+    8,
+    6,
+    4,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    8,
+    6
+   ],
+   "spec_directions": [
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise"
+   ],
+   "labels_seq": [
+    "B",
+    "D",
+    "C",
+    "A",
+    "D",
+    "A",
+    "D",
+    "A",
+    "D",
+    "C",
+    "D",
+    "A",
+    "D",
+    "C",
+    "B"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1493,
+   "exec_start_offset_from_demo_start_m": 0.0002767950452188955,
+   "tcp_z_range": [
+    0.06990677863359451,
+    0.07021111994981766
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     744,
+     749
+    ]
+   ]
+  },
+  {
+   "tier": "xhard4",
+   "episode": 0,
+   "seed": 7600000,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed7600000.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/RouteStick_episode_0/videos/RouteStick_ep0_seed7600000_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 18,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    1,
+    3,
+    7,
+    9,
+    10,
+    11,
+    13,
+    14
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1800,
+   "demo_frames": 900,
+   "exec_frames": 900,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -16.64,
+   "theta_spec_deg": -16.786715984344482,
+   "demo_nodes": [
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    2,
+    4,
+    2,
+    0,
+    2,
+    4
+   ],
+   "exec_nodes": [
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    2,
+    4,
+    2,
+    0,
+    2,
+    4
+   ],
+   "spec_nodes": [
+    8,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    2,
+    4,
+    2,
+    0,
+    2,
+    4
+   ],
+   "spec_directions": [
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise"
+   ],
+   "labels_seq": [
+    "D",
+    "C",
+    "D",
+    "C",
+    "D",
+    "B",
+    "B",
+    "A",
+    "A",
+    "D",
+    "C",
+    "B",
+    "B",
+    "A",
+    "B",
+    "D",
+    "C",
+    "A"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.224,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1793,
+   "exec_start_offset_from_demo_start_m": 0.000402273095945022,
+   "tcp_z_range": [
+    0.06975811719894409,
+    0.07023322582244873
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     894,
+     899
+    ]
+   ]
+  },
+  {
+   "tier": "xhard4",
+   "episode": 3,
+   "seed": 7600300,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/RouteStick_episode_3/hdf5_files/RouteStick_ep3_seed7600300.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/RouteStick_episode_3/videos/RouteStick_ep3_seed7600300_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 18,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    1,
+    4,
+    12,
+    14,
+    15,
+    16,
+    17
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1800,
+   "demo_frames": 900,
+   "exec_frames": 900,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 27.11,
+   "theta_spec_deg": 27.159630060195923,
+   "demo_nodes": [
+    2,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "exec_nodes": [
+    2,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "spec_nodes": [
+    2,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    6,
+    4,
+    2,
+    4,
+    6,
+    4,
+    6,
+    4,
+    6
+   ],
+   "spec_directions": [
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise"
+   ],
+   "labels_seq": [
+    "A",
+    "D",
+    "D",
+    "A",
+    "D",
+    "A",
+    "C",
+    "A",
+    "A",
+    "D",
+    "B",
+    "B",
+    "C",
+    "C",
+    "B",
+    "C",
+    "D",
+    "C"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.265,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1793,
+   "exec_start_offset_from_demo_start_m": 0.0002494207085141399,
+   "tcp_z_range": [
+    0.06961970031261444,
+    0.07025907933712006
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     894,
+     899
+    ]
+   ]
+  },
+  {
+   "tier": "xhard4",
+   "episode": 6,
+   "seed": 7600600,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/RouteStick_episode_6/hdf5_files/RouteStick_ep6_seed7600600.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/RouteStick_episode_6/videos/RouteStick_ep6_seed7600600_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 18,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    2,
+    3,
+    7,
+    13,
+    15,
+    17
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 1800,
+   "demo_frames": 900,
+   "exec_frames": 900,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -6.16,
+   "theta_spec_deg": -6.137899160385132,
+   "demo_nodes": [
+    0,
+    2,
+    4,
+    2,
+    4,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0
+   ],
+   "exec_nodes": [
+    0,
+    2,
+    4,
+    2,
+    4,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0
+   ],
+   "spec_nodes": [
+    0,
+    2,
+    4,
+    2,
+    4,
+    6,
+    8,
+    6,
+    8,
+    6,
+    4,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0,
+    2,
+    0
+   ],
+   "spec_directions": [
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "counterclockwise",
+    "clockwise",
+    "clockwise",
+    "counterclockwise"
+   ],
+   "labels_seq": [
+    "C",
+    "C",
+    "B",
+    "A",
+    "A",
+    "C",
+    "B",
+    "A",
+    "D",
+    "D",
+    "B",
+    "D",
+    "C",
+    "D",
+    "C",
+    "B",
+    "A",
+    "D"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": true,
+   "spec_dirs_match": true,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.286,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 1793,
+   "exec_start_offset_from_demo_start_m": 0.0003036236753107256,
+   "tcp_z_range": [
+    0.06987374275922775,
+    0.07021176069974899
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     894,
+     899
+    ]
+   ]
+  },
+  {
+   "tier": "easy",
+   "episode": 0,
+   "seed": 16000,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed16000.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_0/videos/RouteStick_ep0_seed16000_easy_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 2,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [],
+   "backtrack_rule_ok": true,
+   "frames": 200,
+   "demo_frames": 100,
+   "exec_frames": 100,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -16.78,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    8,
+    6,
+    4
+   ],
+   "exec_nodes": [
+    8,
+    6,
+    4
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "B",
+    "B"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.327,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 193,
+   "exec_start_offset_from_demo_start_m": 0.00040598188725803167,
+   "tcp_z_range": [
+    0.06976788491010666,
+    0.07019990682601929
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     94,
+     99
+    ]
+   ]
+  },
+  {
+   "tier": "easy",
+   "episode": 1,
+   "seed": 16100,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_1/hdf5_files/RouteStick_ep1_seed16100.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_1/videos/RouteStick_ep1_seed16100_easy_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 2,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [],
+   "backtrack_rule_ok": true,
+   "frames": 200,
+   "demo_frames": 100,
+   "exec_frames": 100,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 4.86,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    8,
+    6,
+    4
+   ],
+   "exec_nodes": [
+    8,
+    6,
+    4
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "D",
+    "D"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 193,
+   "exec_start_offset_from_demo_start_m": 0.0003849163785760434,
+   "tcp_z_range": [
+    0.06987810134887695,
+    0.07020837813615799
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     94,
+     99
+    ]
+   ]
+  },
+  {
+   "tier": "medium",
+   "episode": 10,
+   "seed": 17000,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_10/hdf5_files/RouteStick_ep10_seed17000.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_10/videos/RouteStick_ep10_seed17000_medium_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 4,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [],
+   "backtrack_rule_ok": true,
+   "frames": 400,
+   "demo_frames": 200,
+   "exec_frames": 200,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 16.48,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    0,
+    2,
+    4,
+    6,
+    8
+   ],
+   "exec_nodes": [
+    0,
+    2,
+    4,
+    6,
+    8
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "C",
+    "A",
+    "C",
+    "C"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.265,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 393,
+   "exec_start_offset_from_demo_start_m": 0.00036193647995453926,
+   "tcp_z_range": [
+    0.06978165358304977,
+    0.07017972320318222
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     194,
+     199
+    ]
+   ]
+  },
+  {
+   "tier": "hard",
+   "episode": 11,
+   "seed": 17100,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_11/hdf5_files/RouteStick_ep11_seed17100.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_11/videos/RouteStick_ep11_seed17100_hard_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 4,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    2
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 400,
+   "demo_frames": 200,
+   "exec_frames": 200,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -23.96,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    2,
+    0,
+    2,
+    0,
+    2
+   ],
+   "exec_nodes": [
+    2,
+    0,
+    2,
+    0,
+    2
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "B",
+    "C",
+    "D",
+    "C"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.265,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 393,
+   "exec_start_offset_from_demo_start_m": 3.874238293382221e-05,
+   "tcp_z_range": [
+    0.06965078413486481,
+    0.07025868445634842
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     194,
+     199
+    ]
+   ]
+  },
+  {
+   "tier": "medium",
+   "episode": 2,
+   "seed": 16200,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_2/hdf5_files/RouteStick_ep2_seed16200.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_2/videos/RouteStick_ep2_seed16200_medium_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 5,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [],
+   "backtrack_rule_ok": true,
+   "frames": 500,
+   "demo_frames": 250,
+   "exec_frames": 250,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -7.26,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    8,
+    6,
+    4,
+    2,
+    0,
+    2
+   ],
+   "exec_nodes": [
+    8,
+    6,
+    4,
+    2,
+    0,
+    2
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "B",
+    "D",
+    "D",
+    "D",
+    "A"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.245,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 493,
+   "exec_start_offset_from_demo_start_m": 0.0002947807245122811,
+   "tcp_z_range": [
+    0.06986556202173233,
+    0.0702151507139206
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     244,
+     249
+    ]
+   ]
+  },
+  {
+   "tier": "hard",
+   "episode": 3,
+   "seed": 16300,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_3/hdf5_files/RouteStick_ep3_seed16300.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_3/videos/RouteStick_ep3_seed16300_hard_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 5,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    3
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 500,
+   "demo_frames": 250,
+   "exec_frames": 250,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 12.53,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    4,
+    6,
+    8,
+    6,
+    8,
+    6
+   ],
+   "exec_nodes": [
+    4,
+    6,
+    8,
+    6,
+    8,
+    6
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "C",
+    "A",
+    "B",
+    "A",
+    "B"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.306,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 493,
+   "exec_start_offset_from_demo_start_m": 2.5444510783203744e-05,
+   "tcp_z_range": [
+    0.0693916529417038,
+    0.07021841406822205
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     244,
+     249
+    ]
+   ]
+  },
+  {
+   "tier": "easy",
+   "episode": 4,
+   "seed": 16400,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_4/hdf5_files/RouteStick_ep4_seed16400.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_4/videos/RouteStick_ep4_seed16400_easy_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 3,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [],
+   "backtrack_rule_ok": true,
+   "frames": 300,
+   "demo_frames": 150,
+   "exec_frames": 150,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -10.25,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    6,
+    8,
+    6,
+    4
+   ],
+   "exec_nodes": [
+    6,
+    8,
+    6,
+    4
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "A",
+    "D",
+    "B"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.347,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 293,
+   "exec_start_offset_from_demo_start_m": 0.00023508381802986702,
+   "tcp_z_range": [
+    0.06991896778345108,
+    0.0701562836766243
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     144,
+     149
+    ]
+   ]
+  },
+  {
+   "tier": "medium",
+   "episode": 6,
+   "seed": 16600,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_6/hdf5_files/RouteStick_ep6_seed16600.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_6/videos/RouteStick_ep6_seed16600_medium_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 4,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [],
+   "backtrack_rule_ok": true,
+   "frames": 400,
+   "demo_frames": 200,
+   "exec_frames": 200,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": 24.54,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    4,
+    6,
+    8,
+    6,
+    4
+   ],
+   "exec_nodes": [
+    4,
+    6,
+    8,
+    6,
+    4
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "C",
+    "A",
+    "D",
+    "B"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.286,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 393,
+   "exec_start_offset_from_demo_start_m": 4.343809462408737e-05,
+   "tcp_z_range": [
+    0.06948680430650711,
+    0.07025187462568283
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     194,
+     199
+    ]
+   ]
+  },
+  {
+   "tier": "hard",
+   "episode": 7,
+   "seed": 16700,
+   "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_7/hdf5_files/RouteStick_ep7_seed16700.h5",
+   "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/RouteStick_episode_7/videos/RouteStick_ep7_seed16700_hard_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4",
+   "task_goal": [
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+    "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video"
+   ],
+   "choices": [
+    "a: move to the nearest left target by circling around the stick clockwise",
+    "b: move to the nearest right target by circling around the stick clockwise",
+    "c: move to the nearest left target by circling around the stick counterclockwise",
+    "d: move to the nearest right target by circling around the stick counterclockwise"
+   ],
+   "L": 5,
+   "L_in_range": true,
+   "nonendpoint_backtracks": [
+    1
+   ],
+   "backtrack_rule_ok": true,
+   "frames": 500,
+   "demo_frames": 250,
+   "exec_frames": 250,
+   "frames_eq_100L": true,
+   "seg_lengths": [
+    50
+   ],
+   "theta_fit_deg": -12.81,
+   "theta_spec_deg": null,
+   "demo_nodes": [
+    4,
+    6,
+    4,
+    2,
+    0,
+    2
+   ],
+   "exec_nodes": [
+    4,
+    6,
+    4,
+    2,
+    0,
+    2
+   ],
+   "spec_nodes": null,
+   "spec_directions": null,
+   "labels_seq": [
+    "A",
+    "B",
+    "D",
+    "B",
+    "A"
+   ],
+   "demo_exec_labels_paired": true,
+   "demo_exec_nodes_paired": true,
+   "spec_nodes_match": null,
+   "spec_dirs_match": null,
+   "label_side_vs_geometry_ok": true,
+   "label_dir_vs_world_traj_ok": true,
+   "label_dir_vs_screen_traj_ok": true,
+   "red_highlight_on_expected_target_all_segments": true,
+   "min_red_fraction_expected": 0.286,
+   "choice_action_vs_label_mismatches": 0,
+   "last_frame_completed": true,
+   "completed_from": 493,
+   "exec_start_offset_from_demo_start_m": 6.124899822704659e-05,
+   "tcp_z_range": [
+    0.06938987970352173,
+    0.07021716982126236
+   ],
+   "online_subgoal_NO_RECORD_frames": [
+    [
+     244,
+     249
+    ]
+   ]
+  }
+ ]
+}

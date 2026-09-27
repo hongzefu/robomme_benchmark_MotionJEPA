@@ -1,0 +1,30 @@
+{
+  "mismatches": [],
+  "value_points": 27,
+  "consumed": [
+    "actions.swap_pairs.0",
+    "actions.swap_pairs.1",
+    "actions.swap_pairs.2",
+    "actions.swap_pairs.3",
+    "actions.swap_windows.0",
+    "actions.swap_windows.1",
+    "actions.swap_windows.2",
+    "actions.swap_windows.3",
+    "layout.cubes.0.xy_yaw",
+    "layout.cubes.1.xy_yaw",
+    "layout.cubes.2.xy_yaw",
+    "layout.cubes.3.xy_yaw",
+    "layout.swap_graph",
+    "objects.color_rgb",
+    "objects.cube_count.actual",
+    "objects.cube_count.requested",
+    "objects.n_swaps",
+    "objects.num_repeats",
+    "objects.swap_initiators",
+    "objects.swap_initiators_remaining",
+    "objects.swap_plan",
+    "objects.swap_plan_seed",
+    "objects.target"
+  ],
+  "unused": []
+}

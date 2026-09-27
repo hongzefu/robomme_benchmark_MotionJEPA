@@ -1,0 +1,16 @@
+[
+ {
+  "task": "VideoPlaceButton",
+  "episode": 5,
+  "seed": 7000500,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/rollout/run1/episodes/VideoPlaceButton_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ }
+]

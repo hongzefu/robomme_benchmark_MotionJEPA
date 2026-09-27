@@ -1,0 +1,9 @@
+{
+  "approved": true,
+  "run_name": "v6-01-infra-recovery-01",
+  "manifest_sha256": "393a3d108f0b1c9544ecdfe304f844e72c539b7cbe9ccb224a3c011c80a67008",
+  "max_attempts": 76,
+  "user_instruction": "批准恢复",
+  "scope": "仅恢复已列明8格中的60条设备失败、8条中断与8条未试候选；已有成功和真正任务失败不重跑，每格3成功即停，不新增候选抽签；S4累计最多289次",
+  "resource_retention": "四个GL占位job保留，不自动scancel"
+}

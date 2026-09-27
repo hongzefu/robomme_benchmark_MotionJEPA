@@ -1,0 +1,136 @@
+{
+ "task": "ButtonUnmask",
+ "tier": "xhard2",
+ "overrides": {
+  "pick_count.xhard": 3,
+  "xhard.distractor.count": 9,
+  "xhard.distractor.cube_count_range": [
+   4,
+   5
+  ]
+ },
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "pick_count": {
+    "hard": 2,
+    "easy": 1,
+    "medium": 1,
+    "xhard": 3
+   },
+   "bin_layout_policy": {
+    "count": {
+     "hard": 15,
+     "easy": 3,
+     "medium": 5,
+     "xhard": 8
+    },
+    "region_center": [
+     0,
+     0
+    ],
+    "region_half_size": 0.2,
+    "xhard": {
+     "min_gap_factor": 0.75
+    }
+   },
+   "distractor": null,
+   "xhard": {
+    "distractor": {
+     "count": 9,
+     "ring_max_abs_xy": [
+      0.2425,
+      0.3289
+     ],
+     "cube_count_range": [
+      4,
+      5
+     ],
+     "color_pool": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "color_rule": "balanced_cycle",
+     "min_gap_factor": 0.75,
+     "max_trials": 1024
+    }
+   }
+  },
+  "native": {
+   "parameters": {
+    "color_pool": [
+     {
+      "rgba": [
+       1,
+       0,
+       0,
+       1
+      ],
+      "name": "red"
+     },
+     {
+      "rgba": [
+       0,
+       1,
+       0,
+       1
+      ],
+      "name": "green"
+     },
+     {
+      "rgba": [
+       0,
+       0,
+       1,
+       1
+      ],
+      "name": "blue"
+     }
+    ],
+    "color_order": {
+     "sampler": "torch.randperm(3)"
+    },
+    "constructor_rng": {
+     "sampler": "torch.randint",
+     "low": 1,
+     "high_exclusive": 6,
+     "note": "构造器这次抽样不决定抓取数量，但决定后续随机流位置，必须保留（红线 R8）"
+    },
+    "hidden_rule": "前 3 个容器各藏一块，其余为空",
+    "pick_rule": "按按钮后先抓 bin_0，pick>1 再抓 bin_1",
+    "recovery": "构造器的 self.generator 用于恢复；场景另有同 seed 局部 generator，两条流分开",
+    "step_bin_scan": 15
+   },
+   "positions": {
+    "button": {
+     "center_xy": [
+      -0.2,
+      0
+     ],
+     "scale": 1.5,
+     "randomize": true,
+     "randomize_range": [
+      0.1,
+      0.1
+     ]
+    },
+    "bins": {
+     "min_gap_factor": 2,
+     "max_trials": 256,
+     "yaw_expression": "u * 90 度"
+    },
+    "hidden_cube": {
+     "half_size_divisor": 1.2,
+     "yaw": 0.0,
+     "dynamic": true
+    },
+    "reveal_window": {
+     "start_step": 0,
+     "end_step": 64
+    }
+   }
+  }
+ }
+}

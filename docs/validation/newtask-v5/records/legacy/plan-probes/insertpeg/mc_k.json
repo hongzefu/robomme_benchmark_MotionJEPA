@@ -1,0 +1,112 @@
+[
+ {
+  "label": "V5_root>0.075&rectgap>=0.055_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9528,
+   0.8049,
+   0.6694,
+   0.547
+  ],
+  "p_accept_min": [
+   0.9248,
+   0.71289,
+   0.52246,
+   0.36914
+  ],
+  "attempts_mean": [
+   1.05,
+   1.24,
+   1.52,
+   1.85
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "attempts_max": [
+   3,
+   8,
+   10,
+   14
+  ],
+  "sec": 69.5,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0,
+  "target_axisdist_lt_0p02": 0.0,
+  "min_pair_gap_p05": 0.058,
+  "target_gap_median": 0.1188,
+  "target_nn_root_median": 0.1895,
+  "target_nn_root_p10": 0.1222,
+  "finger_full_random_end": 0.0,
+  "finger_full_either_end": 0.0,
+  "finger_tip_random_end": 0.0,
+  "finger_tip_either_end": 0.0,
+  "target_box_overlap": 0.0533,
+  "any_box_overlap": 0.2124,
+  "grasp_dist_from_base_p50": 0.6415,
+  "grasp_dist_gt_0p78": 0.146
+ },
+ {
+  "label": "V5_root>0.075&rectgap>=0.02&boxgap>=0.0_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9528,
+   0.8637,
+   0.7781,
+   0.6974
+  ],
+  "p_accept_min": [
+   0.92676,
+   0.80176,
+   0.69141,
+   0.58105
+  ],
+  "attempts_mean": [
+   1.05,
+   1.15,
+   1.28,
+   1.45
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   2,
+   3
+  ],
+  "attempts_max": [
+   3,
+   5,
+   7,
+   9
+  ],
+  "sec": 69.6,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0,
+  "target_axisdist_lt_0p02": 0.0,
+  "min_pair_gap_p05": 0.0261,
+  "target_gap_median": 0.1051,
+  "target_nn_root_median": 0.1746,
+  "target_nn_root_p10": 0.1039,
+  "finger_full_random_end": 0.0267,
+  "finger_full_either_end": 0.0518,
+  "finger_tip_random_end": 0.0161,
+  "finger_tip_either_end": 0.0303,
+  "target_box_overlap": 0.0544,
+  "any_box_overlap": 0.2095,
+  "grasp_dist_from_base_p50": 0.6421,
+  "grasp_dist_gt_0p78": 0.148
+ }
+]

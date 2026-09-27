@@ -1,0 +1,5 @@
+/home/hongzefu/.local/bin/uv
+SOURCE_PREFLIGHT=PASS files=466 import=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/runtime/src/robomme/__init__.py
+ROUND 0 jobs=1 ok=0 wall_s=151
+ROLLOUT_DONE label=run1 rollout_attempted=1 rollout_ok=0 backfilled=0 selected_shortfall=3
+EXIT_CODE=0

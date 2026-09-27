@@ -1,0 +1,176 @@
+[
+ {
+  "difficulty": "xhard1",
+  "episode": 0,
+  "seed": 9000000,
+  "question_side": "after",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "after": 0
+  },
+  "answer_cube_placements_on_question_side": 2,
+  "alt3": "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+  "ambiguous": true,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard1",
+  "episode": 3,
+  "seed": 9000300,
+  "question_side": "before",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "after": 0
+  },
+  "answer_cube_placements_on_question_side": 1,
+  "alt3": "watch the video carefully, then place the red cube on the target where it was previously placed before the button was pressed",
+  "ambiguous": false,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard1",
+  "episode": 6,
+  "seed": 9000601,
+  "question_side": "after",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "after": 0
+  },
+  "answer_cube_placements_on_question_side": 2,
+  "alt3": "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+  "ambiguous": true,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 0,
+  "seed": 11000000,
+  "question_side": "after",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "before": 0,
+   "after": 0
+  },
+  "answer_cube_placements_on_question_side": 2,
+  "alt3": "watch the video carefully, then place the green cube on the target where it was previously placed after the button was pressed",
+  "ambiguous": true,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 3,
+  "seed": 11000301,
+  "question_side": "after",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "before": 0,
+   "after": 0
+  },
+  "answer_cube_placements_on_question_side": 2,
+  "alt3": "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+  "ambiguous": true,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 6,
+  "seed": 11000600,
+  "question_side": "after",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "before": 0,
+   "after": 0
+  },
+  "answer_cube_placements_on_question_side": 2,
+  "alt3": "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+  "ambiguous": true,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 0,
+  "seed": 13000001,
+  "question_side": "after",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "before": 1
+  },
+  "answer_cube_placements_on_question_side": 1,
+  "alt3": "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+  "ambiguous": false,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 3,
+  "seed": 13000300,
+  "question_side": "before",
+  "answer_demo_index": 1,
+  "extra_owner_by_side": {
+   "before": 1
+  },
+  "answer_cube_placements_on_question_side": 2,
+  "alt3": "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+  "ambiguous": true,
+  "note": "before 侧属已排除的 VPB last-placed-before 绑定问题"
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 6,
+  "seed": 13000600,
+  "question_side": "before",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "before": 0
+  },
+  "answer_cube_placements_on_question_side": 2,
+  "alt3": "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+  "ambiguous": true,
+  "note": "before 侧属已排除的 VPB last-placed-before 绑定问题"
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 0,
+  "seed": 7000000,
+  "question_side": "before",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "before": 1,
+   "after": 0
+  },
+  "answer_cube_placements_on_question_side": 1,
+  "alt3": "watch the video carefully, then place the green cube on the target where it was previously placed before the button was pressed",
+  "ambiguous": false,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 3,
+  "seed": 7000302,
+  "question_side": "after",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "before": 0,
+   "after": 1
+  },
+  "answer_cube_placements_on_question_side": 1,
+  "alt3": "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+  "ambiguous": false,
+  "note": ""
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 6,
+  "seed": 7000600,
+  "question_side": "before",
+  "answer_demo_index": 0,
+  "extra_owner_by_side": {
+   "before": 1,
+   "after": 0
+  },
+  "answer_cube_placements_on_question_side": 1,
+  "alt3": "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+  "ambiguous": false,
+  "note": ""
+ }
+]

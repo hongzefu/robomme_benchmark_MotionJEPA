@@ -1,0 +1,24 @@
+docs: 留档SSH App中16个Luna同时运行的实际验收
+
+一、用户指令原话
+「实验告诉我 注意我是codex app进行ssh的机制 不是cli」
+「并且同步到https://github.com/hongzefu/AgentMetaRules-hongzefu」
+「子agent要小于等于主要请求agent的规格」「只限制模型档位」
+「我的问题是同时已开启的能不能超过」「提高到 16 个子代理」
+「你先实测16个agent能并发 而且因为现在是asttra尝试用luna并发试试看」
+「开始实现 并且验收完毕前测试16并发」「已经退出了 开始实现该计划！」
+「新建 App 验收任务，继续测到结果」
+
+二、计划与实施
+此前1e79ce3已发布Codex专属规则，远端配置16已落地，但原任务树OnceLock固定旧容量。按用户明确授权创建一个新App验收任务，保持同一SSH daemon，不重启其他任务；一次创建16个直接Luna子代理并保留running，获取同一时刻快照、读取各自运行元数据，尝试第17个，完成后逐个停止。新增docs/codex-app-ssh-multiagent.md，并在README与sources建立导航，原规则正文不再改写。
+
+三、实验结果
+正式thread/start创建任务01a0def6-52e3-7fa2-b191-b984a663bf93，App任务列表确认可见，主模型gpt-6-astra。2026-09-26T18:26:08.039Z list_agents返回root与probe01..probe16全running，主代理不计入16；18:26:12.249Z probe17返回collab spawn failed: agent thread limit reached。独立核对16个session_meta父任务身份与turn_context后，模型全部为gpt-6-luna/low。16次interrupt_agent均返回previous_status=running，末次列表中所有16个为interrupted。App wait_threads回报完成、无错误、耗时207770毫秒。
+验收四项：CONCURRENT_16=PASS running=16 root_excluded=1；MODELS_16=PASS model=gpt-6-luna effort=low checked=16；LIMIT_17=PASS rejected=1；CLEANUP=PASS interrupted=16 running_children=0。
+
+四、意外与验证
+App工具未暴露create_thread，使用同一App后端正式thread/start接口创建，再经App列表核实；没有以CLI推理或多顶层任务代替。wait_threads中间快照滞后于实际子代理活动，采用原始rollout工具返回和各子任务元数据独立复核，不根据陈旧快照下结论。修正报告初稿误写的list_threads为真实验收工具list_agents。
+复核命令：在原工作副本command -v uv后，uv run --no-sync python artifacts/codex-multiagent/20260926/verify_acceptance.py，四项PASS、退出0。文档验证ACCEPTANCE_DOCS=PASS files=3 local_links=22 evidence_checks=4，git diff --check通过。只读实验未修改项目代码或依赖。
+
+五、当前状态
+配置16和新App任务16个Luna实际并发已验收通过；旧任务树仍保留创建时容量，此限制明确留档。原始结构化证据、散列和复核命令写入报告。探针全部停止，既有其他任务未被重启。本提交只包含报告及两份导航文档，提交后推送main并核对远端SHA。

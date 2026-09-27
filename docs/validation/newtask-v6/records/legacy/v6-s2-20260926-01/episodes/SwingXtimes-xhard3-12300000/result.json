@@ -1,0 +1,34 @@
+{
+  "id": "SwingXtimes-xhard3-12300000",
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "seed": 12300000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 52.922,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "SwingXtimes",
+      "seed": 12300000,
+      "difficulty": "xhard3",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 48.5,
+      "timesteps": 916
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/SwingXtimes-xhard3-12300000/hdf5_files/SwingXtimes_ep9_seed12300000.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/SwingXtimes-xhard3-12300000/videos/SwingXtimes_ep9_seed12300000_xhard3_pick_up_the_blue_cube_move_it_to_the_top_of_the_right-side_target_then_move_it_to_the_top_of_the_left-side_target_repeating_this_back-and-forth_motion_eight_tim__HASH__a758b06fa86f.mp4"
+  ]
+}

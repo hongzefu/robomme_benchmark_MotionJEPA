@@ -1,0 +1,213 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.goal_xy",
+      "drawn": [
+        -0.1,
+        0.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.button_xy",
+      "drawn": [
+        0.1158140629529953,
+        0.09554075002670288
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_order",
+      "drawn": [
+        0,
+        2,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.red_0",
+      "drawn": [
+        -0.11428744554519654,
+        0.1657192325592041,
+        3.0628008689214132
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.green_0",
+      "drawn": [
+        -0.13039157867431642,
+        -0.1632556986808777,
+        0.6526485296137853
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.blue_0",
+      "drawn": [
+        -0.12687344312667848,
+        -0.034506232738494874,
+        0.2055096082543657
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.targets.0",
+      "drawn": [
+        0.04610015869140624,
+        -0.0739301872253418
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.targets.1",
+      "drawn": [
+        0.14779136657714845,
+        -0.1573260498046875
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.targets.2",
+      "drawn": [
+        0.1485096549987793,
+        -0.057295150756835944
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.targets.3",
+      "drawn": [
+        -0.020242252349853523,
+        -0.15373319625854492
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.visit_counts_by_object",
+      "drawn": [
+        3,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "objects.demo_ids",
+      "drawn": [
+        1,
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.swap_pair_ids",
+      "drawn": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.visit_ids_by_object.0",
+      "drawn": [
+        0,
+        2,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "objects.visit_ids_by_object.1",
+      "drawn": [
+        1,
+        0,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "objects.answer_demo_index",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.which_in_subset",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "actions.target_target_id",
+      "drawn": 2,
+      "source": "record"
+    },
+    {
+      "index": 18,
+      "path": "objects.button_after_visit_index",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "actions.button_task_index",
+      "drawn": 4,
+      "source": "record"
+    },
+    {
+      "index": 20,
+      "path": "actions.target_placement_count",
+      "drawn": 6,
+      "source": "record"
+    },
+    {
+      "index": 21,
+      "path": "actions.return_pose_by_object_id",
+      "drawn": {
+        "cube_green_0": [
+          -0.13039158284664154,
+          -0.1632556915283203,
+          0.019999999552965164,
+          0.9472270607948303,
+          0.0,
+          0.0,
+          0.3205634355545044
+        ],
+        "cube_red_0": [
+          -0.11428744345903397,
+          0.16571922600269318,
+          0.019999999552965164,
+          0.03938569873571396,
+          0.0,
+          0.0,
+          0.999224066734314
+        ]
+      },
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "f93f66b0e4f087bf5e4d32824a6e8168838a09b6f68dd081ca082cd53a1b7179"
+  }
+}

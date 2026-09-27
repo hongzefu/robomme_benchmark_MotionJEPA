@@ -1,0 +1,2 @@
+P4b ring=[0.2425,0.45] task=VideoUnmask layouts=200 N16=1.000 N20=1.000 N24=1.000 N28=1.000 N32=0.995 N36=0.650 N40=0.070 sat_min=31 sat_p5=33 sat_med=36 sat_max=43 wall=58s
+P4b ring=[0.2425,0.45] task=ButtonUnmask layouts=200 N16=1.000 N20=1.000 N24=1.000 N28=1.000 N32=0.975 N36=0.605 N40=0.080 sat_min=30 sat_p5=32 sat_med=36 sat_max=41 wall=59s

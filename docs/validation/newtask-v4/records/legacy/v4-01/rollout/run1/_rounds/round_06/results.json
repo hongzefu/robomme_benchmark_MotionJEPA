@@ -1,0 +1,34 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src",
+  "src_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask",
+  "official_module": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/src/robomme/__init__.py",
+  "removed_sys_path_entries": [],
+  "workers": 12,
+  "gpu": "0",
+  "sampling_config": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/_rounds/round_06/sampling.json",
+  "episode_specs": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/_rounds/round_06/specs.json",
+  "worker": "train_split_worker.run_one",
+  "elapsed_seconds": 212.743,
+  "results": [
+    {
+      "task": "InsertPeg",
+      "episode": 8,
+      "seed": 5300800,
+      "difficulty": "xhard",
+      "gpu": "0",
+      "recovery_mode": null,
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "31073efb40d07d367bc1751e38084503ae1ac9f328e13722fd4fbc7782975221",
+        "episode_spec_sha256": "8e5e1106b945cd5f594420200d7042eabddc2cba5894c1ff2612e9b41deeecfa",
+        "spec_mode": "replay"
+      },
+      "ok": false,
+      "error_type": "DatasetGenerationError",
+      "error": "InsertPeg/episode_8: did not succeed after the complete task_list",
+      "traceback": "Traceback (most recent call last):\n  File \"/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/parity/train_split_worker.py\", line 112, in run_one\n    official._execute_tasks(record_env, planner, torch, job)\n  File \"/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py\", line 203, in _execute_tasks\n    raise DatasetGenerationError(\ngenerate_dataset.DatasetGenerationError: InsertPeg/episode_8: did not succeed after the complete task_list\n"
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+{
+ "task": "ButtonUnmaskSwap",
+ "tier": "xhard",
+ "overrides": {},
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "swap_count_range": {
+    "hard": [
+     2,
+     3
+    ],
+    "easy": [
+     1,
+     2
+    ],
+    "medium": [
+     1,
+     2
+    ],
+    "xhard": [
+     6,
+     8
+    ]
+   },
+   "pick_count_range": {
+    "hard": [
+     2,
+     2
+    ],
+    "easy": [
+     1,
+     2
+    ],
+    "medium": [
+     1,
+     1
+    ],
+    "xhard": [
+     3,
+     3
+    ]
+   },
+   "swap_speed_multiplier": 1,
+   "distractor": null,
+   "xhard": {
+    "swap_speed_multiplier": 1.5,
+    "distractor": {
+     "count": 10,
+     "ring_max_abs_xy": [
+      0.2675,
+      0.45
+     ],
+     "cube_count_range": [
+      5,
+      5
+     ],
+     "color_pool": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "color_rule": "balanced_cycle",
+     "min_gap_factor": 0.75,
+     "max_trials": 1024
+    },
+    "distractor_swap": {
+     "enabled": true,
+     "initiator_rule": "permutation_cycle",
+     "fallback": "next_in_permutation",
+     "partner": {
+      "selection": "nearest",
+      "position_axes": [
+       0,
+       1
+      ],
+      "tie_break": "first_in_index_order",
+      "population": "distractor_bins",
+      "resolve_at": "reset_plan"
+     },
+     "lane_offset": 0.07,
+     "smooth": true,
+     "path_constraints": {
+      "camera_visible": true,
+      "min_inner_circle_clearance_m": 0.04,
+      "min_button_center_dist_m": 0.122
+     },
+     "path_samples": 401,
+     "plan_pad_m": 0.005,
+     "layout_max_attempts": 16
+    }
+   }
+  },
+  "native": {
+   "parameters": {
+    "bin_count": {
+     "hard": 4,
+     "easy": 3,
+     "medium": 4,
+     "xhard": 4
+    },
+    "color_pool": [
+     {
+      "rgba": [
+       1,
+       0,
+       0,
+       1
+      ],
+      "name": "red"
+     },
+     {
+      "rgba": [
+       0,
+       1,
+       0,
+       1
+      ],
+      "name": "green"
+     },
+     {
+      "rgba": [
+       0,
+       0,
+       1,
+       1
+      ],
+      "name": "blue"
+     }
+    ],
+    "color_order": {
+     "sampler": "torch.randperm(3)"
+    },
+    "hidden_rule": "前三容器藏三色，第四个为空",
+    "pick_rule": "右按钮→左按钮后，抓 selected_bins[0]，count=2 时再抓 [1]",
+    "partner_rule": "交换开始时按实际 XY 取最近邻，不另抽签",
+    "swap_window": {
+     "start_step": 64,
+     "duration_steps": 50
+    },
+    "swap_path": {
+     "lane_offset": 0.07,
+     "smooth": true,
+     "keep_upright": true
+    },
+    "button_order": [
+     "right",
+     "left"
+    ],
+    "recovery": "构造器的 self.generator 用于恢复；场景另建同 seed 局部流，两条流分开"
+   },
+   "positions": {
+    "buttons": [
+     {
+      "name": "button_left",
+      "center_xy": [
+       -0.2,
+       -0.1
+      ],
+      "scale": 1.5,
+      "randomize": true,
+      "randomize_range": [
+       0.05,
+       0.05
+      ]
+     },
+     {
+      "name": "button_right",
+      "center_xy": [
+       -0.2,
+       0.1
+      ],
+      "scale": 1.5,
+      "randomize": true,
+      "randomize_range": [
+       0.05,
+       0.05
+      ]
+     }
+    ],
+    "anchors": {
+     "four_point": [
+      [
+       0,
+       -0.1
+      ],
+      [
+       0,
+       0.1
+      ],
+      [
+       0.1,
+       0.1
+      ],
+      [
+       0.1,
+       -0.1
+      ]
+     ],
+     "triangle": [
+      [
+       -0.05,
+       -0.15
+      ],
+      [
+       -0.05,
+       0.15
+      ],
+      [
+       0.05,
+       0
+      ]
+     ],
+     "line": [
+      [
+       -0.05,
+       -0.15
+      ],
+      [
+       -0.05,
+       0.15
+      ],
+      [
+       -0.05,
+       0
+      ]
+     ],
+     "offset_scale": 0.1,
+     "offset_note": "四点按两组各抽一次 y 偏移；三点各自抽一次 x 偏移；未被选中的那一套分支仍然照常消费随机数（红线 R8）",
+     "choice_sampler": "torch.randint(0, 2)"
+    },
+    "bins": {
+     "region_half_size": 0.07,
+     "min_gap_factor": 1,
+     "max_trials": 256
+    },
+    "hidden_cube": {
+     "half_size_divisor": 1.2,
+     "yaw": 0.0
+    }
+   }
+  }
+ }
+}

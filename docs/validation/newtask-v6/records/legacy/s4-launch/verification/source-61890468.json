@@ -1,0 +1,1282 @@
+{
+  "xhard3/draft/drafts.jsonl": {
+    "bytes": 346588,
+    "sha256": "11bbefe89bc7318f318e2efd963010e4c51dce4b154db484659c73aee2b03e29"
+  },
+  "xhard3/report/generation_report.json": {
+    "bytes": 9340,
+    "sha256": "04d3c86b60a118c6b2d7d63fe7356b96bd28104b40325ea39c9080b3d610e0c9"
+  },
+  "xhard3/report/generation_report.md": {
+    "bytes": 3301,
+    "sha256": "a3857ffea67f9afb570eabaded5a642d155f9b387c5459e3c3df3f3ea445441f"
+  },
+  "xhard3/rollout/run1/_rounds/round_00/jobs.json": {
+    "bytes": 14093,
+    "sha256": "70552d3904414b9bae257aaf1429cef57f8d31fe467d7bd103726c0e0249246a"
+  },
+  "xhard3/rollout/run1/_rounds/round_00/results.json": {
+    "bytes": 25567,
+    "sha256": "a9cf30c019df434870a3a6ead763ab003cca2eb7a974e6513ce310a1f88e8489"
+  },
+  "xhard3/rollout/run1/_rounds/round_00/runner.log": {
+    "bytes": 24363,
+    "sha256": "e5c012772cb48a55e1eff83ba1894c4879ca0f106eab936df8de72ed8b6a8825"
+  },
+  "xhard3/rollout/run1/_rounds/round_00/sampling.json": {
+    "bytes": 40081,
+    "sha256": "6af8b4d4ab8867ce92a8101a081007f4a1cc068230b370faee8f308d626d4e58"
+  },
+  "xhard3/rollout/run1/_rounds/round_00/specs.json": {
+    "bytes": 76931,
+    "sha256": "7ee345769b5cab2ed59c004f3c2c606bf8451cddd947461bdae087ae74eb1d7b"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_0/hdf5_files/BinFill_ep0_seed12400000.h5": {
+    "bytes": 1033421616,
+    "sha256": "bb6b645fe7fb137e2fbf74a20588e85145ff563886a1f1bfc604d8635c994519"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_0/rng_trace.json": {
+    "bytes": 7719,
+    "sha256": "734d53a14c51d9678532205f8f1b58acd6c779976ebcfb41ab8bc804c3bb4e3f"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_0/spec_replay.json": {
+    "bytes": 1170,
+    "sha256": "8eefa4e339d25f9b4bae16ac2d6724a9471a077a27e4d5db3d418da272bd1ab0"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_0/videos/BinFill_ep0_seed12400000_xhard3_put_two_red_cubes_and_six_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_two_red_cubes_and_six_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4": {
+    "bytes": 34925622,
+    "sha256": "f1912466667c3a7021b4b5b89636459d44269689ce36d6496f10777f35280fa6"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_3/hdf5_files/BinFill_ep3_seed12400300.h5": {
+    "bytes": 986089240,
+    "sha256": "f03a7fa9562ca934a45db02217e7927d5738d994416f9f7de6af6949d2ff1e42"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_3/rng_trace.json": {
+    "bytes": 7685,
+    "sha256": "bb0568b548a2d9ec51aa534164e92577ebe2c0f4722164e1b0a4b161587f0476"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_3/spec_replay.json": {
+    "bytes": 1164,
+    "sha256": "c663c10060b6fc2c42727aae18789a0288803176d94185f66f080ab895e51423"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_3/videos/BinFill_ep3_seed12400300_xhard3_put_six_red_cubes_and_two_green_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_six_red_cubes_and_two_green_cubes_into_the_bin_and_press_the_button_to_stop.mp4": {
+    "bytes": 32417746,
+    "sha256": "37a4b819bf4cc9d2ee948867547603bf79c731ec20a57f82ce21e649dce54a74"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_6/hdf5_files/BinFill_ep6_seed12400600.h5": {
+    "bytes": 935391784,
+    "sha256": "bfcf9a74639d0b9c2c61f0d7122481069bd488e73a6af95dbf99105b32da0d4d"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_6/rng_trace.json": {
+    "bytes": 7703,
+    "sha256": "18138da7b82a9910a00c6fbb33b373236b55aa78aadf4c677ed756949f97c4fe"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_6/spec_replay.json": {
+    "bytes": 1171,
+    "sha256": "b02bee54c30e51957e773c7eeabeea7f46660c55167803bb805d2a5ff8d56ac6"
+  },
+  "xhard3/rollout/run1/episodes/BinFill_episode_6/videos/BinFill_ep6_seed12400600_xhard3_put_three_red_cubes_three_blue_cubes_and_two_green_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_three_red_cubes_three_blue_cubes_and_two_green_cub__HASH__2c7eb65d85be.mp4": {
+    "bytes": 29316800,
+    "sha256": "350a98ff86104e7964d2378e6bc6e9d7047ba09c8894061e0660d9cdeb30dccd"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed12700000.h5": {
+    "bytes": 454062992,
+    "sha256": "9b43c631d8806357bb402ddcfef9603f8567d14b2975e0bc3e0290ea309d641c"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/rng_trace.json": {
+    "bytes": 12303,
+    "sha256": "08485adac2d57b09cb2e5da0129d77fa8a436b0881f44510705b5c180b6db6d8"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/spec_replay.json": {
+    "bytes": 1881,
+    "sha256": "e5c9ceb009744e654f5553be2e0c036acd6669a905c480c5ae81bc529522a454"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/videos/ButtonUnmaskSwap_ep0_seed12700000_xhard3_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_anoth__HASH__eba41a10f72a.mp4": {
+    "bytes": 14973111,
+    "sha256": "17fb79bac2af91b64b4c7110a016212d73ba2726cccf5ca730ff3a9c62460a9a"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed12700300.h5": {
+    "bytes": 437394520,
+    "sha256": "d6207bcc7813753c62cd082a219571b5df1e98528af5936be048523f1da6ce80"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/rng_trace.json": {
+    "bytes": 12292,
+    "sha256": "2042c4fdb95794bb2dd9edf363412f3931ffcfca13db3b0fead98c797c7747d2"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/spec_replay.json": {
+    "bytes": 1881,
+    "sha256": "e5c9ceb009744e654f5553be2e0c036acd6669a905c480c5ae81bc529522a454"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/videos/ButtonUnmaskSwap_ep3_seed12700300_xhard3_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another__HASH__e54c20f3c3ac.mp4": {
+    "bytes": 15348019,
+    "sha256": "9e84c300e06c68e2b242faad4730e72b100e6b679ae6107f9a6096c8a89f94c2"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed12700600.h5": {
+    "bytes": 459399872,
+    "sha256": "50aae23b46ef7bbab12d6fb81f4558263201eec0235afeee99371e92a0f9cf32"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/rng_trace.json": {
+    "bytes": 12806,
+    "sha256": "4c190306feab5ec457bd77df5b644604f1eb866f9862dafbbb1ea084aadeddd7"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/spec_replay.json": {
+    "bytes": 1950,
+    "sha256": "d03a8779ebb965aa69c039b64ade2999e4e23ff3e5434f3e7102a0b1977ce895"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/videos/ButtonUnmaskSwap_ep6_seed12700600_xhard3_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another__HASH__e54c20f3c3ac.mp4": {
+    "bytes": 15466763,
+    "sha256": "acef3e6741f42bc9a34db958f6980790cddcf702c38761cc1b2647157a75bb61"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed12800000.h5": {
+    "bytes": 352058352,
+    "sha256": "e95dedf32ae4f7a48737e5f607b7ea1c29cacccd9001bc108d0bef42dff11f80"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_0/rng_trace.json": {
+    "bytes": 6790,
+    "sha256": "3eb282d393d5422b7133b849279911836184433353b821466b395a3f679d4d0e"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_0/spec_replay.json": {
+    "bytes": 1167,
+    "sha256": "40220a63004ffc858e8e6bd76aba91b810e38bb0ed6fc4fa67eba615c7029b21"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_0/videos/ButtonUnmask_ep0_seed12800000_xhard3_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4": {
+    "bytes": 13089317,
+    "sha256": "22b0368179a737f2c20dde0ff3669d22ba0e992af9420285acc9824c5eae3d69"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed12800300.h5": {
+    "bytes": 345390168,
+    "sha256": "a7f4170a254981d6ea5a82de6d9358f5b6b33f2e7ff29304a9fa879b24a2a058"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_3/rng_trace.json": {
+    "bytes": 6789,
+    "sha256": "6bda9060afc47b8b48e5429971d5b026e678e6a75425d62334cf3369ac7e1ca0"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_3/spec_replay.json": {
+    "bytes": 1167,
+    "sha256": "40220a63004ffc858e8e6bd76aba91b810e38bb0ed6fc4fa67eba615c7029b21"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_3/videos/ButtonUnmask_ep3_seed12800300_xhard3_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4": {
+    "bytes": 12808992,
+    "sha256": "6581dda4a451390068bd6a80abb446b74eee3b56699126b66daafd1e761aae49"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed12800600.h5": {
+    "bytes": 359393400,
+    "sha256": "bacd9fd73daaaf2b868a9d694060b7f9f4afc969ee21d7e480bd6d748bfb4660"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_6/rng_trace.json": {
+    "bytes": 6791,
+    "sha256": "f372d4808ff5cc367e04b1f28f581851ab3f7a1c104ad2a766dc616e14e0f26c"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_6/spec_replay.json": {
+    "bytes": 1167,
+    "sha256": "40220a63004ffc858e8e6bd76aba91b810e38bb0ed6fc4fa67eba615c7029b21"
+  },
+  "xhard3/rollout/run1/episodes/ButtonUnmask_episode_6/videos/ButtonUnmask_ep6_seed12800600_xhard3_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4": {
+    "bytes": 12865317,
+    "sha256": "9ef8782de616210c9df040d785d96b6c71284144716f5a612e6aa6a3a0f742e8"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_0/hdf5_files/PatternLock_ep0_seed13500000.h5": {
+    "bytes": 761323872,
+    "sha256": "7eb2e93710143a9074cbd57b6553959b303d89f2e7d3d01affe5e57ecfab284b"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_0/rng_trace.json": {
+    "bytes": 538,
+    "sha256": "8809775987afc77c7e4f3a7fd2417377d5b475b605234fa30325d49bc2e6d4d5"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_0/spec_replay.json": {
+    "bytes": 135,
+    "sha256": "258a4f573b1f29107cd522e3a9933a56269988453b69111aae1026716478f3b0"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_0/videos/PatternLock_ep0_seed13500000_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_retrace_the_same_pattern__ALT__watch_the_video_carefully_then_use_the_stick_attached_to_th__HASH__61214aacd7ae.mp4": {
+    "bytes": 24813410,
+    "sha256": "f0afcd4b72a5d3c1bcd0d6f52a86d0e30b65b80b36727f7a156337bbfc26974f"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_3/hdf5_files/PatternLock_ep3_seed13500300.h5": {
+    "bytes": 690665264,
+    "sha256": "1aa336b46ec3396a949050aff74b1f8e3e32aa59918ca74b1c8869454ff20ab1"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_3/rng_trace.json": {
+    "bytes": 537,
+    "sha256": "0cf8eda4adc388b77a3550bdc9fd18a2dc62b5c03b844a6345effbae3d482c67"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_3/spec_replay.json": {
+    "bytes": 135,
+    "sha256": "258a4f573b1f29107cd522e3a9933a56269988453b69111aae1026716478f3b0"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_3/videos/PatternLock_ep3_seed13500300_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_retrace_the_same_pattern__ALT__watch_the_video_carefully_then_use_the_stick_attached_to_th__HASH__61214aacd7ae.mp4": {
+    "bytes": 23477776,
+    "sha256": "7ca23a314409c023bcc5283c92be35f6b26be6f4b7b5dd12a817d52bfdfb04a9"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_6/hdf5_files/PatternLock_ep6_seed13500600.h5": {
+    "bytes": 731990688,
+    "sha256": "4ffd95b12d1bac900f3c4acd3c6ba3e262ea6e85988aa538e523ecca99fea156"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_6/rng_trace.json": {
+    "bytes": 539,
+    "sha256": "f472170ebded25f2dce9660b7c39bf97af9f20f995070ae26f4d112523dd7178"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_6/spec_replay.json": {
+    "bytes": 135,
+    "sha256": "258a4f573b1f29107cd522e3a9933a56269988453b69111aae1026716478f3b0"
+  },
+  "xhard3/rollout/run1/episodes/PatternLock_episode_6/videos/PatternLock_ep6_seed13500600_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_retrace_the_same_pattern__ALT__watch_the_video_carefully_then_use_the_stick_attached_to_th__HASH__61214aacd7ae.mp4": {
+    "bytes": 24243077,
+    "sha256": "196cbb95f3d018668b9fc56dc5b2f4964ed1c0460fe3ddf383ec81e9bbb5ca5d"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed13200000.h5": {
+    "bytes": 664736152,
+    "sha256": "7e75fd452d4b77b78e36839b3cc76f68c248e646475d85c987845d83a513ff10"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_0/rng_trace.json": {
+    "bytes": 4620,
+    "sha256": "b0b3702f9067df45aa0a3d1845b792513569acc8f7e3fffe1c010305adba89fb"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_0/spec_replay.json": {
+    "bytes": 669,
+    "sha256": "7deb59de20edf28de909aef294d32a0309737247a6c4b98a7a24d81bb458a8a3"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_0/videos/PickHighlight_ep0_seed13200000_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4": {
+    "bytes": 20826783,
+    "sha256": "eae90f1364ec26c3a0bb100eeaffe61f7d396bb5b38000f8d91682c55e6a2a71"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed13200300.h5": {
+    "bytes": 656071480,
+    "sha256": "2510f2a19e87bceaf2c651dd30a95f0b8df399be96665ae6ac8aba2f8c0f2ad1"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_3/rng_trace.json": {
+    "bytes": 4617,
+    "sha256": "80814dde199607f6e46775a5c8d27cca0e71fb7376bf991f228d4cc28ffe0b94"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_3/spec_replay.json": {
+    "bytes": 669,
+    "sha256": "7deb59de20edf28de909aef294d32a0309737247a6c4b98a7a24d81bb458a8a3"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_3/videos/PickHighlight_ep3_seed13200300_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4": {
+    "bytes": 19533340,
+    "sha256": "272f28b336dab0b8b283fff4803b64c31610d963a1a03b460211cd99c1040ec5"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_3/videos/success_NO_OBJECT_PickHighlight_ep3_seed13200300_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4": {
+    "bytes": 162371,
+    "sha256": "8eae7a5e6855bb154b5e590842fc54d3bc7a196b7ad9b4f30b3af72a4c1528c0"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed13200600.h5": {
+    "bytes": 703405688,
+    "sha256": "05b50fa016a3dd17a3e4731315b9f1d19d6dc00d0ceae4ff557b99f9a0cc60f9"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_6/rng_trace.json": {
+    "bytes": 4614,
+    "sha256": "7820e35f1570fdd1400d583363d2f09cb0862fe2ffa57a99dad05325f3891622"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_6/spec_replay.json": {
+    "bytes": 669,
+    "sha256": "7deb59de20edf28de909aef294d32a0309737247a6c4b98a7a24d81bb458a8a3"
+  },
+  "xhard3/rollout/run1/episodes/PickHighlight_episode_6/videos/PickHighlight_ep6_seed13200600_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4": {
+    "bytes": 21611383,
+    "sha256": "f854474ce12db3a99c664d7a75da7a13b1ed228d0bd11346a2a97702d67d4c75"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed12100000.h5": {
+    "bytes": 1084835552,
+    "sha256": "7e13ce4eae767934025229df69da191df997fb64418fbc90a4ce996fcbd8341e"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_0/rng_trace.json": {
+    "bytes": 3172,
+    "sha256": "471fb9f22705a40139aeeeb83a55a57b4325e0ef65f4547907d9b740c751dc55"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_0/spec_replay.json": {
+    "bytes": 582,
+    "sha256": "06ec08a110aaa12963c4a288a53e3ae719f083fb0c4075cd7b423492a751d53a"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_0/videos/PickXtimes_ep0_seed12100000_xhard3_pick_up_the_red_cube_and_place_it_on_the_target_repeating_this_action_eleven_times_then_press_the_button_to_stop__ALT__pick_up_the_red_cube_and_place_it_on_the___HASH__09cf6f8179ba.mp4": {
+    "bytes": 30263273,
+    "sha256": "d99960e6681a67dbc2ec99d50edf82c05016b0bdb93914a87ec8502b689e3f43"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed12100300.h5": {
+    "bytes": 1062164296,
+    "sha256": "8cece26507b3091e5b831fc12a743850288b518e7b4f9b0356539ab5500585e6"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_3/rng_trace.json": {
+    "bytes": 3179,
+    "sha256": "c42e74e5d77f4045faf0c9000ff3ea3f7789eab8ea140fd423fa38051d54c83a"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_3/spec_replay.json": {
+    "bytes": 582,
+    "sha256": "06ec08a110aaa12963c4a288a53e3ae719f083fb0c4075cd7b423492a751d53a"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_3/videos/PickXtimes_ep3_seed12100300_xhard3_pick_up_the_red_cube_and_place_it_on_the_target_repeating_this_action_eleven_times_then_press_the_button_to_stop__ALT__pick_up_the_red_cube_and_place_it_on_the___HASH__09cf6f8179ba.mp4": {
+    "bytes": 34856423,
+    "sha256": "dad2c661af905c8bc73e16ca51e0fb07c26962894aa0ba81431e65197f3dfa0b"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed12100600.h5": {
+    "bytes": 1108859024,
+    "sha256": "d505bca63159633691cd12a383cedc689d451abe8c9719f0495a077f9619401d"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_6/rng_trace.json": {
+    "bytes": 3181,
+    "sha256": "a7d926e3ed3bf2ebcbbeea5da859c3d34f9d680affa3f07d2cf65ae75b11a4c4"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_6/spec_replay.json": {
+    "bytes": 582,
+    "sha256": "06ec08a110aaa12963c4a288a53e3ae719f083fb0c4075cd7b423492a751d53a"
+  },
+  "xhard3/rollout/run1/episodes/PickXtimes_episode_6/videos/PickXtimes_ep6_seed12100600_xhard3_pick_up_the_green_cube_and_place_it_on_the_target_repeating_this_action_eleven_times_then_press_the_button_to_stop__ALT__pick_up_the_green_cube_and_place_it_on___HASH__dafd81b7ff94.mp4": {
+    "bytes": 33682424,
+    "sha256": "9f032572f91ad806e6e1c90251e0e87182fcf742d196691ac4736a71b196b32a"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed13600000.h5": {
+    "bytes": 1067031400,
+    "sha256": "80eb260a74461e17182e1257aae351e2e9c75d51e787d99ac14070c98da992fd"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_0/rng_trace.json": {
+    "bytes": 3448,
+    "sha256": "aa5774a5c73e1cfef935ec095811f26e00d0e2fd4b9e0a7a8a0758d3dbfce7ee"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_0/spec_replay.json": {
+    "bytes": 716,
+    "sha256": "a855ddf45bc48ff4ece1da74824a347b4fee84eef0111347519448c79b7f7bbb"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_0/videos/RouteStick_ep0_seed13600000_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4": {
+    "bytes": 36384514,
+    "sha256": "d794ac4bbfb00a793e3883715ffa17f94fcd76ba517768363c1d1f6c5cca6874"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_3/hdf5_files/RouteStick_ep3_seed13600300.h5": {
+    "bytes": 933633848,
+    "sha256": "1f49aed384b403e9423070fe653977fc470811bbfc0a655cabe413b2ab001d18"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_3/rng_trace.json": {
+    "bytes": 3174,
+    "sha256": "26a486b9590710bd8e99726564f5cce0bf8d2eb5a0d948981eab4d1c2415a6a0"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_3/spec_replay.json": {
+    "bytes": 658,
+    "sha256": "b45e6f3903a0d72aa231c8d642983ac659c3a96aee83644ca9c1711429545d1c"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_3/videos/RouteStick_ep3_seed13600300_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4": {
+    "bytes": 29885113,
+    "sha256": "62ca04473540555799bdfc55f2b6916b0c4128048d1dbfec2836b55cd8a202e6"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_6/hdf5_files/RouteStick_ep6_seed13600600.h5": {
+    "bytes": 1000346136,
+    "sha256": "9781cea3e80d8dc11e5bbeb17be0639380ff5b067fb03a5e0a6c09cc82f97aed"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_6/rng_trace.json": {
+    "bytes": 3317,
+    "sha256": "447508eb9fd5ffb18fbb7e75442c05f5f282dc45cf9526ef67a6083e19a0bd0b"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_6/spec_replay.json": {
+    "bytes": 687,
+    "sha256": "a96527f05eaa496426f03f85025234b2f33e3e0453a9b65e6d0e8d7fd9058f3e"
+  },
+  "xhard3/rollout/run1/episodes/RouteStick_episode_6/videos/RouteStick_ep6_seed13600600_xhard3_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4": {
+    "bytes": 32096049,
+    "sha256": "d0faa6fc5e5455b2d1922650037e8704d754cf59f4cc753c61d80c53dc96886b"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed12300000.h5": {
+    "bytes": 611479208,
+    "sha256": "38ffe1ea6ec7fad1bb08e9d728bf8684b9c930d2194c2cc5c8e939015bf9e5a2"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_0/rng_trace.json": {
+    "bytes": 3349,
+    "sha256": "d5f5f5e93daa211c304d58cad417bd2984f18d25078518e82e350de0f9cdfe41"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_0/spec_replay.json": {
+    "bytes": 608,
+    "sha256": "423fa57ba2a9e60567a4f85f0db587274389cb7f1d6068e5e7ed446e62ef2eed"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_0/videos/SwingXtimes_ep0_seed12300000_xhard3_pick_up_the_blue_cube_move_it_to_the_top_of_the_right-side_target_then_move_it_to_the_top_of_the_left-side_target_repeating_this_back-and-forth_motion_eight_tim__HASH__a758b06fa86f.mp4": {
+    "bytes": 21924771,
+    "sha256": "01ca55273e6005310363095a235618f2c6f4ca81abe592e593165b290a3e26a8"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed12300300.h5": {
+    "bytes": 558794608,
+    "sha256": "fa98ccb13d9e86e1734d58c6dd23948ac96cac6038372d685d982bd40dd83bc3"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_3/rng_trace.json": {
+    "bytes": 3354,
+    "sha256": "25694c8dcf6b602778482936939c259b3f2beb2d41cc9a63a911551502600c0f"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_3/spec_replay.json": {
+    "bytes": 608,
+    "sha256": "423fa57ba2a9e60567a4f85f0db587274389cb7f1d6068e5e7ed446e62ef2eed"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_3/videos/SwingXtimes_ep3_seed12300300_xhard3_pick_up_the_blue_cube_move_it_to_the_top_of_the_right-side_target_then_move_it_to_the_top_of_the_left-side_target_repeating_this_back-and-forth_motion_eight_tim__HASH__a758b06fa86f.mp4": {
+    "bytes": 21126370,
+    "sha256": "4ad09c515f2aca1a2659465b9d4642d3a814edd60ccd8237a9dcc37a1e7e516e"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed12300600.h5": {
+    "bytes": 638140600,
+    "sha256": "9eb3594e6d54529338712475a49b075b1e314f656ba707f5e95c0c47083f4f74"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_6/rng_trace.json": {
+    "bytes": 3345,
+    "sha256": "a214c9287d66606182503ab0781149487d4157041ac3cc3d3612bd0f9dd4002d"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_6/spec_replay.json": {
+    "bytes": 608,
+    "sha256": "423fa57ba2a9e60567a4f85f0db587274389cb7f1d6068e5e7ed446e62ef2eed"
+  },
+  "xhard3/rollout/run1/episodes/SwingXtimes_episode_6/videos/SwingXtimes_ep6_seed12300600_xhard3_pick_up_the_green_cube_move_it_to_the_top_of_the_right-side_target_then_move_it_to_the_top_of_the_left-side_target_repeating_this_back-and-forth_motion_eight_ti__HASH__36f03dee861f.mp4": {
+    "bytes": 22060866,
+    "sha256": "d532ba0e6faa6b3cb5adbf0b2deb8305de173649a35415014297899070927305"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed13000001.h5": {
+    "bytes": 1158730592,
+    "sha256": "3954864e022cc2c61dd573d481e18c0227bb33443cd56174a174981400cbc2fa"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/rng_trace.json": {
+    "bytes": 3506,
+    "sha256": "10a1dc825732f8a2b8230ad1beee35f4cbc802e8a0a22094a77d9a678dbffc46"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/spec_replay.json": {
+    "bytes": 636,
+    "sha256": "6911de478c8b92b871df3278687e2801d6c798c07162bb6ba52e3b842097775b"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed13000001_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4": {
+    "bytes": 42706200,
+    "sha256": "a84ce619f40c2f84930a327ef2920b2f72f1477928af8615bcbd1602c694b6a2"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed13000001_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4": {
+    "bytes": 256141,
+    "sha256": "3b22d122ed5cdd5cd7b2c22679c698aff30143f8511df9cc3abac3394e0b51de"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed13000300.h5": {
+    "bytes": 1215395056,
+    "sha256": "a44dbf70e9a39661c6a949437926af640391c312dae9a82c5a1a9758b8767b6c"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/rng_trace.json": {
+    "bytes": 3503,
+    "sha256": "0c8c6a28660ef7b10e5da19c8204fa2b27900c85b7fab96f7ef7cc1493f13300"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/spec_replay.json": {
+    "bytes": 636,
+    "sha256": "6911de478c8b92b871df3278687e2801d6c798c07162bb6ba52e3b842097775b"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed13000300_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4": {
+    "bytes": 42310293,
+    "sha256": "3874c70872d622b931f639db152d76bf570b2c79f3ac55f76c40ce9818fadfa2"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed13000300_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4": {
+    "bytes": 255318,
+    "sha256": "ae9dd49aac399bad043d14eb592fc6f004a2c7fba2c3a65a313ce7e909a874da"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed13000600.h5": {
+    "bytes": 1187395680,
+    "sha256": "ce550692391d235664c5e0f11d24422f830c8533a785e04476a96a8cfb782cdb"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/rng_trace.json": {
+    "bytes": 3503,
+    "sha256": "7498bec494815309ed55fd6f7d762903fee91373e17650ae628f0d404c3b5c7c"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/spec_replay.json": {
+    "bytes": 636,
+    "sha256": "6911de478c8b92b871df3278687e2801d6c798c07162bb6ba52e3b842097775b"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed13000600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4": {
+    "bytes": 42311030,
+    "sha256": "3c316b8ca168883d49f22e70dafa35c11998dc5f516639211e9d2bc1a30467ba"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed13000600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4": {
+    "bytes": 255095,
+    "sha256": "d6db445d30b2f56b410bbbbf4144ecdb96acf338b642d36bfb42d8355121b537"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed13100002.h5": {
+    "bytes": 1336730888,
+    "sha256": "e0f65f9c3bc9570733097a826f1af80ca6da58d42a48c69c7484ca8fe826eaff"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/rng_trace.json": {
+    "bytes": 4015,
+    "sha256": "09bb5728bc8678f80643905b45da5e871185752474d094d76894a419d22b7095"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/spec_replay.json": {
+    "bytes": 743,
+    "sha256": "326ae460a65a543cc2dc6f6f3b5d4c832daacc2d7e3d2a8d067059750790933c"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/VideoPlaceOrder_ep0_seed13100002_xhard3_watch_the_video_carefully_then_place_the_green_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__f2a1912f9e06.mp4": {
+    "bytes": 46155868,
+    "sha256": "9fee3c7c4ad55695e8b89f5240692fa10d856dcacaf3887de62d550402f6436d"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/success_NO_OBJECT_VideoPlaceOrder_ep0_seed13100002_xhard3_watch_the_video_carefully_then_place_the_green_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__f2a1912f9e06.mp4": {
+    "bytes": 362936,
+    "sha256": "d21eb166bdc54b9aeaac80e0a22e6316c57a2c527446c5c2ae7b62a1446a5482"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed13100301.h5": {
+    "bytes": 1340063032,
+    "sha256": "32aa5330971d67d5af0d45dd02814c786391f913de037b3708c038502b5ed504"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/rng_trace.json": {
+    "bytes": 4018,
+    "sha256": "4c72f6c25690c99b9190132c8d09d5b9bbbfa6efe6a69dd4f48f587d4b2e1ecf"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/spec_replay.json": {
+    "bytes": 743,
+    "sha256": "326ae460a65a543cc2dc6f6f3b5d4c832daacc2d7e3d2a8d067059750790933c"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/VideoPlaceOrder_ep3_seed13100301_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__410e09c388eb.mp4": {
+    "bytes": 42682393,
+    "sha256": "dbf6634ae304586f01fec3bb5b51b08e1ea1af2439b06d70897620329a95bf98"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/success_NO_OBJECT_VideoPlaceOrder_ep3_seed13100301_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__410e09c388eb.mp4": {
+    "bytes": 290758,
+    "sha256": "c4d8d36460d6b50c5724394ddfbdc63848562b7a9468ba75fb1950d269a73644"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed13100600.h5": {
+    "bytes": 1419405064,
+    "sha256": "934d61450e9da9b92400fe5ea7997357a983b2c224805eaf917f489a1017f2c7"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/rng_trace.json": {
+    "bytes": 4016,
+    "sha256": "12994fa8d82e52cd48f323b4a8937df3c8f06ef2ad8fbbcabc456c313b8d7df2"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/spec_replay.json": {
+    "bytes": 743,
+    "sha256": "326ae460a65a543cc2dc6f6f3b5d4c832daacc2d7e3d2a8d067059750790933c"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/VideoPlaceOrder_ep6_seed13100600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__f6ffa7d6494b.mp4": {
+    "bytes": 49459234,
+    "sha256": "3900e5addfe72e236a536bdb74ca9bb398ad2e9e6c916ff1b11299895deeee21"
+  },
+  "xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/success_NO_OBJECT_VideoPlaceOrder_ep6_seed13100600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__f6ffa7d6494b.mp4": {
+    "bytes": 250559,
+    "sha256": "5423581e51d88df9969ae20fc9bf224d17a2fcb08021f39f8d8af7c9c5880fbc"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed12900002.h5": {
+    "bytes": 814682768,
+    "sha256": "acd320ef0aeaa5310888f06e0727fd853f5f8840239852c87c5ad204f4771f40"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_0/rng_trace.json": {
+    "bytes": 6841,
+    "sha256": "a0dccbb57524e32a0e776acd4ec71014389f7a570dc612c6b4f0ef213f5931b6"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_0/spec_replay.json": {
+    "bytes": 979,
+    "sha256": "7bfe2e0fe8b8026598b6aab35ac73df5f5bb0b3a58531d32cd62fad5784201a1"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_0/videos/VideoRepick_ep0_seed12900002_xhard3_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_four_times_finally_put_it_down_and_press_the_but__HASH__ac1437c8c935.mp4": {
+    "bytes": 19933285,
+    "sha256": "1a4a8e227e0fedf1248b6e4a4e8e68711db5cb9c08b19650f4993adfd7adb706"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed12900302.h5": {
+    "bytes": 867343328,
+    "sha256": "b7a8b8dbc5205d2a4864e36319f67967532bdb767ebac8b3a04e77fc76320eb0"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_3/rng_trace.json": {
+    "bytes": 7404,
+    "sha256": "53f846cf149b2222868652e1f3ddec52afeb3ffa61ab975057524a58f9e9d114"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_3/spec_replay.json": {
+    "bytes": 1037,
+    "sha256": "e19f9b19fe00c9dcd3ebb0356fe967c2dc54db86afd3a26173c07816247bc3f3"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_3/videos/VideoRepick_ep3_seed12900302_xhard3_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_four_times_finally_put_it_down_and_press_the_but__HASH__ac1437c8c935.mp4": {
+    "bytes": 19441762,
+    "sha256": "65b8605a64f84adca8922192e73128e7ff7102961167b807c7a64c745a3526b6"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed12900600.h5": {
+    "bytes": 822682968,
+    "sha256": "0ea9d56ea3949d6afd1c6268b95053f2a3d4e30b302f7fc8a921e70ecafbffd0"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_6/rng_trace.json": {
+    "bytes": 6976,
+    "sha256": "abab347b3280851b6a7c4a08d5d9c4fb826c3ec9567fc695dda55fc9e945ca5a"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_6/spec_replay.json": {
+    "bytes": 979,
+    "sha256": "7bfe2e0fe8b8026598b6aab35ac73df5f5bb0b3a58531d32cd62fad5784201a1"
+  },
+  "xhard3/rollout/run1/episodes/VideoRepick_episode_6/videos/VideoRepick_ep6_seed12900600_xhard3_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_four_times_finally_put_it_down_and_press_the_but__HASH__ac1437c8c935.mp4": {
+    "bytes": 19562962,
+    "sha256": "b186e9f2a7c634193209c57dfa659f6e1467ffec3fff35c40e48120e9bc761bd"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed12500000.h5": {
+    "bytes": 522690840,
+    "sha256": "52efcf1a2772507877ab98b40007b80e7469d8a4528343df618cef94db1f3bb7"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_0/rng_trace.json": {
+    "bytes": 13794,
+    "sha256": "41095302e85048528d14d5fbcfcbcdeeb499f2cddb7c06ccffbe9d3cf941227d"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_0/spec_replay.json": {
+    "bytes": 2088,
+    "sha256": "5e31e99a2552990140a8a0df16aefbbc0a53b919b4c9d5ab9285e12a5914fd0f"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed12500000_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4": {
+    "bytes": 13162693,
+    "sha256": "e985a005fdca57c8abe815a56cf31a16cb8a7a77f4087ff4e013465c8759d5e5"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed12500300.h5": {
+    "bytes": 504694512,
+    "sha256": "e98f96ab8082124b17d9be0384b05390eae44c88cd06e91a04e7562107cfb254"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/rng_trace.json": {
+    "bytes": 13277,
+    "sha256": "4afeb215b0a35326625da5f181fcfea448bb0e14b735e424890ae2235049f3bd"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/spec_replay.json": {
+    "bytes": 2019,
+    "sha256": "094dc955716a69b864f01609bfa57201c9c7d6b9d909b21ed81f08b4e2782a79"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed12500300_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4": {
+    "bytes": 13200124,
+    "sha256": "e8cfe57bcbbb198fc096d8b4063ec37805c963f2b8c3415be56e71efb50d76f4"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/success_NO_OBJECT_VideoUnmaskSwap_ep3_seed12500300_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4": {
+    "bytes": 170283,
+    "sha256": "f8f78db93b4cfedc5feae745c2538d879562c63b8a4d27cc3f7f1c0c3ea1583d"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed12500600.h5": {
+    "bytes": 493359456,
+    "sha256": "32fb27e52aba4ab7036c3d4f314d6e1098b062163624c2074adff8cf5a3b13dc"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_6/rng_trace.json": {
+    "bytes": 13284,
+    "sha256": "6939da5b8c8596384e1c0eb92bd9f260c11797581238ecb6f6c804bdc7b61aa5"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_6/spec_replay.json": {
+    "bytes": 2019,
+    "sha256": "094dc955716a69b864f01609bfa57201c9c7d6b9d909b21ed81f08b4e2782a79"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed12500600_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4": {
+    "bytes": 11786563,
+    "sha256": "6fddff77a25495c962d23532880cc89d4719c92241df5805e3dc0650452ac5f7"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed12600000.h5": {
+    "bytes": 314044616,
+    "sha256": "5a4aff844b273a27a847eb3ae934f576bda80912bd33dfdaca16dbf727c0a8a3"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_0/rng_trace.json": {
+    "bytes": 6629,
+    "sha256": "c71435f43786194e55a25e8b740f2a87c4e34d498b569a3cdc23e57d27d4824d"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_0/spec_replay.json": {
+    "bytes": 1131,
+    "sha256": "f5669b4eb6db5f161c729fcd1ea0397e7b68a3326d4b5e08d61d887b3309e669"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_0/videos/VideoUnmask_ep0_seed12600000_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4": {
+    "bytes": 9277792,
+    "sha256": "6d859afd8f6cfb5cd4822cfbf77f8a4452764ab1a017e024b1801b0850ee233b"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed12600300.h5": {
+    "bytes": 299379512,
+    "sha256": "64f96988960a9b06183e812dbff9ce23f6a3cc88cc0780571950ad01aaf70be8"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_3/rng_trace.json": {
+    "bytes": 6621,
+    "sha256": "f81314898eff9926a2fdc4acf1493444cb73af9dac7c83008b07005112bf312c"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_3/spec_replay.json": {
+    "bytes": 1131,
+    "sha256": "f5669b4eb6db5f161c729fcd1ea0397e7b68a3326d4b5e08d61d887b3309e669"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_3/videos/VideoUnmask_ep3_seed12600300_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4": {
+    "bytes": 10191832,
+    "sha256": "f174287314c57e3bd8e35e093359174aed5d362772970bc3ac889799ad7a473a"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed12600600.h5": {
+    "bytes": 318714696,
+    "sha256": "0d36ad7be5792b13bb3bf6c06ba94fdcff355ba8122ba50b0a83db4bdc503662"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_6/rng_trace.json": {
+    "bytes": 6632,
+    "sha256": "dadd87d8f551d079eb7b64e37d528ae7f6dfb06d89c4682c50683cd370ea5fed"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_6/spec_replay.json": {
+    "bytes": 1131,
+    "sha256": "f5669b4eb6db5f161c729fcd1ea0397e7b68a3326d4b5e08d61d887b3309e669"
+  },
+  "xhard3/rollout/run1/episodes/VideoUnmask_episode_6/videos/VideoUnmask_ep6_seed12600600_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4": {
+    "bytes": 9981160,
+    "sha256": "2bc1231cfc155acad6c8df1ec2c2a5ed922bc5689aa6619c8cb9afab2a10ff8b"
+  },
+  "xhard3/rollout/run1/results.jsonl": {
+    "bytes": 19281,
+    "sha256": "e719baf3cf73910e4f10caa00ec1016d1c65eb0fb8727004b98c5d8d67ee889d"
+  },
+  "xhard3/rollout/run1/summary.json": {
+    "bytes": 1728,
+    "sha256": "6824e8bc599ce0939c433e7a2c7add7740e4f476fe8225b6306f33bbddb5e5f5"
+  },
+  "xhard3/specs.jsonl": {
+    "bytes": 299969,
+    "sha256": "ccdf87cf6d92cec006e9d3b3cfd1b8d16ffabbec1856046e93ef03de45e3cb47"
+  },
+  "xhard4/draft/drafts.jsonl": {
+    "bytes": 435520,
+    "sha256": "4f4c446de0fea37938f6f70aacdc866824487e1aad11d9143390665894f83266"
+  },
+  "xhard4/rollout/run1/_rounds/round_00/jobs.json": {
+    "bytes": 17180,
+    "sha256": "b60828fbaf7fe9821fc07ba78c6bdf67c6e8ceb2685106126f203f694ae7481f"
+  },
+  "xhard4/rollout/run1/_rounds/round_00/results.json": {
+    "bytes": 79524,
+    "sha256": "3363d277de292b72289d4ceaa8058aed68a933493961f091309762a062d915ec"
+  },
+  "xhard4/rollout/run1/_rounds/round_00/runner.log": {
+    "bytes": 27017,
+    "sha256": "e5e8255a86b1230a902b06c63dafd0d2ec49ad6a05e58e5caed006e6c7fe9f64"
+  },
+  "xhard4/rollout/run1/_rounds/round_00/sampling.json": {
+    "bytes": 45133,
+    "sha256": "5d5156c15060cc8b7455108f18e39c0d9d193d5e40c333dfde2425d3f0f03801"
+  },
+  "xhard4/rollout/run1/_rounds/round_00/specs.json": {
+    "bytes": 95310,
+    "sha256": "d9c6303eb96b2dc75f0d5025eab35e35b7ae991e876297b00f962afa8b4dc4b6"
+  },
+  "xhard4/rollout/run1/_rounds/round_01/jobs.json": {
+    "bytes": 2874,
+    "sha256": "291ca775f3996775d48109941f54acc475ae4a43b5686fb638871e0acf65f728"
+  },
+  "xhard4/rollout/run1/_rounds/round_01/results.json": {
+    "bytes": 24882,
+    "sha256": "a8cd5d8024513a97f55af842a3c0f8c83a70eb0166ae9c07aa46d4d9652afa12"
+  },
+  "xhard4/rollout/run1/_rounds/round_01/runner.log": {
+    "bytes": 11953,
+    "sha256": "efed0567813cc90c93ebef334b72a1b5629c690ac1d3725f0d4bcd39c6beca66"
+  },
+  "xhard4/rollout/run1/_rounds/round_01/sampling.json": {
+    "bytes": 23777,
+    "sha256": "905d7d503527aeeed5ff659fe9f3492158ef4e1b299ee71aaed977fad189d20a"
+  },
+  "xhard4/rollout/run1/_rounds/round_01/specs.json": {
+    "bytes": 15739,
+    "sha256": "b4df13f9466ee6083e559e6d3a3610eb8ad38931ed60d6cef1c2fdf3aed5031c"
+  },
+  "xhard4/rollout/run1/_rounds/round_02/jobs.json": {
+    "bytes": 2874,
+    "sha256": "5505e29ab8908d794280ea28aeeeddce0f5082eb4b3995ab839a70c4b8e8f239"
+  },
+  "xhard4/rollout/run1/_rounds/round_02/results.json": {
+    "bytes": 24882,
+    "sha256": "2bc6cfbe985ce7f755dc61b7c4cd334857b5cf5ad721967b2e6a1846fbc3d2ae"
+  },
+  "xhard4/rollout/run1/_rounds/round_02/runner.log": {
+    "bytes": 11953,
+    "sha256": "bb6f9bcc7232985c57f94d322e390a94a1a4c841c03afb891c202931bb28dcc1"
+  },
+  "xhard4/rollout/run1/_rounds/round_02/sampling.json": {
+    "bytes": 23777,
+    "sha256": "905d7d503527aeeed5ff659fe9f3492158ef4e1b299ee71aaed977fad189d20a"
+  },
+  "xhard4/rollout/run1/_rounds/round_02/specs.json": {
+    "bytes": 15484,
+    "sha256": "9606cebbf662b32cc6c22cc731f81333fde11bfd3fb25d3bba214ab481cf1132"
+  },
+  "xhard4/rollout/run1/_rounds/round_03/jobs.json": {
+    "bytes": 2874,
+    "sha256": "bda777c0d796f688f21d8e6c0392fc78f7609110c560f0717eef570c42921c7e"
+  },
+  "xhard4/rollout/run1/_rounds/round_03/results.json": {
+    "bytes": 24890,
+    "sha256": "1c61d2e74b2dfd307dd6a7fd989ab9e5083901ff97aef59b0a17f6ff6e228fe5"
+  },
+  "xhard4/rollout/run1/_rounds/round_03/runner.log": {
+    "bytes": 11953,
+    "sha256": "9f999e58d96ca80f34e9687ac82286b11a5ec183167c5e1b805bf998b1e7b7e6"
+  },
+  "xhard4/rollout/run1/_rounds/round_03/sampling.json": {
+    "bytes": 23777,
+    "sha256": "905d7d503527aeeed5ff659fe9f3492158ef4e1b299ee71aaed977fad189d20a"
+  },
+  "xhard4/rollout/run1/_rounds/round_03/specs.json": {
+    "bytes": 15551,
+    "sha256": "bf07234603a0124f24c18cab2ce62b2997b4b7b4877b25ffa6ab0afeb664fff4"
+  },
+  "xhard4/rollout/run1/_rounds/round_04/jobs.json": {
+    "bytes": 2874,
+    "sha256": "2b43f5767f7de3b2482366538522a98e441d24e7ae2d74bbb4b8a087542b3252"
+  },
+  "xhard4/rollout/run1/_rounds/round_04/results.json": {
+    "bytes": 24890,
+    "sha256": "622f54c7223e107847f0167b5d32f003a207aa2d68d8bb872242e7c5855a75e9"
+  },
+  "xhard4/rollout/run1/_rounds/round_04/runner.log": {
+    "bytes": 11953,
+    "sha256": "e765222a099740c63d6e69fdb9792394ffc8cd649c98341201d6b6f5756957dd"
+  },
+  "xhard4/rollout/run1/_rounds/round_04/sampling.json": {
+    "bytes": 23777,
+    "sha256": "905d7d503527aeeed5ff659fe9f3492158ef4e1b299ee71aaed977fad189d20a"
+  },
+  "xhard4/rollout/run1/_rounds/round_04/specs.json": {
+    "bytes": 15400,
+    "sha256": "12b4866d8c4bcccb184cd82cc42c4dd145fe5e63007808b73cf56665ac90cc2e"
+  },
+  "xhard4/rollout/run1/_rounds/round_05/jobs.json": {
+    "bytes": 2874,
+    "sha256": "e90689adecd1f8bd142dfa3c07cccf6a6f672f88ebafeb2fed8091fd845e3719"
+  },
+  "xhard4/rollout/run1/_rounds/round_05/results.json": {
+    "bytes": 24890,
+    "sha256": "f85a4dfb82ab2865dad260d4ab2de5a317dd1c63abcec2937c486f1b1cf0c793"
+  },
+  "xhard4/rollout/run1/_rounds/round_05/runner.log": {
+    "bytes": 11953,
+    "sha256": "b8175917905b2b206fb3db5f2270bea3405d7e08d88dbc07e27b33cc223b2405"
+  },
+  "xhard4/rollout/run1/_rounds/round_05/sampling.json": {
+    "bytes": 23777,
+    "sha256": "905d7d503527aeeed5ff659fe9f3492158ef4e1b299ee71aaed977fad189d20a"
+  },
+  "xhard4/rollout/run1/_rounds/round_05/specs.json": {
+    "bytes": 15468,
+    "sha256": "dcf266bf021ebdbac52bb849fa6ddd42a387daed44cc011c3b29083d28f48d53"
+  },
+  "xhard4/rollout/run1/_rounds/round_06/jobs.json": {
+    "bytes": 2874,
+    "sha256": "73c661394b8d5c7c8997df84ca3902f96391f9da8efae9713870b54bedf84b89"
+  },
+  "xhard4/rollout/run1/_rounds/round_06/sampling.json": {
+    "bytes": 23777,
+    "sha256": "905d7d503527aeeed5ff659fe9f3492158ef4e1b299ee71aaed977fad189d20a"
+  },
+  "xhard4/rollout/run1/_rounds/round_06/specs.json": {
+    "bytes": 15520,
+    "sha256": "bfc006a6c032d0fc12ce71f6761f8d82afdf65fc93c4d32776d018949adc39e8"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_0/hdf5_files/BinFill_ep0_seed6400000.h5": {
+    "bytes": 1165432368,
+    "sha256": "a865ccf4ad66bb2ee347959acaeae81a47ab393037a274958179861f19ff44a8"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_0/rng_trace.json": {
+    "bytes": 7711,
+    "sha256": "efd3a28f411201bd4870dc344adc3b0b8e76ea76f9f54dad3b7aeaa88f4b2083"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_0/spec_replay.json": {
+    "bytes": 1168,
+    "sha256": "82418721a41f22be4544effaae4a489ce0930c7b66ea10aa1b71aa6e8c2eaa8a"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_0/videos/BinFill_ep0_seed6400000_xhard4_put_two_red_cubes_and_seven_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_two_red_cubes_and_seven_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4": {
+    "bytes": 37828433,
+    "sha256": "669b6de249e36f6e959c963574e955c2d85e80fcc5027bee9fc9e03c2542399a"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_3/hdf5_files/BinFill_ep3_seed6400300.h5": {
+    "bytes": 1060766912,
+    "sha256": "a3fcf835107be0e7e4babf9cc06dff06a7f1f48b608f875fc92359bb7f255b6d"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_3/rng_trace.json": {
+    "bytes": 7722,
+    "sha256": "20744c40ae0da233d5a89d6d3814d28144fa0a0aea96fa777c2fc68f8b71ec6f"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_3/spec_replay.json": {
+    "bytes": 1175,
+    "sha256": "77bde99a036585bbada4bf22224051deb261416a09e3d0cd3bc519b791942164"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_3/videos/BinFill_ep3_seed6400300_xhard4_put_one_red_cube_two_blue_cubes_and_six_green_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_one_red_cube_two_blue_cubes_and_six_green_cubes_into_th__HASH__dbb6cf20fcff.mp4": {
+    "bytes": 34277073,
+    "sha256": "9dc149d09bee69bc6a4d56dad19544488cbdc8e0a391f3b78314baa50ce38524"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_6/hdf5_files/BinFill_ep6_seed6400600.h5": {
+    "bytes": 1132770752,
+    "sha256": "a3b4ddda09658658303f15f100179459886e43995ab93cec7bbcdb869598b2d0"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_6/rng_trace.json": {
+    "bytes": 7716,
+    "sha256": "414b253ef67c779f1d9e5452e2e856fbc28df0fe13c17103fe03dcb2d4565f76"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_6/spec_replay.json": {
+    "bytes": 1172,
+    "sha256": "3107ca4c38578f3136393dc70f676d5ab58fe2a5dbb6729189eaaa7f0822951f"
+  },
+  "xhard4/rollout/run1/episodes/BinFill_episode_6/videos/BinFill_ep6_seed6400600_xhard4_put_three_red_cubes_three_blue_cubes_and_three_green_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_three_red_cubes_three_blue_cubes_and_three_green__HASH__d170bbdb3bf7.mp4": {
+    "bytes": 36455805,
+    "sha256": "ee09ccdcb25d4b38de8018ec82f2b3ce5705a8835fd21bd255d82252785d973f"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed6700000.h5": {
+    "bytes": 478078112,
+    "sha256": "1b08515421a1c8cac6c989b91bedae632467012f1482411fab763b6382672ebf"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/rng_trace.json": {
+    "bytes": 14298,
+    "sha256": "aa52e4923117f2f34ca91bea3b2e0f25a1b5f5a3a1044605127a44e086cda14a"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/spec_replay.json": {
+    "bytes": 2087,
+    "sha256": "e38490d471d6a3e561435b908cd235b51d2aa7421fa5c54791c2865621803faa"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/videos/ButtonUnmaskSwap_ep0_seed6700000_xhard4_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_anoth__HASH__eba41a10f72a.mp4": {
+    "bytes": 15593696,
+    "sha256": "d3f1212b9f2587b833669e6f5a4acc412e731c9c192eda87db51828441b29d83"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed6700300.h5": {
+    "bytes": 474741608,
+    "sha256": "867fdad628c4b17707507a4b4be8daf38aed3cc6627f3821a06210c225e3039d"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/rng_trace.json": {
+    "bytes": 14242,
+    "sha256": "6a42388eaea6383aa33ca2300281796f5c137d47d226c8aed94f9a024b94c7bd"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/spec_replay.json": {
+    "bytes": 2087,
+    "sha256": "e38490d471d6a3e561435b908cd235b51d2aa7421fa5c54791c2865621803faa"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/videos/ButtonUnmaskSwap_ep3_seed6700300_xhard4_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_anoth__HASH__40d1fafc9f7f.mp4": {
+    "bytes": 14576906,
+    "sha256": "3bc0f63ff1dddd6fe6b3ad75f194c47f109b4fad9c3979e2401b36ba59887bfb"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed6700600.h5": {
+    "bytes": 490078544,
+    "sha256": "14ddd9088db2e0ddd62717191c6345776edbc25ca8e681e135676d805c806f76"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/rng_trace.json": {
+    "bytes": 14260,
+    "sha256": "43dfd4eb397074c45e94214c1cf32aba11450be14344d44a230522c2aae2cc10"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/spec_replay.json": {
+    "bytes": 2087,
+    "sha256": "e38490d471d6a3e561435b908cd235b51d2aa7421fa5c54791c2865621803faa"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/videos/ButtonUnmaskSwap_ep6_seed6700600_xhard4_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_anoth__HASH__eba41a10f72a.mp4": {
+    "bytes": 15989079,
+    "sha256": "4d5d6418f369d386ad4812ec17438e3ed787b23a6371ea7337f18ad1f1560d55"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed6800000.h5": {
+    "bytes": 335385456,
+    "sha256": "a6d000bff130b95dec29a19a5615ee2f437151873f6c2b5486ae41aac6f37a6d"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_0/rng_trace.json": {
+    "bytes": 7298,
+    "sha256": "3ce258e76a444c2e335f796789e3c653f961d9cade0b4f3581b597026a9bd902"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_0/spec_replay.json": {
+    "bytes": 1237,
+    "sha256": "3fc5a8951dbdf29a5f2f75d25810d93c870ba8e638de7723a4db6c31a217271c"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_0/videos/ButtonUnmask_ep0_seed6800000_xhard4_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4": {
+    "bytes": 12427413,
+    "sha256": "c03c653f2480f95dc48894a8fa54f7f4b5a01fee14a2a55c66a8d2ee850efe7b"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed6800300.h5": {
+    "bytes": 349388192,
+    "sha256": "4c755bbd9667c3df99e6fef03b57488212378fd53a5f66a169d20d7ffcca1e7a"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_3/rng_trace.json": {
+    "bytes": 7300,
+    "sha256": "02e490b2a96d2c50a14ed03a91919625aba9e169d4079af3ff547dfe5e69c3b2"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_3/spec_replay.json": {
+    "bytes": 1237,
+    "sha256": "3fc5a8951dbdf29a5f2f75d25810d93c870ba8e638de7723a4db6c31a217271c"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_3/videos/ButtonUnmask_ep3_seed6800300_xhard4_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4": {
+    "bytes": 12569569,
+    "sha256": "a73779d76ec2b2c507eaaad1c7ea99a31ca037f2c9bc96729f131696b313ee4f"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed6800600.h5": {
+    "bytes": 356719064,
+    "sha256": "464cbf83e4b68bb8923eedd96c9597e43938d51eb077126ed0388b102abe11c6"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/rng_trace.json": {
+    "bytes": 7300,
+    "sha256": "334b92dcaf97041540f1cfc88bb26e9353ac053fb6bb21e04426b4c3aeb27fb8"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/spec_replay.json": {
+    "bytes": 1237,
+    "sha256": "3fc5a8951dbdf29a5f2f75d25810d93c870ba8e638de7723a4db6c31a217271c"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/videos/ButtonUnmask_ep6_seed6800600_xhard4_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4": {
+    "bytes": 12647183,
+    "sha256": "6a10036e612f85e79978ec0125e4f09b97ebd501a6d59c642b5f2fc8c96ed5b3"
+  },
+  "xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/videos/success_NO_OBJECT_ButtonUnmask_ep6_seed6800600_xhard4_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4": {
+    "bytes": 187583,
+    "sha256": "6c149921bb466870599ba08f741adc4210a4f24b3366bca84d28bd8296096005"
+  },
+  "xhard4/rollout/run1/episodes/InsertPeg_episode_0/hdf5_files/InsertPeg_ep0_seed7300000.h5": {
+    "bytes": 800,
+    "sha256": "26c4d449632ea072317c16e9d4857e419b67e1b7751f81a89a87c8e75fe9484e"
+  },
+  "xhard4/rollout/run1/episodes/InsertPeg_episode_0/videos/FAILED_InsertPeg_ep0_seed7300000_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4": {
+    "bytes": 29696886,
+    "sha256": "7825dd71c32c1adba50c3731ef6a8f28939433e9a4d4f48c67931a8fe9bb045f"
+  },
+  "xhard4/rollout/run1/episodes/InsertPeg_episode_3/hdf5_files/InsertPeg_ep3_seed7300300.h5": {
+    "bytes": 800,
+    "sha256": "26c4d449632ea072317c16e9d4857e419b67e1b7751f81a89a87c8e75fe9484e"
+  },
+  "xhard4/rollout/run1/episodes/InsertPeg_episode_3/videos/FAILED_InsertPeg_ep3_seed7300300_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4": {
+    "bytes": 13199255,
+    "sha256": "70b0a31de30ad8a73a8cae82cfa26be316ccfc336136488b35dba8aa7eae4dd5"
+  },
+  "xhard4/rollout/run1/episodes/InsertPeg_episode_6/hdf5_files/InsertPeg_ep6_seed7300600.h5": {
+    "bytes": 292057392,
+    "sha256": "d40373c6a7cbfc7f4cdc1d46dc7bb7a91075afdbdce6cf0fd58407f9673aa4e5"
+  },
+  "xhard4/rollout/run1/episodes/InsertPeg_episode_6/rng_trace.json": {
+    "bytes": 4419,
+    "sha256": "10a4164ad71ffd3267debe40128ab006c92d6f36f28252b395f8f1a87b3017c9"
+  },
+  "xhard4/rollout/run1/episodes/InsertPeg_episode_6/spec_replay.json": {
+    "bytes": 922,
+    "sha256": "1d008603cd1a4ac7a4fdfee9b9faf195728d7a650b136cc0d0509f0a5f52b5d4"
+  },
+  "xhard4/rollout/run1/episodes/InsertPeg_episode_6/videos/InsertPeg_ep6_seed7300600_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4": {
+    "bytes": 11696228,
+    "sha256": "5f87679b1112ca362c3cc6857a08c296a96f84c32592dbe6bcdb5e3d0d3210f0"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed7400000.h5": {
+    "bytes": 190708584,
+    "sha256": "0535705cc30ea4b7a252357b1f10756f1d829a94c735bed3924b41acafe10a9c"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_0/rng_trace.json": {
+    "bytes": 3872,
+    "sha256": "131b1c8252582323bfc81ddfb1c44d91554dbb87a0bdcc130bd0275cee2e73ff"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_0/spec_replay.json": {
+    "bytes": 590,
+    "sha256": "b1d449372fdfca736ea3b2cd305da78bf8bf32fb20e6dbbf44b76af88d6a2c55"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_0/videos/MoveCube_ep0_seed7400000_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4": {
+    "bytes": 5683423,
+    "sha256": "80dd8119a9ab697a7b2e3ea36fafc1ce86f5d724cf11fe777cd43d605a1aff70"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_3/hdf5_files/MoveCube_ep3_seed7400300.h5": {
+    "bytes": 175374032,
+    "sha256": "9b8b244fdde5bdcb75542099f24f92617f5e8a5c7e3230116e74407b6727d834"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_3/rng_trace.json": {
+    "bytes": 3880,
+    "sha256": "bd8da14d6590c7633045884dee041d3dc1ec284b892a76c599be443d36f9dc00"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_3/spec_replay.json": {
+    "bytes": 590,
+    "sha256": "b1d449372fdfca736ea3b2cd305da78bf8bf32fb20e6dbbf44b76af88d6a2c55"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_3/videos/MoveCube_ep3_seed7400300_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4": {
+    "bytes": 5548375,
+    "sha256": "58fc4305f689e9e0edb603878a0200d753bab9c2e064cd80924810c2b1a5cdce"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_6/hdf5_files/MoveCube_ep6_seed7400600.h5": {
+    "bytes": 319354352,
+    "sha256": "efe11863b7c8f952d47fae12948f7a8eff246bedf7332d83652ac70cee3ee068"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_6/rng_trace.json": {
+    "bytes": 3869,
+    "sha256": "f3290cfd32e5f04cfe6b2c87e0dc03f9982e3ea993ba370434441302e08623b7"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_6/spec_replay.json": {
+    "bytes": 590,
+    "sha256": "b1d449372fdfca736ea3b2cd305da78bf8bf32fb20e6dbbf44b76af88d6a2c55"
+  },
+  "xhard4/rollout/run1/episodes/MoveCube_episode_6/videos/MoveCube_ep6_seed7400600_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4": {
+    "bytes": 9967636,
+    "sha256": "deb7f276b86b615bc2b21ecf16b016baf58be1c2423f638476769d305b669887"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_0/hdf5_files/PatternLock_ep0_seed7500000.h5": {
+    "bytes": 906648528,
+    "sha256": "05cc76782335282984c85a737360bda4b30870b84658931b68e0cf0878b1ab7b"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_0/rng_trace.json": {
+    "bytes": 583,
+    "sha256": "eeb2686ca864553f4d8e10da12aaf7e4eb78bdff2390894a9f20612c08932e0c"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_0/spec_replay.json": {
+    "bytes": 135,
+    "sha256": "258a4f573b1f29107cd522e3a9933a56269988453b69111aae1026716478f3b0"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_0/videos/PatternLock_ep0_seed7500000_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_retrace_the_same_pattern__ALT__watch_the_video_carefully_then_use_the_stick_attached_to_th__HASH__61214aacd7ae.mp4": {
+    "bytes": 29655077,
+    "sha256": "9110d1075fcc656f8f0889a8acaba9c6b8ec36c09c085ce2d73b1e4bf57c0bb0"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_3/hdf5_files/PatternLock_ep3_seed7500300.h5": {
+    "bytes": 905314624,
+    "sha256": "3d627e93c390cb4758614a69c208a975b6bc3602fe57de1c01a703516cd65367"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_3/rng_trace.json": {
+    "bytes": 586,
+    "sha256": "6f889e778b5fa870b43d310e1d51ba4cf291a880b10864ba4f6ea4b0eec43f9e"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_3/spec_replay.json": {
+    "bytes": 135,
+    "sha256": "258a4f573b1f29107cd522e3a9933a56269988453b69111aae1026716478f3b0"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_3/videos/PatternLock_ep3_seed7500300_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_retrace_the_same_pattern__ALT__watch_the_video_carefully_then_use_the_stick_attached_to_th__HASH__61214aacd7ae.mp4": {
+    "bytes": 30006083,
+    "sha256": "87f939732a1cac86bcbf6a372c48bd29f5494da816632b7ec81eef28e5a02354"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_6/hdf5_files/PatternLock_ep6_seed7500600.h5": {
+    "bytes": 1015996088,
+    "sha256": "0dedf29f7f6a5b0a3c9eb3b153982f6787a541ad21ef973bfdb63f2c1bc91a0b"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_6/rng_trace.json": {
+    "bytes": 608,
+    "sha256": "44fefce23c5a3b024673a4513f953fed06df3e32c4c74ab6c824a8401274c665"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_6/spec_replay.json": {
+    "bytes": 135,
+    "sha256": "258a4f573b1f29107cd522e3a9933a56269988453b69111aae1026716478f3b0"
+  },
+  "xhard4/rollout/run1/episodes/PatternLock_episode_6/videos/PatternLock_ep6_seed7500600_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_retrace_the_same_pattern__ALT__watch_the_video_carefully_then_use_the_stick_attached_to_th__HASH__61214aacd7ae.mp4": {
+    "bytes": 33369429,
+    "sha256": "db48fd86141e087527b816cc0724bcfbb706484e4cb3c703dd95decce7406d71"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed7200000.h5": {
+    "bytes": 838081624,
+    "sha256": "e7d68898dc002baac577d26625bb7de2e70f91d3a3dea281734360d6b435472e"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_0/rng_trace.json": {
+    "bytes": 5051,
+    "sha256": "b5b6fb37c1c58b7a4f56269654b948a068c4ed1388e25d004ff1949dd51701ea"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_0/spec_replay.json": {
+    "bytes": 719,
+    "sha256": "c709d559e8784371c1d67d6fef55fff6004b2b30600682b59655d3a5afa6b9a9"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_0/videos/PickHighlight_ep0_seed7200000_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4": {
+    "bytes": 25827941,
+    "sha256": "3b21598c22f5488b216aff4baff8bbef9152df12d1ec6bef4040ee8087e12155"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_0/videos/success_NO_OBJECT_PickHighlight_ep0_seed7200000_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4": {
+    "bytes": 158297,
+    "sha256": "ea1279b2d004bc86d93756b1cbe7740771c94cb0953fab34a55b6a71b978eae0"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed7200300.h5": {
+    "bytes": 770742080,
+    "sha256": "5afc3a7f3b78591117b4376adb69b46de76da3e517327337109a265c9cb7d057"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_3/rng_trace.json": {
+    "bytes": 5050,
+    "sha256": "29dc01de6f6dea4304e9c22c4c728cadde3c69ad4b1938cc632986eb73d6ebe6"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_3/spec_replay.json": {
+    "bytes": 719,
+    "sha256": "c709d559e8784371c1d67d6fef55fff6004b2b30600682b59655d3a5afa6b9a9"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_3/videos/PickHighlight_ep3_seed7200300_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4": {
+    "bytes": 21992237,
+    "sha256": "532699c435b28fbb5c73f85196bdce7bd0239958d0c84f079f9d79ce03a0569b"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed7200600.h5": {
+    "bytes": 759414008,
+    "sha256": "5d5c2ae3f5bd3174e9464df3f55a9cc126b17e96b3236243096d81c27c3a4d55"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_6/rng_trace.json": {
+    "bytes": 5040,
+    "sha256": "1d906112f46055aec5ad9c84882bdab008d98ed30296182a32a57fc3eb3eb367"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_6/spec_replay.json": {
+    "bytes": 719,
+    "sha256": "c709d559e8784371c1d67d6fef55fff6004b2b30600682b59655d3a5afa6b9a9"
+  },
+  "xhard4/rollout/run1/episodes/PickHighlight_episode_6/videos/PickHighlight_ep6_seed7200600_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4": {
+    "bytes": 23415645,
+    "sha256": "b19369ffd49efedfe4518c7c7d3762f85ca796e28e30d0480d5fed6bfe0a2821"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed6100000.h5": {
+    "bytes": 1403570608,
+    "sha256": "2dcbb5060cdef7038c033576c57506df69937da587520ed44492b4c6f6c05efc"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_0/rng_trace.json": {
+    "bytes": 3180,
+    "sha256": "860f74f1f57acf5b5be3dbf3a7d9af53db73a6ea4a319aa5d9234303d0ed0284"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_0/spec_replay.json": {
+    "bytes": 582,
+    "sha256": "06ec08a110aaa12963c4a288a53e3ae719f083fb0c4075cd7b423492a751d53a"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_0/videos/PickXtimes_ep0_seed6100000_xhard4_pick_up_the_green_cube_and_place_it_on_the_target_repeating_this_action_fourteen_times_then_press_the_button_to_stop__ALT__pick_up_the_green_cube_and_place_it_o__HASH__4593d5e2c5a7.mp4": {
+    "bytes": 40022803,
+    "sha256": "e5db88e04805e8013b073e4f00210563c1229ebe1f527fb2d7cf39d2414cbfc9"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed6100300.h5": {
+    "bytes": 1476889664,
+    "sha256": "879fe856e282882e3c26f83885b5b92893a28c81c911125501feebab8c4c1cc6"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_3/rng_trace.json": {
+    "bytes": 3178,
+    "sha256": "46a73f00c9ffa2116d3396a24b5f4986569f6ddb0896c88c788700cc3ad3b8da"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_3/spec_replay.json": {
+    "bytes": 582,
+    "sha256": "06ec08a110aaa12963c4a288a53e3ae719f083fb0c4075cd7b423492a751d53a"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_3/videos/PickXtimes_ep3_seed6100300_xhard4_pick_up_the_blue_cube_and_place_it_on_the_target_repeating_this_action_fifteen_times_then_press_the_button_to_stop__ALT__pick_up_the_blue_cube_and_place_it_on_t__HASH__8aa228386a09.mp4": {
+    "bytes": 40869927,
+    "sha256": "9059667f6c52cd585a1532d442ae0310018e8ab921417cf36374c09f9bc5fe36"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed6100600.h5": {
+    "bytes": 1330197936,
+    "sha256": "f1dca2bbb7cbba9bb3d454b1ab6206f15ec4b8660057b0c687bb86058f4e0cc1"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_6/rng_trace.json": {
+    "bytes": 3183,
+    "sha256": "4e8dd237c22cd67564fb5b5faef0dd14118701568d5d34b9ee193e9a845f5a8a"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_6/spec_replay.json": {
+    "bytes": 582,
+    "sha256": "06ec08a110aaa12963c4a288a53e3ae719f083fb0c4075cd7b423492a751d53a"
+  },
+  "xhard4/rollout/run1/episodes/PickXtimes_episode_6/videos/PickXtimes_ep6_seed6100600_xhard4_pick_up_the_red_cube_and_place_it_on_the_target_repeating_this_action_thirteen_times_then_press_the_button_to_stop__ALT__pick_up_the_red_cube_and_place_it_on_th__HASH__b90aabe8b3c0.mp4": {
+    "bytes": 38011438,
+    "sha256": "e24e9be10ff60ed72b58af508441e372efa0025f85b9452317138f3f82500278"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_0/hdf5_files/RouteStick_ep0_seed7600000.h5": {
+    "bytes": 1200400008,
+    "sha256": "88a830a6f560daea7766c7cdf23a3fd1cd6091c56fa9c281cccd61ab79ded4cf"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_0/rng_trace.json": {
+    "bytes": 3713,
+    "sha256": "201a4a87baa393fd2adbe3423d0ba5b90fc694e7c1fbec5a39a8dfeec53de7b2"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_0/spec_replay.json": {
+    "bytes": 774,
+    "sha256": "9c07641f73bb24438c875e29b87081e865450e17e44041390bb2b62db572a580"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_0/videos/RouteStick_ep0_seed7600000_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4": {
+    "bytes": 39604784,
+    "sha256": "888db9edea9b4c1085bc97cb11f44b9cc049238c97690270cab2122dba7371e3"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_3/hdf5_files/RouteStick_ep3_seed7600300.h5": {
+    "bytes": 1200404136,
+    "sha256": "7f77af0947b3f8f0e583c5fb579af0687bd3cd3a55a5210b2f0cf9f6f9a1e2f8"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_3/rng_trace.json": {
+    "bytes": 3722,
+    "sha256": "e7090f268a40747b221f660dbb2caa2052d39a35db34101da40e6ffde5e7edc0"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_3/spec_replay.json": {
+    "bytes": 774,
+    "sha256": "9c07641f73bb24438c875e29b87081e865450e17e44041390bb2b62db572a580"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_3/videos/RouteStick_ep3_seed7600300_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4": {
+    "bytes": 39111441,
+    "sha256": "09971aaa9f4b7b046a17f65938c179c96416f56dbb26f4eb1fdd68cd91f6dfe4"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_6/hdf5_files/RouteStick_ep6_seed7600600.h5": {
+    "bytes": 1200404416,
+    "sha256": "e13cd8bf98deb56a95f9a603fce748e1b879ec7c707d6b3d5ce2fca0e68996b5"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_6/rng_trace.json": {
+    "bytes": 3721,
+    "sha256": "a930eb4142c6f7be04f86e054a554e5810379387082e2ad536a7da5905036aed"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_6/spec_replay.json": {
+    "bytes": 774,
+    "sha256": "9c07641f73bb24438c875e29b87081e865450e17e44041390bb2b62db572a580"
+  },
+  "xhard4/rollout/run1/episodes/RouteStick_episode_6/videos/RouteStick_ep6_seed7600600_xhard4_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4": {
+    "bytes": 39223414,
+    "sha256": "71dad6dda44b2ee8c1110b786e919fb489feca406583e2ced4ace91c73208c8e"
+  },
+  "xhard4/rollout/run1/episodes/StopCube_episode_0/hdf5_files/StopCube_ep0_seed6200000.h5": {
+    "bytes": 241348136,
+    "sha256": "504368887d1095bb3525a945c6f49846f175e57e5dd702c32957d78564a5b570"
+  },
+  "xhard4/rollout/run1/episodes/StopCube_episode_0/rng_trace.json": {
+    "bytes": 2601,
+    "sha256": "094d63431b77fd9b8990429e8734eec39b17978178a724341ad4d0606281b1d1"
+  },
+  "xhard4/rollout/run1/episodes/StopCube_episode_0/spec_replay.json": {
+    "bytes": 397,
+    "sha256": "f11c0a927fe0a4feee25e81989fcbfff185c9d432e06f8a594ba57dda732cdb8"
+  },
+  "xhard4/rollout/run1/episodes/StopCube_episode_0/videos/StopCube_ep0_seed6200000_xhard4_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_sixth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_sixth_visit.mp4": {
+    "bytes": 3174360,
+    "sha256": "b2afe9889a70fbb112b27ccdb6b55fa60be16696feccda53b891d214f4d3bde3"
+  },
+  "xhard4/specs.jsonl": {
+    "bytes": 366264,
+    "sha256": "c860fe93df0a67f9b24536ddfd8ed080ca13e41b5df29425dd32716ca09c351a"
+  }
+}

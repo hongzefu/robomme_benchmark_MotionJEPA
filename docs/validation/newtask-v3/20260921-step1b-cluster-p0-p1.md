@@ -1,6 +1,6 @@
 # 步 1b（下半）留档：A40 上的 P1、P0 与 R1a（2026-09-21）
 
-对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 1b 的集群部分。未改动 `src/robomme/`。
+对应 [0921-newtask-release-v3-plan.md](../../plans/0921-newtask-release-v3-plan.md) 第五节步 1b 的集群部分。未改动 `src/robomme/`。
 
 ## 一、集群侧就位情况
 

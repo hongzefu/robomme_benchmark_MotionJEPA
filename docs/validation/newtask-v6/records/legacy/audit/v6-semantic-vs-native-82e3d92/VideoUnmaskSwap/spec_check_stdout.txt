@@ -1,0 +1,54 @@
+all candidates:
+xhard1 8500000 swaps 4 picks 2 outer 4 outer_cubes 2 ['cyan', 'yellow'] L 50 selected [0, 1, 2] colors ['red', 'green', 'blue'] OK
+xhard1 8500100 swaps 4 picks 2 outer 4 outer_cubes 2 ['cyan', 'yellow'] L 50 selected [2, 1, 0] colors ['red', 'green', 'blue'] OK
+xhard1 8500200 swaps 5 picks 2 outer 4 outer_cubes 2 ['magenta', 'yellow'] L 50 selected [0, 1, 2] colors ['blue', 'green', 'red'] OK
+xhard1 8500300 swaps 4 picks 2 outer 4 outer_cubes 2 ['cyan', 'yellow'] L 50 selected [0, 1, 2] colors ['blue', 'green', 'red'] OK
+xhard1 8500400 swaps 4 picks 2 outer 4 outer_cubes 2 ['yellow', 'magenta'] L 50 selected [0, 2, 1] colors ['green', 'blue', 'red'] OK
+xhard1 8500500 swaps 4 picks 2 outer 4 outer_cubes 2 ['cyan', 'magenta'] L 50 selected [0, 2, 1] colors ['green', 'blue', 'red'] OK
+xhard1 8500601 swaps 4 picks 2 outer 4 outer_cubes 2 ['yellow', 'magenta'] L 50 selected [2, 1, 0] colors ['blue', 'green', 'red'] OK
+xhard1 8500700 swaps 5 picks 2 outer 4 outer_cubes 2 ['yellow', 'magenta'] L 50 selected [2, 1, 0] colors ['blue', 'green', 'red'] OK
+xhard1 8500800 swaps 5 picks 2 outer 4 outer_cubes 2 ['magenta', 'cyan'] L 50 selected [1, 2, 0] colors ['green', 'blue', 'red'] OK
+xhard1 8500900 swaps 4 picks 2 outer 4 outer_cubes 2 ['cyan', 'yellow'] L 50 selected [2, 0, 1] colors ['green', 'blue', 'red'] OK
+xhard2 10500000 swaps 7 picks 3 outer 6 outer_cubes 3 ['yellow', 'cyan', 'magenta'] L 33 selected [2, 1, 0] colors ['blue', 'green', 'red'] OK
+xhard2 10500100 swaps 7 picks 3 outer 6 outer_cubes 3 ['cyan', 'magenta', 'yellow'] L 33 selected [1, 0, 2] colors ['green', 'red', 'blue'] OK
+xhard2 10500200 swaps 7 picks 3 outer 6 outer_cubes 3 ['magenta', 'cyan', 'yellow'] L 33 selected [1, 0, 2] colors ['green', 'red', 'blue'] OK
+xhard2 10500300 swaps 7 picks 3 outer 6 outer_cubes 3 ['magenta', 'yellow', 'cyan'] L 33 selected [1, 2, 0] colors ['blue', 'red', 'green'] OK
+xhard2 10500400 swaps 6 picks 3 outer 6 outer_cubes 3 ['magenta', 'cyan', 'yellow'] L 33 selected [1, 2, 0] colors ['red', 'blue', 'green'] OK
+xhard2 10500500 swaps 7 picks 3 outer 6 outer_cubes 3 ['cyan', 'magenta', 'yellow'] L 33 selected [2, 1, 0] colors ['blue', 'red', 'green'] OK
+xhard2 10500600 swaps 7 picks 3 outer 6 outer_cubes 3 ['magenta', 'yellow', 'cyan'] L 33 selected [2, 1, 0] colors ['red', 'green', 'blue'] OK
+xhard2 10500700 swaps 7 picks 3 outer 6 outer_cubes 3 ['magenta', 'cyan', 'yellow'] L 33 selected [1, 2, 0] colors ['green', 'blue', 'red'] OK
+xhard2 10500800 swaps 7 picks 3 outer 6 outer_cubes 3 ['cyan', 'yellow', 'magenta'] L 33 selected [0, 1, 2] colors ['red', 'blue', 'green'] OK
+xhard2 10500900 swaps 6 picks 3 outer 6 outer_cubes 3 ['cyan', 'yellow', 'magenta'] L 33 selected [2, 1, 0] colors ['blue', 'green', 'red'] OK
+xhard3 12500000 swaps 9 picks 3 outer 8 outer_cubes 4 ['yellow', 'magenta', 'cyan', 'yellow'] L 33 selected [0, 1, 2] colors ['green', 'blue', 'red'] OK
+xhard3 12500100 swaps 8 picks 3 outer 8 outer_cubes 4 ['yellow', 'cyan', 'magenta', 'yellow'] L 33 selected [1, 2, 0] colors ['blue', 'red', 'green'] OK
+xhard3 12500200 swaps 9 picks 3 outer 8 outer_cubes 4 ['magenta', 'cyan', 'yellow', 'magenta'] L 33 selected [2, 0, 1] colors ['green', 'red', 'blue'] OK
+xhard3 12500300 swaps 8 picks 3 outer 8 outer_cubes 4 ['magenta', 'cyan', 'yellow', 'magenta'] L 33 selected [2, 0, 1] colors ['green', 'red', 'blue'] OK
+xhard3 12500400 swaps 8 picks 3 outer 8 outer_cubes 4 ['yellow', 'cyan', 'magenta', 'yellow'] L 33 selected [0, 1, 2] colors ['red', 'blue', 'green'] OK
+xhard3 12500500 swaps 9 picks 3 outer 8 outer_cubes 4 ['cyan', 'magenta', 'yellow', 'cyan'] L 33 selected [1, 2, 0] colors ['blue', 'red', 'green'] OK
+xhard3 12500600 swaps 8 picks 3 outer 8 outer_cubes 4 ['yellow', 'magenta', 'cyan', 'yellow'] L 33 selected [2, 0, 1] colors ['red', 'blue', 'green'] OK
+xhard3 12500700 swaps 8 picks 3 outer 8 outer_cubes 4 ['magenta', 'yellow', 'cyan', 'magenta'] L 33 selected [0, 2, 1] colors ['green', 'red', 'blue'] OK
+xhard3 12500800 swaps 9 picks 3 outer 8 outer_cubes 4 ['cyan', 'magenta', 'yellow', 'cyan'] L 33 selected [0, 1, 2] colors ['blue', 'green', 'red'] OK
+xhard3 12500900 swaps 8 picks 3 outer 8 outer_cubes 4 ['magenta', 'cyan', 'yellow', 'magenta'] L 33 selected [2, 1, 0] colors ['green', 'red', 'blue'] OK
+xhard4 6500000 swaps 11 picks 3 outer 10 outer_cubes 5 ['magenta', 'cyan', 'yellow', 'magenta', 'cyan'] L 33 selected [1, 0, 2] colors ['blue', 'green', 'red'] OK
+xhard4 6500100 swaps 12 picks 3 outer 10 outer_cubes 5 ['cyan', 'yellow', 'magenta', 'cyan', 'yellow'] L 33 selected [2, 0, 1] colors ['blue', 'green', 'red'] OK
+xhard4 6500200 swaps 10 picks 3 outer 10 outer_cubes 5 ['yellow', 'magenta', 'cyan', 'yellow', 'magenta'] L 33 selected [0, 1, 2] colors ['blue', 'red', 'green'] OK
+xhard4 6500300 swaps 11 picks 3 outer 10 outer_cubes 5 ['yellow', 'cyan', 'magenta', 'yellow', 'cyan'] L 33 selected [0, 2, 1] colors ['green', 'red', 'blue'] OK
+xhard4 6500400 swaps 10 picks 3 outer 10 outer_cubes 5 ['yellow', 'magenta', 'cyan', 'yellow', 'magenta'] L 33 selected [2, 0, 1] colors ['green', 'blue', 'red'] OK
+xhard4 6500500 swaps 10 picks 3 outer 10 outer_cubes 5 ['cyan', 'yellow', 'magenta', 'cyan', 'yellow'] L 33 selected [1, 0, 2] colors ['red', 'blue', 'green'] OK
+xhard4 6500601 swaps 12 picks 3 outer 10 outer_cubes 5 ['yellow', 'cyan', 'magenta', 'yellow', 'cyan'] L 33 selected [1, 2, 0] colors ['blue', 'green', 'red'] OK
+xhard4 6500700 swaps 11 picks 3 outer 10 outer_cubes 5 ['yellow', 'cyan', 'magenta', 'yellow', 'cyan'] L 33 selected [2, 1, 0] colors ['blue', 'red', 'green'] OK
+xhard4 6500800 swaps 10 picks 3 outer 10 outer_cubes 5 ['cyan', 'magenta', 'yellow', 'cyan', 'magenta'] L 33 selected [2, 1, 0] colors ['green', 'blue', 'red'] OK
+xhard4 6500900 swaps 10 picks 3 outer 10 outer_cubes 5 ['yellow', 'magenta', 'cyan', 'yellow', 'magenta'] L 33 selected [0, 2, 1] colors ['green', 'blue', 'red'] OK
+
+xhard1 8500000 n_swaps 4 last_end 264 demo_last 263 exp ['red', 'green'] goal ['red', 'green'] subgoals ['red', 'green'] MATCH
+xhard1 8500300 n_swaps 4 last_end 264 demo_last 263 exp ['blue', 'green'] goal ['blue', 'green'] subgoals ['blue', 'green'] MATCH
+xhard1 8500601 n_swaps 4 last_end 264 demo_last 263 exp ['blue', 'green'] goal ['blue', 'green'] subgoals ['blue', 'green'] MATCH
+xhard2 10500000 n_swaps 7 last_end 295 demo_last 299 exp ['blue', 'green', 'red'] goal ['blue', 'green', 'red'] subgoals ['blue', 'green', 'red'] MATCH
+xhard2 10500300 n_swaps 7 last_end 295 demo_last 299 exp ['blue', 'red', 'green'] goal ['blue', 'red', 'green'] subgoals ['blue', 'red', 'green'] MATCH
+xhard2 10500600 n_swaps 7 last_end 295 demo_last 299 exp ['red', 'green', 'blue'] goal ['red', 'green', 'blue'] subgoals ['red', 'green', 'blue'] MATCH
+xhard3 12500000 n_swaps 9 last_end 361 demo_last 365 exp ['green', 'blue', 'red'] goal ['green', 'blue', 'red'] subgoals ['green', 'blue', 'red'] MATCH
+xhard3 12500300 n_swaps 8 last_end 328 demo_last 329 exp ['green', 'red', 'blue'] goal ['green', 'red', 'blue'] subgoals ['green', 'red', 'blue'] MATCH
+xhard3 12500600 n_swaps 8 last_end 328 demo_last 329 exp ['red', 'blue', 'green'] goal ['red', 'blue', 'green'] subgoals ['red', 'blue', 'green'] MATCH
+xhard4 6500000 n_swaps 11 last_end 427 demo_last 431 exp ['blue', 'green', 'red'] goal ['blue', 'green', 'red'] subgoals ['blue', 'green', 'red'] MATCH
+xhard4 6500300 n_swaps 11 last_end 427 demo_last 431 exp ['green', 'red', 'blue'] goal ['green', 'red', 'blue'] subgoals ['green', 'red', 'blue'] MATCH
+xhard4 6500601 n_swaps 12 last_end 460 demo_last 461 exp ['blue', 'green', 'red'] goal ['blue', 'green', 'red'] subgoals ['blue', 'green', 'red'] MATCH

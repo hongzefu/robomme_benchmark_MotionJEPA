@@ -1,0 +1,24 @@
+=== 独立复算 totals/missing（与 nocoord.json 核对） ===
+('native', 'demo') 9 / 177 5.08%
+('native', 'exec') 2 / 407 0.49%
+('new', 'demo') 12 / 352 3.41%
+('new', 'exec') 11 / 1011 1.09%
+
+=== 每条 missing exec 行都带 choice_action.point？ ===
+ButtonUnmask xhard4 6 280 point_present= True
+PickHighlight xhard2 6 480 point_present= True
+PickHighlight xhard3 3 701 point_present= True
+PickHighlight xhard4 0 785 point_present= True
+PickXtimes xhard1 3 960 point_present= True
+SwingXtimes xhard4 6 111 point_present= True
+VideoPlaceOrder xhard1 3 1532 point_present= True
+VideoUnmask xhard2 0 388 point_present= True
+VideoUnmaskSwap xhard2 0 593 point_present= True
+VideoUnmaskSwap xhard2 6 442 point_present= True
+VideoUnmaskSwap xhard3 3 657 point_present= True
+SwingXtimes hard 7 106 point_present= True
+VideoRepick easy 4 497 point_present= True
+ALL_EXEC_ROWS_HAVE_POINT = True
+
+=== Fisher exact: native exec 2/407 vs new exec 11/1011 ===
+odds=0.4489 p=0.3698

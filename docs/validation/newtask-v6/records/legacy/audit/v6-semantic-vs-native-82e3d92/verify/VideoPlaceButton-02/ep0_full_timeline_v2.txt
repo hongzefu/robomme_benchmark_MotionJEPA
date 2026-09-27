@@ -1,0 +1,22 @@
+t=0	pick up the cube                             	pick up the cube at <125, 181>                         	color=GREEN
+t=111	drop the cube onto target                    	drop the cube onto target at <100, 89>                 	color=unresolved(med=[231. 231. 231.])
+t=206	pick up the cube                             	pick up the cube at <72, 142>                          	color=BLUE
+t=328	drop the cube onto target                    	drop the cube onto target at <75, 92>                  	color=unresolved(med=[187.  90. 224.])
+t=418	pick up the cube                             	pick up the cube at <72, 91>                           	color=BLUE
+t=492	drop the cube onto target                    	drop the cube onto target at <82, 161>                 	color=unresolved(med=[187.  90. 224.])
+t=590	press the button                             	press the button at <128, 134>                         	color=unresolved(med=[168. 168. 168.])
+t=691	pick up the cube                             	pick up the cube at <99, 86>                           	color=GREEN
+t=784	drop the cube onto target                    	drop the cube onto target at <104, 168>                	color=unresolved(med=[231. 231. 231.])
+t=877	pick up the cube                             	pick up the cube at <80, 162>                          	color=BLUE
+t=973	drop the cube onto target                    	drop the cube onto target at <82, 161>                 	color=unresolved(med=[187.  90. 224.])
+t=1031	pick up the cube                             	pick up the cube at <102, 170>                         	color=GREEN
+t=1126	drop the cube onto target                    	drop the cube onto target at <75, 92>                  	color=unresolved(med=[187.  90. 224.])
+t=1230	pick up the cube                             	pick up the cube at <72, 91>                           	color=GREEN
+t=1305	put the cube back to its original position   	put the cube back to its original position             	color=None
+t=1408	pick up the cube                             	pick up the cube at <79, 160>                          	color=BLUE
+t=1516	put the cube back to its original position   	put the cube back to its original position             	color=None
+t=1603	static                                       	static                                                 	color=None
+t=1664	static                                       	static                                                 	color=None
+t=1724	pick up the cube                             	pick up the cube at <126, 180>                         	color=GREEN
+t=1835	place the cube onto the correct target       	place the cube onto the correct target at <100, 89>    	color=unresolved(med=[231. 231. 231.])
+t=1917	All tasks completed                          	place the cube onto the correct target at <100, 89>    	color=GREEN

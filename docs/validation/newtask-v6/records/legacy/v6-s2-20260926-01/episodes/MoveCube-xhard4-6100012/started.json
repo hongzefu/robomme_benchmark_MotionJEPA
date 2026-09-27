@@ -1,0 +1,30 @@
+{
+  "id": "MoveCube-xhard4-6100012",
+  "task": "MoveCube",
+  "difficulty": "xhard4",
+  "seed": 6100012,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+  "expected_method": "gripper_push",
+  "command": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+    "-m",
+    "scripts.parity.v4_demo_probe",
+    "--task",
+    "MoveCube",
+    "--difficulty",
+    "xhard4",
+    "--seeds",
+    "6100012",
+    "--episode",
+    "9",
+    "--sampling-config",
+    "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+    "--gpu",
+    "1",
+    "--out",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100012"
+  ],
+  "started_at": 1790459682.0353687,
+  "gpu": "1"
+}

@@ -1,0 +1,2506 @@
+{
+ "VideoPlaceOrder|xhard3": {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 1,
+  "reset_ok": 1,
+  "demo_ok": 1,
+  "fail_classes": {
+   "SceneGen(reset)": 5
+  },
+  "elapsed_med": 2156,
+  "elapsed_max": 2156,
+  "fail_elapsed_max": 0,
+  "h5_med": 2120,
+  "h5_max": 2120,
+  "demo_med": 1930,
+  "nondemo_med": 190,
+  "nondemo_max": 190,
+  "n_over_1301": 0,
+  "wall_med": 93.2,
+  "wall_max": 93.2,
+  "knob_vals": [
+   8
+  ],
+  "knob_mean": 8.0,
+  "knob2_vals": [],
+  "es_list": [
+   2156
+  ],
+  "nd_list": [
+   190
+  ],
+  "errors": [
+   "9093000:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9093202:SceneGenerationError:Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9093303:SceneGenerationError:Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9093404:SceneGenerationError:Target 2 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9093505:SceneGenerationError:Target 2 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas"
+  ]
+ },
+ "VideoPlaceOrder|xhard2": {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 1,
+  "reset_ok": 1,
+  "demo_ok": 1,
+  "fail_classes": {
+   "SceneGen(reset)": 5
+  },
+  "elapsed_med": 1861,
+  "elapsed_max": 1861,
+  "fail_elapsed_max": 0,
+  "h5_med": 1825,
+  "h5_max": 1825,
+  "demo_med": 1625,
+  "nondemo_med": 200,
+  "nondemo_max": 200,
+  "n_over_1301": 0,
+  "wall_med": 84.5,
+  "wall_max": 84.5,
+  "knob_vals": [
+   6
+  ],
+  "knob_mean": 6.0,
+  "knob2_vals": [],
+  "es_list": [
+   1861
+  ],
+  "nd_list": [
+   200
+  ],
+  "errors": [
+   "9092000:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9092202:SceneGenerationError:Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9092303:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9092404:SceneGenerationError:Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9092505:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas"
+  ]
+ },
+ "VideoRepick|xhard3": {
+  "task": "VideoRepick",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "fail_classes": {
+   "SceneGen(reset)": 1
+  },
+  "elapsed_med": 1419,
+  "elapsed_max": 1624,
+  "fail_elapsed_max": 0,
+  "h5_med": 1383,
+  "h5_max": 1588,
+  "demo_med": 591,
+  "nondemo_med": 778,
+  "nondemo_max": 818,
+  "n_over_1301": 0,
+  "wall_med": 88.5,
+  "wall_max": 107.9,
+  "knob_vals": [
+   6,
+   6,
+   8,
+   9,
+   7
+  ],
+  "knob_mean": 7.2,
+  "knob2_vals": [
+   4,
+   4,
+   4,
+   5,
+   4
+  ],
+  "es_list": [
+   1249,
+   1198,
+   1462,
+   1624,
+   1419
+  ],
+  "nd_list": [
+   670,
+   631,
+   778,
+   818,
+   792
+  ],
+  "errors": [
+   "9103000:SceneGenerationError:xhard: 第 2 次交换的发起者 bin_0（槽位 0）没有扫掠可行的搭档"
+  ]
+ },
+ "VideoRepick|xhard1": {
+  "task": "VideoRepick",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 4,
+  "reset_ok": 4,
+  "demo_ok": 4,
+  "fail_classes": {
+   "SceneGen(reset)": 2
+  },
+  "elapsed_med": 885.0,
+  "elapsed_max": 924,
+  "fail_elapsed_max": 0,
+  "h5_med": 849.0,
+  "h5_max": 888,
+  "demo_med": 419.5,
+  "nondemo_med": 429.5,
+  "nondemo_max": 505,
+  "n_over_1301": 0,
+  "wall_med": 48.150000000000006,
+  "wall_max": 57.1,
+  "knob_vals": [
+   4,
+   4,
+   4,
+   3
+  ],
+  "knob_mean": 3.75,
+  "knob2_vals": [
+   2,
+   2,
+   2,
+   3
+  ],
+  "es_list": [
+   863,
+   866,
+   904,
+   924
+  ],
+  "nd_list": [
+   394,
+   411,
+   448,
+   505
+  ],
+  "errors": [
+   "9101303:SceneGenerationError:xhard: 第 0 次交换的发起者 bin_0（槽位 0）没有扫掠可行的搭档",
+   "9101404:SceneGenerationError:xhard: 第 2 次交换的发起者 bin_3（槽位 3）没有扫掠可行的搭档"
+  ]
+ },
+ "PatternLock|xhard1": {
+  "task": "PatternLock",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 823.5,
+  "elapsed_max": 905,
+  "fail_elapsed_max": 0,
+  "h5_med": 675.0,
+  "h5_max": 760,
+  "demo_med": 337.5,
+  "nondemo_med": 337.5,
+  "nondemo_max": 380,
+  "n_over_1301": 0,
+  "wall_med": 53.75,
+  "wall_max": 62.3,
+  "knob_vals": [
+   11,
+   9,
+   11,
+   11,
+   9,
+   10
+  ],
+  "knob_mean": 10.166666666666666,
+  "knob2_vals": [],
+  "es_list": [
+   905,
+   648,
+   824,
+   860,
+   823,
+   717
+  ],
+  "nd_list": [
+   380,
+   251,
+   340,
+   359,
+   335,
+   289
+  ],
+  "errors": []
+ },
+ "VideoRepick|xhard2": {
+  "task": "VideoRepick",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {
+   "SceneGen(reset)": 3
+  },
+  "elapsed_med": 1200,
+  "elapsed_max": 1355,
+  "fail_elapsed_max": 0,
+  "h5_med": 1164,
+  "h5_max": 1319,
+  "demo_med": 481,
+  "nondemo_med": 527,
+  "nondemo_max": 838,
+  "n_over_1301": 0,
+  "wall_med": 72.8,
+  "wall_max": 76.4,
+  "knob_vals": [
+   5,
+   7,
+   5
+  ],
+  "knob_mean": 5.666666666666667,
+  "knob2_vals": [
+   3,
+   3,
+   4
+  ],
+  "es_list": [
+   1042,
+   1200,
+   1355
+  ],
+  "nd_list": [
+   527,
+   523,
+   838
+  ],
+  "errors": [
+   "9102101:SceneGenerationError:xhard: 第 1 次交换的发起者 bin_4（槽位 4）没有扫掠可行的搭档",
+   "9102303:SceneGenerationError:xhard: 第 0 次交换的发起者 bin_1（槽位 1）没有扫掠可行的搭档",
+   "9102505:SceneGenerationError:xhard: 第 0 次交换的发起者 bin_4（槽位 4）没有扫掠可行的搭档"
+  ]
+ },
+ "BinFill|xhard2": {
+  "task": "BinFill",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 878.0,
+  "elapsed_max": 1115,
+  "fail_elapsed_max": 0,
+  "h5_med": 878.0,
+  "h5_max": 1115,
+  "demo_med": 0.0,
+  "nondemo_med": 878.0,
+  "nondemo_max": 1115,
+  "n_over_1301": 0,
+  "wall_med": 63.15,
+  "wall_max": 76.3,
+  "knob_vals": [
+   4,
+   5,
+   5,
+   5,
+   4,
+   4
+  ],
+  "knob_mean": 4.5,
+  "knob2_vals": [],
+  "es_list": [
+   788,
+   968,
+   1115,
+   997,
+   767,
+   784
+  ],
+  "nd_list": [
+   788,
+   968,
+   1115,
+   997,
+   767,
+   784
+  ],
+  "errors": []
+ },
+ "PickXtimes|xhard1": {
+  "task": "PickXtimes",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 994.0,
+  "elapsed_max": 1155,
+  "fail_elapsed_max": 0,
+  "h5_med": 994.0,
+  "h5_max": 1155,
+  "demo_med": 0.0,
+  "nondemo_med": 994.0,
+  "nondemo_max": 1155,
+  "n_over_1301": 0,
+  "wall_med": 66.9,
+  "wall_max": 79.6,
+  "knob_vals": [
+   6,
+   7,
+   6,
+   7,
+   6,
+   6
+  ],
+  "knob_mean": 6.333333333333333,
+  "knob2_vals": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "es_list": [
+   921,
+   1111,
+   986,
+   1155,
+   924,
+   1002
+  ],
+  "nd_list": [
+   921,
+   1111,
+   986,
+   1155,
+   924,
+   1002
+  ],
+  "errors": []
+ },
+ "VideoPlaceButton|xhard1": {
+  "task": "VideoPlaceButton",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 4,
+  "reset_ok": 4,
+  "demo_ok": 4,
+  "fail_classes": {
+   "SceneGen(reset)": 2
+  },
+  "elapsed_med": 1010.0,
+  "elapsed_max": 1063,
+  "fail_elapsed_max": 0,
+  "h5_med": 974.0,
+  "h5_max": 1027,
+  "demo_med": 759.5,
+  "nondemo_med": 216.0,
+  "nondemo_max": 220,
+  "n_over_1301": 0,
+  "wall_med": 61.7,
+  "wall_max": 79.4,
+  "knob_vals": [
+   1,
+   1,
+   1,
+   1
+  ],
+  "knob_mean": 1.0,
+  "knob2_vals": [],
+  "es_list": [
+   976,
+   950,
+   1063,
+   1044
+  ],
+  "nd_list": [
+   209,
+   213,
+   219,
+   220
+  ],
+  "errors": [
+   "9081101:SceneGenerationError:Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9081202:SceneGenerationError:Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas"
+  ]
+ },
+ "VideoPlaceOrder|xhard1": {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {
+   "SceneGen(reset)": 3
+  },
+  "elapsed_med": 1123,
+  "elapsed_max": 1277,
+  "fail_elapsed_max": 0,
+  "h5_med": 1087,
+  "h5_max": 1241,
+  "demo_med": 890,
+  "nondemo_med": 197,
+  "nondemo_max": 212,
+  "n_over_1301": 0,
+  "wall_med": 70.6,
+  "wall_max": 79.4,
+  "knob_vals": [
+   2,
+   3,
+   4
+  ],
+  "knob_mean": 3.0,
+  "knob2_vals": [],
+  "es_list": [
+   1002,
+   1123,
+   1277
+  ],
+  "nd_list": [
+   212,
+   197,
+   187
+  ],
+  "errors": [
+   "9091101:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9091303:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9091505:SceneGenerationError:Target 2 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas"
+  ]
+ },
+ "BinFill|xhard1": {
+  "task": "BinFill",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 5,
+  "reset_ok": 6,
+  "demo_ok": 5,
+  "fail_classes": {
+   "DatasetGenerationError": 1
+  },
+  "elapsed_med": 842,
+  "elapsed_max": 910,
+  "fail_elapsed_max": 819,
+  "h5_med": 842,
+  "h5_max": 910,
+  "demo_med": 0,
+  "nondemo_med": 842,
+  "nondemo_max": 910,
+  "n_over_1301": 0,
+  "wall_med": 53.1,
+  "wall_max": 81.1,
+  "knob_vals": [
+   5,
+   4,
+   4,
+   4,
+   4,
+   4
+  ],
+  "knob_mean": 4.166666666666667,
+  "knob2_vals": [],
+  "es_list": [
+   910,
+   842,
+   830,
+   851,
+   833
+  ],
+  "nd_list": [
+   910,
+   842,
+   830,
+   851,
+   833
+  ],
+  "errors": [
+   "9001404:DatasetGenerationError:BinFill/episode_9: 环境报告失败"
+  ]
+ },
+ "RouteStick|xhard1": {
+  "task": "RouteStick",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 1316.5,
+  "elapsed_max": 1331,
+  "fail_elapsed_max": 0,
+  "h5_med": 1000.0,
+  "h5_max": 1000,
+  "demo_med": 500.0,
+  "nondemo_med": 500.0,
+  "nondemo_max": 500,
+  "n_over_1301": 0,
+  "wall_med": 85.4,
+  "wall_max": 97.4,
+  "knob_vals": [
+   8,
+   10,
+   10,
+   10,
+   9,
+   10
+  ],
+  "knob_mean": 9.5,
+  "knob2_vals": [],
+  "es_list": [
+   1119,
+   1326,
+   1316,
+   1317,
+   1219,
+   1331
+  ],
+  "nd_list": [
+   400,
+   500,
+   500,
+   500,
+   450,
+   500
+  ],
+  "errors": []
+ },
+ "BinFill|xhard3": {
+  "task": "BinFill",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 4,
+  "reset_ok": 6,
+  "demo_ok": 4,
+  "fail_classes": {
+   "DatasetGenerationError": 2
+  },
+  "elapsed_med": 1069.5,
+  "elapsed_max": 1115,
+  "fail_elapsed_max": 1083,
+  "h5_med": 1069.5,
+  "h5_max": 1115,
+  "demo_med": 0.0,
+  "nondemo_med": 1069.5,
+  "nondemo_max": 1115,
+  "n_over_1301": 0,
+  "wall_med": 71.05,
+  "wall_max": 94.1,
+  "knob_vals": [
+   5,
+   6,
+   5,
+   5,
+   5,
+   5
+  ],
+  "knob_mean": 5.166666666666667,
+  "knob2_vals": [],
+  "es_list": [
+   1061,
+   1115,
+   947,
+   1078
+  ],
+  "nd_list": [
+   1061,
+   1115,
+   947,
+   1078
+  ],
+  "errors": [
+   "9003202:DatasetGenerationError:BinFill/episode_9: 环境报告失败",
+   "9003404:DatasetGenerationError:BinFill/episode_9: 环境报告失败"
+  ]
+ },
+ "PatternLock|xhard2": {
+  "task": "PatternLock",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 1166.5,
+  "elapsed_max": 1245,
+  "fail_elapsed_max": 0,
+  "h5_med": 1025.0,
+  "h5_max": 1100,
+  "demo_med": 512.5,
+  "nondemo_med": 512.5,
+  "nondemo_max": 550,
+  "n_over_1301": 0,
+  "wall_med": 78.1,
+  "wall_max": 120.9,
+  "knob_vals": [
+   16,
+   17,
+   15,
+   13,
+   13,
+   15
+  ],
+  "knob_mean": 14.833333333333334,
+  "knob2_vals": [],
+  "es_list": [
+   1245,
+   1226,
+   1148,
+   929,
+   1067,
+   1185
+  ],
+  "nd_list": [
+   550,
+   538,
+   502,
+   395,
+   461,
+   523
+  ],
+  "errors": []
+ },
+ "RouteStick|xhard2": {
+  "task": "RouteStick",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 1473.0,
+  "elapsed_max": 1527,
+  "fail_elapsed_max": 0,
+  "h5_med": 1150.0,
+  "h5_max": 1200,
+  "demo_med": 575.0,
+  "nondemo_med": 575.0,
+  "nondemo_max": 600,
+  "n_over_1301": 0,
+  "wall_med": 96.75,
+  "wall_max": 119.5,
+  "knob_vals": [
+   11,
+   12,
+   12,
+   11,
+   11,
+   12
+  ],
+  "knob_mean": 11.5,
+  "knob2_vals": [],
+  "es_list": [
+   1426,
+   1520,
+   1522,
+   1426,
+   1413,
+   1527
+  ],
+  "nd_list": [
+   550,
+   600,
+   600,
+   550,
+   550,
+   600
+  ],
+  "errors": []
+ },
+ "VideoPlaceButton|xhard2": {
+  "task": "VideoPlaceButton",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 5,
+  "reset_ok": 5,
+  "demo_ok": 5,
+  "fail_classes": {
+   "SceneGen(reset)": 1
+  },
+  "elapsed_med": 1570,
+  "elapsed_max": 1614,
+  "fail_elapsed_max": 0,
+  "h5_med": 1534,
+  "h5_max": 1578,
+  "demo_med": 1341,
+  "nondemo_med": 198,
+  "nondemo_max": 205,
+  "n_over_1301": 0,
+  "wall_med": 87.2,
+  "wall_max": 124.6,
+  "knob_vals": [
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "knob_mean": 2.0,
+  "knob2_vals": [],
+  "es_list": [
+   1570,
+   1542,
+   1580,
+   1518,
+   1614
+  ],
+  "nd_list": [
+   193,
+   193,
+   198,
+   205,
+   200
+  ],
+  "errors": [
+   "9082101:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas"
+  ]
+ },
+ "VideoUnmaskSwap|xhard1": {
+  "task": "VideoUnmaskSwap",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 531.0,
+  "elapsed_max": 601,
+  "fail_elapsed_max": 0,
+  "h5_med": 531.0,
+  "h5_max": 601,
+  "demo_med": 264.0,
+  "nondemo_med": 263.0,
+  "nondemo_max": 283,
+  "n_over_1301": 0,
+  "wall_med": 34.45,
+  "wall_max": 46.6,
+  "knob_vals": [
+   5,
+   4,
+   4,
+   4,
+   4,
+   5
+  ],
+  "knob_mean": 4.333333333333333,
+  "knob2_vals": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "es_list": [
+   580,
+   526,
+   534,
+   528,
+   498,
+   601
+  ],
+  "nd_list": [
+   262,
+   262,
+   270,
+   264,
+   234,
+   283
+  ],
+  "errors": []
+ },
+ "VideoPlaceButton|xhard3": {
+  "task": "VideoPlaceButton",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 1589.0,
+  "elapsed_max": 1685,
+  "fail_elapsed_max": 0,
+  "h5_med": 1553.0,
+  "h5_max": 1649,
+  "demo_med": 1364.5,
+  "nondemo_med": 193.5,
+  "nondemo_max": 215,
+  "n_over_1301": 0,
+  "wall_med": 88.05000000000001,
+  "wall_max": 131.2,
+  "knob_vals": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "knob_mean": 2.0,
+  "knob2_vals": [],
+  "es_list": [
+   1685,
+   1618,
+   1553,
+   1574,
+   1604,
+   1539
+  ],
+  "nd_list": [
+   215,
+   185,
+   183,
+   175,
+   202,
+   208
+  ],
+  "errors": []
+ },
+ "PickHighlight|xhard1": {
+  "task": "PickHighlight",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 696.0,
+  "elapsed_max": 770,
+  "fail_elapsed_max": 0,
+  "h5_med": 696.0,
+  "h5_max": 770,
+  "demo_med": 0.0,
+  "nondemo_med": 696.0,
+  "nondemo_max": 770,
+  "n_over_1301": 0,
+  "wall_med": 50.45,
+  "wall_max": 68.2,
+  "knob_vals": [
+   4,
+   4,
+   4,
+   4,
+   4,
+   4
+  ],
+  "knob_mean": 4.0,
+  "knob2_vals": [
+   7,
+   7,
+   7,
+   7,
+   7,
+   7
+  ],
+  "es_list": [
+   720,
+   645,
+   672,
+   670,
+   733,
+   770
+  ],
+  "nd_list": [
+   720,
+   645,
+   672,
+   670,
+   733,
+   770
+  ],
+  "errors": []
+ },
+ "PatternLock|xhard3": {
+  "task": "PatternLock",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 1326.5,
+  "elapsed_max": 1487,
+  "fail_elapsed_max": 0,
+  "h5_med": 1179.0,
+  "h5_max": 1338,
+  "demo_med": 589.5,
+  "nondemo_med": 589.5,
+  "nondemo_max": 669,
+  "n_over_1301": 0,
+  "wall_med": 101.05,
+  "wall_max": 132.6,
+  "knob_vals": [
+   18,
+   18,
+   18,
+   19,
+   19,
+   20
+  ],
+  "knob_mean": 18.666666666666668,
+  "knob2_vals": [],
+  "es_list": [
+   1312,
+   1308,
+   1288,
+   1424,
+   1341,
+   1487
+  ],
+  "nd_list": [
+   583,
+   583,
+   571,
+   629,
+   596,
+   669
+  ],
+  "errors": []
+ },
+ "VideoUnmaskSwap|xhard2": {
+  "task": "VideoUnmaskSwap",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 687.0,
+  "elapsed_max": 718,
+  "fail_elapsed_max": 0,
+  "h5_med": 687.0,
+  "h5_max": 718,
+  "demo_med": 264.0,
+  "nondemo_med": 414.0,
+  "nondemo_max": 436,
+  "n_over_1301": 0,
+  "wall_med": 45.0,
+  "wall_max": 57.4,
+  "knob_vals": [
+   6,
+   6,
+   5,
+   7,
+   7,
+   6
+  ],
+  "knob_mean": 6.166666666666667,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   700,
+   671,
+   665,
+   706,
+   718,
+   674
+  ],
+  "nd_list": [
+   436,
+   407,
+   431,
+   406,
+   418,
+   410
+  ],
+  "errors": []
+ },
+ "ButtonUnmaskSwap|xhard1": {
+  "task": "ButtonUnmaskSwap",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 494.0,
+  "elapsed_max": 518,
+  "fail_elapsed_max": 0,
+  "h5_med": 494.0,
+  "h5_max": 518,
+  "demo_med": 0.0,
+  "nondemo_med": 494.0,
+  "nondemo_max": 518,
+  "n_over_1301": 0,
+  "wall_med": 37.55,
+  "wall_max": 45.2,
+  "knob_vals": [
+   3,
+   3,
+   4,
+   3,
+   4,
+   4
+  ],
+  "knob_mean": 3.5,
+  "knob2_vals": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "es_list": [
+   467,
+   460,
+   514,
+   474,
+   518,
+   518
+  ],
+  "nd_list": [
+   467,
+   460,
+   514,
+   474,
+   518,
+   518
+  ],
+  "errors": []
+ },
+ "VideoUnmaskSwap|xhard3": {
+  "task": "VideoUnmaskSwap",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 709.5,
+  "elapsed_max": 756,
+  "fail_elapsed_max": 0,
+  "h5_med": 709.5,
+  "h5_max": 756,
+  "demo_med": 300.0,
+  "nondemo_med": 398.0,
+  "nondemo_max": 417,
+  "n_over_1301": 0,
+  "wall_med": 48.0,
+  "wall_max": 61.4,
+  "knob_vals": [
+   7,
+   7,
+   9,
+   7,
+   8,
+   7
+  ],
+  "knob_mean": 7.5,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   701,
+   717,
+   756,
+   695,
+   714,
+   705
+  ],
+  "nd_list": [
+   401,
+   417,
+   390,
+   395,
+   384,
+   405
+  ],
+  "errors": []
+ },
+ "PickHighlight|xhard2": {
+  "task": "PickHighlight",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 849.0,
+  "elapsed_max": 915,
+  "fail_elapsed_max": 0,
+  "h5_med": 849.0,
+  "h5_max": 915,
+  "demo_med": 0.0,
+  "nondemo_med": 849.0,
+  "nondemo_max": 915,
+  "n_over_1301": 0,
+  "wall_med": 64.95,
+  "wall_max": 69.9,
+  "knob_vals": [
+   4,
+   5,
+   5,
+   5,
+   5,
+   5
+  ],
+  "knob_mean": 4.833333333333333,
+  "knob2_vals": [
+   8,
+   8,
+   8,
+   8,
+   8,
+   8
+  ],
+  "es_list": [
+   707,
+   817,
+   818,
+   907,
+   915,
+   880
+  ],
+  "nd_list": [
+   707,
+   817,
+   818,
+   907,
+   915,
+   880
+  ],
+  "errors": []
+ },
+ "PickXtimes|xhard2": {
+  "task": "PickXtimes",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 1204.5,
+  "elapsed_max": 1341,
+  "fail_elapsed_max": 0,
+  "h5_med": 1204.5,
+  "h5_max": 1341,
+  "demo_med": 0.0,
+  "nondemo_med": 1204.5,
+  "nondemo_max": 1341,
+  "n_over_1301": 1,
+  "wall_med": 79.5,
+  "wall_max": 101.3,
+  "knob_vals": [
+   7,
+   9,
+   8,
+   8,
+   6,
+   7
+  ],
+  "knob_mean": 7.5,
+  "knob2_vals": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "es_list": [
+   1186,
+   1341,
+   1271,
+   1223,
+   1041,
+   1060
+  ],
+  "nd_list": [
+   1186,
+   1341,
+   1271,
+   1223,
+   1041,
+   1060
+  ],
+  "errors": []
+ },
+ "RouteStick|xhard3": {
+  "task": "RouteStick",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 1717.5,
+  "elapsed_max": 1720,
+  "fail_elapsed_max": 0,
+  "h5_med": 1400.0,
+  "h5_max": 1400,
+  "demo_med": 700.0,
+  "nondemo_med": 700.0,
+  "nondemo_max": 700,
+  "n_over_1301": 0,
+  "wall_med": 119.45,
+  "wall_max": 154.3,
+  "knob_vals": [
+   14,
+   14,
+   14,
+   13,
+   14,
+   13
+  ],
+  "knob_mean": 13.666666666666666,
+  "knob2_vals": [],
+  "es_list": [
+   1720,
+   1720,
+   1720,
+   1617,
+   1715,
+   1613
+  ],
+  "nd_list": [
+   700,
+   700,
+   700,
+   650,
+   700,
+   650
+  ],
+  "errors": []
+ },
+ "ButtonUnmaskSwap|xhard2": {
+  "task": "ButtonUnmaskSwap",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 615.0,
+  "elapsed_max": 652,
+  "fail_elapsed_max": 0,
+  "h5_med": 615.0,
+  "h5_max": 652,
+  "demo_med": 0.0,
+  "nondemo_med": 615.0,
+  "nondemo_max": 652,
+  "n_over_1301": 0,
+  "wall_med": 42.599999999999994,
+  "wall_max": 61.4,
+  "knob_vals": [
+   5,
+   4,
+   4,
+   5,
+   5,
+   4
+  ],
+  "knob_mean": 4.5,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   652,
+   627,
+   619,
+   601,
+   611,
+   596
+  ],
+  "nd_list": [
+   652,
+   627,
+   619,
+   601,
+   611,
+   596
+  ],
+  "errors": []
+ },
+ "ButtonUnmask|xhard1": {
+  "task": "ButtonUnmask",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 381.5,
+  "elapsed_max": 395,
+  "fail_elapsed_max": 0,
+  "h5_med": 381.5,
+  "h5_max": 395,
+  "demo_med": 0.0,
+  "nondemo_med": 381.5,
+  "nondemo_max": 395,
+  "n_over_1301": 0,
+  "wall_med": 28.2,
+  "wall_max": 34.3,
+  "knob_vals": [
+   7,
+   7,
+   7,
+   7,
+   7,
+   7
+  ],
+  "knob_mean": 7.0,
+  "knob2_vals": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "es_list": [
+   381,
+   373,
+   376,
+   382,
+   388,
+   395
+  ],
+  "nd_list": [
+   381,
+   373,
+   376,
+   382,
+   388,
+   395
+  ],
+  "errors": []
+ },
+ "VideoUnmask|xhard1": {
+  "task": "VideoUnmask",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 322.0,
+  "elapsed_max": 332,
+  "fail_elapsed_max": 0,
+  "h5_med": 322.0,
+  "h5_max": 332,
+  "demo_med": 66.0,
+  "nondemo_med": 256.0,
+  "nondemo_max": 266,
+  "n_over_1301": 0,
+  "wall_med": 24.450000000000003,
+  "wall_max": 29.6,
+  "knob_vals": [
+   8,
+   8,
+   8,
+   8,
+   8,
+   8
+  ],
+  "knob_mean": 8.0,
+  "knob2_vals": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "es_list": [
+   320,
+   324,
+   332,
+   307,
+   332,
+   317
+  ],
+  "nd_list": [
+   254,
+   258,
+   266,
+   241,
+   266,
+   251
+  ],
+  "errors": []
+ },
+ "PickHighlight|xhard3": {
+  "task": "PickHighlight",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 914.0,
+  "elapsed_max": 1084,
+  "fail_elapsed_max": 0,
+  "h5_med": 914.0,
+  "h5_max": 1084,
+  "demo_med": 0.0,
+  "nondemo_med": 914.0,
+  "nondemo_max": 1084,
+  "n_over_1301": 0,
+  "wall_med": 68.65,
+  "wall_max": 91.9,
+  "knob_vals": [
+   6,
+   5,
+   5,
+   6,
+   5,
+   6
+  ],
+  "knob_mean": 5.5,
+  "knob2_vals": [
+   8,
+   8,
+   8,
+   8,
+   9,
+   8
+  ],
+  "es_list": [
+   988,
+   840,
+   794,
+   1037,
+   806,
+   1084
+  ],
+  "nd_list": [
+   988,
+   840,
+   794,
+   1037,
+   806,
+   1084
+  ],
+  "errors": []
+ },
+ "SwingXtimes|xhard1": {
+  "task": "SwingXtimes",
+  "tier": "xhard1",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 493.0,
+  "elapsed_max": 622,
+  "fail_elapsed_max": 0,
+  "h5_med": 493.0,
+  "h5_max": 622,
+  "demo_med": 0.0,
+  "nondemo_med": 493.0,
+  "nondemo_max": 622,
+  "n_over_1301": 0,
+  "wall_med": 33.25,
+  "wall_max": 48.5,
+  "knob_vals": [
+   4,
+   3,
+   3,
+   4,
+   3,
+   3
+  ],
+  "knob_mean": 3.3333333333333335,
+  "knob2_vals": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "es_list": [
+   544,
+   506,
+   480,
+   622,
+   454,
+   451
+  ],
+  "nd_list": [
+   544,
+   506,
+   480,
+   622,
+   454,
+   451
+  ],
+  "errors": []
+ },
+ "ButtonUnmask|xhard2": {
+  "task": "ButtonUnmask",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 523.0,
+  "elapsed_max": 557,
+  "fail_elapsed_max": 0,
+  "h5_med": 523.0,
+  "h5_max": 557,
+  "demo_med": 0.0,
+  "nondemo_med": 523.0,
+  "nondemo_max": 557,
+  "n_over_1301": 0,
+  "wall_med": 39.5,
+  "wall_max": 47.6,
+  "knob_vals": [
+   9,
+   9,
+   9,
+   9,
+   9,
+   9
+  ],
+  "knob_mean": 9.0,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   532,
+   505,
+   514,
+   552,
+   503,
+   557
+  ],
+  "nd_list": [
+   532,
+   505,
+   514,
+   552,
+   503,
+   557
+  ],
+  "errors": []
+ },
+ "ButtonUnmaskSwap|xhard3": {
+  "task": "ButtonUnmaskSwap",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 647.5,
+  "elapsed_max": 680,
+  "fail_elapsed_max": 0,
+  "h5_med": 647.5,
+  "h5_max": 680,
+  "demo_med": 0.0,
+  "nondemo_med": 647.5,
+  "nondemo_max": 680,
+  "n_over_1301": 0,
+  "wall_med": 49.099999999999994,
+  "wall_max": 58.4,
+  "knob_vals": [
+   5,
+   5,
+   6,
+   6,
+   6,
+   5
+  ],
+  "knob_mean": 5.5,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   636,
+   629,
+   668,
+   659,
+   680,
+   618
+  ],
+  "nd_list": [
+   636,
+   629,
+   668,
+   659,
+   680,
+   618
+  ],
+  "errors": []
+ },
+ "ButtonUnmask|xhard3": {
+  "task": "ButtonUnmask",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 513.0,
+  "elapsed_max": 539,
+  "fail_elapsed_max": 0,
+  "h5_med": 513.0,
+  "h5_max": 539,
+  "demo_med": 0.0,
+  "nondemo_med": 513.0,
+  "nondemo_max": 539,
+  "n_over_1301": 0,
+  "wall_med": 39.8,
+  "wall_max": 47.5,
+  "knob_vals": [
+   12,
+   12,
+   12,
+   12,
+   12,
+   12
+  ],
+  "knob_mean": 12.0,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   539,
+   539,
+   500,
+   503,
+   517,
+   509
+  ],
+  "nd_list": [
+   539,
+   539,
+   500,
+   503,
+   517,
+   509
+  ],
+  "errors": []
+ },
+ "VideoUnmask|xhard2": {
+  "task": "VideoUnmask",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 472.0,
+  "elapsed_max": 503,
+  "fail_elapsed_max": 0,
+  "h5_med": 472.0,
+  "h5_max": 503,
+  "demo_med": 66.0,
+  "nondemo_med": 406.0,
+  "nondemo_max": 437,
+  "n_over_1301": 0,
+  "wall_med": 34.099999999999994,
+  "wall_max": 42.1,
+  "knob_vals": [
+   10,
+   10,
+   10,
+   10,
+   10,
+   10
+  ],
+  "knob_mean": 10.0,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   503,
+   481,
+   462,
+   457,
+   486,
+   463
+  ],
+  "nd_list": [
+   437,
+   415,
+   396,
+   391,
+   420,
+   397
+  ],
+  "errors": []
+ },
+ "PickXtimes|xhard3": {
+  "task": "PickXtimes",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 1577.0,
+  "elapsed_max": 1714,
+  "fail_elapsed_max": 0,
+  "h5_med": 1577.0,
+  "h5_max": 1714,
+  "demo_med": 0.0,
+  "nondemo_med": 1577.0,
+  "nondemo_max": 1714,
+  "n_over_1301": 5,
+  "wall_med": 113.80000000000001,
+  "wall_max": 124.4,
+  "knob_vals": [
+   9,
+   10,
+   7,
+   8,
+   12,
+   11
+  ],
+  "knob_mean": 9.5,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   1416,
+   1498,
+   1078,
+   1656,
+   1703,
+   1714
+  ],
+  "nd_list": [
+   1416,
+   1498,
+   1078,
+   1656,
+   1703,
+   1714
+  ],
+  "errors": []
+ },
+ "VideoUnmask|xhard3": {
+  "task": "VideoUnmask",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 478.0,
+  "elapsed_max": 486,
+  "fail_elapsed_max": 0,
+  "h5_med": 478.0,
+  "h5_max": 486,
+  "demo_med": 66.0,
+  "nondemo_med": 412.0,
+  "nondemo_max": 420,
+  "n_over_1301": 0,
+  "wall_med": 35.55,
+  "wall_max": 38.6,
+  "knob_vals": [
+   13,
+   13,
+   13,
+   13,
+   13,
+   13
+  ],
+  "knob_mean": 13.0,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   460,
+   486,
+   478,
+   479,
+   459,
+   478
+  ],
+  "nd_list": [
+   394,
+   420,
+   412,
+   413,
+   393,
+   412
+  ],
+  "errors": []
+ },
+ "SwingXtimes|xhard2": {
+  "task": "SwingXtimes",
+  "tier": "xhard2",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 644.5,
+  "elapsed_max": 730,
+  "fail_elapsed_max": 0,
+  "h5_med": 644.5,
+  "h5_max": 730,
+  "demo_med": 0.0,
+  "nondemo_med": 644.5,
+  "nondemo_max": 730,
+  "n_over_1301": 0,
+  "wall_med": 46.95,
+  "wall_max": 64.7,
+  "knob_vals": [
+   6,
+   4,
+   5,
+   4,
+   4,
+   5
+  ],
+  "knob_mean": 4.666666666666667,
+  "knob2_vals": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "es_list": [
+   730,
+   609,
+   669,
+   586,
+   620,
+   709
+  ],
+  "nd_list": [
+   730,
+   609,
+   669,
+   586,
+   620,
+   709
+  ],
+  "errors": []
+ },
+ "SwingXtimes|xhard3": {
+  "task": "SwingXtimes",
+  "tier": "xhard3",
+  "n": 6,
+  "ok": 6,
+  "reset_ok": 6,
+  "demo_ok": 6,
+  "fail_classes": {},
+  "elapsed_med": 730.0,
+  "elapsed_max": 865,
+  "fail_elapsed_max": 0,
+  "h5_med": 730.0,
+  "h5_max": 865,
+  "demo_med": 0.0,
+  "nondemo_med": 730.0,
+  "nondemo_max": 865,
+  "n_over_1301": 0,
+  "wall_med": 56.35,
+  "wall_max": 63.6,
+  "knob_vals": [
+   7,
+   5,
+   8,
+   6,
+   7,
+   5
+  ],
+  "knob_mean": 6.333333333333333,
+  "knob2_vals": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   745,
+   671,
+   865,
+   715,
+   817,
+   654
+  ],
+  "nd_list": [
+   745,
+   671,
+   865,
+   715,
+   817,
+   654
+  ],
+  "errors": []
+ },
+ "VideoPlaceOrder|xhard": {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 1,
+  "reset_ok": 1,
+  "demo_ok": 1,
+  "fail_classes": {
+   "SceneGen(reset)": 2
+  },
+  "elapsed_med": 2048,
+  "elapsed_max": 2048,
+  "fail_elapsed_max": 0,
+  "h5_med": 2012,
+  "h5_max": 2012,
+  "demo_med": 1808,
+  "nondemo_med": 204,
+  "nondemo_max": 204,
+  "n_over_1301": 0,
+  "wall_med": 116.0,
+  "wall_max": 116.0,
+  "knob_vals": [
+   7
+  ],
+  "knob_mean": 7.0,
+  "knob2_vals": [],
+  "es_list": [
+   2048
+  ],
+  "nd_list": [
+   204
+  ],
+  "errors": [
+   "9094000:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9094202:SceneGenerationError:Target 3 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas"
+  ]
+ },
+ "VideoPlaceButton|xhard": {
+  "task": "VideoPlaceButton",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 1,
+  "reset_ok": 1,
+  "demo_ok": 1,
+  "fail_classes": {
+   "SceneGen(reset)": 2
+  },
+  "elapsed_med": 1537,
+  "elapsed_max": 1537,
+  "fail_elapsed_max": 0,
+  "h5_med": 1501,
+  "h5_max": 1501,
+  "demo_med": 1304,
+  "nondemo_med": 197,
+  "nondemo_max": 197,
+  "n_over_1301": 0,
+  "wall_med": 92.8,
+  "wall_max": 92.8,
+  "knob_vals": [
+   2
+  ],
+  "knob_mean": 2.0,
+  "knob2_vals": [],
+  "es_list": [
+   1537
+  ],
+  "nd_list": [
+   197
+  ],
+  "errors": [
+   "9084000:SceneGenerationError:Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas",
+   "9084101:SceneGenerationError:Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decreas"
+  ]
+ },
+ "VideoUnmask|xhard": {
+  "task": "VideoUnmask",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {},
+  "elapsed_med": 471,
+  "elapsed_max": 496,
+  "fail_elapsed_max": 0,
+  "h5_med": 471,
+  "h5_max": 496,
+  "demo_med": 66,
+  "nondemo_med": 405,
+  "nondemo_max": 430,
+  "n_over_1301": 0,
+  "wall_med": 32.5,
+  "wall_max": 33.3,
+  "knob_vals": [
+   15,
+   15,
+   15
+  ],
+  "knob_mean": 15.0,
+  "knob2_vals": [
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   471,
+   462,
+   496
+  ],
+  "nd_list": [
+   405,
+   396,
+   430
+  ],
+  "errors": []
+ },
+ "ButtonUnmask|xhard": {
+  "task": "ButtonUnmask",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {},
+  "elapsed_med": 541,
+  "elapsed_max": 545,
+  "fail_elapsed_max": 0,
+  "h5_med": 541,
+  "h5_max": 545,
+  "demo_med": 0,
+  "nondemo_med": 541,
+  "nondemo_max": 545,
+  "n_over_1301": 0,
+  "wall_med": 33.2,
+  "wall_max": 34.4,
+  "knob_vals": [
+   14,
+   14,
+   14
+  ],
+  "knob_mean": 14.0,
+  "knob2_vals": [
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   545,
+   541,
+   503
+  ],
+  "nd_list": [
+   545,
+   541,
+   503
+  ],
+  "errors": []
+ },
+ "ButtonUnmaskSwap|xhard": {
+  "task": "ButtonUnmaskSwap",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {},
+  "elapsed_med": 692,
+  "elapsed_max": 711,
+  "fail_elapsed_max": 0,
+  "h5_med": 692,
+  "h5_max": 711,
+  "demo_med": 0,
+  "nondemo_med": 692,
+  "nondemo_max": 711,
+  "n_over_1301": 0,
+  "wall_med": 46.0,
+  "wall_max": 52.0,
+  "knob_vals": [
+   8,
+   6,
+   8
+  ],
+  "knob_mean": 7.333333333333333,
+  "knob2_vals": [
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   692,
+   688,
+   711
+  ],
+  "nd_list": [
+   692,
+   688,
+   711
+  ],
+  "errors": []
+ },
+ "VideoUnmaskSwap|xhard": {
+  "task": "VideoUnmaskSwap",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 2,
+  "reset_ok": 2,
+  "demo_ok": 2,
+  "fail_classes": {
+   "SceneGen(reset)": 1
+  },
+  "elapsed_med": 806.0,
+  "elapsed_max": 879,
+  "fail_elapsed_max": 0,
+  "h5_med": 806.0,
+  "h5_max": 879,
+  "demo_med": 396.0,
+  "nondemo_med": 410.0,
+  "nondemo_max": 417,
+  "n_over_1301": 0,
+  "wall_med": 48.05,
+  "wall_max": 53.9,
+  "knob_vals": [
+   12,
+   8
+  ],
+  "knob_mean": 10.0,
+  "knob2_vals": [
+   3,
+   3
+  ],
+  "es_list": [
+   879,
+   733
+  ],
+  "nd_list": [
+   417,
+   403
+  ],
+  "errors": [
+   "9124202:SceneGenerationError:xhard 内环对内环扫掠在 reset 预判被拒（L20）：碰撞排除[contact] inner_prejudge#1 对象 bin_0(形状1) 与 bin_2(形状1) g=-0.00399999792428 s=0.625 中点判定"
+  ]
+ },
+ "PickXtimes|xhard": {
+  "task": "PickXtimes",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {},
+  "elapsed_med": 1955,
+  "elapsed_max": 2163,
+  "fail_elapsed_max": 0,
+  "h5_med": 1955,
+  "h5_max": 2163,
+  "demo_med": 0,
+  "nondemo_med": 1955,
+  "nondemo_max": 2163,
+  "n_over_1301": 2,
+  "wall_med": 117.7,
+  "wall_max": 120.0,
+  "knob_vals": [
+   6,
+   9,
+   15
+  ],
+  "knob_mean": 10.0,
+  "knob2_vals": [
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   929,
+   1955,
+   2163
+  ],
+  "nd_list": [
+   929,
+   1955,
+   2163
+  ],
+  "errors": []
+ },
+ "BinFill|xhard": {
+  "task": "BinFill",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 2,
+  "reset_ok": 3,
+  "demo_ok": 2,
+  "fail_classes": {
+   "DatasetGenerationError": 1
+  },
+  "elapsed_med": 973.5,
+  "elapsed_max": 993,
+  "fail_elapsed_max": 1081,
+  "h5_med": 973.5,
+  "h5_max": 993,
+  "demo_med": 0.0,
+  "nondemo_med": 973.5,
+  "nondemo_max": 993,
+  "n_over_1301": 0,
+  "wall_med": 63.35,
+  "wall_max": 76.7,
+  "knob_vals": [
+   5,
+   5,
+   6
+  ],
+  "knob_mean": 5.333333333333333,
+  "knob2_vals": [],
+  "es_list": [
+   954,
+   993
+  ],
+  "nd_list": [
+   954,
+   993
+  ],
+  "errors": [
+   "9004202:DatasetGenerationError:BinFill/episode_9: 环境报告失败"
+  ]
+ },
+ "PickHighlight|xhard": {
+  "task": "PickHighlight",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 2,
+  "reset_ok": 2,
+  "demo_ok": 2,
+  "fail_classes": {
+   "SceneGen(reset)": 1
+  },
+  "elapsed_med": 1146.0,
+  "elapsed_max": 1251,
+  "fail_elapsed_max": 0,
+  "h5_med": 1146.0,
+  "h5_max": 1251,
+  "demo_med": 0.0,
+  "nondemo_med": 1146.0,
+  "nondemo_max": 1251,
+  "n_over_1301": 0,
+  "wall_med": 82.2,
+  "wall_max": 85.5,
+  "knob_vals": [
+   6,
+   6
+  ],
+  "knob_mean": 6.0,
+  "knob2_vals": [
+   10,
+   8
+  ],
+  "es_list": [
+   1041,
+   1251
+  ],
+  "nd_list": [
+   1041,
+   1251
+  ],
+  "errors": [
+   "9044101:SceneGenerationError:PickHighlight xhard: 方块放不满，请求 10 实际 9（第 9 块失败：spawn_random_cube: Region crowded or constraints too tight, no feasible position found. Try: increase region/decre"
+  ]
+ },
+ "SwingXtimes|xhard": {
+  "task": "SwingXtimes",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {},
+  "elapsed_med": 701,
+  "elapsed_max": 1001,
+  "fail_elapsed_max": 0,
+  "h5_med": 701,
+  "h5_max": 1001,
+  "demo_med": 0,
+  "nondemo_med": 701,
+  "nondemo_max": 1001,
+  "n_over_1301": 0,
+  "wall_med": 45.6,
+  "wall_max": 59.5,
+  "knob_vals": [
+   9,
+   6,
+   4
+  ],
+  "knob_mean": 6.333333333333333,
+  "knob2_vals": [
+   3,
+   3,
+   3
+  ],
+  "es_list": [
+   1001,
+   701,
+   560
+  ],
+  "nd_list": [
+   1001,
+   701,
+   560
+  ],
+  "errors": []
+ },
+ "VideoRepick|xhard": {
+  "task": "VideoRepick",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {},
+  "elapsed_med": 1625,
+  "elapsed_max": 1774,
+  "fail_elapsed_max": 0,
+  "h5_med": 1589,
+  "h5_max": 1738,
+  "demo_med": 741,
+  "nondemo_med": 848,
+  "nondemo_max": 876,
+  "n_over_1301": 0,
+  "wall_med": 101.6,
+  "wall_max": 116.8,
+  "knob_vals": [
+   9,
+   11,
+   10
+  ],
+  "knob_mean": 10.0,
+  "knob2_vals": [
+   5,
+   4,
+   4
+  ],
+  "es_list": [
+   1515,
+   1774,
+   1625
+  ],
+  "nd_list": [
+   774,
+   876,
+   848
+  ],
+  "errors": []
+ },
+ "PatternLock|xhard": {
+  "task": "PatternLock",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {},
+  "elapsed_med": 1720,
+  "elapsed_max": 1843,
+  "fail_elapsed_max": 0,
+  "h5_med": 1574,
+  "h5_max": 1692,
+  "demo_med": 787,
+  "nondemo_med": 787,
+  "nondemo_max": 846,
+  "n_over_1301": 0,
+  "wall_med": 130.6,
+  "wall_max": 134.5,
+  "knob_vals": [
+   25,
+   25,
+   25
+  ],
+  "knob_mean": 25.0,
+  "knob2_vals": [],
+  "es_list": [
+   1720,
+   1702,
+   1843
+  ],
+  "nd_list": [
+   787,
+   767,
+   846
+  ],
+  "errors": []
+ },
+ "RouteStick|xhard": {
+  "task": "RouteStick",
+  "tier": "xhard",
+  "n": 3,
+  "ok": 3,
+  "reset_ok": 3,
+  "demo_ok": 3,
+  "fail_classes": {},
+  "elapsed_med": 2220,
+  "elapsed_max": 2317,
+  "fail_elapsed_max": 0,
+  "h5_med": 1900,
+  "h5_max": 2000,
+  "demo_med": 950,
+  "nondemo_med": 950,
+  "nondemo_max": 1000,
+  "n_over_1301": 0,
+  "wall_med": 139.7,
+  "wall_max": 160.7,
+  "knob_vals": [
+   20,
+   15,
+   19
+  ],
+  "knob_mean": 18.0,
+  "knob2_vals": [],
+  "es_list": [
+   2317,
+   1822,
+   2220
+  ],
+  "nd_list": [
+   1000,
+   750,
+   950
+  ],
+  "errors": []
+ }
+}

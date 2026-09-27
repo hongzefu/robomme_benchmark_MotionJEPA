@@ -1,0 +1,14 @@
+ep3 最小 p（各颜色≥3块 × {nn,x,y}）=0.0086 来自 c0-x
+   seed 4400000 spawn=[5, 2, 5] minp=0.2116 (c2-nn)
+   seed 4400100 spawn=[3, 4, 5] minp=0.0180 (c2-y)
+   seed 4400200 spawn=[3, 5, 4] minp=0.0918 (c2-nn)
+   seed 4400300 spawn=[7, 1, 4] minp=0.0078 (c0-x)
+   seed 4400400 spawn=[3, 2, 7] minp=0.2222 (c0-x)
+   seed 4400500 spawn=[6, 4, 2] minp=0.2416 (c0-x)
+   seed 4400600 spawn=[6, 3, 3] minp=0.0550 (c1-x)
+   seed 4400700 spawn=[5, 4, 3] minp=0.1340 (c0-x)
+   seed 4400800 spawn=[5, 2, 5] minp=0.1278 (c0-y)
+   seed 4400900 spawn=[3, 5, 4] minp=0.0284 (c2-x)
+V4 过程 1500 局：P(minp <= ep3 的 0.0086) = 0.0400；P(minp<=0.01)=0.0533 P(minp<=0.05)=0.2593
+   条件 max colour>=7：P(minp<=ep3)=0.0242 (n=331)
+   每 3 局正式集至少 1 局 ≥ep3 程度: 0.115；10 条候选至少 1 条: 0.335

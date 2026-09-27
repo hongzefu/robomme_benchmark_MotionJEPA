@@ -1,0 +1,3866 @@
+{
+ "per_type_yaw": {
+  "grasp|0": {
+   "area_m2": 0.44000000000000006,
+   "n": 704,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4925000000000001
+  },
+  "grasp|45": {
+   "area_m2": 0.4256250000000001,
+   "n": 681,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.375
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4893750000000001
+  },
+  "grasp|90": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4643750000000001
+  },
+  "grasp|135": {
+   "area_m2": 0.16187500000000002,
+   "n": 259,
+   "r_max": 0.8082233602167164,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.15
+   ],
+   "y_range": [
+    -0.4,
+    -0.1
+   ],
+   "x_range_at_y0": null,
+   "y_range_at_x0": [
+    -0.375,
+    -0.125
+   ],
+   "R_center00": 0.0,
+   "R_center00_domain_limited": false,
+   "R_best": 0.01545084971874736,
+   "R_best_center": [
+    -0.2875,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.0,
+   "R_best_y0_center": [
+    -0.3,
+    0.0
+   ],
+   "ik_area_m2": 0.4687500000000001
+  },
+  "grasp|180": {
+   "area_m2": 0.33375000000000005,
+   "n": 534,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.20255813167606582,
+   "R_best_y0_center": [
+    -0.025,
+    0.0
+   ],
+   "ik_area_m2": 0.4925000000000001
+  },
+  "grasp|225": {
+   "area_m2": 0.42375000000000007,
+   "n": 678,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2970269348055829,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.16777756377319944,
+   "R_center00_domain_limited": false,
+   "R_best": 0.19441181696558535,
+   "R_best_center": [
+    -0.0375,
+    -0.0125
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1909852574512465,
+   "R_best_y0_center": [
+    -0.0375,
+    0.0
+   ],
+   "ik_area_m2": 0.4987500000000001
+  },
+  "grasp|270": {
+   "area_m2": 0.4381250000000001,
+   "n": 701,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.5012500000000001
+  },
+  "grasp|315": {
+   "area_m2": 0.4381250000000001,
+   "n": 701,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2970269348055829,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.16777756377319944,
+   "R_center00_domain_limited": false,
+   "R_best": 0.19441181696558538,
+   "R_best_center": [
+    -0.0375,
+    0.0125
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.19098525745124645,
+   "R_best_y0_center": [
+    -0.0375,
+    0.0
+   ],
+   "ik_area_m2": 0.4987500000000001
+  },
+  "push|0": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4956250000000001
+  },
+  "push|45": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4975000000000001
+  },
+  "push|90": {
+   "area_m2": 0.10687500000000003,
+   "n": 171,
+   "r_max": 0.7853184067625054,
+   "r_min": 0.4833218389437829,
+   "x_range": [
+    -0.25,
+    0.1
+   ],
+   "y_range": [
+    0.05,
+    0.4
+   ],
+   "x_range_at_y0": null,
+   "y_range_at_x0": [
+    0.05,
+    0.4
+   ],
+   "R_center00": 0.0,
+   "R_center00_domain_limited": false,
+   "R_best": 0.06353453162872766,
+   "R_best_center": [
+    -0.0375,
+    0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.0,
+   "R_best_y0_center": [
+    -0.3,
+    0.0
+   ],
+   "ik_area_m2": 0.4962500000000001
+  },
+  "push|135": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4975000000000001
+  },
+  "push|180": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4956250000000001
+  },
+  "push|225": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4975000000000001
+  },
+  "push|270": {
+   "area_m2": 0.10687500000000003,
+   "n": 171,
+   "r_max": 0.7853184067625054,
+   "r_min": 0.4833218389437829,
+   "x_range": [
+    -0.25,
+    0.1
+   ],
+   "y_range": [
+    -0.4,
+    -0.05
+   ],
+   "x_range_at_y0": null,
+   "y_range_at_x0": [
+    -0.4,
+    -0.05
+   ],
+   "R_center00": 0.0,
+   "R_center00_domain_limited": false,
+   "R_best": 0.06353453162872771,
+   "R_best_center": [
+    -0.0375,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.0,
+   "R_best_y0_center": [
+    -0.3,
+    0.0
+   ],
+   "ik_area_m2": 0.4950000000000001
+  },
+  "push|315": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4975000000000001
+  },
+  "push2|0": {
+   "area_m2": 0.4381250000000001,
+   "n": 701,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.5012500000000001
+  },
+  "push2|45": {
+   "area_m2": 0.4381250000000001,
+   "n": 701,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2970269348055829,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.16777756377319944,
+   "R_center00_domain_limited": false,
+   "R_best": 0.19441181696558538,
+   "R_best_center": [
+    -0.0375,
+    0.0125
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.19098525745124645,
+   "R_best_y0_center": [
+    -0.0375,
+    0.0
+   ],
+   "ik_area_m2": 0.4987500000000001
+  },
+  "push2|90": {
+   "area_m2": 0.44000000000000006,
+   "n": 704,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4925000000000001
+  },
+  "push2|135": {
+   "area_m2": 0.42375000000000007,
+   "n": 678,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2970269348055829,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.16777756377319944,
+   "R_center00_domain_limited": false,
+   "R_best": 0.19441181696558535,
+   "R_best_center": [
+    -0.0375,
+    -0.0125
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1909852574512465,
+   "R_best_y0_center": [
+    -0.0375,
+    0.0
+   ],
+   "ik_area_m2": 0.4987500000000001
+  },
+  "push2|180": {
+   "area_m2": 0.4381250000000001,
+   "n": 701,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.5012500000000001
+  },
+  "push2|225": {
+   "area_m2": 0.4381250000000001,
+   "n": 701,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2970269348055829,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.16777756377319944,
+   "R_center00_domain_limited": false,
+   "R_best": 0.19441181696558538,
+   "R_best_center": [
+    -0.0375,
+    0.0125
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.19098525745124645,
+   "R_best_y0_center": [
+    -0.0375,
+    0.0
+   ],
+   "ik_area_m2": 0.4987500000000001
+  },
+  "push2|270": {
+   "area_m2": 0.33375000000000005,
+   "n": 534,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.20255813167606582,
+   "R_best_y0_center": [
+    -0.025,
+    0.0
+   ],
+   "ik_area_m2": 0.4925000000000001
+  },
+  "push2|315": {
+   "area_m2": 0.42375000000000007,
+   "n": 678,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2970269348055829,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.16777756377319944,
+   "R_center00_domain_limited": false,
+   "R_best": 0.19441181696558535,
+   "R_best_center": [
+    -0.0375,
+    -0.0125
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1909852574512465,
+   "R_best_y0_center": [
+    -0.0375,
+    0.0
+   ],
+   "ik_area_m2": 0.4987500000000001
+  },
+  "peg|0": {
+   "area_m2": 0.21375000000000005,
+   "n": 342,
+   "r_max": 0.7853184067625054,
+   "r_min": 0.4833218389437829,
+   "x_range": [
+    -0.25,
+    0.1
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": null,
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.0,
+   "R_center00_domain_limited": false,
+   "R_best": 0.06353453162872771,
+   "R_best_center": [
+    -0.0375,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.0,
+   "R_best_y0_center": [
+    -0.3,
+    0.0
+   ],
+   "ik_area_m2": 0.4893750000000001
+  },
+  "peg|45": {
+   "area_m2": 0.09375000000000001,
+   "n": 150,
+   "r_max": 0.7960684643923536,
+   "r_min": 0.41800119617053727,
+   "x_range": [
+    -0.2,
+    0.1
+   ],
+   "y_range": [
+    -0.05,
+    0.35
+   ],
+   "x_range_at_y0": [
+    -0.15,
+    0.05
+   ],
+   "y_range_at_x0": [
+    -0.025,
+    0.3
+   ],
+   "R_center00": 0.037500000000000006,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1456138830084187,
+   "R_best_center": [
+    -0.05,
+    0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.058210678118654574,
+   "R_best_y0_center": [
+    -0.05,
+    0.0
+   ],
+   "ik_area_m2": 0.4856250000000001
+  },
+  "peg|90": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4643750000000001
+  },
+  "peg|135": {
+   "area_m2": 0.06562500000000002,
+   "n": 105,
+   "r_max": 0.7960684643923536,
+   "r_min": 0.4217226576791908,
+   "x_range": [
+    -0.2,
+    0.1
+   ],
+   "y_range": [
+    -0.35,
+    -0.075
+   ],
+   "x_range_at_y0": null,
+   "y_range_at_x0": [
+    -0.3,
+    -0.075
+   ],
+   "R_center00": 0.0,
+   "R_center00_domain_limited": false,
+   "R_best": 0.03903882032022073,
+   "R_best_center": [
+    -0.1625,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.0,
+   "R_best_y0_center": [
+    -0.3,
+    0.0
+   ],
+   "ik_area_m2": 0.4643750000000001
+  },
+  "peg|180": {
+   "area_m2": 0.21375000000000005,
+   "n": 342,
+   "r_max": 0.7853184067625054,
+   "r_min": 0.4833218389437829,
+   "x_range": [
+    -0.25,
+    0.1
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": null,
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.0,
+   "R_center00_domain_limited": false,
+   "R_best": 0.06353453162872771,
+   "R_best_center": [
+    -0.0375,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.0,
+   "R_best_y0_center": [
+    -0.3,
+    0.0
+   ],
+   "ik_area_m2": 0.4893750000000001
+  },
+  "peg|225": {
+   "area_m2": 0.09375000000000001,
+   "n": 150,
+   "r_max": 0.7960684643923536,
+   "r_min": 0.41800119617053727,
+   "x_range": [
+    -0.2,
+    0.1
+   ],
+   "y_range": [
+    -0.05,
+    0.35
+   ],
+   "x_range_at_y0": [
+    -0.15,
+    0.05
+   ],
+   "y_range_at_x0": [
+    -0.025,
+    0.3
+   ],
+   "R_center00": 0.037500000000000006,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1456138830084187,
+   "R_best_center": [
+    -0.05,
+    0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.058210678118654574,
+   "R_best_y0_center": [
+    -0.05,
+    0.0
+   ],
+   "ik_area_m2": 0.4856250000000001
+  },
+  "peg|270": {
+   "area_m2": 0.0,
+   "n": 0,
+   "ik_area_m2": 0.4643750000000001
+  },
+  "peg|315": {
+   "area_m2": 0.06562500000000002,
+   "n": 105,
+   "r_max": 0.7960684643923536,
+   "r_min": 0.4217226576791908,
+   "x_range": [
+    -0.2,
+    0.1
+   ],
+   "y_range": [
+    -0.35,
+    -0.075
+   ],
+   "x_range_at_y0": null,
+   "y_range_at_x0": [
+    -0.3,
+    -0.075
+   ],
+   "R_center00": 0.0,
+   "R_center00_domain_limited": false,
+   "R_best": 0.03903882032022073,
+   "R_best_center": [
+    -0.1625,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.0,
+   "R_best_y0_center": [
+    -0.3,
+    0.0
+   ],
+   "ik_area_m2": 0.4662500000000001
+  },
+  "peg2|0": {
+   "area_m2": 0.4431250000000001,
+   "n": 709,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4806250000000001
+  },
+  "peg2|45": {
+   "area_m2": 0.4431250000000001,
+   "n": 709,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4875000000000001
+  },
+  "peg2|90": {
+   "area_m2": 0.4381250000000001,
+   "n": 701,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4650000000000001
+  },
+  "peg2|135": {
+   "area_m2": 0.4412500000000001,
+   "n": 706,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.16777756377319944,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.20255813167606587,
+   "R_best_y0_center": [
+    -0.05,
+    0.0
+   ],
+   "ik_area_m2": 0.4675000000000001
+  },
+  "peg2|180": {
+   "area_m2": 0.4431250000000001,
+   "n": 709,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4806250000000001
+  },
+  "peg2|225": {
+   "area_m2": 0.4431250000000001,
+   "n": 709,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4868750000000001
+  },
+  "peg2|270": {
+   "area_m2": 0.4381250000000001,
+   "n": 701,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "ik_area_m2": 0.4650000000000001
+  },
+  "peg2|315": {
+   "area_m2": 0.4412500000000001,
+   "n": 706,
+   "r_max": 0.8091507894082537,
+   "r_min": 0.2936409372005204,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.16777756377319944,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.20255813167606587,
+   "R_best_y0_center": [
+    -0.05,
+    0.0
+   ],
+   "ik_area_m2": 0.4662500000000001
+  }
+ },
+ "per_type_all_yaw": {
+  "grasp": {
+   "area_m2": 0.4356250000000001,
+   "n": 697,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.29954131601500317,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ]
+  },
+  "push": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "push2": {
+   "area_m2": 0.32250000000000006,
+   "n": 516,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.32380549717384355,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.5524717187331855,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": null,
+     "r_max": null
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.30450779957170226,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ]
+  },
+  "peg": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "peg2": {
+   "area_m2": 0.4356250000000001,
+   "n": 697,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.29954131601500317,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ]
+  },
+  "peg|s=1": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "peg|s=-1": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "peg2|s=1": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "peg2|s=-1": {
+   "area_m2": 0.0,
+   "n": 0
+  }
+ },
+ "per_type_all_yaw_ik": {
+  "grasp": {
+   "area_m2": 0.4625000000000001,
+   "n": 740,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.2164486082191336,
+     "r_max": 0.7963039620647382,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.21499999999999997,
+     "r_max": 0.7963039620647382,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.7984985911070852,
+   "r_min": 0.21499999999999997,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.4,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.17789432764659768,
+   "R_center00_domain_limited": false,
+   "R_best": 0.2918948915471478,
+   "R_best_center": [
+    -0.1125,
+    -0.025
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.2875000000000002,
+   "R_best_y0_center": [
+    -0.125,
+    0.0
+   ]
+  },
+  "push": {
+   "area_m2": 0.4750000000000001,
+   "n": 760,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.8412639300481152,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.8364956664561988,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.2164486082191336,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.21499999999999997,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.8364956664561988,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.8412639300481152,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.8412639300481152,
+   "r_min": 0.21499999999999997,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.4,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.3000000000000002,
+   "R_best_center": [
+    -0.1125,
+    -0.0625
+   ],
+   "R_best_domain_limited": true,
+   "R_best_y0": 0.2999999999999998,
+   "R_best_y0_center": [
+    -0.1125,
+    0.0
+   ]
+  },
+  "push2": {
+   "area_m2": 0.4750000000000001,
+   "n": 760,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.8129268109737802,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.2164486082191336,
+     "r_max": 0.845931439302264,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.21499999999999997,
+     "r_max": 0.845931439302264,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.8129268109737802,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.845931439302264,
+   "r_min": 0.21499999999999997,
+   "x_range": [
+    -0.4,
+    0.225
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.4,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.3000000000000002,
+   "R_best_center": [
+    -0.1125,
+    -0.0625
+   ],
+   "R_best_domain_limited": true,
+   "R_best_y0": 0.2999999999999998,
+   "R_best_y0_center": [
+    -0.1125,
+    0.0
+   ]
+  },
+  "peg": {
+   "area_m2": 0.46062500000000006,
+   "n": 737,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.2164486082191336,
+     "r_max": 0.7963039620647382,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.21499999999999997,
+     "r_max": 0.7935521406939812,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.22770595073471397,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.7984985911070852,
+   "r_min": 0.21499999999999997,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.4,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.27309149146989636,
+   "R_best_center": [
+    -0.0875,
+    -0.0125
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.2684025631780527,
+   "R_best_y0_center": [
+    -0.0875,
+    0.0
+   ]
+  },
+  "peg2": {
+   "area_m2": 0.4612500000000001,
+   "n": 738,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.2164486082191336,
+     "r_max": 0.7915806970865321,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.21499999999999997,
+     "r_max": 0.7935521406939812,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.7984985911070852,
+   "r_min": 0.21499999999999997,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.4,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.17789432764659768,
+   "R_center00_domain_limited": false,
+   "R_best": 0.27904759474226515,
+   "R_best_center": [
+    -0.125,
+    0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.2670084971874739,
+   "R_best_y0_center": [
+    -0.1,
+    0.0
+   ]
+  }
+ },
+ "combos": {
+  "严格（grasp∧push∧peg，初始位姿直达）": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "推荐（grasp∧push2∧peg2，两段式）": {
+   "area_m2": 0.32250000000000006,
+   "n": 516,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.32380549717384355,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.5524717187331855,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": null,
+     "r_max": null
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.30450779957170226,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ]
+  },
+  "抓+两段式推（grasp∧push2，不含带杆推）": {
+   "area_m2": 0.32250000000000006,
+   "n": 516,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.32380549717384355,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.5524717187331855,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": null,
+     "r_max": null
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.30450779957170226,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ]
+  },
+  "仅顶抓（grasp，yaw≡yaw+180°）": {
+   "area_m2": 0.4356250000000001,
+   "n": 697,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.29954131601500317,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ]
+  },
+  "IK 上限（五类全 yaw 存在无碰逆解）": {
+   "area_m2": 0.4568750000000001,
+   "n": 731,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.2164486082191336,
+     "r_max": 0.7915806970865321,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.21499999999999997,
+     "r_max": 0.7915806970865321,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.22770595073471397,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.7984985911070852,
+   "r_min": 0.21499999999999997,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.4,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.17789432764659768,
+   "R_center00_domain_limited": false,
+   "R_best": 0.26504504138968166,
+   "R_best_center": [
+    -0.1,
+    -0.0125
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.2636340254296817,
+   "R_best_y0_center": [
+    -0.1,
+    0.0
+   ]
+  }
+ },
+ "per_type_all_yaw_literal": {
+  "grasp": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "push": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "push2": {
+   "area_m2": 0.32250000000000006,
+   "n": 516,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.32380549717384355,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.5524717187331855,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": null,
+     "r_max": null
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.30450779957170226,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1221291201783626,
+   "R_center00_domain_limited": false,
+   "R_best": 0.1556703005884212,
+   "R_best_center": [
+    -0.0625,
+    -0.0
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1556703005884212,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ]
+  },
+  "peg": {
+   "area_m2": 0.0,
+   "n": 0
+  },
+  "peg2": {
+   "area_m2": 0.0,
+   "n": 0
+  }
+ },
+ "combos_filled": {
+  "严格（grasp∧push∧peg，初始位姿直达）": {
+   "area_m2": 0.0,
+   "n": 0,
+   "holes_filled": 0
+  },
+  "推荐（grasp∧push2∧peg2，两段式）": {
+   "area_m2": 0.33062500000000006,
+   "n": 529,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.32380549717384355,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.5524717187331855,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": null,
+     "r_max": null
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.30450779957170226,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.24519410160110355,
+   "R_best_center": [
+    -0.0625,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1909852574512465,
+   "R_best_y0_center": [
+    -0.0125,
+    0.0
+   ],
+   "holes_filled": 13
+  },
+  "抓+两段式推（grasp∧push2，不含带杆推）": {
+   "area_m2": 0.33062500000000006,
+   "n": 529,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.32380549717384355,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.5524717187331855,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": null,
+     "r_max": null
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.30450779957170226,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.24519410160110355,
+   "R_best_center": [
+    -0.0625,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1909852574512465,
+   "R_best_y0_center": [
+    -0.0125,
+    0.0
+   ],
+   "holes_filled": 13
+  },
+  "仅顶抓（grasp，yaw≡yaw+180°）": {
+   "area_m2": 0.44000000000000006,
+   "n": 704,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.29954131601500317,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "holes_filled": 7
+  },
+  "IK 上限（五类全 yaw 存在无碰逆解）": {
+   "area_m2": 0.4587500000000001,
+   "n": 734,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.22073740054644111,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.2164486082191336,
+     "r_max": 0.7915806970865321,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.21499999999999997,
+     "r_max": 0.7915806970865321,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.22770595073471397,
+     "r_max": 0.7974020316001208,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.2371181140275875,
+     "r_max": 0.7984985911070852,
+     "r_max_edge": false,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.24869660230891774,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.2936409372005204,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.7984985911070852,
+   "r_min": 0.21499999999999997,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.4,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.17789432764659768,
+   "R_center00_domain_limited": false,
+   "R_best": 0.2749999999999998,
+   "R_best_center": [
+    -0.1125,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.2636340254296817,
+   "R_best_y0_center": [
+    -0.1,
+    0.0
+   ],
+   "holes_filled": 3
+  }
+ },
+ "per_type_all_yaw_filled": {
+  "grasp": {
+   "area_m2": 0.44000000000000006,
+   "n": 704,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.29954131601500317,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "holes_filled": 7
+  },
+  "push": {
+   "area_m2": 0.0,
+   "n": 0,
+   "holes_filled": 0
+  },
+  "push2": {
+   "area_m2": 0.33062500000000006,
+   "n": 529,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.32380549717384355,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.5524717187331855,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": null,
+     "r_max": null
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": null,
+     "r_max": null
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.30450779957170226,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.375
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.275
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.24519410160110355,
+   "R_best_center": [
+    -0.0625,
+    -0.1
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.1909852574512465,
+   "R_best_y0_center": [
+    -0.0125,
+    0.0
+   ],
+   "holes_filled": 13
+  },
+  "peg": {
+   "area_m2": 0.0,
+   "n": 0,
+   "holes_filled": 0
+  },
+  "peg2": {
+   "area_m2": 0.44000000000000006,
+   "n": 704,
+   "r_theta": [
+    {
+     "theta": "[-70,-60)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-60,-50)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-50,-40)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[-40,-30)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-30,-20)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-20,-10)",
+     "r_min": 0.30675723300355934,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[-10,0)",
+     "r_min": 0.3159905061864992,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[0,10)",
+     "r_min": 0.315,
+     "r_max": 0.7998281065328975,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[10,20)",
+     "r_min": 0.29954131601500317,
+     "r_max": 0.8091507894082537,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[20,30)",
+     "r_min": 0.30450779957170226,
+     "r_max": 0.8082233602167164,
+     "r_max_edge": false,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[30,40)",
+     "r_min": 0.31240998703626616,
+     "r_max": 0.7975587752636165,
+     "r_max_edge": true,
+     "r_min_edge": false
+    },
+    {
+     "theta": "[40,50)",
+     "r_min": 0.3112073263919087,
+     "r_max": 0.6133718285020922,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[50,60)",
+     "r_min": 0.3490701935141412,
+     "r_max": 0.5091414341811125,
+     "r_max_edge": true,
+     "r_min_edge": true
+    },
+    {
+     "theta": "[60,70)",
+     "r_min": 0.43226149493101973,
+     "r_max": 0.4541200281863816,
+     "r_max_edge": true,
+     "r_min_edge": true
+    }
+   ],
+   "r_max": 0.8091507894082537,
+   "r_min": 0.29954131601500317,
+   "x_range": [
+    -0.4,
+    0.175
+   ],
+   "y_range": [
+    -0.4,
+    0.4
+   ],
+   "x_range_at_y0": [
+    -0.3,
+    0.175
+   ],
+   "y_range_at_x0": [
+    -0.4,
+    0.4
+   ],
+   "R_center00": 0.1875,
+   "R_center00_domain_limited": false,
+   "R_best": 0.25029745052035773,
+   "R_best_center": [
+    -0.0625,
+    -0.0875
+   ],
+   "R_best_domain_limited": false,
+   "R_best_y0": 0.24999999999999978,
+   "R_best_y0_center": [
+    -0.0625,
+    0.0
+   ],
+   "holes_filled": 7
+  }
+ }
+}

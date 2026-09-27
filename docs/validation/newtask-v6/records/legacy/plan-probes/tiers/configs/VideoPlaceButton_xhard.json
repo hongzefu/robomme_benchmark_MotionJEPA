@@ -1,0 +1,125 @@
+{
+ "task": "VideoPlaceButton",
+ "tier": "xhard",
+ "overrides": {},
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "demo_object_count": 1,
+   "demo_return_policy": "native_random_goal_site",
+   "targets": {
+    "hard": 4,
+    "easy": 3,
+    "medium": 4,
+    "xhard": 4
+   },
+   "swap": {
+    "hard": true,
+    "easy": false,
+    "medium": false,
+    "xhard": true
+   },
+   "additional_place": {
+    "hard": false,
+    "easy": false,
+    "medium": false,
+    "xhard": false
+   },
+   "xhard": {
+    "demo_object_count": 2,
+    "demo_return_policy": "return_to_origin"
+   }
+  },
+  "native": {
+   "parameters": {
+    "color_pool": [
+     {
+      "rgba": [
+       1,
+       0,
+       0,
+       1
+      ],
+      "name": "red"
+     },
+     {
+      "rgba": [
+       0,
+       0,
+       1,
+       1
+      ],
+      "name": "blue"
+     },
+     {
+      "rgba": [
+       0,
+       1,
+       0,
+       1
+      ],
+      "name": "green"
+     }
+    ],
+    "color_order": {
+     "sampler": "torch.randperm(3)"
+    },
+    "target_selection": {
+     "sampler": "torch.randint(0, len(all_cubes))"
+    },
+    "task_mapping": "before→target_0，after→target_1；演示 target_0→按钮→target_1→goal_site",
+    "swap_duration_steps": 50,
+    "goal_site_z_override": -0.05,
+    "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+    "target_slots": 4,
+    "color": {
+     "hard": 3,
+     "easy": 1,
+     "medium": 3,
+     "xhard": 3
+    }
+   },
+   "positions": {
+    "goal": {
+     "region_center": [
+      -0.1,
+      0
+     ],
+     "region_half_size": 0.1,
+     "radius_factor": 3,
+     "thickness": 0.005
+    },
+    "button": {
+     "center_xy": [
+      0.1,
+      0
+     ],
+     "scale": 1.5,
+     "randomize_range": [
+      0.05,
+      0.3
+     ]
+    },
+    "cubes": {
+     "region_center": [
+      0,
+      0
+     ],
+     "region_half_size": 0.2,
+     "random_yaw": true
+    },
+    "targets": {
+     "region_center": [
+      0,
+      0
+     ],
+     "region_half_size": 0.2,
+     "radius_factor": 2,
+     "thickness": 0.005,
+     "min_gap_factor": 1
+    }
+   }
+  }
+ }
+}

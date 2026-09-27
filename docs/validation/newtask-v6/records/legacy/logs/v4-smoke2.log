@@ -1,0 +1,22 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+DRAW StopCube ep=0 attempt=0 seed=4200000 ok=True 
+DRAW StopCube ep=1 attempt=0 seed=4200100 ok=True 
+DRAW StopCube ep=2 attempt=0 seed=4200200 ok=True 
+DRAW StopCube ep=3 attempt=0 seed=4200300 ok=True 
+DRAW_TASK StopCube ok=4 attempted=4 shortfall=0
+DRAW SwingXtimes ep=0 attempt=0 seed=4300000 ok=True 
+DRAW SwingXtimes ep=1 attempt=0 seed=4300100 ok=True 
+DRAW SwingXtimes ep=2 attempt=0 seed=4300200 ok=True 
+DRAW SwingXtimes ep=3 attempt=0 seed=4300300 ok=True 
+DRAW_TASK SwingXtimes ok=4 attempted=4 shortfall=0
+DRAW_DONE rows=8 ok=8 out=/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/smoke-02/draft/drafts.jsonl
+FREEZE_DONE rows=8 selected=4 envs=2 candidate_shortfall=0 out=/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/smoke-02/specs.jsonl
+ROUND 0 jobs=4 ok=4 wall_s=107
+ROLLOUT_DONE label=run1 rollout_attempted=4 rollout_ok=4 backfilled=0 selected_shortfall=0
+ROUND 0 jobs=4 ok=4 wall_s=110
+ROLLOUT_DONE label=run2 rollout_attempted=4 rollout_ok=4 backfilled=0 selected_shortfall=0
+NEWVALUE_REPLAY=PASS identities=4 terminal_mismatch=0 compared_success=4 sha_equal=4 field_mismatch=0 empty_or_invalid=0
+EXIT_CODE=0

@@ -1,6 +1,6 @@
 # V4 步 1～2：链路甲退役口径与新值规格类别
 
-> 对应 [0922-newtask-release-v4-plan.md](../../../0922-newtask-release-v4-plan.md) 第六节步 1、步 2（红线 N1 要求的逐步报告）。
+> 对应 [0922-newtask-release-v4-plan.md](../../plans/0922-newtask-release-v4-plan.md) 第六节步 1、步 2（红线 N1 要求的逐步报告）。
 > 分支 `newtaskRelease-v4`，起点 `13e5151`。录像器 `RecordWrapper.py` 未改（`git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py` 为真）。
 
 ## 一、改动清单

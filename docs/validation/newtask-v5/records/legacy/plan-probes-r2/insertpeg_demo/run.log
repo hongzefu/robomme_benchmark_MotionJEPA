@@ -1,0 +1,43 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+EP ep=0 seed=5300000 ok=False steps=None err=DatasetGenerationError min_pair=0.0565 min_box=0.1116 grasp_d=0.720 pinch=[] land=[] settle_max=0.00mm same=True wall=26.2s
+EP ep=1 seed=5300100 ok=True steps=400 err=None min_pair=0.0304 min_box=0.0841 grasp_d=0.711 pinch=[] land=[] settle_max=0.00mm same=True wall=20.7s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.030525 is greater than threshold 0.001000.
+IK Failed! Distance 0.029128 is greater than threshold 0.001000.
+IK Failed! Distance 0.033123 is greater than threshold 0.001000.
+EP ep=2 seed=5300200 ok=False steps=None err=PlannerExhausted min_pair=0.0519 min_box=0.0844 grasp_d=0.832 pinch=[] land=[] settle_max=0.00mm same=True wall=46.8s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+EP ep=3 seed=5300300 ok=False steps=None err=DatasetGenerationError min_pair=0.0814 min_box=0.0389 grasp_d=0.815 pinch=[] land=[] settle_max=0.00mm same=True wall=82.5s
+EP ep=4 seed=5300400 ok=True steps=421 err=None min_pair=0.0534 min_box=0.0703 grasp_d=0.614 pinch=[] land=[] settle_max=0.00mm same=True wall=28.0s
+screw plan failed
+screw plan failed
+screw plan failed
+EP ep=5 seed=5300500 ok=False steps=None err=FailsafeTimeout min_pair=0.0565 min_box=0.0330 grasp_d=0.530 pinch=[] land=[] settle_max=0.00mm same=True wall=196.2s
+EP ep=6 seed=5300600 ok=False steps=None err=DatasetGenerationError min_pair=0.0756 min_box=0.0472 grasp_d=0.454 pinch=[] land=[] settle_max=0.00mm same=True wall=26.6s
+EP ep=7 seed=5300700 ok=False steps=None err=DatasetGenerationError min_pair=0.0817 min_box=0.0707 grasp_d=0.475 pinch=[] land=[] settle_max=0.00mm same=True wall=30.8s
+EP ep=8 seed=5300800 ok=True steps=481 err=None min_pair=0.1656 min_box=0.0291 grasp_d=0.660 pinch=[] land=[] settle_max=0.00mm same=True wall=25.0s
+screw plan failed
+screw plan failed
+screw plan failed
+EP ep=9 seed=5300900 ok=True steps=572 err=None min_pair=0.0498 min_box=0.0165 grasp_d=0.457 pinch=[] land=[] settle_max=0.00mm same=True wall=30.2s
+ALL_DONE
+EXIT_CODE=139

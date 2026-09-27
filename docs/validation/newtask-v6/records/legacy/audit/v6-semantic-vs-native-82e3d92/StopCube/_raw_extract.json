@@ -1,0 +1,1055 @@
+[
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/StopCube_episode_0/hdf5_files/StopCube_ep0_seed6200000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/StopCube_episode_0/videos/StopCube_ep0_seed6200000_xhard4_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_sixth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_sixth_visit.mp4",
+  "seed": 6200000,
+  "difficulty": "xhard4",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the sixth time",
+   "press the button to stop the cube exactly at the target on its sixth visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 362,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   54,
+   102,
+   204,
+   300,
+   328
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <65, 115> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [68, 116]}"
+   },
+   {
+    "start": 54,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 300,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <95, 121>",
+    "choice": "{\"choice\": \"C\", \"point\": [96, 122]}"
+   },
+   {
+    "start": 328,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <95, 121>",
+    "choice": "{\"choice\": \"C\", \"point\": [96, 122]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/StopCube_episode_3/hdf5_files/StopCube_ep3_seed6200300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/StopCube_episode_3/videos/StopCube_ep3_seed6200300_xhard4_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_fourteenth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_fourteenth_visit.mp4",
+  "seed": 6200300,
+  "difficulty": "xhard4",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the fourteenth time",
+   "press the button to stop the cube exactly at the target on its fourteenth visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 852,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   60,
+   102,
+   204,
+   300,
+   402,
+   504,
+   600,
+   702,
+   780,
+   809
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <58, 102> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [61, 103]}"
+   },
+   {
+    "start": 60,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 780,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <100, 136>",
+    "choice": "{\"choice\": \"C\", \"point\": [101, 137]}"
+   },
+   {
+    "start": 809,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <100, 136>",
+    "choice": "{\"choice\": \"C\", \"point\": [101, 137]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/StopCube_episode_6/hdf5_files/StopCube_ep6_seed6200600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/StopCube_episode_6/videos/StopCube_ep6_seed6200600_xhard4_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_fifteenth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_fifteenth_visit.mp4",
+  "seed": 6200600,
+  "difficulty": "xhard4",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the fifteenth time",
+   "press the button to stop the cube exactly at the target on its fifteenth visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 902,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   54,
+   102,
+   204,
+   300,
+   402,
+   504,
+   600,
+   702,
+   804,
+   840,
+   868
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <66, 107> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [68, 108]}"
+   },
+   {
+    "start": 2,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <66, 107> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [69, 108]}"
+   },
+   {
+    "start": 54,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 840,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <90, 137>",
+    "choice": "{\"choice\": \"C\", \"point\": [90, 138]}"
+   },
+   {
+    "start": 868,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <90, 137>",
+    "choice": "{\"choice\": \"C\", \"point\": [90, 138]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_0/hdf5_files/StopCube_ep0_seed2000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_0/videos/StopCube_ep0_seed2000_easy_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_fourth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_fourth_visit.mp4",
+  "seed": 2000,
+  "difficulty": "easy",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the fourth time",
+   "press the button to stop the cube exactly at the target on its fourth visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 459,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   56,
+   104,
+   200,
+   302,
+   392,
+   422
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <57, 85> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [59, 87]}"
+   },
+   {
+    "start": 2,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <57, 85> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [60, 87]}"
+   },
+   {
+    "start": 56,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 392,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <103, 103>",
+    "choice": "{\"choice\": \"C\", \"point\": [104, 104]}"
+   },
+   {
+    "start": 422,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <103, 103>",
+    "choice": "{\"choice\": \"C\", \"point\": [104, 104]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_1/hdf5_files/StopCube_ep1_seed2100.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_1/videos/StopCube_ep1_seed2100_easy_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_third_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_third_visit.mp4",
+  "seed": 2100,
+  "difficulty": "easy",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the third time",
+   "press the button to stop the cube exactly at the target on its third visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 186,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   57,
+   105,
+   123,
+   150
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <69, 108> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [72, 110]}"
+   },
+   {
+    "start": 57,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 123,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <122, 138>",
+    "choice": "{\"choice\": \"C\", \"point\": [123, 139]}"
+   },
+   {
+    "start": 150,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <122, 138>",
+    "choice": "{\"choice\": \"C\", \"point\": [123, 139]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_10/hdf5_files/StopCube_ep10_seed3001.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_10/videos/StopCube_ep10_seed3001_medium_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_third_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_third_visit.mp4",
+  "seed": 3001,
+  "difficulty": "medium",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the third time",
+   "press the button to stop the cube exactly at the target on its third visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 234,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   53,
+   101,
+   173,
+   200
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <67, 159> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [70, 159]}"
+   },
+   {
+    "start": 53,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 173,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <107, 130>",
+    "choice": "{\"choice\": \"C\", \"point\": [108, 131]}"
+   },
+   {
+    "start": 200,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <107, 130>",
+    "choice": "{\"choice\": \"C\", \"point\": [108, 131]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_11/hdf5_files/StopCube_ep11_seed3100.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_11/videos/StopCube_ep11_seed3100_hard_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_third_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_third_visit.mp4",
+  "seed": 3100,
+  "difficulty": "hard",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the third time",
+   "press the button to stop the cube exactly at the target on its third visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 331,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   54,
+   102,
+   204,
+   270,
+   297
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <67, 105> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [70, 107]}"
+   },
+   {
+    "start": 54,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 270,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <112, 103>",
+    "choice": "{\"choice\": \"C\", \"point\": [113, 104]}"
+   },
+   {
+    "start": 297,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <112, 103>",
+    "choice": "{\"choice\": \"C\", \"point\": [113, 104]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_2/hdf5_files/StopCube_ep2_seed2200.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_2/videos/StopCube_ep2_seed2200_medium_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_third_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_third_visit.mp4",
+  "seed": 2200,
+  "difficulty": "medium",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the third time",
+   "press the button to stop the cube exactly at the target on its third visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 243,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   55,
+   103,
+   175,
+   203
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <63, 162> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [66, 162]}"
+   },
+   {
+    "start": 55,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 175,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <93, 114>",
+    "choice": "{\"choice\": \"C\", \"point\": [93, 115]}"
+   },
+   {
+    "start": 203,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <93, 114>",
+    "choice": "{\"choice\": \"C\", \"point\": [93, 115]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_3/hdf5_files/StopCube_ep3_seed2300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_3/videos/StopCube_ep3_seed2300_hard_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_fourth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_fourth_visit.mp4",
+  "seed": 2300,
+  "difficulty": "hard",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the fourth time",
+   "press the button to stop the cube exactly at the target on its fourth visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 453,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   54,
+   102,
+   204,
+   300,
+   390,
+   418
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <65, 127> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [68, 128]}"
+   },
+   {
+    "start": 54,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 390,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <96, 130>",
+    "choice": "{\"choice\": \"C\", \"point\": [96, 130]}"
+   },
+   {
+    "start": 418,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <96, 130>",
+    "choice": "{\"choice\": \"C\", \"point\": [96, 130]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_4/hdf5_files/StopCube_ep4_seed2400.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_4/videos/StopCube_ep4_seed2400_easy_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_second_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_second_visit.mp4",
+  "seed": 2400,
+  "difficulty": "easy",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the second time",
+   "press the button to stop the cube exactly at the target on its second visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 211,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   54,
+   102,
+   150,
+   178
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <66, 155> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [69, 156]}"
+   },
+   {
+    "start": 54,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 150,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <105, 122>",
+    "choice": "{\"choice\": \"C\", \"point\": [106, 123]}"
+   },
+   {
+    "start": 178,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <105, 122>",
+    "choice": "{\"choice\": \"C\", \"point\": [106, 123]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_6/hdf5_files/StopCube_ep6_seed2600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_6/videos/StopCube_ep6_seed2600_medium_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_fourth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_fourth_visit.mp4",
+  "seed": 2600,
+  "difficulty": "medium",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the fourth time",
+   "press the button to stop the cube exactly at the target on its fourth visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 247,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   53,
+   101,
+   185,
+   212
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <68, 95> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [71, 96]}"
+   },
+   {
+    "start": 53,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 185,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <125, 155>",
+    "choice": "{\"choice\": \"C\", \"point\": [126, 156]}"
+   },
+   {
+    "start": 212,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <125, 155>",
+    "choice": "{\"choice\": \"C\", \"point\": [126, 156]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_7/hdf5_files/StopCube_ep7_seed2700.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/StopCube_episode_7/videos/StopCube_ep7_seed2700_hard_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_fifth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_fifth_visit.mp4",
+  "seed": 2700,
+  "difficulty": "hard",
+  "task_goal": [
+   "press the button to stop the cube just as it reaches the target for the fifth time",
+   "press the button to stop the cube exactly at the target on its fifth visit"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "move to the top of the button to prepare",
+    "need_parameter": false
+   },
+   {
+    "label": "b",
+    "action": "remain static",
+    "need_parameter": false
+   },
+   {
+    "label": "c",
+    "action": "press button to stop the cube",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 406,
+  "video_demo_steps": 0,
+  "boundaries": [
+   0,
+   57,
+   105,
+   201,
+   303,
+   333,
+   363
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "simple": "move to the top of the button to prepare",
+    "grounded": "move to the top of the button at <57, 160> to prepare",
+    "choice": "{\"choice\": \"A\", \"point\": [60, 161]}"
+   },
+   {
+    "start": 57,
+    "simple": "remain static",
+    "grounded": "remain static",
+    "choice": "{\"choice\": \"B\", \"point\": []}"
+   },
+   {
+    "start": 333,
+    "simple": "press the button to stop the cube on the target",
+    "grounded": "press the button to stop the cube on the target at <88, 129>",
+    "choice": "{\"choice\": \"C\", \"point\": [89, 130]}"
+   },
+   {
+    "start": 363,
+    "simple": "All tasks completed",
+    "grounded": "press the button to stop the cube on the target at <88, 129>",
+    "choice": "{\"choice\": \"C\", \"point\": [89, 130]}"
+   }
+  ],
+  "is_completed_last": true,
+  "front_extrinsic": [
+   [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.8944271802902222,
+    0.0,
+    -0.44721364974975586,
+    -0.08944264054298401
+   ],
+   [
+    -0.4472137689590454,
+    0.0,
+    -0.8944271802902222,
+    0.49193501472473145
+   ]
+  ]
+ }
+]

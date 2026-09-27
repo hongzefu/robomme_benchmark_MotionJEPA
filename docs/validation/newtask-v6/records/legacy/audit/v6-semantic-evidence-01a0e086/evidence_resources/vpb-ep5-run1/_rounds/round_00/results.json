@@ -1,0 +1,36 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/official-src",
+  "src_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/runtime",
+  "official_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/runtime/src/robomme/__init__.py",
+  "removed_sys_path_entries": [
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src"
+  ],
+  "workers": 1,
+  "gpu": "0",
+  "sampling_config": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/rollout/run1/_rounds/round_00/sampling.json",
+  "episode_specs": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/rollout/run1/_rounds/round_00/specs.json",
+  "worker": "train_split_worker.run_one",
+  "elapsed_seconds": 149.886,
+  "results": [
+    {
+      "task": "VideoPlaceButton",
+      "episode": 5,
+      "seed": 7000500,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "1044950cce907b4939a9db3dc1140cf1410b11bdb509bd880d196845e7e8fed2",
+        "episode_spec_sha256": "a205e9584c67a8949b57ab0505731e3d0d00e709cf6b73f5878af225cdaea532",
+        "spec_mode": "replay"
+      },
+      "ok": false,
+      "error_type": "DatasetGenerationError",
+      "error": "VideoPlaceButton/episode_5: did not succeed after the complete task_list",
+      "traceback": "Traceback (most recent call last):\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/runtime/scripts/parity/train_split_worker.py\", line 112, in run_one\n    official._execute_tasks(record_env, planner, torch, job)\n  File \"/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/official-src/scripts/data-generation/generate_dataset.py\", line 203, in _execute_tasks\n    raise DatasetGenerationError(\ngenerate_dataset.DatasetGenerationError: VideoPlaceButton/episode_5: did not succeed after the complete task_list\n"
+    }
+  ]
+}

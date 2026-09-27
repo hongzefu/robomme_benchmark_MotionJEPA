@@ -1,0 +1,135 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src",
+  "src_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl",
+  "official_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/__init__.py",
+  "removed_sys_path_entries": [],
+  "workers": 7,
+  "gpu": "0",
+  "sampling_config": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/_rounds/round_02/sampling.json",
+  "episode_specs": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/_rounds/round_02/specs.json",
+  "worker": "train_split_worker.run_one",
+  "elapsed_seconds": 109.955,
+  "results": [
+    {
+      "task": "InsertPeg",
+      "episode": 2,
+      "seed": 7300200,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "1d6952238ab320ba844e173d4a36b45ce46522fd93f47179f7bf1ccbe58c2cba",
+        "episode_spec_sha256": "336fc10f208b2de0b5b8b39a868d6690658edb52b515d7d5067debff202423d5",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_2/hdf5_files/InsertPeg_ep2_seed7300200.h5",
+      "timestep_count": 464
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 3,
+      "seed": 6300300,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "907f4e0b39ca66adec37152ceba55d0f393a47f16a1371134021f1ad36d4e9b2",
+        "episode_spec_sha256": "8667d4794675ce6d09664cd19d1e19e77b50dbbe89f3d4bd28a5299088e769cf",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed6300300.h5",
+      "timestep_count": 1007
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 3,
+      "seed": 7000302,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "1044950cce907b4939a9db3dc1140cf1410b11bdb509bd880d196845e7e8fed2",
+        "episode_spec_sha256": "5a7f03ca4dbec4dc932c1d8bb6ca93b6235ba93e1c512fddedcd90440cfd53f9",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed7000302.h5",
+      "timestep_count": 1849
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 3,
+      "seed": 7100301,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "45c6e4ed3e63e71d1db0267f91a1bd61a347c6cb2adf748cdadfe567eff453c3",
+        "episode_spec_sha256": "f519a9d94174612abf29e02186f4e604d88f9d3cfbd123ec5e348edc1422fc7d",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed7100301.h5",
+      "timestep_count": 2168
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "seed": 6900300,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "4343d2c96c70999fd296250b81c75cd5e477b67ab01700e692ec5b4991f17a1c",
+        "episode_spec_sha256": "70cbd2452049076a32ac940ffaa619737b3036ee6f46e874bd058fd554307954",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed6900300.h5",
+      "timestep_count": 1715
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 3,
+      "seed": 6600300,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "4f730668f3ca4cc413c1ccc1b26cf4dcc3a781c1164b19e071c6bb5b1317fa7b",
+        "episode_spec_sha256": "db6accd363d3c579b429357492f9844c905afc40ef23715d70efa0557a744feb",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed6600300.h5",
+      "timestep_count": 465
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 3,
+      "seed": 6500300,
+      "difficulty": "xhard4",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "9119a7aaa0e9e7662d2df9d7df9bba483877783c774d751c31abe0a74cd593f3",
+        "episode_spec_sha256": "286f3a66604283137a65ae09c63e11fa62c06a8001d172a8b21418a202240ce8",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed6500300.h5",
+      "timestep_count": 826
+    }
+  ]
+}

@@ -1,0 +1,490 @@
+[
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 12,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.07156633784566815,
+  "kw": {},
+  "sec": 30.7
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 13,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.07053415645045832,
+  "kw": {},
+  "sec": 28.9
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 14,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.06988168044239773,
+  "kw": {},
+  "sec": 22.4
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 15,
+  "success": 0.9951171875,
+  "wilson_lo": 0.9886206977231167,
+  "fails": {
+   "cube": 5
+  },
+  "min_pair_median": 0.06922019916262188,
+  "kw": {},
+  "sec": 24.4
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 16,
+  "success": 0.9853515625,
+  "wilson_lo": 0.9759719732670051,
+  "fails": {
+   "cube": 15
+  },
+  "min_pair_median": 0.0684080434998932,
+  "kw": {},
+  "sec": 20.3
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 17,
+  "success": 0.9580078125,
+  "wilson_lo": 0.943915065312417,
+  "fails": {
+   "cube": 43
+  },
+  "min_pair_median": 0.06781212402911675,
+  "kw": {},
+  "sec": 23.5
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 18,
+  "success": 0.859375,
+  "wilson_lo": 0.8367366460936368,
+  "fails": {
+   "cube": 144
+  },
+  "min_pair_median": 0.06731847856510756,
+  "kw": {},
+  "sec": 60.2
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 19,
+  "success": 0.7021484375,
+  "wilson_lo": 0.6734246098704271,
+  "fails": {
+   "cube": 305
+  },
+  "min_pair_median": 0.06690354835772831,
+  "kw": {},
+  "sec": 73.8
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 20,
+  "success": 0.517578125,
+  "wilson_lo": 0.48696353616976107,
+  "fails": {
+   "cube": 494
+  },
+  "min_pair_median": 0.06608413179922011,
+  "kw": {},
+  "sec": 53.0
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 21,
+  "success": 0.2841796875,
+  "wilson_lo": 0.25740105362334764,
+  "fails": {
+   "cube": 733
+  },
+  "min_pair_median": 0.06568556568612252,
+  "kw": {},
+  "sec": 68.6
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 22,
+  "success": 0.130859375,
+  "wilson_lo": 0.11157523291705779,
+  "fails": {
+   "cube": 890
+  },
+  "min_pair_median": 0.06546470882533721,
+  "kw": {},
+  "sec": 52.5
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 24,
+  "success": 0.02734375,
+  "wilson_lo": 0.018984875239024507,
+  "fails": {
+   "cube": 996
+  },
+  "min_pair_median": 0.06497662926128472,
+  "kw": {},
+  "sec": 52.8
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 26,
+  "success": 0.0009765625,
+  "wilson_lo": 0.00017240363051574179,
+  "fails": {
+   "cube": 1023
+  },
+  "min_pair_median": 0.06136209491510218,
+  "kw": {},
+  "sec": 43.0
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 0.4x0.5",
+  "N": 28,
+  "success": 0.0,
+  "wilson_lo": 0.0,
+  "fails": {
+   "cube": 1024
+  },
+  "min_pair_median": null,
+  "kw": {},
+  "sec": 53.5
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 y 半宽 0.30",
+  "N": 16,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.06969724395673166,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.3
+   ]
+  },
+  "sec": 22.0
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 y 半宽 0.30",
+  "N": 18,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.06880018544623398,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.3
+   ]
+  },
+  "sec": 21.4
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 y 半宽 0.30",
+  "N": 20,
+  "success": 0.9892578125,
+  "wilson_lo": 0.9808670326348792,
+  "fails": {
+   "cube": 11
+  },
+  "min_pair_median": 0.06783385438589297,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.3
+   ]
+  },
+  "sec": 26.0
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 y 半宽 0.30",
+  "N": 22,
+  "success": 0.9111328125,
+  "wilson_lo": 0.8921322469462177,
+  "fails": {
+   "cube": 91
+  },
+  "min_pair_median": 0.06685663023079688,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.3
+   ]
+  },
+  "sec": 30.0
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 y 半宽 0.30",
+  "N": 24,
+  "success": 0.6416015625,
+  "wilson_lo": 0.6117512725343391,
+  "fails": {
+   "cube": 367
+  },
+  "min_pair_median": 0.06591941497756827,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.3
+   ]
+  },
+  "sec": 34.7
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 y 半宽 0.30",
+  "N": 26,
+  "success": 0.2763671875,
+  "wilson_lo": 0.24985045010716184,
+  "fails": {
+   "cube": 741
+  },
+  "min_pair_median": 0.06495013451131526,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.3
+   ]
+  },
+  "sec": 37.2
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 y 半宽 0.30",
+  "N": 28,
+  "success": 0.072265625,
+  "wilson_lo": 0.05795415037234433,
+  "fails": {
+   "cube": 950
+  },
+  "min_pair_median": 0.06460294248143876,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.3
+   ]
+  },
+  "sec": 38.2
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 y 半宽 0.30",
+  "N": 30,
+  "success": 0.0048828125,
+  "wilson_lo": 0.0020873641822286623,
+  "fails": {
+   "cube": 1019
+  },
+  "min_pair_median": 0.0652498925730552,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.3
+   ]
+  },
+  "sec": 38.0
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 x 0.45 y 0.30",
+  "N": 16,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.07066880435017775,
+  "kw": {
+   "region_half": [
+    0.225,
+    0.3
+   ],
+   "region_center": [
+    -0.1,
+    0.0
+   ]
+  },
+  "sec": 18.0
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 x 0.45 y 0.30",
+  "N": 18,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.06970259777934693,
+  "kw": {
+   "region_half": [
+    0.225,
+    0.3
+   ],
+   "region_center": [
+    -0.1,
+    0.0
+   ]
+  },
+  "sec": 21.7
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 x 0.45 y 0.30",
+  "N": 20,
+  "success": 0.9990234375,
+  "wilson_lo": 0.9944890376332649,
+  "fails": {
+   "cube": 1
+  },
+  "min_pair_median": 0.06867869988603391,
+  "kw": {
+   "region_half": [
+    0.225,
+    0.3
+   ],
+   "region_center": [
+    -0.1,
+    0.0
+   ]
+  },
+  "sec": 25.8
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 x 0.45 y 0.30",
+  "N": 22,
+  "success": 0.998046875,
+  "wilson_lo": 0.9929065784982852,
+  "fails": {
+   "cube": 2
+  },
+  "min_pair_median": 0.06765513832620967,
+  "kw": {
+   "region_half": [
+    0.225,
+    0.3
+   ],
+   "region_center": [
+    -0.1,
+    0.0
+   ]
+  },
+  "sec": 30.2
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 x 0.45 y 0.30",
+  "N": 24,
+  "success": 0.970703125,
+  "wilson_lo": 0.9584851077050606,
+  "fails": {
+   "cube": 30
+  },
+  "min_pair_median": 0.0668723213335164,
+  "kw": {
+   "region_half": [
+    0.225,
+    0.3
+   ],
+   "region_center": [
+    -0.1,
+    0.0
+   ]
+  },
+  "sec": 34.6
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 x 0.45 y 0.30",
+  "N": 26,
+  "success": 0.806640625,
+  "wilson_lo": 0.7813230007158096,
+  "fails": {
+   "cube": 198
+  },
+  "min_pair_median": 0.06601519935750899,
+  "kw": {
+   "region_half": [
+    0.225,
+    0.3
+   ],
+   "region_center": [
+    -0.1,
+    0.0
+   ]
+  },
+  "sec": 40.3
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 x 0.45 y 0.30",
+  "N": 28,
+  "success": 0.494140625,
+  "wilson_lo": 0.4635969004695898,
+  "fails": {
+   "cube": 518
+  },
+  "min_pair_median": 0.06545216787968423,
+  "kw": {
+   "region_half": [
+    0.225,
+    0.3
+   ],
+   "region_center": [
+    -0.1,
+    0.0
+   ]
+  },
+  "sec": 44.3
+ },
+ {
+  "env": "BinFill",
+  "variant": "框 x 0.45 y 0.30",
+  "N": 30,
+  "success": 0.1767578125,
+  "wilson_lo": 0.15461372874469403,
+  "fails": {
+   "cube": 843
+  },
+  "min_pair_median": 0.06506066273888818,
+  "kw": {
+   "region_half": [
+    0.225,
+    0.3
+   ],
+   "region_center": [
+    -0.1,
+    0.0
+   ]
+  },
+  "sec": 47.3
+ }
+]

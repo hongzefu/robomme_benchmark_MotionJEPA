@@ -1,0 +1,87 @@
+        "xarm6_robotiq",
+        "so100",
+        "widowxai",
+    ]
+    agent: Union[Panda]
+    goal_thresh = 0.025
+    cube_spawn_half_size = 0.05
+    cube_spawn_center = (0, 0)
+    _clearance = 0.01
+
+    # V4（A4/A6）：本环境原本没有难度分档，现有全局常量即 hard；三档同值，
+    # difficulty 只在 xhard 生效。消费点读的是 decision（可被 sampling_config 覆盖），
+    # 这里是 decision 的默认值来源。
+    config_native = {
+        "peg_yaw_range": {"span_rad": np.pi / 2, "offset_rad": np.pi / 4},
+        "corner_bias": 0.0,
+    }
+    config_xhard = {
+        # ±180°：u*2π - π（A1）
+        "peg_yaw_range": {"span_rad": 2 * np.pi, "offset_rad": np.pi},
+        # V5（计划 2.9，L30/L33）：V4 的 corner_bias 已删除（不再用偏置），改为桌面中心共同禁区、
+        # 直接拒绝：以 (0,0) 为圆心、半径 0.05 m 的圆；杆按实际轴线段离圆心的最近点判，
+        # goal 圆盘、方块候选中心与方块最终中心按物体中心判；落进圆即原地重抽。
+        # max_trials 只约束新增的杆重抽循环（goal/方块沿用各自原有循环的预算），超出抛 SceneGenerationError。
+        "center_exclusion": {"shape": "circle", "center": [0.0, 0.0], "radius_m": 0.05,
+                             "judge": "object_center", "max_trials": 128},
+    }
+    configs = {
+        "easy": config_native,
+        "medium": config_native,
+        "hard": config_native,
+        "xhard": config_xhard,
+    }
+
+    def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
+                     sampling_config=None,
+====StopCube
+38:from .utils.sampling_config import assert_native_decision, split_sampling_config
+71:NATIVE_SAMPLING = {
+112:    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
+135:    顶层两键是原三档共用的原值（三档同值，取 ``configs["hard"]``），与 V3 快照逐字相同；
+138:    hard = cls.configs["hard"]
+142:        "xhard": copy.deepcopy(cls.configs["xhard"]),
+146:def _resolve_sampling_config(cls, override):
+149:    decision, native = split_sampling_config(override, native_default, decision_default)
+176:    configs = {
+185:                     sampling_config=None,
+189:        self._sampling = _resolve_sampling_config(type(self), sampling_config)
+244:    def _default_sensor_configs(self):
+256:    def _default_human_render_camera_configs(self):
+===Insert
+    agent: Union[Panda]
+    goal_thresh = 0.025
+    cube_spawn_half_size = 0.05
+    cube_spawn_center = (0, 0)
+    _clearance = 0.01
+
+    # V4（A4/A6）：本环境原本没有难度分档，现有全局常量即 hard；三档同值，
+    # difficulty 只在 xhard 生效。消费点读 decision（可被 sampling_config 覆盖），这里是默认值来源。
+    config_native = {
+        "peg_count": 3,
+        "peg_offsets": [0.1, 0, -0.1],
+        "near_target_distractor": None,
+        "peg_yaw_range": {"half_span_deg": 45},
+    }
+    config_xhard = {
+        # peg_offsets 的长度决定杆数（构造期临时排布，第 4 根放在 y_base+0.2 处，随后被重采样覆盖）；
+        # peg_count 同步为 4：会改变 _load_scene 里那次 randint 的取值域（结果仍被 overridden_to=0 覆盖）
+        "peg_count": 4,
+        "peg_offsets": [0.1, 0, -0.1, -0.2],
+        "peg_yaw_range": {"half_span_deg": 180},
+        # V5（计划 2.8）：删除 V4 的 near_target_distractor（L28）；4 根杆由 _xhard_sample_pegs 一个循环抽，
+        # 原生两条杆根判据（离孔板中心 > radius*6、杆根两两 > length*1.5）保留，另加两条轮廓间隔：
+        # 任意两杆轮廓 > peg_min_pair_gap_m（L24，严格不等号），杆轮廓与孔板轮廓 > peg_box_min_gap_m（L26）。
+        "peg_min_pair_gap_m": 0.03,
+        "peg_box_min_gap_m": 0.01,
+        # L52：杆区 x 上界由原生的 x_offset + x_span = 0.2 收到 0.1（下界 −0.2 与 y 范围不动）
+        "peg_x_max_m": 0.1,
+    }
+    configs = {
+        "easy": config_native,
+        "medium": config_native,
+        "hard": config_native,
+        "xhard": config_xhard,
+    }
+
+    def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,

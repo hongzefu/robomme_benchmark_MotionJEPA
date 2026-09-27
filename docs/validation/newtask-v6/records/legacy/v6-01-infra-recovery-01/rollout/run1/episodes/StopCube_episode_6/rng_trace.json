@@ -1,0 +1,137 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.button_xy",
+      "drawn": [
+        -0.18447861075401306,
+        -0.08837826251983644
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.target_xy",
+      "drawn": [
+        -0.062495555728673935,
+        0.04156426340341568
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.cube_rgb",
+      "drawn": [
+        0.7200798988342285,
+        0.7759475708007812,
+        0.9885818958282471
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "actions.sampling_trace.interval_draw",
+      "drawn": 32,
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "actions.move_interval_idx",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "actions.stop_time",
+      "drawn": 15,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "actions.move_interval",
+      "drawn": 60,
+      "source": "record"
+    },
+    {
+      "index": 7,
+      "path": "actions.motion_segments",
+      "drawn": 15,
+      "source": "record"
+    },
+    {
+      "index": 8,
+      "path": "actions.steps_press",
+      "drawn": 870.0,
+      "source": "record"
+    },
+    {
+      "index": 9,
+      "path": "actions.stop_window",
+      "drawn": [
+        840.0,
+        900.0
+      ],
+      "source": "record"
+    },
+    {
+      "index": 10,
+      "path": "actions.rotation_deg",
+      "drawn": 12.469278335571289,
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "actions.sampling_trace.interval_draw",
+      "drawn": 32,
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "actions.move_interval_idx",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "actions.stop_time",
+      "drawn": 15,
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "actions.move_interval",
+      "drawn": 60,
+      "source": "record"
+    },
+    {
+      "index": 15,
+      "path": "actions.motion_segments",
+      "drawn": 15,
+      "source": "record"
+    },
+    {
+      "index": 16,
+      "path": "actions.steps_press",
+      "drawn": 870.0,
+      "source": "record"
+    },
+    {
+      "index": 17,
+      "path": "actions.stop_window",
+      "drawn": [
+        840.0,
+        900.0
+      ],
+      "source": "record"
+    },
+    {
+      "index": 18,
+      "path": "actions.rotation_deg",
+      "drawn": 12.469278335571289,
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {}
+}

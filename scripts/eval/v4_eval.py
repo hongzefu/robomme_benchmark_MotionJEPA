@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V4 新值评估入口（0922-newtask-release-v4-plan.md 第四节，步 6；E1 批准的 ``scripts/eval/``）。
+"""V4 新值评估入口（docs/plans/0922-newtask-release-v4-plan.md 第四节，步 6；E1 批准的 ``scripts/eval/``）。
 
 按冻结的 ``specs.jsonl`` 逐局起环境跑策略，边跑边写 ``eval_results.jsonl``，结束写 ``eval_summary.json``。
 **不改 ``scripts/evaluation.py``**（口径 9：它与上游逐字节相同）；评估循环照抄它的写法。

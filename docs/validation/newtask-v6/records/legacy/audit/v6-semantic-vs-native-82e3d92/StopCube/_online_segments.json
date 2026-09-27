@@ -1,0 +1,206 @@
+{
+ "xhard4_ep0": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <65, 115> to prepare"
+  ],
+  [
+   39,
+   "remain static",
+   "remain static"
+  ],
+  [
+   300,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <95, 121>"
+  ]
+ ],
+ "xhard4_ep3": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <58, 102> to prepare"
+  ],
+  [
+   40,
+   "remain static",
+   "remain static"
+  ],
+  [
+   780,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <100, 136>"
+  ]
+ ],
+ "xhard4_ep6": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <66, 107> to prepare"
+  ],
+  [
+   39,
+   "remain static",
+   "remain static"
+  ],
+  [
+   840,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <90, 137>"
+  ]
+ ],
+ "easy_ep0": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <57, 85> to prepare"
+  ],
+  [
+   41,
+   "remain static",
+   "remain static"
+  ],
+  [
+   390,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <103, 103>"
+  ]
+ ],
+ "easy_ep1": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <69, 108> to prepare"
+  ],
+  [
+   38,
+   "remain static",
+   "remain static"
+  ],
+  [
+   120,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <122, 138>"
+  ]
+ ],
+ "medium_ep10": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <67, 159> to prepare"
+  ],
+  [
+   38,
+   "remain static",
+   "remain static"
+  ],
+  [
+   170,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <107, 130>"
+  ]
+ ],
+ "hard_ep11": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <67, 105> to prepare"
+  ],
+  [
+   39,
+   "remain static",
+   "remain static"
+  ],
+  [
+   270,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <112, 103>"
+  ]
+ ],
+ "medium_ep2": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <63, 162> to prepare"
+  ],
+  [
+   39,
+   "remain static",
+   "remain static"
+  ],
+  [
+   170,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <93, 114>"
+  ]
+ ],
+ "hard_ep3": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <65, 127> to prepare"
+  ],
+  [
+   39,
+   "remain static",
+   "remain static"
+  ],
+  [
+   390,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <96, 130>"
+  ]
+ ],
+ "easy_ep4": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <66, 155> to prepare"
+  ],
+  [
+   39,
+   "remain static",
+   "remain static"
+  ],
+  [
+   150,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <105, 122>"
+  ]
+ ],
+ "medium_ep6": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <68, 95> to prepare"
+  ],
+  [
+   38,
+   "remain static",
+   "remain static"
+  ],
+  [
+   180,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <125, 155>"
+  ]
+ ],
+ "hard_ep7": [
+  [
+   0,
+   "move to the top of the button to prepare",
+   "move to the top of the button at <57, 160> to prepare"
+  ],
+  [
+   41,
+   "remain static",
+   "remain static"
+  ],
+  [
+   330,
+   "press the button to stop the cube on the target",
+   "press the button to stop the cube on the target at <88, 129>"
+  ]
+ ]
+}

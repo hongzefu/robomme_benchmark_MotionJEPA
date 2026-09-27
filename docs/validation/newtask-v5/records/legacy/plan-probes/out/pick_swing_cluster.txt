@@ -1,0 +1,318 @@
+- marker: [内部产出，英文] 以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。
+- topic_key: pick_swing_cluster
+- summary: Both envs place objects with sequential rejection sampling: a draw either lands in free space or is thrown away and redrawn (spawn_random_cube / spawn_random_target, up to 256 trials each). I rebuilt this sampling in plain numpy/torch and checked it against the frozen specs: all 20 PickXtimes/SwingXtimes candidates in specs.jsonl match bit-for-bit, so the statistics below (3000 layouts per setting) describe the real V4 process. PickXtimes has a deliberate bias: corner_push with corner_bias=0.5 (exponent 1/3 on each axis separately) is applied to all 3 colored cubes (J5). Because of it, 91.3% of colored cubes land in the 4 corner cells (a 3x3 grid over the sampling square), versus 50.6% under uniform sampling with the same rules. In 44.5% of layouts at least 2 colored cubes share a corner cell, versus 14.3% uniform (3.1x); this is the corner piling the user sees (selected ep0/ep3 have 2 colored cubes in one corner cell, ep6 has all 3 in one quadrant). There is also a bug that affects both envs and all tiers. get_actor_obb (trimesh bounding_box_oriented), then _trimesh_box_to_obb2d, gives an already-placed cube a degenerate 2D box (one axis vertical, projected to zero) about 66% of the time. The intended 2 cm gap (6 cm between centers) is then not enforced: 15.5% of V4 PickXtimes layouts and 7.3% of SwingXtimes layouts have a pair of cubes closer than 6 cm (as close as 4.1 cm, i.e. touching). 3 of the 10 frozen PickXtimes candidates have such a pair, including selected ep6 (5.5 cm). Region geometry adds more crowding: 6 cubes, the goal disk and the button share a 0.4 m square that covers only 11.0% of the 256x256 front frame. The button takes the near-robot edge, so colored cubes pile toward the far/camera edge (far third 56.8% vs near third 38.9%). Near the robot, perspective shrinks a 6 cm gap to 8.5 px, versus 16.2 px near the camera. SwingXtimes has no intended bias. Its crowding comes from chance, density, the same OBB bug and perspective; ep3's diagonal line of cubes is a chance layout, with no pair under 9.3 cm. Recommendation for V5, xhard only: in PickXtimes keep J5 (corner_bias 0.5 on all 3) but require the 3 colored cubes to sit in different quadrants; in both envs add exact cube OBBs, an 8 cm minimum center distance for all 6 cubes, and max_trials 1024 (PickXtimes). None of this adds a random draw point, and easy/medium/hard stay byte-identical. Predicted effect in PickXtimes: corner sharing 44.5% to 0, pairs under 7 cm 40.5% to 0, 10 cm three-cube clusters 45.3% to 19.9%, target still at the edge (median 1.62 cm vs 1.75 cm), reset failure 0.97%. Enlarging the PickXtimes region to half 0.25 is an optional extra lever, pending a demo check. It cuts 10 cm clusters to 4.3% and failure to 0.03%.
+## current_mechanism
+  [0]
+    - env: PickXtimes
+    - anchor: src/robomme/robomme_env/PickXtimes.py :: XHARD_DECISION
+    - behavior: xhard decision: target_cube_position_policy {region_center [-0.1,0], region_half_size 0.2, corner_bias 0.5}; goal_position_policy {[-0.1,0], 0.2} (C1, own copy); distractor {colors yellow/cyan/magenta, region [-0.1,0] half 0.2, no corner bias}. The frozen snapshot scripts/configs/newtask-v4/v4-01/specs.jsonl header sampling_config.PickXtimes.decision.xhard has the same values.
+  [1]
+    - env: PickXtimes
+    - anchor: src/robomme/robomme_env/PickXtimes.py :: PickXtimes._load_scene
+    - behavior: One local torch.Generator(seed) is used throughout, in this order: build_button draws rand(2) → the xhard branch _spawn_scene_objects_xhard → task list built → recovery draw (disabled in V4, I3) → _spawn_distractors_xhard, which comes last (N5). num_repeats is drawn in __init__ from a separate generator.
+  [2]
+    - env: PickXtimes
+    - anchor: src/robomme/robomme_env/PickXtimes.py :: PickXtimes._spawn_scene_objects_xhard
+    - behavior: Draw order: randperm(3) color_order → randint(3) target_color_idx (a dummy, later overwritten) → goal disk (G1, placed first, avoid=[button OBB]; radius 0.04, min_gap 0.04, center uniform in x∈[-0.26,0.06], y∈[-0.16,0.16], 2 draws per trial) → append disk square _disk_avoid_obb (half 0.06) → 3 colored cubes in shuffled color order via spawn_random_cube(region [-0.1,0]±0.2, half_size 0.02, min_gap 0.02, random_yaw, corner_bias=0.5, max_trials 256) → each accepted cube actor is appended to avoid → randint(3) target_cube_idx picks from target_candidates. Any failure raises SceneGenerationError (D2), and the candidate is redrawn (F2).
+  [3]
+    - env: PickXtimes
+    - anchor: src/robomme/robomme_env/PickXtimes.py :: PickXtimes._spawn_distractors_xhard
+    - behavior: 3 distractor cubes (yellow, cyan, magenta, in that order) are drawn UNIFORMLY (no corner_bias) in the same region, with the same min_gap 0.02, avoiding button, disk square, colored cubes and earlier distractors (cubes enter avoid as actors). They join all_cubes and non_target_cubes.
+  [4]
+    - env: PickXtimes, SwingXtimes (and every xhard env using corner_bias)
+    - anchor: src/robomme/robomme_env/utils/xhard.py :: corner_push / CORNER_GAIN
+    - behavior: Applied to each axis independently: t=2u-1, p=1/(1+CORNER_GAIN*b) with CORNER_GAIN=4, t'=sign(t)|t|^p, u'=(t'+1)/2. For b=0.5, p=1/3, so P(|t'|<=s)=s^3 and the density of t' is 1.5 t'^2 (U-shaped). P(outer third on one axis)=1-(1/3)^3=0.963, and on both axes 0.927 (uniform: 0.444). Pushing each axis separately makes the joint mass sit in the 4 corners of the sampling box. The box does NOT exclude the button or disk, so blocked corners get rejected and redrawn, and the extra mass lands in the remaining free corners. b=0 returns u unchanged (no float op).
+  [5]
+    - env: all (shared)
+    - anchor: src/robomme/robomme_env/utils/object_generation.py :: spawn_random_cube
+    - behavior: Rejection loop, up to max_trials=256. Each trial draws u1, u2, then yaw (3 torch.rand calls); u1/u2 go through corner_push only if corner_bias!=0. x=x_low+u1(x_high-x_low) with x_low=center-half+hs. The new cube's OBB is padded by min_gap (pad on the new cube only), then SAT-tested against every OBB in obb2d_list (built once per call from avoid: pre-made (c,A,h) tuples are used as given, actors go through get_actor_obb and silently vanish on exception, e.g. the disk) plus circle_list. The first feasible trial is accepted, after which recorder.value may substitute frozen values. corner_bias only remaps draws and never adds any.
+  [6]
+    - env: all (shared)
+    - anchor: src/robomme/robomme_env/utils/object_generation.py :: _trimesh_box_to_obb2d (with mani_skill examples/motionplanning/base_motionplanner/utils.py :: get_actor_obb)
+    - behavior: BUG. get_actor_obb returns trimesh mesh.bounding_box_oriented. For a cube, trimesh returns the 3 OBB axes in arbitrary order, so one of axes 0/1 is often the vertical axis. _trimesh_box_to_obb2d takes R[:2,0] and R[:2,1], so the vertical axis projects to a ~0 vector, and _safe_unit leaves it at ~0. The placed cube then counts as a 4 cm line segment. Measured: 66.1% of placed cubes are degenerate (replica with float32 poses, N=4000). A new padded cube can then sit at 4.1 cm center distance (faces touching) instead of the intended ≥6.0 cm. The same weakness applies to disk-vs-cube tests in spawn_random_target.
+  [7]
+    - env: all (shared)
+    - anchor: src/robomme/robomme_env/utils/object_generation.py :: spawn_random_target
+    - behavior: random_yaw is hard-set to False, so each trial takes 2 draws. Center uniform in region minus radius. Test: circle vs each OBB (closest point) with radius+min_gap, and circle vs circle for actors carrying _target_radius. The disk itself is kinematic with add_collision=False, so later spawn_random_cube calls ignore it unless a pre-made square is passed.
+  [8]
+    - env: PickXtimes, SwingXtimes
+    - anchor: src/robomme/robomme_env/utils/object_generation.py :: build_button / create_button_obb
+    - behavior: Button center = [-0.2,0] + (rand(2)-0.5)*[0.1,0.4], so x∈[-0.25,-0.15], y∈[-0.2,0.2]: it always sits inside the near-robot third of the cube region. Its avoid OBB is an axis-aligned square of half 0.0375*1.5=0.05625. With the cube pad, cube centers are kept ≥0.096 m (axis-aligned) from the button center, which usually blocks one near-robot corner.
+  [9]
+    - env: SwingXtimes
+    - anchor: src/robomme/robomme_env/SwingXtimes.py :: SwingXtimes._load_scene (with NATIVE_SAMPLING.positions)
+    - behavior: This colored-cube loop is SHARED by all tiers. Order: button rand(2) → randperm(3) → randint(3) → 3 colored cubes UNIFORM in [-0.1,0]±0.25 (centers x∈[-0.33,0.13], y∈[-0.23,0.23]), min_gap 0.02, no corner bias → temp_target_0 in [-0.1,-0.2]±0.1 (centers x∈[-0.16,-0.04], y∈[-0.26,-0.14]), radius 0.04, min_gap 0.02, avoiding cube OBBs → temp_target_1 in [-0.1,0.2]±0.1 → xhard only: _select_target_xhard draws randint(3) → recovery (off) → xhard only: _spawn_distractors_xhard.
+  [10]
+    - env: SwingXtimes
+    - anchor: src/robomme/robomme_env/SwingXtimes.py :: SwingXtimes._spawn_distractors_xhard / _disk_avoid_obb
+    - behavior: 3 uniform distractors in [-0.1,0]±0.25. They avoid the button, colored cubes (actors, so the degenerate OBB applies) and both disks via pre-made squares of half 0.04 (0.08 axis-aligned exclusion around each disk with the cube pad). Result: the distractor x-distribution is U-shaped, avoiding the disk band x∈[-0.2,0].
+  [11]
+    - env: PickXtimes, SwingXtimes
+    - anchor: src/robomme/robomme_env/PickXtimes.py :: PickXtimes._default_sensor_configs (base_camera = front_rgb)
+    - behavior: Camera eye [0.3,0,0.4], target [0,0,-0.2], fov pi/2, 256x256. It looks from beyond the far table edge toward the robot. Measured projection (extrinsic taken from the h5): the PickXtimes region (0.4x0.4) covers u∈[71,185], v∈[55,128], i.e. 11.0% of the frame; the SwingXtimes region covers 17.7%. A 6 cm gap along x is 8.5 px at x=-0.28 (near robot) and 16.2 px at x=+0.08.
+## user_question_answers
+  [0]
+    - question: PickXtimes 为什么会扎堆生成在一起 (why do PickXtimes objects cluster?)
+    - answer: Four stacked causes. (1) Intended corner bias (J5): all 3 colored cubes go through corner_push with b=0.5, so 91.3% of them land in the 4 corner cells (a 3x3 grid over the 36x36 cm area where cube centers can go) and at least 2 share a corner cell in 44.5% of layouts. Under uniform sampling with the same rules it is 14.3%, and for iid points 13.8%, so the bias adds about 30 points (3.1x). Cubes pushed to the same corner or edge line up right next to each other (selected ep6: red/blue/green all along the y=+0.18 edge near the robot). (2) Degenerate-OBB bug: in 66% of cases a placed cube's avoidance box collapses to a segment, so the 2 cm clearance is not enforced. 15.5% of layouts have a pair under 6 cm (the rules intend at least 6 cm) and 40.5% a pair under 7 cm; with correct OBBs the numbers are 0% and 10.3%. The bug alone raises 8 cm three-cube clusters from 5.1% to 13.7%. (3) Density and geometry: 6 cubes, an 8 cm disk and the button share a 0.4 m square. Even an ideal 6 cm Poisson process in that box gives 10 cm three-cube clusters 41% of the time. The button sits on the near-robot edge, so cubes lean to the far edge (colored x far third 56.8% vs near third 38.9%). The distractors fill the middle that the corner-pushed cubes leave empty (|y|<0.1: 56.4% vs 47.2% uniform). (4) Perception: the whole region covers only 11% of the front frame, and near the robot a 6 cm gap is only 8.5 px. Corner bias does NOT make the whole set tighter; RMS spread is 15.9 cm vs 14.3 cm uniform. What it does is create same-corner pairs/triples and edge rows.
+    - evidence: Replica (scratch replica.py) bit-exact on all 20 frozen candidates (validate_replica.py: REPLICA_EXACT=20/20). cluster_stats.py N=3000 per setting, seeds 20,000,000+i: V4 same_cornercell_ge2=0.4447, cb0 same rules 0.1433, iid6 0.138; all_min<0.06: V4 0.1547, cb0.5 with exact OBB 0.0; cl08_ge3: V4 0.1373, cb0.5 exact 0.051; poisson6 cl10_ge3=0.4127. projection.py: region = 11.0% of frame. obb_degen_rate.py: 66.1% degenerate.
+  [1]
+    - question: PickXtimes episode 3 (the video the user cited): what exactly happened?
+    - answer: Selected candidate, seed 4100300, num 7, target green. Layout: goal disk (-0.217,+0.139), button (-0.220,-0.179), blue (-0.009,+0.136), green (+0.063,-0.153), red (+0.067,+0.066), cyan (+0.024,-0.027), magenta (-0.128,-0.041), yellow (-0.253,+0.016). Both near-robot corners are blocked: the button exclusion square covers the near-left one and the disk square the near-right one. So the corner push could only land colored cubes on the far (camera-side) edge. Green went to the far-left corner cell; red and blue share the far-right corner cell (10.3 cm apart). Together with cyan this makes a row of 4 cubes in the band x∈[-0.01,0.07]. In the frame that is the blue/red/cyan/green row across the lower middle (projected pixels match the image to a few px). This episode has no sub-6 cm pair (minimum 10.2 cm), so here the effect is corner bias plus blocked corners plus small image footprint. Selected ep6 (seed 4100600) is the clearest pile: all 3 colored cubes in one quadrant (a 1.4% event under V4), with blue–green only 5.5 cm apart, possible only because blue's OBB was degenerate.
+    - evidence: dump_specs.out; spec_metrics.py per-candidate lines; PickXtimes_ep3_frame0.png and PickXtimes_ep6_frame0.png viewed; projection.py (e.g. green→(252,348), blue→(493,299) in the 3x upscaled frame, matching the image).
+  [2]
+    - question: 现在的 generator 是怎么定位置的？(PickXtimes)
+    - answer: Sequential rejection sampling with one torch.Generator(seed), in this order: button center = (-0.2,0)+(rand2-0.5)*(0.1,0.4) → color permutation and a dummy target-color draw → goal disk: uniform (x,y) in [-0.26,0.06]x[-0.16,0.16], rejected if within 0.08 m of the button square (up to 256 trials × 2 draws) → 3 colored cubes: each trial draws u1, u2, yaw; u1, u2 are pushed by corner_push (b=0.5: u'=(sign(t)|t|^(1/3)+1)/2, t=2u-1); x=-0.28+0.36u1', y=-0.18+0.36u2'; the trial is rejected if the 2 cm-padded cube overlaps (SAT) the button square (half 0.05625), the disk square (half 0.06) or any earlier cube's OBB → target = randint(3) among the colored cubes → 3 distractors, same loop without corner push. The first feasible trial wins. After 256 failed trials SceneGenerationError is raised and the candidate is redrawn.
+    - evidence: Source anchors in current_mechanism; draw order confirmed by the replica reproducing all frozen values bit-exactly, including target_cube_idx.
+  [3]
+    - question: 是否有 bias？(PickXtimes)
+    - answer: Yes, one intended and three unintended. Intended: the corner push on all 3 colored cubes (J5). The per-axis 9-bin histograms of colored cube centers are U-shaped: x=[.229,.109,.051,.016,.002,.025,.083,.162,.323], y=[.284,.134,.065,.023,.001,.021,.067,.127,.278]. The target sits a median 1.75 cm from the box edge (uniform: 4.1 cm). Unintended: (a) near/far asymmetry from the button, with colored cubes 38.9% in the near-robot third vs 56.8% in the far third; (b) distractors concentrate in the middle (the part the colored cubes leave free), with distractor x-histogram peaking at 0.143 in the central bins; (c) the degenerate-OBB bug lets cubes nearly touch (15.5% of layouts under 6 cm). Uniform sampling with the same rules still shows (a), since the button alone gives 28.2% near vs 42.2% far.
+    - evidence: cluster_stats_N3000.json keys hist_col_x/hist_col_y/hist_dis_x, col_x_low_third, col_x_high_third, tgt_dist_edge_median for P_V4_actual vs P_cb0 vs P_chance_iid6.
+  [4]
+    - question: Does corner_push push toward the 4 corners of the box so that multiple cubes share a corner?
+    - answer: Yes. The two axes are pushed independently, so the joint distribution puts 92.7% of its mass (before rejection) in the 4 corner cells; after rejection 91.3% of colored cubes end up there. There are 3 cubes and nominally 4 corners, but the button usually blocks one near-robot corner and the disk may block another. Blocked-corner trials are rejected and redrawn, so the extra mass goes to the remaining corners. As a result ≥2 colored cubes share a corner cell in 44.5% of layouts (10-candidate frozen sample: 5/10) and share a quadrant in 58.9%. All 3 in one quadrant is rarer (1.4%) than under chance (6.5%), because a corner cell can physically hold only about 1–2 cubes. With b=1.0 corner-cell occupancy rises to 98.8% while sharing is 39.9%.
+    - evidence: cluster_stats.py: P_V4_actual col_in_cornercell=0.9132, col_same_cornercell_ge2=0.4447, col_same_quad_all3=0.0143; P_cb1.0 0.9884 / 0.399; spec_metrics.py: 5/10 candidates share a corner cell.
+  [5]
+    - question: SwingXtimes 也是扎堆吗？generator 怎么定位置、有无 bias？
+    - answer: SwingXtimes has NO intended bias; there is no corner_bias anywhere. Placement order: button → 3 colored cubes uniform in x∈[-0.33,0.13], y∈[-0.23,0.23] (min_gap 0.02, avoid button and earlier cubes; the loop is shared with all tiers) → right disk uniform in [-0.16,-0.04]x[-0.26,-0.14] and left disk in [-0.16,-0.04]x[0.14,0.26] (radius 0.04, ≥2 cm from cubes; 1.9% of layouts fail here and are redrawn) → target randint → 3 uniform distractors that also avoid 8 cm squares around the disks. The disks come after the colored cubes, so they do not push the colored cubes anywhere. They do push the distractors out of the disk band, giving a U-shaped distractor x-histogram [.150,.102,.076,.054,.062,.093,.126,.161,.175] and a slight excess at |y|<0.1 (48.7% vs 43.5% chance). The button again skews colored cubes to the far side (27.9% near third vs 40.0% far third). The same OBB bug gives 7.3% of layouts a pair under 6 cm (2/10 frozen candidates: 4.8 cm and 5.4 cm). Compared with PickXtimes, SwingXtimes is less crowded (area for cube centers 0.21 vs 0.13 m²; 10 cm three-cube clusters 22.2% vs 45.3%). Selected ep3 (seed 4300300) shows a diagonal line blue(-0.323,-0.002)/red(-0.203,-0.044)/green(-0.112,-0.066), 12.7 cm and 9.3 cm apart, which is not a rule violation. It is a chance layout next to the robot, where perspective halves the pixel spacing.
+    - evidence: cluster_stats.py swing settings N=3000: S_V4_actual fail 0.0187, all_min_lt_0p06=0.0727, cl10_ge3=0.2215, hist_dis_x above; S_chance_iid6 cl10_ge3=0.33; spec_metrics.py SwingXtimes block; SwingXtimes_ep3_frame0.png viewed; projection.py 8.5 px vs 16.2 px per 6 cm.
+  [6]
+    - question: How much of the clustering is due to corner_bias vs chance vs region geometry?
+    - answer: It depends on the metric (PickXtimes, 3000 layouts each). Same-corner piling of colored cubes (≥2 per corner cell): chance 13.8%, uniform with the V4 rules and correct OBBs 12.3%, adding the OBB bug 14.3%, adding corner_bias 0.5 (=V4) 44.5%. Corner_bias explains about 30 of the 44.5 points; chance/geometry about 14. Near-touching pairs (<6 cm): 0% with correct OBBs versus 15.5% in V4, so 100% OBB bug. Pairs under 7 cm: 10.3% with correct OBBs versus 40.5%, so the bug adds about 30 points. Tight 3-clusters (8 cm linkage): corner bias alone 5.1%, uniform alone 6.7%, V4 13.7%, so the bug roughly doubles them. Loose 3-clusters (10 cm linkage): ideal Poisson 41.3%, uniform with same rules 46.2%, V4 45.3%, so they are dominated by density/region size, and corner bias actually lowers them slightly (36.7% with correct OBBs). Enlarging the region to half 0.25 with V4 rules cuts them to 17.2%.
+    - evidence: cluster_stats_N3000.json (pick: P_chance_iid6, P_poisson6, P_cb0_exactOBB, P_cb0, P_cb0.5_exactOBB, P_V4_actual), cluster_stats2_N3000.json (R25_V4rules).
+## measurements
+  [0]
+    - name: Replica parity against frozen V4 specs
+    - script_or_command: cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask && uv run --no-sync python <scratch>/validate_replica.py <scratch>  (replica in <scratch>/replica.py)
+    - settings: All 20 rows of scripts/configs/newtask-v4/v4-01/specs.jsonl for PickXtimes (seeds 4100000..4100900) and SwingXtimes (4300000..4300900); exact float comparison of button, goal/disks, 3 colored cubes and 3 distractors (x,y,yaw) plus target_cube_idx
+    - result: REPLICA_EXACT=20/20, max abs diff 0 for every field. With exact (non-degenerate) OBBs instead, 6/10 PickXtimes and 3/10 SwingXtimes layouts come out different.
+    - conclusion: The pure-geometry replica reproduces V4 sampling exactly, including the degenerate-OBB decisions, so replica statistics are statistics of the real V4 generator.
+  [1]
+    - name: Cube OBB degeneracy rate and effect
+    - script_or_command: uv run --no-sync python <scratch>/obb_degen_rate.py <scratch>; uv run --no-sync python <scratch>/obb_check.py
+    - settings: obb_degen_rate: N=4000 random yaw∈[0,2π), xy in the PickXtimes box, float32 sapien.Pose, the same path as get_actor_obb (trimesh box → bounding_box_oriented → _trimesh_box_to_obb2d). obb_check: 30 existing-cube yaws × 3000 probe placements of a 2 cm-padded new cube
+    - result: degenerate_frac=0.661 (per-30° bin 0.565..0.759; at yaw 0.3 and π/4 degenerate at 100% of positions, at yaw 1.0 at 0%). Minimum accepted center distance: 0.041–0.043 m when the existing cube is degenerate, 0.060–0.063 m otherwise.
+    - conclusion: Two-thirds of placed cubes are seen as line segments, which removes the 2 cm clearance in one direction. This affects every tier and every env that passes cube actors into avoid (Swing, Pick, BinFill, PickHighlight, VideoRepick, VideoPlace*, MoveCube).
+  [2]
+    - name: Clustering statistics batch 1 (V4 vs baselines vs V5 candidates)
+    - script_or_command: uv run --no-sync python <scratch>/cluster_stats.py <scratch> 3000 <scratch>/cluster_stats_N3000.json
+    - settings: N=3000 layouts per setting, seeds 20,000,000+i, 12 CPU workers, 26 s. Metrics are over the 3 colored + 3 distractor centers; corner cell = outer cell of a 3x3 grid over the box of allowed cube centers; quadrant relative to (-0.1,0); clusters = single linkage at 8 cm and 10 cm
+    - result: PickXtimes, reported as [fail, ≥2 colored share corner cell, ≥2 share quadrant, colored in corner cells, any pair<6cm, any pair<7cm, 3-cluster@8cm, 3-cluster@10cm, mean NN (m), target edge-distance median (m)]: V4 actual [0, .445, .589, .913, .155, .405, .137, .453, .111, .0175]; cb0 same rules [0, .143, .684, .506, .158, .438, .186, .563, .103, .0409]; cb1.0 [0, .399, .423, .988, .146, .390, .116, .379, .118, .0111]; cb0.5 exact OBB [0, .380, .535, .910, 0, .103, .051, .367, .116, .0175]; cb0 exact [0, .123, .660, .507, 0, .113, .067, .462, .109, .0407]; iid6 chance [0, .138, .628, .440, .707, .817, .351, .584, .089, .0549]; Poisson 6cm without obstacles [0, .082, .542, .443, 0, .364, .122, .413, .108, .0549]; V5A target-only+exact+8cm [0, .142, .621, .611, 0, 0, 0, .305, .117, .0176]; V5B distinct-quadrant+exact+8cm [.035, 0, 0, .908, 0, 0, 0, .199, .127, .0162]; V5C uniform+exact+8cm [0, .096, .630, .508, 0, 0, 0, .335, .115, .0398]; V5D cb0.5 all+exact+8cm [0, .317, .486, .905, 0, 0, 0, .256, .121, .0174]; V5B2 distinct+10cm [.037, 0, 0, .910, 0, 0, 0, 0, .137, .0162]; V5A2 target-only+10cm [.0043, .071, .549, .604, 0, 0, 0, 0, .130, .0175]. SwingXtimes: V4 actual [fail .0187 (disk), share quad .611, <6cm .073, <7cm .230, cl8 .047, cl10 .222, NN .131]; exact OBB [.036, .600, 0, .052, .017, .163, .135]; iid6 [0, .628, .524, .632, .169, .330, .114]; exact+8cm [.036, .583, 0, 0, 0, .103, .140]; exact+10cm [.035, .536, 0, 0, 0, 0, .152].
+    - conclusion: Corner_bias drives same-corner piling (3.1x). The OBB bug drives near-touching pairs. Density drives loose clusters. V5B removes piling and near pairs while keeping the corner intent. In SwingXtimes, spacing plus the OBB fix removes all sub-8 cm pairs at the cost of +1.7 pt reset failure (disk placement).
+  [3]
+    - name: Per-axis histograms (9 bins across the box of allowed cube centers)
+    - script_or_command: same run; keys hist_col_x/hist_col_y/hist_dis_x/hist_dis_y in cluster_stats_N3000.json
+    - settings: PickXtimes box x∈[-0.28,0.08], y∈[-0.18,0.18]; SwingXtimes box x∈[-0.33,0.13], y∈[-0.23,0.23]; N=3000 layouts (9000 colored and 9000 distractor points)
+    - result: Pick V4 colored x [.229,.109,.051,.016,.002,.025,.083,.162,.323], y [.284,.134,.065,.023,.001,.021,.067,.127,.278]; Pick V4 distractor x [.102,.068,.084,.100,.135,.143,.135,.101,.133]; Pick cb0 colored x [.112,.091,.078,.078,.101,.116,.127,.129,.166]. Swing V4 colored x [.114,.086,.079,.078,.114,.130,.129,.131,.139], y ~flat [.127..0.099..0.131]; Swing distractor x [.150,.102,.076,.054,.062,.093,.126,.161,.175].
+    - conclusion: PickXtimes colored cubes are strongly U-shaped on both axes, with the far edge (x high) favoured over the near/button edge. SwingXtimes colored cubes are roughly uniform with a near-side dip from the button, and its distractors avoid the disk band.
+  [4]
+    - name: Clustering statistics batch 2 (dispersion variants, max_trials, enlarged region)
+    - script_or_command: uv run --no-sync python <scratch>/cluster_stats2.py <scratch> 3000 <scratch>/cluster_stats2_N3000.json (sampler <scratch>/replica_v5b.py, whose default equals V4: 50/50 exact)
+    - settings: N=3000 each, same seeds; R25 = cube and distractor region half 0.25 (disk region stays 0.2)
+    - result: [fail, ≥2 colored share corner cell, ≥2 share quad, in-corner, cl10≥3, mean NN, RMS spread, target edge median]: V5B distinct+8cm, 256 trials [.0353, 0, 0, .908, .199, .127, .166, .0162]; same with 1024 trials [.0097, 0, 0, .902, .202, .127, .165, .0163]; colored pair≥0.15 [.0263, .0003, .047, .906, .205, ...]; colored pair≥0.12 [.003, .038, .195, .894, .210, ...]; R25 V4 rules [0, .403, .506, .925, .172, .145, .210, .0223] (pairs<6cm .082); R25 distinct+8cm [.0003, 0, 0, .932, .043, .162, .216, .0219]; R25 distinct+10cm [.0003, 0, 0, .932, 0, .171, .217, .0219]; R25 target-only [0, .178, .595, .631, .088, .145, .196, .0221]; R25 uniform [0, .123, .597, .513, .102, .141, .190, .0506].
+    - conclusion: Raising max_trials to 1024 cuts the distinct-quadrant failure from 3.5% to 0.97%, so the failures are not a real space shortage. Enlarging the region is the strongest lever for overall spread (+36% RMS) and makes distinct-quadrant essentially always feasible.
+  [5]
+    - name: Only enlarging min_gap (no OBB fix)
+    - script_or_command: uv run --no-sync python <scratch>/cluster_stats3.py <scratch> 3000 <scratch>/cluster_stats3_N3000.json
+    - settings: min_gap 0.02→0.04 for colored cubes and distractors; N=3000
+    - result: Pick with trimesh OBB: fail .0067, share corner cell .402, pairs<7cm .060, cl10≥3 .329. Pick with exact OBB: fail .040 (distractors, since the larger pad also grows the button/disk clearance). Swing with trimesh: fail .016, pairs<7cm .015, cl10 .073.
+    - conclusion: A larger min_gap alone does not fix corner sharing and adds failures through button/disk clearance. A separate center-distance rule is cleaner.
+  [6]
+    - name: Metrics on the 10 frozen candidates per env
+    - script_or_command: uv run --no-sync python <scratch>/spec_metrics.py <scratch>
+    - settings: specs.jsonl rows; the degenerate-OBB flag is recomputed per cube with the replica
+    - result: PickXtimes: share corner cell 5/10, share quadrant 6/10, all 3 in one quadrant 1/10 (seed 4100600, selected ep6), in-corner 93.3%, min pair<6cm 3/10 (4.6, 5.0, 5.5 cm), <7cm 7/10, 3-cluster@8cm 3/10, target edge median 1.68 cm. SwingXtimes: share corner cell 0/10, share quadrant 7/10, all 3 in one quadrant 2/10, <6cm 2/10 (4.8, 5.4 cm), 3-cluster@8cm 0/10.
+    - conclusion: The frozen V4 data match the 3000-layout statistics.
+  [7]
+    - name: Front-camera footprint and perspective
+    - script_or_command: uv run --no-sync python <scratch>/projection.py
+    - settings: front_camera_extrinsic from PickXtimes_ep3 h5 timestep_0; K from fov π/2 at 256 px; checked against the ep3 frame
+    - result: Pick region 0.4x0.4 m projects to u∈[71,185], v∈[55,128], 7178 px² = 11.0% of the frame; Swing region 17.7%. A 6 cm gap along x is 8.5 px at x=-0.28, 11.4 px at x=-0.10, 16.2 px at x=+0.08; along y 12.8/14.8/17.5 px.
+    - conclusion: The whole scene occupies a small patch of the frame, and objects near the robot look about 2x more compressed, which amplifies the impression of clustering even for rule-abiding layouts.
+  [8]
+    - name: Visual inspection
+    - script_or_command: uv run --no-sync python <scratch>/extract_frames.py <scratch>; Read on the PNGs; uv run --no-sync python <scratch>/plot_layouts.py <scratch>
+    - settings: First front_rgb frame (256x256, upscaled 3x) of PickXtimes ep0/3/6 and SwingXtimes ep0/3/6; top-down scatter of 400 layouts each for V4 Pick, V5B, V5B+R25, V4 Swing
+    - result: ep6 shows red/blue/green piled in one near-robot corner; ep0/ep3 each show 2 colored cubes in one far corner cell plus a far-edge row; Swing ep3 shows a chance diagonal line near the robot. The scatter shows a red perimeter/corner ring with grey distractors in the middle for V4 Pick.
+    - conclusion: The visuals match the coordinate-level diagnosis.
+## proposals
+  [0]
+    - title: P1 PickXtimes: distinct-quadrant corner push + exact cube OBB + 8 cm center spacing + max_trials 1024 (xhard only)
+    - recommended: True
+    - envs: PickXtimes
+    - anchors_to_change: src/robomme/robomme_env/PickXtimes.py :: XHARD_DECISION, PickXtimes._spawn_scene_objects_xhard, PickXtimes._spawn_distractors_xhard, new helper _cube_avoid_obb (or utils/xhard.py :: cube_avoid_obb); src/robomme/robomme_env/utils/object_generation.py :: spawn_random_cube (new kwarg extra_reject=None)
+    - design: (1) Config (decision.xhard): target_cube_position_policy gains 'dispersion': 'distinct_quadrant' (enum none|distinct_quadrant) and 'quadrant_center': [-0.1, 0]; corner_bias stays 0.5 on all 3 colored cubes. New subtree 'spacing': {'min_center_dist': 0.08, 'cube_obb': 'exact', 'max_trials': 1024}. (2) spawn_random_cube gets extra_reject=None, a callable (x,y)->bool evaluated after the OBB and circle tests and before recorder.value. None skips it, so other callers behave byte-identically. (3) _spawn_scene_objects_xhard keeps placed_xy and used_quads. The colored-cube call passes corner_bias=0.5, max_trials=spacing.max_trials and extra_reject = lambda x,y: any(hypot(x-px,y-py) < 0.08 for placed) or ((x>=qc0, y>=qc1) in used_quads). After acceptance it reads the actual pose back from cube.pose (so spec replay stays consistent), appends _cube_avoid_obb(cube) = (xy, [[cos,-sin],[sin,cos]](yaw from quaternion), [hs,hs]) to avoid INSTEAD of the actor, and updates placed_xy and used_quads. (4) _spawn_distractors_xhard does the same with only the 8 cm rule (no quadrant rule), the exact OBB and max_trials 1024. (5) Spec records: layout.cube_dispersion, layout.cube_min_center_dist (PickXtimes spec fields 19→21). A deterministic 'fold into assigned quadrant' variant was considered and rejected: it needs a quadrant assignment, which means new randomness or ad-hoc rules, while rejection is simpler and measured.
+    - rationale: This keeps the user's V4 intent ('把 target 生成的位置尽可能推向边角') and J5 (all 3 colored cubes pushed, so the target is not the only cornered cube). It removes the two mechanisms that produce visible piles: corner sharing and the degenerate-OBB near-touching. Wider spacing also reduces the gripper-grazes-neighbour demo failure seen in the V4 step3b report ('第 4 次抓取时夹爪紧贴品红/黄干扰物').
+    - rng_impact: No new draw points and no reordering. Per-trial draws stay (u1,u2,yaw) for cubes and (x,y) for the disk; only the accept predicate changes. For the same seed, the xhard stream therefore takes different numbers of trials: cube/distractor positions and the target_cube_idx value change, so V5 xhard specs must be redrawn and refrozen under a new run id (e.g. v5-01). easy/medium/hard: none. _spawn_scene_objects_native is untouched, and the new spawn_random_cube kwarg defaults to None (no code path executed). The V1 reset probe must confirm diff=0.
+    - overturned_v4_decisions: None formally. Keeps J5 (cb 0.5 on all 3), the 1.2 PickXtimes text, G1 (disk first), C1 (disk may be central), A5/B2 (3 uniform distractors yellow/cyan/magenta), I1, I3, H2 (the new defect fix lives only in xhard; call it a new D-item 'cube OBB degeneracy'). It changes the plan 2.4/2.21 layout description (adds spacing rules), and F1–F4 re-freezing applies.
+    - spec_and_test_changes: Re-export scripts/configs/newtask-v5/sampling_config.json (test_sampling_config_split::test_snapshot_matches_source). New specs.jsonl/combos.json for V5. tests/lightweight/test_v4_xhard_pickxtimes.py → V5 variant: decision entries (dispersion, spacing), guard accepts/rejects, _cube_avoid_obb returns orthonormal axes for 1000 random yaws, spawn_random_cube(extra_reject=None) behaves byte-identically (e.g. via the replica on 50 seeds). Reset smoke 20 seeds asserting pairwise center distance ≥0.08 for all 6 cubes, 3 distinct quadrants for colored cubes, target ∈ colored. V6 combos: num 6..15 as in V4 (dispersion/spacing are fixed values, so they add no combos unless exposed as ranges).
+    - expected_numbers: Replica, N=3000: reset failure 0.97% with max_trials 1024 (3.53% with 256), all at the 3rd colored cube. Colored cubes sharing a corner cell 44.5%→0; sharing a quadrant 58.9%→0; any pair <7 cm 40.5%→0 (<8 cm 0); 3-cluster@8cm 13.7%→0; 3-cluster@10cm 45.3%→19.9–20.2%; mean NN 11.1→12.7 cm; RMS spread 15.9→16.5 cm. Corner intent kept: colored in corner cells 91.3%→90.2%, target edge-distance median 1.75→1.63 cm, target within 2 cm of an edge 55.0%→56.3%. Demo success unknown (V4 V6 baseline 46/50); must be measured.
+  [1]
+    - title: P2 SwingXtimes: exact cube OBB + 8 cm center spacing (xhard only), no corner bias, region unchanged
+    - recommended: True
+    - envs: SwingXtimes
+    - anchors_to_change: src/robomme/robomme_env/SwingXtimes.py :: XHARD_DECISION, SwingXtimes._load_scene (colored-cube loop; branch on difficulty), SwingXtimes._spawn_distractors_xhard, new helper _cube_avoid_obb; object_generation.py :: spawn_random_cube (same extra_reject kwarg as P1)
+    - design: Add decision.xhard.spacing = {'min_center_dist': 0.08, 'cube_obb': 'exact'} (max_trials stays 256, since failures are disk-driven). In the shared colored loop: if self.difficulty == 'xhard', pass extra_reject (8 cm to earlier cubes) and append _cube_avoid_obb(cube) instead of the actor. Otherwise the call and the avoid.append(cube) stay exactly as today. Disks keep avoiding the (now exact) cube OBBs. Distractors: extra_reject 8 cm to all 6 placed cubes, exact OBB append. Record layout.cube_min_center_dist (spec fields 18→19). Option: 0.10 m instead of 0.08 (same failure rate, 10 cm three-clusters 0%).
+    - rationale: SwingXtimes has no intended bias. Its near-touching pairs come purely from the OBB bug (7.3% under 6 cm, 23% under 7 cm), and the rest is chance. Spacing removes both without touching the region (2.21 says 'SwingXtimes 区域全不动').
+    - rng_impact: No new draw points and no reordering; the xhard stream values change (colored cubes, disks, target idx, distractors), so V5 re-freeze is required. easy/medium/hard: none. The shared loop gets an explicit difficulty branch whose non-xhard arm is the current code verbatim, and spawn_random_cube's default kwarg is a no-op. V1 must show diff=0.
+    - overturned_v4_decisions: None. Keeps A5/B2 (3 distractors, not merged into color_pool), the 2.5 region values, and H2 (fix only in xhard).
+    - spec_and_test_changes: sampling_config snapshot re-export. tests/lightweight/test_v4_xhard_swingxtimes.py → V5 variant (spacing entries; distractor colors still not in color_pool). Reset smoke 20 seeds: min pairwise ≥0.08 over 6 cubes, disks ≥ radius+2 cm from exact cube squares. V6 combos num 4..10.
+    - expected_numbers: Replica N=3000: pairs <6 cm 7.3%→0; <7 cm 23.0%→0; 3-cluster@8cm 4.7%→0; @10cm 22.2%→10.3% (0% with 0.10 m); mean NN 13.1→14.0 cm. Reset failure (disk cannot be placed) 1.9%→3.6%, absorbed by the F2 redraw; the P(10 successes needs >30 attempts) is negligible. V4 demo baseline 34/35; V5 demo impact unknown but expected neutral or positive.
+  [2]
+    - title: P3 PickXtimes alternative: corner push only on the target (target = first-placed colored cube) + exact OBB + 8 cm spacing
+    - recommended: False
+    - envs: PickXtimes
+    - anchors_to_change: PickXtimes.py :: XHARD_DECISION (corner_bias_scope: 'target' | 'all_candidates'), _spawn_scene_objects_xhard; object_generation.py :: spawn_random_cube (extra_reject)
+    - design: Colored slot 0 (whose color is uniform over red/green/blue thanks to the existing randperm) gets corner_bias 0.5; slots 1–2 get corner_bias 0. The existing target_cube_idx randint is still drawn at the same point as a placeholder (recorded under e.g. objects.target_cube_idx_draw), and the target is fixed to slot 0 (objects.target_cube_idx=0). The alternative of moving the target_cube_idx draw before cube placement reorders an existing draw point, which was avoided in V4 and is not recommended.
+    - rationale: Matches the user's original 1.2 wording (only the target at a corner) and gives the lowest corner sharing achievable while keeping a cornered target.
+    - rng_impact: No new draws; the placeholder randint stays at its current point. xhard values change (re-freeze). easy/medium/hard: none.
+    - overturned_v4_decisions: Overturns J5 ('推全部 3 个有色方块'). Keeps 1.2, G1, C1, A5/B2.
+    - spec_and_test_changes: Spec semantics: target_cube_idx is always 0, plus a new placeholder field. Tests assert that the target is slot 0 and that the target color is uniform over seeds (chi-square over e.g. 300 seeds).
+    - expected_numbers: N=3000: fail 0% (8 cm) / 0.43% (10 cm); colored sharing a corner cell 14.2% (about chance); 3-cluster@10cm 30.5% (0% with 10 cm); target edge-distance median 1.76 cm, within 2 cm 54.8%. Positional shortcut: the target is in a corner cell about 91% of the time vs about 46% for the other colored cubes, so a policy could guess the target from position without reading the color.
+  [3]
+    - title: P4 PickXtimes alternative: remove corner bias (corner_bias 0) + exact OBB + 8 cm spacing
+    - recommended: False
+    - envs: PickXtimes
+    - anchors_to_change: PickXtimes.py :: XHARD_DECISION (corner_bias 0.0), _spawn_scene_objects_xhard / _spawn_distractors_xhard (spacing, exact OBB); object_generation.py :: spawn_random_cube (extra_reject)
+    - design: Set decision.xhard.target_cube_position_policy.corner_bias = 0 (corner_push returns u unchanged); add the P1 spacing and exact OBB.
+    - rationale: Simplest and fully uniform, but it drops the requested xhard difficulty feature.
+    - rng_impact: No new draws; xhard values change (re-freeze); easy/medium/hard none.
+    - overturned_v4_decisions: Overturns the 1.2 PickXtimes requirement '把 target 生成的位置尽可能推向边角' and J5.
+    - spec_and_test_changes: corner_bias recorded as 0.0; the other changes as in P1.
+    - expected_numbers: N=3000: fail 0; sharing a corner cell 9.6%; 3-cluster@10cm 33.5%; target edge-distance median 3.98 cm (V4 1.75 cm), within 2 cm 29.3%.
+  [4]
+    - title: P5 Optional add-on to P1: enlarge PickXtimes xhard cube+distractor region half 0.2 → 0.25 (SwingXtimes size), disk region unchanged
+    - recommended: False
+    - envs: PickXtimes
+    - anchors_to_change: PickXtimes.py :: XHARD_DECISION (target_cube_position_policy.region_half_size, distractor.region_half_size); config only, on top of P1
+    - design: Cube centers move from x∈[-0.28,0.08], y∈[-0.18,0.18] to x∈[-0.33,0.13], y∈[-0.23,0.23]; goal_position_policy stays half 0.2 (G1 wording 'do not enlarge the disk region' kept).
+    - rationale: This is the only lever that changes the overall footprint. The region covers 11% of the frame today (17.7% at the Swing size). Recommend deciding after a small demo check.
+    - rng_impact: No new draws, no code change beyond config; xhard values change; easy/medium/hard none.
+    - overturned_v4_decisions: Changes the 2.4 table value 'region 沿用原值' (not a lettered decision); keeps G1/C1.
+    - spec_and_test_changes: Config snapshot plus a guard test for the new value.
+    - expected_numbers: With P1 rules: fail 0.03%; 3-cluster@10cm 4.3% (0% at 10 cm spacing); mean NN 16.2 cm; RMS spread 21.6 cm (+36% vs V4); target edge-distance median 2.19 cm. With V4 rules only: cl10 17.2%, pairs <6 cm 8.2%. Risk: far corners reach about 0.78 m horizontally from the Panda base. SwingXtimes already picks there in all tiers (V4 V6 34/35), but PickXtimes repeats up to 15 pick-place cycles there, so a demo sweep is needed.
+  [5]
+    - title: P6 Not recommended: spacing fix only (keep V4 corner push on all 3) or larger min_gap only
+    - recommended: False
+    - envs: PickXtimes
+    - anchors_to_change: PickXtimes.py :: _spawn_scene_objects_xhard (min_gap or spacing)
+    - design: (a) exact OBB + 8 cm spacing with corner_bias 0.5 on all 3 and no quadrant rule; (b) min_gap 0.02→0.04 without the OBB fix.
+    - rationale: Listed for completeness, since the user asked about larger min_gap / Poisson-disk.
+    - rng_impact: No new draws; xhard values change; easy/medium/hard none.
+    - overturned_v4_decisions: None.
+    - spec_and_test_changes: As in P1, minus dispersion.
+    - expected_numbers: (a) sharing a corner cell still 31.7%, cl10 25.6%; (b) sharing a corner cell 40.2%, pairs <7 cm 6.0%, fail 0.7% (4.0% if combined with exact OBB, because the larger pad also grows the button/disk clearance). Neither removes corner piling.
+## risks
+  [0]
+    - risk: Demo success under the new layouts is unmeasured. The distinct-quadrant rule puts more colored cubes in near-robot corners next to the button (near third 38.9%→43.5%), which could raise accidental button presses or planner failures. P5 far corners may hit reach limits.
+    - mitigation: Before freezing, run the V6 combo sweep (5 demos per num value, as in J8) for PickXtimes (10 combos) and SwingXtimes (7 combos) and compare with the V4 baselines 46/50 and 34/35. Also run a local 4-seed demo probe (scripts/parity/v4_demo_probe.py) per variant first.
+  [1]
+    - risk: Changing a shared function (spawn_random_cube gets an extra_reject kwarg) or the shared SwingXtimes colored loop could leak into easy/medium/hard.
+    - mitigation: Default None short-circuits with no float ops; use an explicit difficulty branch whose non-xhard arm is the verbatim current code; gate with v4_reset_probe diff on PickXtimes/SwingXtimes (expect compared=18 diff=0) and the full V1 NATIVE_REGRESSION.
+  [2]
+    - risk: Reset-level failures rise: PickXtimes 0%→0.97% (P1 with 1024 trials) and SwingXtimes 1.9%→3.6% (disk placement with exact OBBs). This bears on 口径14 'generable' and the F2 candidate budget.
+    - mitigation: F2 allows 30 attempts per 10 candidates, so the shortfall probability is negligible at a ≤4% failure rate. Report reset-level and demo-level together (H3).
+  [3]
+    - risk: All V4 xhard layouts for these envs become invalid references; the 10 candidates per env, the 3 selected episodes, the rollout videos and h5 files must be regenerated.
+    - mitigation: Treat it as a V5 run (new run id); keep the V4 artifacts for comparison; the replica can predict the V5 layouts per seed before running the simulator.
+  [4]
+    - risk: The degenerate-OBB bug stays in easy/medium/hard (H2) and in other envs (BinFill, PickHighlight, VideoRepick, VideoPlaceButton/Order, MoveCube), so their clutter layouts still allow near-touching cubes.
+    - mitigation: Flag it to the other V5 topics. The same xhard-only fix (pre-made exact OBB) applies wherever cube actors are passed to avoid.
+  [5]
+    - risk: Positional shortcut. Under J5 and P1 the colored candidates sit in corners and the distractors in the middle (distractors |y|<0.1: 58.9% under P1), so position alone separates candidates from distractors. P3 would additionally single out the target.
+    - mitigation: If this matters for the benchmark, a follow-up option is a mild corner_bias on the distractors too, but it would reintroduce corner sharing between 6 cubes. Present it to the user as a trade-off, not as a default.
+  [6]
+    - risk: The 'clustered' perception may persist even with perfect spacing, because the scene covers only 11% of the front frame and near-robot spacing is compressed 2x.
+    - mitigation: Offer P5 (region half 0.25) as the footprint lever. Changing the camera is out of scope, since it affects all tiers and the recorder/inference.
+## pending_decisions
+  [0]
+    - question: PickXtimes corner semantics for V5
+    - options: (a) keep J5 (corner_bias 0.5 on all 3 colored) plus the distinct-quadrant rule (P1); (b) push only the target (P3, overturns J5); (c) no corner bias (P4, overturns the 1.2 text and J5); (d) keep the V4 corner push and only add spacing (P6a)
+    - recommendation: (a)
+    - reason: This is the only option that removes corner piling (44.5%→0) while keeping both the user's '推向边角' intent and the J5 choice (target edge median 1.63 cm vs 1.75 cm); cost is 0.97% reset failure.
+  [1]
+    - question: Fix the cube-OBB degeneracy in xhard (pass exact pre-made OBBs for placed cubes)?
+    - options: (a) yes, xhard only (H2 style); (b) no; (c) fix globally (breaks V1, not allowed without lifting H2)
+    - recommendation: (a)
+    - reason: It is the sole cause of sub-6 cm pairs (15.5% of V4 PickXtimes layouts, 7.3% of SwingXtimes). The original tiers must stay byte-identical.
+  [2]
+    - question: Minimum center distance between all 6 cubes (xhard)
+    - options: 0.06 (the V4 intent, achieved by the OBB fix alone) / 0.08 / 0.10
+    - recommendation: 0.08 for both envs; 0.10 acceptable for SwingXtimes, and for PickXtimes if P5 is adopted
+    - reason: 0.08 removes all pairs under 8 cm at zero added failure (P3/P4/SwingXtimes) or 0.97% (P1). 0.10 removes 10 cm three-clusters but costs 3.7% failure in PickXtimes at 256 trials (not measured at 1024).
+  [3]
+    - question: Raise xhard max_trials for PickXtimes cube placement from 256 to 1024?
+    - options: 256 / 1024
+    - recommendation: 1024
+    - reason: With the distinct-quadrant rule, failures drop from 3.53% to 0.97%. No new draw points (only more trials), and xhard only.
+  [4]
+    - question: Enlarge the PickXtimes xhard cube+distractor region to half 0.25 (P5)?
+    - options: yes / no / decide after a demo probe
+    - recommendation: decide after a small demo probe
+    - reason: Largest dispersion gain (RMS spread +36%, 10 cm three-clusters 4.3%, failure 0.03%), but far-corner reach during up to 15 pick-place cycles is untested.
+## verification_checks
+  [0]
+    - check: Original tiers byte-identical after V5 edits
+    - how: uv run --no-sync python -m scripts.parity.v4_reset_probe probe --tasks PickXtimes,SwingXtimes --out <new.json>; ... diff artifacts/newtask-v4/probe/base-13e.json <new.json>; then the full V1 NATIVE_REGRESSION
+    - judgement_line: RESET_REGRESSION_PICK_SWING=PASS compared=18 diff=0 ; NATIVE_REGRESSION=PASS diff=0
+  [1]
+    - check: Replica updated to V5 rules matches the real env
+    - how: Extend <scratch>/replica_v5b.py to the implemented V5 rules; reset 10 xhard seeds per env in the simulator (CUDA_VISIBLE_DEVICES=0, timeout 290) and compare all layout values exactly
+    - judgement_line: V5_REPLICA_PARITY=PASS envs=PickXtimes,SwingXtimes seeds=20 exact=20
+  [2]
+    - check: Exact cube OBB helper is non-degenerate
+    - how: Unit test: _cube_avoid_obb for 1000 random yaws returns orthonormal 2D axes and h=[0.02,0.02]; minimum accepted center distance in the probe placement ≥0.060
+    - judgement_line: V5_EXACT_OBB=PASS cubes=1000 degenerate=0 min_center_dist>=0.060
+  [3]
+    - check: PickXtimes dispersion and corner intent (replica, 3000 layouts)
+    - how: Run cluster_stats2-style metrics on the implemented V5 sampler
+    - judgement_line: V5_PICK_DISPERSION=PASS layouts=3000 same_cornercell_ge2=0.000 same_quad_ge2=0.000 min_pair_lt_0p08=0.000 in_corner_cell>=0.85 tgt_edge_median<=0.020
+  [4]
+    - check: PickXtimes and SwingXtimes reset feasibility
+    - how: Replica 3000 layouts plus 20-seed simulator reset smoke per env
+    - judgement_line: V5_RESET_FEASIBILITY=PASS pick_fail_rate<=0.010 swing_fail_rate<=0.040 smoke_pick=20/20 smoke_swing=20/20
+  [5]
+    - check: SwingXtimes spacing
+    - how: Replica 3000 layouts plus reset smoke asserting pairwise center distance ≥0.08 over the 6 cubes
+    - judgement_line: V5_SWING_SPACING=PASS layouts=3000 min_pair_lt_0p08=0.000
+  [6]
+    - check: Demo-level generability (口径14/H3)
+    - how: scripts/parity/v4_combos.py run --samples 5 over the V5 combos for PickXtimes (num 6..15) and SwingXtimes (num 4..10)
+    - judgement_line: COMBO_COVERAGE=PASS envs=PickXtimes,SwingXtimes missing_combinations=0 zero_success_combinations=0 pick_demo_ok>=46/50 swing_demo_ok>=34/35
+  [7]
+    - check: Visual sanity
+    - how: Montage of first front_rgb frames for the 10 V5 candidates per env; confirm no touching cubes and no two colored cubes in one corner (PickXtimes)
+    - judgement_line: V5_VISUAL=PASS pick_frames=10 swing_frames=10 touching_pairs=0 shared_corner=0
+## blind_spots
+  * No V5 variant was run through the simulator or demos; every V5 number comes from the replica. The replica is bit-exact for V4 rules (20/20), but V5 parity must be re-checked after implementation.
+  * Demo success impact of the distinct-quadrant rule (more near-robot corner placements next to the button) and of P5's far corners (up to about 0.78 m reach) is unknown.
+  * The 66.1% OBB degeneracy rate is measured through the replica's float32 sapien.Pose path. Exact agreement with the real sapien get_actor_obb is inferred from 20/20 bit-exact parity, which includes 9 layouts whose decisions depend on degeneracy; I did not inspect OBBs inside a live scene.
+  * 'Clustering' is subjective. I used proxies (shared corner cell or quadrant, pairs under 6/7/8 cm, single-linkage clusters at 8/10 cm, RMS spread, per-axis histograms). The user might react to something else, such as the overall footprint in the frame.
+  * The degenerate-OBB bug in other envs (BinFill, PickHighlight, VideoRepick, VideoPlaceButton/Order, MoveCube) was not quantified here.
+  * Not evaluated: whether distractors in the middle and colored cubes in the corners create a learnable positional shortcut for the benchmark's models.
+  * Recovery-mode draws (inject_fail_grasp) are disabled in V4 (I3) and were not modelled. If V5 turns recovery on, the distractor stream shifts accordingly.
+## scratch_files
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/replica.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/validate_replica.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/replica_v5.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/replica_v5b.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/cluster_stats.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/cluster_stats_N3000.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/cluster_stats2.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/cluster_stats2_N3000.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/cluster_stats3.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/cluster_stats3_N3000.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/spec_metrics.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/dump_specs.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/dump_specs.out
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/obb_check.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/obb_degen_rate.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/projection.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/extract_frames.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/plot_layouts.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/layout_scatter_v4_vs_v5.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/PickXtimes_ep0_frame0.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/PickXtimes_ep3_frame0.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/PickXtimes_ep6_frame0.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/SwingXtimes_ep0_frame0.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/SwingXtimes_ep3_frame0.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/pick_swing_cluster/SwingXtimes_ep6_frame0.png

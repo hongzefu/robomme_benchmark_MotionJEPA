@@ -1,0 +1,1989 @@
+{
+ "PatternLock_episode_0": {
+  "file": "PatternLock_ep0_seed5500000.h5",
+  "total": 1636,
+  "demo": 818,
+  "exec": 818,
+  "demo_s": 27.27,
+  "demo_segs": [
+   [
+    "move backward-right",
+    1
+   ],
+   [
+    "move backward-right",
+    35
+   ],
+   [
+    "move right",
+    28
+   ],
+   [
+    "move forward",
+    34
+   ],
+   [
+    "move forward-left",
+    31
+   ],
+   [
+    "move backward",
+    36
+   ],
+   [
+    "move backward-left",
+    27
+   ],
+   [
+    "move left",
+    28
+   ],
+   [
+    "move forward",
+    35
+   ],
+   [
+    "move forward",
+    31
+   ],
+   [
+    "move right",
+    24
+   ],
+   [
+    "move forward-left",
+    46
+   ],
+   [
+    "move forward",
+    50
+   ],
+   [
+    "move right",
+    21
+   ],
+   [
+    "move right",
+    26
+   ],
+   [
+    "move backward-left",
+    49
+   ],
+   [
+    "move right",
+    24
+   ],
+   [
+    "move forward-right",
+    46
+   ],
+   [
+    "move right",
+    23
+   ],
+   [
+    "move backward-left",
+    52
+   ],
+   [
+    "move backward",
+    33
+   ],
+   [
+    "move forward-right",
+    41
+   ],
+   [
+    "move backward",
+    34
+   ],
+   [
+    "move backward",
+    35
+   ],
+   [
+    "move backward",
+    29
+   ]
+  ],
+  "exec_segs": [
+   [
+    "move backward-right",
+    35
+   ],
+   [
+    "move right",
+    28
+   ],
+   [
+    "move forward",
+    34
+   ],
+   [
+    "move forward-left",
+    31
+   ],
+   [
+    "move backward",
+    36
+   ],
+   [
+    "move backward-left",
+    27
+   ],
+   [
+    "move left",
+    28
+   ],
+   [
+    "move forward",
+    35
+   ],
+   [
+    "move forward",
+    31
+   ],
+   [
+    "move right",
+    24
+   ],
+   [
+    "move forward-left",
+    46
+   ],
+   [
+    "move forward",
+    50
+   ],
+   [
+    "move right",
+    21
+   ],
+   [
+    "move right",
+    26
+   ],
+   [
+    "move backward-left",
+    49
+   ],
+   [
+    "move right",
+    24
+   ],
+   [
+    "move forward-right",
+    46
+   ],
+   [
+    "move right",
+    23
+   ],
+   [
+    "move backward-left",
+    52
+   ],
+   [
+    "move backward",
+    33
+   ],
+   [
+    "move forward-right",
+    41
+   ],
+   [
+    "move backward",
+    34
+   ],
+   [
+    "move backward",
+    35
+   ],
+   [
+    "move backward",
+    22
+   ],
+   [
+    "All tasks completed",
+    6
+   ]
+  ],
+  "goal": "watch the video carefully, then use the stick attached to the robot to retrace the same pattern",
+  "difficulty": "b'xhard'"
+ },
+ "PatternLock_episode_3": {
+  "file": "PatternLock_ep3_seed5500300.h5",
+  "total": 1744,
+  "demo": 872,
+  "exec": 872,
+  "demo_s": 29.07,
+  "demo_segs": [
+   [
+    "move forward-right",
+    1
+   ],
+   [
+    "move forward-right",
+    46
+   ],
+   [
+    "move left",
+    26
+   ],
+   [
+    "move backward-left",
+    40
+   ],
+   [
+    "move backward-right",
+    38
+   ],
+   [
+    "move backward",
+    36
+   ],
+   [
+    "move forward-right",
+    37
+   ],
+   [
+    "move forward",
+    35
+   ],
+   [
+    "move forward-right",
+    53
+   ],
+   [
+    "move backward",
+    46
+   ],
+   [
+    "move backward",
+    34
+   ],
+   [
+    "move backward",
+    36
+   ],
+   [
+    "move backward-left",
+    38
+   ],
+   [
+    "move right",
+    27
+   ],
+   [
+    "move forward-left",
+    32
+   ],
+   [
+    "move backward-left",
+    37
+   ],
+   [
+    "move left",
+    28
+   ],
+   [
+    "move forward-left",
+    38
+   ],
+   [
+    "move backward",
+    31
+   ],
+   [
+    "move forward-right",
+    31
+   ],
+   [
+    "move forward-left",
+    44
+   ],
+   [
+    "move right",
+    24
+   ],
+   [
+    "move forward-left",
+    45
+   ],
+   [
+    "move forward",
+    49
+   ],
+   [
+    "move right",
+    21
+   ]
+  ],
+  "exec_segs": [
+   [
+    "move forward-right",
+    46
+   ],
+   [
+    "move left",
+    26
+   ],
+   [
+    "move backward-left",
+    40
+   ],
+   [
+    "move backward-right",
+    38
+   ],
+   [
+    "move backward",
+    36
+   ],
+   [
+    "move forward-right",
+    37
+   ],
+   [
+    "move forward",
+    35
+   ],
+   [
+    "move forward-right",
+    53
+   ],
+   [
+    "move backward",
+    46
+   ],
+   [
+    "move backward",
+    34
+   ],
+   [
+    "move backward",
+    36
+   ],
+   [
+    "move backward-left",
+    38
+   ],
+   [
+    "move right",
+    27
+   ],
+   [
+    "move forward-left",
+    32
+   ],
+   [
+    "move backward-left",
+    37
+   ],
+   [
+    "move left",
+    28
+   ],
+   [
+    "move forward-left",
+    38
+   ],
+   [
+    "move backward",
+    31
+   ],
+   [
+    "move forward-right",
+    31
+   ],
+   [
+    "move forward-left",
+    44
+   ],
+   [
+    "move right",
+    24
+   ],
+   [
+    "move forward-left",
+    45
+   ],
+   [
+    "move forward",
+    49
+   ],
+   [
+    "move right",
+    15
+   ],
+   [
+    "All tasks completed",
+    5
+   ]
+  ],
+  "goal": "watch the video carefully, then use the stick attached to the robot to retrace the same pattern",
+  "difficulty": "b'xhard'"
+ },
+ "PatternLock_episode_6": {
+  "file": "PatternLock_ep6_seed5500600.h5",
+  "total": 1674,
+  "demo": 837,
+  "exec": 837,
+  "demo_s": 27.9,
+  "demo_segs": [
+   [
+    "move left",
+    1
+   ],
+   [
+    "move left",
+    23
+   ],
+   [
+    "move backward",
+    46
+   ],
+   [
+    "move backward-right",
+    46
+   ],
+   [
+    "move backward-left",
+    32
+   ],
+   [
+    "move forward",
+    36
+   ],
+   [
+    "move backward-right",
+    39
+   ],
+   [
+    "move backward-left",
+    31
+   ],
+   [
+    "move right",
+    29
+   ],
+   [
+    "move right",
+    27
+   ],
+   [
+    "move forward-right",
+    34
+   ],
+   [
+    "move forward",
+    34
+   ],
+   [
+    "move right",
+    25
+   ],
+   [
+    "move forward",
+    36
+   ],
+   [
+    "move forward-left",
+    41
+   ],
+   [
+    "move right",
+    22
+   ],
+   [
+    "move backward-left",
+    52
+   ],
+   [
+    "move left",
+    24
+   ],
+   [
+    "move forward",
+    44
+   ],
+   [
+    "move backward-left",
+    47
+   ],
+   [
+    "move backward-right",
+    38
+   ],
+   [
+    "move backward",
+    34
+   ],
+   [
+    "move backward-right",
+    31
+   ],
+   [
+    "move right",
+    36
+   ],
+   [
+    "move forward",
+    30
+   ]
+  ],
+  "exec_segs": [
+   [
+    "move left",
+    23
+   ],
+   [
+    "move backward",
+    46
+   ],
+   [
+    "move backward-right",
+    46
+   ],
+   [
+    "move backward-left",
+    32
+   ],
+   [
+    "move forward",
+    36
+   ],
+   [
+    "move backward-right",
+    39
+   ],
+   [
+    "move backward-left",
+    31
+   ],
+   [
+    "move right",
+    29
+   ],
+   [
+    "move right",
+    27
+   ],
+   [
+    "move forward-right",
+    34
+   ],
+   [
+    "move forward",
+    34
+   ],
+   [
+    "move right",
+    25
+   ],
+   [
+    "move forward",
+    36
+   ],
+   [
+    "move forward-left",
+    41
+   ],
+   [
+    "move right",
+    22
+   ],
+   [
+    "move backward-left",
+    52
+   ],
+   [
+    "move left",
+    24
+   ],
+   [
+    "move forward",
+    44
+   ],
+   [
+    "move backward-left",
+    47
+   ],
+   [
+    "move backward-right",
+    38
+   ],
+   [
+    "move backward",
+    34
+   ],
+   [
+    "move backward-right",
+    31
+   ],
+   [
+    "move right",
+    36
+   ],
+   [
+    "move forward",
+    22
+   ],
+   [
+    "All tasks completed",
+    7
+   ]
+  ],
+  "goal": "watch the video carefully, then use the stick attached to the robot to retrace the same pattern",
+  "difficulty": "b'xhard'"
+ },
+ "RouteStick_episode_0": {
+  "file": "RouteStick_ep0_seed5600000.h5",
+  "total": 2100,
+  "demo": 1050,
+  "exec": 1050,
+  "demo_s": 35.0,
+  "demo_segs": [
+   [
+    "move to the nearest left target by circling around the stick",
+    1
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ]
+  ],
+  "exec_segs": [
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    43
+   ],
+   [
+    "All tasks completed",
+    6
+   ]
+  ],
+  "goal": "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+  "difficulty": "b'xhard'"
+ },
+ "RouteStick_episode_3": {
+  "file": "RouteStick_ep3_seed5600300.h5",
+  "total": 1700,
+  "demo": 850,
+  "exec": 850,
+  "demo_s": 28.33,
+  "demo_segs": [
+   [
+    "move to the nearest right target by circling around the stic",
+    1
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ]
+  ],
+  "exec_segs": [
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    43
+   ],
+   [
+    "All tasks completed",
+    6
+   ]
+  ],
+  "goal": "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+  "difficulty": "b'xhard'"
+ },
+ "RouteStick_episode_6": {
+  "file": "RouteStick_ep6_seed5600600.h5",
+  "total": 1600,
+  "demo": 800,
+  "exec": 800,
+  "demo_s": 26.67,
+  "demo_segs": [
+   [
+    "move to the nearest right target by circling around the stic",
+    1
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ]
+  ],
+  "exec_segs": [
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest left target by circling around the stick",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    50
+   ],
+   [
+    "move to the nearest right target by circling around the stic",
+    43
+   ],
+   [
+    "All tasks completed",
+    6
+   ]
+  ],
+  "goal": "watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path",
+  "difficulty": "b'xhard'"
+ },
+ "VideoPlaceButton_episode_0": {
+  "file": "VideoPlaceButton_ep0_seed5000000.h5",
+  "total": 1552,
+  "demo": 1365,
+  "exec": 187,
+  "demo_s": 45.5,
+  "demo_segs": [
+   [
+    "pick up the cube",
+    1
+   ],
+   [
+    "pick up the cube",
+    108
+   ],
+   [
+    "drop the cube onto target",
+    97
+   ],
+   [
+    "pick up the cube",
+    117
+   ],
+   [
+    "drop the cube onto target",
+    92
+   ],
+   [
+    "press the button",
+    111
+   ],
+   [
+    "pick up the cube",
+    111
+   ],
+   [
+    "drop the cube onto target",
+    100
+   ],
+   [
+    "pick up the cube",
+    92
+   ],
+   [
+    "drop the cube onto target",
+    75
+   ],
+   [
+    "pick up the cube",
+    93
+   ],
+   [
+    "put the cube back to its original position",
+    82
+   ],
+   [
+    "pick up the cube",
+    85
+   ],
+   [
+    "put the cube back to its original position",
+    85
+   ],
+   [
+    "static",
+    57
+   ],
+   [
+    "static",
+    60
+   ]
+  ],
+  "exec_segs": [
+   [
+    "pick up the cube",
+    107
+   ],
+   [
+    "place the cube onto the correct target",
+    68
+   ],
+   [
+    "All tasks completed",
+    11
+   ]
+  ],
+  "goal": "watch the video carefully, then place the green cube on the target right after the button was pressed",
+  "difficulty": "b'xhard'"
+ },
+ "VideoPlaceButton_episode_3": {
+  "file": "VideoPlaceButton_ep3_seed5000302.h5",
+  "total": 1568,
+  "demo": 1373,
+  "exec": 195,
+  "demo_s": 45.77,
+  "demo_segs": [
+   [
+    "pick up the cube",
+    1
+   ],
+   [
+    "pick up the cube",
+    106
+   ],
+   [
+    "drop the cube onto target",
+    88
+   ],
+   [
+    "pick up the cube",
+    97
+   ],
+   [
+    "drop the cube onto target",
+    95
+   ],
+   [
+    "press the button",
+    93
+   ],
+   [
+    "pick up the cube",
+    102
+   ],
+   [
+    "drop the cube onto target",
+    97
+   ],
+   [
+    "pick up the cube",
+    121
+   ],
+   [
+    "drop the cube onto target",
+    98
+   ],
+   [
+    "pick up the cube",
+    92
+   ],
+   [
+    "put the cube back to its original position",
+    88
+   ],
+   [
+    "pick up the cube",
+    97
+   ],
+   [
+    "put the cube back to its original position",
+    88
+   ],
+   [
+    "static",
+    51
+   ],
+   [
+    "static",
+    60
+   ]
+  ],
+  "exec_segs": [
+   [
+    "pick up the cube",
+    101
+   ],
+   [
+    "place the cube onto the correct target",
+    77
+   ],
+   [
+    "All tasks completed",
+    16
+   ]
+  ],
+  "goal": "watch the video carefully, then place the green cube on the target right after the button was pressed",
+  "difficulty": "b'xhard'"
+ },
+ "VideoPlaceButton_episode_6": {
+  "file": "VideoPlaceButton_ep6_seed5000601.h5",
+  "total": 1589,
+  "demo": 1368,
+  "exec": 221,
+  "demo_s": 45.6,
+  "demo_segs": [
+   [
+    "pick up the cube",
+    1
+   ],
+   [
+    "pick up the cube",
+    118
+   ],
+   [
+    "drop the cube onto target",
+    101
+   ],
+   [
+    "pick up the cube",
+    111
+   ],
+   [
+    "drop the cube onto target",
+    88
+   ],
+   [
+    "press the button",
+    69
+   ],
+   [
+    "pick up the cube",
+    83
+   ],
+   [
+    "drop the cube onto target",
+    94
+   ],
+   [
+    "pick up the cube",
+    91
+   ],
+   [
+    "drop the cube onto target",
+    110
+   ],
+   [
+    "pick up the cube",
+    99
+   ],
+   [
+    "put the cube back to its original position",
+    86
+   ],
+   [
+    "pick up the cube",
+    111
+   ],
+   [
+    "put the cube back to its original position",
+    91
+   ],
+   [
+    "static",
+    56
+   ],
+   [
+    "static",
+    60
+   ]
+  ],
+  "exec_segs": [
+   [
+    "pick up the cube",
+    119
+   ],
+   [
+    "place the cube onto the correct target",
+    88
+   ],
+   [
+    "All tasks completed",
+    13
+   ]
+  ],
+  "goal": "watch the video carefully, then place the red cube on the target right before the button was pressed",
+  "difficulty": "b'xhard'"
+ },
+ "VideoPlaceOrder_episode_0": {
+  "file": "VideoPlaceOrder_ep0_seed5100003.h5",
+  "total": 1700,
+  "demo": 1520,
+  "exec": 180,
+  "demo_s": 50.67,
+  "demo_segs": [
+   [
+    "pick up the cube",
+    1
+   ],
+   [
+    "pick up the cube",
+    124
+   ],
+   [
+    "drop the cube onto target",
+    106
+   ],
+   [
+    "pick up the cube",
+    73
+   ],
+   [
+    "drop the cube onto target",
+    92
+   ],
+   [
+    "pick up the cube",
+    71
+   ],
+   [
+    "put the cube back to its original position",
+    100
+   ],
+   [
+    "pick up the cube",
+    112
+   ],
+   [
+    "drop the cube onto target",
+    69
+   ],
+   [
+    "press the button",
+    99
+   ],
+   [
+    "pick up the cube",
+    116
+   ],
+   [
+    "drop the cube onto target",
+    103
+   ],
+   [
+    "pick up the cube",
+    72
+   ],
+   [
+    "drop the cube onto target",
+    104
+   ],
+   [
+    "pick up the cube",
+    75
+   ],
+   [
+    "put the cube back to its original position",
+    90
+   ],
+   [
+    "static",
+    54
+   ],
+   [
+    "static",
+    60
+   ]
+  ],
+  "exec_segs": [
+   [
+    "pick up the cube",
+    105
+   ],
+   [
+    "place the cube onto the correct target",
+    62
+   ],
+   [
+    "All tasks completed",
+    12
+   ]
+  ],
+  "goal": "watch the video carefully, then place the green cube on the second target it was previously placed on",
+  "difficulty": "b'xhard'"
+ },
+ "VideoPlaceOrder_episode_3": {
+  "file": "VideoPlaceOrder_ep3_seed5100303.h5",
+  "total": 2171,
+  "demo": 1952,
+  "exec": 219,
+  "demo_s": 65.07,
+  "demo_segs": [
+   [
+    "pick up the cube",
+    1
+   ],
+   [
+    "pick up the cube",
+    116
+   ],
+   [
+    "drop the cube onto target",
+    99
+   ],
+   [
+    "pick up the cube",
+    74
+   ],
+   [
+    "drop the cube onto target",
+    90
+   ],
+   [
+    "pick up the cube",
+    71
+   ],
+   [
+    "drop the cube onto target",
+    94
+   ],
+   [
+    "pick up the cube",
+    74
+   ],
+   [
+    "drop the cube onto target",
+    101
+   ],
+   [
+    "press the button",
+    78
+   ],
+   [
+    "pick up the cube",
+    84
+   ],
+   [
+    "put the cube back to its original position",
+    107
+   ],
+   [
+    "pick up the cube",
+    93
+   ],
+   [
+    "drop the cube onto target",
+    89
+   ],
+   [
+    "pick up the cube",
+    74
+   ],
+   [
+    "drop the cube onto target",
+    111
+   ],
+   [
+    "pick up the cube",
+    83
+   ],
+   [
+    "drop the cube onto target",
+    100
+   ],
+   [
+    "pick up the cube",
+    67
+   ],
+   [
+    "drop the cube onto target",
+    99
+   ],
+   [
+    "pick up the cube",
+    70
+   ],
+   [
+    "put the cube back to its original position",
+    71
+   ],
+   [
+    "static",
+    47
+   ],
+   [
+    "static",
+    60
+   ]
+  ],
+  "exec_segs": [
+   [
+    "pick up the cube",
+    117
+   ],
+   [
+    "place the cube onto the correct target",
+    88
+   ],
+   [
+    "All tasks completed",
+    13
+   ]
+  ],
+  "goal": "watch the video carefully, then place the green cube on the third target it was previously placed on",
+  "difficulty": "b'xhard'"
+ },
+ "VideoPlaceOrder_episode_6": {
+  "file": "VideoPlaceOrder_ep6_seed5100600.h5",
+  "total": 1832,
+  "demo": 1606,
+  "exec": 226,
+  "demo_s": 53.53,
+  "demo_segs": [
+   [
+    "pick up the cube",
+    1
+   ],
+   [
+    "pick up the cube",
+    122
+   ],
+   [
+    "drop the cube onto target",
+    77
+   ],
+   [
+    "pick up the cube",
+    80
+   ],
+   [
+    "drop the cube onto target",
+    95
+   ],
+   [
+    "pick up the cube",
+    68
+   ],
+   [
+    "drop the cube onto target",
+    71
+   ],
+   [
+    "pick up the cube",
+    69
+   ],
+   [
+    "put the cube back to its original position",
+    108
+   ],
+   [
+    "pick up the cube",
+    100
+   ],
+   [
+    "drop the cube onto target",
+    79
+   ],
+   [
+    "press the button",
+    91
+   ],
+   [
+    "pick up the cube",
+    107
+   ],
+   [
+    "drop the cube onto target",
+    92
+   ],
+   [
+    "pick up the cube",
+    69
+   ],
+   [
+    "drop the cube onto target",
+    75
+   ],
+   [
+    "pick up the cube",
+    74
+   ],
+   [
+    "put the cube back to its original position",
+    106
+   ],
+   [
+    "static",
+    63
+   ],
+   [
+    "static",
+    60
+   ]
+  ],
+  "exec_segs": [
+   [
+    "pick up the cube",
+    125
+   ],
+   [
+    "place the cube onto the correct target",
+    86
+   ],
+   [
+    "All tasks completed",
+    14
+   ]
+  ],
+  "goal": "watch the video carefully, then place the green cube on the second target it was previously placed on",
+  "difficulty": "b'xhard'"
+ },
+ "InsertPeg_episode_0": {
+  "file": "InsertPeg_ep0_seed5300000.h5",
+  "total": 451,
+  "demo": 238,
+  "exec": 213,
+  "demo_s": 7.93,
+  "demo_segs": [
+   [
+    "Pick up the peg by grasping the near end",
+    1
+   ],
+   [
+    "Pick up the peg by grasping the near end",
+    112
+   ],
+   [
+    "Insert the peg from the right side of the box",
+    126
+   ]
+  ],
+  "exec_segs": [
+   [
+    "Pick up the peg by grasping the near end",
+    112
+   ],
+   [
+    "Insert the peg from the right side",
+    96
+   ],
+   [
+    "All tasks completed",
+    4
+   ]
+  ],
+  "goal": "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+  "difficulty": "b'xhard'"
+ },
+ "InsertPeg_episode_1": {
+  "file": "InsertPeg_ep1_seed5300100.h5",
+  "total": 496,
+  "demo": 248,
+  "exec": 248,
+  "demo_s": 8.27,
+  "demo_segs": [
+   [
+    "Pick up the peg by grasping the near end",
+    1
+   ],
+   [
+    "Pick up the peg by grasping the near end",
+    111
+   ],
+   [
+    "Insert the peg from the left side of the box",
+    137
+   ]
+  ],
+  "exec_segs": [
+   [
+    "Pick up the peg by grasping the near end",
+    111
+   ],
+   [
+    "Insert the peg from the left side",
+    122
+   ],
+   [
+    "All tasks completed",
+    14
+   ]
+  ],
+  "goal": "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+  "difficulty": "b'xhard'"
+ },
+ "InsertPeg_episode_5": {
+  "file": "InsertPeg_ep5_seed5300500.h5",
+  "total": 484,
+  "demo": 242,
+  "exec": 242,
+  "demo_s": 8.07,
+  "demo_segs": [
+   [
+    "Pick up the peg by grasping the far end",
+    1
+   ],
+   [
+    "Pick up the peg by grasping the far end",
+    120
+   ],
+   [
+    "Insert the peg from the left side of the box",
+    122
+   ]
+  ],
+  "exec_segs": [
+   [
+    "Pick up the peg by grasping the far end",
+    120
+   ],
+   [
+    "Insert the peg from the left side",
+    111
+   ],
+   [
+    "All tasks completed",
+    10
+   ]
+  ],
+  "goal": "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+  "difficulty": "b'xhard'"
+ },
+ "StopCube_episode_0": {
+  "file": "StopCube_ep0_seed4200000.h5",
+  "total": 428,
+  "demo": 0,
+  "exec": 428,
+  "demo_s": 0.0,
+  "demo_segs": [],
+  "exec_segs": [
+   [
+    "move to the top of the button to prepare",
+    1
+   ],
+   [
+    "move to the top of the button to prepare",
+    59
+   ],
+   [
+    "remain static",
+    42
+   ],
+   [
+    "remain static",
+    102
+   ],
+   [
+    "remain static",
+    102
+   ],
+   [
+    "remain static",
+    60
+   ],
+   [
+    "press the button to stop the cube on the target",
+    28
+   ],
+   [
+    "All tasks completed",
+    34
+   ]
+  ],
+  "goal": "press the button to stop the cube just as it reaches the target for the seventh time",
+  "difficulty": "b'xhard'"
+ },
+ "StopCube_episode_3": {
+  "file": "StopCube_ep3_seed4200300.h5",
+  "total": 846,
+  "demo": 0,
+  "exec": 846,
+  "demo_s": 0.0,
+  "demo_segs": [],
+  "exec_segs": [
+   [
+    "move to the top of the button to prepare",
+    1
+   ],
+   [
+    "move to the top of the button to prepare",
+    57
+   ],
+   [
+    "remain static",
+    48
+   ],
+   [
+    "remain static",
+    96
+   ],
+   [
+    "remain static",
+    102
+   ],
+   [
+    "remain static",
+    102
+   ],
+   [
+    "remain static",
+    96
+   ],
+   [
+    "remain static",
+    102
+   ],
+   [
+    "remain static",
+    102
+   ],
+   [
+    "remain static",
+    78
+   ],
+   [
+    "press the button to stop the cube on the target",
+    27
+   ],
+   [
+    "All tasks completed",
+    35
+   ]
+  ],
+  "goal": "press the button to stop the cube just as it reaches the target for the fourteenth time",
+  "difficulty": "b'xhard'"
+ },
+ "StopCube_episode_6": {
+  "file": "StopCube_ep6_seed4200600.h5",
+  "total": 553,
+  "demo": 0,
+  "exec": 553,
+  "demo_s": 0.0,
+  "demo_segs": [],
+  "exec_segs": [
+   [
+    "move to the top of the button to prepare",
+    1
+   ],
+   [
+    "move to the top of the button to prepare",
+    55
+   ],
+   [
+    "remain static",
+    48
+   ],
+   [
+    "remain static",
+    102
+   ],
+   [
+    "remain static",
+    96
+   ],
+   [
+    "remain static",
+    102
+   ],
+   [
+    "remain static",
+    78
+   ],
+   [
+    "press the button to stop the cube on the target",
+    29
+   ],
+   [
+    "All tasks completed",
+    42
+   ]
+  ],
+  "goal": "press the button to stop the cube just as it reaches the target for the ninth time",
+  "difficulty": "b'xhard'"
+ }
+}

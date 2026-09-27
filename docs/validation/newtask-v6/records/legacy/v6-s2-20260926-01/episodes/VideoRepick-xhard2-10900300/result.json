@@ -1,0 +1,30 @@
+{
+  "id": "VideoRepick-xhard2-10900300",
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "seed": 10900300,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json",
+  "ok": false,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 5.116,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "VideoRepick",
+      "seed": 10900300,
+      "difficulty": "xhard2",
+      "ok": false,
+      "failure_class": "task",
+      "error_type": "SceneGenerationError",
+      "error": "xhard2: 槽位 [0] 没有扫掠可行的搭档（可行槽位对 [(1, 4), (2, 4), (3, 4)]）",
+      "wall_s": 1.1,
+      "timesteps": null
+    }
+  ],
+  "hdf5": [],
+  "videos": []
+}

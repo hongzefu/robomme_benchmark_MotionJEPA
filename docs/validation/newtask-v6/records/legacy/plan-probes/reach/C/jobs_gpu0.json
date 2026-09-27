@@ -1,0 +1,128 @@
+[
+ {
+  "task": "MoveCube",
+  "episode": 100,
+  "seed": 7300000,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_100"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 102,
+  "seed": 7300002,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_102"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 104,
+  "seed": 7300004,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_104"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 106,
+  "seed": 7300006,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_106"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 108,
+  "seed": 7300008,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_108"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 110,
+  "seed": 7300010,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_110"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 112,
+  "seed": 7300012,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_112"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 114,
+  "seed": 7300014,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_114"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 116,
+  "seed": 7300016,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_116"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 118,
+  "seed": 7300018,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_118"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 120,
+  "seed": 7300020,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_120"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 122,
+  "seed": 7300022,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_122"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 124,
+  "seed": 7300024,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_124"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 126,
+  "seed": 7300026,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_126"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 128,
+  "seed": 7300028,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_128"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 130,
+  "seed": 7300030,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_130"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 132,
+  "seed": 7300032,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_132"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 134,
+  "seed": 7300034,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/plan-probes/reach/C/episodes/MoveCube_episode_134"
+ }
+]

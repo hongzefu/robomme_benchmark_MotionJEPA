@@ -1,0 +1,15 @@
+warning: `VIRTUAL_ENV=/data/hongzefu/robomme_benchmark_MotionJEPA/.venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+HOME_SITE_COUNTEREXAMPLE=PASS actual_xy= [-0.0006738138198852522, 0.0482799232006073] rng_changed= True randomize_reads= 0
+INSERT_YAW_COUNTEREXAMPLE=PASS original_x= [-0.15000000596046448, -0.15000000596046448, -0.10000000894069672, 0.10000000149011612] flipped_x= [0.25, 0.25, 0.20000000298023224, 0.0] max_position_delta_m= 0.4000000059604645
+DISTRACTOR_COUNTEREXAMPLE=PASS initial_gap_m= 0.012935621759688737 omitted_pass= True included_rejection= {'reason': 'contact', 'stage': 'sweep', 'object_a': 'a', 'object_b': 'distractor', 'shape_a': 0, 'shape_b': 0, 'gap_m': -0.0049999999999999975, 's': 0.5, 'sweep_index': None, 'interval_low': 0.0, 'interval_high': 1.0, 'depth': 0, 'intervals_used': 3, 'detail': '中点判定'}
+ORIGIN_MODEL_COUNTEREXAMPLE=PASS draft_keys= ['fail_class', 'identity', 'reset_ok', 'spec'] provenance_keys= ['mismatches', 'mode', 'value_points'] hash_self_consistent= True
+SELECTED_COUNTEREXAMPLE=PASS selected_hash_invariant=False
+H5_COUNTEREXAMPLE=PASS case= empty
+{'sha_equal': 1, 'field_mismatch': 0, 'timestep_count': {}}
+H5_COUNTEREXAMPLE=PASS case= root_attrs
+{'sha_equal': 0, 'field_mismatch': 0, 'timestep_count': {'left': 1, 'right': 1}}
+AUDIT_COUNTEREXAMPLES=PASS checks=7

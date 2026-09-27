@@ -1,0 +1,102 @@
+{
+  "checked": 8,
+  "possible_complete_success": 0,
+  "identities": [
+    {
+      "task": "StopCube",
+      "episode": 8,
+      "seed": 6200800,
+      "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/StopCube_episode_8",
+      "directory_exists": true,
+      "files": [],
+      "hdf5": [],
+      "videos": [],
+      "spec_replay_present": false,
+      "possible_complete_success": false
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 8,
+      "seed": 6300800,
+      "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/SwingXtimes_episode_8",
+      "directory_exists": true,
+      "files": [],
+      "hdf5": [],
+      "videos": [],
+      "spec_replay_present": false,
+      "possible_complete_success": false
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 8,
+      "seed": 6500800,
+      "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoUnmaskSwap_episode_8",
+      "directory_exists": true,
+      "files": [],
+      "hdf5": [],
+      "videos": [],
+      "spec_replay_present": false,
+      "possible_complete_success": false
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 8,
+      "seed": 6600800,
+      "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoUnmask_episode_8",
+      "directory_exists": true,
+      "files": [],
+      "hdf5": [],
+      "videos": [],
+      "spec_replay_present": false,
+      "possible_complete_success": false
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 8,
+      "seed": 6900803,
+      "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoRepick_episode_8",
+      "directory_exists": true,
+      "files": [],
+      "hdf5": [],
+      "videos": [],
+      "spec_replay_present": false,
+      "possible_complete_success": false
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 8,
+      "seed": 7000800,
+      "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoPlaceButton_episode_8",
+      "directory_exists": true,
+      "files": [],
+      "hdf5": [],
+      "videos": [],
+      "spec_replay_present": false,
+      "possible_complete_success": false
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 8,
+      "seed": 7100800,
+      "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoPlaceOrder_episode_8",
+      "directory_exists": true,
+      "files": [],
+      "hdf5": [],
+      "videos": [],
+      "spec_replay_present": false,
+      "possible_complete_success": false
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 8,
+      "seed": 7300800,
+      "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_8",
+      "directory_exists": true,
+      "files": [],
+      "hdf5": [],
+      "videos": [],
+      "spec_replay_present": false,
+      "possible_complete_success": false
+    }
+  ]
+}

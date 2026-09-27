@@ -1,0 +1,7 @@
+CFG ButtonUnmask v5 {"count": 14, "ring_max_abs_xy": [0.2425, 0.3289], "cube_count_range": [7, 7], "color_pool": ["yellow", "cyan", "magenta", "yellow", "cyan", "magenta", "yellow", "cyan", "magenta"], "min_gap_factor": 0.75, "max_trials": 1024}
+ROW {"task": "ButtonUnmask", "mode": "v5", "seed": 910000, "reset_s": 8.7, "n_distractors": 14, "n_dcubes": 7, "step_ms_reveal_0_31": 416.9, "step_ms_after_33_71": 17.0, "max_xy_err_after_reveal_mm": 0.05, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+ROW {"task": "ButtonUnmask", "mode": "v5", "seed": 910101, "reset_s": 4.7, "n_distractors": 14, "n_dcubes": 7, "step_ms_reveal_0_31": 184.1, "step_ms_after_33_71": 13.7, "max_xy_err_after_reveal_mm": 0.05, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+ROW {"task": "ButtonUnmask", "mode": "v5", "seed": 910202, "reset_s": 4.8, "n_distractors": 14, "n_dcubes": 7, "step_ms_reveal_0_31": 273.3, "step_ms_after_33_71": 8.8, "max_xy_err_after_reveal_mm": 0.05, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+DEMO {"task": "ButtonUnmask", "mode": "v5", "seed": 910000, "ok": true, "class": null, "etype": null, "err": "", "wall_s": 70.0, "timesteps": 521}
+DEMO {"task": "ButtonUnmask", "mode": "v5", "seed": 910101, "ok": true, "class": null, "etype": null, "err": "", "wall_s": 58.1, "timesteps": 513}
+SIM_DONE ButtonUnmask v5

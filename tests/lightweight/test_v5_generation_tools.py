@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 生成工具链（0924-newtask-release-v5-plan.md 3.1～3.3 S4～S6）。
+"""轻量测试：V5 生成工具链（docs/plans/0924-newtask-release-v5-plan.md 3.1～3.3 S4～S6）。
 
 纯 CPU、不起仿真环境：
 * ``v4_specs draw --workers N`` 的多 worker 合并：假 reset + 线程池，结果与单 worker 逐行相同（除墙钟），

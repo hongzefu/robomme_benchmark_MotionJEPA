@@ -1,0 +1,7338 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "seed": 9000000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed9000000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed9000000_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed9000000_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4"
+  ],
+  "n_steps": 1160,
+  "task_goal": [
+   "watch the video carefully, then place the red cube on the target right after the button was pressed",
+   "watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 103,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 138>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       138,
+       116
+      ],
+      [
+       142,
+       92
+      ],
+      24.3
+     ]
+    }
+   },
+   {
+    "start": 104,
+    "end": 209,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       142,
+       92
+      ],
+      [
+       153,
+       76
+      ],
+      19.4
+     ]
+    }
+   },
+   {
+    "start": 210,
+    "end": 307,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <122, 86>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       106,
+       84
+      ],
+      [
+       109,
+       88
+      ],
+      5.0
+     ]
+    }
+   },
+   {
+    "start": 308,
+    "end": 417,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <76, 153>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       153,
+       76
+      ],
+      [
+       159,
+       46
+      ],
+      30.6
+     ],
+     "blue": [
+      [
+       109,
+       88
+      ],
+      [
+       106,
+       84
+      ],
+      5.0
+     ]
+    }
+   },
+   {
+    "start": 418,
+    "end": 516,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <78, 90>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       159,
+       46
+      ],
+      [
+       88,
+       74
+      ],
+      76.3
+     ]
+    }
+   },
+   {
+    "start": 517,
+    "end": 590,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 88>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       88,
+       74
+      ],
+      [
+       76,
+       45
+      ],
+      31.4
+     ]
+    }
+   },
+   {
+    "start": 591,
+    "end": 686,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <132, 165>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       76,
+       44
+      ],
+      [
+       167,
+       131
+      ],
+      125.9
+     ]
+    }
+   },
+   {
+    "start": 687,
+    "end": 755,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <131, 167>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       167,
+       131
+      ],
+      [
+       179,
+       116
+      ],
+      19.2
+     ],
+     "green": [
+      [
+       167,
+       104
+      ],
+      [
+       161,
+       105
+      ],
+      6.1
+     ]
+    }
+   },
+   {
+    "start": 756,
+    "end": 840,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       179,
+       116
+      ],
+      [
+       137,
+       116
+      ],
+      42.0
+     ],
+     "green": [
+      [
+       161,
+       105
+      ],
+      [
+       165,
+       101
+      ],
+      5.7
+     ]
+    }
+   },
+   {
+    "start": 841,
+    "end": 952,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 953,
+    "end": 1056,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 137>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       137,
+       116
+      ],
+      [
+       140,
+       93
+      ],
+      23.2
+     ]
+    }
+   },
+   {
+    "start": 1057,
+    "end": 1141,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <78, 90>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       140,
+       93
+      ],
+      [
+       88,
+       74
+      ],
+      55.4
+     ]
+    }
+   },
+   {
+    "start": 1142,
+    "end": 1159,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <78, 90>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   210,
+   307
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "red",
+    "green",
+    "blue"
+   ],
+   "demo_cubes": [
+    "red"
+   ],
+   "answer_cube": "red",
+   "language": "after",
+   "answer_target": 1,
+   "swap_pair": [
+    3,
+    2
+   ],
+   "placement_count": 3,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "red",
+     "target": 0,
+     "drop_seg": [
+      104,
+      209
+     ],
+     "subgoal": "drop the cube onto target"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      210,
+      307
+     ],
+     "subgoal": "press the button at <122, 86>"
+    },
+    {
+     "kind": "after",
+     "cube": "red",
+     "target": 1,
+     "drop_seg": [
+      418,
+      516
+     ],
+     "subgoal": "drop the cube onto target at <78, 90>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "red",
+     "target": 2,
+     "drop_seg": [
+      591,
+      686
+     ],
+     "subgoal": "drop the cube onto target at <132, 165>"
+    },
+    {
+     "kind": "home",
+     "cube": "red",
+     "target": null,
+     "drop_seg": [
+      756,
+      840
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 1,
+   "program_answer_target": 1,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "red",
+    1
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [],
+   "distinct_target_changes": 3
+  }
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "seed": 9000300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed9000300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed9000300_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed9000300_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4"
+  ],
+  "n_steps": 1110,
+  "task_goal": [
+   "watch the video carefully, then place the red cube on the target right before the button was pressed",
+   "watch the video carefully, and place the red cube on the target where it was placed immediately before the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was previously placed before the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was last placed before the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 117,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 163>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       163,
+       74
+      ],
+      [
+       173,
+       41
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "start": 118,
+    "end": 196,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <104, 133>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       173,
+       41
+      ],
+      [
+       133,
+       102
+      ],
+      72.9
+     ]
+    }
+   },
+   {
+    "start": 197,
+    "end": 281,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <123, 101>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 282,
+    "end": 370,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <102, 133>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       133,
+       102
+      ],
+      [
+       136,
+       76
+      ],
+      26.2
+     ]
+    }
+   },
+   {
+    "start": 371,
+    "end": 453,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <101, 159>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       136,
+       76
+      ],
+      [
+       161,
+       99
+      ],
+      34.0
+     ]
+    }
+   },
+   {
+    "start": 454,
+    "end": 524,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 161>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       161,
+       99
+      ],
+      [
+       171,
+       72
+      ],
+      28.8
+     ]
+    }
+   },
+   {
+    "start": 525,
+    "end": 620,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <74, 99>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       171,
+       72
+      ],
+      [
+       98,
+       72
+      ],
+      73.0
+     ]
+    }
+   },
+   {
+    "start": 621,
+    "end": 695,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 98>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       98,
+       72
+      ],
+      [
+       90,
+       41
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "start": 696,
+    "end": 792,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       90,
+       41
+      ],
+      [
+       164,
+       74
+      ],
+      81.0
+     ]
+    }
+   },
+   {
+    "start": 793,
+    "end": 911,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 912,
+    "end": 1030,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 164>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       164,
+       74
+      ],
+      [
+       174,
+       42
+      ],
+      33.5
+     ]
+    }
+   },
+   {
+    "start": 1031,
+    "end": 1097,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <104, 133>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       174,
+       42
+      ],
+      [
+       133,
+       102
+      ],
+      72.7
+     ]
+    }
+   },
+   {
+    "start": 1098,
+    "end": 1109,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <104, 133>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   197,
+   281
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "green",
+    "blue",
+    "red"
+   ],
+   "demo_cubes": [
+    "red"
+   ],
+   "answer_cube": "red",
+   "language": "before",
+   "answer_target": 0,
+   "swap_pair": [
+    2,
+    1
+   ],
+   "placement_count": 3,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "red",
+     "target": 0,
+     "drop_seg": [
+      118,
+      196
+     ],
+     "subgoal": "drop the cube onto target at <104, 133>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      197,
+      281
+     ],
+     "subgoal": "press the button at <123, 101>"
+    },
+    {
+     "kind": "after",
+     "cube": "red",
+     "target": 1,
+     "drop_seg": [
+      371,
+      453
+     ],
+     "subgoal": "drop the cube onto target at <101, 159>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "red",
+     "target": 3,
+     "drop_seg": [
+      525,
+      620
+     ],
+     "subgoal": "drop the cube onto target at <74, 99>"
+    },
+    {
+     "kind": "home",
+     "cube": "red",
+     "target": null,
+     "drop_seg": [
+      696,
+      792
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 0,
+   "program_answer_target": 0,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "red",
+    0
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [],
+   "distinct_target_changes": 3
+  }
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "seed": 9000601,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed9000601.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed9000601_xhard1_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed9000601_xhard1_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4"
+  ],
+  "n_steps": 1151,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 108,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <123, 176>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       176,
+       123
+      ],
+      [
+       195,
+       100
+      ],
+      29.8
+     ]
+    }
+   },
+   {
+    "start": 109,
+    "end": 211,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <98, 91>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       195,
+       101
+      ],
+      [
+       89,
+       96
+      ],
+      106.1
+     ]
+    }
+   },
+   {
+    "start": 212,
+    "end": 293,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <122, 114>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 294,
+    "end": 388,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 89>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       89,
+       99
+      ],
+      [
+       77,
+       68
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 389,
+    "end": 477,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <138, 149>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       77,
+       68
+      ],
+      [
+       151,
+       137
+      ],
+      101.2
+     ]
+    }
+   },
+   {
+    "start": 478,
+    "end": 551,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <137, 151>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       151,
+       137
+      ],
+      [
+       160,
+       127
+      ],
+      13.5
+     ]
+    }
+   },
+   {
+    "start": 552,
+    "end": 667,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <78, 90>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       161,
+       127
+      ],
+      [
+       88,
+       75
+      ],
+      89.6
+     ]
+    }
+   },
+   {
+    "start": 668,
+    "end": 743,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <75, 88>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       88,
+       75
+      ],
+      [
+       77,
+       45
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "start": 744,
+    "end": 842,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       163,
+       83
+      ],
+      [
+       160,
+       88
+      ],
+      5.8
+     ],
+     "blue": [
+      [
+       77,
+       45
+      ],
+      [
+       176,
+       123
+      ],
+      126.0
+     ]
+    }
+   },
+   {
+    "start": 843,
+    "end": 963,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       160,
+       88
+      ],
+      [
+       163,
+       83
+      ],
+      5.8
+     ]
+    }
+   },
+   {
+    "start": 964,
+    "end": 1072,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <123, 176>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       176,
+       123
+      ],
+      [
+       194,
+       102
+      ],
+      27.7
+     ]
+    }
+   },
+   {
+    "start": 1073,
+    "end": 1136,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <138, 149>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       194,
+       102
+      ],
+      [
+       151,
+       142
+      ],
+      58.7
+     ]
+    }
+   },
+   {
+    "start": 1137,
+    "end": 1150,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <138, 149>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       151,
+       141
+      ],
+      [
+       151,
+       136
+      ],
+      5.0
+     ]
+    }
+   }
+  ],
+  "button_steps": [
+   212,
+   293
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "red",
+    "green",
+    "blue"
+   ],
+   "demo_cubes": [
+    "blue"
+   ],
+   "answer_cube": "blue",
+   "language": "after",
+   "answer_target": 1,
+   "swap_pair": [
+    3,
+    0
+   ],
+   "placement_count": 3,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "blue",
+     "target": 0,
+     "drop_seg": [
+      109,
+      211
+     ],
+     "subgoal": "drop the cube onto target at <98, 91>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      212,
+      293
+     ],
+     "subgoal": "press the button at <122, 114>"
+    },
+    {
+     "kind": "after",
+     "cube": "blue",
+     "target": 1,
+     "drop_seg": [
+      389,
+      477
+     ],
+     "subgoal": "drop the cube onto target at <138, 149>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "blue",
+     "target": 3,
+     "drop_seg": [
+      552,
+      667
+     ],
+     "subgoal": "drop the cube onto target at <78, 90>"
+    },
+    {
+     "kind": "home",
+     "cube": "blue",
+     "target": null,
+     "drop_seg": [
+      744,
+      842
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 1,
+   "program_answer_target": 1,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "blue",
+    1
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [],
+   "distinct_target_changes": 3
+  }
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "seed": 11000000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed11000000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed11000000_xhard2_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__056b0e8138b1.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed11000000_xhard2_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__056b0e8138b1.mp4"
+  ],
+  "n_steps": 1296,
+  "task_goal": [
+   "watch the video carefully, then place the green cube on the target right after the button was pressed",
+   "watch the video carefully, and place the green cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 112,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <85, 162>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       162,
+       85
+      ],
+      [
+       175,
+       53
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "start": 113,
+    "end": 191,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <111, 167>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       175,
+       53
+      ],
+      [
+       170,
+       109
+      ],
+      56.2
+     ]
+    }
+   },
+   {
+    "start": 192,
+    "end": 266,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <109, 170>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       170,
+       109
+      ],
+      [
+       187,
+       85
+      ],
+      29.4
+     ]
+    }
+   },
+   {
+    "start": 267,
+    "end": 362,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <75, 147>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       187,
+       85
+      ],
+      [
+       151,
+       72
+      ],
+      38.3
+     ]
+    }
+   },
+   {
+    "start": 363,
+    "end": 455,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <120, 135>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 456,
+    "end": 565,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 566,
+    "end": 653,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <102, 101>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       160,
+       41
+      ],
+      [
+       100,
+       100
+      ],
+      84.1
+     ]
+    }
+   },
+   {
+    "start": 654,
+    "end": 723,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <100, 100>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       100,
+       100
+      ],
+      [
+       94,
+       72
+      ],
+      28.6
+     ]
+    }
+   },
+   {
+    "start": 724,
+    "end": 817,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <75, 149>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       94,
+       72
+      ],
+      [
+       150,
+       72
+      ],
+      56.0
+     ]
+    }
+   },
+   {
+    "start": 818,
+    "end": 901,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 150>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       150,
+       72
+      ],
+      [
+       159,
+       40
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 902,
+    "end": 982,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       159,
+       40
+      ],
+      [
+       162,
+       85
+      ],
+      45.1
+     ]
+    }
+   },
+   {
+    "start": 983,
+    "end": 1095,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1096,
+    "end": 1208,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <85, 162>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       162,
+       85
+      ],
+      [
+       175,
+       53
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "start": 1209,
+    "end": 1282,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <102, 101>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       175,
+       53
+      ],
+      [
+       101,
+       100
+      ],
+      87.7
+     ]
+    }
+   },
+   {
+    "start": 1283,
+    "end": 1295,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <102, 101>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   363,
+   455
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "red",
+    "green",
+    "blue"
+   ],
+   "demo_cubes": [
+    "green"
+   ],
+   "answer_cube": "green",
+   "language": "after",
+   "answer_target": 1,
+   "swap_pair": [
+    3,
+    2
+   ],
+   "placement_count": 4,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "green",
+     "target": 0,
+     "drop_seg": [
+      113,
+      191
+     ],
+     "subgoal": "drop the cube onto target at <111, 167>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "green",
+     "target": 2,
+     "drop_seg": [
+      267,
+      362
+     ],
+     "subgoal": "drop the cube onto target at <75, 147>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      363,
+      455
+     ],
+     "subgoal": "press the button at <120, 135>"
+    },
+    {
+     "kind": "after",
+     "cube": "green",
+     "target": 1,
+     "drop_seg": [
+      566,
+      653
+     ],
+     "subgoal": "drop the cube onto target at <102, 101>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "green",
+     "target": 2,
+     "drop_seg": [
+      724,
+      817
+     ],
+     "subgoal": "drop the cube onto target at <75, 149>"
+    },
+    {
+     "kind": "home",
+     "cube": "green",
+     "target": null,
+     "drop_seg": [
+      902,
+      982
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 1,
+   "program_answer_target": 1,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "green",
+    1
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [],
+   "distinct_target_changes": 4
+  }
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "seed": 11000301,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed11000301.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed11000301_xhard2_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed11000301_xhard2_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4"
+  ],
+  "n_steps": 1358,
+  "task_goal": [
+   "watch the video carefully, then place the red cube on the target right after the button was pressed",
+   "watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 122,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <69, 153>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       153,
+       69
+      ],
+      [
+       157,
+       36
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 123,
+    "end": 225,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <79, 93>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       157,
+       36
+      ],
+      [
+       91,
+       75
+      ],
+      76.7
+     ]
+    }
+   },
+   {
+    "start": 226,
+    "end": 299,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <75, 91>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       91,
+       75
+      ],
+      [
+       79,
+       45
+      ],
+      32.3
+     ]
+    }
+   },
+   {
+    "start": 300,
+    "end": 407,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <143, 168>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       78,
+       45
+      ],
+      [
+       169,
+       142
+      ],
+      133.0
+     ]
+    }
+   },
+   {
+    "start": 408,
+    "end": 503,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <129, 112>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       95,
+       102
+      ],
+      [
+       96,
+       108
+      ],
+      6.1
+     ]
+    }
+   },
+   {
+    "start": 504,
+    "end": 612,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <142, 169>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       169,
+       142
+      ],
+      [
+       178,
+       127
+      ],
+      17.5
+     ],
+     "blue": [
+      [
+       95,
+       109
+      ],
+      [
+       95,
+       102
+      ],
+      7.0
+     ]
+    }
+   },
+   {
+    "start": 613,
+    "end": 697,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <117, 154>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       178,
+       127
+      ],
+      [
+       155,
+       114
+      ],
+      26.4
+     ]
+    }
+   },
+   {
+    "start": 698,
+    "end": 772,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <114, 155>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       155,
+       114
+      ],
+      [
+       160,
+       89
+      ],
+      25.5
+     ]
+    }
+   },
+   {
+    "start": 773,
+    "end": 862,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 168>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       160,
+       89
+      ],
+      [
+       165,
+       87
+      ],
+      5.4
+     ]
+    }
+   },
+   {
+    "start": 863,
+    "end": 931,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <87, 165>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       165,
+       87
+      ],
+      [
+       172,
+       57
+      ],
+      30.8
+     ]
+    }
+   },
+   {
+    "start": 932,
+    "end": 1022,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       172,
+       57
+      ],
+      [
+       153,
+       70
+      ],
+      23.0
+     ]
+    }
+   },
+   {
+    "start": 1023,
+    "end": 1144,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1145,
+    "end": 1268,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <70, 153>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       153,
+       70
+      ],
+      [
+       157,
+       36
+      ],
+      34.2
+     ]
+    }
+   },
+   {
+    "start": 1269,
+    "end": 1344,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <117, 154>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       157,
+       36
+      ],
+      [
+       153,
+       117
+      ],
+      81.1
+     ]
+    }
+   },
+   {
+    "start": 1345,
+    "end": 1357,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <117, 154>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   408,
+   503
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "green",
+    "blue",
+    "red"
+   ],
+   "demo_cubes": [
+    "red"
+   ],
+   "answer_cube": "red",
+   "language": "after",
+   "answer_target": 1,
+   "swap_pair": [
+    3,
+    0
+   ],
+   "placement_count": 4,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "red",
+     "target": 0,
+     "drop_seg": [
+      123,
+      225
+     ],
+     "subgoal": "drop the cube onto target at <79, 93>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "red",
+     "target": 3,
+     "drop_seg": [
+      300,
+      407
+     ],
+     "subgoal": "drop the cube onto target at <143, 168>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      408,
+      503
+     ],
+     "subgoal": "press the button at <129, 112>"
+    },
+    {
+     "kind": "after",
+     "cube": "red",
+     "target": 1,
+     "drop_seg": [
+      613,
+      697
+     ],
+     "subgoal": "drop the cube onto target at <117, 154>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "red",
+     "target": 2,
+     "drop_seg": [
+      773,
+      862
+     ],
+     "subgoal": "drop the cube onto target at <96, 168>"
+    },
+    {
+     "kind": "home",
+     "cube": "red",
+     "target": null,
+     "drop_seg": [
+      932,
+      1022
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 1,
+   "program_answer_target": 1,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "red",
+    1
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [],
+   "distinct_target_changes": 4
+  }
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "seed": 11000600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed11000600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed11000600_xhard2_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed11000600_xhard2_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4"
+  ],
+  "n_steps": 1282,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 104,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 134>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       108,
+       68
+      ],
+      [
+       105,
+       71
+      ],
+      4.2
+     ],
+     "blue": [
+      [
+       134,
+       116
+      ],
+      [
+       132,
+       92
+      ],
+      24.1
+     ]
+    }
+   },
+   {
+    "start": 105,
+    "end": 192,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <97, 93>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       105,
+       71
+      ],
+      [
+       108,
+       68
+      ],
+      4.2
+     ],
+     "blue": [
+      [
+       132,
+       92
+      ],
+      [
+       91,
+       95
+      ],
+      41.1
+     ]
+    }
+   },
+   {
+    "start": 193,
+    "end": 263,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <95, 91>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       91,
+       95
+      ],
+      [
+       75,
+       68
+      ],
+      31.4
+     ]
+    }
+   },
+   {
+    "start": 264,
+    "end": 353,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <82, 164>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       75,
+       68
+      ],
+      [
+       165,
+       79
+      ],
+      90.7
+     ]
+    }
+   },
+   {
+    "start": 354,
+    "end": 452,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <130, 173>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 453,
+    "end": 566,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 567,
+    "end": 670,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <138, 79>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       174,
+       47
+      ],
+      [
+       77,
+       138
+      ],
+      133.0
+     ]
+    }
+   },
+   {
+    "start": 671,
+    "end": 739,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <138, 77>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       77,
+       138
+      ],
+      [
+       50,
+       120
+      ],
+      32.4
+     ]
+    }
+   },
+   {
+    "start": 740,
+    "end": 838,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <103, 157>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       49,
+       120
+      ],
+      [
+       156,
+       100
+      ],
+      108.9
+     ]
+    }
+   },
+   {
+    "start": 839,
+    "end": 906,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <100, 156>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       156,
+       100
+      ],
+      [
+       163,
+       72
+      ],
+      28.9
+     ]
+    }
+   },
+   {
+    "start": 907,
+    "end": 981,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       163,
+       72
+      ],
+      [
+       133,
+       116
+      ],
+      53.3
+     ]
+    }
+   },
+   {
+    "start": 982,
+    "end": 1093,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1094,
+    "end": 1198,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 133>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       133,
+       116
+      ],
+      [
+       130,
+       93
+      ],
+      23.2
+     ]
+    }
+   },
+   {
+    "start": 1199,
+    "end": 1267,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <138, 79>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       130,
+       93
+      ],
+      [
+       72,
+       140
+      ],
+      74.7
+     ]
+    }
+   },
+   {
+    "start": 1268,
+    "end": 1281,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <138, 79>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       111,
+       72
+      ],
+      [
+       108,
+       68
+      ],
+      5.0
+     ],
+     "blue": [
+      [
+       72,
+       140
+      ],
+      [
+       76,
+       138
+      ],
+      4.5
+     ]
+    }
+   }
+  ],
+  "button_steps": [
+   354,
+   452
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "blue",
+    "red",
+    "green"
+   ],
+   "demo_cubes": [
+    "blue"
+   ],
+   "answer_cube": "blue",
+   "language": "after",
+   "answer_target": 1,
+   "swap_pair": [
+    0,
+    3
+   ],
+   "placement_count": 4,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "blue",
+     "target": 0,
+     "drop_seg": [
+      105,
+      192
+     ],
+     "subgoal": "drop the cube onto target at <97, 93>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "blue",
+     "target": 3,
+     "drop_seg": [
+      264,
+      353
+     ],
+     "subgoal": "drop the cube onto target at <82, 164>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      354,
+      452
+     ],
+     "subgoal": "press the button at <130, 173>"
+    },
+    {
+     "kind": "after",
+     "cube": "blue",
+     "target": 1,
+     "drop_seg": [
+      567,
+      670
+     ],
+     "subgoal": "drop the cube onto target at <138, 79>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "blue",
+     "target": 2,
+     "drop_seg": [
+      740,
+      838
+     ],
+     "subgoal": "drop the cube onto target at <103, 157>"
+    },
+    {
+     "kind": "home",
+     "cube": "blue",
+     "target": null,
+     "drop_seg": [
+      907,
+      981
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 1,
+   "program_answer_target": 1,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "blue",
+    1
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [],
+   "distinct_target_changes": 4
+  }
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "seed": 13000001,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed13000001.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed13000001_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed13000001_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4"
+  ],
+  "n_steps": 1738,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 121,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <145, 74>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       74,
+       145
+      ],
+      [
+       57,
+       131
+      ],
+      22.0
+     ]
+    }
+   },
+   {
+    "start": 122,
+    "end": 231,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <90, 98>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       56,
+       130
+      ],
+      [
+       97,
+       87
+      ],
+      59.4
+     ]
+    }
+   },
+   {
+    "start": 232,
+    "end": 333,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <102, 158>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       158,
+       102
+      ],
+      [
+       170,
+       75
+      ],
+      29.5
+     ]
+    }
+   },
+   {
+    "start": 334,
+    "end": 417,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <130, 166>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       170,
+       75
+      ],
+      [
+       169,
+       129
+      ],
+      54.0
+     ]
+    }
+   },
+   {
+    "start": 418,
+    "end": 491,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <129, 169>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       169,
+       129
+      ],
+      [
+       183,
+       113
+      ],
+      21.3
+     ]
+    }
+   },
+   {
+    "start": 492,
+    "end": 572,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <115, 91>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       184,
+       113
+      ],
+      [
+       89,
+       113
+      ],
+      95.0
+     ]
+    }
+   },
+   {
+    "start": 573,
+    "end": 651,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <120, 126>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       129,
+       93
+      ],
+      [
+       131,
+       97
+      ],
+      4.5
+     ]
+    }
+   },
+   {
+    "start": 652,
+    "end": 754,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <90, 96>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       96,
+       90
+      ],
+      [
+       90,
+       58
+      ],
+      32.6
+     ]
+    }
+   },
+   {
+    "start": 755,
+    "end": 844,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <78, 164>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       90,
+       58
+      ],
+      [
+       167,
+       74
+      ],
+      78.6
+     ]
+    }
+   },
+   {
+    "start": 845,
+    "end": 947,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <113, 89>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       89,
+       113
+      ],
+      [
+       77,
+       88
+      ],
+      27.7
+     ]
+    }
+   },
+   {
+    "start": 948,
+    "end": 1002,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <115, 91>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       77,
+       89
+      ],
+      [
+       90,
+       113
+      ],
+      27.3
+     ]
+    }
+   },
+   {
+    "start": 1003,
+    "end": 1107,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 167>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       167,
+       74
+      ],
+      [
+       180,
+       45
+      ],
+      31.8
+     ]
+    }
+   },
+   {
+    "start": 1108,
+    "end": 1221,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       180,
+       45
+      ],
+      [
+       75,
+       144
+      ],
+      144.3
+     ]
+    }
+   },
+   {
+    "start": 1222,
+    "end": 1328,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <113, 90>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       90,
+       113
+      ],
+      [
+       79,
+       88
+      ],
+      27.3
+     ]
+    }
+   },
+   {
+    "start": 1329,
+    "end": 1411,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       79,
+       88
+      ],
+      [
+       159,
+       101
+      ],
+      81.0
+     ]
+    }
+   },
+   {
+    "start": 1412,
+    "end": 1525,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1526,
+    "end": 1648,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <144, 75>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       75,
+       144
+      ],
+      [
+       58,
+       130
+      ],
+      22.0
+     ]
+    }
+   },
+   {
+    "start": 1649,
+    "end": 1722,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <130, 166>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       159,
+       101
+      ],
+      [
+       155,
+       97
+      ],
+      5.7
+     ],
+     "blue": [
+      [
+       58,
+       130
+      ],
+      [
+       170,
+       131
+      ],
+      112.0
+     ]
+    }
+   },
+   {
+    "start": 1723,
+    "end": 1737,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <130, 166>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   573,
+   651
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "red",
+    "blue",
+    "green"
+   ],
+   "demo_cubes": [
+    "blue",
+    "green"
+   ],
+   "answer_cube": "blue",
+   "language": "after",
+   "answer_target": 1,
+   "swap_pair": [
+    1,
+    2
+   ],
+   "placement_count": 5,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "blue",
+     "target": 0,
+     "drop_seg": [
+      122,
+      231
+     ],
+     "subgoal": "drop the cube onto target at <90, 98>"
+    },
+    {
+     "kind": "before",
+     "cube": "green",
+     "target": 2,
+     "drop_seg": [
+      334,
+      417
+     ],
+     "subgoal": "drop the cube onto target at <130, 166>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "green",
+     "target": 3,
+     "drop_seg": [
+      492,
+      572
+     ],
+     "subgoal": "drop the cube onto target at <115, 91>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      573,
+      651
+     ],
+     "subgoal": "press the button at <120, 126>"
+    },
+    {
+     "kind": "after",
+     "cube": "blue",
+     "target": 1,
+     "drop_seg": [
+      755,
+      844
+     ],
+     "subgoal": "drop the cube onto target at <78, 164>"
+    },
+    {
+     "kind": "after",
+     "cube": "green",
+     "target": 3,
+     "drop_seg": [
+      948,
+      1002
+     ],
+     "subgoal": "drop the cube onto target at <115, 91>"
+    },
+    {
+     "kind": "home",
+     "cube": "blue",
+     "target": null,
+     "drop_seg": [
+      1108,
+      1221
+     ],
+     "subgoal": "put the cube back to its original position"
+    },
+    {
+     "kind": "home",
+     "cube": "green",
+     "target": null,
+     "drop_seg": [
+      1329,
+      1411
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 1,
+   "program_answer_target": 1,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "blue",
+    1
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [
+    {
+     "cube": "green",
+     "target": 3,
+     "steps": [
+      948,
+      1002
+     ]
+    }
+   ],
+   "distinct_target_changes": 4
+  }
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "seed": 13000300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed13000300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed13000300_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed13000300_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4"
+  ],
+  "n_steps": 1823,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately before the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was last placed before the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 104,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <93, 162>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       162,
+       93
+      ],
+      [
+       170,
+       64
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "start": 105,
+    "end": 195,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 91>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       171,
+       64
+      ],
+      [
+       88,
+       94
+      ],
+      88.3
+     ]
+    }
+   },
+   {
+    "start": 196,
+    "end": 315,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <144, 70>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       70,
+       144
+      ],
+      [
+       49,
+       132
+      ],
+      24.2
+     ]
+    }
+   },
+   {
+    "start": 316,
+    "end": 434,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <74, 103>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       49,
+       132
+      ],
+      [
+       103,
+       71
+      ],
+      81.5
+     ]
+    }
+   },
+   {
+    "start": 435,
+    "end": 520,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <71, 103>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       103,
+       71
+      ],
+      [
+       99,
+       38
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 521,
+    "end": 607,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <77, 151>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       99,
+       38
+      ],
+      [
+       152,
+       73
+      ],
+      63.5
+     ]
+    }
+   },
+   {
+    "start": 608,
+    "end": 703,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <125, 113>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       152,
+       73
+      ],
+      [
+       157,
+       74
+      ],
+      5.1
+     ]
+    }
+   },
+   {
+    "start": 704,
+    "end": 800,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <101, 89>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       157,
+       74
+      ],
+      [
+       152,
+       73
+      ],
+      5.1
+     ]
+    }
+   },
+   {
+    "start": 801,
+    "end": 878,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <115, 150>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       74,
+       67
+      ],
+      [
+       151,
+       113
+      ],
+      89.7
+     ],
+     "blue": [
+      [
+       152,
+       73
+      ],
+      [
+       151,
+       78
+      ],
+      5.1
+     ]
+    }
+   },
+   {
+    "start": 879,
+    "end": 982,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <78, 152>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       152,
+       78
+      ],
+      [
+       161,
+       42
+      ],
+      37.1
+     ]
+    }
+   },
+   {
+    "start": 983,
+    "end": 1045,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <77, 151>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       161,
+       42
+      ],
+      [
+       152,
+       74
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 1046,
+    "end": 1154,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <113, 151>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       151,
+       113
+      ],
+      [
+       157,
+       89
+      ],
+      24.7
+     ]
+    }
+   },
+   {
+    "start": 1155,
+    "end": 1229,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       157,
+       89
+      ],
+      [
+       161,
+       93
+      ],
+      5.7
+     ]
+    }
+   },
+   {
+    "start": 1230,
+    "end": 1335,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 152>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       152,
+       74
+      ],
+      [
+       161,
+       42
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 1336,
+    "end": 1447,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       161,
+       42
+      ],
+      [
+       71,
+       144
+      ],
+      136.0
+     ]
+    }
+   },
+   {
+    "start": 1448,
+    "end": 1584,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1585,
+    "end": 1703,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <144, 71>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       71,
+       144
+      ],
+      [
+       52,
+       132
+      ],
+      22.5
+     ]
+    }
+   },
+   {
+    "start": 1704,
+    "end": 1807,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <74, 103>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       51,
+       132
+      ],
+      [
+       103,
+       70
+      ],
+      80.9
+     ]
+    }
+   },
+   {
+    "start": 1808,
+    "end": 1822,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <74, 103>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   608,
+   703
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "red",
+    "blue",
+    "green"
+   ],
+   "demo_cubes": [
+    "red",
+    "blue"
+   ],
+   "answer_cube": "blue",
+   "language": "before",
+   "answer_target": 2,
+   "swap_pair": [
+    0,
+    3
+   ],
+   "placement_count": 5,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "red",
+     "target": 0,
+     "drop_seg": [
+      105,
+      195
+     ],
+     "subgoal": "drop the cube onto target at <96, 91>"
+    },
+    {
+     "kind": "before",
+     "cube": "blue",
+     "target": 2,
+     "drop_seg": [
+      316,
+      434
+     ],
+     "subgoal": "drop the cube onto target at <74, 103>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "blue",
+     "target": 3,
+     "drop_seg": [
+      521,
+      607
+     ],
+     "subgoal": "drop the cube onto target at <77, 151>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      608,
+      703
+     ],
+     "subgoal": "press the button at <125, 113>"
+    },
+    {
+     "kind": "after",
+     "cube": "red",
+     "target": 1,
+     "drop_seg": [
+      801,
+      878
+     ],
+     "subgoal": "drop the cube onto target at <115, 150>"
+    },
+    {
+     "kind": "after",
+     "cube": "blue",
+     "target": 3,
+     "drop_seg": [
+      983,
+      1045
+     ],
+     "subgoal": "drop the cube onto target at <77, 151>"
+    },
+    {
+     "kind": "home",
+     "cube": "red",
+     "target": null,
+     "drop_seg": [
+      1155,
+      1229
+     ],
+     "subgoal": "put the cube back to its original position"
+    },
+    {
+     "kind": "home",
+     "cube": "blue",
+     "target": null,
+     "drop_seg": [
+      1336,
+      1447
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 3,
+   "program_answer_target": 2,
+   "per_cube_match": false,
+   "placement_adjacent_to_button": [
+    "blue",
+    3
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [
+    {
+     "cube": "blue",
+     "target": 3,
+     "steps": [
+      983,
+      1045
+     ]
+    }
+   ],
+   "distinct_target_changes": 4
+  }
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "seed": 13000600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed13000600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed13000600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed13000600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4"
+  ],
+  "n_steps": 1781,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately before the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was last placed before the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 107,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <124, 175>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       175,
+       124
+      ],
+      [
+       199,
+       101
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 108,
+    "end": 208,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <83, 105>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       198,
+       101
+      ],
+      [
+       105,
+       79
+      ],
+      95.6
+     ]
+    }
+   },
+   {
+    "start": 209,
+    "end": 323,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <69, 133>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       133,
+       69
+      ],
+      [
+       134,
+       37
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "start": 324,
+    "end": 426,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <141, 148>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       134,
+       37
+      ],
+      [
+       148,
+       140
+      ],
+      103.9
+     ]
+    }
+   },
+   {
+    "start": 427,
+    "end": 545,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <79, 104>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       104,
+       79
+      ],
+      [
+       102,
+       49
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "start": 546,
+    "end": 628,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <91, 165>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       102,
+       48
+      ],
+      [
+       167,
+       88
+      ],
+      76.3
+     ]
+    }
+   },
+   {
+    "start": 629,
+    "end": 717,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <124, 110>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 718,
+    "end": 818,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <88, 167>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       167,
+       88
+      ],
+      [
+       184,
+       58
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "start": 819,
+    "end": 876,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <91, 165>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       184,
+       59
+      ],
+      [
+       168,
+       89
+      ],
+      34.0
+     ]
+    }
+   },
+   {
+    "start": 877,
+    "end": 980,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <140, 148>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       148,
+       140
+      ],
+      [
+       155,
+       131
+      ],
+      11.4
+     ]
+    }
+   },
+   {
+    "start": 981,
+    "end": 1083,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <100, 87>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       155,
+       130
+      ],
+      [
+       84,
+       98
+      ],
+      77.9
+     ]
+    }
+   },
+   {
+    "start": 1084,
+    "end": 1174,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <89, 168>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       168,
+       89
+      ],
+      [
+       185,
+       59
+      ],
+      34.5
+     ]
+    }
+   },
+   {
+    "start": 1175,
+    "end": 1265,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       185,
+       59
+      ],
+      [
+       175,
+       124
+      ],
+      65.8
+     ]
+    }
+   },
+   {
+    "start": 1266,
+    "end": 1362,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <98, 84>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       84,
+       98
+      ],
+      [
+       71,
+       71
+      ],
+      30.0
+     ]
+    }
+   },
+   {
+    "start": 1363,
+    "end": 1458,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       71,
+       71
+      ],
+      [
+       133,
+       70
+      ],
+      62.0
+     ]
+    }
+   },
+   {
+    "start": 1459,
+    "end": 1581,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1582,
+    "end": 1689,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <124, 175>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       175,
+       124
+      ],
+      [
+       199,
+       101
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 1690,
+    "end": 1765,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <91, 162>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       199,
+       101
+      ],
+      [
+       168,
+       89
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 1766,
+    "end": 1780,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <91, 162>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   629,
+   717
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "green",
+    "red",
+    "blue"
+   ],
+   "demo_cubes": [
+    "blue",
+    "green"
+   ],
+   "answer_cube": "blue",
+   "language": "before",
+   "answer_target": 0,
+   "swap_pair": [
+    0,
+    1
+   ],
+   "placement_count": 5,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "blue",
+     "target": 0,
+     "drop_seg": [
+      108,
+      208
+     ],
+     "subgoal": "drop the cube onto target at <83, 105>"
+    },
+    {
+     "kind": "before",
+     "cube": "green",
+     "target": 2,
+     "drop_seg": [
+      324,
+      426
+     ],
+     "subgoal": "drop the cube onto target at <141, 148>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "blue",
+     "target": 1,
+     "drop_seg": [
+      546,
+      628
+     ],
+     "subgoal": "drop the cube onto target at <91, 165>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      629,
+      717
+     ],
+     "subgoal": "press the button at <124, 110>"
+    },
+    {
+     "kind": "after",
+     "cube": "blue",
+     "target": 1,
+     "drop_seg": [
+      819,
+      876
+     ],
+     "subgoal": "drop the cube onto target at <91, 165>"
+    },
+    {
+     "kind": "after",
+     "cube": "green",
+     "target": 3,
+     "drop_seg": [
+      981,
+      1083
+     ],
+     "subgoal": "drop the cube onto target at <100, 87>"
+    },
+    {
+     "kind": "home",
+     "cube": "blue",
+     "target": null,
+     "drop_seg": [
+      1175,
+      1265
+     ],
+     "subgoal": "put the cube back to its original position"
+    },
+    {
+     "kind": "home",
+     "cube": "green",
+     "target": null,
+     "drop_seg": [
+      1363,
+      1458
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 1,
+   "program_answer_target": 0,
+   "per_cube_match": false,
+   "placement_adjacent_to_button": [
+    "blue",
+    1
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [
+    {
+     "cube": "blue",
+     "target": 1,
+     "steps": [
+      819,
+      876
+     ]
+    }
+   ],
+   "distinct_target_changes": 4
+  }
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "seed": 7000000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed7000000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed7000000_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/success_NO_OBJECT_VideoPlaceButton_ep0_seed7000000_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4"
+  ],
+  "n_steps": 1930,
+  "task_goal": [
+   "watch the video carefully, then place the green cube on the target right before the button was pressed",
+   "watch the video carefully, and place the green cube on the target where it was placed immediately before the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was previously placed before the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was last placed before the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 110,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <125, 181>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       181,
+       125
+      ],
+      [
+       201,
+       104
+      ],
+      29.0
+     ]
+    }
+   },
+   {
+    "start": 111,
+    "end": 205,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <100, 89>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       200,
+       104
+      ],
+      [
+       87,
+       98
+      ],
+      113.2
+     ]
+    }
+   },
+   {
+    "start": 206,
+    "end": 327,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 142>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       142,
+       72
+      ],
+      [
+       145,
+       39
+      ],
+      33.1
+     ]
+    }
+   },
+   {
+    "start": 328,
+    "end": 417,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <75, 92>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       145,
+       39
+      ],
+      [
+       91,
+       72
+      ],
+      63.3
+     ]
+    }
+   },
+   {
+    "start": 418,
+    "end": 491,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 91>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       91,
+       72
+      ],
+      [
+       79,
+       41
+      ],
+      33.2
+     ]
+    }
+   },
+   {
+    "start": 492,
+    "end": 589,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <82, 161>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       79,
+       41
+      ],
+      [
+       163,
+       79
+      ],
+      92.2
+     ]
+    }
+   },
+   {
+    "start": 590,
+    "end": 690,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <128, 134>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 691,
+    "end": 783,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 86>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       86,
+       99
+      ],
+      [
+       76,
+       71
+      ],
+      29.7
+     ]
+    }
+   },
+   {
+    "start": 784,
+    "end": 876,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <104, 168>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       76,
+       70
+      ],
+      [
+       170,
+       102
+      ],
+      99.3
+     ]
+    }
+   },
+   {
+    "start": 877,
+    "end": 972,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <80, 162>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       162,
+       80
+      ],
+      [
+       172,
+       48
+      ],
+      33.5
+     ]
+    }
+   },
+   {
+    "start": 973,
+    "end": 1030,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <82, 161>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       172,
+       48
+      ],
+      [
+       162,
+       79
+      ],
+      32.6
+     ]
+    }
+   },
+   {
+    "start": 1031,
+    "end": 1125,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <102, 170>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       170,
+       102
+      ],
+      [
+       184,
+       76
+      ],
+      29.5
+     ]
+    }
+   },
+   {
+    "start": 1126,
+    "end": 1229,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <75, 92>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       184,
+       76
+      ],
+      [
+       91,
+       72
+      ],
+      93.1
+     ]
+    }
+   },
+   {
+    "start": 1230,
+    "end": 1304,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <72, 91>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       91,
+       72
+      ],
+      [
+       82,
+       42
+      ],
+      31.3
+     ]
+    }
+   },
+   {
+    "start": 1305,
+    "end": 1407,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       82,
+       42
+      ],
+      [
+       180,
+       126
+      ],
+      129.1
+     ]
+    }
+   },
+   {
+    "start": 1408,
+    "end": 1515,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <79, 160>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       160,
+       79
+      ],
+      [
+       170,
+       49
+      ],
+      31.6
+     ]
+    }
+   },
+   {
+    "start": 1516,
+    "end": 1602,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       170,
+       49
+      ],
+      [
+       141,
+       72
+      ],
+      37.0
+     ]
+    }
+   },
+   {
+    "start": 1603,
+    "end": 1723,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1724,
+    "end": 1834,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <126, 180>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       180,
+       126
+      ],
+      [
+       200,
+       105
+      ],
+      29.0
+     ]
+    }
+   },
+   {
+    "start": 1835,
+    "end": 1916,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <100, 89>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       199,
+       106
+      ],
+      [
+       86,
+       98
+      ],
+      113.3
+     ]
+    }
+   },
+   {
+    "start": 1917,
+    "end": 1929,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <100, 89>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   590,
+   690
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "blue",
+    "red",
+    "green"
+   ],
+   "demo_cubes": [
+    "green",
+    "blue"
+   ],
+   "answer_cube": "green",
+   "language": "before",
+   "answer_target": 0,
+   "swap_pair": [
+    3,
+    2
+   ],
+   "placement_count": 6,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "green",
+     "target": 0,
+     "drop_seg": [
+      111,
+      205
+     ],
+     "subgoal": "drop the cube onto target at <100, 89>"
+    },
+    {
+     "kind": "before",
+     "cube": "blue",
+     "target": 2,
+     "drop_seg": [
+      328,
+      417
+     ],
+     "subgoal": "drop the cube onto target at <75, 92>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "blue",
+     "target": 3,
+     "drop_seg": [
+      492,
+      589
+     ],
+     "subgoal": "drop the cube onto target at <82, 161>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      590,
+      690
+     ],
+     "subgoal": "press the button at <128, 134>"
+    },
+    {
+     "kind": "after",
+     "cube": "green",
+     "target": 1,
+     "drop_seg": [
+      784,
+      876
+     ],
+     "subgoal": "drop the cube onto target at <104, 168>"
+    },
+    {
+     "kind": "after",
+     "cube": "blue",
+     "target": 3,
+     "drop_seg": [
+      973,
+      1030
+     ],
+     "subgoal": "drop the cube onto target at <82, 161>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "green",
+     "target": 2,
+     "drop_seg": [
+      1126,
+      1229
+     ],
+     "subgoal": "drop the cube onto target at <75, 92>"
+    },
+    {
+     "kind": "home",
+     "cube": "green",
+     "target": null,
+     "drop_seg": [
+      1305,
+      1407
+     ],
+     "subgoal": "put the cube back to its original position"
+    },
+    {
+     "kind": "home",
+     "cube": "blue",
+     "target": null,
+     "drop_seg": [
+      1516,
+      1602
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 0,
+   "program_answer_target": 0,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "blue",
+    3
+   ],
+   "adjacent_is_answer_cube": false,
+   "noop_replacements": [
+    {
+     "cube": "blue",
+     "target": 3,
+     "steps": [
+      973,
+      1030
+     ]
+    }
+   ],
+   "distinct_target_changes": 5
+  }
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "seed": 7000302,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed7000302.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed7000302_xhard4_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/success_NO_OBJECT_VideoPlaceButton_ep3_seed7000302_xhard4_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4"
+  ],
+  "n_steps": 1849,
+  "task_goal": [
+   "watch the video carefully, then place the red cube on the target right after the button was pressed",
+   "watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 110,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <77, 167>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       167,
+       77
+      ],
+      [
+       180,
+       46
+      ],
+      33.6
+     ]
+    }
+   },
+   {
+    "start": 111,
+    "end": 201,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 100>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       180,
+       46
+      ],
+      [
+       99,
+       93
+      ],
+      93.6
+     ]
+    }
+   },
+   {
+    "start": 202,
+    "end": 281,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <96, 146>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       146,
+       96
+      ],
+      [
+       155,
+       69
+      ],
+      28.5
+     ]
+    }
+   },
+   {
+    "start": 282,
+    "end": 353,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <110, 123>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       155,
+       69
+      ],
+      [
+       124,
+       108
+      ],
+      49.8
+     ]
+    }
+   },
+   {
+    "start": 354,
+    "end": 434,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <95, 100>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       100,
+       95
+      ],
+      [
+       95,
+       64
+      ],
+      31.4
+     ]
+    }
+   },
+   {
+    "start": 435,
+    "end": 535,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <142, 176>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       95,
+       64
+      ],
+      [
+       178,
+       141
+      ],
+      113.2
+     ]
+    }
+   },
+   {
+    "start": 536,
+    "end": 617,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <125, 84>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 618,
+    "end": 708,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <140, 178>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       178,
+       140
+      ],
+      [
+       201,
+       129
+      ],
+      25.5
+     ]
+    }
+   },
+   {
+    "start": 709,
+    "end": 786,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <135, 144>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       202,
+       129
+      ],
+      [
+       145,
+       135
+      ],
+      57.3
+     ],
+     "blue": [
+      [
+       167,
+       109
+      ],
+      [
+       170,
+       116
+      ],
+      7.6
+     ]
+    }
+   },
+   {
+    "start": 787,
+    "end": 881,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       170,
+       116
+      ],
+      [
+       169,
+       111
+      ],
+      5.1
+     ]
+    }
+   },
+   {
+    "start": 882,
+    "end": 971,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <142, 176>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       127,
+       83
+      ],
+      [
+       177,
+       144
+      ],
+      78.9
+     ]
+    }
+   },
+   {
+    "start": 972,
+    "end": 1050,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <144, 177>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1051,
+    "end": 1155,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 100>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1156,
+    "end": 1256,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <135, 145>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       145,
+       135
+      ],
+      [
+       151,
+       120
+      ],
+      16.2
+     ]
+    }
+   },
+   {
+    "start": 1257,
+    "end": 1354,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       151,
+       121
+      ],
+      [
+       167,
+       77
+      ],
+      46.8
+     ]
+    }
+   },
+   {
+    "start": 1355,
+    "end": 1459,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <93, 99>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       99,
+       93
+      ],
+      [
+       95,
+       64
+      ],
+      29.3
+     ]
+    }
+   },
+   {
+    "start": 1460,
+    "end": 1537,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       95,
+       64
+      ],
+      [
+       147,
+       95
+      ],
+      60.5
+     ]
+    }
+   },
+   {
+    "start": 1538,
+    "end": 1643,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1644,
+    "end": 1754,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <77, 167>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       167,
+       77
+      ],
+      [
+       181,
+       46
+      ],
+      34.0
+     ]
+    }
+   },
+   {
+    "start": 1755,
+    "end": 1833,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <135, 144>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       181,
+       46
+      ],
+      [
+       145,
+       124
+      ],
+      85.9
+     ]
+    }
+   },
+   {
+    "start": 1834,
+    "end": 1848,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <135, 144>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       145,
+       129
+      ],
+      [
+       146,
+       134
+      ],
+      5.1
+     ]
+    }
+   }
+  ],
+  "button_steps": [
+   536,
+   617
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "blue",
+    "green",
+    "red"
+   ],
+   "demo_cubes": [
+    "red",
+    "green"
+   ],
+   "answer_cube": "red",
+   "language": "after",
+   "answer_target": 1,
+   "swap_pair": [
+    2,
+    0
+   ],
+   "placement_count": 6,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "red",
+     "target": 0,
+     "drop_seg": [
+      111,
+      201
+     ],
+     "subgoal": "drop the cube onto target at <96, 100>"
+    },
+    {
+     "kind": "before",
+     "cube": "green",
+     "target": 2,
+     "drop_seg": [
+      282,
+      353
+     ],
+     "subgoal": "drop the cube onto target at <110, 123>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "red",
+     "target": 3,
+     "drop_seg": [
+      435,
+      535
+     ],
+     "subgoal": "drop the cube onto target at <142, 176>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      536,
+      617
+     ],
+     "subgoal": "press the button at <125, 84>"
+    },
+    {
+     "kind": "after",
+     "cube": "red",
+     "target": 1,
+     "drop_seg": [
+      709,
+      786
+     ],
+     "subgoal": "drop the cube onto target at <135, 144>"
+    },
+    {
+     "kind": "after",
+     "cube": "green",
+     "target": 3,
+     "drop_seg": [
+      882,
+      971
+     ],
+     "subgoal": "drop the cube onto target at <142, 176>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "green",
+     "target": 0,
+     "drop_seg": [
+      1051,
+      1155
+     ],
+     "subgoal": "drop the cube onto target at <96, 100>"
+    },
+    {
+     "kind": "home",
+     "cube": "red",
+     "target": null,
+     "drop_seg": [
+      1257,
+      1354
+     ],
+     "subgoal": "put the cube back to its original position"
+    },
+    {
+     "kind": "home",
+     "cube": "green",
+     "target": null,
+     "drop_seg": [
+      1460,
+      1537
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 1,
+   "program_answer_target": 1,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "red",
+    1
+   ],
+   "adjacent_is_answer_cube": true,
+   "noop_replacements": [],
+   "distinct_target_changes": 6
+  }
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "seed": 7000600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed7000600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed7000600_xhard4_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/success_NO_OBJECT_VideoPlaceButton_ep6_seed7000600_xhard4_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4"
+  ],
+  "n_steps": 1949,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately before the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was last placed before the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 120,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <69, 142>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       142,
+       69
+      ],
+      [
+       145,
+       36
+      ],
+      33.1
+     ]
+    }
+   },
+   {
+    "start": 121,
+    "end": 211,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <112, 89>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       145,
+       36
+      ],
+      [
+       87,
+       110
+      ],
+      94.0
+     ]
+    }
+   },
+   {
+    "start": 212,
+    "end": 331,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <142, 177>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       177,
+       142
+      ],
+      [
+       189,
+       124
+      ],
+      21.6
+     ]
+    }
+   },
+   {
+    "start": 332,
+    "end": 423,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <104, 160>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       189,
+       124
+      ],
+      [
+       161,
+       101
+      ],
+      36.2
+     ]
+    }
+   },
+   {
+    "start": 424,
+    "end": 491,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <101, 161>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       161,
+       101
+      ],
+      [
+       166,
+       73
+      ],
+      28.4
+     ]
+    }
+   },
+   {
+    "start": 492,
+    "end": 580,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <138, 83>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       166,
+       73
+      ],
+      [
+       82,
+       137
+      ],
+      105.6
+     ]
+    }
+   },
+   {
+    "start": 581,
+    "end": 675,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <126, 123>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 676,
+    "end": 762,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <110, 87>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       87,
+       110
+      ],
+      [
+       73,
+       86
+      ],
+      27.8
+     ]
+    }
+   },
+   {
+    "start": 763,
+    "end": 853,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <84, 160>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       91,
+       86
+      ],
+      [
+       90,
+       81
+      ],
+      5.1
+     ],
+     "blue": [
+      [
+       73,
+       86
+      ],
+      [
+       161,
+       81
+      ],
+      88.1
+     ]
+    }
+   },
+   {
+    "start": 854,
+    "end": 962,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <136, 80>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       80,
+       136
+      ],
+      [
+       71,
+       113
+      ],
+      24.7
+     ]
+    }
+   },
+   {
+    "start": 963,
+    "end": 1023,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <138, 84>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       70,
+       113
+      ],
+      [
+       81,
+       138
+      ],
+      27.3
+     ]
+    }
+   },
+   {
+    "start": 1024,
+    "end": 1139,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <81, 161>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       161,
+       81
+      ],
+      [
+       169,
+       49
+      ],
+      33.0
+     ]
+    }
+   },
+   {
+    "start": 1140,
+    "end": 1216,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <104, 160>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       169,
+       49
+      ],
+      [
+       161,
+       102
+      ],
+      53.6
+     ]
+    }
+   },
+   {
+    "start": 1217,
+    "end": 1285,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <102, 161>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       161,
+       102
+      ],
+      [
+       170,
+       74
+      ],
+      29.4
+     ]
+    }
+   },
+   {
+    "start": 1286,
+    "end": 1384,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       170,
+       74
+      ],
+      [
+       142,
+       70
+      ],
+      28.3
+     ]
+    }
+   },
+   {
+    "start": 1385,
+    "end": 1495,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <136, 79>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       79,
+       136
+      ],
+      [
+       69,
+       113
+      ],
+      25.1
+     ]
+    }
+   },
+   {
+    "start": 1496,
+    "end": 1588,
+    "demo": true,
+    "simple": "put the cube back to its original position",
+    "grounded": "put the cube back to its original position",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       69,
+       112
+      ],
+      [
+       176,
+       141
+      ],
+      110.9
+     ]
+    }
+   },
+   {
+    "start": 1589,
+    "end": 1722,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 1723,
+    "end": 1845,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <70, 142>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       142,
+       70
+      ],
+      [
+       144,
+       37
+      ],
+      33.1
+     ]
+    }
+   },
+   {
+    "start": 1846,
+    "end": 1933,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <138, 83>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       144,
+       37
+      ],
+      [
+       80,
+       140
+      ],
+      121.3
+     ]
+    }
+   },
+   {
+    "start": 1934,
+    "end": 1948,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <138, 83>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   581,
+   675
+  ],
+  "plan_from_rng": {
+   "all_cubes": [
+    "blue",
+    "green",
+    "red"
+   ],
+   "demo_cubes": [
+    "blue",
+    "green"
+   ],
+   "answer_cube": "blue",
+   "language": "before",
+   "answer_target": 0,
+   "swap_pair": [
+    3,
+    0
+   ],
+   "placement_count": 6,
+   "sequence": [
+    {
+     "kind": "before",
+     "cube": "blue",
+     "target": 0,
+     "drop_seg": [
+      121,
+      211
+     ],
+     "subgoal": "drop the cube onto target at <112, 89>"
+    },
+    {
+     "kind": "before",
+     "cube": "green",
+     "target": 2,
+     "drop_seg": [
+      332,
+      423
+     ],
+     "subgoal": "drop the cube onto target at <104, 160>"
+    },
+    {
+     "kind": "extra-before",
+     "cube": "green",
+     "target": 3,
+     "drop_seg": [
+      492,
+      580
+     ],
+     "subgoal": "drop the cube onto target at <138, 83>"
+    },
+    {
+     "kind": "BUTTON",
+     "cube": null,
+     "target": null,
+     "drop_seg": [
+      581,
+      675
+     ],
+     "subgoal": "press the button at <126, 123>"
+    },
+    {
+     "kind": "after",
+     "cube": "blue",
+     "target": 1,
+     "drop_seg": [
+      763,
+      853
+     ],
+     "subgoal": "drop the cube onto target at <84, 160>"
+    },
+    {
+     "kind": "after",
+     "cube": "green",
+     "target": 3,
+     "drop_seg": [
+      963,
+      1023
+     ],
+     "subgoal": "drop the cube onto target at <138, 84>"
+    },
+    {
+     "kind": "extra-after",
+     "cube": "blue",
+     "target": 2,
+     "drop_seg": [
+      1140,
+      1216
+     ],
+     "subgoal": "drop the cube onto target at <104, 160>"
+    },
+    {
+     "kind": "home",
+     "cube": "blue",
+     "target": null,
+     "drop_seg": [
+      1286,
+      1384
+     ],
+     "subgoal": "put the cube back to its original position"
+    },
+    {
+     "kind": "home",
+     "cube": "green",
+     "target": null,
+     "drop_seg": [
+      1496,
+      1588
+     ],
+     "subgoal": "put the cube back to its original position"
+    }
+   ]
+  },
+  "checks": {
+   "per_cube_expected_target": 0,
+   "program_answer_target": 0,
+   "per_cube_match": true,
+   "placement_adjacent_to_button": [
+    "green",
+    3
+   ],
+   "adjacent_is_answer_cube": false,
+   "noop_replacements": [
+    {
+     "cube": "green",
+     "target": 3,
+     "steps": [
+      963,
+      1023
+     ]
+    }
+   ],
+   "distinct_target_changes": 5
+  }
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "seed": 10000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed10000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed10000_FailRecoverZ_easy_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4"
+  ],
+  "n_steps": 1048,
+  "task_goal": [
+   "watch the video carefully, then place the red cube on the target right after the button was pressed",
+   "watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 119,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <75, 140>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       140,
+       75
+      ],
+      [
+       144,
+       43
+      ],
+      32.2
+     ]
+    }
+   },
+   {
+    "start": 120,
+    "end": 200,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <102, 162>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       144,
+       43
+      ],
+      [
+       163,
+       99
+      ],
+      59.1
+     ]
+    }
+   },
+   {
+    "start": 201,
+    "end": 289,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <131, 84>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 290,
+    "end": 392,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 163>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       163,
+       99
+      ],
+      [
+       173,
+       72
+      ],
+      28.8
+     ]
+    }
+   },
+   {
+    "start": 393,
+    "end": 480,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <133, 174>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       173,
+       72
+      ],
+      [
+       177,
+       133
+      ],
+      61.1
+     ]
+    }
+   },
+   {
+    "start": 481,
+    "end": 549,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <133, 177>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       177,
+       133
+      ],
+      [
+       191,
+       117
+      ],
+      21.3
+     ]
+    }
+   },
+   {
+    "start": 550,
+    "end": 649,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       191,
+       117
+      ],
+      [
+       117,
+       84
+      ],
+      81.0
+     ]
+    }
+   },
+   {
+    "start": 650,
+    "end": 764,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 765,
+    "end": 950,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <84, 117>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       117,
+       84
+      ],
+      [
+       113,
+       52
+      ],
+      32.2
+     ]
+    }
+   },
+   {
+    "start": 951,
+    "end": 1032,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <133, 174>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       113,
+       52
+      ],
+      [
+       178,
+       132
+      ],
+      103.1
+     ]
+    }
+   },
+   {
+    "start": 1033,
+    "end": 1047,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <133, 174>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   201,
+   289
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "seed": 10101,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_1/hdf5_files/VideoPlaceButton_ep1_seed10101.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_1/videos/VideoPlaceButton_ep1_seed10101_FailRecoverZ_easy_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4"
+  ],
+  "n_steps": 1002,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 108,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <92, 104>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       104,
+       92
+      ],
+      [
+       93,
+       63
+      ],
+      31.0
+     ]
+    }
+   },
+   {
+    "start": 109,
+    "end": 188,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <118, 161>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       92,
+       62
+      ],
+      [
+       162,
+       116
+      ],
+      88.4
+     ]
+    }
+   },
+   {
+    "start": 189,
+    "end": 287,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <129, 110>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 288,
+    "end": 398,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <116, 162>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       162,
+       116
+      ],
+      [
+       168,
+       90
+      ],
+      26.7
+     ]
+    }
+   },
+   {
+    "start": 399,
+    "end": 489,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <81, 155>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       168,
+       90
+      ],
+      [
+       161,
+       78
+      ],
+      13.9
+     ]
+    }
+   },
+   {
+    "start": 490,
+    "end": 564,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <78, 161>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       161,
+       78
+      ],
+      [
+       167,
+       45
+      ],
+      33.5
+     ]
+    }
+   },
+   {
+    "start": 565,
+    "end": 643,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       167,
+       45
+      ],
+      [
+       128,
+       88
+      ],
+      58.1
+     ]
+    }
+   },
+   {
+    "start": 644,
+    "end": 756,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 757,
+    "end": 923,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <88, 128>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       128,
+       88
+      ],
+      [
+       125,
+       59
+      ],
+      29.2
+     ]
+    }
+   },
+   {
+    "start": 924,
+    "end": 987,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <81, 160>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       125,
+       58
+      ],
+      [
+       161,
+       78
+      ],
+      41.2
+     ]
+    }
+   },
+   {
+    "start": 988,
+    "end": 1001,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <81, 160>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   189,
+   287
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "seed": 11000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_10/hdf5_files/VideoPlaceButton_ep10_seed11000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_10/videos/VideoPlaceButton_ep10_seed11000_medium_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_10/videos/success_NO_OBJECT_VideoPlaceButton_ep10_seed11000_medium_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4"
+  ],
+  "n_steps": 980,
+  "task_goal": [
+   "watch the video carefully, then place the red cube on the target right after the button was pressed",
+   "watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 110,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <141, 155>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       155,
+       141
+      ],
+      [
+       161,
+       127
+      ],
+      15.2
+     ]
+    }
+   },
+   {
+    "start": 111,
+    "end": 222,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       161,
+       126
+      ],
+      [
+       147,
+       72
+      ],
+      55.8
+     ]
+    }
+   },
+   {
+    "start": 223,
+    "end": 314,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <120, 117>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 315,
+    "end": 424,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 425,
+    "end": 510,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <105, 154>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       154,
+       41
+      ],
+      [
+       155,
+       103
+      ],
+      62.0
+     ]
+    }
+   },
+   {
+    "start": 511,
+    "end": 581,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <103, 155>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       155,
+       103
+      ],
+      [
+       167,
+       78
+      ],
+      27.7
+     ]
+    }
+   },
+   {
+    "start": 582,
+    "end": 668,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       167,
+       78
+      ],
+      [
+       117,
+       78
+      ],
+      50.0
+     ]
+    }
+   },
+   {
+    "start": 669,
+    "end": 786,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 787,
+    "end": 899,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <78, 117>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       117,
+       78
+      ],
+      [
+       116,
+       46
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "start": 900,
+    "end": 966,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <105, 154>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       116,
+       46
+      ],
+      [
+       156,
+       104
+      ],
+      70.5
+     ],
+     "blue": [
+      [
+       132,
+       95
+      ],
+      [
+       130,
+       100
+      ],
+      5.4
+     ]
+    }
+   },
+   {
+    "start": 967,
+    "end": 979,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <105, 154>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       131,
+       99
+      ],
+      [
+       132,
+       95
+      ],
+      4.1
+     ]
+    }
+   }
+  ],
+  "button_steps": [
+   223,
+   314
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "seed": 11100,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_11/hdf5_files/VideoPlaceButton_ep11_seed11100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_11/videos/VideoPlaceButton_ep11_seed11100_hard_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4"
+  ],
+  "n_steps": 946,
+  "task_goal": [
+   "watch the video carefully, then place the green cube on the target right before the button was pressed",
+   "watch the video carefully, and place the green cube on the target where it was placed immediately before the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was previously placed before the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was last placed before the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 106,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <99, 148>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       148,
+       99
+      ],
+      [
+       154,
+       72
+      ],
+      27.7
+     ]
+    }
+   },
+   {
+    "start": 107,
+    "end": 186,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <124, 162>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       154,
+       71
+      ],
+      [
+       163,
+       123
+      ],
+      52.8
+     ]
+    }
+   },
+   {
+    "start": 187,
+    "end": 271,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <122, 121>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 272,
+    "end": 372,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <123, 163>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       163,
+       123
+      ],
+      [
+       176,
+       101
+      ],
+      25.6
+     ]
+    }
+   },
+   {
+    "start": 373,
+    "end": 468,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <96, 160>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       176,
+       101
+      ],
+      [
+       166,
+       93
+      ],
+      12.8
+     ]
+    }
+   },
+   {
+    "start": 469,
+    "end": 538,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <93, 166>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       166,
+       93
+      ],
+      [
+       177,
+       65
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "start": 539,
+    "end": 617,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       178,
+       65
+      ],
+      [
+       131,
+       82
+      ],
+      50.0
+     ]
+    }
+   },
+   {
+    "start": 618,
+    "end": 733,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 734,
+    "end": 846,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <82, 131>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       131,
+       82
+      ],
+      [
+       131,
+       50
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "start": 847,
+    "end": 931,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <140, 81>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       131,
+       50
+      ],
+      [
+       80,
+       140
+      ],
+      103.4
+     ]
+    }
+   },
+   {
+    "start": 932,
+    "end": 945,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <140, 81>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   187,
+   271
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "seed": 10202,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_2/hdf5_files/VideoPlaceButton_ep2_seed10202.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_2/videos/VideoPlaceButton_ep2_seed10202_FailRecoverZ_medium_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4"
+  ],
+  "n_steps": 1001,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 103,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <96, 126>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       126,
+       96
+      ],
+      [
+       124,
+       67
+      ],
+      29.1
+     ]
+    }
+   },
+   {
+    "start": 104,
+    "end": 183,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <101, 166>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       124,
+       67
+      ],
+      [
+       168,
+       98
+      ],
+      53.8
+     ]
+    }
+   },
+   {
+    "start": 184,
+    "end": 274,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <118, 101>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 275,
+    "end": 375,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <98, 168>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       168,
+       98
+      ],
+      [
+       179,
+       70
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "start": 376,
+    "end": 467,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <87, 93>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       180,
+       70
+      ],
+      [
+       91,
+       84
+      ],
+      90.1
+     ]
+    }
+   },
+   {
+    "start": 468,
+    "end": 548,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <84, 91>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       91,
+       84
+      ],
+      [
+       78,
+       53
+      ],
+      33.6
+     ]
+    }
+   },
+   {
+    "start": 549,
+    "end": 626,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       78,
+       53
+      ],
+      [
+       123,
+       83
+      ],
+      54.1
+     ]
+    }
+   },
+   {
+    "start": 627,
+    "end": 742,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 743,
+    "end": 921,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <83, 123>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       123,
+       83
+      ],
+      [
+       121,
+       51
+      ],
+      32.1
+     ]
+    }
+   },
+   {
+    "start": 922,
+    "end": 986,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <87, 93>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       121,
+       51
+      ],
+      [
+       92,
+       84
+      ],
+      43.9
+     ]
+    }
+   },
+   {
+    "start": 987,
+    "end": 1000,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <87, 93>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       89,
+       75
+      ],
+      [
+       88,
+       69
+      ],
+      6.1
+     ]
+    }
+   }
+  ],
+  "button_steps": [
+   184,
+   274
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "seed": 10301,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed10301.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed10301_FailRecoverXY_hard_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4"
+  ],
+  "n_steps": 1041,
+  "task_goal": [
+   "watch the video carefully, then place the green cube on the target right before the button was pressed",
+   "watch the video carefully, and place the green cube on the target where it was placed immediately before the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was previously placed before the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was last placed before the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 118,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <74, 110>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       110,
+       74
+      ],
+      [
+       105,
+       42
+      ],
+      32.4
+     ]
+    }
+   },
+   {
+    "start": 119,
+    "end": 212,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <98, 165>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       104,
+       42
+      ],
+      [
+       168,
+       96
+      ],
+      83.7
+     ]
+    }
+   },
+   {
+    "start": 213,
+    "end": 292,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <119, 115>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 293,
+    "end": 385,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <96, 168>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       168,
+       96
+      ],
+      [
+       182,
+       68
+      ],
+      31.3
+     ]
+    }
+   },
+   {
+    "start": 386,
+    "end": 471,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <129, 173>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       182,
+       68
+      ],
+      [
+       175,
+       129
+      ],
+      61.4
+     ]
+    }
+   },
+   {
+    "start": 472,
+    "end": 544,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <129, 175>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       175,
+       129
+      ],
+      [
+       192,
+       113
+      ],
+      23.3
+     ]
+    }
+   },
+   {
+    "start": 545,
+    "end": 646,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       193,
+       112
+      ],
+      [
+       128,
+       88
+      ],
+      69.3
+     ]
+    }
+   },
+   {
+    "start": 647,
+    "end": 758,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 759,
+    "end": 952,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <88, 128>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       128,
+       88
+      ],
+      [
+       128,
+       60
+      ],
+      28.0
+     ]
+    }
+   },
+   {
+    "start": 953,
+    "end": 1022,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <98, 165>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       128,
+       59
+      ],
+      [
+       167,
+       96
+      ],
+      53.8
+     ]
+    }
+   },
+   {
+    "start": 1023,
+    "end": 1040,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <98, 165>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   213,
+   292
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "seed": 10402,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_4/hdf5_files/VideoPlaceButton_ep4_seed10402.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_4/videos/VideoPlaceButton_ep4_seed10402_FailRecoverXY_easy_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__056b0e8138b1.mp4"
+  ],
+  "n_steps": 1089,
+  "task_goal": [
+   "watch the video carefully, then place the green cube on the target right after the button was pressed",
+   "watch the video carefully, and place the green cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the green cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 113,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <81, 156>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       156,
+       81
+      ],
+      [
+       162,
+       49
+      ],
+      32.6
+     ]
+    }
+   },
+   {
+    "start": 114,
+    "end": 216,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <140, 175>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       162,
+       49
+      ],
+      [
+       176,
+       139
+      ],
+      91.1
+     ]
+    }
+   },
+   {
+    "start": 217,
+    "end": 310,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <124, 126>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 311,
+    "end": 419,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <139, 176>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       176,
+       139
+      ],
+      [
+       190,
+       121
+      ],
+      22.8
+     ]
+    }
+   },
+   {
+    "start": 420,
+    "end": 512,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <106, 92>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       190,
+       121
+      ],
+      [
+       90,
+       103
+      ],
+      101.6
+     ]
+    }
+   },
+   {
+    "start": 513,
+    "end": 584,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <103, 90>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       90,
+       103
+      ],
+      [
+       73,
+       77
+      ],
+      31.1
+     ]
+    }
+   },
+   {
+    "start": 585,
+    "end": 679,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       73,
+       77
+      ],
+      [
+       126,
+       76
+      ],
+      53.0
+     ]
+    }
+   },
+   {
+    "start": 680,
+    "end": 802,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 803,
+    "end": 1007,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <76, 126>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       126,
+       76
+      ],
+      [
+       118,
+       47
+      ],
+      30.1
+     ]
+    }
+   },
+   {
+    "start": 1008,
+    "end": 1075,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <106, 92>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       117,
+       47
+      ],
+      [
+       89,
+       105
+      ],
+      64.4
+     ]
+    }
+   },
+   {
+    "start": 1076,
+    "end": 1088,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <106, 92>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   217,
+   310
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "seed": 10600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed10600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed10600_medium_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4"
+  ],
+  "n_steps": 921,
+  "task_goal": [
+   "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+   "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+   "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 111,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <79, 113>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       113,
+       79
+      ],
+      [
+       109,
+       48
+      ],
+      31.3
+     ]
+    }
+   },
+   {
+    "start": 112,
+    "end": 199,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <119, 89>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       109,
+       48
+      ],
+      [
+       87,
+       117
+      ],
+      72.4
+     ]
+    }
+   },
+   {
+    "start": 200,
+    "end": 274,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <125, 125>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       153,
+       89
+      ],
+      [
+       154,
+       95
+      ],
+      6.1
+     ]
+    }
+   },
+   {
+    "start": 275,
+    "end": 366,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <117, 87>",
+    "cube_moves_px_xy": {
+     "green": [
+      [
+       154,
+       95
+      ],
+      [
+       153,
+       89
+      ],
+      6.1
+     ],
+     "blue": [
+      [
+       87,
+       117
+      ],
+      [
+       71,
+       94
+      ],
+      28.0
+     ]
+    }
+   },
+   {
+    "start": 367,
+    "end": 459,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <91, 92>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       71,
+       94
+      ],
+      [
+       88,
+       88
+      ],
+      18.0
+     ]
+    }
+   },
+   {
+    "start": 460,
+    "end": 529,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <88, 88>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       88,
+       88
+      ],
+      [
+       77,
+       59
+      ],
+      31.0
+     ]
+    }
+   },
+   {
+    "start": 530,
+    "end": 608,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       77,
+       59
+      ],
+      [
+       121,
+       77
+      ],
+      47.5
+     ]
+    }
+   },
+   {
+    "start": 609,
+    "end": 727,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 728,
+    "end": 840,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <77, 121>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       121,
+       77
+      ],
+      [
+       120,
+       47
+      ],
+      30.0
+     ]
+    }
+   },
+   {
+    "start": 841,
+    "end": 904,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <90, 90>",
+    "cube_moves_px_xy": {
+     "blue": [
+      [
+       120,
+       47
+      ],
+      [
+       88,
+       88
+      ],
+      52.0
+     ]
+    }
+   },
+   {
+    "start": 905,
+    "end": 920,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <90, 90>",
+    "cube_moves_px_xy": {}
+   }
+  ],
+  "button_steps": [
+   200,
+   274
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "seed": 10701,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_7/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_7/videos/VideoPlaceButton_ep7_seed10701_hard_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_7/videos/success_NO_OBJECT_VideoPlaceButton_ep7_seed10701_hard_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4"
+  ],
+  "n_steps": 958,
+  "task_goal": [
+   "watch the video carefully, then place the red cube on the target right before the button was pressed",
+   "watch the video carefully, and place the red cube on the target where it was placed immediately before the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was previously placed before the button was pressed",
+   "watch the video carefully, then place the red cube on the target where it was last placed before the button was pressed"
+  ],
+  "choices": "[{\"label\": \"a\", \"action\": \"pick up the cube\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"drop onto\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"press the button\", \"need_parameter\": false}]",
+  "segments": [
+   {
+    "start": 0,
+    "end": 117,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <73, 143>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       143,
+       73
+      ],
+      [
+       149,
+       41
+      ],
+      32.6
+     ]
+    }
+   },
+   {
+    "start": 118,
+    "end": 215,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target at <126, 145>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       149,
+       41
+      ],
+      [
+       146,
+       125
+      ],
+      84.1
+     ],
+     "blue": [
+      [
+       111,
+       77
+      ],
+      [
+       106,
+       77
+      ],
+      5.0
+     ]
+    }
+   },
+   {
+    "start": 216,
+    "end": 289,
+    "demo": true,
+    "simple": "press the button",
+    "grounded": "press the button at <123, 92>",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 290,
+    "end": 368,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <125, 146>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       146,
+       125
+      ],
+      [
+       155,
+       110
+      ],
+      17.5
+     ]
+    }
+   },
+   {
+    "start": 369,
+    "end": 477,
+    "demo": true,
+    "simple": "drop the cube onto target",
+    "grounded": "drop the cube onto target",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       155,
+       109
+      ],
+      [
+       166,
+       77
+      ],
+      33.8
+     ]
+    }
+   },
+   {
+    "start": 478,
+    "end": 552,
+    "demo": true,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <77, 166>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       166,
+       77
+      ],
+      [
+       177,
+       47
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "start": 553,
+    "end": 634,
+    "demo": true,
+    "simple": "drop the cube onto table",
+    "grounded": "drop the cube onto table",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       177,
+       47
+      ],
+      [
+       121,
+       83
+      ],
+      66.6
+     ]
+    }
+   },
+   {
+    "start": 635,
+    "end": 749,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static",
+    "cube_moves_px_xy": {}
+   },
+   {
+    "start": 750,
+    "end": 863,
+    "demo": false,
+    "simple": "pick up the cube",
+    "grounded": "pick up the cube at <83, 121>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       121,
+       83
+      ],
+      [
+       120,
+       51
+      ],
+      32.0
+     ]
+    }
+   },
+   {
+    "start": 864,
+    "end": 943,
+    "demo": false,
+    "simple": "place the cube onto the correct target",
+    "grounded": "place the cube onto the correct target at <126, 145>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       120,
+       51
+      ],
+      [
+       147,
+       124
+      ],
+      77.8
+     ]
+    }
+   },
+   {
+    "start": 944,
+    "end": 957,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the correct target at <126, 145>",
+    "cube_moves_px_xy": {
+     "red": [
+      [
+       147,
+       129
+      ],
+      [
+       146,
+       125
+      ],
+      4.1
+     ],
+     "blue": [
+      [
+       111,
+       77
+      ],
+      [
+       106,
+       77
+      ],
+      5.0
+     ]
+    }
+   }
+  ],
+  "button_steps": [
+   216,
+   289
+  ]
+ }
+]

@@ -1,0 +1,2882 @@
+[
+ {
+  "difficulty": "xhard4",
+  "episode": 6,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_6/hdf5_files/InsertPeg_ep6_seed7300600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_6/videos/InsertPeg_ep6_seed7300600_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 7300600,
+  "setup_difficulty": "xhard4",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 438,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <82, 200>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 108
+   },
+   {
+    "start": 109,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <81, 113>",
+    "demo": true,
+    "boundaries": [
+     109
+    ],
+    "end": 218
+   },
+   {
+    "start": 219,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <82, 200>",
+    "demo": false,
+    "boundaries": [
+     219
+    ],
+    "end": 327
+   },
+   {
+    "start": 328,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <81, 113>",
+    "demo": false,
+    "boundaries": [
+     328
+    ],
+    "end": 434
+   },
+   {
+    "start": 435,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <81, 113>",
+    "demo": false,
+    "boundaries": [
+     435
+    ],
+    "end": 437
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [83, 201]}"
+   ],
+   [
+    74,
+    "{\"choice\": \"A\", \"point\": [83, 202]}"
+   ],
+   [
+    77,
+    "{\"choice\": \"A\", \"point\": [83, 201]}"
+   ],
+   [
+    78,
+    "{\"choice\": \"A\", \"point\": [82, 202]}"
+   ],
+   [
+    81,
+    "{\"choice\": \"A\", \"point\": [81, 202]}"
+   ],
+   [
+    82,
+    "{\"choice\": \"A\", \"point\": [80, 203]}"
+   ],
+   [
+    83,
+    "{\"choice\": \"A\", \"point\": [79, 203]}"
+   ],
+   [
+    84,
+    "{\"choice\": \"A\", \"point\": [78, 204]}"
+   ],
+   [
+    85,
+    "{\"choice\": \"A\", \"point\": [76, 205]}"
+   ],
+   [
+    86,
+    "{\"choice\": \"A\", \"point\": [75, 207]}"
+   ],
+   [
+    87,
+    "{\"choice\": \"A\", \"point\": [73, 208]}"
+   ],
+   [
+    88,
+    "{\"choice\": \"A\", \"point\": [70, 210]}"
+   ],
+   [
+    89,
+    "{\"choice\": \"A\", \"point\": [67, 212]}"
+   ],
+   [
+    90,
+    "{\"choice\": \"A\", \"point\": [64, 214]}"
+   ],
+   [
+    91,
+    "{\"choice\": \"A\", \"point\": [61, 216]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [57, 219]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [54, 221]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [50, 224]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [47, 226]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [44, 228]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [41, 230]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [38, 232]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [36, 233]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [35, 235]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [33, 235]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [33, 236]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [32, 236]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [33, 236]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"B\", \"point\": [82, 114]}"
+   ],
+   [
+    219,
+    "{\"choice\": \"A\", \"point\": [83, 201]}"
+   ],
+   [
+    293,
+    "{\"choice\": \"A\", \"point\": [83, 202]}"
+   ],
+   [
+    296,
+    "{\"choice\": \"A\", \"point\": [83, 201]}"
+   ],
+   [
+    297,
+    "{\"choice\": \"A\", \"point\": [82, 202]}"
+   ],
+   [
+    300,
+    "{\"choice\": \"A\", \"point\": [81, 202]}"
+   ],
+   [
+    301,
+    "{\"choice\": \"A\", \"point\": [80, 203]}"
+   ],
+   [
+    302,
+    "{\"choice\": \"A\", \"point\": [79, 203]}"
+   ],
+   [
+    303,
+    "{\"choice\": \"A\", \"point\": [78, 204]}"
+   ],
+   [
+    304,
+    "{\"choice\": \"A\", \"point\": [76, 205]}"
+   ],
+   [
+    305,
+    "{\"choice\": \"A\", \"point\": [75, 207]}"
+   ],
+   [
+    306,
+    "{\"choice\": \"A\", \"point\": [73, 208]}"
+   ]
+  ],
+  "last_demo_step": 218,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    70,
+    218
+   ],
+   [
+    289,
+    437
+   ]
+  ]
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 2,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_2/hdf5_files/InsertPeg_ep2_seed7300200.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_2/videos/InsertPeg_ep2_seed7300200_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 7300200,
+  "setup_difficulty": "xhard4",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 464,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <96, 56>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 122
+   },
+   {
+    "start": 123,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <81, 105>",
+    "demo": true,
+    "boundaries": [
+     123
+    ],
+    "end": 231
+   },
+   {
+    "start": 232,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <96, 56>",
+    "demo": false,
+    "boundaries": [
+     232
+    ],
+    "end": 354
+   },
+   {
+    "start": 355,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <81, 105>",
+    "demo": false,
+    "boundaries": [
+     355
+    ],
+    "end": 451
+   },
+   {
+    "start": 452,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <81, 105>",
+    "demo": false,
+    "boundaries": [
+     452
+    ],
+    "end": 463
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [97, 57]}"
+   ],
+   [
+    81,
+    "{\"choice\": \"A\", \"point\": [97, 58]}"
+   ],
+   [
+    88,
+    "{\"choice\": \"A\", \"point\": [96, 58]}"
+   ],
+   [
+    90,
+    "{\"choice\": \"A\", \"point\": [96, 57]}"
+   ],
+   [
+    91,
+    "{\"choice\": \"A\", \"point\": [95, 57]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [94, 56]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [93, 56]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [92, 55]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [90, 54]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [89, 52]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [86, 51]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [84, 49]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [81, 46]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [78, 44]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [74, 41]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [71, 38]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [67, 36]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [63, 33]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [60, 30]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [57, 28]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [54, 26]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [51, 24]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [49, 22]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"A\", \"point\": [47, 21]}"
+   ],
+   [
+    111,
+    "{\"choice\": \"A\", \"point\": [46, 20]}"
+   ],
+   [
+    112,
+    "{\"choice\": \"A\", \"point\": [45, 19]}"
+   ],
+   [
+    115,
+    "{\"choice\": \"A\", \"point\": [45, 20]}"
+   ],
+   [
+    116,
+    "{\"choice\": \"A\", \"point\": [46, 20]}"
+   ],
+   [
+    117,
+    "{\"choice\": \"A\", \"point\": [46, 21]}"
+   ],
+   [
+    123,
+    "{\"choice\": \"C\", \"point\": [82, 107]}"
+   ],
+   [
+    232,
+    "{\"choice\": \"A\", \"point\": [97, 57]}"
+   ],
+   [
+    313,
+    "{\"choice\": \"A\", \"point\": [97, 58]}"
+   ],
+   [
+    320,
+    "{\"choice\": \"A\", \"point\": [96, 58]}"
+   ],
+   [
+    322,
+    "{\"choice\": \"A\", \"point\": [96, 57]}"
+   ],
+   [
+    323,
+    "{\"choice\": \"A\", \"point\": [95, 57]}"
+   ],
+   [
+    324,
+    "{\"choice\": \"A\", \"point\": [94, 56]}"
+   ],
+   [
+    325,
+    "{\"choice\": \"A\", \"point\": [93, 56]}"
+   ],
+   [
+    326,
+    "{\"choice\": \"A\", \"point\": [92, 55]}"
+   ],
+   [
+    327,
+    "{\"choice\": \"A\", \"point\": [90, 54]}"
+   ],
+   [
+    328,
+    "{\"choice\": \"A\", \"point\": [89, 52]}"
+   ]
+  ],
+  "last_demo_step": 231,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    80,
+    231
+   ],
+   [
+    312,
+    463
+   ]
+  ]
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 4,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_4/hdf5_files/InsertPeg_ep4_seed7300400.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_4/videos/InsertPeg_ep4_seed7300400_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 7300400,
+  "setup_difficulty": "xhard4",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 423,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <99, 73>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 127
+   },
+   {
+    "start": 128,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <89, 154>",
+    "demo": true,
+    "boundaries": [
+     128
+    ],
+    "end": 213
+   },
+   {
+    "start": 214,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <99, 73>",
+    "demo": false,
+    "boundaries": [
+     214
+    ],
+    "end": 341
+   },
+   {
+    "start": 342,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <89, 154>",
+    "demo": false,
+    "boundaries": [
+     342
+    ],
+    "end": 415
+   },
+   {
+    "start": 416,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <89, 154>",
+    "demo": false,
+    "boundaries": [
+     416
+    ],
+    "end": 422
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [99, 74]}"
+   ],
+   [
+    86,
+    "{\"choice\": \"A\", \"point\": [99, 75]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [98, 75]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [97, 75]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [97, 74]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [96, 74]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [94, 73]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [93, 72]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [91, 71]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [89, 70]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [87, 69]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [84, 67]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [81, 65]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [78, 63]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [74, 61]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [71, 59]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [67, 57]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"A\", \"point\": [64, 55]}"
+   ],
+   [
+    111,
+    "{\"choice\": \"A\", \"point\": [61, 53]}"
+   ],
+   [
+    112,
+    "{\"choice\": \"A\", \"point\": [58, 52]}"
+   ],
+   [
+    113,
+    "{\"choice\": \"A\", \"point\": [55, 50]}"
+   ],
+   [
+    114,
+    "{\"choice\": \"A\", \"point\": [53, 49]}"
+   ],
+   [
+    115,
+    "{\"choice\": \"A\", \"point\": [51, 48]}"
+   ],
+   [
+    116,
+    "{\"choice\": \"A\", \"point\": [50, 47]}"
+   ],
+   [
+    117,
+    "{\"choice\": \"A\", \"point\": [49, 47]}"
+   ],
+   [
+    118,
+    "{\"choice\": \"A\", \"point\": [48, 46]}"
+   ],
+   [
+    120,
+    "{\"choice\": \"A\", \"point\": [49, 46]}"
+   ],
+   [
+    121,
+    "{\"choice\": \"A\", \"point\": [49, 47]}"
+   ],
+   [
+    128,
+    "{\"choice\": \"C\", \"point\": [90, 154]}"
+   ],
+   [
+    214,
+    "{\"choice\": \"A\", \"point\": [99, 74]}"
+   ],
+   [
+    300,
+    "{\"choice\": \"A\", \"point\": [99, 75]}"
+   ],
+   [
+    308,
+    "{\"choice\": \"A\", \"point\": [98, 75]}"
+   ],
+   [
+    310,
+    "{\"choice\": \"A\", \"point\": [97, 75]}"
+   ],
+   [
+    311,
+    "{\"choice\": \"A\", \"point\": [97, 74]}"
+   ],
+   [
+    312,
+    "{\"choice\": \"A\", \"point\": [96, 74]}"
+   ],
+   [
+    313,
+    "{\"choice\": \"A\", \"point\": [94, 73]}"
+   ],
+   [
+    314,
+    "{\"choice\": \"A\", \"point\": [93, 72]}"
+   ],
+   [
+    315,
+    "{\"choice\": \"A\", \"point\": [91, 71]}"
+   ],
+   [
+    316,
+    "{\"choice\": \"A\", \"point\": [89, 70]}"
+   ],
+   [
+    317,
+    "{\"choice\": \"A\", \"point\": [87, 69]}"
+   ]
+  ],
+  "last_demo_step": 213,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    85,
+    213
+   ],
+   [
+    299,
+    422
+   ]
+  ]
+ },
+ {
+  "difficulty": "easy",
+  "episode": 0,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_0/hdf5_files/InsertPeg_ep0_seed13000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_0/videos/InsertPeg_ep0_seed13000_easy_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 13000,
+  "setup_difficulty": "easy",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 475,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <71, 79>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 122
+   },
+   {
+    "start": 123,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <78, 140>",
+    "demo": true,
+    "boundaries": [
+     123
+    ],
+    "end": 237
+   },
+   {
+    "start": 238,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <71, 79>",
+    "demo": false,
+    "boundaries": [
+     238
+    ],
+    "end": 360
+   },
+   {
+    "start": 361,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <78, 140>",
+    "demo": false,
+    "boundaries": [
+     361
+    ],
+    "end": 462
+   },
+   {
+    "start": 463,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <78, 140>",
+    "demo": false,
+    "boundaries": [
+     463
+    ],
+    "end": 474
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [72, 80]}"
+   ],
+   [
+    88,
+    "{\"choice\": \"A\", \"point\": [71, 80]}"
+   ],
+   [
+    90,
+    "{\"choice\": \"A\", \"point\": [70, 79]}"
+   ],
+   [
+    91,
+    "{\"choice\": \"A\", \"point\": [69, 79]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [68, 79]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [67, 78]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [66, 78]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [64, 77]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [62, 76]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [60, 75]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [57, 74]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [55, 73]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [52, 72]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [49, 71]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [46, 69]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [42, 68]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [39, 67]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [36, 65]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [33, 64]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [31, 63]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [28, 62]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [26, 61]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"A\", \"point\": [24, 60]}"
+   ],
+   [
+    111,
+    "{\"choice\": \"A\", \"point\": [23, 60]}"
+   ],
+   [
+    112,
+    "{\"choice\": \"A\", \"point\": [21, 59]}"
+   ],
+   [
+    113,
+    "{\"choice\": \"A\", \"point\": [20, 59]}"
+   ],
+   [
+    115,
+    "{\"choice\": \"A\", \"point\": [20, 58]}"
+   ],
+   [
+    116,
+    "{\"choice\": \"A\", \"point\": [20, 59]}"
+   ],
+   [
+    123,
+    "{\"choice\": \"C\", \"point\": [80, 142]}"
+   ],
+   [
+    238,
+    "{\"choice\": \"A\", \"point\": [72, 80]}"
+   ],
+   [
+    326,
+    "{\"choice\": \"A\", \"point\": [71, 80]}"
+   ],
+   [
+    328,
+    "{\"choice\": \"A\", \"point\": [70, 80]}"
+   ],
+   [
+    329,
+    "{\"choice\": \"A\", \"point\": [69, 79]}"
+   ],
+   [
+    330,
+    "{\"choice\": \"A\", \"point\": [68, 79]}"
+   ],
+   [
+    331,
+    "{\"choice\": \"A\", \"point\": [67, 78]}"
+   ],
+   [
+    332,
+    "{\"choice\": \"A\", \"point\": [66, 78]}"
+   ],
+   [
+    333,
+    "{\"choice\": \"A\", \"point\": [64, 77]}"
+   ],
+   [
+    334,
+    "{\"choice\": \"A\", \"point\": [62, 76]}"
+   ],
+   [
+    335,
+    "{\"choice\": \"A\", \"point\": [60, 75]}"
+   ],
+   [
+    336,
+    "{\"choice\": \"A\", \"point\": [58, 74]}"
+   ]
+  ],
+  "last_demo_step": 237,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    78,
+    237
+   ],
+   [
+    316,
+    474
+   ]
+  ]
+ },
+ {
+  "difficulty": "easy",
+  "episode": 1,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_1/hdf5_files/InsertPeg_ep1_seed13101.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_1/videos/InsertPeg_ep1_seed13101_easy_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 13101,
+  "setup_difficulty": "easy",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 568,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <114, 212>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 123
+   },
+   {
+    "start": 124,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <116, 143>",
+    "demo": true,
+    "boundaries": [
+     124
+    ],
+    "end": 283
+   },
+   {
+    "start": 284,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <114, 212>",
+    "demo": false,
+    "boundaries": [
+     284
+    ],
+    "end": 407
+   },
+   {
+    "start": 408,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <116, 143>",
+    "demo": false,
+    "boundaries": [
+     408
+    ],
+    "end": 561
+   },
+   {
+    "start": 562,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <116, 143>",
+    "demo": false,
+    "boundaries": [
+     562
+    ],
+    "end": 567
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [116, 211]}"
+   ],
+   [
+    87,
+    "{\"choice\": \"A\", \"point\": [116, 210]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [115, 210]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [114, 211]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [113, 212]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [112, 213]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [111, 214]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [110, 216]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [108, 218]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [106, 220]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [103, 223]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [100, 227]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [97, 230]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [93, 234]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [90, 238]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [86, 242]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"A\", \"point\": [83, 246]}"
+   ],
+   [
+    111,
+    "{\"choice\": \"A\", \"point\": [80, 249]}"
+   ],
+   [
+    112,
+    "{\"choice\": \"A\", \"point\": [77, 252]}"
+   ],
+   [
+    113,
+    "{\"choice\": \"A\", \"point\": [75, 255]}"
+   ],
+   [
+    114,
+    "{\"choice\": \"A\", \"point\": []}"
+   ],
+   [
+    124,
+    "{\"choice\": \"B\", \"point\": [118, 143]}"
+   ],
+   [
+    284,
+    "{\"choice\": \"A\", \"point\": [116, 211]}"
+   ],
+   [
+    371,
+    "{\"choice\": \"A\", \"point\": [116, 210]}"
+   ],
+   [
+    379,
+    "{\"choice\": \"A\", \"point\": [115, 210]}"
+   ],
+   [
+    381,
+    "{\"choice\": \"A\", \"point\": [114, 211]}"
+   ],
+   [
+    382,
+    "{\"choice\": \"A\", \"point\": [114, 212]}"
+   ],
+   [
+    383,
+    "{\"choice\": \"A\", \"point\": [113, 213]}"
+   ],
+   [
+    384,
+    "{\"choice\": \"A\", \"point\": [111, 214]}"
+   ],
+   [
+    385,
+    "{\"choice\": \"A\", \"point\": [110, 216]}"
+   ],
+   [
+    386,
+    "{\"choice\": \"A\", \"point\": [108, 218]}"
+   ],
+   [
+    387,
+    "{\"choice\": \"A\", \"point\": [106, 220]}"
+   ],
+   [
+    388,
+    "{\"choice\": \"A\", \"point\": [103, 223]}"
+   ],
+   [
+    389,
+    "{\"choice\": \"A\", \"point\": [100, 227]}"
+   ],
+   [
+    390,
+    "{\"choice\": \"A\", \"point\": [97, 230]}"
+   ],
+   [
+    391,
+    "{\"choice\": \"A\", \"point\": [93, 234]}"
+   ],
+   [
+    392,
+    "{\"choice\": \"A\", \"point\": [90, 238]}"
+   ],
+   [
+    393,
+    "{\"choice\": \"A\", \"point\": [86, 242]}"
+   ],
+   [
+    394,
+    "{\"choice\": \"A\", \"point\": [83, 246]}"
+   ],
+   [
+    395,
+    "{\"choice\": \"A\", \"point\": [80, 249]}"
+   ]
+  ],
+  "last_demo_step": 283,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    86,
+    283
+   ],
+   [
+    370,
+    567
+   ]
+  ]
+ },
+ {
+  "difficulty": "medium",
+  "episode": 10,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_10/hdf5_files/InsertPeg_ep10_seed14001.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_10/videos/InsertPeg_ep10_seed14001_medium_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 14001,
+  "setup_difficulty": "medium",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 454,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <129, 156>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 117
+   },
+   {
+    "start": 118,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <92, 146>",
+    "demo": true,
+    "boundaries": [
+     118
+    ],
+    "end": 226
+   },
+   {
+    "start": 227,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <129, 156>",
+    "demo": false,
+    "boundaries": [
+     227
+    ],
+    "end": 344
+   },
+   {
+    "start": 345,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <92, 146>",
+    "demo": false,
+    "boundaries": [
+     345
+    ],
+    "end": 445
+   },
+   {
+    "start": 446,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <92, 146>",
+    "demo": false,
+    "boundaries": [
+     446
+    ],
+    "end": 453
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [131, 157]}"
+   ],
+   [
+    81,
+    "{\"choice\": \"A\", \"point\": [131, 156]}"
+   ],
+   [
+    90,
+    "{\"choice\": \"A\", \"point\": [130, 156]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [129, 156]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [128, 157]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [127, 157]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [126, 158]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [124, 158]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [123, 159]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [120, 160]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [118, 162]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [115, 163]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [112, 164]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [109, 166]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [106, 167]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [103, 169]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [100, 170]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [97, 171]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [95, 172]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [94, 173]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [92, 173]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"A\", \"point\": [92, 174]}"
+   ],
+   [
+    111,
+    "{\"choice\": \"A\", \"point\": [91, 174]}"
+   ],
+   [
+    118,
+    "{\"choice\": \"C\", \"point\": [93, 147]}"
+   ],
+   [
+    227,
+    "{\"choice\": \"A\", \"point\": [131, 157]}"
+   ],
+   [
+    308,
+    "{\"choice\": \"A\", \"point\": [131, 156]}"
+   ],
+   [
+    317,
+    "{\"choice\": \"A\", \"point\": [130, 156]}"
+   ],
+   [
+    319,
+    "{\"choice\": \"A\", \"point\": [129, 156]}"
+   ],
+   [
+    320,
+    "{\"choice\": \"A\", \"point\": [128, 157]}"
+   ],
+   [
+    321,
+    "{\"choice\": \"A\", \"point\": [127, 157]}"
+   ],
+   [
+    322,
+    "{\"choice\": \"A\", \"point\": [126, 158]}"
+   ],
+   [
+    323,
+    "{\"choice\": \"A\", \"point\": [124, 158]}"
+   ],
+   [
+    324,
+    "{\"choice\": \"A\", \"point\": [123, 159]}"
+   ],
+   [
+    325,
+    "{\"choice\": \"A\", \"point\": [120, 160]}"
+   ],
+   [
+    326,
+    "{\"choice\": \"A\", \"point\": [118, 162]}"
+   ],
+   [
+    327,
+    "{\"choice\": \"A\", \"point\": [115, 163]}"
+   ],
+   [
+    328,
+    "{\"choice\": \"A\", \"point\": [112, 164]}"
+   ],
+   [
+    329,
+    "{\"choice\": \"A\", \"point\": [109, 166]}"
+   ],
+   [
+    330,
+    "{\"choice\": \"A\", \"point\": [106, 167]}"
+   ],
+   [
+    331,
+    "{\"choice\": \"A\", \"point\": [103, 169]}"
+   ]
+  ],
+  "last_demo_step": 226,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    80,
+    226
+   ],
+   [
+    307,
+    453
+   ]
+  ]
+ },
+ {
+  "difficulty": "hard",
+  "episode": 11,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_11/hdf5_files/InsertPeg_ep11_seed14100.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_11/videos/InsertPeg_ep11_seed14100_hard_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 14100,
+  "setup_difficulty": "hard",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 494,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <84, 169>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 120
+   },
+   {
+    "start": 121,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <87, 114>",
+    "demo": true,
+    "boundaries": [
+     121
+    ],
+    "end": 246
+   },
+   {
+    "start": 247,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <84, 169>",
+    "demo": false,
+    "boundaries": [
+     247
+    ],
+    "end": 367
+   },
+   {
+    "start": 368,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <87, 114>",
+    "demo": false,
+    "boundaries": [
+     368
+    ],
+    "end": 492
+   },
+   {
+    "start": 493,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <87, 114>",
+    "demo": false,
+    "boundaries": [
+     493
+    ],
+    "end": 493
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [85, 171]}"
+   ],
+   [
+    86,
+    "{\"choice\": \"A\", \"point\": [84, 172]}"
+   ],
+   [
+    88,
+    "{\"choice\": \"A\", \"point\": [83, 172]}"
+   ],
+   [
+    89,
+    "{\"choice\": \"A\", \"point\": [82, 172]}"
+   ],
+   [
+    90,
+    "{\"choice\": \"A\", \"point\": [81, 173]}"
+   ],
+   [
+    91,
+    "{\"choice\": \"A\", \"point\": [80, 173]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [78, 174]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [76, 175]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [74, 176]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [71, 177]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [69, 178]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [66, 179]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [62, 181]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [59, 182]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [56, 184]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [52, 185]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [49, 186]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [46, 188]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [43, 189]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [40, 190]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [38, 191]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [36, 192]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [35, 192]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [33, 193]}"
+   ],
+   [
+    111,
+    "{\"choice\": \"A\", \"point\": [32, 193]}"
+   ],
+   [
+    113,
+    "{\"choice\": \"A\", \"point\": [33, 193]}"
+   ],
+   [
+    121,
+    "{\"choice\": \"B\", \"point\": [88, 115]}"
+   ],
+   [
+    247,
+    "{\"choice\": \"A\", \"point\": [85, 171]}"
+   ],
+   [
+    333,
+    "{\"choice\": \"A\", \"point\": [84, 172]}"
+   ],
+   [
+    335,
+    "{\"choice\": \"A\", \"point\": [83, 172]}"
+   ],
+   [
+    336,
+    "{\"choice\": \"A\", \"point\": [82, 172]}"
+   ],
+   [
+    337,
+    "{\"choice\": \"A\", \"point\": [81, 173]}"
+   ],
+   [
+    338,
+    "{\"choice\": \"A\", \"point\": [80, 173]}"
+   ],
+   [
+    339,
+    "{\"choice\": \"A\", \"point\": [78, 174]}"
+   ],
+   [
+    340,
+    "{\"choice\": \"A\", \"point\": [76, 175]}"
+   ],
+   [
+    341,
+    "{\"choice\": \"A\", \"point\": [74, 176]}"
+   ],
+   [
+    342,
+    "{\"choice\": \"A\", \"point\": [71, 177]}"
+   ],
+   [
+    343,
+    "{\"choice\": \"A\", \"point\": [69, 178]}"
+   ],
+   [
+    344,
+    "{\"choice\": \"A\", \"point\": [66, 179]}"
+   ],
+   [
+    345,
+    "{\"choice\": \"A\", \"point\": [62, 181]}"
+   ]
+  ],
+  "last_demo_step": 246,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    76,
+    246
+   ],
+   [
+    323,
+    493
+   ]
+  ]
+ },
+ {
+  "difficulty": "medium",
+  "episode": 2,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_2/hdf5_files/InsertPeg_ep2_seed13201.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_2/videos/InsertPeg_ep2_seed13201_medium_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 13201,
+  "setup_difficulty": "medium",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 478,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <82, 187>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 119
+   },
+   {
+    "start": 120,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <90, 117>",
+    "demo": true,
+    "boundaries": [
+     120
+    ],
+    "end": 239
+   },
+   {
+    "start": 240,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <82, 187>",
+    "demo": false,
+    "boundaries": [
+     240
+    ],
+    "end": 359
+   },
+   {
+    "start": 360,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <90, 117>",
+    "demo": false,
+    "boundaries": [
+     360
+    ],
+    "end": 469
+   },
+   {
+    "start": 470,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <90, 117>",
+    "demo": false,
+    "boundaries": [
+     470
+    ],
+    "end": 477
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [84, 188]}"
+   ],
+   [
+    88,
+    "{\"choice\": \"A\", \"point\": [83, 188]}"
+   ],
+   [
+    89,
+    "{\"choice\": \"A\", \"point\": [83, 189]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [82, 189]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [81, 190]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [80, 190]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [79, 191]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [78, 192]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [76, 193]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [74, 194]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [71, 195]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [68, 197]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [65, 199]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [62, 201]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [58, 203]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [55, 205]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [52, 207]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [48, 209]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [45, 210]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [42, 212]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [40, 213]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"A\", \"point\": [38, 215]}"
+   ],
+   [
+    111,
+    "{\"choice\": \"A\", \"point\": [36, 216]}"
+   ],
+   [
+    112,
+    "{\"choice\": \"A\", \"point\": [34, 216]}"
+   ],
+   [
+    113,
+    "{\"choice\": \"A\", \"point\": [34, 217]}"
+   ],
+   [
+    114,
+    "{\"choice\": \"A\", \"point\": [33, 217]}"
+   ],
+   [
+    117,
+    "{\"choice\": \"A\", \"point\": [34, 217]}"
+   ],
+   [
+    120,
+    "{\"choice\": \"C\", \"point\": [91, 119]}"
+   ],
+   [
+    240,
+    "{\"choice\": \"A\", \"point\": [84, 188]}"
+   ],
+   [
+    322,
+    "{\"choice\": \"A\", \"point\": [84, 189]}"
+   ],
+   [
+    323,
+    "{\"choice\": \"A\", \"point\": [83, 189]}"
+   ],
+   [
+    332,
+    "{\"choice\": \"A\", \"point\": [82, 189]}"
+   ],
+   [
+    333,
+    "{\"choice\": \"A\", \"point\": [81, 190]}"
+   ],
+   [
+    334,
+    "{\"choice\": \"A\", \"point\": [80, 190]}"
+   ],
+   [
+    335,
+    "{\"choice\": \"A\", \"point\": [79, 191]}"
+   ],
+   [
+    336,
+    "{\"choice\": \"A\", \"point\": [77, 192]}"
+   ],
+   [
+    337,
+    "{\"choice\": \"A\", \"point\": [76, 193]}"
+   ],
+   [
+    338,
+    "{\"choice\": \"A\", \"point\": [74, 194]}"
+   ],
+   [
+    339,
+    "{\"choice\": \"A\", \"point\": [71, 195]}"
+   ],
+   [
+    340,
+    "{\"choice\": \"A\", \"point\": [68, 197]}"
+   ]
+  ],
+  "last_demo_step": 239,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    81,
+    239
+   ],
+   [
+    321,
+    477
+   ]
+  ]
+ },
+ {
+  "difficulty": "hard",
+  "episode": 3,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_3/hdf5_files/InsertPeg_ep3_seed13300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_3/videos/InsertPeg_ep3_seed13300_hard_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 13300,
+  "setup_difficulty": "hard",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 434,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <136, 137>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 117
+   },
+   {
+    "start": 118,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <111, 158>",
+    "demo": true,
+    "boundaries": [
+     118
+    ],
+    "end": 216
+   },
+   {
+    "start": 217,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <136, 137>",
+    "demo": false,
+    "boundaries": [
+     217
+    ],
+    "end": 334
+   },
+   {
+    "start": 335,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <111, 158>",
+    "demo": false,
+    "boundaries": [
+     335
+    ],
+    "end": 414
+   },
+   {
+    "start": 415,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <111, 158>",
+    "demo": false,
+    "boundaries": [
+     415
+    ],
+    "end": 433
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [137, 138]}"
+   ],
+   [
+    80,
+    "{\"choice\": \"A\", \"point\": [137, 137]}"
+   ],
+   [
+    89,
+    "{\"choice\": \"A\", \"point\": [136, 137]}"
+   ],
+   [
+    91,
+    "{\"choice\": \"A\", \"point\": [135, 137]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [135, 138]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [134, 138]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [132, 138]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [131, 138]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [129, 138]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [127, 139]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [125, 139]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [123, 140]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [120, 140]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [117, 140]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [114, 141]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [111, 141]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [109, 142]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [106, 142]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [104, 143]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [102, 143]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [101, 143]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [100, 143]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"A\", \"point\": [99, 143]}"
+   ],
+   [
+    118,
+    "{\"choice\": \"B\", \"point\": [104, 156]}"
+   ],
+   [
+    217,
+    "{\"choice\": \"A\", \"point\": [137, 138]}"
+   ],
+   [
+    297,
+    "{\"choice\": \"A\", \"point\": [137, 137]}"
+   ],
+   [
+    306,
+    "{\"choice\": \"A\", \"point\": [136, 137]}"
+   ],
+   [
+    308,
+    "{\"choice\": \"A\", \"point\": [135, 137]}"
+   ],
+   [
+    309,
+    "{\"choice\": \"A\", \"point\": [135, 138]}"
+   ],
+   [
+    310,
+    "{\"choice\": \"A\", \"point\": [134, 138]}"
+   ],
+   [
+    311,
+    "{\"choice\": \"A\", \"point\": [132, 138]}"
+   ],
+   [
+    312,
+    "{\"choice\": \"A\", \"point\": [131, 138]}"
+   ],
+   [
+    313,
+    "{\"choice\": \"A\", \"point\": [129, 138]}"
+   ],
+   [
+    314,
+    "{\"choice\": \"A\", \"point\": [127, 139]}"
+   ],
+   [
+    315,
+    "{\"choice\": \"A\", \"point\": [125, 139]}"
+   ],
+   [
+    316,
+    "{\"choice\": \"A\", \"point\": [123, 140]}"
+   ],
+   [
+    317,
+    "{\"choice\": \"A\", \"point\": [120, 140]}"
+   ],
+   [
+    318,
+    "{\"choice\": \"A\", \"point\": [117, 140]}"
+   ],
+   [
+    319,
+    "{\"choice\": \"A\", \"point\": [114, 141]}"
+   ],
+   [
+    320,
+    "{\"choice\": \"A\", \"point\": [111, 141]}"
+   ]
+  ],
+  "last_demo_step": 216,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    79,
+    216
+   ],
+   [
+    296,
+    433
+   ]
+  ]
+ },
+ {
+  "difficulty": "easy",
+  "episode": 4,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_4/hdf5_files/InsertPeg_ep4_seed13403.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_4/videos/InsertPeg_ep4_seed13403_easy_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 13403,
+  "setup_difficulty": "easy",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 482,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <121, 98>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 105
+   },
+   {
+    "start": 106,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <93, 112>",
+    "demo": true,
+    "boundaries": [
+     106
+    ],
+    "end": 240
+   },
+   {
+    "start": 241,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <121, 98>",
+    "demo": false,
+    "boundaries": [
+     241
+    ],
+    "end": 346
+   },
+   {
+    "start": 347,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <93, 112>",
+    "demo": false,
+    "boundaries": [
+     347
+    ],
+    "end": 480
+   },
+   {
+    "start": 481,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <93, 112>",
+    "demo": false,
+    "boundaries": [
+     481
+    ],
+    "end": 481
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [122, 99]}"
+   ],
+   [
+    70,
+    "{\"choice\": \"A\", \"point\": [122, 98]}"
+   ],
+   [
+    77,
+    "{\"choice\": \"A\", \"point\": [121, 98]}"
+   ],
+   [
+    80,
+    "{\"choice\": \"A\", \"point\": [120, 97]}"
+   ],
+   [
+    82,
+    "{\"choice\": \"A\", \"point\": [119, 97]}"
+   ],
+   [
+    83,
+    "{\"choice\": \"A\", \"point\": [117, 96]}"
+   ],
+   [
+    84,
+    "{\"choice\": \"A\", \"point\": [116, 95]}"
+   ],
+   [
+    85,
+    "{\"choice\": \"A\", \"point\": [114, 95]}"
+   ],
+   [
+    86,
+    "{\"choice\": \"A\", \"point\": [112, 94]}"
+   ],
+   [
+    87,
+    "{\"choice\": \"A\", \"point\": [110, 93]}"
+   ],
+   [
+    88,
+    "{\"choice\": \"A\", \"point\": [107, 91]}"
+   ],
+   [
+    89,
+    "{\"choice\": \"A\", \"point\": [104, 90]}"
+   ],
+   [
+    90,
+    "{\"choice\": \"A\", \"point\": [101, 88]}"
+   ],
+   [
+    91,
+    "{\"choice\": \"A\", \"point\": [98, 87]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [95, 85]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [92, 84]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [89, 83]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [86, 82]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [84, 81]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [83, 80]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [81, 80]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [81, 79]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"B\", \"point\": [92, 112]}"
+   ],
+   [
+    241,
+    "{\"choice\": \"A\", \"point\": [122, 99]}"
+   ],
+   [
+    311,
+    "{\"choice\": \"A\", \"point\": [122, 98]}"
+   ],
+   [
+    318,
+    "{\"choice\": \"A\", \"point\": [121, 98]}"
+   ],
+   [
+    321,
+    "{\"choice\": \"A\", \"point\": [120, 97]}"
+   ],
+   [
+    323,
+    "{\"choice\": \"A\", \"point\": [119, 97]}"
+   ],
+   [
+    324,
+    "{\"choice\": \"A\", \"point\": [117, 96]}"
+   ],
+   [
+    325,
+    "{\"choice\": \"A\", \"point\": [116, 95]}"
+   ],
+   [
+    326,
+    "{\"choice\": \"A\", \"point\": [114, 95]}"
+   ],
+   [
+    327,
+    "{\"choice\": \"A\", \"point\": [112, 94]}"
+   ],
+   [
+    328,
+    "{\"choice\": \"A\", \"point\": [110, 93]}"
+   ],
+   [
+    329,
+    "{\"choice\": \"A\", \"point\": [107, 91]}"
+   ],
+   [
+    330,
+    "{\"choice\": \"A\", \"point\": [104, 90]}"
+   ],
+   [
+    331,
+    "{\"choice\": \"A\", \"point\": [101, 88]}"
+   ],
+   [
+    332,
+    "{\"choice\": \"A\", \"point\": [98, 87]}"
+   ],
+   [
+    333,
+    "{\"choice\": \"A\", \"point\": [95, 85]}"
+   ],
+   [
+    334,
+    "{\"choice\": \"A\", \"point\": [92, 84]}"
+   ],
+   [
+    335,
+    "{\"choice\": \"A\", \"point\": [89, 83]}"
+   ]
+  ],
+  "last_demo_step": 240,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    69,
+    240
+   ],
+   [
+    310,
+    481
+   ]
+  ]
+ },
+ {
+  "difficulty": "medium",
+  "episode": 6,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_6/hdf5_files/InsertPeg_ep6_seed13602.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_6/videos/InsertPeg_ep6_seed13602_medium_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 13602,
+  "setup_difficulty": "medium",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 514,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <74, 103>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 128
+   },
+   {
+    "start": 129,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <80, 149>",
+    "demo": true,
+    "boundaries": [
+     129
+    ],
+    "end": 252
+   },
+   {
+    "start": 253,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <74, 103>",
+    "demo": false,
+    "boundaries": [
+     253
+    ],
+    "end": 381
+   },
+   {
+    "start": 382,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <80, 149>",
+    "demo": false,
+    "boundaries": [
+     382
+    ],
+    "end": 499
+   },
+   {
+    "start": 500,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <80, 149>",
+    "demo": false,
+    "boundaries": [
+     500
+    ],
+    "end": 513
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [75, 104]}"
+   ],
+   [
+    91,
+    "{\"choice\": \"A\", \"point\": [74, 104]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [73, 103]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [72, 103]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [71, 103]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [70, 103]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [69, 103]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [67, 102]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [65, 102]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [63, 102]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [61, 101]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [59, 101]}"
+   ],
+   [
+    104,
+    "{\"choice\": \"A\", \"point\": [56, 100]}"
+   ],
+   [
+    105,
+    "{\"choice\": \"A\", \"point\": [53, 99]}"
+   ],
+   [
+    106,
+    "{\"choice\": \"A\", \"point\": [50, 99]}"
+   ],
+   [
+    107,
+    "{\"choice\": \"A\", \"point\": [47, 98]}"
+   ],
+   [
+    108,
+    "{\"choice\": \"A\", \"point\": [44, 97]}"
+   ],
+   [
+    109,
+    "{\"choice\": \"A\", \"point\": [41, 97]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"A\", \"point\": [38, 96]}"
+   ],
+   [
+    111,
+    "{\"choice\": \"A\", \"point\": [35, 95]}"
+   ],
+   [
+    112,
+    "{\"choice\": \"A\", \"point\": [33, 95]}"
+   ],
+   [
+    113,
+    "{\"choice\": \"A\", \"point\": [30, 94]}"
+   ],
+   [
+    114,
+    "{\"choice\": \"A\", \"point\": [28, 94]}"
+   ],
+   [
+    115,
+    "{\"choice\": \"A\", \"point\": [26, 94]}"
+   ],
+   [
+    116,
+    "{\"choice\": \"A\", \"point\": [25, 93]}"
+   ],
+   [
+    117,
+    "{\"choice\": \"A\", \"point\": [24, 93]}"
+   ],
+   [
+    118,
+    "{\"choice\": \"A\", \"point\": [23, 93]}"
+   ],
+   [
+    119,
+    "{\"choice\": \"A\", \"point\": [22, 93]}"
+   ],
+   [
+    122,
+    "{\"choice\": \"A\", \"point\": [23, 93]}"
+   ],
+   [
+    129,
+    "{\"choice\": \"C\", \"point\": [81, 149]}"
+   ],
+   [
+    253,
+    "{\"choice\": \"A\", \"point\": [75, 104]}"
+   ],
+   [
+    344,
+    "{\"choice\": \"A\", \"point\": [74, 104]}"
+   ],
+   [
+    346,
+    "{\"choice\": \"A\", \"point\": [74, 103]}"
+   ],
+   [
+    347,
+    "{\"choice\": \"A\", \"point\": [73, 103]}"
+   ],
+   [
+    348,
+    "{\"choice\": \"A\", \"point\": [72, 103]}"
+   ],
+   [
+    349,
+    "{\"choice\": \"A\", \"point\": [71, 103]}"
+   ],
+   [
+    350,
+    "{\"choice\": \"A\", \"point\": [70, 103]}"
+   ],
+   [
+    351,
+    "{\"choice\": \"A\", \"point\": [69, 102]}"
+   ],
+   [
+    352,
+    "{\"choice\": \"A\", \"point\": [67, 102]}"
+   ],
+   [
+    353,
+    "{\"choice\": \"A\", \"point\": [65, 102]}"
+   ]
+  ],
+  "last_demo_step": 252,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    82,
+    252
+   ],
+   [
+    335,
+    513
+   ]
+  ]
+ },
+ {
+  "difficulty": "hard",
+  "episode": 7,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_7/hdf5_files/InsertPeg_ep7_seed13700.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_7/videos/InsertPeg_ep7_seed13700_hard_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "seed": 13700,
+  "setup_difficulty": "hard",
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg by grasping one end\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"insert the peg from the right side\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"insert the peg from the left side\", \"need_parameter\": false}]",
+  "n_steps": 486,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <90, 82>",
+    "demo": true,
+    "boundaries": [
+     0
+    ],
+    "end": 109
+   },
+   {
+    "start": 110,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <111, 118>",
+    "demo": true,
+    "boundaries": [
+     110
+    ],
+    "end": 241
+   },
+   {
+    "start": 242,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <90, 82>",
+    "demo": false,
+    "boundaries": [
+     242
+    ],
+    "end": 351
+   },
+   {
+    "start": 352,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <111, 118>",
+    "demo": false,
+    "boundaries": [
+     352
+    ],
+    "end": 474
+   },
+   {
+    "start": 475,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <111, 118>",
+    "demo": false,
+    "boundaries": [
+     475
+    ],
+    "end": 485
+   }
+  ],
+  "choices": [
+   [
+    0,
+    "{\"choice\": \"A\", \"point\": [91, 83]}"
+   ],
+   [
+    72,
+    "{\"choice\": \"A\", \"point\": [90, 82]}"
+   ],
+   [
+    82,
+    "{\"choice\": \"A\", \"point\": [89, 82]}"
+   ],
+   [
+    83,
+    "{\"choice\": \"A\", \"point\": [88, 82]}"
+   ],
+   [
+    84,
+    "{\"choice\": \"A\", \"point\": [87, 81]}"
+   ],
+   [
+    85,
+    "{\"choice\": \"A\", \"point\": [86, 81]}"
+   ],
+   [
+    86,
+    "{\"choice\": \"A\", \"point\": [85, 80]}"
+   ],
+   [
+    87,
+    "{\"choice\": \"A\", \"point\": [83, 79]}"
+   ],
+   [
+    88,
+    "{\"choice\": \"A\", \"point\": [81, 78]}"
+   ],
+   [
+    89,
+    "{\"choice\": \"A\", \"point\": [78, 77]}"
+   ],
+   [
+    90,
+    "{\"choice\": \"A\", \"point\": [76, 76]}"
+   ],
+   [
+    91,
+    "{\"choice\": \"A\", \"point\": [73, 74]}"
+   ],
+   [
+    92,
+    "{\"choice\": \"A\", \"point\": [69, 73]}"
+   ],
+   [
+    93,
+    "{\"choice\": \"A\", \"point\": [66, 71]}"
+   ],
+   [
+    94,
+    "{\"choice\": \"A\", \"point\": [63, 69]}"
+   ],
+   [
+    95,
+    "{\"choice\": \"A\", \"point\": [59, 68]}"
+   ],
+   [
+    96,
+    "{\"choice\": \"A\", \"point\": [56, 66]}"
+   ],
+   [
+    97,
+    "{\"choice\": \"A\", \"point\": [53, 65]}"
+   ],
+   [
+    98,
+    "{\"choice\": \"A\", \"point\": [50, 64]}"
+   ],
+   [
+    99,
+    "{\"choice\": \"A\", \"point\": [48, 62]}"
+   ],
+   [
+    100,
+    "{\"choice\": \"A\", \"point\": [46, 62]}"
+   ],
+   [
+    101,
+    "{\"choice\": \"A\", \"point\": [44, 61]}"
+   ],
+   [
+    102,
+    "{\"choice\": \"A\", \"point\": [43, 60]}"
+   ],
+   [
+    103,
+    "{\"choice\": \"A\", \"point\": [42, 60]}"
+   ],
+   [
+    110,
+    "{\"choice\": \"C\", \"point\": [112, 120]}"
+   ],
+   [
+    242,
+    "{\"choice\": \"A\", \"point\": [91, 83]}"
+   ],
+   [
+    314,
+    "{\"choice\": \"A\", \"point\": [90, 82]}"
+   ],
+   [
+    324,
+    "{\"choice\": \"A\", \"point\": [89, 82]}"
+   ],
+   [
+    325,
+    "{\"choice\": \"A\", \"point\": [88, 81]}"
+   ],
+   [
+    326,
+    "{\"choice\": \"A\", \"point\": [87, 81]}"
+   ],
+   [
+    327,
+    "{\"choice\": \"A\", \"point\": [86, 80]}"
+   ],
+   [
+    328,
+    "{\"choice\": \"A\", \"point\": [84, 80]}"
+   ],
+   [
+    329,
+    "{\"choice\": \"A\", \"point\": [83, 79]}"
+   ],
+   [
+    330,
+    "{\"choice\": \"A\", \"point\": [81, 78]}"
+   ],
+   [
+    331,
+    "{\"choice\": \"A\", \"point\": [78, 77]}"
+   ],
+   [
+    332,
+    "{\"choice\": \"A\", \"point\": [76, 76]}"
+   ],
+   [
+    333,
+    "{\"choice\": \"A\", \"point\": [73, 74]}"
+   ],
+   [
+    334,
+    "{\"choice\": \"A\", \"point\": [69, 73]}"
+   ],
+   [
+    335,
+    "{\"choice\": \"A\", \"point\": [66, 71]}"
+   ],
+   [
+    336,
+    "{\"choice\": \"A\", \"point\": [63, 69]}"
+   ]
+  ],
+  "last_demo_step": 241,
+  "is_completed_last": true,
+  "gripper_closed_intervals": [
+   [
+    71,
+    241
+   ],
+   [
+    313,
+    485
+   ]
+  ]
+ }
+]

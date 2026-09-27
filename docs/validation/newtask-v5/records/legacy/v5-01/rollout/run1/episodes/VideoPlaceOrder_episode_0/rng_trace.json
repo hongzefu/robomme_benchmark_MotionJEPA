@@ -1,0 +1,209 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.goal_xy",
+      "drawn": [
+        -0.1,
+        0.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.button_xy",
+      "drawn": [
+        0.12409561276435853,
+        -0.08206737041473389
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_order",
+      "drawn": [
+        0,
+        2,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.red_0",
+      "drawn": [
+        -0.16633260011672976,
+        -0.029371454715728773,
+        6.07398043807706
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.green_0",
+      "drawn": [
+        0.049988501071929925,
+        0.04984649419784545,
+        3.9365781969115266
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.blue_0",
+      "drawn": [
+        -0.03894498825073242,
+        0.11438316822052005,
+        5.200908306821221
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.targets.0",
+      "drawn": [
+        0.03401975631713866,
+        0.15700260162353516
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.targets.1",
+      "drawn": [
+        0.1536570358276367,
+        0.10983669281005862
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.targets.2",
+      "drawn": [
+        -0.003777370452880846,
+        -0.13568954467773436
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.targets.3",
+      "drawn": [
+        -0.14012029647827148,
+        -0.15917308807373048
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.demo_ids",
+      "drawn": [
+        0,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "objects.swap_pair_ids",
+      "drawn": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.num_targets_by_object.0",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.visit_ids_by_object.0",
+      "drawn": [
+        1,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "objects.num_targets_by_object.1",
+      "drawn": 3,
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "objects.visit_ids_by_object.1",
+      "drawn": [
+        0,
+        3,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.answer_demo_index",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "objects.which_in_subset",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "actions.target_target_id",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 19,
+      "path": "objects.button_after_visit_index",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "actions.button_task_index",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 21,
+      "path": "actions.return_pose_by_object_id",
+      "drawn": {
+        "cube_red_0": [
+          -0.16633260250091553,
+          -0.029371455311775208,
+          0.019999999552965164,
+          0.9945341944694519,
+          0.0,
+          0.0,
+          -0.10441183298826218
+        ],
+        "cube_green_0": [
+          0.04998850077390671,
+          0.04984649270772934,
+          0.019999999552965164,
+          0.38710784912109375,
+          -0.0,
+          -0.0,
+          -0.9220344424247742
+        ]
+      },
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "74b2087868f4624281b5138eb026895bb5ecedf1c5c8f18f841c9866870c7e89"
+  }
+}

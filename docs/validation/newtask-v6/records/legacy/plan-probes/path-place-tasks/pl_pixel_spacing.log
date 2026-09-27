@@ -1,0 +1,7 @@
+5x5@0.1: min adjacent-node pixel distance=14.1px, button radius (row nearest robot)=4.1px
+6x6@0.08: min adjacent-node pixel distance=11.1px, button radius (row nearest robot)=4.1px
+6x6@0.09: min adjacent-node pixel distance=12.2px, button radius (row nearest robot)=4.1px
+7x7@0.07: min adjacent-node pixel distance=9.5px, button radius (row nearest robot)=4.1px
+7x7@0.065: min adjacent-node pixel distance=9.0px, button radius (row nearest robot)=4.2px
+8x8@0.06: min adjacent-node pixel distance=8.1px, button radius (row nearest robot)=4.1px
+8x8@0.057: min adjacent-node pixel distance=7.8px, button radius (row nearest robot)=4.1px

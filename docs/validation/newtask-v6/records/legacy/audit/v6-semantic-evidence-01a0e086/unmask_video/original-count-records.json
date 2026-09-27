@@ -1,0 +1,659 @@
+[
+  {
+    "seed": 6000,
+    "tier": "easy",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed6000.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  },
+  {
+    "seed": 6100,
+    "tier": "easy",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_1/hdf5_files/VideoUnmask_ep1_seed6100.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  },
+  {
+    "seed": 7001,
+    "tier": "medium",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_10/hdf5_files/VideoUnmask_ep10_seed7001.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  },
+  {
+    "seed": 7100,
+    "tier": "hard",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_11/hdf5_files/VideoUnmask_ep11_seed7100.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  },
+  {
+    "seed": 6200,
+    "tier": "medium",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_2/hdf5_files/VideoUnmask_ep2_seed6200.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  },
+  {
+    "seed": 6300,
+    "tier": "hard",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed6300.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  },
+  {
+    "seed": 6400,
+    "tier": "easy",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_4/hdf5_files/VideoUnmask_ep4_seed6400.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  },
+  {
+    "seed": 6600,
+    "tier": "medium",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed6600.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  },
+  {
+    "seed": 6700,
+    "tier": "hard",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_7/hdf5_files/VideoUnmask_ep7_seed6700.h5",
+    "fields": [
+      "action/choice_action",
+      "action/eef_action",
+      "action/joint_action",
+      "action/waypoint_action",
+      "info/grounded_subgoal",
+      "info/grounded_subgoal_online",
+      "info/is_completed",
+      "info/is_subgoal_boundary",
+      "info/is_video_demo",
+      "info/simple_subgoal",
+      "info/simple_subgoal_online",
+      "obs/eef_state",
+      "obs/front_camera_extrinsic",
+      "obs/front_depth",
+      "obs/front_rgb",
+      "obs/gripper_state",
+      "obs/is_gripper_close",
+      "obs/joint_state",
+      "obs/wrist_camera_extrinsic",
+      "obs/wrist_depth",
+      "obs/wrist_rgb"
+    ],
+    "setup_keys": [
+      "available_multi_choices",
+      "difficulty",
+      "front_camera_intrinsic",
+      "seed",
+      "task_goal",
+      "wrist_camera_intrinsic"
+    ],
+    "K": [
+      [
+        128.0,
+        0.0,
+        128.0
+      ],
+      [
+        0.0,
+        128.0,
+        128.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "E": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.8944271802902222,
+        0.0,
+        -0.44721364974975586,
+        -0.08944264054298401
+      ],
+      [
+        -0.4472137689590454,
+        0.0,
+        -0.8944271802902222,
+        0.49193501472473145
+      ]
+    ]
+  }
+]

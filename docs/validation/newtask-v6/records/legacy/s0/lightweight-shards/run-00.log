@@ -1,0 +1,1593 @@
+................................................FFF......F.EEEEEEEEEEEE. [ 22%]
+........................................................................ [ 44%]
+...........................................ssss........................s [ 66%]
+sss......s.............................................................. [ 88%]
+..........ssssss...................s                                     [100%]
+==================================== ERRORS ====================================
+______________ ERROR at setup of test_end_to_end_and_role_rewrite ______________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+---------------------------- Captured stdout setup -----------------------------
+候选完成 RouteStick/easy rows=200
+SPEC_SCOPE=PASS groups=1 specs=200 blocks=2 excluded=VideoRepick-hard problems=0
+CONTRACT_DERIVED=PASS fields=200 mismatches=6 overrides=2 version=v3 problems=0
+COVERAGE_QUOTA=PASS groups=1 batches=10 blocks=2 quota_gaps=0
+STATIC_GEOMETRY=PASS checked=200 rejected=0
+COLLISION_GEOMETRY=PASS bin_shapes=6 cube_shapes=1 four_object_pairs=6 note=真实-actor-对照在步骤2冒烟
+COLLISION_SWEEP=PASS specs=0 rejected=0 uncertified=0 min_g_m=None
+SPEC_REPRODUCIBLE=PASS compared=200 differences=0
+SCREENING_EVIDENCE=PASS rows=200 groups=1
+_____________ ERROR at setup of test_tampering_rejected[snapshot] ______________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+_______________ ERROR at setup of test_tampering_rejected[seed] ________________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+________________ ERROR at setup of test_tampering_rejected[key] ________________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+_______________ ERROR at setup of test_tampering_rejected[split] _______________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+______________ ERROR at setup of test_tampering_rejected[unknown] ______________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+_______________ ERROR at setup of test_tampering_rejected[spec] ________________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+_____________ ERROR at setup of test_tampering_rejected[collision] _____________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+______________ ERROR at setup of test_tampering_rejected[missing] ______________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+_____________ ERROR at setup of test_tampering_rejected[duplicate] _____________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+_________________ ERROR at setup of test_projection_deep_copy __________________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+____ ERROR at setup of test_source_fingerprint_checked_even_after_resealing ____
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7bb38e3a9910>, _basetemp=PosixPath('/tmp/pytest-of-hongzefu/pytest-860'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def frozen(tmp_path_factory):
+        root = tmp_path_factory.mktemp("candidates")
+        logs = root / "candidates/logs"
+        logs.mkdir(parents=True)
+        args = Namespace(run_id="candidate-test", sampling_config=str(CONFIG / "native_sampling.json"),
+                         contract=str(CONFIG / "injection_contract_v3.json"),
+                         delivery_config=str(CONFIG / "delivery_400.json"), seed=20260909,
+                         purpose="smoke", groups=["RouteStick/easy"], blocks=2, reconstruct_run=None)
+>       assert entry.generate(args, root, root / "candidates", logs) == 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidates_refactor.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/__main__.py:173: in generate
+    validate_candidates(header, rows, repo_root=REPO_ROOT)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 200, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+=================================== FAILURES ===================================
+_____ test_all_3400_loader_and_kwargs_equal_before_and_after_role_rewrite ______
+
+old = <module 'stage2_legacy_generator' from '/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/generate_dataset_newseed.py'>
+tmp_path = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-a0fjdzmf')
+
+    def test_all_3400_loader_and_kwargs_equal_before_and_after_role_rewrite(old, tmp_path):
+        source_sha = hashlib.sha256(CANDIDATES.read_bytes()).hexdigest()
+>       header, rows = load_candidates(CANDIDATES, repo_root=ROOT)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidate_loader.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/io.py:191: in load_candidates
+    validate_candidates(header, rows, repo_root=repo_root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 3400, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   scripts.injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+____________ test_generation_uses_snapshot_and_explicit_digest_flag ____________
+
+value = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl')
+repo_root = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask')
+output = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-hwsh82iz/jsonl')
+
+    def load_episode_specs(
+        value: str | Path,
+        repo_root: Path,
+        output: Path,
+        *,
+        task: str | None = None,
+        difficulty: str | None = None,
+        episodes: Sequence[int] | None = None,
+        candidate_header: dict[str, Any] | None = None,
+        candidate_split: str | None = None,
+        candidate_tasks: Sequence[str] | None = None,
+    ) -> list[SpecGroup]:
+        """解析 ``--episode-specs``：既接受单份规格文件，也接受多组清单。
+    
+        * **单组**：文件顶层带 ``spec_schema_version``，配合 ``--env/--difficulty`` 与
+          ``--episodes/--episode-start`` 使用，产物落 ``--output-dir`` 本身。
+        * **清单**：文件顶层带 ``manifest_version``，一次调用把多个任务／难度的 job 混进
+          同一套进程池；每组自带难度与独立输出根 ``<output>/<任务>/<难度>``。
+          同任务不同难度的 seed 与 HDF5 文件名相同，因此**必须**分目录。
+        """
+        path = Path(value).expanduser()
+        if not path.is_absolute():
+            path = (repo_root / path).resolve()
+        if not path.is_file():
+            raise EpisodeSpecError(f"找不到 --episode-specs 指向的文件：{path}")
+        if path.suffix.lower() == ".jsonl":
+            # SCRIPT_DIR 已在 sys.path，直接脚本、模块和 spawn 调用均可导入同一纯标准库读取器。
+            from injection.candidates.io import load_candidates, project_spec
+    
+            try:
+>               header, rows = load_candidates(path, repo_root=repo_root)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/generate_dataset_newseed.py:1477: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/io.py:191: in load_candidates
+    validate_candidates(header, rows, repo_root=repo_root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 3400, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+
+The above exception was the direct cause of the following exception:
+
+old = <module 'stage2_legacy_generator' from '/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/generate_dataset_newseed.py'>
+tmp_path = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-hwsh82iz')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb20ed83c90>
+
+    def test_generation_uses_snapshot_and_explicit_digest_flag(old, tmp_path, monkeypatch):
+        new_jobs = capture_jobs(monkeypatch, gen)
+        old_jobs = capture_jobs(monkeypatch, old)
+>       gen.generate_dataset_newseed(tmp_path / "jsonl", env="RouteStick", episodes=2, difficulty_ratio="100",
+                                     workers=1, max_attempts=1, episode_specs=CANDIDATES)
+
+tests/lightweight/test_candidate_loader.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/generate_dataset_newseed.py:2666: in generate_dataset_newseed
+    spec_groups = load_episode_specs(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl')
+repo_root = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask')
+output = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-hwsh82iz/jsonl')
+
+    def load_episode_specs(
+        value: str | Path,
+        repo_root: Path,
+        output: Path,
+        *,
+        task: str | None = None,
+        difficulty: str | None = None,
+        episodes: Sequence[int] | None = None,
+        candidate_header: dict[str, Any] | None = None,
+        candidate_split: str | None = None,
+        candidate_tasks: Sequence[str] | None = None,
+    ) -> list[SpecGroup]:
+        """解析 ``--episode-specs``：既接受单份规格文件，也接受多组清单。
+    
+        * **单组**：文件顶层带 ``spec_schema_version``，配合 ``--env/--difficulty`` 与
+          ``--episodes/--episode-start`` 使用，产物落 ``--output-dir`` 本身。
+        * **清单**：文件顶层带 ``manifest_version``，一次调用把多个任务／难度的 job 混进
+          同一套进程池；每组自带难度与独立输出根 ``<output>/<任务>/<难度>``。
+          同任务不同难度的 seed 与 HDF5 文件名相同，因此**必须**分目录。
+        """
+        path = Path(value).expanduser()
+        if not path.is_absolute():
+            path = (repo_root / path).resolve()
+        if not path.is_file():
+            raise EpisodeSpecError(f"找不到 --episode-specs 指向的文件：{path}")
+        if path.suffix.lower() == ".jsonl":
+            # SCRIPT_DIR 已在 sys.path，直接脚本、模块和 spawn 调用均可导入同一纯标准库读取器。
+            from injection.candidates.io import load_candidates, project_spec
+    
+            try:
+                header, rows = load_candidates(path, repo_root=repo_root)
+            except (ValueError, OSError, KeyError, TypeError) as exc:
+>               raise EpisodeSpecError(f"{path}: 候选封套校验失败：{exc}") from exc
+E               scripts.generate_dataset_newseed.EpisodeSpecError: /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl: 候选封套校验失败：采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/generate_dataset_newseed.py:1479: EpisodeSpecError
+_____________________ test_legacy_job_path_unchanged[json] _____________________
+
+old = <module 'stage2_legacy_generator' from '/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/generate_dataset_newseed.py'>
+tmp_path = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-vda8jj_v')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb3846aff10>
+kind = 'json'
+
+    @pytest.mark.parametrize("kind", ["json", "none"])
+    def test_legacy_job_path_unchanged(old, tmp_path, monkeypatch, kind):
+        actual = capture_jobs(monkeypatch, gen)
+        expected = capture_jobs(monkeypatch, old)
+        options = dict(env="RouteStick", episodes=2, workers=1, difficulty_ratio="100", max_attempts=1)
+        if kind == "json":
+            options.update(episode_specs=legacy_path("specs/RouteStick/easy.json"), sampling_config=SAMPLING)
+>       gen.generate_dataset_newseed(tmp_path / "new", **options)
+
+tests/lightweight/test_candidate_loader.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/generate_dataset_newseed.py:2656: in generate_dataset_newseed
+    task_configs = load_sampling_config(sampling_config, REPO_ROOT)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/generate_dataset_newseed.py:1065: in load_sampling_config
+    return validate_sampling_config(payload, repo_root, config_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/generate_dataset_newseed.py:1089: in validate_sampling_config
+    _same_shape(native["parameters"], payload["parameters"], "parameters")
+scripts/generate_dataset_newseed.py:1020: in _same_shape
+    _same_shape(native[key], candidate[key], f"{path}.{key}" if path else key)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+native = {'configs': {'easy': {'color': 1, 'put_in_color': [1, 1], 'put_in_numbers': [1, 3], 'spawn_cubes': [4, 6]}, 'hard': {'...{'cast': 'bool', 'high_exclusive': 2, 'low': 0, 'sampler': 'torch.randint', ...}, 'put_in_color': 'FROM_CLASS_CONFIGS'}
+candidate = {'configs': {'easy': {'color': 1, 'put_in_color': [1, 1], 'put_in_numbers': [1, 3], 'spawn_cubes': [4, 6]}, 'hard': {'... 'spawn_cubes': [8, 10]}}, 'dynamic': {'cast': 'bool', 'high_exclusive': 2, 'low': 0, 'sampler': 'torch.randint', ...}}
+path = 'parameters.BinFill'
+
+    def _same_shape(native: Any, candidate: Any, path: str) -> None:
+        """逐字段核对结构、字段名与类型；数值可以不同，形状与类型不能变。"""
+        if isinstance(native, dict):
+            if not isinstance(candidate, dict):
+                raise SamplingConfigError(f"{path}: 应为对象，实际为 {type(candidate).__name__}")
+            missing = sorted(set(native) - set(candidate))
+            unknown = sorted(set(candidate) - set(native))
+            if missing:
+>               raise SamplingConfigError(f"{path}: 缺少字段 {missing}")
+E               scripts.generate_dataset_newseed.SamplingConfigError: parameters.BinFill: 缺少字段 ['put_in_color']
+
+scripts/generate_dataset_newseed.py:1016: SamplingConfigError
+_____________ test_jsonl_selection_never_launches_test_candidates ______________
+
+value = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl')
+repo_root = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask')
+output = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-msyvelgr')
+
+    def load_episode_specs(
+        value: str | Path,
+        repo_root: Path,
+        output: Path,
+        *,
+        task: str | None = None,
+        difficulty: str | None = None,
+        episodes: Sequence[int] | None = None,
+        candidate_header: dict[str, Any] | None = None,
+        candidate_split: str | None = None,
+        candidate_tasks: Sequence[str] | None = None,
+    ) -> list[SpecGroup]:
+        """解析 ``--episode-specs``：既接受单份规格文件，也接受多组清单。
+    
+        * **单组**：文件顶层带 ``spec_schema_version``，配合 ``--env/--difficulty`` 与
+          ``--episodes/--episode-start`` 使用，产物落 ``--output-dir`` 本身。
+        * **清单**：文件顶层带 ``manifest_version``，一次调用把多个任务／难度的 job 混进
+          同一套进程池；每组自带难度与独立输出根 ``<output>/<任务>/<难度>``。
+          同任务不同难度的 seed 与 HDF5 文件名相同，因此**必须**分目录。
+        """
+        path = Path(value).expanduser()
+        if not path.is_absolute():
+            path = (repo_root / path).resolve()
+        if not path.is_file():
+            raise EpisodeSpecError(f"找不到 --episode-specs 指向的文件：{path}")
+        if path.suffix.lower() == ".jsonl":
+            # SCRIPT_DIR 已在 sys.path，直接脚本、模块和 spawn 调用均可导入同一纯标准库读取器。
+            from injection.candidates.io import load_candidates, project_spec
+    
+            try:
+>               header, rows = load_candidates(path, repo_root=repo_root)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/generate_dataset_newseed.py:1477: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/injection/candidates/io.py:191: in load_candidates
+    validate_candidates(header, rows, repo_root=repo_root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+header = {'candidate_schema_version': 1, 'candidates': 3400, 'contract': 'scripts/configs/newtask-v2/injection_contract_v3.json', 'contract_sha256': 'bfcf4c5984fb89f28c8f04ae918513514ec3d726edb0735d7a22e8587b450da6', ...}
+rows = [{'block': 0, 'difficulty': 'easy', 'episode': 0, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episod...'episode': 4, 'error_type': None, ...}, {'block': 0, 'difficulty': 'easy', 'episode': 5, 'error_type': None, ...}, ...]
+
+    def validate_candidates(header: dict[str, Any], rows: list[dict[str, Any]], *, repo_root: Path | None = None) -> None:
+        _keys(header, _HEADER_KEYS, _HEADER_OPTIONAL, "header")
+        if header["record"] != "header" or header["candidate_schema_version"] != 1 or header["spec_schema_version"] != 1:
+            raise CandidateError("不支持的候选格式版本")
+        if header["purpose"] not in {"delivery", "smoke"} or header["runtime"] != RUNTIME:
+            raise CandidateError("运行目的或固定环境参数不符")
+        sampling = header["sampling_config"]
+        if sampling.get("schema_version") != 3:
+            raise CandidateError("采样快照版本不符")
+        provenance = header["group_provenance"]
+        if header["groups"] != len(provenance) or header["candidates"] != len(rows) or not rows:
+            raise CandidateError("声明的组数或候选数不符")
+        delivery = header["delivery_config_snapshot"]
+        groups = {(g["task"], g["difficulty"]): g for g in delivery["groups"]}
+        if len(groups) != len(delivery["groups"]):
+            raise CandidateError("交付配置存在重复组")
+        expected = set()
+        for name, p in provenance.items():
+            task, difficulty = name.split("/")
+            _keys(p, set("spec_schema_version task difficulty generator_seed derived_seed generator_version sampling_config_sha256".split()), {"blocks"}, "组溯源")
+            if (task, difficulty) not in groups or p["task"] != task or p["difficulty"] != difficulty:
+                raise CandidateError("组溯源主键不一致")
+            if p["generator_seed"] != header["generator_seed"] or p["generator_version"] != header["generator_version"] or p["spec_schema_version"] != 1:
+                raise CandidateError("组溯源生成器不一致")
+            blocks = p.get("blocks", 1)
+            if type(blocks) is not int or blocks < 1:
+                raise CandidateError("组溯源 block 数非法")
+            expected.update((task, difficulty, ep) for ep in range(blocks * 100))
+        seen = set()
+        for row in rows:
+            project_spec(row)
+            key = candidate_key(row)
+            if key in seen or key not in expected:
+                raise CandidateError(f"重复或额外候选键：{key}")
+            seen.add(key)
+            task, difficulty, ep = key
+            if type(ep) is not int or ep < 0 or row["block"] != ep // 100 or row["seed"] != seed_for(task, ep):
+                raise CandidateError(f"候选编号、block 或 seed 不符：{key}")
+            split = "train" if ep < groups[(task, difficulty)]["run_episodes"] else "test"
+            if row["split"] != split or row["role"] not in {"pending", "primary", "spare", "failed", "unused"}:
+                raise CandidateError(f"候选划分或角色非法：{key}")
+            if (split == "train" and row["role"] == "unused") or (row["role"] != "failed" and row["error_type"] is not None):
+                raise CandidateError(f"角色与错误状态冲突：{key}")
+            _validate_screening(row)
+        if seen != expected:
+            raise CandidateError(f"候选缺失：{len(expected - seen)}")
+        parameters = copy.deepcopy(sampling["parameters"])
+        difficulties = {key[1] for key in expected}
+        for value in parameters.values():
+            if isinstance(value, dict) and isinstance(value.get("configs"), dict):
+                value["configs"] = {k: v for k, v in value["configs"].items() if k in difficulties}
+        operands = digest({"parameters": parameters, "positions": sampling["positions"]})
+        if header["sampling_config_sha256"] != operands or any(p["sampling_config_sha256"] != operands for p in provenance.values()):
+            raise CandidateError("采样取值域散列不符")
+        if identity_sha256(header, rows) != header["identity_sha256"]:
+            raise CandidateError("候选或快照身份散列不符")
+        if repo_root is not None:
+            root = repo_root.resolve()
+            for source in sampling["sources"].values():
+                path = (root / source["path"]).resolve()
+                if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
+>                   raise CandidateError(f"采样源码指纹不符：{source['path']}")
+E                   injection.candidates.io.CandidateError: 采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/injection/candidates/io.py:165: CandidateError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-msyvelgr')
+
+    def test_jsonl_selection_never_launches_test_candidates(tmp_path):
+>       groups = gen.load_episode_specs(CANDIDATES, ROOT, tmp_path, candidate_split="train")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_candidate_loader.py:179: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl')
+repo_root = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask')
+output = PosixPath('/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/test-tmp/candidate-loader-msyvelgr')
+
+    def load_episode_specs(
+        value: str | Path,
+        repo_root: Path,
+        output: Path,
+        *,
+        task: str | None = None,
+        difficulty: str | None = None,
+        episodes: Sequence[int] | None = None,
+        candidate_header: dict[str, Any] | None = None,
+        candidate_split: str | None = None,
+        candidate_tasks: Sequence[str] | None = None,
+    ) -> list[SpecGroup]:
+        """解析 ``--episode-specs``：既接受单份规格文件，也接受多组清单。
+    
+        * **单组**：文件顶层带 ``spec_schema_version``，配合 ``--env/--difficulty`` 与
+          ``--episodes/--episode-start`` 使用，产物落 ``--output-dir`` 本身。
+        * **清单**：文件顶层带 ``manifest_version``，一次调用把多个任务／难度的 job 混进
+          同一套进程池；每组自带难度与独立输出根 ``<output>/<任务>/<难度>``。
+          同任务不同难度的 seed 与 HDF5 文件名相同，因此**必须**分目录。
+        """
+        path = Path(value).expanduser()
+        if not path.is_absolute():
+            path = (repo_root / path).resolve()
+        if not path.is_file():
+            raise EpisodeSpecError(f"找不到 --episode-specs 指向的文件：{path}")
+        if path.suffix.lower() == ".jsonl":
+            # SCRIPT_DIR 已在 sys.path，直接脚本、模块和 spawn 调用均可导入同一纯标准库读取器。
+            from injection.candidates.io import load_candidates, project_spec
+    
+            try:
+                header, rows = load_candidates(path, repo_root=repo_root)
+            except (ValueError, OSError, KeyError, TypeError) as exc:
+>               raise EpisodeSpecError(f"{path}: 候选封套校验失败：{exc}") from exc
+E               scripts.generate_dataset_newseed.EpisodeSpecError: /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/injection/20260912-contract-v3-10/candidates/candidates.jsonl: 候选封套校验失败：采样源码指纹不符：src/robomme/robomme_env/BinFill.py
+
+scripts/generate_dataset_newseed.py:1479: EpisodeSpecError
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/lightweight/test_candidate_loader.py::test_all_3400_loader_and_kwargs_equal_before_and_after_role_rewrite
+FAILED tests/lightweight/test_candidate_loader.py::test_generation_uses_snapshot_and_explicit_digest_flag
+FAILED tests/lightweight/test_candidate_loader.py::test_legacy_job_path_unchanged[json]
+FAILED tests/lightweight/test_candidate_loader.py::test_jsonl_selection_never_launches_test_candidates
+ERROR tests/lightweight/test_candidates_refactor.py::test_end_to_end_and_role_rewrite
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[snapshot]
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[seed]
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[key]
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[split]
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[unknown]
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[spec]
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[collision]
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[missing]
+ERROR tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[duplicate]
+ERROR tests/lightweight/test_candidates_refactor.py::test_projection_deep_copy
+ERROR tests/lightweight/test_candidates_refactor.py::test_source_fingerprint_checked_even_after_resealing
+4 failed, 292 passed, 16 skipped, 9 deselected, 2 warnings, 12 errors in 105.93s (0:01:45)
+EXIT_CODE=123

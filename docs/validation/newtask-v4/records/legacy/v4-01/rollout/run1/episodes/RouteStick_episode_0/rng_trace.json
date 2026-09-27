@@ -1,0 +1,158 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.rotation_deg",
+      "drawn": -13.216145038604736,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.obstacle_rgb.0",
+      "drawn": [
+        0.2258480191230774,
+        0.8605076670646667,
+        0.2719247341156006
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.obstacle_rgb.1",
+      "drawn": [
+        0.058984994888305664,
+        0.7050882577896118,
+        0.9404116272926331
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.obstacle_rgb.2",
+      "drawn": [
+        0.626577615737915,
+        0.5957674384117126,
+        0.9389626979827881
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.obstacle_rgb.3",
+      "drawn": [
+        0.3454383611679077,
+        0.9103620052337646,
+        0.3976275324821472
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "objects.L",
+      "drawn": 13,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "actions.nodes",
+      "drawn": [
+        0,
+        2,
+        0,
+        2,
+        0,
+        2,
+        4,
+        2,
+        0,
+        2,
+        4,
+        6,
+        8,
+        6
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "actions.directions.0",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "actions.directions.1",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "actions.directions.2",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "actions.directions.3",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "actions.directions.4",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "actions.directions.5",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "actions.directions.6",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "actions.directions.7",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "actions.directions.8",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "actions.directions.9",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "actions.directions.10",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "actions.directions.11",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "actions.directions.12",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {}
+}

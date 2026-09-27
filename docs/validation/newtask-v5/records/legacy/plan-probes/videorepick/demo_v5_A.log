@@ -1,0 +1,4 @@
+seed=7000000 ok=True err=None None wall=118s
+seed=7000009 ok=False err=BinCollisionError 碰撞排除[contact] sweep#3 对象 bin_1(形状0) 与 bin_0(形状0) g=-0.0010219517461 s=0.5 中点判定 wall=36s
+seed=7000025 ok=False err=BinCollisionError 碰撞排除[contact] sweep#0 对象 bin_0(形状0) 与 bin_4(形状0) g=-0.000611392699044 s=0.5 中点判定 wall=28s
+全部完成

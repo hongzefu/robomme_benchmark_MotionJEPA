@@ -1,0 +1,27 @@
+{
+  "mismatches": [],
+  "value_points": 20,
+  "consumed": [
+    "actions.swap_window",
+    "layout.bins.0",
+    "layout.bins.1",
+    "layout.bins.2",
+    "layout.bins.3",
+    "layout.distractors.0",
+    "layout.distractors.1",
+    "layout.distractors.2",
+    "layout.distractors_placed",
+    "layout.distractors_requested",
+    "layout.type_choice",
+    "objects.color_order",
+    "objects.distractors.cube_colors",
+    "objects.distractors.n_with_cube",
+    "objects.n_picks",
+    "objects.n_swaps",
+    "objects.selected",
+    "objects.swap_initiator_indices",
+    "objects.swap_initiator_third",
+    "objects.target_choice"
+  ],
+  "unused": []
+}

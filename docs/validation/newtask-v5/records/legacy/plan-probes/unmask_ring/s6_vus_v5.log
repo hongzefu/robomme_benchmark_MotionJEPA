@@ -1,0 +1,10 @@
+CFG VideoUnmaskSwap v5 {"count": 14, "with_cube_range": [3, 3], "ring_half_extent": [0.2539, 0.3403], "min_gap": 0.04, "colors": ["yellow", "cyan", "magenta"]}
+ROW {"task": "VideoUnmaskSwap", "mode": "v5", "seed": 910000, "reset_s": 33.5, "n_distractors": 14, "n_dcubes": 3, "step_ms_reveal_0_31": 55.3, "step_ms_after_33_71": 17.3, "max_xy_err_after_reveal_mm": 28.08, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+ROW {"task": "VideoUnmaskSwap", "mode": "v5", "seed": 910101, "reset_s": 36.0, "n_distractors": 14, "n_dcubes": 3, "step_ms_reveal_0_31": 116.7, "step_ms_after_33_71": 47.1, "max_xy_err_after_reveal_mm": 30.03, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+ROW {"task": "VideoUnmaskSwap", "mode": "v5", "seed": 910202, "reset_s": 66.4, "n_distractors": 14, "n_dcubes": 3, "step_ms_reveal_0_31": 191.9, "step_ms_after_33_71": 43.3, "max_xy_err_after_reveal_mm": 30.53, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+SIM_DONE VideoUnmaskSwap v5
+Traceback (most recent call last):
+ValueError: invalid literal for int() with base 10: ''
+CFG VideoUnmaskSwap v5 {"count": 14, "with_cube_range": [3, 3], "ring_half_extent": [0.2539, 0.3403], "min_gap": 0.04, "colors": ["yellow", "cyan", "magenta"]}
+DEMO {"task": "VideoUnmaskSwap", "mode": "v5", "seed": 910000, "ok": true, "class": null, "etype": null, "err": "", "wall_s": 89.4, "timesteps": 854}
+SIM_DONE VideoUnmaskSwap v5

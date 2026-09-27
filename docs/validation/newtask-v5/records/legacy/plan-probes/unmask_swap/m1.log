@@ -1,0 +1,27 @@
+== 运行期碰撞失败 seed 的名义预演 ==
+VideoUnmaskSwap seed=4500300 [rollout: sweep#1 bin_2 vs bin_1 s=0.5625] predicted_first_fail=(1, 'contact', 'bin_2', 'bin_1', 0.5625) pairs=[(0, 1), (2, 0), (1, 2), (0, 1), (2, 0), (1, 2), (0, 1), (2, 0), (1, 2), (0, 1)]
+VideoUnmaskSwap seed=7500004 [V6: sweep#2 bin_3 vs bin_2 s=0.625] predicted_first_fail=(2, 'contact', 'bin_3', 'bin_2', 0.6406) pairs=[(0, 1), (2, 0), (3, 0), (0, 3), (2, 0), (3, 2), (0, 3), (2, 0)]
+ButtonUnmaskSwap seed=7700001 [V6: sweep#0 bin_3 vs bin_0 s=0.297] predicted_first_fail=(0, 'contact', 'bin_3', 'bin_0', 0.2969) pairs=[(2, 3), (1, 3), (3, 1), (2, 0), (1, 3), (3, 1)]
+ButtonUnmaskSwap seed=7700100 [V6: sweep#0 bin_0 vs bin_1 s=0.625] predicted_first_fail=(0, 'contact', 'bin_0', 'bin_1', 0.625) pairs=[(0, 3), (2, 1), (3, 0), (0, 3), (2, 0), (3, 2)]
+ButtonUnmaskSwap seed=7700102 [V6: sweep#1 bin_0 vs bin_2 s=0.5] predicted_first_fail=(1, 'contact', 'bin_1', 'bin_0', 0.625) pairs=[(0, 2), (1, 2), (2, 1), (0, 3), (1, 2), (2, 1)]
+ButtonUnmaskSwap seed=7700201 [V6: sweep#0 bin_3 vs bin_1 s=0.375] predicted_first_fail=(0, 'contact', 'bin_3', 'bin_1', 0.375) pairs=[(2, 3), (0, 1), (3, 2), (2, 3), (0, 1), (3, 2), (2, 3)]
+ButtonUnmaskSwap seed=7700401 [V6: sweep#0 bin_2 vs bin_3 s=0.4375] predicted_first_fail=(0, 'contact', 'bin_2', 'bin_3', 0.4375) pairs=[(1, 2), (0, 3), (2, 1), (1, 2), (0, 1), (2, 0), (1, 2), (0, 1)]
+ButtonUnmaskSwap seed=7700504 [V6: sweep#0 bin_2 vs bin_0 s=0.5] predicted_first_fail=(0, 'contact', 'bin_2', 'bin_0', 0.5) pairs=[(2, 1), (0, 3), (1, 2), (2, 1), (0, 3), (1, 2), (2, 1), (0, 3)]
+SPEC_ROWS_PREDICTED_INNER_COLLISION=2/20 [('VideoUnmaskSwap', 3, 4500300, (1, 'contact', 'bin_2', 'bin_1', 0.5625)), ('ButtonUnmaskSwap', 8, 4700800, (0, 'contact', 'bin_1', 'bin_3', 0.5))]
+
+VideoUnmaskSwap: layouts=300 n_swaps={8: 52, 9: 63, 10: 57, 11: 69, 12: 59}
+  partner_dist_m min=0.0989 p5=0.1132 median=0.1527 p95=0.2059 max=0.2468
+  distinct_unordered_pairs_per_episode={2: 182, 3: 38, 4: 53, 5: 22, 6: 5}
+  used_pairs_pairwise_disjoint(fixed matching)=182/300=0.607  immediate_undo=723/3020=0.239
+  hidden_cube_distinct_slots_visited={1: 18, 2: 579, 3: 243, 4: 60} (3 cubes x episodes)
+  INNER_SWEEP_COLLISION episodes=4/300=0.013 kinds={'inner_bystander': 4} first_fail_window={0: 2, 2: 1, 5: 1}
+  wall: sample_distractors(fast)=0.01s/ep  inner sweep eval(fast)=0.04s/ep
+
+ButtonUnmaskSwap: layouts=299 n_swaps={6: 98, 7: 112, 8: 89}
+  partner_dist_m min=0.0979 p5=0.1015 median=0.1266 p95=0.1654 max=0.2124
+  distinct_unordered_pairs_per_episode={2: 245, 3: 30, 4: 14, 5: 10}
+  used_pairs_pairwise_disjoint(fixed matching)=245/299=0.819  immediate_undo=556/2084=0.267
+  hidden_cube_distinct_slots_visited={1: 12, 2: 755, 3: 110, 4: 20} (3 cubes x episodes)
+  INNER_SWEEP_COLLISION episodes=32/299=0.107 kinds={'inner_bystander': 32} first_fail_window={0: 17, 1: 10, 2: 3, 5: 2}
+  wall: sample_distractors(fast)=0.03s/ep  inner sweep eval(fast)=0.07s/ep
+EXIT_CODE=0

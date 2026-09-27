@@ -1,0 +1,746 @@
+[
+  {
+    "difficulty": "xhard1",
+    "episode": 0,
+    "seed": 9200000,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed9200000.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 706,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 113,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 234,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 295,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 402,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 453,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 565,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 617,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 693,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 3,
+    "seed": 9200300,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed9200300.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 705,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 115,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 246,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 315,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 426,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 476,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 568,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 618,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 693,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 6,
+    "seed": 9200600,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed9200600.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 707,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 112,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 210,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 269,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 366,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 421,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 535,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 604,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 694,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 0,
+    "seed": 11200000,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed11200000.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 844,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 121,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 220,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 292,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 407,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 458,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 546,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 596,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 679,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 733,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 828,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 3,
+    "seed": 11200300,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed11200300.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 887,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 121,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 239,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 318,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 428,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 483,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 571,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 630,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 726,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 785,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 874,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 6,
+    "seed": 11200600,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed11200600.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 869,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 118,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 239,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 315,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 430,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 480,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 586,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 643,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 739,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 789,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 856,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 0,
+    "seed": 13200000,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed13200000.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 997,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 114,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 224,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 275,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 369,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 429,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 523,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 579,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 690,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 755,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 853,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 903,
+        "text": "pick up the sixth highlighted cube"
+      },
+      {
+        "t": 982,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 3,
+    "seed": 13200300,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed13200300.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 984,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 117,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 210,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 266,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 359,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 409,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 496,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 555,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 651,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 701,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 821,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 885,
+        "text": "pick up the sixth highlighted cube"
+      },
+      {
+        "t": 967,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 6,
+    "seed": 13200600,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed13200600.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 1055,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 117,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 235,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 300,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 410,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 495,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 604,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 658,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 748,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 798,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 902,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 950,
+        "text": "pick up the sixth highlighted cube"
+      },
+      {
+        "t": 1040,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 0,
+    "seed": 7200000,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed7200000.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 1257,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 108,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 219,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 297,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 398,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 448,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 567,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 633,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 735,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 785,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 909,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 988,
+        "text": "pick up the sixth highlighted cube"
+      },
+      {
+        "t": 1096,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 1146,
+        "text": "pick up the seventh highlighted cube"
+      },
+      {
+        "t": 1241,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 3,
+    "seed": 7200300,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed7200300.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 1156,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 115,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 219,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 269,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 355,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 416,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 501,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 551,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 631,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 681,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 799,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 864,
+        "text": "pick up the sixth highlighted cube"
+      },
+      {
+        "t": 984,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 1058,
+        "text": "pick up the seventh highlighted cube"
+      },
+      {
+        "t": 1143,
+        "text": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 6,
+    "seed": 7200600,
+    "hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed7200600.h5",
+    "goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "frames": 1139,
+    "terminal_completed": true,
+    "segments": [
+      {
+        "t": 0,
+        "text": "press the button"
+      },
+      {
+        "t": 127,
+        "text": "pick up the first highlighted cube"
+      },
+      {
+        "t": 234,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 284,
+        "text": "pick up the second highlighted cube"
+      },
+      {
+        "t": 379,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 433,
+        "text": "pick up the third highlighted cube"
+      },
+      {
+        "t": 547,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 612,
+        "text": "pick up the fourth highlighted cube"
+      },
+      {
+        "t": 716,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 766,
+        "text": "pick up the fifth highlighted cube"
+      },
+      {
+        "t": 849,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 907,
+        "text": "pick up the sixth highlighted cube"
+      },
+      {
+        "t": 1000,
+        "text": "place the cube onto the table"
+      },
+      {
+        "t": 1050,
+        "text": "pick up the seventh highlighted cube"
+      },
+      {
+        "t": 1125,
+        "text": "All tasks completed"
+      }
+    ]
+  }
+]

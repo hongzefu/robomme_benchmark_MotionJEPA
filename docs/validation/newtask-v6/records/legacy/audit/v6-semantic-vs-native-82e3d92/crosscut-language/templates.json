@@ -1,0 +1,2375 @@
+{
+ "audit_base": "82e3d922b78d48ec1e825b168cccc0e1b8c690c1",
+ "envs": {
+  "BinFill": {
+   "source_branches": "task_goal.py::get_language_goal BinFill：按颜色计数拼短语（1 用 cube，其余 cubes），0～3 色三分支；无分档分支。子目标 BinFill.py 用 subgoal_language.get_subgoal_with_index（序数表到 twentieth）。",
+   "goal_variants": {
+    "variant0|put {num} {color} cube and {num} {color} cubes into the bin, then press the button to stop": {
+     "tiers": [
+      "hard",
+      "xhard2"
+     ],
+     "scope": "both"
+    },
+    "variant0|put {num} {color} cube into the bin, then press the button to stop": {
+     "tiers": [
+      "easy"
+     ],
+     "scope": "native_only"
+    },
+    "variant0|put {num} {color} cube, {num} {color} cubes and {num} {color} cubes into the bin, then press the button to stop": {
+     "tiers": [
+      "xhard4"
+     ],
+     "scope": "new_only"
+    },
+    "variant0|put {num} {color} cubes and {num} {color} cube into the bin, then press the button to stop": {
+     "tiers": [
+      "hard",
+      "xhard1"
+     ],
+     "scope": "both"
+    },
+    "variant0|put {num} {color} cubes and {num} {color} cubes into the bin, then press the button to stop": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant0|put {num} {color} cubes into the bin, then press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium"
+     ],
+     "scope": "native_only"
+    },
+    "variant0|put {num} {color} cubes, {num} {color} cube and {num} {color} cubes into the bin, then press the button to stop": {
+     "tiers": [
+      "xhard1"
+     ],
+     "scope": "new_only"
+    },
+    "variant0|put {num} {color} cubes, {num} {color} cubes and {num} {color} cubes into the bin, then press the button to stop": {
+     "tiers": [
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    },
+    "variant1|put {num} {color} cube and {num} {color} cubes into the bin and press the button to stop": {
+     "tiers": [
+      "hard",
+      "xhard2"
+     ],
+     "scope": "both"
+    },
+    "variant1|put {num} {color} cube into the bin and press the button to stop": {
+     "tiers": [
+      "easy"
+     ],
+     "scope": "native_only"
+    },
+    "variant1|put {num} {color} cube, {num} {color} cubes and {num} {color} cubes into the bin and press the button to stop": {
+     "tiers": [
+      "xhard4"
+     ],
+     "scope": "new_only"
+    },
+    "variant1|put {num} {color} cubes and {num} {color} cube into the bin and press the button to stop": {
+     "tiers": [
+      "hard",
+      "xhard1"
+     ],
+     "scope": "both"
+    },
+    "variant1|put {num} {color} cubes and {num} {color} cubes into the bin and press the button to stop": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|put {num} {color} cubes into the bin and press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium"
+     ],
+     "scope": "native_only"
+    },
+    "variant1|put {num} {color} cubes, {num} {color} cube and {num} {color} cubes into the bin and press the button to stop": {
+     "tiers": [
+      "xhard1"
+     ],
+     "scope": "new_only"
+    },
+    "variant1|put {num} {color} cubes, {num} {color} cubes and {num} {color} cubes into the bin and press the button to stop": {
+     "tiers": [
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    }
+   },
+   "subgoal_templates": {
+    "exec|pick up the {ord} {color} cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|press the button": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|put it into the bin": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the cube",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "put it into the bin",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "press the button",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "goal_vs_subgoal_counts|native|ok": 9,
+    "goal_vs_subgoal_counts|new|ok": 12,
+    "ordinals_sequential|native|ok": 9,
+    "ordinals_sequential|new|ok": 12,
+    "plan_range_total|native|ok": 3,
+    "plan_range_total|new|ok": 12,
+    "plural_forms|native|ok": 9,
+    "plural_forms|new|ok": 12,
+    "spec_target_numbers|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "ButtonUnmask": {
+   "source_branches": "同 VideoUnmask，前缀 first press the button。",
+   "goal_variants": {
+    "variant0|{ord} press the button, then pick up the container hiding the {color} cube": {
+     "tiers": [
+      "easy",
+      "medium"
+     ],
+     "scope": "native_only"
+    },
+    "variant0|{ord} press the button, then pick up the container hiding the {color} cube, finally pick up another container hiding the {color} cube": {
+     "tiers": [
+      "hard",
+      "xhard1"
+     ],
+     "scope": "both"
+    },
+    "variant0|{ord} press the button, then pick up the container hiding the {color} cube, next pick up another container hiding the {color} cube, finally pick up another container hiding the {color} cube": {
+     "tiers": [
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    }
+   },
+   "subgoal_templates": {
+    "exec|pick up the container that hides the {color} cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|press the button": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|put down the container": {
+     "tiers": [
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "press the button",
+       "need_parameter": false
+      },
+      {
+       "label": "b",
+       "action": "pick up the container",
+       "need_parameter": true
+      },
+      {
+       "label": "c",
+       "action": "put down the container",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "goal_colors_distinct|native|ok": 9,
+    "goal_colors_distinct|new|ok": 12,
+    "goal_colors_vs_subgoal_colors|native|ok": 9,
+    "goal_colors_vs_subgoal_colors|new|ok": 12,
+    "plan_range_picks|native|ok": 3,
+    "plan_range_picks|new|ok": 12,
+    "spec_n_picks|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "ButtonUnmaskSwap": {
+   "source_branches": "同 VideoUnmaskSwap，前缀 first press both buttons on the table。",
+   "goal_variants": {
+    "variant0|{ord} press both buttons on the table, then pick up the container hiding the {color} cube": {
+     "tiers": [
+      "medium"
+     ],
+     "scope": "native_only"
+    },
+    "variant0|{ord} press both buttons on the table, then pick up the container hiding the {color} cube, finally pick up another container hiding the {color} cube": {
+     "tiers": [
+      "easy",
+      "hard",
+      "xhard1"
+     ],
+     "scope": "both"
+    },
+    "variant0|{ord} press both buttons on the table, then pick up the container hiding the {color} cube, next pick up another container hiding the {color} cube, finally pick up another container hiding the {color} cube": {
+     "tiers": [
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    }
+   },
+   "subgoal_templates": {
+    "exec|pick up the container that hides the {color} cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|press the {ord} button": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|put down the container": {
+     "tiers": [
+      "easy",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "press the first button",
+       "need_parameter": false
+      },
+      {
+       "label": "b",
+       "action": "press the second button",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "pick up the container",
+       "need_parameter": true
+      },
+      {
+       "label": "d",
+       "action": "put down the container",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "goal_colors_distinct|native|ok": 9,
+    "goal_colors_distinct|new|ok": 12,
+    "goal_colors_vs_subgoal_colors|native|ok": 9,
+    "goal_colors_vs_subgoal_colors|new|ok": 12,
+    "plan_range_picks|native|ok": 3,
+    "plan_range_picks|new|ok": 12,
+    "plan_range_swaps|new|ok": 12,
+    "spec_n_picks|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "InsertPeg": {
+   "source_branches": "两句固定。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then grasp the same end of the same peg you've picked {before|after} and insert it into the same side of the box": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "demo|Insert the peg from the left side of the box": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|Insert the peg from the right side of the box": {
+     "tiers": [
+      "easy",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|Pick up the peg by grasping the far end": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|Pick up the peg by grasping the near end": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "exec|Insert the peg from the left side": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|Insert the peg from the right side": {
+     "tiers": [
+      "easy",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|Pick up the peg by grasping the far end": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|Pick up the peg by grasping the near end": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the peg by grasping one end",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "insert the peg from the right side",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "insert the peg from the left side",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {},
+   "episodes": {
+    "native": 9,
+    "new": 3
+   }
+  },
+  "MoveCube": {
+   "source_branches": "两句固定。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then move the cube to the target in the same manner as {before|after}": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|watch the video carefully, then move the cube to the target in the same manner shown in the video": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "demo|Close the gripper and push the cube to the target": {
+     "tiers": [
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|Hook the cube to the target with the peg": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "demo|Pick up the cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|Pick up the peg": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "demo|place the cube onto the target": {
+     "tiers": [
+      "easy",
+      "medium",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|static": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|Close the gripper and push the cube to the target": {
+     "tiers": [
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|Hook the cube to the target with the peg": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "exec|Pick up the cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|Pick up the peg": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "exec|place the cube onto the target": {
+     "tiers": [
+      "easy",
+      "medium",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the peg",
+       "need_parameter": false
+      },
+      {
+       "label": "b",
+       "action": "hook the cube to the target with the peg",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "close gripper and push the cube to the target",
+       "need_parameter": false
+      },
+      {
+       "label": "d",
+       "action": "pick up the cube",
+       "need_parameter": false
+      },
+      {
+       "label": "e",
+       "action": "place the cube onto the target",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {},
+   "episodes": {
+    "native": 9,
+    "new": 3
+   }
+  },
+  "PatternLock": {
+   "source_branches": "两句固定。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then use the stick attached to the robot to retrace the same pattern": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|watch the video carefully, then use the stick attached to the robot to retrace the same pattern shown in the video": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "demo|move backward": {
+     "tiers": [
+      "medium",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move backward-left": {
+     "tiers": [
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move backward-right": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move forward": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move forward-left": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move forward-right": {
+     "tiers": [
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move left": {
+     "tiers": [
+      "easy",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move right": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move backward": {
+     "tiers": [
+      "medium",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move backward-left": {
+     "tiers": [
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move backward-right": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move forward": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move forward-left": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move forward-right": {
+     "tiers": [
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move left": {
+     "tiers": [
+      "easy",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move right": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "move forward",
+       "need_parameter": false
+      },
+      {
+       "label": "b",
+       "action": "move backward",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "move left",
+       "need_parameter": false
+      },
+      {
+       "label": "d",
+       "action": "move right",
+       "need_parameter": false
+      },
+      {
+       "label": "e",
+       "action": "move forward-left",
+       "need_parameter": false
+      },
+      {
+       "label": "f",
+       "action": "move forward-right",
+       "need_parameter": false
+      },
+      {
+       "label": "g",
+       "action": "move backward-left",
+       "need_parameter": false
+      },
+      {
+       "label": "h",
+       "action": "move backward-right",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "plan_range_nodes|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "PickHighlight": {
+   "source_branches": "两句固定（含拼写 highlighteted）；无分档分支。子目标：新档 subgoal_color_suffix=omit 去掉 ', which is {color}'（PickHighlight.py::_load_scene xhard 分支）。",
+   "goal_variants": {
+    "variant0|{ord} press the button, then pick up all cubes that have been highlighteted with white areas on the table": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|{ord} press the button, then pick up all highlighted cubes, finally press the button again to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "exec|pick up the highlighted cube, which is {color}": {
+     "tiers": [
+      "easy"
+     ],
+     "scope": "native_only"
+    },
+    "exec|pick up the {ord} highlighted cube": {
+     "tiers": [
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    },
+    "exec|pick up the {ord} highlighted cube, which is {color}": {
+     "tiers": [
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "exec|place the cube onto the table": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|press the button": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "press button",
+       "need_parameter": false
+      },
+      {
+       "label": "b",
+       "action": "pick up the highlighted cube",
+       "need_parameter": true
+      },
+      {
+       "label": "c",
+       "action": "place the cube onto the table",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "color_suffix_present|native|ok": 9,
+    "color_suffix_present|new|FAIL": 12,
+    "ordinals_sequential|native|ok": 9,
+    "ordinals_sequential|new|ok": 12,
+    "plan_range|new|ok": 12,
+    "spec_highlight_count|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "PickXtimes": {
+   "source_branches": "repeats>1 两句 / repeats==1 一句；无分档分支。子目标序数走 subgoal_language（到 twentieth）。新档另有 yellow/cyan/magenta 干扰块（NEWVALUE_DECISION 前 k 色）。",
+   "goal_variants": {
+    "variant0|pick up the {color} cube and place it on the target, repeating this action {num} times, then press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|pick up the {color} cube and place it on the target, repeating this pick-and-place action {num} times, then press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "exec|pick up the {color} cube for the {ord} time": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|place the {color} cube onto the target": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the cube",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "place the cube onto the target",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "press the button to stop",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "alt_goal_numbers_agree|native|ok": 9,
+    "alt_goal_numbers_agree|new|ok": 12,
+    "goal_color_vs_subgoal_color|native|ok": 9,
+    "goal_color_vs_subgoal_color|new|ok": 12,
+    "goal_vs_subgoal_counts|native|ok": 9,
+    "goal_vs_subgoal_counts|new|ok": 12,
+    "ordinals_sequential|native|ok": 9,
+    "ordinals_sequential|new|ok": 12,
+    "plan_range|native|ok": 3,
+    "plan_range|new|ok": 12,
+    "spec_num_repeats|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "RouteStick": {
+   "source_branches": "两句固定。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|watch the video carefully, then use the stick attached to the robot to navigate around the sticks on the table, following the same path shown in the video": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "demo|move to the nearest left target by circling around the stick clockwise": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move to the nearest left target by circling around the stick counterclockwise": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move to the nearest right target by circling around the stick clockwise": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|move to the nearest right target by circling around the stick counterclockwise": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move to the nearest left target by circling around the stick clockwise": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move to the nearest left target by circling around the stick counterclockwise": {
+     "tiers": [
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move to the nearest right target by circling around the stick clockwise": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move to the nearest right target by circling around the stick counterclockwise": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "move to the nearest left target by circling around the stick clockwise",
+       "need_parameter": false
+      },
+      {
+       "label": "b",
+       "action": "move to the nearest right target by circling around the stick clockwise",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "move to the nearest left target by circling around the stick counterclockwise",
+       "need_parameter": false
+      },
+      {
+       "label": "d",
+       "action": "move to the nearest right target by circling around the stick counterclockwise",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "plan_range_L|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "StopCube": {
+   "source_branches": "两句，num2words_2[stop_time]（到 twentieth）；无分档分支。",
+   "goal_variants": {
+    "variant0|press the button to stop the cube just as it reaches the target for the {ord} time": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|press the button to stop the cube exactly at the target on its {ord} visit": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "exec|move to the top of the button to prepare": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|press the button to stop the cube on the target": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|remain static": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "move to the top of the button to prepare",
+       "need_parameter": false
+      },
+      {
+       "label": "b",
+       "action": "remain static",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "press button to stop the cube",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "alt_ordinals_agree|native|ok": 9,
+    "alt_ordinals_agree|new|ok": 3,
+    "plan_range|new|ok": 3,
+    "spec_stop_time|new|ok": 3
+   },
+   "episodes": {
+    "native": 9,
+    "new": 3
+   }
+  },
+  "SwingXtimes": {
+   "source_branches": "repeats>1 两句（第 1 句不提放下）/ repeats==1 两句；无分档分支。子目标序数用 SwingXtimes.py::_load_scene 本地 10 项表，超出写成 f\"{i+1}th\"。",
+   "goal_variants": {
+    "variant0|pick up the {color} cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion {num} times, finally press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant0|pick up the {color} cube, move it to the top of the right-side target, then put it down on the left-side target, finally press the button to stop": {
+     "tiers": [
+      "medium"
+     ],
+     "scope": "native_only"
+    },
+    "variant1|pick up the {color} cube, move it to the right-side target and then put it down on the left-side target, then press the button to stop": {
+     "tiers": [
+      "medium"
+     ],
+     "scope": "native_only"
+    },
+    "variant1|pick up the {color} cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion {num} times, then put down the cube and press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "exec|move to the top of the left-side target for the {ord} time": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|move to the top of the right-side target for the {ord} time": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|pick up the {color} cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|press the button": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|put the {color} cube on the table": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the cube",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "move to the top of the target",
+       "need_parameter": true
+      },
+      {
+       "label": "c",
+       "action": "put the cube on the table",
+       "need_parameter": false
+      },
+      {
+       "label": "d",
+       "action": "press the button",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "alt_goal_numbers_agree|native|ok": 9,
+    "alt_goal_numbers_agree|new|ok": 12,
+    "goal_color_vs_subgoal_color|native|ok": 9,
+    "goal_color_vs_subgoal_color|new|ok": 12,
+    "goal_vs_subgoal_counts|native|ok": 9,
+    "goal_vs_subgoal_counts|new|ok": 12,
+    "ordinals_sequential|native|ok": 9,
+    "ordinals_sequential|new|FAIL": 2,
+    "ordinals_sequential|new|ok": 10,
+    "plan_range|native|ok": 3,
+    "plan_range|new|ok": 12,
+    "spec_num_repeats|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "VideoPlaceButton": {
+   "source_branches": "四句固定；第 4 句按 before/after 分 last placed before / first placed after。无分档分支；新档额外放台（extra_place_before/after）只改任务链，不改语言。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then place the {color} cube on the target right {before|after} the button was pressed": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|watch the video carefully, and place the {color} cube on the target where it was placed immediately {before|after} the button was pressed": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant2|watch the video carefully, then place the {color} cube on the target where it was previously placed {before|after} the button was pressed": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant3|watch the video carefully, then place the {color} cube on the target where it was last placed {before|after} the button was pressed": {
+     "tiers": [
+      "hard",
+      "xhard1",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant3|watch the video carefully, then place the {color} cube on the target where it was {ord} placed {before|after} the button was pressed": {
+     "tiers": [
+      "easy",
+      "medium",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "demo|drop the cube onto table": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "demo|drop the cube onto target": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|pick up the cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|press the button": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|put the cube back to its original position": {
+     "tiers": [
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    },
+    "demo|static": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|pick up the cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|place the cube onto the correct target": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the cube",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "drop onto",
+       "need_parameter": true
+      },
+      {
+       "label": "c",
+       "action": "press the button",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "spec_placements_plan|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "VideoPlaceOrder": {
+   "source_branches": "两句，{num} 用 num2words_2[which_in_subset]；无分档分支。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then place the {color} cube on the {ord} target it was previously placed on": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|watch the video carefully and place the {color} cube on the {ord} target where it was placed": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "demo|drop the cube onto table": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "demo|drop the cube onto target": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|pick up the cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|press the button": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|put the cube back to its original position": {
+     "tiers": [
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    },
+    "demo|static": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|pick up the cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|place the cube onto the correct target": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the cube",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "drop onto",
+       "need_parameter": true
+      },
+      {
+       "label": "c",
+       "action": "press the button",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "answer_target_is_nth_visit|new|ok": 12,
+    "nth_visit_target_unique_in_cube_history|new|ok": 12,
+    "spec_which_in_subset|new|ok": 12,
+    "total_placements_plan|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "VideoRepick": {
+   "source_branches": "num_repeats>1 三句（two 时用 twice）/ ==1 两句；无分档分支。子目标序数 VideoRepick.py 本地 10 项表。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then pick up the same block that was previously picked up again, finally put it down and press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "variant0|watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for {num} times, finally put it down and press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|watch the video carefully, then pick up the same cube that was previously picked up again, finally press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard"
+     ],
+     "scope": "native_only"
+    },
+    "variant1|watch the video carefully, then pick up the same cube that was previously picked up {num} times, and finally press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant1|watch the video carefully, then pick up the same cube that was previously picked up {num}, and finally press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "xhard1"
+     ],
+     "scope": "both"
+    },
+    "variant2|watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube {num} times, finally press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "variant2|watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube {num}, finally press the button to stop": {
+     "tiers": [
+      "easy",
+      "medium",
+      "xhard1"
+     ],
+     "scope": "both"
+    }
+   },
+   "subgoal_templates": {
+    "demo|drop the cube on the table": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|pick up the cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "demo|static": {
+     "tiers": [
+      "easy",
+      "medium",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|pick up the correct cube for the {ord} time": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|press the button to finish": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|put it down": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the cube",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "put it down",
+       "need_parameter": false
+      },
+      {
+       "label": "c",
+       "action": "press the button to finish",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "alt_goal_numbers_agree|native|ok": 9,
+    "alt_goal_numbers_agree|new|ok": 12,
+    "goal_vs_subgoal_counts|native|ok": 9,
+    "goal_vs_subgoal_counts|new|ok": 12,
+    "ordinals_sequential|native|ok": 9,
+    "ordinals_sequential|new|ok": 12,
+    "plan_range|new|ok": 12,
+    "plan_range_swaps|new|ok": 12,
+    "spec_num_repeats|new|ok": 12,
+    "vr_static_eq_swaps_plus1|new|FAIL": 1,
+    "vr_static_eq_swaps_plus1|new|ok": 11
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "VideoUnmask": {
+   "source_branches": "task_goal.py::_unmask_pick_count：新档读 env.xhard_pick_count；pick>2 走 _unmask_multi_pick_clause（next…finally…），pick==2 / 1 原句。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then pick up the container hiding the {color} cube": {
+     "tiers": [
+      "easy",
+      "medium"
+     ],
+     "scope": "native_only"
+    },
+    "variant0|watch the video carefully, then pick up the container hiding the {color} cube, finally pick up another container hiding the {color} cube": {
+     "tiers": [
+      "hard",
+      "xhard1"
+     ],
+     "scope": "both"
+    },
+    "variant0|watch the video carefully, then pick up the container hiding the {color} cube, next pick up another container hiding the {color} cube, finally pick up another container hiding the {color} cube": {
+     "tiers": [
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    }
+   },
+   "subgoal_templates": {
+    "demo|static": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|pick up the container that hides the {color} cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|put down the container": {
+     "tiers": [
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the container",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "put down the container",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "goal_colors_distinct|native|ok": 9,
+    "goal_colors_distinct|new|ok": 12,
+    "goal_colors_vs_subgoal_colors|native|ok": 9,
+    "goal_colors_vs_subgoal_colors|new|ok": 12,
+    "plan_range_picks|native|ok": 3,
+    "plan_range_picks|new|ok": 12,
+    "spec_n_picks|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  },
+  "VideoUnmaskSwap": {
+   "source_branches": "self.pick_times==2 / >=3（V4 新增 next…finally…）/ 其他。",
+   "goal_variants": {
+    "variant0|watch the video carefully, then pick up the container hiding the {color} cube": {
+     "tiers": [
+      "easy",
+      "medium"
+     ],
+     "scope": "native_only"
+    },
+    "variant0|watch the video carefully, then pick up the container hiding the {color} cube, finally pick up another container hiding the {color} cube": {
+     "tiers": [
+      "hard",
+      "xhard1"
+     ],
+     "scope": "both"
+    },
+    "variant0|watch the video carefully, then pick up the container hiding the {color} cube, next pick up another container hiding the {color} cube, finally pick up another container hiding the {color} cube": {
+     "tiers": [
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "new_only"
+    }
+   },
+   "subgoal_templates": {
+    "demo|static": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|pick up the container that hides the {color} cube": {
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    },
+    "exec|put down the container": {
+     "tiers": [
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   },
+   "choice_sets": [
+    {
+     "choices": [
+      {
+       "label": "a",
+       "action": "pick up the container",
+       "need_parameter": true
+      },
+      {
+       "label": "b",
+       "action": "put down the container",
+       "need_parameter": false
+      }
+     ],
+     "tiers": [
+      "easy",
+      "medium",
+      "hard",
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+     ],
+     "scope": "both"
+    }
+   ],
+   "auto_checks": {
+    "goal_colors_distinct|native|ok": 9,
+    "goal_colors_distinct|new|ok": 12,
+    "goal_colors_vs_subgoal_colors|native|ok": 9,
+    "goal_colors_vs_subgoal_colors|new|ok": 12,
+    "plan_range_picks|native|ok": 3,
+    "plan_range_picks|new|ok": 12,
+    "plan_range_swaps|new|ok": 12,
+    "spec_n_picks|new|ok": 12
+   },
+   "episodes": {
+    "native": 9,
+    "new": 12
+   }
+  }
+ }
+}

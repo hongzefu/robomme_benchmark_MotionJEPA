@@ -1,0 +1,215 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.goal_xy",
+      "drawn": [
+        -0.1,
+        0.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.button_xy",
+      "drawn": [
+        0.08706400692462922,
+        -0.11863426566123962
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_order",
+      "drawn": [
+        0,
+        2,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.red_0",
+      "drawn": [
+        -0.014130885601043697,
+        -0.007888333797454822,
+        5.377805952621076
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.green_0",
+      "drawn": [
+        -0.013500394821166994,
+        0.17868919372558598,
+        4.434315264835418
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.blue_0",
+      "drawn": [
+        0.04791247129440307,
+        0.041777744293212904,
+        3.255283999210685
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.targets.0",
+      "drawn": [
+        0.12363370895385742,
+        0.12224576950073243
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.targets.1",
+      "drawn": [
+        0.13015489578247072,
+        -0.00013557434082031583
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.targets.2",
+      "drawn": [
+        -0.15941099166870118,
+        -0.15093219757080079
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.targets.3",
+      "drawn": [
+        -0.13952796936035156,
+        0.1565645408630371
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.visit_counts_by_object",
+      "drawn": [
+        4,
+        4
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "objects.demo_ids",
+      "drawn": [
+        1,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.swap_pair_ids",
+      "drawn": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.visit_ids_by_object.0",
+      "drawn": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "objects.visit_ids_by_object.1",
+      "drawn": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "objects.answer_demo_index",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.which_in_subset",
+      "drawn": 4,
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "actions.target_target_id",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 18,
+      "path": "objects.button_after_visit_index",
+      "drawn": 6,
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "actions.button_task_index",
+      "drawn": 16,
+      "source": "record"
+    },
+    {
+      "index": 20,
+      "path": "actions.target_placement_count",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 21,
+      "path": "actions.return_pose_by_object_id",
+      "drawn": {
+        "cube_green_0": [
+          -0.013500395230948925,
+          0.17868919670581818,
+          0.019999999552965164,
+          0.6022856831550598,
+          -0.0,
+          -0.0,
+          -0.7982807159423828
+        ],
+        "cube_blue_0": [
+          0.04791247099637985,
+          0.04177774488925934,
+          0.019999999552965164,
+          0.056815098971128464,
+          -0.0,
+          -0.0,
+          -0.9983847141265869
+        ]
+      },
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "f1cb980e6fc5008ec2752ee09f35d6f95cb66a2d94e1571a09ff5f818b2552f4"
+  }
+}

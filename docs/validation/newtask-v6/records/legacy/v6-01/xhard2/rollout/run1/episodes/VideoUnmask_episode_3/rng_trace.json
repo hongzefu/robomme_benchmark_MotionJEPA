@@ -1,0 +1,306 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.bin_count.requested",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 1,
+      "path": "layout.bins.0",
+      "drawn": [
+        -0.07429502069950104,
+        -0.006886421442031859,
+        69.21070218086243
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.bins.1",
+      "drawn": [
+        0.03696817517280579,
+        -0.12232485115528108,
+        52.281296253204346
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.bins.2",
+      "drawn": [
+        0.049404733479022994,
+        -0.0030417063832283153,
+        56.18529975414276
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.bins.3",
+      "drawn": [
+        0.08994478583335877,
+        0.13635813206434252,
+        21.792964339256287
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.bins.4",
+      "drawn": [
+        -0.10544649302959443,
+        -0.17234250336885454,
+        77.98950254917145
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.bins.5",
+      "drawn": [
+        -0.10594296008348465,
+        0.1153219163417816,
+        86.38673722743988
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.bins.6",
+      "drawn": [
+        0.1619463273882866,
+        -0.1632787871360779,
+        53.73333692550659
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.bins.7",
+      "drawn": [
+        -0.16097434759140017,
+        -0.09154889076948167,
+        47.89596498012543
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.bin_count.placed",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 10,
+      "path": "objects.color_order",
+      "drawn": [
+        0,
+        2,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "objects.n_picks",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "objects.pick_order",
+      "drawn": [
+        0,
+        1,
+        2
+      ],
+      "source": "record"
+    },
+    {
+      "index": 13,
+      "path": "objects.distractors.requested",
+      "drawn": 10,
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "objects.distractors.bins.0",
+      "drawn": [
+        -0.28081048711538314,
+        0.2700811571955681,
+        73.39636981487274
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "objects.distractors.bins.1",
+      "drawn": [
+        0.2825907234191895,
+        0.08609321569204331,
+        2.5361359119415283
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.distractors.bins.2",
+      "drawn": [
+        0.10998939366340638,
+        0.3136103559136391,
+        85.4497879743576
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "objects.distractors.bins.3",
+      "drawn": [
+        -0.31274095915555955,
+        0.07617560765743259,
+        26.066442131996155
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "objects.distractors.bins.4",
+      "drawn": [
+        -0.2202410884141922,
+        -0.2565637902021408,
+        86.38027846813202
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "objects.distractors.bins.5",
+      "drawn": [
+        -0.12522375456094742,
+        0.2511453319549561,
+        47.41429924964905
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "objects.distractors.bins.6",
+      "drawn": [
+        -0.056310279893875104,
+        0.30705008417367935,
+        62.94469714164734
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 21,
+      "path": "objects.distractors.bins.7",
+      "drawn": [
+        0.2969342408180237,
+        -0.005662017941474917,
+        42.92202830314636
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 22,
+      "path": "objects.distractors.bins.8",
+      "drawn": [
+        -0.24857462446689607,
+        -0.15535995385646822,
+        85.918128490448
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 23,
+      "path": "objects.distractors.bins.9",
+      "drawn": [
+        -0.24703865360021593,
+        -0.030866329467296616,
+        43.32490682601929
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 24,
+      "path": "objects.distractors.placed",
+      "drawn": 10,
+      "source": "record"
+    },
+    {
+      "index": 25,
+      "path": "objects.distractors.trials",
+      "drawn": [
+        1,
+        4,
+        1,
+        2,
+        5,
+        1,
+        1,
+        1,
+        5,
+        7
+      ],
+      "source": "record"
+    },
+    {
+      "index": 26,
+      "path": "objects.distractors.cube_count",
+      "drawn": 5,
+      "source": "spec"
+    },
+    {
+      "index": 27,
+      "path": "objects.distractors.cube_bins",
+      "drawn": [
+        6,
+        1,
+        9,
+        8,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 28,
+      "path": "objects.distractors.color_order",
+      "drawn": [
+        0,
+        2,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 29,
+      "path": "objects.distractors.cube_colors",
+      "drawn": [
+        "yellow",
+        "magenta",
+        "cyan",
+        "yellow",
+        "magenta"
+      ],
+      "source": "record"
+    },
+    {
+      "index": 30,
+      "path": "objects.distractors.cube_names",
+      "drawn": [
+        "distractor_cube_0_yellow",
+        "distractor_cube_1_magenta",
+        "distractor_cube_2_cyan",
+        "distractor_cube_3_yellow",
+        "distractor_cube_4_magenta"
+      ],
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {}
+}

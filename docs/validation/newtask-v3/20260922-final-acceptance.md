@@ -1,6 +1,6 @@
 # 最终验收汇总（2026-09-22）
 
-对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第四节的完成条件。
+对应 [0921-newtask-release-v3-plan.md](../../plans/0921-newtask-release-v3-plan.md) 第四节的完成条件。
 分支 `newtaskRelease-v3`，从 `ce72b04` 切出。
 
 ## 一、第一轮目标达成情况

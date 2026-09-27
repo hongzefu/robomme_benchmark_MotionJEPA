@@ -1,0 +1,106 @@
+[
+ {
+  "N": 12,
+  "lo": 5,
+  "hi": 7,
+  "region_half": [
+   0.2,
+   0.25
+  ],
+  "reset_ok": 1024,
+  "redraw_frac": 0.033203125,
+  "fallback": 0,
+  "max_single_color_max": 10
+ },
+ {
+  "N": 14,
+  "lo": 7,
+  "hi": 9,
+  "region_half": [
+   0.2,
+   0.25
+  ],
+  "reset_ok": 1024,
+  "redraw_frac": 0.0771484375,
+  "fallback": 0,
+  "max_single_color_max": 11
+ },
+ {
+  "N": 16,
+  "lo": 9,
+  "hi": 11,
+  "region_half": [
+   0.2,
+   0.25
+  ],
+  "reset_ok": 1011,
+  "redraw_frac": 0.18397626112759644,
+  "fallback": 0,
+  "max_single_color_max": 12
+ },
+ {
+  "N": 17,
+  "lo": 10,
+  "hi": 12,
+  "region_half": [
+   0.2,
+   0.25
+  ],
+  "reset_ok": 958,
+  "redraw_frac": 0.2609603340292276,
+  "fallback": 1,
+  "max_single_color_max": 15
+ },
+ {
+  "N": 18,
+  "lo": 11,
+  "hi": 13,
+  "region_half": [
+   0.2,
+   0.32
+  ],
+  "reset_ok": 1024,
+  "redraw_frac": 0.11328125,
+  "fallback": 0,
+  "max_single_color_max": 15
+ },
+ {
+  "N": 20,
+  "lo": 12,
+  "hi": 14,
+  "region_half": [
+   0.2,
+   0.32
+  ],
+  "reset_ok": 1024,
+  "redraw_frac": 0.1748046875,
+  "fallback": 0,
+  "max_single_color_max": 15
+ },
+ {
+  "N": 16,
+  "lo": 8,
+  "hi": 10,
+  "region_half": [
+   0.2,
+   0.25
+  ],
+  "reset_ok": 1009,
+  "redraw_frac": 0.18037661050545095,
+  "fallback": 0,
+  "max_single_color_max": 13
+ },
+ {
+  "N": 18,
+  "lo": 10,
+  "hi": 12,
+  "region_half": [
+   0.2,
+   0.32
+  ],
+  "reset_ok": 1024,
+  "redraw_frac": 0.1181640625,
+  "fallback": 0,
+  "max_single_color_max": 13
+ }
+]

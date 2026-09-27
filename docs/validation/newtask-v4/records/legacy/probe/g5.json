@@ -1,0 +1,5814 @@
+{
+ "manifest": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v3/subset_manifest.json",
+ "rows": [
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.20ecd40000000p-5",
+        "-0x1.72290a0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6e7d140000000p-25",
+        "-0x1.f3be000000000p-1",
+        "0x1.bd73e20000000p-3",
+        "0x1.46acd40000000p-27"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.b38ecc0000000p-6",
+        "0x1.6be49e0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.42e0ae0000000p-25",
+        "-0x1.b846440000000p-1",
+        "0x1.0558e80000000p-1",
+        "0x1.7f52280000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.f15dec0000000p-8",
+        "0x1.54a11c0000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.2a26860000000p-25",
+        "-0x1.968e820000000p-1",
+        "0x1.37376a0000000p-1",
+        "0x1.c876ec0000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "-0x1.20ecd40000000p-5",
+        "-0x1.72290a0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.f15dec0000000p-8",
+        "0x1.54a11c0000000p-5",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.b38ecc0000000p-6",
+        "0x1.6be49e0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 5000
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        -0.03526917822659016,
+        -0.18074233204126358,
+        25.12520134449005
+       ],
+       "1": [
+        0.02658433891832829,
+        0.17768214344978334,
+        61.3868111371994
+       ],
+       "2": [
+        0.007589216232299807,
+        0.041580727994442,
+        74.8676472902298
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       1,
+       2,
+       0
+      ],
+      "n_picks": 1,
+      "n_swaps": 2,
+      "selected": [
+       2,
+       0,
+       1
+      ],
+      "swap_initiator_indices": [
+       1,
+       2
+      ],
+      "swap_initiator_third": 0,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 11
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       -0.03526917822659016,
+       -0.18074233204126358,
+       25.12520134449005
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.02658433891832829,
+       0.17768214344978334,
+       61.3868111371994
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.007589216232299807,
+       0.041580727994442,
+       74.8676472902298
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 0,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 5000,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.4d8dd80000000p-3",
+        "0x1.a5c81c0000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0d23060000000p-25",
+        "-0x1.6efe620000000p-1",
+        "0x1.6503d00000000p-1",
+        "0x1.05d19c0000000p-25"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.bcaaea0000000p-4",
+        "-0x1.3fd7b80000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.54a2c20000000p-25",
+        "-0x1.d07d440000000p-1",
+        "0x1.aec8a60000000p-2",
+        "0x1.3beaea0000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.d130400000000p-6",
+        "-0x1.3bb7780000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.151d1a0000000p-25",
+        "-0x1.79def40000000p-1",
+        "0x1.597b4e0000000p-1",
+        "0x1.fab8c20000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "-0x1.bcaaea0000000p-4",
+        "-0x1.3fd7b80000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.4d8dd80000000p-3",
+        "0x1.a5c81c0000000p-5",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.d130400000000p-6",
+        "-0x1.3bb7780000000p-5",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 5100
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.16286819636821748,
+        0.05148702204227447,
+        88.42072606086731
+       ],
+       "1": [
+        -0.10856143444776535,
+        -0.0780865877866745,
+        49.755975008010864
+       ],
+       "2": [
+        0.02839285165071488,
+        -0.03853963464498521,
+        84.87240493297577
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       2,
+       1,
+       0
+      ],
+      "n_picks": 1,
+      "n_swaps": 2,
+      "selected": [
+       1,
+       0,
+       2
+      ],
+      "swap_initiator_indices": [
+       0,
+       1
+      ],
+      "swap_initiator_third": 2,
+      "target_choice": 0
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 11
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the blue cube",
+      "subgoal_segment": "pick up the container at <> that hides the blue cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.16286819636821748,
+       0.05148702204227447,
+       88.42072606086731
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       -0.10856143444776535,
+       -0.0780865877866745,
+       49.755975008010864
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.02839285165071488,
+       -0.03853963464498521,
+       84.87240493297577
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 2
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 1,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 5100,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.3a98ea0000000p-3",
+        "0x1.5526300000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.75d2f00000000p-25",
+        "-0x1.fdbea20000000p-1",
+        "0x1.8007fa0000000p-4",
+        "0x1.19a19e0000000p-28"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.1672340000000p-3",
+        "0x1.b576300000000p-8",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.64bcf80000000p-25",
+        "-0x1.e6724e0000000p-1",
+        "0x1.3f75fa0000000p-2",
+        "0x1.d48e820000000p-27"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.a63e280000000p-9",
+        "0x1.054ac60000000p-6",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.44f8da0000000p-25",
+        "-0x1.bb21600000000p-1",
+        "0x1.00799e0000000p-1",
+        "0x1.782cbe0000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.3a98ea0000000p-3",
+        "0x1.5526300000000p-5",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "-0x1.a63e280000000p-9",
+        "0x1.054ac60000000p-6",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "-0x1.1672340000000p-3",
+        "0x1.b576300000000p-8",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 5400
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.15361197024583817,
+        0.04164418637752533,
+        10.759633183479309
+       ],
+       "1": [
+        -0.13596000730991364,
+        0.006675135493278514,
+        36.356404423713684
+       ],
+       "2": [
+        -0.0032214570045471166,
+        0.015948002636432652,
+        60.122814774513245
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       1,
+       2,
+       0
+      ],
+      "n_picks": 1,
+      "n_swaps": 2,
+      "selected": [
+       2,
+       0,
+       1
+      ],
+      "swap_initiator_indices": [
+       0,
+       2
+      ],
+      "swap_initiator_third": 1,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 11
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.15361197024583817,
+       0.04164418637752533,
+       10.759633183479309
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       -0.13596000730991364,
+       0.006675135493278514,
+       36.356404423713684
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       -0.0032214570045471166,
+       0.015948002636432652,
+       60.122814774513245
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 1
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 4,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 5400,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.22894a0000000p-3",
+        "-0x1.0575c00000000p-6",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6457420000000p-25",
+        "-0x1.e5e79a0000000p-1",
+        "0x1.42be020000000p-2",
+        "0x1.d95e960000000p-27"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.71507c0000000p-6",
+        "0x1.c92d900000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.73611c0000000p-25",
+        "-0x1.fa69400000000p-1",
+        "0x1.2dc67a0000000p-3",
+        "0x1.ba9dfc0000000p-28"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.3d6e5c0000000p-3",
+        "-0x1.f3e5da0000000p-6",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.1438a80000000p-25",
+        "-0x1.78a7720000000p-1",
+        "0x1.5aced00000000p-1",
+        "0x1.fcaab80000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.9149aa0000000p-6",
+        "-0x1.274dce0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.30b6000000000p-25",
+        "-0x1.9f80a00000000p-1",
+        "0x1.2b2b1c0000000p-1",
+        "0x1.b6cb240000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.71507c0000000p-6",
+        "0x1.c92d900000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "-0x1.22894a0000000p-3",
+        "-0x1.0575c00000000p-6",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.3d6e5c0000000p-3",
+        "-0x1.f3e5da0000000p-6",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 5200
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        -0.14186342149972916,
+        -0.015958250015974035,
+        36.74310922622681
+       ],
+       "1": [
+        0.02254116073250771,
+        0.11161571472883225,
+        16.9469153881073
+       ],
+       "2": [
+        0.1549956503510475,
+        -0.03051134407520295,
+        85.27523517608643
+       ],
+       "3": [
+        0.024492660164833077,
+        -0.14419137090444564,
+        71.50898516178131
+       ]
+      },
+      "type_choice": 0
+     },
+     "objects": {
+      "color_order": [
+       1,
+       2,
+       0
+      ],
+      "n_picks": 1,
+      "n_swaps": 1,
+      "selected": [
+       0,
+       1,
+       2
+      ],
+      "swap_initiator_indices": [
+       0,
+       2
+      ],
+      "swap_initiator_third": 3,
+      "target_choice": 0
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       -0.14186342149972916,
+       -0.015958250015974035,
+       36.74310922622681
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.02254116073250771,
+       0.11161571472883225,
+       16.9469153881073
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.1549956503510475,
+       -0.03051134407520295,
+       85.27523517608643
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.024492660164833077,
+       -0.14419137090444564,
+       71.50898516178131
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 3
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 2,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 5200,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.4e3ae20000000p-4",
+        "0x1.82cf0a0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.74fff00000000p-25",
+        "-0x1.fc9ee80000000p-1",
+        "0x1.d5d25e0000000p-4",
+        "0x1.588bda0000000p-28"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.7ab92c0000000p-4",
+        "0x1.076e1a0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.3058120000000p-25",
+        "-0x1.9f008a0000000p-1",
+        "0x1.2bdcb00000000p-1",
+        "0x1.b7cf9a0000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.0cc8520000000p-4",
+        "-0x1.49f55e0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.57004a0000000p-25",
+        "-0x1.d3b6fa0000000p-1",
+        "0x1.a0972c0000000p-2",
+        "0x1.3182460000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "-0x1.3dc62e0000000p-4",
+        "-0x1.a2feda0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0d35a60000000p-25",
+        "-0x1.6f17c60000000p-1",
+        "0x1.64e9b20000000p-1",
+        "0x1.05be760000000p-25"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "-0x1.4e3ae20000000p-4",
+        "0x1.82cf0a0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.0cc8520000000p-4",
+        "-0x1.49f55e0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.7ab92c0000000p-4",
+        "0x1.076e1a0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 5600
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        -0.08159912437200546,
+        0.0944357278943062,
+        13.172940015792847
+       ],
+       "1": [
+        0.09246174693107605,
+        0.06431398719549179,
+        71.70040905475616
+       ],
+       "2": [
+        0.06562072664499283,
+        -0.08055626809597015,
+        48.01129460334778
+       ],
+       "3": [
+        -0.0775815799832344,
+        -0.10229382544755936,
+        88.38887214660645
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       1,
+       0,
+       2
+      ],
+      "n_picks": 1,
+      "n_swaps": 2,
+      "selected": [
+       2,
+       1,
+       0
+      ],
+      "swap_initiator_indices": [
+       0,
+       2
+      ],
+      "swap_initiator_third": 3,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       -0.08159912437200546,
+       0.0944357278943062,
+       13.172940015792847
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.09246174693107605,
+       0.06431398719549179,
+       71.70040905475616
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.06562072664499283,
+       -0.08055626809597015,
+       48.01129460334778
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       -0.0775815799832344,
+       -0.10229382544755936,
+       88.38887214660645
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 3
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 6,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 5600,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.fe28580000000p-4",
+        "0x1.92f6fa0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.157d080000000p-25",
+        "-0x1.7a61c40000000p-1",
+        "0x1.58ec060000000p-1",
+        "0x1.f9e69a0000000p-26"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.6f9d560000000p-5",
+        "-0x1.f748900000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.462dbe0000000p-25",
+        "-0x1.bcc6980000000p-1",
+        "0x1.fb38d00000000p-2",
+        "0x1.73f9540000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.765bd80000000p-4",
+        "-0x1.5131060000000p-6",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.2fde4a0000000p-25",
+        "-0x1.9e5a7a0000000p-1",
+        "0x1.2cc1fe0000000p-1",
+        "0x1.b91fec0000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "-0x1.836c600000000p-7",
+        "0x1.4a38320000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.43dd740000000p-25",
+        "-0x1.b99ef40000000p-1",
+        "0x1.0310ca0000000p-1",
+        "0x1.7bf96c0000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "-0x1.765bd80000000p-4",
+        "-0x1.5131060000000p-6",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.fe28580000000p-4",
+        "0x1.92f6fa0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.6f9d560000000p-5",
+        "-0x1.f748900000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 6000
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.12455019593238831,
+        0.0983800682425499,
+        84.70278739929199
+       ],
+       "1": [
+        0.044874828755855564,
+        -0.12287193566560745,
+        59.38354432582855
+       ],
+       "2": [
+        -0.09139618426561355,
+        -0.02058053582906723,
+        71.94792866706848
+       ],
+       "3": [
+        -0.011823221743106835,
+        0.1612399983406067,
+        60.7938551902771
+       ]
+      },
+      "type_choice": 0
+     },
+     "objects": {
+      "color_order": [
+       2,
+       0,
+       1
+      ],
+      "n_picks": 1,
+      "n_swaps": 1,
+      "selected": [
+       2,
+       1,
+       0
+      ],
+      "swap_initiator_indices": [
+       1,
+       2
+      ],
+      "swap_initiator_third": 0,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the blue cube",
+      "subgoal_segment": "pick up the container at <> that hides the blue cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.12455019593238831,
+       0.0983800682425499,
+       84.70278739929199
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.044874828755855564,
+       -0.12287193566560745,
+       59.38354432582855
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       -0.09139618426561355,
+       -0.02058053582906723,
+       71.94792866706848
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       -0.011823221743106835,
+       0.1612399983406067,
+       60.7938551902771
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 10,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 6000,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.7ef3840000000p-5",
+        "-0x1.a1cbfa0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6cf3a00000000p-25",
+        "-0x1.f1a5780000000p-1",
+        "0x1.e188540000000p-3",
+        "0x1.61226e0000000p-27"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.1f59720000000p-3",
+        "0x1.dc850a0000000p-6",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.1d6f760000000p-25",
+        "-0x1.8537e40000000p-1",
+        "0x1.4ca5460000000p-1",
+        "0x1.e7e51a0000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.28a4660000000p-4",
+        "0x1.20fb200000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.60c0fa0000000p-25",
+        "-0x1.e103720000000p-1",
+        "0x1.5ed3f20000000p-2",
+        "0x1.0148140000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.4f03760000000p-3",
+        "0x1.5fc3c20000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.772a600000000p-25",
+        "-0x1.ff92f20000000p-1",
+        "0x1.4e1b2c0000000p-5",
+        "0x1.ea097e0000000p-30"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "-0x1.28a4660000000p-4",
+        "0x1.20fb200000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "-0x1.1f59720000000p-3",
+        "0x1.dc850a0000000p-6",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.7ef3840000000p-5",
+        "-0x1.a1cbfa0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 5300
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.04674697488546371,
+        -0.1020011693239212,
+        27.197781801223755
+       ],
+       "1": [
+        -0.1403073263168335,
+        0.02908445343375206,
+        81.03773653507233
+       ],
+       "2": [
+        -0.07242240816354753,
+        0.14110397577285766,
+        40.07137656211853
+       ],
+       "3": [
+        0.16358081340789796,
+        0.042940023243427286,
+        4.674848914146423
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       2,
+       0,
+       1
+      ],
+      "n_picks": 2,
+      "n_swaps": 3,
+      "selected": [
+       2,
+       0,
+       1
+      ],
+      "swap_initiator_indices": [
+       1,
+       2
+      ],
+      "swap_initiator_third": 3,
+      "target_choice": 0
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the blue cube",
+      "subgoal_segment": "pick up the container at <> that hides the blue cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the red cube",
+      "subgoal_segment": "pick up the container at <> that hides the red cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.04674697488546371,
+       -0.1020011693239212,
+       27.197781801223755
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       -0.1403073263168335,
+       0.02908445343375206,
+       81.03773653507233
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       -0.07242240816354753,
+       0.14110397577285766,
+       40.07137656211853
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.16358081340789796,
+       0.042940023243427286,
+       4.674848914146423
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 3
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 3,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 5300,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.d9b3c00000000p-4",
+        "0x1.4da8880000000p-8",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.72c6260000000p-25",
+        "-0x1.f995f40000000p-1",
+        "0x1.4329200000000p-3",
+        "0x1.d9fbb40000000p-28"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.9c49e60000000p-5",
+        "-0x1.801a820000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.73f4ce0000000p-25",
+        "-0x1.fb32a60000000p-1",
+        "0x1.17d69a0000000p-3",
+        "0x1.9a711c0000000p-28"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.0573260000000p-3",
+        "0x1.954af00000000p-6",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.39d8460000000p-25",
+        "-0x1.abf5140000000p-1",
+        "0x1.19102e0000000p-1",
+        "0x1.9c3d0c0000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.665d8a0000000p-4",
+        "0x1.e434740000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.7707380000000p-25",
+        "-0x1.ff63000000000p-1",
+        "0x1.90d67a0000000p-5",
+        "0x1.25f4e20000000p-29"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.d9b3c00000000p-4",
+        "0x1.4da8880000000p-8",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "-0x1.0573260000000p-3",
+        "0x1.954af00000000p-6",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "-0x1.9c49e60000000p-5",
+        "-0x1.801a820000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 5700
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.11564994007349014,
+        0.005091222077608107,
+        18.15766990184784
+       ],
+       "1": [
+        -0.050328207314014425,
+        -0.09377527683973313,
+        15.706903338432312
+       ],
+       "2": [
+        -0.12766104012727736,
+        0.024737104773521416,
+        66.5902429819107
+       ],
+       "3": [
+        0.08749154806137086,
+        0.11821408331394195,
+        5.609250068664551
+       ]
+      },
+      "type_choice": 0
+     },
+     "objects": {
+      "color_order": [
+       2,
+       1,
+       0
+      ],
+      "n_picks": 2,
+      "n_swaps": 2,
+      "selected": [
+       0,
+       2,
+       1
+      ],
+      "swap_initiator_indices": [
+       0,
+       2
+      ],
+      "swap_initiator_third": 3,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the blue cube",
+      "subgoal_segment": "pick up the container at <> that hides the blue cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.11564994007349014,
+       0.005091222077608107,
+       18.15766990184784
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       -0.050328207314014425,
+       -0.09377527683973313,
+       15.706903338432312
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       -0.12766104012727736,
+       0.024737104773521416,
+       66.5902429819107
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.08749154806137086,
+       0.11821408331394195,
+       5.609250068664551
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 3
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 7,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 5700,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.a5ba860000000p-4",
+        "-0x1.42bf9a0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.5858fa0000000p-25",
+        "-0x1.d58cfe0000000p-1",
+        "0x1.983edc0000000p-2",
+        "0x1.2b639a0000000p-26"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.3189f60000000p-6",
+        "0x1.c3741c0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.45bcd80000000p-25",
+        "-0x1.bc2ca60000000p-1",
+        "0x1.fd53500000000p-2",
+        "0x1.75843e0000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.485a760000000p-3",
+        "0x1.7f8fca0000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.30ff8c0000000p-25",
+        "-0x1.9fe4e80000000p-1",
+        "0x1.2a9fa20000000p-1",
+        "0x1.b5fe940000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.80c1780000000p-4",
+        "-0x1.4b3f980000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.45aaf00000000p-25",
+        "-0x1.bc143a0000000p-1",
+        "0x1.fda8780000000p-2",
+        "0x1.75c2b00000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.485a760000000p-3",
+        "0x1.7f8fca0000000p-5",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.3189f60000000p-6",
+        "0x1.c3741c0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "-0x1.a5ba860000000p-4",
+        "-0x1.42bf9a0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "identity": {
+      "seed": 6100
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        -0.10296108394861223,
+        -0.07879600495100021,
+        46.99103057384491
+       ],
+       "1": [
+        0.018648615181446088,
+        0.11021815210580826,
+        59.65470492839813
+       ],
+       "2": [
+        0.16032879263162614,
+        0.04682149365544319,
+        71.35879218578339
+       ],
+       "3": [
+        0.09393450692296029,
+        -0.1617423927783966,
+        59.697614908218384
+       ]
+      },
+      "type_choice": 0
+     },
+     "objects": {
+      "color_order": [
+       1,
+       0,
+       2
+      ],
+      "n_picks": 2,
+      "n_swaps": 2,
+      "selected": [
+       1,
+       0,
+       2
+      ],
+      "swap_initiator_indices": [
+       1,
+       0
+      ],
+      "swap_initiator_third": 2,
+      "target_choice": 0
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the red cube",
+      "subgoal_segment": "pick up the container at <> that hides the red cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       -0.10296108394861223,
+       -0.07879600495100021,
+       46.99103057384491
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.018648615181446088,
+       0.11021815210580826,
+       59.65470492839813
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.16032879263162614,
+       0.04682149365544319,
+       71.35879218578339
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.09393450692296029,
+       -0.1617423927783966,
+       59.697614908218384
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 2
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 11,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 6100,
+   "task": "VideoUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.3230a40000000p-7",
+        "-0x1.0479600000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.48565c0000000p-25",
+        "-0x1.bfb8220000000p-1",
+        "0x1.f0c15a0000000p-2",
+        "0x1.6c4c560000000p-26"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.9e33260000000p-6",
+        "0x1.11a5c60000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.70b4a60000000p-25",
+        "-0x1.f6c3ec0000000p-1",
+        "0x1.8337600000000p-3",
+        "0x1.1bf7980000000p-27"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.5923ae0000000p-13",
+        "0x1.a969920000000p-8",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0ef1ba0000000p-25",
+        "-0x1.7175520000000p-1",
+        "0x1.6276b80000000p-1",
+        "0x1.03f2aa0000000p-25"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "-0x1.3230a40000000p-7",
+        "-0x1.0479600000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.5923ae0000000p-13",
+        "0x1.a969920000000p-8",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "-0x1.9e33260000000p-6",
+        "0x1.11a5c60000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "1d9cf2288857eeb3d7d3cf851902738ff5fb4f2ba3705ea6fa2691f1cc8d5595"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 7000
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        -0.009344176948070534,
+        -0.12718463093042373,
+        58.03969860076904
+       ],
+       "1": [
+        -0.02528075009584428,
+        0.13361697137355805,
+        21.79708421230316
+       ],
+       "2": [
+        0.00016457527875900213,
+        0.006491277813911442,
+        87.62681901454926
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       2,
+       1,
+       0
+      ],
+      "n_picks": 2,
+      "n_swaps": 2,
+      "selected": [
+       0,
+       2,
+       1
+      ],
+      "swap_initiator_indices": [
+       0,
+       1
+      ],
+      "swap_initiator_third": 2,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 11
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the blue cube",
+      "subgoal_segment": "pick up the container at <> that hides the blue cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       -0.009344176948070534,
+       -0.12718463093042373,
+       58.03969860076904
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       -0.02528075009584428,
+       0.13361697137355805,
+       21.79708421230316
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.00016457527875900213,
+       0.006491277813911442,
+       87.62681901454926
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 2
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 0,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 7000,
+   "task": "ButtonUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.45e3da0000000p-5",
+        "-0x1.0d89ea0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.4aa67c0000000p-25",
+        "-0x1.c2df900000000p-1",
+        "0x1.e535de0000000p-2",
+        "0x1.63d4e80000000p-26"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.13dc460000000p-6",
+        "0x1.fb10ec0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.7249240000000p-25",
+        "-0x1.f8eb7a0000000p-1",
+        "0x1.53690a0000000p-3",
+        "0x1.f1d1180000000p-28"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.64fd680000000p-3",
+        "0x1.d601740000000p-7",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.2ac7a00000000p-25",
+        "-0x1.976a2c0000000p-1",
+        "0x1.3617a20000000p-1",
+        "0x1.c6d0d60000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.13dc460000000p-6",
+        "0x1.fb10ec0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "-0x1.45e3da0000000p-5",
+        "-0x1.0d89ea0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.64fd680000000p-3",
+        "0x1.d601740000000p-7",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "831349ae04b8d96290b81ca8f5052897c9e0af1e020f1d7467cbc096329ee8f3"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 7100
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        -0.039781501293182385,
+        -0.13161070942878722,
+        56.567482352256775
+       ],
+       "1": [
+        0.01683718591928482,
+        0.12379543572664259,
+        19.0790194272995
+       ],
+       "2": [
+        0.17431145697832107,
+        0.014343434870243074,
+        74.55112516880035
+       ]
+      },
+      "type_choice": 0
+     },
+     "objects": {
+      "color_order": [
+       0,
+       1,
+       2
+      ],
+      "n_picks": 2,
+      "n_swaps": 1,
+      "selected": [
+       2,
+       0,
+       1
+      ],
+      "swap_initiator_indices": [
+       2,
+       1
+      ],
+      "swap_initiator_third": 0,
+      "target_choice": 1
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 11
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the red cube",
+      "subgoal_segment": "pick up the container at <> that hides the red cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       -0.039781501293182385,
+       -0.13161070942878722,
+       56.567482352256775
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.01683718591928482,
+       0.12379543572664259,
+       19.0790194272995
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.17431145697832107,
+       0.014343434870243074,
+       74.55112516880035
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 1,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 7100,
+   "task": "ButtonUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.7629d80000000p-7",
+        "-0x1.f40c860000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.7710980000000p-25",
+        "-0x1.ff6fc60000000p-1",
+        "0x1.8032f60000000p-5",
+        "0x1.19c1240000000p-29"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.9fa8740000000p-5",
+        "0x1.10ee300000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6f61e40000000p-25",
+        "-0x1.f4f5fa0000000p-1",
+        "0x1.a6fbee0000000p-3",
+        "0x1.36329a0000000p-27"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.5961660000000p-7",
+        "-0x1.692fae0000000p-12",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.7490b60000000p-25",
+        "-0x1.fc073c0000000p-1",
+        "0x1.fd32800000000p-4",
+        "0x1.756c2e0000000p-28"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.7629d80000000p-7",
+        "-0x1.f40c860000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "-0x1.5961660000000p-7",
+        "-0x1.692fae0000000p-12",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "-0x1.9fa8740000000p-5",
+        "0x1.10ee300000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "6434f8016f1c84416378c493489ba625d4d9708a1a72b1ff8e89591243863446"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 7400
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.011418562829494477,
+        -0.12208225458860396,
+        5.376235842704773
+       ],
+       "1": [
+        -0.05073950558900833,
+        0.13326680749654768,
+        23.838765621185303
+       ],
+       "2": [
+        -0.010540175139904025,
+        -0.0003444540500640858,
+        14.28248405456543
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       2,
+       1,
+       0
+      ],
+      "n_picks": 2,
+      "n_swaps": 2,
+      "selected": [
+       0,
+       2,
+       1
+      ],
+      "swap_initiator_indices": [
+       2,
+       1
+      ],
+      "swap_initiator_third": 0,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 11
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the blue cube",
+      "subgoal_segment": "pick up the container at <> that hides the blue cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.011418562829494477,
+       -0.12208225458860396,
+       5.376235842704773
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       -0.05073950558900833,
+       0.13326680749654768,
+       23.838765621185303
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       -0.010540175139904025,
+       -0.0003444540500640858,
+       14.28248405456543
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 4,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 7400,
+   "task": "ButtonUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.0073060000000p-8",
+        "-0x1.0b0e580000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0eae520000000p-25",
+        "-0x1.7119660000000p-1",
+        "0x1.62d6720000000p-1",
+        "0x1.0438de0000000p-25"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.4bd7d80000000p-7",
+        "0x1.6eb6c00000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.4fc6120000000p-25",
+        "-0x1.c9dc080000000p-1",
+        "0x1.ca4ba40000000p-2",
+        "0x1.5017ec0000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.0859d20000000p-4",
+        "0x1.d5e88c0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.75168e0000000p-25",
+        "-0x1.fcbdc20000000p-1",
+        "0x1.cd65720000000p-4",
+        "0x1.525e100000000p-28"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.7901780000000p-4",
+        "0x1.33390c0000000p-7",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.5f58a40000000p-25",
+        "-0x1.df181a0000000p-1",
+        "0x1.692e2e0000000p-2",
+        "0x1.08dfa40000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.0859d20000000p-4",
+        "0x1.d5e88c0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.0073060000000p-8",
+        "-0x1.0b0e580000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.4bd7d80000000p-7",
+        "0x1.6eb6c00000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "7f48a6e95bee12b8ed0a6084d59510a18b1631500c87b6fdb5114245767a7222"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 7200
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.003913106024265291,
+        -0.1303984597325325,
+        87.74283528327942
+       ],
+       "1": [
+        0.010127049386501316,
+        0.0895297533273697,
+        53.17374229431152
+       ],
+       "2": [
+        0.06453878790140152,
+        0.22944745659828192,
+        12.935687899589539
+       ],
+       "3": [
+        0.09204241633415222,
+        0.00937569737434387,
+        41.306962966918945
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       1,
+       2,
+       0
+      ],
+      "n_picks": 1,
+      "n_swaps": 2,
+      "selected": [
+       0,
+       2,
+       1
+      ],
+      "swap_initiator_indices": [
+       2,
+       1
+      ],
+      "swap_initiator_third": 3,
+      "target_choice": 1
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.003913106024265291,
+       -0.1303984597325325,
+       87.74283528327942
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.010127049386501316,
+       0.0895297533273697,
+       53.17374229431152
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.06453878790140152,
+       0.22944745659828192,
+       12.935687899589539
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.09204241633415222,
+       0.00937569737434387,
+       41.306962966918945
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 3
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 2,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 7200,
+   "task": "ButtonUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.0bcd420000000p-6",
+        "-0x1.9b39b20000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6f0c980000000p-25",
+        "-0x1.f481ae0000000p-1",
+        "0x1.af80cc0000000p-3",
+        "0x1.3c71f60000000p-27"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.a0deb00000000p-8",
+        "0x1.14403e0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.3bad200000000p-25",
+        "-0x1.ae74660000000p-1",
+        "0x1.15392a0000000p-1",
+        "0x1.969b3e0000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.0898e40000000p-3",
+        "0x1.6380940000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.348ddc0000000p-25",
+        "-0x1.a4be340000000p-1",
+        "0x1.23c0900000000p-1",
+        "0x1.abea860000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.11ae620000000p-3",
+        "-0x1.2844da0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.750eaa0000000p-25",
+        "-0x1.fcb2fe0000000p-1",
+        "0x1.d05b080000000p-4",
+        "0x1.5489a60000000p-28"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.0898e40000000p-3",
+        "0x1.6380940000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.a0deb00000000p-8",
+        "0x1.14403e0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "-0x1.0bcd420000000p-6",
+        "-0x1.9b39b20000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "b909d7a0c44c104e29b0a8e499639230e1197c85720feedded23f18fb44beb62"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 7600
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        -0.01634532451629639,
+        -0.10039681971073153,
+        24.326155185699463
+       ],
+       "1": [
+        0.006360929608345035,
+        0.13488816291093825,
+        65.5650383234024
+       ],
+       "2": [
+        0.12919786125421526,
+        0.17358508586883545,
+        69.47654128074646
+       ],
+       "3": [
+        0.1336333885788918,
+        -0.0723312905430794,
+        13.019013404846191
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       0,
+       2,
+       1
+      ],
+      "n_picks": 1,
+      "n_swaps": 1,
+      "selected": [
+       0,
+       2,
+       1
+      ],
+      "swap_initiator_indices": [
+       2,
+       1
+      ],
+      "swap_initiator_third": 0,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the red cube",
+      "subgoal_segment": "pick up the container at <> that hides the red cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       -0.01634532451629639,
+       -0.10039681971073153,
+       24.326155185699463
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.006360929608345035,
+       0.13488816291093825,
+       65.5650383234024
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.12919786125421526,
+       0.17358508586883545,
+       69.47654128074646
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.1336333885788918,
+       -0.0723312905430794,
+       13.019013404846191
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 6,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 7600,
+   "task": "ButtonUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.98a1640000000p-6",
+        "-0x1.1093e80000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.72a7d60000000p-25",
+        "-0x1.f96c9e0000000p-1",
+        "0x1.472d6e0000000p-3",
+        "0x1.dfdfee0000000p-28"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.33dba80000000p-9",
+        "0x1.2335f00000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.64b3780000000p-25",
+        "-0x1.e665580000000p-1",
+        "0x1.3fc4da0000000p-2",
+        "0x1.d502300000000p-27"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.1b585e0000000p-3",
+        "0x1.262eba0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.2b45360000000p-25",
+        "-0x1.98156a0000000p-1",
+        "0x1.3536240000000p-1",
+        "0x1.c5861a0000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.1d66840000000p-3",
+        "-0x1.79b4580000000p-6",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.21848e0000000p-25",
+        "-0x1.8ac8fc0000000p-1",
+        "0x1.4605000000000p-1",
+        "0x1.de2d260000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.1b585e0000000p-3",
+        "0x1.262eba0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.33dba80000000p-9",
+        "0x1.2335f00000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.98a1640000000p-6",
+        "-0x1.1093e80000000p-5",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "d4029b622872ddaee19f03c8094a7631d651e15fe9a394b880772b4ac3b38a52"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 8000
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.024940823018550884,
+        -0.033273653686046595,
+        18.385308980941772
+       ],
+       "1": [
+        0.0023487704992294287,
+        0.14219271451234816,
+        36.39269471168518
+       ],
+       "2": [
+        0.13835214257240297,
+        0.14364381551742555,
+        74.30358409881592
+       ],
+       "3": [
+        0.13935568898916245,
+        -0.023053251504898065,
+        79.10082221031189
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       2,
+       1,
+       0
+      ],
+      "n_picks": 1,
+      "n_swaps": 1,
+      "selected": [
+       2,
+       1,
+       0
+      ],
+      "swap_initiator_indices": [
+       1,
+       2
+      ],
+      "swap_initiator_third": 0,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the blue cube",
+      "subgoal_segment": "pick up the container at <> that hides the blue cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.024940823018550884,
+       -0.033273653686046595,
+       18.385308980941772
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.0023487704992294287,
+       0.14219271451234816,
+       36.39269471168518
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.13835214257240297,
+       0.14364381551742555,
+       74.30358409881592
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.13935568898916245,
+       -0.023053251504898065,
+       79.10082221031189
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 10,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 8000,
+   "task": "ButtonUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.a51f380000000p-6",
+        "0x1.377ce20000000p-6",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.72208a0000000p-25",
+        "-0x1.f8b4220000000p-1",
+        "0x1.5884520000000p-3",
+        "0x1.f94e7e0000000p-28"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.0511f80000000p-7",
+        "0x1.a92a600000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.5d9c780000000p-25",
+        "-0x1.dcba6e0000000p-1",
+        "0x1.757e220000000p-2",
+        "0x1.11e7240000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.9a4ed20000000p-4",
+        "0x1.b2035e0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.12495e0000000p-25",
+        "-0x1.7604120000000p-1",
+        "0x1.5da6c20000000p-1",
+        "0x1.006b320000000p-25"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.191c0a0000000p-3",
+        "-0x1.3592f40000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.7486880000000p-25",
+        "-0x1.fbf95e0000000p-1",
+        "0x1.0052ac0000000p-3",
+        "0x1.77f39c0000000p-28"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "-0x1.0511f80000000p-7",
+        "0x1.a92a600000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.9a4ed20000000p-4",
+        "0x1.b2035e0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.a51f380000000p-6",
+        "0x1.377ce20000000p-6",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "4a5642d2257385b03df56d7388ea922d7b6f2d39dd5a24df3137bcd50cabb009"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 7300
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.025703244507312775,
+        0.019011708796024318,
+        19.368816018104553
+       ],
+       "1": [
+        -0.007967230081558231,
+        0.20760035365819934,
+        42.78304159641266
+       ],
+       "2": [
+        0.10017282485961915,
+        0.1059602439403534,
+        86.14338040351868
+       ],
+       "3": [
+        0.13726051688194277,
+        -0.03778979867696762,
+        14.379724860191345
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       1,
+       2,
+       0
+      ],
+      "n_picks": 2,
+      "n_swaps": 2,
+      "selected": [
+       2,
+       1,
+       0
+      ],
+      "swap_initiator_indices": [
+       1,
+       2
+      ],
+      "swap_initiator_third": 0,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the blue cube",
+      "subgoal_segment": "pick up the container at <> that hides the blue cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.025703244507312775,
+       0.019011708796024318,
+       19.368816018104553
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       -0.007967230081558231,
+       0.20760035365819934,
+       42.78304159641266
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.10017282485961915,
+       0.1059602439403534,
+       86.14338040351868
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.13726051688194277,
+       -0.03778979867696762,
+       14.379724860191345
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 3,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 7300,
+   "task": "ButtonUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.ee497c0000000p-6",
+        "-0x1.3c1a740000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.449e820000000p-25",
+        "-0x1.baa6320000000p-1",
+        "0x1.014dfe0000000p-1",
+        "0x1.79643a0000000p-26"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.7a52260000000p-7",
+        "0x1.27956c0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.419c1e0000000p-25",
+        "-0x1.b68bb00000000p-1",
+        "0x1.083cec0000000p-1",
+        "0x1.838f8a0000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.ebf76e0000000p-4",
+        "0x1.375d3e0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.367a400000000p-25",
+        "-0x1.a75da00000000p-1",
+        "0x1.1feede0000000p-1",
+        "0x1.a650880000000p-26"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.0607ba0000000p-3",
+        "-0x1.a6de880000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.170b6e0000000p-25",
+        "-0x1.7c81060000000p-1",
+        "0x1.56945a0000000p-1",
+        "0x1.f6770c0000000p-26"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.ee497c0000000p-6",
+        "-0x1.3c1a740000000p-5",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "0x1.7a52260000000p-7",
+        "0x1.27956c0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "0x1.ebf76e0000000p-4",
+        "0x1.375d3e0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "c981e7a11863272174bd8f5ab55095f779b1616a60b6e8c197b971614cd7118a"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 7700
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        0.03016888648271561,
+        -0.03858683288097382,
+        60.33745050430298
+       ],
+       "1": [
+        0.011545437276363375,
+        0.1443279615044594,
+        62.14065670967102
+       ],
+       "2": [
+        0.12010901749134065,
+        0.15203331500291825,
+        68.43962073326111
+       ],
+       "3": [
+        0.12794443011283876,
+        -0.10323956787586214,
+        83.99536550045013
+       ]
+      },
+      "type_choice": 0
+     },
+     "objects": {
+      "color_order": [
+       1,
+       0,
+       2
+      ],
+      "n_picks": 2,
+      "n_swaps": 3,
+      "selected": [
+       1,
+       2,
+       0
+      ],
+      "swap_initiator_indices": [
+       0,
+       1
+      ],
+      "swap_initiator_third": 2,
+      "target_choice": 0
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the red cube",
+      "subgoal_segment": "pick up the container at <> that hides the red cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       0.03016888648271561,
+       -0.03858683288097382,
+       60.33745050430298
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       0.011545437276363375,
+       0.1443279615044594,
+       62.14065670967102
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.12010901749134065,
+       0.15203331500291825,
+       68.43962073326111
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.12794443011283876,
+       -0.10323956787586214,
+       83.99536550045013
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 2
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 7,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 7700,
+   "task": "ButtonUnmaskSwap"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.bad7e60000000p-10",
+        "-0x1.42a3e80000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6880e60000000p-25",
+        "-0x1.eb94b60000000p-1",
+        "0x1.1e4d560000000p-2",
+        "0x1.a3ec200000000p-27"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.9cd23e0000000p-7",
+        "0x1.60d62e0000000p-4",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.3ed6e80000000p-25",
+        "-0x1.b2c49a0000000p-1",
+        "0x1.0e68980000000p-1",
+        "0x1.8c9c760000000p-26"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.739a4e0000000p-4",
+        "0x1.0eac9c0000000p-3",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a4bd20000000p-25",
+        "-0x1.ee067a0000000p-1",
+        "0x1.0cf22c0000000p-2",
+        "0x1.8a774c0000000p-27"
+       ]
+      ]
+     },
+     "bin_3": {
+      "p": [
+       [
+        "0x1.1e50820000000p-3",
+        "-0x1.e3092c0000000p-5",
+        "0x1.a9fbe80000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.76ff4e0000000p-25",
+        "-0x1.ff58340000000p-1",
+        "0x1.9e63980000000p-5",
+        "0x1.2fe4fa0000000p-29"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_cube_blue": {
+      "p": [
+       [
+        "0x1.739a4e0000000p-4",
+        "0x1.0eac9c0000000p-3",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_green": {
+      "p": [
+       [
+        "-0x1.bad7e60000000p-10",
+        "-0x1.42a3e80000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_cube_red": {
+      "p": [
+       [
+        "-0x1.9cd23e0000000p-7",
+        "0x1.60d62e0000000p-4",
+        "0x1.1111120000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "3fd09e38472d7381c9caa56b4fbc3c96752be0645459babdb82b56e0b02a35d9"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 8100
+     },
+     "layout": {
+      "bins": {
+       "0": [
+        -0.0016893133521080003,
+        -0.07876959234476091,
+        32.471696734428406
+       ],
+       "1": [
+        -0.012598305046558383,
+        0.08614175796508788,
+        63.75997066497803
+       ],
+       "2": [
+        0.09072332978248596,
+        0.13216516643762588,
+        30.45383870601654
+       ],
+       "3": [
+        0.13980198770761493,
+        -0.05896433621644974,
+        5.79904317855835
+       ]
+      },
+      "type_choice": 1
+     },
+     "objects": {
+      "color_order": [
+       1,
+       0,
+       2
+      ],
+      "n_picks": 2,
+      "n_swaps": 2,
+      "selected": [
+       0,
+       1,
+       2
+      ],
+      "swap_initiator_indices": [
+       1,
+       2
+      ],
+      "swap_initiator_third": 3,
+      "target_choice": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 12
+     },
+     "spec_kind": "native-parity/1",
+     "task": "ButtonUnmaskSwap"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the first button",
+      "subgoal_segment": "press the first button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "press the second button",
+      "subgoal_segment": "press the second button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the green cube",
+      "subgoal_segment": "pick up the container at <> that hides the green cube"
+     },
+     {
+      "demonstration": false,
+      "name": "put down the container",
+      "subgoal_segment": "put down the container"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the container that hides the red cube",
+      "subgoal_segment": "pick up the container at <> that hides the red cube"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.n_picks",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.type_choice",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.bins.0",
+      "source": "draw",
+      "value": [
+       -0.0016893133521080003,
+       -0.07876959234476091,
+       32.471696734428406
+      ]
+     },
+     {
+      "path": "layout.bins.1",
+      "source": "draw",
+      "value": [
+       -0.012598305046558383,
+       0.08614175796508788,
+       63.75997066497803
+      ]
+     },
+     {
+      "path": "layout.bins.2",
+      "source": "draw",
+      "value": [
+       0.09072332978248596,
+       0.13216516643762588,
+       30.45383870601654
+      ]
+     },
+     {
+      "path": "layout.bins.3",
+      "source": "draw",
+      "value": [
+       0.13980198770761493,
+       -0.05896433621644974,
+       5.79904317855835
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.selected",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_choice",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_initiator_indices",
+      "source": "draw",
+      "value": [
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiator_third",
+      "source": "draw",
+      "value": 3
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 11,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 8100,
+   "task": "ButtonUnmaskSwap"
+  }
+ ],
+ "schema": "v4-reset-probe/1"
+}

@@ -1,0 +1,38 @@
+{
+  "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed10700001.h5",
+  "n_steps": 610,
+  "press_second_button_segment": [
+    118,
+    228
+  ],
+  "seg_len": 111,
+  "eef_z_min_idx": 179,
+  "eef_z_min": 0.024343930184841156,
+  "eef_z_last": 0.14863818883895874,
+  "eef_z_at_min_plus_context": [
+    0.024696722626686096,
+    0.02445104718208313,
+    0.024343930184841156,
+    0.02437557280063629,
+    0.02435620129108429,
+    0.024356484413146973,
+    0.026280730962753296,
+    0.026658423244953156,
+    0.026943564414978027,
+    0.02742333710193634
+  ],
+  "next_subgoal": "pick up the container that hides the green cube",
+  "trailing_static_steps_within_seg": 17,
+  "diffs_tail": [
+    5.62703860396141e-07,
+    1.528731274902384e-07,
+    2.835139412127319e-07,
+    2.0171681569536304e-07,
+    0.0,
+    1.6660004575896892e-07,
+    1.6660004575896892e-07,
+    1.6660004575896892e-07,
+    1.6660004575896892e-07,
+    1.6660004575896892e-07
+  ]
+}

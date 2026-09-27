@@ -1,0 +1,6915 @@
+{
+ "manifest": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v3/subset_manifest.json",
+ "rows": [
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "0x1.4f984a0000000p-4",
+        "0x1.0faf840000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.a340f40000000p-3",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.f528240000000p-1"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.70c8cc0000000p-7",
+        "0x1.403bc80000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "0x1.7573ae0000000p-7",
+        "-0x1.28c9400000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.062eb00000000p-3",
+        "0x1.464ac20000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "0x1.263ed40000000p-3",
+        "-0x1.464c240000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "2c51cf6409b1c6a3f5dfcf0c00ebeaff390773759ec63dd81ecde00383d57110"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 11003
+     },
+     "layout": {
+      "button_xy": [
+       0.10353308618068696,
+       -0.039216309785842896
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 0,
+      "color_order": [
+       1,
+       0,
+       2
+      ],
+      "num_targets_to_pick": 3,
+      "target_cube_idx": 0,
+      "visit_ids": [
+       0,
+       3,
+       2
+      ],
+      "which_in_subset": 1
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.10353308618068696,
+       -0.039216309785842896
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       0,
+       3,
+       2
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 0,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 11003,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.39f7360000000p-3",
+        "-0x1.1b3d860000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.ffb1d20000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.1ae56a0000000p-5"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "0x1.eb64240000000p-4",
+        "0x1.aff7420000000p-4",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.46a4f00000000p-3",
+        "0x1.32d8800000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "0x1.f6a7340000000p-6",
+        "0x1.3e920a0000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.1180ae0000000p-5",
+        "-0x1.4180180000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "e796b46892db493101253df669f5aec14e091918eefbbc3ec898b5d9d4d12163"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 11103
+     },
+     "layout": {
+      "button_xy": [
+       0.09066688418388368,
+       -0.10252752900123596
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 0,
+      "color_order": [
+       2,
+       0,
+       1
+      ],
+      "num_targets_to_pick": 4,
+      "target_cube_idx": 0,
+      "visit_ids": [
+       0,
+       1,
+       3,
+       2
+      ],
+      "which_in_subset": 4
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.09066688418388368,
+       -0.10252752900123596
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 4
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       3,
+       2
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 4
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 1,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 11103,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.21fa860000000p-7",
+        "0x1.1898f60000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.e096760000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6127660000000p-2"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.3d137a0000000p-5",
+        "-0x1.3673340000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.3ed27a0000000p-3",
+        "-0x1.3f13180000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "0x1.144ab80000000p-4",
+        "-0x1.3b49760000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "0x1.4588500000000p-3",
+        "0x1.2463d40000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "66460b8f2c7d15ac7d8b3233aea184c86e777d3ea7e46d33323cd655bb630168"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 11401
+     },
+     "layout": {
+      "button_xy": [
+       0.09809630513191224,
+       -0.019861042499542236
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 2,
+      "color_order": [
+       1,
+       2,
+       0
+      ],
+      "num_targets_to_pick": 4,
+      "target_cube_idx": 0,
+      "visit_ids": [
+       3,
+       2,
+       1,
+       0
+      ],
+      "which_in_subset": 3
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.09809630513191224,
+       -0.019861042499542236
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 4
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       3,
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 2
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 4,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 11401,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "0x1.663f140000000p-7",
+        "-0x1.2e63a80000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.5804660000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.7b34660000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.378c060000000p-5",
+        "-0x1.4171740000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.fe91e20000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.31eef80000000p-4"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.11a03c0000000p-3",
+        "0x1.96fcdc0000000p-7",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.ffff960000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.4adcf80000000p-9"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "0x1.61a9ec0000000p-4",
+        "-0x1.a1071e0000000p-6",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "0x1.819e700000000p-4",
+        "-0x1.4776780000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.3c16260000000p-3",
+        "0x1.4260b00000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.4b03660000000p-5",
+        "0x1.3919800000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "172f76ab660f77110e9330d71bc7421fc23662885011ddbb4e677df6b3349cb2"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 11206
+     },
+     "layout": {
+      "button_xy": [
+       0.09339020252227784,
+       0.1017472207546234
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 1,
+      "color_order": [
+       1,
+       2,
+       0
+      ],
+      "num_targets_to_pick": 3,
+      "target_cube_idx": 2,
+      "visit_ids": [
+       3,
+       2,
+       1
+      ],
+      "which_in_subset": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.09339020252227784,
+       0.1017472207546234
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       3,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 1
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 2,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 11206,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "0x1.0a5df00000000p-7",
+        "-0x1.bb071e0000000p-9",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.19129c0000000p-4",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.fecb0a0000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.11f2000000000p-3",
+        "-0x1.5091640000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.dd320c0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.7319180000000p-2"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.f4dd560000000p-4",
+        "0x1.4484760000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.eee1c60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.0692300000000p-2"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "0x1.eb30a40000000p-9",
+        "-0x1.1540240000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "0x1.b6899a0000000p-5",
+        "0x1.9bc1b80000000p-4",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "0x1.349d660000000p-3",
+        "0x1.3c6b480000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "0x1.d58ed80000000p-4",
+        "-0x1.3796fe0000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "8a88a9acfb3d178dbfb8defc3647fa0b6609fa6abeaf323b705649dcef50ed92"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 11603
+     },
+     "layout": {
+      "button_xy": [
+       0.11537990868091584,
+       -0.022214108705520628
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 0,
+      "color_order": [
+       2,
+       1,
+       0
+      ],
+      "num_targets_to_pick": 2,
+      "target_cube_idx": 1,
+      "visit_ids": [
+       0,
+       1
+      ],
+      "which_in_subset": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.11537990868091584,
+       -0.022214108705520628
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 6,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 11603,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "0x1.6016e40000000p-3",
+        "-0x1.00c7780000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.fa7b040000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.bcfca80000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.85ed5c0000000p-4",
+        "-0x1.5dea7c0000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f806ba0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.6808ba0000000p-3"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.5f04800000000p-4",
+        "0x1.59e1600000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.579a540000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.7b94840000000p-1"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "0x1.241b8a0000000p-3",
+        "-0x1.360ef60000000p-6",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "0x1.f95eae0000000p-5",
+        "-0x1.57160a0000000p-4",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.74d83e0000000p-6",
+        "-0x1.407ecc0000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.2695b00000000p-3",
+        "-0x1.44d3460000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "bb15e776d187ce2c1da57de0823edf9deb9d77220799589719acaeaf607672cd"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 12002
+     },
+     "layout": {
+      "button_xy": [
+       0.08697818517684937,
+       0.13455487489700316
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 0,
+      "color_order": [
+       0,
+       1,
+       2
+      ],
+      "num_targets_to_pick": 4,
+      "target_cube_idx": 1,
+      "visit_ids": [
+       3,
+       2,
+       1,
+       0
+      ],
+      "which_in_subset": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.08697818517684937,
+       0.13455487489700316
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 4
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       3,
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 10,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 12002,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.611c000000000p-5",
+        "0x1.4c48b80000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d555f40000000p-3",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.f25fc60000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.3a54300000000p-5",
+        "-0x1.25269c0000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0836380000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.b68fba0000000p-1"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.7b673c0000000p-4",
+        "0x1.8fb9700000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f70e720000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.7d1e5c0000000p-3"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "0x1.b456520000000p-5",
+        "-0x1.80d79a0000000p-4",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "0x1.2e70780000000p-3",
+        "-0x1.1720640000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "0x1.3fb0780000000p-3",
+        "-0x1.2275340000000p-5",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.4092d20000000p-3",
+        "-0x1.35b3300000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "7953c6b0eb9c74ad450d0a1bc172bf6d3dcab3d4fec5fd4b916bab940ed7d734"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 11305
+     },
+     "layout": {
+      "button_xy": [
+       0.10683444142341614,
+       0.09762187600135804
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 3,
+      "color_order": [
+       1,
+       0,
+       2
+      ],
+      "num_targets_to_pick": 4,
+      "swap_pair_ids": [
+       2,
+       0,
+       1,
+       3
+      ],
+      "target_cube_idx": 2,
+      "visit_ids": [
+       1,
+       0,
+       2,
+       3
+      ],
+      "which_in_subset": 3
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 9
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.10683444142341614,
+       0.09762187600135804
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_pair_ids",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1,
+       3
+      ]
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 4
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2,
+       3
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 3
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 3,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 11305,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.41d5260000000p-3",
+        "-0x1.4cfd480000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6acebe0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6944a40000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "0x1.32259e0000000p-3",
+        "0x1.1b480e0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.72a4be0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6139680000000p-1"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.78c5d00000000p-4",
+        "0x1.921aa00000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f4922e0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.ae4e280000000p-3"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "0x1.a79a280000000p-5",
+        "0x1.0cfb480000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.e045860000000p-6",
+        "-0x1.37749e0000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.2589de0000000p-3",
+        "0x1.3d94920000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "0x1.0665340000000p-3",
+        "0x1.696dae0000000p-5",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "7e4bd65e8d5ce9a8d463ab0f0dc6eefdaf5050ca1d2b47f70def66de43d872d2"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 11705
+     },
+     "layout": {
+      "button_xy": [
+       0.09905233979225159,
+       -0.07336029410362244
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 1,
+      "color_order": [
+       1,
+       0,
+       2
+      ],
+      "num_targets_to_pick": 3,
+      "swap_pair_ids": [
+       0,
+       2,
+       3,
+       1
+      ],
+      "target_cube_idx": 1,
+      "visit_ids": [
+       2,
+       1,
+       3
+      ],
+      "which_in_subset": 2
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 9
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.09905233979225159,
+       -0.07336029410362244
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.swap_pair_ids",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       3,
+       1
+      ]
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       3
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 1
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 7,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 11705,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.e281bc0000000p-4",
+        "-0x1.3b45020000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.b28fa00000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.0ebdb40000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "0x1.ce0c080000000p-4",
+        "0x1.4429cc0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.67272e0000000p-2",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.df799a0000000p-1"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.49a6580000000p-5",
+        "0x1.167f020000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.015ff60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.ba9bbe0000000p-1"
+       ]
+      ]
+     },
+     "goal_site": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-5"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "0x1.fee7ec0000000p-4",
+        "-0x1.3d7b360000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "0x1.653b9a0000000p-6",
+        "0x1.318ce60000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.34840a0000000p-3",
+        "0x1.3f92dc0000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "0x1.8a50b80000000p-6",
+        "-0x1.1a3a300000000p-3",
+        "0x1.47ae140000000p-8"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "a13882eee052738163aad13cdb206f6d2b7b1c0b7fe3d3d0f9337b53e96bbdfc"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 12100
+     },
+     "layout": {
+      "button_xy": [
+       0.11047296524047852,
+       -0.01525057554244995
+      ],
+      "goal_xy": [
+       -0.1,
+       0.0
+      ]
+     },
+     "objects": {
+      "button_after_pair_index": 1,
+      "color_order": [
+       0,
+       1,
+       2
+      ],
+      "num_targets_to_pick": 4,
+      "swap_pair_ids": [
+       3,
+       2,
+       1,
+       0
+      ],
+      "target_cube_idx": 2,
+      "visit_ids": [
+       3,
+       2,
+       1,
+       0
+      ],
+      "which_in_subset": 3
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 9
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoPlaceOrder"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto target",
+      "subgoal_segment": "drop the cube onto target at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube onto table",
+      "subgoal_segment": "drop the cube onto table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the correct target",
+      "subgoal_segment": "place the cube onto the correct target at <>"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.goal_xy",
+      "source": "draw",
+      "value": [
+       -0.1,
+       0.0
+      ]
+     },
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       0.11047296524047852,
+       -0.01525057554244995
+      ]
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.target_cube_idx",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.swap_pair_ids",
+      "source": "draw",
+      "value": [
+       3,
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.num_targets_to_pick",
+      "source": "draw",
+      "value": 4
+     },
+     {
+      "path": "objects.visit_ids",
+      "source": "draw",
+      "value": [
+       3,
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.which_in_subset",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.button_after_pair_index",
+      "source": "draw",
+      "value": 1
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 11,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 12100,
+   "task": "VideoPlaceOrder"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 2,
+      "path_nodes": [
+       5,
+       4,
+       3
+      ]
+     },
+     "identity": {
+      "difficulty": "easy",
+      "seed": 15001
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": true,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": false,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       5,
+       4,
+       3
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 2
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 0,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 15001,
+   "task": "PatternLock"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 1,
+      "path_nodes": [
+       4,
+       5,
+       1
+      ]
+     },
+     "identity": {
+      "difficulty": "easy",
+      "seed": 15100
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move left",
+      "subgoal_segment": "move left"
+     },
+     {
+      "demonstration": true,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move left",
+      "subgoal_segment": "move left"
+     },
+     {
+      "demonstration": false,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       4,
+       5,
+       1
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 1
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 1,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 15100,
+   "task": "PatternLock"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 1,
+      "path_nodes": [
+       2,
+       1
+      ]
+     },
+     "identity": {
+      "difficulty": "easy",
+      "seed": 15400
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       2,
+       1
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 1
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 4,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 15400,
+   "task": "PatternLock"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_10": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_11": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_12": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_13": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_14": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_15": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_9": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 2,
+      "path_nodes": [
+       7,
+       3,
+       2,
+       6,
+       1
+      ]
+     },
+     "identity": {
+      "difficulty": "medium",
+      "seed": 15200
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move backward",
+      "subgoal_segment": "move backward"
+     },
+     {
+      "demonstration": true,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": true,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move backward",
+      "subgoal_segment": "move backward"
+     },
+     {
+      "demonstration": false,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": false,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       7,
+       3,
+       2,
+       6,
+       1
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 2
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 2,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 15200,
+   "task": "PatternLock"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_10": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_11": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_12": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_13": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_14": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_15": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_9": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 5,
+      "path_nodes": [
+       5,
+       10,
+       14
+      ]
+     },
+     "identity": {
+      "difficulty": "medium",
+      "seed": 15600
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward-left",
+      "subgoal_segment": "move forward-left"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward-left",
+      "subgoal_segment": "move forward-left"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       5,
+       10,
+       14
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 5
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 6,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 15600,
+   "task": "PatternLock"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_10": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_11": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_12": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_13": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_14": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_15": {
+      "p": [
+       [
+        "0x1.99999a0000000p-5",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.0000000000000p-2",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "-0x1.3333340000000p-3",
+        "0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "-0x1.3333340000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_9": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-5",
+        "-0x1.99999a0000000p-5",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 1,
+      "path_nodes": [
+       7,
+       11,
+       6,
+       1
+      ]
+     },
+     "identity": {
+      "difficulty": "medium",
+      "seed": 16000
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": true,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     },
+     {
+      "demonstration": true,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": false,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     },
+     {
+      "demonstration": false,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       7,
+       11,
+       6,
+       1
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 1
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 10,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 16000,
+   "task": "PatternLock"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_10": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_11": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_12": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_13": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_14": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_15": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_16": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_17": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_18": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_19": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_20": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_21": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_22": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_23": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_24": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_9": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 4,
+      "path_nodes": [
+       16,
+       22,
+       21,
+       17,
+       11
+      ]
+     },
+     "identity": {
+      "difficulty": "hard",
+      "seed": 15300
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward-left",
+      "subgoal_segment": "move forward-left"
+     },
+     {
+      "demonstration": true,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": true,
+      "name": "move backward-left",
+      "subgoal_segment": "move backward-left"
+     },
+     {
+      "demonstration": true,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward-left",
+      "subgoal_segment": "move forward-left"
+     },
+     {
+      "demonstration": false,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": false,
+      "name": "move backward-left",
+      "subgoal_segment": "move backward-left"
+     },
+     {
+      "demonstration": false,
+      "name": "move backward-right",
+      "subgoal_segment": "move backward-right"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       16,
+       22,
+       21,
+       17,
+       11
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 4
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 3,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 15300,
+   "task": "PatternLock"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_10": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_11": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_12": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_13": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_14": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_15": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_16": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_17": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_18": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_19": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_20": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_21": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_22": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_23": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_24": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_9": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 10,
+      "path_nodes": [
+       9,
+       8,
+       12,
+       17,
+       22,
+       18
+      ]
+     },
+     "identity": {
+      "difficulty": "hard",
+      "seed": 15700
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward-right",
+      "subgoal_segment": "move forward-right"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": true,
+      "name": "move backward-left",
+      "subgoal_segment": "move backward-left"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward-right",
+      "subgoal_segment": "move forward-right"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": false,
+      "name": "move backward-left",
+      "subgoal_segment": "move backward-left"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       9,
+       8,
+       12,
+       17,
+       22,
+       18
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 10
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 7,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 15700,
+   "task": "PatternLock"
+  },
+  {
+   "capture": {
+    "actors": {
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     },
+     "target_0": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_1": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_10": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_11": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_12": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_13": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_14": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_15": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_16": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_17": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_18": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_19": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_2": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_20": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_21": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_22": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_23": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_24": {
+      "p": [
+       [
+        "0x1.99999a0000000p-4",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_3": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_4": {
+      "p": [
+       [
+        "-0x1.3333340000000p-2",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_5": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_6": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "-0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_7": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x0.0p+0",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_8": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-4",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "target_9": {
+      "p": [
+       [
+        "-0x1.99999a0000000p-3",
+        "0x1.99999a0000000p-3",
+        "0x1.47ae140000000p-7"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0"
+       ]
+      ]
+     }
+    },
+    "generator_states": {},
+    "spec": {
+     "actions": {
+      "path_attempts": 3,
+      "path_nodes": [
+       4,
+       3,
+       8,
+       14,
+       19
+      ]
+     },
+     "identity": {
+      "difficulty": "hard",
+      "seed": 16100
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 1
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PatternLock"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward-left",
+      "subgoal_segment": "move forward-left"
+     },
+     {
+      "demonstration": true,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "move right",
+      "subgoal_segment": "move right"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward-left",
+      "subgoal_segment": "move forward-left"
+     },
+     {
+      "demonstration": false,
+      "name": "move forward",
+      "subgoal_segment": "move forward"
+     }
+    ],
+    "trace": [
+     {
+      "path": "actions.path_nodes",
+      "source": "draw",
+      "value": [
+       4,
+       3,
+       8,
+       14,
+       19
+      ]
+     },
+     {
+      "path": "actions.path_attempts",
+      "source": "record",
+      "value": 3
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 11,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 16100,
+   "task": "PatternLock"
+  }
+ ],
+ "schema": "v4-reset-probe/1"
+}

@@ -1,0 +1,64 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[1/18] ep=104 ok=True   steps=305 wall=31.0 t=36s
+[2/18] ep=102 ok=True   steps=510 wall=40.1 t=45s
+[3/18] ep=100 ok=False DatasetGenerationError MoveCube/episode_100: did not succeed after the complete task_list steps=629 wall=47.1 t=51s
+[4/18] ep=106 ok=True   steps=516 wall=23.4 t=60s
+[5/18] ep=110 ok=True   steps=322 wall=13.9 t=64s
+screw plan failed
+screw plan failed
+screw plan failed
+[6/18] ep=108 ok=True   steps=623 wall=27.9 t=73s
+screw plan failed
+screw plan failed
+screw plan failed
+[7/18] ep=114 ok=True   steps=503 wall=25.1 t=89s
+[8/18] ep=116 ok=True   steps=320 wall=16.8 t=90s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.060472 is greater than threshold 0.001000.
+IK Failed! Distance 0.053358 is greater than threshold 0.001000.
+IK Failed! Distance 0.063818 is greater than threshold 0.001000.
+[9/18] ep=112 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=1177 wall=50.5 t=110s
+[10/18] ep=118 ok=True   steps=542 wall=22.8 t=112s
+[11/18] ep=120 ok=True   steps=597 wall=25.5 t=115s
+[12/18] ep=122 ok=True   steps=325 wall=14.4 t=125s
+[13/18] ep=126 ok=True   steps=497 wall=20.5 t=136s
+[14/18] ep=128 ok=True   steps=357 wall=15.5 t=140s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.062106 is greater than threshold 0.001000.
+IK Failed! Distance 0.077068 is greater than threshold 0.001000.
+IK Failed! Distance 0.093487 is greater than threshold 0.001000.
+[15/18] ep=130 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=133 wall=7.3 t=143s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.057923 is greater than threshold 0.001000.
+IK Failed! Distance 0.082638 is greater than threshold 0.001000.
+IK Failed! Distance 0.064986 is greater than threshold 0.001000.
+[16/18] ep=124 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=1054 wall=41.8 t=154s
+[17/18] ep=134 ok=True   steps=306 wall=12.9 t=156s
+[18/18] ep=132 ok=True   steps=515 wall=20.9 t=161s
+DONE gpu=0 jobs=18 t=162s

@@ -1,0 +1,206 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "actions.sampling_trace.constructor_draw",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.button_xy",
+      "drawn": [
+        -0.1857142448425293,
+        0.0071585714817047124
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.bin_count.requested",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 3,
+      "path": "layout.bins.0",
+      "drawn": [
+        -0.0959284856915474,
+        -0.11310748368501664,
+        49.94005501270294
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.bins.1",
+      "drawn": [
+        0.15947291672229766,
+        -0.024523720443248742,
+        5.82974374294281
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.bins.2",
+      "drawn": [
+        0.05360044866800309,
+        -0.08016035646200181,
+        61.78765118122101
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.bins.3",
+      "drawn": [
+        -0.08846813410520554,
+        0.07938459455966948,
+        3.841524124145508
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.bins.4",
+      "drawn": [
+        0.16953071862459182,
+        0.07548267155885696,
+        25.168417096138
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.bins.5",
+      "drawn": [
+        0.04678433418273925,
+        0.16577794343233113,
+        1.312190294265747
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.bins.6",
+      "drawn": [
+        0.15947528153657917,
+        -0.114278704226017,
+        43.7261438369751
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "layout.bins.7",
+      "drawn": [
+        -0.015680589973926545,
+        -0.16234324604272843,
+        81.9449508190155
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "layout.bin_count.placed",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "objects.color_order",
+      "drawn": [
+        1,
+        0,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.n_picks",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "objects.pick_order",
+      "drawn": [
+        0,
+        1,
+        2
+      ],
+      "source": "record"
+    },
+    {
+      "index": 15,
+      "path": "objects.distractors.requested",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 16,
+      "path": "objects.distractors.bins.0",
+      "drawn": [
+        -0.2143759846687317,
+        -0.2764295876026154,
+        23.489960432052612
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "objects.distractors.bins.1",
+      "drawn": [
+        0.3084185242652893,
+        0.06315336227416996,
+        19.94389772415161
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "objects.distractors.bins.2",
+      "drawn": [
+        -0.2624614477157593,
+        0.40243923068046566,
+        34.492714405059814
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "objects.distractors.placed",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 20,
+      "path": "objects.distractors.cube_count",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 21,
+      "path": "objects.distractors.cube_bins",
+      "drawn": [
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 22,
+      "path": "objects.distractors.cube_colors",
+      "drawn": [
+        0
+      ],
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "681d657acf7f8dfd038666b3053806f409fb1a6dfa421ebc8162208e10ea8ea6"
+  }
+}

@@ -1,0 +1,144 @@
+##### BinFill
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "pick up the cube", "need_parameter": true}, {"label": "b", "action": "put it into the bin", "need_parameter": false}, {"label": "c", "action": "press the button", "need_parameter": false}]
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the ORD COL cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|press the button ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|put it into the bin ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### ButtonUnmask
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "press the button", "need_parameter": false}, {"label": "b", "action": "pick up the container", "need_parameter": true}, {"label": "c", "action": "put down the container", "need_parameter": false}]
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the container that hides the COL cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|press the button ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|put down the container ['hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### ButtonUnmaskSwap
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "press the first button", "need_parameter": false}, {"label": "b", "action": "press the second button", "need_parameter": false}, {"label": "c", "action": "pick up the container", "need_parameter": true}, {"label": "d", "action": "put down the container", "need_parameter": 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the container that hides the COL cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|press the ORD button ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|put down the container ['easy', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### InsertPeg
+  CHOICES ['easy', 'medium', 'hard', 'xhard4'] [{"label": "a", "action": "pick up the peg by grasping one end", "need_parameter": true}, {"label": "b", "action": "insert the peg from the right side", "need_parameter": false}, {"label": "c", "action": "insert the peg from the left side", "need_parameter": false}]
+    D|Insert the peg from the left side of the box ['easy', 'medium', 'hard', 'xhard4'] 
+    D|Insert the peg from the right side of the box ['easy', 'hard', 'xhard4'] 
+    D|Pick up the peg by grasping the far end ['easy', 'medium', 'hard', 'xhard4'] 
+    D|Pick up the peg by grasping the near end ['easy', 'medium', 'hard']   <-- NATIVE ONLY
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard4'] 
+    E|Insert the peg from the left side ['easy', 'medium', 'hard', 'xhard4'] 
+    E|Insert the peg from the right side ['easy', 'hard', 'xhard4'] 
+    E|Pick up the peg by grasping the far end ['easy', 'medium', 'hard', 'xhard4'] 
+    E|Pick up the peg by grasping the near end ['easy', 'medium', 'hard']   <-- NATIVE ONLY
+##### MoveCube
+  CHOICES ['easy', 'medium', 'hard', 'xhard4'] [{"label": "a", "action": "pick up the peg", "need_parameter": false}, {"label": "b", "action": "hook the cube to the target with the peg", "need_parameter": false}, {"label": "c", "action": "close gripper and push the cube to the target", "need_parameter": false}, {"label": "d", "action": "pick up 
+    D|Close the gripper and push the cube to the target ['hard', 'xhard4'] 
+    D|Hook the cube to the target with the peg ['easy', 'medium', 'hard']   <-- NATIVE ONLY
+    D|Pick up the cube ['easy', 'medium', 'xhard4'] 
+    D|Pick up the peg ['easy', 'medium', 'hard']   <-- NATIVE ONLY
+    D|place the cube onto the target ['easy', 'medium', 'xhard4'] 
+    D|static ['easy', 'medium', 'hard', 'xhard4'] 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard4'] 
+    E|Close the gripper and push the cube to the target ['hard', 'xhard4'] 
+    E|Hook the cube to the target with the peg ['easy', 'medium', 'hard']   <-- NATIVE ONLY
+    E|Pick up the cube ['easy', 'medium', 'xhard4'] 
+    E|Pick up the peg ['easy', 'medium', 'hard']   <-- NATIVE ONLY
+    E|place the cube onto the target ['easy', 'medium', 'xhard4'] 
+##### PatternLock
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "move forward", "need_parameter": false}, {"label": "b", "action": "move backward", "need_parameter": false}, {"label": "c", "action": "move left", "need_parameter": false}, {"label": "d", "action": "move right", "need_parameter": false}, {"label": "e", "action": "move forw
+    D|move backward ['medium', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move backward-left ['hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move backward-right ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move forward ['medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move forward-left ['medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move forward-right ['hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move left ['easy', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move right ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move backward ['medium', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move backward-left ['hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move backward-right ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move forward ['medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move forward-left ['medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move forward-right ['hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move left ['easy', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move right ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### PickHighlight
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "press button", "need_parameter": false}, {"label": "b", "action": "pick up the highlighted cube", "need_parameter": true}, {"label": "c", "action": "place the cube onto the table", "need_parameter": false}]
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the ORD highlighted cube ['xhard1', 'xhard2', 'xhard3', 'xhard4']   <-- NEW ONLY
+    E|pick up the ORD highlighted cube, which is COL ['medium', 'hard']   <-- NATIVE ONLY
+    E|pick up the highlighted cube, which is COL ['easy']   <-- NATIVE ONLY
+    E|place the cube onto the table ['medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|press the button ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### PickXtimes
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "pick up the cube", "need_parameter": true}, {"label": "b", "action": "place the cube onto the target", "need_parameter": false}, {"label": "c", "action": "press the button to stop", "need_parameter": false}]
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the COL cube for the ORD time ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|place the COL cube onto the target ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|press the button to stop ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### RouteStick
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "move to the nearest left target by circling around the stick clockwise", "need_parameter": false}, {"label": "b", "action": "move to the nearest right target by circling around the stick clockwise", "need_parameter": false}, {"label": "c", "action": "move to the nearest le
+    D|move to the nearest left target by circling around the stick clockwise ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move to the nearest left target by circling around the stick counterclockwise ['medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move to the nearest right target by circling around the stick clockwise ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|move to the nearest right target by circling around the stick counterclockwise ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move to the nearest left target by circling around the stick clockwise ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move to the nearest left target by circling around the stick counterclockwise ['medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move to the nearest right target by circling around the stick clockwise ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move to the nearest right target by circling around the stick counterclockwise ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### StopCube
+  CHOICES ['easy', 'medium', 'hard', 'xhard4'] [{"label": "a", "action": "move to the top of the button to prepare", "need_parameter": false}, {"label": "b", "action": "remain static", "need_parameter": false}, {"label": "c", "action": "press button to stop the cube", "need_parameter": false}]
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard4'] 
+    E|move to the top of the button to prepare ['easy', 'medium', 'hard', 'xhard4'] 
+    E|press the button to stop the cube on the target ['easy', 'medium', 'hard', 'xhard4'] 
+    E|remain static ['easy', 'medium', 'hard', 'xhard4'] 
+##### SwingXtimes
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "pick up the cube", "need_parameter": true}, {"label": "b", "action": "move to the top of the target", "need_parameter": true}, {"label": "c", "action": "put the cube on the table", "need_parameter": false}, {"label": "d", "action": "press the button", "need_parameter": fal
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move to the top of the left-side target for the ORD time ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|move to the top of the right-side target for the ORD time ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the COL cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|press the button ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|put the COL cube on the table ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### VideoPlaceButton
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "pick up the cube", "need_parameter": true}, {"label": "b", "action": "drop onto", "need_parameter": true}, {"label": "c", "action": "press the button", "need_parameter": false}]
+    D|drop the cube onto table ['easy', 'medium', 'hard']   <-- NATIVE ONLY
+    D|drop the cube onto target ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|pick up the cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|press the button ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|put the cube back to its original position ['xhard1', 'xhard2', 'xhard3', 'xhard4']   <-- NEW ONLY
+    D|static ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|place the cube onto the correct target ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### VideoPlaceOrder
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "pick up the cube", "need_parameter": true}, {"label": "b", "action": "drop onto", "need_parameter": true}, {"label": "c", "action": "press the button", "need_parameter": false}]
+    D|drop the cube onto table ['easy', 'medium', 'hard']   <-- NATIVE ONLY
+    D|drop the cube onto target ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|pick up the cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|press the button ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|put the cube back to its original position ['xhard1', 'xhard2', 'xhard3', 'xhard4']   <-- NEW ONLY
+    D|static ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|place the cube onto the correct target ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### VideoRepick
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "pick up the cube", "need_parameter": true}, {"label": "b", "action": "put it down", "need_parameter": false}, {"label": "c", "action": "press the button to finish", "need_parameter": false}]
+    D|drop the cube on the table ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|pick up the cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    D|static ['easy', 'medium', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the correct cube for the ORD time ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|press the button to finish ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|put it down ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### VideoUnmask
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "pick up the container", "need_parameter": true}, {"label": "b", "action": "put down the container", "need_parameter": false}]
+    D|static ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the container that hides the COL cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|put down the container ['hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+##### VideoUnmaskSwap
+  CHOICES ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] [{"label": "a", "action": "pick up the container", "need_parameter": true}, {"label": "b", "action": "put down the container", "need_parameter": false}]
+    D|static ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|All tasks completed ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|pick up the container that hides the COL cube ['easy', 'medium', 'hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 
+    E|put down the container ['hard', 'xhard1', 'xhard2', 'xhard3', 'xhard4'] 

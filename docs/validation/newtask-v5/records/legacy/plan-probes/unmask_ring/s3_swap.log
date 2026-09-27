@@ -1,0 +1,50 @@
+
+=== VUS: 内层失败 0/500，有效 500（52s）===
+  [A g.015 W.1414] 扫掠占环带比例 mean 0.2% p95 1.3%；需区间二分（包围球粗筛不过）的候选比例 mean 67.8%
+    unified  饱和 mean 22.1 min 18 p5 20; 近扫掠候选数(每局) N=8:5.4 N=16:10.7
+      N=4:100.0%  N=6:100.0%  N=8:100.0%  N=10:100.0%  N=12:100.0%  N=14:100.0%  N=16:100.0%  N=18:94.2%
+    v4swap   饱和 mean 16.8 min 14 p5 15; 近扫掠候选数(每局) N=8:5.2 N=16:9.9
+      N=4:100.0%  N=6:100.0%  N=8:100.0%  N=10:100.0%  N=12:99.8%  N=14:97.0%  N=16:50.8%  N=18:3.0%
+  [C g.040 W.1414] 扫掠占环带比例 mean 0.0% p95 0.0%；需区间二分（包围球粗筛不过）的候选比例 mean 56.5%
+    unified  饱和 mean 22.9 min 19 p5 21; 近扫掠候选数(每局) N=8:4.6 N=16:9.0
+      N=4:100.0%  N=6:100.0%  N=8:100.0%  N=10:100.0%  N=12:100.0%  N=14:100.0%  N=16:100.0%  N=18:95.0%
+    v4swap   饱和 mean 17.8 min 15 p5 16; 近扫掠候选数(每局) N=8:4.4 N=16:8.4
+      N=4:100.0%  N=6:100.0%  N=8:100.0%  N=10:100.0%  N=12:100.0%  N=14:100.0%  N=16:73.4%  N=18:14.2%
+  [B g.015 W.085] 扫掠占环带比例 mean 0.6% p95 3.7%；需区间二分（包围球粗筛不过）的候选比例 mean 79.2%
+    unified  饱和 mean 16.6 min 14 p5 15; 近扫掠候选数(每局) N=8:6.4 N=16:12.3
+      N=4:100.0%  N=6:100.0%  N=8:100.0%  N=10:100.0%  N=12:100.0%  N=14:96.4%  N=16:47.0%  N=18:0.6%
+    v4swap   饱和 mean 13.2 min 11 p5 12; 近扫掠候选数(每局) N=8:6.3 N=16:10.3
+      N=4:100.0%  N=6:100.0%  N=8:100.0%  N=10:100.0%  N=12:83.4%  N=14:10.2%  N=16:0.0%  N=18:0.0%
+  [V4 [0.2675,0.45]] 扫掠占环带比例 mean 0.0% p95 0.0%；需区间二分（包围球粗筛不过）的候选比例 mean 41.5%
+    unified  饱和 mean 35.3 min 31 p5 33; 近扫掠候选数(每局) N=8:3.4 N=16:6.8
+      N=4:100.0%  N=6:100.0%  N=8:100.0%  N=10:100.0%  N=12:100.0%  N=14:100.0%  N=16:100.0%  N=18:100.0%
+    v4swap   饱和 mean 28.2 min 24 p5 26; 近扫掠候选数(每局) N=8:3.3 N=16:6.6
+      N=4:100.0%  N=6:100.0%  N=8:100.0%  N=10:100.0%  N=12:100.0%  N=14:100.0%  N=16:100.0%  N=18:100.0%
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/pool.py", line 48, in mapstar
+    return list(map(*args))
+           ^^^^^^^^^^^^^^^^
+  File "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_ring/s3_feasibility_swap.py", line 36, in one
+    lay = L.inner_bus(rng); nsw = int(rng.integers(6, 9)); btns = list(lay[1])
+                                                                       ~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_ring/s3_feasibility_swap.py", line 87, in <module>
+    outs = pool.map(one, [(env, 200000 + s) for s in range(NTRIAL)])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/pool.py", line 367, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/pool.py", line 774, in get
+    raise self._value
+TypeError: 'NoneType' object is not subscriptable
+EXIT_CODE=1

@@ -1,0 +1,4 @@
+{"time": 1790463052.5767677, "kind": "old_paused"}
+{"time": 1790471180.127218, "kind": "child_exit_observed", "exit_code": 0, "waitstatus": 0}
+{"time": 1790471180.2625303, "kind": "child_group_finished", "live_members": 0, "pipe_eof": true}
+{"time": 1790471180.2627647, "kind": "old_resumed"}

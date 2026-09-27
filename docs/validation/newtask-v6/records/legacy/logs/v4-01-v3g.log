@@ -1,0 +1,148 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+NEG BinFill/0 layout.board.offsets changed=True 
+NEG BinFill/0 layout.cubes.red_1 changed=True 
+BIND BinFill/0 ok=True mismatch=0 unused=0
+NEG BinFill/3 layout.board.offsets changed=True 
+NEG BinFill/3 layout.cubes.red_3 changed=True 
+BIND BinFill/3 ok=True mismatch=0 unused=0
+NEG BinFill/6 layout.board.offsets changed=True 
+NEG BinFill/6 layout.cubes.red_2 changed=True 
+BIND BinFill/6 ok=True mismatch=0 unused=0
+NEG ButtonUnmask/0 layout.bins.0 changed=True 
+NEG ButtonUnmask/0 layout.bins.7 changed=True 
+BIND ButtonUnmask/0 ok=True mismatch=0 unused=0
+NEG ButtonUnmask/3 layout.bins.0 changed=True 
+NEG ButtonUnmask/3 layout.bins.7 changed=True 
+BIND ButtonUnmask/3 ok=True mismatch=0 unused=0
+NEG ButtonUnmask/6 layout.bins.0 changed=True 
+NEG ButtonUnmask/6 layout.button_xy changed=True 
+BIND ButtonUnmask/6 ok=True mismatch=0 unused=0
+NEG ButtonUnmaskSwap/0 layout.bins.0 changed=True SceneGenerationError: 干扰容器 0 在 512 次尝试内找不到合法位置（外环 0.2675~0.45）
+NEG ButtonUnmaskSwap/0 objects.color_order changed=True 
+BIND ButtonUnmaskSwap/0 ok=True mismatch=0 unused=0
+NEG ButtonUnmaskSwap/3 layout.bins.0 changed=True SceneGenerationError: 干扰容器 0 在 512 次尝试内找不到合法位置（外环 0.2675~0.45）
+NEG ButtonUnmaskSwap/3 objects.color_order changed=True 
+BIND ButtonUnmaskSwap/3 ok=True mismatch=0 unused=0
+NEG ButtonUnmaskSwap/6 layout.bins.0 changed=True 
+NEG ButtonUnmaskSwap/6 objects.color_order changed=True 
+BIND ButtonUnmaskSwap/6 ok=True mismatch=0 unused=0
+NEG InsertPeg/0 objects.head_rgb changed=True 
+NEG InsertPeg/0 initializations.1.box_yaw changed=True 
+BIND InsertPeg/0 ok=True mismatch=0 unused=0
+NEG InsertPeg/3 objects.head_rgb changed=True 
+NEG InsertPeg/3 initializations.1.box_yaw changed=True 
+BIND InsertPeg/3 ok=True mismatch=0 unused=0
+NEG InsertPeg/6 objects.head_rgb changed=True 
+NEG InsertPeg/6 initializations.1.box_yaw changed=True 
+BIND InsertPeg/6 ok=True mismatch=0 unused=0
+NEG MoveCube/0 layout.demo.cube_pose changed=True 
+NEG MoveCube/0 layout.execution.goal_xy changed=True 
+BIND MoveCube/0 ok=True mismatch=0 unused=0
+NEG MoveCube/3 layout.demo.cube_pose changed=True 
+NEG MoveCube/3 layout.execution.goal_xy changed=True 
+BIND MoveCube/3 ok=True mismatch=0 unused=0
+NEG MoveCube/6 layout.demo.cube_pose changed=True 
+NEG MoveCube/6 layout.execution.goal_xy changed=True 
+BIND MoveCube/6 ok=True mismatch=0 unused=0
+NEG PatternLock/0 actions.path_nodes changed=True 
+BIND PatternLock/0 ok=True mismatch=0 unused=0
+NEG PatternLock/3 actions.path_nodes changed=True 
+BIND PatternLock/3 ok=True mismatch=0 unused=0
+NEG PatternLock/6 actions.path_nodes changed=True 
+BIND PatternLock/6 ok=True mismatch=0 unused=0
+NEG PickHighlight/0 layout.button_xy changed=True 
+NEG PickHighlight/0 objects.color_rgba.1 changed=True 
+BIND PickHighlight/0 ok=True mismatch=0 unused=0
+NEG PickHighlight/3 layout.button_xy changed=True 
+NEG PickHighlight/3 objects.color_rgba.1 changed=True 
+BIND PickHighlight/3 ok=True mismatch=0 unused=0
+NEG PickHighlight/6 layout.button_xy changed=True 
+NEG PickHighlight/6 objects.color_rgba.1 changed=True 
+BIND PickHighlight/6 ok=True mismatch=0 unused=0
+NEG PickXtimes/0 layout.button_xy changed=True 
+NEG PickXtimes/0 layout.distractors.yellow_0 changed=True 
+BIND PickXtimes/0 ok=True mismatch=0 unused=0
+NEG PickXtimes/3 layout.button_xy changed=True 
+NEG PickXtimes/3 layout.distractors.yellow_0 changed=True 
+BIND PickXtimes/3 ok=True mismatch=0 unused=0
+NEG PickXtimes/6 layout.button_xy changed=True 
+NEG PickXtimes/6 layout.distractors.yellow_0 changed=True 
+BIND PickXtimes/6 ok=True mismatch=0 unused=0
+NEG RouteStick/0 layout.obstacle_rgb.0 changed=True 
+NEG RouteStick/0 layout.obstacle_rgb.3 changed=True 
+BIND RouteStick/0 ok=True mismatch=0 unused=0
+NEG RouteStick/3 layout.obstacle_rgb.0 changed=True 
+NEG RouteStick/3 layout.obstacle_rgb.3 changed=True 
+BIND RouteStick/3 ok=True mismatch=0 unused=0
+NEG RouteStick/6 layout.obstacle_rgb.0 changed=True 
+NEG RouteStick/6 layout.obstacle_rgb.3 changed=True 
+BIND RouteStick/6 ok=True mismatch=0 unused=0
+NEG StopCube/0 layout.button_xy changed=True 
+NEG StopCube/0 actions.move_interval_idx changed=True IndexError: list index out of range
+BIND StopCube/0 ok=True mismatch=0 unused=0
+NEG StopCube/3 layout.button_xy changed=True 
+NEG StopCube/3 actions.move_interval_idx changed=True IndexError: list index out of range
+BIND StopCube/3 ok=True mismatch=0 unused=0
+NEG StopCube/6 layout.button_xy changed=True 
+NEG StopCube/6 actions.move_interval_idx changed=True IndexError: list index out of range
+BIND StopCube/6 ok=True mismatch=0 unused=0
+NEG SwingXtimes/0 layout.button_xy changed=True TypeError: catching classes that do not inherit from BaseException is not allowe
+NEG SwingXtimes/0 layout.distractors.yellow_0 changed=True 
+BIND SwingXtimes/0 ok=True mismatch=0 unused=0
+NEG SwingXtimes/3 layout.button_xy changed=True 
+NEG SwingXtimes/3 layout.distractors.yellow_0 changed=True 
+BIND SwingXtimes/3 ok=True mismatch=0 unused=0
+NEG SwingXtimes/6 layout.button_xy changed=True TypeError: catching classes that do not inherit from BaseException is not allowe
+NEG SwingXtimes/6 layout.distractors.yellow_0 changed=True 
+BIND SwingXtimes/6 ok=True mismatch=0 unused=0
+NEG VideoPlaceButton/0 layout.button_xy changed=True 
+NEG VideoPlaceButton/0 layout.targets.2 changed=True 
+BIND VideoPlaceButton/0 ok=True mismatch=0 unused=0
+NEG VideoPlaceButton/3 layout.button_xy changed=True 
+NEG VideoPlaceButton/3 layout.targets.2 changed=True 
+BIND VideoPlaceButton/3 ok=True mismatch=0 unused=0
+NEG VideoPlaceButton/6 layout.button_xy changed=True 
+NEG VideoPlaceButton/6 layout.targets.2 changed=True 
+BIND VideoPlaceButton/6 ok=True mismatch=0 unused=0
+NEG VideoPlaceOrder/0 layout.button_xy changed=True 
+NEG VideoPlaceOrder/0 objects.answer_demo_index changed=True 
+BIND VideoPlaceOrder/0 ok=True mismatch=0 unused=0
+NEG VideoPlaceOrder/3 layout.button_xy changed=True 
+NEG VideoPlaceOrder/3 objects.answer_demo_index changed=True 
+BIND VideoPlaceOrder/3 ok=True mismatch=0 unused=0
+NEG VideoPlaceOrder/6 layout.button_xy changed=True 
+NEG VideoPlaceOrder/6 objects.answer_demo_index changed=True 
+BIND VideoPlaceOrder/6 ok=True mismatch=0 unused=0
+NEG VideoRepick/0 layout.cubes.0.xy_yaw changed=True 
+NEG VideoRepick/0 layout.cubes.5.xy_yaw changed=True 
+BIND VideoRepick/0 ok=True mismatch=0 unused=0
+NEG VideoRepick/3 layout.cubes.0.xy_yaw changed=True 
+NEG VideoRepick/3 layout.cubes.5.xy_yaw changed=True 
+BIND VideoRepick/3 ok=True mismatch=0 unused=0
+NEG VideoRepick/6 layout.cubes.0.xy_yaw changed=True 
+NEG VideoRepick/6 layout.cubes.5.xy_yaw changed=True 
+BIND VideoRepick/6 ok=True mismatch=0 unused=0
+NEG VideoUnmask/0 layout.bins.0 changed=True 
+NEG VideoUnmask/0 layout.bins.7 changed=True 
+BIND VideoUnmask/0 ok=True mismatch=0 unused=0
+NEG VideoUnmask/3 layout.bins.0 changed=True 
+NEG VideoUnmask/3 layout.bins.7 changed=True 
+BIND VideoUnmask/3 ok=True mismatch=0 unused=0
+NEG VideoUnmask/6 layout.bins.0 changed=True 
+NEG VideoUnmask/6 layout.bins.7 changed=True 
+BIND VideoUnmask/6 ok=True mismatch=0 unused=0
+NEG VideoUnmaskSwap/0 layout.bins.0 changed=True 
+NEG VideoUnmaskSwap/0 objects.color_order changed=True 
+BIND VideoUnmaskSwap/0 ok=True mismatch=0 unused=0
+NEG VideoUnmaskSwap/3 layout.bins.0 changed=True 
+NEG VideoUnmaskSwap/3 objects.color_order changed=True 
+BIND VideoUnmaskSwap/3 ok=True mismatch=0 unused=0
+NEG VideoUnmaskSwap/6 layout.bins.0 changed=True SceneGenerationError: 干扰容器 0 在 512 次尝试内找不到合法位置（外环 0.2675~0.45）
+NEG VideoUnmaskSwap/6 objects.color_order changed=True 
+BIND VideoUnmaskSwap/6 ok=True mismatch=0 unused=0
+SPEC_BINDING=PASS specs=48 bad=0
+SPEC_NEGATIVE=PASS cases=93 diff_zero=0
+EXIT_CODE=0

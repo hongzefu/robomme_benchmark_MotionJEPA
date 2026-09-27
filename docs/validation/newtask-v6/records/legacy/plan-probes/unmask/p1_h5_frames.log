@@ -1,0 +1,99 @@
+VideoUnmask VideoUnmask_ep0_seed4600000.h5 total=507 demo=66 exec=441
+       66  static
+      125  pick up the container that hides the blue cube
+       50  put down the container
+       96  pick up the container that hides the green cube
+       52  put down the container
+      106  pick up the container that hides the red cube
+       12  All tasks completed
+VideoUnmask VideoUnmask_ep3_seed4600300.h5 total=441 demo=66 exec=375
+       66  static
+      102  pick up the container that hides the red cube
+       47  put down the container
+       90  pick up the container that hides the blue cube
+       48  put down the container
+       81  pick up the container that hides the green cube
+        7  All tasks completed
+VideoUnmask VideoUnmask_ep6_seed4600600.h5 total=466 demo=66 exec=400
+       66  static
+       99  pick up the container that hides the green cube
+       41  put down the container
+      111  pick up the container that hides the blue cube
+       51  put down the container
+       90  pick up the container that hides the red cube
+        8  All tasks completed
+ButtonUnmask ButtonUnmask_ep0_seed4800000.h5 total=538 demo=0 exec=538
+      119  press the button
+      109  pick up the container that hides the green cube
+       51  put down the container
+       99  pick up the container that hides the red cube
+       51  put down the container
+       97  pick up the container that hides the blue cube
+       12  All tasks completed
+ButtonUnmask ButtonUnmask_ep3_seed4800300.h5 total=516 demo=0 exec=516
+      111  press the button
+      109  pick up the container that hides the green cube
+       51  put down the container
+      106  pick up the container that hides the red cube
+       41  put down the container
+       91  pick up the container that hides the blue cube
+        7  All tasks completed
+ButtonUnmask ButtonUnmask_ep6_seed4800600.h5 total=511 demo=0 exec=511
+      116  press the button
+      109  pick up the container that hides the green cube
+       51  put down the container
+      105  pick up the container that hides the red cube
+       41  put down the container
+       82  pick up the container that hides the blue cube
+        7  All tasks completed
+VideoUnmaskSwap VideoUnmaskSwap_ep0_seed4500000.h5 total=802 demo=396 exec=406
+      396  static
+      113  pick up the container that hides the green cube
+       53  put down the container
+      106  pick up the container that hides the blue cube
+       53  put down the container
+       75  pick up the container that hides the red cube
+        6  All tasks completed
+VideoUnmaskSwap VideoUnmaskSwap_ep3_seed4500301.h5 total=807 demo=396 exec=411
+      396  static
+      126  pick up the container that hides the green cube
+       50  put down the container
+       99  pick up the container that hides the blue cube
+       51  put down the container
+       79  pick up the container that hides the red cube
+        6  All tasks completed
+VideoUnmaskSwap VideoUnmaskSwap_ep6_seed4500600.h5 total=780 demo=366 exec=414
+      366  static
+      107  pick up the container that hides the blue cube
+       48  put down the container
+      104  pick up the container that hides the red cube
+       48  put down the container
+      100  pick up the container that hides the green cube
+        7  All tasks completed
+ButtonUnmaskSwap ButtonUnmaskSwap_ep0_seed4700000.h5 total=716 demo=0 exec=716
+      115  press the first button
+      214  press the second button
+      114  pick up the container that hides the red cube
+       51  put down the container
+      104  pick up the container that hides the green cube
+       41  put down the container
+       71  pick up the container that hides the blue cube
+        6  All tasks completed
+ButtonUnmaskSwap ButtonUnmaskSwap_ep3_seed4700300.h5 total=689 demo=0 exec=689
+      109  press the first button
+      189  press the second button
+      105  pick up the container that hides the green cube
+       51  put down the container
+       94  pick up the container that hides the blue cube
+       41  put down the container
+       93  pick up the container that hides the red cube
+        7  All tasks completed
+ButtonUnmaskSwap ButtonUnmaskSwap_ep6_seed4700600.h5 total=721 demo=0 exec=721
+      119  press the first button
+      210  press the second button
+      113  pick up the container that hides the red cube
+       41  put down the container
+      101  pick up the container that hides the green cube
+       49  put down the container
+       80  pick up the container that hides the blue cube
+        8  All tasks completed

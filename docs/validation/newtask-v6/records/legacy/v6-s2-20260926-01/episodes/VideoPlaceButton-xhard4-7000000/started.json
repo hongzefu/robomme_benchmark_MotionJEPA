@@ -1,0 +1,29 @@
+{
+  "id": "VideoPlaceButton-xhard4-7000000",
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard4",
+  "seed": 7000000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json",
+  "command": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+    "-m",
+    "scripts.parity.v4_demo_probe",
+    "--task",
+    "VideoPlaceButton",
+    "--difficulty",
+    "xhard4",
+    "--seeds",
+    "7000000",
+    "--episode",
+    "9",
+    "--sampling-config",
+    "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json",
+    "--gpu",
+    "1",
+    "--out",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoPlaceButton-xhard4-7000000"
+  ],
+  "started_at": 1790459258.8836572,
+  "gpu": "1"
+}

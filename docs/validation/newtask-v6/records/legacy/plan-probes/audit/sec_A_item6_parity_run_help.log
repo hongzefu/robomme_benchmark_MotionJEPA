@@ -1,0 +1,33 @@
+usage: train_split_parity.py run [-h] [--manifest MANIFEST] [--env ENV]
+                                 [--episode EPISODE] [--paths PATHS]
+                                 [--workers WORKERS] [--gpus GPUS]
+                                 [--shard SHARD] [--sequence SEQUENCE]
+                                 [--source-repo SOURCE_REPO]
+                                 [--source-ref SOURCE_REF]
+                                 [--official-root OFFICIAL_ROOT]
+                                 [--sampling-config SAMPLING_CONFIG]
+                                 [--episode-specs EPISODE_SPECS] [--trace]
+                                 --output OUTPUT
+
+options:
+  -h, --help            show this help message and exit
+  --manifest MANIFEST
+  --env ENV             单环境名，须同时属于全量来源与子集
+  --episode EPISODE     官方原 episode 编号，不重编号
+  --paths PATHS         五路子集，逗号分隔
+  --workers WORKERS
+  --gpus GPUS
+  --shard SHARD         分片 k/N，按 task 切
+  --sequence SEQUENCE   P6：显式身份序列（如 BinFill/0,PickXtimes/0,BinFill/1），按给定顺序在同一
+                        worker 进程里连续跑
+  --source-repo SOURCE_REPO
+  --source-ref SOURCE_REF
+  --official-root OFFICIAL_ROOT
+                        官方隔离源码目录，默认 <output>/official-src
+  --sampling-config SAMPLING_CONFIG
+                        C／D 路的显式采样配置 JSON
+  --episode-specs EPISODE_SPECS
+                        D 路的每局规格 JSON
+  --trace               P3：让 B 路也走镜像 worker 以产出随机流轨迹（两个输入都为 None 时镜像与官方
+                        _worker 逐句一致）
+  --output OUTPUT

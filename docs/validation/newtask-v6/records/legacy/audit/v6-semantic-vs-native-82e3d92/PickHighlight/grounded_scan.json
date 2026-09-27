@@ -1,0 +1,383 @@
+{
+ "new/xhard1/ep0": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    215,
+    233
+   ],
+   [
+    390,
+    401
+   ],
+   [
+    551,
+    564
+   ],
+   [
+    617,
+    692
+   ]
+  ]
+ },
+ "new/xhard1/ep3": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    229,
+    245
+   ],
+   [
+    414,
+    425
+   ],
+   [
+    554,
+    567
+   ]
+  ]
+ },
+ "new/xhard1/ep6": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    198,
+    209
+   ],
+   [
+    350,
+    365
+   ],
+   [
+    421,
+    534
+   ]
+  ]
+ },
+ "new/xhard2/ep0": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    203,
+    219
+   ],
+   [
+    393,
+    406
+   ],
+   [
+    534,
+    545
+   ],
+   [
+    666,
+    678
+   ]
+  ]
+ },
+ "new/xhard2/ep3": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    218,
+    238
+   ],
+   [
+    413,
+    427
+   ],
+   [
+    557,
+    570
+   ],
+   [
+    714,
+    725
+   ]
+  ]
+ },
+ "new/xhard2/ep6": {
+  "grounded_no_coord_runs": [
+   [
+    480,
+    585
+   ]
+  ],
+  "online_no_coord_runs": [
+   [
+    220,
+    238
+   ],
+   [
+    416,
+    429
+   ],
+   [
+    570,
+    585
+   ],
+   [
+    727,
+    738
+   ]
+  ]
+ },
+ "new/xhard3/ep0": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    210,
+    223
+   ],
+   [
+    357,
+    368
+   ],
+   [
+    509,
+    522
+   ],
+   [
+    674,
+    689
+   ],
+   [
+    841,
+    852
+   ]
+  ]
+ },
+ "new/xhard3/ep3": {
+  "grounded_no_coord_runs": [
+   [
+    701,
+    820
+   ]
+  ],
+  "online_no_coord_runs": [
+   [
+    195,
+    209
+   ],
+   [
+    347,
+    358
+   ],
+   [
+    484,
+    495
+   ],
+   [
+    637,
+    650
+   ],
+   [
+    701,
+    820
+   ]
+  ]
+ },
+ "new/xhard3/ep6": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    219,
+    234
+   ],
+   [
+    385,
+    409
+   ],
+   [
+    587,
+    603
+   ],
+   [
+    736,
+    747
+   ],
+   [
+    889,
+    901
+   ]
+  ]
+ },
+ "new/xhard4/ep0": {
+  "grounded_no_coord_runs": [
+   [
+    785,
+    908
+   ]
+  ],
+  "online_no_coord_runs": [
+   [
+    197,
+    218
+   ],
+   [
+    386,
+    397
+   ],
+   [
+    548,
+    566
+   ],
+   [
+    723,
+    734
+   ],
+   [
+    785,
+    908
+   ],
+   [
+    1084,
+    1095
+   ]
+  ]
+ },
+ "new/xhard4/ep3": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    206,
+    218
+   ],
+   [
+    269,
+    354
+   ],
+   [
+    489,
+    500
+   ],
+   [
+    618,
+    630
+   ],
+   [
+    785,
+    798
+   ],
+   [
+    965,
+    983
+   ]
+  ]
+ },
+ "new/xhard4/ep6": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    222,
+    233
+   ],
+   [
+    366,
+    378
+   ],
+   [
+    533,
+    546
+   ],
+   [
+    704,
+    715
+   ],
+   [
+    837,
+    848
+   ],
+   [
+    987,
+    999
+   ]
+  ]
+ },
+ "native/easy/ep0": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": []
+ },
+ "native/easy/ep1": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": []
+ },
+ "native/medium/ep10": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    218,
+    232
+   ]
+  ]
+ },
+ "native/hard/ep11": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    225,
+    242
+   ],
+   [
+    388,
+    407
+   ]
+  ]
+ },
+ "native/medium/ep2": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    195,
+    206
+   ],
+   [
+    259,
+    417
+   ]
+  ]
+ },
+ "native/hard/ep3": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    306,
+    320
+   ],
+   [
+    482,
+    495
+   ]
+  ]
+ },
+ "native/easy/ep4": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": []
+ },
+ "native/medium/ep6": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    215,
+    226
+   ],
+   [
+    287,
+    370
+   ]
+  ]
+ },
+ "native/hard/ep7": {
+  "grounded_no_coord_runs": [],
+  "online_no_coord_runs": [
+   [
+    205,
+    216
+   ],
+   [
+    360,
+    372
+   ]
+  ]
+ }
+}

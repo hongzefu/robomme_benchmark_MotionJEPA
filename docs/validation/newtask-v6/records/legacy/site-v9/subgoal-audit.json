@@ -1,0 +1,4113 @@
+{
+  "samples": [
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard1",
+      "media_id": "81ac9faf048ff482643dcdf8",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed9000000.h5",
+      "episode": 0,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <116, 138>",
+          "translated": "抓起方块（图像坐标 116, 138）"
+        },
+        {
+          "timestep": 104,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 210,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <122, 86>",
+          "translated": "按按钮（图像坐标 122, 86）"
+        },
+        {
+          "timestep": 308,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <76, 153>",
+          "translated": "抓起方块（图像坐标 76, 153）"
+        },
+        {
+          "timestep": 418,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <78, 90>",
+          "translated": "放下方块到目标台（图像坐标 78, 90）"
+        },
+        {
+          "timestep": 517,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <74, 88>",
+          "translated": "抓起方块（图像坐标 74, 88）"
+        },
+        {
+          "timestep": 591,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <132, 165>",
+          "translated": "放下方块到目标台（图像坐标 132, 165）"
+        },
+        {
+          "timestep": 687,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <131, 167>",
+          "translated": "抓起方块（图像坐标 131, 167）"
+        },
+        {
+          "timestep": 756,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 841,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 893,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 953,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <116, 137>",
+          "translated": "抓起方块（图像坐标 116, 137）"
+        },
+        {
+          "timestep": 1057,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <78, 90>",
+          "translated": "将方块放到答案台（图像坐标 78, 90）"
+        }
+      ],
+      "flow_sha256": "5bdadde6172542ae2dd88f3511a2c88f1a468808afb023e13780ffc52a650c9c"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard1",
+      "media_id": "caf0c2c73b0542f5c8b86ae4",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed9000300.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <74, 163>",
+          "translated": "抓起方块（图像坐标 74, 163）"
+        },
+        {
+          "timestep": 118,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <104, 133>",
+          "translated": "放下方块到目标台（图像坐标 104, 133）"
+        },
+        {
+          "timestep": 197,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <123, 101>",
+          "translated": "按按钮（图像坐标 123, 101）"
+        },
+        {
+          "timestep": 282,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <102, 133>",
+          "translated": "抓起方块（图像坐标 102, 133）"
+        },
+        {
+          "timestep": 371,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <101, 159>",
+          "translated": "放下方块到目标台（图像坐标 101, 159）"
+        },
+        {
+          "timestep": 454,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <99, 161>",
+          "translated": "抓起方块（图像坐标 99, 161）"
+        },
+        {
+          "timestep": 525,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 99>",
+          "translated": "放下方块到目标台（图像坐标 74, 99）"
+        },
+        {
+          "timestep": 621,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 98>",
+          "translated": "抓起方块（图像坐标 72, 98）"
+        },
+        {
+          "timestep": 696,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 793,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 852,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 912,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <74, 164>",
+          "translated": "抓起方块（图像坐标 74, 164）"
+        },
+        {
+          "timestep": 1031,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <104, 133>",
+          "translated": "将方块放到答案台（图像坐标 104, 133）"
+        }
+      ],
+      "flow_sha256": "4463ac561ac83aadc93c0c361b2c92f1e1ad86986bad801e83d27bbfb2464f8f"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard1",
+      "media_id": "5bbb4f0947278a0575da4c51",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed9000601.h5",
+      "episode": 6,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <123, 176>",
+          "translated": "抓起方块（图像坐标 123, 176）"
+        },
+        {
+          "timestep": 109,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <98, 91>",
+          "translated": "放下方块到目标台（图像坐标 98, 91）"
+        },
+        {
+          "timestep": 212,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <122, 114>",
+          "translated": "按按钮（图像坐标 122, 114）"
+        },
+        {
+          "timestep": 294,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <99, 89>",
+          "translated": "抓起方块（图像坐标 99, 89）"
+        },
+        {
+          "timestep": 389,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <138, 149>",
+          "translated": "放下方块到目标台（图像坐标 138, 149）"
+        },
+        {
+          "timestep": 478,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <137, 151>",
+          "translated": "抓起方块（图像坐标 137, 151）"
+        },
+        {
+          "timestep": 552,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <78, 90>",
+          "translated": "放下方块到目标台（图像坐标 78, 90）"
+        },
+        {
+          "timestep": 668,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <75, 88>",
+          "translated": "抓起方块（图像坐标 75, 88）"
+        },
+        {
+          "timestep": 744,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 843,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 904,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 964,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <123, 176>",
+          "translated": "抓起方块（图像坐标 123, 176）"
+        },
+        {
+          "timestep": 1073,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <138, 149>",
+          "translated": "将方块放到答案台（图像坐标 138, 149）"
+        }
+      ],
+      "flow_sha256": "2377d4ff52024c5e75a9fe399f211dc53a1a25a6e3f7122de6094c883a68b254"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard1",
+      "media_id": "e227e18d965e14a247e86fc4",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed9100001.h5",
+      "episode": 0,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <115, 106>",
+          "translated": "抓起方块（图像坐标 115, 106）"
+        },
+        {
+          "timestep": 104,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <140, 115>",
+          "translated": "放下方块到目标台（图像坐标 140, 115）"
+        },
+        {
+          "timestep": 186,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <139, 114>",
+          "translated": "抓起方块（图像坐标 139, 114）"
+        },
+        {
+          "timestep": 259,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <135, 81>",
+          "translated": "放下方块到目标台（图像坐标 135, 81）"
+        },
+        {
+          "timestep": 332,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <121, 153>",
+          "translated": "按按钮（图像坐标 121, 153）"
+        },
+        {
+          "timestep": 410,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <135, 77>",
+          "translated": "抓起方块（图像坐标 135, 77）"
+        },
+        {
+          "timestep": 499,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <116, 83>",
+          "translated": "放下方块到目标台（图像坐标 116, 83）"
+        },
+        {
+          "timestep": 584,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <106, 84>",
+          "translated": "抓起方块（图像坐标 106, 84）"
+        },
+        {
+          "timestep": 658,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 730,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <84, 131>",
+          "translated": "抓起方块（图像坐标 84, 131）"
+        },
+        {
+          "timestep": 834,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <78, 90>",
+          "translated": "放下方块到目标台（图像坐标 78, 90）"
+        },
+        {
+          "timestep": 921,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <75, 87>",
+          "translated": "抓起方块（图像坐标 75, 87）"
+        },
+        {
+          "timestep": 994,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <108, 86>",
+          "translated": "放下方块到目标台（图像坐标 108, 86）"
+        },
+        {
+          "timestep": 1075,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <106, 84>",
+          "translated": "抓起方块（图像坐标 106, 84）"
+        },
+        {
+          "timestep": 1148,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1235,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1293,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1353,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <116, 106>",
+          "translated": "抓起方块（图像坐标 116, 106）"
+        },
+        {
+          "timestep": 1457,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <108, 86>",
+          "translated": "将方块放到答案台（图像坐标 108, 86）"
+        }
+      ],
+      "flow_sha256": "7d1f33a80d06070f11ec5eb772b40e00d7f6c8ac631e4e573ee89a6feba26803"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard1",
+      "media_id": "08444a6b3bd255c7694a6aff",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed9100302.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <133, 174>",
+          "translated": "抓起方块（图像坐标 133, 174）"
+        },
+        {
+          "timestep": 111,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <128, 146>",
+          "translated": "放下方块到目标台（图像坐标 128, 146）"
+        },
+        {
+          "timestep": 185,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <126, 147>",
+          "translated": "抓起方块（图像坐标 126, 147）"
+        },
+        {
+          "timestep": 253,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 91>",
+          "translated": "放下方块到目标台（图像坐标 74, 91）"
+        },
+        {
+          "timestep": 362,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <71, 90>",
+          "translated": "抓起方块（图像坐标 71, 90）"
+        },
+        {
+          "timestep": 437,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 540,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <103, 147>",
+          "translated": "抓起方块（图像坐标 103, 147）"
+        },
+        {
+          "timestep": 642,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 91>",
+          "translated": "放下方块到目标台（图像坐标 74, 91）"
+        },
+        {
+          "timestep": 740,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <71, 90>",
+          "translated": "抓起方块（图像坐标 71, 90）"
+        },
+        {
+          "timestep": 815,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <104, 169>",
+          "translated": "放下方块到目标台（图像坐标 104, 169）"
+        },
+        {
+          "timestep": 904,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <123, 98>",
+          "translated": "按按钮（图像坐标 123, 98）"
+        },
+        {
+          "timestep": 986,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <101, 171>",
+          "translated": "抓起方块（图像坐标 101, 171）"
+        },
+        {
+          "timestep": 1076,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <95, 89>",
+          "translated": "放下方块到目标台（图像坐标 95, 89）"
+        },
+        {
+          "timestep": 1168,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <93, 88>",
+          "translated": "抓起方块（图像坐标 93, 88）"
+        },
+        {
+          "timestep": 1238,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1316,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1362,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1422,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <134, 173>",
+          "translated": "抓起方块（图像坐标 134, 173）"
+        },
+        {
+          "timestep": 1532,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target",
+          "translated": "将方块放到答案台"
+        }
+      ],
+      "flow_sha256": "2fb57ef8459a84fa80a7c652aa71db39df81372534dc2d48c21951e5f9e33d1d"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard1",
+      "media_id": "dd6b6ebb25b7d661a4b0e379",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed9100600.h5",
+      "episode": 6,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <79, 135>",
+          "translated": "抓起方块（图像坐标 79, 135）"
+        },
+        {
+          "timestep": 113,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <102, 87>",
+          "translated": "放下方块到目标台（图像坐标 102, 87）"
+        },
+        {
+          "timestep": 198,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <100, 85>",
+          "translated": "抓起方块（图像坐标 100, 85）"
+        },
+        {
+          "timestep": 268,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <119, 163>",
+          "translated": "放下方块到目标台（图像坐标 119, 163）"
+        },
+        {
+          "timestep": 354,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <118, 165>",
+          "translated": "抓起方块（图像坐标 118, 165）"
+        },
+        {
+          "timestep": 432,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 529,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <89, 168>",
+          "translated": "抓起方块（图像坐标 89, 168）"
+        },
+        {
+          "timestep": 618,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <102, 87>",
+          "translated": "放下方块到目标台（图像坐标 102, 87）"
+        },
+        {
+          "timestep": 708,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <100, 84>",
+          "translated": "抓起方块（图像坐标 100, 84）"
+        },
+        {
+          "timestep": 779,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <135, 83>",
+          "translated": "放下方块到目标台（图像坐标 135, 83）"
+        },
+        {
+          "timestep": 868,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <120, 119>",
+          "translated": "按按钮（图像坐标 120, 119）"
+        },
+        {
+          "timestep": 950,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <134, 80>",
+          "translated": "抓起方块（图像坐标 134, 80）"
+        },
+        {
+          "timestep": 1035,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 162>",
+          "translated": "放下方块到目标台（图像坐标 74, 162）"
+        },
+        {
+          "timestep": 1149,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <71, 164>",
+          "translated": "抓起方块（图像坐标 71, 164）"
+        },
+        {
+          "timestep": 1225,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1300,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1354,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1414,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <90, 168>",
+          "translated": "抓起方块（图像坐标 90, 168）"
+        },
+        {
+          "timestep": 1524,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <135, 83>",
+          "translated": "将方块放到答案台（图像坐标 135, 83）"
+        }
+      ],
+      "flow_sha256": "28b3f5abace585f2c96119dabb750a1bcf8d4b82dacf959baf60c716c6538aa2"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard2",
+      "media_id": "7f860bb2ecf2a4c76eac98bf",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed11000000.h5",
+      "episode": 0,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <85, 162>",
+          "translated": "抓起方块（图像坐标 85, 162）"
+        },
+        {
+          "timestep": 113,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <111, 167>",
+          "translated": "放下方块到目标台（图像坐标 111, 167）"
+        },
+        {
+          "timestep": 192,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <109, 170>",
+          "translated": "抓起方块（图像坐标 109, 170）"
+        },
+        {
+          "timestep": 267,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <75, 147>",
+          "translated": "放下方块到目标台（图像坐标 75, 147）"
+        },
+        {
+          "timestep": 363,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <120, 135>",
+          "translated": "按按钮（图像坐标 120, 135）"
+        },
+        {
+          "timestep": 456,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube",
+          "translated": "抓起方块"
+        },
+        {
+          "timestep": 566,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <102, 101>",
+          "translated": "放下方块到目标台（图像坐标 102, 101）"
+        },
+        {
+          "timestep": 654,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <100, 100>",
+          "translated": "抓起方块（图像坐标 100, 100）"
+        },
+        {
+          "timestep": 724,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <75, 149>",
+          "translated": "放下方块到目标台（图像坐标 75, 149）"
+        },
+        {
+          "timestep": 818,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 150>",
+          "translated": "抓起方块（图像坐标 72, 150）"
+        },
+        {
+          "timestep": 902,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 983,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1036,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1096,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <85, 162>",
+          "translated": "抓起方块（图像坐标 85, 162）"
+        },
+        {
+          "timestep": 1209,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <102, 101>",
+          "translated": "将方块放到答案台（图像坐标 102, 101）"
+        }
+      ],
+      "flow_sha256": "7fb0f10066a7e46a3f646ae28d1f71df962b1c5dd3d26327d1aa6e7bb5f0bd9c"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard2",
+      "media_id": "4b787ce57e57b71e0fe94449",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed11000301.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <69, 153>",
+          "translated": "抓起方块（图像坐标 69, 153）"
+        },
+        {
+          "timestep": 123,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <79, 93>",
+          "translated": "放下方块到目标台（图像坐标 79, 93）"
+        },
+        {
+          "timestep": 226,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <75, 91>",
+          "translated": "抓起方块（图像坐标 75, 91）"
+        },
+        {
+          "timestep": 300,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <143, 168>",
+          "translated": "放下方块到目标台（图像坐标 143, 168）"
+        },
+        {
+          "timestep": 408,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <129, 112>",
+          "translated": "按按钮（图像坐标 129, 112）"
+        },
+        {
+          "timestep": 504,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <142, 169>",
+          "translated": "抓起方块（图像坐标 142, 169）"
+        },
+        {
+          "timestep": 613,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <117, 154>",
+          "translated": "放下方块到目标台（图像坐标 117, 154）"
+        },
+        {
+          "timestep": 698,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <114, 155>",
+          "translated": "抓起方块（图像坐标 114, 155）"
+        },
+        {
+          "timestep": 773,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <96, 168>",
+          "translated": "放下方块到目标台（图像坐标 96, 168）"
+        },
+        {
+          "timestep": 863,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <87, 165>",
+          "translated": "抓起方块（图像坐标 87, 165）"
+        },
+        {
+          "timestep": 932,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1023,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1085,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1145,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <70, 153>",
+          "translated": "抓起方块（图像坐标 70, 153）"
+        },
+        {
+          "timestep": 1269,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <117, 154>",
+          "translated": "将方块放到答案台（图像坐标 117, 154）"
+        }
+      ],
+      "flow_sha256": "68015ecf5f9b633a466590a2d5144ff2cd321a48c50b3c0ca5d109ceab9f18e9"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard2",
+      "media_id": "1da999ca4ed5da085bbd90e7",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed11000600.h5",
+      "episode": 6,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <116, 134>",
+          "translated": "抓起方块（图像坐标 116, 134）"
+        },
+        {
+          "timestep": 105,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <97, 93>",
+          "translated": "放下方块到目标台（图像坐标 97, 93）"
+        },
+        {
+          "timestep": 193,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <95, 91>",
+          "translated": "抓起方块（图像坐标 95, 91）"
+        },
+        {
+          "timestep": 264,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <82, 164>",
+          "translated": "放下方块到目标台（图像坐标 82, 164）"
+        },
+        {
+          "timestep": 354,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <130, 173>",
+          "translated": "按按钮（图像坐标 130, 173）"
+        },
+        {
+          "timestep": 453,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube",
+          "translated": "抓起方块"
+        },
+        {
+          "timestep": 567,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <138, 79>",
+          "translated": "放下方块到目标台（图像坐标 138, 79）"
+        },
+        {
+          "timestep": 671,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <138, 77>",
+          "translated": "抓起方块（图像坐标 138, 77）"
+        },
+        {
+          "timestep": 740,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <103, 157>",
+          "translated": "放下方块到目标台（图像坐标 103, 157）"
+        },
+        {
+          "timestep": 839,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <100, 156>",
+          "translated": "抓起方块（图像坐标 100, 156）"
+        },
+        {
+          "timestep": 907,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 982,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1034,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1094,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <116, 133>",
+          "translated": "抓起方块（图像坐标 116, 133）"
+        },
+        {
+          "timestep": 1199,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <138, 79>",
+          "translated": "将方块放到答案台（图像坐标 138, 79）"
+        }
+      ],
+      "flow_sha256": "2544200596cb320758bee6698932e75a65453cba1bce4096ba22ee2211a08c41"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard2",
+      "media_id": "3e15095a06d5c6cc689f51fd",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed11100001.h5",
+      "episode": 0,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <75, 88>",
+          "translated": "抓起方块（图像坐标 75, 88）"
+        },
+        {
+          "timestep": 121,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <113, 107>",
+          "translated": "放下方块到目标台（图像坐标 113, 107）"
+        },
+        {
+          "timestep": 209,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <111, 106>",
+          "translated": "抓起方块（图像坐标 111, 106）"
+        },
+        {
+          "timestep": 282,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <140, 110>",
+          "translated": "放下方块到目标台（图像坐标 140, 110）"
+        },
+        {
+          "timestep": 373,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <128, 156>",
+          "translated": "按按钮（图像坐标 128, 156）"
+        },
+        {
+          "timestep": 464,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <139, 109>",
+          "translated": "抓起方块（图像坐标 139, 109）"
+        },
+        {
+          "timestep": 572,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 673,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <96, 86>",
+          "translated": "抓起方块（图像坐标 96, 86）"
+        },
+        {
+          "timestep": 742,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 822,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <78, 168>",
+          "translated": "抓起方块（图像坐标 78, 168）"
+        },
+        {
+          "timestep": 945,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <140, 79>",
+          "translated": "放下方块到目标台（图像坐标 140, 79）"
+        },
+        {
+          "timestep": 1050,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <139, 77>",
+          "translated": "抓起方块（图像坐标 139, 77）"
+        },
+        {
+          "timestep": 1123,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <113, 107>",
+          "translated": "放下方块到目标台（图像坐标 113, 107）"
+        },
+        {
+          "timestep": 1210,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <112, 106>",
+          "translated": "抓起方块（图像坐标 112, 106）"
+        },
+        {
+          "timestep": 1286,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <140, 110>",
+          "translated": "放下方块到目标台（图像坐标 140, 110）"
+        },
+        {
+          "timestep": 1370,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 108>",
+          "translated": "抓起方块（图像坐标 140, 108）"
+        },
+        {
+          "timestep": 1442,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1548,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1608,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1668,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <75, 88>",
+          "translated": "抓起方块（图像坐标 75, 88）"
+        },
+        {
+          "timestep": 1788,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <140, 110>",
+          "translated": "将方块放到答案台（图像坐标 140, 110）"
+        }
+      ],
+      "flow_sha256": "d69262b8295f84256515020570fb6e7b98ab46607cd47548988e5d85e8375e0c"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard2",
+      "media_id": "6ebb1d88d84a69e41a35db10",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed11100304.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <93, 131>",
+          "translated": "抓起方块（图像坐标 93, 131）"
+        },
+        {
+          "timestep": 113,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <139, 175>",
+          "translated": "放下方块到目标台（图像坐标 139, 175）"
+        },
+        {
+          "timestep": 207,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <139, 177>",
+          "translated": "抓起方块（图像坐标 139, 177）"
+        },
+        {
+          "timestep": 274,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <106, 93>",
+          "translated": "放下方块到目标台（图像坐标 106, 93）"
+        },
+        {
+          "timestep": 364,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <126, 134>",
+          "translated": "按按钮（图像坐标 126, 134）"
+        },
+        {
+          "timestep": 456,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <105, 92>",
+          "translated": "抓起方块（图像坐标 105, 92）"
+        },
+        {
+          "timestep": 561,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <103, 163>",
+          "translated": "放下方块到目标台（图像坐标 103, 163）"
+        },
+        {
+          "timestep": 647,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <101, 166>",
+          "translated": "抓起方块（图像坐标 101, 166）"
+        },
+        {
+          "timestep": 717,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 788,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <68, 136>",
+          "translated": "抓起方块（图像坐标 68, 136）"
+        },
+        {
+          "timestep": 891,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <139, 175>",
+          "translated": "放下方块到目标台（图像坐标 139, 175）"
+        },
+        {
+          "timestep": 996,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 175>",
+          "translated": "抓起方块（图像坐标 140, 175）"
+        },
+        {
+          "timestep": 1064,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <103, 163>",
+          "translated": "放下方块到目标台（图像坐标 103, 163）"
+        },
+        {
+          "timestep": 1154,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <102, 167>",
+          "translated": "抓起方块（图像坐标 102, 167）"
+        },
+        {
+          "timestep": 1226,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 93>",
+          "translated": "放下方块到目标台（图像坐标 74, 93）"
+        },
+        {
+          "timestep": 1331,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <70, 92>",
+          "translated": "抓起方块（图像坐标 70, 92）"
+        },
+        {
+          "timestep": 1405,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1494,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1557,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1617,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <92, 131>",
+          "translated": "抓起方块（图像坐标 92, 131）"
+        },
+        {
+          "timestep": 1729,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <103, 163>",
+          "translated": "将方块放到答案台（图像坐标 103, 163）"
+        }
+      ],
+      "flow_sha256": "3b46782bfda3615392c67e70b6680f8f4f5d6c993d9b114427e823fb9cc79e17"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard2",
+      "media_id": "6de1f74c9a1fd6c6050629a6",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed11100600.h5",
+      "episode": 6,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <120, 151>",
+          "translated": "抓起方块（图像坐标 120, 151）"
+        },
+        {
+          "timestep": 107,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <108, 169>",
+          "translated": "放下方块到目标台（图像坐标 108, 169）"
+        },
+        {
+          "timestep": 178,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <104, 170>",
+          "translated": "抓起方块（图像坐标 104, 170）"
+        },
+        {
+          "timestep": 250,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <95, 88>",
+          "translated": "放下方块到目标台（图像坐标 95, 88）"
+        },
+        {
+          "timestep": 342,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <93, 87>",
+          "translated": "抓起方块（图像坐标 93, 87）"
+        },
+        {
+          "timestep": 413,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <143, 165>",
+          "translated": "放下方块到目标台（图像坐标 143, 165）"
+        },
+        {
+          "timestep": 508,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <121, 110>",
+          "translated": "按按钮（图像坐标 121, 110）"
+        },
+        {
+          "timestep": 595,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <143, 167>",
+          "translated": "抓起方块（图像坐标 143, 167）"
+        },
+        {
+          "timestep": 703,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 792,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <67, 114>",
+          "translated": "抓起方块（图像坐标 67, 114）"
+        },
+        {
+          "timestep": 915,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <107, 167>",
+          "translated": "放下方块到目标台（图像坐标 107, 167）"
+        },
+        {
+          "timestep": 1007,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <104, 169>",
+          "translated": "抓起方块（图像坐标 104, 169）"
+        },
+        {
+          "timestep": 1078,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 157>",
+          "translated": "放下方块到目标台（图像坐标 74, 157）"
+        },
+        {
+          "timestep": 1175,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <70, 164>",
+          "translated": "抓起方块（图像坐标 70, 164）"
+        },
+        {
+          "timestep": 1250,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <143, 165>",
+          "translated": "放下方块到目标台（图像坐标 143, 165）"
+        },
+        {
+          "timestep": 1353,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <146, 168>",
+          "translated": "抓起方块（图像坐标 146, 168）"
+        },
+        {
+          "timestep": 1428,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1543,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1609,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1669,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <120, 150>",
+          "translated": "抓起方块（图像坐标 120, 150）"
+        },
+        {
+          "timestep": 1776,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <143, 165>",
+          "translated": "将方块放到答案台（图像坐标 143, 165）"
+        }
+      ],
+      "flow_sha256": "ffc5b8f5807306e75567ebe2db724479137cd97062478b3bcbfff3654bcc2061"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard3",
+      "media_id": "aff3336b4343cae02ad6d767",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed13000001.h5",
+      "episode": 0,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <145, 74>",
+          "translated": "抓起方块（图像坐标 145, 74）"
+        },
+        {
+          "timestep": 122,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <90, 98>",
+          "translated": "放下方块到目标台（图像坐标 90, 98）"
+        },
+        {
+          "timestep": 232,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <102, 158>",
+          "translated": "抓起方块（图像坐标 102, 158）"
+        },
+        {
+          "timestep": 334,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <130, 166>",
+          "translated": "放下方块到目标台（图像坐标 130, 166）"
+        },
+        {
+          "timestep": 418,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <129, 169>",
+          "translated": "抓起方块（图像坐标 129, 169）"
+        },
+        {
+          "timestep": 492,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <115, 91>",
+          "translated": "放下方块到目标台（图像坐标 115, 91）"
+        },
+        {
+          "timestep": 573,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <120, 126>",
+          "translated": "按按钮（图像坐标 120, 126）"
+        },
+        {
+          "timestep": 652,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <90, 96>",
+          "translated": "抓起方块（图像坐标 90, 96）"
+        },
+        {
+          "timestep": 755,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <78, 164>",
+          "translated": "放下方块到目标台（图像坐标 78, 164）"
+        },
+        {
+          "timestep": 845,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <113, 89>",
+          "translated": "抓起方块（图像坐标 113, 89）"
+        },
+        {
+          "timestep": 948,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <115, 91>",
+          "translated": "放下方块到目标台（图像坐标 115, 91）"
+        },
+        {
+          "timestep": 1003,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <74, 167>",
+          "translated": "抓起方块（图像坐标 74, 167）"
+        },
+        {
+          "timestep": 1108,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1222,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <113, 90>",
+          "translated": "抓起方块（图像坐标 113, 90）"
+        },
+        {
+          "timestep": 1329,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1412,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1466,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1526,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <144, 75>",
+          "translated": "抓起方块（图像坐标 144, 75）"
+        },
+        {
+          "timestep": 1649,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <130, 166>",
+          "translated": "将方块放到答案台（图像坐标 130, 166）"
+        }
+      ],
+      "flow_sha256": "8c564d038c92d0d59c51accdde8c463248760ff55d2e259cd6235d006368f6f1"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard3",
+      "media_id": "6b87bdeb088af47999a03623",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed13000300.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <93, 162>",
+          "translated": "抓起方块（图像坐标 93, 162）"
+        },
+        {
+          "timestep": 105,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <96, 91>",
+          "translated": "放下方块到目标台（图像坐标 96, 91）"
+        },
+        {
+          "timestep": 196,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <144, 70>",
+          "translated": "抓起方块（图像坐标 144, 70）"
+        },
+        {
+          "timestep": 316,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 103>",
+          "translated": "放下方块到目标台（图像坐标 74, 103）"
+        },
+        {
+          "timestep": 435,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <71, 103>",
+          "translated": "抓起方块（图像坐标 71, 103）"
+        },
+        {
+          "timestep": 521,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <77, 151>",
+          "translated": "放下方块到目标台（图像坐标 77, 151）"
+        },
+        {
+          "timestep": 608,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <125, 113>",
+          "translated": "按按钮（图像坐标 125, 113）"
+        },
+        {
+          "timestep": 704,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <101, 89>",
+          "translated": "抓起方块（图像坐标 101, 89）"
+        },
+        {
+          "timestep": 801,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <115, 150>",
+          "translated": "放下方块到目标台（图像坐标 115, 150）"
+        },
+        {
+          "timestep": 879,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <78, 152>",
+          "translated": "抓起方块（图像坐标 78, 152）"
+        },
+        {
+          "timestep": 983,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <77, 151>",
+          "translated": "放下方块到目标台（图像坐标 77, 151）"
+        },
+        {
+          "timestep": 1046,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <113, 151>",
+          "translated": "抓起方块（图像坐标 113, 151）"
+        },
+        {
+          "timestep": 1155,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1230,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <74, 152>",
+          "translated": "抓起方块（图像坐标 74, 152）"
+        },
+        {
+          "timestep": 1336,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1448,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1525,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1585,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <144, 71>",
+          "translated": "抓起方块（图像坐标 144, 71）"
+        },
+        {
+          "timestep": 1704,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <74, 103>",
+          "translated": "将方块放到答案台（图像坐标 74, 103）"
+        }
+      ],
+      "flow_sha256": "6f4ae29ebea56b68cca838afaf592a48dc0f2fb0ee0ac08d8392114ca32f1d40"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard3",
+      "media_id": "2e88732211d3f6de43580fcd",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed13000600.h5",
+      "episode": 6,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <124, 175>",
+          "translated": "抓起方块（图像坐标 124, 175）"
+        },
+        {
+          "timestep": 108,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <83, 105>",
+          "translated": "放下方块到目标台（图像坐标 83, 105）"
+        },
+        {
+          "timestep": 209,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <69, 133>",
+          "translated": "抓起方块（图像坐标 69, 133）"
+        },
+        {
+          "timestep": 324,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <141, 148>",
+          "translated": "放下方块到目标台（图像坐标 141, 148）"
+        },
+        {
+          "timestep": 427,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <79, 104>",
+          "translated": "抓起方块（图像坐标 79, 104）"
+        },
+        {
+          "timestep": 546,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <91, 165>",
+          "translated": "放下方块到目标台（图像坐标 91, 165）"
+        },
+        {
+          "timestep": 629,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <124, 110>",
+          "translated": "按按钮（图像坐标 124, 110）"
+        },
+        {
+          "timestep": 718,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <88, 167>",
+          "translated": "抓起方块（图像坐标 88, 167）"
+        },
+        {
+          "timestep": 819,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <91, 165>",
+          "translated": "放下方块到目标台（图像坐标 91, 165）"
+        },
+        {
+          "timestep": 877,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 148>",
+          "translated": "抓起方块（图像坐标 140, 148）"
+        },
+        {
+          "timestep": 981,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <100, 87>",
+          "translated": "放下方块到目标台（图像坐标 100, 87）"
+        },
+        {
+          "timestep": 1084,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <89, 168>",
+          "translated": "抓起方块（图像坐标 89, 168）"
+        },
+        {
+          "timestep": 1175,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1266,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <98, 84>",
+          "translated": "抓起方块（图像坐标 98, 84）"
+        },
+        {
+          "timestep": 1363,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1459,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1522,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1582,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <124, 175>",
+          "translated": "抓起方块（图像坐标 124, 175）"
+        },
+        {
+          "timestep": 1690,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <91, 162>",
+          "translated": "将方块放到答案台（图像坐标 91, 162）"
+        }
+      ],
+      "flow_sha256": "c5b327f1e5169c024b9542e1260b8d6faf39d89f38dfa34dae55446631bf39c7"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard3",
+      "media_id": "70e12ba3f61de11ce8e49ee1",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed13100002.h5",
+      "episode": 0,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <136, 96>",
+          "translated": "抓起方块（图像坐标 136, 96）"
+        },
+        {
+          "timestep": 106,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <127, 79>",
+          "translated": "放下方块到目标台（图像坐标 127, 79）"
+        },
+        {
+          "timestep": 182,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <119, 80>",
+          "translated": "抓起方块（图像坐标 119, 80）"
+        },
+        {
+          "timestep": 260,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <81, 90>",
+          "translated": "放下方块到目标台（图像坐标 81, 90）"
+        },
+        {
+          "timestep": 365,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <128, 130>",
+          "translated": "按按钮（图像坐标 128, 130）"
+        },
+        {
+          "timestep": 467,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube",
+          "translated": "抓起方块"
+        },
+        {
+          "timestep": 581,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <140, 174>",
+          "translated": "放下方块到目标台（图像坐标 140, 174）"
+        },
+        {
+          "timestep": 688,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 176>",
+          "translated": "抓起方块（图像坐标 140, 176）"
+        },
+        {
+          "timestep": 760,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 847,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <109, 168>",
+          "translated": "抓起方块（图像坐标 109, 168）"
+        },
+        {
+          "timestep": 923,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1018,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <93, 145>",
+          "translated": "抓起方块（图像坐标 93, 145）"
+        },
+        {
+          "timestep": 1120,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <140, 174>",
+          "translated": "放下方块到目标台（图像坐标 140, 174）"
+        },
+        {
+          "timestep": 1215,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 177>",
+          "translated": "抓起方块（图像坐标 140, 177）"
+        },
+        {
+          "timestep": 1287,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <109, 157>",
+          "translated": "放下方块到目标台（图像坐标 109, 157）"
+        },
+        {
+          "timestep": 1374,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <109, 169>",
+          "translated": "抓起方块（图像坐标 109, 169）"
+        },
+        {
+          "timestep": 1450,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <121, 82>",
+          "translated": "放下方块到目标台（图像坐标 121, 82）"
+        },
+        {
+          "timestep": 1531,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <119, 80>",
+          "translated": "抓起方块（图像坐标 119, 80）"
+        },
+        {
+          "timestep": 1610,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1693,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1740,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1800,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <92, 145>",
+          "translated": "抓起方块（图像坐标 92, 145）"
+        },
+        {
+          "timestep": 1910,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <140, 174>",
+          "translated": "将方块放到答案台（图像坐标 140, 174）"
+        }
+      ],
+      "flow_sha256": "475b8fb2f76f3c89fbf87613e2e7cda7505d114f3922cb2549c735b9c7a13587"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard3",
+      "media_id": "89e48e8124ab65ef7adf8a85",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed13100301.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <99, 163>",
+          "translated": "抓起方块（图像坐标 99, 163）"
+        },
+        {
+          "timestep": 104,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <76, 90>",
+          "translated": "放下方块到目标台（图像坐标 76, 90）"
+        },
+        {
+          "timestep": 204,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <73, 89>",
+          "translated": "抓起方块（图像坐标 73, 89）"
+        },
+        {
+          "timestep": 279,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <141, 146>",
+          "translated": "放下方块到目标台（图像坐标 141, 146）"
+        },
+        {
+          "timestep": 382,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 146>",
+          "translated": "抓起方块（图像坐标 140, 146）"
+        },
+        {
+          "timestep": 456,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 560,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <78, 168>",
+          "translated": "抓起方块（图像坐标 78, 168）"
+        },
+        {
+          "timestep": 638,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <97, 88>",
+          "translated": "放下方块到目标台（图像坐标 97, 88）"
+        },
+        {
+          "timestep": 734,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <122, 108>",
+          "translated": "按按钮（图像坐标 122, 108）"
+        },
+        {
+          "timestep": 820,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <99, 85>",
+          "translated": "抓起方块（图像坐标 99, 85）"
+        },
+        {
+          "timestep": 910,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 990,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <122, 164>",
+          "translated": "抓起方块（图像坐标 122, 164）"
+        },
+        {
+          "timestep": 1093,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <76, 90>",
+          "translated": "放下方块到目标台（图像坐标 76, 90）"
+        },
+        {
+          "timestep": 1201,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <73, 89>",
+          "translated": "抓起方块（图像坐标 73, 89）"
+        },
+        {
+          "timestep": 1276,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <80, 165>",
+          "translated": "放下方块到目标台（图像坐标 80, 165）"
+        },
+        {
+          "timestep": 1373,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <77, 167>",
+          "translated": "抓起方块（图像坐标 77, 167）"
+        },
+        {
+          "timestep": 1447,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <141, 146>",
+          "translated": "放下方块到目标台（图像坐标 141, 146）"
+        },
+        {
+          "timestep": 1545,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 147>",
+          "translated": "抓起方块（图像坐标 140, 147）"
+        },
+        {
+          "timestep": 1619,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1707,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1765,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1825,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <99, 164>",
+          "translated": "抓起方块（图像坐标 99, 164）"
+        },
+        {
+          "timestep": 1928,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <81, 163>",
+          "translated": "将方块放到答案台（图像坐标 81, 163）"
+        }
+      ],
+      "flow_sha256": "4799017b11b403b0d784b5edda43cc66fc7b69bf17059375b0d28d32d838801a"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard3",
+      "media_id": "4a9d61471d37b60faff15777",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed13100600.h5",
+      "episode": 6,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 148>",
+          "translated": "抓起方块（图像坐标 72, 148）"
+        },
+        {
+          "timestep": 126,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <141, 111>",
+          "translated": "放下方块到目标台（图像坐标 141, 111）"
+        },
+        {
+          "timestep": 227,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 110>",
+          "translated": "抓起方块（图像坐标 140, 110）"
+        },
+        {
+          "timestep": 295,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <102, 164>",
+          "translated": "放下方块到目标台（图像坐标 102, 164）"
+        },
+        {
+          "timestep": 395,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <100, 166>",
+          "translated": "抓起方块（图像坐标 100, 166）"
+        },
+        {
+          "timestep": 466,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <99, 87>",
+          "translated": "放下方块到目标台（图像坐标 99, 87）"
+        },
+        {
+          "timestep": 559,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <131, 163>",
+          "translated": "按按钮（图像坐标 131, 163）"
+        },
+        {
+          "timestep": 649,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <97, 86>",
+          "translated": "抓起方块（图像坐标 97, 86）"
+        },
+        {
+          "timestep": 744,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 843,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <147, 82>",
+          "translated": "抓起方块（图像坐标 147, 82）"
+        },
+        {
+          "timestep": 977,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <99, 87>",
+          "translated": "放下方块到目标台（图像坐标 99, 87）"
+        },
+        {
+          "timestep": 1087,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <96, 85>",
+          "translated": "抓起方块（图像坐标 96, 85）"
+        },
+        {
+          "timestep": 1156,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <77, 91>",
+          "translated": "放下方块到目标台（图像坐标 77, 91）"
+        },
+        {
+          "timestep": 1251,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <73, 88>",
+          "translated": "抓起方块（图像坐标 73, 88）"
+        },
+        {
+          "timestep": 1326,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <141, 111>",
+          "translated": "放下方块到目标台（图像坐标 141, 111）"
+        },
+        {
+          "timestep": 1425,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <142, 106>",
+          "translated": "抓起方块（图像坐标 142, 106）"
+        },
+        {
+          "timestep": 1494,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <102, 164>",
+          "translated": "放下方块到目标台（图像坐标 102, 164）"
+        },
+        {
+          "timestep": 1590,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <98, 165>",
+          "translated": "抓起方块（图像坐标 98, 165）"
+        },
+        {
+          "timestep": 1656,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1768,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1846,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1906,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 147>",
+          "translated": "抓起方块（图像坐标 72, 147）"
+        },
+        {
+          "timestep": 2028,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <141, 111>",
+          "translated": "将方块放到答案台（图像坐标 141, 111）"
+        }
+      ],
+      "flow_sha256": "61c17644aa13aa6c7c19438c99836c53e46e4fa8c38d65993a594d853da31b08"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard4",
+      "media_id": "ff2a72799a4e7734ae2e6b63",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed7000000.h5",
+      "episode": 0,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <125, 181>",
+          "translated": "抓起方块（图像坐标 125, 181）"
+        },
+        {
+          "timestep": 111,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <100, 89>",
+          "translated": "放下方块到目标台（图像坐标 100, 89）"
+        },
+        {
+          "timestep": 206,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 142>",
+          "translated": "抓起方块（图像坐标 72, 142）"
+        },
+        {
+          "timestep": 328,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <75, 92>",
+          "translated": "放下方块到目标台（图像坐标 75, 92）"
+        },
+        {
+          "timestep": 418,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 91>",
+          "translated": "抓起方块（图像坐标 72, 91）"
+        },
+        {
+          "timestep": 492,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <82, 161>",
+          "translated": "放下方块到目标台（图像坐标 82, 161）"
+        },
+        {
+          "timestep": 590,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <128, 134>",
+          "translated": "按按钮（图像坐标 128, 134）"
+        },
+        {
+          "timestep": 691,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <99, 86>",
+          "translated": "抓起方块（图像坐标 99, 86）"
+        },
+        {
+          "timestep": 784,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <104, 168>",
+          "translated": "放下方块到目标台（图像坐标 104, 168）"
+        },
+        {
+          "timestep": 877,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <80, 162>",
+          "translated": "抓起方块（图像坐标 80, 162）"
+        },
+        {
+          "timestep": 973,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <82, 161>",
+          "translated": "放下方块到目标台（图像坐标 82, 161）"
+        },
+        {
+          "timestep": 1031,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <102, 170>",
+          "translated": "抓起方块（图像坐标 102, 170）"
+        },
+        {
+          "timestep": 1126,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <75, 92>",
+          "translated": "放下方块到目标台（图像坐标 75, 92）"
+        },
+        {
+          "timestep": 1230,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 91>",
+          "translated": "抓起方块（图像坐标 72, 91）"
+        },
+        {
+          "timestep": 1305,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1408,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <79, 160>",
+          "translated": "抓起方块（图像坐标 79, 160）"
+        },
+        {
+          "timestep": 1516,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1603,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1664,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1724,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <126, 180>",
+          "translated": "抓起方块（图像坐标 126, 180）"
+        },
+        {
+          "timestep": 1835,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <100, 89>",
+          "translated": "将方块放到答案台（图像坐标 100, 89）"
+        }
+      ],
+      "flow_sha256": "b40de4f7be4f70436f395f47114cd6ab3160bdd4741661c166b876f061e621f6"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard4",
+      "media_id": "18475ff9a26958dda6588a4b",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed7100000.h5",
+      "episode": 0,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <97, 175>",
+          "translated": "抓起方块（图像坐标 97, 175）"
+        },
+        {
+          "timestep": 105,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <133, 163>",
+          "translated": "放下方块到目标台（图像坐标 133, 163）"
+        },
+        {
+          "timestep": 191,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <132, 165>",
+          "translated": "抓起方块（图像坐标 132, 165）"
+        },
+        {
+          "timestep": 260,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 92>",
+          "translated": "放下方块到目标台（图像坐标 74, 92）"
+        },
+        {
+          "timestep": 373,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <71, 90>",
+          "translated": "抓起方块（图像坐标 71, 90）"
+        },
+        {
+          "timestep": 449,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <135, 127>",
+          "translated": "放下方块到目标台（图像坐标 135, 127）"
+        },
+        {
+          "timestep": 547,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <134, 126>",
+          "translated": "抓起方块（图像坐标 134, 126）"
+        },
+        {
+          "timestep": 616,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <71, 167>",
+          "translated": "放下方块到目标台（图像坐标 71, 167）"
+        },
+        {
+          "timestep": 723,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <74, 166>",
+          "translated": "抓起方块（图像坐标 74, 166）"
+        },
+        {
+          "timestep": 797,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 876,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <111, 139>",
+          "translated": "抓起方块（图像坐标 111, 139）"
+        },
+        {
+          "timestep": 977,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <133, 163>",
+          "translated": "放下方块到目标台（图像坐标 133, 163）"
+        },
+        {
+          "timestep": 1060,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <132, 166>",
+          "translated": "抓起方块（图像坐标 132, 166）"
+        },
+        {
+          "timestep": 1129,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <74, 92>",
+          "translated": "放下方块到目标台（图像坐标 74, 92）"
+        },
+        {
+          "timestep": 1238,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <71, 91>",
+          "translated": "抓起方块（图像坐标 71, 91）"
+        },
+        {
+          "timestep": 1313,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <77, 163>",
+          "translated": "放下方块到目标台（图像坐标 77, 163）"
+        },
+        {
+          "timestep": 1409,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <120, 92>",
+          "translated": "按按钮（图像坐标 120, 92）"
+        },
+        {
+          "timestep": 1500,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <74, 166>",
+          "translated": "抓起方块（图像坐标 74, 166）"
+        },
+        {
+          "timestep": 1611,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <135, 127>",
+          "translated": "放下方块到目标台（图像坐标 135, 127）"
+        },
+        {
+          "timestep": 1706,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <134, 127>",
+          "translated": "抓起方块（图像坐标 134, 127）"
+        },
+        {
+          "timestep": 1775,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1858,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1910,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1970,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <97, 174>",
+          "translated": "抓起方块（图像坐标 97, 174）"
+        },
+        {
+          "timestep": 2075,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <77, 163>",
+          "translated": "将方块放到答案台（图像坐标 77, 163）"
+        }
+      ],
+      "flow_sha256": "1ec0e2c34b5a8680c3d3f54babfe00ff60868d1d4c35e30e30e23c644f8991b6"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard4",
+      "media_id": "8e67b3129d0de9ee558f1cb2",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed7000302.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <77, 167>",
+          "translated": "抓起方块（图像坐标 77, 167）"
+        },
+        {
+          "timestep": 111,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <96, 100>",
+          "translated": "放下方块到目标台（图像坐标 96, 100）"
+        },
+        {
+          "timestep": 202,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <96, 146>",
+          "translated": "抓起方块（图像坐标 96, 146）"
+        },
+        {
+          "timestep": 282,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <110, 123>",
+          "translated": "放下方块到目标台（图像坐标 110, 123）"
+        },
+        {
+          "timestep": 354,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <95, 100>",
+          "translated": "抓起方块（图像坐标 95, 100）"
+        },
+        {
+          "timestep": 435,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <142, 176>",
+          "translated": "放下方块到目标台（图像坐标 142, 176）"
+        },
+        {
+          "timestep": 536,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <125, 84>",
+          "translated": "按按钮（图像坐标 125, 84）"
+        },
+        {
+          "timestep": 618,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <140, 178>",
+          "translated": "抓起方块（图像坐标 140, 178）"
+        },
+        {
+          "timestep": 709,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <135, 144>",
+          "translated": "放下方块到目标台（图像坐标 135, 144）"
+        },
+        {
+          "timestep": 787,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube",
+          "translated": "抓起方块"
+        },
+        {
+          "timestep": 882,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <142, 176>",
+          "translated": "放下方块到目标台（图像坐标 142, 176）"
+        },
+        {
+          "timestep": 972,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <144, 177>",
+          "translated": "抓起方块（图像坐标 144, 177）"
+        },
+        {
+          "timestep": 1051,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <96, 100>",
+          "translated": "放下方块到目标台（图像坐标 96, 100）"
+        },
+        {
+          "timestep": 1156,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <135, 145>",
+          "translated": "抓起方块（图像坐标 135, 145）"
+        },
+        {
+          "timestep": 1257,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1355,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <93, 99>",
+          "translated": "抓起方块（图像坐标 93, 99）"
+        },
+        {
+          "timestep": 1460,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1538,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1584,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1644,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <77, 167>",
+          "translated": "抓起方块（图像坐标 77, 167）"
+        },
+        {
+          "timestep": 1755,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <135, 144>",
+          "translated": "将方块放到答案台（图像坐标 135, 144）"
+        }
+      ],
+      "flow_sha256": "e067c996e3c022ee70bb5133e267317cde117d12e3c4fa024c8a09eef52b0e9f"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard4",
+      "media_id": "e72501eab405879262cfa4bb",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed7100301.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <88, 168>",
+          "translated": "抓起方块（图像坐标 88, 168）"
+        },
+        {
+          "timestep": 113,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <143, 113>",
+          "translated": "放下方块到目标台（图像坐标 143, 113）"
+        },
+        {
+          "timestep": 212,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <142, 113>",
+          "translated": "抓起方块（图像坐标 142, 113）"
+        },
+        {
+          "timestep": 286,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 403,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 89>",
+          "translated": "抓起方块（图像坐标 72, 89）"
+        },
+        {
+          "timestep": 479,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <133, 82>",
+          "translated": "放下方块到目标台（图像坐标 133, 82）"
+        },
+        {
+          "timestep": 581,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <132, 79>",
+          "translated": "抓起方块（图像坐标 132, 79）"
+        },
+        {
+          "timestep": 650,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <105, 88>",
+          "translated": "放下方块到目标台（图像坐标 105, 88）"
+        },
+        {
+          "timestep": 737,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <103, 85>",
+          "translated": "抓起方块（图像坐标 103, 85）"
+        },
+        {
+          "timestep": 811,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 904,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <91, 109>",
+          "translated": "抓起方块（图像坐标 91, 109）"
+        },
+        {
+          "timestep": 1018,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <104, 87>",
+          "translated": "放下方块到目标台（图像坐标 104, 87）"
+        },
+        {
+          "timestep": 1091,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <101, 85>",
+          "translated": "抓起方块（图像坐标 101, 85）"
+        },
+        {
+          "timestep": 1160,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <133, 82>",
+          "translated": "放下方块到目标台（图像坐标 133, 82）"
+        },
+        {
+          "timestep": 1246,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <120, 166>",
+          "translated": "按按钮（图像坐标 120, 166）"
+        },
+        {
+          "timestep": 1345,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <131, 79>",
+          "translated": "抓起方块（图像坐标 131, 79）"
+        },
+        {
+          "timestep": 1461,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <143, 113>",
+          "translated": "放下方块到目标台（图像坐标 143, 113）"
+        },
+        {
+          "timestep": 1532,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <142, 114>",
+          "translated": "抓起方块（图像坐标 142, 114）"
+        },
+        {
+          "timestep": 1601,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 1717,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 89>",
+          "translated": "抓起方块（图像坐标 72, 89）"
+        },
+        {
+          "timestep": 1792,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1865,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1918,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1978,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <90, 110>",
+          "translated": "抓起方块（图像坐标 90, 110）"
+        },
+        {
+          "timestep": 2089,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <104, 87>",
+          "translated": "将方块放到答案台（图像坐标 104, 87）"
+        }
+      ],
+      "flow_sha256": "72d90b8d8c5bf97c25fcf3497c8b46deb5294c43f246a18da413d46060396590"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard4",
+      "media_id": "d5e20a74ab0f182dc9f6e867",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed7000600.h5",
+      "episode": 6,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <69, 142>",
+          "translated": "抓起方块（图像坐标 69, 142）"
+        },
+        {
+          "timestep": 121,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <112, 89>",
+          "translated": "放下方块到目标台（图像坐标 112, 89）"
+        },
+        {
+          "timestep": 212,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <142, 177>",
+          "translated": "抓起方块（图像坐标 142, 177）"
+        },
+        {
+          "timestep": 332,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <104, 160>",
+          "translated": "放下方块到目标台（图像坐标 104, 160）"
+        },
+        {
+          "timestep": 424,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <101, 161>",
+          "translated": "抓起方块（图像坐标 101, 161）"
+        },
+        {
+          "timestep": 492,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <138, 83>",
+          "translated": "放下方块到目标台（图像坐标 138, 83）"
+        },
+        {
+          "timestep": 581,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <126, 123>",
+          "translated": "按按钮（图像坐标 126, 123）"
+        },
+        {
+          "timestep": 676,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <110, 87>",
+          "translated": "抓起方块（图像坐标 110, 87）"
+        },
+        {
+          "timestep": 763,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <84, 160>",
+          "translated": "放下方块到目标台（图像坐标 84, 160）"
+        },
+        {
+          "timestep": 854,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <136, 80>",
+          "translated": "抓起方块（图像坐标 136, 80）"
+        },
+        {
+          "timestep": 963,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <138, 84>",
+          "translated": "放下方块到目标台（图像坐标 138, 84）"
+        },
+        {
+          "timestep": 1024,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <81, 161>",
+          "translated": "抓起方块（图像坐标 81, 161）"
+        },
+        {
+          "timestep": 1140,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <104, 160>",
+          "translated": "放下方块到目标台（图像坐标 104, 160）"
+        },
+        {
+          "timestep": 1217,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <102, 161>",
+          "translated": "抓起方块（图像坐标 102, 161）"
+        },
+        {
+          "timestep": 1286,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1385,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <136, 79>",
+          "translated": "抓起方块（图像坐标 136, 79）"
+        },
+        {
+          "timestep": 1496,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1589,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1663,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1723,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <70, 142>",
+          "translated": "抓起方块（图像坐标 70, 142）"
+        },
+        {
+          "timestep": 1846,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <138, 83>",
+          "translated": "将方块放到答案台（图像坐标 138, 83）"
+        }
+      ],
+      "flow_sha256": "1e262f9ff98b0230dde9232adc8a9c05ca8f072ee9723723029c23ea262d4a9a"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard4",
+      "media_id": "381aa0388c629a33ed1105f1",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed7100600.h5",
+      "episode": 6,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <77, 116>",
+          "translated": "抓起方块（图像坐标 77, 116）"
+        },
+        {
+          "timestep": 117,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <137, 108>",
+          "translated": "放下方块到目标台（图像坐标 137, 108）"
+        },
+        {
+          "timestep": 218,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <137, 107>",
+          "translated": "抓起方块（图像坐标 137, 107）"
+        },
+        {
+          "timestep": 287,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 375,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <100, 86>",
+          "translated": "抓起方块（图像坐标 100, 86）"
+        },
+        {
+          "timestep": 446,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <76, 92>",
+          "translated": "放下方块到目标台（图像坐标 76, 92）"
+        },
+        {
+          "timestep": 539,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 90>",
+          "translated": "抓起方块（图像坐标 72, 90）"
+        },
+        {
+          "timestep": 614,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <98, 166>",
+          "translated": "放下方块到目标台（图像坐标 98, 166）"
+        },
+        {
+          "timestep": 712,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <96, 168>",
+          "translated": "抓起方块（图像坐标 96, 168）"
+        },
+        {
+          "timestep": 783,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 872,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <91, 140>",
+          "translated": "抓起方块（图像坐标 91, 140）"
+        },
+        {
+          "timestep": 956,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <98, 166>",
+          "translated": "放下方块到目标台（图像坐标 98, 166）"
+        },
+        {
+          "timestep": 1042,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <96, 167>",
+          "translated": "抓起方块（图像坐标 96, 167）"
+        },
+        {
+          "timestep": 1111,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <137, 108>",
+          "translated": "放下方块到目标台（图像坐标 137, 108）"
+        },
+        {
+          "timestep": 1204,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <137, 107>",
+          "translated": "抓起方块（图像坐标 137, 107）"
+        },
+        {
+          "timestep": 1277,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 1365,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <126, 156>",
+          "translated": "按按钮（图像坐标 126, 156）"
+        },
+        {
+          "timestep": 1452,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <100, 87>",
+          "translated": "抓起方块（图像坐标 100, 87）"
+        },
+        {
+          "timestep": 1543,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <75, 92>",
+          "translated": "放下方块到目标台（图像坐标 75, 92）"
+        },
+        {
+          "timestep": 1639,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <72, 90>",
+          "translated": "抓起方块（图像坐标 72, 90）"
+        },
+        {
+          "timestep": 1714,
+          "phase": "demo_steps",
+          "simple": "put the cube back to its original position",
+          "grounded": "put the cube back to its original position",
+          "translated": "将方块放回原位"
+        },
+        {
+          "timestep": 1805,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1853,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1913,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <77, 115>",
+          "translated": "抓起方块（图像坐标 77, 115）"
+        },
+        {
+          "timestep": 2030,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <102, 89>",
+          "translated": "将方块放到答案台（图像坐标 102, 89）"
+        }
+      ],
+      "flow_sha256": "295d3635f179dc81f799057ba7cb443d542ecd9a949865559c7994e55289c39e"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "hard",
+      "media_id": "88cd8afb207a509b36ac4667",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed10301.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <74, 110>",
+          "translated": "抓起方块（图像坐标 74, 110）"
+        },
+        {
+          "timestep": 119,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <98, 165>",
+          "translated": "放下方块到目标台（图像坐标 98, 165）"
+        },
+        {
+          "timestep": 213,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <119, 115>",
+          "translated": "按按钮（图像坐标 119, 115）"
+        },
+        {
+          "timestep": 293,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <96, 168>",
+          "translated": "抓起方块（图像坐标 96, 168）"
+        },
+        {
+          "timestep": 386,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <129, 173>",
+          "translated": "放下方块到目标台（图像坐标 129, 173）"
+        },
+        {
+          "timestep": 472,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <129, 175>",
+          "translated": "抓起方块（图像坐标 129, 175）"
+        },
+        {
+          "timestep": 545,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto table",
+          "grounded": "drop the cube onto table",
+          "translated": "放下方块到桌面"
+        },
+        {
+          "timestep": 647,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 699,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 759,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <88, 128>",
+          "translated": "抓起方块（图像坐标 88, 128）"
+        },
+        {
+          "timestep": 953,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <98, 165>",
+          "translated": "将方块放到答案台（图像坐标 98, 165）"
+        }
+      ],
+      "flow_sha256": "ccb7e6c90b807098f76fbd61a2cf9ec160602b4484bb9651fc12f9ff67898525"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "hard",
+      "media_id": "2d8f82cde1e12c7a72445521",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_7/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
+      "episode": 7,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <73, 143>",
+          "translated": "抓起方块（图像坐标 73, 143）"
+        },
+        {
+          "timestep": 118,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <126, 145>",
+          "translated": "放下方块到目标台（图像坐标 126, 145）"
+        },
+        {
+          "timestep": 216,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <123, 92>",
+          "translated": "按按钮（图像坐标 123, 92）"
+        },
+        {
+          "timestep": 290,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <125, 146>",
+          "translated": "抓起方块（图像坐标 125, 146）"
+        },
+        {
+          "timestep": 369,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 478,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <77, 166>",
+          "translated": "抓起方块（图像坐标 77, 166）"
+        },
+        {
+          "timestep": 553,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto table",
+          "grounded": "drop the cube onto table",
+          "translated": "放下方块到桌面"
+        },
+        {
+          "timestep": 635,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 690,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 750,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <83, 121>",
+          "translated": "抓起方块（图像坐标 83, 121）"
+        },
+        {
+          "timestep": 864,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <126, 145>",
+          "translated": "将方块放到答案台（图像坐标 126, 145）"
+        }
+      ],
+      "flow_sha256": "87a4cadccff17a70773f748a6913c7d7572f66f89d26e724be691698bf37d8ac"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "hard",
+      "media_id": "472eaf1be6f71e9358efbf2e",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_11/hdf5_files/VideoPlaceButton_ep11_seed11100.h5",
+      "episode": 11,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <99, 148>",
+          "translated": "抓起方块（图像坐标 99, 148）"
+        },
+        {
+          "timestep": 107,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <124, 162>",
+          "translated": "放下方块到目标台（图像坐标 124, 162）"
+        },
+        {
+          "timestep": 187,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <122, 121>",
+          "translated": "按按钮（图像坐标 122, 121）"
+        },
+        {
+          "timestep": 272,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <123, 163>",
+          "translated": "抓起方块（图像坐标 123, 163）"
+        },
+        {
+          "timestep": 373,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <96, 160>",
+          "translated": "放下方块到目标台（图像坐标 96, 160）"
+        },
+        {
+          "timestep": 469,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <93, 166>",
+          "translated": "抓起方块（图像坐标 93, 166）"
+        },
+        {
+          "timestep": 539,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto table",
+          "grounded": "drop the cube onto table",
+          "translated": "放下方块到桌面"
+        },
+        {
+          "timestep": 618,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 674,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 734,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <82, 131>",
+          "translated": "抓起方块（图像坐标 82, 131）"
+        },
+        {
+          "timestep": 847,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <140, 81>",
+          "translated": "将方块放到答案台（图像坐标 140, 81）"
+        }
+      ],
+      "flow_sha256": "abfd35299cfd181e462b6e598991a15b31a86bdc7ecd9f3d11f7124ea9476427"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "hard",
+      "media_id": "b91c44b2e40e4df9070653dd",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed11305.h5",
+      "episode": 3,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <92, 108>",
+          "translated": "抓起方块（图像坐标 92, 108）"
+        },
+        {
+          "timestep": 113,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <140, 86>",
+          "translated": "放下方块到目标台（图像坐标 140, 86）"
+        },
+        {
+          "timestep": 209,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <138, 84>",
+          "translated": "抓起方块（图像坐标 138, 84）"
+        },
+        {
+          "timestep": 278,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <114, 106>",
+          "translated": "放下方块到目标台（图像坐标 114, 106）"
+        },
+        {
+          "timestep": 361,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <114, 99>",
+          "translated": "抓起方块（图像坐标 114, 99）"
+        },
+        {
+          "timestep": 438,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <142, 116>",
+          "translated": "放下方块到目标台（图像坐标 142, 116）"
+        },
+        {
+          "timestep": 529,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <141, 115>",
+          "translated": "抓起方块（图像坐标 141, 115）"
+        },
+        {
+          "timestep": 601,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target",
+          "translated": "放下方块到目标台"
+        },
+        {
+          "timestep": 711,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <126, 157>",
+          "translated": "按按钮（图像坐标 126, 157）"
+        },
+        {
+          "timestep": 812,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <71, 90>",
+          "translated": "抓起方块（图像坐标 71, 90）"
+        },
+        {
+          "timestep": 927,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto table",
+          "grounded": "drop the cube onto table",
+          "translated": "放下方块到桌面"
+        },
+        {
+          "timestep": 1008,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1064,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1124,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <81, 127>",
+          "translated": "抓起方块（图像坐标 81, 127）"
+        },
+        {
+          "timestep": 1319,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <115, 101>",
+          "translated": "将方块放到答案台（图像坐标 115, 101）"
+        }
+      ],
+      "flow_sha256": "bbde83f372ce97c5cafd0652175f47dc0d0ce438c0f0facb77b555dcd90b5aa8"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "hard",
+      "media_id": "22f7d8e02cf7cf21d111fb17",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_7/hdf5_files/VideoPlaceOrder_ep7_seed11705.h5",
+      "episode": 7,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <82, 151>",
+          "translated": "抓起方块（图像坐标 82, 151）"
+        },
+        {
+          "timestep": 115,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <76, 163>",
+          "translated": "放下方块到目标台（图像坐标 76, 163）"
+        },
+        {
+          "timestep": 195,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <73, 165>",
+          "translated": "抓起方块（图像坐标 73, 165）"
+        },
+        {
+          "timestep": 268,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <97, 88>",
+          "translated": "放下方块到目标台（图像坐标 97, 88）"
+        },
+        {
+          "timestep": 367,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <124, 105>",
+          "translated": "按按钮（图像坐标 124, 105）"
+        },
+        {
+          "timestep": 455,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <101, 85>",
+          "translated": "抓起方块（图像坐标 101, 85）"
+        },
+        {
+          "timestep": 550,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <134, 140>",
+          "translated": "放下方块到目标台（图像坐标 134, 140）"
+        },
+        {
+          "timestep": 641,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <134, 141>",
+          "translated": "抓起方块（图像坐标 134, 141）"
+        },
+        {
+          "timestep": 714,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto table",
+          "grounded": "drop the cube onto table",
+          "translated": "放下方块到桌面"
+        },
+        {
+          "timestep": 814,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 870,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 930,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <82, 128>",
+          "translated": "抓起方块（图像坐标 82, 128）"
+        },
+        {
+          "timestep": 1043,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <97, 88>",
+          "translated": "将方块放到答案台（图像坐标 97, 88）"
+        }
+      ],
+      "flow_sha256": "c97d307bf1dc8ef9d5296f78a8222717eabd397ea5dda1129902df9e20ee3a6e"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "hard",
+      "media_id": "2d6d2cff285699fba5bc53e3",
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_11/hdf5_files/VideoPlaceOrder_ep11_seed12100.h5",
+      "episode": 11,
+      "boundaries": [
+        {
+          "timestep": 0,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <127, 175>",
+          "translated": "抓起方块（图像坐标 127, 175）"
+        },
+        {
+          "timestep": 103,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <108, 90>",
+          "translated": "放下方块到目标台（图像坐标 108, 90）"
+        },
+        {
+          "timestep": 193,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <106, 88>",
+          "translated": "抓起方块（图像坐标 106, 88）"
+        },
+        {
+          "timestep": 265,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <75, 163>",
+          "translated": "放下方块到目标台（图像坐标 75, 163）"
+        },
+        {
+          "timestep": 366,
+          "phase": "demo_steps",
+          "simple": "press the button",
+          "grounded": "press the button at <127, 122>",
+          "translated": "按按钮（图像坐标 127, 122）"
+        },
+        {
+          "timestep": 466,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube",
+          "translated": "抓起方块"
+        },
+        {
+          "timestep": 579,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <108, 167>",
+          "translated": "放下方块到目标台（图像坐标 108, 167）"
+        },
+        {
+          "timestep": 662,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <105, 170>",
+          "translated": "抓起方块（图像坐标 105, 170）"
+        },
+        {
+          "timestep": 731,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto target",
+          "grounded": "drop the cube onto target at <133, 81>",
+          "translated": "放下方块到目标台（图像坐标 133, 81）"
+        },
+        {
+          "timestep": 821,
+          "phase": "demo_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <132, 79>",
+          "translated": "抓起方块（图像坐标 132, 79）"
+        },
+        {
+          "timestep": 888,
+          "phase": "demo_steps",
+          "simple": "drop the cube onto table",
+          "grounded": "drop the cube onto table",
+          "translated": "放下方块到桌面"
+        },
+        {
+          "timestep": 992,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1054,
+          "phase": "demo_steps",
+          "simple": "static",
+          "grounded": "static",
+          "translated": "静止"
+        },
+        {
+          "timestep": 1114,
+          "phase": "execution_steps",
+          "simple": "pick up the cube",
+          "grounded": "pick up the cube at <81, 127>",
+          "translated": "抓起方块（图像坐标 81, 127）"
+        },
+        {
+          "timestep": 1229,
+          "phase": "execution_steps",
+          "simple": "place the cube onto the correct target",
+          "grounded": "place the cube onto the correct target at <108, 167>",
+          "translated": "将方块放到答案台（图像坐标 108, 167）"
+        }
+      ],
+      "flow_sha256": "67d43a1ffa9b55788e9d81dcbb652990e42f2fb535f1e34cff6ef2f93b152c70"
+    }
+  ],
+  "sha_scope": "真实边界、阶段及原始动作文字的散列，非H5全文件散列"
+}

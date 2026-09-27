@@ -1,0 +1,9 @@
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+500/3000 26s fails=0
+1000/3000 52s fails=0
+1500/3000 79s fails=0
+2000/3000 105s fails=0
+2500/3000 131s fails=0
+3000/3000 158s fails=0
+SIM_DONE n=3000 exact=True fails=0 degenerate_obb=23922/36000 wall=158s

@@ -1,0 +1,1814 @@
+[
+ {
+  "difficulty": "xhard4",
+  "episode": 6,
+  "seed": 7300600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_6/hdf5_files/InsertPeg_ep6_seed7300600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_6/videos/InsertPeg_ep6_seed7300600_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 438,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 108,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <82, 200>"
+   },
+   {
+    "start": 109,
+    "end": 218,
+    "demo": true,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <81, 113>"
+   },
+   {
+    "start": 219,
+    "end": 327,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <82, 200>"
+   },
+   {
+    "start": 328,
+    "end": 434,
+    "demo": false,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <81, 113>"
+   },
+   {
+    "start": 435,
+    "end": 437,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <81, 113>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    70,
+    218
+   ],
+   [
+    289,
+    437
+   ]
+  ],
+  "demo_close_step": 70,
+  "exec_close_step": 289,
+  "last_demo_step": 218,
+  "exec_start_step": 219,
+  "grasp_wp_demo": [
+   -0.1037,
+   0.3017,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   -0.1037,
+   0.3017,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.062,
+   -0.141,
+   0.0387
+  ],
+  "final_eef_exec": [
+   -0.062,
+   -0.141,
+   0.0387
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 5.960464477539063e-08,
+  "final_demo_vs_exec_dist_m": 2.593029515966587e-06,
+  "frame0_vs_exec_start_meanabs": 0.011281331380208334,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001678466796875,
+  "spec": {
+   "head_rgb": [
+    0.586784303188324,
+    0.6499829888343811,
+    0.2554996609687805
+   ],
+   "tail_rgb": [
+    0.413215696811676,
+    0.3500170111656189,
+    0.7445003390312195
+   ],
+   "init_index_used": 1,
+   "n_inits": 2,
+   "box_xy": [
+    -0.07486447095870973,
+    -0.052145314216613774
+   ],
+   "box_yaw": 1.7489459079784413,
+   "pegs": [
+    [
+     [
+      -0.14634697139263153,
+      0.2756980061531067
+     ],
+     -2.5942154280798015
+    ],
+    [
+     [
+      -0.05927179008722305,
+      -0.13232174515724182
+     ],
+     0.09692241892207128
+    ],
+    [
+     [
+      -0.046772051602602005,
+      0.1481957733631134
+     ],
+     1.0632370630399803
+    ],
+    [
+     [
+      0.04992378503084183,
+      -0.10464595258235931
+     ],
+     -2.395814337729454
+    ]
+   ],
+   "obj_sample": 1,
+   "dir_sample": 1,
+   "min_pair_gap": 0.06039914988585635,
+   "min_box_gap": 0.018228394996640973
+  },
+  "pegs": [
+   {
+    "k": 0,
+    "head": [
+     -0.1463,
+     0.2757
+    ],
+    "tail": [
+     -0.1037,
+     0.3017
+    ],
+    "yaw_deg": -148.6,
+    "head_uv": [
+     192.34505357244385,
+     75.53133215333763
+    ],
+    "tail_uv": [
+     200.95843886972287,
+     82.87275417702266
+    ],
+    "head_px_rgb_step0": [
+     132.2,
+     138.6,
+     90.4
+    ],
+    "tail_px_rgb_step0": [
+     123.3,
+     114.7,
+     161.0
+    ]
+   },
+   {
+    "k": 1,
+    "head": [
+     -0.0593,
+     -0.1323
+    ],
+    "tail": [
+     -0.109,
+     -0.1372
+    ],
+    "yaw_deg": 5.6,
+    "head_uv": [
+     94.75710878927526,
+     91.08734198938171
+    ],
+    "tail_uv": [
+     94.98374097209,
+     81.9177776081071
+    ],
+    "head_px_rgb_step0": [
+     185.0,
+     193.0,
+     130.0
+    ],
+    "tail_px_rgb_step0": [
+     158.2,
+     147.6,
+     205.0
+    ]
+   },
+   {
+    "k": 2,
+    "head": [
+     -0.0468,
+     0.1482
+    ],
+    "tail": [
+     -0.0711,
+     0.1045
+    ],
+    "yaw_deg": 60.9,
+    "head_uv": [
+     165.6439046358814,
+     93.51776604010736
+    ],
+    "tail_uv": [
+     153.9838859073193,
+     88.84092973298934
+    ],
+    "head_px_rgb_step0": [
+     138.0,
+     144.3,
+     94.7
+    ],
+    "tail_px_rgb_step0": [
+     124.3,
+     115.6,
+     161.9
+    ]
+   },
+   {
+    "k": 3,
+    "head": [
+     0.0499,
+     -0.1046
+    ],
+    "tail": [
+     0.0867,
+     -0.0707
+    ],
+    "yaw_deg": -137.3,
+    "head_uv": [
+     98.92310687833707,
+     114.31219021806727
+    ],
+    "tail_uv": [
+     107.62357055206915,
+     123.27142609225939
+    ],
+    "head_px_rgb_step0": [
+     185.0,
+     194.0,
+     130.8
+    ],
+    "tail_px_rgb_step0": [
+     159.0,
+     148.7,
+     205.0
+    ]
+   }
+  ],
+  "demo_grasp_nearest": [
+   [
+    5.146065609834091e-05,
+    0,
+    "tail"
+   ],
+   [
+    0.04995854116305113,
+    0,
+    "head"
+   ]
+  ],
+  "exec_grasp_nearest": [
+   [
+    5.140618782805449e-05,
+    0,
+    "tail"
+   ],
+   [
+    0.04995849028164843,
+    0,
+    "head"
+   ]
+  ],
+  "expected": {
+   "target_peg": 0,
+   "grasp_end": "tail",
+   "insert_way": "right",
+   "obj_flag": 1,
+   "direction": 1
+  },
+  "near_far_xaxis": "far",
+  "near_far_euclid": "far",
+  "exec_side_indicator_y": -0.08883962333202361,
+  "demo_side_indicator_y": -0.08884156048297881,
+  "side_ok_exec": true,
+  "side_ok_demo": true,
+  "box_uv": [
+   114.36830586618868,
+   82.43703184324531
+  ]
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 2,
+  "seed": 7300200,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_2/hdf5_files/InsertPeg_ep2_seed7300200.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_2/videos/InsertPeg_ep2_seed7300200_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 464,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 122,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <96, 56>"
+   },
+   {
+    "start": 123,
+    "end": 231,
+    "demo": true,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <81, 105>"
+   },
+   {
+    "start": 232,
+    "end": 354,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <96, 56>"
+   },
+   {
+    "start": 355,
+    "end": 451,
+    "demo": false,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <81, 105>"
+   },
+   {
+    "start": 452,
+    "end": 463,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <81, 105>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    80,
+    231
+   ],
+   [
+    312,
+    463
+   ]
+  ],
+  "demo_close_step": 80,
+  "exec_close_step": 312,
+  "last_demo_step": 231,
+  "exec_start_step": 232,
+  "grasp_wp_demo": [
+   -0.0308,
+   -0.2753,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   -0.0308,
+   -0.2753,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.0878,
+   -0.0108,
+   0.0364
+  ],
+  "final_eef_exec": [
+   -0.0879,
+   -0.0108,
+   0.0363
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 1.862645149230957e-09,
+  "final_demo_vs_exec_dist_m": 0.00010990605824088751,
+  "frame0_vs_exec_start_meanabs": 0.010431925455729166,
+  "frame0_vs_exec_start_frac_px_gt30": 0.000152587890625,
+  "spec": {
+   "head_rgb": [
+    0.5919651985168457,
+    0.9292979836463928,
+    0.8659043908119202
+   ],
+   "tail_rgb": [
+    0.4080348014831543,
+    0.07070201635360718,
+    0.13409560918807983
+   ],
+   "init_index_used": 1,
+   "n_inits": 2,
+   "box_xy": [
+    -0.07704386711120606,
+    -0.08217968940734864
+   ],
+   "box_yaw": 1.7288664639851923,
+   "pegs": [
+    [
+     [
+      -0.03075774386525154,
+      -0.27526119351387024
+     ],
+     0.2312768153219672
+    ],
+    [
+     [
+      -0.11741530150175095,
+      0.07224930822849274
+     ],
+     -1.2080064998966877
+    ],
+    [
+     [
+      -0.16150112450122833,
+      -0.17992912232875824
+     ],
+     -0.035854179367628816
+    ],
+    [
+     [
+      0.02558107301592827,
+      0.1844499707221985
+     ],
+     -0.4783986485039573
+    ]
+   ],
+   "obj_sample": 0,
+   "dir_sample": 0,
+   "min_pair_gap": 0.09693125299718484,
+   "min_box_gap": 0.04293001150910659
+  },
+  "pegs": [
+   {
+    "k": 0,
+    "head": [
+     -0.0308,
+     -0.2753
+    ],
+    "tail": [
+     -0.0794,
+     -0.2867
+    ],
+    "yaw_deg": 13.3,
+    "head_uv": [
+     57.07153620005021,
+     96.71148939333311
+    ],
+    "tail_uv": [
+     57.219593956431915,
+     87.27887778868116
+    ],
+    "head_px_rgb_step0": [
+     166.7,
+     201.8,
+     196.0
+    ],
+    "tail_px_rgb_step0": [
+     166.0,
+     96.7,
+     113.7
+    ]
+   },
+   {
+    "k": 1,
+    "head": [
+     -0.1174,
+     0.0722
+    ],
+    "tail": [
+     -0.1352,
+     0.119
+    ],
+    "yaw_deg": -69.2,
+    "head_uv": [
+     145.2696603579347,
+     80.4490075397504
+    ],
+    "tail_uv": [
+     156.02784500381787,
+     77.40516154475662
+    ],
+    "head_px_rgb_step0": [
+     153.2,
+     188.0,
+     181.9
+    ],
+    "tail_px_rgb_step0": [
+     123.3,
+     56.9,
+     75.0
+    ]
+   },
+   {
+    "k": 2,
+    "head": [
+     -0.1615,
+     -0.1799
+    ],
+    "tail": [
+     -0.2115,
+     -0.1781
+    ],
+    "yaw_deg": -2.1,
+    "head_uv": [
+     86.51899714903176,
+     73.04696539248422
+    ],
+    "tail_uv": [
+     88.52114422243764,
+     65.26831574154302
+    ],
+    "head_px_rgb_step0": [
+     154.7,
+     189.1,
+     183.0
+    ],
+    "tail_px_rgb_step0": [
+     130.8,
+     63.3,
+     81.4
+    ]
+   },
+   {
+    "k": 3,
+    "head": [
+     0.0256,
+     0.1844
+    ],
+    "tail": [
+     -0.0188,
+     0.2075
+    ],
+    "yaw_deg": -27.4,
+    "head_uv": [
+     178.06800863927347,
+     108.71808068808784
+    ],
+    "tail_uv": [
+     182.04119277199285,
+     99.15576692900959
+    ],
+    "head_px_rgb_step0": [
+     183.0,
+     224.0,
+     217.0
+    ],
+    "tail_px_rgb_step0": [
+     155.0,
+     73.1,
+     96.0
+    ]
+   }
+  ],
+  "demo_grasp_nearest": [
+   [
+    5.733259730303955e-05,
+    0,
+    "head"
+   ],
+   [
+    0.049969596040311974,
+    0,
+    "tail"
+   ]
+  ],
+  "exec_grasp_nearest": [
+   [
+    5.733120348306785e-05,
+    0,
+    "head"
+   ],
+   [
+    0.049969594227120086,
+    0,
+    "tail"
+   ]
+  ],
+  "expected": {
+   "target_peg": 0,
+   "grasp_end": "head",
+   "insert_way": "left",
+   "obj_flag": -1,
+   "direction": -1
+  },
+  "near_far_xaxis": "far",
+  "near_far_euclid": "far",
+  "exec_side_indicator_y": 0.07140317428857089,
+  "demo_side_indicator_y": 0.07140583414584399,
+  "side_ok_exec": true,
+  "side_ok_demo": true,
+  "box_uv": [
+   106.5594753462529,
+   82.01897605038361
+  ]
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 4,
+  "seed": 7300400,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_4/hdf5_files/InsertPeg_ep4_seed7300400.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_4/videos/InsertPeg_ep4_seed7300400_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 423,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 127,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <99, 73>"
+   },
+   {
+    "start": 128,
+    "end": 213,
+    "demo": true,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <89, 154>"
+   },
+   {
+    "start": 214,
+    "end": 341,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <99, 73>"
+   },
+   {
+    "start": 342,
+    "end": 415,
+    "demo": false,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <89, 154>"
+   },
+   {
+    "start": 416,
+    "end": 422,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <89, 154>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    85,
+    213
+   ],
+   [
+    299,
+    422
+   ]
+  ],
+  "demo_close_step": 85,
+  "exec_close_step": 299,
+  "last_demo_step": 213,
+  "exec_start_step": 214,
+  "grasp_wp_demo": [
+   -0.0176,
+   -0.2058,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   -0.0176,
+   -0.2058,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.0444,
+   0.1638,
+   0.0394
+  ],
+  "final_eef_exec": [
+   -0.0422,
+   0.1637,
+   0.0408
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 1.5359765386647212e-08,
+  "final_demo_vs_exec_dist_m": 0.002662814755091497,
+  "frame0_vs_exec_start_meanabs": 0.00897216796875,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001373291015625,
+  "spec": {
+   "head_rgb": [
+    0.9049886465072632,
+    0.6905815601348877,
+    0.8873327374458313
+   ],
+   "tail_rgb": [
+    0.09501135349273682,
+    0.3094184398651123,
+    0.1126672625541687
+   ],
+   "init_index_used": 1,
+   "n_inits": 2,
+   "box_xy": [
+    -0.036088967323303224,
+    0.09640563726425172
+   ],
+   "box_yaw": 1.667487133925915,
+   "pegs": [
+    [
+     [
+      -0.05761130526661873,
+      -0.23576320707798004
+     ],
+     -2.4992707807741423
+    ],
+    [
+     [
+      -0.09963774681091309,
+      -0.060815226286649704
+     ],
+     -3.0878827281272394
+    ],
+    [
+     [
+      -0.16713684797286987,
+      0.1296081244945526
+     ],
+     1.48390882369592
+    ],
+    [
+     [
+      0.030738478526473045,
+      0.08404780924320221
+     ],
+     -1.500280398437722
+    ]
+   ],
+   "obj_sample": 1,
+   "dir_sample": 0,
+   "min_pair_gap": 0.11297367999499282,
+   "min_box_gap": 0.014671400643055306
+  },
+  "pegs": [
+   {
+    "k": 0,
+    "head": [
+     -0.0576,
+     -0.2358
+    ],
+    "tail": [
+     -0.0176,
+     -0.2058
+    ],
+    "yaw_deg": -143.2,
+    "head_uv": [
+     68.68329155290103,
+     91.40712707354794
+    ],
+    "tail_uv": [
+     74.33048844829177,
+     99.4102535076966
+    ],
+    "head_px_rgb_step0": [
+     226.7,
+     202.0,
+     225.0
+    ],
+    "tail_px_rgb_step0": [
+     96.3,
+     145.0,
+     101.3
+    ]
+   },
+   {
+    "k": 1,
+    "head": [
+     -0.0996,
+     -0.0608
+    ],
+    "tail": [
+     -0.0497,
+     -0.0581
+    ],
+    "yaw_deg": -176.9,
+    "head_uv": [
+     113.24434221441679,
+     83.59040642945271
+    ],
+    "tail_uv": [
+     113.27226541143146,
+     92.94171189377452
+    ],
+    "head_px_rgb_step0": [
+     222.0,
+     197.0,
+     220.0
+    ],
+    "tail_px_rgb_step0": [
+     86.0,
+     139.0,
+     92.0
+    ]
+   },
+   {
+    "k": 2,
+    "head": [
+     -0.1671,
+     0.1296
+    ],
+    "tail": [
+     -0.1715,
+     0.0798
+    ],
+    "yaw_deg": 85.0,
+    "head_uv": [
+     157.74493455711226,
+     72.13844858788045
+    ],
+    "tail_uv": [
+     146.24977940260564,
+     71.44456166740714
+    ],
+    "head_px_rgb_step0": [
+     198.0,
+     170.7,
+     161.7
+    ],
+    "tail_px_rgb_step0": [
+     61.4,
+     103.7,
+     66.3
+    ]
+   },
+   {
+    "k": 3,
+    "head": [
+     0.0307,
+     0.084
+    ],
+    "tail": [
+     0.0272,
+     0.1339
+    ],
+    "yaw_deg": -86.0,
+    "head_uv": [
+     150.9264901211448,
+     109.8816141949936
+    ],
+    "tail_uv": [
+     164.40930835356633,
+     109.08560401979162
+    ],
+    "head_px_rgb_step0": [
+     195.0,
+     173.0,
+     193.3
+    ],
+    "tail_px_rgb_step0": [
+     73.0,
+     121.0,
+     78.3
+    ]
+   }
+  ],
+  "demo_grasp_nearest": [
+   [
+    2.5580776421823917e-05,
+    0,
+    "tail"
+   ],
+   [
+    0.05001252093576259,
+    0,
+    "head"
+   ]
+  ],
+  "exec_grasp_nearest": [
+   [
+    2.5590208984428284e-05,
+    0,
+    "tail"
+   ],
+   [
+    0.050012514981615526,
+    0,
+    "head"
+   ]
+  ],
+  "expected": {
+   "target_peg": 0,
+   "grasp_end": "tail",
+   "insert_way": "left",
+   "obj_flag": 1,
+   "direction": -1
+  },
+  "near_far_xaxis": "far",
+  "near_far_euclid": "far",
+  "exec_side_indicator_y": 0.06724502444267272,
+  "demo_side_indicator_y": 0.06741373538970946,
+  "side_ok_exec": true,
+  "side_ok_demo": true,
+  "box_uv": [
+   154.12743854332962,
+   90.16346417525494
+  ]
+ },
+ {
+  "difficulty": "easy",
+  "episode": 0,
+  "seed": 13000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_0/hdf5_files/InsertPeg_ep0_seed13000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_0/videos/InsertPeg_ep0_seed13000_easy_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 475,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 122,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <71, 79>"
+   },
+   {
+    "start": 123,
+    "end": 237,
+    "demo": true,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <78, 140>"
+   },
+   {
+    "start": 238,
+    "end": 360,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <71, 79>"
+   },
+   {
+    "start": 361,
+    "end": 462,
+    "demo": false,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <78, 140>"
+   },
+   {
+    "start": 463,
+    "end": 474,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <78, 140>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    78,
+    237
+   ],
+   [
+    316,
+    474
+   ]
+  ],
+  "demo_close_step": 78,
+  "exec_close_step": 316,
+  "last_demo_step": 237,
+  "exec_start_step": 238,
+  "grasp_wp_demo": [
+   -0.1667,
+   -0.2072,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   -0.1667,
+   -0.2072,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.0834,
+   0.1196,
+   0.0484
+  ],
+  "final_eef_exec": [
+   -0.0816,
+   0.1188,
+   0.0501
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 2.1073424255447017e-08,
+  "final_demo_vs_exec_dist_m": 0.0025905745037844083,
+  "frame0_vs_exec_start_meanabs": 0.009043375651041666,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001373291015625
+ },
+ {
+  "difficulty": "easy",
+  "episode": 1,
+  "seed": 13101,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_1/hdf5_files/InsertPeg_ep1_seed13101.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_1/videos/InsertPeg_ep1_seed13101_easy_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 568,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 123,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <114, 212>"
+   },
+   {
+    "start": 124,
+    "end": 283,
+    "demo": true,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <116, 143>"
+   },
+   {
+    "start": 284,
+    "end": 407,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <114, 212>"
+   },
+   {
+    "start": 408,
+    "end": 561,
+    "demo": false,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <116, 143>"
+   },
+   {
+    "start": 562,
+    "end": 567,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <116, 143>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    86,
+    283
+   ],
+   [
+    370,
+    567
+   ]
+  ],
+  "demo_close_step": 86,
+  "exec_close_step": 370,
+  "last_demo_step": 283,
+  "exec_start_step": 284,
+  "grasp_wp_demo": [
+   0.0583,
+   0.2979,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   0.0583,
+   0.2979,
+   0.01
+  ],
+  "final_eef_demo": [
+   0.093,
+   -0.053,
+   0.0396
+  ],
+  "final_eef_exec": [
+   0.0934,
+   -0.0529,
+   0.0396
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 3.0719530773294423e-08,
+  "final_demo_vs_exec_dist_m": 0.0004572891155531127,
+  "frame0_vs_exec_start_meanabs": 0.2702534993489583,
+  "frame0_vs_exec_start_frac_px_gt30": 0.00360107421875
+ },
+ {
+  "difficulty": "medium",
+  "episode": 10,
+  "seed": 14001,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_10/hdf5_files/InsertPeg_ep10_seed14001.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_10/videos/InsertPeg_ep10_seed14001_medium_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 454,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 117,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <129, 156>"
+   },
+   {
+    "start": 118,
+    "end": 226,
+    "demo": true,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <92, 146>"
+   },
+   {
+    "start": 227,
+    "end": 344,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <129, 156>"
+   },
+   {
+    "start": 345,
+    "end": 445,
+    "demo": false,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <92, 146>"
+   },
+   {
+    "start": 446,
+    "end": 453,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <92, 146>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    80,
+    226
+   ],
+   [
+    307,
+    453
+   ]
+  ],
+  "demo_close_step": 80,
+  "exec_close_step": 307,
+  "last_demo_step": 226,
+  "exec_start_step": 227,
+  "grasp_wp_demo": [
+   0.1179,
+   0.0965,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   0.1179,
+   0.0965,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.0267,
+   0.1359,
+   0.0401
+  ],
+  "final_eef_exec": [
+   -0.0267,
+   0.1359,
+   0.0401
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 6.664001874625056e-08,
+  "final_demo_vs_exec_dist_m": 8.085634248869824e-06,
+  "frame0_vs_exec_start_meanabs": 0.007990519205729166,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001220703125
+ },
+ {
+  "difficulty": "hard",
+  "episode": 11,
+  "seed": 14100,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_11/hdf5_files/InsertPeg_ep11_seed14100.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_11/videos/InsertPeg_ep11_seed14100_hard_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 494,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 120,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <84, 169>"
+   },
+   {
+    "start": 121,
+    "end": 246,
+    "demo": true,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <87, 114>"
+   },
+   {
+    "start": 247,
+    "end": 367,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <84, 169>"
+   },
+   {
+    "start": 368,
+    "end": 492,
+    "demo": false,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <87, 114>"
+   },
+   {
+    "start": 493,
+    "end": 493,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <87, 114>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    76,
+    246
+   ],
+   [
+    323,
+    493
+   ]
+  ],
+  "demo_close_step": 76,
+  "exec_close_step": 323,
+  "last_demo_step": 246,
+  "exec_start_step": 247,
+  "grasp_wp_demo": [
+   -0.0891,
+   0.1742,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   -0.0891,
+   0.1742,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.0286,
+   -0.153,
+   0.0386
+  ],
+  "final_eef_exec": [
+   -0.0286,
+   -0.153,
+   0.0386
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 7.450580596923828e-09,
+  "final_demo_vs_exec_dist_m": 9.986650959910986e-06,
+  "frame0_vs_exec_start_meanabs": 0.009038289388020834,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001373291015625
+ },
+ {
+  "difficulty": "medium",
+  "episode": 2,
+  "seed": 13201,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_2/hdf5_files/InsertPeg_ep2_seed13201.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_2/videos/InsertPeg_ep2_seed13201_medium_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 478,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 119,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <82, 187>"
+   },
+   {
+    "start": 120,
+    "end": 239,
+    "demo": true,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <90, 117>"
+   },
+   {
+    "start": 240,
+    "end": 359,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <82, 187>"
+   },
+   {
+    "start": 360,
+    "end": 469,
+    "demo": false,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <90, 117>"
+   },
+   {
+    "start": 470,
+    "end": 477,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <90, 117>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    81,
+    239
+   ],
+   [
+    321,
+    477
+   ]
+  ],
+  "demo_close_step": 81,
+  "exec_close_step": 321,
+  "last_demo_step": 239,
+  "exec_start_step": 240,
+  "grasp_wp_demo": [
+   -0.0996,
+   0.2485,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   -0.0996,
+   0.2485,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.0189,
+   0.0274,
+   0.043
+  ],
+  "final_eef_exec": [
+   -0.0175,
+   0.0337,
+   0.0417
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 6.365778852490731e-08,
+  "final_demo_vs_exec_dist_m": 0.0065610110164882746,
+  "frame0_vs_exec_start_meanabs": 0.009190877278645834,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001373291015625
+ },
+ {
+  "difficulty": "hard",
+  "episode": 3,
+  "seed": 13300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_3/hdf5_files/InsertPeg_ep3_seed13300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_3/videos/InsertPeg_ep3_seed13300_hard_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 434,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 117,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <136, 137>"
+   },
+   {
+    "start": 118,
+    "end": 216,
+    "demo": true,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <111, 158>"
+   },
+   {
+    "start": 217,
+    "end": 334,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <136, 137>"
+   },
+   {
+    "start": 335,
+    "end": 414,
+    "demo": false,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <111, 158>"
+   },
+   {
+    "start": 415,
+    "end": 433,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <111, 158>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    79,
+    216
+   ],
+   [
+    296,
+    433
+   ]
+  ],
+  "demo_close_step": 79,
+  "exec_close_step": 296,
+  "last_demo_step": 216,
+  "exec_start_step": 217,
+  "grasp_wp_demo": [
+   0.1392,
+   0.0326,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   0.1392,
+   0.0326,
+   0.01
+  ],
+  "final_eef_demo": [
+   0.031,
+   0.0213,
+   0.0395
+  ],
+  "final_eef_exec": [
+   0.0299,
+   0.0214,
+   0.0405
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 3.725290298461914e-08,
+  "final_demo_vs_exec_dist_m": 0.0014937114641743767,
+  "frame0_vs_exec_start_meanabs": 0.010711669921875,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001678466796875
+ },
+ {
+  "difficulty": "easy",
+  "episode": 4,
+  "seed": 13403,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_4/hdf5_files/InsertPeg_ep4_seed13403.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_4/videos/InsertPeg_ep4_seed13403_easy_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 482,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 105,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <121, 98>"
+   },
+   {
+    "start": 106,
+    "end": 240,
+    "demo": true,
+    "simple": "Insert the peg from the right side of the box",
+    "grounded": "Insert the peg from the right side of the box at <93, 112>"
+   },
+   {
+    "start": 241,
+    "end": 346,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the near end",
+    "grounded": "Pick up the peg by grasping the near end at <121, 98>"
+   },
+   {
+    "start": 347,
+    "end": 480,
+    "demo": false,
+    "simple": "Insert the peg from the right side",
+    "grounded": "Insert the peg from the right side at <93, 112>"
+   },
+   {
+    "start": 481,
+    "end": 481,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the right side at <93, 112>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    69,
+    240
+   ],
+   [
+    310,
+    481
+   ]
+  ],
+  "demo_close_step": 69,
+  "exec_close_step": 310,
+  "last_demo_step": 240,
+  "exec_start_step": 241,
+  "grasp_wp_demo": [
+   0.0822,
+   -0.1016,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   0.0822,
+   -0.1016,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.0503,
+   -0.1626,
+   0.0394
+  ],
+  "final_eef_exec": [
+   -0.0503,
+   -0.1626,
+   0.0394
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 2.2351741790771484e-08,
+  "final_demo_vs_exec_dist_m": 2.0139604654663078e-05,
+  "frame0_vs_exec_start_meanabs": 0.011500040690104166,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001678466796875
+ },
+ {
+  "difficulty": "medium",
+  "episode": 6,
+  "seed": 13602,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_6/hdf5_files/InsertPeg_ep6_seed13602.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_6/videos/InsertPeg_ep6_seed13602_medium_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 514,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 128,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <74, 103>"
+   },
+   {
+    "start": 129,
+    "end": 252,
+    "demo": true,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <80, 149>"
+   },
+   {
+    "start": 253,
+    "end": 381,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <74, 103>"
+   },
+   {
+    "start": 382,
+    "end": 499,
+    "demo": false,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <80, 149>"
+   },
+   {
+    "start": 500,
+    "end": 513,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <80, 149>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    82,
+    252
+   ],
+   [
+    335,
+    513
+   ]
+  ],
+  "demo_close_step": 82,
+  "exec_close_step": 335,
+  "last_demo_step": 252,
+  "exec_start_step": 253,
+  "grasp_wp_demo": [
+   -0.1503,
+   -0.1032,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   -0.1503,
+   -0.1032,
+   0.01
+  ],
+  "final_eef_demo": [
+   -0.1052,
+   0.1484,
+   0.0401
+  ],
+  "final_eef_exec": [
+   -0.1064,
+   0.1486,
+   0.04
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 7.450580596923828e-09,
+  "final_demo_vs_exec_dist_m": 0.00125956277310469,
+  "frame0_vs_exec_start_meanabs": 0.010777791341145834,
+  "frame0_vs_exec_start_frac_px_gt30": 0.0001678466796875
+ },
+ {
+  "difficulty": "hard",
+  "episode": 7,
+  "seed": 13700,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_7/hdf5_files/InsertPeg_ep7_seed13700.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/InsertPeg_episode_7/videos/InsertPeg_ep7_seed13700_hard_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4",
+  "n_steps": 486,
+  "task_goal": [
+   "watch the video carefully, then grasp the same end of the same peg you've picked before and insert it into the same side of the box",
+   "watch the video carefully, then grasp the same peg at the same end and insert it into the same side of the box as in the video"
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 109,
+    "demo": true,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <90, 82>"
+   },
+   {
+    "start": 110,
+    "end": 241,
+    "demo": true,
+    "simple": "Insert the peg from the left side of the box",
+    "grounded": "Insert the peg from the left side of the box at <111, 118>"
+   },
+   {
+    "start": 242,
+    "end": 351,
+    "demo": false,
+    "simple": "Pick up the peg by grasping the far end",
+    "grounded": "Pick up the peg by grasping the far end at <90, 82>"
+   },
+   {
+    "start": 352,
+    "end": 474,
+    "demo": false,
+    "simple": "Insert the peg from the left side",
+    "grounded": "Insert the peg from the left side at <111, 118>"
+   },
+   {
+    "start": 475,
+    "end": 485,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Insert the peg from the left side at <111, 118>"
+   }
+  ],
+  "gripper_closed_intervals": [
+   [
+    71,
+    241
+   ],
+   [
+    313,
+    485
+   ]
+  ],
+  "demo_close_step": 71,
+  "exec_close_step": 313,
+  "last_demo_step": 241,
+  "exec_start_step": 242,
+  "grasp_wp_demo": [
+   -0.0598,
+   -0.1787,
+   0.01
+  ],
+  "grasp_wp_exec": [
+   -0.0598,
+   -0.1787,
+   0.01
+  ],
+  "final_eef_demo": [
+   0.0671,
+   0.0391,
+   0.0485
+  ],
+  "final_eef_exec": [
+   0.066,
+   0.0396,
+   0.0469
+  ],
+  "eef_reset_exec_start": [
+   -0.0605,
+   0.0,
+   0.5211
+  ],
+  "eef_step0": [
+   -0.0605,
+   -0.0,
+   0.5211
+  ],
+  "grasp_demo_vs_exec_dist_m": 2.2351741790771484e-08,
+  "final_demo_vs_exec_dist_m": 0.0021074203219815482,
+  "frame0_vs_exec_start_meanabs": 0.010182698567708334,
+  "frame0_vs_exec_start_frac_px_gt30": 0.000152587890625
+ }
+]

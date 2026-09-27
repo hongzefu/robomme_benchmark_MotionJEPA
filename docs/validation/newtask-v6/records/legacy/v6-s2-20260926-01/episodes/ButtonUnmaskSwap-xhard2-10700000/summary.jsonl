@@ -1,0 +1,1 @@
+{"task": "ButtonUnmaskSwap", "seed": 10700000, "difficulty": "xhard2", "ok": false, "failure_class": "task", "error_type": "SceneGenerationError", "error": "xhard2 内环可行槽对图不连通（可行槽对 [(0, 3), (1, 2)]），按 V6 S5 拒绝本次布局", "wall_s": 1.1, "timesteps": null}

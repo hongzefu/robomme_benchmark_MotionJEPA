@@ -1,0 +1,56 @@
+{
+  "line": "V5_GENERATION=REPORT tasks=1 draft_ok=1 rollout_ok=1 backfilled=0 selected_shortfall=0 demo_frames_out_of_band=N/A outer_swap_mismatch=N/A bin_collision=0 vr_min_participants=N/A",
+  "sources": {
+    "drafts": "/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/draft/drafts.jsonl",
+    "specs": "/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/specs.jsonl",
+    "rollout": "/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1",
+    "run_id": "/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z",
+    "identity_sha256": "bc8e8b1533f114e02e168bc4c919d0052765272a05366c8ebd2952050dfbbda1"
+  },
+  "params": {
+    "candidates_per_env": 1,
+    "demo_band": [
+      750,
+      1050
+    ],
+    "select_indices": [
+      0
+    ]
+  },
+  "totals": {
+    "tasks": 1,
+    "draft_attempted": 1,
+    "draft_ok": 1,
+    "candidate_shortfall": 0,
+    "rollout_attempted": 1,
+    "rollout_ok": 1,
+    "backfilled": 0,
+    "selected_shortfall": 0,
+    "demo_frames_checked": 0,
+    "demo_frames_out_of_band": "N/A",
+    "outer_swap_checked": 0,
+    "outer_swap_mismatch": "N/A",
+    "bin_collision": 0,
+    "draft_bin_collision": 0,
+    "vr_checked": 0,
+    "vr_min_participants": "N/A"
+  },
+  "per_env": {
+    "BinFill": {
+      "draft_attempted": 1,
+      "draft_ok": 1,
+      "candidate_shortfall": 0,
+      "draft_fail_classes": {},
+      "selected_target": 1,
+      "rollout_attempted": 1,
+      "rollout_ok": 1,
+      "backfilled": 0,
+      "selected_shortfall": 0,
+      "by_class": {}
+    }
+  },
+  "demo_frames": [],
+  "outer_swap": [],
+  "vr_participants": [],
+  "warnings": []
+}

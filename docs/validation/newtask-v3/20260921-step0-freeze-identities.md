@@ -1,6 +1,6 @@
 # 步 0 留档：切分支与身份冻结（2026-09-21）
 
-对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 0，闸门 G1。本步只读官方 Git 对象、只写冻结产物，未启动仿真、未改动 `src/robomme/`。
+对应 [0921-newtask-release-v3-plan.md](../../plans/0921-newtask-release-v3-plan.md) 第五节步 0，闸门 G1。本步只读官方 Git 对象、只写冻结产物，未启动仿真、未改动 `src/robomme/`。
 
 ## 一、分支与冻结基线
 

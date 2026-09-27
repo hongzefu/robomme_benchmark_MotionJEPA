@@ -1,0 +1,383 @@
+{
+  "source": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed8700300.h5",
+  "rows": [
+    {
+      "t": 0,
+      "simple": "press the first button",
+      "choice": "{\"choice\": \"A\", \"point\": [66, 149]}",
+      "grounded": "press the first button at <64, 149>",
+      "online": "press the first button at <64, 149>"
+    },
+    {
+      "t": 78,
+      "simple": "press the first button",
+      "choice": "{\"choice\": \"A\", \"point\": [67, 149]}",
+      "grounded": "press the first button at <64, 149>",
+      "online": "press the first button at <64, 149>"
+    },
+    {
+      "t": 79,
+      "simple": "press the first button",
+      "choice": "{\"choice\": \"A\", \"point\": [68, 149]}",
+      "grounded": "press the first button at <64, 149>",
+      "online": "press the first button at <64, 149>"
+    },
+    {
+      "t": 80,
+      "simple": "press the first button",
+      "choice": "{\"choice\": \"A\", \"point\": [69, 149]}",
+      "grounded": "press the first button at <64, 149>",
+      "online": "press the second button at <63, 105>"
+    },
+    {
+      "t": 93,
+      "simple": "press the first button",
+      "choice": "{\"choice\": \"A\", \"point\": [68, 149]}",
+      "grounded": "press the first button at <64, 149>",
+      "online": "press the second button at <63, 105>"
+    },
+    {
+      "t": 94,
+      "simple": "press the first button",
+      "choice": "{\"choice\": \"A\", \"point\": [67, 149]}",
+      "grounded": "press the first button at <64, 149>",
+      "online": "press the second button at <63, 105>"
+    },
+    {
+      "t": 96,
+      "simple": "press the first button",
+      "choice": "{\"choice\": \"A\", \"point\": [66, 149]}",
+      "grounded": "press the first button at <64, 149>",
+      "online": "press the second button at <63, 105>"
+    },
+    {
+      "t": 119,
+      "simple": "press the second button",
+      "choice": "{\"choice\": \"B\", \"point\": [65, 107]}",
+      "grounded": "press the second button at <63, 105>",
+      "online": "press the second button at <63, 105>"
+    },
+    {
+      "t": 173,
+      "simple": "press the second button",
+      "choice": "{\"choice\": \"B\", \"point\": [66, 107]}",
+      "grounded": "press the second button at <63, 105>",
+      "online": "press the second button at <63, 105>"
+    },
+    {
+      "t": 174,
+      "simple": "press the second button",
+      "choice": "{\"choice\": \"B\", \"point\": [67, 107]}",
+      "grounded": "press the second button at <63, 105>",
+      "online": "press the second button at <63, 105>"
+    },
+    {
+      "t": 175,
+      "simple": "press the second button",
+      "choice": "{\"choice\": \"B\", \"point\": [68, 107]}",
+      "grounded": "press the second button at <63, 105>",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 188,
+      "simple": "press the second button",
+      "choice": "{\"choice\": \"B\", \"point\": [67, 107]}",
+      "grounded": "press the second button at <63, 105>",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 190,
+      "simple": "press the second button",
+      "choice": "{\"choice\": \"B\", \"point\": [66, 107]}",
+      "grounded": "press the second button at <63, 105>",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 195,
+      "simple": "press the second button",
+      "choice": "{\"choice\": \"B\", \"point\": [65, 107]}",
+      "grounded": "press the second button at <63, 105>",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 268,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [132, 182]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 355,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [132, 181]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 365,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [131, 181]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 366,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [131, 182]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 367,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [130, 182]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 368,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [129, 183]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 369,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [127, 185]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 370,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [126, 186]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 371,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [124, 188]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 372,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [121, 190]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 373,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [119, 193]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 374,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [116, 195]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 375,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [114, 198]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "pick up the container at <126, 118> that hides the blue cube"
+    },
+    {
+      "t": 376,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [111, 200]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "put down the container"
+    },
+    {
+      "t": 377,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [109, 202]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "put down the container"
+    },
+    {
+      "t": 378,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [108, 203]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "put down the container"
+    },
+    {
+      "t": 379,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [107, 204]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "put down the container"
+    },
+    {
+      "t": 380,
+      "simple": "pick up the container that hides the blue cube",
+      "choice": "{\"choice\": \"C\", \"point\": [106, 205]}",
+      "grounded": "pick up the container at <135, 179> that hides the blue cube",
+      "online": "put down the container"
+    },
+    {
+      "t": 381,
+      "simple": "put down the container",
+      "choice": "{\"choice\": \"D\", \"point\": []}",
+      "grounded": "put down the container",
+      "online": "put down the container"
+    },
+    {
+      "t": 422,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [123, 119]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 493,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [123, 120]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 496,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [124, 119]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 500,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [123, 119]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 503,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [122, 119]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 504,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [121, 119]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 505,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [120, 119]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 506,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [118, 119]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 507,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [116, 118]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 508,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [114, 118]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 509,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [112, 118]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 510,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [109, 118]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 511,
+      "simple": "pick up the container that hides the red cube",
+      "choice": "{\"choice\": \"C\", \"point\": [106, 117]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 512,
+      "simple": "All tasks completed",
+      "choice": "{\"choice\": \"C\", \"point\": [103, 117]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 513,
+      "simple": "All tasks completed",
+      "choice": "{\"choice\": \"C\", \"point\": [101, 117]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 514,
+      "simple": "All tasks completed",
+      "choice": "{\"choice\": \"C\", \"point\": [98, 116]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 515,
+      "simple": "All tasks completed",
+      "choice": "{\"choice\": \"C\", \"point\": [96, 116]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 516,
+      "simple": "All tasks completed",
+      "choice": "{\"choice\": \"C\", \"point\": [94, 116]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 517,
+      "simple": "All tasks completed",
+      "choice": "{\"choice\": \"C\", \"point\": [92, 116]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 518,
+      "simple": "All tasks completed",
+      "choice": "{\"choice\": \"C\", \"point\": [91, 116]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    },
+    {
+      "t": 522,
+      "simple": "All tasks completed",
+      "choice": "{\"choice\": \"C\", \"point\": [92, 116]}",
+      "grounded": "pick up the container at <126, 118> that hides the red cube",
+      "online": "pick up the container at <126, 118> that hides the red cube"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+# 身份 144 条，路径 B，worker 1，官方源码树 1d4c13697f0c（复用）
+RUN_PATH path=B identities=144 ok=144 failed=0 exit=0 elapsed_s=10005.977
+RUN_DONE paths=1 identities=144 failed=0
+EXIT_CODE=0

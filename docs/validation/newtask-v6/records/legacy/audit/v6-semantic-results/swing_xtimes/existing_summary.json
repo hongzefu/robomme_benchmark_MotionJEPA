@@ -1,0 +1,2058 @@
+[
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed8300000.h5",
+    "tier": "xhard1",
+    "seed": 8300000,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion four times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion four times, then put down the cube and press the button to stop"
+    ],
+    "frames": 630,
+    "terminal_completed": true,
+    "right_segments": 4,
+    "left_segments": 4,
+    "spans": [
+      {
+        "start": 0,
+        "end": 117,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 118,
+        "end": 151,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 152,
+        "end": 195,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 196,
+        "end": 239,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 240,
+        "end": 289,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 290,
+        "end": 338,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 339,
+        "end": 386,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 387,
+        "end": 435,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 436,
+        "end": 483,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 484,
+        "end": 520,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 521,
+        "end": 589,
+        "label": "press the button"
+      },
+      {
+        "start": 590,
+        "end": 629,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.16039885580539703,
+      -0.2527965009212494,
+      0.09924213588237762
+    ],
+    "swing_eef_xyz_max": [
+      -0.057859424501657486,
+      0.23656490445137024,
+      0.14821481704711914
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed8300300.h5",
+    "tier": "xhard1",
+    "seed": 8300300,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion four times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion four times, then put down the cube and press the button to stop"
+    ],
+    "frames": 522,
+    "terminal_completed": true,
+    "right_segments": 4,
+    "left_segments": 4,
+    "spans": [
+      {
+        "start": 0,
+        "end": 117,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 118,
+        "end": 139,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 140,
+        "end": 175,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 176,
+        "end": 211,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 212,
+        "end": 247,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 248,
+        "end": 283,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 284,
+        "end": 319,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 320,
+        "end": 355,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 356,
+        "end": 391,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 392,
+        "end": 426,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 427,
+        "end": 483,
+        "label": "press the button"
+      },
+      {
+        "start": 484,
+        "end": 521,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.161379873752594,
+      -0.19523729383945465,
+      0.09720546007156372
+    ],
+    "swing_eef_xyz_max": [
+      -0.07609816640615463,
+      0.19703048467636108,
+      0.1473388671875
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed8300600.h5",
+    "tier": "xhard1",
+    "seed": 8300600,
+    "task_goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion five times, then put down the cube and press the button to stop"
+    ],
+    "frames": 680,
+    "terminal_completed": true,
+    "right_segments": 5,
+    "left_segments": 5,
+    "spans": [
+      {
+        "start": 0,
+        "end": 124,
+        "label": "pick up the red cube"
+      },
+      {
+        "start": 125,
+        "end": 164,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 165,
+        "end": 205,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 206,
+        "end": 246,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 247,
+        "end": 287,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 288,
+        "end": 328,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 329,
+        "end": 369,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 370,
+        "end": 410,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 411,
+        "end": 451,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 452,
+        "end": 492,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 493,
+        "end": 533,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 534,
+        "end": 569,
+        "label": "put the red cube on the table"
+      },
+      {
+        "start": 570,
+        "end": 644,
+        "label": "press the button"
+      },
+      {
+        "start": 645,
+        "end": 679,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.2038334459066391,
+      -0.24750418961048126,
+      0.09624005109071732
+    ],
+    "swing_eef_xyz_max": [
+      -0.058216892182826996,
+      0.2337963581085205,
+      0.14863260090351105
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed10300000.h5",
+    "tier": "xhard2",
+    "seed": 10300000,
+    "task_goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion six times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion six times, then put down the cube and press the button to stop"
+    ],
+    "frames": 775,
+    "terminal_completed": true,
+    "right_segments": 6,
+    "left_segments": 6,
+    "spans": [
+      {
+        "start": 0,
+        "end": 148,
+        "label": "pick up the blue cube"
+      },
+      {
+        "start": 149,
+        "end": 197,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 198,
+        "end": 235,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 236,
+        "end": 277,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 278,
+        "end": 317,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 318,
+        "end": 358,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 359,
+        "end": 399,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 400,
+        "end": 440,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 441,
+        "end": 481,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 482,
+        "end": 522,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 523,
+        "end": 563,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 564,
+        "end": 604,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 605,
+        "end": 645,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 646,
+        "end": 680,
+        "label": "put the blue cube on the table"
+      },
+      {
+        "start": 681,
+        "end": 737,
+        "label": "press the button"
+      },
+      {
+        "start": 738,
+        "end": 774,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.31843093037605286,
+      -0.20434749126434326,
+      0.09614363312721252
+    ],
+    "swing_eef_xyz_max": [
+      -0.08332663774490356,
+      0.20069724321365356,
+      0.14784744381904602
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed10300300.h5",
+    "tier": "xhard2",
+    "seed": 10300300,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion seven times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion seven times, then put down the cube and press the button to stop"
+    ],
+    "frames": 859,
+    "terminal_completed": true,
+    "right_segments": 7,
+    "left_segments": 7,
+    "spans": [
+      {
+        "start": 0,
+        "end": 105,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 106,
+        "end": 146,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 147,
+        "end": 187,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 188,
+        "end": 233,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 234,
+        "end": 278,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 279,
+        "end": 323,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 324,
+        "end": 368,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 369,
+        "end": 413,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 414,
+        "end": 458,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 459,
+        "end": 503,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 504,
+        "end": 548,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 549,
+        "end": 593,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 594,
+        "end": 638,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 639,
+        "end": 683,
+        "label": "move to the top of the right-side target for the seventh time"
+      },
+      {
+        "start": 684,
+        "end": 728,
+        "label": "move to the top of the left-side target for the seventh time"
+      },
+      {
+        "start": 729,
+        "end": 763,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 764,
+        "end": 821,
+        "label": "press the button"
+      },
+      {
+        "start": 822,
+        "end": 858,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.1420353353023529,
+      -0.2228747010231018,
+      0.09950312227010727
+    ],
+    "swing_eef_xyz_max": [
+      0.0787620097398758,
+      0.24074165523052216,
+      0.15088330209255219
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed10300600.h5",
+    "tier": "xhard2",
+    "seed": 10300600,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion six times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion six times, then put down the cube and press the button to stop"
+    ],
+    "frames": 658,
+    "terminal_completed": true,
+    "right_segments": 6,
+    "left_segments": 6,
+    "spans": [
+      {
+        "start": 0,
+        "end": 101,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 102,
+        "end": 132,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 133,
+        "end": 169,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 170,
+        "end": 205,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 206,
+        "end": 241,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 242,
+        "end": 277,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 278,
+        "end": 313,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 314,
+        "end": 349,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 350,
+        "end": 385,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 386,
+        "end": 421,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 422,
+        "end": 457,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 458,
+        "end": 493,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 494,
+        "end": 530,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 531,
+        "end": 564,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 565,
+        "end": 618,
+        "label": "press the button"
+      },
+      {
+        "start": 619,
+        "end": 657,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.09785490483045578,
+      -0.1680995672941208,
+      0.09946367889642715
+    ],
+    "swing_eef_xyz_max": [
+      0.029195636510849,
+      0.18606455624103546,
+      0.14978787302970886
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed12300000.h5",
+    "tier": "xhard3",
+    "seed": 12300000,
+    "task_goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+    ],
+    "frames": 917,
+    "terminal_completed": true,
+    "right_segments": 8,
+    "left_segments": 8,
+    "spans": [
+      {
+        "start": 0,
+        "end": 102,
+        "label": "pick up the blue cube"
+      },
+      {
+        "start": 103,
+        "end": 142,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 143,
+        "end": 185,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 186,
+        "end": 228,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 229,
+        "end": 271,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 272,
+        "end": 314,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 315,
+        "end": 357,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 358,
+        "end": 400,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 401,
+        "end": 443,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 444,
+        "end": 486,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 487,
+        "end": 529,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 530,
+        "end": 572,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 573,
+        "end": 615,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 616,
+        "end": 658,
+        "label": "move to the top of the right-side target for the seventh time"
+      },
+      {
+        "start": 659,
+        "end": 701,
+        "label": "move to the top of the left-side target for the seventh time"
+      },
+      {
+        "start": 702,
+        "end": 744,
+        "label": "move to the top of the right-side target for the eighth time"
+      },
+      {
+        "start": 745,
+        "end": 787,
+        "label": "move to the top of the left-side target for the eighth time"
+      },
+      {
+        "start": 788,
+        "end": 821,
+        "label": "put the blue cube on the table"
+      },
+      {
+        "start": 822,
+        "end": 879,
+        "label": "press the button"
+      },
+      {
+        "start": 880,
+        "end": 916,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.12144194543361664,
+      -0.2516627609729767,
+      0.09949096292257309
+    ],
+    "swing_eef_xyz_max": [
+      0.03925248607993126,
+      0.24357451498508453,
+      0.1477857381105423
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed12300300.h5",
+    "tier": "xhard3",
+    "seed": 12300300,
+    "task_goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+    ],
+    "frames": 838,
+    "terminal_completed": true,
+    "right_segments": 8,
+    "left_segments": 8,
+    "spans": [
+      {
+        "start": 0,
+        "end": 109,
+        "label": "pick up the blue cube"
+      },
+      {
+        "start": 110,
+        "end": 144,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 145,
+        "end": 179,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 180,
+        "end": 215,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 216,
+        "end": 251,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 252,
+        "end": 287,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 288,
+        "end": 323,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 324,
+        "end": 359,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 360,
+        "end": 395,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 396,
+        "end": 431,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 432,
+        "end": 467,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 468,
+        "end": 503,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 504,
+        "end": 539,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 540,
+        "end": 575,
+        "label": "move to the top of the right-side target for the seventh time"
+      },
+      {
+        "start": 576,
+        "end": 611,
+        "label": "move to the top of the left-side target for the seventh time"
+      },
+      {
+        "start": 612,
+        "end": 647,
+        "label": "move to the top of the right-side target for the eighth time"
+      },
+      {
+        "start": 648,
+        "end": 683,
+        "label": "move to the top of the left-side target for the eighth time"
+      },
+      {
+        "start": 684,
+        "end": 718,
+        "label": "put the blue cube on the table"
+      },
+      {
+        "start": 719,
+        "end": 800,
+        "label": "press the button"
+      },
+      {
+        "start": 801,
+        "end": 837,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.10714831948280334,
+      -0.18338702619075775,
+      0.09952842444181442
+    ],
+    "swing_eef_xyz_max": [
+      0.10501666367053986,
+      0.17190437018871307,
+      0.1511671543121338
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed12300600.h5",
+    "tier": "xhard3",
+    "seed": 12300600,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+    ],
+    "frames": 957,
+    "terminal_completed": true,
+    "right_segments": 8,
+    "left_segments": 8,
+    "spans": [
+      {
+        "start": 0,
+        "end": 136,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 137,
+        "end": 170,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 171,
+        "end": 211,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 212,
+        "end": 254,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 255,
+        "end": 296,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 297,
+        "end": 338,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 339,
+        "end": 380,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 381,
+        "end": 422,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 423,
+        "end": 464,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 465,
+        "end": 506,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 507,
+        "end": 548,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 549,
+        "end": 590,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 591,
+        "end": 632,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 633,
+        "end": 675,
+        "label": "move to the top of the right-side target for the seventh time"
+      },
+      {
+        "start": 676,
+        "end": 717,
+        "label": "move to the top of the left-side target for the seventh time"
+      },
+      {
+        "start": 718,
+        "end": 760,
+        "label": "move to the top of the right-side target for the eighth time"
+      },
+      {
+        "start": 761,
+        "end": 803,
+        "label": "move to the top of the left-side target for the eighth time"
+      },
+      {
+        "start": 804,
+        "end": 839,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 840,
+        "end": 908,
+        "label": "press the button"
+      },
+      {
+        "start": 909,
+        "end": 956,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.24456767737865448,
+      -0.21266238391399384,
+      0.09613348543643951
+    ],
+    "swing_eef_xyz_max": [
+      -0.09431929141283035,
+      0.23882082104682922,
+      0.14742127060890198
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed6300000.h5",
+    "tier": "xhard4",
+    "seed": 6300000,
+    "task_goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eleven times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eleven times, then put down the cube and press the button to stop"
+    ],
+    "frames": 1261,
+    "terminal_completed": true,
+    "right_segments": 11,
+    "left_segments": 11,
+    "spans": [
+      {
+        "start": 0,
+        "end": 113,
+        "label": "pick up the red cube"
+      },
+      {
+        "start": 114,
+        "end": 137,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 138,
+        "end": 184,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 185,
+        "end": 230,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 231,
+        "end": 276,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 277,
+        "end": 321,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 322,
+        "end": 367,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 368,
+        "end": 412,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 413,
+        "end": 458,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 459,
+        "end": 503,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 504,
+        "end": 549,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 550,
+        "end": 594,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 595,
+        "end": 640,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 641,
+        "end": 685,
+        "label": "move to the top of the right-side target for the seventh time"
+      },
+      {
+        "start": 686,
+        "end": 731,
+        "label": "move to the top of the left-side target for the seventh time"
+      },
+      {
+        "start": 732,
+        "end": 775,
+        "label": "move to the top of the right-side target for the eighth time"
+      },
+      {
+        "start": 776,
+        "end": 821,
+        "label": "move to the top of the left-side target for the eighth time"
+      },
+      {
+        "start": 822,
+        "end": 865,
+        "label": "move to the top of the right-side target for the ninth time"
+      },
+      {
+        "start": 866,
+        "end": 910,
+        "label": "move to the top of the left-side target for the ninth time"
+      },
+      {
+        "start": 911,
+        "end": 954,
+        "label": "move to the top of the right-side target for the tenth time"
+      },
+      {
+        "start": 955,
+        "end": 999,
+        "label": "move to the top of the left-side target for the tenth time"
+      },
+      {
+        "start": 1000,
+        "end": 1043,
+        "label": "move to the top of the right-side target for the 11th time"
+      },
+      {
+        "start": 1044,
+        "end": 1088,
+        "label": "move to the top of the left-side target for the 11th time"
+      },
+      {
+        "start": 1089,
+        "end": 1128,
+        "label": "put the red cube on the table"
+      },
+      {
+        "start": 1129,
+        "end": 1204,
+        "label": "press the button"
+      },
+      {
+        "start": 1205,
+        "end": 1260,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.16249573230743408,
+      -0.26447969675064087,
+      0.09714733809232712
+    ],
+    "swing_eef_xyz_max": [
+      -0.06529772281646729,
+      0.2167830914258957,
+      0.14752230048179626
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed6300300.h5",
+    "tier": "xhard4",
+    "seed": 6300300,
+    "task_goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion ten times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion ten times, then put down the cube and press the button to stop"
+    ],
+    "frames": 1007,
+    "terminal_completed": true,
+    "right_segments": 10,
+    "left_segments": 10,
+    "spans": [
+      {
+        "start": 0,
+        "end": 101,
+        "label": "pick up the red cube"
+      },
+      {
+        "start": 102,
+        "end": 136,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 137,
+        "end": 177,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 178,
+        "end": 216,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 217,
+        "end": 255,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 256,
+        "end": 294,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 295,
+        "end": 333,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 334,
+        "end": 372,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 373,
+        "end": 411,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 412,
+        "end": 450,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 451,
+        "end": 489,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 490,
+        "end": 528,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 529,
+        "end": 567,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 568,
+        "end": 606,
+        "label": "move to the top of the right-side target for the seventh time"
+      },
+      {
+        "start": 607,
+        "end": 645,
+        "label": "move to the top of the left-side target for the seventh time"
+      },
+      {
+        "start": 646,
+        "end": 684,
+        "label": "move to the top of the right-side target for the eighth time"
+      },
+      {
+        "start": 685,
+        "end": 723,
+        "label": "move to the top of the left-side target for the eighth time"
+      },
+      {
+        "start": 724,
+        "end": 762,
+        "label": "move to the top of the right-side target for the ninth time"
+      },
+      {
+        "start": 763,
+        "end": 801,
+        "label": "move to the top of the left-side target for the ninth time"
+      },
+      {
+        "start": 802,
+        "end": 840,
+        "label": "move to the top of the right-side target for the tenth time"
+      },
+      {
+        "start": 841,
+        "end": 879,
+        "label": "move to the top of the left-side target for the tenth time"
+      },
+      {
+        "start": 880,
+        "end": 914,
+        "label": "put the red cube on the table"
+      },
+      {
+        "start": 915,
+        "end": 967,
+        "label": "press the button"
+      },
+      {
+        "start": 968,
+        "end": 1006,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.14998365938663483,
+      -0.21794737875461578,
+      0.09959292411804199
+    ],
+    "swing_eef_xyz_max": [
+      0.012859618291258812,
+      0.1487414538860321,
+      0.14873111248016357
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed6300600.h5",
+    "tier": "xhard4",
+    "seed": 6300600,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eleven times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eleven times, then put down the cube and press the button to stop"
+    ],
+    "frames": 1106,
+    "terminal_completed": true,
+    "right_segments": 11,
+    "left_segments": 11,
+    "spans": [
+      {
+        "start": 0,
+        "end": 110,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 111,
+        "end": 152,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 153,
+        "end": 192,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 193,
+        "end": 231,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 232,
+        "end": 270,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 271,
+        "end": 309,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 310,
+        "end": 348,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 349,
+        "end": 387,
+        "label": "move to the top of the right-side target for the fourth time"
+      },
+      {
+        "start": 388,
+        "end": 426,
+        "label": "move to the top of the left-side target for the fourth time"
+      },
+      {
+        "start": 427,
+        "end": 465,
+        "label": "move to the top of the right-side target for the fifth time"
+      },
+      {
+        "start": 466,
+        "end": 504,
+        "label": "move to the top of the left-side target for the fifth time"
+      },
+      {
+        "start": 505,
+        "end": 543,
+        "label": "move to the top of the right-side target for the sixth time"
+      },
+      {
+        "start": 544,
+        "end": 582,
+        "label": "move to the top of the left-side target for the sixth time"
+      },
+      {
+        "start": 583,
+        "end": 621,
+        "label": "move to the top of the right-side target for the seventh time"
+      },
+      {
+        "start": 622,
+        "end": 660,
+        "label": "move to the top of the left-side target for the seventh time"
+      },
+      {
+        "start": 661,
+        "end": 699,
+        "label": "move to the top of the right-side target for the eighth time"
+      },
+      {
+        "start": 700,
+        "end": 738,
+        "label": "move to the top of the left-side target for the eighth time"
+      },
+      {
+        "start": 739,
+        "end": 777,
+        "label": "move to the top of the right-side target for the ninth time"
+      },
+      {
+        "start": 778,
+        "end": 816,
+        "label": "move to the top of the left-side target for the ninth time"
+      },
+      {
+        "start": 817,
+        "end": 855,
+        "label": "move to the top of the right-side target for the tenth time"
+      },
+      {
+        "start": 856,
+        "end": 894,
+        "label": "move to the top of the left-side target for the tenth time"
+      },
+      {
+        "start": 895,
+        "end": 933,
+        "label": "move to the top of the right-side target for the 11th time"
+      },
+      {
+        "start": 934,
+        "end": 972,
+        "label": "move to the top of the left-side target for the 11th time"
+      },
+      {
+        "start": 973,
+        "end": 1009,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 1010,
+        "end": 1067,
+        "label": "press the button"
+      },
+      {
+        "start": 1068,
+        "end": 1105,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.06695891171693802,
+      -0.14717617630958557,
+      0.09941580146551132
+    ],
+    "swing_eef_xyz_max": [
+      0.12025077641010284,
+      0.2530755400657654,
+      0.15112687647342682
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed3000.h5",
+    "tier": "easy",
+    "seed": 3000,
+    "task_goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion two times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion two times, then put down the cube and press the button to stop"
+    ],
+    "frames": 482,
+    "terminal_completed": true,
+    "right_segments": 2,
+    "left_segments": 2,
+    "spans": [
+      {
+        "start": 0,
+        "end": 190,
+        "label": "pick up the red cube"
+      },
+      {
+        "start": 191,
+        "end": 216,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 217,
+        "end": 258,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 259,
+        "end": 301,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 302,
+        "end": 343,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 344,
+        "end": 378,
+        "label": "put the red cube on the table"
+      },
+      {
+        "start": 379,
+        "end": 444,
+        "label": "press the button"
+      },
+      {
+        "start": 445,
+        "end": 481,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.20547902584075928,
+      -0.2089228481054306,
+      0.0973905548453331
+    ],
+    "swing_eef_xyz_max": [
+      -0.1035643070936203,
+      0.2239963263273239,
+      0.1467336267232895
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_1/hdf5_files/SwingXtimes_ep1_seed3100.h5",
+    "tier": "easy",
+    "seed": 3100,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+    ],
+    "frames": 608,
+    "terminal_completed": true,
+    "right_segments": 3,
+    "left_segments": 3,
+    "spans": [
+      {
+        "start": 0,
+        "end": 168,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 169,
+        "end": 221,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 222,
+        "end": 264,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 265,
+        "end": 312,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 313,
+        "end": 359,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 360,
+        "end": 406,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 407,
+        "end": 453,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 454,
+        "end": 488,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 489,
+        "end": 572,
+        "label": "press the button"
+      },
+      {
+        "start": 573,
+        "end": 607,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.1351216733455658,
+      -0.2563762366771698,
+      0.0994512066245079
+    ],
+    "swing_eef_xyz_max": [
+      0.10589547455310822,
+      0.23667949438095093,
+      0.14884695410728455
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_10/hdf5_files/SwingXtimes_ep10_seed4000.h5",
+    "tier": "medium",
+    "seed": 4000,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion two times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion two times, then put down the cube and press the button to stop"
+    ],
+    "frames": 380,
+    "terminal_completed": true,
+    "right_segments": 2,
+    "left_segments": 2,
+    "spans": [
+      {
+        "start": 0,
+        "end": 111,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 112,
+        "end": 133,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 134,
+        "end": 174,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 175,
+        "end": 215,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 216,
+        "end": 256,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 257,
+        "end": 291,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 292,
+        "end": 344,
+        "label": "press the button"
+      },
+      {
+        "start": 345,
+        "end": 379,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.16406404972076416,
+      -0.2505139708518982,
+      0.09930439293384552
+    ],
+    "swing_eef_xyz_max": [
+      -0.0750131607055664,
+      0.18747469782829285,
+      0.1467939019203186
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_11/hdf5_files/SwingXtimes_ep11_seed4101.h5",
+    "tier": "hard",
+    "seed": 4101,
+    "task_goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+    ],
+    "frames": 486,
+    "terminal_completed": true,
+    "right_segments": 3,
+    "left_segments": 3,
+    "spans": [
+      {
+        "start": 0,
+        "end": 101,
+        "label": "pick up the blue cube"
+      },
+      {
+        "start": 102,
+        "end": 127,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 128,
+        "end": 167,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 168,
+        "end": 207,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 208,
+        "end": 252,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 253,
+        "end": 296,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 297,
+        "end": 340,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 341,
+        "end": 375,
+        "label": "put the blue cube on the table"
+      },
+      {
+        "start": 376,
+        "end": 448,
+        "label": "press the button"
+      },
+      {
+        "start": 449,
+        "end": 485,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.1343226432800293,
+      -0.19435617327690125,
+      0.09945553541183472
+    ],
+    "swing_eef_xyz_max": [
+      -0.029420603066682816,
+      0.25990861654281616,
+      0.14610058069229126
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_2/hdf5_files/SwingXtimes_ep2_seed3200.h5",
+    "tier": "medium",
+    "seed": 3200,
+    "task_goals": [
+      "pick up the green cube, move it to the top of the right-side target, then put it down on the left-side target, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then put it down on the left-side target, then press the button to stop"
+    ],
+    "frames": 396,
+    "terminal_completed": true,
+    "right_segments": 1,
+    "left_segments": 1,
+    "spans": [
+      {
+        "start": 0,
+        "end": 184,
+        "label": "pick up the green cube"
+      },
+      {
+        "start": 185,
+        "end": 208,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 209,
+        "end": 246,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 247,
+        "end": 281,
+        "label": "put the green cube on the table"
+      },
+      {
+        "start": 282,
+        "end": 351,
+        "label": "press the button"
+      },
+      {
+        "start": 352,
+        "end": 395,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.19020666182041168,
+      -0.19539161026477814,
+      0.09666173160076141
+    ],
+    "swing_eef_xyz_max": [
+      -0.09482664614915848,
+      0.14673349261283875,
+      0.14764168858528137
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed3301.h5",
+    "tier": "hard",
+    "seed": 3301,
+    "task_goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+    ],
+    "frames": 535,
+    "terminal_completed": true,
+    "right_segments": 3,
+    "left_segments": 3,
+    "spans": [
+      {
+        "start": 0,
+        "end": 178,
+        "label": "pick up the red cube"
+      },
+      {
+        "start": 179,
+        "end": 213,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 214,
+        "end": 251,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 252,
+        "end": 289,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 290,
+        "end": 327,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 328,
+        "end": 365,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 366,
+        "end": 403,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 404,
+        "end": 439,
+        "label": "put the red cube on the table"
+      },
+      {
+        "start": 440,
+        "end": 498,
+        "label": "press the button"
+      },
+      {
+        "start": 499,
+        "end": 534,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.05780351534485817,
+      -0.24650366604328156,
+      0.0994032695889473
+    ],
+    "swing_eef_xyz_max": [
+      -0.013453906401991844,
+      0.15713948011398315,
+      0.14839088916778564
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_4/hdf5_files/SwingXtimes_ep4_seed3400.h5",
+    "tier": "easy",
+    "seed": 3400,
+    "task_goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion two times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion two times, then put down the cube and press the button to stop"
+    ],
+    "frames": 488,
+    "terminal_completed": true,
+    "right_segments": 2,
+    "left_segments": 2,
+    "spans": [
+      {
+        "start": 0,
+        "end": 197,
+        "label": "pick up the blue cube"
+      },
+      {
+        "start": 198,
+        "end": 225,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 226,
+        "end": 265,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 266,
+        "end": 305,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 306,
+        "end": 345,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 346,
+        "end": 385,
+        "label": "put the blue cube on the table"
+      },
+      {
+        "start": 386,
+        "end": 442,
+        "label": "press the button"
+      },
+      {
+        "start": 443,
+        "end": 487,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.14655490219593048,
+      -0.21452663838863373,
+      0.09966719895601273
+    ],
+    "swing_eef_xyz_max": [
+      -0.10248811542987823,
+      0.1798887401819229,
+      0.14927616715431213
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed3600.h5",
+    "tier": "medium",
+    "seed": 3600,
+    "task_goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion two times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion two times, then put down the cube and press the button to stop"
+    ],
+    "frames": 392,
+    "terminal_completed": true,
+    "right_segments": 2,
+    "left_segments": 2,
+    "spans": [
+      {
+        "start": 0,
+        "end": 108,
+        "label": "pick up the red cube"
+      },
+      {
+        "start": 109,
+        "end": 154,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 155,
+        "end": 190,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 191,
+        "end": 224,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 225,
+        "end": 259,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 260,
+        "end": 294,
+        "label": "put the red cube on the table"
+      },
+      {
+        "start": 295,
+        "end": 354,
+        "label": "press the button"
+      },
+      {
+        "start": 355,
+        "end": 391,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.09648071974515915,
+      -0.1535641998052597,
+      0.09944496303796768
+    ],
+    "swing_eef_xyz_max": [
+      0.10151032358407974,
+      0.20897968113422394,
+      0.14812320470809937
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_7/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+    "tier": "hard",
+    "seed": 3700,
+    "task_goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+    ],
+    "frames": 504,
+    "terminal_completed": true,
+    "right_segments": 3,
+    "left_segments": 3,
+    "spans": [
+      {
+        "start": 0,
+        "end": 105,
+        "label": "pick up the blue cube"
+      },
+      {
+        "start": 106,
+        "end": 138,
+        "label": "move to the top of the right-side target for the first time"
+      },
+      {
+        "start": 139,
+        "end": 176,
+        "label": "move to the top of the left-side target for the first time"
+      },
+      {
+        "start": 177,
+        "end": 219,
+        "label": "move to the top of the right-side target for the second time"
+      },
+      {
+        "start": 220,
+        "end": 261,
+        "label": "move to the top of the left-side target for the second time"
+      },
+      {
+        "start": 262,
+        "end": 303,
+        "label": "move to the top of the right-side target for the third time"
+      },
+      {
+        "start": 304,
+        "end": 345,
+        "label": "move to the top of the left-side target for the third time"
+      },
+      {
+        "start": 346,
+        "end": 380,
+        "label": "put the blue cube on the table"
+      },
+      {
+        "start": 381,
+        "end": 461,
+        "label": "press the button"
+      },
+      {
+        "start": 462,
+        "end": 503,
+        "label": "All tasks completed"
+      }
+    ],
+    "swing_gripper_closed_fraction": 1.0,
+    "swing_eef_xyz_min": [
+      -0.13530008494853973,
+      -0.18611423671245575,
+      0.09956536442041397
+    ],
+    "swing_eef_xyz_max": [
+      0.07284514605998993,
+      0.21821589767932892,
+      0.14952051639556885
+    ]
+  }
+]

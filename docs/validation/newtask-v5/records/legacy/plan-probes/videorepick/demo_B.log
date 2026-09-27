@@ -1,0 +1,7 @@
+seed=7000009 ok=False err=BinCollisionError 碰撞排除[contact] sweep#0 对象 bin_4(形状0) 与 bin_1(形状0) g=-0.0103954588811 s=0.5 中点判定 wall=63s
+seed=7000000 ok=False err=BinCollisionError 碰撞排除[contact] sweep#1 对象 bin_1(形状0) 与 bin_0(形状0) g=-0.00632444544902 s=0.5 中点判定 wall=11s
+seed=7000025 ok=False err=BinCollisionError 碰撞排除[contact] sweep#0 对象 bin_1(形状0) 与 bin_4(形状0) g=-0.0281015434144 s=0.5 中点判定 wall=10s
+seed=7000013 ok=False err=BinCollisionError 碰撞排除[contact] sweep#1 对象 bin_5(形状0) 与 bin_1(形状0) g=-0.000306662942345 s=0.0390625 中点判定 wall=10s
+seed=7000024 ok=False err=BinCollisionError 碰撞排除[contact] sweep#2 对象 bin_5(形状0) 与 bin_1(形状0) g=-0.0118311532358 s=0.5 中点判定 wall=11s
+seed=7000001 ok=True err=None None wall=71s
+全部完成 26 swap records

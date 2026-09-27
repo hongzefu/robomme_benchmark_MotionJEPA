@@ -1,0 +1,5461 @@
+[
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard1",
+    "episode": 0,
+    "seed": 8100000,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed8100000.h5",
+    "expected_repeats": 6,
+    "target_color": "blue",
+    "frames": 978,
+    "segments": [
+      {
+        "start": 0,
+        "end": 142,
+        "label": "pick up the blue cube for the first time",
+        "eef_last": [
+          -0.308851420879364,
+          0.1453007012605667,
+          0.14803926646709442,
+          -3.1371660232543945,
+          -0.002313610166311264,
+          0.7380602955818176
+        ],
+        "gripper_last": [
+          0.018304510042071342,
+          0.01828462816774845
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 143,
+        "end": 238,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          0.03581545501947403,
+          -0.10310866683721542,
+          0.148114413022995,
+          -3.140326499938965,
+          -0.004966016858816147,
+          0.7377253174781799
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999996557831764
+        ],
+        "online_last": "pick up the blue cube for the second time"
+      },
+      {
+        "start": 239,
+        "end": 310,
+        "label": "pick up the blue cube for the second time",
+        "eef_last": [
+          0.03672116622328758,
+          -0.09894402325153351,
+          0.15015798807144165,
+          -3.1407418251037598,
+          -0.0055465660989284515,
+          0.736965000629425
+        ],
+        "gripper_last": [
+          0.018324507400393486,
+          0.018293537199497223
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 311,
+        "end": 365,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          0.03584618121385574,
+          -0.10309948772192001,
+          0.14811338484287262,
+          -3.143829822540283,
+          -0.008280988782644272,
+          0.7365947365760803
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the blue cube for the third time"
+      },
+      {
+        "start": 366,
+        "end": 438,
+        "label": "pick up the blue cube for the third time",
+        "eef_last": [
+          0.03818613290786743,
+          -0.09988734871149063,
+          0.14993403851985931,
+          -3.142589569091797,
+          -0.0021502934396266937,
+          0.7422884106636047
+        ],
+        "gripper_last": [
+          0.01831708662211895,
+          0.018286151811480522
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 439,
+        "end": 491,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          0.035838283598423004,
+          -0.10310302674770355,
+          0.14811265468597412,
+          -3.1456549167633057,
+          -0.004893537610769272,
+          0.7419098019599915
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.039999958127737045
+        ],
+        "online_last": "pick up the blue cube for the fourth time"
+      },
+      {
+        "start": 492,
+        "end": 564,
+        "label": "pick up the blue cube for the fourth time",
+        "eef_last": [
+          0.037895604968070984,
+          -0.09737195819616318,
+          0.1496061384677887,
+          -3.1427524089813232,
+          -0.0015661679208278656,
+          0.742312490940094
+        ],
+        "gripper_last": [
+          0.018319865688681602,
+          0.018288936465978622
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 565,
+        "end": 618,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          0.03583623468875885,
+          -0.10309936106204987,
+          0.14809304475784302,
+          -3.145808458328247,
+          -0.00432252511382103,
+          0.7419431805610657
+        ],
+        "gripper_last": [
+          0.03999997302889824,
+          0.039999961853027344
+        ],
+        "online_last": "pick up the blue cube for the fifth time"
+      },
+      {
+        "start": 619,
+        "end": 691,
+        "label": "pick up the blue cube for the fifth time",
+        "eef_last": [
+          0.037778206169605255,
+          -0.09820369631052017,
+          0.14956927299499512,
+          -3.1427457332611084,
+          -0.0014581643044948578,
+          0.7432547211647034
+        ],
+        "gripper_last": [
+          0.01831965148448944,
+          0.018288714811205864
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 692,
+        "end": 745,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          0.035835109651088715,
+          -0.10310666263103485,
+          0.1480916291475296,
+          -3.145796298980713,
+          -0.004217620939016342,
+          0.7428608536720276
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the blue cube for the sixth time"
+      },
+      {
+        "start": 746,
+        "end": 818,
+        "label": "pick up the blue cube for the sixth time",
+        "eef_last": [
+          0.03762868791818619,
+          -0.09776509553194046,
+          0.14953994750976562,
+          -3.142744541168213,
+          -0.0014557801187038422,
+          0.7428537011146545
+        ],
+        "gripper_last": [
+          0.018320009112358093,
+          0.01828908361494541
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 819,
+        "end": 872,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          0.03583445027470589,
+          -0.10311105847358704,
+          0.1480904221534729,
+          -3.145786762237549,
+          -0.004223819822072983,
+          0.742443859577179
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.03999996930360794
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 873,
+        "end": 945,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.16577661037445068,
+          0.101473867893219,
+          0.042767152190208435,
+          -3.1420931816101074,
+          0.001243356615304947,
+          0.0013521313667297363
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 946,
+        "end": 977,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.15809869766235352,
+          0.10402759164571762,
+          0.14798742532730103,
+          -3.140946388244629,
+          -0.002726789563894272,
+          0.00012737512588500977
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      946,
+      947,
+      948,
+      949,
+      950,
+      951,
+      952,
+      953,
+      954,
+      955,
+      956,
+      957,
+      958,
+      959,
+      960,
+      961,
+      962,
+      963,
+      964,
+      965,
+      966,
+      967,
+      968,
+      969,
+      970,
+      971,
+      972,
+      973,
+      974,
+      975,
+      976,
+      977
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard1_ep0_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard1",
+    "episode": 3,
+    "seed": 8100300,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed8100300.h5",
+    "expected_repeats": 7,
+    "target_color": "green",
+    "frames": 1080,
+    "segments": [
+      {
+        "start": 0,
+        "end": 103,
+        "label": "pick up the green cube for the first time",
+        "eef_last": [
+          -0.028873823583126068,
+          -0.15585234761238098,
+          0.14547201991081238,
+          -3.1408112049102783,
+          0.001086954027414322,
+          -0.11809033155441284
+        ],
+        "gripper_last": [
+          0.018285563215613365,
+          0.018258167430758476
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 104,
+        "end": 182,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          0.044630177319049835,
+          0.028552895411849022,
+          0.1481720507144928,
+          -3.139885425567627,
+          -0.002976890653371811,
+          -0.11853665113449097
+        ],
+        "gripper_last": [
+          0.03999992087483406,
+          0.03999992087483406
+        ],
+        "online_last": "pick up the green cube for the second time"
+      },
+      {
+        "start": 183,
+        "end": 257,
+        "label": "pick up the green cube for the second time",
+        "eef_last": [
+          0.051919467747211456,
+          0.02941163443028927,
+          0.15213263034820557,
+          -3.1394474506378174,
+          -0.003728386014699936,
+          -0.11945575475692749
+        ],
+        "gripper_last": [
+          0.018289780244231224,
+          0.018259961158037186
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 258,
+        "end": 312,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          0.04465567320585251,
+          0.028562059625983238,
+          0.14818045496940613,
+          -3.138577461242676,
+          -0.00780009850859642,
+          -0.11986559629440308
+        ],
+        "gripper_last": [
+          0.03999992087483406,
+          0.03999992460012436
+        ],
+        "online_last": "pick up the green cube for the third time"
+      },
+      {
+        "start": 313,
+        "end": 388,
+        "label": "pick up the green cube for the third time",
+        "eef_last": [
+          0.051924772560596466,
+          0.025663182139396667,
+          0.15052518248558044,
+          -3.140781879425049,
+          -0.0017232857644557953,
+          -0.11924880743026733
+        ],
+        "gripper_last": [
+          0.018295414745807648,
+          0.01826557330787182
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 389,
+        "end": 443,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          0.04463483393192291,
+          0.02855343371629715,
+          0.14812985062599182,
+          -3.1399085521698,
+          -0.005764957517385483,
+          -0.11966556310653687
+        ],
+        "gripper_last": [
+          0.03999992460012436,
+          0.039999932050704956
+        ],
+        "online_last": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 444,
+        "end": 518,
+        "label": "pick up the green cube for the fourth time",
+        "eef_last": [
+          0.05064767226576805,
+          0.025870049372315407,
+          0.15034830570220947,
+          -3.1409082412719727,
+          -0.0015377961099147797,
+          -0.11912363767623901
+        ],
+        "gripper_last": [
+          0.01829507015645504,
+          0.0182652585208416
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 519,
+        "end": 572,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          0.04463457316160202,
+          0.028551938012242317,
+          0.1481281816959381,
+          -3.1400439739227295,
+          -0.005578991025686264,
+          -0.11953181028366089
+        ],
+        "gripper_last": [
+          0.03999991714954376,
+          0.03999992832541466
+        ],
+        "online_last": "pick up the green cube for the fifth time"
+      },
+      {
+        "start": 573,
+        "end": 647,
+        "label": "pick up the green cube for the fifth time",
+        "eef_last": [
+          0.050555020570755005,
+          0.0257134847342968,
+          0.15030522644519806,
+          -3.140915870666504,
+          -0.001474376767873764,
+          -0.12309950590133667
+        ],
+        "gripper_last": [
+          0.018294934183359146,
+          0.018265139311552048
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 648,
+        "end": 701,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          0.04463423043489456,
+          0.02854173816740513,
+          0.1481233835220337,
+          -3.1400177478790283,
+          -0.005507465451955795,
+          -0.12354534864425659
+        ],
+        "gripper_last": [
+          0.03999992460012436,
+          0.039999935775995255
+        ],
+        "online_last": "pick up the green cube for the sixth time"
+      },
+      {
+        "start": 702,
+        "end": 776,
+        "label": "pick up the green cube for the sixth time",
+        "eef_last": [
+          0.05071856454014778,
+          0.025714516639709473,
+          0.15031790733337402,
+          -3.1409096717834473,
+          -0.001487966626882553,
+          -0.12363618612289429
+        ],
+        "gripper_last": [
+          0.01829511672258377,
+          0.018265297636389732
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 777,
+        "end": 830,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          0.04463493078947067,
+          0.02854091487824917,
+          0.14812493324279785,
+          -3.140012502670288,
+          -0.005519624799489975,
+          -0.12407678365707397
+        ],
+        "gripper_last": [
+          0.03999992460012436,
+          0.039999935775995255
+        ],
+        "online_last": "pick up the green cube for the seventh time"
+      },
+      {
+        "start": 831,
+        "end": 905,
+        "label": "pick up the green cube for the seventh time",
+        "eef_last": [
+          0.05055452138185501,
+          0.025629661977291107,
+          0.15029709041118622,
+          -3.1408917903900146,
+          -0.001466270536184311,
+          -0.12773293256759644
+        ],
+        "gripper_last": [
+          0.018295029178261757,
+          0.018265219405293465
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 906,
+        "end": 959,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          0.044634971767663956,
+          0.028530441224575043,
+          0.14812064170837402,
+          -3.139958620071411,
+          -0.00548982247710228,
+          -0.1282138228416443
+        ],
+        "gripper_last": [
+          0.03999992087483406,
+          0.03999992832541466
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 960,
+        "end": 1033,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.24735765159130096,
+          0.0033729353453963995,
+          0.03931726515293121,
+          -3.1427559852600098,
+          0.0009171999990940094,
+          0.0012670159339904785
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1034,
+        "end": 1079,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.24725332856178284,
+          0.0026453956961631775,
+          0.1504867970943451,
+          -3.1439287662506104,
+          -0.0002729855477809906,
+          -0.001691281795501709
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      1034,
+      1035,
+      1036,
+      1037,
+      1038,
+      1039,
+      1040,
+      1041,
+      1042,
+      1043,
+      1044,
+      1045,
+      1046,
+      1047,
+      1048,
+      1049,
+      1050,
+      1051,
+      1052,
+      1053,
+      1054,
+      1055,
+      1056,
+      1057,
+      1058,
+      1059,
+      1060,
+      1061,
+      1062,
+      1063,
+      1064,
+      1065,
+      1066,
+      1067,
+      1068,
+      1069,
+      1070,
+      1071,
+      1072,
+      1073,
+      1074,
+      1075,
+      1076,
+      1077,
+      1078,
+      1079
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard1_ep3_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard1",
+    "episode": 6,
+    "seed": 8100600,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed8100600.h5",
+    "expected_repeats": 6,
+    "target_color": "red",
+    "frames": 965,
+    "segments": [
+      {
+        "start": 0,
+        "end": 137,
+        "label": "pick up the red cube for the first time",
+        "eef_last": [
+          -0.25497010350227356,
+          -0.09547686576843262,
+          0.14716869592666626,
+          -3.1446597576141357,
+          0.0037612952291965485,
+          0.7244165539741516
+        ],
+        "gripper_last": [
+          0.018312346190214157,
+          0.018286315724253654
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 138,
+        "end": 229,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.01872675120830536,
+          0.004945953376591206,
+          0.14751030504703522,
+          -3.146435499191284,
+          0.00038934126496315,
+          0.722640335559845
+        ],
+        "gripper_last": [
+          0.03999994695186615,
+          0.03999995067715645
+        ],
+        "online_last": "pick up the red cube for the second time"
+      },
+      {
+        "start": 230,
+        "end": 298,
+        "label": "pick up the red cube for the second time",
+        "eef_last": [
+          0.021263111382722855,
+          0.00745722372084856,
+          0.14786633849143982,
+          -3.14487361907959,
+          0.00118279829621315,
+          0.7193143963813782
+        ],
+        "gripper_last": [
+          0.01830587163567543,
+          0.018275726586580276
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 299,
+        "end": 351,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.018789928406476974,
+          0.004924576263874769,
+          0.1475316882133484,
+          -3.146620988845825,
+          -0.002214428037405014,
+          0.7174411416053772
+        ],
+        "gripper_last": [
+          0.03999995440244675,
+          0.03999995440244675
+        ],
+        "online_last": "pick up the red cube for the third time"
+      },
+      {
+        "start": 352,
+        "end": 422,
+        "label": "pick up the red cube for the third time",
+        "eef_last": [
+          0.02408955618739128,
+          0.009891564957797527,
+          0.14650875329971313,
+          -3.140641212463379,
+          0.00039625540375709534,
+          0.715196430683136
+        ],
+        "gripper_last": [
+          0.018311893567442894,
+          0.01828170381486416
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 423,
+        "end": 476,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.01876627840101719,
+          0.0049139331094920635,
+          0.1474609375,
+          -3.1423115730285645,
+          -0.0029940567910671234,
+          0.7132566571235657
+        ],
+        "gripper_last": [
+          0.03999994322657585,
+          0.03999994695186615
+        ],
+        "online_last": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 477,
+        "end": 546,
+        "label": "pick up the red cube for the fourth time",
+        "eef_last": [
+          0.023472029715776443,
+          0.008709713816642761,
+          0.1479402780532837,
+          -3.1407899856567383,
+          -0.0021903477609157562,
+          0.7097967267036438
+        ],
+        "gripper_last": [
+          0.01830497942864895,
+          0.018274856731295586
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 547,
+        "end": 599,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.018750907853245735,
+          0.004884136375039816,
+          0.14744919538497925,
+          -3.1424360275268555,
+          -0.005555387586355209,
+          0.707783043384552
+        ],
+        "gripper_last": [
+          0.03999994695186615,
+          0.03999995440244675
+        ],
+        "online_last": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 600,
+        "end": 669,
+        "label": "pick up the red cube for the fifth time",
+        "eef_last": [
+          0.02236524410545826,
+          0.009021667763590813,
+          0.14633582532405853,
+          -3.1401100158691406,
+          -7.176026701927185e-05,
+          0.7039008736610413
+        ],
+        "gripper_last": [
+          0.01831052638590336,
+          0.01828037016093731
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 670,
+        "end": 722,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.01876337081193924,
+          0.0048642936162650585,
+          0.14743003249168396,
+          -3.1416616439819336,
+          -0.0034844838082790375,
+          0.7017977833747864
+        ],
+        "gripper_last": [
+          0.03999994695186615,
+          0.03999995067715645
+        ],
+        "online_last": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 723,
+        "end": 791,
+        "label": "pick up the red cube for the sixth time",
+        "eef_last": [
+          0.02387353777885437,
+          0.008390907198190689,
+          0.14782121777534485,
+          -3.1398966312408447,
+          -0.0023291073739528656,
+          0.6980703473091125
+        ],
+        "gripper_last": [
+          0.01830185018479824,
+          0.018271703273057938
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 792,
+        "end": 844,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.018739931285381317,
+          0.004833304788917303,
+          0.14739714562892914,
+          -3.1414105892181396,
+          -0.005706068128347397,
+          0.6958978772163391
+        ],
+        "gripper_last": [
+          0.03999995067715645,
+          0.039999958127737045
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 845,
+        "end": 920,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.21564801037311554,
+          0.1086544468998909,
+          0.03918343037366867,
+          -3.1438612937927246,
+          -0.002582784742116928,
+          0.0017829537391662598
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 921,
+        "end": 964,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.21418976783752441,
+          0.10888107120990753,
+          0.15045753121376038,
+          -3.145698308944702,
+          -0.0007770024240016937,
+          -0.0037984251976013184
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      921,
+      922,
+      923,
+      924,
+      925,
+      926,
+      927,
+      928,
+      929,
+      930,
+      931,
+      932,
+      933,
+      934,
+      935,
+      936,
+      937,
+      938,
+      939,
+      940,
+      941,
+      942,
+      943,
+      944,
+      945,
+      946,
+      947,
+      948,
+      949,
+      950,
+      951,
+      952,
+      953,
+      954,
+      955,
+      956,
+      957,
+      958,
+      959,
+      960,
+      961,
+      962,
+      963,
+      964
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard1_ep6_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard2",
+    "episode": 0,
+    "seed": 10100000,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed10100000.h5",
+    "expected_repeats": 9,
+    "target_color": "blue",
+    "frames": 1390,
+    "segments": [
+      {
+        "start": 0,
+        "end": 98,
+        "label": "pick up the blue cube for the first time",
+        "eef_last": [
+          0.019282598048448563,
+          0.17415811121463776,
+          0.14992676675319672,
+          -3.141849994659424,
+          -0.0026223622262477875,
+          0.18642932176589966
+        ],
+        "gripper_last": [
+          0.018291275948286057,
+          0.01826181448996067
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 99,
+        "end": 189,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.10930028557777405,
+          0.0858905091881752,
+          0.14739476144313812,
+          -3.1421921253204346,
+          -0.005160566419363022,
+          0.18818455934524536
+        ],
+        "gripper_last": [
+          0.03999995067715645,
+          0.03999995067715645
+        ],
+        "online_last": "pick up the blue cube for the second time"
+      },
+      {
+        "start": 190,
+        "end": 264,
+        "label": "pick up the blue cube for the second time",
+        "eef_last": [
+          -0.10469865053892136,
+          0.08769018948078156,
+          0.14814728498458862,
+          -3.1407718658447266,
+          -6.007775664329529e-05,
+          0.18177324533462524
+        ],
+        "gripper_last": [
+          0.01828598789870739,
+          0.01826249621808529
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 265,
+        "end": 323,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.10927456617355347,
+          0.08597797155380249,
+          0.14738604426383972,
+          -3.1410131454467773,
+          -0.002579685300588608,
+          0.18370729684829712
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.039999961853027344
+        ],
+        "online_last": "pick up the blue cube for the third time"
+      },
+      {
+        "start": 324,
+        "end": 398,
+        "label": "pick up the blue cube for the third time",
+        "eef_last": [
+          -0.10410892963409424,
+          0.08920061588287354,
+          0.14762502908706665,
+          -3.1404285430908203,
+          0.0007681883871555328,
+          0.18259507417678833
+        ],
+        "gripper_last": [
+          0.018285483121871948,
+          0.01826193742454052
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 399,
+        "end": 458,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.10930320620536804,
+          0.08604620397090912,
+          0.14732736349105835,
+          -3.1406941413879395,
+          -0.0016605816781520844,
+          0.18478423357009888
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the blue cube for the fourth time"
+      },
+      {
+        "start": 459,
+        "end": 532,
+        "label": "pick up the blue cube for the fourth time",
+        "eef_last": [
+          -0.10475330799818039,
+          0.09133337438106537,
+          0.14727389812469482,
+          -3.1402130126953125,
+          0.00132012739777565,
+          0.17734700441360474
+        ],
+        "gripper_last": [
+          0.01828504167497158,
+          0.018261490389704704
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 533,
+        "end": 592,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.10914449393749237,
+          0.08605878800153732,
+          0.14695623517036438,
+          -3.14080810546875,
+          -0.0010597668588161469,
+          0.17968708276748657
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the blue cube for the fifth time"
+      },
+      {
+        "start": 593,
+        "end": 668,
+        "label": "pick up the blue cube for the fifth time",
+        "eef_last": [
+          -0.09914828836917877,
+          0.09100748598575592,
+          0.14877375960350037,
+          -3.1415910720825195,
+          -0.0013563595712184906,
+          0.17679458856582642
+        ],
+        "gripper_last": [
+          0.01828443445265293,
+          0.018260618671774864
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 669,
+        "end": 739,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.10994718968868256,
+          0.0860692709684372,
+          0.1502387821674347,
+          -3.1417794227600098,
+          -0.0020549260079860687,
+          0.17951279878616333
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the blue cube for the sixth time"
+      },
+      {
+        "start": 740,
+        "end": 812,
+        "label": "pick up the blue cube for the sixth time",
+        "eef_last": [
+          -0.10414668917655945,
+          0.0870850533246994,
+          0.14704808592796326,
+          -3.1402602195739746,
+          -0.0001878701150417328,
+          0.18381744623184204
+        ],
+        "gripper_last": [
+          0.018279707059264183,
+          0.01825621724128723
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 813,
+        "end": 880,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.1097988486289978,
+          0.08618312329053879,
+          0.14986106753349304,
+          -3.1405751705169678,
+          -0.0011215172708034515,
+          0.1868768334388733
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the blue cube for the seventh time"
+      },
+      {
+        "start": 881,
+        "end": 953,
+        "label": "pick up the blue cube for the seventh time",
+        "eef_last": [
+          -0.10457806289196014,
+          0.09235641360282898,
+          0.14583063125610352,
+          -3.1399123668670654,
+          0.0019171275198459625,
+          0.18669110536575317
+        ],
+        "gripper_last": [
+          0.018285132944583893,
+          0.01826145499944687
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 954,
+        "end": 1020,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.10964594781398773,
+          0.08630239218473434,
+          0.14933902025222778,
+          -3.1403112411499023,
+          0.0007739104330539703,
+          0.1900835633277893
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the blue cube for the eighth time"
+      },
+      {
+        "start": 1021,
+        "end": 1093,
+        "label": "pick up the blue cube for the eighth time",
+        "eef_last": [
+          -0.10310325771570206,
+          0.08716897666454315,
+          0.14545169472694397,
+          -3.1401681900024414,
+          0.0025172270834445953,
+          0.16684061288833618
+        ],
+        "gripper_last": [
+          0.018284671008586884,
+          0.01826091669499874
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1094,
+        "end": 1159,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.10955566167831421,
+          0.08639130741357803,
+          0.1487947404384613,
+          -3.1406266689300537,
+          0.0014050044119358063,
+          0.1705356240272522
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the blue cube for the ninth time"
+      },
+      {
+        "start": 1160,
+        "end": 1232,
+        "label": "pick up the blue cube for the ninth time",
+        "eef_last": [
+          -0.10356197506189346,
+          0.08972626179456711,
+          0.14685672521591187,
+          -3.141979932785034,
+          -0.0007059536874294281,
+          0.17429739236831665
+        ],
+        "gripper_last": [
+          0.018286453559994698,
+          0.01826266013085842
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1233,
+        "end": 1293,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.10931219160556793,
+          0.08650472015142441,
+          0.14759418368339539,
+          -3.142573595046997,
+          -0.0021035633981227875,
+          0.1783497929573059
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.03999997675418854
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1294,
+        "end": 1349,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.25162842869758606,
+          -0.10079332441091537,
+          0.03829172998666763,
+          -3.1368801593780518,
+          -0.0010514222085475922,
+          0.0005868077278137207
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1350,
+        "end": 1389,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.2521580159664154,
+          -0.10296286642551422,
+          0.1481865644454956,
+          -3.1400911808013916,
+          -0.0024154148995876312,
+          0.001986086368560791
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      1350,
+      1351,
+      1352,
+      1353,
+      1354,
+      1355,
+      1356,
+      1357,
+      1358,
+      1359,
+      1360,
+      1361,
+      1362,
+      1363,
+      1364,
+      1365,
+      1366,
+      1367,
+      1368,
+      1369,
+      1370,
+      1371,
+      1372,
+      1373,
+      1374,
+      1375,
+      1376,
+      1377,
+      1378,
+      1379,
+      1380,
+      1381,
+      1382,
+      1383,
+      1384,
+      1385,
+      1386,
+      1387,
+      1388,
+      1389
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard2_ep0_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard2",
+    "episode": 3,
+    "seed": 10100300,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed10100300.h5",
+    "expected_repeats": 9,
+    "target_color": "red",
+    "frames": 1317,
+    "segments": [
+      {
+        "start": 0,
+        "end": 115,
+        "label": "pick up the red cube for the first time",
+        "eef_last": [
+          -0.08897310495376587,
+          -0.14283977448940277,
+          0.1486893594264984,
+          -3.139423131942749,
+          0.0015144385397434235,
+          0.6217775940895081
+        ],
+        "gripper_last": [
+          0.018312256783246994,
+          0.01828278973698616
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 116,
+        "end": 205,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.012714353390038013,
+          0.12491229176521301,
+          0.1475372612476349,
+          -3.1409544944763184,
+          -0.002034660428762436,
+          0.62188321352005
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the red cube for the second time"
+      },
+      {
+        "start": 206,
+        "end": 275,
+        "label": "pick up the red cube for the second time",
+        "eef_last": [
+          -0.008112495765089989,
+          0.13127759099006653,
+          0.1472553312778473,
+          -3.140481948852539,
+          -0.0012001954019069672,
+          0.622124969959259
+        ],
+        "gripper_last": [
+          0.018302517011761665,
+          0.01827436126768589
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 276,
+        "end": 330,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.01240440085530281,
+          0.12500135600566864,
+          0.14750206470489502,
+          -3.1421072483062744,
+          -0.004806037992238998,
+          0.6222994923591614
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.039999958127737045
+        ],
+        "online_last": "pick up the red cube for the third time"
+      },
+      {
+        "start": 331,
+        "end": 400,
+        "label": "pick up the red cube for the third time",
+        "eef_last": [
+          -0.007371813990175724,
+          0.12888477742671967,
+          0.14680469036102295,
+          -3.1411941051483154,
+          6.84298574924469e-05,
+          0.6314333081245422
+        ],
+        "gripper_last": [
+          0.018300339579582214,
+          0.018272075802087784
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 401,
+        "end": 455,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.012358186766505241,
+          0.1250036656856537,
+          0.14754268527030945,
+          -3.1429178714752197,
+          -0.0035245381295681,
+          0.6316536068916321
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 456,
+        "end": 526,
+        "label": "pick up the red cube for the fourth time",
+        "eef_last": [
+          -0.005678525194525719,
+          0.13109906017780304,
+          0.14675432443618774,
+          -3.141289710998535,
+          0.00035858526825904846,
+          0.6242993474006653
+        ],
+        "gripper_last": [
+          0.018304869532585144,
+          0.01827661320567131
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 527,
+        "end": 582,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.012356782332062721,
+          0.12500512599945068,
+          0.14754703640937805,
+          -3.142934560775757,
+          -0.0032622776925563812,
+          0.6244753003120422
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.039999961853027344
+        ],
+        "online_last": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 583,
+        "end": 652,
+        "label": "pick up the red cube for the fifth time",
+        "eef_last": [
+          -0.005864819511771202,
+          0.12890632450580597,
+          0.1487731635570526,
+          -3.142463207244873,
+          -0.0024917088449001312,
+          0.6246138215065002
+        ],
+        "gripper_last": [
+          0.01829194650053978,
+          0.018263645470142365
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 653,
+        "end": 708,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.01238727942109108,
+          0.1249970942735672,
+          0.14751915633678436,
+          -3.14414381980896,
+          -0.006094451993703842,
+          0.624826967716217
+        ],
+        "gripper_last": [
+          0.039999958127737045,
+          0.039999958127737045
+        ],
+        "online_last": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 709,
+        "end": 779,
+        "label": "pick up the red cube for the sixth time",
+        "eef_last": [
+          -0.005717530846595764,
+          0.12851619720458984,
+          0.14704200625419617,
+          -3.1414589881896973,
+          -3.1229108572006226e-05,
+          0.6297157406806946
+        ],
+        "gripper_last": [
+          0.018301798030734062,
+          0.018273545429110527
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 780,
+        "end": 835,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.012356110848486423,
+          0.12500809133052826,
+          0.14754930138587952,
+          -3.1431407928466797,
+          -0.0036382637917995453,
+          0.6299124360084534
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 836,
+        "end": 906,
+        "label": "pick up the red cube for the seventh time",
+        "eef_last": [
+          -0.005551893264055252,
+          0.12958015501499176,
+          0.1491258442401886,
+          -3.142683506011963,
+          -0.0029301606118679047,
+          0.630139172077179
+        ],
+        "gripper_last": [
+          0.018291857093572617,
+          0.01826363615691662
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 907,
+        "end": 962,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.012321151793003082,
+          0.1250203251838684,
+          0.14759168028831482,
+          -3.144378662109375,
+          -0.006572958081960678,
+          0.6303513646125793
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999996557831764
+        ],
+        "online_last": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 963,
+        "end": 1034,
+        "label": "pick up the red cube for the eighth time",
+        "eef_last": [
+          -0.004386047832667828,
+          0.13135747611522675,
+          0.1470964550971985,
+          -3.141427516937256,
+          4.625692963600159e-05,
+          0.6322670578956604
+        ],
+        "gripper_last": [
+          0.018303269520401955,
+          0.018274953588843346
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1035,
+        "end": 1091,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.012358408421278,
+          0.12501086294651031,
+          0.14755330979824066,
+          -3.1431264877319336,
+          -0.0035493336617946625,
+          0.6324785351753235
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999996557831764
+        ],
+        "online_last": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1092,
+        "end": 1162,
+        "label": "pick up the red cube for the ninth time",
+        "eef_last": [
+          -0.005895894020795822,
+          0.1295824944972992,
+          0.14901375770568848,
+          -3.142669916152954,
+          -0.0028257332742214203,
+          0.6327205300331116
+        ],
+        "gripper_last": [
+          0.018291931599378586,
+          0.01826361194252968
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1163,
+        "end": 1218,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.01238879095762968,
+          0.12501005828380585,
+          0.1475204974412918,
+          -3.144388437271118,
+          -0.006413694471120834,
+          0.632972776889801
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999996557831764
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1219,
+        "end": 1280,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.20420686900615692,
+          -0.07337570190429688,
+          0.04135508835315704,
+          -3.1438324451446533,
+          0.0018758811056613922,
+          -0.0014604926109313965
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1281,
+        "end": 1316,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.20473110675811768,
+          -0.0737927109003067,
+          0.14768919348716736,
+          -3.1448910236358643,
+          -0.0007615052163600922,
+          -0.0036148428916931152
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      1281,
+      1282,
+      1283,
+      1284,
+      1285,
+      1286,
+      1287,
+      1288,
+      1289,
+      1290,
+      1291,
+      1292,
+      1293,
+      1294,
+      1295,
+      1296,
+      1297,
+      1298,
+      1299,
+      1300,
+      1301,
+      1302,
+      1303,
+      1304,
+      1305,
+      1306,
+      1307,
+      1308,
+      1309,
+      1310,
+      1311,
+      1312,
+      1313,
+      1314,
+      1315,
+      1316
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard2_ep3_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard2",
+    "episode": 6,
+    "seed": 10100600,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed10100600.h5",
+    "expected_repeats": 9,
+    "target_color": "red",
+    "frames": 1313,
+    "segments": [
+      {
+        "start": 0,
+        "end": 110,
+        "label": "pick up the red cube for the first time",
+        "eef_last": [
+          0.09794241189956665,
+          -0.20084847509860992,
+          0.15203818678855896,
+          -3.139669179916382,
+          -0.0001959763467311859,
+          -0.5847157835960388
+        ],
+        "gripper_last": [
+          0.018314821645617485,
+          0.018281904980540276
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 111,
+        "end": 189,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.030614007264375687,
+          -0.06932670623064041,
+          0.1477947235107422,
+          -3.1372475624084473,
+          -0.0033521614968776703,
+          -0.5859295725822449
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999996557831764
+        ],
+        "online_last": "pick up the red cube for the second time"
+      },
+      {
+        "start": 190,
+        "end": 261,
+        "label": "pick up the red cube for the second time",
+        "eef_last": [
+          0.0324922539293766,
+          -0.07365822792053223,
+          0.14863309264183044,
+          -3.140361785888672,
+          -0.00021791085600852966,
+          -0.5853745341300964
+        ],
+        "gripper_last": [
+          0.01830994337797165,
+          0.01827995665371418
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 262,
+        "end": 314,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.03063759207725525,
+          -0.06938404589891434,
+          0.14782702922821045,
+          -3.1380858421325684,
+          -0.0034720860421657562,
+          -0.5866004824638367
+        ],
+        "gripper_last": [
+          0.03999994695186615,
+          0.039999961853027344
+        ],
+        "online_last": "pick up the red cube for the third time"
+      },
+      {
+        "start": 315,
+        "end": 386,
+        "label": "pick up the red cube for the third time",
+        "eef_last": [
+          0.03394238278269768,
+          -0.07675468176603317,
+          0.15145596861839294,
+          -3.1376469135284424,
+          -0.0032594166696071625,
+          -0.5892733931541443
+        ],
+        "gripper_last": [
+          0.018301397562026978,
+          0.01827133819460869
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 387,
+        "end": 440,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.030674055218696594,
+          -0.06940359622240067,
+          0.14790472388267517,
+          -3.135378122329712,
+          -0.0065422020852565765,
+          -0.5905453562736511
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 441,
+        "end": 514,
+        "label": "pick up the red cube for the fourth time",
+        "eef_last": [
+          0.03573920950293541,
+          -0.07820355892181396,
+          0.14904847741127014,
+          -3.140338897705078,
+          -0.0005609951913356781,
+          -0.5960466265678406
+        ],
+        "gripper_last": [
+          0.01830988936126232,
+          0.01827973499894142
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 515,
+        "end": 569,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.030636243522167206,
+          -0.06940602511167526,
+          0.1478135734796524,
+          -3.137981653213501,
+          -0.0037329159677028656,
+          -0.5973588824272156
+        ],
+        "gripper_last": [
+          0.039999958127737045,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 570,
+        "end": 641,
+        "label": "pick up the red cube for the fifth time",
+        "eef_last": [
+          0.033706121146678925,
+          -0.07724840939044952,
+          0.1478419303894043,
+          -3.141326904296875,
+          0.0011618174612522125,
+          -0.6013721823692322
+        ],
+        "gripper_last": [
+          0.01831001229584217,
+          0.018279923126101494
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 642,
+        "end": 695,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.030629567801952362,
+          -0.06943188607692719,
+          0.14778298139572144,
+          -3.138965368270874,
+          -0.001991506665945053,
+          -0.60272616147995
+        ],
+        "gripper_last": [
+          0.03999995440244675,
+          0.03999996557831764
+        ],
+        "online_last": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 696,
+        "end": 767,
+        "label": "pick up the red cube for the sixth time",
+        "eef_last": [
+          0.0343613363802433,
+          -0.0762256532907486,
+          0.15020668506622314,
+          -3.1385581493377686,
+          -0.0015611611306667328,
+          -0.6056181788444519
+        ],
+        "gripper_last": [
+          0.0183049738407135,
+          0.018274862319231033
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 768,
+        "end": 821,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.030651994049549103,
+          -0.06944345682859421,
+          0.1478358507156372,
+          -3.1361701488494873,
+          -0.004709716886281967,
+          -0.6070334315299988
+        ],
+        "gripper_last": [
+          0.03999995440244675,
+          0.03999996557831764
+        ],
+        "online_last": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 822,
+        "end": 894,
+        "label": "pick up the red cube for the seventh time",
+        "eef_last": [
+          0.03504950553178787,
+          -0.07788689434528351,
+          0.14881837368011475,
+          -3.1403167247772217,
+          -0.0002698861062526703,
+          -0.6124011874198914
+        ],
+        "gripper_last": [
+          0.018310220912098885,
+          0.018280062824487686
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 895,
+        "end": 949,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.030629940330982208,
+          -0.06945379078388214,
+          0.14778286218643188,
+          -3.137863874435425,
+          -0.003337617963552475,
+          -0.6138610243797302
+        ],
+        "gripper_last": [
+          0.039999958127737045,
+          0.03999996557831764
+        ],
+        "online_last": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 950,
+        "end": 1020,
+        "label": "pick up the red cube for the eighth time",
+        "eef_last": [
+          0.03350258991122246,
+          -0.07762084156274796,
+          0.14754511415958405,
+          -3.1415748596191406,
+          0.0016348399221897125,
+          -0.6186780333518982
+        ],
+        "gripper_last": [
+          0.018310410901904106,
+          0.018280286341905594
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1021,
+        "end": 1075,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.030621323734521866,
+          -0.06947668641805649,
+          0.1477591097354889,
+          -3.1391005516052246,
+          -0.0013987980782985687,
+          -0.6201841235160828
+        ],
+        "gripper_last": [
+          0.03999994695186615,
+          0.03999995440244675
+        ],
+        "online_last": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1076,
+        "end": 1147,
+        "label": "pick up the red cube for the ninth time",
+        "eef_last": [
+          0.03379575163125992,
+          -0.0772446021437645,
+          0.14961224794387817,
+          -3.1386611461639404,
+          -0.0007929764688014984,
+          -0.623374879360199
+        ],
+        "gripper_last": [
+          0.018308168277144432,
+          0.018278080970048904
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1148,
+        "end": 1201,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.03064100630581379,
+          -0.06950108706951141,
+          0.14778947830200195,
+          -3.1361961364746094,
+          -0.0038382969796657562,
+          -0.624945342540741
+        ],
+        "gripper_last": [
+          0.03999995067715645,
+          0.039999961853027344
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1202,
+        "end": 1274,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.18871034681797028,
+          -0.19286790490150452,
+          0.043819643557071686,
+          -3.1406757831573486,
+          0.002744201570749283,
+          0.0019050240516662598
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1275,
+        "end": 1312,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.18677791953086853,
+          -0.19583919644355774,
+          0.14775314927101135,
+          -3.1436376571655273,
+          -0.0009527169167995453,
+          -0.0037989020347595215
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      1275,
+      1276,
+      1277,
+      1278,
+      1279,
+      1280,
+      1281,
+      1282,
+      1283,
+      1284,
+      1285,
+      1286,
+      1287,
+      1288,
+      1289,
+      1290,
+      1291,
+      1292,
+      1293,
+      1294,
+      1295,
+      1296,
+      1297,
+      1298,
+      1299,
+      1300,
+      1301,
+      1302,
+      1303,
+      1304,
+      1305,
+      1306,
+      1307,
+      1308,
+      1309,
+      1310,
+      1311,
+      1312
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard2_ep6_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard3",
+    "episode": 0,
+    "seed": 12100000,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed12100000.h5",
+    "expected_repeats": 11,
+    "target_color": "red",
+    "frames": 1627,
+    "segments": [
+      {
+        "start": 0,
+        "end": 103,
+        "label": "pick up the red cube for the first time",
+        "eef_last": [
+          0.016325468197464943,
+          -0.08785360306501389,
+          0.14891231060028076,
+          -3.142003297805786,
+          -0.0028316937386989594,
+          0.09483343362808228
+        ],
+        "gripper_last": [
+          0.01828947104513645,
+          0.018261004239320755
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 104,
+        "end": 188,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.1094144731760025,
+          0.04320197179913521,
+          0.14748495817184448,
+          -3.141909122467041,
+          -0.005578514188528061,
+          0.0951891541481018
+        ],
+        "gripper_last": [
+          0.039999935775995255,
+          0.03999992460012436
+        ],
+        "online_last": "pick up the red cube for the second time"
+      },
+      {
+        "start": 189,
+        "end": 264,
+        "label": "pick up the red cube for the second time",
+        "eef_last": [
+          -0.10479653626680374,
+          0.04446721076965332,
+          0.14877565205097198,
+          -3.141453981399536,
+          -0.0010058842599391937,
+          0.1010330319404602
+        ],
+        "gripper_last": [
+          0.018283972516655922,
+          0.018260911107063293
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 265,
+        "end": 322,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.10938571393489838,
+          0.04314963519573212,
+          0.14752434194087982,
+          -3.1415045261383057,
+          -0.003766056150197983,
+          0.10130983591079712
+        ],
+        "gripper_last": [
+          0.03999992087483406,
+          0.039999913424253464
+        ],
+        "online_last": "pick up the red cube for the third time"
+      },
+      {
+        "start": 323,
+        "end": 398,
+        "label": "pick up the red cube for the third time",
+        "eef_last": [
+          -0.1042356789112091,
+          0.04551371932029724,
+          0.14815032482147217,
+          -3.141267776489258,
+          0.0003960169851779938,
+          0.12996965646743774
+        ],
+        "gripper_last": [
+          0.01828605867922306,
+          0.018262896686792374
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 399,
+        "end": 457,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.10938451439142227,
+          0.04317956417798996,
+          0.1475074291229248,
+          -3.1413989067077637,
+          -0.0023579560220241547,
+          0.13035136461257935
+        ],
+        "gripper_last": [
+          0.03999994322657585,
+          0.03999992832541466
+        ],
+        "online_last": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 458,
+        "end": 533,
+        "label": "pick up the red cube for the fourth time",
+        "eef_last": [
+          -0.10418935120105743,
+          0.04173547774553299,
+          0.1481436789035797,
+          -3.1414973735809326,
+          0.0004289187490940094,
+          0.09980899095535278
+        ],
+        "gripper_last": [
+          0.018285362049937248,
+          0.01826224848628044
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 534,
+        "end": 592,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.10938554257154465,
+          0.04315296560525894,
+          0.14750811457633972,
+          -3.141596794128418,
+          -0.002324100583791733,
+          0.10015136003494263
+        ],
+        "gripper_last": [
+          0.03999992087483406,
+          0.03999991714954376
+        ],
+        "online_last": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 593,
+        "end": 668,
+        "label": "pick up the red cube for the fifth time",
+        "eef_last": [
+          -0.10444162040948868,
+          0.040819570422172546,
+          0.14839154481887817,
+          -3.141343832015991,
+          -0.00022196397185325623,
+          0.11379653215408325
+        ],
+        "gripper_last": [
+          0.01828519068658352,
+          0.018262116238474846
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 669,
+        "end": 727,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.10938633233308792,
+          0.043173812329769135,
+          0.14750945568084717,
+          -3.1414895057678223,
+          -0.0029723607003688812,
+          0.11421805620193481
+        ],
+        "gripper_last": [
+          0.03999992832541466,
+          0.03999992087483406
+        ],
+        "online_last": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 728,
+        "end": 803,
+        "label": "pick up the red cube for the sixth time",
+        "eef_last": [
+          -0.10429856181144714,
+          0.03986327722668648,
+          0.14841923117637634,
+          -3.141263008117676,
+          -0.0003530941903591156,
+          0.13391047716140747
+        ],
+        "gripper_last": [
+          0.01828533597290516,
+          0.018262263387441635
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 804,
+        "end": 862,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.10938862711191177,
+          0.04319881275296211,
+          0.14750491082668304,
+          -3.1414871215820312,
+          -0.003091331571340561,
+          0.13444429636001587
+        ],
+        "gripper_last": [
+          0.03999993950128555,
+          0.03999992832541466
+        ],
+        "online_last": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 863,
+        "end": 937,
+        "label": "pick up the red cube for the seventh time",
+        "eef_last": [
+          -0.10478358715772629,
+          0.04580162838101387,
+          0.14793339371681213,
+          -3.14105486869812,
+          0.000776294618844986,
+          0.1621266007423401
+        ],
+        "gripper_last": [
+          0.018285883590579033,
+          0.01826273649930954
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 938,
+        "end": 996,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.10936714708805084,
+          0.043272536247968674,
+          0.14751306176185608,
+          -3.1412718296051025,
+          -0.0019781552255153656,
+          0.16283375024795532
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999995440244675
+        ],
+        "online_last": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 997,
+        "end": 1073,
+        "label": "pick up the red cube for the eighth time",
+        "eef_last": [
+          -0.10326287895441055,
+          0.04531121999025345,
+          0.14841526746749878,
+          -3.14113450050354,
+          -0.0001459084451198578,
+          0.15818887948989868
+        ],
+        "gripper_last": [
+          0.018286004662513733,
+          0.01826283521950245
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1074,
+        "end": 1132,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.1093987375497818,
+          0.04327993467450142,
+          0.14748620986938477,
+          -3.141387701034546,
+          -0.002854343503713608,
+          0.15897661447525024
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999995067715645
+        ],
+        "online_last": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1133,
+        "end": 1207,
+        "label": "pick up the red cube for the ninth time",
+        "eef_last": [
+          -0.10483116656541824,
+          0.04462849348783493,
+          0.14822635054588318,
+          -3.1410038471221924,
+          8.825212717056274e-06,
+          0.16613918542861938
+        ],
+        "gripper_last": [
+          0.01828444004058838,
+          0.01826130971312523
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1208,
+        "end": 1266,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.10939694941043854,
+          0.043315187096595764,
+          0.14747683703899384,
+          -3.1412956714630127,
+          -0.0026938877999782562,
+          0.1670723557472229
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.03999995067715645
+        ],
+        "online_last": "pick up the red cube for the tenth time"
+      },
+      {
+        "start": 1267,
+        "end": 1341,
+        "label": "pick up the red cube for the tenth time",
+        "eef_last": [
+          -0.10444971174001694,
+          0.0470823235809803,
+          0.14816442131996155,
+          -3.140927314758301,
+          0.0001580752432346344,
+          0.15871983766555786
+        ],
+        "gripper_last": [
+          0.01828593946993351,
+          0.01826283521950245
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1342,
+        "end": 1400,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.10940591990947723,
+          0.04335450381040573,
+          0.1474624127149582,
+          -3.1411776542663574,
+          -0.0025260411202907562,
+          0.15976959466934204
+        ],
+        "gripper_last": [
+          0.039999958127737045,
+          0.03999994695186615
+        ],
+        "online_last": "pick up the red cube for the eleventh time"
+      },
+      {
+        "start": 1401,
+        "end": 1475,
+        "label": "pick up the red cube for the eleventh time",
+        "eef_last": [
+          -0.1042357012629509,
+          0.04323006048798561,
+          0.14800837635993958,
+          -3.1407783031463623,
+          0.00020790472626686096,
+          0.17603260278701782
+        ],
+        "gripper_last": [
+          0.018284274265170097,
+          0.018261102959513664
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1476,
+        "end": 1534,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.1094069629907608,
+          0.04339027404785156,
+          0.1474408060312271,
+          -3.141136646270752,
+          -0.0024409256875514984,
+          0.17727667093276978
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.03999995067715645
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1535,
+        "end": 1590,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.21521180868148804,
+          0.1880510002374649,
+          0.04074598848819733,
+          -3.1392152309417725,
+          0.0030436553061008453,
+          0.0027747750282287598
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1591,
+        "end": 1626,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.2141272872686386,
+          0.1895497888326645,
+          0.14933979511260986,
+          -3.139000415802002,
+          0.00041985884308815,
+          0.0038316845893859863
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      1591,
+      1592,
+      1593,
+      1594,
+      1595,
+      1596,
+      1597,
+      1598,
+      1599,
+      1600,
+      1601,
+      1602,
+      1603,
+      1604,
+      1605,
+      1606,
+      1607,
+      1608,
+      1609,
+      1610,
+      1611,
+      1612,
+      1613,
+      1614,
+      1615,
+      1616,
+      1617,
+      1618,
+      1619,
+      1620,
+      1621,
+      1622,
+      1623,
+      1624,
+      1625,
+      1626
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard3_ep0_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard3",
+    "episode": 3,
+    "seed": 12100300,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed12100300.h5",
+    "expected_repeats": 11,
+    "target_color": "red",
+    "frames": 1593,
+    "segments": [
+      {
+        "start": 0,
+        "end": 115,
+        "label": "pick up the red cube for the first time",
+        "eef_last": [
+          -0.1468946784734726,
+          -0.2245444804430008,
+          0.1465986967086792,
+          -3.1420469284057617,
+          -0.0003664456307888031,
+          -0.36851948499679565
+        ],
+        "gripper_last": [
+          0.01829303614795208,
+          0.01826930232346058
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 116,
+        "end": 208,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.00688648596405983,
+          0.14506742358207703,
+          0.1478058397769928,
+          -3.1396968364715576,
+          -0.0036332570016384125,
+          -0.3686901926994324
+        ],
+        "gripper_last": [
+          0.03999993950128555,
+          0.03999994322657585
+        ],
+        "online_last": "pick up the red cube for the second time"
+      },
+      {
+        "start": 209,
+        "end": 279,
+        "label": "pick up the red cube for the second time",
+        "eef_last": [
+          0.00997084379196167,
+          0.14007872343063354,
+          0.15026375651359558,
+          -3.139676570892334,
+          -0.003363128751516342,
+          -0.3690261244773865
+        ],
+        "gripper_last": [
+          0.0182965025305748,
+          0.01826629228889942
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 280,
+        "end": 334,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006977465003728867,
+          0.1451406478881836,
+          0.14785833656787872,
+          -3.137394666671753,
+          -0.006743904203176498,
+          -0.3690280318260193
+        ],
+        "gripper_last": [
+          0.03999994322657585,
+          0.03999994695186615
+        ],
+        "online_last": "pick up the red cube for the third time"
+      },
+      {
+        "start": 335,
+        "end": 407,
+        "label": "pick up the red cube for the third time",
+        "eef_last": [
+          0.013612117618322372,
+          0.14055562019348145,
+          0.14868423342704773,
+          -3.140835762023926,
+          -0.0009281598031520844,
+          -0.36946576833724976
+        ],
+        "gripper_last": [
+          0.018302051350474358,
+          0.018271714448928833
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 408,
+        "end": 461,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006952725350856781,
+          0.14513364434242249,
+          0.1478070318698883,
+          -3.1385881900787354,
+          -0.004263874143362045,
+          -0.36946600675582886
+        ],
+        "gripper_last": [
+          0.03999993950128555,
+          0.03999994695186615
+        ],
+        "online_last": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 462,
+        "end": 532,
+        "label": "pick up the red cube for the fourth time",
+        "eef_last": [
+          0.012085066176950932,
+          0.14034105837345123,
+          0.14740735292434692,
+          -3.14216685295105,
+          0.0012185610830783844,
+          -0.369262158870697
+        ],
+        "gripper_last": [
+          0.01830153353512287,
+          0.018271222710609436
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 533,
+        "end": 586,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.0069502731785178185,
+          0.14513304829597473,
+          0.14778870344161987,
+          -3.139922618865967,
+          -0.002117391675710678,
+          -0.3692578673362732
+        ],
+        "gripper_last": [
+          0.039999935775995255,
+          0.03999993950128555
+        ],
+        "online_last": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 587,
+        "end": 658,
+        "label": "pick up the red cube for the fifth time",
+        "eef_last": [
+          0.012164988555014133,
+          0.14003902673721313,
+          0.1495736688375473,
+          -3.1398918628692627,
+          -0.0019328556954860687,
+          -0.3696860671043396
+        ],
+        "gripper_last": [
+          0.018298953771591187,
+          0.01826867274940014
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 659,
+        "end": 713,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006965287029743195,
+          0.14513665437698364,
+          0.14783090353012085,
+          -3.1376287937164307,
+          -0.0053024254739284515,
+          -0.3696865439414978
+        ],
+        "gripper_last": [
+          0.03999994695186615,
+          0.03999995067715645
+        ],
+        "online_last": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 714,
+        "end": 786,
+        "label": "pick up the red cube for the sixth time",
+        "eef_last": [
+          0.013013666495680809,
+          0.14026272296905518,
+          0.1484973132610321,
+          -3.1409270763397217,
+          -0.000677105039358139,
+          -0.37036746740341187
+        ],
+        "gripper_last": [
+          0.018302179872989655,
+          0.018271852284669876
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 787,
+        "end": 840,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006951513700187206,
+          0.14513306319713593,
+          0.14780421555042267,
+          -3.138678789138794,
+          -0.004011388868093491,
+          -0.37036722898483276
+        ],
+        "gripper_last": [
+          0.03999994322657585,
+          0.03999995067715645
+        ],
+        "online_last": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 841,
+        "end": 912,
+        "label": "pick up the red cube for the seventh time",
+        "eef_last": [
+          0.011599070392549038,
+          0.13917659223079681,
+          0.15099835395812988,
+          -3.138573169708252,
+          -0.0039045773446559906,
+          -0.3708319067955017
+        ],
+        "gripper_last": [
+          0.01829387992620468,
+          0.018263721838593483
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 913,
+        "end": 967,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006986008025705814,
+          0.14513824880123138,
+          0.14787349104881287,
+          -3.1362979412078857,
+          -0.007300373166799545,
+          -0.37083905935287476
+        ],
+        "gripper_last": [
+          0.03999994695186615,
+          0.03999995440244675
+        ],
+        "online_last": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 968,
+        "end": 1041,
+        "label": "pick up the red cube for the eighth time",
+        "eef_last": [
+          0.01409568078815937,
+          0.14010901749134064,
+          0.14863768219947815,
+          -3.140768051147461,
+          -0.0008587799966335297,
+          -0.3701884150505066
+        ],
+        "gripper_last": [
+          0.01830265484750271,
+          0.018272336572408676
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1042,
+        "end": 1095,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006952129304409027,
+          0.14513319730758667,
+          0.1478031873703003,
+          -3.138514995574951,
+          -0.004195209592580795,
+          -0.37019413709640503
+        ],
+        "gripper_last": [
+          0.03999994695186615,
+          0.03999995067715645
+        ],
+        "online_last": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1096,
+        "end": 1166,
+        "label": "pick up the red cube for the ninth time",
+        "eef_last": [
+          0.01213802769780159,
+          0.1407099813222885,
+          0.14740166068077087,
+          -3.1421101093292236,
+          0.0011978186666965485,
+          -0.36924880743026733
+        ],
+        "gripper_last": [
+          0.018301790580153465,
+          0.018271498382091522
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1167,
+        "end": 1220,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006948595866560936,
+          0.1451355665922165,
+          0.14778529107570648,
+          -3.1398544311523438,
+          -0.002135511487722397,
+          -0.36924904584884644
+        ],
+        "gripper_last": [
+          0.03999993950128555,
+          0.03999994322657585
+        ],
+        "online_last": "pick up the red cube for the tenth time"
+      },
+      {
+        "start": 1221,
+        "end": 1292,
+        "label": "pick up the red cube for the tenth time",
+        "eef_last": [
+          0.011632654815912247,
+          0.1371409296989441,
+          0.14928805828094482,
+          -3.1397557258605957,
+          -0.0019764862954616547,
+          -0.369806706905365
+        ],
+        "gripper_last": [
+          0.018347404897212982,
+          0.018317071720957756
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1293,
+        "end": 1348,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006967527791857719,
+          0.14514106512069702,
+          0.14782753586769104,
+          -3.13747501373291,
+          -0.005346771329641342,
+          -0.3698119521141052
+        ],
+        "gripper_last": [
+          0.03999994322657585,
+          0.03999994695186615
+        ],
+        "online_last": "pick up the red cube for the eleventh time"
+      },
+      {
+        "start": 1349,
+        "end": 1421,
+        "label": "pick up the red cube for the eleventh time",
+        "eef_last": [
+          0.01196335069835186,
+          0.14020198583602905,
+          0.14828763902187347,
+          -3.1409053802490234,
+          -0.0006184540688991547,
+          -0.3615097403526306
+        ],
+        "gripper_last": [
+          0.01830407604575157,
+          0.01827385276556015
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1422,
+        "end": 1475,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          0.006948486901819706,
+          0.1451425850391388,
+          0.14780202507972717,
+          -3.138685464859009,
+          -0.003980632871389389,
+          -0.3614887595176697
+        ],
+        "gripper_last": [
+          0.03999993950128555,
+          0.03999994322657585
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1476,
+        "end": 1546,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.24945291876792908,
+          0.0215992983430624,
+          0.040848515927791595,
+          -3.1419222354888916,
+          0.0013406313955783844,
+          -0.0013596415519714355
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1547,
+        "end": 1592,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.24887053668498993,
+          0.020923379808664322,
+          0.15062598884105682,
+          -3.143662452697754,
+          -0.0003440342843532562,
+          -0.0014924407005310059
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      1547,
+      1548,
+      1549,
+      1550,
+      1551,
+      1552,
+      1553,
+      1554,
+      1555,
+      1556,
+      1557,
+      1558,
+      1559,
+      1560,
+      1561,
+      1562,
+      1563,
+      1564,
+      1565,
+      1566,
+      1567,
+      1568,
+      1569,
+      1570,
+      1571,
+      1572,
+      1573,
+      1574,
+      1575,
+      1576,
+      1577,
+      1578,
+      1579,
+      1580,
+      1581,
+      1582,
+      1583,
+      1584,
+      1585,
+      1586,
+      1587,
+      1588,
+      1589,
+      1590,
+      1591,
+      1592
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard3_ep3_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard3",
+    "episode": 6,
+    "seed": 12100600,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed12100600.h5",
+    "expected_repeats": 11,
+    "target_color": "green",
+    "frames": 1663,
+    "segments": [
+      {
+        "start": 0,
+        "end": 102,
+        "label": "pick up the green cube for the first time",
+        "eef_last": [
+          0.04418662562966347,
+          -0.13542746007442474,
+          0.14857497811317444,
+          -3.141502618789673,
+          0.002292398363351822,
+          -0.5019006133079529
+        ],
+        "gripper_last": [
+          0.01830413192510605,
+          0.01827375963330269
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 103,
+        "end": 189,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06499859690666199,
+          -0.06307457387447357,
+          0.14896133542060852,
+          -3.1401727199554443,
+          -5.530938506126404e-05,
+          -0.5032383799552917
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the green cube for the second time"
+      },
+      {
+        "start": 190,
+        "end": 260,
+        "label": "pick up the green cube for the second time",
+        "eef_last": [
+          -0.06269007921218872,
+          -0.06913543492555618,
+          0.1470802277326584,
+          -3.140526533126831,
+          -0.001785513013601303,
+          -0.5009116530418396
+        ],
+        "gripper_last": [
+          0.01832384429872036,
+          0.01829775981605053
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 261,
+        "end": 319,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06498004496097565,
+          -0.06312613934278488,
+          0.14886224269866943,
+          -3.139312744140625,
+          -0.0041673146188259125,
+          -0.5023292899131775
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the green cube for the third time"
+      },
+      {
+        "start": 320,
+        "end": 389,
+        "label": "pick up the green cube for the third time",
+        "eef_last": [
+          -0.0602710023522377,
+          -0.06662340462207794,
+          0.14492473006248474,
+          -3.1415812969207764,
+          0.0011074580252170563,
+          -0.5016233325004578
+        ],
+        "gripper_last": [
+          0.01830468885600567,
+          0.01827847771346569
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 390,
+        "end": 448,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06497432291507721,
+          -0.0631498247385025,
+          0.14879697561264038,
+          -3.1403119564056396,
+          -0.0012383423745632172,
+          -0.503145158290863
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 449,
+        "end": 527,
+        "label": "pick up the green cube for the fourth time",
+        "eef_last": [
+          -0.06392268091440201,
+          -0.06725673377513885,
+          0.15170948207378387,
+          -3.140200614929199,
+          -0.001913066953420639,
+          -0.5061671137809753
+        ],
+        "gripper_last": [
+          0.01830337755382061,
+          0.018277229741215706
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 528,
+        "end": 586,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.0649576410651207,
+          -0.0632050558924675,
+          0.14869874715805054,
+          -3.13897705078125,
+          -0.004242416471242905,
+          -0.5078405737876892
+        ],
+        "gripper_last": [
+          0.03999997302889824,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the green cube for the fifth time"
+      },
+      {
+        "start": 587,
+        "end": 657,
+        "label": "pick up the green cube for the fifth time",
+        "eef_last": [
+          -0.0596834272146225,
+          -0.07112470269203186,
+          0.14568185806274414,
+          -3.14169979095459,
+          0.00015664473176002502,
+          -0.5133129954338074
+        ],
+        "gripper_last": [
+          0.018295614048838615,
+          0.018269453197717667
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 658,
+        "end": 716,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06487967073917389,
+          -0.06325211375951767,
+          0.14816617965698242,
+          -3.140251874923706,
+          -0.0023388825356960297,
+          -0.5151383280754089
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the green cube for the sixth time"
+      },
+      {
+        "start": 717,
+        "end": 796,
+        "label": "pick up the green cube for the sixth time",
+        "eef_last": [
+          -0.062184616923332214,
+          -0.07199984788894653,
+          0.1522236168384552,
+          -3.1400909423828125,
+          -0.0029907189309597015,
+          -0.5188316702842712
+        ],
+        "gripper_last": [
+          0.018304232507944107,
+          0.018278051167726517
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 797,
+        "end": 856,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06487301737070084,
+          -0.0633009746670723,
+          0.1479128897190094,
+          -3.138615131378174,
+          -0.005406852811574936,
+          -0.5208610892295837
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the green cube for the seventh time"
+      },
+      {
+        "start": 857,
+        "end": 937,
+        "label": "pick up the green cube for the seventh time",
+        "eef_last": [
+          -0.06220095977187157,
+          -0.07053717225790024,
+          0.15117093920707703,
+          -3.140890598297119,
+          -0.0015253983438014984,
+          -0.5236026644706726
+        ],
+        "gripper_last": [
+          0.01830538734793663,
+          0.0182791780680418
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 938,
+        "end": 996,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06486913561820984,
+          -0.06334847211837769,
+          0.14783668518066406,
+          -3.1393885612487793,
+          -0.003830906003713608,
+          -0.5257954001426697
+        ],
+        "gripper_last": [
+          0.03999997302889824,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the green cube for the eighth time"
+      },
+      {
+        "start": 997,
+        "end": 1076,
+        "label": "pick up the green cube for the eighth time",
+        "eef_last": [
+          -0.06267176568508148,
+          -0.07129372656345367,
+          0.1527705192565918,
+          -3.139422655105591,
+          -0.004261251538991928,
+          -0.5301429629325867
+        ],
+        "gripper_last": [
+          0.018301716074347496,
+          0.018275583162903786
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1077,
+        "end": 1135,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06485608220100403,
+          -0.06339988112449646,
+          0.1476992964744568,
+          -3.137903928756714,
+          -0.006460662931203842,
+          -0.5325426459312439
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the green cube for the ninth time"
+      },
+      {
+        "start": 1136,
+        "end": 1215,
+        "label": "pick up the green cube for the ninth time",
+        "eef_last": [
+          -0.061738286167383194,
+          -0.07097750902175903,
+          0.15089552104473114,
+          -3.140812635421753,
+          -0.0016069374978542328,
+          -0.5377277731895447
+        ],
+        "gripper_last": [
+          0.01830562762916088,
+          0.01827937550842762
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1216,
+        "end": 1274,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06487876921892166,
+          -0.06343603879213333,
+          0.14754866063594818,
+          -3.1392111778259277,
+          -0.003612276166677475,
+          -0.5403069853782654
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the green cube for the tenth time"
+      },
+      {
+        "start": 1275,
+        "end": 1352,
+        "label": "pick up the green cube for the tenth time",
+        "eef_last": [
+          -0.0631212666630745,
+          -0.06964182108640671,
+          0.15004050731658936,
+          -3.141237735748291,
+          -0.0006735287606716156,
+          -0.5510260462760925
+        ],
+        "gripper_last": [
+          0.018304990604519844,
+          0.01827879622578621
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1353,
+        "end": 1410,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.0648660808801651,
+          -0.06351307779550552,
+          0.14745138585567474,
+          -3.1396498680114746,
+          -0.002561088651418686,
+          -0.5538274645805359
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the green cube for the eleventh time"
+      },
+      {
+        "start": 1411,
+        "end": 1488,
+        "label": "pick up the green cube for the eleventh time",
+        "eef_last": [
+          -0.06216753274202347,
+          -0.0716310665011406,
+          0.15100255608558655,
+          -3.1399624347686768,
+          -0.002228733152151108,
+          -0.5592383742332458
+        ],
+        "gripper_last": [
+          0.018303951248526573,
+          0.018277756869792938
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1489,
+        "end": 1547,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.06487295776605606,
+          -0.0635613426566124,
+          0.14730677008628845,
+          -3.138340473175049,
+          -0.003943677991628647,
+          -0.5622641444206238
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999997675418854
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1548,
+        "end": 1613,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.24132505059242249,
+          -0.06863775849342346,
+          0.042032964527606964,
+          -3.149035930633545,
+          0.001649860292673111,
+          -0.00035828351974487305
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1614,
+        "end": 1662,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.24087916314601898,
+          -0.07001695781946182,
+          0.14931422472000122,
+          -3.1477677822113037,
+          0.0002603568136692047,
+          -0.004203736782073975
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      1614,
+      1615,
+      1616,
+      1617,
+      1618,
+      1619,
+      1620,
+      1621,
+      1622,
+      1623,
+      1624,
+      1625,
+      1626,
+      1627,
+      1628,
+      1629,
+      1630,
+      1631,
+      1632,
+      1633,
+      1634,
+      1635,
+      1636,
+      1637,
+      1638,
+      1639,
+      1640,
+      1641,
+      1642,
+      1643,
+      1644,
+      1645,
+      1646,
+      1647,
+      1648,
+      1649,
+      1650,
+      1651,
+      1652,
+      1653,
+      1654,
+      1655,
+      1656,
+      1657,
+      1658,
+      1659,
+      1660,
+      1661,
+      1662
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard3_ep6_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard4",
+    "episode": 0,
+    "seed": 6100000,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed6100000.h5",
+    "expected_repeats": 14,
+    "target_color": "green",
+    "frames": 2105,
+    "segments": [
+      {
+        "start": 0,
+        "end": 109,
+        "label": "pick up the green cube for the first time",
+        "eef_last": [
+          -0.027588315308094025,
+          -0.03960401937365532,
+          0.14554855227470398,
+          -3.142268180847168,
+          0.0001504458487033844,
+          0.1315820813179016
+        ],
+        "gripper_last": [
+          0.01829020492732525,
+          0.018263522535562515
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 110,
+        "end": 203,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12439322471618652,
+          0.12388572841882706,
+          0.15079161524772644,
+          -3.1422245502471924,
+          -0.00020980462431907654,
+          0.13293391466140747
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the green cube for the second time"
+      },
+      {
+        "start": 204,
+        "end": 277,
+        "label": "pick up the green cube for the second time",
+        "eef_last": [
+          -0.11995144188404083,
+          0.13201552629470825,
+          0.14765219390392303,
+          -3.140948534011841,
+          0.001508716493844986,
+          0.12356764078140259
+        ],
+        "gripper_last": [
+          0.018282197415828705,
+          0.01825875975191593
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 278,
+        "end": 338,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12345121800899506,
+          0.1241590678691864,
+          0.14741551876068115,
+          -3.140758752822876,
+          -0.0011177025735378265,
+          0.12506252527236938
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the green cube for the third time"
+      },
+      {
+        "start": 339,
+        "end": 413,
+        "label": "pick up the green cube for the third time",
+        "eef_last": [
+          -0.11717698723077774,
+          0.12127117067575455,
+          0.14790019392967224,
+          -3.139955997467041,
+          3.818422555923462e-06,
+          0.12730246782302856
+        ],
+        "gripper_last": [
+          0.01828409917652607,
+          0.018260763958096504
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 414,
+        "end": 472,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12346424907445908,
+          0.12418268620967865,
+          0.14737212657928467,
+          -3.139906406402588,
+          -0.0025923214852809906,
+          0.12900406122207642
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 473,
+        "end": 546,
+        "label": "pick up the green cube for the fourth time",
+        "eef_last": [
+          -0.1176992878317833,
+          0.12332400679588318,
+          0.14734378457069397,
+          -3.1403563022613525,
+          0.0009496249258518219,
+          0.1389501690864563
+        ],
+        "gripper_last": [
+          0.018282759934663773,
+          0.018259325996041298
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 547,
+        "end": 617,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12424203008413315,
+          0.12410605698823929,
+          0.1504918932914734,
+          -3.140345335006714,
+          0.0003206767141819,
+          0.14095145463943481
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the green cube for the fifth time"
+      },
+      {
+        "start": 618,
+        "end": 690,
+        "label": "pick up the green cube for the fifth time",
+        "eef_last": [
+          -0.11894693225622177,
+          0.12674100697040558,
+          0.1464155912399292,
+          -3.140282392501831,
+          0.0015952624380588531,
+          0.13896948099136353
+        ],
+        "gripper_last": [
+          0.018282515928149223,
+          0.018259109929203987
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 691,
+        "end": 760,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12413720786571503,
+          0.1242162361741066,
+          0.1503046303987503,
+          -3.1403121948242188,
+          0.0007450617849826813,
+          0.141299307346344
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the green cube for the sixth time"
+      },
+      {
+        "start": 761,
+        "end": 833,
+        "label": "pick up the green cube for the sixth time",
+        "eef_last": [
+          -0.11795163154602051,
+          0.1264776587486267,
+          0.14604145288467407,
+          -3.140148401260376,
+          0.0018932856619358063,
+          0.15171509981155396
+        ],
+        "gripper_last": [
+          0.018283789977431297,
+          0.01826031692326069
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 834,
+        "end": 902,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12404986470937729,
+          0.12432345002889633,
+          0.14995859563350677,
+          -3.1402480602264404,
+          0.0009584464132785797,
+          0.15438896417617798
+        ],
+        "gripper_last": [
+          0.039999984204769135,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the green cube for the seventh time"
+      },
+      {
+        "start": 903,
+        "end": 975,
+        "label": "pick up the green cube for the seventh time",
+        "eef_last": [
+          -0.11782007664442062,
+          0.12831100821495056,
+          0.14579036831855774,
+          -3.140000104904175,
+          0.0021748580038547516,
+          0.16517025232315063
+        ],
+        "gripper_last": [
+          0.018283868208527565,
+          0.018260274082422256
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 976,
+        "end": 1043,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12391915917396545,
+          0.12446781247854233,
+          0.14961591362953186,
+          -3.1400980949401855,
+          0.0011115111410617828,
+          0.1682160496711731
+        ],
+        "gripper_last": [
+          0.03999998793005943,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the green cube for the eighth time"
+      },
+      {
+        "start": 1044,
+        "end": 1117,
+        "label": "pick up the green cube for the eighth time",
+        "eef_last": [
+          -0.1174471527338028,
+          0.1281360238790512,
+          0.14721766114234924,
+          -3.1415374279022217,
+          -0.0011262856423854828,
+          0.1516595482826233
+        ],
+        "gripper_last": [
+          0.018283545970916748,
+          0.01825992576777935
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1118,
+        "end": 1182,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12374792993068695,
+          0.12457308918237686,
+          0.14884112775325775,
+          -3.141759157180786,
+          -0.002454753965139389,
+          0.15509134531021118
+        ],
+        "gripper_last": [
+          0.03999997302889824,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the green cube for the ninth time"
+      },
+      {
+        "start": 1183,
+        "end": 1255,
+        "label": "pick up the green cube for the ninth time",
+        "eef_last": [
+          -0.11734633892774582,
+          0.1275814324617386,
+          0.14670966565608978,
+          -3.1401119232177734,
+          5.8416277170181274e-05,
+          0.1604805588722229
+        ],
+        "gripper_last": [
+          0.018277930095791817,
+          0.01825428195297718
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1256,
+        "end": 1318,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.1236053854227066,
+          0.12469808012247086,
+          0.14793752133846283,
+          -3.140460729598999,
+          -0.0013668499886989594,
+          0.1642354130744934
+        ],
+        "gripper_last": [
+          0.039999958127737045,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the green cube for the tenth time"
+      },
+      {
+        "start": 1319,
+        "end": 1390,
+        "label": "pick up the green cube for the tenth time",
+        "eef_last": [
+          -0.11714273691177368,
+          0.12682148814201355,
+          0.14573702216148376,
+          -3.138861656188965,
+          0.0012795962393283844,
+          0.170229971408844
+        ],
+        "gripper_last": [
+          0.018281038850545883,
+          0.018257319927215576
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1391,
+        "end": 1451,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12349110096693039,
+          0.12479107081890106,
+          0.14700305461883545,
+          -3.139395236968994,
+          -8.320435881614685e-05,
+          0.1742759346961975
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.039999984204769135
+        ],
+        "online_last": "pick up the green cube for the eleventh time"
+      },
+      {
+        "start": 1452,
+        "end": 1523,
+        "label": "pick up the green cube for the eleventh time",
+        "eef_last": [
+          -0.11715933680534363,
+          0.1278786063194275,
+          0.14481011033058167,
+          -3.1420998573303223,
+          0.002151254564523697,
+          0.18642836809158325
+        ],
+        "gripper_last": [
+          0.018292004242539406,
+          0.018268106505274773
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1524,
+        "end": 1584,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.1234915480017662,
+          0.12486670911312103,
+          0.14685596525669098,
+          -3.1426243782043457,
+          0.0010914839804172516,
+          0.1907406449317932
+        ],
+        "gripper_last": [
+          0.03999997302889824,
+          0.03999999165534973
+        ],
+        "online_last": "pick up the green cube for the twelfth time"
+      },
+      {
+        "start": 1585,
+        "end": 1660,
+        "label": "pick up the green cube for the twelfth time",
+        "eef_last": [
+          -0.12296011298894882,
+          0.12888921797275543,
+          0.14769573509693146,
+          -3.1401262283325195,
+          0.0029068030416965485,
+          0.17683154344558716
+        ],
+        "gripper_last": [
+          0.018288997933268547,
+          0.01826518401503563
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1661,
+        "end": 1720,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12356305867433548,
+          0.12492609769105911,
+          0.1464976668357849,
+          -3.1408753395080566,
+          0.0021808184683322906,
+          0.1814773678779602
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.039999984204769135
+        ],
+        "online_last": "pick up the green cube for the thirteenth time"
+      },
+      {
+        "start": 1721,
+        "end": 1796,
+        "label": "pick up the green cube for the thirteenth time",
+        "eef_last": [
+          -0.12011988461017609,
+          0.12930427491664886,
+          0.14774897694587708,
+          -3.1422996520996094,
+          0.0003037489950656891,
+          0.18448024988174438
+        ],
+        "gripper_last": [
+          0.01828872226178646,
+          0.018264690414071083
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1797,
+        "end": 1864,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12408395856618881,
+          0.12494083493947983,
+          0.14903464913368225,
+          -3.14298939704895,
+          0.0011293925344944,
+          0.18962103128433228
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.039999984204769135
+        ],
+        "online_last": "pick up the green cube for the fourteenth time"
+      },
+      {
+        "start": 1865,
+        "end": 1937,
+        "label": "pick up the green cube for the fourteenth time",
+        "eef_last": [
+          -0.11966539919376373,
+          0.12841525673866272,
+          0.14636200666427612,
+          -3.1424319744110107,
+          0.0005564726889133453,
+          0.1963089108467102
+        ],
+        "gripper_last": [
+          0.018287520855665207,
+          0.01826341636478901
+        ],
+        "online_last": "place the green cube onto the target"
+      },
+      {
+        "start": 1938,
+        "end": 2001,
+        "label": "place the green cube onto the target",
+        "eef_last": [
+          -0.12379373610019684,
+          0.12502290308475494,
+          0.1474543809890747,
+          -3.143566370010376,
+          0.000978950411081314,
+          0.20173770189285278
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999997302889824
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 2002,
+        "end": 2058,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.2061055600643158,
+          -0.049163926392793655,
+          0.041538454592227936,
+          -3.1338329315185547,
+          -0.0009019337594509125,
+          0.0005310177803039551
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 2059,
+        "end": 2104,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.206224724650383,
+          -0.049809396266937256,
+          0.15015482902526855,
+          -3.1363985538482666,
+          0.00010800734162330627,
+          0.004417717456817627
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      2059,
+      2060,
+      2061,
+      2062,
+      2063,
+      2064,
+      2065,
+      2066,
+      2067,
+      2068,
+      2069,
+      2070,
+      2071,
+      2072,
+      2073,
+      2074,
+      2075,
+      2076,
+      2077,
+      2078,
+      2079,
+      2080,
+      2081,
+      2082,
+      2083,
+      2084,
+      2085,
+      2086,
+      2087,
+      2088,
+      2089,
+      2090,
+      2091,
+      2092,
+      2093,
+      2094,
+      2095,
+      2096,
+      2097,
+      2098,
+      2099,
+      2100,
+      2101,
+      2102,
+      2103,
+      2104
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard4_ep0_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard4",
+    "episode": 3,
+    "seed": 6100300,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed6100300.h5",
+    "expected_repeats": 15,
+    "target_color": "blue",
+    "frames": 2215,
+    "segments": [
+      {
+        "start": 0,
+        "end": 165,
+        "label": "pick up the blue cube for the first time",
+        "eef_last": [
+          -0.32725128531455994,
+          0.13540953397750854,
+          0.1480383574962616,
+          -3.134856700897217,
+          0.0016315020620822906,
+          -0.0915336012840271
+        ],
+        "gripper_last": [
+          0.018287120386958122,
+          0.018267378211021423
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 166,
+        "end": 265,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03724269941449165,
+          0.10818355530500412,
+          0.1499815136194229,
+          -3.1351866722106934,
+          -0.000415559858083725,
+          -0.08887189626693726
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.039999984204769135
+        ],
+        "online_last": "pick up the blue cube for the second time"
+      },
+      {
+        "start": 266,
+        "end": 336,
+        "label": "pick up the blue cube for the second time",
+        "eef_last": [
+          -0.029154926538467407,
+          0.10818973183631897,
+          0.14508593082427979,
+          -3.141335964202881,
+          0.001684669405221939,
+          -0.07995861768722534
+        ],
+        "gripper_last": [
+          0.018286624923348427,
+          0.01825868710875511
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 337,
+        "end": 399,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03721868246793747,
+          0.10821430385112762,
+          0.14992091059684753,
+          -3.1416234970092773,
+          -0.00027465447783470154,
+          -0.07721585035324097
+        ],
+        "gripper_last": [
+          0.03999997302889824,
+          0.039999984204769135
+        ],
+        "online_last": "pick up the blue cube for the third time"
+      },
+      {
+        "start": 400,
+        "end": 469,
+        "label": "pick up the blue cube for the third time",
+        "eef_last": [
+          -0.029232710599899292,
+          0.10696982592344284,
+          0.14495381712913513,
+          -3.1422250270843506,
+          0.0016059912741184235,
+          -0.07316488027572632
+        ],
+        "gripper_last": [
+          0.01828787662088871,
+          0.018259983509778976
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 470,
+        "end": 531,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03714199364185333,
+          0.1082964614033699,
+          0.14988702535629272,
+          -3.1425857543945312,
+          -0.0005102120339870453,
+          -0.07017725706100464
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.03999999165534973
+        ],
+        "online_last": "pick up the blue cube for the fourth time"
+      },
+      {
+        "start": 532,
+        "end": 602,
+        "label": "pick up the blue cube for the fourth time",
+        "eef_last": [
+          -0.02722892165184021,
+          0.107475146651268,
+          0.14490076899528503,
+          -3.1432769298553467,
+          0.0014808215200901031,
+          -0.0660209059715271
+        ],
+        "gripper_last": [
+          0.018286680802702904,
+          0.018258683383464813
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 603,
+        "end": 665,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.037109144032001495,
+          0.10833126306533813,
+          0.1495959460735321,
+          -3.1436877250671387,
+          -0.0006947480142116547,
+          -0.0629228949546814
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the blue cube for the fifth time"
+      },
+      {
+        "start": 666,
+        "end": 736,
+        "label": "pick up the blue cube for the fifth time",
+        "eef_last": [
+          -0.028108753263950348,
+          0.1071309968829155,
+          0.1447460800409317,
+          -3.144385576248169,
+          0.0014059580862522125,
+          -0.0584835410118103
+        ],
+        "gripper_last": [
+          0.01828877627849579,
+          0.0182607751339674
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 737,
+        "end": 798,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03709079325199127,
+          0.10838276892900467,
+          0.14949846267700195,
+          -3.144857168197632,
+          -0.0006966553628444672,
+          -0.05522841215133667
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999998793005943
+        ],
+        "online_last": "pick up the blue cube for the sixth time"
+      },
+      {
+        "start": 799,
+        "end": 869,
+        "label": "pick up the blue cube for the sixth time",
+        "eef_last": [
+          -0.028315499424934387,
+          0.10683944076299667,
+          0.14451803267002106,
+          -3.145585536956787,
+          0.0015313662588596344,
+          -0.050540149211883545
+        ],
+        "gripper_last": [
+          0.018288685008883476,
+          0.018260665237903595
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 870,
+        "end": 931,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03706631436944008,
+          0.10842771083116531,
+          0.14925450086593628,
+          -3.146153450012207,
+          -0.0005629025399684906,
+          -0.04712957143783569
+        ],
+        "gripper_last": [
+          0.03999997302889824,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the blue cube for the seventh time"
+      },
+      {
+        "start": 932,
+        "end": 1001,
+        "label": "pick up the blue cube for the seventh time",
+        "eef_last": [
+          -0.028261523693799973,
+          0.11012791097164154,
+          0.144282266497612,
+          -3.1429266929626465,
+          0.0019521750509738922,
+          -0.03704279661178589
+        ],
+        "gripper_last": [
+          0.018286436796188354,
+          0.01825837790966034
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1002,
+        "end": 1061,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03696514666080475,
+          0.10848760604858398,
+          0.14881868660449982,
+          -3.1436283588409424,
+          -0.00042533501982688904,
+          -0.033493220806121826
+        ],
+        "gripper_last": [
+          0.03999997302889824,
+          0.039999984204769135
+        ],
+        "online_last": "pick up the blue cube for the eighth time"
+      },
+      {
+        "start": 1062,
+        "end": 1131,
+        "label": "pick up the blue cube for the eighth time",
+        "eef_last": [
+          -0.02856682613492012,
+          0.11046672612428665,
+          0.1441747546195984,
+          -3.1426472663879395,
+          0.0021450556814670563,
+          -0.007769525051116943
+        ],
+        "gripper_last": [
+          0.01828794740140438,
+          0.018259922042489052
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1132,
+        "end": 1191,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.036933496594429016,
+          0.1085621789097786,
+          0.1488640010356903,
+          -3.1433517932891846,
+          -2.7175992727279663e-05,
+          -0.004086196422576904
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the blue cube for the ninth time"
+      },
+      {
+        "start": 1192,
+        "end": 1261,
+        "label": "pick up the blue cube for the ninth time",
+        "eef_last": [
+          -0.026896849274635315,
+          0.11026716977357864,
+          0.14389854669570923,
+          -3.1443116664886475,
+          0.0023379363119602203,
+          0.0015504956245422363
+        ],
+        "gripper_last": [
+          0.018287403509020805,
+          0.018259288743138313
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1262,
+        "end": 1321,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.036931268870830536,
+          0.10858239233493805,
+          0.14810816943645477,
+          -3.145245313644409,
+          0.00015759840607643127,
+          0.005383312702178955
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the blue cube for the tenth time"
+      },
+      {
+        "start": 1322,
+        "end": 1390,
+        "label": "pick up the blue cube for the tenth time",
+        "eef_last": [
+          -0.02987002395093441,
+          0.11134950816631317,
+          0.1463208943605423,
+          -3.142550468444824,
+          -0.0018234215676784515,
+          0.009335339069366455
+        ],
+        "gripper_last": [
+          0.01828850246965885,
+          0.018260443583130836
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1391,
+        "end": 1447,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03682994097471237,
+          0.10863275080919266,
+          0.14740343391895294,
+          -3.14365816116333,
+          -0.0041694603860378265,
+          0.01335078477859497
+        ],
+        "gripper_last": [
+          0.03999995440244675,
+          0.039999961853027344
+        ],
+        "online_last": "pick up the blue cube for the eleventh time"
+      },
+      {
+        "start": 1448,
+        "end": 1526,
+        "label": "pick up the blue cube for the eleventh time",
+        "eef_last": [
+          -0.031120531260967255,
+          0.11100319027900696,
+          0.15230724215507507,
+          -3.1444199085235596,
+          -0.003363844007253647,
+          0.0205572247505188
+        ],
+        "gripper_last": [
+          0.01829090714454651,
+          0.018262773752212524
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1527,
+        "end": 1582,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.036783814430236816,
+          0.1087004765868187,
+          0.14735478162765503,
+          -3.1454832553863525,
+          -0.005594249814748764,
+          0.024729549884796143
+        ],
+        "gripper_last": [
+          0.039999961853027344,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the blue cube for the twelfth time"
+      },
+      {
+        "start": 1583,
+        "end": 1662,
+        "label": "pick up the blue cube for the twelfth time",
+        "eef_last": [
+          -0.030117342248558998,
+          0.11405269056558609,
+          0.15028905868530273,
+          -3.143280506134033,
+          0.00029755011200904846,
+          0.03534036874771118
+        ],
+        "gripper_last": [
+          0.018295766785740852,
+          0.01826745644211769
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1663,
+        "end": 1719,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03684384748339653,
+          0.10870307683944702,
+          0.14704293012619019,
+          -3.1446597576141357,
+          -0.0017347298562526703,
+          0.03961068391799927
+        ],
+        "gripper_last": [
+          0.039999958127737045,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the blue cube for the thirteenth time"
+      },
+      {
+        "start": 1720,
+        "end": 1796,
+        "label": "pick up the blue cube for the thirteenth time",
+        "eef_last": [
+          -0.032523222267627716,
+          0.11314596235752106,
+          0.14928816258907318,
+          -3.1433253288269043,
+          0.0012195147573947906,
+          0.05344873666763306
+        ],
+        "gripper_last": [
+          0.018293220549821854,
+          0.018265103921294212
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1797,
+        "end": 1852,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.03682605177164078,
+          0.10876307636499405,
+          0.14692425727844238,
+          -3.1447701454162598,
+          -0.0006720982491970062,
+          0.05785709619522095
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the blue cube for the fourteenth time"
+      },
+      {
+        "start": 1853,
+        "end": 1929,
+        "label": "pick up the blue cube for the fourteenth time",
+        "eef_last": [
+          -0.031092822551727295,
+          0.11167456209659576,
+          0.1489613652229309,
+          -3.146148443222046,
+          0.0012233294546604156,
+          0.0657239556312561
+        ],
+        "gripper_last": [
+          0.01829364523291588,
+          0.01826544478535652
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 1930,
+        "end": 1985,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.036829639226198196,
+          0.10878383368253708,
+          0.14676958322525024,
+          -3.147717237472534,
+          -0.0005173645913600922,
+          0.0702553391456604
+        ],
+        "gripper_last": [
+          0.039999958127737045,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the blue cube for the fifteenth time"
+      },
+      {
+        "start": 1986,
+        "end": 2061,
+        "label": "pick up the blue cube for the fifteenth time",
+        "eef_last": [
+          -0.030766472220420837,
+          0.11408943682909012,
+          0.14832249283790588,
+          -3.144094228744507,
+          0.002463344484567642,
+          0.09199529886245728
+        ],
+        "gripper_last": [
+          0.018293006345629692,
+          0.018264781683683395
+        ],
+        "online_last": "place the blue cube onto the target"
+      },
+      {
+        "start": 2062,
+        "end": 2117,
+        "label": "place the blue cube onto the target",
+        "eef_last": [
+          -0.036845747381448746,
+          0.10882735252380371,
+          0.14660866558551788,
+          -3.1458356380462646,
+          0.0009095706045627594,
+          0.09665709733963013
+        ],
+        "gripper_last": [
+          0.03999996930360794,
+          0.03999997675418854
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 2118,
+        "end": 2179,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.19304117560386658,
+          -0.160894513130188,
+          0.041099026799201965,
+          -3.1370272636413574,
+          -0.0005712471902370453,
+          -1.7821788787841797e-05
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 2180,
+        "end": 2214,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.191876620054245,
+          -0.16235433518886566,
+          0.14843860268592834,
+          -3.140038013458252,
+          -0.001396413892507553,
+          0.004315435886383057
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      2180,
+      2181,
+      2182,
+      2183,
+      2184,
+      2185,
+      2186,
+      2187,
+      2188,
+      2189,
+      2190,
+      2191,
+      2192,
+      2193,
+      2194,
+      2195,
+      2196,
+      2197,
+      2198,
+      2199,
+      2200,
+      2201,
+      2202,
+      2203,
+      2204,
+      2205,
+      2206,
+      2207,
+      2208,
+      2209,
+      2210,
+      2211,
+      2212,
+      2213,
+      2214
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard4_ep3_boundaries.jpg"
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard4",
+    "episode": 6,
+    "seed": 6100600,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed6100600.h5",
+    "expected_repeats": 13,
+    "target_color": "red",
+    "frames": 1995,
+    "segments": [
+      {
+        "start": 0,
+        "end": 115,
+        "label": "pick up the red cube for the first time",
+        "eef_last": [
+          -0.07287204265594482,
+          0.1416746973991394,
+          0.14988908171653748,
+          -3.1427876949310303,
+          0.0012614764273166656,
+          -0.4050063490867615
+        ],
+        "gripper_last": [
+          0.018302269279956818,
+          0.018273595720529556
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 116,
+        "end": 217,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.14172372221946716,
+          -0.1359371691942215,
+          0.1503629982471466,
+          -3.142899990081787,
+          0.0002961196005344391,
+          -0.40642088651657104
+        ],
+        "gripper_last": [
+          0.039999984204769135,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the red cube for the second time"
+      },
+      {
+        "start": 218,
+        "end": 291,
+        "label": "pick up the red cube for the second time",
+        "eef_last": [
+          -0.1371394842863083,
+          -0.13897688686847687,
+          0.14628690481185913,
+          -3.142951011657715,
+          0.0008878745138645172,
+          -0.4224798083305359
+        ],
+        "gripper_last": [
+          0.018287986516952515,
+          0.01826561614871025
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 292,
+        "end": 360,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.14164194464683533,
+          -0.1359700709581375,
+          0.1500815451145172,
+          -3.142843723297119,
+          -0.00034832581877708435,
+          -0.4239644408226013
+        ],
+        "gripper_last": [
+          0.039999984204769135,
+          0.039999984204769135
+        ],
+        "online_last": "pick up the red cube for the third time"
+      },
+      {
+        "start": 361,
+        "end": 434,
+        "label": "pick up the red cube for the third time",
+        "eef_last": [
+          -0.13531160354614258,
+          -0.13721701502799988,
+          0.14634978771209717,
+          -3.1440324783325195,
+          0.0005483664572238922,
+          -0.42673367261886597
+        ],
+        "gripper_last": [
+          0.018288102000951767,
+          0.018265599384903908
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 435,
+        "end": 503,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.1416008472442627,
+          -0.13605041801929474,
+          0.14986002445220947,
+          -3.1438114643096924,
+          -0.0007195435464382172,
+          -0.42851918935775757
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 504,
+        "end": 576,
+        "label": "pick up the red cube for the fourth time",
+        "eef_last": [
+          -0.13794082403182983,
+          -0.1432180553674698,
+          0.14607775211334229,
+          -3.143660068511963,
+          0.0010159052908420563,
+          -0.440055787563324
+        ],
+        "gripper_last": [
+          0.01828821562230587,
+          0.018265750259160995
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 577,
+        "end": 644,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.14149968326091766,
+          -0.13618431985378265,
+          0.14956587553024292,
+          -3.1434550285339355,
+          -0.0004136525094509125,
+          -0.4421922564506531
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 645,
+        "end": 717,
+        "label": "pick up the red cube for the fifth time",
+        "eef_last": [
+          -0.13660112023353577,
+          -0.14148776233196259,
+          0.145884707570076,
+          -3.1437480449676514,
+          0.00122857466340065,
+          -0.454145610332489
+        ],
+        "gripper_last": [
+          0.018289240077137947,
+          0.018266763538122177
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 718,
+        "end": 783,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.1413756161928177,
+          -0.13632123172283173,
+          0.14900270104408264,
+          -3.14345383644104,
+          -0.0003831349313259125,
+          -0.4566599726676941
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.03999997675418854
+        ],
+        "online_last": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 784,
+        "end": 856,
+        "label": "pick up the red cube for the sixth time",
+        "eef_last": [
+          -0.1369231939315796,
+          -0.1425030678510666,
+          0.14571532607078552,
+          -3.145411968231201,
+          0.0010931529104709625,
+          -0.46122878789901733
+        ],
+        "gripper_last": [
+          0.01829116977751255,
+          0.01826862245798111
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 857,
+        "end": 920,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.14124684035778046,
+          -0.13644929230213165,
+          0.14811813831329346,
+          -3.144941806793213,
+          -0.0006463490426540375,
+          -0.46411460638046265
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 921,
+        "end": 993,
+        "label": "pick up the red cube for the seventh time",
+        "eef_last": [
+          -0.13670726120471954,
+          -0.1407242715358734,
+          0.14701098203659058,
+          -3.141342878341675,
+          -0.001035209745168686,
+          -0.4693295359611511
+        ],
+        "gripper_last": [
+          0.018294520676136017,
+          0.01827196776866913
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 994,
+        "end": 1055,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.14118264615535736,
+          -0.13653509318828583,
+          0.14731992781162262,
+          -3.140876293182373,
+          -0.00252508744597435,
+          -0.47260230779647827
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 1056,
+        "end": 1128,
+        "label": "pick up the red cube for the eighth time",
+        "eef_last": [
+          -0.13730251789093018,
+          -0.1428319811820984,
+          0.14549201726913452,
+          -3.1440627574920654,
+          0.001483682543039322,
+          -0.4852978587150574
+        ],
+        "gripper_last": [
+          0.018290318548679352,
+          0.01826779916882515
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1129,
+        "end": 1191,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.14120203256607056,
+          -0.13665425777435303,
+          0.14714092016220093,
+          -3.1436314582824707,
+          0.0003094710409641266,
+          -0.4889337420463562
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.039999980479478836
+        ],
+        "online_last": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1192,
+        "end": 1271,
+        "label": "pick up the red cube for the ninth time",
+        "eef_last": [
+          -0.13775761425495148,
+          -0.1417163759469986,
+          0.14930954575538635,
+          -3.1414952278137207,
+          0.00019479170441627502,
+          -0.49292677640914917
+        ],
+        "gripper_last": [
+          0.018297424539923668,
+          0.018274838104844093
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1272,
+        "end": 1332,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.14120696485042572,
+          -0.13675035536289215,
+          0.14664027094841003,
+          -3.1409661769866943,
+          -0.0007863007485866547,
+          -0.497039258480072
+        ],
+        "gripper_last": [
+          0.03999996557831764,
+          0.03999996557831764
+        ],
+        "online_last": "pick up the red cube for the tenth time"
+      },
+      {
+        "start": 1333,
+        "end": 1408,
+        "label": "pick up the red cube for the tenth time",
+        "eef_last": [
+          -0.14012019336223602,
+          -0.1437053084373474,
+          0.1472378671169281,
+          -3.141289234161377,
+          9.680166840553284e-05,
+          -0.5295984148979187
+        ],
+        "gripper_last": [
+          0.018298950046300888,
+          0.018276451155543327
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1409,
+        "end": 1477,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.1416115015745163,
+          -0.13677024841308594,
+          0.14878712594509125,
+          -3.141129493713379,
+          0.00043487921357154846,
+          -0.5342459082603455
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.03999997302889824
+        ],
+        "online_last": "pick up the red cube for the eleventh time"
+      },
+      {
+        "start": 1478,
+        "end": 1551,
+        "label": "pick up the red cube for the eleventh time",
+        "eef_last": [
+          -0.1373405009508133,
+          -0.14203950762748718,
+          0.1445675641298294,
+          -3.144702911376953,
+          0.0035209693014621735,
+          -0.5604974627494812
+        ],
+        "gripper_last": [
+          0.01829586736857891,
+          0.018273094668984413
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1552,
+        "end": 1615,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.1413571834564209,
+          -0.1369018852710724,
+          0.14684531092643738,
+          -3.1441142559051514,
+          0.003718379884958267,
+          -0.5654215216636658
+        ],
+        "gripper_last": [
+          0.03999997675418854,
+          0.039999961853027344
+        ],
+        "online_last": "pick up the red cube for the twelfth time"
+      },
+      {
+        "start": 1616,
+        "end": 1688,
+        "label": "pick up the red cube for the twelfth time",
+        "eef_last": [
+          -0.13780483603477478,
+          -0.1429387480020523,
+          0.14593935012817383,
+          -3.140866994857788,
+          0.001085285097360611,
+          -0.5694169402122498
+        ],
+        "gripper_last": [
+          0.018300862982869148,
+          0.018278129398822784
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1689,
+        "end": 1752,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.14132192730903625,
+          -0.13691121339797974,
+          0.1462879180908203,
+          -3.1402428150177,
+          0.0018692053854465485,
+          -0.5745558142662048
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999996930360794
+        ],
+        "online_last": "pick up the red cube for the thirteenth time"
+      },
+      {
+        "start": 1753,
+        "end": 1832,
+        "label": "pick up the red cube for the thirteenth time",
+        "eef_last": [
+          -0.14094194769859314,
+          -0.1437523365020752,
+          0.1468217372894287,
+          -3.1440069675445557,
+          0.0046424902975559235,
+          -0.5904054045677185
+        ],
+        "gripper_last": [
+          0.01830141805112362,
+          0.01827853173017502
+        ],
+        "online_last": "place the red cube onto the target"
+      },
+      {
+        "start": 1833,
+        "end": 1895,
+        "label": "place the red cube onto the target",
+        "eef_last": [
+          -0.1414271891117096,
+          -0.1370014101266861,
+          0.1458856761455536,
+          -3.1434202194213867,
+          0.0059242285788059235,
+          -0.5958368182182312
+        ],
+        "gripper_last": [
+          0.039999980479478836,
+          0.03999996930360794
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1896,
+        "end": 1951,
+        "label": "press the button to stop",
+        "eef_last": [
+          -0.23130962252616882,
+          0.11499668657779694,
+          0.037484295666217804,
+          -3.1493024826049805,
+          -0.0035154782235622406,
+          -0.00023478269577026367
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      },
+      {
+        "start": 1952,
+        "end": 1994,
+        "label": "All tasks completed",
+        "eef_last": [
+          -0.23215346038341522,
+          0.1158236637711525,
+          0.14783573150634766,
+          -3.145279884338379,
+          -0.0024557076394557953,
+          -0.004170835018157959
+        ],
+        "gripper_last": [
+          0.0,
+          0.0
+        ],
+        "online_last": "press the button to stop"
+      }
+    ],
+    "completed_frames": [
+      1952,
+      1953,
+      1954,
+      1955,
+      1956,
+      1957,
+      1958,
+      1959,
+      1960,
+      1961,
+      1962,
+      1963,
+      1964,
+      1965,
+      1966,
+      1967,
+      1968,
+      1969,
+      1970,
+      1971,
+      1972,
+      1973,
+      1974,
+      1975,
+      1976,
+      1977,
+      1978,
+      1979,
+      1980,
+      1981,
+      1982,
+      1983,
+      1984,
+      1985,
+      1986,
+      1987,
+      1988,
+      1989,
+      1990,
+      1991,
+      1992,
+      1993,
+      1994
+    ],
+    "boundary_image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/pick_xtimes/xhard4_ep6_boundaries.jpg"
+  }
+]

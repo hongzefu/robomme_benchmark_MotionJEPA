@@ -1,0 +1,1012 @@
+[
+ {
+  "ep": "episode_0",
+  "diff": "easy",
+  "seed": 5000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_1",
+  "diff": "easy",
+  "seed": 5100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_10",
+  "diff": "medium",
+  "seed": 6000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_11",
+  "diff": "hard",
+  "seed": 6100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_12",
+  "diff": "easy",
+  "seed": 6200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_13",
+  "diff": "easy",
+  "seed": 6300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_14",
+  "diff": "medium",
+  "seed": 6400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_15",
+  "diff": "hard",
+  "seed": 6500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_16",
+  "diff": "easy",
+  "seed": 6600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_17",
+  "diff": "easy",
+  "seed": 6700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_18",
+  "diff": "medium",
+  "seed": 6800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_19",
+  "diff": "hard",
+  "seed": 6900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_2",
+  "diff": "medium",
+  "seed": 5200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_20",
+  "diff": "easy",
+  "seed": 7000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_21",
+  "diff": "easy",
+  "seed": 7100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": [
+   [
+    271,
+    "pick up the container that hides the red cube"
+   ]
+  ]
+ },
+ {
+  "ep": "episode_22",
+  "diff": "medium",
+  "seed": 7200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_23",
+  "diff": "hard",
+  "seed": 7300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_24",
+  "diff": "easy",
+  "seed": 7400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_25",
+  "diff": "easy",
+  "seed": 7500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_26",
+  "diff": "medium",
+  "seed": 7600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_27",
+  "diff": "hard",
+  "seed": 7700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_28",
+  "diff": "easy",
+  "seed": 7800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_29",
+  "diff": "easy",
+  "seed": 7900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_3",
+  "diff": "hard",
+  "seed": 5300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_30",
+  "diff": "medium",
+  "seed": 8000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_31",
+  "diff": "hard",
+  "seed": 8100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_32",
+  "diff": "easy",
+  "seed": 8201,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_33",
+  "diff": "easy",
+  "seed": 8300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_34",
+  "diff": "medium",
+  "seed": 8400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_35",
+  "diff": "hard",
+  "seed": 8500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_36",
+  "diff": "easy",
+  "seed": 8600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_37",
+  "diff": "easy",
+  "seed": 8700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_38",
+  "diff": "medium",
+  "seed": 8800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_39",
+  "diff": "hard",
+  "seed": 8900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_4",
+  "diff": "easy",
+  "seed": 5400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_40",
+  "diff": "easy",
+  "seed": 9000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_41",
+  "diff": "easy",
+  "seed": 9100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_42",
+  "diff": "medium",
+  "seed": 9200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_43",
+  "diff": "hard",
+  "seed": 9300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_44",
+  "diff": "easy",
+  "seed": 9400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_45",
+  "diff": "easy",
+  "seed": 9500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_46",
+  "diff": "medium",
+  "seed": 9600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_47",
+  "diff": "hard",
+  "seed": 9700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_48",
+  "diff": "easy",
+  "seed": 9800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_49",
+  "diff": "easy",
+  "seed": 9900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_5",
+  "diff": "easy",
+  "seed": 5500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_50",
+  "diff": "medium",
+  "seed": 10000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_51",
+  "diff": "hard",
+  "seed": 10100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_52",
+  "diff": "easy",
+  "seed": 10200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_53",
+  "diff": "easy",
+  "seed": 10300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_54",
+  "diff": "medium",
+  "seed": 10400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_55",
+  "diff": "hard",
+  "seed": 10500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_56",
+  "diff": "easy",
+  "seed": 10600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_57",
+  "diff": "easy",
+  "seed": 10700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_58",
+  "diff": "medium",
+  "seed": 10800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_59",
+  "diff": "hard",
+  "seed": 10900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_6",
+  "diff": "medium",
+  "seed": 5600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_60",
+  "diff": "easy",
+  "seed": 11000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_61",
+  "diff": "easy",
+  "seed": 11101,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_62",
+  "diff": "medium",
+  "seed": 11200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_63",
+  "diff": "hard",
+  "seed": 11300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_64",
+  "diff": "easy",
+  "seed": 11400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_65",
+  "diff": "easy",
+  "seed": 11500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_66",
+  "diff": "medium",
+  "seed": 11600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_67",
+  "diff": "hard",
+  "seed": 11700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_68",
+  "diff": "easy",
+  "seed": 11800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_69",
+  "diff": "easy",
+  "seed": 11900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_7",
+  "diff": "hard",
+  "seed": 5700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_70",
+  "diff": "medium",
+  "seed": 12000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_71",
+  "diff": "hard",
+  "seed": 12100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_72",
+  "diff": "easy",
+  "seed": 12200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_73",
+  "diff": "easy",
+  "seed": 12300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_74",
+  "diff": "medium",
+  "seed": 12400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_75",
+  "diff": "hard",
+  "seed": 12500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_76",
+  "diff": "easy",
+  "seed": 12600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_77",
+  "diff": "easy",
+  "seed": 12700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_78",
+  "diff": "medium",
+  "seed": 12800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_79",
+  "diff": "hard",
+  "seed": 12900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_8",
+  "diff": "easy",
+  "seed": 5800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_80",
+  "diff": "easy",
+  "seed": 13000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_81",
+  "diff": "easy",
+  "seed": 13100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": [
+   [
+    254,
+    "pick up the container that hides the green cube"
+   ]
+  ]
+ },
+ {
+  "ep": "episode_82",
+  "diff": "medium",
+  "seed": 13200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_83",
+  "diff": "hard",
+  "seed": 13300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_84",
+  "diff": "easy",
+  "seed": 13400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_85",
+  "diff": "easy",
+  "seed": 13500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_86",
+  "diff": "medium",
+  "seed": 13600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_87",
+  "diff": "hard",
+  "seed": 13700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_88",
+  "diff": "easy",
+  "seed": 13800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_89",
+  "diff": "easy",
+  "seed": 13900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_9",
+  "diff": "easy",
+  "seed": 5900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_90",
+  "diff": "medium",
+  "seed": 14000,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_91",
+  "diff": "hard",
+  "seed": 14100,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_92",
+  "diff": "easy",
+  "seed": 14200,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_93",
+  "diff": "easy",
+  "seed": 14300,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_94",
+  "diff": "medium",
+  "seed": 14400,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_95",
+  "diff": "hard",
+  "seed": 14500,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_96",
+  "diff": "easy",
+  "seed": 14600,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_97",
+  "diff": "easy",
+  "seed": 14700,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_98",
+  "diff": "medium",
+  "seed": 14800,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "n_picks": 1,
+  "nocoord": []
+ },
+ {
+  "ep": "episode_99",
+  "diff": "hard",
+  "seed": 14900,
+  "goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "n_picks": 2,
+  "nocoord": []
+ }
+]

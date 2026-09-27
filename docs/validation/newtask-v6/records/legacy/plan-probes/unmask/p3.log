@@ -1,0 +1,19 @@
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+P3_DONE task=VideoUnmaskSwap count=10 N=10000 wall=739.4s
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+P3_DONE task=ButtonUnmaskSwap count=10 N=10000 wall=422.2s
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+P3_DONE task=VideoUnmaskSwap count=14 N=1000 wall=176.7s
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+P3_DONE task=ButtonUnmaskSwap count=14 N=1000 wall=97.4s
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+P3_DONE task=VideoUnmaskSwap count=18 N=1000 wall=294.3s
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+P3_DONE task=ButtonUnmaskSwap count=18 N=1000 wall=167.5s
+EXIT_CODE=0

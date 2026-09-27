@@ -1,0 +1,35 @@
+{
+  "audit_base": "0a3f989b0dfcff12a3cbb34a8112cb56864c7ee8",
+  "scope": "纯谓词反例，未证明已有生成轨迹发生错误",
+  "new_resets": 0,
+  "new_rollouts": 0,
+  "cases": [
+    {
+      "case": "空中且无杆接触",
+      "position": [
+        0.0,
+        0.0,
+        0.5
+      ],
+      "accepted": true
+    },
+    {
+      "case": "地面上但没有推动历史",
+      "position": [
+        0.0,
+        0.0,
+        0.02
+      ],
+      "accepted": true
+    },
+    {
+      "case": "中心越过半径4厘米的圆盘",
+      "position": [
+        0.047,
+        0.0,
+        0.02
+      ],
+      "accepted": true
+    }
+  ]
+}

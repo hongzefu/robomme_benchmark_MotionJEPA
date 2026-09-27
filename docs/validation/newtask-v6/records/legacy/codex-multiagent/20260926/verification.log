@@ -1,0 +1,4 @@
+CONCURRENT_16=PASS running=16 root_excluded=1
+MODELS_16=PASS model=gpt-6-luna effort=low checked=16
+LIMIT_17=PASS rejected=1
+CLEANUP=PASS interrupted=16 running_children=0

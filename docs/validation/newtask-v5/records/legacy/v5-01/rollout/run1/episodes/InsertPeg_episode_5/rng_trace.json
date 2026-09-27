@@ -1,0 +1,221 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "objects.head_rgb",
+      "drawn": [
+        0.6546037197113037,
+        0.9139472842216492,
+        0.9905912280082703
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.sampling_trace.random_peg_idx",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "initializations.0.box_jitter",
+      "drawn": [
+        -0.007914745807647705,
+        0.01846463680267334
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "initializations.0.box_yaw",
+      "drawn": 1.3022050875900963,
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "initializations.0.pegs.0",
+      "drawn": [
+        [
+          -0.02826484479010105,
+          0.22540132701396942
+        ],
+        0.9989959999418448
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "initializations.0.pegs.1",
+      "drawn": [
+        [
+          0.023467976599931717,
+          0.09919102489948273
+        ],
+        2.5575927602901167
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "initializations.0.pegs.2",
+      "drawn": [
+        [
+          0.06198041886091232,
+          -0.10437726974487305
+        ],
+        2.718982070048384
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "initializations.0.pegs.3",
+      "drawn": [
+        [
+          0.06503425538539886,
+          -0.23783433437347412
+        ],
+        2.3059839584021553
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "initializations.0.peg_attempts",
+      "drawn": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "source": "record"
+    },
+    {
+      "index": 9,
+      "path": "initializations.0.min_pair_gap_m",
+      "drawn": 0.07683260767598644,
+      "source": "record"
+    },
+    {
+      "index": 10,
+      "path": "initializations.0.min_box_gap_m",
+      "drawn": 0.014708774223258085,
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "initializations.0.obj_sample",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "initializations.0.dir_sample",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "initializations.1.box_jitter",
+      "drawn": [
+        0.005401265621185303,
+        0.07131167650222779
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "initializations.1.box_yaw",
+      "drawn": 1.7101676609576895,
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "initializations.1.pegs.0",
+      "drawn": [
+        [
+          -0.11410871148109436,
+          0.014307225123047829
+        ],
+        -0.6134245360055814
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "initializations.1.pegs.1",
+      "drawn": [
+        [
+          -0.08453065156936646,
+          0.21975044906139374
+        ],
+        -1.2447183003591062
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "initializations.1.pegs.2",
+      "drawn": [
+        [
+          -0.09857743233442307,
+          -0.2699856162071228
+        ],
+        0.6748421906174208
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "initializations.1.pegs.3",
+      "drawn": [
+        [
+          -0.003893435001373291,
+          0.25307878851890564
+        ],
+        -2.684497088376192
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "initializations.1.peg_attempts",
+      "drawn": [
+        1,
+        2,
+        5,
+        1
+      ],
+      "source": "record"
+    },
+    {
+      "index": 20,
+      "path": "initializations.1.min_pair_gap_m",
+      "drawn": 0.05097202143562512,
+      "source": "record"
+    },
+    {
+      "index": 21,
+      "path": "initializations.1.min_box_gap_m",
+      "drawn": 0.061188919575392534,
+      "source": "record"
+    },
+    {
+      "index": 22,
+      "path": "initializations.1.obj_sample",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 23,
+      "path": "initializations.1.dir_sample",
+      "drawn": 0,
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "_hb_generator": "9fc6d0bef37a678c4608268fcd6a61e00b64bb22f9fc042c27030f6b5a897c8b"
+  }
+}

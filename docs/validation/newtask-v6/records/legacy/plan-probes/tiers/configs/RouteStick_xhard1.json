@@ -1,0 +1,99 @@
+{
+ "task": "RouteStick",
+ "tier": "xhard1",
+ "overrides": {
+  "xhard.segment_count_range": [
+   8,
+   10
+  ]
+ },
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "demo_duration_seconds_range": null,
+   "demonstration_duration_policy": "native",
+   "xhard": {
+    "segment_count_range": [
+     8,
+     10
+    ]
+   }
+  },
+  "native": {
+   "parameters": {
+    "configs_fallback_difficulty": "easy",
+    "walk": {
+     "node_indices": [
+      0,
+      2,
+      4,
+      6,
+      8
+     ],
+     "start_selection": "randint",
+     "neighbor_order": [
+      -1,
+      1
+     ],
+     "force_reverse_at_endpoint": true,
+     "direction": {
+      "sampler": "torch.rand",
+      "shape": [
+       1
+      ],
+      "threshold": 0.5,
+      "less_than": "clockwise",
+      "otherwise": "counterclockwise"
+     }
+    }
+   },
+   "positions": {
+    "grid_center": [
+     -0.1,
+     0
+    ],
+    "grid_spacing_x": 0.07,
+    "grid_spacing_y": 0.07,
+    "rotation_center": [
+     0,
+     0
+    ],
+    "yaw_deg": {
+     "scale": 60,
+     "subtract": 30
+    },
+    "yaw_expression": "math.radians(u * 60 - 30)",
+    "grid_spacing_x_effect": "num_rows=1 使 row 偏移恒为 0，该参数对结果无影响（死参数）",
+    "target_builder": "build_gray_white_target",
+    "obstacle_builder": "_load_scene 内联 create_actor_builder",
+    "cylinder_radius": 0.015,
+    "cylinder_height": 0.1,
+    "obstacle_color": {
+     "sampler": "torch.rand",
+     "shape": [
+      3
+     ],
+     "count": 4,
+     "position_in_stream": "theta 之后、steps 之前，每根障碍柱一次"
+    },
+    "walk_start": {
+     "sampler": "torch.randint",
+     "low": 0,
+     "high_exclusive": 5,
+     "note": "generate_dynamic_walk 未传 start_idx 时抽取，是路线随机流的第一次抽取"
+    },
+    "tcp_trail": {
+     "end_offset_steps": 40,
+     "disk_radius": 0.005,
+     "native_note": "官方 dataset-gen d53f21a 的 highlight_position 尾迹存活 40 步"
+    },
+    "button_highlight": {
+     "end_offset_steps": 40,
+     "disk_radius_scale": 1.002,
+     "native_note": "官方与现行一致，未改动"
+    }
+   }
+  }
+ }
+}

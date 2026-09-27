@@ -1,0 +1,35 @@
+{
+  "id": "MoveCube-xhard4-6100008",
+  "task": "MoveCube",
+  "difficulty": "xhard4",
+  "seed": 6100008,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+  "expected_method": "grasp_putdown",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 24.769,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "MoveCube",
+      "seed": 6100008,
+      "difficulty": "xhard4",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 20.8,
+      "timesteps": 478
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100008/hdf5_files/MoveCube_ep9_seed6100008.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100008/videos/MoveCube_ep9_seed6100008_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ]
+}

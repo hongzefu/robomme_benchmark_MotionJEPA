@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 S2a 共用采样基础设施（0924-newtask-release-v5-plan.md 2.0①②③、L3、L4 b）。
+"""轻量测试：V5 S2a 共用采样基础设施（docs/plans/0924-newtask-release-v5-plan.md 2.0①②③、L3、L4 b）。
 
 纯 CPU、不起 sapien 场景（``actors.build_cube`` 与圆盘 builder 用假 actor 顶替）：
 

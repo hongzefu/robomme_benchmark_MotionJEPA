@@ -1,0 +1,1 @@
+{"task": "MoveCube", "seed": 6100007, "difficulty": "xhard4", "ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "MoveCube/episode_9: 跑完整个 task_list 仍未成功", "wall_s": 16.5, "timesteps": null}

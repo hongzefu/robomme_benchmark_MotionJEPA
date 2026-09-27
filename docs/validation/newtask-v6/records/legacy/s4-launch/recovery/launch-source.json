@@ -1,0 +1,26 @@
+{
+  "anchor": "c8c06ab755ef448baa24abe245d2f9ec2ffc0add",
+  "code_baseline": "38488db08954ed10c0dd5450a5ccca9b6294d9dd",
+  "working_tree_status": [
+    " M AGENTS.md",
+    " M NEWTASK_RELEASE_V6_PLAN.md",
+    " M scripts/README.md"
+  ],
+  "documents": {
+    "AGENTS.md": {
+      "sha256": "d902d745f142eeb089c70fa6d427502a87c1db0050b7792c3cb91f1e51f6f796",
+      "bytes": 491190
+    },
+    "NEWTASK_RELEASE_V6_PLAN.md": {
+      "sha256": "c81c17e350652fcb0289d2590ff62f07c2716013fd7fcc63cddd75150e63e485",
+      "bytes": 52877
+    },
+    "scripts/README.md": {
+      "sha256": "33fbf8f79caf845bfcb51d84eb20fdbd9f81ca53c2abc1b68c075d1f61e0cbb0",
+      "bytes": 86824
+    }
+  },
+  "scope": "运行源码冻结；仅允许三份授权文档普通修改，不声明全工作树干净",
+  "runtime_manifest_sha256": "a781578c35820f386631887a56fc51dc310c171d439877b2bc29a342710717bd",
+  "runtime_manifest_source": "38488db08954ed10c0dd5450a5ccca9b6294d9dd"
+}

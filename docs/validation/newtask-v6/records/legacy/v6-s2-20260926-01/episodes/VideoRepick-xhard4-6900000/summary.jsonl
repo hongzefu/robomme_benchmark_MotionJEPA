@@ -1,0 +1,1 @@
+{"task": "VideoRepick", "seed": 6900000, "difficulty": "xhard4", "ok": false, "failure_class": "task", "error_type": "SceneGenerationError", "error": "xhard4: 槽位 [2, 6] 没有扫掠可行的搭档（可行槽位对 [(0, 3), (0, 4), (0, 5), (1, 4)]）", "wall_s": 1.2, "timesteps": null}

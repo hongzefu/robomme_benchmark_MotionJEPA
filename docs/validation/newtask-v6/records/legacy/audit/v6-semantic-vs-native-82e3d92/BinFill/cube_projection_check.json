@@ -1,0 +1,554 @@
+[
+ {
+  "diff": "xhard1",
+  "ep": 0,
+  "n_cubes": 12,
+  "max_component_recomputed": 3,
+  "t0_colour_at_cube": {
+   "green_0": "green",
+   "red_3": "red",
+   "red_1": "red",
+   "red_2": "red",
+   "blue_1": "blue",
+   "red_4": "red",
+   "red_5": "red",
+   "blue_0": "blue",
+   "blue_3": "blue",
+   "red_0": "red",
+   "blue_4": "blue",
+   "blue_2": "blue"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "green_0": "green",
+   "red_3": "none",
+   "red_1": "none",
+   "red_2": "none",
+   "blue_1": "none",
+   "red_4": "red",
+   "red_5": "red",
+   "blue_0": "none",
+   "blue_3": "none",
+   "red_0": "red",
+   "blue_4": "blue",
+   "blue_2": "blue"
+  },
+  "last_match": 6,
+  "expected_remaining": {
+   "red": 3,
+   "blue": 2,
+   "green": 1
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 3,
+   "green": 1,
+   "blue": 2
+  }
+ },
+ {
+  "diff": "xhard1",
+  "ep": 3,
+  "n_cubes": 12,
+  "max_component_recomputed": 1,
+  "t0_colour_at_cube": {
+   "green_4": "green",
+   "red_0": "red",
+   "green_2": "green",
+   "green_0": "green",
+   "green_3": "green",
+   "red_2": "red",
+   "green_1": "green",
+   "red_3": "red",
+   "red_1": "red",
+   "blue_0": "blue",
+   "green_5": "green",
+   "red_4": "red"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "green_4": "none",
+   "red_0": "none",
+   "green_2": "none",
+   "green_0": "none",
+   "green_3": "green",
+   "red_2": "none",
+   "green_1": "green",
+   "red_3": "red",
+   "red_1": "red",
+   "blue_0": "none",
+   "green_5": "green",
+   "red_4": "red"
+  },
+  "last_match": 6,
+  "expected_remaining": {
+   "red": 3,
+   "blue": 0,
+   "green": 3
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 3,
+   "green": 3,
+   "blue": 0
+  }
+ },
+ {
+  "diff": "xhard1",
+  "ep": 6,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "blue_3": "blue",
+   "red_0": "red",
+   "red_1": "red",
+   "green_0": "green",
+   "blue_1": "blue",
+   "red_4": "red",
+   "red_3": "red",
+   "green_1": "green",
+   "blue_0": "blue",
+   "red_2": "red",
+   "green_2": "green",
+   "blue_2": "blue"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "blue_3": "blue",
+   "red_0": "none",
+   "red_1": "none",
+   "green_0": "none",
+   "blue_1": "blue",
+   "red_4": "none",
+   "red_3": "none",
+   "green_1": "green",
+   "blue_0": "blue",
+   "red_2": "none",
+   "green_2": "green",
+   "blue_2": "blue"
+  },
+  "last_match": 6,
+  "expected_remaining": {
+   "red": 0,
+   "blue": 4,
+   "green": 2
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 0,
+   "green": 2,
+   "blue": 4
+  }
+ },
+ {
+  "diff": "xhard2",
+  "ep": 0,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "blue_5": "blue",
+   "blue_4": "blue",
+   "green_2": "green",
+   "green_3": "green",
+   "green_4": "green",
+   "blue_0": "blue",
+   "green_1": "green",
+   "blue_3": "blue",
+   "blue_2": "blue",
+   "red_0": "red",
+   "green_0": "green",
+   "blue_1": "blue"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "blue_5": "none",
+   "blue_4": "none",
+   "green_2": "green",
+   "green_3": "green",
+   "green_4": "green",
+   "blue_0": "none",
+   "green_1": "green",
+   "blue_3": "none",
+   "blue_2": "none",
+   "red_0": "none",
+   "green_0": "green",
+   "blue_1": "none"
+  },
+  "last_match": 5,
+  "expected_remaining": {
+   "red": 0,
+   "blue": 0,
+   "green": 5
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 0,
+   "green": 5,
+   "blue": 0
+  }
+ },
+ {
+  "diff": "xhard2",
+  "ep": 3,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "blue_4": "blue",
+   "green_2": "green",
+   "red_3": "red",
+   "red_2": "red",
+   "green_1": "green",
+   "blue_3": "blue",
+   "green_0": "green",
+   "blue_0": "blue",
+   "blue_2": "blue",
+   "blue_1": "blue",
+   "red_1": "red",
+   "red_0": "red"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "blue_4": "none",
+   "green_2": "none",
+   "red_3": "none",
+   "red_2": "none",
+   "green_1": "none",
+   "blue_3": "none",
+   "green_0": "green",
+   "blue_0": "none",
+   "blue_2": "blue",
+   "blue_1": "blue",
+   "red_1": "red",
+   "red_0": "red"
+  },
+  "last_match": 5,
+  "expected_remaining": {
+   "red": 2,
+   "blue": 2,
+   "green": 1
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 2,
+   "green": 1,
+   "blue": 2
+  }
+ },
+ {
+  "diff": "xhard2",
+  "ep": 6,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "red_7": "red",
+   "red_6": "red",
+   "green_1": "green",
+   "red_5": "red",
+   "red_2": "red",
+   "green_0": "green",
+   "blue_0": "blue",
+   "red_3": "red",
+   "red_4": "red",
+   "red_1": "red",
+   "red_0": "red",
+   "green_2": "green"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "red_7": "none",
+   "red_6": "none",
+   "green_1": "none",
+   "red_5": "none",
+   "red_2": "none",
+   "green_0": "none",
+   "blue_0": "blue",
+   "red_3": "none",
+   "red_4": "red",
+   "red_1": "red",
+   "red_0": "red",
+   "green_2": "green"
+  },
+  "last_match": 5,
+  "expected_remaining": {
+   "red": 3,
+   "blue": 1,
+   "green": 1
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 3,
+   "green": 1,
+   "blue": 1
+  }
+ },
+ {
+  "diff": "xhard3",
+  "ep": 0,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "blue_0": "blue",
+   "blue_3": "blue",
+   "blue_4": "blue",
+   "red_0": "red",
+   "blue_7": "blue",
+   "blue_1": "blue",
+   "blue_5": "blue",
+   "red_1": "red",
+   "blue_2": "blue",
+   "green_1": "green",
+   "green_0": "green",
+   "blue_6": "blue"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "blue_0": "none",
+   "blue_3": "none",
+   "blue_4": "none",
+   "red_0": "none",
+   "blue_7": "none",
+   "blue_1": "none",
+   "blue_5": "none",
+   "red_1": "none",
+   "blue_2": "blue",
+   "green_1": "green",
+   "green_0": "green",
+   "blue_6": "blue"
+  },
+  "last_match": 4,
+  "expected_remaining": {
+   "red": 0,
+   "blue": 2,
+   "green": 2
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 0,
+   "green": 2,
+   "blue": 2
+  }
+ },
+ {
+  "diff": "xhard3",
+  "ep": 3,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "green_0": "green",
+   "red_4": "red",
+   "red_6": "red",
+   "red_0": "red",
+   "red_1": "red",
+   "red_5": "red",
+   "red_3": "red",
+   "blue_1": "blue",
+   "red_7": "red",
+   "blue_0": "blue",
+   "green_1": "green",
+   "red_2": "red"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "green_0": "none",
+   "red_4": "none",
+   "red_6": "none",
+   "red_0": "none",
+   "red_1": "none",
+   "red_5": "none",
+   "red_3": "none",
+   "blue_1": "blue",
+   "red_7": "red",
+   "blue_0": "blue",
+   "green_1": "none",
+   "red_2": "red"
+  },
+  "last_match": 4,
+  "expected_remaining": {
+   "red": 2,
+   "blue": 2,
+   "green": 0
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 2,
+   "green": 0,
+   "blue": 2
+  }
+ },
+ {
+  "diff": "xhard3",
+  "ep": 6,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "blue_2": "blue",
+   "blue_4": "blue",
+   "green_3": "green",
+   "red_0": "red",
+   "red_1": "red",
+   "blue_0": "blue",
+   "green_1": "green",
+   "red_2": "red",
+   "green_2": "green",
+   "blue_1": "blue",
+   "blue_3": "blue",
+   "green_0": "green"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "blue_2": "none",
+   "blue_4": "none",
+   "green_3": "none",
+   "red_0": "none",
+   "red_1": "none",
+   "blue_0": "none",
+   "green_1": "none",
+   "red_2": "none",
+   "green_2": "green",
+   "blue_1": "blue",
+   "blue_3": "blue",
+   "green_0": "green"
+  },
+  "last_match": 4,
+  "expected_remaining": {
+   "red": 0,
+   "blue": 2,
+   "green": 2
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 0,
+   "green": 2,
+   "blue": 2
+  }
+ },
+ {
+  "diff": "xhard4",
+  "ep": 0,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "blue_0": "blue",
+   "blue_5": "blue",
+   "red_2": "red",
+   "blue_2": "blue",
+   "blue_7": "blue",
+   "blue_1": "blue",
+   "blue_3": "blue",
+   "blue_6": "blue",
+   "red_1": "red",
+   "green_0": "green",
+   "red_0": "red",
+   "blue_4": "blue"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "blue_0": "none",
+   "blue_5": "none",
+   "red_2": "none",
+   "blue_2": "none",
+   "blue_7": "none",
+   "blue_1": "none",
+   "blue_3": "none",
+   "blue_6": "none",
+   "red_1": "green",
+   "green_0": "green",
+   "red_0": "red",
+   "blue_4": "blue"
+  },
+  "last_match": 3,
+  "expected_remaining": {
+   "red": 1,
+   "blue": 1,
+   "green": 1
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  }
+ },
+ {
+  "diff": "xhard4",
+  "ep": 3,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "green_4": "green",
+   "red_1": "red",
+   "green_0": "green",
+   "green_2": "green",
+   "green_6": "green",
+   "blue_0": "blue",
+   "green_3": "green",
+   "green_1": "green",
+   "blue_2": "blue",
+   "blue_1": "blue",
+   "red_0": "red",
+   "green_5": "green"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "green_4": "none",
+   "red_1": "none",
+   "green_0": "none",
+   "green_2": "none",
+   "green_6": "none",
+   "blue_0": "none",
+   "green_3": "none",
+   "green_1": "none",
+   "blue_2": "none",
+   "blue_1": "blue",
+   "red_0": "red",
+   "green_5": "green"
+  },
+  "last_match": 3,
+  "expected_remaining": {
+   "red": 1,
+   "blue": 1,
+   "green": 1
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  }
+ },
+ {
+  "diff": "xhard4",
+  "ep": 6,
+  "n_cubes": 12,
+  "max_component_recomputed": 2,
+  "t0_colour_at_cube": {
+   "green_3": "green",
+   "red_1": "red",
+   "blue_3": "blue",
+   "blue_2": "blue",
+   "blue_1": "blue",
+   "green_1": "green",
+   "green_4": "green",
+   "red_0": "red",
+   "blue_0": "blue",
+   "green_0": "green",
+   "red_2": "red",
+   "green_2": "green"
+  },
+  "t0_match": 12,
+  "last_colour_at_cube": {
+   "green_3": "none",
+   "red_1": "none",
+   "blue_3": "none",
+   "blue_2": "none",
+   "blue_1": "none",
+   "green_1": "none",
+   "green_4": "none",
+   "red_0": "none",
+   "blue_0": "blue",
+   "green_0": "green",
+   "red_2": "none",
+   "green_2": "green"
+  },
+  "last_match": 3,
+  "expected_remaining": {
+   "red": 0,
+   "blue": 1,
+   "green": 2
+  },
+  "observed_remaining_at_original_pos": {
+   "red": 0,
+   "green": 2,
+   "blue": 1
+  }
+ }
+]

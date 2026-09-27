@@ -1,0 +1,94 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+COMBO BinFill [put_in=5,put_in_color=3] s3 seed=7400103 reset=True demo=True  69s
+COMBO BinFill [put_in=7,put_in_color=2] s2 seed=7400402 reset=True demo=True  78s
+COMBO ButtonUnmask [distractor_cubes=2] s1 seed=7800101 reset=True demo=True  31s
+COMBO ButtonUnmaskSwap [swap=7,distractor_cubes=1] s0 seed=7700200 reset=True demo=True  47s
+COMBO ButtonUnmaskSwap [swap=8,distractor_cubes=1] s4 seed=7700404 reset=True demo=True  53s
+COMBO MoveCube [default] s3 seed=8400003 reset=True demo=True  36s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+COMBO PatternLock [length=22] s2 seed=8500202 reset=True demo=True  200s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+COMBO PatternLock [length=25] s1 seed=8500501 reset=True demo=True  172s
+screw plan failed
+screw plan failed
+screw plan failed
+COMBO PickHighlight [highlight=5,spawn=10] s0 seed=8200200 reset=True demo=True  125s
+COMBO PickHighlight [highlight=6,spawn=9] s4 seed=8200404 reset=True demo=True  130s
+COMBO PickHighlight [highlight=7,spawn=9] s3 seed=8200703 reset=True demo=True  171s
+COMBO PickXtimes [num=7] s2 seed=7100102 reset=True demo=True  151s
+COMBO PickXtimes [num=10] s1 seed=7100401 reset=True demo=True  200s
+COMBO PickXtimes [num=13] s0 seed=7100700 reset=True demo=True  320s
+COMBO PickXtimes [num=15] s4 seed=7100904 reset=True demo=True  502s
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+COMBO RouteStick [L=14] s3 seed=8600203 reset=True demo=True  274s
+COMBO StopCube [stop_time=7] s2 seed=7200102 reset=True demo=True  51s
+COMBO StopCube [stop_time=10] s1 seed=7200401 reset=True demo=True  110s
+COMBO StopCube [stop_time=13] s0 seed=7200700 reset=True demo=True  148s
+COMBO StopCube [stop_time=15] s4 seed=7200904 reset=True demo=True  161s
+COMBO SwingXtimes [num=6] s3 seed=7300203 reset=True demo=True  176s
+COMBO SwingXtimes [num=9] s2 seed=7300502 reset=True demo=True  217s
+COMBO VideoPlaceOrder [default] s1 seed=8100001 reset=False demo=False TypeError 7s
+COMBO VideoRepick [swap=8,repeats=6] s0 seed=7900200 reset=True demo=True  371s
+COMBO VideoRepick [swap=9,repeats=5] s4 seed=7900404 reset=True demo=False BinCollisionError 50s
+COMBO VideoRepick [swap=10,repeats=5] s3 seed=7900703 reset=True demo=False BinCollisionError 68s
+COMBO VideoRepick [swap=11,repeats=5] s2 seed=7901002 reset=True demo=False BinCollisionError 51s
+COMBO VideoRepick [swap=12,repeats=5] s1 seed=7901301 reset=True demo=True  344s
+COMBO VideoUnmask [distractor_cubes=2] s0 seed=7600100 reset=True demo=True  109s
+COMBO VideoUnmaskSwap [swap=8,distractor_cubes=2] s4 seed=7500104 reset=True demo=True  184s
+COMBO VideoUnmaskSwap [swap=10,distractor_cubes=1] s3 seed=7500403 reset=True demo=True  167s
+COMBO VideoUnmaskSwap [swap=11,distractor_cubes=2] s2 seed=7500702 reset=True demo=True  176s
+SHARD_DONE shard=8/14

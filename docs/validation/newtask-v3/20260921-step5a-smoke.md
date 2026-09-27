@@ -1,6 +1,6 @@
 # 步 5a 报告：十六环境各一条身份走五路（2026-09-21）
 
-对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 5a，闸门 P1／P5／P7（另带 G4、R1a）。运行目录 `artifacts/train-parity/gl-5a`，A40 上 4 个占位 job 并行，每环境取 `episode 0` 跑 A1／A2／B／C／D 五路。
+对应 [0921-newtask-release-v3-plan.md](../../plans/0921-newtask-release-v3-plan.md) 第五节步 5a，闸门 P1／P5／P7（另带 G4、R1a）。运行目录 `artifacts/train-parity/gl-5a`，A40 上 4 个占位 job 并行，每环境取 `episode 0` 跑 A1／A2／B／C／D 五路。
 
 ## 一、结果
 

@@ -1,0 +1,4 @@
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+P2_DONE task=ButtonUnmaskSwap N=9986 wall=191.0s
+EXIT_CODE=0

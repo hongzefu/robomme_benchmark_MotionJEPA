@@ -1,0 +1,122 @@
+[
+  {
+    "difficulty": "xhard1",
+    "episode": 0,
+    "swing_frames": 366,
+    "eef_z_min": 0.09924213588237762,
+    "eef_z_max": 0.14821481704711914,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 3,
+    "swing_frames": 274,
+    "eef_z_min": 0.09720546007156372,
+    "eef_z_max": 0.1473388671875,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 6,
+    "swing_frames": 409,
+    "eef_z_min": 0.09624005109071732,
+    "eef_z_max": 0.14863260090351105,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 0,
+    "swing_frames": 497,
+    "eef_z_min": 0.09614363312721252,
+    "eef_z_max": 0.14784744381904602,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 3,
+    "swing_frames": 623,
+    "eef_z_min": 0.09950312227010727,
+    "eef_z_max": 0.15088330209255219,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 6,
+    "swing_frames": 429,
+    "eef_z_min": 0.09946367889642715,
+    "eef_z_max": 0.14978787302970886,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 0,
+    "swing_frames": 685,
+    "eef_z_min": 0.09949096292257309,
+    "eef_z_max": 0.1477857381105423,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 3,
+    "swing_frames": 574,
+    "eef_z_min": 0.09952842444181442,
+    "eef_z_max": 0.1511671543121338,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 6,
+    "swing_frames": 667,
+    "eef_z_min": 0.09613348543643951,
+    "eef_z_max": 0.14742127060890198,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 0,
+    "swing_frames": 975,
+    "eef_z_min": 0.09714733809232712,
+    "eef_z_max": 0.14752230048179626,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 3,
+    "swing_frames": 778,
+    "eef_z_min": 0.09959292411804199,
+    "eef_z_max": 0.14873111248016357,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 6,
+    "swing_frames": 862,
+    "eef_z_min": 0.09941580146551132,
+    "eef_z_max": 0.15112687647342682,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "hard",
+    "episode": "示例 4",
+    "swing_frames": 225,
+    "eef_z_min": 0.0994032695889473,
+    "eef_z_max": 0.14839088916778564,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "hard",
+    "episode": "示例 8",
+    "swing_frames": 240,
+    "eef_z_min": 0.09956536442041397,
+    "eef_z_max": 0.14952051639556885,
+    "gripper_open_frames": 0
+  },
+  {
+    "difficulty": "hard",
+    "episode": "示例 12",
+    "swing_frames": 239,
+    "eef_z_min": 0.09945553541183472,
+    "eef_z_max": 0.14610058069229126,
+    "gripper_open_frames": 0
+  }
+]

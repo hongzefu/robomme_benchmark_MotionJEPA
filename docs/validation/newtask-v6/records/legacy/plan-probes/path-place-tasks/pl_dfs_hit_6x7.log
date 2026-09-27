@@ -1,0 +1,22 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+6x7 n>=26: p_single=0.282797 hit20k=1.0000 hit50k=1.0000 | n==26: p=0.036625 hit20k=1.0000
+6x7 n>=27: p_single=0.246172 hit20k=1.0000 hit50k=1.0000 | n==27: p=0.036155 hit20k=1.0000
+6x7 n>=28: p_single=0.210017 hit20k=1.0000 hit50k=1.0000 | n==28: p=0.034515 hit20k=1.0000
+6x7 n>=29: p_single=0.175503 hit20k=1.0000 hit50k=1.0000 | n==29: p=0.032715 hit20k=1.0000
+6x7 n>=30: p_single=0.142788 hit20k=1.0000 hit50k=1.0000 | n==30: p=0.030400 hit20k=1.0000
+6x7 n>=31: p_single=0.112388 hit20k=1.0000 hit50k=1.0000 | n==31: p=0.027735 hit20k=1.0000
+6x7 n>=32: p_single=0.084653 hit20k=1.0000 hit50k=1.0000 | n==32: p=0.024005 hit20k=1.0000
+6x7 n>=33: p_single=0.060648 hit20k=1.0000 hit50k=1.0000 | n==33: p=0.019270 hit20k=1.0000
+6x7 n>=34: p_single=0.041377 hit20k=1.0000 hit50k=1.0000 | n==34: p=0.014937 hit20k=1.0000
+6x7 n>=35: p_single=0.026440 hit20k=1.0000 hit50k=1.0000 | n==35: p=0.011080 hit20k=1.0000
+6x7 n>=36: p_single=0.015360 hit20k=1.0000 hit50k=1.0000 | n==36: p=0.007253 hit20k=1.0000
+6x7 n>=37: p_single=0.008108 hit20k=1.0000 hit50k=1.0000 | n==37: p=0.004358 hit20k=1.0000
+6x7 n>=38: p_single=0.003750 hit20k=1.0000 hit50k=1.0000 | n==38: p=0.002332 hit20k=1.0000
+6x7 n>=39: p_single=0.001417 hit20k=1.0000 hit50k=1.0000 | n==39: p=0.000990 hit20k=1.0000
+6x7 n>=40: p_single=0.000427 hit20k=0.9998 hit50k=1.0000 | n==40: p=0.000330 hit20k=0.9986
+6x7 n>=41: p_single=0.000097 hit20k=0.8577 hit50k=0.9924 | n==41: p=0.000075 hit20k=0.7769
+6x7 n>=42: p_single=0.000023 hit20k=0.3624 hit50k=0.6754 | n==42: p=0.000023 hit20k=0.3624
+6x7: 0.24 ms/attempt, max nodes seen=42

@@ -1,0 +1,5333 @@
+[
+  {
+    "difficulty": "xhard1",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed8700000.h5",
+    "seed": 8700000,
+    "steps": 513,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <60, 151>"
+      },
+      {
+        "t": 115,
+        "text": "press the second button",
+        "grounded": "press the second button at <64, 104>"
+      },
+      {
+        "t": 265,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <96, 185> that hides the red cube"
+      },
+      {
+        "t": 369,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 419,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <128, 192> that hides the blue cube"
+      },
+      {
+        "t": 507,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <128, 192> that hides the blue cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            0,
+            2,
+            3,
+            3
+          ],
+          "range": 3,
+          "undo": 0,
+          "unvisited": 1
+        },
+        "distractor_swap_fallback": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "distractor_swap_pairs": [
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            3,
+            2
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_3",
+            "partner": "bin_2"
+          },
+          "1": {
+            "initiator": "bin_0",
+            "partner": "bin_1"
+          },
+          "2": {
+            "initiator": "bin_2",
+            "partner": "bin_3"
+          },
+          "3": {
+            "initiator": "bin_1",
+            "partner": "bin_0"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 50,
+          "speed_multiplier": 1.0,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard1",
+        "episode": 0,
+        "recovery_mode": null,
+        "seed": 8700000,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            -0.024240485131740576,
+            0.007898036539554606,
+            29.175857305526733
+          ],
+          "1": [
+            -0.010923365056514742,
+            0.21127025425434115,
+            73.60534608364105
+          ],
+          "2": [
+            0.11809614390134812,
+            0.20682740777730946,
+            5.596740245819092
+          ],
+          "3": [
+            0.13991751670837405,
+            0.02725564867258072,
+            50.35766959190369
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 1
+      },
+      "objects": {
+        "color_order": [
+          0,
+          2,
+          1
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.3595497965812683,
+              -0.4132093727588654,
+              76.73040390014648
+            ],
+            "1": [
+              0.3685547769069672,
+              0.12232359051704406,
+              40.654762387275696
+            ],
+            "2": [
+              -0.3556230962276459,
+              -0.15400015711784365,
+              39.02620017528534
+            ],
+            "3": [
+              -0.4139729976654053,
+              0.05122493505477904,
+              60.45571982860565
+            ]
+          },
+          "color_order": [
+            0,
+            1,
+            2
+          ],
+          "cube_bins": [
+            1,
+            2
+          ],
+          "cube_colors": [
+            "yellow",
+            "cyan"
+          ],
+          "cube_count": 2,
+          "cube_names": [
+            "distractor_cube_0_yellow",
+            "distractor_cube_1_cyan"
+          ],
+          "label_perm": [
+            1,
+            3,
+            2,
+            0
+          ],
+          "placed": 4,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3"
+            ],
+            "bins": [
+              [
+                0.3685547769069672,
+                0.12232359051704406,
+                40.654762387275696
+              ],
+              [
+                -0.4139729976654053,
+                0.05122493505477904,
+                60.45571982860565
+              ],
+              [
+                -0.3556230962276459,
+                -0.15400015711784365,
+                39.02620017528534
+              ],
+              [
+                -0.3595497965812683,
+                -0.4132093727588654,
+                76.73040390014648
+              ]
+            ],
+            "color_order": [
+              0,
+              1,
+              2
+            ],
+            "cube_bins": [
+              0,
+              2
+            ],
+            "cube_colors": [
+              "yellow",
+              "cyan"
+            ],
+            "cube_count": 2,
+            "cube_names": [
+              "distractor_cube_0_yellow",
+              "distractor_cube_1_cyan"
+            ]
+          },
+          "requested": 4,
+          "swap_plan_seed": 2029214612088447925,
+          "trials": [
+            2,
+            5,
+            6,
+            2
+          ]
+        },
+        "n_picks": 2,
+        "n_swaps": 4,
+        "selected": [
+          1,
+          2,
+          0
+        ],
+        "swap_initiator_indices": [
+          2,
+          0
+        ],
+        "swap_initiator_third": 3,
+        "swap_plan": {
+          "counts": [
+            2,
+            2,
+            2,
+            2
+          ],
+          "range": 0,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 3005457676027689126,
+        "target_choice": 0
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 26
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "red",
+      "blue"
+    ],
+    "pick_actual": [
+      "red",
+      "blue"
+    ],
+    "pick_language_match": true,
+    "swap_end": 264,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard1-ep0.jpg"
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed8700300.h5",
+    "seed": 8700300,
+    "steps": 523,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <64, 149>"
+      },
+      {
+        "t": 119,
+        "text": "press the second button",
+        "grounded": "press the second button at <63, 105>"
+      },
+      {
+        "t": 268,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <135, 179> that hides the blue cube"
+      },
+      {
+        "t": 381,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 422,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <126, 118> that hides the red cube"
+      },
+      {
+        "t": 512,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <126, 118> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            4,
+            0,
+            0,
+            4
+          ],
+          "range": 4,
+          "undo": 3,
+          "unvisited": 2
+        },
+        "distractor_swap_fallback": [
+          0,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            3,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          },
+          "1": {
+            "initiator": "bin_2",
+            "partner": "bin_1"
+          },
+          "2": {
+            "initiator": "bin_3",
+            "partner": "bin_2"
+          },
+          "3": {
+            "initiator": "bin_1",
+            "partner": "bin_0"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 50,
+          "speed_multiplier": 1.0,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard1",
+        "episode": 3,
+        "recovery_mode": null,
+        "seed": 8700300,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            -0.022320139110088354,
+            -0.018986661732196812,
+            70.19515335559845
+          ],
+          "1": [
+            0.033464317917823796,
+            0.19311896175146104,
+            20.202800631523132
+          ],
+          "2": [
+            0.14150991499423982,
+            0.1598512962460518,
+            10.986108183860779
+          ],
+          "3": [
+            0.11090134143829347,
+            -0.028551416993141177,
+            82.25960075855255
+          ]
+        },
+        "distractor_layout_attempts": 2,
+        "distractor_layout_failures": [
+          "window_0"
+        ],
+        "inner_swap_graph": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 0
+      },
+      "objects": {
+        "color_order": [
+          2,
+          0,
+          1
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              0.32277531623840333,
+              -0.18860955834388732,
+              22.810020446777344
+            ],
+            "1": [
+              -0.07101888656616212,
+              -0.29912912249565127,
+              43.89193654060364
+            ],
+            "2": [
+              0.3594789862632752,
+              0.00859057903289795,
+              40.93488156795502
+            ],
+            "3": [
+              0.0648432075977326,
+              -0.2812196910381317,
+              67.6914131641388
+            ]
+          },
+          "color_order": [
+            2,
+            1,
+            0
+          ],
+          "cube_bins": [
+            3,
+            2
+          ],
+          "cube_colors": [
+            "magenta",
+            "cyan"
+          ],
+          "cube_count": 2,
+          "cube_names": [
+            "distractor_cube_0_magenta",
+            "distractor_cube_1_cyan"
+          ],
+          "label_perm": [
+            1,
+            2,
+            0,
+            3
+          ],
+          "placed": 4,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3"
+            ],
+            "bins": [
+              [
+                -0.07101888656616212,
+                -0.29912912249565127,
+                43.89193654060364
+              ],
+              [
+                0.3594789862632752,
+                0.00859057903289795,
+                40.93488156795502
+              ],
+              [
+                0.32277531623840333,
+                -0.18860955834388732,
+                22.810020446777344
+              ],
+              [
+                0.0648432075977326,
+                -0.2812196910381317,
+                67.6914131641388
+              ]
+            ],
+            "color_order": [
+              2,
+              1,
+              0
+            ],
+            "cube_bins": [
+              3,
+              1
+            ],
+            "cube_colors": [
+              "magenta",
+              "cyan"
+            ],
+            "cube_count": 2,
+            "cube_names": [
+              "distractor_cube_0_magenta",
+              "distractor_cube_1_cyan"
+            ]
+          },
+          "requested": 4,
+          "swap_plan_seed": 4207719013408997268,
+          "trials": [
+            16,
+            5,
+            9,
+            2
+          ]
+        },
+        "n_picks": 2,
+        "n_swaps": 4,
+        "selected": [
+          0,
+          1,
+          2
+        ],
+        "swap_initiator_indices": [
+          0,
+          1
+        ],
+        "swap_initiator_third": 2,
+        "swap_plan": {
+          "counts": [
+            2,
+            2,
+            2,
+            2
+          ],
+          "range": 0,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 3977057791839356687,
+        "target_choice": 2
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 26
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "blue",
+      "red"
+    ],
+    "pick_actual": [
+      "blue",
+      "red"
+    ],
+    "pick_language_match": true,
+    "swap_end": 264,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard1-ep3.jpg"
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed8700600.h5",
+    "seed": 8700600,
+    "steps": 515,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <61, 153>"
+      },
+      {
+        "t": 114,
+        "text": "press the second button",
+        "grounded": "press the second button at <60, 103>"
+      },
+      {
+        "t": 266,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <95, 114> that hides the red cube"
+      },
+      {
+        "t": 369,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 417,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <133, 165> that hides the green cube"
+      },
+      {
+        "t": 509,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <133, 165> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "range": 4,
+          "undo": 3,
+          "unvisited": 2
+        },
+        "distractor_swap_fallback": [
+          0,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            3,
+            2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_3",
+            "partner": "bin_2"
+          },
+          "1": {
+            "initiator": "bin_2",
+            "partner": "bin_0"
+          },
+          "2": {
+            "initiator": "bin_3",
+            "partner": "bin_1"
+          },
+          "3": {
+            "initiator": "bin_0",
+            "partner": "bin_1"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 50,
+          "speed_multiplier": 1.0,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard1",
+        "episode": 6,
+        "recovery_mode": null,
+        "seed": 8700600,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            -0.01483082711696625,
+            -0.04911219507455826,
+            40.559377670288086
+          ],
+          "1": [
+            0.025209686458110822,
+            0.14380819201469422,
+            21.519615054130554
+          ],
+          "2": [
+            0.13730903774499895,
+            0.11838414102792741,
+            8.937581777572632
+          ],
+          "3": [
+            0.13590518534183504,
+            -0.07388958662748338,
+            10.45475721359253
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 0
+      },
+      "objects": {
+        "color_order": [
+          0,
+          1,
+          2
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.3684084892272949,
+              -0.13636216521263123,
+              68.3690357208252
+            ],
+            "1": [
+              -0.14979944229125974,
+              0.3529851436614991,
+              15.638378262519836
+            ],
+            "2": [
+              -0.0033017992973327637,
+              0.31690927147865294,
+              28.33375632762909
+            ],
+            "3": [
+              -0.35831635594367983,
+              0.21002313494682318,
+              29.389843940734863
+            ]
+          },
+          "color_order": [
+            2,
+            0,
+            1
+          ],
+          "cube_bins": [
+            0,
+            2
+          ],
+          "cube_colors": [
+            "magenta",
+            "yellow"
+          ],
+          "cube_count": 2,
+          "cube_names": [
+            "distractor_cube_0_magenta",
+            "distractor_cube_1_yellow"
+          ],
+          "label_perm": [
+            0,
+            3,
+            2,
+            1
+          ],
+          "placed": 4,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3"
+            ],
+            "bins": [
+              [
+                -0.3684084892272949,
+                -0.13636216521263123,
+                68.3690357208252
+              ],
+              [
+                -0.35831635594367983,
+                0.21002313494682318,
+                29.389843940734863
+              ],
+              [
+                -0.0033017992973327637,
+                0.31690927147865294,
+                28.33375632762909
+              ],
+              [
+                -0.14979944229125974,
+                0.3529851436614991,
+                15.638378262519836
+              ]
+            ],
+            "color_order": [
+              2,
+              0,
+              1
+            ],
+            "cube_bins": [
+              0,
+              2
+            ],
+            "cube_colors": [
+              "magenta",
+              "yellow"
+            ],
+            "cube_count": 2,
+            "cube_names": [
+              "distractor_cube_0_magenta",
+              "distractor_cube_1_yellow"
+            ]
+          },
+          "requested": 4,
+          "swap_plan_seed": 3037577984526330869,
+          "trials": [
+            2,
+            1,
+            3,
+            3
+          ]
+        },
+        "n_picks": 2,
+        "n_swaps": 4,
+        "selected": [
+          2,
+          0,
+          1
+        ],
+        "swap_initiator_indices": [
+          0,
+          2
+        ],
+        "swap_initiator_third": 3,
+        "swap_plan": {
+          "counts": [
+            2,
+            2,
+            2,
+            2
+          ],
+          "range": 0,
+          "tries": 3,
+          "undo": 0
+        },
+        "swap_plan_seed": 1123501938791813852,
+        "target_choice": 1
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 26
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "red",
+      "green"
+    ],
+    "pick_actual": [
+      "red",
+      "green"
+    ],
+    "pick_language_match": true,
+    "swap_end": 264,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard1-ep6.jpg"
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed10700001.h5",
+    "seed": 10700001,
+    "steps": 610,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <64, 153>"
+      },
+      {
+        "t": 118,
+        "text": "press the second button",
+        "grounded": "press the second button at <61, 101>"
+      },
+      {
+        "t": 229,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <100, 152> that hides the green cube"
+      },
+      {
+        "t": 330,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 380,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <104, 109> that hides the blue cube"
+      },
+      {
+        "t": 466,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 516,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <134, 110> that hides the red cube"
+      },
+      {
+        "t": 604,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <134, 110> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            5,
+            0,
+            0,
+            5,
+            0,
+            0
+          ],
+          "range": 5,
+          "undo": 4,
+          "unvisited": 4
+        },
+        "distractor_swap_fallback": [
+          0,
+          2,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            0
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_1",
+            "partner": "bin_0"
+          },
+          "1": {
+            "initiator": "bin_1",
+            "partner": "bin_3"
+          },
+          "2": {
+            "initiator": "bin_0",
+            "partner": "bin_2"
+          },
+          "3": {
+            "initiator": "bin_3",
+            "partner": "bin_2"
+          },
+          "4": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard2",
+        "episode": 0,
+        "recovery_mode": null,
+        "seed": 10700001,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            0.025893786549568185,
+            -0.061613846421241764,
+            21.326356530189514
+          ],
+          "1": [
+            0.006167134940624236,
+            0.08997845351696014,
+            76.23762309551239
+          ],
+          "2": [
+            0.07310199826955795,
+            0.19509222477674487,
+            11.166309714317322
+          ],
+          "3": [
+            0.13826373398303987,
+            -0.05424537152051927,
+            8.413907289505005
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 0
+      },
+      "objects": {
+        "color_order": [
+          1,
+          2,
+          0
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.1669322669506073,
+              0.43333103656768795,
+              24.562076926231384
+            ],
+            "1": [
+              0.15451471209526063,
+              -0.2688191413879395,
+              11.347299814224243
+            ],
+            "2": [
+              0.01085768938064574,
+              0.3761602342128754,
+              16.187260150909424
+            ],
+            "3": [
+              0.3089244961738587,
+              -0.08085996508598325,
+              26.029416918754578
+            ],
+            "4": [
+              -0.24415708780288697,
+              0.3535597264766693,
+              77.72327721118927
+            ],
+            "5": [
+              -0.3373082220554352,
+              -0.025685906410217285,
+              12.209222316741943
+            ]
+          },
+          "color_order": [
+            2,
+            0,
+            1
+          ],
+          "cube_bins": [
+            0,
+            5,
+            3
+          ],
+          "cube_colors": [
+            "magenta",
+            "yellow",
+            "cyan"
+          ],
+          "cube_count": 3,
+          "cube_names": [
+            "distractor_cube_0_magenta",
+            "distractor_cube_1_yellow",
+            "distractor_cube_2_cyan"
+          ],
+          "label_perm": [
+            4,
+            3,
+            1,
+            0,
+            5,
+            2
+          ],
+          "placed": 6,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5"
+            ],
+            "bins": [
+              [
+                -0.24415708780288697,
+                0.3535597264766693,
+                77.72327721118927
+              ],
+              [
+                0.3089244961738587,
+                -0.08085996508598325,
+                26.029416918754578
+              ],
+              [
+                0.15451471209526063,
+                -0.2688191413879395,
+                11.347299814224243
+              ],
+              [
+                -0.1669322669506073,
+                0.43333103656768795,
+                24.562076926231384
+              ],
+              [
+                -0.3373082220554352,
+                -0.025685906410217285,
+                12.209222316741943
+              ],
+              [
+                0.01085768938064574,
+                0.3761602342128754,
+                16.187260150909424
+              ]
+            ],
+            "color_order": [
+              2,
+              0,
+              1
+            ],
+            "cube_bins": [
+              3,
+              4,
+              1
+            ],
+            "cube_colors": [
+              "magenta",
+              "yellow",
+              "cyan"
+            ],
+            "cube_count": 3,
+            "cube_names": [
+              "distractor_cube_0_magenta",
+              "distractor_cube_1_yellow",
+              "distractor_cube_2_cyan"
+            ]
+          },
+          "requested": 6,
+          "swap_plan_seed": 4460000951101115114,
+          "trials": [
+            1,
+            3,
+            5,
+            4,
+            1,
+            1
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 5,
+        "selected": [
+          0,
+          2,
+          1
+        ],
+        "swap_initiator_indices": [
+          1,
+          0
+        ],
+        "swap_initiator_third": 3,
+        "swap_plan": {
+          "counts": [
+            3,
+            2,
+            2,
+            3
+          ],
+          "range": 1,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 3544145194940830363,
+        "target_choice": 2
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 29
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "green",
+      "blue",
+      "red"
+    ],
+    "pick_actual": [
+      "green",
+      "blue",
+      "red"
+    ],
+    "pick_language_match": true,
+    "swap_end": 229,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard2-ep0.jpg"
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed10700300.h5",
+    "seed": 10700300,
+    "steps": 621,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <67, 156>"
+      },
+      {
+        "t": 109,
+        "text": "press the second button",
+        "grounded": "press the second button at <60, 100>"
+      },
+      {
+        "t": 234,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <90, 159> that hides the blue cube"
+      },
+      {
+        "t": 330,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 378,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <130, 126> that hides the red cube"
+      },
+      {
+        "t": 490,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 531,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <111, 114> that hides the green cube"
+      },
+      {
+        "t": 614,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <111, 114> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            2,
+            2,
+            0,
+            2,
+            2,
+            2
+          ],
+          "range": 2,
+          "undo": 0,
+          "unvisited": 1
+        },
+        "distractor_swap_fallback": [
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "distractor_swap_pairs": [
+          [
+            0,
+            5
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            4,
+            5
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_2",
+            "partner": "bin_3"
+          },
+          "1": {
+            "initiator": "bin_1",
+            "partner": "bin_3"
+          },
+          "2": {
+            "initiator": "bin_0",
+            "partner": "bin_2"
+          },
+          "3": {
+            "initiator": "bin_0",
+            "partner": "bin_1"
+          },
+          "4": {
+            "initiator": "bin_0",
+            "partner": "bin_3"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard2",
+        "episode": 3,
+        "recovery_mode": null,
+        "seed": 10700300,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            0.023269338309764867,
+            -0.0602685222029686,
+            48.52206230163574
+          ],
+          "1": [
+            -0.03909061014652253,
+            0.1209521558880806,
+            64.6368008852005
+          ],
+          "2": [
+            0.1379332682490349,
+            0.19068041652441026,
+            25.202781558036804
+          ],
+          "3": [
+            0.12697084128856662,
+            -0.0029400956630706715,
+            62.10141062736511
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 1
+      },
+      "objects": {
+        "color_order": [
+          2,
+          0,
+          1
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.34748908281326296,
+              -0.3577981531620026,
+              66.9034606218338
+            ],
+            "1": [
+              0.27678782343864444,
+              0.023760026693344094,
+              33.14173400402069
+            ],
+            "2": [
+              -0.4259522259235382,
+              -0.24467110633850098,
+              85.5048805475235
+            ],
+            "3": [
+              -0.08646181225776672,
+              -0.27526937127113343,
+              49.544472098350525
+            ],
+            "4": [
+              -0.02063584327697754,
+              -0.35749887228012084,
+              6.004559397697449
+            ],
+            "5": [
+              -0.4175519227981567,
+              0.3362109839916229,
+              1.6626369953155518
+            ]
+          },
+          "color_order": [
+            2,
+            1,
+            0
+          ],
+          "cube_bins": [
+            2,
+            1,
+            0
+          ],
+          "cube_colors": [
+            "magenta",
+            "cyan",
+            "yellow"
+          ],
+          "cube_count": 3,
+          "cube_names": [
+            "distractor_cube_0_magenta",
+            "distractor_cube_1_cyan",
+            "distractor_cube_2_yellow"
+          ],
+          "label_perm": [
+            0,
+            2,
+            1,
+            5,
+            4,
+            3
+          ],
+          "placed": 6,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5"
+            ],
+            "bins": [
+              [
+                -0.34748908281326296,
+                -0.3577981531620026,
+                66.9034606218338
+              ],
+              [
+                -0.4259522259235382,
+                -0.24467110633850098,
+                85.5048805475235
+              ],
+              [
+                0.27678782343864444,
+                0.023760026693344094,
+                33.14173400402069
+              ],
+              [
+                -0.4175519227981567,
+                0.3362109839916229,
+                1.6626369953155518
+              ],
+              [
+                -0.02063584327697754,
+                -0.35749887228012084,
+                6.004559397697449
+              ],
+              [
+                -0.08646181225776672,
+                -0.27526937127113343,
+                49.544472098350525
+              ]
+            ],
+            "color_order": [
+              2,
+              1,
+              0
+            ],
+            "cube_bins": [
+              1,
+              2,
+              0
+            ],
+            "cube_colors": [
+              "magenta",
+              "cyan",
+              "yellow"
+            ],
+            "cube_count": 3,
+            "cube_names": [
+              "distractor_cube_0_magenta",
+              "distractor_cube_1_cyan",
+              "distractor_cube_2_yellow"
+            ]
+          },
+          "requested": 6,
+          "swap_plan_seed": 4526336894800858281,
+          "trials": [
+            1,
+            1,
+            2,
+            6,
+            2,
+            3
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 5,
+        "selected": [
+          0,
+          1,
+          2
+        ],
+        "swap_initiator_indices": [
+          1,
+          2
+        ],
+        "swap_initiator_third": 0,
+        "swap_plan": {
+          "counts": [
+            3,
+            2,
+            2,
+            3
+          ],
+          "range": 1,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 3250645690561840895,
+        "target_choice": 2
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 29
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "pick_actual": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "pick_language_match": true,
+    "swap_end": 229,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard2-ep3.jpg"
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed10700600.h5",
+    "seed": 10700600,
+    "steps": 632,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <62, 148>"
+      },
+      {
+        "t": 118,
+        "text": "press the second button",
+        "grounded": "press the second button at <64, 102>"
+      },
+      {
+        "t": 233,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <105, 166> that hides the blue cube"
+      },
+      {
+        "t": 338,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 389,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <128, 93> that hides the red cube"
+      },
+      {
+        "t": 489,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 530,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <105, 130> that hides the green cube"
+      },
+      {
+        "t": 625,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <105, 130> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            0,
+            0,
+            0,
+            0,
+            5,
+            5
+          ],
+          "range": 5,
+          "undo": 4,
+          "unvisited": 4
+        },
+        "distractor_swap_fallback": [
+          0,
+          2,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            4,
+            5
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            4,
+            5
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            0,
+            1
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_0",
+            "partner": "bin_1"
+          },
+          "1": {
+            "initiator": "bin_3",
+            "partner": "bin_1"
+          },
+          "2": {
+            "initiator": "bin_0",
+            "partner": "bin_2"
+          },
+          "3": {
+            "initiator": "bin_3",
+            "partner": "bin_2"
+          },
+          "4": {
+            "initiator": "bin_0",
+            "partner": "bin_3"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard2",
+        "episode": 6,
+        "recovery_mode": null,
+        "seed": 10700600,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            0.028003747463226328,
+            0.011679452061653148,
+            32.94751524925232
+          ],
+          "1": [
+            0.031160694062709812,
+            0.13595943063497543,
+            73.2346111536026
+          ],
+          "2": [
+            0.13502535015344622,
+            0.15662544041872026,
+            72.77533113956451
+          ],
+          "3": [
+            0.11835084676742555,
+            -0.10784689068794252,
+            4.394407868385315
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 0
+      },
+      "objects": {
+        "color_order": [
+          2,
+          0,
+          1
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.31171576380729676,
+              -0.348824554681778,
+              39.37770903110504
+            ],
+            "1": [
+              -0.18147069811820982,
+              0.4310569524765015,
+              82.90217757225037
+            ],
+            "2": [
+              0.29358263611793517,
+              -0.15545032024383543,
+              77.19753205776215
+            ],
+            "3": [
+              -0.2023784101009369,
+              -0.34163859486579895,
+              54.3808650970459
+            ],
+            "4": [
+              0.206394374370575,
+              0.28451521396636964,
+              25.34548580646515
+            ],
+            "5": [
+              -0.37860512137413027,
+              -0.010366201400756836,
+              14.280885457992554
+            ]
+          },
+          "color_order": [
+            0,
+            2,
+            1
+          ],
+          "cube_bins": [
+            1,
+            2,
+            3
+          ],
+          "cube_colors": [
+            "yellow",
+            "magenta",
+            "cyan"
+          ],
+          "cube_count": 3,
+          "cube_names": [
+            "distractor_cube_0_yellow",
+            "distractor_cube_1_magenta",
+            "distractor_cube_2_cyan"
+          ],
+          "label_perm": [
+            4,
+            2,
+            1,
+            5,
+            3,
+            0
+          ],
+          "placed": 6,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5"
+            ],
+            "bins": [
+              [
+                0.206394374370575,
+                0.28451521396636964,
+                25.34548580646515
+              ],
+              [
+                0.29358263611793517,
+                -0.15545032024383543,
+                77.19753205776215
+              ],
+              [
+                -0.18147069811820982,
+                0.4310569524765015,
+                82.90217757225037
+              ],
+              [
+                -0.37860512137413027,
+                -0.010366201400756836,
+                14.280885457992554
+              ],
+              [
+                -0.2023784101009369,
+                -0.34163859486579895,
+                54.3808650970459
+              ],
+              [
+                -0.31171576380729676,
+                -0.348824554681778,
+                39.37770903110504
+              ]
+            ],
+            "color_order": [
+              0,
+              2,
+              1
+            ],
+            "cube_bins": [
+              2,
+              1,
+              4
+            ],
+            "cube_colors": [
+              "yellow",
+              "magenta",
+              "cyan"
+            ],
+            "cube_count": 3,
+            "cube_names": [
+              "distractor_cube_0_yellow",
+              "distractor_cube_1_magenta",
+              "distractor_cube_2_cyan"
+            ]
+          },
+          "requested": 6,
+          "swap_plan_seed": 831697187083450554,
+          "trials": [
+            2,
+            1,
+            1,
+            6,
+            1,
+            2
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 5,
+        "selected": [
+          0,
+          1,
+          2
+        ],
+        "swap_initiator_indices": [
+          1,
+          0
+        ],
+        "swap_initiator_third": 3,
+        "swap_plan": {
+          "counts": [
+            3,
+            2,
+            2,
+            3
+          ],
+          "range": 1,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 2538016825345737609,
+        "target_choice": 1
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 29
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "pick_actual": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "pick_language_match": true,
+    "swap_end": 229,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard2-ep6.jpg"
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed12700000.h5",
+    "seed": 12700000,
+    "steps": 681,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <65, 155>"
+      },
+      {
+        "t": 104,
+        "text": "press the second button",
+        "grounded": "press the second button at <65, 109>"
+      },
+      {
+        "t": 263,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <113, 196> that hides the blue cube"
+      },
+      {
+        "t": 380,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 427,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <101, 160> that hides the green cube"
+      },
+      {
+        "t": 524,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 573,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <134, 134> that hides the red cube"
+      },
+      {
+        "t": 669,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <134, 134> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            0,
+            0,
+            6,
+            0,
+            0,
+            6,
+            0,
+            0
+          ],
+          "range": 6,
+          "undo": 5,
+          "unvisited": 6
+        },
+        "distractor_swap_fallback": [
+          0,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            2,
+            5
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            2,
+            5
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            0
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_1",
+            "partner": "bin_2"
+          },
+          "1": {
+            "initiator": "bin_0",
+            "partner": "bin_3"
+          },
+          "2": {
+            "initiator": "bin_1",
+            "partner": "bin_2"
+          },
+          "3": {
+            "initiator": "bin_0",
+            "partner": "bin_3"
+          },
+          "4": {
+            "initiator": "bin_2",
+            "partner": "bin_1"
+          },
+          "5": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard3",
+        "episode": 0,
+        "recovery_mode": null,
+        "seed": 12700000,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            0.02288481414318086,
+            -0.06823487401008606,
+            38.45115602016449
+          ],
+          "1": [
+            0.013211126029491427,
+            0.11549912095069886,
+            63.24377954006195
+          ],
+          "2": [
+            0.062367994785308835,
+            0.2333273079991341,
+            5.815495848655701
+          ],
+          "3": [
+            0.13859119027853012,
+            0.023751538097858432,
+            15.801993012428284
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 0
+      },
+      "objects": {
+        "color_order": [
+          2,
+          1,
+          0
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.000346970558166515,
+              0.3687501490116119,
+              65.16817331314087
+            ],
+            "1": [
+              0.2919859170913696,
+              0.012215209007263195,
+              10.230240225791931
+            ],
+            "2": [
+              -0.33776929378509524,
+              -0.31130415201187134,
+              21.67927622795105
+            ],
+            "3": [
+              -0.10893759727478025,
+              0.34481899738311766,
+              74.46264445781708
+            ],
+            "4": [
+              -0.06681640148162843,
+              -0.37670493721961973,
+              34.61918592453003
+            ],
+            "5": [
+              0.0556520819664002,
+              -0.323751050233841,
+              7.04447329044342
+            ],
+            "6": [
+              -0.36303972601890566,
+              0.08342426419258114,
+              48.85991334915161
+            ],
+            "7": [
+              -0.20166826844215394,
+              -0.4113783895969391,
+              20.18692195415497
+            ]
+          },
+          "color_order": [
+            0,
+            1,
+            2
+          ],
+          "cube_bins": [
+            4,
+            3,
+            6,
+            7
+          ],
+          "cube_colors": [
+            "yellow",
+            "cyan",
+            "magenta",
+            "yellow"
+          ],
+          "cube_count": 4,
+          "cube_names": [
+            "distractor_cube_0_yellow",
+            "distractor_cube_1_cyan",
+            "distractor_cube_2_magenta",
+            "distractor_cube_3_yellow"
+          ],
+          "label_perm": [
+            0,
+            4,
+            2,
+            1,
+            5,
+            7,
+            6,
+            3
+          ],
+          "placed": 8,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5",
+              "distractor_bin_6",
+              "distractor_bin_7"
+            ],
+            "bins": [
+              [
+                -0.000346970558166515,
+                0.3687501490116119,
+                65.16817331314087
+              ],
+              [
+                -0.06681640148162843,
+                -0.37670493721961973,
+                34.61918592453003
+              ],
+              [
+                -0.33776929378509524,
+                -0.31130415201187134,
+                21.67927622795105
+              ],
+              [
+                0.2919859170913696,
+                0.012215209007263195,
+                10.230240225791931
+              ],
+              [
+                0.0556520819664002,
+                -0.323751050233841,
+                7.04447329044342
+              ],
+              [
+                -0.20166826844215394,
+                -0.4113783895969391,
+                20.18692195415497
+              ],
+              [
+                -0.36303972601890566,
+                0.08342426419258114,
+                48.85991334915161
+              ],
+              [
+                -0.10893759727478025,
+                0.34481899738311766,
+                74.46264445781708
+              ]
+            ],
+            "color_order": [
+              0,
+              1,
+              2
+            ],
+            "cube_bins": [
+              1,
+              7,
+              6,
+              5
+            ],
+            "cube_colors": [
+              "yellow",
+              "cyan",
+              "magenta",
+              "yellow"
+            ],
+            "cube_count": 4,
+            "cube_names": [
+              "distractor_cube_0_yellow",
+              "distractor_cube_1_cyan",
+              "distractor_cube_2_magenta",
+              "distractor_cube_3_yellow"
+            ]
+          },
+          "requested": 8,
+          "swap_plan_seed": 4053127554130720008,
+          "trials": [
+            11,
+            4,
+            2,
+            4,
+            2,
+            1,
+            11,
+            9
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 6,
+        "selected": [
+          1,
+          2,
+          0
+        ],
+        "swap_initiator_indices": [
+          0,
+          1
+        ],
+        "swap_initiator_third": 2,
+        "swap_plan": {
+          "counts": [
+            3,
+            3,
+            3,
+            3
+          ],
+          "range": 0,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 1463958130498602253,
+        "target_choice": 0
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 32
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "blue",
+      "green",
+      "red"
+    ],
+    "pick_actual": [
+      "blue",
+      "green",
+      "red"
+    ],
+    "pick_language_match": true,
+    "swap_end": 262,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard3-ep0.jpg"
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed12700300.h5",
+    "seed": 12700300,
+    "steps": 656,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <62, 145>"
+      },
+      {
+        "t": 119,
+        "text": "press the second button",
+        "grounded": "press the second button at <62, 104>"
+      },
+      {
+        "t": 262,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <121, 112> that hides the blue cube"
+      },
+      {
+        "t": 376,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 423,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <131, 183> that hides the red cube"
+      },
+      {
+        "t": 512,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 553,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <91, 105> that hides the green cube"
+      },
+      {
+        "t": 649,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <91, 105> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            3,
+            3,
+            0,
+            0,
+            0,
+            0,
+            3,
+            3
+          ],
+          "range": 3,
+          "undo": 0,
+          "unvisited": 4
+        },
+        "distractor_swap_fallback": [
+          0,
+          0,
+          2,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            1,
+            7
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            0,
+            6
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_1",
+            "partner": "bin_3"
+          },
+          "1": {
+            "initiator": "bin_3",
+            "partner": "bin_2"
+          },
+          "2": {
+            "initiator": "bin_0",
+            "partner": "bin_1"
+          },
+          "3": {
+            "initiator": "bin_2",
+            "partner": "bin_0"
+          },
+          "4": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          },
+          "5": {
+            "initiator": "bin_1",
+            "partner": "bin_2"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard3",
+        "episode": 3,
+        "recovery_mode": null,
+        "seed": 12700300,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            -0.036083958148956305,
+            -0.08284437686204911,
+            6.794518232345581
+          ],
+          "1": [
+            0.038467955291271214,
+            0.12280949175357819,
+            67.69752323627472
+          ],
+          "2": [
+            0.13076172560453417,
+            0.17537484109401705,
+            54.76660430431366
+          ],
+          "3": [
+            0.09462301492691041,
+            -0.05066402167081833,
+            66.18932247161865
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 1
+      },
+      "objects": {
+        "color_order": [
+          2,
+          0,
+          1
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.3385006248950958,
+              0.26416985392570497,
+              30.490660071372986
+            ],
+            "1": [
+              -0.4156486809253693,
+              -0.43082740902900696,
+              30.33078968524933
+            ],
+            "2": [
+              0.034381091594696045,
+              0.32413841485977174,
+              53.40758800506592
+            ],
+            "3": [
+              0.30622442364692687,
+              -0.2209256708621979,
+              50.66391885280609
+            ],
+            "4": [
+              -0.2924806773662567,
+              -0.2252549707889557,
+              83.5027027130127
+            ],
+            "5": [
+              -0.3225632071495056,
+              -0.06583589315414429,
+              50.855830907821655
+            ],
+            "6": [
+              -0.19523938894271853,
+              -0.33913335800170896,
+              46.46742045879364
+            ],
+            "7": [
+              0.0702152967453003,
+              -0.3468163847923279,
+              47.70530819892883
+            ]
+          },
+          "color_order": [
+            1,
+            2,
+            0
+          ],
+          "cube_bins": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "cube_colors": [
+            "cyan",
+            "magenta",
+            "yellow",
+            "cyan"
+          ],
+          "cube_count": 4,
+          "cube_names": [
+            "distractor_cube_0_cyan",
+            "distractor_cube_1_magenta",
+            "distractor_cube_2_yellow",
+            "distractor_cube_3_cyan"
+          ],
+          "label_perm": [
+            2,
+            1,
+            3,
+            5,
+            7,
+            4,
+            0,
+            6
+          ],
+          "placed": 8,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5",
+              "distractor_bin_6",
+              "distractor_bin_7"
+            ],
+            "bins": [
+              [
+                0.034381091594696045,
+                0.32413841485977174,
+                53.40758800506592
+              ],
+              [
+                -0.4156486809253693,
+                -0.43082740902900696,
+                30.33078968524933
+              ],
+              [
+                0.30622442364692687,
+                -0.2209256708621979,
+                50.66391885280609
+              ],
+              [
+                -0.3225632071495056,
+                -0.06583589315414429,
+                50.855830907821655
+              ],
+              [
+                0.0702152967453003,
+                -0.3468163847923279,
+                47.70530819892883
+              ],
+              [
+                -0.2924806773662567,
+                -0.2252549707889557,
+                83.5027027130127
+              ],
+              [
+                -0.3385006248950958,
+                0.26416985392570497,
+                30.490660071372986
+              ],
+              [
+                -0.19523938894271853,
+                -0.33913335800170896,
+                46.46742045879364
+              ]
+            ],
+            "color_order": [
+              1,
+              2,
+              0
+            ],
+            "cube_bins": [
+              1,
+              2,
+              5,
+              3
+            ],
+            "cube_colors": [
+              "cyan",
+              "magenta",
+              "yellow",
+              "cyan"
+            ],
+            "cube_count": 4,
+            "cube_names": [
+              "distractor_cube_0_cyan",
+              "distractor_cube_1_magenta",
+              "distractor_cube_2_yellow",
+              "distractor_cube_3_cyan"
+            ]
+          },
+          "requested": 8,
+          "swap_plan_seed": 4018967932870309029,
+          "trials": [
+            1,
+            1,
+            3,
+            8,
+            2,
+            1,
+            7,
+            2
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 6,
+        "selected": [
+          1,
+          0,
+          2
+        ],
+        "swap_initiator_indices": [
+          0,
+          2
+        ],
+        "swap_initiator_third": 3,
+        "swap_plan": {
+          "counts": [
+            3,
+            3,
+            3,
+            3
+          ],
+          "range": 0,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 1997063209972440048,
+        "target_choice": 0
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 32
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "pick_actual": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "pick_language_match": true,
+    "swap_end": 262,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard3-ep3.jpg"
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed12700600.h5",
+    "seed": 12700600,
+    "steps": 689,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <67, 147>"
+      },
+      {
+        "t": 110,
+        "text": "press the second button",
+        "grounded": "press the second button at <65, 109>"
+      },
+      {
+        "t": 295,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <105, 114> that hides the blue cube"
+      },
+      {
+        "t": 398,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 448,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <127, 177> that hides the red cube"
+      },
+      {
+        "t": 555,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 596,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <126, 95> that hides the green cube"
+      },
+      {
+        "t": 677,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <126, 95> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            0,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            3
+          ],
+          "range": 3,
+          "undo": 0,
+          "unvisited": 1
+        },
+        "distractor_swap_fallback": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          3
+        ],
+        "distractor_swap_pairs": [
+          [
+            4,
+            6
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            0
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_0",
+            "partner": "bin_1"
+          },
+          "1": {
+            "initiator": "bin_0",
+            "partner": "bin_2"
+          },
+          "2": {
+            "initiator": "bin_3",
+            "partner": "bin_1"
+          },
+          "3": {
+            "initiator": "bin_3",
+            "partner": "bin_2"
+          },
+          "4": {
+            "initiator": "bin_0",
+            "partner": "bin_3"
+          },
+          "5": {
+            "initiator": "bin_1",
+            "partner": "bin_2"
+          },
+          "6": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard3",
+        "episode": 6,
+        "recovery_mode": null,
+        "seed": 12700600,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            0.029759744703769686,
+            -0.043775962591171266,
+            45.741437673568726
+          ],
+          "1": [
+            -0.006769422888755802,
+            0.14094014286994935,
+            43.16248834133148
+          ],
+          "2": [
+            0.11415341973304749,
+            0.15840933442115784,
+            18.692877888679504
+          ],
+          "3": [
+            0.11299283534288407,
+            -0.10247098863124848,
+            41.30659282207489
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 0
+      },
+      "objects": {
+        "color_order": [
+          2,
+          0,
+          1
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.010492372512817372,
+              -0.2848255455493927,
+              32.75948703289032
+            ],
+            "1": [
+              -0.2560532748699188,
+              0.4137134671211243,
+              80.79581201076508
+            ],
+            "2": [
+              -0.4358997344970703,
+              -0.2622856557369232,
+              40.82824766635895
+            ],
+            "3": [
+              -0.1438817918300629,
+              0.30891655683517455,
+              57.765743136405945
+            ],
+            "4": [
+              0.017862224578857444,
+              0.3632870256900787,
+              86.79805934429169
+            ],
+            "5": [
+              -0.4280425250530243,
+              0.381601631641388,
+              22.712613344192505
+            ],
+            "6": [
+              -0.1296794950962067,
+              -0.3553983807563782,
+              49.91662859916687
+            ],
+            "7": [
+              0.36858165264129644,
+              0.0361128866672516,
+              73.28431785106659
+            ]
+          },
+          "color_order": [
+            2,
+            1,
+            0
+          ],
+          "cube_bins": [
+            6,
+            1,
+            0,
+            3
+          ],
+          "cube_colors": [
+            "magenta",
+            "cyan",
+            "yellow",
+            "magenta"
+          ],
+          "cube_count": 4,
+          "cube_names": [
+            "distractor_cube_0_magenta",
+            "distractor_cube_1_cyan",
+            "distractor_cube_2_yellow",
+            "distractor_cube_3_magenta"
+          ],
+          "label_perm": [
+            7,
+            6,
+            0,
+            2,
+            4,
+            1,
+            3,
+            5
+          ],
+          "placed": 8,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5",
+              "distractor_bin_6",
+              "distractor_bin_7"
+            ],
+            "bins": [
+              [
+                0.36858165264129644,
+                0.0361128866672516,
+                73.28431785106659
+              ],
+              [
+                -0.1296794950962067,
+                -0.3553983807563782,
+                49.91662859916687
+              ],
+              [
+                -0.010492372512817372,
+                -0.2848255455493927,
+                32.75948703289032
+              ],
+              [
+                -0.4358997344970703,
+                -0.2622856557369232,
+                40.82824766635895
+              ],
+              [
+                0.017862224578857444,
+                0.3632870256900787,
+                86.79805934429169
+              ],
+              [
+                -0.2560532748699188,
+                0.4137134671211243,
+                80.79581201076508
+              ],
+              [
+                -0.1438817918300629,
+                0.30891655683517455,
+                57.765743136405945
+              ],
+              [
+                -0.4280425250530243,
+                0.381601631641388,
+                22.712613344192505
+              ]
+            ],
+            "color_order": [
+              2,
+              1,
+              0
+            ],
+            "cube_bins": [
+              1,
+              5,
+              2,
+              6
+            ],
+            "cube_colors": [
+              "magenta",
+              "cyan",
+              "yellow",
+              "magenta"
+            ],
+            "cube_count": 4,
+            "cube_names": [
+              "distractor_cube_0_magenta",
+              "distractor_cube_1_cyan",
+              "distractor_cube_2_yellow",
+              "distractor_cube_3_magenta"
+            ]
+          },
+          "requested": 8,
+          "swap_plan_seed": 840568602742190029,
+          "trials": [
+            4,
+            3,
+            10,
+            1,
+            1,
+            2,
+            1,
+            1
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 7,
+        "selected": [
+          1,
+          0,
+          2
+        ],
+        "swap_initiator_indices": [
+          2,
+          0
+        ],
+        "swap_initiator_third": 3,
+        "swap_plan": {
+          "counts": [
+            4,
+            3,
+            3,
+            4
+          ],
+          "range": 1,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 629716385727398014,
+        "target_choice": 0
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 33
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "pick_actual": [
+      "blue",
+      "red",
+      "green"
+    ],
+    "pick_language_match": true,
+    "swap_end": 295,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard3-ep6.jpg"
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed6700000.h5",
+    "seed": 6700000,
+    "steps": 717,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <60, 155>"
+      },
+      {
+        "t": 113,
+        "text": "press the second button",
+        "grounded": "press the second button at <65, 105>"
+      },
+      {
+        "t": 333,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <95, 110> that hides the blue cube"
+      },
+      {
+        "t": 428,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 476,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <123, 106> that hides the green cube"
+      },
+      {
+        "t": 583,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 630,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <131, 190> that hides the red cube"
+      },
+      {
+        "t": 711,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <131, 190> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            2,
+            3,
+            0,
+            0,
+            0,
+            2,
+            0,
+            3,
+            3,
+            3
+          ],
+          "range": 3,
+          "undo": 0,
+          "unvisited": 4
+        },
+        "distractor_swap_fallback": [
+          0,
+          0,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            0,
+            8
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            0,
+            9
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            8,
+            9
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            3,
+            0
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          },
+          "1": {
+            "initiator": "bin_1",
+            "partner": "bin_2"
+          },
+          "2": {
+            "initiator": "bin_1",
+            "partner": "bin_0"
+          },
+          "3": {
+            "initiator": "bin_2",
+            "partner": "bin_3"
+          },
+          "4": {
+            "initiator": "bin_2",
+            "partner": "bin_1"
+          },
+          "5": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          },
+          "6": {
+            "initiator": "bin_2",
+            "partner": "bin_1"
+          },
+          "7": {
+            "initiator": "bin_0",
+            "partner": "bin_3"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard4",
+        "episode": 0,
+        "recovery_mode": null,
+        "seed": 6700000,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            -0.015482010841369631,
+            -0.061143578886985794,
+            16.110522150993347
+          ],
+          "1": [
+            0.0009605580568313593,
+            0.17902027606964113,
+            46.27867877483368
+          ],
+          "2": [
+            0.13116670787334445,
+            0.19694986522197724,
+            31.887168288230896
+          ],
+          "3": [
+            0.10172250330448152,
+            -0.0683802217245102,
+            55.158947110176086
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 1
+      },
+      "objects": {
+        "color_order": [
+          2,
+          1,
+          0
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              0.13081514239311215,
+              0.3109886705875397,
+              31.840465664863586
+            ],
+            "1": [
+              -0.3970140874385834,
+              0.1753979623317719,
+              49.65204477310181
+            ],
+            "2": [
+              -0.1005052149295807,
+              -0.30340906977653503,
+              53.97256314754486
+            ],
+            "3": [
+              -0.14212489128112793,
+              0.27783806920051574,
+              73.5929811000824
+            ],
+            "4": [
+              -0.31410775780677797,
+              0.4093184530735016,
+              62.696818113327026
+            ],
+            "5": [
+              0.36704640984535214,
+              -0.19418753385543824,
+              55.8081328868866
+            ],
+            "6": [
+              0.2699891746044159,
+              -0.03916019797325132,
+              84.2735105752945
+            ],
+            "7": [
+              0.02164875268936156,
+              -0.3151369750499725,
+              39.05890166759491
+            ],
+            "8": [
+              -0.24961897730827332,
+              -0.4083460450172424,
+              17.640877962112427
+            ],
+            "9": [
+              -0.38668296933174134,
+              0.06490350365638736,
+              58.36160659790039
+            ]
+          },
+          "color_order": [
+            2,
+            0,
+            1
+          ],
+          "cube_bins": [
+            6,
+            0,
+            2,
+            5,
+            4
+          ],
+          "cube_colors": [
+            "magenta",
+            "yellow",
+            "cyan",
+            "magenta",
+            "yellow"
+          ],
+          "cube_count": 5,
+          "cube_names": [
+            "distractor_cube_0_magenta",
+            "distractor_cube_1_yellow",
+            "distractor_cube_2_cyan",
+            "distractor_cube_3_magenta",
+            "distractor_cube_4_yellow"
+          ],
+          "label_perm": [
+            8,
+            1,
+            6,
+            0,
+            9,
+            3,
+            5,
+            4,
+            2,
+            7
+          ],
+          "placed": 10,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5",
+              "distractor_bin_6",
+              "distractor_bin_7",
+              "distractor_bin_8",
+              "distractor_bin_9"
+            ],
+            "bins": [
+              [
+                -0.24961897730827332,
+                -0.4083460450172424,
+                17.640877962112427
+              ],
+              [
+                -0.3970140874385834,
+                0.1753979623317719,
+                49.65204477310181
+              ],
+              [
+                0.2699891746044159,
+                -0.03916019797325132,
+                84.2735105752945
+              ],
+              [
+                0.13081514239311215,
+                0.3109886705875397,
+                31.840465664863586
+              ],
+              [
+                -0.38668296933174134,
+                0.06490350365638736,
+                58.36160659790039
+              ],
+              [
+                -0.14212489128112793,
+                0.27783806920051574,
+                73.5929811000824
+              ],
+              [
+                0.36704640984535214,
+                -0.19418753385543824,
+                55.8081328868866
+              ],
+              [
+                -0.31410775780677797,
+                0.4093184530735016,
+                62.696818113327026
+              ],
+              [
+                -0.1005052149295807,
+                -0.30340906977653503,
+                53.97256314754486
+              ],
+              [
+                0.02164875268936156,
+                -0.3151369750499725,
+                39.05890166759491
+              ]
+            ],
+            "color_order": [
+              2,
+              0,
+              1
+            ],
+            "cube_bins": [
+              2,
+              3,
+              8,
+              6,
+              7
+            ],
+            "cube_colors": [
+              "magenta",
+              "yellow",
+              "cyan",
+              "magenta",
+              "yellow"
+            ],
+            "cube_count": 5,
+            "cube_names": [
+              "distractor_cube_0_magenta",
+              "distractor_cube_1_yellow",
+              "distractor_cube_2_cyan",
+              "distractor_cube_3_magenta",
+              "distractor_cube_4_yellow"
+            ]
+          },
+          "requested": 10,
+          "swap_plan_seed": 2865633041914062505,
+          "trials": [
+            3,
+            2,
+            3,
+            1,
+            1,
+            3,
+            5,
+            2,
+            9,
+            3
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 8,
+        "selected": [
+          2,
+          1,
+          0
+        ],
+        "swap_initiator_indices": [
+          0,
+          2
+        ],
+        "swap_initiator_third": 1,
+        "swap_plan": {
+          "counts": [
+            4,
+            4,
+            4,
+            4
+          ],
+          "range": 0,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 3311290975109576089,
+        "target_choice": 2
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 36
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "blue",
+      "green",
+      "red"
+    ],
+    "pick_actual": [
+      "blue",
+      "green",
+      "red"
+    ],
+    "pick_language_match": true,
+    "swap_end": 328,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard4-ep0.jpg"
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed6700300.h5",
+    "seed": 6700300,
+    "steps": 712,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <60, 150>"
+      },
+      {
+        "t": 114,
+        "text": "press the second button",
+        "grounded": "press the second button at <64, 102>"
+      },
+      {
+        "t": 332,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <97, 137> that hides the green cube"
+      },
+      {
+        "t": 428,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 476,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <99, 187> that hides the blue cube"
+      },
+      {
+        "t": 562,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 612,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <134, 176> that hides the red cube"
+      },
+      {
+        "t": 706,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <134, 176> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            0,
+            4,
+            4,
+            0,
+            0,
+            4,
+            0,
+            4,
+            0,
+            0
+          ],
+          "range": 4,
+          "undo": 0,
+          "unvisited": 6
+        },
+        "distractor_swap_fallback": [
+          0,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            1,
+            2
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            5,
+            7
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            3,
+            0
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          },
+          "1": {
+            "initiator": "bin_1",
+            "partner": "bin_2"
+          },
+          "2": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          },
+          "3": {
+            "initiator": "bin_2",
+            "partner": "bin_1"
+          },
+          "4": {
+            "initiator": "bin_0",
+            "partner": "bin_3"
+          },
+          "5": {
+            "initiator": "bin_2",
+            "partner": "bin_1"
+          },
+          "6": {
+            "initiator": "bin_0",
+            "partner": "bin_3"
+          },
+          "7": {
+            "initiator": "bin_1",
+            "partner": "bin_2"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard4",
+        "episode": 3,
+        "recovery_mode": null,
+        "seed": 6700300,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            -0.007645058035850527,
+            0.036468959748744964,
+            80.08171141147614
+          ],
+          "1": [
+            0.0018637999892234802,
+            0.21446869254112247,
+            81.32138550281525
+          ],
+          "2": [
+            0.13908377051353454,
+            0.15353964984416965,
+            40.43924152851105
+          ],
+          "3": [
+            0.11391637831926346,
+            -0.05379235565662384,
+            34.451531767845154
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 1
+      },
+      "objects": {
+        "color_order": [
+          1,
+          2,
+          0
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.3556938529014587,
+              0.01051490306854247,
+              28.501936197280884
+            ],
+            "1": [
+              0.3011210918426514,
+              0.1400533139705658,
+              77.72825002670288
+            ],
+            "2": [
+              -0.2922750592231751,
+              -0.42708803415298463,
+              76.6297835111618
+            ],
+            "3": [
+              -0.1253099083900452,
+              -0.30702431201934816,
+              28.871217370033264
+            ],
+            "4": [
+              -0.4487670958042145,
+              -0.37674742341041567,
+              46.64453208446503
+            ],
+            "5": [
+              -0.2413322925567627,
+              0.2713323712348938,
+              9.887260794639587
+            ],
+            "6": [
+              -0.370513379573822,
+              0.3390714526176453,
+              24.79636788368225
+            ],
+            "7": [
+              -0.31341134905815127,
+              -0.2959880411624909,
+              70.14989376068115
+            ],
+            "8": [
+              -0.18183778524398803,
+              -0.3972764074802399,
+              49.95776832103729
+            ],
+            "9": [
+              0.36524316072463986,
+              -0.03496913909912108,
+              31.905696988105774
+            ]
+          },
+          "color_order": [
+            2,
+            1,
+            0
+          ],
+          "cube_bins": [
+            0,
+            4,
+            8,
+            1,
+            5
+          ],
+          "cube_colors": [
+            "magenta",
+            "cyan",
+            "yellow",
+            "magenta",
+            "cyan"
+          ],
+          "cube_count": 5,
+          "cube_names": [
+            "distractor_cube_0_magenta",
+            "distractor_cube_1_cyan",
+            "distractor_cube_2_yellow",
+            "distractor_cube_3_magenta",
+            "distractor_cube_4_cyan"
+          ],
+          "label_perm": [
+            4,
+            5,
+            6,
+            1,
+            7,
+            3,
+            9,
+            8,
+            0,
+            2
+          ],
+          "placed": 10,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5",
+              "distractor_bin_6",
+              "distractor_bin_7",
+              "distractor_bin_8",
+              "distractor_bin_9"
+            ],
+            "bins": [
+              [
+                -0.4487670958042145,
+                -0.37674742341041567,
+                46.64453208446503
+              ],
+              [
+                -0.2413322925567627,
+                0.2713323712348938,
+                9.887260794639587
+              ],
+              [
+                -0.370513379573822,
+                0.3390714526176453,
+                24.79636788368225
+              ],
+              [
+                0.3011210918426514,
+                0.1400533139705658,
+                77.72825002670288
+              ],
+              [
+                -0.31341134905815127,
+                -0.2959880411624909,
+                70.14989376068115
+              ],
+              [
+                -0.1253099083900452,
+                -0.30702431201934816,
+                28.871217370033264
+              ],
+              [
+                0.36524316072463986,
+                -0.03496913909912108,
+                31.905696988105774
+              ],
+              [
+                -0.18183778524398803,
+                -0.3972764074802399,
+                49.95776832103729
+              ],
+              [
+                -0.3556938529014587,
+                0.01051490306854247,
+                28.501936197280884
+              ],
+              [
+                -0.2922750592231751,
+                -0.42708803415298463,
+                76.6297835111618
+              ]
+            ],
+            "color_order": [
+              2,
+              1,
+              0
+            ],
+            "cube_bins": [
+              8,
+              0,
+              7,
+              3,
+              1
+            ],
+            "cube_colors": [
+              "magenta",
+              "cyan",
+              "yellow",
+              "magenta",
+              "cyan"
+            ],
+            "cube_count": 5,
+            "cube_names": [
+              "distractor_cube_0_magenta",
+              "distractor_cube_1_cyan",
+              "distractor_cube_2_yellow",
+              "distractor_cube_3_magenta",
+              "distractor_cube_4_cyan"
+            ]
+          },
+          "requested": 10,
+          "swap_plan_seed": 3898047029037743248,
+          "trials": [
+            1,
+            8,
+            3,
+            1,
+            5,
+            5,
+            1,
+            5,
+            3,
+            4
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 8,
+        "selected": [
+          0,
+          1,
+          2
+        ],
+        "swap_initiator_indices": [
+          2,
+          0
+        ],
+        "swap_initiator_third": 1,
+        "swap_plan": {
+          "counts": [
+            4,
+            4,
+            4,
+            4
+          ],
+          "range": 0,
+          "tries": 2,
+          "undo": 0
+        },
+        "swap_plan_seed": 1906885093945988081,
+        "target_choice": 0
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 36
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "green",
+      "blue",
+      "red"
+    ],
+    "pick_actual": [
+      "green",
+      "blue",
+      "red"
+    ],
+    "pick_language_match": true,
+    "swap_end": 328,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard4-ep3.jpg"
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed6700600.h5",
+    "seed": 6700600,
+    "steps": 735,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <60, 148>"
+      },
+      {
+        "t": 115,
+        "text": "press the second button",
+        "grounded": "press the second button at <60, 100>"
+      },
+      {
+        "t": 333,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <134, 156> that hides the blue cube"
+      },
+      {
+        "t": 443,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 484,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <101, 96> that hides the green cube"
+      },
+      {
+        "t": 581,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 632,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <129, 104> that hides the red cube"
+      },
+      {
+        "t": 723,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <129, 104> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "spec": {
+      "actions": {
+        "distractor_swap_balance": {
+          "counts": [
+            2,
+            0,
+            2,
+            2,
+            0,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "range": 2,
+          "undo": 0,
+          "unvisited": 2
+        },
+        "distractor_swap_fallback": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          2,
+          2,
+          2
+        ],
+        "distractor_swap_pairs": [
+          [
+            6,
+            8
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            6,
+            8
+          ]
+        ],
+        "predicted_inner_swap_pairs": [
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "swap_pairs": {
+          "0": {
+            "initiator": "bin_2",
+            "partner": "bin_3"
+          },
+          "1": {
+            "initiator": "bin_0",
+            "partner": "bin_2"
+          },
+          "2": {
+            "initiator": "bin_3",
+            "partner": "bin_1"
+          },
+          "3": {
+            "initiator": "bin_0",
+            "partner": "bin_1"
+          },
+          "4": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          },
+          "5": {
+            "initiator": "bin_2",
+            "partner": "bin_1"
+          },
+          "6": {
+            "initiator": "bin_3",
+            "partner": "bin_0"
+          },
+          "7": {
+            "initiator": "bin_1",
+            "partner": "bin_2"
+          }
+        },
+        "swap_window": {
+          "duration_steps": 33,
+          "speed_multiplier": 1.5,
+          "start_step": 64
+        }
+      },
+      "identity": {
+        "difficulty": "xhard4",
+        "episode": 6,
+        "recovery_mode": null,
+        "seed": 6700600,
+        "task": "ButtonUnmaskSwap"
+      },
+      "layout": {
+        "bins": {
+          "0": [
+            0.012044999003410342,
+            -0.10966133266687393,
+            72.35723912715912
+          ],
+          "1": [
+            0.015547656118869782,
+            0.10865041673183443,
+            59.51749384403229
+          ],
+          "2": [
+            0.1383935096859932,
+            0.09155385673046113,
+            80.8354389667511
+          ],
+          "3": [
+            0.12421538621187211,
+            -0.07399448126554489,
+            1.5704280138015747
+          ]
+        },
+        "distractor_layout_attempts": 1,
+        "distractor_layout_failures": [],
+        "inner_swap_graph": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "inner_swap_graph_connected": true,
+        "type_choice": 0
+      },
+      "objects": {
+        "color_order": [
+          2,
+          1,
+          0
+        ],
+        "distractors": {
+          "bins": {
+            "0": [
+              -0.3338976323604584,
+              0.41520810127258306,
+              64.43534553050995
+            ],
+            "1": [
+              -0.14687835574150088,
+              -0.41440102458000183,
+              35.30529499053955
+            ],
+            "2": [
+              -0.37083465456962583,
+              -0.0005107998847961315,
+              69.26976978778839
+            ],
+            "3": [
+              -0.3399742305278778,
+              -0.17335309982299807,
+              48.18950593471527
+            ],
+            "4": [
+              -0.4484362185001373,
+              -0.26181519627571104,
+              67.7577656507492
+            ],
+            "5": [
+              0.36606981754302975,
+              -0.1666875958442688,
+              40.877224802970886
+            ],
+            "6": [
+              -0.29635781049728394,
+              -0.3806037962436676,
+              21.862149238586426
+            ],
+            "7": [
+              -0.1360482394695282,
+              0.26784667968750003,
+              71.62280201911926
+            ],
+            "8": [
+              -0.02322084903717042,
+              0.2750540435314179,
+              60.89193284511566
+            ],
+            "9": [
+              -0.4136281728744507,
+              -0.40242962837219237,
+              69.0625262260437
+            ]
+          },
+          "color_order": [
+            2,
+            0,
+            1
+          ],
+          "cube_bins": [
+            3,
+            9,
+            6,
+            8,
+            4
+          ],
+          "cube_colors": [
+            "magenta",
+            "yellow",
+            "cyan",
+            "magenta",
+            "yellow"
+          ],
+          "cube_count": 5,
+          "cube_names": [
+            "distractor_cube_0_magenta",
+            "distractor_cube_1_yellow",
+            "distractor_cube_2_cyan",
+            "distractor_cube_3_magenta",
+            "distractor_cube_4_yellow"
+          ],
+          "label_perm": [
+            6,
+            5,
+            9,
+            1,
+            2,
+            7,
+            4,
+            0,
+            3,
+            8
+          ],
+          "placed": 10,
+          "public": {
+            "bin_names": [
+              "distractor_bin_0",
+              "distractor_bin_1",
+              "distractor_bin_2",
+              "distractor_bin_3",
+              "distractor_bin_4",
+              "distractor_bin_5",
+              "distractor_bin_6",
+              "distractor_bin_7",
+              "distractor_bin_8",
+              "distractor_bin_9"
+            ],
+            "bins": [
+              [
+                -0.29635781049728394,
+                -0.3806037962436676,
+                21.862149238586426
+              ],
+              [
+                0.36606981754302975,
+                -0.1666875958442688,
+                40.877224802970886
+              ],
+              [
+                -0.4136281728744507,
+                -0.40242962837219237,
+                69.0625262260437
+              ],
+              [
+                -0.14687835574150088,
+                -0.41440102458000183,
+                35.30529499053955
+              ],
+              [
+                -0.37083465456962583,
+                -0.0005107998847961315,
+                69.26976978778839
+              ],
+              [
+                -0.1360482394695282,
+                0.26784667968750003,
+                71.62280201911926
+              ],
+              [
+                -0.4484362185001373,
+                -0.26181519627571104,
+                67.7577656507492
+              ],
+              [
+                -0.3338976323604584,
+                0.41520810127258306,
+                64.43534553050995
+              ],
+              [
+                -0.3399742305278778,
+                -0.17335309982299807,
+                48.18950593471527
+              ],
+              [
+                -0.02322084903717042,
+                0.2750540435314179,
+                60.89193284511566
+              ]
+            ],
+            "color_order": [
+              2,
+              0,
+              1
+            ],
+            "cube_bins": [
+              8,
+              2,
+              0,
+              9,
+              6
+            ],
+            "cube_colors": [
+              "magenta",
+              "yellow",
+              "cyan",
+              "magenta",
+              "yellow"
+            ],
+            "cube_count": 5,
+            "cube_names": [
+              "distractor_cube_0_magenta",
+              "distractor_cube_1_yellow",
+              "distractor_cube_2_cyan",
+              "distractor_cube_3_magenta",
+              "distractor_cube_4_yellow"
+            ]
+          },
+          "requested": 10,
+          "swap_plan_seed": 3512814622513387236,
+          "trials": [
+            1,
+            3,
+            1,
+            9,
+            4,
+            2,
+            1,
+            2,
+            5,
+            2
+          ]
+        },
+        "n_picks": 3,
+        "n_swaps": 8,
+        "selected": [
+          0,
+          2,
+          1
+        ],
+        "swap_initiator_indices": [
+          0,
+          1
+        ],
+        "swap_initiator_third": 3,
+        "swap_plan": {
+          "counts": [
+            4,
+            4,
+            4,
+            4
+          ],
+          "range": 0,
+          "tries": 1,
+          "undo": 0
+        },
+        "swap_plan_seed": 2281050427850430869,
+        "target_choice": 2
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 36
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "ButtonUnmaskSwap"
+    },
+    "pick_expected": [
+      "blue",
+      "green",
+      "red"
+    ],
+    "pick_actual": [
+      "blue",
+      "green",
+      "red"
+    ],
+    "pick_language_match": true,
+    "swap_end": 328,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/xhard4-ep6.jpg"
+  },
+  {
+    "difficulty": "easy",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed7000.h5",
+    "seed": 7000,
+    "steps": 514,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <62, 145>"
+      },
+      {
+        "t": 122,
+        "text": "press the second button",
+        "grounded": "press the second button at <61, 104>"
+      },
+      {
+        "t": 213,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <93, 163> that hides the blue cube"
+      },
+      {
+        "t": 381,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 429,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <96, 92> that hides the green cube"
+      },
+      {
+        "t": 507,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <96, 92> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/easy-ep0.jpg"
+  },
+  {
+    "difficulty": "easy",
+    "episode": 1,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_1/hdf5_files/ButtonUnmaskSwap_ep1_seed7100.h5",
+    "seed": 7100,
+    "steps": 519,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <63, 147>"
+      },
+      {
+        "t": 119,
+        "text": "press the second button",
+        "grounded": "press the second button at <66, 99>"
+      },
+      {
+        "t": 218,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <102, 162> that hides the red cube"
+      },
+      {
+        "t": 384,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 435,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <90, 92> that hides the green cube"
+      },
+      {
+        "t": 513,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <90, 92> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/easy-ep1.jpg"
+  },
+  {
+    "difficulty": "medium",
+    "episode": 10,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_10/hdf5_files/ButtonUnmaskSwap_ep10_seed8000.h5",
+    "seed": 8000,
+    "steps": 321,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <62, 153>"
+      },
+      {
+        "t": 114,
+        "text": "press the second button",
+        "grounded": "press the second button at <64, 100>"
+      },
+      {
+        "t": 207,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <99, 166> that hides the blue cube"
+      },
+      {
+        "t": 314,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <99, 166> that hides the blue cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/medium-ep10.jpg"
+  },
+  {
+    "difficulty": "hard",
+    "episode": 11,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_11/hdf5_files/ButtonUnmaskSwap_ep11_seed8100.h5",
+    "seed": 8100,
+    "steps": 454,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <66, 152>"
+      },
+      {
+        "t": 109,
+        "text": "press the second button",
+        "grounded": "press the second button at <65, 110>"
+      },
+      {
+        "t": 203,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <98, 105> that hides the green cube"
+      },
+      {
+        "t": 301,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 349,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <95, 151> that hides the red cube"
+      },
+      {
+        "t": 447,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <95, 151> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/hard-ep11.jpg"
+  },
+  {
+    "difficulty": "medium",
+    "episode": 2,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_2/hdf5_files/ButtonUnmaskSwap_ep2_seed7200.h5",
+    "seed": 7200,
+    "steps": 361,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <66, 149>"
+      },
+      {
+        "t": 109,
+        "text": "press the second button",
+        "grounded": "press the second button at <62, 106>"
+      },
+      {
+        "t": 204,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <99, 91> that hides the green cube"
+      },
+      {
+        "t": 354,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <99, 91> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/medium-ep2.jpg"
+  },
+  {
+    "difficulty": "hard",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed7300.h5",
+    "seed": 7300,
+    "steps": 555,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <63, 150>"
+      },
+      {
+        "t": 121,
+        "text": "press the second button",
+        "grounded": "press the second button at <62, 102>"
+      },
+      {
+        "t": 218,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <123, 160> that hides the green cube"
+      },
+      {
+        "t": 416,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 464,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <103, 181> that hides the blue cube"
+      },
+      {
+        "t": 549,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <103, 181> that hides the blue cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/hard-ep3.jpg"
+  },
+  {
+    "difficulty": "easy",
+    "episode": 4,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_4/hdf5_files/ButtonUnmaskSwap_ep4_seed7400.h5",
+    "seed": 7400,
+    "steps": 532,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <65, 153>"
+      },
+      {
+        "t": 109,
+        "text": "press the second button",
+        "grounded": "press the second button at <62, 103>"
+      },
+      {
+        "t": 206,
+        "text": "pick up the container that hides the blue cube",
+        "grounded": "pick up the container at <88, 162> that hides the blue cube"
+      },
+      {
+        "t": 388,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 435,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <101, 93> that hides the green cube"
+      },
+      {
+        "t": 525,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <101, 93> that hides the green cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/easy-ep4.jpg"
+  },
+  {
+    "difficulty": "medium",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed7600.h5",
+    "seed": 7600,
+    "steps": 303,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <66, 153>"
+      },
+      {
+        "t": 109,
+        "text": "press the second button",
+        "grounded": "press the second button at <62, 102>"
+      },
+      {
+        "t": 206,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <95, 99> that hides the red cube"
+      },
+      {
+        "t": 296,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <95, 99> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/medium-ep6.jpg"
+  },
+  {
+    "difficulty": "hard",
+    "episode": 7,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined/B/ButtonUnmaskSwap_episode_7/hdf5_files/ButtonUnmaskSwap_ep7_seed7700.h5",
+    "seed": 7700,
+    "steps": 451,
+    "goal": [
+      "first press both buttons on the table, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "transitions": [
+      {
+        "t": 0,
+        "text": "press the first button",
+        "grounded": "press the first button at <61, 147>"
+      },
+      {
+        "t": 116,
+        "text": "press the second button",
+        "grounded": "press the second button at <63, 108>"
+      },
+      {
+        "t": 209,
+        "text": "pick up the container that hides the green cube",
+        "grounded": "pick up the container at <102, 166> that hides the green cube"
+      },
+      {
+        "t": 309,
+        "text": "put down the container",
+        "grounded": "put down the container"
+      },
+      {
+        "t": 360,
+        "text": "pick up the container that hides the red cube",
+        "grounded": "pick up the container at <128, 175> that hides the red cube"
+      },
+      {
+        "t": 445,
+        "text": "All tasks completed",
+        "grounded": "pick up the container at <128, 175> that hides the red cube"
+      }
+    ],
+    "completed": true,
+    "swap_end": null,
+    "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask_swap/hard-ep7.jpg"
+  }
+]

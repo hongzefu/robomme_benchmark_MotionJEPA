@@ -1,0 +1,114 @@
+[
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PatternLock_episode_0/hdf5_files/PatternLock_ep0_seed15001.h5",
+    "tier": "easy",
+    "seed": 15001,
+    "demo_nodes": [
+      5,
+      4,
+      3
+    ],
+    "exec_nodes": [
+      5,
+      4,
+      3
+    ],
+    "node_equal": true,
+    "unique": true,
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PatternLock_episode_1/hdf5_files/PatternLock_ep1_seed15100.h5",
+    "tier": "easy",
+    "seed": 15100,
+    "demo_nodes": [
+      4,
+      5,
+      1
+    ],
+    "exec_nodes": [
+      4,
+      5,
+      1
+    ],
+    "node_equal": true,
+    "unique": true,
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PatternLock_episode_10/hdf5_files/PatternLock_ep10_seed16000.h5",
+    "tier": "medium",
+    "seed": 16000,
+    "demo_nodes": [
+      7,
+      11,
+      6,
+      1
+    ],
+    "exec_nodes": [
+      7,
+      11,
+      6,
+      1
+    ],
+    "node_equal": true,
+    "unique": true,
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PatternLock_episode_2/hdf5_files/PatternLock_ep2_seed15200.h5",
+    "tier": "medium",
+    "seed": 15200,
+    "demo_nodes": [
+      7,
+      3,
+      2,
+      6,
+      1
+    ],
+    "exec_nodes": [
+      7,
+      3,
+      2,
+      6,
+      1
+    ],
+    "node_equal": true,
+    "unique": true,
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PatternLock_episode_4/hdf5_files/PatternLock_ep4_seed15400.h5",
+    "tier": "easy",
+    "seed": 15400,
+    "demo_nodes": [
+      2,
+      1
+    ],
+    "exec_nodes": [
+      2,
+      1
+    ],
+    "node_equal": true,
+    "unique": true,
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PatternLock_episode_6/hdf5_files/PatternLock_ep6_seed15600.h5",
+    "tier": "medium",
+    "seed": 15600,
+    "demo_nodes": [
+      5,
+      10,
+      14
+    ],
+    "exec_nodes": [
+      5,
+      10,
+      14
+    ],
+    "node_equal": true,
+    "unique": true,
+    "completed": true
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "id": "VideoPlaceOrder-xhard4-7100100",
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "seed": 7100100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json",
+  "command": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+    "-m",
+    "scripts.parity.v4_demo_probe",
+    "--task",
+    "VideoPlaceOrder",
+    "--difficulty",
+    "xhard4",
+    "--seeds",
+    "7100100",
+    "--episode",
+    "9",
+    "--sampling-config",
+    "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json",
+    "--gpu",
+    "0",
+    "--out",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoPlaceOrder-xhard4-7100100"
+  ],
+  "started_at": 1790459280.8868265,
+  "gpu": "0"
+}

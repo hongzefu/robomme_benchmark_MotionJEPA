@@ -1,0 +1,21 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=3 targets=4: ok=0.500 fails={'target3': 82, 'target4': 155, 'target2': 13}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=3 targets=5: ok=0.182 fails={'target3': 82, 'target4': 155, 'target5': 159, 'target2': 13}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=3 targets=6: ok=0.034 fails={'target3': 82, 'target4': 155, 'target5': 159, 'target6': 74, 'target2': 13}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=3 targets=7: ok=0.000 fails={'target3': 82, 'target4': 155, 'target5': 159, 'target6': 74, 'target7': 17, 'target2': 13}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=3 targets=8: ok=0.000 fails={'target3': 82, 'target4': 155, 'target5': 159, 'target6': 74, 'target7': 17, 'target2': 13}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=4 targets=4: ok=0.312 fails={'target3': 109, 'target4': 202, 'target2': 32, 'target1': 1}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=4 targets=5: ok=0.072 fails={'target3': 109, 'target4': 202, 'target2': 32, 'target5': 120, 'target1': 1}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=4 targets=6: ok=0.008 fails={'target3': 109, 'target4': 202, 'target6': 32, 'target2': 32, 'target5': 120, 'target1': 1}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=4 targets=7: ok=0.000 fails={'target3': 109, 'target4': 202, 'target6': 32, 'target2': 32, 'target5': 120, 'target7': 4, 'target1': 1}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=4 targets=8: ok=0.000 fails={'target3': 109, 'target4': 202, 'target6': 32, 'target2': 32, 'target5': 120, 'target7': 4, 'target1': 1}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=5 targets=4: ok=0.174 fails={'target3': 164, 'target4': 167, 'target2': 76, 'target1': 6}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=5 targets=5: ok=0.020 fails={'target3': 164, 'target4': 167, 'target2': 76, 'target1': 6, 'target5': 77}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=5 targets=6: ok=0.002 fails={'target3': 164, 'target4': 167, 'target2': 76, 'target6': 9, 'target1': 6, 'target5': 77}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=5 targets=7: ok=0.000 fails={'target3': 164, 'target4': 167, 'target2': 76, 'target6': 9, 'target1': 6, 'target5': 77, 'target7': 1}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=5 targets=8: ok=0.000 fails={'target3': 164, 'target4': 167, 'target2': 76, 'target6': 9, 'target1': 6, 'target5': 77, 'target7': 1}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=6 targets=4: ok=0.090 fails={'target3': 190, 'target2': 117, 'target4': 128, 'target1': 20}
+VideoPlaceOrder goal_avoid=True  half=0.2 cubes=6 targets=5: ok=0.008 fails={'target3': 190, 'target2': 117, 'target5': 41, 'target4': 128, 'target1': 20}

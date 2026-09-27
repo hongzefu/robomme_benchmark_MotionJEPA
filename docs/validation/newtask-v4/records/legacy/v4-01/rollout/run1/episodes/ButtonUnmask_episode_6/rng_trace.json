@@ -1,0 +1,208 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "actions.sampling_trace.constructor_draw",
+      "drawn": 3,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.button_xy",
+      "drawn": [
+        -0.19823442101478578,
+        0.0250924289226532
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.bin_count.requested",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 3,
+      "path": "layout.bins.0",
+      "drawn": [
+        0.03897370219230653,
+        0.13266022056341173,
+        6.1515069007873535
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.bins.1",
+      "drawn": [
+        0.11988189518451689,
+        -0.07997647672891617,
+        4.964489936828613
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.bins.2",
+      "drawn": [
+        0.017916676104068746,
+        -0.08627924144268037,
+        14.473800659179688
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.bins.3",
+      "drawn": [
+        -0.11483048737049104,
+        -0.1374600738286972,
+        61.29289627075195
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.bins.4",
+      "drawn": [
+        0.10194290757179261,
+        0.03358303606510163,
+        23.9711594581604
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.bins.5",
+      "drawn": [
+        -0.0964087074995041,
+        0.03772693097591401,
+        62.65581786632538
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.bins.6",
+      "drawn": [
+        0.1626025530695915,
+        0.1403048425912857,
+        45.55883824825287
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "layout.bins.7",
+      "drawn": [
+        0.10236265182495116,
+        -0.17009300976991654,
+        51.013861298561096
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "layout.bin_count.placed",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "objects.color_order",
+      "drawn": [
+        1,
+        0,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.n_picks",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "objects.pick_order",
+      "drawn": [
+        0,
+        1,
+        2
+      ],
+      "source": "record"
+    },
+    {
+      "index": 15,
+      "path": "objects.distractors.requested",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 16,
+      "path": "objects.distractors.bins.0",
+      "drawn": [
+        -0.0691769063472748,
+        -0.37262679934501647,
+        75.89961647987366
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "objects.distractors.bins.1",
+      "drawn": [
+        -0.3240747928619385,
+        -0.1841737747192383,
+        26.346909999847412
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "objects.distractors.bins.2",
+      "drawn": [
+        -0.27122089862823484,
+        0.3952326178550721,
+        66.90650224685669
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "objects.distractors.placed",
+      "drawn": 3,
+      "source": "record"
+    },
+    {
+      "index": 20,
+      "path": "objects.distractors.cube_count",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 21,
+      "path": "objects.distractors.cube_bins",
+      "drawn": [
+        0,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 22,
+      "path": "objects.distractors.cube_colors",
+      "drawn": [
+        1,
+        2
+      ],
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "3ca103dbd103f385f634799bc8f7777d883f0dd0b71902234071ccb6d3fb1e0b"
+  }
+}

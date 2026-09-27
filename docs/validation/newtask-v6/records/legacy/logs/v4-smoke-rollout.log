@@ -1,0 +1,6 @@
+ROUND 0 jobs=4 ok=4 wall_s=411
+ROLLOUT_DONE label=run1 rollout_attempted=4 rollout_ok=4 backfilled=0 selected_shortfall=0
+ROUND 0 jobs=4 ok=4 wall_s=529
+ROLLOUT_DONE label=run2 rollout_attempted=4 rollout_ok=4 backfilled=0 selected_shortfall=0
+NEWVALUE_REPLAY=PASS identities=4 terminal_mismatch=0 compared_success=4 sha_equal=4 field_mismatch=0 empty_or_invalid=0
+EXIT_CODE=0

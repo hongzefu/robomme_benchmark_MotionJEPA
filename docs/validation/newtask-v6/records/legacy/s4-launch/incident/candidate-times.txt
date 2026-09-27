@@ -1,0 +1,2 @@
+mtime=2026-09-26 18:14:49.715581175 -0400 ctime=2026-09-26 18:26:39.614686208 -0400 birth=2026-09-26 18:26:39.607686215 -0400 artifacts/newtask-v6/s4-launch/candidate-inputs/xhard3.jsonl
+mtime=2026-09-26 18:24:38.761045088 -0400 ctime=2026-09-26 18:26:39.653686167 -0400 birth=2026-09-26 18:26:39.646686174 -0400 artifacts/newtask-v6/s4-launch/candidate-inputs/xhard4.jsonl

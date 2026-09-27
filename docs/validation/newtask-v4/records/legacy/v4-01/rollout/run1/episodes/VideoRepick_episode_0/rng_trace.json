@@ -1,0 +1,308 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "objects.num_repeats",
+      "drawn": 5,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.n_swaps",
+      "drawn": 10,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_rgb",
+      "drawn": [
+        0.06383776331621398,
+        0.48620850022938694,
+        0.7643118977546692
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.0.xy_yaw",
+      "drawn": [
+        -0.24804394721984865,
+        -0.15397361993789674,
+        2.7752341492189863
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.1.xy_yaw",
+      "drawn": [
+        -0.08585360050201415,
+        0.10328359961509706,
+        5.063657847571539
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.2.xy_yaw",
+      "drawn": [
+        -0.15645790338516236,
+        0.14376387357711792,
+        2.663200371705317
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.cubes.3.xy_yaw",
+      "drawn": [
+        0.004776010513305673,
+        0.18910365581512453,
+        3.4369049276513635
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.cubes.4.xy_yaw",
+      "drawn": [
+        0.04817127704620361,
+        0.11820224642753599,
+        5.040480731111608
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.cubes.5.xy_yaw",
+      "drawn": [
+        -0.10190426111221315,
+        -0.03834829449653626,
+        1.2642095186465838
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "objects.cube_count.requested",
+      "drawn": 6,
+      "source": "record"
+    },
+    {
+      "index": 10,
+      "path": "objects.cube_count.actual",
+      "drawn": 6,
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "objects.target",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.swap_initiators_remaining",
+      "drawn": [
+        0,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.swap_initiators",
+      "drawn": [
+        "bin_1",
+        "bin_0",
+        "bin_3"
+      ],
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "actions.swap_pairs.0",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 15,
+      "path": "actions.swap_windows.0",
+      "drawn": [
+        206,
+        256
+      ],
+      "source": "record"
+    },
+    {
+      "index": 16,
+      "path": "actions.swap_pairs.1",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_5"
+      },
+      "source": "record"
+    },
+    {
+      "index": 17,
+      "path": "actions.swap_windows.1",
+      "drawn": [
+        256,
+        306
+      ],
+      "source": "record"
+    },
+    {
+      "index": 18,
+      "path": "actions.swap_pairs.2",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_4"
+      },
+      "source": "record"
+    },
+    {
+      "index": 19,
+      "path": "actions.swap_windows.2",
+      "drawn": [
+        306,
+        356
+      ],
+      "source": "record"
+    },
+    {
+      "index": 20,
+      "path": "actions.swap_pairs.3",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 21,
+      "path": "actions.swap_windows.3",
+      "drawn": [
+        356,
+        406
+      ],
+      "source": "record"
+    },
+    {
+      "index": 22,
+      "path": "actions.swap_pairs.4",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 23,
+      "path": "actions.swap_windows.4",
+      "drawn": [
+        406,
+        456
+      ],
+      "source": "record"
+    },
+    {
+      "index": 24,
+      "path": "actions.swap_pairs.5",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_4"
+      },
+      "source": "record"
+    },
+    {
+      "index": 25,
+      "path": "actions.swap_windows.5",
+      "drawn": [
+        456,
+        506
+      ],
+      "source": "record"
+    },
+    {
+      "index": 26,
+      "path": "actions.swap_pairs.6",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_0"
+      },
+      "source": "record"
+    },
+    {
+      "index": 27,
+      "path": "actions.swap_windows.6",
+      "drawn": [
+        506,
+        556
+      ],
+      "source": "record"
+    },
+    {
+      "index": 28,
+      "path": "actions.swap_pairs.7",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 29,
+      "path": "actions.swap_windows.7",
+      "drawn": [
+        556,
+        606
+      ],
+      "source": "record"
+    },
+    {
+      "index": 30,
+      "path": "actions.swap_pairs.8",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_4"
+      },
+      "source": "record"
+    },
+    {
+      "index": 31,
+      "path": "actions.swap_windows.8",
+      "drawn": [
+        606,
+        656
+      ],
+      "source": "record"
+    },
+    {
+      "index": 32,
+      "path": "actions.swap_pairs.9",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_0"
+      },
+      "source": "record"
+    },
+    {
+      "index": 33,
+      "path": "actions.swap_windows.9",
+      "drawn": [
+        656,
+        706
+      ],
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "6e7dfd417f89de8a1bacd585b317a0e8e4bffbac97ad69d9ff8948c72e0eff2a"
+  }
+}

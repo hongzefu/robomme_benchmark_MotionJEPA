@@ -1,0 +1,251 @@
+[
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 18,
+  "success": 0.86328125,
+  "wilson_lo": 0.8408765404950619,
+  "fails": {
+   "distractor": 107,
+   "disk": 33
+  },
+  "min_pair_median": 0.08091145696320748,
+  "kw": {},
+  "sec": 18.5
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 20,
+  "success": 0.5068359375,
+  "wilson_lo": 0.47624551889103206,
+  "fails": {
+   "distractor": 474,
+   "disk": 31
+  },
+  "min_pair_median": 0.08073195143966803,
+  "kw": {},
+  "sec": 21.6
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 22,
+  "success": 0.12109375,
+  "wilson_lo": 0.10251512237965063,
+  "fails": {
+   "distractor": 873,
+   "disk": 27
+  },
+  "min_pair_median": 0.0804957896430731,
+  "kw": {},
+  "sec": 23.4
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 24,
+  "success": 0.0068359375,
+  "wilson_lo": 0.0033151669659664536,
+  "fails": {
+   "distractor": 979,
+   "disk": 38
+  },
+  "min_pair_median": 0.08042541782128401,
+  "kw": {},
+  "sec": 23.3
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 26,
+  "success": 0.0,
+  "wilson_lo": 0.0,
+  "fails": {
+   "disk": 36,
+   "distractor": 988
+  },
+  "min_pair_median": null,
+  "kw": {},
+  "sec": 23.4
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 28,
+  "success": 0.0,
+  "wilson_lo": 0.0,
+  "fails": {
+   "distractor": 994,
+   "disk": 30
+  },
+  "min_pair_median": null,
+  "kw": {},
+  "sec": 23.5
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 30,
+  "success": 0.0,
+  "wilson_lo": 0.0,
+  "fails": {
+   "distractor": 992,
+   "disk": 32
+  },
+  "min_pair_median": null,
+  "kw": {},
+  "sec": 23.4
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "y 半宽 0.30 d=0.08",
+  "N": 18,
+  "success": 0.9716796875,
+  "wilson_lo": 0.9596231478247027,
+  "fails": {
+   "disk": 29
+  },
+  "min_pair_median": 0.0815269362637264,
+  "kw": {
+   "region_half": [
+    0.25,
+    0.3
+   ]
+  },
+  "sec": 18.7
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "y 半宽 0.30 d=0.08",
+  "N": 20,
+  "success": 0.95703125,
+  "wilson_lo": 0.942808499814729,
+  "fails": {
+   "disk": 29,
+   "distractor": 15
+  },
+  "min_pair_median": 0.0811768091610998,
+  "kw": {
+   "region_half": [
+    0.25,
+    0.3
+   ]
+  },
+  "sec": 22.4
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "y 半宽 0.30 d=0.08",
+  "N": 22,
+  "success": 0.8642578125,
+  "wilson_lo": 0.8419123960169237,
+  "fails": {
+   "distractor": 94,
+   "disk": 45
+  },
+  "min_pair_median": 0.0808417681412273,
+  "kw": {
+   "region_half": [
+    0.25,
+    0.3
+   ]
+  },
+  "sec": 25.9
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "y 半宽 0.30 d=0.08",
+  "N": 24,
+  "success": 0.521484375,
+  "wilson_lo": 0.49086448720432285,
+  "fails": {
+   "disk": 32,
+   "distractor": 458
+  },
+  "min_pair_median": 0.08058647409844685,
+  "kw": {
+   "region_half": [
+    0.25,
+    0.3
+   ]
+  },
+  "sec": 29.7
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "y 半宽 0.30 d=0.08",
+  "N": 26,
+  "success": 0.158203125,
+  "wilson_lo": 0.13713382485219952,
+  "fails": {
+   "disk": 35,
+   "distractor": 827
+  },
+  "min_pair_median": 0.08039960264771039,
+  "kw": {
+   "region_half": [
+    0.25,
+    0.3
+   ]
+  },
+  "sec": 32.2
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "y 半宽 0.30 d=0.08",
+  "N": 28,
+  "success": 0.021484375,
+  "wilson_lo": 0.014230048863088396,
+  "fails": {
+   "distractor": 967,
+   "disk": 35
+  },
+  "min_pair_median": 0.08043748391758421,
+  "kw": {
+   "region_half": [
+    0.25,
+    0.3
+   ]
+  },
+  "sec": 32.8
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "y 半宽 0.30 d=0.08",
+  "N": 30,
+  "success": 0.0,
+  "wilson_lo": 0.0,
+  "fails": {
+   "distractor": 994,
+   "disk": 30
+  },
+  "min_pair_median": null,
+  "kw": {
+   "region_half": [
+    0.25,
+    0.3
+   ]
+  },
+  "sec": 33.2
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "y 半宽 0.30 d=0.08",
+  "N": 32,
+  "success": 0.0,
+  "wilson_lo": 0.0,
+  "fails": {
+   "distractor": 1001,
+   "disk": 23
+  },
+  "min_pair_median": null,
+  "kw": {
+   "region_half": [
+    0.25,
+    0.3
+   ]
+  },
+  "sec": 33.2
+ }
+]

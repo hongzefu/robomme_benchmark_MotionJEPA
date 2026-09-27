@@ -1,0 +1,234 @@
+{
+ "VideoRepick_ep0_seed9000.h5": {
+  "demo_len": 321,
+  "first_static": 159,
+  "static_boundaries": [
+   159,
+   213,
+   267
+  ],
+  "motion_windows": [
+   [
+    159,
+    184
+   ],
+   [
+    203,
+    250
+   ],
+   [
+    253,
+    300
+   ]
+  ],
+  "n_windows": 3,
+  "last_diff_tail": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "VideoRepick_ep1_seed9100.h5": {
+  "demo_len": 343,
+  "first_static": 176,
+  "static_boundaries": [
+   176,
+   235,
+   289
+  ],
+  "motion_windows": [
+   [
+    178,
+    206
+   ],
+   [
+    226,
+    268
+   ],
+   [
+    276,
+    319
+   ]
+  ],
+  "n_windows": 3,
+  "last_diff_tail": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "VideoRepick_ep4_seed9400.h5": {
+  "demo_len": 255,
+  "first_static": 157,
+  "static_boundaries": [
+   157,
+   201
+  ],
+  "motion_windows": [
+   [
+    157,
+    176
+   ],
+   [
+    192,
+    214
+   ],
+   [
+    217,
+    238
+   ]
+  ],
+  "n_windows": 3,
+  "last_diff_tail": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "VideoRepick_ep2_seed9200.h5": {
+  "demo_len": 313,
+  "first_static": 158,
+  "static_boundaries": [
+   158,
+   205,
+   259
+  ],
+  "motion_windows": [
+   [
+    160,
+    176
+   ],
+   [
+    195,
+    240
+   ],
+   [
+    245,
+    290
+   ]
+  ],
+  "n_windows": 3,
+  "last_diff_tail": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "VideoRepick_ep6_seed9600.h5": {
+  "demo_len": 317,
+  "first_static": 158,
+  "static_boundaries": [
+   158,
+   209,
+   263
+  ],
+  "motion_windows": [
+   [
+    160,
+    180
+   ],
+   [
+    202,
+    242
+   ],
+   [
+    252,
+    292
+   ]
+  ],
+  "n_windows": 3,
+  "last_diff_tail": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "VideoRepick_ep10_seed10000.h5": {
+  "demo_len": 363,
+  "first_static": 156,
+  "static_boundaries": [
+   156,
+   201,
+   255,
+   309
+  ],
+  "motion_windows": [
+   [
+    158,
+    172
+   ],
+   [
+    193,
+    235
+   ],
+   [
+    243,
+    285
+   ],
+   [
+    296,
+    334
+   ]
+  ],
+  "n_windows": 4,
+  "last_diff_tail": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ]
+ }
+}

@@ -1,0 +1,697 @@
+[
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "green",
+   "green",
+   "blue",
+   "green",
+   "blue",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "red",
+   "blue",
+   "blue",
+   "red",
+   "blue",
+   "red",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "green",
+   "blue",
+   "blue",
+   "green",
+   "blue",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "blue",
+   "blue",
+   "green",
+   "blue",
+   "green",
+   "green",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "green",
+   "red",
+   "red",
+   "green",
+   "red",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "green",
+   "green",
+   "blue",
+   "green",
+   "blue",
+   "blue",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red",
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green",
+   "green",
+   "red",
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red",
+   "red",
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red",
+   "red",
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "red",
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "green",
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green",
+   "green",
+   "green",
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "green",
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red",
+   "red",
+   "red",
+   "green",
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "goal_color": "green",
+  "exec_pick_color": "green",
+  "demo_pick_colors": [
+   "green",
+   "green",
+   "green",
+   "green",
+   "green"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "goal_color": "blue",
+  "exec_pick_color": "blue",
+  "demo_pick_colors": [
+   "blue",
+   "blue",
+   "blue"
+  ],
+  "ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "goal_color": "red",
+  "exec_pick_color": "red",
+  "demo_pick_colors": [
+   "red",
+   "red",
+   "red",
+   "red"
+  ],
+  "ok": true
+ }
+]

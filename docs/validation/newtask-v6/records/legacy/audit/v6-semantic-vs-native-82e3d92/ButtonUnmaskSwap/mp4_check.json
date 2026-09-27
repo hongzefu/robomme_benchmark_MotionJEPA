@@ -1,0 +1,212 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "mp4_frames": 513,
+  "h5_steps": 513,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "mp4_frames": 523,
+  "h5_steps": 523,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "mp4_frames": 515,
+  "h5_steps": 515,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "mp4_frames": 610,
+  "h5_steps": 610,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "mp4_frames": 621,
+  "h5_steps": 621,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "mp4_frames": 632,
+  "h5_steps": 632,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "mp4_frames": 681,
+  "h5_steps": 681,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "mp4_frames": 656,
+  "h5_steps": 656,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "mp4_frames": 689,
+  "h5_steps": 689,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "mp4_frames": 717,
+  "h5_steps": 717,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "mp4_frames": 712,
+  "h5_steps": 712,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "mp4_frames": 735,
+  "h5_steps": 735,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "mp4_frames": 514,
+  "h5_steps": 514,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "mp4_frames": 519,
+  "h5_steps": 519,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "mp4_frames": 321,
+  "h5_steps": 321,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "mp4_frames": 454,
+  "h5_steps": 454,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "mp4_frames": 361,
+  "h5_steps": 361,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "mp4_frames": 555,
+  "h5_steps": 555,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "mp4_frames": 532,
+  "h5_steps": 532,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "mp4_frames": 303,
+  "h5_steps": 303,
+  "size": [
+   1280,
+   768
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "mp4_frames": 451,
+  "h5_steps": 451,
+  "size": [
+   1280,
+   768
+  ]
+ }
+]

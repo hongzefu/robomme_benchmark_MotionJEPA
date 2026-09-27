@@ -1,0 +1,74 @@
+origin	https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git (fetch)
+origin	https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git (push)
+  origin/HEAD -> origin/dataset-gen-NewSeed
+  origin/PolicyEvalThirdParty-simplememvla-0918
+  origin/PolicyEvalThirdParty-v2-eval-0917
+  origin/PolicyEvalThirdParty-v2-eval-0918-motion
+  origin/claude/data-generation-newseed-unmask-57b3fa
+  origin/claude/motionjpa-swap-event-generation-25a99e
+  origin/dataset-gen
+  origin/dataset-gen-LabelData
+  origin/dataset-gen-NewSeed
+  origin/dataset-gen-SegmentAndMask
+  origin/eval-gl-test0917
+  origin/newtask-v1
+  origin/newtask-v2
+  origin/newtask-v2.1refractor
+  origin/newtaskRelease-v3
+  origin/newtaskRelease-v4
+  origin/newtaskRelease-v5
+== eval history
+57dc593 v3 unified fail aware wrapper
+76b5bda v2 - default no optional fields in make_env_for_episode
+e0fde96 update doc
+9da8566 udpate script
+b933d7a add eval script
+7ce6e6b add docker setup
+ee43514 update script
+1151fcd update scripts
+57dc593 v3 unified fail aware wrapper
+76b5bda v2 - default no optional fields in make_env_for_episode
+-- evaluation
+9ffa32d977f80769583957a01cfee5d8b787ffb669e248f6b3d3ffe23dca1870  scripts/evaluation.py
+artifacts/train-parity/local-smoke-01/official-src/scripts/evaluation.py
+9ffa32d977f80769583957a01cfee5d8b787ffb669e248f6b3d3ffe23dca1870  artifacts/train-parity/local-smoke-01/official-src/scripts/evaluation.py
+-- run_example
+85be8e7870362a41faaf7d314235d7f24e2166618c6bfcfd3476e61e86333291  scripts/run_example.py
+artifacts/train-parity/local-smoke-01/official-src/scripts/run_example.py
+85be8e7870362a41faaf7d314235d7f24e2166618c6bfcfd3476e61e86333291  artifacts/train-parity/local-smoke-01/official-src/scripts/run_example.py
+-- dataset_replay
+81b489b081fb74e80c79016a723fb0c1c7733da4cf78ec75b23163a86d11f148  scripts/dataset_replay.py
+artifacts/train-parity/local-smoke-01/official-src/scripts/dataset_replay.py
+81b489b081fb74e80c79016a723fb0c1c7733da4cf78ec75b23163a86d11f148  artifacts/train-parity/local-smoke-01/official-src/scripts/dataset_replay.py
+AGENTS.md
+assets
+challenge_interface
+doc
+Dockerfile
+LICENSE
+pyproject.toml
+readme.md
+scripts
+src
+NEWTASK_RELEASE_V5_PLAN.md:55:| 2 | **录像器冻结**；`scripts/evaluation.py`、`scripts/run_example.py`、`scripts/dataset_replay.py` 与上游逐字节相同这一性质要保住；`scripts/` 顶层只许五个入口 | V4 N2、口径 8/9；AGENTS.md 规则 11/12 |
+NEWTASK_RELEASE_V5_PLAN.md:905:| FROZEN_FILES | `git diff --quiet` 录像器；`scripts/evaluation.py` 与官方副本 diff；`ls -1 scripts/*.py` 恰好五个 | N2，以及不得通过挪动评估预算常量来吸收变长的局 | `RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
+NEWTASK_RELEASE_V5_PLAN.md:1086:   --official-root artifacts/train-parity/local-smoke-01/official-src --workers <n> --output artifacts/newtask-v5/v5-01/rollout \
+origin/dataset-gen-NewSeed evaluation same
+origin/dataset-gen-NewSeed run_example same
+origin/dataset-gen-NewSeed dataset_replay same
+13e5151 evaluation same
+13e5151 run_example same
+13e5151 dataset_replay same
+compare
+jobs
+logs
+official-src
+results
+run_config.json
+run_summary.json
+total 520
+drwxrwxr-x 8 hongzefu hongzefu   4096 Sep 21 17:52 .
+drwxrwxr-x 7 hongzefu hongzefu   4096 Sep 23 21:22 ..
+-rw-rw-r-- 1 hongzefu hongzefu 116797 Jul 19 11:30 AGENTS.md
+drwxrwxr-x 2 hongzefu hongzefu   4096 Jul 19 11:30 assets
+.gitignore:215:/artifacts/*	artifacts/train-parity/local-smoke-01/official-src/scripts/evaluation.py

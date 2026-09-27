@@ -1,0 +1,138 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "objects.num_repeats",
+      "drawn": 6,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.button_xy",
+      "drawn": [
+        -0.15915907621383668,
+        0.10373573303222657
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.cube_min_center_dist",
+      "drawn": 0.08,
+      "source": "record"
+    },
+    {
+      "index": 3,
+      "path": "objects.color_order",
+      "drawn": [
+        0,
+        2,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "objects.target_color_idx",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.goal_xy",
+      "drawn": [
+        0.039243640899658205,
+        -0.10353418350219726
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.cubes.red_0",
+      "drawn": [
+        -0.21570917010307308,
+        -0.11703168392181397,
+        1.683554026394255
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.cubes.green_0",
+      "drawn": [
+        -0.09670606732368467,
+        0.22182868242263795,
+        2.322860743125124
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.cubes.blue_0",
+      "drawn": [
+        -0.30297898769378656,
+        0.14404984474182128,
+        0.7352778878010774
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "objects.cube_count",
+      "drawn": {
+        "requested": 3,
+        "actual": 3
+      },
+      "source": "record"
+    },
+    {
+      "index": 10,
+      "path": "objects.target_candidates",
+      "drawn": [
+        "red",
+        "green",
+        "blue"
+      ],
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "objects.target_cube_idx",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.distractors",
+      "drawn": [
+        {
+          "name": "cube_yellow_0",
+          "color": "yellow"
+        }
+      ],
+      "source": "record"
+    },
+    {
+      "index": 13,
+      "path": "layout.distractors.yellow_0",
+      "drawn": [
+        0.02440732717514038,
+        0.17249056816101074,
+        2.6834346119369266
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "objects.distractor_count",
+      "drawn": {
+        "requested": 1,
+        "actual": 1
+      },
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {}
+}

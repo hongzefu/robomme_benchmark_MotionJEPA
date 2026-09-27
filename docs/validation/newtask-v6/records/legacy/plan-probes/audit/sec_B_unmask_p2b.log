@@ -1,0 +1,7 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+P2B VideoUnmaskSwap layouts=10000 发起次数占比=[0.2829, 0.2865, 0.2818, 0.1487] 永不发起概率=[0.1698, 0.1587, 0.1693, 0.5022] selected含bin_3=0
+P2B ButtonUnmaskSwap layouts=9986 发起次数占比=[0.2841, 0.2882, 0.2867, 0.1411] 永不发起概率=[0.1693, 0.1607, 0.164, 0.5059] selected含bin_3=0
+EXIT_CODE=0

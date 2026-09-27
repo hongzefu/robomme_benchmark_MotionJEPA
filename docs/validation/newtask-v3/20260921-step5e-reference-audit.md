@@ -1,6 +1,6 @@
 # 步 5e：发布集审计 R1b（2026-09-21 预演 / 2026-09-22 正式）
 
-对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 5e、闸门 R1b。
+对应 [0921-newtask-release-v3-plan.md](../../plans/0921-newtask-release-v3-plan.md) 第五节步 5e、闸门 R1b。
 本文同时记录两次运行：先用 4 worker 那批做预演验证链路，再用单 worker 的 5d 正式产物重跑。
 **两次的统计量逐位相同**（见第五节），下文数字即正式结果。
 

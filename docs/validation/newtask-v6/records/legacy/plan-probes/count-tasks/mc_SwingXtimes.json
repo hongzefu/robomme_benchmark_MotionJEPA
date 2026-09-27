@@ -1,0 +1,282 @@
+[
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 6,
+  "success": 0.96875,
+  "wilson_lo": 0.9562176002068032,
+  "fails": {
+   "disk": 32
+  },
+  "min_pair_median": 0.0966894655119569,
+  "kw": {},
+  "sec": 4.9
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 7,
+  "success": 0.9716796875,
+  "wilson_lo": 0.9596231478247027,
+  "fails": {
+   "disk": 29
+  },
+  "min_pair_median": 0.09143921460897136,
+  "kw": {},
+  "sec": 5.8
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 8,
+  "success": 0.962890625,
+  "wilson_lo": 0.9494753493896662,
+  "fails": {
+   "disk": 38
+  },
+  "min_pair_median": 0.08839510586809081,
+  "kw": {},
+  "sec": 8.7
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 9,
+  "success": 0.97265625,
+  "wilson_lo": 0.9607642311242115,
+  "fails": {
+   "disk": 28
+  },
+  "min_pair_median": 0.08654313734945016,
+  "kw": {},
+  "sec": 8.7
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 10,
+  "success": 0.9560546875,
+  "wilson_lo": 0.9417036274880376,
+  "fails": {
+   "disk": 45
+  },
+  "min_pair_median": 0.08520028763251636,
+  "kw": {},
+  "sec": 17.5
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 11,
+  "success": 0.96875,
+  "wilson_lo": 0.9562176002068032,
+  "fails": {
+   "disk": 32
+  },
+  "min_pair_median": 0.08387268524220454,
+  "kw": {},
+  "sec": 18.4
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 12,
+  "success": 0.9619140625,
+  "wilson_lo": 0.9483594177817789,
+  "fails": {
+   "disk": 39
+  },
+  "min_pair_median": 0.08348773999331392,
+  "kw": {},
+  "sec": 16.6
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 13,
+  "success": 0.974609375,
+  "wilson_lo": 0.9630561580688454,
+  "fails": {
+   "disk": 26
+  },
+  "min_pair_median": 0.08269227796819012,
+  "kw": {},
+  "sec": 18.8
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 14,
+  "success": 0.970703125,
+  "wilson_lo": 0.9584851077050606,
+  "fails": {
+   "disk": 30
+  },
+  "min_pair_median": 0.08220235699757861,
+  "kw": {},
+  "sec": 17.1
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 15,
+  "success": 0.966796875,
+  "wilson_lo": 0.9539606979079528,
+  "fails": {
+   "disk": 33,
+   "distractor": 1
+  },
+  "min_pair_median": 0.08175840978065464,
+  "kw": {},
+  "sec": 16.1
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08",
+  "N": 16,
+  "success": 0.9541015625,
+  "wilson_lo": 0.9394987552600478,
+  "fails": {
+   "disk": 39,
+   "distractor": 8
+  },
+  "min_pair_median": 0.08141235960128639,
+  "kw": {},
+  "sec": 17.3
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08 预算1024",
+  "N": 8,
+  "success": 0.9638671875,
+  "wilson_lo": 0.9505933609927014,
+  "fails": {
+   "disk": 37
+  },
+  "min_pair_median": 0.08821285610530177,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 42.2
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08 预算1024",
+  "N": 10,
+  "success": 0.9609375,
+  "wilson_lo": 0.9472454916079235,
+  "fails": {
+   "disk": 40
+  },
+  "min_pair_median": 0.08503973226686251,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 77.7
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08 预算1024",
+  "N": 12,
+  "success": 0.9697265625,
+  "wilson_lo": 0.9573499688245313,
+  "fails": {
+   "disk": 31
+  },
+  "min_pair_median": 0.08312879907472673,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 62.5
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "现值 0.25 d=0.08 预算1024",
+  "N": 14,
+  "success": 0.9697265625,
+  "wilson_lo": 0.9573499688245313,
+  "fails": {
+   "disk": 31
+  },
+  "min_pair_median": 0.08205015514015988,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 106.2
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 10,
+  "success": 0.9755859375,
+  "wilson_lo": 0.964207353551252,
+  "fails": {
+   "disk": 25
+  },
+  "min_pair_median": 0.08822954713083957,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 17.1
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 12,
+  "success": 0.974609375,
+  "wilson_lo": 0.9630561580688454,
+  "fails": {
+   "disk": 26
+  },
+  "min_pair_median": 0.08546554884780236,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 21.4
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 14,
+  "success": 0.9794921875,
+  "wilson_lo": 0.9688519819484908,
+  "fails": {
+   "disk": 21
+  },
+  "min_pair_median": 0.08365467450725869,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 25.1
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 16,
+  "success": 0.98046875,
+  "wilson_lo": 0.9700244015115459,
+  "fails": {
+   "disk": 20
+  },
+  "min_pair_median": 0.08277545729910267,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 16.1
+ },
+ {
+  "env": "SwingXtimes",
+  "variant": "半宽 0.30 d=0.08",
+  "N": 18,
+  "success": 0.9716796875,
+  "wilson_lo": 0.9596231478247027,
+  "fails": {
+   "disk": 29
+  },
+  "min_pair_median": 0.0820184141448603,
+  "kw": {
+   "region_half": 0.3
+  },
+  "sec": 33.3
+ }
+]

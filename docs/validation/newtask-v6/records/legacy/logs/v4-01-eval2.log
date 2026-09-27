@@ -1,0 +1,26 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+EVAL InsertPeg/4 status=timeout steps=1301 binding={'available': True, 'mode': 'replay', 'mismatch': 0, 'unattributed_mismatch': 0, 'unused': 0}
+EVAL MoveCube/0 status=timeout steps=1301 binding={'available': True, 'mode': 'replay', 'mismatch': 0, 'unattributed_mismatch': 0, 'unused': 0}
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+EVAL PatternLock/0 status=timeout steps=1301 binding={'available': True, 'mode': 'replay', 'mismatch': 0, 'unattributed_mismatch': 0, 'unused': 0}
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+Warning: link 'camera_link' material 'aluminum' undefined.
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+EVAL RouteStick/0 status=timeout steps=1301 binding={'available': True, 'mode': 'replay', 'mismatch': 0, 'unattributed_mismatch': 0, 'unused': 0}
+EVAL_DONE episodes=4 out=artifacts/newtask-v4/v4-01/eval-p2
+EXIT_CODE=0

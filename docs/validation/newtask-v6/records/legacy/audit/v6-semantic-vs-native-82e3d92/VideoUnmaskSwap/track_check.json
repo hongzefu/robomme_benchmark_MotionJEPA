@@ -1,0 +1,575 @@
+[
+ {
+  "tier": "xhard1",
+  "seed": 8500000,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "red": 0.88,
+   "green": 0.8,
+   "blue": 0.54
+  },
+  "picks": {
+   "red": {
+    "step": 365,
+    "expected_px": [
+     160.0,
+     97.0
+    ],
+    "observed_px": [
+     159.1,
+     96.0
+    ],
+    "err": 1.36,
+    "nearest_other_slot_px": 36.6
+   },
+   "green": {
+    "step": 503,
+    "expected_px": [
+     140.6,
+     127.5
+    ],
+    "observed_px": [
+     139.7,
+     129.1
+    ],
+    "err": 1.74,
+    "nearest_other_slot_px": 37.6
+   }
+  }
+ },
+ {
+  "tier": "xhard1",
+  "seed": 8500300,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "blue": 0.9,
+   "green": 0.68,
+   "red": 0.89
+  },
+  "picks": {
+   "blue": {
+    "step": 369,
+    "expected_px": [
+     162.8,
+     93.9
+    ],
+    "observed_px": [
+     162.4,
+     93.0
+    ],
+    "err": 0.89,
+    "nearest_other_slot_px": 33.1
+   },
+   "green": {
+    "step": 513,
+    "expected_px": [
+     148.7,
+     143.2
+    ],
+    "observed_px": [
+     145.2,
+     144.7
+    ],
+    "err": 3.8,
+    "nearest_other_slot_px": 53.8
+   }
+  }
+ },
+ {
+  "tier": "xhard1",
+  "seed": 8500601,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "blue": 0.65,
+   "green": 1.1,
+   "red": 0.57
+  },
+  "picks": {
+   "blue": {
+    "step": 360,
+    "expected_px": [
+     140.0,
+     134.0
+    ],
+    "observed_px": [
+     139.8,
+     133.5
+    ],
+    "err": 0.58,
+    "nearest_other_slot_px": 45.5
+   },
+   "green": {
+    "step": 488,
+    "expected_px": [
+     107.1,
+     101.9
+    ],
+    "observed_px": [
+     106.5,
+     101.0
+    ],
+    "err": 1.04,
+    "nearest_other_slot_px": 31.0
+   }
+  }
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500000,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "blue": 1.0,
+   "green": 0.67,
+   "red": 0.62
+  },
+  "picks": {
+   "blue": {
+    "step": 403,
+    "expected_px": [
+     85.4,
+     95.2
+    ],
+    "observed_px": [
+     84.7,
+     94.5
+    ],
+    "err": 1.0,
+    "nearest_other_slot_px": 44.0
+   },
+   "green": {
+    "step": 551,
+    "expected_px": [
+     120.3,
+     136.6
+    ],
+    "observed_px": [
+     119.5,
+     136.3
+    ],
+    "err": 0.87,
+    "nearest_other_slot_px": 53.4
+   },
+   "red": {
+    "step": 706,
+    "expected_px": [
+     122.1,
+     71.4
+    ],
+    "observed_px": [
+     121.5,
+     70.5
+    ],
+    "err": 1.03,
+    "nearest_other_slot_px": 27.8
+   }
+  }
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500300,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "blue": 0.95,
+   "red": 0.88,
+   "green": 0.96
+  },
+  "picks": {
+   "blue": {
+    "step": 405,
+    "expected_px": [
+     99.8,
+     119.0
+    ],
+    "observed_px": [
+     99.1,
+     118.5
+    ],
+    "err": 0.93,
+    "nearest_other_slot_px": 45.8
+   },
+   "red": {
+    "step": 554,
+    "expected_px": [
+     148.8,
+     80.4
+    ],
+    "observed_px": [
+     148.3,
+     79.6
+    ],
+    "err": 0.88,
+    "nearest_other_slot_px": 27.3
+   },
+   "green": {
+    "step": 688,
+    "expected_px": [
+     121.1,
+     78.3
+    ],
+    "observed_px": [
+     120.5,
+     77.5
+    ],
+    "err": 0.95,
+    "nearest_other_slot_px": 28.4
+   }
+  }
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500600,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "red": 0.87,
+   "green": 0.77,
+   "blue": 1.17
+  },
+  "picks": {
+   "red": {
+    "step": 400,
+    "expected_px": [
+     137.6,
+     142.8
+    ],
+    "observed_px": [
+     136.5,
+     143.5
+    ],
+    "err": 1.31,
+    "nearest_other_slot_px": 39.9
+   },
+   "green": {
+    "step": 555,
+    "expected_px": [
+     125.4,
+     83.4
+    ],
+    "observed_px": [
+     124.9,
+     82.9
+    ],
+    "err": 0.74,
+    "nearest_other_slot_px": 28.8
+   },
+   "blue": {
+    "step": 699,
+    "expected_px": [
+     105.0,
+     118.9
+    ],
+    "observed_px": [
+     104.5,
+     119.9
+    ],
+    "err": 1.13,
+    "nearest_other_slot_px": 40.1
+   }
+  }
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500000,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "green": 1.02,
+   "blue": 0.75,
+   "red": 1.0
+  },
+  "picks": {
+   "green": {
+    "step": 474,
+    "expected_px": [
+     159.6,
+     106.7
+    ],
+    "observed_px": [
+     158.0,
+     105.0
+    ],
+    "err": 2.32,
+    "nearest_other_slot_px": 45.2
+   },
+   "blue": {
+    "step": 643,
+    "expected_px": [
+     88.0,
+     90.3
+    ],
+    "observed_px": [
+     87.0,
+     89.5
+    ],
+    "err": 1.27,
+    "nearest_other_slot_px": 37.6
+   },
+   "red": {
+    "step": 775,
+    "expected_px": [
+     122.5,
+     77.2
+    ],
+    "observed_px": [
+     122.1,
+     76.4
+    ],
+    "err": 0.87,
+    "nearest_other_slot_px": 36.8
+   }
+  }
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500300,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "green": 1.07,
+   "red": 0.81,
+   "blue": 0.88
+  },
+  "picks": {
+   "green": {
+    "step": 456,
+    "expected_px": [
+     128.2,
+     74.3
+    ],
+    "observed_px": [
+     127.5,
+     73.5
+    ],
+    "err": 1.07,
+    "nearest_other_slot_px": 33.9
+   },
+   "red": {
+    "step": 615,
+    "expected_px": [
+     133.1,
+     135.3
+    ],
+    "observed_px": [
+     132.9,
+     135.3
+    ],
+    "err": 0.2,
+    "nearest_other_slot_px": 36.7
+   },
+   "blue": {
+    "step": 749,
+    "expected_px": [
+     101.9,
+     95.7
+    ],
+    "observed_px": [
+     101.3,
+     95.0
+    ],
+    "err": 0.87,
+    "nearest_other_slot_px": 34.0
+   }
+  }
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500600,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "red": 0.78,
+   "blue": 0.6,
+   "green": 0.9
+  },
+  "picks": {
+   "red": {
+    "step": 445,
+    "expected_px": [
+     115.2,
+     77.5
+    ],
+    "observed_px": [
+     114.2,
+     77.4
+    ],
+    "err": 1.03,
+    "nearest_other_slot_px": 31.6
+   },
+   "blue": {
+    "step": 605,
+    "expected_px": [
+     140.1,
+     125.5
+    ],
+    "observed_px": [
+     139.9,
+     124.9
+    ],
+    "err": 0.6,
+    "nearest_other_slot_px": 41.8
+   },
+   "green": {
+    "step": 732,
+    "expected_px": [
+     97.2,
+     104.1
+    ],
+    "observed_px": [
+     96.5,
+     103.5
+    ],
+    "err": 0.94,
+    "nearest_other_slot_px": 32.0
+   }
+  }
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500000,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "blue": 0.81,
+   "green": 0.94,
+   "red": 0.81
+  },
+  "picks": {
+   "blue": {
+    "step": 535,
+    "expected_px": [
+     165.0,
+     94.9
+    ],
+    "observed_px": [
+     164.7,
+     94.0
+    ],
+    "err": 0.91,
+    "nearest_other_slot_px": 33.4
+   },
+   "green": {
+    "step": 679,
+    "expected_px": [
+     100.0,
+     88.0
+    ],
+    "observed_px": [
+     99.3,
+     87.5
+    ],
+    "err": 0.91,
+    "nearest_other_slot_px": 43.3
+   },
+   "red": {
+    "step": 829,
+    "expected_px": [
+     139.7,
+     71.9
+    ],
+    "observed_px": [
+     138.5,
+     70.4
+    ],
+    "err": 1.92,
+    "nearest_other_slot_px": 36.0
+   }
+  }
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500300,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "green": 0.51,
+   "red": 0.66,
+   "blue": 0.83
+  },
+  "picks": {
+   "green": {
+    "step": 533,
+    "expected_px": [
+     91.4,
+     109.2
+    ],
+    "observed_px": [
+     90.8,
+     109.0
+    ],
+    "err": 0.66,
+    "nearest_other_slot_px": 33.1
+   },
+   "red": {
+    "step": 684,
+    "expected_px": [
+     119.5,
+     81.7
+    ],
+    "observed_px": [
+     119.1,
+     81.4
+    ],
+    "err": 0.57,
+    "nearest_other_slot_px": 29.3
+   },
+   "blue": {
+    "step": 818,
+    "expected_px": [
+     144.9,
+     95.3
+    ],
+    "observed_px": [
+     144.5,
+     95.0
+    ],
+    "err": 0.51,
+    "nearest_other_slot_px": 28.2
+   }
+  }
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500601,
+  "spec_replay_mismatches": [],
+  "init_proj_err_px": {
+   "blue": 0.88,
+   "green": 0.91,
+   "red": 1.23
+  },
+  "picks": {
+   "blue": {
+    "step": 563,
+    "expected_px": [
+     153.5,
+     144.7
+    ],
+    "observed_px": [
+     152.7,
+     144.9
+    ],
+    "err": 0.83,
+    "nearest_other_slot_px": 53.4
+   },
+   "green": {
+    "step": 705,
+    "expected_px": [
+     110.0,
+     111.1
+    ],
+    "observed_px": [
+     109.3,
+     110.6
+    ],
+    "err": 0.87,
+    "nearest_other_slot_px": 24.7
+   },
+   "red": {
+    "step": 855,
+    "expected_px": [
+     158.7,
+     91.9
+    ],
+    "observed_px": [
+     158.1,
+     91.0
+    ],
+    "err": 1.08,
+    "nearest_other_slot_px": 45.0
+   }
+  }
+ }
+]

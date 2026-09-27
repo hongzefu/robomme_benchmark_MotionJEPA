@@ -1,0 +1,4198 @@
+[
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "seed": 7400000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed7400000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_0/videos/MoveCube_ep0_seed7400000_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4",
+  "setup": {
+   "difficulty": "xhard4",
+   "seed": 7400000,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 286,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <74, 89> to the target at <124, 129>",
+    "demo": true,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <74, 89> to the target at <124, 129>",
+    "completed": false
+   },
+   {
+    "step": 116,
+    "boundary": false,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <74, 89> to the target at <124, 129>",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 120,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 177,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 180,
+    "boundary": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <84, 92> to the target at <119, 100>",
+    "demo": false,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <84, 92> to the target at <119, 100>",
+    "completed": false
+   },
+   {
+    "step": 281,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Close the gripper and push the cube at <84, 92> to the target at <119, 100>",
+    "demo": false,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <84, 92> to the target at <119, 100>",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"C\", \"point\": [75, 90]}"
+   },
+   {
+    "step": 83,
+    "v": "{\"choice\": \"C\", \"point\": [76, 91]}"
+   },
+   {
+    "step": 84,
+    "v": "{\"choice\": \"C\", \"point\": [77, 92]}"
+   },
+   {
+    "step": 85,
+    "v": "{\"choice\": \"C\", \"point\": [78, 94]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"C\", \"point\": [79, 95]}"
+   },
+   {
+    "step": 87,
+    "v": "{\"choice\": \"C\", \"point\": [80, 97]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"C\", \"point\": [82, 99]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"C\", \"point\": [84, 100]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"C\", \"point\": [86, 102]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"C\", \"point\": [88, 104]}"
+   },
+   {
+    "step": 92,
+    "v": "{\"choice\": \"C\", \"point\": [91, 106]}"
+   },
+   {
+    "step": 93,
+    "v": "{\"choice\": \"C\", \"point\": [93, 108]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"C\", \"point\": [96, 110]}"
+   },
+   {
+    "step": 95,
+    "v": "{\"choice\": \"C\", \"point\": [98, 113]}"
+   },
+   {
+    "step": 96,
+    "v": "{\"choice\": \"C\", \"point\": [101, 115]}"
+   },
+   {
+    "step": 97,
+    "v": "{\"choice\": \"C\", \"point\": [103, 117]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"C\", \"point\": [106, 119]}"
+   },
+   {
+    "step": 99,
+    "v": "{\"choice\": \"C\", \"point\": [108, 121]}"
+   },
+   {
+    "step": 100,
+    "v": "{\"choice\": \"C\", \"point\": [110, 123]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"C\", \"point\": [111, 124]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"C\", \"point\": [113, 126]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"C\", \"point\": [115, 127]}"
+   },
+   {
+    "step": 104,
+    "v": "{\"choice\": \"C\", \"point\": [116, 128]}"
+   },
+   {
+    "step": 105,
+    "v": "{\"choice\": \"C\", \"point\": [117, 129]}"
+   },
+   {
+    "step": 106,
+    "v": "{\"choice\": \"C\", \"point\": [118, 130]}"
+   },
+   {
+    "step": 107,
+    "v": "{\"choice\": \"C\", \"point\": [119, 131]}"
+   },
+   {
+    "step": 108,
+    "v": "{\"choice\": \"C\", \"point\": [120, 132]}"
+   },
+   {
+    "step": 109,
+    "v": "{\"choice\": \"C\", \"point\": [121, 133]}"
+   },
+   {
+    "step": 111,
+    "v": "{\"choice\": \"C\", \"point\": [122, 133]}"
+   },
+   {
+    "step": 112,
+    "v": "{\"choice\": \"C\", \"point\": [122, 134]}"
+   },
+   {
+    "step": 120,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 180,
+    "v": "{\"choice\": \"C\", \"point\": [85, 93]}"
+   },
+   {
+    "step": 256,
+    "v": "{\"choice\": \"C\", \"point\": [86, 94]}"
+   },
+   {
+    "step": 257,
+    "v": "{\"choice\": \"C\", \"point\": [86, 95]}"
+   },
+   {
+    "step": 258,
+    "v": "{\"choice\": \"C\", \"point\": [88, 95]}"
+   },
+   {
+    "step": 259,
+    "v": "{\"choice\": \"C\", \"point\": [90, 96]}"
+   },
+   {
+    "step": 260,
+    "v": "{\"choice\": \"C\", \"point\": [91, 96]}"
+   },
+   {
+    "step": 261,
+    "v": "{\"choice\": \"C\", \"point\": [93, 97]}"
+   },
+   {
+    "step": 262,
+    "v": "{\"choice\": \"C\", \"point\": [96, 97]}"
+   },
+   {
+    "step": 263,
+    "v": "{\"choice\": \"C\", \"point\": [98, 98]}"
+   },
+   {
+    "step": 264,
+    "v": "{\"choice\": \"C\", \"point\": [100, 98]}"
+   },
+   {
+    "step": 265,
+    "v": "{\"choice\": \"C\", \"point\": [102, 99]}"
+   },
+   {
+    "step": 266,
+    "v": "{\"choice\": \"C\", \"point\": [104, 99]}"
+   },
+   {
+    "step": 267,
+    "v": "{\"choice\": \"C\", \"point\": [106, 100]}"
+   },
+   {
+    "step": 268,
+    "v": "{\"choice\": \"C\", \"point\": [108, 100]}"
+   },
+   {
+    "step": 269,
+    "v": "{\"choice\": \"C\", \"point\": [109, 101]}"
+   },
+   {
+    "step": 270,
+    "v": "{\"choice\": \"C\", \"point\": [111, 101]}"
+   },
+   {
+    "step": 271,
+    "v": "{\"choice\": \"C\", \"point\": [112, 102]}"
+   },
+   {
+    "step": 272,
+    "v": "{\"choice\": \"C\", \"point\": [113, 102]}"
+   },
+   {
+    "step": 273,
+    "v": "{\"choice\": \"C\", \"point\": [115, 102]}"
+   },
+   {
+    "step": 275,
+    "v": "{\"choice\": \"C\", \"point\": [116, 103]}"
+   },
+   {
+    "step": 276,
+    "v": "{\"choice\": \"C\", \"point\": [117, 103]}"
+   },
+   {
+    "step": 278,
+    "v": "{\"choice\": \"C\", \"point\": [118, 103]}"
+   }
+  ],
+  "n_demo": 180,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.4056603773584906
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "seed": 7400300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_3/hdf5_files/MoveCube_ep3_seed7400300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_3/videos/MoveCube_ep3_seed7400300_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4",
+  "setup": {
+   "difficulty": "xhard4",
+   "seed": 7400300,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 263,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <86, 158> to the target at <82, 88>",
+    "demo": true,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <86, 158> to the target at <82, 88>",
+    "completed": false
+   },
+   {
+    "step": 94,
+    "boundary": false,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <86, 158> to the target at <82, 88>",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 98,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 155,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 158,
+    "boundary": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <95, 92> to the target at <122, 133>",
+    "demo": false,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <95, 92> to the target at <122, 133>",
+    "completed": false
+   },
+   {
+    "step": 258,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Close the gripper and push the cube at <95, 92> to the target at <122, 133>",
+    "demo": false,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <95, 92> to the target at <122, 133>",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"C\", \"point\": [87, 159]}"
+   },
+   {
+    "step": 66,
+    "v": "{\"choice\": \"C\", \"point\": [87, 158]}"
+   },
+   {
+    "step": 67,
+    "v": "{\"choice\": \"C\", \"point\": [87, 156]}"
+   },
+   {
+    "step": 68,
+    "v": "{\"choice\": \"C\", \"point\": [88, 154]}"
+   },
+   {
+    "step": 69,
+    "v": "{\"choice\": \"C\", \"point\": [88, 152]}"
+   },
+   {
+    "step": 70,
+    "v": "{\"choice\": \"C\", \"point\": [88, 149]}"
+   },
+   {
+    "step": 71,
+    "v": "{\"choice\": \"C\", \"point\": [88, 146]}"
+   },
+   {
+    "step": 72,
+    "v": "{\"choice\": \"C\", \"point\": [88, 142]}"
+   },
+   {
+    "step": 73,
+    "v": "{\"choice\": \"C\", \"point\": [87, 138]}"
+   },
+   {
+    "step": 74,
+    "v": "{\"choice\": \"C\", \"point\": [87, 134]}"
+   },
+   {
+    "step": 75,
+    "v": "{\"choice\": \"C\", \"point\": [86, 130]}"
+   },
+   {
+    "step": 76,
+    "v": "{\"choice\": \"C\", \"point\": [86, 125]}"
+   },
+   {
+    "step": 77,
+    "v": "{\"choice\": \"C\", \"point\": [85, 121]}"
+   },
+   {
+    "step": 78,
+    "v": "{\"choice\": \"C\", \"point\": [85, 116]}"
+   },
+   {
+    "step": 79,
+    "v": "{\"choice\": \"C\", \"point\": [84, 112]}"
+   },
+   {
+    "step": 80,
+    "v": "{\"choice\": \"C\", \"point\": [84, 108]}"
+   },
+   {
+    "step": 81,
+    "v": "{\"choice\": \"C\", \"point\": [83, 105]}"
+   },
+   {
+    "step": 82,
+    "v": "{\"choice\": \"C\", \"point\": [83, 102]}"
+   },
+   {
+    "step": 83,
+    "v": "{\"choice\": \"C\", \"point\": [83, 99]}"
+   },
+   {
+    "step": 84,
+    "v": "{\"choice\": \"C\", \"point\": [82, 96]}"
+   },
+   {
+    "step": 85,
+    "v": "{\"choice\": \"C\", \"point\": [82, 94]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"C\", \"point\": [82, 92]}"
+   },
+   {
+    "step": 87,
+    "v": "{\"choice\": \"C\", \"point\": [81, 90]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"C\", \"point\": [81, 89]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"C\", \"point\": [81, 88]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"C\", \"point\": [81, 87]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"C\", \"point\": [81, 86]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 158,
+    "v": "{\"choice\": \"C\", \"point\": [96, 93]}"
+   },
+   {
+    "step": 236,
+    "v": "{\"choice\": \"C\", \"point\": [97, 95]}"
+   },
+   {
+    "step": 237,
+    "v": "{\"choice\": \"C\", \"point\": [97, 97]}"
+   },
+   {
+    "step": 238,
+    "v": "{\"choice\": \"C\", \"point\": [99, 100]}"
+   },
+   {
+    "step": 239,
+    "v": "{\"choice\": \"C\", \"point\": [100, 102]}"
+   },
+   {
+    "step": 240,
+    "v": "{\"choice\": \"C\", \"point\": [102, 105]}"
+   },
+   {
+    "step": 241,
+    "v": "{\"choice\": \"C\", \"point\": [104, 109]}"
+   },
+   {
+    "step": 242,
+    "v": "{\"choice\": \"C\", \"point\": [106, 112]}"
+   },
+   {
+    "step": 243,
+    "v": "{\"choice\": \"C\", \"point\": [108, 115]}"
+   },
+   {
+    "step": 244,
+    "v": "{\"choice\": \"C\", \"point\": [110, 118]}"
+   },
+   {
+    "step": 245,
+    "v": "{\"choice\": \"C\", \"point\": [112, 122]}"
+   },
+   {
+    "step": 246,
+    "v": "{\"choice\": \"C\", \"point\": [113, 124]}"
+   },
+   {
+    "step": 247,
+    "v": "{\"choice\": \"C\", \"point\": [115, 127]}"
+   },
+   {
+    "step": 248,
+    "v": "{\"choice\": \"C\", \"point\": [116, 129]}"
+   },
+   {
+    "step": 249,
+    "v": "{\"choice\": \"C\", \"point\": [117, 131]}"
+   },
+   {
+    "step": 250,
+    "v": "{\"choice\": \"C\", \"point\": [118, 133]}"
+   },
+   {
+    "step": 251,
+    "v": "{\"choice\": \"C\", \"point\": [119, 134]}"
+   },
+   {
+    "step": 252,
+    "v": "{\"choice\": \"C\", \"point\": [119, 135]}"
+   },
+   {
+    "step": 253,
+    "v": "{\"choice\": \"C\", \"point\": [120, 136]}"
+   },
+   {
+    "step": 254,
+    "v": "{\"choice\": \"C\", \"point\": [120, 137]}"
+   },
+   {
+    "step": 255,
+    "v": "{\"choice\": \"C\", \"point\": [121, 137]}"
+   }
+  ],
+  "n_demo": 158,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.3619047619047619
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "seed": 7400600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_6/hdf5_files/MoveCube_ep6_seed7400600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_6/videos/MoveCube_ep6_seed7400600_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4",
+  "setup": {
+   "difficulty": "xhard4",
+   "seed": 7400600,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 479,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <71, 151>",
+    "demo": true,
+    "simple_online": "Pick up the cube",
+    "grounded_online": "Pick up the cube at <71, 151>",
+    "completed": false
+   },
+   {
+    "step": 109,
+    "boundary": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <71, 151>",
+    "demo": true,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <115, 150>",
+    "completed": false
+   },
+   {
+    "step": 126,
+    "boundary": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <115, 150>",
+    "demo": true,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <115, 150>",
+    "completed": false
+   },
+   {
+    "step": 201,
+    "boundary": false,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <115, 150>",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 213,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 269,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 273,
+    "boundary": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <70, 157>",
+    "demo": false,
+    "simple_online": "Pick up the cube",
+    "grounded_online": "Pick up the cube at <70, 157>",
+    "completed": false
+   },
+   {
+    "step": 377,
+    "boundary": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <70, 157>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <107, 165>",
+    "completed": false
+   },
+   {
+    "step": 394,
+    "boundary": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <107, 165>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <107, 165>",
+    "completed": false
+   },
+   {
+    "step": 467,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the target at <107, 165>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <107, 165>",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"D\", \"point\": [73, 151]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"D\", \"point\": [72, 151]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"D\", \"point\": [71, 151]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"D\", \"point\": [70, 151]}"
+   },
+   {
+    "step": 104,
+    "v": "{\"choice\": \"D\", \"point\": [69, 151]}"
+   },
+   {
+    "step": 105,
+    "v": "{\"choice\": \"D\", \"point\": [68, 151]}"
+   },
+   {
+    "step": 106,
+    "v": "{\"choice\": \"D\", \"point\": [67, 151]}"
+   },
+   {
+    "step": 107,
+    "v": "{\"choice\": \"D\", \"point\": [66, 152]}"
+   },
+   {
+    "step": 108,
+    "v": "{\"choice\": \"D\", \"point\": [64, 152]}"
+   },
+   {
+    "step": 109,
+    "v": "{\"choice\": \"D\", \"point\": [62, 152]}"
+   },
+   {
+    "step": 110,
+    "v": "{\"choice\": \"D\", \"point\": [60, 153]}"
+   },
+   {
+    "step": 111,
+    "v": "{\"choice\": \"D\", \"point\": [58, 153]}"
+   },
+   {
+    "step": 112,
+    "v": "{\"choice\": \"D\", \"point\": [56, 153]}"
+   },
+   {
+    "step": 113,
+    "v": "{\"choice\": \"D\", \"point\": [53, 154]}"
+   },
+   {
+    "step": 114,
+    "v": "{\"choice\": \"D\", \"point\": [51, 154]}"
+   },
+   {
+    "step": 115,
+    "v": "{\"choice\": \"D\", \"point\": [49, 155]}"
+   },
+   {
+    "step": 116,
+    "v": "{\"choice\": \"D\", \"point\": [47, 155]}"
+   },
+   {
+    "step": 117,
+    "v": "{\"choice\": \"D\", \"point\": [45, 155]}"
+   },
+   {
+    "step": 118,
+    "v": "{\"choice\": \"D\", \"point\": [43, 155]}"
+   },
+   {
+    "step": 119,
+    "v": "{\"choice\": \"D\", \"point\": [42, 156]}"
+   },
+   {
+    "step": 120,
+    "v": "{\"choice\": \"D\", \"point\": [41, 156]}"
+   },
+   {
+    "step": 121,
+    "v": "{\"choice\": \"D\", \"point\": [40, 156]}"
+   },
+   {
+    "step": 122,
+    "v": "{\"choice\": \"D\", \"point\": [39, 156]}"
+   },
+   {
+    "step": 126,
+    "v": "{\"choice\": \"E\", \"point\": [115, 151]}"
+   },
+   {
+    "step": 213,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 273,
+    "v": "{\"choice\": \"D\", \"point\": [71, 158]}"
+   },
+   {
+    "step": 370,
+    "v": "{\"choice\": \"D\", \"point\": [70, 158]}"
+   },
+   {
+    "step": 372,
+    "v": "{\"choice\": \"D\", \"point\": [69, 158]}"
+   },
+   {
+    "step": 373,
+    "v": "{\"choice\": \"D\", \"point\": [68, 158]}"
+   },
+   {
+    "step": 374,
+    "v": "{\"choice\": \"D\", \"point\": [67, 158]}"
+   },
+   {
+    "step": 375,
+    "v": "{\"choice\": \"D\", \"point\": [66, 159]}"
+   },
+   {
+    "step": 376,
+    "v": "{\"choice\": \"D\", \"point\": [65, 159]}"
+   },
+   {
+    "step": 377,
+    "v": "{\"choice\": \"D\", \"point\": [63, 159]}"
+   },
+   {
+    "step": 378,
+    "v": "{\"choice\": \"D\", \"point\": [61, 160]}"
+   },
+   {
+    "step": 379,
+    "v": "{\"choice\": \"D\", \"point\": [59, 160]}"
+   },
+   {
+    "step": 380,
+    "v": "{\"choice\": \"D\", \"point\": [56, 161]}"
+   },
+   {
+    "step": 381,
+    "v": "{\"choice\": \"D\", \"point\": [54, 161]}"
+   },
+   {
+    "step": 382,
+    "v": "{\"choice\": \"D\", \"point\": [51, 162]}"
+   },
+   {
+    "step": 383,
+    "v": "{\"choice\": \"D\", \"point\": [49, 163]}"
+   },
+   {
+    "step": 384,
+    "v": "{\"choice\": \"D\", \"point\": [47, 163]}"
+   },
+   {
+    "step": 385,
+    "v": "{\"choice\": \"D\", \"point\": [45, 163]}"
+   },
+   {
+    "step": 386,
+    "v": "{\"choice\": \"D\", \"point\": [43, 164]}"
+   },
+   {
+    "step": 387,
+    "v": "{\"choice\": \"D\", \"point\": [42, 164]}"
+   },
+   {
+    "step": 388,
+    "v": "{\"choice\": \"D\", \"point\": [41, 165]}"
+   },
+   {
+    "step": 389,
+    "v": "{\"choice\": \"D\", \"point\": [40, 165]}"
+   },
+   {
+    "step": 390,
+    "v": "{\"choice\": \"D\", \"point\": [39, 165]}"
+   },
+   {
+    "step": 391,
+    "v": "{\"choice\": \"D\", \"point\": [38, 165]}"
+   },
+   {
+    "step": 394,
+    "v": "{\"choice\": \"E\", \"point\": [108, 166]}"
+   }
+  ],
+  "n_demo": 273,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.44660194174757284
+ },
+ {
+  "kind": "native",
+  "episode": 0,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed14000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_0/videos/MoveCube_ep0_seed14000_easy_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "easy",
+   "seed": 14000,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 425,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <85, 74>",
+    "demo": true,
+    "simple_online": "Pick up the peg",
+    "grounded_online": "Pick up the peg at <85, 74>",
+    "completed": false
+   },
+   {
+    "step": 97,
+    "boundary": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <85, 74>",
+    "demo": true,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <96, 138> to the target at <121, 116> with the peg",
+    "completed": false
+   },
+   {
+    "step": 119,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <96, 138> to the target at <121, 116> with the peg",
+    "demo": true,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <96, 138> to the target at <121, 116> with the peg",
+    "completed": false
+   },
+   {
+    "step": 199,
+    "boundary": false,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <96, 138> to the target at <121, 116> with the peg",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 204,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 230,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 234,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <87, 170>",
+    "demo": false,
+    "simple_online": "Pick up the peg",
+    "grounded_online": "Pick up the peg at <87, 170>",
+    "completed": false
+   },
+   {
+    "step": 330,
+    "boundary": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <87, 170>",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <98, 116> to the target at <106, 140> with the peg",
+    "completed": false
+   },
+   {
+    "step": 352,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <98, 116> to the target at <106, 140> with the peg",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <98, 116> to the target at <106, 140> with the peg",
+    "completed": false
+   },
+   {
+    "step": 419,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <98, 116> to the target at <106, 140> with the peg",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <98, 116> to the target at <106, 140> with the peg",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"A\", \"point\": [87, 75]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"A\", \"point\": [86, 75]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"A\", \"point\": [85, 75]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"A\", \"point\": [84, 74]}"
+   },
+   {
+    "step": 93,
+    "v": "{\"choice\": \"A\", \"point\": [82, 73]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"A\", \"point\": [81, 73]}"
+   },
+   {
+    "step": 95,
+    "v": "{\"choice\": \"A\", \"point\": [79, 72]}"
+   },
+   {
+    "step": 96,
+    "v": "{\"choice\": \"A\", \"point\": [77, 71]}"
+   },
+   {
+    "step": 97,
+    "v": "{\"choice\": \"A\", \"point\": [75, 70]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"A\", \"point\": [73, 69]}"
+   },
+   {
+    "step": 99,
+    "v": "{\"choice\": \"A\", \"point\": [70, 67]}"
+   },
+   {
+    "step": 100,
+    "v": "{\"choice\": \"A\", \"point\": [67, 65]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"A\", \"point\": [63, 64]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"A\", \"point\": [60, 62]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"A\", \"point\": [57, 60]}"
+   },
+   {
+    "step": 104,
+    "v": "{\"choice\": \"A\", \"point\": [53, 58]}"
+   },
+   {
+    "step": 105,
+    "v": "{\"choice\": \"A\", \"point\": [50, 57]}"
+   },
+   {
+    "step": 106,
+    "v": "{\"choice\": \"A\", \"point\": [47, 55]}"
+   },
+   {
+    "step": 107,
+    "v": "{\"choice\": \"A\", \"point\": [45, 54]}"
+   },
+   {
+    "step": 108,
+    "v": "{\"choice\": \"A\", \"point\": [42, 53]}"
+   },
+   {
+    "step": 109,
+    "v": "{\"choice\": \"A\", \"point\": [40, 52]}"
+   },
+   {
+    "step": 110,
+    "v": "{\"choice\": \"A\", \"point\": [39, 51]}"
+   },
+   {
+    "step": 111,
+    "v": "{\"choice\": \"A\", \"point\": [37, 50]}"
+   },
+   {
+    "step": 113,
+    "v": "{\"choice\": \"A\", \"point\": [36, 50]}"
+   },
+   {
+    "step": 114,
+    "v": "{\"choice\": \"A\", \"point\": [37, 50]}"
+   },
+   {
+    "step": 119,
+    "v": "{\"choice\": \"B\", \"point\": [97, 139]}"
+   },
+   {
+    "step": 181,
+    "v": "{\"choice\": \"B\", \"point\": [98, 138]}"
+   },
+   {
+    "step": 182,
+    "v": "{\"choice\": \"B\", \"point\": [100, 136]}"
+   },
+   {
+    "step": 183,
+    "v": "{\"choice\": \"B\", \"point\": [102, 134]}"
+   },
+   {
+    "step": 184,
+    "v": "{\"choice\": \"B\", \"point\": [104, 132]}"
+   },
+   {
+    "step": 185,
+    "v": "{\"choice\": \"B\", \"point\": [106, 130]}"
+   },
+   {
+    "step": 186,
+    "v": "{\"choice\": \"B\", \"point\": [108, 128]}"
+   },
+   {
+    "step": 187,
+    "v": "{\"choice\": \"B\", \"point\": [109, 126]}"
+   },
+   {
+    "step": 188,
+    "v": "{\"choice\": \"B\", \"point\": [111, 124]}"
+   },
+   {
+    "step": 189,
+    "v": "{\"choice\": \"B\", \"point\": [112, 123]}"
+   },
+   {
+    "step": 190,
+    "v": "{\"choice\": \"B\", \"point\": [114, 122]}"
+   },
+   {
+    "step": 191,
+    "v": "{\"choice\": \"B\", \"point\": [115, 120]}"
+   },
+   {
+    "step": 192,
+    "v": "{\"choice\": \"B\", \"point\": [116, 120]}"
+   },
+   {
+    "step": 193,
+    "v": "{\"choice\": \"B\", \"point\": [116, 119]}"
+   },
+   {
+    "step": 194,
+    "v": "{\"choice\": \"B\", \"point\": [117, 118]}"
+   },
+   {
+    "step": 195,
+    "v": "{\"choice\": \"B\", \"point\": [118, 117]}"
+   },
+   {
+    "step": 204,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 234,
+    "v": "{\"choice\": \"A\", \"point\": [88, 171]}"
+   },
+   {
+    "step": 322,
+    "v": "{\"choice\": \"A\", \"point\": [87, 171]}"
+   },
+   {
+    "step": 323,
+    "v": "{\"choice\": \"A\", \"point\": [87, 172]}"
+   },
+   {
+    "step": 324,
+    "v": "{\"choice\": \"A\", \"point\": [86, 172]}"
+   },
+   {
+    "step": 325,
+    "v": "{\"choice\": \"A\", \"point\": [85, 172]}"
+   },
+   {
+    "step": 326,
+    "v": "{\"choice\": \"A\", \"point\": [84, 173]}"
+   },
+   {
+    "step": 327,
+    "v": "{\"choice\": \"A\", \"point\": [82, 173]}"
+   },
+   {
+    "step": 328,
+    "v": "{\"choice\": \"A\", \"point\": [81, 174]}"
+   },
+   {
+    "step": 329,
+    "v": "{\"choice\": \"A\", \"point\": [79, 175]}"
+   },
+   {
+    "step": 330,
+    "v": "{\"choice\": \"A\", \"point\": [77, 176]}"
+   },
+   {
+    "step": 331,
+    "v": "{\"choice\": \"A\", \"point\": [74, 177]}"
+   },
+   {
+    "step": 332,
+    "v": "{\"choice\": \"A\", \"point\": [71, 178]}"
+   },
+   {
+    "step": 333,
+    "v": "{\"choice\": \"A\", \"point\": [68, 179]}"
+   },
+   {
+    "step": 334,
+    "v": "{\"choice\": \"A\", \"point\": [65, 181]}"
+   },
+   {
+    "step": 335,
+    "v": "{\"choice\": \"A\", \"point\": [61, 182]}"
+   },
+   {
+    "step": 336,
+    "v": "{\"choice\": \"A\", \"point\": [58, 184]}"
+   },
+   {
+    "step": 337,
+    "v": "{\"choice\": \"A\", \"point\": [55, 185]}"
+   },
+   {
+    "step": 338,
+    "v": "{\"choice\": \"A\", \"point\": [52, 187]}"
+   },
+   {
+    "step": 339,
+    "v": "{\"choice\": \"A\", \"point\": [49, 188]}"
+   },
+   {
+    "step": 340,
+    "v": "{\"choice\": \"A\", \"point\": [46, 189]}"
+   },
+   {
+    "step": 341,
+    "v": "{\"choice\": \"A\", \"point\": [44, 190]}"
+   },
+   {
+    "step": 342,
+    "v": "{\"choice\": \"A\", \"point\": [42, 191]}"
+   },
+   {
+    "step": 343,
+    "v": "{\"choice\": \"A\", \"point\": [40, 192]}"
+   },
+   {
+    "step": 344,
+    "v": "{\"choice\": \"A\", \"point\": [39, 192]}"
+   },
+   {
+    "step": 345,
+    "v": "{\"choice\": \"A\", \"point\": [38, 192]}"
+   },
+   {
+    "step": 346,
+    "v": "{\"choice\": \"A\", \"point\": [38, 193]}"
+   },
+   {
+    "step": 347,
+    "v": "{\"choice\": \"A\", \"point\": [38, 192]}"
+   },
+   {
+    "step": 352,
+    "v": "{\"choice\": \"B\", \"point\": [99, 117]}"
+   },
+   {
+    "step": 408,
+    "v": "{\"choice\": \"B\", \"point\": [100, 119]}"
+   },
+   {
+    "step": 409,
+    "v": "{\"choice\": \"B\", \"point\": [101, 123]}"
+   },
+   {
+    "step": 410,
+    "v": "{\"choice\": \"B\", \"point\": [102, 126]}"
+   },
+   {
+    "step": 411,
+    "v": "{\"choice\": \"B\", \"point\": [102, 129]}"
+   },
+   {
+    "step": 412,
+    "v": "{\"choice\": \"B\", \"point\": [103, 131]}"
+   },
+   {
+    "step": 413,
+    "v": "{\"choice\": \"B\", \"point\": [103, 134]}"
+   },
+   {
+    "step": 414,
+    "v": "{\"choice\": \"B\", \"point\": [104, 136]}"
+   },
+   {
+    "step": 415,
+    "v": "{\"choice\": \"B\", \"point\": [104, 138]}"
+   },
+   {
+    "step": 416,
+    "v": "{\"choice\": \"B\", \"point\": [104, 139]}"
+   },
+   {
+    "step": 417,
+    "v": "{\"choice\": \"B\", \"point\": [104, 140]}"
+   },
+   {
+    "step": 418,
+    "v": "{\"choice\": \"B\", \"point\": [105, 141]}"
+   }
+  ],
+  "n_demo": 234,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.5706806282722513
+ },
+ {
+  "kind": "native",
+  "episode": 1,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_1/hdf5_files/MoveCube_ep1_seed14100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_1/videos/MoveCube_ep1_seed14100_easy_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "easy",
+   "seed": 14100,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 441,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <86, 142>",
+    "demo": true,
+    "simple_online": "Pick up the cube",
+    "grounded_online": "Pick up the cube at <86, 142>",
+    "completed": false
+   },
+   {
+    "step": 97,
+    "boundary": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <86, 142>",
+    "demo": true,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <82, 104>",
+    "completed": false
+   },
+   {
+    "step": 114,
+    "boundary": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <82, 104>",
+    "demo": true,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <82, 104>",
+    "completed": false
+   },
+   {
+    "step": 185,
+    "boundary": false,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <82, 104>",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 198,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 254,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 258,
+    "boundary": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <101, 141>",
+    "demo": false,
+    "simple_online": "Pick up the cube",
+    "grounded_online": "Pick up the cube at <101, 141>",
+    "completed": false
+   },
+   {
+    "step": 352,
+    "boundary": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <101, 141>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <97, 118>",
+    "completed": false
+   },
+   {
+    "step": 364,
+    "boundary": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <95, 119>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <97, 118>",
+    "completed": false
+   },
+   {
+    "step": 424,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the target at <95, 119>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <97, 118>",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"D\", \"point\": [87, 143]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"D\", \"point\": [86, 143]}"
+   },
+   {
+    "step": 92,
+    "v": "{\"choice\": \"D\", \"point\": [85, 143]}"
+   },
+   {
+    "step": 93,
+    "v": "{\"choice\": \"D\", \"point\": [84, 143]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"D\", \"point\": [83, 143]}"
+   },
+   {
+    "step": 95,
+    "v": "{\"choice\": \"D\", \"point\": [82, 143]}"
+   },
+   {
+    "step": 96,
+    "v": "{\"choice\": \"D\", \"point\": [80, 144]}"
+   },
+   {
+    "step": 97,
+    "v": "{\"choice\": \"D\", \"point\": [78, 144]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"D\", \"point\": [76, 144]}"
+   },
+   {
+    "step": 99,
+    "v": "{\"choice\": \"D\", \"point\": [73, 145]}"
+   },
+   {
+    "step": 100,
+    "v": "{\"choice\": \"D\", \"point\": [71, 145]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"D\", \"point\": [68, 145]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"D\", \"point\": [66, 146]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"D\", \"point\": [64, 146]}"
+   },
+   {
+    "step": 104,
+    "v": "{\"choice\": \"D\", \"point\": [62, 146]}"
+   },
+   {
+    "step": 105,
+    "v": "{\"choice\": \"D\", \"point\": [60, 147]}"
+   },
+   {
+    "step": 106,
+    "v": "{\"choice\": \"D\", \"point\": [58, 147]}"
+   },
+   {
+    "step": 107,
+    "v": "{\"choice\": \"D\", \"point\": [57, 147]}"
+   },
+   {
+    "step": 108,
+    "v": "{\"choice\": \"D\", \"point\": [56, 147]}"
+   },
+   {
+    "step": 109,
+    "v": "{\"choice\": \"D\", \"point\": [55, 147]}"
+   },
+   {
+    "step": 114,
+    "v": "{\"choice\": \"E\", \"point\": [83, 105]}"
+   },
+   {
+    "step": 198,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 258,
+    "v": "{\"choice\": \"D\", \"point\": [102, 142]}"
+   },
+   {
+    "step": 346,
+    "v": "{\"choice\": \"D\", \"point\": [101, 143]}"
+   },
+   {
+    "step": 348,
+    "v": "{\"choice\": \"D\", \"point\": [100, 143]}"
+   },
+   {
+    "step": 349,
+    "v": "{\"choice\": \"D\", \"point\": [99, 143]}"
+   },
+   {
+    "step": 350,
+    "v": "{\"choice\": \"D\", \"point\": [97, 143]}"
+   },
+   {
+    "step": 351,
+    "v": "{\"choice\": \"D\", \"point\": [96, 143]}"
+   },
+   {
+    "step": 352,
+    "v": "{\"choice\": \"D\", \"point\": [94, 144]}"
+   },
+   {
+    "step": 353,
+    "v": "{\"choice\": \"D\", \"point\": [92, 144]}"
+   },
+   {
+    "step": 354,
+    "v": "{\"choice\": \"D\", \"point\": [90, 145]}"
+   },
+   {
+    "step": 355,
+    "v": "{\"choice\": \"D\", \"point\": [87, 145]}"
+   },
+   {
+    "step": 356,
+    "v": "{\"choice\": \"D\", \"point\": [85, 145]}"
+   },
+   {
+    "step": 357,
+    "v": "{\"choice\": \"D\", \"point\": [82, 146]}"
+   },
+   {
+    "step": 358,
+    "v": "{\"choice\": \"D\", \"point\": [80, 146]}"
+   },
+   {
+    "step": 359,
+    "v": "{\"choice\": \"D\", \"point\": [78, 147]}"
+   },
+   {
+    "step": 360,
+    "v": "{\"choice\": \"D\", \"point\": [77, 147]}"
+   },
+   {
+    "step": 361,
+    "v": "{\"choice\": \"D\", \"point\": [75, 147]}"
+   },
+   {
+    "step": 362,
+    "v": "{\"choice\": \"D\", \"point\": [74, 147]}"
+   },
+   {
+    "step": 364,
+    "v": "{\"choice\": \"E\", \"point\": [96, 120]}"
+   }
+  ],
+  "n_demo": 258,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.3989071038251366
+ },
+ {
+  "kind": "native",
+  "episode": 10,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_10/hdf5_files/MoveCube_ep10_seed15000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_10/videos/MoveCube_ep10_seed15000_medium_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "medium",
+   "seed": 15000,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 482,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <90, 66>",
+    "demo": true,
+    "simple_online": "Pick up the peg",
+    "grounded_online": "Pick up the peg at <90, 66>",
+    "completed": false
+   },
+   {
+    "step": 91,
+    "boundary": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <90, 66>",
+    "demo": true,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <108, 125> to the target at <84, 109> with the peg",
+    "completed": false
+   },
+   {
+    "step": 114,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <108, 125> to the target at <84, 109> with the peg",
+    "demo": true,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <108, 125> to the target at <84, 109> with the peg",
+    "completed": false
+   },
+   {
+    "step": 237,
+    "boundary": false,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <108, 125> to the target at <84, 109> with the peg",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 242,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 268,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 272,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <92, 49>",
+    "demo": false,
+    "simple_online": "Pick up the peg",
+    "grounded_online": "Pick up the peg at <92, 49>",
+    "completed": false
+   },
+   {
+    "step": 376,
+    "boundary": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <92, 49>",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <121, 111> to the target at <116, 141> with the peg",
+    "completed": false
+   },
+   {
+    "step": 402,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <121, 111> to the target at <116, 141> with the peg",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <121, 111> to the target at <116, 141> with the peg",
+    "completed": false
+   },
+   {
+    "step": 476,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <121, 111> to the target at <116, 141> with the peg",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <121, 111> to the target at <116, 141> with the peg",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"A\", \"point\": [92, 67]}"
+   },
+   {
+    "step": 74,
+    "v": "{\"choice\": \"A\", \"point\": [92, 68]}"
+   },
+   {
+    "step": 83,
+    "v": "{\"choice\": \"A\", \"point\": [91, 68]}"
+   },
+   {
+    "step": 85,
+    "v": "{\"choice\": \"A\", \"point\": [90, 67]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"A\", \"point\": [89, 67]}"
+   },
+   {
+    "step": 87,
+    "v": "{\"choice\": \"A\", \"point\": [88, 66]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"A\", \"point\": [86, 65]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"A\", \"point\": [85, 64]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"A\", \"point\": [83, 63]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"A\", \"point\": [80, 61]}"
+   },
+   {
+    "step": 92,
+    "v": "{\"choice\": \"A\", \"point\": [78, 59]}"
+   },
+   {
+    "step": 93,
+    "v": "{\"choice\": \"A\", \"point\": [75, 57]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"A\", \"point\": [71, 55]}"
+   },
+   {
+    "step": 95,
+    "v": "{\"choice\": \"A\", \"point\": [68, 53]}"
+   },
+   {
+    "step": 96,
+    "v": "{\"choice\": \"A\", \"point\": [65, 51]}"
+   },
+   {
+    "step": 97,
+    "v": "{\"choice\": \"A\", \"point\": [61, 49]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"A\", \"point\": [58, 47]}"
+   },
+   {
+    "step": 99,
+    "v": "{\"choice\": \"A\", \"point\": [55, 45]}"
+   },
+   {
+    "step": 100,
+    "v": "{\"choice\": \"A\", \"point\": [52, 43]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"A\", \"point\": [50, 42]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"A\", \"point\": [48, 40]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"A\", \"point\": [46, 39]}"
+   },
+   {
+    "step": 104,
+    "v": "{\"choice\": \"A\", \"point\": [45, 38]}"
+   },
+   {
+    "step": 105,
+    "v": "{\"choice\": \"A\", \"point\": [44, 38]}"
+   },
+   {
+    "step": 106,
+    "v": "{\"choice\": \"A\", \"point\": [43, 38]}"
+   },
+   {
+    "step": 114,
+    "v": "{\"choice\": \"B\", \"point\": [109, 126]}"
+   },
+   {
+    "step": 215,
+    "v": "{\"choice\": \"B\", \"point\": [108, 125]}"
+   },
+   {
+    "step": 216,
+    "v": "{\"choice\": \"B\", \"point\": [106, 124]}"
+   },
+   {
+    "step": 217,
+    "v": "{\"choice\": \"B\", \"point\": [104, 123]}"
+   },
+   {
+    "step": 218,
+    "v": "{\"choice\": \"B\", \"point\": [102, 122]}"
+   },
+   {
+    "step": 219,
+    "v": "{\"choice\": \"B\", \"point\": [100, 120]}"
+   },
+   {
+    "step": 220,
+    "v": "{\"choice\": \"B\", \"point\": [98, 119]}"
+   },
+   {
+    "step": 221,
+    "v": "{\"choice\": \"B\", \"point\": [96, 118]}"
+   },
+   {
+    "step": 222,
+    "v": "{\"choice\": \"B\", \"point\": [94, 117]}"
+   },
+   {
+    "step": 223,
+    "v": "{\"choice\": \"B\", \"point\": [92, 116]}"
+   },
+   {
+    "step": 224,
+    "v": "{\"choice\": \"B\", \"point\": [90, 115]}"
+   },
+   {
+    "step": 225,
+    "v": "{\"choice\": \"B\", \"point\": [89, 114]}"
+   },
+   {
+    "step": 226,
+    "v": "{\"choice\": \"B\", \"point\": [88, 113]}"
+   },
+   {
+    "step": 227,
+    "v": "{\"choice\": \"B\", \"point\": [86, 113]}"
+   },
+   {
+    "step": 228,
+    "v": "{\"choice\": \"B\", \"point\": [85, 112]}"
+   },
+   {
+    "step": 229,
+    "v": "{\"choice\": \"B\", \"point\": [84, 112]}"
+   },
+   {
+    "step": 230,
+    "v": "{\"choice\": \"B\", \"point\": [83, 111]}"
+   },
+   {
+    "step": 232,
+    "v": "{\"choice\": \"B\", \"point\": [82, 110]}"
+   },
+   {
+    "step": 233,
+    "v": "{\"choice\": \"B\", \"point\": [81, 110]}"
+   },
+   {
+    "step": 242,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 272,
+    "v": "{\"choice\": \"A\", \"point\": [94, 52]}"
+   },
+   {
+    "step": 360,
+    "v": "{\"choice\": \"A\", \"point\": [93, 53]}"
+   },
+   {
+    "step": 369,
+    "v": "{\"choice\": \"A\", \"point\": [93, 52]}"
+   },
+   {
+    "step": 370,
+    "v": "{\"choice\": \"A\", \"point\": [92, 52]}"
+   },
+   {
+    "step": 371,
+    "v": "{\"choice\": \"A\", \"point\": [91, 51]}"
+   },
+   {
+    "step": 372,
+    "v": "{\"choice\": \"A\", \"point\": [90, 51]}"
+   },
+   {
+    "step": 373,
+    "v": "{\"choice\": \"A\", \"point\": [89, 50]}"
+   },
+   {
+    "step": 374,
+    "v": "{\"choice\": \"A\", \"point\": [87, 49]}"
+   },
+   {
+    "step": 375,
+    "v": "{\"choice\": \"A\", \"point\": [86, 47]}"
+   },
+   {
+    "step": 376,
+    "v": "{\"choice\": \"A\", \"point\": [83, 45]}"
+   },
+   {
+    "step": 377,
+    "v": "{\"choice\": \"A\", \"point\": [81, 44]}"
+   },
+   {
+    "step": 378,
+    "v": "{\"choice\": \"A\", \"point\": [78, 41]}"
+   },
+   {
+    "step": 379,
+    "v": "{\"choice\": \"A\", \"point\": [75, 39]}"
+   },
+   {
+    "step": 380,
+    "v": "{\"choice\": \"A\", \"point\": [71, 36]}"
+   },
+   {
+    "step": 381,
+    "v": "{\"choice\": \"A\", \"point\": [68, 33]}"
+   },
+   {
+    "step": 382,
+    "v": "{\"choice\": \"A\", \"point\": [64, 30]}"
+   },
+   {
+    "step": 383,
+    "v": "{\"choice\": \"A\", \"point\": [61, 27]}"
+   },
+   {
+    "step": 384,
+    "v": "{\"choice\": \"A\", \"point\": [57, 25]}"
+   },
+   {
+    "step": 385,
+    "v": "{\"choice\": \"A\", \"point\": [54, 22]}"
+   },
+   {
+    "step": 386,
+    "v": "{\"choice\": \"A\", \"point\": [51, 20]}"
+   },
+   {
+    "step": 387,
+    "v": "{\"choice\": \"A\", \"point\": [48, 18]}"
+   },
+   {
+    "step": 388,
+    "v": "{\"choice\": \"A\", \"point\": [46, 16]}"
+   },
+   {
+    "step": 389,
+    "v": "{\"choice\": \"A\", \"point\": [44, 15]}"
+   },
+   {
+    "step": 390,
+    "v": "{\"choice\": \"A\", \"point\": [43, 14]}"
+   },
+   {
+    "step": 391,
+    "v": "{\"choice\": \"A\", \"point\": [42, 13]}"
+   },
+   {
+    "step": 392,
+    "v": "{\"choice\": \"A\", \"point\": [41, 13]}"
+   },
+   {
+    "step": 394,
+    "v": "{\"choice\": \"A\", \"point\": [42, 13]}"
+   },
+   {
+    "step": 395,
+    "v": "{\"choice\": \"A\", \"point\": [42, 14]}"
+   },
+   {
+    "step": 396,
+    "v": "{\"choice\": \"A\", \"point\": [43, 14]}"
+   },
+   {
+    "step": 400,
+    "v": "{\"choice\": \"A\", \"point\": [42, 14]}"
+   },
+   {
+    "step": 402,
+    "v": "{\"choice\": \"B\", \"point\": [122, 112]}"
+   },
+   {
+    "step": 463,
+    "v": "{\"choice\": \"B\", \"point\": [121, 115]}"
+   },
+   {
+    "step": 464,
+    "v": "{\"choice\": \"B\", \"point\": [120, 119]}"
+   },
+   {
+    "step": 465,
+    "v": "{\"choice\": \"B\", \"point\": [118, 123]}"
+   },
+   {
+    "step": 466,
+    "v": "{\"choice\": \"B\", \"point\": [117, 126]}"
+   },
+   {
+    "step": 467,
+    "v": "{\"choice\": \"B\", \"point\": [116, 130]}"
+   },
+   {
+    "step": 468,
+    "v": "{\"choice\": \"B\", \"point\": [115, 133]}"
+   },
+   {
+    "step": 469,
+    "v": "{\"choice\": \"B\", \"point\": [115, 135]}"
+   },
+   {
+    "step": 470,
+    "v": "{\"choice\": \"B\", \"point\": [114, 138]}"
+   },
+   {
+    "step": 471,
+    "v": "{\"choice\": \"B\", \"point\": [113, 139]}"
+   },
+   {
+    "step": 472,
+    "v": "{\"choice\": \"B\", \"point\": [113, 141]}"
+   },
+   {
+    "step": 473,
+    "v": "{\"choice\": \"B\", \"point\": [112, 142]}"
+   },
+   {
+    "step": 475,
+    "v": "{\"choice\": \"B\", \"point\": [112, 143]}"
+   }
+  ],
+  "n_demo": 272,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.5666666666666667
+ },
+ {
+  "kind": "native",
+  "episode": 11,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_11/hdf5_files/MoveCube_ep11_seed15100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_11/videos/MoveCube_ep11_seed15100_hard_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "hard",
+   "seed": 15100,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 257,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <109, 131> to the target at <86, 121>",
+    "demo": true,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <109, 131> to the target at <86, 121>",
+    "completed": false
+   },
+   {
+    "step": 98,
+    "boundary": false,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <109, 131> to the target at <86, 121>",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 102,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 159,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 162,
+    "boundary": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <97, 137> to the target at <106, 112>",
+    "demo": false,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <97, 137> to the target at <106, 112>",
+    "completed": false
+   },
+   {
+    "step": 252,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Close the gripper and push the cube at <97, 137> to the target at <106, 112>",
+    "demo": false,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <97, 137> to the target at <106, 112>",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"C\", \"point\": [110, 132]}"
+   },
+   {
+    "step": 57,
+    "v": "{\"choice\": \"C\", \"point\": [110, 133]}"
+   },
+   {
+    "step": 58,
+    "v": "{\"choice\": \"C\", \"point\": [109, 133]}"
+   },
+   {
+    "step": 59,
+    "v": "{\"choice\": \"C\", \"point\": [109, 134]}"
+   },
+   {
+    "step": 63,
+    "v": "{\"choice\": \"C\", \"point\": [108, 134]}"
+   },
+   {
+    "step": 67,
+    "v": "{\"choice\": \"C\", \"point\": [107, 133]}"
+   },
+   {
+    "step": 69,
+    "v": "{\"choice\": \"C\", \"point\": [106, 133]}"
+   },
+   {
+    "step": 70,
+    "v": "{\"choice\": \"C\", \"point\": [105, 133]}"
+   },
+   {
+    "step": 71,
+    "v": "{\"choice\": \"C\", \"point\": [104, 133]}"
+   },
+   {
+    "step": 72,
+    "v": "{\"choice\": \"C\", \"point\": [103, 133]}"
+   },
+   {
+    "step": 73,
+    "v": "{\"choice\": \"C\", \"point\": [102, 133]}"
+   },
+   {
+    "step": 74,
+    "v": "{\"choice\": \"C\", \"point\": [101, 132]}"
+   },
+   {
+    "step": 75,
+    "v": "{\"choice\": \"C\", \"point\": [100, 132]}"
+   },
+   {
+    "step": 76,
+    "v": "{\"choice\": \"C\", \"point\": [98, 132]}"
+   },
+   {
+    "step": 77,
+    "v": "{\"choice\": \"C\", \"point\": [97, 132]}"
+   },
+   {
+    "step": 78,
+    "v": "{\"choice\": \"C\", \"point\": [95, 132]}"
+   },
+   {
+    "step": 79,
+    "v": "{\"choice\": \"C\", \"point\": [94, 132]}"
+   },
+   {
+    "step": 80,
+    "v": "{\"choice\": \"C\", \"point\": [92, 131]}"
+   },
+   {
+    "step": 81,
+    "v": "{\"choice\": \"C\", \"point\": [90, 130]}"
+   },
+   {
+    "step": 82,
+    "v": "{\"choice\": \"C\", \"point\": [89, 130]}"
+   },
+   {
+    "step": 83,
+    "v": "{\"choice\": \"C\", \"point\": [88, 129]}"
+   },
+   {
+    "step": 84,
+    "v": "{\"choice\": \"C\", \"point\": [86, 128]}"
+   },
+   {
+    "step": 85,
+    "v": "{\"choice\": \"C\", \"point\": [85, 128]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"C\", \"point\": [84, 127]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"C\", \"point\": [83, 127]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"C\", \"point\": [82, 126]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"C\", \"point\": [81, 126]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 162,
+    "v": "{\"choice\": \"C\", \"point\": [98, 138]}"
+   },
+   {
+    "step": 239,
+    "v": "{\"choice\": \"C\", \"point\": [99, 136]}"
+   },
+   {
+    "step": 240,
+    "v": "{\"choice\": \"C\", \"point\": [99, 133]}"
+   },
+   {
+    "step": 241,
+    "v": "{\"choice\": \"C\", \"point\": [99, 130]}"
+   },
+   {
+    "step": 242,
+    "v": "{\"choice\": \"C\", \"point\": [99, 127]}"
+   },
+   {
+    "step": 243,
+    "v": "{\"choice\": \"C\", \"point\": [99, 124]}"
+   },
+   {
+    "step": 244,
+    "v": "{\"choice\": \"C\", \"point\": [100, 121]}"
+   },
+   {
+    "step": 245,
+    "v": "{\"choice\": \"C\", \"point\": [100, 118]}"
+   },
+   {
+    "step": 246,
+    "v": "{\"choice\": \"C\", \"point\": [101, 116]}"
+   },
+   {
+    "step": 247,
+    "v": "{\"choice\": \"C\", \"point\": [101, 114]}"
+   },
+   {
+    "step": 248,
+    "v": "{\"choice\": \"C\", \"point\": [102, 112]}"
+   },
+   {
+    "step": 249,
+    "v": "{\"choice\": \"C\", \"point\": [102, 111]}"
+   },
+   {
+    "step": 250,
+    "v": "{\"choice\": \"C\", \"point\": [102, 110]}"
+   },
+   {
+    "step": 252,
+    "v": "{\"choice\": \"C\", \"point\": [102, 109]}"
+   }
+  ],
+  "n_demo": 162,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.29473684210526313
+ },
+ {
+  "kind": "native",
+  "episode": 2,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_2/hdf5_files/MoveCube_ep2_seed14200.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_2/videos/MoveCube_ep2_seed14200_medium_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "medium",
+   "seed": 14200,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 478,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <94, 170>",
+    "demo": true,
+    "simple_online": "Pick up the peg",
+    "grounded_online": "Pick up the peg at <94, 170>",
+    "completed": false
+   },
+   {
+    "step": 91,
+    "boundary": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <94, 170>",
+    "demo": true,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <83, 146> to the target at <124, 109> with the peg",
+    "completed": false
+   },
+   {
+    "step": 114,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <83, 146> to the target at <124, 109> with the peg",
+    "demo": true,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <83, 146> to the target at <124, 109> with the peg",
+    "completed": false
+   },
+   {
+    "step": 208,
+    "boundary": false,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <83, 146> to the target at <124, 109> with the peg",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 213,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 239,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 243,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <93, 176>",
+    "demo": false,
+    "simple_online": "Pick up the peg",
+    "grounded_online": "Pick up the peg at <93, 176>",
+    "completed": false
+   },
+   {
+    "step": 335,
+    "boundary": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <93, 176>",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <118, 148> to the target at <99, 136> with the peg",
+    "completed": false
+   },
+   {
+    "step": 357,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <118, 148> to the target at <99, 136> with the peg",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <118, 148> to the target at <99, 136> with the peg",
+    "completed": false
+   },
+   {
+    "step": 472,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <118, 148> to the target at <99, 136> with the peg",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <118, 148> to the target at <99, 136> with the peg",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"A\", \"point\": [95, 171]}"
+   },
+   {
+    "step": 75,
+    "v": "{\"choice\": \"A\", \"point\": [95, 172]}"
+   },
+   {
+    "step": 84,
+    "v": "{\"choice\": \"A\", \"point\": [94, 172]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"A\", \"point\": [93, 173]}"
+   },
+   {
+    "step": 87,
+    "v": "{\"choice\": \"A\", \"point\": [92, 173]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"A\", \"point\": [91, 174]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"A\", \"point\": [89, 174]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"A\", \"point\": [87, 175]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"A\", \"point\": [85, 176]}"
+   },
+   {
+    "step": 92,
+    "v": "{\"choice\": \"A\", \"point\": [83, 177]}"
+   },
+   {
+    "step": 93,
+    "v": "{\"choice\": \"A\", \"point\": [80, 179]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"A\", \"point\": [77, 180]}"
+   },
+   {
+    "step": 95,
+    "v": "{\"choice\": \"A\", \"point\": [74, 182]}"
+   },
+   {
+    "step": 96,
+    "v": "{\"choice\": \"A\", \"point\": [70, 183]}"
+   },
+   {
+    "step": 97,
+    "v": "{\"choice\": \"A\", \"point\": [67, 185]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"A\", \"point\": [64, 187]}"
+   },
+   {
+    "step": 99,
+    "v": "{\"choice\": \"A\", \"point\": [61, 188]}"
+   },
+   {
+    "step": 100,
+    "v": "{\"choice\": \"A\", \"point\": [58, 190]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"A\", \"point\": [55, 191]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"A\", \"point\": [53, 192]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"A\", \"point\": [51, 193]}"
+   },
+   {
+    "step": 104,
+    "v": "{\"choice\": \"A\", \"point\": [49, 194]}"
+   },
+   {
+    "step": 105,
+    "v": "{\"choice\": \"A\", \"point\": [48, 194]}"
+   },
+   {
+    "step": 106,
+    "v": "{\"choice\": \"A\", \"point\": [47, 195]}"
+   },
+   {
+    "step": 111,
+    "v": "{\"choice\": \"A\", \"point\": [47, 194]}"
+   },
+   {
+    "step": 114,
+    "v": "{\"choice\": \"B\", \"point\": [84, 147]}"
+   },
+   {
+    "step": 181,
+    "v": "{\"choice\": \"B\", \"point\": [85, 147]}"
+   },
+   {
+    "step": 182,
+    "v": "{\"choice\": \"B\", \"point\": [87, 146]}"
+   },
+   {
+    "step": 183,
+    "v": "{\"choice\": \"B\", \"point\": [89, 144]}"
+   },
+   {
+    "step": 184,
+    "v": "{\"choice\": \"B\", \"point\": [91, 144]}"
+   },
+   {
+    "step": 185,
+    "v": "{\"choice\": \"B\", \"point\": [93, 142]}"
+   },
+   {
+    "step": 186,
+    "v": "{\"choice\": \"B\", \"point\": [95, 140]}"
+   },
+   {
+    "step": 187,
+    "v": "{\"choice\": \"B\", \"point\": [97, 138]}"
+   },
+   {
+    "step": 188,
+    "v": "{\"choice\": \"B\", \"point\": [100, 136]}"
+   },
+   {
+    "step": 189,
+    "v": "{\"choice\": \"B\", \"point\": [102, 133]}"
+   },
+   {
+    "step": 190,
+    "v": "{\"choice\": \"B\", \"point\": [105, 131]}"
+   },
+   {
+    "step": 191,
+    "v": "{\"choice\": \"B\", \"point\": [107, 129]}"
+   },
+   {
+    "step": 192,
+    "v": "{\"choice\": \"B\", \"point\": [109, 127]}"
+   },
+   {
+    "step": 193,
+    "v": "{\"choice\": \"B\", \"point\": [111, 125]}"
+   },
+   {
+    "step": 194,
+    "v": "{\"choice\": \"B\", \"point\": [113, 124]}"
+   },
+   {
+    "step": 195,
+    "v": "{\"choice\": \"B\", \"point\": [115, 122]}"
+   },
+   {
+    "step": 196,
+    "v": "{\"choice\": \"B\", \"point\": [116, 120]}"
+   },
+   {
+    "step": 197,
+    "v": "{\"choice\": \"B\", \"point\": [118, 119]}"
+   },
+   {
+    "step": 198,
+    "v": "{\"choice\": \"B\", \"point\": [119, 118]}"
+   },
+   {
+    "step": 199,
+    "v": "{\"choice\": \"B\", \"point\": [120, 117]}"
+   },
+   {
+    "step": 200,
+    "v": "{\"choice\": \"B\", \"point\": [121, 116]}"
+   },
+   {
+    "step": 201,
+    "v": "{\"choice\": \"B\", \"point\": [122, 115]}"
+   },
+   {
+    "step": 202,
+    "v": "{\"choice\": \"B\", \"point\": [123, 114]}"
+   },
+   {
+    "step": 203,
+    "v": "{\"choice\": \"B\", \"point\": [124, 114]}"
+   },
+   {
+    "step": 204,
+    "v": "{\"choice\": \"B\", \"point\": [124, 113]}"
+   },
+   {
+    "step": 205,
+    "v": "{\"choice\": \"B\", \"point\": [125, 113]}"
+   },
+   {
+    "step": 206,
+    "v": "{\"choice\": \"B\", \"point\": [125, 112]}"
+   },
+   {
+    "step": 213,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 243,
+    "v": "{\"choice\": \"A\", \"point\": [94, 177]}"
+   },
+   {
+    "step": 325,
+    "v": "{\"choice\": \"A\", \"point\": [93, 177]}"
+   },
+   {
+    "step": 328,
+    "v": "{\"choice\": \"A\", \"point\": [92, 178]}"
+   },
+   {
+    "step": 329,
+    "v": "{\"choice\": \"A\", \"point\": [91, 178]}"
+   },
+   {
+    "step": 330,
+    "v": "{\"choice\": \"A\", \"point\": [90, 179]}"
+   },
+   {
+    "step": 331,
+    "v": "{\"choice\": \"A\", \"point\": [89, 179]}"
+   },
+   {
+    "step": 332,
+    "v": "{\"choice\": \"A\", \"point\": [88, 180]}"
+   },
+   {
+    "step": 333,
+    "v": "{\"choice\": \"A\", \"point\": [86, 181]}"
+   },
+   {
+    "step": 334,
+    "v": "{\"choice\": \"A\", \"point\": [84, 182]}"
+   },
+   {
+    "step": 335,
+    "v": "{\"choice\": \"A\", \"point\": [82, 183]}"
+   },
+   {
+    "step": 336,
+    "v": "{\"choice\": \"A\", \"point\": [79, 185]}"
+   },
+   {
+    "step": 337,
+    "v": "{\"choice\": \"A\", \"point\": [76, 186]}"
+   },
+   {
+    "step": 338,
+    "v": "{\"choice\": \"A\", \"point\": [73, 188]}"
+   },
+   {
+    "step": 339,
+    "v": "{\"choice\": \"A\", \"point\": [69, 190]}"
+   },
+   {
+    "step": 340,
+    "v": "{\"choice\": \"A\", \"point\": [66, 192]}"
+   },
+   {
+    "step": 341,
+    "v": "{\"choice\": \"A\", \"point\": [63, 193]}"
+   },
+   {
+    "step": 342,
+    "v": "{\"choice\": \"A\", \"point\": [60, 195]}"
+   },
+   {
+    "step": 343,
+    "v": "{\"choice\": \"A\", \"point\": [57, 197]}"
+   },
+   {
+    "step": 344,
+    "v": "{\"choice\": \"A\", \"point\": [54, 198]}"
+   },
+   {
+    "step": 345,
+    "v": "{\"choice\": \"A\", \"point\": [51, 199]}"
+   },
+   {
+    "step": 346,
+    "v": "{\"choice\": \"A\", \"point\": [49, 200]}"
+   },
+   {
+    "step": 347,
+    "v": "{\"choice\": \"A\", \"point\": [48, 201]}"
+   },
+   {
+    "step": 348,
+    "v": "{\"choice\": \"A\", \"point\": [46, 202]}"
+   },
+   {
+    "step": 350,
+    "v": "{\"choice\": \"A\", \"point\": [45, 202]}"
+   },
+   {
+    "step": 351,
+    "v": "{\"choice\": \"A\", \"point\": [45, 203]}"
+   },
+   {
+    "step": 352,
+    "v": "{\"choice\": \"A\", \"point\": [45, 202]}"
+   },
+   {
+    "step": 357,
+    "v": "{\"choice\": \"B\", \"point\": [120, 149]}"
+   },
+   {
+    "step": 451,
+    "v": "{\"choice\": \"B\", \"point\": [118, 148]}"
+   },
+   {
+    "step": 452,
+    "v": "{\"choice\": \"B\", \"point\": [117, 147]}"
+   },
+   {
+    "step": 453,
+    "v": "{\"choice\": \"B\", \"point\": [116, 145]}"
+   },
+   {
+    "step": 454,
+    "v": "{\"choice\": \"B\", \"point\": [115, 144]}"
+   },
+   {
+    "step": 455,
+    "v": "{\"choice\": \"B\", \"point\": [113, 143]}"
+   },
+   {
+    "step": 456,
+    "v": "{\"choice\": \"B\", \"point\": [111, 142]}"
+   },
+   {
+    "step": 457,
+    "v": "{\"choice\": \"B\", \"point\": [110, 141]}"
+   },
+   {
+    "step": 458,
+    "v": "{\"choice\": \"B\", \"point\": [108, 141]}"
+   },
+   {
+    "step": 459,
+    "v": "{\"choice\": \"B\", \"point\": [106, 140]}"
+   },
+   {
+    "step": 460,
+    "v": "{\"choice\": \"B\", \"point\": [105, 139]}"
+   },
+   {
+    "step": 461,
+    "v": "{\"choice\": \"B\", \"point\": [104, 139]}"
+   },
+   {
+    "step": 462,
+    "v": "{\"choice\": \"B\", \"point\": [102, 138]}"
+   },
+   {
+    "step": 463,
+    "v": "{\"choice\": \"B\", \"point\": [101, 137]}"
+   },
+   {
+    "step": 464,
+    "v": "{\"choice\": \"B\", \"point\": [100, 137]}"
+   },
+   {
+    "step": 465,
+    "v": "{\"choice\": \"B\", \"point\": [99, 137]}"
+   },
+   {
+    "step": 466,
+    "v": "{\"choice\": \"B\", \"point\": [99, 136]}"
+   },
+   {
+    "step": 467,
+    "v": "{\"choice\": \"B\", \"point\": [98, 136]}"
+   },
+   {
+    "step": 468,
+    "v": "{\"choice\": \"B\", \"point\": [97, 136]}"
+   },
+   {
+    "step": 469,
+    "v": "{\"choice\": \"B\", \"point\": [97, 135]}"
+   },
+   {
+    "step": 471,
+    "v": "{\"choice\": \"B\", \"point\": [96, 135]}"
+   }
+  ],
+  "n_demo": 243,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.6680851063829787
+ },
+ {
+  "kind": "native",
+  "episode": 3,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_3/hdf5_files/MoveCube_ep3_seed14300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_3/videos/MoveCube_ep3_seed14300_hard_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "hard",
+   "seed": 14300,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 266,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <87, 119> to the target at <110, 130>",
+    "demo": true,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <87, 119> to the target at <110, 130>",
+    "completed": false
+   },
+   {
+    "step": 97,
+    "boundary": false,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <87, 119> to the target at <110, 130>",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 101,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 158,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 161,
+    "boundary": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <83, 104> to the target at <109, 135>",
+    "demo": false,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <83, 104> to the target at <109, 135>",
+    "completed": false
+   },
+   {
+    "step": 261,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Close the gripper and push the cube at <83, 104> to the target at <109, 135>",
+    "demo": false,
+    "simple_online": "Close the gripper and push the cube to the target",
+    "grounded_online": "Close the gripper and push the cube at <83, 104> to the target at <109, 135>",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"C\", \"point\": [88, 121]}"
+   },
+   {
+    "step": 76,
+    "v": "{\"choice\": \"C\", \"point\": [90, 120]}"
+   },
+   {
+    "step": 77,
+    "v": "{\"choice\": \"C\", \"point\": [91, 121]}"
+   },
+   {
+    "step": 78,
+    "v": "{\"choice\": \"C\", \"point\": [93, 122]}"
+   },
+   {
+    "step": 79,
+    "v": "{\"choice\": \"C\", \"point\": [95, 123]}"
+   },
+   {
+    "step": 80,
+    "v": "{\"choice\": \"C\", \"point\": [96, 124]}"
+   },
+   {
+    "step": 81,
+    "v": "{\"choice\": \"C\", \"point\": [98, 125]}"
+   },
+   {
+    "step": 82,
+    "v": "{\"choice\": \"C\", \"point\": [100, 125]}"
+   },
+   {
+    "step": 83,
+    "v": "{\"choice\": \"C\", \"point\": [101, 126]}"
+   },
+   {
+    "step": 84,
+    "v": "{\"choice\": \"C\", \"point\": [103, 127]}"
+   },
+   {
+    "step": 85,
+    "v": "{\"choice\": \"C\", \"point\": [104, 128]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"C\", \"point\": [105, 128]}"
+   },
+   {
+    "step": 87,
+    "v": "{\"choice\": \"C\", \"point\": [106, 129]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"C\", \"point\": [107, 129]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"C\", \"point\": [108, 130]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"C\", \"point\": [109, 130]}"
+   },
+   {
+    "step": 92,
+    "v": "{\"choice\": \"C\", \"point\": [110, 130]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"C\", \"point\": [110, 131]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 161,
+    "v": "{\"choice\": \"C\", \"point\": [84, 105]}"
+   },
+   {
+    "step": 238,
+    "v": "{\"choice\": \"C\", \"point\": [84, 106]}"
+   },
+   {
+    "step": 239,
+    "v": "{\"choice\": \"C\", \"point\": [85, 108]}"
+   },
+   {
+    "step": 240,
+    "v": "{\"choice\": \"C\", \"point\": [86, 110]}"
+   },
+   {
+    "step": 241,
+    "v": "{\"choice\": \"C\", \"point\": [87, 112]}"
+   },
+   {
+    "step": 242,
+    "v": "{\"choice\": \"C\", \"point\": [89, 114]}"
+   },
+   {
+    "step": 243,
+    "v": "{\"choice\": \"C\", \"point\": [91, 116]}"
+   },
+   {
+    "step": 244,
+    "v": "{\"choice\": \"C\", \"point\": [93, 119]}"
+   },
+   {
+    "step": 245,
+    "v": "{\"choice\": \"C\", \"point\": [95, 121]}"
+   },
+   {
+    "step": 246,
+    "v": "{\"choice\": \"C\", \"point\": [96, 124]}"
+   },
+   {
+    "step": 247,
+    "v": "{\"choice\": \"C\", \"point\": [98, 126]}"
+   },
+   {
+    "step": 248,
+    "v": "{\"choice\": \"C\", \"point\": [100, 128]}"
+   },
+   {
+    "step": 249,
+    "v": "{\"choice\": \"C\", \"point\": [101, 130]}"
+   },
+   {
+    "step": 250,
+    "v": "{\"choice\": \"C\", \"point\": [102, 132]}"
+   },
+   {
+    "step": 251,
+    "v": "{\"choice\": \"C\", \"point\": [103, 133]}"
+   },
+   {
+    "step": 252,
+    "v": "{\"choice\": \"C\", \"point\": [104, 135]}"
+   },
+   {
+    "step": 253,
+    "v": "{\"choice\": \"C\", \"point\": [105, 136]}"
+   },
+   {
+    "step": 254,
+    "v": "{\"choice\": \"C\", \"point\": [106, 137]}"
+   },
+   {
+    "step": 256,
+    "v": "{\"choice\": \"C\", \"point\": [107, 138]}"
+   },
+   {
+    "step": 258,
+    "v": "{\"choice\": \"C\", \"point\": [107, 139]}"
+   }
+  ],
+  "n_demo": 161,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.37142857142857144
+ },
+ {
+  "kind": "native",
+  "episode": 4,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_4/hdf5_files/MoveCube_ep4_seed14400.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_4/videos/MoveCube_ep4_seed14400_easy_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "easy",
+   "seed": 14400,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 440,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <103, 155>",
+    "demo": true,
+    "simple_online": "Pick up the cube",
+    "grounded_online": "Pick up the cube at <103, 155>",
+    "completed": false
+   },
+   {
+    "step": 91,
+    "boundary": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <103, 155>",
+    "demo": true,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <109, 110>",
+    "completed": false
+   },
+   {
+    "step": 103,
+    "boundary": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <109, 110>",
+    "demo": true,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <109, 110>",
+    "completed": false
+   },
+   {
+    "step": 165,
+    "boundary": false,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <109, 110>",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 176,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 232,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 236,
+    "boundary": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <114, 107>",
+    "demo": false,
+    "simple_online": "Pick up the cube",
+    "grounded_online": "Pick up the cube at <114, 107>",
+    "completed": false
+   },
+   {
+    "step": 334,
+    "boundary": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <114, 107>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <100, 138>",
+    "completed": false
+   },
+   {
+    "step": 348,
+    "boundary": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <98, 136>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <100, 138>",
+    "completed": false
+   },
+   {
+    "step": 422,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the target at <98, 136>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <100, 138>",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"D\", \"point\": [104, 156]}"
+   },
+   {
+    "step": 84,
+    "v": "{\"choice\": \"D\", \"point\": [103, 156]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"D\", \"point\": [102, 156]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"D\", \"point\": [101, 157]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"D\", \"point\": [99, 157]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"D\", \"point\": [98, 157]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"D\", \"point\": [96, 158]}"
+   },
+   {
+    "step": 92,
+    "v": "{\"choice\": \"D\", \"point\": [94, 159]}"
+   },
+   {
+    "step": 93,
+    "v": "{\"choice\": \"D\", \"point\": [91, 159]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"D\", \"point\": [89, 160]}"
+   },
+   {
+    "step": 95,
+    "v": "{\"choice\": \"D\", \"point\": [87, 161]}"
+   },
+   {
+    "step": 96,
+    "v": "{\"choice\": \"D\", \"point\": [84, 162]}"
+   },
+   {
+    "step": 97,
+    "v": "{\"choice\": \"D\", \"point\": [82, 162]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"D\", \"point\": [80, 163]}"
+   },
+   {
+    "step": 99,
+    "v": "{\"choice\": \"D\", \"point\": [78, 164]}"
+   },
+   {
+    "step": 100,
+    "v": "{\"choice\": \"D\", \"point\": [77, 164]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"D\", \"point\": [76, 164]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"D\", \"point\": [75, 164]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"E\", \"point\": [109, 110]}"
+   },
+   {
+    "step": 176,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 236,
+    "v": "{\"choice\": \"D\", \"point\": [116, 108]}"
+   },
+   {
+    "step": 319,
+    "v": "{\"choice\": \"D\", \"point\": [115, 108]}"
+   },
+   {
+    "step": 329,
+    "v": "{\"choice\": \"D\", \"point\": [114, 108]}"
+   },
+   {
+    "step": 330,
+    "v": "{\"choice\": \"D\", \"point\": [113, 108]}"
+   },
+   {
+    "step": 331,
+    "v": "{\"choice\": \"D\", \"point\": [112, 108]}"
+   },
+   {
+    "step": 332,
+    "v": "{\"choice\": \"D\", \"point\": [111, 107]}"
+   },
+   {
+    "step": 333,
+    "v": "{\"choice\": \"D\", \"point\": [110, 107]}"
+   },
+   {
+    "step": 334,
+    "v": "{\"choice\": \"D\", \"point\": [108, 107]}"
+   },
+   {
+    "step": 335,
+    "v": "{\"choice\": \"D\", \"point\": [106, 106]}"
+   },
+   {
+    "step": 336,
+    "v": "{\"choice\": \"D\", \"point\": [103, 105]}"
+   },
+   {
+    "step": 337,
+    "v": "{\"choice\": \"D\", \"point\": [101, 105]}"
+   },
+   {
+    "step": 338,
+    "v": "{\"choice\": \"D\", \"point\": [99, 104]}"
+   },
+   {
+    "step": 339,
+    "v": "{\"choice\": \"D\", \"point\": [96, 104]}"
+   },
+   {
+    "step": 340,
+    "v": "{\"choice\": \"D\", \"point\": [94, 103]}"
+   },
+   {
+    "step": 341,
+    "v": "{\"choice\": \"D\", \"point\": [92, 102]}"
+   },
+   {
+    "step": 342,
+    "v": "{\"choice\": \"D\", \"point\": [91, 102]}"
+   },
+   {
+    "step": 343,
+    "v": "{\"choice\": \"D\", \"point\": [90, 102]}"
+   },
+   {
+    "step": 344,
+    "v": "{\"choice\": \"D\", \"point\": [89, 102]}"
+   },
+   {
+    "step": 345,
+    "v": "{\"choice\": \"D\", \"point\": [88, 101]}"
+   },
+   {
+    "step": 347,
+    "v": "{\"choice\": \"D\", \"point\": [88, 102]}"
+   },
+   {
+    "step": 348,
+    "v": "{\"choice\": \"E\", \"point\": [99, 137]}"
+   }
+  ],
+  "n_demo": 236,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.4362745098039216
+ },
+ {
+  "kind": "native",
+  "episode": 6,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_6/hdf5_files/MoveCube_ep6_seed14602.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_6/videos/MoveCube_ep6_seed14602_medium_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "medium",
+   "seed": 14602,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 443,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <113, 138>",
+    "demo": true,
+    "simple_online": "Pick up the cube",
+    "grounded_online": "Pick up the cube at <113, 138>",
+    "completed": false
+   },
+   {
+    "step": 92,
+    "boundary": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <113, 138>",
+    "demo": true,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <108, 102>",
+    "completed": false
+   },
+   {
+    "step": 106,
+    "boundary": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <108, 102>",
+    "demo": true,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <108, 102>",
+    "completed": false
+   },
+   {
+    "step": 168,
+    "boundary": false,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <108, 102>",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 180,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 236,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 240,
+    "boundary": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <126, 124>",
+    "demo": false,
+    "simple_online": "Pick up the cube",
+    "grounded_online": "Pick up the cube at <126, 124>",
+    "completed": false
+   },
+   {
+    "step": 333,
+    "boundary": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <126, 124>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <90, 144>",
+    "completed": false
+   },
+   {
+    "step": 349,
+    "boundary": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <102, 145>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <90, 144>",
+    "completed": false
+   },
+   {
+    "step": 427,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the target at <102, 145>",
+    "demo": false,
+    "simple_online": "place the cube onto the target",
+    "grounded_online": "place the cube onto the target at <90, 144>",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"D\", \"point\": [115, 139]}"
+   },
+   {
+    "step": 76,
+    "v": "{\"choice\": \"D\", \"point\": [114, 138]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"D\", \"point\": [113, 138]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"D\", \"point\": [112, 138]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"D\", \"point\": [111, 139]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"D\", \"point\": [110, 139]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"D\", \"point\": [108, 139]}"
+   },
+   {
+    "step": 92,
+    "v": "{\"choice\": \"D\", \"point\": [106, 139]}"
+   },
+   {
+    "step": 93,
+    "v": "{\"choice\": \"D\", \"point\": [104, 139]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"D\", \"point\": [102, 139]}"
+   },
+   {
+    "step": 95,
+    "v": "{\"choice\": \"D\", \"point\": [100, 140]}"
+   },
+   {
+    "step": 96,
+    "v": "{\"choice\": \"D\", \"point\": [97, 140]}"
+   },
+   {
+    "step": 97,
+    "v": "{\"choice\": \"D\", \"point\": [95, 140]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"D\", \"point\": [93, 140]}"
+   },
+   {
+    "step": 99,
+    "v": "{\"choice\": \"D\", \"point\": [91, 140]}"
+   },
+   {
+    "step": 100,
+    "v": "{\"choice\": \"D\", \"point\": [89, 141]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"D\", \"point\": [88, 141]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"D\", \"point\": [87, 141]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"D\", \"point\": [86, 141]}"
+   },
+   {
+    "step": 106,
+    "v": "{\"choice\": \"E\", \"point\": [109, 103]}"
+   },
+   {
+    "step": 180,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 240,
+    "v": "{\"choice\": \"D\", \"point\": [127, 125]}"
+   },
+   {
+    "step": 327,
+    "v": "{\"choice\": \"D\", \"point\": [126, 125]}"
+   },
+   {
+    "step": 329,
+    "v": "{\"choice\": \"D\", \"point\": [125, 125]}"
+   },
+   {
+    "step": 330,
+    "v": "{\"choice\": \"D\", \"point\": [124, 125]}"
+   },
+   {
+    "step": 331,
+    "v": "{\"choice\": \"D\", \"point\": [123, 125]}"
+   },
+   {
+    "step": 332,
+    "v": "{\"choice\": \"D\", \"point\": [122, 125]}"
+   },
+   {
+    "step": 333,
+    "v": "{\"choice\": \"D\", \"point\": [120, 125]}"
+   },
+   {
+    "step": 334,
+    "v": "{\"choice\": \"D\", \"point\": [118, 124]}"
+   },
+   {
+    "step": 335,
+    "v": "{\"choice\": \"D\", \"point\": [116, 124]}"
+   },
+   {
+    "step": 336,
+    "v": "{\"choice\": \"D\", \"point\": [114, 124]}"
+   },
+   {
+    "step": 337,
+    "v": "{\"choice\": \"D\", \"point\": [112, 124]}"
+   },
+   {
+    "step": 338,
+    "v": "{\"choice\": \"D\", \"point\": [110, 124]}"
+   },
+   {
+    "step": 339,
+    "v": "{\"choice\": \"D\", \"point\": [107, 124]}"
+   },
+   {
+    "step": 340,
+    "v": "{\"choice\": \"D\", \"point\": [106, 124]}"
+   },
+   {
+    "step": 341,
+    "v": "{\"choice\": \"D\", \"point\": [104, 124]}"
+   },
+   {
+    "step": 342,
+    "v": "{\"choice\": \"D\", \"point\": [103, 124]}"
+   },
+   {
+    "step": 343,
+    "v": "{\"choice\": \"D\", \"point\": [102, 124]}"
+   },
+   {
+    "step": 344,
+    "v": "{\"choice\": \"D\", \"point\": [101, 124]}"
+   },
+   {
+    "step": 347,
+    "v": "{\"choice\": \"D\", \"point\": [102, 124]}"
+   },
+   {
+    "step": 349,
+    "v": "{\"choice\": \"E\", \"point\": [98, 141]}"
+   }
+  ],
+  "n_demo": 240,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.4630541871921182
+ },
+ {
+  "kind": "native",
+  "episode": 7,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_7/hdf5_files/MoveCube_ep7_seed14700.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_7/videos/MoveCube_ep7_seed14700_hard_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "setup": {
+   "difficulty": "hard",
+   "seed": 14700,
+   "task_goal": [
+    "watch the video carefully, then move the cube to the target in the same manner as before",
+    "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the peg\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"hook the cube to the target with the peg\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"close gripper and push the cube to the target\", \"need_parameter\": false}, {\"label\": \"d\", \"action\": \"pick up the cube\", \"need_parameter\": false}, {\"label\": \"e\", \"action\": \"place the cube onto the target\", \"need_parameter\": false}]"
+  },
+  "n_steps": 512,
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <86, 74>",
+    "demo": true,
+    "simple_online": "Pick up the peg",
+    "grounded_online": "Pick up the peg at <86, 74>",
+    "completed": false
+   },
+   {
+    "step": 94,
+    "boundary": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <86, 74>",
+    "demo": true,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <86, 135> to the target at <113, 153> with the peg",
+    "completed": false
+   },
+   {
+    "step": 115,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <86, 135> to the target at <113, 153> with the peg",
+    "demo": true,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <86, 135> to the target at <113, 153> with the peg",
+    "completed": false
+   },
+   {
+    "step": 232,
+    "boundary": false,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <86, 135> to the target at <113, 153> with the peg",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 237,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "static",
+    "grounded_online": "static",
+    "completed": false
+   },
+   {
+    "step": 263,
+    "boundary": false,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true,
+    "simple_online": "NO RECORD",
+    "grounded_online": "NO RECORD",
+    "completed": false
+   },
+   {
+    "step": 267,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <85, 68>",
+    "demo": false,
+    "simple_online": "Pick up the peg",
+    "grounded_online": "Pick up the peg at <85, 68>",
+    "completed": false
+   },
+   {
+    "step": 364,
+    "boundary": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <85, 68>",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <113, 138> to the target at <94, 118> with the peg",
+    "completed": false
+   },
+   {
+    "step": 385,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <113, 138> to the target at <94, 118> with the peg",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <113, 138> to the target at <94, 118> with the peg",
+    "completed": false
+   },
+   {
+    "step": 506,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <113, 138> to the target at <94, 118> with the peg",
+    "demo": false,
+    "simple_online": "Hook the cube to the target with the peg",
+    "grounded_online": "Hook the cube at <113, 138> to the target at <94, 118> with the peg",
+    "completed": true
+   }
+  ],
+  "choice_actions": [
+   {
+    "step": 0,
+    "v": "{\"choice\": \"A\", \"point\": [89, 76]}"
+   },
+   {
+    "step": 77,
+    "v": "{\"choice\": \"A\", \"point\": [88, 77]}"
+   },
+   {
+    "step": 85,
+    "v": "{\"choice\": \"A\", \"point\": [88, 76]}"
+   },
+   {
+    "step": 86,
+    "v": "{\"choice\": \"A\", \"point\": [87, 76]}"
+   },
+   {
+    "step": 88,
+    "v": "{\"choice\": \"A\", \"point\": [86, 76]}"
+   },
+   {
+    "step": 89,
+    "v": "{\"choice\": \"A\", \"point\": [85, 75]}"
+   },
+   {
+    "step": 90,
+    "v": "{\"choice\": \"A\", \"point\": [84, 74]}"
+   },
+   {
+    "step": 91,
+    "v": "{\"choice\": \"A\", \"point\": [82, 74]}"
+   },
+   {
+    "step": 92,
+    "v": "{\"choice\": \"A\", \"point\": [81, 73]}"
+   },
+   {
+    "step": 93,
+    "v": "{\"choice\": \"A\", \"point\": [78, 72]}"
+   },
+   {
+    "step": 94,
+    "v": "{\"choice\": \"A\", \"point\": [76, 70]}"
+   },
+   {
+    "step": 95,
+    "v": "{\"choice\": \"A\", \"point\": [73, 69]}"
+   },
+   {
+    "step": 96,
+    "v": "{\"choice\": \"A\", \"point\": [70, 67]}"
+   },
+   {
+    "step": 97,
+    "v": "{\"choice\": \"A\", \"point\": [67, 66]}"
+   },
+   {
+    "step": 98,
+    "v": "{\"choice\": \"A\", \"point\": [64, 64]}"
+   },
+   {
+    "step": 99,
+    "v": "{\"choice\": \"A\", \"point\": [60, 62]}"
+   },
+   {
+    "step": 100,
+    "v": "{\"choice\": \"A\", \"point\": [57, 60]}"
+   },
+   {
+    "step": 101,
+    "v": "{\"choice\": \"A\", \"point\": [54, 58]}"
+   },
+   {
+    "step": 102,
+    "v": "{\"choice\": \"A\", \"point\": [51, 57]}"
+   },
+   {
+    "step": 103,
+    "v": "{\"choice\": \"A\", \"point\": [48, 55]}"
+   },
+   {
+    "step": 104,
+    "v": "{\"choice\": \"A\", \"point\": [45, 54]}"
+   },
+   {
+    "step": 105,
+    "v": "{\"choice\": \"A\", \"point\": [43, 53]}"
+   },
+   {
+    "step": 106,
+    "v": "{\"choice\": \"A\", \"point\": [42, 52]}"
+   },
+   {
+    "step": 107,
+    "v": "{\"choice\": \"A\", \"point\": [41, 52]}"
+   },
+   {
+    "step": 108,
+    "v": "{\"choice\": \"A\", \"point\": [40, 51]}"
+   },
+   {
+    "step": 115,
+    "v": "{\"choice\": \"B\", \"point\": [87, 136]}"
+   },
+   {
+    "step": 212,
+    "v": "{\"choice\": \"B\", \"point\": [88, 137]}"
+   },
+   {
+    "step": 213,
+    "v": "{\"choice\": \"B\", \"point\": [90, 137]}"
+   },
+   {
+    "step": 214,
+    "v": "{\"choice\": \"B\", \"point\": [92, 138]}"
+   },
+   {
+    "step": 215,
+    "v": "{\"choice\": \"B\", \"point\": [94, 139]}"
+   },
+   {
+    "step": 216,
+    "v": "{\"choice\": \"B\", \"point\": [96, 141]}"
+   },
+   {
+    "step": 217,
+    "v": "{\"choice\": \"B\", \"point\": [98, 142]}"
+   },
+   {
+    "step": 218,
+    "v": "{\"choice\": \"B\", \"point\": [99, 144]}"
+   },
+   {
+    "step": 219,
+    "v": "{\"choice\": \"B\", \"point\": [101, 145]}"
+   },
+   {
+    "step": 220,
+    "v": "{\"choice\": \"B\", \"point\": [103, 146]}"
+   },
+   {
+    "step": 221,
+    "v": "{\"choice\": \"B\", \"point\": [104, 147]}"
+   },
+   {
+    "step": 222,
+    "v": "{\"choice\": \"B\", \"point\": [105, 148]}"
+   },
+   {
+    "step": 223,
+    "v": "{\"choice\": \"B\", \"point\": [106, 149]}"
+   },
+   {
+    "step": 224,
+    "v": "{\"choice\": \"B\", \"point\": [107, 150]}"
+   },
+   {
+    "step": 225,
+    "v": "{\"choice\": \"B\", \"point\": [108, 150]}"
+   },
+   {
+    "step": 226,
+    "v": "{\"choice\": \"B\", \"point\": [109, 151]}"
+   },
+   {
+    "step": 227,
+    "v": "{\"choice\": \"B\", \"point\": [110, 151]}"
+   },
+   {
+    "step": 228,
+    "v": "{\"choice\": \"B\", \"point\": [110, 152]}"
+   },
+   {
+    "step": 230,
+    "v": "{\"choice\": \"B\", \"point\": [111, 152]}"
+   },
+   {
+    "step": 237,
+    "v": "{\"choice\": \"\", \"point\": []}"
+   },
+   {
+    "step": 267,
+    "v": "{\"choice\": \"A\", \"point\": [87, 69]}"
+   },
+   {
+    "step": 347,
+    "v": "{\"choice\": \"A\", \"point\": [87, 70]}"
+   },
+   {
+    "step": 356,
+    "v": "{\"choice\": \"A\", \"point\": [86, 69]}"
+   },
+   {
+    "step": 357,
+    "v": "{\"choice\": \"A\", \"point\": [85, 69]}"
+   },
+   {
+    "step": 359,
+    "v": "{\"choice\": \"A\", \"point\": [84, 68]}"
+   },
+   {
+    "step": 360,
+    "v": "{\"choice\": \"A\", \"point\": [82, 67]}"
+   },
+   {
+    "step": 361,
+    "v": "{\"choice\": \"A\", \"point\": [81, 67]}"
+   },
+   {
+    "step": 362,
+    "v": "{\"choice\": \"A\", \"point\": [79, 66]}"
+   },
+   {
+    "step": 363,
+    "v": "{\"choice\": \"A\", \"point\": [77, 64]}"
+   },
+   {
+    "step": 364,
+    "v": "{\"choice\": \"A\", \"point\": [75, 63]}"
+   },
+   {
+    "step": 365,
+    "v": "{\"choice\": \"A\", \"point\": [72, 61]}"
+   },
+   {
+    "step": 366,
+    "v": "{\"choice\": \"A\", \"point\": [69, 59]}"
+   },
+   {
+    "step": 367,
+    "v": "{\"choice\": \"A\", \"point\": [65, 57]}"
+   },
+   {
+    "step": 368,
+    "v": "{\"choice\": \"A\", \"point\": [62, 55]}"
+   },
+   {
+    "step": 369,
+    "v": "{\"choice\": \"A\", \"point\": [59, 53]}"
+   },
+   {
+    "step": 370,
+    "v": "{\"choice\": \"A\", \"point\": [55, 51]}"
+   },
+   {
+    "step": 371,
+    "v": "{\"choice\": \"A\", \"point\": [52, 50]}"
+   },
+   {
+    "step": 372,
+    "v": "{\"choice\": \"A\", \"point\": [49, 48]}"
+   },
+   {
+    "step": 373,
+    "v": "{\"choice\": \"A\", \"point\": [46, 46]}"
+   },
+   {
+    "step": 374,
+    "v": "{\"choice\": \"A\", \"point\": [44, 45]}"
+   },
+   {
+    "step": 375,
+    "v": "{\"choice\": \"A\", \"point\": [42, 44]}"
+   },
+   {
+    "step": 376,
+    "v": "{\"choice\": \"A\", \"point\": [40, 43]}"
+   },
+   {
+    "step": 377,
+    "v": "{\"choice\": \"A\", \"point\": [39, 42]}"
+   },
+   {
+    "step": 378,
+    "v": "{\"choice\": \"A\", \"point\": [38, 42]}"
+   },
+   {
+    "step": 379,
+    "v": "{\"choice\": \"A\", \"point\": [38, 41]}"
+   },
+   {
+    "step": 381,
+    "v": "{\"choice\": \"A\", \"point\": [38, 42]}"
+   },
+   {
+    "step": 385,
+    "v": "{\"choice\": \"B\", \"point\": [114, 139]}"
+   },
+   {
+    "step": 432,
+    "v": "{\"choice\": \"B\", \"point\": [115, 141]}"
+   },
+   {
+    "step": 433,
+    "v": "{\"choice\": \"B\", \"point\": [116, 140]}"
+   },
+   {
+    "step": 434,
+    "v": "{\"choice\": \"B\", \"point\": [115, 140]}"
+   },
+   {
+    "step": 487,
+    "v": "{\"choice\": \"B\", \"point\": [114, 138]}"
+   },
+   {
+    "step": 488,
+    "v": "{\"choice\": \"B\", \"point\": [112, 137]}"
+   },
+   {
+    "step": 489,
+    "v": "{\"choice\": \"B\", \"point\": [110, 135]}"
+   },
+   {
+    "step": 490,
+    "v": "{\"choice\": \"B\", \"point\": [108, 134]}"
+   },
+   {
+    "step": 491,
+    "v": "{\"choice\": \"B\", \"point\": [106, 132]}"
+   },
+   {
+    "step": 492,
+    "v": "{\"choice\": \"B\", \"point\": [105, 130]}"
+   },
+   {
+    "step": 493,
+    "v": "{\"choice\": \"B\", \"point\": [103, 129]}"
+   },
+   {
+    "step": 494,
+    "v": "{\"choice\": \"B\", \"point\": [101, 128]}"
+   },
+   {
+    "step": 495,
+    "v": "{\"choice\": \"B\", \"point\": [100, 126]}"
+   },
+   {
+    "step": 496,
+    "v": "{\"choice\": \"B\", \"point\": [99, 125]}"
+   },
+   {
+    "step": 497,
+    "v": "{\"choice\": \"B\", \"point\": [97, 124]}"
+   },
+   {
+    "step": 498,
+    "v": "{\"choice\": \"B\", \"point\": [96, 123]}"
+   },
+   {
+    "step": 499,
+    "v": "{\"choice\": \"B\", \"point\": [95, 122]}"
+   },
+   {
+    "step": 500,
+    "v": "{\"choice\": \"B\", \"point\": [94, 122]}"
+   },
+   {
+    "step": 501,
+    "v": "{\"choice\": \"B\", \"point\": [94, 121]}"
+   },
+   {
+    "step": 502,
+    "v": "{\"choice\": \"B\", \"point\": [93, 120]}"
+   },
+   {
+    "step": 504,
+    "v": "{\"choice\": \"B\", \"point\": [92, 120]}"
+   }
+  ],
+  "n_demo": 267,
+  "last_completed": true,
+  "grip_close_frac_exec": 0.6612244897959184
+ }
+]

@@ -1,0 +1,6 @@
+seed=7000009 ok=False err=BinCollisionError 碰撞排除[contact] sweep#0 对象 bin_4(形状0) 与 bin_1(形状0) g=-0.0103954588811 s=0.5 中点判定 wall=11s
+screw plan failed
+screw plan failed
+screw plan failed
+seed=7000018 ok=False err=DatasetGenerationError VideoRepick/episode_9: 跑完整个 task_list 仍未成功 wall=185s
+seed=7000000 ok=False err=BinCollisionError 碰撞排除[contact] sweep#1 对象 bin_1(形状0) 与 bin_0(形状0) g=-0.00632444544902 s=0.5 中点判定 wall=24s

@@ -1,0 +1,206 @@
+{
+ "task": "VideoUnmaskSwap",
+ "tier": "xhard",
+ "overrides": {},
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "swap_count_range": {
+    "hard": [
+     2,
+     3
+    ],
+    "easy": [
+     1,
+     2
+    ],
+    "medium": [
+     1,
+     2
+    ],
+    "xhard": [
+     8,
+     12
+    ]
+   },
+   "pick_count_range": {
+    "hard": [
+     2,
+     2
+    ],
+    "easy": [
+     1,
+     2
+    ],
+    "medium": [
+     1,
+     1
+    ],
+    "xhard": [
+     3,
+     3
+    ]
+   },
+   "swap_speed_multiplier": 1,
+   "distractor": null,
+   "xhard": {
+    "swap_speed_multiplier": 1.5,
+    "distractor": {
+     "count": 10,
+     "ring_max_abs_xy": [
+      0.2675,
+      0.45
+     ],
+     "cube_count_range": [
+      5,
+      5
+     ],
+     "color_pool": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "color_rule": "balanced_cycle",
+     "min_gap_factor": 0.75,
+     "max_trials": 1024
+    },
+    "distractor_swap": {
+     "enabled": true,
+     "initiator_rule": "permutation_cycle",
+     "fallback": "next_in_permutation",
+     "partner": {
+      "selection": "nearest",
+      "position_axes": [
+       0,
+       1
+      ],
+      "tie_break": "first_in_index_order",
+      "population": "distractor_bins",
+      "resolve_at": "reset_plan"
+     },
+     "lane_offset": 0.07,
+     "smooth": true,
+     "path_constraints": {
+      "camera_visible": true,
+      "min_inner_circle_clearance_m": 0.04,
+      "min_button_center_dist_m": null
+     },
+     "path_samples": 401,
+     "plan_pad_m": 0.005,
+     "layout_max_attempts": 16
+    }
+   }
+  },
+  "native": {
+   "parameters": {
+    "object_selection": {
+     "hidden_bin_permutation_size": 3,
+     "hidden_bin_count_max": 3,
+     "pickup_selected_indices": [
+      0,
+      1
+     ],
+     "swap_seed_target_count": 2
+    },
+    "swap_selection": {
+     "initiator_mapping": "selected_local_indices_into_spawned_bins",
+     "remaining_selection": "randint_from_spawned_indices_excluding_local_targets",
+     "partner": {
+      "selection": "nearest",
+      "position_axes": [
+       0,
+       1
+      ],
+      "resolve_at": "swap_start",
+      "exclude_self": true,
+      "tie_break": "first_in_spawn_order"
+     }
+    },
+    "xhard": {
+     "object_selection": {
+      "pickup_selected_indices": [
+       0,
+       1,
+       2
+      ]
+     }
+    }
+   },
+   "positions": {
+    "containers": {
+     "region3_tri": [
+      [
+       -0.05,
+       -0.1
+      ],
+      [
+       -0.05,
+       0.1
+      ],
+      [
+       0.1,
+       0
+      ]
+     ],
+     "region3_line": [
+      [
+       0,
+       -0.15
+      ],
+      [
+       0,
+       0.15
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "region4": [
+      [
+       -0.05,
+       -0.1
+      ],
+      [
+       -0.05,
+       0.1
+      ],
+      [
+       0.1,
+       0.1
+      ],
+      [
+       0.1,
+       -0.1
+      ]
+     ],
+     "region3_choice": {
+      "sampler": "torch.randint",
+      "low": 0,
+      "high_exclusive": 2,
+      "order": [
+       "region3_tri",
+       "region3_line"
+      ]
+     },
+     "layout_rotation_range_rad": [
+      0,
+      180
+     ],
+     "region_half_size": 0.07,
+     "yaw_scale_deg": 90.0,
+     "yaw_expression": "u * 90.0",
+     "rotation_center": [
+      0,
+      0
+     ],
+     "min_gap": "self.cube_half_size",
+     "min_gap_value": 0.02,
+     "spawn_random_bin_default_min_gap": 0.05,
+     "spawn_random_bin_has_include_flags": false
+    }
+   }
+  }
+ }
+}

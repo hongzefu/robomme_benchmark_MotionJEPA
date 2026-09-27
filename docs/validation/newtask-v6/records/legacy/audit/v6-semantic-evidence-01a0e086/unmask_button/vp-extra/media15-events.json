@@ -1,0 +1,1724 @@
+[
+  {
+    "tier": "hard",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed10301_FailRecoverXY_hard_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed10301.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the target right before the button was pressed",
+      "watch the video carefully, and place the green cube on the target where it was placed immediately before the button was pressed",
+      "watch the video carefully, then place the green cube on the target where it was previously placed before the button was pressed",
+      "watch the video carefully, then place the green cube on the target where it was last placed before the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <74, 110>",
+        "demo": true
+      },
+      {
+        "t": 119,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <98, 165>",
+        "demo": true
+      },
+      {
+        "t": 213,
+        "name": "press the button",
+        "grounded": "press the button at <119, 115>",
+        "demo": true
+      },
+      {
+        "t": 293,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <96, 168>",
+        "demo": true
+      },
+      {
+        "t": 386,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <129, 173>",
+        "demo": true
+      },
+      {
+        "t": 472,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <129, 175>",
+        "demo": true
+      },
+      {
+        "t": 545,
+        "name": "drop the cube onto table",
+        "grounded": "drop the cube onto table",
+        "demo": true
+      },
+      {
+        "t": 647,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 699,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 759,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <88, 128>",
+        "demo": false
+      },
+      {
+        "t": 953,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <98, 165>",
+        "demo": false
+      },
+      {
+        "t": 1023,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <98, 165>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "hard",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_7/videos/VideoPlaceButton_ep7_seed10701_hard_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_7/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the target right before the button was pressed",
+      "watch the video carefully, and place the red cube on the target where it was placed immediately before the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was previously placed before the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was last placed before the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <73, 143>",
+        "demo": true
+      },
+      {
+        "t": 118,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <126, 145>",
+        "demo": true
+      },
+      {
+        "t": 216,
+        "name": "press the button",
+        "grounded": "press the button at <123, 92>",
+        "demo": true
+      },
+      {
+        "t": 290,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <125, 146>",
+        "demo": true
+      },
+      {
+        "t": 369,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target",
+        "demo": true
+      },
+      {
+        "t": 478,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <77, 166>",
+        "demo": true
+      },
+      {
+        "t": 553,
+        "name": "drop the cube onto table",
+        "grounded": "drop the cube onto table",
+        "demo": true
+      },
+      {
+        "t": 635,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 690,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 750,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <83, 121>",
+        "demo": false
+      },
+      {
+        "t": 864,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <126, 145>",
+        "demo": false
+      },
+      {
+        "t": 944,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <126, 145>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "hard",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_11/videos/VideoPlaceButton_ep11_seed11100_hard_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_11/hdf5_files/VideoPlaceButton_ep11_seed11100.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the target right before the button was pressed",
+      "watch the video carefully, and place the green cube on the target where it was placed immediately before the button was pressed",
+      "watch the video carefully, then place the green cube on the target where it was previously placed before the button was pressed",
+      "watch the video carefully, then place the green cube on the target where it was last placed before the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <99, 148>",
+        "demo": true
+      },
+      {
+        "t": 107,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <124, 162>",
+        "demo": true
+      },
+      {
+        "t": 187,
+        "name": "press the button",
+        "grounded": "press the button at <122, 121>",
+        "demo": true
+      },
+      {
+        "t": 272,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <123, 163>",
+        "demo": true
+      },
+      {
+        "t": 373,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <96, 160>",
+        "demo": true
+      },
+      {
+        "t": 469,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <93, 166>",
+        "demo": true
+      },
+      {
+        "t": 539,
+        "name": "drop the cube onto table",
+        "grounded": "drop the cube onto table",
+        "demo": true
+      },
+      {
+        "t": 618,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 674,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 734,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <82, 131>",
+        "demo": false
+      },
+      {
+        "t": 847,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <140, 81>",
+        "demo": false
+      },
+      {
+        "t": 932,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <140, 81>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard1",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed9000000_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed9000000.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the target right after the button was pressed",
+      "watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <116, 138>",
+        "demo": true
+      },
+      {
+        "t": 104,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target",
+        "demo": true
+      },
+      {
+        "t": 210,
+        "name": "press the button",
+        "grounded": "press the button at <122, 86>",
+        "demo": true
+      },
+      {
+        "t": 308,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <76, 153>",
+        "demo": true
+      },
+      {
+        "t": 418,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <78, 90>",
+        "demo": true
+      },
+      {
+        "t": 517,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <74, 88>",
+        "demo": true
+      },
+      {
+        "t": 591,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <132, 165>",
+        "demo": true
+      },
+      {
+        "t": 687,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <131, 167>",
+        "demo": true
+      },
+      {
+        "t": 756,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 841,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 893,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 953,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <116, 137>",
+        "demo": false
+      },
+      {
+        "t": 1057,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <78, 90>",
+        "demo": false
+      },
+      {
+        "t": 1142,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <78, 90>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard1",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed9000300_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed9000300.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the target right before the button was pressed",
+      "watch the video carefully, and place the red cube on the target where it was placed immediately before the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was previously placed before the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was last placed before the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <74, 163>",
+        "demo": true
+      },
+      {
+        "t": 118,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <104, 133>",
+        "demo": true
+      },
+      {
+        "t": 197,
+        "name": "press the button",
+        "grounded": "press the button at <123, 101>",
+        "demo": true
+      },
+      {
+        "t": 282,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <102, 133>",
+        "demo": true
+      },
+      {
+        "t": 371,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <101, 159>",
+        "demo": true
+      },
+      {
+        "t": 454,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <99, 161>",
+        "demo": true
+      },
+      {
+        "t": 525,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <74, 99>",
+        "demo": true
+      },
+      {
+        "t": 621,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <72, 98>",
+        "demo": true
+      },
+      {
+        "t": 696,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 793,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 852,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 912,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <74, 164>",
+        "demo": false
+      },
+      {
+        "t": 1031,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <104, 133>",
+        "demo": false
+      },
+      {
+        "t": 1098,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <104, 133>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard1",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed9000601_xhard1_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed9000601.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+      "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <123, 176>",
+        "demo": true
+      },
+      {
+        "t": 109,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <98, 91>",
+        "demo": true
+      },
+      {
+        "t": 212,
+        "name": "press the button",
+        "grounded": "press the button at <122, 114>",
+        "demo": true
+      },
+      {
+        "t": 294,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <99, 89>",
+        "demo": true
+      },
+      {
+        "t": 389,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <138, 149>",
+        "demo": true
+      },
+      {
+        "t": 478,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <137, 151>",
+        "demo": true
+      },
+      {
+        "t": 552,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <78, 90>",
+        "demo": true
+      },
+      {
+        "t": 668,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <75, 88>",
+        "demo": true
+      },
+      {
+        "t": 744,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 843,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 904,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 964,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <123, 176>",
+        "demo": false
+      },
+      {
+        "t": 1073,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <138, 149>",
+        "demo": false
+      },
+      {
+        "t": 1137,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <138, 149>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard2",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed11000000_xhard2_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__056b0e8138b1.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed11000000.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the target right after the button was pressed",
+      "watch the video carefully, and place the green cube on the target where it was placed immediately after the button was pressed",
+      "watch the video carefully, then place the green cube on the target where it was previously placed after the button was pressed",
+      "watch the video carefully, then place the green cube on the target where it was first placed after the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <85, 162>",
+        "demo": true
+      },
+      {
+        "t": 113,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <111, 167>",
+        "demo": true
+      },
+      {
+        "t": 192,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <109, 170>",
+        "demo": true
+      },
+      {
+        "t": 267,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <75, 147>",
+        "demo": true
+      },
+      {
+        "t": 363,
+        "name": "press the button",
+        "grounded": "press the button at <120, 135>",
+        "demo": true
+      },
+      {
+        "t": 456,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube",
+        "demo": true
+      },
+      {
+        "t": 566,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <102, 101>",
+        "demo": true
+      },
+      {
+        "t": 654,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <100, 100>",
+        "demo": true
+      },
+      {
+        "t": 724,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <75, 149>",
+        "demo": true
+      },
+      {
+        "t": 818,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <72, 150>",
+        "demo": true
+      },
+      {
+        "t": 902,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 983,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1036,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1096,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <85, 162>",
+        "demo": false
+      },
+      {
+        "t": 1209,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <102, 101>",
+        "demo": false
+      },
+      {
+        "t": 1283,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <102, 101>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard2",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed11000301_xhard2_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed11000301.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the target right after the button was pressed",
+      "watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <69, 153>",
+        "demo": true
+      },
+      {
+        "t": 123,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <79, 93>",
+        "demo": true
+      },
+      {
+        "t": 226,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <75, 91>",
+        "demo": true
+      },
+      {
+        "t": 300,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <143, 168>",
+        "demo": true
+      },
+      {
+        "t": 408,
+        "name": "press the button",
+        "grounded": "press the button at <129, 112>",
+        "demo": true
+      },
+      {
+        "t": 504,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <142, 169>",
+        "demo": true
+      },
+      {
+        "t": 613,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <117, 154>",
+        "demo": true
+      },
+      {
+        "t": 698,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <114, 155>",
+        "demo": true
+      },
+      {
+        "t": 773,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <96, 168>",
+        "demo": true
+      },
+      {
+        "t": 863,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <87, 165>",
+        "demo": true
+      },
+      {
+        "t": 932,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1023,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1085,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1145,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <70, 153>",
+        "demo": false
+      },
+      {
+        "t": 1269,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <117, 154>",
+        "demo": false
+      },
+      {
+        "t": 1345,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <117, 154>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard2",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed11000600_xhard2_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed11000600.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+      "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <116, 134>",
+        "demo": true
+      },
+      {
+        "t": 105,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <97, 93>",
+        "demo": true
+      },
+      {
+        "t": 193,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <95, 91>",
+        "demo": true
+      },
+      {
+        "t": 264,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <82, 164>",
+        "demo": true
+      },
+      {
+        "t": 354,
+        "name": "press the button",
+        "grounded": "press the button at <130, 173>",
+        "demo": true
+      },
+      {
+        "t": 453,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube",
+        "demo": true
+      },
+      {
+        "t": 567,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <138, 79>",
+        "demo": true
+      },
+      {
+        "t": 671,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <138, 77>",
+        "demo": true
+      },
+      {
+        "t": 740,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <103, 157>",
+        "demo": true
+      },
+      {
+        "t": 839,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <100, 156>",
+        "demo": true
+      },
+      {
+        "t": 907,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 982,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1034,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1094,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <116, 133>",
+        "demo": false
+      },
+      {
+        "t": 1199,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <138, 79>",
+        "demo": false
+      },
+      {
+        "t": 1268,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <138, 79>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard3",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed13000001_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__0d9a93946201.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed13000001.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+      "watch the video carefully, and place the blue cube on the target where it was placed immediately after the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was previously placed after the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was first placed after the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <145, 74>",
+        "demo": true
+      },
+      {
+        "t": 122,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <90, 98>",
+        "demo": true
+      },
+      {
+        "t": 232,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <102, 158>",
+        "demo": true
+      },
+      {
+        "t": 334,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <130, 166>",
+        "demo": true
+      },
+      {
+        "t": 418,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <129, 169>",
+        "demo": true
+      },
+      {
+        "t": 492,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <115, 91>",
+        "demo": true
+      },
+      {
+        "t": 573,
+        "name": "press the button",
+        "grounded": "press the button at <120, 126>",
+        "demo": true
+      },
+      {
+        "t": 652,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <90, 96>",
+        "demo": true
+      },
+      {
+        "t": 755,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <78, 164>",
+        "demo": true
+      },
+      {
+        "t": 845,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <113, 89>",
+        "demo": true
+      },
+      {
+        "t": 948,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <115, 91>",
+        "demo": true
+      },
+      {
+        "t": 1003,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <74, 167>",
+        "demo": true
+      },
+      {
+        "t": 1108,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1222,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <113, 90>",
+        "demo": true
+      },
+      {
+        "t": 1329,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1412,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1466,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1526,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <144, 75>",
+        "demo": false
+      },
+      {
+        "t": 1649,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <130, 166>",
+        "demo": false
+      },
+      {
+        "t": 1723,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <130, 166>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard3",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed13000300_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed13000300.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+      "watch the video carefully, and place the blue cube on the target where it was placed immediately before the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was last placed before the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <93, 162>",
+        "demo": true
+      },
+      {
+        "t": 105,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <96, 91>",
+        "demo": true
+      },
+      {
+        "t": 196,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <144, 70>",
+        "demo": true
+      },
+      {
+        "t": 316,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <74, 103>",
+        "demo": true
+      },
+      {
+        "t": 435,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <71, 103>",
+        "demo": true
+      },
+      {
+        "t": 521,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <77, 151>",
+        "demo": true
+      },
+      {
+        "t": 608,
+        "name": "press the button",
+        "grounded": "press the button at <125, 113>",
+        "demo": true
+      },
+      {
+        "t": 704,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <101, 89>",
+        "demo": true
+      },
+      {
+        "t": 801,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <115, 150>",
+        "demo": true
+      },
+      {
+        "t": 879,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <78, 152>",
+        "demo": true
+      },
+      {
+        "t": 983,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <77, 151>",
+        "demo": true
+      },
+      {
+        "t": 1046,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <113, 151>",
+        "demo": true
+      },
+      {
+        "t": 1155,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1230,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <74, 152>",
+        "demo": true
+      },
+      {
+        "t": 1336,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1448,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1525,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1585,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <144, 71>",
+        "demo": false
+      },
+      {
+        "t": 1704,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <74, 103>",
+        "demo": false
+      },
+      {
+        "t": 1808,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <74, 103>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard3",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed13000600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed13000600.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+      "watch the video carefully, and place the blue cube on the target where it was placed immediately before the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was last placed before the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <124, 175>",
+        "demo": true
+      },
+      {
+        "t": 108,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <83, 105>",
+        "demo": true
+      },
+      {
+        "t": 209,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <69, 133>",
+        "demo": true
+      },
+      {
+        "t": 324,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <141, 148>",
+        "demo": true
+      },
+      {
+        "t": 427,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <79, 104>",
+        "demo": true
+      },
+      {
+        "t": 546,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <91, 165>",
+        "demo": true
+      },
+      {
+        "t": 629,
+        "name": "press the button",
+        "grounded": "press the button at <124, 110>",
+        "demo": true
+      },
+      {
+        "t": 718,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <88, 167>",
+        "demo": true
+      },
+      {
+        "t": 819,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <91, 165>",
+        "demo": true
+      },
+      {
+        "t": 877,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <140, 148>",
+        "demo": true
+      },
+      {
+        "t": 981,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <100, 87>",
+        "demo": true
+      },
+      {
+        "t": 1084,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <89, 168>",
+        "demo": true
+      },
+      {
+        "t": 1175,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1266,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <98, 84>",
+        "demo": true
+      },
+      {
+        "t": 1363,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1459,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1522,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1582,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <124, 175>",
+        "demo": false
+      },
+      {
+        "t": 1690,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <91, 162>",
+        "demo": false
+      },
+      {
+        "t": 1766,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <91, 162>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard4",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/videos/VideoPlaceButton_ep0_seed7000000_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed7000000.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the target right before the button was pressed",
+      "watch the video carefully, and place the green cube on the target where it was placed immediately before the button was pressed",
+      "watch the video carefully, then place the green cube on the target where it was previously placed before the button was pressed",
+      "watch the video carefully, then place the green cube on the target where it was last placed before the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <125, 181>",
+        "demo": true
+      },
+      {
+        "t": 111,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <100, 89>",
+        "demo": true
+      },
+      {
+        "t": 206,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <72, 142>",
+        "demo": true
+      },
+      {
+        "t": 328,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <75, 92>",
+        "demo": true
+      },
+      {
+        "t": 418,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <72, 91>",
+        "demo": true
+      },
+      {
+        "t": 492,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <82, 161>",
+        "demo": true
+      },
+      {
+        "t": 590,
+        "name": "press the button",
+        "grounded": "press the button at <128, 134>",
+        "demo": true
+      },
+      {
+        "t": 691,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <99, 86>",
+        "demo": true
+      },
+      {
+        "t": 784,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <104, 168>",
+        "demo": true
+      },
+      {
+        "t": 877,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <80, 162>",
+        "demo": true
+      },
+      {
+        "t": 973,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <82, 161>",
+        "demo": true
+      },
+      {
+        "t": 1031,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <102, 170>",
+        "demo": true
+      },
+      {
+        "t": 1126,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <75, 92>",
+        "demo": true
+      },
+      {
+        "t": 1230,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <72, 91>",
+        "demo": true
+      },
+      {
+        "t": 1305,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1408,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <79, 160>",
+        "demo": true
+      },
+      {
+        "t": 1516,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1603,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1664,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1724,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <126, 180>",
+        "demo": false
+      },
+      {
+        "t": 1835,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <100, 89>",
+        "demo": false
+      },
+      {
+        "t": 1917,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <100, 89>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard4",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/videos/VideoPlaceButton_ep3_seed7000302_xhard4_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_after_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4fc6273a2c66.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed7000302.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the target right after the button was pressed",
+      "watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed",
+      "watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <77, 167>",
+        "demo": true
+      },
+      {
+        "t": 111,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <96, 100>",
+        "demo": true
+      },
+      {
+        "t": 202,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <96, 146>",
+        "demo": true
+      },
+      {
+        "t": 282,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <110, 123>",
+        "demo": true
+      },
+      {
+        "t": 354,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <95, 100>",
+        "demo": true
+      },
+      {
+        "t": 435,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <142, 176>",
+        "demo": true
+      },
+      {
+        "t": 536,
+        "name": "press the button",
+        "grounded": "press the button at <125, 84>",
+        "demo": true
+      },
+      {
+        "t": 618,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <140, 178>",
+        "demo": true
+      },
+      {
+        "t": 709,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <135, 144>",
+        "demo": true
+      },
+      {
+        "t": 787,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube",
+        "demo": true
+      },
+      {
+        "t": 882,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <142, 176>",
+        "demo": true
+      },
+      {
+        "t": 972,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <144, 177>",
+        "demo": true
+      },
+      {
+        "t": 1051,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <96, 100>",
+        "demo": true
+      },
+      {
+        "t": 1156,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <135, 145>",
+        "demo": true
+      },
+      {
+        "t": 1257,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1355,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <93, 99>",
+        "demo": true
+      },
+      {
+        "t": 1460,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1538,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1584,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1644,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <77, 167>",
+        "demo": false
+      },
+      {
+        "t": 1755,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <135, 144>",
+        "demo": false
+      },
+      {
+        "t": 1834,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <135, 144>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  },
+  {
+    "tier": "xhard4",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/videos/VideoPlaceButton_ep6_seed7000600_xhard4_watch_the_video_carefully_then_place_the_blue_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_blue_cube_on___HASH__adaa013164be.mp4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed7000600.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+      "watch the video carefully, and place the blue cube on the target where it was placed immediately before the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was previously placed before the button was pressed",
+      "watch the video carefully, then place the blue cube on the target where it was last placed before the button was pressed"
+    ],
+    "events": [
+      {
+        "t": 0,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <69, 142>",
+        "demo": true
+      },
+      {
+        "t": 121,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <112, 89>",
+        "demo": true
+      },
+      {
+        "t": 212,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <142, 177>",
+        "demo": true
+      },
+      {
+        "t": 332,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <104, 160>",
+        "demo": true
+      },
+      {
+        "t": 424,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <101, 161>",
+        "demo": true
+      },
+      {
+        "t": 492,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <138, 83>",
+        "demo": true
+      },
+      {
+        "t": 581,
+        "name": "press the button",
+        "grounded": "press the button at <126, 123>",
+        "demo": true
+      },
+      {
+        "t": 676,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <110, 87>",
+        "demo": true
+      },
+      {
+        "t": 763,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <84, 160>",
+        "demo": true
+      },
+      {
+        "t": 854,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <136, 80>",
+        "demo": true
+      },
+      {
+        "t": 963,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <138, 84>",
+        "demo": true
+      },
+      {
+        "t": 1024,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <81, 161>",
+        "demo": true
+      },
+      {
+        "t": 1140,
+        "name": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <104, 160>",
+        "demo": true
+      },
+      {
+        "t": 1217,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <102, 161>",
+        "demo": true
+      },
+      {
+        "t": 1286,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1385,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <136, 79>",
+        "demo": true
+      },
+      {
+        "t": 1496,
+        "name": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position",
+        "demo": true
+      },
+      {
+        "t": 1589,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1663,
+        "name": "static",
+        "grounded": "static",
+        "demo": true
+      },
+      {
+        "t": 1723,
+        "name": "pick up the cube",
+        "grounded": "pick up the cube at <70, 142>",
+        "demo": false
+      },
+      {
+        "t": 1846,
+        "name": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <138, 83>",
+        "demo": false
+      },
+      {
+        "t": 1934,
+        "name": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <138, 83>",
+        "demo": false
+      }
+    ],
+    "completed": true
+  }
+]

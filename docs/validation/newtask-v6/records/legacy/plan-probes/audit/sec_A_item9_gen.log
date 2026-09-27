@@ -1,0 +1,107 @@
+503: def _flatten(payload: Any, prefix: str = "") -> dict[str, Any]:
+513: def _pick_path(payload: Mapping[str, Any], path: str) -> Any:
+522: def _operand_view(payload: Mapping[str, Any]) -> dict[str, Any]:
+527: def extract_native_sampling(
+3:98:    difficulty_for,
+4:100:    parse_difficulty_ratio,
+8:274:    "parameters.RouteStick.configs_fallback_difficulty",
+28:527:def extract_native_sampling(
+35:775:def _extract_legacy(trees: Mapping[str, ast.Module]) -> tuple[dict[str, Any], dict[str, Any]]:
+36:869:    parameters["RouteStick"]["configs_fallback_difficulty"] = _legacy_routestick_fallback(route_scene)
+43:1053:def load_sampling_config(path: str | Path, repo_root: Path) -> dict[str, dict[str, Any]]:
+44:1068:def validate_sampling_config(
+50:1293:    difficulty: str
+51:1330:        "difficulty",
+52:1341:SPEC_RECORD_REQUIRED = ("episode", "task", "difficulty", "layout", "objects", "actions", "spec_sha256")
+56:1381:def validate_episode_spec(record: Mapping[str, Any], task: str, difficulty: str, where: str) -> None:
+57:1386:    if record["task"] != task or record["difficulty"] != difficulty:
+58:1388:            f"{where}: 记录标称 {record['task']}/{record['difficulty']}，与文件的 {task}/{difficulty} 不符"
+59:1398:def load_spec_document(path: Path, task: str | None = None, difficulty: str | None = None) -> dict[str, Any]:
+60:1399:    """读一份规格文档并逐条校验，返回 ``{"task":..,"difficulty":..,"records":{episode: 记录}}``。"""
+61:1415:    doc_difficulty = str(document["difficulty"])
+62:1418:    if difficulty is not None and doc_difficulty != difficulty:
+63:1419:        raise EpisodeSpecError(f"{path}: 文件是 {doc_difficulty} 的规格，CLI 请求的是 {difficulty}")
+64:1427:        validate_episode_spec(record, doc_task, doc_difficulty, f"{path}#{index}")
+65:1432:    return {"task": doc_task, "difficulty": doc_difficulty, "records": records, "path": str(path)}
+66:1440:    difficulty: str
+68:1453:    difficulty: str | None = None,
+69:1461:    * **单组**：文件顶层带 ``spec_schema_version``，配合 ``--env/--difficulty`` 与
+70:1496:            if difficulty is not None and row["difficulty"] != difficulty:
+71:1498:            key = (row["task"], row["difficulty"])
+72:1505:        for (group_task, group_difficulty), records in records_by_group.items():
+73:1507:                raise EpisodeSpecError(f"{path}: 请求的 episode 不在 {group_task}/{group_difficulty} 规格内")
+74:1508:            numbers = sorted(eligible.get((group_task, group_difficulty), set()) & (set(wanted) if wanted is not None else records.keys()))
+75:1510:                groups.append(SpecGroup(group_task, group_difficulty, str(path),
+76:1511:                                        str(output / group_task / group_difficulty), tuple(numbers), records))
+77:1533:            for key in ("task", "difficulty", "spec_path", "episodes"):
+78:1537:            group_difficulty = str(item["difficulty"])
+79:1538:            if (group_task, group_difficulty) in seen:
+80:1539:                raise EpisodeSpecError(f"{path}: 组 {group_task}/{group_difficulty} 重复")
+81:1540:            seen.add((group_task, group_difficulty))
+82:1544:            document = load_spec_document(spec_path, group_task, group_difficulty)
+83:1552:                    difficulty=group_difficulty,
+84:1554:                    output_root=str(output / group_task / group_difficulty),
+85:1564:    document = load_spec_document(path, task, difficulty)
+15:from __future__ import annotations
+17:import argparse
+18:import hashlib
+19:import importlib
+20:import json
+21:import sys
+22:from pathlib import Path
+28:from seed_layout import ALL_TASKS  # noqa: E402
+40:def extract_task(task: str):
+566:                "hard": _assigned_literal(class_def, "config_hard"),
+790:                "hard": _assigned_literal(class_def, "config_hard"),
+2923:    parser.add_argument("--layout", default=DEFAULT_LAYOUT, choices=sorted(LAYOUTS), help="seed 布局代")
+2940:        choices=("none", "per-gpu"),
+scripts/generate_dataset_newseed.py:527:def extract_native_sampling(
+scripts/generate_dataset_newseed.py:1088:    native = extract_native_sampling(repo_root)
+scripts/generate_dataset_newseed.py:1149:    extracted = extract_native_sampling(repo_root)
+scripts/generate_dataset_newseed.py:1180:            reference = extract_native_sampling(repo_root, source_ref=source_ref)
+tests/lightweight/test_episode_action_sampling.py:64:    current = generator.extract_native_sampling(REPO_ROOT)
+tests/lightweight/test_episode_action_sampling.py:65:    old = generator.extract_native_sampling(REPO_ROOT, ref)
+tests/lightweight/test_episode_action_sampling.py:88:        generator.extract_native_sampling(REPO_ROOT)
+def validate_sampling_config(
+    payload: Any, repo_root: Path, config_path: str | Path = "候选 header 内嵌采样配置"
+) -> dict[str, dict[str, Any]]:
+    """文件与候选快照共用对象校验；只读原对象，返回各任务的独立副本。"""
+    if not isinstance(payload, dict):
+        raise SamplingConfigError(f"{config_path}: 顶层必须是对象")
+    if payload.get("schema_version") != SAMPLING_SCHEMA_VERSION:
+        raise SamplingConfigError(
+            f"{config_path}: schema_version 必须为 {SAMPLING_SCHEMA_VERSION}，实际为 {payload.get('schema_version')!r}；请使用 --extract-config 重新导出"
+        )
+    for block in ("parameters", "positions"):
+        if block not in payload or not isinstance(payload[block], dict):
+            raise SamplingConfigError(f"{config_path}: 缺少 {block} 块")
+        unknown = sorted(set(payload[block]) - set(SAMPLING_TASKS))
+        if unknown:
+            raise SamplingConfigError(f"{config_path}: {block} 出现未知任务名 {unknown}")
+        missing = sorted(set(SAMPLING_TASKS) - set(payload[block]))
+        if missing:
+            raise SamplingConfigError(f"{config_path}: {block} 缺少任务 {missing}")
+
+    native = extract_native_sampling(repo_root)
+    _same_shape(native["parameters"], payload["parameters"], "parameters")
+    _same_shape(native["positions"], payload["positions"], "positions")
+    _validate_action_parameters(payload["parameters"], native["parameters"])
+
+    # 来源指纹：生成时核对七份源码，防止配置与实际运行的源码脱节
+    declared = payload.get("sources")
+    if not isinstance(declared, dict):
+        raise SamplingConfigError(f"{config_path}: 缺少 sources 块")
+    for name, actual in native["sources"].items():
+        expected = declared.get(name)
+        if not isinstance(expected, dict):
+            raise SamplingConfigError(f"{config_path}: sources 缺少 {name}")
+        if expected.get("sha256") != actual["sha256"]:
+            raise SamplingConfigError(
+                f"{config_path}: {actual['path']} 的 SHA-256 与快照不符"
+                f"（源码 {actual['sha256'][:12]}…，快照 {str(expected.get('sha256'))[:12]}…）"
+            )
+
+    return {
+        task: {
+            "parameters": copy.deepcopy(payload["parameters"][task]),
+            "positions": copy.deepcopy(payload["positions"][task]),

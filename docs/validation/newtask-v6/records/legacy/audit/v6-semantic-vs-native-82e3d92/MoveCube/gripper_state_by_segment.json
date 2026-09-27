@@ -1,0 +1,426 @@
+{
+ "xhard4_ep0": [
+  {
+   "seg": "Close the gripper and push the",
+   "demo": true,
+   "start": 0,
+   "end": 120,
+   "closed_frac": 0.4,
+   "first_closed": 68,
+   "closed_at_end": false,
+   "gripper_state_end": 0.038
+  },
+  {
+   "seg": "Close the gripper and push the",
+   "demo": false,
+   "start": 180,
+   "end": 281,
+   "closed_frac": 0.416,
+   "first_closed": 239,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0156
+  }
+ ],
+ "xhard4_ep3": [
+  {
+   "seg": "Close the gripper and push the",
+   "demo": true,
+   "start": 0,
+   "end": 98,
+   "closed_frac": 0.408,
+   "first_closed": 54,
+   "closed_at_end": false,
+   "gripper_state_end": 0.038
+  },
+  {
+   "seg": "Close the gripper and push the",
+   "demo": false,
+   "start": 158,
+   "end": 258,
+   "closed_frac": 0.37,
+   "first_closed": 221,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0156
+  }
+ ],
+ "xhard4_ep6": [
+  {
+   "seg": "Pick up the cube",
+   "demo": true,
+   "start": 0,
+   "end": 126,
+   "closed_frac": 0.278,
+   "first_closed": 91,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0183
+  },
+  {
+   "seg": "place the cube onto the target",
+   "demo": true,
+   "start": 126,
+   "end": 213,
+   "closed_frac": 0.69,
+   "first_closed": 126,
+   "closed_at_end": false,
+   "gripper_state_end": 0.04
+  },
+  {
+   "seg": "Pick up the cube",
+   "demo": false,
+   "start": 273,
+   "end": 394,
+   "closed_frac": 0.281,
+   "first_closed": 360,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0183
+  },
+  {
+   "seg": "place the cube onto the target",
+   "demo": false,
+   "start": 394,
+   "end": 467,
+   "closed_frac": 0.795,
+   "first_closed": 394,
+   "closed_at_end": false,
+   "gripper_state_end": 0.04
+  }
+ ],
+ "easy_ep0": [
+  {
+   "seg": "Pick up the peg",
+   "demo": true,
+   "start": 0,
+   "end": 119,
+   "closed_frac": 0.336,
+   "first_closed": 79,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0089
+  },
+  {
+   "seg": "Hook the cube to the target wi",
+   "demo": true,
+   "start": 119,
+   "end": 204,
+   "closed_frac": 0.953,
+   "first_closed": 119,
+   "closed_at_end": false,
+   "gripper_state_end": 0.0384
+  },
+  {
+   "seg": "Pick up the peg",
+   "demo": false,
+   "start": 234,
+   "end": 352,
+   "closed_frac": 0.339,
+   "first_closed": 312,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0088
+  },
+  {
+   "seg": "Hook the cube to the target wi",
+   "demo": false,
+   "start": 352,
+   "end": 419,
+   "closed_frac": 1.0,
+   "first_closed": 352,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0088
+  }
+ ],
+ "easy_ep1": [
+  {
+   "seg": "Pick up the cube",
+   "demo": true,
+   "start": 0,
+   "end": 114,
+   "closed_frac": 0.298,
+   "first_closed": 80,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0183
+  },
+  {
+   "seg": "place the cube onto the target",
+   "demo": true,
+   "start": 114,
+   "end": 198,
+   "closed_frac": 0.643,
+   "first_closed": 114,
+   "closed_at_end": false,
+   "gripper_state_end": 0.04
+  },
+  {
+   "seg": "Pick up the cube",
+   "demo": false,
+   "start": 258,
+   "end": 364,
+   "closed_frac": 0.264,
+   "first_closed": 336,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0183
+  },
+  {
+   "seg": "place the cube onto the target",
+   "demo": false,
+   "start": 364,
+   "end": 424,
+   "closed_frac": 0.75,
+   "first_closed": 364,
+   "closed_at_end": false,
+   "gripper_state_end": 0.04
+  }
+ ],
+ "medium_ep10": [
+  {
+   "seg": "Pick up the peg",
+   "demo": true,
+   "start": 0,
+   "end": 114,
+   "closed_frac": 0.36,
+   "first_closed": 73,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0089
+  },
+  {
+   "seg": "Hook the cube to the target wi",
+   "demo": true,
+   "start": 114,
+   "end": 242,
+   "closed_frac": 0.969,
+   "first_closed": 114,
+   "closed_at_end": false,
+   "gripper_state_end": 0.0384
+  },
+  {
+   "seg": "Pick up the peg",
+   "demo": false,
+   "start": 272,
+   "end": 402,
+   "closed_frac": 0.331,
+   "first_closed": 359,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0091
+  },
+  {
+   "seg": "Hook the cube to the target wi",
+   "demo": false,
+   "start": 402,
+   "end": 476,
+   "closed_frac": 1.0,
+   "first_closed": 402,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0091
+  }
+ ],
+ "hard_ep11": [
+  {
+   "seg": "Close the gripper and push the",
+   "demo": true,
+   "start": 0,
+   "end": 102,
+   "closed_frac": 0.422,
+   "first_closed": 55,
+   "closed_at_end": false,
+   "gripper_state_end": 0.038
+  },
+  {
+   "seg": "Close the gripper and push the",
+   "demo": false,
+   "start": 162,
+   "end": 252,
+   "closed_frac": 0.3,
+   "first_closed": 225,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0156
+  }
+ ],
+ "medium_ep2": [
+  {
+   "seg": "Pick up the peg",
+   "demo": true,
+   "start": 0,
+   "end": 114,
+   "closed_frac": 0.351,
+   "first_closed": 74,
+   "closed_at_end": true,
+   "gripper_state_end": 0.009
+  },
+  {
+   "seg": "Hook the cube to the target wi",
+   "demo": true,
+   "start": 114,
+   "end": 213,
+   "closed_frac": 0.96,
+   "first_closed": 114,
+   "closed_at_end": false,
+   "gripper_state_end": 0.0384
+  },
+  {
+   "seg": "Pick up the peg",
+   "demo": false,
+   "start": 243,
+   "end": 357,
+   "closed_frac": 0.351,
+   "first_closed": 317,
+   "closed_at_end": true,
+   "gripper_state_end": 0.009
+  },
+  {
+   "seg": "Hook the cube to the target wi",
+   "demo": false,
+   "start": 357,
+   "end": 472,
+   "closed_frac": 1.0,
+   "first_closed": 357,
+   "closed_at_end": true,
+   "gripper_state_end": 0.009
+  }
+ ],
+ "hard_ep3": [
+  {
+   "seg": "Close the gripper and push the",
+   "demo": true,
+   "start": 0,
+   "end": 101,
+   "closed_frac": 0.386,
+   "first_closed": 58,
+   "closed_at_end": false,
+   "gripper_state_end": 0.038
+  },
+  {
+   "seg": "Close the gripper and push the",
+   "demo": false,
+   "start": 161,
+   "end": 261,
+   "closed_frac": 0.38,
+   "first_closed": 223,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0157
+  }
+ ],
+ "easy_ep4": [
+  {
+   "seg": "Pick up the cube",
+   "demo": true,
+   "start": 0,
+   "end": 103,
+   "closed_frac": 0.272,
+   "first_closed": 75,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0183
+  },
+  {
+   "seg": "place the cube onto the target",
+   "demo": true,
+   "start": 103,
+   "end": 176,
+   "closed_frac": 0.63,
+   "first_closed": 103,
+   "closed_at_end": false,
+   "gripper_state_end": 0.04
+  },
+  {
+   "seg": "Pick up the cube",
+   "demo": false,
+   "start": 236,
+   "end": 348,
+   "closed_frac": 0.268,
+   "first_closed": 318,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0183
+  },
+  {
+   "seg": "place the cube onto the target",
+   "demo": false,
+   "start": 348,
+   "end": 422,
+   "closed_frac": 0.797,
+   "first_closed": 348,
+   "closed_at_end": false,
+   "gripper_state_end": 0.04
+  }
+ ],
+ "medium_ep6": [
+  {
+   "seg": "Pick up the cube",
+   "demo": true,
+   "start": 0,
+   "end": 106,
+   "closed_frac": 0.283,
+   "first_closed": 76,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0183
+  },
+  {
+   "seg": "place the cube onto the target",
+   "demo": true,
+   "start": 106,
+   "end": 180,
+   "closed_frac": 0.635,
+   "first_closed": 106,
+   "closed_at_end": false,
+   "gripper_state_end": 0.04
+  },
+  {
+   "seg": "Pick up the cube",
+   "demo": false,
+   "start": 240,
+   "end": 349,
+   "closed_frac": 0.294,
+   "first_closed": 317,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0183
+  },
+  {
+   "seg": "place the cube onto the target",
+   "demo": false,
+   "start": 349,
+   "end": 427,
+   "closed_frac": 0.795,
+   "first_closed": 349,
+   "closed_at_end": false,
+   "gripper_state_end": 0.04
+  }
+ ],
+ "hard_ep7": [
+  {
+   "seg": "Pick up the peg",
+   "demo": true,
+   "start": 0,
+   "end": 115,
+   "closed_frac": 0.339,
+   "first_closed": 76,
+   "closed_at_end": true,
+   "gripper_state_end": 0.009
+  },
+  {
+   "seg": "Hook the cube to the target wi",
+   "demo": true,
+   "start": 115,
+   "end": 237,
+   "closed_frac": 0.967,
+   "first_closed": 115,
+   "closed_at_end": false,
+   "gripper_state_end": 0.0384
+  },
+  {
+   "seg": "Pick up the peg",
+   "demo": false,
+   "start": 267,
+   "end": 385,
+   "closed_frac": 0.331,
+   "first_closed": 346,
+   "closed_at_end": true,
+   "gripper_state_end": 0.0089
+  },
+  {
+   "seg": "Hook the cube to the target wi",
+   "demo": false,
+   "start": 385,
+   "end": 506,
+   "closed_frac": 1.0,
+   "first_closed": 385,
+   "closed_at_end": true,
+   "gripper_state_end": 0.009
+  }
+ ]
+}

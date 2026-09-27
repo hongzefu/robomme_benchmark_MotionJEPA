@@ -1,0 +1,23 @@
+  import pynvml  # type: ignore[import]
+  import pkg_resources
+PickXtimes 4100000 EXACT maxabs=0 tidx 1 1
+PickXtimes 4100100 EXACT maxabs=0 tidx 0 0
+PickXtimes 4100200 EXACT maxabs=0 tidx 0 0
+PickXtimes 4100300 EXACT maxabs=0 tidx 0 0
+PickXtimes 4100400 EXACT maxabs=0 tidx 0 0
+PickXtimes 4100500 EXACT maxabs=0 tidx 2 2
+PickXtimes 4100600 EXACT maxabs=0 tidx 0 0
+PickXtimes 4100700 EXACT maxabs=0 tidx 0 0
+PickXtimes 4100800 EXACT maxabs=0 tidx 0 0
+PickXtimes 4100900 EXACT maxabs=0 tidx 0 0
+SwingXtimes 4300000 EXACT maxabs=0 tidx 2 2
+SwingXtimes 4300100 EXACT maxabs=0 tidx 0 0
+SwingXtimes 4300200 EXACT maxabs=0 tidx 1 1
+SwingXtimes 4300300 EXACT maxabs=0 tidx 0 0
+SwingXtimes 4300400 EXACT maxabs=0 tidx 1 1
+SwingXtimes 4300500 EXACT maxabs=0 tidx 2 2
+SwingXtimes 4300600 EXACT maxabs=0 tidx 0 0
+SwingXtimes 4300700 EXACT maxabs=0 tidx 0 0
+SwingXtimes 4300800 EXACT maxabs=0 tidx 2 2
+SwingXtimes 4300900 EXACT maxabs=0 tidx 1 1
+REPLICA_EXACT=20/20

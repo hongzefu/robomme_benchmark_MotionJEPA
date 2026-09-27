@@ -1,0 +1,523 @@
+[
+  {
+    "episode": 0,
+    "frames": 362,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/StopCube_episode_0/hdf5_files/StopCube_ep0_seed6200000.h5",
+    "spec": {
+      "actions": {
+        "motion_segments": 6,
+        "move_interval": 60,
+        "move_interval_idx": 0,
+        "rotation_deg": -7.297357559204102,
+        "sampling_trace": {
+          "interval_draw": 27
+        },
+        "steps_press": 330.0,
+        "stop_time": 6,
+        "stop_window": [
+          300.0,
+          360.0
+        ]
+      },
+      "identity": {
+        "difficulty": "xhard4",
+        "episode": 0,
+        "recovery_mode": null,
+        "seed": 6200000,
+        "task": "StopCube"
+      },
+      "layout": {
+        "button_xy": [
+          -0.1876282334327698,
+          -0.05150065422058106
+        ],
+        "target_xy": [
+          -0.03319108486175537,
+          -0.024324525147676468
+        ]
+      },
+      "objects": {
+        "cube_rgb": [
+          0.802485466003418,
+          0.026599466800689697,
+          0.5180825591087341
+        ]
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 11
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "StopCube"
+    },
+    "setup": {
+      "available_multi_choices": "[{\"label\": \"a\", \"action\": \"move to the top of the button to prepare\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"remain static\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"press button to stop the cube\", \"need_parameter\": false}]",
+      "difficulty": "xhard4",
+      "front_camera_intrinsic": [
+        [
+          128.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          128.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "seed": 6200000,
+      "task_goal": [
+        "press the button to stop the cube just as it reaches the target for the sixth time",
+        "press the button to stop the cube exactly at the target on its sixth visit"
+      ],
+      "wrist_camera_intrinsic": [
+        [
+          128.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          128.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "subgoals": [
+      {
+        "frame": 0,
+        "simple": "move to the top of the button to prepare",
+        "online": "move to the top of the button to prepare",
+        "complete": false,
+        "grounded": "move to the top of the button at <65, 115> to prepare"
+      },
+      {
+        "frame": 54,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 102,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 204,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 300,
+        "simple": "press the button to stop the cube on the target",
+        "online": "press the button to stop the cube on the target",
+        "complete": false,
+        "grounded": "press the button to stop the cube on the target at <95, 121>"
+      },
+      {
+        "frame": 328,
+        "simple": "All tasks completed",
+        "online": "press the button to stop the cube on the target",
+        "complete": true,
+        "grounded": "press the button to stop the cube on the target at <95, 121>"
+      },
+      {
+        "frame": 361,
+        "simple": "All tasks completed",
+        "online": "press the button to stop the cube on the target",
+        "complete": true,
+        "grounded": "press the button to stop the cube on the target at <95, 121>"
+      }
+    ]
+  },
+  {
+    "episode": 3,
+    "frames": 852,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/StopCube_episode_3/hdf5_files/StopCube_ep3_seed6200300.h5",
+    "spec": {
+      "actions": {
+        "motion_segments": 14,
+        "move_interval": 60,
+        "move_interval_idx": 0,
+        "rotation_deg": 10.355791091918945,
+        "sampling_trace": {
+          "interval_draw": 31
+        },
+        "steps_press": 810.0,
+        "stop_time": 14,
+        "stop_window": [
+          780.0,
+          840.0
+        ]
+      },
+      "identity": {
+        "difficulty": "xhard4",
+        "episode": 3,
+        "recovery_mode": null,
+        "seed": 6200300,
+        "task": "StopCube"
+      },
+      "layout": {
+        "button_xy": [
+          -0.23332754373550416,
+          -0.11235129833221436
+        ],
+        "target_xy": [
+          -0.011752009391784668,
+          0.03451930359005928
+        ]
+      },
+      "objects": {
+        "cube_rgb": [
+          0.4120039939880371,
+          0.8032338619232178,
+          0.08544063568115234
+        ]
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 11
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "StopCube"
+    },
+    "setup": {
+      "available_multi_choices": "[{\"label\": \"a\", \"action\": \"move to the top of the button to prepare\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"remain static\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"press button to stop the cube\", \"need_parameter\": false}]",
+      "difficulty": "xhard4",
+      "front_camera_intrinsic": [
+        [
+          128.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          128.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "seed": 6200300,
+      "task_goal": [
+        "press the button to stop the cube just as it reaches the target for the fourteenth time",
+        "press the button to stop the cube exactly at the target on its fourteenth visit"
+      ],
+      "wrist_camera_intrinsic": [
+        [
+          128.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          128.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "subgoals": [
+      {
+        "frame": 0,
+        "simple": "move to the top of the button to prepare",
+        "online": "move to the top of the button to prepare",
+        "complete": false,
+        "grounded": "move to the top of the button at <58, 102> to prepare"
+      },
+      {
+        "frame": 60,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 102,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 204,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 300,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 402,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 504,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 600,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 702,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 780,
+        "simple": "press the button to stop the cube on the target",
+        "online": "press the button to stop the cube on the target",
+        "complete": false,
+        "grounded": "press the button to stop the cube on the target at <100, 136>"
+      },
+      {
+        "frame": 809,
+        "simple": "All tasks completed",
+        "online": "press the button to stop the cube on the target",
+        "complete": true,
+        "grounded": "press the button to stop the cube on the target at <100, 136>"
+      },
+      {
+        "frame": 851,
+        "simple": "All tasks completed",
+        "online": "press the button to stop the cube on the target",
+        "complete": true,
+        "grounded": "press the button to stop the cube on the target at <100, 136>"
+      }
+    ]
+  },
+  {
+    "episode": 6,
+    "frames": 902,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/StopCube_episode_6/hdf5_files/StopCube_ep6_seed6200600.h5",
+    "spec": {
+      "actions": {
+        "motion_segments": 15,
+        "move_interval": 60,
+        "move_interval_idx": 0,
+        "rotation_deg": 12.469278335571289,
+        "sampling_trace": {
+          "interval_draw": 32
+        },
+        "steps_press": 870.0,
+        "stop_time": 15,
+        "stop_window": [
+          840.0,
+          900.0
+        ]
+      },
+      "identity": {
+        "difficulty": "xhard4",
+        "episode": 6,
+        "recovery_mode": null,
+        "seed": 6200600,
+        "task": "StopCube"
+      },
+      "layout": {
+        "button_xy": [
+          -0.18447861075401306,
+          -0.08837826251983644
+        ],
+        "target_xy": [
+          -0.062495555728673935,
+          0.04156426340341568
+        ]
+      },
+      "objects": {
+        "cube_rgb": [
+          0.7200798988342285,
+          0.7759475708007812,
+          0.9885818958282471
+        ]
+      },
+      "provenance": {
+        "mismatches": 0,
+        "mode": "export",
+        "unattributed_mismatches": 0,
+        "value_points": 11
+      },
+      "spec_kind": "native-newvalue/2",
+      "task": "StopCube"
+    },
+    "setup": {
+      "available_multi_choices": "[{\"label\": \"a\", \"action\": \"move to the top of the button to prepare\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"remain static\", \"need_parameter\": false}, {\"label\": \"c\", \"action\": \"press button to stop the cube\", \"need_parameter\": false}]",
+      "difficulty": "xhard4",
+      "front_camera_intrinsic": [
+        [
+          128.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          128.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "seed": 6200600,
+      "task_goal": [
+        "press the button to stop the cube just as it reaches the target for the fifteenth time",
+        "press the button to stop the cube exactly at the target on its fifteenth visit"
+      ],
+      "wrist_camera_intrinsic": [
+        [
+          128.0,
+          0.0,
+          128.0
+        ],
+        [
+          0.0,
+          128.0,
+          128.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "subgoals": [
+      {
+        "frame": 0,
+        "simple": "move to the top of the button to prepare",
+        "online": "move to the top of the button to prepare",
+        "complete": false,
+        "grounded": "move to the top of the button at <66, 107> to prepare"
+      },
+      {
+        "frame": 54,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 102,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 204,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 300,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 402,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 504,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 600,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 702,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 804,
+        "simple": "remain static",
+        "online": "remain static",
+        "complete": false,
+        "grounded": "remain static"
+      },
+      {
+        "frame": 840,
+        "simple": "press the button to stop the cube on the target",
+        "online": "press the button to stop the cube on the target",
+        "complete": false,
+        "grounded": "press the button to stop the cube on the target at <90, 137>"
+      },
+      {
+        "frame": 868,
+        "simple": "All tasks completed",
+        "online": "press the button to stop the cube on the target",
+        "complete": true,
+        "grounded": "press the button to stop the cube on the target at <90, 137>"
+      },
+      {
+        "frame": 901,
+        "simple": "All tasks completed",
+        "online": "press the button to stop the cube on the target",
+        "complete": true,
+        "grounded": "press the button to stop the cube on the target at <90, 137>"
+      }
+    ]
+  }
+]

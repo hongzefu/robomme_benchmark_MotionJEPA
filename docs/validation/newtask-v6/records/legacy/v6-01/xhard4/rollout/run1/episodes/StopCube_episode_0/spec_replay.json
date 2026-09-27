@@ -1,0 +1,18 @@
+{
+  "mismatches": [],
+  "value_points": 19,
+  "consumed": [
+    "actions.motion_segments",
+    "actions.move_interval",
+    "actions.move_interval_idx",
+    "actions.rotation_deg",
+    "actions.sampling_trace.interval_draw",
+    "actions.steps_press",
+    "actions.stop_time",
+    "actions.stop_window",
+    "layout.button_xy",
+    "layout.target_xy",
+    "objects.cube_rgb"
+  ],
+  "unused": []
+}

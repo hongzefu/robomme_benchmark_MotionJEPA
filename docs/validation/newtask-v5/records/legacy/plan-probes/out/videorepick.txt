@@ -1,0 +1,341 @@
+- marker: [内部产出，英文] 以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。
+- topic_key: videorepick
+- summary: I built an offline copy of the V4 VideoRepick xhard reset sampler. It reproduces all 10 frozen specs.jsonl candidates exactly, including every float. The offline swap and D5 model reproduces the swap pairs of all 3 rollout episodes. In 9 simulator demos (6 V4 seeds, 3 V5-minimal seeds, 37 swap records in total) its D5 prediction matched the runtime result every time; partner identity matched 36/37, and the one miss was a near-tie flip that did not change the D5 outcome. Uniformity: V4 does sample uniformly over the free area (no spawn-order drift), but uniform random is not evenly spread. Over 2400 layouts, 26.9% put ≥3 of the 6 cubes into one sixth of the region, 13.5% leave ≤1 cube on one image side, and the median closest pair is only 0.079 m apart (centre to centre). On top of that the button cuts out 22.6% of the sampling rectangle (robot side, centre), which makes the marginal distributions U-shaped (p<1e-180). The whole region also covers only 14.3% of the table pixels in the front camera (rows 56-128 of 256). 'Not all cubes swap' comes from B12 (3 fixed initiators) combined with nearest-neighbour partners. Only 17.0% of V4 episodes involve all 6 cubes; 9.4% involve only 3. Pairs repeat heavily: on average one pair is swapped 5.8 times per episode (ep3 swaps bin_4<->bin_3 four times; bin_1 never moves). The target ends back in its starting slot 35.7% of the time. Offline, V4 loses 35.3% of episodes to D5 sweep rejection (J2 measured about 45%). Spreading the cubes and swap coverage turn out to be linked. A minimum centre distance of 0.12 m places 100% of layouts and cuts nearest-neighbour D5 rejection from 39.7% to 3.3%. Recommended V5: (1) that 0.12 m minimum distance; (2) every cube is an initiator, with the target every 3rd swap and the other 5 cycling in randperm order, which needs no new RNG draw; (3) partners planned at reset: pick uniformly among the 2 nearest sweep-feasible slots (feasibility checked with a 5 mm margin), never repeating the previous pair, using one appended torch.rand(n_swaps) draw. Offline this gives 100% all-6 participation, target home 16.3% (≈1/6), target moves 4.9 and max pair repeat 2.9. 8.4% of layouts are rejected at reset (cheap draft retries), and the modelled runtime D5 residual is 0.00% for target drop shifts up to 12 mm. This overturns B12 and J2, keeps G2 (N=6, same region), A3, C2/J3, D5, H2, H3, H4 and I3, and leaves easy/medium/hard untouched. I also found a latent bug: in VideoRepick.py the name SceneGenerationError is the submodule, not the class, so any _load_scene failure surfaces as TypeError. V5 should fix it for xhard using the same pattern as K2.
+## current_mechanism
+  [0]
+    - env: VideoRepick (xhard)
+    - anchor: src/robomme/robomme_env/VideoRepick.py :: VideoRepick.config_xhard / _native_decision
+    - behavior: xhard is derived from medium. decision.xhard.layout = {mode: clutter, cube_count: 6 (G2), region_center: [-0.1, 0.0], region_half_size: [0.2, 0.25]}; decision.swap.xhard = [8,12] (A3, closed interval); decision.num_repeats_range.xhard = {low 4, high_exclusive 7} (pick times 4..6); decision.xhard.block_color = same_color_hsv_floor (C2/J3: H any, S>=0.5, V>=0.4). The xhard branch reads only decision.* (native.parameters.configs.xhard is an unused copy).
+  [1]
+    - env: VideoRepick (xhard)
+    - anchor: VideoRepick.py :: VideoRepick.__init__ (+ _load_scene → object_generation.py::build_button)
+    - behavior: RNG order on self.generator (torch.Generator seeded with seed): torch.randint(4,7) num_repeats → torch.randint(8,13) n_swaps → super().__init__ → _load_scene: build_button torch.rand(2) (centre [-0.2,0] + (U-0.5)*[0.1,0.1]; the OBB added to avoid is axis-aligned with half size 0.025*1.5*1.5 = 0.05625 and no pad) → _load_cubes_xhard. The button is not recorded in the spec. The button OBB rejects 22.6% of the cube-centre sampling rectangle (button_hole.py, 40k MC).
+  [2]
+    - env: VideoRepick (xhard)
+    - anchor: VideoRepick.py :: VideoRepick._load_cubes_xhard + utils/object_generation.py :: spawn_random_cube
+    - behavior: Colour: torch.rand(3) → hsv_floor_rgb → objects.color_rgb. Then 6 sequential calls to spawn_random_cube with plain uniform rejection sampling: centres x∈[-0.28,0.08], y∈[-0.23,0.23] (region shrunk by the 0.02 cube half size). Each trial draws 3 × torch.rand(1) (u1, u2, yaw·2π). The new cube's 2D OBB half size is 0.02 + min_gap 0.02 = 0.04. It is SAT-tested against the button OBB and the trimesh OBBs of cubes already placed (pad 0; per G2 these are often degenerate into a 0.04 m segment). max_trials is 256. include_existing and include_goal are False (from positions.hard_cubes). Accepted poses go through recorder.value('layout.cubes.<i>.xy_yaw'); objects.cube_count.{requested,actual} is recorded. Next: target = torch.randint(0,6) → objects.target; selected = torch.randperm(5)[:swap_remaining_count=2] → objects.swap_initiators_remaining; swap_indices = [target, r1, r2] (B12) → objects.swap_initiators; swap_pair{k+1}_idx1 = spawned[swap_indices[k % 3]] with idx2 = None; then _refresh_swap_schedule.
+  [3]
+    - env: VideoRepick (xhard)
+    - anchor: VideoRepick.py :: VideoRepick.step / _refresh_swap_schedule
+    - behavior: The schedule starts when the first 'swap' specialflag task begins: swap k occupies [start+50k, start+50(k+1)]. At the first step of window i, when idx2 is None, the partner is resolved as the nearest neighbour of the initiator's ACTUAL position. The distance is L2 on native.parameters.swap_selection.partner.position_axes = [0,1], scanned in spawn order with strict < (ties go to the first in spawn order). For xhard, _check_swap_sweep_from_actual runs next (D5), then actions.swap_pairs.<i> and actions.swap_windows.<i> are recorded with _spec.record. These are recorded only at runtime, so they are absent from the reset-only specs.jsonl and appear only in rollout rng_trace.json.
+  [4]
+    - env: VideoRepick (xhard)
+    - anchor: src/robomme/robomme_env/utils/statechange.py :: swap_flat_two_lane (called with lane_offset=0.07, smooth=True, other_cube = all other cubes)
+    - behavior: Endpoints are captured at window start. Progress α is smoothstepped. A moves along +n (n = left normal of B−A) with a bell-shaped offset of 0.07·sin(πα); B mirrors it along −n. Bystanders are pinned with set_pose every step. At window end, cube_a ← (B's xy, B's quaternion) and cube_b ← (A's xy, A's quaternion). So the set of slots (xy + yaw) is invariant through all swaps and only occupancy permutes. The lane pair depends only on the unordered slot pair, so any D5 outcome can be precomputed per slot pair from the reset layout.
+  [5]
+    - env: VideoRepick (xhard)
+    - anchor: VideoRepick.py :: _sweep_checks_enabled / _check_swap_sweep_from_actual / _before_simulation_step / _after_simulation_step + utils/bin_collision.py :: check_swap_sweep, check_bin_state
+    - behavior: D5 (H2) is on for xhard in the native (乙) channel. It covers: the initial check_bin_state pass in _initialize_episode; per swap, a certified continuous interval-bisection proof over the full lane path (mover vs mover and mover vs each bystander, with the same LANE_OFFSET 0.07 as the call site); and static checks at each substep inside swap windows. A gap g ≤ EPS 1e-6 raises BinCollisionError. _solve_hold_obj_xhard lets that error through. The generator classifies it as a retryable task failure; in the formal rollout (max-attempts 1) the episode fails and H4 backfills within the 10 candidates (J2 accepted about 45%).
+  [6]
+    - env: VideoRepick (xhard)
+    - anchor: VideoRepick.py :: _initialize_episode (task list) + evaluate
+    - behavior: Target tracking is purely by actor identity. self.target_cube_1 is the actor chosen by objects.target. The demo picks it and drops it at the current TCP xy (solve_putdown_whenhold release_z=0.03; measured drop shift median 1.5 mm, max 12.2 mm, yaw change ≤0.4°). Then 8-12 swaps move the actors. The non-demo tasks 'pick up the correct cube for the {n}th time' check is_obj_pickup(target_cube_1); failure_func fires if any other cube is picked up or the button is pressed early. All cubes share one colour, so only watching the video can identify the target.
+  [7]
+    - env: VideoRepick (all tiers)
+    - anchor: VideoRepick.py :: _resolve_sampling_config / NATIVE_SAMPLING.parameters.{object_selection, swap_selection}; utils/sampling_config.py :: assert_native_decision
+    - behavior: _resolve_sampling_config requires native.parameters.object_selection and swap_selection to JSON-equal NATIVE_SAMPLING, which protects easy/medium. assert_native_decision requires the non-xhard part of decision to equal the source default, and the xhard key SHAPE to equal the declared shape exactly (values may differ). The xhard branch currently reuses native object_selection.swap_remaining_count (=2) and swap_selection.partner.position_axes.
+  [8]
+    - env: VideoRepick (all tiers)
+    - anchor: VideoRepick.py module globals: `from .utils.SceneGenerationError import SceneGenerationError` followed by `from .utils import *`
+    - behavior: Verified: sys.modules['robomme.robomme_env.VideoRepick'].SceneGenerationError is the MODULE utils.SceneGenerationError, not the class. So `raise SceneGenerationError(...)` inside _load_cubes_xhard, and `except SceneGenerationError:` in _load_scene, turn any _load_scene exception into TypeError ('catching classes that do not inherit from BaseException'). My first V5 probe reproduced exactly this. This is the same bug as K2 in VideoPlaceOrder, which fixes it with a _RealSceneGenerationError alias for xhard only. V4 xhard never triggered it because 6-cube placement is 100%.
+## user_question_answers
+  [0]
+    - question: What does the user's video (VideoRepick_episode_3, seed 4900300) show and why?
+    - answer: Its layout has 3 of the 6 cubes (bin_1, bin_3, bin_4) crowded into one corner (image left / region +x−y); the region sits in the upper band of the frame and the lower half of the table is empty. With n_swaps=12 and B12 initiators [bin_5, bin_4, bin_0], the recorded pairs are (5,2),(4,3),(0,2),(5,0),(4,3),(0,5),(5,0),(4,3),(0,5),(5,0),(4,3),(0,5). So bin_4↔bin_3 swap back and forth 4 times (net zero), 0/5 alternate, and bin_1 never moves. The cause is 3 fixed initiators plus nearest-neighbour partners over a slot set that never changes: each initiator can only reach slots in its nearest-neighbour chain and ends up oscillating on a mutual-nearest pair.
+    - evidence: rng_trace.json of ep3. Offline replication check_rollout_pairs.py matched the recorded pair sequence exactly for ep0/ep3/ep6. First frame saved as ep3_t0.png; annotated as ep3_t0_annot.png (region in green, button exclusion in magenta).
+  [1]
+    - question: Is the current xhard generation non-uniform, and why?
+    - answer: Yes, visibly, for three reasons, none of them a sampler bug. (1) The sampler is uniform random with rejection. Every cube's marginal equals the first cube's (no spawn-order drift: mean |x+0.1| 0.092 and |y| 0.13 for spawn index 0..5), and uniform random clumps. Over 2400 layouts: ≥3 cubes in one of 6 equal cells 26.9%; ≤1 cube on one y-side (image left/right) 13.5%; a tight triple (all pairwise ≤0.10 m) 4.0%; closest centre-to-centre pair median 0.079 m (5th percentile 0.055); covering radius 0.235 m. (2) The button OBB removes 22.6% of the centre rectangle at the robot-side centre, so marginals are U-shaped: y bins from edge to centre 16.5/14.8/10.9/7.9% vs 7.6/10.8/14.7/16.7%, and x rises from 8.7-10.4% on the near side to 15.5-16.9% on the far side (chi-square p≈1e-181 and 1e-227). (3) The region x∈[-0.3,0.1] covers only 14.3% of the visible table pixels (image rows 56-128 of 256), so all cubes sit in one band of the image. For comparison, 6 iid points without button or hard core (CSR) are flat (p=0.53 on y) but clump even more (≥3 per cell 35.9%).
+    - evidence: big_sim.py 2400 seeds → analyze_2400.txt (per-axis histograms, per-spawn-index table, clump metrics); button_hole.py; project_region.py; density_2400.png. The 10 frozen candidates (specs_stats.py): closest pair 0.062-0.092 m, side_min=1 in 2 of 10, max 3 cubes in one cell in 4 of 10.
+  [2]
+    - question: What does 'all cubes can swap' mean, and how do the candidate semantics compare?
+    - answer: Three readings were simulated with realistic layouts. (a) Every cube is an initiator: [target] + the full randperm(5) cycled k%6, or target every 3rd swap with the other 5 filling the gaps. Coverage is 6/6 in 100% of episodes because n_swaps ≥ 8 ≥ 6, and no RNG draw is added (randperm(5) is already drawn; V4 only slices [:2]). (b) 'Every cube participates at least once' holds automatically under (a). Under i.i.d. random initiators it holds only 69.5% of the time, and under uniformly random pairs 87.0%. (c) A random pair each swap gives 87% coverage but, without a feasibility filter, fails D5 in 99.8% of V4 layouts (98.9% even with 0.12 m spacing), so it is unusable unless partners are filtered by sweep feasibility. V4's B12 gives 6/6 in only 17.0% of episodes (3 cubes 9.4%, 4 cubes 40.2%, 5 cubes 33.4%). The slot nearest-neighbour graph has 1/2/3 components in 22.3/68.9/8.8% of layouts; nearest-neighbour partners can never carry a cube across components, which is why the V4 target returns home 35.7% of the time.
+    - evidence: big_sim.py schemes S0-S11; extra_sim.py S12-S15; specs_stats.py (10 candidates under S0: 3 cubes ×1, 4 ×2, 5 ×4, 6 ×3); final_design_sim2.py (cycle vs interleave).
+  [3]
+    - question: How do the proposals affect D5 sweep rejection?
+    - answer: D5 rejection is driven mostly by cube spacing, not by the initiator scheme. On V4 layouts, per-episode D5 rejection is 35.3% for B12 + nearest neighbour and 39.7% when all cubes initiate with nearest-neighbour partners. With a minimum centre distance of 0.10/0.12/0.13/0.14 m the all-cycle + nearest-neighbour rate falls to 14.6/3.3/0.9/0.0%. Random partners stay catastrophic (random among 2 nearest 66.9%, among 3 nearest 91.9%, any 99.2% on 0.12 m layouts). Feasibility-aware selection turns these into 'no feasible partner' events: 1.7% at 0.12 m with no margin, 8.4% with a 5 mm planning margin (resolved at reset). Keeping the plan fixed at reset while the target drop shifts the target up to 12 mm gives 4.23% runtime rejection with no margin and 0.00% with 5 mm (0.27% at 20 mm).
+    - evidence: analyze_2400.txt, extra_2400.txt, perturb_check.py and perturb_check2.py (1200 layouts each for hc0.12 and hc0.13). Simulator calibration: V4 rules, 6 seeds / 20 swap records, partner agreement 20/20 and D5 agreement 20/20. V5-minimal (0.12 m + all-cycle + nearest neighbour), 3 seeds / 17 records: D5 17/17, pairs 16/17 (a near-tie flip, NN distances 0.1417 vs 0.1421 m with the target shifted 8.1 mm; both candidate pairs were rejected anyway).
+  [4]
+    - question: How does target tracking change?
+    - answer: The mechanism is unchanged: identity-based target_cube_1. Difficulty is measured by how often the target ends where it was dropped (the no-memory baseline), how many times it moves, and how many distinct slots it visits. V4: home 35.7%, 5.8 moves, 2.60 slots, max pair repeat 5.77. All-cycle + nearest neighbour: home 37.2%, 3.8 moves; coverage is fixed but the target is less active and swaps stay repetitive (max repeat 3.38; P(some pair ≥3 times) 95.6%). Recommended (target every 3rd swap, others cycled, random among 2 nearest feasible, no immediate repeat): home 16.3% (≈1/6), 4.91 moves, P(target moves ≤2) = 0%, 3.94 slots, max repeat 2.92, 5.62 distinct pairs. The pure all-cycle variant has home 18.6% but P(target moves ≤2) = 9.5%, because the target then initiates only at k=0 and k=6.
+    - evidence: extra_2400.txt; final_design_sim.py; final_design_sim2.py (1500 layouts).
+  [5]
+    - question: Which guards and snapshots must change (NATIVE_SAMPLING, _resolve_sampling_config equality on object_selection / swap_selection)?
+    - answer: None of them should change. They protect easy/medium/hard (V0/V1). All new xhard rules go under decision.xhard (e.g. decision.xhard.layout.min_center_dist_m and decision.xhard.swap.{initiators, partner}), which _strip_xhard removes before the original-tier comparison. _native_decision must declare the new keys, because assert_native_decision requires the xhard key shape to match exactly. The xhard code must stop reading native object_selection.swap_remaining_count and swap_selection.partner.position_axes. Side effect: the V4 v4-01 specs.jsonl header embeds a VideoRepick decision without the new keys, so V5 code will reject it with SamplingConfigError; VideoRepick needs a new run (for example v5-01).
+    - evidence: sampling_config.py::assert_native_decision (_xhard_shape equality; exemption only when no xhard entry at all); VideoRepick._resolve_sampling_config; tests test_守卫放行xhard收窄且拒绝改原三档 and test_去掉xhard后decision与改动前相同.
+  [6]
+    - question: Which V4 decisions are overturned or kept?
+    - answer: Overturned: B12 (initiators stay 3) → all 6 initiate. J2 (accept about 45% demo-time D5 rejection, rely on H4, do not change the mechanism) → the mechanism changes: spread placement plus reset-planned feasible partners, with D5 kept as a runtime guard. Also V4's xhard reuse of the native 'partner = nearest at swap_start' rule is replaced for xhard only. Kept: G2 (N=6, same region centre and half size), A3 (8-12 swaps), pick times 4-6, C2/J3 colour, D5 (still enforced), H2 (xhard only), H3, H4 (still the fallback), I3 (no recovery), N5 (appended draws), A7 and the K-series. The K2 SceneGenerationError fix pattern should also be applied to VideoRepick xhard; this is new, not a reversal.
+    - evidence: NEWTASK_RELEASE_V4_PLAN.md section 1.3 (B12, G2, J2, H2, H4, I3); 20260922-step3b-videorepick.md.
+## measurements
+  [0]
+    - name: Exact replication of the V4 xhard reset sampler
+    - script_or_command: cd repo && uv run --no-sync python $S/validate_rep.py   (S=/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick; library $S/v4rep.py)
+    - settings: The 10 VideoRepick rows of scripts/configs/newtask-v4/v4-01/specs.jsonl (seeds 4900000..4900900). torch.Generator stream; repo functions _build_new_cube_obb2d, _obb2d_intersect, _trimesh_box_to_obb2d; cube obstacle OBB via trimesh box plus sapien.Pose.to_transformation_matrix.
+    - result: REPLICATION exact=10/10 (xy_yaw max diff 0; target, n_swaps, num_repeats, initiators, colour identical)
+    - conclusion: The offline model is bit-exact, so the statistics below reflect the real sampler, not an approximation.
+  [1]
+    - name: Rollout swap-pair replication
+    - script_or_command: uv run --no-sync python $S/check_rollout_pairs.py
+    - settings: Rollout run1 episodes 0/3/6 (seeds 4900000/4900300/4900600); V4 rule (k%3 initiators, XY nearest neighbour, slot exchange)
+    - result: match=True for all 3 (10, 12 and 9 swaps). Offline D5: no rejection, consistent with demo success. Participants: ep0 6, ep3 5, ep6 3.
+    - conclusion: The slot-permutation model and runtime partner resolution agree exactly, despite the demo pick/drop.
+  [2]
+    - name: Camera footprint of the region
+    - script_or_command: uv run --no-sync python $S/project_region.py
+    - settings: front_camera_intrinsic/extrinsic from ep3 h5; back-projection of every pixel onto z=0
+    - result: The region covers 13.7% of image pixels and 14.3% of visible table pixels, rows 56-128 of 256. Visible table x ∈ [-0.722, 0.432]. Annotated frame: ep3_t0_annot.png.
+    - conclusion: All cubes sit in the upper-middle band of the video frame; the lower half of the table is always empty.
+  [3]
+    - name: Button exclusion area
+    - script_or_command: uv run --no-sync python $S/button_hole.py
+    - settings: 40,000 MC samples; button jitter ±0.05; random yaw; new-cube OBB half size 0.04
+    - result: The button removes 22.6% of the cube-centre sampling rectangle
+    - conclusion: This is the main cause of the U-shaped marginals and the hole at the robot-side centre.
+  [4]
+    - name: Uniformity and placement success per placement method
+    - script_or_command: tmux vr-bigsim: OMP_NUM_THREADS=1 uv run --no-sync python $S/big_sim.py 2400 ; then uv run --no-sync python $S/analyze.py $S/big_sim_2400.json > $S/analyze_2400.txt
+    - settings: 2400 seeds 7000000..7002399, 20 processes. Methods: v4, hc0.10/0.12/0.14 (extra minimum centre distance), bc4/bc8 (best candidate), grid6of8 (jittered 2×4 grid minus the 2 button cells), CSR (iid reference). Same torch RNG protocol as V4.
+    - result: Placement ok%: v4 100, hc0.10 100, hc0.12 100 (mean trials 22.7), hc0.14 96.58, bc8 100 (67.8 trials), grid 100. Mean NN distance / closest pair: v4 0.120/0.081; hc0.12 0.154/0.130; hc0.14 0.167/0.148; bc8 0.168/0.136; grid 0.137/0.095; CSR 0.102/0.054. Clark-Evans R: 1.44 / 1.86 / 2.02 / 2.02 / 1.65 / 1.23. Tight triple: 4.0% / 0 / 0 / 0 / 0.3 / 21.2%. ≥3 cubes in one sixth: 26.9 / 3.8 / 0.8 / 1.5 / 0.0 / 35.9%. ≤1 cube on one side: 13.5 / 1.5 / 0.3 / 0.2 / 0.0 / 21.0%. Covering radius: 0.235 / 0.197 / 0.185 / 0.187 / 0.202 / 0.248. Every method with a button is U-shaped; the hard-core methods add slightly more mass at the edges (hc0.12 y edge bins 18.8% vs 16.5% for v4).
+    - conclusion: hc0.12 removes clumps with 100% placement and a one-line predicate. bc8 spreads a little more but concentrates more at edges and corners and costs 3× the trials. The grid looks structured and has worse D5 (see below).
+  [5]
+    - name: Swap schemes: coverage, tracking and D5 rejection
+    - script_or_command: same run (big_sim.py 2400) → analyze_2400.txt; uv run --no-sync python $S/extra_sim.py 2400 → extra_2400.txt
+    - settings: Per layout, one episode with n_swaps from the replicated draw (8-12). D5 = the real bin_collision.check_swap_sweep on nominal cube states (cube_shape_specs(0.02)), cached per slot pair. Schemes: S0 V4; S1 all-cycle + NN; S2/S3 random among 2/3 nearest; S4 random partner; S5 random pair; S6 iid initiator; S7-S11 feasibility-filtered; S12-S15 no pair reuse.
+    - result: V4 layouts. S0: all6 17.0%, per-episode D5 35.3% (per swap 18.3%), target home 35.7%, distinct pairs 2.84, max repeat 5.77. S1: all6 100%, D5 39.7%, home 37.8%. S2/S3/S4/S5: D5 91.2/98.1/99.8/99.8%. S6: all6 69.5%. S9 (2 nearest feasible): home 23.2%, but 29.5% of layouts have a slot with no feasible partner. hc0.12 layouts. S0 2.7%, S1 3.3%, S2 66.9%, S4 99.2%, S7/S9/S11 infeasible 1.7%. S14 (2 nearest feasible + no reuse): home 19.2%, max repeat 2.66, distinct pairs 5.98. hc0.14: S1 0.0%. Mean path length: S1 0.161 m, S9 0.190 m.
+    - conclusion: Spacing controls D5. Random partners need a feasibility filter. Nearest-neighbour-only partners stay repetitive even when all cubes initiate.
+  [6]
+    - name: Frozen V4 candidates
+    - script_or_command: uv run --no-sync python $S/specs_stats.py
+    - settings: The 10 VideoRepick candidates; offline S0 and S1
+    - result: S0 participant counts {3:1, 4:2, 5:4, 6:3}. Offline D5 predicts rejection for ep5 (swap 0), ep7 (swap 1) and ep9 (swap 2); selected 0/3/6 are clean, consistent with rollout success. V4 layout-wide 2400: participants 3/4/5/6 = 9.4/40.2/33.4/17.0%; NN-graph components 1/2/3 = 22.3/68.9/8.8%.
+    - conclusion: The user's complaint applies to most V4 episodes, not only ep3.
+  [7]
+    - name: Simulator calibration of the offline D5 predictor (V4 rules)
+    - script_or_command: CUDA_VISIBLE_DEVICES=1 timeout 280 uv run --no-sync python $S/demo_probe_log.py 7000009,7000000,7000025,7000013,7000024,7000001 B ; uv run --no-sync python $S/compare_demo.py $S/demo_log_B.json
+    - settings: Official entry generate_dataset_newseed._worker, single process, GPU1. _check_swap_sweep_from_actual monkeypatched in-process to log actual poses. Batch A (7000009, 7000018, 7000000) was cut by the timeout; 7000018 failed with DatasetGenerationError after 185 s and 3× 'screw plan failed' (planner failure; its swap log was lost).
+    - result: Batch B: 5 predicted rejections were rejected at exactly the predicted sweep index (#0, #1, #0, #1, #2); the predicted-clean 7000001 succeeded (71 s). PAIR_AGREE=20/20, D5_AGREE=20/20. Target shift at swap start: median 1.5 mm, max 12.2 mm; yaw change ≤0.4°. Episode time: rejected 10-11 s, success 71 s.
+    - conclusion: Offline nominal-slot D5 predicts runtime D5 reliably, so D5 outcomes can be planned or filtered at reset.
+  [8]
+    - name: Simulator run of the V5-minimal design (monkeypatch only)
+    - script_or_command: CUDA_VISIBLE_DEVICES=1 timeout 285 uv run --no-sync python $S/demo_probe_v5min.py 7000000,7000009,7000025 A
+    - settings: In-process patch: minimum centre distance 0.12 via a sentinel disk obstacle in object_generation._obb2d_intersect (same RNG protocol); initiators = target + full randperm cycled k%6; partner = V4 runtime nearest neighbour
+    - result: 7000000 succeeded, 12 swaps, all 6 cubes took part, 118 s including warm-up. 7000009 was rejected at sweep #3 and 7000025 at sweep #0; both were predicted offline (they fall in the 3.3% predicted-reject set). Spawn positions matched offline to within 2e-6 m. D5 agreement 17/17; pair identity 16/17 (a near-tie flip).
+    - conclusion: The minimal design works end to end, but nearest-neighbour partners keep a demo-time D5 tail and are exposed to near-ties. This motivates planning feasible partners at reset.
+  [9]
+    - name: Reset-planned partner robustness to the demo drop shift
+    - script_or_command: uv run --no-sync python $S/perturb_check.py 1200 hc0.12|v4 ; uv run --no-sync python $S/perturb_check2.py 1200 hc0.12|hc0.13
+    - settings: Plan = initiators cycled over all cubes, uniform among 2 nearest feasible, no immediate pair reuse; plan checked with cube half size 0.02+m. The target slot is shifted uniformly within a disk of radius 3/12/20 mm (yaw ±0.5°) and planned pairs are re-checked with true shapes.
+    - result: hc0.12: margin 0 → plan_ok 98.4%, runtime rejection 1.35/4.23/7.54%. Margin 5 mm → plan_ok 92.0%, runtime 0.00/0.00/0.27%. Margin 10 mm → 77.5%, 0/0/0. hc0.13 with 5 mm: plan_ok 95.5%, runtime 0/0/0.35%. v4 layouts with margin 0: plan_ok 70.4%, runtime 2.37/8.52/13.85%.
+    - conclusion: A 5 mm planning margin shifts essentially all D5 failures to reset (cheap draft retries).
+  [10]
+    - name: Recommended-design metrics
+    - script_or_command: uv run --no-sync python $S/final_design_sim.py 1500 ; uv run --no-sync python $S/final_design_sim2.py 1500
+    - settings: hc0.12 or hc0.13, margin 0 or 5 mm, k = 2 or 3; initiator sequence 'cycle' or 'interleave' (target at k%3==0, other positions cycle the remaining 5 in randperm order)
+    - result: hc0.12, m=5 mm, k=2, cycle: plan_ok 91.6%, all6 100%, target home 18.6%, target moves 3.62 (P≤2 9.5%), slots 3.43, max repeat 2.80, distinct 5.60, path mean 0.189 m, max 0.290 m. Same with interleave: all 6 initiate in 100%, all6 participate 100%, target moves 4.91 (P≤2 0.0%), home 16.3%, slots 3.94, max repeat 2.92, distinct 5.62. hc0.13, m=5 mm: placed 99.7%, plan_ok 95.6%.
+    - conclusion: Interleave plus 2 nearest feasible partners, 5 mm margin and 0.12 m spacing meets both user requirements and keeps the target busy.
+## proposals
+  [0]
+    - title: R (recommended): spaced placement + all-cube initiators (target every 3rd swap) + reset-planned partners (uniform among 2 nearest sweep-feasible, 5 mm margin, no immediate repeat)
+    - recommended: True
+    - envs: VideoRepick (xhard only)
+    - anchors_to_change: VideoRepick.py :: config_xhard, _native_decision, _load_cubes_xhard, new VideoRepick._plan_swaps_xhard, step (xhard partner branch), _load_scene (real exception class for xhard); a _RealSceneGenerationError module alias as in VideoPlaceOrder.py. utils/object_generation.py :: spawn_random_cube gets new opt-in kwargs min_center_dist=0.0 and center_ref_xy=None (default does nothing, following the corner_bias precedent), or a local sampler in utils/xhard.py if the BinFill/PickXtimes topics adopt a shared helper. utils/bin_collision.py is unchanged: planning builds ObjectState with cube_shape_specs(hs+margin) and calls check_swap_sweep.
+    - design: New decision keys (declared in _native_decision; mirrored in config_xhard as min_center_dist 0.12, partner_k 2, plan_margin 0.005): decision.xhard.layout.min_center_dist_m = 0.12; decision.xhard.swap = {initiators: 'target_every_3rd_then_randperm_cycle', partner: {selection: 'uniform_among_k_nearest_sweep_feasible', k: 2, position_axes: [0,1], tie_break: 'first_in_spawn_order', exclude_previous_pair: true, plan_margin_m: 0.005, resolve_at: 'reset', sampler: 'torch.rand'}}.
+
+Algorithm inside _load_cubes_xhard:
+(1) Colour: unchanged.
+(2) For i in 0..5, call spawn_random_cube(..., min_center_dist=0.12, center_ref_xy=[xy of already spawned cubes]). Inside the trial loop, after the OBB checks, reject if any ||(x,y) − c_j|| < d_min. Each trial still draws exactly 3 × torch.rand(1). A failure raises the real SceneGenerationError.
+(3) target = torch.randint(0,6): unchanged.
+(4) perm = torch.randperm(5): the call is unchanged, but the full list is now used. Record objects.swap_initiators_remaining = perm (length 5). others = [remaining[j] for j in perm]. Initiator sequence: seq[k] = target if k % 3 == 0 else others[(k − ceil-count) mod 5], i.e. the other positions cycle through the 5 non-targets in perm order. For n_swaps in [8,12] every non-target initiates at least once. Record objects.swap_initiators = [target] + others.
+(5) NEW, appended: u = _spec.value('objects.swap_partner_u', torch.rand(n_swaps, generator).tolist(), decision_key='xhard.swap').
+(6) NEW _plan_swaps_xhard(seq, u). Slot states come from object_state_from_actor(actor) with shapes cube_shape_specs(hs+0.005). occ[slot] and slot_of[cube] start as the identity. For each k: a = seq[k]; sa = slot_of[a]; order the other slots by XY distance (strict <, spawn-order ties); feasible = slots s where check_swap_sweep(states[sa], states[s], bystanders) returns no rejection (cached per unordered slot pair); remove the slot that recreates the previous swap's pair when an alternative exists; if the list is empty, raise _RealSceneGenerationError('xhard swap plan infeasible at k'), which is a reset failure. Otherwise pool = feasible[:2]; sb = pool[int(u[k]·len(pool))]; b = occ[sb]; call _spec.value(f'actions.swap_pairs.{k}', {'initiator': f'bin_{a}', 'partner': f'bin_{b}'}, decision_key='xhard.swap'); update occ and slot_of. Store self._xhard_swap_plan. Keep swap_pair{k+1}_idx1 = spawned[a_k] and idx2 = None.
+(7) step(): inside `if pair_idx2 is None and pair_idx1 is not None:`, for xhard set closest_actor = spawned[self._xhard_swap_plan[i][1]] instead of the NN loop. Keep the existing D5 _check_swap_sweep_from_actual and the record of actions.swap_pairs.i / swap_windows.i unchanged: they act as a runtime guard and replay cross-check.
+(8) Exception class: _SceneGenError = _RealSceneGenerationError if xhard else SceneGenerationError in _load_scene's except clause (K2 pattern).
+    - rationale: Delivers both user asks with measured margins. Uniform: no clumps (closest pair ≥0.12 m; ≥3 cubes per sixth drops from 26.9% to 3.8%; one-sided layouts from 13.5% to 1.5%; covering radius 0.235→0.197 m) at 100% placement. All cubes swap: 6/6 initiate and participate in 100% of episodes vs 17%. Swap sequences stop being repetitive: max pair repeat 5.77→2.92, distinct pairs 2.84→5.62, target home 35.7%→16.3% (≈1/6), target moves 4.91 and never ≤2. D5 stays enforced but fails almost only at reset, where a draft retry is cheap: 8.4% of layouts, versus about 35-45% of demos in V4 (J2). Planned pairs also land in specs.jsonl, so spec-level audits become possible. Runtime D5 still guards against residual physics effects.
+    - rng_impact: easy/medium/hard: no change. All code is in the xhard-only method _load_cubes_xhard, xhard-gated branches of step()/_load_scene, a new kwarg whose default does nothing, and decision.xhard keys that _strip_xhard removes. V0 NATIVE_DEFS_UNCHANGED and V1 must stay at diff 0; NATIVE_SAMPLING is untouched. xhard: the order of draw points is unchanged up to and including randperm(5). The only differences are (i) extra placement rejections, so more 3-draw trials, which moves the stream position of target and randperm values relative to V4 for the same seed, and (ii) ONE new draw torch.rand(n_swaps) appended after randperm (red line N5 satisfied). Planning uses no RNG. Recovery-mode draws (inject_fail_grasp, disabled by I3) would shift for xhard only. V4 v4-01 VideoRepick specs cannot be replayed on V5 code (new keys fail the xhard shape check; new draw), so a new run-id is needed.
+    - overturned_v4_decisions: Overturns B12 (3 initiators → all 6, target kept at every 3rd swap) and J2 (accepting about 45% demo-time D5 with no mechanism change → mechanism changed; D5 kept as a guard). Replaces for xhard only the inherited native 'partner = nearest at swap_start' rule. Keeps G2 (N=6, region [-0.1,0]±[0.2,0.25]), A3 (8-12), pick times 4-6, C2/J3, D5, H2, H3, H4 (fallback), I3, N5, A7, K1-K5. Adds a VideoRepick instance of the K2 fix.
+    - spec_and_test_changes: Spec paths: objects.swap_initiators_remaining now has length 5 (was 2); objects.swap_initiators has length 6; NEW objects.swap_partner_u (n_swaps floats, decision_key xhard.swap); actions.swap_pairs.<k> now comes from _spec.value at reset (in drafts and specs.jsonl); actions.swap_windows.<k> is still recorded at runtime. Update tests/lightweight/test_v4_xhard_videorepick.py: test_xhard_新值只挂在xhard子键下 (new keys), test_xhard_交换调度八到十二次首尾相接 (the '{init0,init1,init2}  # B12' assertion becomes 6 initiators with the target at k%3==0), test_xhard_走独立方法且原分支不被改写 (add objects.swap_partner_u and actions.swap_pairs paths), test_守卫放行xhard收窄且拒绝改原三档 (narrowing the new keys allowed; extra keys rejected). Add tests: pairwise centre distance ≥ min_center_dist; initiator coverage and target cadence; RNG draw-order trace (num_repeats, n_swaps, color_rgb, cubes 0-5, target, swap_initiators_remaining, swap_partner_u, swap_pairs.*); every planned pair passes check_swap_sweep on nominal states; placement failure raises the real SceneGenerationError (not TypeError); LANE_OFFSET in bin_collision equals the lane_offset literal in VideoRepick.step. Re-check tests/lightweight/test_episode_action_sampling.py::test_real_swap_resolution_matches_baseline_and_preserves_ties (it execs the step loop with difficulty='easy'; the xhard branch must only touch attributes present on its fake env) plus test_swap_schedule_generic and test_native_sampling_config: the failure set must equal the baseline. Configs: new scripts/configs/newtask-v5/sampling_config.json with the declared keys. combos.json needs no new combos if the new keys are fixed values (still 15 swap×repeat combos); add a d_min axis only if the user wants it swept. Docs: scripts/README section 1.9 (initiators and spec fields); train_split_audit FIELD_ALIASES partner_rule text; final report.
+    - expected_numbers: Offline, 1500-2400 layouts, validated by exact spec replication and 37/37 simulator D5 agreements. Placement 100% (2400/2400; trials mean 22.7, p99 68, max 208 across the 6 cubes). Reset-level plan_ok 91.6% (0.12 m, 5 mm margin); hc0.13 gives 95.3% overall. Expected draft attempts for 10 candidates about 11 (limit 30), P(candidate_shortfall) ≈ 0. Runtime D5 residual 0.00% for drop shift ≤12 mm (1181 plans), 0.27% at ≤20 mm. all6 participation 100%; target home 16.3%; target moves 4.91; slots 3.94; max pair repeat 2.92; distinct pairs 5.62; mean path 0.19 m (max 0.29-0.30 m vs 0.16-0.19 m for nearest neighbour, so lane speed rises by up to about 1.5× within the fixed 50-step window). Uniformity: closest pair ≥0.12 m (median 0.127), Clark-Evans R 1.86, covering radius 0.197 m. Demo-level success is NOT measured for this exact design (only the minimal variant was run); the planner failure rate should be as in V4 (1 FailsafeTimeout in 40 V4 demos; 1 planner failure in my 7 V4 seeds).
+  [1]
+    - title: M (minimal alternative): spaced placement + all-cube initiators + unchanged runtime nearest-neighbour partner
+    - recommended: False
+    - envs: VideoRepick (xhard only)
+    - anchors_to_change: VideoRepick.py :: config_xhard, _native_decision (layout.min_center_dist_m, swap.initiators), _load_cubes_xhard (full randperm, k%6 or interleave), _load_scene exception alias; object_generation.py :: spawn_random_cube (opt-in min_center_dist). step() is unchanged.
+    - design: Items (2)-(4) and (8) of R, plus swap_pair{k+1}_idx1 = spawned[seq[k]]. Partner resolution stays at runtime as the XY nearest neighbour (V4 code path, D5 guard).
+    - rationale: Smallest diff and no new RNG draw. Fixes 'all cubes swap' (100%) and cuts D5 from about 40% to 3.3% only because the cubes are spread out.
+    - rng_impact: Original tiers: none. xhard: only the placement trial count changes; no appended draw.
+    - overturned_v4_decisions: Overturns B12; partially overturns J2 (the mechanism changes through placement only). Keeps everything else.
+    - spec_and_test_changes: Same as R minus objects.swap_partner_u and the reset-time actions.swap_pairs.
+    - expected_numbers: Offline 2400 layouts (hc0.12, all-cycle + NN): all6 100%, demo-time D5 3.3% (13 of about 400 demos would need H4), target home 37.2%, max pair repeat 3.38 (P ≥3 times 95.6%), distinct pairs 3.89 (swaps still look repetitive: the same neighbour pairs return). Simulator (3 seeds): 1 success with all 6 participating; 2 D5 rejections, both predicted offline.
+  [2]
+    - title: B1 (variant of R): resolve the feasible random partner at runtime from actual states instead of planning at reset
+    - recommended: False
+    - envs: VideoRepick (xhard only)
+    - anchors_to_change: VideoRepick.py :: step (new _resolve_partner_xhard(i, initiator) using object_state_from_actor + check_swap_sweep), _load_cubes_xhard (pre-draw objects.swap_partner_u)
+    - design: Same u vector and rule as R, but at swap start, from ACTUAL states, with no margin. If no candidate is feasible, raise BinCollisionError.
+    - rationale: Immune to the demo drop shift and needs no margin, but failures happen at demo time (expensive; H4) and planned pairs are absent from specs.jsonl.
+    - rng_impact: Same as R (one appended torch.rand(n_swaps) at reset).
+    - overturned_v4_decisions: B12, J2 (same as R).
+    - spec_and_test_changes: As R, but actions.swap_pairs stays runtime-only.
+    - expected_numbers: hc0.12: 1.7% of episodes have no feasible partner at some step, a demo-time failure. Target and repeat metrics equal R with margin 0 (home about 18-19%, max repeat about 2.7).
+  [3]
+    - title: Rejected alternatives (measured)
+    - recommended: False
+    - envs: VideoRepick (xhard only)
+    - anchors_to_change: n/a
+    - design: (i) Uniformly random pair or random partner without a feasibility filter; (ii) i.i.d. random initiator each swap; (iii) best-candidate (Mitchell, K=8) placement; (iv) jittered 2×4 grid minus the button cells; (v) larger d_min = 0.14.
+    - rationale: (i) Per-episode D5 99.8% (V4 layouts) or 98.9-99.2% (0.12 m). (ii) all6 only 69.5% and target home 37.5%. (iii) Strongest edge and corner concentration (x end bins 18.1% and 21.7%) at 3× the trials. (iv) Nearest-neighbour D5 16.5% and a visibly gridded look. (v) Placement 96.6%, so 3.4% reset failures, which currently surface as TypeError until the exception fix lands.
+    - rng_impact: n/a
+    - overturned_v4_decisions: n/a
+    - spec_and_test_changes: n/a
+    - expected_numbers: See analyze_2400.txt and extra_2400.txt.
+## risks
+  [0]
+    - risk: V4 VideoRepick specs (v4-01) and embedded sampling_config are rejected, or cannot be replayed, under V5 code: the xhard key shape changes and the RNG stream shifts.
+    - mitigation: Treat VideoRepick V5 as a new run-id (draft → freeze → rollout), and record in the V5 report that the V4 artifacts are tied to commit 0baff09. Add backward-compat defaults only if the user requires V4 replay.
+  [1]
+    - risk: The runtime drop shift of the target (measured median 1.5 mm, max 12.2 mm on only 6 seeds) could exceed the 5 mm planning margin in rare cases and cause demo-time D5 rejection of a planned pair.
+    - mitigation: Runtime D5 stays as a guard (H4 backfill). Measured residual is 0.00% at δ≤12 mm and 0.27% at δ≤20 mm. Log the actual drop shift in runtime_checks during the V5 V6 coverage run. Raise the margin to 10 mm if the tail is worse (plan_ok 77.5%).
+  [2]
+    - risk: Near-tie nearest neighbours: the demo shift can flip partner identity (seen once in 17 records: 0.1417 vs 0.1421 m). Under design M this changes the recorded pair; under R the identity is fixed at reset.
+    - mitigation: Recommend R (identity planned at reset, cross-checked at runtime by record()).
+  [3]
+    - risk: The SceneGenerationError symbol in VideoRepick.py is shadowed by `from .utils import *`, so xhard placement or plan failures surface as TypeError. The generator classifies that as a non-retryable code failure.
+    - mitigation: Apply the K2 pattern (a _RealSceneGenerationError alias chosen by difficulty in _load_scene; raise the real class in _load_cubes_xhard and _plan_swaps_xhard). Leave the original tiers as they are (H2). Add a unit test.
+  [4]
+    - risk: Longer partner paths (mean 0.19 m, max about 0.30 m vs 0.12-0.16 m in V4) within fixed 50-step windows make cubes move up to about 1.5-1.9× faster, which may hurt video legibility and tracking.
+    - mitigation: Keep k=2 (not 'any feasible': mean 0.21 m, max 0.33 m). Optionally cap path length in the plan (e.g. ≤0.25 m) as an extra filter. Check the video manually before freezing.
+  [5]
+    - risk: Placement with d_min has more mass at the edges (y edge bins 18.8% vs 16.5%), and the button hole remains, so the density is still not flat.
+    - mitigation: Accept it: evenness means no clumps, not a flat density. If a flat look is required, the button position or region would have to change (a user decision).
+  [6]
+    - risk: Other V5 topics (binfill_cluster, pick_swing_cluster) may add their own spreading helpers, creating two code paths in shared object_generation.
+    - mitigation: Align on a single opt-in spawn_random_cube kwarg (min_center_dist with center_ref_xy, default 0 = no-op) or a shared utils/xhard.py helper before implementing.
+  [7]
+    - risk: The target moves at most at every 3rd swap plus as a partner. If the user prefers the pure k%6 cycle, P(target moves ≤2) = 9.5% makes some episodes easy.
+    - mitigation: Recommend the interleave sequence (P ≤2 = 0%, home 16.3%).
+  [8]
+    - risk: Demo-level success of the full design R has not been run in the simulator (only V5-minimal, 3 seeds).
+    - mitigation: Before freezing, run V6 combo coverage (15 swap×repeat combos × 5 demos) on the implemented code and report runtime D5 and planner failures.
+## pending_decisions
+  [0]
+    - question: Which meaning of 'all cubes swap'?
+    - options: (a) Every cube is an initiator: target every 3rd swap plus the other 5 cycled in randperm order (interleave); (a') pure all-cube cycle k%6; (b) coverage constraint only; (c) a random pair each swap (needs a feasibility filter).
+    - recommendation: (a) interleave
+    - reason: 100% coverage with no new RNG draw; keeps V4's target cadence (P(target moves ≤2) = 0%, home 16.3%); (c) is infeasible without filtering (99% D5).
+  [1]
+    - question: Partner rule
+    - options: Keep nearest neighbour (design M) / uniform among the 2 nearest sweep-feasible with no immediate repeat (R) / uniform among 3 nearest or all feasible.
+    - recommendation: 2 nearest feasible + no immediate repeat
+    - reason: Nearest-neighbour-only swaps stay repetitive (max pair repeat 3.4, target home 37%); k=2 gives home ≈1/6 with short paths (0.19 m vs 0.21 m for 'all').
+  [2]
+    - question: Where partners are decided
+    - options: Planned at reset (R; failures happen at draft stage; pairs are in specs.jsonl; 5 mm margin) / at runtime from actual states (B1; failures at demo time).
+    - recommendation: Reset plan with a 5 mm margin
+    - reason: Draft retries are cheap (8.4% of layouts); the measured runtime residual is 0.00% for shifts ≤12 mm; the plan is auditable in specs.
+  [3]
+    - question: Placement method and minimum centre distance
+    - options: d_min 0.10 (D5 14.6% with nearest neighbour) / 0.12 (100% placed) / 0.13 (99.7% placed) / 0.14 (96.6% placed); or best-candidate K=8; or grid.
+    - recommendation: hard-core d_min = 0.12 m
+    - reason: 100% placement over 2400 layouts, clumps removed, one simple predicate; 0.13 raises plan_ok to 95.3% but costs 0.3% placement failures.
+  [4]
+    - question: Should the region or button change so the cubes fill more of the camera view?
+    - options: Keep the region [-0.1,0]±[0.2,0.25] (14.3% of table pixels) / enlarge toward +x (camera side) / move or shrink the button exclusion (22.6% of the region).
+    - recommendation: Keep (not measured for reach or planner success)
+    - reason: The user asked for even spread and all-cube swaps. Changing the region reopens G2 and reachability and needs new demo tests.
+  [5]
+    - question: Must the V4 v4-01 VideoRepick specs remain replayable on V5 code?
+    - options: No: new run-id; V4 artifacts tied to 0baff09 / Yes: add backward-compat defaults for the missing keys in _resolve_sampling_config.
+    - recommendation: No
+    - reason: V5 intentionally changes the xhard stream; compatibility would add guard exceptions for no benchmark value.
+  [6]
+    - question: Apply the K2-style SceneGenerationError fix to VideoRepick xhard?
+    - options: Yes (xhard only, H2) / no.
+    - recommendation: Yes
+    - reason: Otherwise placement or plan failures under V5 surface as TypeError, which counts as a code failure.
+## verification_checks
+  [0]
+    - check: Original tiers unchanged (V0/V1)
+    - how: NATIVE_DEFS_UNCHANGED static check; uv run --no-sync python -m scripts.parity.v4_reset_probe probe --tasks VideoRepick --out <tmp>/p.json and diff against artifacts/newtask-v4/probe/base-13e.json; full local H5 parity for 144 episodes
+    - judgement_line: NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0 ; RESET_REGRESSION VideoRepick compared=9 diff=0
+  [1]
+    - check: Spacing honoured in every frozen V5 candidate
+    - how: Read specs.jsonl VideoRepick rows and compute the minimum pairwise distance of layout.cubes.*.xy_yaw
+    - judgement_line: VR_MIN_CENTER_DIST=PASS rows=10 min_d>=0.120
+  [2]
+    - check: All cubes swap (from specs)
+    - how: From the actions.swap_pairs.* planned at reset: participants per row, initiator set = all 6, target at k%3==0
+    - judgement_line: VR_ALL_CUBES_SWAP=PASS rows=10 min_participants=6 initiators_all6=10
+  [3]
+    - check: Plan feasibility offline
+    - how: Re-run bin_collision.check_swap_sweep for every planned pair on nominal states (true shapes), advancing slot occupancy
+    - judgement_line: VR_PLAN_D5=PASS rows=10 pairs_checked=N rejected=0
+  [4]
+    - check: Draw order and the N5 append rule
+    - how: Unit test on SpecRecorder.trace order for xhard: num_repeats, n_swaps, color_rgb, cubes.0..5, cube_count, target, swap_initiators_remaining, swap_initiators, swap_partner_u, swap_pairs.*
+    - judgement_line: VR_RNG_ORDER=PASS paths_in_order=1
+  [5]
+    - check: Real exception class on failure
+    - how: Unit test: make VideoRepick xhard with min_center_dist forced to 1.0 m; reset must raise the real SceneGenerationError, not TypeError
+    - judgement_line: VR_SCENEGEN_CLASS=PASS raised=SceneGenerationError
+  [6]
+    - check: Offline Monte Carlo against the implemented code
+    - how: Re-run this topic's big_sim/final_design_sim with the repo's new functions imported instead of the scratch copies; 2000 seeds
+    - judgement_line: VR_UNIFORM_MC=PASS layouts=2000 placed>=0.995 plan_ok>=0.90 clump3=0 side_le1<=0.03 all6=1.00 target_home<=0.22
+  [7]
+    - check: Demo-level generability (V6 for VideoRepick)
+    - how: 15 swap×repeat combos × 5 demos on the implemented code (J8); count BinCollisionError separately
+    - judgement_line: COMBO_COVERAGE=PASS combos=15 missing_combinations=0 zero_success_combinations=0 ; VR_DEMO_D5=REPORT demos=75 d5_rejected=k
+  [8]
+    - check: Draft stage within budget
+    - how: V5 draw for VideoRepick: attempts needed for 10 reset-ok candidates
+    - judgement_line: FREEZE_DONE VideoRepick attempted<=30 candidate_shortfall=0
+  [9]
+    - check: Lightweight tests
+    - how: timeout 280s uv run --no-sync python -m pytest tests/lightweight/test_v4_xhard_videorepick.py tests/lightweight/test_episode_action_sampling.py tests/lightweight/test_swap_schedule_generic.py tests/lightweight/test_native_sampling_config.py -q; compare the failure set with the pre-change baseline
+    - judgement_line: LIGHTWEIGHT=PASS failure_set_equal_baseline=1
+  [10]
+    - check: Recorder frozen
+    - how: git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py
+    - judgement_line: RECORDER_FROZEN=PASS
+## blind_spots
+  * The full recommended design R (reset-planned feasible partners, 5 mm margin, interleave) was NOT run in the simulator. Only V5-minimal ran (3 seeds: 1 success, 2 predicted D5 rejections). R's numbers come from the offline model, which matched real D5 outcomes 37/37 and pairs 36/37.
+  * The target drop-shift distribution comes from 6 seeds and 20 swap records only (median 1.5 mm, max 12.2 mm). The margin analysis assumes shifts up to about 12-20 mm.
+  * Planner (motion) failure rates for spread layouts and longer or faster swaps were not measured at scale. One of my 7 V4 seeds (7000018) failed with 3× 'screw plan failed' before reaching the swaps; its log was lost to the timeout.
+  * All simulator runs used this machine (sm_89) and GPU1, not the A40.
+  * 'Uniform' was interpreted as evenly spread with no clumps inside the existing region. If the user means filling the visible table (the region is 14.3% of it), the region or button must change, and that was not measured (reachability, G2).
+  * Uniformity was judged by proxy metrics (NN distance, per-cell counts, side balance, covering radius), not by human perception. The effect on policy learning difficulty is unknown.
+  * The J2 45% demo-time figure (V4 report, 40 demos with endpoint-pinned combos) vs my 35.3% offline over 2400: the gap is attributed to sample and combo mix, not verified.
+  * hc0.13 uniformity metrics were not computed (only placement and D5); hc0.14 uniformity and D5 were computed.
+  * In layouts_v4_vs_hc012.png the y axis is mirrored relative to the camera image (image left = −y).
+## scratch_files
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/v4rep.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/validate_rep.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/sim_lib.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/placements.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/big_sim.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/analyze.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/analyze_2400.txt
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/big_sim_2400.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/extra_sim.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/extra_2400.txt
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/specs_stats.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/check_rollout_pairs.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/project_region.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/button_hole.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/demo_probe_log.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/compare_demo.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/demo_log_B.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/demo_B.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/demo_probe_v5min.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/demo_v5_log_A.json
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/demo_v5_A.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/perturb_check.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/perturb_check2.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/final_design_sim.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/final_design_sim2.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/plots.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/ep3_t0.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/ep3_t0_annot.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/density_2400.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/layouts_v4_vs_hc012.png

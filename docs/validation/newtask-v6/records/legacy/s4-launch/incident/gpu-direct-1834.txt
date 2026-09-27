@@ -1,0 +1,41 @@
+timestamp, index, uuid, pci.bus_id, compute_mode, memory.used [MiB]
+2026/09/26 18:34:33.955, 0, GPU-dd2731bb-7405-64c2-6124-4487ab37cb31, 00000000:1E:00.0, Exclusive_Process, 0 MiB
+
+==============NVSMI LOG==============
+
+Timestamp                                              : Sat Sep 26 18:34:33 2026
+Driver Version                                         : 595.71.05
+CUDA Version                                           : 13.2
+
+Attached GPUs                                          : 1
+GPU 00000000:1E:00.0
+    Product Name                                       : NVIDIA A40
+    Product Brand                                      : NVIDIA
+    Product Architecture                               : Ampere
+    Display Mode                                       : Requested functionality has been deprecated
+    Display Attached                                   : Yes
+    Display Active                                     : Disabled
+    Persistence Mode                                   : Enabled
+    Addressing Mode                                    : None
+    MIG Mode
+        Current                                        : N/A
+        Pending                                        : N/A
+    Accounting Mode                                    : Disabled
+    Accounting Mode Buffer Size                        : 4000
+    Driver Model
+        Current                                        : N/A
+        Pending                                        : N/A
+    Serial Number                                      : 1322221015778
+    GPU UUID                                           : GPU-dd2731bb-7405-64c2-6124-4487ab37cb31
+    GPU PDI                                            : 0x77b5d3b98bbde272
+    Minor Number                                       : 1
+    VBIOS Version                                      : 94.02.5C.00.03
+    MultiGPU Board                                     : No
+    Board ID                                           : 0x1e00
+    Board Part Number                                  : 900-2G133-0000-000
+    GPU Part Number                                    : 2235-895-A1
+    FRU Part Number                                    : N/A
+    Platform Info
+        Chassis Serial Number                          : N/A
+        Slot Number                                    : N/A
+0::/system.slice/slurmstepd.scope/job_61890468/step_extern/user/task_0

@@ -1,0 +1,485 @@
+{
+  "decision": {
+    "distractor": null,
+    "pick_count_range": {
+      "easy": [
+        1,
+        2
+      ],
+      "hard": [
+        2,
+        2
+      ],
+      "medium": [
+        1,
+        1
+      ],
+      "xhard1": [
+        2,
+        2
+      ],
+      "xhard2": [
+        3,
+        3
+      ],
+      "xhard3": [
+        3,
+        3
+      ],
+      "xhard4": [
+        3,
+        3
+      ]
+    },
+    "swap_count_range": {
+      "easy": [
+        1,
+        2
+      ],
+      "hard": [
+        2,
+        3
+      ],
+      "medium": [
+        1,
+        2
+      ],
+      "xhard1": [
+        4,
+        4
+      ],
+      "xhard2": [
+        5,
+        5
+      ],
+      "xhard3": [
+        6,
+        7
+      ],
+      "xhard4": [
+        8,
+        9
+      ]
+    },
+    "swap_speed_multiplier": 1,
+    "xhard1": {
+      "distractor": {
+        "color_pool": [
+          "yellow",
+          "cyan",
+          "magenta"
+        ],
+        "color_rule": "balanced_cycle",
+        "count": 4,
+        "cube_count_range": [
+          2,
+          2
+        ],
+        "max_trials": 1024,
+        "min_gap_factor": 0.75,
+        "ring_max_abs_xy": [
+          0.2675,
+          0.45
+        ]
+      },
+      "distractor_swap": {
+        "enabled": true,
+        "fallback": "undo_only_if_no_other_feasible",
+        "initiator_rule": "balanced_greedy_o4",
+        "lane_offset": 0.07,
+        "layout_max_attempts": 16,
+        "partner": {
+          "population": "distractor_bins",
+          "relabel": "randperm_count_after_placement",
+          "resolve_at": "reset_plan",
+          "score": "max_then_sum_of_participation",
+          "selection": "balanced_greedy_with_initiator",
+          "tie_break": "uniform_local_generator"
+        },
+        "path_constraints": {
+          "camera_visible": true,
+          "min_button_center_dist_m": 0.122,
+          "min_inner_circle_clearance_m": 0.04
+        },
+        "path_samples": 401,
+        "plan_pad_m": 0.005,
+        "smooth": true
+      },
+      "swap_plan_v6": {
+        "accept_range": 1,
+        "forbid_immediate_undo": true,
+        "plan_seed_high_exclusive": 4611686018427387904,
+        "range_retry_budget": 20,
+        "require_connected_graph": true,
+        "rule": "s5_balanced_greedy",
+        "score": "max_sum"
+      },
+      "swap_speed_multiplier": 1.0
+    },
+    "xhard2": {
+      "distractor": {
+        "color_pool": [
+          "yellow",
+          "cyan",
+          "magenta"
+        ],
+        "color_rule": "balanced_cycle",
+        "count": 6,
+        "cube_count_range": [
+          3,
+          3
+        ],
+        "max_trials": 1024,
+        "min_gap_factor": 0.75,
+        "ring_max_abs_xy": [
+          0.2675,
+          0.45
+        ]
+      },
+      "distractor_swap": {
+        "enabled": true,
+        "fallback": "undo_only_if_no_other_feasible",
+        "initiator_rule": "balanced_greedy_o4",
+        "lane_offset": 0.07,
+        "layout_max_attempts": 16,
+        "partner": {
+          "population": "distractor_bins",
+          "relabel": "randperm_count_after_placement",
+          "resolve_at": "reset_plan",
+          "score": "max_then_sum_of_participation",
+          "selection": "balanced_greedy_with_initiator",
+          "tie_break": "uniform_local_generator"
+        },
+        "path_constraints": {
+          "camera_visible": true,
+          "min_button_center_dist_m": 0.122,
+          "min_inner_circle_clearance_m": 0.04
+        },
+        "path_samples": 401,
+        "plan_pad_m": 0.005,
+        "smooth": true
+      },
+      "swap_plan_v6": {
+        "accept_range": 1,
+        "forbid_immediate_undo": true,
+        "plan_seed_high_exclusive": 4611686018427387904,
+        "range_retry_budget": 20,
+        "require_connected_graph": true,
+        "rule": "s5_balanced_greedy",
+        "score": "max_sum"
+      },
+      "swap_speed_multiplier": 1.5
+    },
+    "xhard3": {
+      "distractor": {
+        "color_pool": [
+          "yellow",
+          "cyan",
+          "magenta"
+        ],
+        "color_rule": "balanced_cycle",
+        "count": 8,
+        "cube_count_range": [
+          4,
+          4
+        ],
+        "max_trials": 1024,
+        "min_gap_factor": 0.75,
+        "ring_max_abs_xy": [
+          0.2675,
+          0.45
+        ]
+      },
+      "distractor_swap": {
+        "enabled": true,
+        "fallback": "undo_only_if_no_other_feasible",
+        "initiator_rule": "balanced_greedy_o4",
+        "lane_offset": 0.07,
+        "layout_max_attempts": 16,
+        "partner": {
+          "population": "distractor_bins",
+          "relabel": "randperm_count_after_placement",
+          "resolve_at": "reset_plan",
+          "score": "max_then_sum_of_participation",
+          "selection": "balanced_greedy_with_initiator",
+          "tie_break": "uniform_local_generator"
+        },
+        "path_constraints": {
+          "camera_visible": true,
+          "min_button_center_dist_m": 0.122,
+          "min_inner_circle_clearance_m": 0.04
+        },
+        "path_samples": 401,
+        "plan_pad_m": 0.005,
+        "smooth": true
+      },
+      "swap_plan_v6": {
+        "accept_range": 1,
+        "forbid_immediate_undo": true,
+        "plan_seed_high_exclusive": 4611686018427387904,
+        "range_retry_budget": 20,
+        "require_connected_graph": true,
+        "rule": "s5_balanced_greedy",
+        "score": "max_sum"
+      },
+      "swap_speed_multiplier": 1.5
+    },
+    "xhard4": {
+      "distractor": {
+        "color_pool": [
+          "yellow",
+          "cyan",
+          "magenta"
+        ],
+        "color_rule": "balanced_cycle",
+        "count": 10,
+        "cube_count_range": [
+          5,
+          5
+        ],
+        "max_trials": 1024,
+        "min_gap_factor": 0.75,
+        "ring_max_abs_xy": [
+          0.2675,
+          0.45
+        ]
+      },
+      "distractor_swap": {
+        "enabled": true,
+        "fallback": "undo_only_if_no_other_feasible",
+        "initiator_rule": "balanced_greedy_o4",
+        "lane_offset": 0.07,
+        "layout_max_attempts": 16,
+        "partner": {
+          "population": "distractor_bins",
+          "relabel": "randperm_count_after_placement",
+          "resolve_at": "reset_plan",
+          "score": "max_then_sum_of_participation",
+          "selection": "balanced_greedy_with_initiator",
+          "tie_break": "uniform_local_generator"
+        },
+        "path_constraints": {
+          "camera_visible": true,
+          "min_button_center_dist_m": 0.122,
+          "min_inner_circle_clearance_m": 0.04
+        },
+        "path_samples": 401,
+        "plan_pad_m": 0.005,
+        "smooth": true
+      },
+      "swap_plan_v6": {
+        "accept_range": 1,
+        "forbid_immediate_undo": true,
+        "plan_seed_high_exclusive": 4611686018427387904,
+        "range_retry_budget": 20,
+        "require_connected_graph": true,
+        "rule": "s5_balanced_greedy",
+        "score": "max_sum"
+      },
+      "swap_speed_multiplier": 1.5
+    }
+  },
+  "native": {
+    "parameters": {
+      "bin_count": {
+        "easy": 3,
+        "hard": 4,
+        "medium": 4,
+        "xhard1": 4,
+        "xhard2": 4,
+        "xhard3": 4,
+        "xhard4": 4
+      },
+      "button_order": [
+        "right",
+        "left"
+      ],
+      "color_order": {
+        "sampler": "torch.randperm(3)"
+      },
+      "color_pool": [
+        {
+          "name": "red",
+          "rgba": [
+            1,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "green",
+          "rgba": [
+            0,
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "blue",
+          "rgba": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "configs": {
+        "easy": {
+          "bin": 3,
+          "pick_max": 2,
+          "pick_min": 1,
+          "swap_max": 2,
+          "swap_min": 1
+        },
+        "hard": {
+          "bin": 4,
+          "pick_max": 2,
+          "pick_min": 2,
+          "swap_max": 3,
+          "swap_min": 2
+        },
+        "medium": {
+          "bin": 4,
+          "pick_max": 1,
+          "pick_min": 1,
+          "swap_max": 2,
+          "swap_min": 1
+        },
+        "xhard1": {
+          "bin": 4,
+          "pick_max": 2,
+          "pick_min": 2,
+          "swap_max": 4,
+          "swap_min": 4
+        },
+        "xhard2": {
+          "bin": 4,
+          "pick_max": 3,
+          "pick_min": 3,
+          "swap_max": 5,
+          "swap_min": 5
+        },
+        "xhard3": {
+          "bin": 4,
+          "pick_max": 3,
+          "pick_min": 3,
+          "swap_max": 7,
+          "swap_min": 6
+        },
+        "xhard4": {
+          "bin": 4,
+          "pick_max": 3,
+          "pick_min": 3,
+          "swap_max": 9,
+          "swap_min": 8
+        }
+      },
+      "hidden_rule": "前三容器藏三色，第四个为空",
+      "partner_rule": "交换开始时按实际 XY 取最近邻，不另抽签",
+      "pick_rule": "右按钮→左按钮后，抓 selected_bins[0]，count=2 时再抓 [1]",
+      "recovery": "构造器的 self.generator 用于恢复；场景另建同 seed 局部流，两条流分开",
+      "swap_path": {
+        "keep_upright": true,
+        "lane_offset": 0.07,
+        "smooth": true
+      },
+      "swap_window": {
+        "duration_steps": 50,
+        "start_step": 64
+      }
+    },
+    "positions": {
+      "anchors": {
+        "choice_sampler": "torch.randint(0, 2)",
+        "four_point": [
+          [
+            0,
+            -0.1
+          ],
+          [
+            0,
+            0.1
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.1,
+            -0.1
+          ]
+        ],
+        "line": [
+          [
+            -0.05,
+            -0.15
+          ],
+          [
+            -0.05,
+            0.15
+          ],
+          [
+            -0.05,
+            0
+          ]
+        ],
+        "offset_note": "四点按两组各抽一次 y 偏移；三点各自抽一次 x 偏移；未被选中的那一套分支仍然照常消费随机数（红线 R8）",
+        "offset_scale": 0.1,
+        "triangle": [
+          [
+            -0.05,
+            -0.15
+          ],
+          [
+            -0.05,
+            0.15
+          ],
+          [
+            0.05,
+            0
+          ]
+        ]
+      },
+      "bins": {
+        "max_trials": 256,
+        "min_gap_factor": 1,
+        "region_half_size": 0.07
+      },
+      "buttons": [
+        {
+          "center_xy": [
+            -0.2,
+            -0.1
+          ],
+          "name": "button_left",
+          "randomize": true,
+          "randomize_range": [
+            0.05,
+            0.05
+          ],
+          "scale": 1.5
+        },
+        {
+          "center_xy": [
+            -0.2,
+            0.1
+          ],
+          "name": "button_right",
+          "randomize": true,
+          "randomize_range": [
+            0.05,
+            0.05
+          ],
+          "scale": 1.5
+        }
+      ],
+      "hidden_cube": {
+        "half_size_divisor": 1.2,
+        "yaw": 0.0
+      }
+    }
+  }
+}

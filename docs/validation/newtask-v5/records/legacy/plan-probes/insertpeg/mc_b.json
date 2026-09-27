@@ -1,0 +1,277 @@
+[
+ {
+  "label": "V5_axis>=2r+0.0_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9528,
+   0.9005,
+   0.85,
+   0.801
+  ],
+  "p_accept_min": [
+   0.92578,
+   0.85352,
+   0.77832,
+   0.72656
+  ],
+  "attempts_mean": [
+   1.05,
+   1.11,
+   1.17,
+   1.24
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   2,
+   2
+  ],
+  "attempts_max": [
+   4,
+   4,
+   6,
+   6
+  ],
+  "sec": 8.3,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0013,
+  "target_axisdist_lt_0p02": 0.0004,
+  "min_pair_gap_p05": 0.0085,
+  "target_gap_median": 0.0938,
+  "target_nn_root_median": 0.1636,
+  "target_nn_root_p10": 0.0809,
+  "finger_full_random_end": 0.0794,
+  "finger_full_either_end": 0.1308,
+  "finger_tip_random_end": 0.0625,
+  "finger_tip_either_end": 0.1065,
+  "target_box_overlap": 0.0556,
+  "any_box_overlap": 0.2053,
+  "grasp_dist_from_base_p50": 0.6458,
+  "grasp_dist_gt_0p78": 0.1445
+ },
+ {
+  "label": "V5_axis>=2r+0.01_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9528,
+   0.8833,
+   0.8165,
+   0.7528
+  ],
+  "p_accept_min": [
+   0.92871,
+   0.83008,
+   0.74512,
+   0.65723
+  ],
+  "attempts_mean": [
+   1.05,
+   1.13,
+   1.22,
+   1.32
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   2,
+   3
+  ],
+  "attempts_max": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "sec": 9.0,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0006,
+  "target_axisdist_lt_0p02": 0.0001,
+  "min_pair_gap_p05": 0.0184,
+  "target_gap_median": 0.0983,
+  "target_nn_root_median": 0.168,
+  "target_nn_root_p10": 0.0892,
+  "finger_full_random_end": 0.0607,
+  "finger_full_either_end": 0.1014,
+  "finger_tip_random_end": 0.0433,
+  "finger_tip_either_end": 0.075,
+  "target_box_overlap": 0.0507,
+  "any_box_overlap": 0.2086,
+  "grasp_dist_from_base_p50": 0.6421,
+  "grasp_dist_gt_0p78": 0.1459
+ },
+ {
+  "label": "V5_axis>=2r+0.02_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9529,
+   0.8652,
+   0.7813,
+   0.7026
+  ],
+  "p_accept_min": [
+   0.92285,
+   0.80469,
+   0.6875,
+   0.5918
+  ],
+  "attempts_mean": [
+   1.05,
+   1.16,
+   1.28,
+   1.42
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   2,
+   3
+  ],
+  "attempts_max": [
+   3,
+   5,
+   7,
+   9
+  ],
+  "sec": 8.6,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0,
+  "target_axisdist_lt_0p02": 0.0,
+  "min_pair_gap_p05": 0.0278,
+  "target_gap_median": 0.1031,
+  "target_nn_root_median": 0.1718,
+  "target_nn_root_p10": 0.0964,
+  "finger_full_random_end": 0.0427,
+  "finger_full_either_end": 0.0728,
+  "finger_tip_random_end": 0.0295,
+  "finger_tip_either_end": 0.0503,
+  "target_box_overlap": 0.0496,
+  "any_box_overlap": 0.2034,
+  "grasp_dist_from_base_p50": 0.6377,
+  "grasp_dist_gt_0p78": 0.1493
+ },
+ {
+  "label": "V5_axis>=2r+0.03_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9528,
+   0.8456,
+   0.7454,
+   0.6517
+  ],
+  "p_accept_min": [
+   0.92773,
+   0.77344,
+   0.64258,
+   0.5166
+  ],
+  "attempts_mean": [
+   1.05,
+   1.18,
+   1.35,
+   1.55
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   3,
+   3
+  ],
+  "attempts_max": [
+   3,
+   7,
+   8,
+   10
+  ],
+  "sec": 9.1,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0,
+  "target_axisdist_lt_0p02": 0.0,
+  "min_pair_gap_p05": 0.0377,
+  "target_gap_median": 0.1065,
+  "target_nn_root_median": 0.1769,
+  "target_nn_root_p10": 0.1049,
+  "finger_full_random_end": 0.0265,
+  "finger_full_either_end": 0.0454,
+  "finger_tip_random_end": 0.0115,
+  "finger_tip_either_end": 0.0221,
+  "target_box_overlap": 0.0557,
+  "any_box_overlap": 0.2109,
+  "grasp_dist_from_base_p50": 0.6413,
+  "grasp_dist_gt_0p78": 0.1474
+ },
+ {
+  "label": "V5_axis>=2r+0.04_joint",
+  "n": 10000,
+  "fail_direct": 0,
+  "fail_est": 0.0,
+  "p_accept_mean": [
+   0.9529,
+   0.8256,
+   0.7067,
+   0.5991
+  ],
+  "p_accept_min": [
+   0.92578,
+   0.74219,
+   0.58203,
+   0.43945
+  ],
+  "attempts_mean": [
+   1.05,
+   1.23,
+   1.42,
+   1.69
+  ],
+  "attempts_p95": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "attempts_max": [
+   4,
+   6,
+   9,
+   13
+  ],
+  "sec": 15.2,
+  "any_visual_overlap": 0.0,
+  "target_visual_overlap": 0.0,
+  "any_collision_overlap": 0.0,
+  "target_collision_overlap": 0.0,
+  "any_axisdist_lt_0p02": 0.0,
+  "target_axisdist_lt_0p02": 0.0,
+  "min_pair_gap_p05": 0.0476,
+  "target_gap_median": 0.1146,
+  "target_nn_root_median": 0.1842,
+  "target_nn_root_p10": 0.1121,
+  "finger_full_random_end": 0.0121,
+  "finger_full_either_end": 0.0217,
+  "finger_tip_random_end": 0.0021,
+  "finger_tip_either_end": 0.0037,
+  "target_box_overlap": 0.0535,
+  "any_box_overlap": 0.2112,
+  "grasp_dist_from_base_p50": 0.6448,
+  "grasp_dist_gt_0p78": 0.1463
+ }
+]

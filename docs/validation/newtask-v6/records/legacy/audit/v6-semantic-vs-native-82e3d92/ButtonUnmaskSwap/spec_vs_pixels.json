@@ -1,0 +1,497 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "named": "red",
+  "bin": 1,
+  "final_slot": 1,
+  "slot_original_colour": "red",
+  "reveal": [
+   100.8,
+   178.66666666666666,
+   15
+  ],
+  "dist_px": 6.018120784578683,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "named": "blue",
+  "bin": 2,
+  "final_slot": 2,
+  "slot_original_colour": "blue",
+  "reveal": [
+   131.16666666666666,
+   183.77777777777777,
+   18
+  ],
+  "dist_px": 6.5805870647910885,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "named": "blue",
+  "bin": 0,
+  "final_slot": 2,
+  "slot_original_colour": "green",
+  "reveal": [
+   138.1764705882353,
+   172.61764705882354,
+   34
+  ],
+  "dist_px": 4.892705571818908,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "named": "red",
+  "bin": 1,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   129.25,
+   119.0,
+   24
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 35.4px)"
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "named": "red",
+  "bin": 2,
+  "final_slot": 0,
+  "slot_original_colour": "green",
+  "reveal": [
+   96.64,
+   114.08,
+   25
+  ],
+  "dist_px": 1.443994459823163,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "named": "green",
+  "bin": 0,
+  "final_slot": 2,
+  "slot_original_colour": "red",
+  "reveal": [
+   141.5,
+   162.61111111111111,
+   18
+  ],
+  "dist_px": 7.750055951955631,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "named": "green",
+  "bin": 0,
+  "final_slot": 1,
+  "slot_original_colour": "red",
+  "reveal": [
+   107.85714285714286,
+   151.64285714285714,
+   28
+  ],
+  "dist_px": 7.173605447925838,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "named": "blue",
+  "bin": 2,
+  "final_slot": 0,
+  "slot_original_colour": "green",
+  "reveal": [
+   106.89655172413794,
+   109.6896551724138,
+   29
+  ],
+  "dist_px": 0.7757208616646615,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "named": "red",
+  "bin": 1,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   137.22222222222223,
+   109.66666666666667,
+   27
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 30.2px)"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "named": "blue",
+  "bin": 0,
+  "final_slot": 1,
+  "slot_original_colour": "red",
+  "reveal": [
+   93.16666666666667,
+   155.79166666666666,
+   24
+  ],
+  "dist_px": 3.7759744284412515,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "named": "red",
+  "bin": 1,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   133.48275862068965,
+   127.72413793103448,
+   29
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 34.2px)"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "named": "green",
+  "bin": 2,
+  "final_slot": 0,
+  "slot_original_colour": "blue",
+  "reveal": [
+   111.22222222222223,
+   113.05555555555556,
+   18
+  ],
+  "dist_px": 7.723914444696615,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "named": "blue",
+  "bin": 0,
+  "final_slot": 1,
+  "slot_original_colour": "red",
+  "reveal": [
+   110.0,
+   160.46666666666667,
+   15
+  ],
+  "dist_px": 5.953662585352766,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "named": "red",
+  "bin": 1,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   131.6875,
+   92.0625,
+   16
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 47.2px)"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "named": "green",
+  "bin": 2,
+  "final_slot": 0,
+  "slot_original_colour": "blue",
+  "reveal": [
+   112.21052631578948,
+   128.0,
+   19
+  ],
+  "dist_px": 7.809717648589647,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "named": "blue",
+  "bin": 1,
+  "final_slot": 2,
+  "slot_original_colour": "green",
+  "reveal": [
+   117.52631578947368,
+   188.26315789473685,
+   19
+  ],
+  "dist_px": 6.12216158427202,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "named": "green",
+  "bin": 2,
+  "final_slot": 1,
+  "slot_original_colour": "blue",
+  "reveal": [
+   108.66666666666667,
+   157.66666666666666,
+   27
+  ],
+  "dist_px": 6.7005124199415365,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "named": "red",
+  "bin": 0,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   137.76470588235293,
+   132.7058823529412,
+   17
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 42.2px)"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "named": "blue",
+  "bin": 1,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   124.96428571428571,
+   113.39285714285714,
+   28
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 34.9px)"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "named": "red",
+  "bin": 0,
+  "final_slot": 2,
+  "slot_original_colour": "green",
+  "reveal": [
+   134.9189189189189,
+   177.24324324324326,
+   37
+  ],
+  "dist_px": 4.336987565596708,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "named": "green",
+  "bin": 2,
+  "final_slot": 0,
+  "slot_original_colour": "red",
+  "reveal": [
+   99.47058823529412,
+   106.23529411764706,
+   17
+  ],
+  "dist_px": 8.500429735188563,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "named": "blue",
+  "bin": 1,
+  "final_slot": 0,
+  "slot_original_colour": "red",
+  "reveal": [
+   107.10526315789474,
+   116.36842105263158,
+   19
+  ],
+  "dist_px": 2.118952956676399,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "named": "red",
+  "bin": 0,
+  "final_slot": 2,
+  "slot_original_colour": "green",
+  "reveal": [
+   131.11111111111111,
+   171.16666666666666,
+   18
+  ],
+  "dist_px": 4.673122773156446,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "named": "green",
+  "bin": 2,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   132.33333333333334,
+   100.5925925925926,
+   27
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 30.4px)"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "named": "blue",
+  "bin": 2,
+  "final_slot": 0,
+  "slot_original_colour": "red",
+  "reveal": [
+   97.22727272727273,
+   110.54545454545455,
+   22
+  ],
+  "dist_px": 2.2731817727363675,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "named": "green",
+  "bin": 1,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   130.06666666666666,
+   110.13333333333334,
+   15
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 35.1px)"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "named": "red",
+  "bin": 0,
+  "final_slot": 2,
+  "slot_original_colour": "blue",
+  "reveal": [
+   134.03703703703704,
+   180.14814814814815,
+   27
+  ],
+  "dist_px": 7.907788407794005,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "named": "green",
+  "bin": 0,
+  "final_slot": 0,
+  "slot_original_colour": "green",
+  "reveal": [
+   105.5625,
+   137.4375,
+   16
+  ],
+  "dist_px": 5.621095737192225,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "named": "blue",
+  "bin": 1,
+  "final_slot": 1,
+  "slot_original_colour": "blue",
+  "reveal": [
+   103.6470588235294,
+   180.11764705882354,
+   17
+  ],
+  "dist_px": 6.018883282508612,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "named": "red",
+  "bin": 2,
+  "final_slot": 2,
+  "slot_original_colour": "red",
+  "reveal": [
+   136.94444444444446,
+   170.5,
+   18
+  ],
+  "dist_px": 4.825439239938387,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "named": "blue",
+  "bin": 0,
+  "final_slot": 2,
+  "slot_original_colour": "green",
+  "reveal": [
+   136.60714285714286,
+   152.67857142857142,
+   28
+  ],
+  "dist_px": 3.4029370712396014,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "named": "green",
+  "bin": 2,
+  "final_slot": 0,
+  "slot_original_colour": "blue",
+  "reveal": [
+   109.53333333333333,
+   98.93333333333334,
+   15
+  ],
+  "dist_px": 8.226716867722391,
+  "verdict": "match"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "named": "red",
+  "bin": 1,
+  "final_slot": 3,
+  "slot_original_colour": null,
+  "reveal": [
+   133.47619047619048,
+   103.76190476190476,
+   21
+  ],
+  "dist_px": null,
+  "verdict": "empty_slot_unverifiable(min dist to any init cube 32.6px)"
+ }
+]

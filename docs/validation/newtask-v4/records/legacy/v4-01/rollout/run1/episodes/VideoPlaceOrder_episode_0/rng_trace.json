@@ -1,0 +1,212 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.goal_xy",
+      "drawn": [
+        -0.1,
+        0.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.button_xy",
+      "drawn": [
+        0.12191437780857087,
+        -0.09585245847702026
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_order",
+      "drawn": [
+        2,
+        0,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.green_0",
+      "drawn": [
+        -0.11461950302124024,
+        0.12268524885177615,
+        1.1488594813973854
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.red_0",
+      "drawn": [
+        0.06115657567977906,
+        0.028754632472991953,
+        4.574388009050311
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.blue_0",
+      "drawn": [
+        -0.17395080327987672,
+        0.10072855710983278,
+        5.5139212810680025
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.targets.0",
+      "drawn": [
+        -0.1510053825378418,
+        -0.1540036392211914
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.targets.1",
+      "drawn": [
+        0.11852205276489255,
+        0.14412763595581055
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.targets.2",
+      "drawn": [
+        -0.031067276000976557,
+        -0.15930614471435547
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.targets.3",
+      "drawn": [
+        -0.008600559234619137,
+        0.13928256988525392
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.demo_ids",
+      "drawn": [
+        1,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "objects.swap_pair_ids",
+      "drawn": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.num_targets_by_object.0",
+      "drawn": 4,
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.visit_ids_by_object.0",
+      "drawn": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "objects.num_targets_by_object.1",
+      "drawn": 4,
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "objects.visit_ids_by_object.1",
+      "drawn": [
+        1,
+        2,
+        0,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.answer_demo_index",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "objects.which_in_subset",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "actions.target_target_id",
+      "drawn": 2,
+      "source": "record"
+    },
+    {
+      "index": 19,
+      "path": "objects.button_after_visit_index",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "actions.button_task_index",
+      "drawn": 6,
+      "source": "record"
+    },
+    {
+      "index": 21,
+      "path": "actions.return_pose_by_object_id",
+      "drawn": {
+        "cube_red_0": [
+          0.06115657463669777,
+          0.02875463292002678,
+          0.019999999552965164,
+          0.6566721796989441,
+          -0.0,
+          -0.0,
+          -0.7541761994361877
+        ],
+        "cube_blue_0": [
+          -0.17395080626010895,
+          0.10072855651378632,
+          0.019999999552965164,
+          0.9269365668296814,
+          0.0,
+          0.0,
+          -0.37521806359291077
+        ]
+      },
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "941c7d844ea12e712f246448dfa8642c36ca5a77de97acd140ce7cf2798ba060"
+  }
+}

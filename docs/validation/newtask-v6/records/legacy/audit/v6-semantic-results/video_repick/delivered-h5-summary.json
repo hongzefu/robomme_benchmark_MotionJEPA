@@ -1,0 +1,1046 @@
+[
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed8900000.h5",
+    "tier": "xhard1",
+    "seed": 8900000,
+    "timesteps": 850,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <76, 101>"
+      },
+      {
+        "start": 112,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 170,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 445,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <81, 159> for the first time"
+      },
+      {
+        "start": 560,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 615,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <82, 159> for the second time"
+      },
+      {
+        "start": 693,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 747,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <57, 126> to finish"
+      },
+      {
+        "start": 807,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <57, 126> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed8900302.h5",
+    "tier": "xhard1",
+    "seed": 8900302,
+    "timesteps": 781,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <84, 84>"
+      },
+      {
+        "start": 120,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 170,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 388,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <81, 167> for the first time"
+      },
+      {
+        "start": 501,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 555,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <80, 168> for the second time"
+      },
+      {
+        "start": 630,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 684,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <61, 126> to finish"
+      },
+      {
+        "start": 738,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <61, 126> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed8900600.h5",
+    "tier": "xhard1",
+    "seed": 8900600,
+    "timesteps": 849,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <109, 82>"
+      },
+      {
+        "start": 104,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 150,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 419,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <70, 166> for the first time"
+      },
+      {
+        "start": 544,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 602,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <69, 165> for the second time"
+      },
+      {
+        "start": 675,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 736,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <62, 122> to finish"
+      },
+      {
+        "start": 810,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <62, 122> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed10900000.h5",
+    "tier": "xhard2",
+    "seed": 10900000,
+    "timesteps": 1120,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <73, 180>"
+      },
+      {
+        "start": 109,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 164,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 550,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <72, 181> for the first time"
+      },
+      {
+        "start": 678,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 734,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <71, 180> for the second time"
+      },
+      {
+        "start": 812,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 868,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <70, 179> for the third time"
+      },
+      {
+        "start": 940,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1000,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <61, 131> to finish"
+      },
+      {
+        "start": 1080,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <61, 131> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed10900301.h5",
+    "tier": "xhard2",
+    "seed": 10900301,
+    "timesteps": 1247,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <58, 90>"
+      },
+      {
+        "start": 132,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 198,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 589,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <57, 90> for the first time"
+      },
+      {
+        "start": 731,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 800,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <57, 90> for the second time"
+      },
+      {
+        "start": 892,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 969,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <56, 90> for the third time"
+      },
+      {
+        "start": 1065,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1147,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <63, 118> to finish"
+      },
+      {
+        "start": 1202,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <63, 118> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed10900601.h5",
+    "tier": "xhard2",
+    "seed": 10900601,
+    "timesteps": 1128,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <65, 176>"
+      },
+      {
+        "start": 118,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 177,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 569,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <75, 111> for the first time"
+      },
+      {
+        "start": 688,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 754,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <74, 110> for the second time"
+      },
+      {
+        "start": 829,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 894,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <74, 110> for the third time"
+      },
+      {
+        "start": 969,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1032,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <57, 134> to finish"
+      },
+      {
+        "start": 1085,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <57, 134> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed12900002.h5",
+    "tier": "xhard3",
+    "seed": 12900002,
+    "timesteps": 1222,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for four times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up four times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube four times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <63, 83>"
+      },
+      {
+        "start": 119,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 175,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 618,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <100, 124> for the first time"
+      },
+      {
+        "start": 720,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 770,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <100, 122> for the second time"
+      },
+      {
+        "start": 839,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 889,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <100, 120> for the third time"
+      },
+      {
+        "start": 958,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1008,
+        "demo": false,
+        "simple": "pick up the correct cube for the fourth time",
+        "grounded": "pick up the correct cube at <100, 118> for the fourth time"
+      },
+      {
+        "start": 1077,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1127,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <70, 121> to finish"
+      },
+      {
+        "start": 1184,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <70, 121> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed12900302.h5",
+    "tier": "xhard3",
+    "seed": 12900302,
+    "timesteps": 1301,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for four times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up four times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube four times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <110, 188>"
+      },
+      {
+        "start": 108,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 152,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 645,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <83, 165> for the first time"
+      },
+      {
+        "start": 762,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 816,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <83, 164> for the second time"
+      },
+      {
+        "start": 894,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 948,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <83, 164> for the third time"
+      },
+      {
+        "start": 1025,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1079,
+        "demo": false,
+        "simple": "pick up the correct cube for the fourth time",
+        "grounded": "pick up the correct cube at <83, 164> for the fourth time"
+      },
+      {
+        "start": 1155,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1209,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <65, 135> to finish"
+      },
+      {
+        "start": 1263,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <65, 135> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed12900600.h5",
+    "tier": "xhard3",
+    "seed": 12900600,
+    "timesteps": 1234,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for four times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up four times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube four times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <75, 171>"
+      },
+      {
+        "start": 114,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 170,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 612,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <106, 136> for the first time"
+      },
+      {
+        "start": 717,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 767,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <106, 135> for the second time"
+      },
+      {
+        "start": 838,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 888,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <106, 134> for the third time"
+      },
+      {
+        "start": 959,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1009,
+        "demo": false,
+        "simple": "pick up the correct cube for the fourth time",
+        "grounded": "pick up the correct cube at <107, 134> for the fourth time"
+      },
+      {
+        "start": 1082,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1132,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <71, 126> to finish"
+      },
+      {
+        "start": 1197,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <71, 126> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed6900003.h5",
+    "tier": "xhard4",
+    "seed": 6900003,
+    "timesteps": 1621,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for five times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up five times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube five times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <78, 178>"
+      },
+      {
+        "start": 117,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 176,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 883,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <101, 158> for the first time"
+      },
+      {
+        "start": 988,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1038,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <101, 159> for the second time"
+      },
+      {
+        "start": 1107,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1157,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <102, 160> for the third time"
+      },
+      {
+        "start": 1227,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1277,
+        "demo": false,
+        "simple": "pick up the correct cube for the fourth time",
+        "grounded": "pick up the correct cube at <102, 161> for the fourth time"
+      },
+      {
+        "start": 1346,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1396,
+        "demo": false,
+        "simple": "pick up the correct cube for the fifth time",
+        "grounded": "pick up the correct cube at <102, 162> for the fifth time"
+      },
+      {
+        "start": 1466,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1516,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <58, 136> to finish"
+      },
+      {
+        "start": 1583,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <58, 136> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed6900300.h5",
+    "tier": "xhard4",
+    "seed": 6900300,
+    "timesteps": 1715,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for six times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up six times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube six times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <86, 88>"
+      },
+      {
+        "start": 113,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 163,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 816,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <84, 87> for the first time"
+      },
+      {
+        "start": 928,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 983,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <84, 86> for the second time"
+      },
+      {
+        "start": 1061,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1115,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <83, 85> for the third time"
+      },
+      {
+        "start": 1193,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1247,
+        "demo": false,
+        "simple": "pick up the correct cube for the fourth time",
+        "grounded": "pick up the correct cube at <82, 84> for the fourth time"
+      },
+      {
+        "start": 1322,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1376,
+        "demo": false,
+        "simple": "pick up the correct cube for the fifth time",
+        "grounded": "pick up the correct cube at <81, 82> for the fifth time"
+      },
+      {
+        "start": 1449,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1503,
+        "demo": false,
+        "simple": "pick up the correct cube for the sixth time",
+        "grounded": "pick up the correct cube at <80, 81> for the sixth time"
+      },
+      {
+        "start": 1576,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1630,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <68, 126> to finish"
+      },
+      {
+        "start": 1681,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <68, 126> to finish"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed6900600.h5",
+    "tier": "xhard4",
+    "seed": 6900600,
+    "timesteps": 1553,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for five times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up five times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube five times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <88, 183>"
+      },
+      {
+        "start": 113,
+        "demo": true,
+        "simple": "drop the cube on the table",
+        "grounded": "drop the cube on the table"
+      },
+      {
+        "start": 163,
+        "demo": true,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "start": 760,
+        "demo": false,
+        "simple": "pick up the correct cube for the first time",
+        "grounded": "pick up the correct cube at <87, 181> for the first time"
+      },
+      {
+        "start": 871,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 931,
+        "demo": false,
+        "simple": "pick up the correct cube for the second time",
+        "grounded": "pick up the correct cube at <87, 181> for the second time"
+      },
+      {
+        "start": 1000,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1061,
+        "demo": false,
+        "simple": "pick up the correct cube for the third time",
+        "grounded": "pick up the correct cube at <88, 180> for the third time"
+      },
+      {
+        "start": 1130,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1191,
+        "demo": false,
+        "simple": "pick up the correct cube for the fourth time",
+        "grounded": "pick up the correct cube at <89, 180> for the fourth time"
+      },
+      {
+        "start": 1261,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1317,
+        "demo": false,
+        "simple": "pick up the correct cube for the fifth time",
+        "grounded": "pick up the correct cube at <89, 179> for the fifth time"
+      },
+      {
+        "start": 1386,
+        "demo": false,
+        "simple": "put it down",
+        "grounded": "put it down"
+      },
+      {
+        "start": 1441,
+        "demo": false,
+        "simple": "press the button to finish",
+        "grounded": "press the button at <58, 127> to finish"
+      },
+      {
+        "start": 1513,
+        "demo": false,
+        "simple": "All tasks completed",
+        "grounded": "press the button at <58, 127> to finish"
+      }
+    ],
+    "final_completed": true
+  }
+]

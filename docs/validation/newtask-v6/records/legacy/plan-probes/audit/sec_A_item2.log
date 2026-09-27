@@ -1,0 +1,30 @@
+src/robomme/env_record_wrapper/RecordWrapper.py:1102:        fail_safe_limit = 5000
+src/robomme/env_record_wrapper/RecordWrapper.py:1105:        if env_steps >= fail_safe_limit:
+src/robomme/env_record_wrapper/RecordWrapper.py:1129:                raise FailsafeTimeout(f"Episode exceeded failsafe limit ({env_steps} >= {fail_safe_limit})")
+== recorder diff vs 13e5151
+rc=1
+ src/robomme/env_record_wrapper/RecordWrapper.py | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+== 12.116
+f5b6a17 12.116 V5 计划写回 L52：InsertPeg xhard 杆区 x 上界 0.2 → 0.1
+749158e 12.76 V4：落实四项用户决策（录像器上限 5000、MoveCube corner_bias 0.5、InsertPeg 维持现状、V4 全链路不开 recover）
+== memory
+---
+name: src-robomme-changes-need-approval
+description: 用户约定：src/robomme 改动 2026-09-21 起免逐项批准、改完出 md 报告；录像器 RecordWrapper.py 仍冻结（唯一例外：2026-09-22 授权 fail_safe_limit 2000→5000），NO RECORD 跳过是设计
+metadata:
+  node_type: memory
+  type: feedback
+  originSessionId: a6d14cc1-a3fb-48b2-8212-a83c03925a4e
+  modified: 2026-09-21T21:48:16.208Z
+---
+
+**2026-09-21 起（newtaskRelease-v3 实施期间）**：用户原话「对src robomme的可以先改 不用用户批准 但是结束后生成md报告」——`src/robomme/` 的改动**不再需要逐项事前批准**，改完后必须出一份 md 报告说明改了哪些文件／锚点／为什么。录像器 `src/robomme/env_record_wrapper/RecordWrapper.py` 仍然冻结：不改源文件、不子类覆写、不打补丁；`NO RECORD` 阶段跳过录像、不补 reset 帧是用户认可的设计，不是缺陷。
+
+**2026-09-22 例外**：用户原话「录像放开2000步 改为5000步」——只授权把 `RecordWrapper.py` 的 `fail_safe_limit` 从 2000 改成 5000（为 PickXtimes xhard num≤15 的长演示），录像器其余部分仍冻结，其他改动仍须单独授权。
+
+**此前口径（2026-09-10～2026-09-20，已被上条取代）**：任何改动和覆盖都要逐个批准，写在仓库 `AGENTS.md` 强制规则第 11 条与 `NEWTASK_RELEASE_V3_PLAN.md` 的红线 R1 里。
+
+**Why:** 早期用户连续三次纠正（"不要改动视频生成的逻辑""不要覆盖""能否不改录像器"）并否决流式写入／子类覆写方案，把 `src/robomme` 当受保护的生产代码；进入 v3 实施后十六环境都要接 `sampling_config`／`episode_spec`，逐项审批成了主要瓶颈，因此改为事后报告。
+
+**How to apply:** 动 `src/robomme` 时直接改，但每步收尾在 `docs/validation/newtask-v3/` 出 md 报告列「文件／锚点／改什么／为什么／怎么验的」；录像器依旧只读，需要视频状态时在 `scripts/` 入口或 `tests/` 侧做只读核验。相关：[[newtask-v2-plan-context]]

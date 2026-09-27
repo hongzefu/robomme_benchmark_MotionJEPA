@@ -1,0 +1,575 @@
+[
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "num_repeats": 2,
+  "first_pick_step": 445,
+  "first_put_step": 545,
+  "pick_guard_window": [
+   495,
+   945
+  ],
+  "put_guard_window": [
+   595,
+   1045
+  ],
+  "last_pick_end": 677,
+  "last_put_end": 733,
+  "exec_steps_before_button": 289,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 176,
+  "put_total_steps": 113
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "num_repeats": 2,
+  "first_pick_step": 388,
+  "first_put_step": 486,
+  "pick_guard_window": [
+   438,
+   888
+  ],
+  "put_guard_window": [
+   536,
+   986
+  ],
+  "last_pick_end": 615,
+  "last_put_end": 670,
+  "exec_steps_before_button": 283,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 172,
+  "put_total_steps": 111
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "num_repeats": 2,
+  "first_pick_step": 419,
+  "first_put_step": 529,
+  "pick_guard_window": [
+   469,
+   919
+  ],
+  "put_guard_window": [
+   579,
+   1029
+  ],
+  "last_pick_end": 660,
+  "last_put_end": 721,
+  "exec_steps_before_button": 303,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 183,
+  "put_total_steps": 120
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "num_repeats": 3,
+  "first_pick_step": 550,
+  "first_put_step": 660,
+  "pick_guard_window": [
+   600,
+   1050
+  ],
+  "put_guard_window": [
+   710,
+   1160
+  ],
+  "last_pick_end": 926,
+  "last_put_end": 981,
+  "exec_steps_before_button": 432,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 259,
+  "put_total_steps": 173
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "num_repeats": 3,
+  "first_pick_step": 589,
+  "first_put_step": 709,
+  "pick_guard_window": [
+   639,
+   1089
+  ],
+  "put_guard_window": [
+   759,
+   1209
+  ],
+  "last_pick_end": 1043,
+  "last_put_end": 1122,
+  "exec_steps_before_button": 534,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 303,
+  "put_total_steps": 231
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "num_repeats": 3,
+  "first_pick_step": 569,
+  "first_put_step": 674,
+  "pick_guard_window": [
+   619,
+   1069
+  ],
+  "put_guard_window": [
+   724,
+   1174
+  ],
+  "last_pick_end": 954,
+  "last_put_end": 1015,
+  "exec_steps_before_button": 447,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 261,
+  "put_total_steps": 186
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "num_repeats": 4,
+  "first_pick_step": 618,
+  "first_put_step": 708,
+  "pick_guard_window": [
+   668,
+   1118
+  ],
+  "put_guard_window": [
+   758,
+   1208
+  ],
+  "last_pick_end": 1064,
+  "last_put_end": 1114,
+  "exec_steps_before_button": 497,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 297,
+  "put_total_steps": 200
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "num_repeats": 4,
+  "first_pick_step": 645,
+  "first_put_step": 746,
+  "pick_guard_window": [
+   695,
+   1145
+  ],
+  "put_guard_window": [
+   796,
+   1246
+  ],
+  "last_pick_end": 1140,
+  "last_put_end": 1195,
+  "exec_steps_before_button": 551,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 328,
+  "put_total_steps": 223
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "num_repeats": 4,
+  "first_pick_step": 612,
+  "first_put_step": 705,
+  "pick_guard_window": [
+   662,
+   1112
+  ],
+  "put_guard_window": [
+   755,
+   1205
+  ],
+  "last_pick_end": 1068,
+  "last_put_end": 1119,
+  "exec_steps_before_button": 508,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 306,
+  "put_total_steps": 202
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "num_repeats": 5,
+  "first_pick_step": 883,
+  "first_put_step": 976,
+  "pick_guard_window": [
+   933,
+   1383
+  ],
+  "put_guard_window": [
+   1026,
+   1476
+  ],
+  "last_pick_end": 1453,
+  "last_put_end": 1503,
+  "exec_steps_before_button": 621,
+  "pick_steps_unguarded": 70,
+  "put_steps_unguarded": 27,
+  "pick_unguarded_ranges": [
+   [
+    1384,
+    1453
+   ]
+  ],
+  "put_unguarded_ranges": [
+   [
+    1477,
+    1503
+   ]
+  ],
+  "pick_total_steps": 371,
+  "put_total_steps": 250
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "num_repeats": 6,
+  "first_pick_step": 816,
+  "first_put_step": 911,
+  "pick_guard_window": [
+   866,
+   1316
+  ],
+  "put_guard_window": [
+   961,
+   1411
+  ],
+  "last_pick_end": 1562,
+  "last_put_end": 1616,
+  "exec_steps_before_button": 801,
+  "pick_steps_unguarded": 145,
+  "put_steps_unguarded": 109,
+  "pick_unguarded_ranges": [
+   [
+    1363,
+    1434
+   ],
+   [
+    1490,
+    1562
+   ]
+  ],
+  "put_unguarded_ranges": [
+   [
+    1435,
+    1489
+   ],
+   [
+    1563,
+    1616
+   ]
+  ],
+  "pick_total_steps": 467,
+  "put_total_steps": 334
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "num_repeats": 5,
+  "first_pick_step": 760,
+  "first_put_step": 859,
+  "pick_guard_window": [
+   810,
+   1260
+  ],
+  "put_guard_window": [
+   909,
+   1359
+  ],
+  "last_pick_end": 1373,
+  "last_put_end": 1423,
+  "exec_steps_before_button": 664,
+  "pick_steps_unguarded": 74,
+  "put_steps_unguarded": 50,
+  "pick_unguarded_ranges": [
+   [
+    1300,
+    1373
+   ]
+  ],
+  "put_unguarded_ranges": [
+   [
+    1374,
+    1423
+   ]
+  ],
+  "pick_total_steps": 394,
+  "put_total_steps": 270
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 0,
+  "num_repeats": 2,
+  "first_pick_step": 321,
+  "first_put_step": 412,
+  "pick_guard_window": [
+   371,
+   821
+  ],
+  "put_guard_window": [
+   462,
+   912
+  ],
+  "last_pick_end": 591,
+  "last_put_end": 641,
+  "exec_steps_before_button": 321,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 220,
+  "put_total_steps": 101
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 1,
+  "num_repeats": 3,
+  "first_pick_step": 343,
+  "first_put_step": 438,
+  "pick_guard_window": [
+   393,
+   843
+  ],
+  "put_guard_window": [
+   488,
+   938
+  ],
+  "last_pick_end": 749,
+  "last_put_end": 803,
+  "exec_steps_before_button": 461,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 295,
+  "put_total_steps": 166
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 10,
+  "num_repeats": 3,
+  "first_pick_step": 363,
+  "first_put_step": 465,
+  "pick_guard_window": [
+   413,
+   863
+  ],
+  "put_guard_window": [
+   515,
+   965
+  ],
+  "last_pick_end": 724,
+  "last_put_end": 779,
+  "exec_steps_before_button": 417,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 250,
+  "put_total_steps": 167
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 11,
+  "num_repeats": 1,
+  "first_pick_step": 162,
+  "first_put_step": 262,
+  "pick_guard_window": [
+   212,
+   662
+  ],
+  "put_guard_window": [
+   312,
+   762
+  ],
+  "last_pick_end": 261,
+  "last_put_end": 317,
+  "exec_steps_before_button": 156,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 100,
+  "put_total_steps": 56
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 2,
+  "num_repeats": 2,
+  "first_pick_step": 313,
+  "first_put_step": 465,
+  "pick_guard_window": [
+   363,
+   813
+  ],
+  "put_guard_window": [
+   515,
+   965
+  ],
+  "last_pick_end": 586,
+  "last_put_end": 638,
+  "exec_steps_before_button": 326,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 223,
+  "put_total_steps": 103
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 3,
+  "num_repeats": 3,
+  "first_pick_step": 214,
+  "first_put_step": 335,
+  "pick_guard_window": [
+   264,
+   714
+  ],
+  "put_guard_window": [
+   385,
+   835
+  ],
+  "last_pick_end": 811,
+  "last_put_end": 904,
+  "exec_steps_before_button": 691,
+  "pick_steps_unguarded": 97,
+  "put_steps_unguarded": 69,
+  "pick_unguarded_ranges": [
+   [
+    715,
+    811
+   ]
+  ],
+  "put_unguarded_ranges": [
+   [
+    836,
+    904
+   ]
+  ],
+  "pick_total_steps": 433,
+  "put_total_steps": 258
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 4,
+  "num_repeats": 1,
+  "first_pick_step": 255,
+  "first_put_step": 431,
+  "pick_guard_window": [
+   305,
+   755
+  ],
+  "put_guard_window": [
+   481,
+   931
+  ],
+  "last_pick_end": 430,
+  "last_put_end": 483,
+  "exec_steps_before_button": 229,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 176,
+  "put_total_steps": 53
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 6,
+  "num_repeats": 1,
+  "first_pick_step": 317,
+  "first_put_step": 412,
+  "pick_guard_window": [
+   367,
+   817
+  ],
+  "put_guard_window": [
+   462,
+   912
+  ],
+  "last_pick_end": 411,
+  "last_put_end": 463,
+  "exec_steps_before_button": 147,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 95,
+  "put_total_steps": 52
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 7,
+  "num_repeats": 3,
+  "first_pick_step": 159,
+  "first_put_step": 250,
+  "pick_guard_window": [
+   209,
+   659
+  ],
+  "put_guard_window": [
+   300,
+   750
+  ],
+  "last_pick_end": 490,
+  "last_put_end": 541,
+  "exec_steps_before_button": 383,
+  "pick_steps_unguarded": 0,
+  "put_steps_unguarded": 0,
+  "pick_unguarded_ranges": [],
+  "put_unguarded_ranges": [],
+  "pick_total_steps": 231,
+  "put_total_steps": 152
+ }
+]

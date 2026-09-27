@@ -1,0 +1,2908 @@
+[
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard1",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the red cube on the target right after the button was pressed",
+  "goal_color": "red",
+  "button_t": 210,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 104,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4608,
+     "green": 500
+    }
+   },
+   {
+    "t_pick": 308,
+    "t_mid": 418,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4656
+    }
+   },
+   {
+    "t_pick": 517,
+    "t_mid": 591,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "blue": 75,
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 687,
+    "t_mid": 756,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4656,
+     "green": 3
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 3
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 2,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard1",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the red cube on the target right before the button was pressed",
+  "goal_color": "red",
+  "button_t": 197,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 118,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4560
+    }
+   },
+   {
+    "t_pick": 282,
+    "t_mid": 371,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 454,
+    "t_mid": 525,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 621,
+    "t_mid": 696,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 3
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 2,
+  "which": "before"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard1",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+  "goal_color": "blue",
+  "button_t": 212,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 109,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4560
+    }
+   },
+   {
+    "t_pick": 294,
+    "t_mid": 389,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4733,
+     "green": 1
+    }
+   },
+   {
+    "t_pick": 478,
+    "t_mid": 552,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4800
+    }
+   },
+   {
+    "t_pick": 668,
+    "t_mid": 744,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "green": 688,
+     "blue": 4656
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 3
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 2,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard2",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the green cube on the target right after the button was pressed",
+  "goal_color": "green",
+  "button_t": 363,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 113,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4608
+    }
+   },
+   {
+    "t_pick": 192,
+    "t_mid": 267,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4608
+    }
+   },
+   {
+    "t_pick": 456,
+    "t_mid": 566,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4662
+    }
+   },
+   {
+    "t_pick": 654,
+    "t_mid": 724,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4697,
+     "red": 108
+    }
+   },
+   {
+    "t_pick": 818,
+    "t_mid": 902,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4567
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 4
+  },
+  "goal_color_before": 2,
+  "goal_color_after": 2,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard2",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the red cube on the target right after the button was pressed",
+  "goal_color": "red",
+  "button_t": 408,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 123,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4512
+    }
+   },
+   {
+    "t_pick": 226,
+    "t_mid": 300,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4643
+    }
+   },
+   {
+    "t_pick": 504,
+    "t_mid": 613,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4449
+    }
+   },
+   {
+    "t_pick": 698,
+    "t_mid": 773,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4543
+    }
+   },
+   {
+    "t_pick": 863,
+    "t_mid": 932,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4569
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 4
+  },
+  "goal_color_before": 2,
+  "goal_color_after": 2,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard2",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+  "goal_color": "blue",
+  "button_t": 354,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 105,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4495
+    }
+   },
+   {
+    "t_pick": 193,
+    "t_mid": 264,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4595
+    }
+   },
+   {
+    "t_pick": 453,
+    "t_mid": 567,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4545
+    }
+   },
+   {
+    "t_pick": 671,
+    "t_mid": 740,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 839,
+    "t_mid": 907,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4713
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 4
+  },
+  "goal_color_before": 2,
+  "goal_color_after": 2,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard3",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+  "goal_color": "blue",
+  "button_t": 573,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 122,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4592
+    }
+   },
+   {
+    "t_pick": 232,
+    "t_mid": 334,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 418,
+    "t_mid": 492,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4734
+    }
+   },
+   {
+    "t_pick": 652,
+    "t_mid": 755,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 845,
+    "t_mid": 948,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4560
+    }
+   },
+   {
+    "t_pick": 1003,
+    "t_mid": 1108,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4608
+    }
+   },
+   {
+    "t_pick": 1222,
+    "t_mid": 1329,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4512
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 2,
+   "green": 3
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard3",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+  "goal_color": "blue",
+  "button_t": 608,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 105,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4656
+    }
+   },
+   {
+    "t_pick": 196,
+    "t_mid": 316,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 435,
+    "t_mid": 521,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "green": 480,
+     "blue": 4544
+    }
+   },
+   {
+    "t_pick": 704,
+    "t_mid": 801,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704,
+     "green": 1
+    }
+   },
+   {
+    "t_pick": 879,
+    "t_mid": 983,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4680
+    }
+   },
+   {
+    "t_pick": 1046,
+    "t_mid": 1155,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4539
+    }
+   },
+   {
+    "t_pick": 1230,
+    "t_mid": 1336,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 2,
+   "blue": 3
+  },
+  "goal_color_before": 2,
+  "goal_color_after": 1,
+  "which": "before"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard3",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+  "goal_color": "blue",
+  "button_t": 629,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 108,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4505
+    }
+   },
+   {
+    "t_pick": 209,
+    "t_mid": 324,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4656
+    }
+   },
+   {
+    "t_pick": 427,
+    "t_mid": 546,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4566
+    }
+   },
+   {
+    "t_pick": 718,
+    "t_mid": 819,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4553
+    }
+   },
+   {
+    "t_pick": 877,
+    "t_mid": 981,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 1084,
+    "t_mid": 1175,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4544
+    }
+   },
+   {
+    "t_pick": 1266,
+    "t_mid": 1363,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 3,
+   "green": 2
+  },
+  "goal_color_before": 2,
+  "goal_color_after": 1,
+  "which": "before"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard4",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the green cube on the target right before the button was pressed",
+  "goal_color": "green",
+  "button_t": 590,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 111,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4501
+    }
+   },
+   {
+    "t_pick": 206,
+    "t_mid": 328,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4515
+    }
+   },
+   {
+    "t_pick": 418,
+    "t_mid": 492,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 691,
+    "t_mid": 784,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4671
+    }
+   },
+   {
+    "t_pick": 877,
+    "t_mid": 973,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 1031,
+    "t_mid": 1126,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4696
+    }
+   },
+   {
+    "t_pick": 1230,
+    "t_mid": 1305,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4703
+    }
+   },
+   {
+    "t_pick": 1408,
+    "t_mid": 1516,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4593
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 3,
+   "blue": 3
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 2,
+  "which": "before"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard4",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the red cube on the target right after the button was pressed",
+  "goal_color": "red",
+  "button_t": 536,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 111,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4649
+    }
+   },
+   {
+    "t_pick": 202,
+    "t_mid": 282,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4739
+    }
+   },
+   {
+    "t_pick": 354,
+    "t_mid": 435,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4566
+    }
+   },
+   {
+    "t_pick": 618,
+    "t_mid": 709,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4694,
+     "blue": 11
+    }
+   },
+   {
+    "t_pick": 787,
+    "t_mid": 882,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4636
+    }
+   },
+   {
+    "t_pick": 972,
+    "t_mid": 1051,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4624,
+     "blue": 477
+    }
+   },
+   {
+    "t_pick": 1156,
+    "t_mid": 1257,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4677,
+     "blue": 15
+    }
+   },
+   {
+    "t_pick": 1355,
+    "t_mid": 1460,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4458
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 3,
+   "green": 3
+  },
+  "goal_color_before": 2,
+  "goal_color_after": 1,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "xhard4",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the blue cube on the target right before the button was pressed",
+  "goal_color": "blue",
+  "button_t": 581,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 121,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 212,
+    "t_mid": 332,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4416
+    }
+   },
+   {
+    "t_pick": 424,
+    "t_mid": 492,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4464
+    }
+   },
+   {
+    "t_pick": 676,
+    "t_mid": 763,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 854,
+    "t_mid": 963,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4512
+    }
+   },
+   {
+    "t_pick": 1024,
+    "t_mid": 1140,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4530
+    }
+   },
+   {
+    "t_pick": 1217,
+    "t_mid": 1286,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4752
+    }
+   },
+   {
+    "t_pick": 1385,
+    "t_mid": 1496,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4481
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 3,
+   "green": 3
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 2,
+  "which": "before"
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard1",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the blue cube on the first target it was previously placed on",
+  "goal_color": "blue",
+  "button_t": 332,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 104,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4608
+    }
+   },
+   {
+    "t_pick": 186,
+    "t_mid": 259,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 410,
+    "t_mid": 499,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 584,
+    "t_mid": 658,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4702
+    }
+   },
+   {
+    "t_pick": 730,
+    "t_mid": 834,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 921,
+    "t_mid": 994,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704,
+     "red": 789
+    }
+   },
+   {
+    "t_pick": 1075,
+    "t_mid": 1148,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "blue": 390,
+     "green": 4608
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 3,
+   "green": 2
+  },
+  "goal_ordinal": 1,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard1",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the red cube on the second target it was previously placed on",
+  "goal_color": "red",
+  "button_t": 904,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 111,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4512
+    }
+   },
+   {
+    "t_pick": 185,
+    "t_mid": 253,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4717,
+     "blue": 44
+    }
+   },
+   {
+    "t_pick": 362,
+    "t_mid": 437,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4608
+    }
+   },
+   {
+    "t_pick": 540,
+    "t_mid": 642,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656,
+     "green": 24
+    }
+   },
+   {
+    "t_pick": 740,
+    "t_mid": 815,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4583
+    }
+   },
+   {
+    "t_pick": 986,
+    "t_mid": 1076,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 1168,
+    "t_mid": 1238,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4524
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 2,
+   "blue": 3
+  },
+  "goal_ordinal": 2,
+  "goal_color_places": 2,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard1",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the green cube on the third target it was previously placed on",
+  "goal_color": "green",
+  "button_t": 868,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 113,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 198,
+    "t_mid": 268,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704,
+     "red": 95
+    }
+   },
+   {
+    "t_pick": 354,
+    "t_mid": 432,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4608,
+     "green": 106
+    }
+   },
+   {
+    "t_pick": 529,
+    "t_mid": 618,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 708,
+    "t_mid": 779,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4608,
+     "red": 10
+    }
+   },
+   {
+    "t_pick": 950,
+    "t_mid": 1035,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 1149,
+    "t_mid": 1225,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 2,
+   "green": 3
+  },
+  "goal_ordinal": 3,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard2",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the green cube on the second target it was previously placed on",
+  "goal_color": "green",
+  "button_t": 373,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 121,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4562
+    }
+   },
+   {
+    "t_pick": 209,
+    "t_mid": 282,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4570
+    }
+   },
+   {
+    "t_pick": 464,
+    "t_mid": 572,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4459
+    }
+   },
+   {
+    "t_pick": 673,
+    "t_mid": 742,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4622
+    }
+   },
+   {
+    "t_pick": 822,
+    "t_mid": 945,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 1050,
+    "t_mid": 1123,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4818
+    }
+   },
+   {
+    "t_pick": 1210,
+    "t_mid": 1286,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704,
+     "blue": 91
+    }
+   },
+   {
+    "t_pick": 1370,
+    "t_mid": 1442,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4711
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 3,
+   "red": 3
+  },
+  "goal_ordinal": 2,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard2",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the red cube on the third target it was previously placed on",
+  "goal_color": "red",
+  "button_t": 364,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 113,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4462,
+     "blue": 281
+    }
+   },
+   {
+    "t_pick": 207,
+    "t_mid": 274,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4746
+    }
+   },
+   {
+    "t_pick": 456,
+    "t_mid": 561,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4554
+    }
+   },
+   {
+    "t_pick": 647,
+    "t_mid": 717,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4655
+    }
+   },
+   {
+    "t_pick": 788,
+    "t_mid": 891,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4496
+    }
+   },
+   {
+    "t_pick": 996,
+    "t_mid": 1064,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4800
+    }
+   },
+   {
+    "t_pick": 1154,
+    "t_mid": 1226,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4560
+    }
+   },
+   {
+    "t_pick": 1331,
+    "t_mid": 1405,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4359
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 3,
+   "blue": 3
+  },
+  "goal_ordinal": 3,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard2",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the red cube on the third target it was previously placed on",
+  "goal_color": "red",
+  "button_t": 508,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 107,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4560
+    }
+   },
+   {
+    "t_pick": 178,
+    "t_mid": 250,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4656
+    }
+   },
+   {
+    "t_pick": 342,
+    "t_mid": 413,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 595,
+    "t_mid": 703,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4560
+    }
+   },
+   {
+    "t_pick": 792,
+    "t_mid": 915,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4545
+    }
+   },
+   {
+    "t_pick": 1007,
+    "t_mid": 1078,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4560
+    }
+   },
+   {
+    "t_pick": 1175,
+    "t_mid": 1250,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4510
+    }
+   },
+   {
+    "t_pick": 1353,
+    "t_mid": 1428,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4655,
+     "red": 3
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 3,
+   "blue": 3
+  },
+  "goal_ordinal": 3,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard3",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the green cube on the first target it was previously placed on",
+  "goal_color": "green",
+  "button_t": 365,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 106,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4560
+    }
+   },
+   {
+    "t_pick": 182,
+    "t_mid": 260,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4505
+    }
+   },
+   {
+    "t_pick": 467,
+    "t_mid": 581,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 688,
+    "t_mid": 760,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 847,
+    "t_mid": 923,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4614,
+     "red": 108
+    }
+   },
+   {
+    "t_pick": 1018,
+    "t_mid": 1120,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4656,
+     "red": 574
+    }
+   },
+   {
+    "t_pick": 1215,
+    "t_mid": 1287,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 1374,
+    "t_mid": 1450,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4611,
+     "red": 108
+    }
+   },
+   {
+    "t_pick": 1531,
+    "t_mid": 1610,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4512
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 4,
+   "green": 3
+  },
+  "goal_ordinal": 1,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard3",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the blue cube on the third target it was previously placed on",
+  "goal_color": "blue",
+  "button_t": 734,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 104,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 204,
+    "t_mid": 279,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 382,
+    "t_mid": 456,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4752,
+     "red": 628
+    }
+   },
+   {
+    "t_pick": 560,
+    "t_mid": 638,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4560
+    }
+   },
+   {
+    "t_pick": 820,
+    "t_mid": 910,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 990,
+    "t_mid": 1093,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4560,
+     "blue": 42
+    }
+   },
+   {
+    "t_pick": 1201,
+    "t_mid": 1276,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4655
+    }
+   },
+   {
+    "t_pick": 1373,
+    "t_mid": 1447,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 1545,
+    "t_mid": 1619,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 4,
+   "red": 3
+  },
+  "goal_ordinal": 3,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard3",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the blue cube on the first target it was previously placed on",
+  "goal_color": "blue",
+  "button_t": 559,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 126,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4505
+    }
+   },
+   {
+    "t_pick": 227,
+    "t_mid": 295,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 395,
+    "t_mid": 466,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4539
+    }
+   },
+   {
+    "t_pick": 649,
+    "t_mid": 744,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "red": 69,
+     "blue": 4608
+    }
+   },
+   {
+    "t_pick": 843,
+    "t_mid": 977,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4417
+    }
+   },
+   {
+    "t_pick": 1087,
+    "t_mid": 1156,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "red": 133,
+     "green": 4762
+    }
+   },
+   {
+    "t_pick": 1251,
+    "t_mid": 1326,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4520
+    }
+   },
+   {
+    "t_pick": 1425,
+    "t_mid": 1494,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4519
+    }
+   },
+   {
+    "t_pick": 1590,
+    "t_mid": 1656,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4416
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 3,
+   "green": 4
+  },
+  "goal_ordinal": 1,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard4",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the green cube on the fourth target it was previously placed on",
+  "goal_color": "green",
+  "button_t": 1409,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 105,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4656
+    }
+   },
+   {
+    "t_pick": 191,
+    "t_mid": 260,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4800
+    }
+   },
+   {
+    "t_pick": 373,
+    "t_mid": 449,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 547,
+    "t_mid": 616,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4749,
+     "blue": 23
+    }
+   },
+   {
+    "t_pick": 723,
+    "t_mid": 797,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4562
+    }
+   },
+   {
+    "t_pick": 876,
+    "t_mid": 977,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 1060,
+    "t_mid": 1129,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4752
+    }
+   },
+   {
+    "t_pick": 1238,
+    "t_mid": 1313,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4694
+    }
+   },
+   {
+    "t_pick": 1500,
+    "t_mid": 1611,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4648
+    }
+   },
+   {
+    "t_pick": 1706,
+    "t_mid": 1775,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "blue": 4704,
+     "red": 85
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 4,
+   "blue": 4
+  },
+  "goal_ordinal": 4,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard4",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the green cube on the first target it was previously placed on",
+  "goal_color": "green",
+  "button_t": 1246,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 113,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4560
+    }
+   },
+   {
+    "t_pick": 212,
+    "t_mid": 286,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4680,
+     "red": 108
+    }
+   },
+   {
+    "t_pick": 403,
+    "t_mid": 479,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 581,
+    "t_mid": 650,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4800
+    }
+   },
+   {
+    "t_pick": 737,
+    "t_mid": 811,
+    "dest": "put the cube back to its original position",
+    "color": "blue",
+    "votes": {
+     "red": 19,
+     "blue": 4608,
+     "green": 717
+    }
+   },
+   {
+    "t_pick": 904,
+    "t_mid": 1018,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4423
+    }
+   },
+   {
+    "t_pick": 1091,
+    "t_mid": 1160,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4549
+    }
+   },
+   {
+    "t_pick": 1345,
+    "t_mid": 1461,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4558
+    }
+   },
+   {
+    "t_pick": 1532,
+    "t_mid": 1601,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4656,
+     "red": 259
+    }
+   },
+   {
+    "t_pick": 1717,
+    "t_mid": 1792,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "green": 4416
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 4,
+   "green": 4
+  },
+  "goal_ordinal": 1,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "xhard4",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the red cube on the second target it was previously placed on",
+  "goal_color": "red",
+  "button_t": 1365,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 117,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "green": 1,
+     "red": 4612,
+     "blue": 342
+    }
+   },
+   {
+    "t_pick": 218,
+    "t_mid": 287,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 375,
+    "t_mid": 446,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4759
+    }
+   },
+   {
+    "t_pick": 539,
+    "t_mid": 614,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4659
+    }
+   },
+   {
+    "t_pick": 712,
+    "t_mid": 783,
+    "dest": "put the cube back to its original position",
+    "color": "red",
+    "votes": {
+     "red": 4473
+    }
+   },
+   {
+    "t_pick": 872,
+    "t_mid": 956,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 1042,
+    "t_mid": 1111,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4723
+    }
+   },
+   {
+    "t_pick": 1204,
+    "t_mid": 1277,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 1452,
+    "t_mid": 1543,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4656,
+     "red": 17
+    }
+   },
+   {
+    "t_pick": 1639,
+    "t_mid": 1714,
+    "dest": "put the cube back to its original position",
+    "color": "green",
+    "votes": {
+     "red": 194,
+     "green": 4671
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 4,
+   "green": 4
+  },
+  "goal_ordinal": 2,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "easy",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the red cube on the target right after the button was pressed",
+  "goal_color": "red",
+  "button_t": 201,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 120,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4560
+    }
+   },
+   {
+    "t_pick": 290,
+    "t_mid": 393,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4651
+    }
+   },
+   {
+    "t_pick": 481,
+    "t_mid": 550,
+    "dest": "drop the cube onto table",
+    "color": "red",
+    "votes": {
+     "red": 4654
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "easy",
+  "ep": 1,
+  "goal": "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+  "goal_color": "blue",
+  "button_t": 189,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 109,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4496
+    }
+   },
+   {
+    "t_pick": 288,
+    "t_mid": 399,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4320
+    }
+   },
+   {
+    "t_pick": 490,
+    "t_mid": 565,
+    "dest": "drop the cube onto table",
+    "color": "blue",
+    "votes": {
+     "blue": 4314
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "medium",
+  "ep": 10,
+  "goal": "watch the video carefully, then place the red cube on the target right after the button was pressed",
+  "goal_color": "red",
+  "button_t": 223,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 111,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4575
+    }
+   },
+   {
+    "t_pick": 315,
+    "t_mid": 425,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4656
+    }
+   },
+   {
+    "t_pick": 511,
+    "t_mid": 582,
+    "dest": "drop the cube onto table",
+    "color": "red",
+    "votes": {
+     "red": 4656
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "hard",
+  "ep": 11,
+  "goal": "watch the video carefully, then place the green cube on the target right before the button was pressed",
+  "goal_color": "green",
+  "button_t": 187,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 107,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4656
+    }
+   },
+   {
+    "t_pick": 272,
+    "t_mid": 373,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4560
+    }
+   },
+   {
+    "t_pick": 469,
+    "t_mid": 539,
+    "dest": "drop the cube onto table",
+    "color": "green",
+    "votes": {
+     "green": 4752
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "before"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "medium",
+  "ep": 2,
+  "goal": "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+  "goal_color": "blue",
+  "button_t": 184,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 104,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656,
+     "red": 13
+    }
+   },
+   {
+    "t_pick": 275,
+    "t_mid": 376,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4752
+    }
+   },
+   {
+    "t_pick": 468,
+    "t_mid": 549,
+    "dest": "drop the cube onto table",
+    "color": "blue",
+    "votes": {
+     "blue": 4566
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "hard",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the green cube on the target right before the button was pressed",
+  "goal_color": "green",
+  "button_t": 213,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 119,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4560
+    }
+   },
+   {
+    "t_pick": 293,
+    "t_mid": 386,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4752
+    }
+   },
+   {
+    "t_pick": 472,
+    "t_mid": 545,
+    "dest": "drop the cube onto table",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "before"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "easy",
+  "ep": 4,
+  "goal": "watch the video carefully, then place the green cube on the target right after the button was pressed",
+  "goal_color": "green",
+  "button_t": 217,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 114,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4560
+    }
+   },
+   {
+    "t_pick": 311,
+    "t_mid": 420,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4461
+    }
+   },
+   {
+    "t_pick": 513,
+    "t_mid": 585,
+    "dest": "drop the cube onto table",
+    "color": "green",
+    "votes": {
+     "green": 4602
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "medium",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the blue cube on the target right after the button was pressed",
+  "goal_color": "blue",
+  "button_t": 200,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 112,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 275,
+    "t_mid": 367,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4608
+    }
+   },
+   {
+    "t_pick": 460,
+    "t_mid": 530,
+    "dest": "drop the cube onto table",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "after"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "tier": "hard",
+  "ep": 7,
+  "goal": "watch the video carefully, then place the red cube on the target right before the button was pressed",
+  "goal_color": "red",
+  "button_t": 216,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 118,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4558
+    }
+   },
+   {
+    "t_pick": 290,
+    "t_mid": 369,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 478,
+    "t_mid": 553,
+    "dest": "drop the cube onto table",
+    "color": "red",
+    "votes": {
+     "red": 4657
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 2
+  },
+  "goal_color_before": 1,
+  "goal_color_after": 1,
+  "which": "before"
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "easy",
+  "ep": 0,
+  "goal": "watch the video carefully, then place the blue cube on the first target it was previously placed on",
+  "goal_color": "blue",
+  "button_t": 186,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 109,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4608
+    }
+   },
+   {
+    "t_pick": 282,
+    "t_mid": 381,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4608
+    }
+   },
+   {
+    "t_pick": 479,
+    "t_mid": 548,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4704
+    }
+   },
+   {
+    "t_pick": 666,
+    "t_mid": 739,
+    "dest": "drop the cube onto table",
+    "color": "blue",
+    "votes": {
+     "blue": 4608
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 3
+  },
+  "goal_ordinal": 1,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "easy",
+  "ep": 1,
+  "goal": "watch the video carefully, then place the green cube on the fourth target it was previously placed on",
+  "goal_color": "green",
+  "button_t": 217,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 121,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4681
+    }
+   },
+   {
+    "t_pick": 298,
+    "t_mid": 389,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4601
+    }
+   },
+   {
+    "t_pick": 498,
+    "t_mid": 573,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4674
+    }
+   },
+   {
+    "t_pick": 668,
+    "t_mid": 738,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4704
+    }
+   },
+   {
+    "t_pick": 821,
+    "t_mid": 897,
+    "dest": "drop the cube onto table",
+    "color": "green",
+    "votes": {
+     "green": 4543
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 4
+  },
+  "goal_ordinal": 4,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "medium",
+  "ep": 10,
+  "goal": "watch the video carefully, then place the blue cube on the second target it was previously placed on",
+  "goal_color": "blue",
+  "button_t": 236,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 115,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4650
+    }
+   },
+   {
+    "t_pick": 343,
+    "t_mid": 464,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4616
+    }
+   },
+   {
+    "t_pick": 545,
+    "t_mid": 615,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4608
+    }
+   },
+   {
+    "t_pick": 693,
+    "t_mid": 769,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4512,
+     "green": 25
+    }
+   },
+   {
+    "t_pick": 851,
+    "t_mid": 920,
+    "dest": "drop the cube onto table",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 4
+  },
+  "goal_ordinal": 2,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "hard",
+  "ep": 11,
+  "goal": "watch the video carefully, then place the green cube on the third target it was previously placed on",
+  "goal_color": "green",
+  "button_t": 366,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 103,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4608,
+     "red": 1
+    }
+   },
+   {
+    "t_pick": 193,
+    "t_mid": 265,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4497
+    }
+   },
+   {
+    "t_pick": 466,
+    "t_mid": 579,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4511
+    }
+   },
+   {
+    "t_pick": 662,
+    "t_mid": 731,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4560,
+     "red": 233
+    }
+   },
+   {
+    "t_pick": 821,
+    "t_mid": 888,
+    "dest": "drop the cube onto table",
+    "color": "green",
+    "votes": {
+     "green": 4667
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 4
+  },
+  "goal_ordinal": 3,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "medium",
+  "ep": 2,
+  "goal": "watch the video carefully, then place the red cube on the second target it was previously placed on",
+  "goal_color": "red",
+  "button_t": 374,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 121,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4560
+    }
+   },
+   {
+    "t_pick": 213,
+    "t_mid": 285,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 469,
+    "t_mid": 577,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4704
+    }
+   },
+   {
+    "t_pick": 673,
+    "t_mid": 741,
+    "dest": "drop the cube onto table",
+    "color": "red",
+    "votes": {
+     "red": 4752,
+     "green": 16
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 3
+  },
+  "goal_ordinal": 2,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "hard",
+  "ep": 3,
+  "goal": "watch the video carefully, then place the green cube on the third target it was previously placed on",
+  "goal_color": "green",
+  "button_t": 711,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 113,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4417
+    }
+   },
+   {
+    "t_pick": 209,
+    "t_mid": 278,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4656
+    }
+   },
+   {
+    "t_pick": 361,
+    "t_mid": 438,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4548
+    }
+   },
+   {
+    "t_pick": 529,
+    "t_mid": 601,
+    "dest": "drop the cube onto target",
+    "color": "green",
+    "votes": {
+     "green": 4624
+    }
+   },
+   {
+    "t_pick": 812,
+    "t_mid": 927,
+    "dest": "drop the cube onto table",
+    "color": "green",
+    "votes": {
+     "green": 4656
+    }
+   }
+  ],
+  "places_by_color": {
+   "green": 4
+  },
+  "goal_ordinal": 3,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "easy",
+  "ep": 4,
+  "goal": "watch the video carefully, then place the blue cube on the third target it was previously placed on",
+  "goal_color": "blue",
+  "button_t": 543,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 101,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656
+    }
+   },
+   {
+    "t_pick": 194,
+    "t_mid": 267,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4628
+    }
+   },
+   {
+    "t_pick": 356,
+    "t_mid": 434,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4458
+    }
+   },
+   {
+    "t_pick": 646,
+    "t_mid": 764,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4512
+    }
+   },
+   {
+    "t_pick": 855,
+    "t_mid": 924,
+    "dest": "drop the cube onto table",
+    "color": "blue",
+    "votes": {
+     "blue": 4540
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 4
+  },
+  "goal_ordinal": 3,
+  "goal_color_places": 4,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "medium",
+  "ep": 6,
+  "goal": "watch the video carefully, then place the blue cube on the second target it was previously placed on",
+  "goal_color": "blue",
+  "button_t": 177,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 106,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4656,
+     "red": 8
+    }
+   },
+   {
+    "t_pick": 264,
+    "t_mid": 355,
+    "dest": "drop the cube onto target",
+    "color": "blue",
+    "votes": {
+     "blue": 4703,
+     "green": 108
+    }
+   },
+   {
+    "t_pick": 432,
+    "t_mid": 508,
+    "dest": "drop the cube onto table",
+    "color": "blue",
+    "votes": {
+     "blue": 4541
+    }
+   }
+  ],
+  "places_by_color": {
+   "blue": 2
+  },
+  "goal_ordinal": 2,
+  "goal_color_places": 2,
+  "ordinal_ok": true
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "tier": "hard",
+  "ep": 7,
+  "goal": "watch the video carefully, then place the red cube on the second target it was previously placed on",
+  "goal_color": "red",
+  "button_t": 367,
+  "events": [
+   {
+    "t_pick": 0,
+    "t_mid": 115,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4653
+    }
+   },
+   {
+    "t_pick": 195,
+    "t_mid": 268,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4712
+    }
+   },
+   {
+    "t_pick": 455,
+    "t_mid": 550,
+    "dest": "drop the cube onto target",
+    "color": "red",
+    "votes": {
+     "red": 4752,
+     "blue": 33
+    }
+   },
+   {
+    "t_pick": 641,
+    "t_mid": 714,
+    "dest": "drop the cube onto table",
+    "color": "red",
+    "votes": {
+     "green": 38,
+     "red": 4704
+    }
+   }
+  ],
+  "places_by_color": {
+   "red": 3
+  },
+  "goal_ordinal": 2,
+  "goal_color_places": 3,
+  "ordinal_ok": true
+ }
+]

@@ -1,0 +1,78 @@
+{
+  "decision": {
+    "demo_duration_seconds_range": null,
+    "demonstration_duration_policy": "native",
+    "grid": {
+      "easy": 3,
+      "hard": 5,
+      "medium": 4,
+      "xhard1": 5,
+      "xhard2": 5,
+      "xhard3": 5,
+      "xhard4": 5
+    },
+    "path_length_range": {
+      "easy": [
+        2,
+        4
+      ],
+      "hard": [
+        4,
+        8
+      ],
+      "medium": [
+        3,
+        5
+      ],
+      "xhard1": [
+        9,
+        12
+      ],
+      "xhard2": [
+        13,
+        16
+      ],
+      "xhard3": [
+        17,
+        20
+      ],
+      "xhard4": [
+        21,
+        25
+      ]
+    },
+    "xhard1": {
+      "path_search_max_attempts": 20000
+    },
+    "xhard2": {
+      "path_search_max_attempts": 20000
+    },
+    "xhard3": {
+      "path_search_max_attempts": 20000
+    },
+    "xhard4": {
+      "path_search_max_attempts": 20000
+    }
+  },
+  "native": {
+    "parameters": {
+      "motion_template": "每个目标 solve_swingonto 两次 screw 运动并 close_gripper",
+      "path_binding": "演示与执行复用同一条路径；首个目标保留 NO RECORD",
+      "path_selection": {
+        "exhausted_rule": "耗尽后使用最后一次搜索到的路径，不另抽",
+        "max_attempts": 1000,
+        "search": "允许对角线的随机 DFS（find_path_0_to_8, diagonals=True）",
+        "start_end_sampler": "torch.randperm(num_targets)[:2]"
+      },
+      "recovery": "沿用入口给定的 fail recover 模式与原 generator"
+    },
+    "positions": {
+      "grid_center": [
+        -0.1,
+        0
+      ],
+      "grid_spacing": 0.1,
+      "node_position_expression": "center + (index - (n-1)/2) * spacing"
+    }
+  }
+}

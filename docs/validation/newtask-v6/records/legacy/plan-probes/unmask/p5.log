@@ -1,0 +1,4 @@
+P5 n4 layouts=1000 place_fail=0.000 G_density=0.639 every_slot_has_partner=0.990 G_connected=0.965 nn_dist_mean=0.154 nn_pair_feasible=0.992 all_visible=1.000 max_abs_xy=0.184
+P5 n5 layouts=1000 place_fail=0.000 G_density=0.538 every_slot_has_partner=1.000 G_connected=1.000 nn_dist_mean=0.160 nn_pair_feasible=0.999 all_visible=1.000 max_abs_xy=0.216
+P5 n6 layouts=1000 place_fail=0.000 G_density=0.349 every_slot_has_partner=0.754 G_connected=0.657 nn_dist_mean=0.137 nn_pair_feasible=0.862 all_visible=1.000 max_abs_xy=0.222
+P5 n6h layouts=1000 place_fail=0.000 G_density=0.457 every_slot_has_partner=1.000 G_connected=1.000 nn_dist_mean=0.153 nn_pair_feasible=1.000 all_visible=1.000 max_abs_xy=0.236

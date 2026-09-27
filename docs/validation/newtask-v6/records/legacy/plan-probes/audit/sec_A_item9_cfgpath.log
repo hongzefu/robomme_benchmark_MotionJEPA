@@ -1,0 +1,9 @@
+sampling_config.json
+v5-01
+['schema', 'note', 'tasks_total', 'tasks_ready', 'tasks_pending', 'tasks']
+['PickXtimes', 'StopCube', 'SwingXtimes', 'BinFill', 'VideoUnmaskSwap', 'VideoUnmask', 'ButtonUnmaskSwap', 'ButtonUnmask', 'VideoRepick', 'VideoPlaceButton', 'VideoPlaceOrder', 'PickHighlight', 'InsertPeg', 'MoveCube', 'PatternLock', 'RouteStick']
+['decision', 'native']
+scripts/generate_dataset_newseed.py:2656:        task_configs = load_sampling_config(sampling_config, REPO_ROOT)
+scripts/generate_dataset_newseed.py:2689:            task_configs = validate_sampling_config(snapshot, REPO_ROOT)
+scripts/injection/rollout/reset_check.py:724:            sampling_config=gen.validate_sampling_config(header["sampling_config"], REPO_ROOT),
+scripts/injection/rollout/run.py:220:    configs = gen.validate_sampling_config(header["sampling_config"], ROOT)

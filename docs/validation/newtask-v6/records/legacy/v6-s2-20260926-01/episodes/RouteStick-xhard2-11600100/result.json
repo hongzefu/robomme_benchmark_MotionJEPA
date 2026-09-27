@@ -1,0 +1,34 @@
+{
+  "id": "RouteStick-xhard2-11600100",
+  "task": "RouteStick",
+  "difficulty": "xhard2",
+  "seed": 11600100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 75.224,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "RouteStick",
+      "seed": 11600100,
+      "difficulty": "xhard2",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 70.7,
+      "timesteps": 1200
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/RouteStick-xhard2-11600100/hdf5_files/RouteStick_ep9_seed11600100.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/RouteStick-xhard2-11600100/videos/RouteStick_ep9_seed11600100_xhard2_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_navigate_around_the_sticks_on_the_table_following_the_same_path__ALT__watch_the_video_care__HASH__e8c2535278f1.mp4"
+  ]
+}

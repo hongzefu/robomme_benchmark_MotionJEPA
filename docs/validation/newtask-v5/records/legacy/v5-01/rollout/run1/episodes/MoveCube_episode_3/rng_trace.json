@@ -1,0 +1,159 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.demo.peg_offsets",
+      "drawn": [
+        -0.2,
+        -0.004233503341674805,
+        -0.04567677974700928
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.demo.peg_yaw",
+      "drawn": -2.606414994526426,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.execution.peg_offsets",
+      "drawn": [
+        -0.2,
+        0.004607605934143067,
+        -0.04685527682304383
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.execution.peg_yaw",
+      "drawn": -2.4724553285343505,
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "objects.obj_sample",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "objects.sampling_trace.dir_sample",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.demo.goal_xy",
+      "drawn": [
+        0.0958559536933899,
+        0.03194676995277404
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.execution.goal_xy",
+      "drawn": [
+        0.048708415031433104,
+        0.022162914276123054
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.demo.cube_pose",
+      "drawn": [
+        -0.051069928407669066,
+        0.02449991941452026,
+        4.707206926634208
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.execution.cube_pose",
+      "drawn": [
+        -0.11034324765205383,
+        0.02483844280242921,
+        5.49043294926756
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "layout.demo.center_exclusion",
+      "drawn": {
+        "center": [
+          0.0,
+          0.0
+        ],
+        "judge": "object_center",
+        "max_trials": 128,
+        "radius_m": 0.05,
+        "shape": "circle",
+        "peg_axis_extent_m": [
+          -0.15000000223517418,
+          0.05000000074505806
+        ]
+      },
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "layout.demo.center_exclusion_trials",
+      "drawn": {
+        "peg_trials": 1,
+        "cube_candidate_center_rejects": 0
+      },
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "layout.execution.center_exclusion",
+      "drawn": {
+        "center": [
+          0.0,
+          0.0
+        ],
+        "judge": "object_center",
+        "max_trials": 128,
+        "radius_m": 0.05,
+        "shape": "circle",
+        "peg_axis_extent_m": [
+          -0.15000000223517418,
+          0.05000000074505806
+        ]
+      },
+      "source": "record"
+    },
+    {
+      "index": 13,
+      "path": "layout.execution.center_exclusion_trials",
+      "drawn": {
+        "peg_trials": 1,
+        "cube_candidate_center_rejects": 0
+      },
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "initializations.0.way_idx",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "initializations.1.way_idx",
+      "drawn": 1,
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "_hb_generator": "a2481844d9da93082e368a035c38e1c47a9641ccf692d3794eff646831327f11"
+  }
+}

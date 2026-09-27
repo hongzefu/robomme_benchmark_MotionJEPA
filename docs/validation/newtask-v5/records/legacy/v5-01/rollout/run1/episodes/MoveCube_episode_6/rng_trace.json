@@ -1,0 +1,159 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.demo.peg_offsets",
+      "drawn": [
+        0.2,
+        0.023580294847488404,
+        -0.02154020667076111
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.demo.peg_yaw",
+      "drawn": 2.6123029940252396,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.execution.peg_offsets",
+      "drawn": [
+        -0.2,
+        0.02840872406959534,
+        0.03410053253173828
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.execution.peg_yaw",
+      "drawn": 0.5208426535414192,
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "objects.obj_sample",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "objects.sampling_trace.dir_sample",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.demo.goal_xy",
+      "drawn": [
+        0.04552298307418823,
+        -0.05563798785209655
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.execution.goal_xy",
+      "drawn": [
+        0.05439552068710327,
+        -0.055537347793579106
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.demo.cube_pose",
+      "drawn": [
+        -0.08546550631523134,
+        -0.027699617147445683,
+        3.637700990447641
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.execution.cube_pose",
+      "drawn": [
+        -0.10844127535820006,
+        -0.0672129797935486,
+        2.567062545007518
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "layout.demo.center_exclusion",
+      "drawn": {
+        "center": [
+          0.0,
+          0.0
+        ],
+        "judge": "object_center",
+        "max_trials": 128,
+        "radius_m": 0.05,
+        "shape": "circle",
+        "peg_axis_extent_m": [
+          -0.15000000223517418,
+          0.05000000074505806
+        ]
+      },
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "layout.demo.center_exclusion_trials",
+      "drawn": {
+        "peg_trials": 1,
+        "cube_candidate_center_rejects": 0
+      },
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "layout.execution.center_exclusion",
+      "drawn": {
+        "center": [
+          0.0,
+          0.0
+        ],
+        "judge": "object_center",
+        "max_trials": 128,
+        "radius_m": 0.05,
+        "shape": "circle",
+        "peg_axis_extent_m": [
+          -0.15000000223517418,
+          0.05000000074505806
+        ]
+      },
+      "source": "record"
+    },
+    {
+      "index": 13,
+      "path": "layout.execution.center_exclusion_trials",
+      "drawn": {
+        "peg_trials": 2,
+        "cube_candidate_center_rejects": 0
+      },
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "initializations.0.way_idx",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "initializations.1.way_idx",
+      "drawn": 1,
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "_hb_generator": "f84d21a7b3fc6a1d79d6b648c3c8f65449922a271997560083f32572d4be5e36"
+  }
+}

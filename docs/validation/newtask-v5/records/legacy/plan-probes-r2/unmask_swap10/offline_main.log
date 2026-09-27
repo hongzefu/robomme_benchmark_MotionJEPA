@@ -1,0 +1,24 @@
+进度 VideoUnmaskSwap 50/500 1s
+进度 VideoUnmaskSwap 100/500 1s
+进度 VideoUnmaskSwap 150/500 2s
+进度 VideoUnmaskSwap 200/500 3s
+进度 VideoUnmaskSwap 250/500 3s
+进度 VideoUnmaskSwap 300/500 4s
+进度 VideoUnmaskSwap 350/500 5s
+进度 VideoUnmaskSwap 400/500 6s
+进度 VideoUnmaskSwap 450/500 6s
+进度 VideoUnmaskSwap 500/500 9s
+SUMMARY {"task": "VideoUnmaskSwap", "layouts": 500, "status": {"ok": 496, "inner_inner": 4}, "inner_inner_reject_rate": 0.008, "inner_spawn_fail_rate": 0.0, "entered_outer_planning": 496, "first_layout_feasible_rate(of_entered)": 0.998, "final_ok_rate(of_entered)": 1.0, "exhaust16_rate(of_entered)": 0.0, "placement_fail(of_entered)": 0, "mean_redraws(ok)": 0.002, "max_attempts(ok)": 2, "attempt_hist": {"1": 495, "2": 1}, "first_candidate_window_share(final_plan)": 0.6256, "tries_hist(final_plan)": {"1": 3099, "2": 1123, "3": 444, "4": 168, "5": 75, "6": 28, "7": 9, "8": 4, "9": 2, "10": 2}, "reject_reasons(all_candidates)": {"inner_clear": 538, "exact": 617, "vis": 1929}, "failed_attempts_total": 1, "outer_immediate_undo_rate": 0.2951, "distinct_moved_distractors_mean": 6.68, "near_tie_windows(<5mm)": 156, "windows": 4954, "cube_color_counts": {"yellow": 806, "magenta": 831, "cyan": 843}, "plan_s": {"mean": 0.18, "p50": 0.037, "p95": 0.697, "max": 2.61}, "h1_calls_mean": 0.0, "joint_calls_mean": 11.1, "prefilter": true, "wall_s": 9.3}
+进度 ButtonUnmaskSwap 50/500 0s
+进度 ButtonUnmaskSwap 100/500 1s
+进度 ButtonUnmaskSwap 150/500 2s
+进度 ButtonUnmaskSwap 200/500 4s
+进度 ButtonUnmaskSwap 250/500 4s
+进度 ButtonUnmaskSwap 300/500 5s
+进度 ButtonUnmaskSwap 350/500 7s
+进度 ButtonUnmaskSwap 400/500 8s
+进度 ButtonUnmaskSwap 450/500 9s
+进度 ButtonUnmaskSwap 500/500 11s
+SUMMARY {"task": "ButtonUnmaskSwap", "layouts": 500, "status": {"ok": 450, "inner_inner": 49, "inner_spawn_fail": 1}, "inner_inner_reject_rate": 0.098, "inner_spawn_fail_rate": 0.002, "entered_outer_planning": 450, "first_layout_feasible_rate(of_entered)": 0.9889, "final_ok_rate(of_entered)": 1.0, "exhaust16_rate(of_entered)": 0.0, "placement_fail(of_entered)": 0, "mean_redraws(ok)": 0.0111, "max_attempts(ok)": 2, "attempt_hist": {"1": 445, "2": 5}, "first_candidate_window_share(final_plan)": 0.4826, "tries_hist(final_plan)": {"1": 1516, "2": 758, "3": 401, "4": 215, "5": 121, "6": 64, "7": 31, "8": 16, "9": 15, "10": 4}, "reject_reasons(all_candidates)": {"btn": 1022, "vis": 1651, "exact": 475, "inner_clear": 365}, "failed_attempts_total": 5, "outer_immediate_undo_rate": 0.4457, "distinct_moved_distractors_mean": 4.94, "near_tie_windows(<5mm)": 106, "windows": 3141, "cube_color_counts": {"magenta": 742, "cyan": 751, "yellow": 757}, "plan_s": {"mean": 0.23, "p50": 0.035, "p95": 1.346, "max": 3.558}, "h1_calls_mean": 0.2, "joint_calls_mean": 7.2, "prefilter": true, "wall_s": 11.5}
+全部完成
+EXIT_CODE=0

@@ -1,0 +1,239 @@
+{
+ "6100001": {
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100001/hdf5_files/MoveCube_ep9_seed6100001.h5",
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <60, 112>",
+    "demo": true
+   },
+   {
+    "step": 145,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <89, 161> to the target at <91, 91> with the peg",
+    "demo": true
+   },
+   {
+    "step": 241,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true
+   },
+   {
+    "step": 271,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <58, 121>",
+    "demo": false
+   },
+   {
+    "step": 426,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <92, 172> to the target at <65, 151> with the peg",
+    "demo": false
+   },
+   {
+    "step": 537,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <92, 172> to the target at <65, 151> with the peg",
+    "demo": false
+   }
+  ],
+  "keys": [
+   0,
+   145,
+   193,
+   241,
+   271,
+   426,
+   484,
+   537,
+   542
+  ],
+  "d_static": 7.4,
+  "d_last": 9.0,
+  "red_n_static": 154,
+  "grip_closed_frac_demo_hook": 0.9583333333333334,
+  "grip_closed_frac_exec_hook": 0.9658119658119658,
+  "red_start": [
+   89.9,
+   161.8
+  ],
+  "red_hookstart_exec": [
+   92.0,
+   172.9
+  ],
+  "red_last": [
+   60.3,
+   153.6
+  ],
+  "pur_last": [
+   64.5,
+   145.6
+  ]
+ },
+ "6100002": {
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100002/hdf5_files/MoveCube_ep9_seed6100002.h5",
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <116, 162>",
+    "demo": true
+   },
+   {
+    "step": 105,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube to the target with the peg",
+    "demo": true
+   },
+   {
+    "step": 229,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true
+   },
+   {
+    "step": 259,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <64, 105>",
+    "demo": false
+   },
+   {
+    "step": 397,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <95, 171> to the target at <123, 159> with the peg",
+    "demo": false
+   },
+   {
+    "step": 502,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <95, 171> to the target at <123, 159> with the peg",
+    "demo": false
+   }
+  ],
+  "keys": [
+   0,
+   105,
+   167,
+   229,
+   259,
+   397,
+   452,
+   502,
+   507
+  ],
+  "d_static": 7.6,
+  "d_last": 6.9,
+  "red_n_static": 178,
+  "grip_closed_frac_demo_hook": 0.967741935483871,
+  "grip_closed_frac_exec_hook": 0.963963963963964,
+  "red_start": [
+   67.9,
+   156.5
+  ],
+  "red_hookstart_exec": [
+   95.6,
+   171.3
+  ],
+  "red_last": [
+   120.5,
+   161.2
+  ],
+  "pur_last": [
+   126.2,
+   157.4
+  ]
+ },
+ "6100006": {
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/MoveCube-xhard4-6100006/hdf5_files/MoveCube_ep9_seed6100006.h5",
+  "segments": [
+   {
+    "step": 0,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <82, 161>",
+    "demo": true
+   },
+   {
+    "step": 121,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <89, 96> to the target at <114, 149> with the peg",
+    "demo": true
+   },
+   {
+    "step": 208,
+    "boundary": true,
+    "simple": "static",
+    "grounded": "static",
+    "demo": true
+   },
+   {
+    "step": 238,
+    "boundary": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <58, 130>",
+    "demo": false
+   },
+   {
+    "step": 394,
+    "boundary": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <101, 85> to the target at <126, 112> with the peg",
+    "demo": false
+   },
+   {
+    "step": 498,
+    "boundary": true,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <101, 85> to the target at <126, 112> with the peg",
+    "demo": false
+   }
+  ],
+  "keys": [
+   0,
+   121,
+   164,
+   208,
+   238,
+   394,
+   448,
+   498,
+   503
+  ],
+  "d_static": 10.8,
+  "d_last": 9.8,
+  "red_n_static": 176,
+  "grip_closed_frac_demo_hook": 0.9540229885057471,
+  "grip_closed_frac_exec_hook": 0.9636363636363636,
+  "red_start": [
+   89.4,
+   96.0
+  ],
+  "red_hookstart_exec": [
+   101.9,
+   85.8
+  ],
+  "red_last": [
+   122.6,
+   115.3
+  ],
+  "pur_last": [
+   131.8,
+   111.8
+  ]
+ }
+}

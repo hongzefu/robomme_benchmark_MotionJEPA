@@ -1,0 +1,26 @@
+{
+  "mismatches": [],
+  "value_points": 19,
+  "consumed": [
+    "layout.button_xy",
+    "layout.cubes.0",
+    "layout.cubes.1",
+    "layout.cubes.2",
+    "layout.cubes.3",
+    "layout.cubes.4",
+    "layout.cubes.5",
+    "layout.cubes.6",
+    "objects.color_rgba.0",
+    "objects.color_rgba.1",
+    "objects.color_rgba.2",
+    "objects.color_rgba.3",
+    "objects.color_rgba.4",
+    "objects.color_rgba.5",
+    "objects.color_rgba.6",
+    "objects.highlight_count",
+    "objects.highlight_ids",
+    "objects.n_cubes",
+    "objects.n_cubes_spawned"
+  ],
+  "unused": []
+}

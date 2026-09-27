@@ -1,0 +1,9 @@
+{
+  "user": "两条高频 nvidia-smi直接关闭",
+  "pids": {
+    "1275035": "2042338906",
+    "1488784": "2042560089"
+  },
+  "signal": "SIGTERM",
+  "main_worker_untouched": 1843953
+}

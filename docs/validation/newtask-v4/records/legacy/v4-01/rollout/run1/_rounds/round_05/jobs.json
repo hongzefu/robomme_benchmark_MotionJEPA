@@ -1,0 +1,10 @@
+[
+ {
+  "task": "InsertPeg",
+  "episode": 7,
+  "seed": 5300700,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/InsertPeg_episode_7"
+ }
+]

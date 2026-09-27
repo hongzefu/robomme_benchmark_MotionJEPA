@@ -1,0 +1,9 @@
+[
+  {
+    "task": "BinFill",
+    "episode": 0,
+    "seed": 4000,
+    "difficulty": "easy",
+    "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/s0/base-smoke/B/BinFill_episode_0"
+  }
+]

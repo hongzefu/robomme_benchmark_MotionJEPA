@@ -1,0 +1,6086 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "seed": "9100001",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed9100001.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/VideoPlaceOrder_ep0_seed9100001_xhard1_watch_the_video_carefully_then_place_the_blue_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__f6ffa7d6494b.mp4",
+  "goal": [
+   "watch the video carefully, then place the blue cube on the first target it was previously placed on",
+   "watch the video carefully and place the blue cube on the first target where it was placed"
+  ],
+  "lang_color": "blue",
+  "lang_ordinal": 1,
+  "n_steps": 1524,
+  "first_exec_step": 1353,
+  "targets_t0": [
+   [
+    78.2,
+    90.3,
+    204
+   ],
+   [
+    108.0,
+    86.5,
+    299
+   ],
+   [
+    135.6,
+    80.9,
+    418
+   ],
+   [
+    140.0,
+    115.2,
+    440
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    68.1,
+    111.5
+   ],
+   "green": [
+    74.4,
+    131.7
+   ],
+   "blue": [
+    113.0,
+    105.6
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       115,
+       106
+      ],
+      [
+       "blue",
+       112
+      ]
+     ],
+     [
+      186,
+      [
+       139,
+       114
+      ],
+      [
+       "blue",
+       143
+      ]
+     ],
+     [
+      410,
+      [
+       135,
+       77
+      ],
+      [
+       "blue",
+       122
+      ]
+     ],
+     [
+      584,
+      [
+       106,
+       84
+      ],
+      [
+       "blue",
+       101
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 185,
+      "coord": [
+       140,
+       115
+      ],
+      "cube_px": [
+       137.7,
+       113.9
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.6
+     },
+     {
+      "t_end": 331,
+      "coord": [
+       135,
+       81
+      ],
+      "cube_px": [
+       133.3,
+       75.3
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 6.1
+     },
+     {
+      "t_end": 583,
+      "coord": [
+       116,
+       83
+      ],
+      "cube_px": [
+       104.1,
+       82.8
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.4
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 729,
+    "end_vs_t0_px": 0.7
+   },
+   {
+    "color": "green",
+    "picks": [
+     [
+      730,
+      [
+       84,
+       131
+      ],
+      [
+       "red",
+       0
+      ]
+     ],
+     [
+      921,
+      [
+       75,
+       87
+      ],
+      [
+       "green",
+       70
+      ]
+     ],
+     [
+      1075,
+      [
+       106,
+       84
+      ],
+      [
+       "green",
+       101
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 920,
+      "coord": [
+       78,
+       90
+      ],
+      "cube_px": [
+       72.4,
+       86.7
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.8
+     },
+     {
+      "t_end": 1074,
+      "coord": [
+       108,
+       86
+      ],
+      "cube_px": [
+       104.2,
+       83.2
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.0
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1234,
+    "end_vs_t0_px": 0.6
+   }
+  ],
+  "visit_counts": [
+   3,
+   2
+  ],
+  "button_after_nth_visit": 2,
+  "exec_pick": [
+   116,
+   106
+  ],
+  "exec_pick_color": [
+   "blue",
+   109
+  ],
+  "exec_target_grounded": [
+   108,
+   86
+  ],
+  "answer_target_t0_idx": 3,
+  "swap": {
+   "swap_start": 1293,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    1,
+    2,
+    3
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 3,
+  "final_cube_px": [
+   103.3,
+   82.5
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 49.2,
+  "exec_target_grounded_to_expected_px": 43.3,
+  "non_demo_cubes": [
+   "red"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": false
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     3,
+     2,
+     1
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     2.6,
+     6.1,
+     5.4
+    ],
+    [
+     6.8,
+     5.0
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "seed": "9100302",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed9100302.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/VideoPlaceOrder_ep3_seed9100302_xhard1_watch_the_video_carefully_then_place_the_red_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4ff10aa5857b.mp4",
+  "goal": [
+   "watch the video carefully, then place the red cube on the second target it was previously placed on",
+   "watch the video carefully and place the red cube on the second target where it was placed"
+  ],
+  "lang_color": "red",
+  "lang_ordinal": 2,
+  "n_steps": 1618,
+  "first_exec_step": 1422,
+  "targets_t0": [
+   [
+    73.9,
+    91.4,
+    190
+   ],
+   [
+    95.5,
+    89.5,
+    255
+   ],
+   [
+    104.1,
+    169.1,
+    288
+   ],
+   [
+    128.0,
+    146.7,
+    384
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    133.2,
+    174.0
+   ],
+   "green": [
+    71.2,
+    127.3
+   ],
+   "blue": [
+    102.2,
+    146.4
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "red",
+    "picks": [
+     [
+      0,
+      [
+       133,
+       174
+      ],
+      [
+       "red",
+       156
+      ]
+     ],
+     [
+      185,
+      [
+       126,
+       147
+      ],
+      [
+       "red",
+       144
+      ]
+     ],
+     [
+      362,
+      [
+       71,
+       90
+      ],
+      [
+       "red",
+       66
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 184,
+      "coord": [
+       128,
+       146
+      ],
+      "cube_px": [
+       125.4,
+       146.9
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.6
+     },
+     {
+      "t_end": 361,
+      "coord": [
+       74,
+       91
+      ],
+      "cube_px": [
+       68.5,
+       89.2
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.8
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 539,
+    "end_vs_t0_px": 0.9
+   },
+   {
+    "color": "blue",
+    "picks": [
+     [
+      540,
+      [
+       103,
+       147
+      ],
+      [
+       "blue",
+       126
+      ]
+     ],
+     [
+      740,
+      [
+       71,
+       90
+      ],
+      [
+       "blue",
+       71
+      ]
+     ],
+     [
+      986,
+      [
+       101,
+       171
+      ],
+      [
+       "blue",
+       134
+      ]
+     ],
+     [
+      1168,
+      [
+       93,
+       88
+      ],
+      [
+       "blue",
+       87
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 739,
+      "coord": [
+       74,
+       91
+      ],
+      "cube_px": [
+       68.5,
+       89.3
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.8
+     },
+     {
+      "t_end": 903,
+      "coord": [
+       104,
+       169
+      ],
+      "cube_px": [
+       100.9,
+       170.6
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 3.5
+     },
+     {
+      "t_end": 1167,
+      "coord": [
+       95,
+       89
+      ],
+      "cube_px": [
+       90.8,
+       87.3
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.2
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1315,
+    "end_vs_t0_px": 1.3
+   }
+  ],
+  "visit_counts": [
+   2,
+   3
+  ],
+  "button_after_nth_visit": 4,
+  "exec_pick": [
+   134,
+   173
+  ],
+  "exec_pick_color": [
+   "red",
+   156
+  ],
+  "exec_target_grounded": null,
+  "answer_target_t0_idx": 0,
+  "swap": {
+   "swap_start": 1362,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    2
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 2,
+  "final_cube_px": [
+   100.7,
+   170.8
+  ],
+  "final_nearest_t0_target_idx": 2,
+  "final_cube_to_expected_px": 3.8,
+  "exec_target_grounded_to_expected_px": null,
+  "non_demo_cubes": [
+   "green"
+  ],
+  "non_demo_cube_shift_px": {
+   "green": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     3,
+     0
+    ],
+    [
+     0,
+     2,
+     1
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     2.6,
+     5.8
+    ],
+    [
+     5.8,
+     3.5,
+     5.2
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.2
+   }
+  }
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "seed": "9100600",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed9100600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/VideoPlaceOrder_ep6_seed9100600_xhard1_watch_the_video_carefully_then_place_the_green_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__305030b69467.mp4",
+  "goal": [
+   "watch the video carefully, then place the green cube on the third target it was previously placed on",
+   "watch the video carefully and place the green cube on the third target where it was placed"
+  ],
+  "lang_color": "green",
+  "lang_ordinal": 3,
+  "n_steps": 1617,
+  "first_exec_step": 1414,
+  "targets_t0": [
+   [
+    74.1,
+    162.4,
+    193
+   ],
+   [
+    101.9,
+    87.8,
+    279
+   ],
+   [
+    119.5,
+    163.3,
+    347
+   ],
+   [
+    135.1,
+    83.2,
+    413
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    69.2,
+    106.7
+   ],
+   "green": [
+    87.5,
+    167.8
+   ],
+   "blue": [
+    75.7,
+    135.7
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       79,
+       135
+      ],
+      [
+       "blue",
+       69
+      ]
+     ],
+     [
+      198,
+      [
+       100,
+       85
+      ],
+      [
+       "blue",
+       95
+      ]
+     ],
+     [
+      354,
+      [
+       118,
+       165
+      ],
+      [
+       "blue",
+       127
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 197,
+      "coord": [
+       102,
+       87
+      ],
+      "cube_px": [
+       97.6,
+       84.7
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.3
+     },
+     {
+      "t_end": 353,
+      "coord": [
+       119,
+       163
+      ],
+      "cube_px": [
+       116.2,
+       165.5
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.0
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 528,
+    "end_vs_t0_px": 0.3
+   },
+   {
+    "color": "green",
+    "picks": [
+     [
+      529,
+      [
+       89,
+       168
+      ],
+      [
+       "green",
+       113
+      ]
+     ],
+     [
+      708,
+      [
+       100,
+       84
+      ],
+      [
+       "green",
+       93
+      ]
+     ],
+     [
+      950,
+      [
+       134,
+       80
+      ],
+      [
+       "green",
+       137
+      ]
+     ],
+     [
+      1149,
+      [
+       71,
+       164
+      ],
+      [
+       "green",
+       83
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 707,
+      "coord": [
+       102,
+       87
+      ],
+      "cube_px": [
+       97.7,
+       83.4
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 6.1
+     },
+     {
+      "t_end": 867,
+      "coord": [
+       135,
+       83
+      ],
+      "cube_px": [
+       132.6,
+       79.4
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 4.5
+     },
+     {
+      "t_end": 1148,
+      "coord": [
+       74,
+       162
+      ],
+      "cube_px": [
+       69.0,
+       163.7
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.3
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1299,
+    "end_vs_t0_px": 0.4
+   }
+  ],
+  "visit_counts": [
+   2,
+   3
+  ],
+  "button_after_nth_visit": 4,
+  "exec_pick": [
+   90,
+   168
+  ],
+  "exec_pick_color": [
+   "green",
+   98
+  ],
+  "exec_target_grounded": [
+   135,
+   83
+  ],
+  "answer_target_t0_idx": 0,
+  "swap": {
+   "swap_start": 1354,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    3
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 3,
+  "final_cube_px": [
+   132.2,
+   79.7
+  ],
+  "final_nearest_t0_target_idx": 3,
+  "final_cube_to_expected_px": 4.5,
+  "exec_target_grounded_to_expected_px": 0.2,
+  "non_demo_cubes": [
+   "red"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3,
+     0
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     5.3,
+     4.0
+    ],
+    [
+     6.1,
+     4.5,
+     5.3
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.3,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "seed": "11100001",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed11100001.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/VideoPlaceOrder_ep0_seed11100001_xhard2_watch_the_video_carefully_then_place_the_green_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__ac314f143027.mp4",
+  "goal": [
+   "watch the video carefully, then place the green cube on the second target it was previously placed on",
+   "watch the video carefully and place the green cube on the second target where it was placed"
+  ],
+  "lang_color": "green",
+  "lang_ordinal": 2,
+  "n_steps": 1886,
+  "first_exec_step": 1668,
+  "targets_t0": [
+   [
+    99.1,
+    87.8,
+    273
+   ],
+   [
+    113.6,
+    107.0,
+    324
+   ],
+   [
+    140.0,
+    79.4,
+    435
+   ],
+   [
+    140.2,
+    110.0,
+    442
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    75.7,
+    167.8
+   ],
+   "green": [
+    73.2,
+    86.2
+   ],
+   "blue": [
+    72.6,
+    118.7
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "green",
+    "picks": [
+     [
+      0,
+      [
+       75,
+       88
+      ],
+      [
+       "green",
+       81
+      ]
+     ],
+     [
+      209,
+      [
+       111,
+       106
+      ],
+      [
+       "green",
+       118
+      ]
+     ],
+     [
+      464,
+      [
+       139,
+       109
+      ],
+      [
+       "green",
+       140
+      ]
+     ],
+     [
+      673,
+      [
+       96,
+       86
+      ],
+      [
+       "green",
+       95
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 208,
+      "coord": [
+       113,
+       107
+      ],
+      "cube_px": [
+       110.2,
+       105.6
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 3.7
+     },
+     {
+      "t_end": 372,
+      "coord": [
+       140,
+       110
+      ],
+      "cube_px": [
+       138.0,
+       109.0
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.4
+     },
+     {
+      "t_end": 672,
+      "coord": null,
+      "cube_px": [
+       94.6,
+       84.5
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.6
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 821,
+    "end_vs_t0_px": 0.6
+   },
+   {
+    "color": "red",
+    "picks": [
+     [
+      822,
+      [
+       78,
+       168
+      ],
+      [
+       "red",
+       92
+      ]
+     ],
+     [
+      1050,
+      [
+       139,
+       77
+      ],
+      [
+       "red",
+       141
+      ]
+     ],
+     [
+      1210,
+      [
+       112,
+       106
+      ],
+      [
+       "red",
+       117
+      ]
+     ],
+     [
+      1370,
+      [
+       140,
+       108
+      ],
+      [
+       "red",
+       146
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 1049,
+      "coord": [
+       140,
+       79
+      ],
+      "cube_px": [
+       138.0,
+       76.0
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 3.9
+     },
+     {
+      "t_end": 1209,
+      "coord": [
+       113,
+       107
+      ],
+      "cube_px": [
+       110.5,
+       105.5
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 3.4
+     },
+     {
+      "t_end": 1369,
+      "coord": [
+       140,
+       110
+      ],
+      "cube_px": [
+       138.8,
+       108.4
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.1
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1547,
+    "end_vs_t0_px": 0.2
+   }
+  ],
+  "visit_counts": [
+   3,
+   3
+  ],
+  "button_after_nth_visit": 2,
+  "exec_pick": [
+   75,
+   88
+  ],
+  "exec_pick_color": [
+   "green",
+   85
+  ],
+  "exec_target_grounded": [
+   140,
+   110
+  ],
+  "answer_target_t0_idx": 3,
+  "swap": {
+   "swap_start": 1608,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    1
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 3,
+  "final_cube_px": [
+   137.7,
+   108.9
+  ],
+  "final_nearest_t0_target_idx": 3,
+  "final_cube_to_expected_px": 2.7,
+  "exec_target_grounded_to_expected_px": 0.2,
+  "non_demo_cubes": [
+   "blue"
+  ],
+  "non_demo_cube_shift_px": {
+   "blue": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     1,
+     3,
+     0
+    ],
+    [
+     2,
+     1,
+     3
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     3.7,
+     2.4,
+     5.6
+    ],
+    [
+     3.9,
+     3.4,
+     2.1
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "seed": "11100304",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed11100304.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/VideoPlaceOrder_ep3_seed11100304_xhard2_watch_the_video_carefully_then_place_the_red_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the___HASH__9fc52231b86c.mp4",
+  "goal": [
+   "watch the video carefully, then place the red cube on the third target it was previously placed on",
+   "watch the video carefully and place the red cube on the third target where it was placed"
+  ],
+  "lang_color": "red",
+  "lang_ordinal": 3,
+  "n_steps": 1801,
+  "first_exec_step": 1617,
+  "targets_t0": [
+   [
+    74.0,
+    93.0,
+    188
+   ],
+   [
+    103.6,
+    163.9,
+    284
+   ],
+   [
+    106.6,
+    93.1,
+    296
+   ],
+   [
+    139.6,
+    175.4,
+    439
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    91.8,
+    130.1
+   ],
+   "green": [
+    126.7,
+    95.5
+   ],
+   "blue": [
+    65.1,
+    136.8
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "red",
+    "picks": [
+     [
+      0,
+      [
+       93,
+       131
+      ],
+      [
+       "red",
+       115
+      ]
+     ],
+     [
+      207,
+      [
+       139,
+       177
+      ],
+      [
+       "red",
+       137
+      ]
+     ],
+     [
+      456,
+      [
+       105,
+       92
+      ],
+      [
+       "red",
+       105
+      ]
+     ],
+     [
+      647,
+      [
+       101,
+       166
+      ],
+      [
+       "red",
+       132
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 206,
+      "coord": [
+       139,
+       175
+      ],
+      "cube_px": [
+       139.0,
+       177.4
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.1
+     },
+     {
+      "t_end": 363,
+      "coord": [
+       106,
+       93
+      ],
+      "cube_px": [
+       103.3,
+       90.7
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.1
+     },
+     {
+      "t_end": 646,
+      "coord": [
+       103,
+       163
+      ],
+      "cube_px": [
+       100.6,
+       165.7
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 3.5
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 787,
+    "end_vs_t0_px": 1.0
+   },
+   {
+    "color": "blue",
+    "picks": [
+     [
+      788,
+      [
+       68,
+       136
+      ],
+      [
+       "blue",
+       59
+      ]
+     ],
+     [
+      996,
+      [
+       140,
+       175
+      ],
+      [
+       "blue",
+       71
+      ]
+     ],
+     [
+      1154,
+      [
+       102,
+       167
+      ],
+      [
+       "blue",
+       89
+      ]
+     ],
+     [
+      1331,
+      [
+       70,
+       92
+      ],
+      [
+       "blue",
+       64
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 995,
+      "coord": [
+       139,
+       175
+      ],
+      "cube_px": [
+       137.8,
+       176.9
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.3
+     },
+     {
+      "t_end": 1153,
+      "coord": [
+       103,
+       163
+      ],
+      "cube_px": [
+       99.6,
+       168.6
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 6.2
+     },
+     {
+      "t_end": 1330,
+      "coord": [
+       74,
+       93
+      ],
+      "cube_px": [
+       67.8,
+       91.4
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.4
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1493,
+    "end_vs_t0_px": 0.9
+   }
+  ],
+  "visit_counts": [
+   3,
+   3
+  ],
+  "button_after_nth_visit": 2,
+  "exec_pick": [
+   92,
+   131
+  ],
+  "exec_pick_color": [
+   "red",
+   117
+  ],
+  "exec_target_grounded": [
+   103,
+   163
+  ],
+  "answer_target_t0_idx": 1,
+  "swap": {
+   "swap_start": 1557,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    2
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 1,
+  "final_cube_px": [
+   100.4,
+   165.6
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 3.6,
+  "exec_target_grounded_to_expected_px": 1.1,
+  "non_demo_cubes": [
+   "green"
+  ],
+  "non_demo_cube_shift_px": {
+   "green": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     3,
+     2,
+     1
+    ],
+    [
+     3,
+     1,
+     0
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     2.1,
+     4.1,
+     3.5
+    ],
+    [
+     2.3,
+     6.2,
+     6.4
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "seed": "11100600",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed11100600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/VideoPlaceOrder_ep6_seed11100600_xhard2_watch_the_video_carefully_then_place_the_red_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the___HASH__9fc52231b86c.mp4",
+  "goal": [
+   "watch the video carefully, then place the red cube on the third target it was previously placed on",
+   "watch the video carefully and place the red cube on the third target where it was placed"
+  ],
+  "lang_color": "red",
+  "lang_ordinal": 3,
+  "n_steps": 1860,
+  "first_exec_step": 1669,
+  "targets_t0": [
+   [
+    74.0,
+    162.3,
+    194
+   ],
+   [
+    94.7,
+    88.7,
+    252
+   ],
+   [
+    106.8,
+    167.9,
+    297
+   ],
+   [
+    143.2,
+    166.0,
+    459
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    118.2,
+    150.7
+   ],
+   "green": [
+    93.2,
+    145.3
+   ],
+   "blue": [
+    64.1,
+    115.8
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "red",
+    "picks": [
+     [
+      0,
+      [
+       120,
+       151
+      ],
+      [
+       "red",
+       129
+      ]
+     ],
+     [
+      178,
+      [
+       104,
+       170
+      ],
+      [
+       "red",
+       126
+      ]
+     ],
+     [
+      342,
+      [
+       93,
+       87
+      ],
+      [
+       "red",
+       88
+      ]
+     ],
+     [
+      595,
+      [
+       143,
+       167
+      ],
+      [
+       "red",
+       154
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 177,
+      "coord": [
+       108,
+       169
+      ],
+      "cube_px": [
+       102.7,
+       170.0
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.6
+     },
+     {
+      "t_end": 341,
+      "coord": [
+       95,
+       88
+      ],
+      "cube_px": [
+       90.3,
+       86.2
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.1
+     },
+     {
+      "t_end": 507,
+      "coord": [
+       143,
+       165
+      ],
+      "cube_px": [
+       142.0,
+       167.7
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.1
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 791,
+    "end_vs_t0_px": 0.1
+   },
+   {
+    "color": "blue",
+    "picks": [
+     [
+      792,
+      [
+       67,
+       114
+      ],
+      [
+       "blue",
+       43
+      ]
+     ],
+     [
+      1007,
+      [
+       104,
+       169
+      ],
+      [
+       "blue",
+       90
+      ]
+     ],
+     [
+      1175,
+      [
+       70,
+       164
+      ],
+      [
+       "blue",
+       65
+      ]
+     ],
+     [
+      1353,
+      [
+       146,
+       168
+      ],
+      [
+       "blue",
+       18
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 1006,
+      "coord": [
+       107,
+       167
+      ],
+      "cube_px": [
+       102.1,
+       171.0
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 5.6
+     },
+     {
+      "t_end": 1174,
+      "coord": [
+       74,
+       157
+      ],
+      "cube_px": [
+       67.8,
+       165.0
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.8
+     },
+     {
+      "t_end": 1352,
+      "coord": [
+       143,
+       165
+      ],
+      "cube_px": [
+       144.6,
+       173.2
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 7.3
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1542,
+    "end_vs_t0_px": 1.3
+   }
+  ],
+  "visit_counts": [
+   3,
+   3
+  ],
+  "button_after_nth_visit": 3,
+  "exec_pick": [
+   120,
+   150
+  ],
+  "exec_pick_color": [
+   "red",
+   126
+  ],
+  "exec_target_grounded": [
+   143,
+   165
+  ],
+  "answer_target_t0_idx": 3,
+  "swap": {
+   "swap_start": 1609,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    2
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 3,
+  "final_cube_px": [
+   141.2,
+   167.1
+  ],
+  "final_nearest_t0_target_idx": 3,
+  "final_cube_to_expected_px": 2.3,
+  "exec_target_grounded_to_expected_px": 1.0,
+  "non_demo_cubes": [
+   "green"
+  ],
+  "non_demo_cube_shift_px": {
+   "green": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     2,
+     1,
+     3
+    ],
+    [
+     2,
+     0,
+     3
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     4.6,
+     5.1,
+     2.1
+    ],
+    [
+     5.6,
+     6.8,
+     7.3
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.1,
+    "blue": 2.2
+   }
+  }
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "seed": "13100002",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed13100002.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/VideoPlaceOrder_ep0_seed13100002_xhard3_watch_the_video_carefully_then_place_the_green_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__f2a1912f9e06.mp4",
+  "goal": [
+   "watch the video carefully, then place the green cube on the first target it was previously placed on",
+   "watch the video carefully and place the green cube on the first target where it was placed"
+  ],
+  "lang_color": "green",
+  "lang_ordinal": 1,
+  "n_steps": 2005,
+  "first_exec_step": 1800,
+  "targets_t0": [
+   [
+    76.8,
+    90.2,
+    194
+   ],
+   [
+    111.2,
+    166.5,
+    315
+   ],
+   [
+    120.9,
+    82.8,
+    350
+   ],
+   [
+    140.7,
+    174.8,
+    445
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    74.3,
+    164.5
+   ],
+   "green": [
+    91.1,
+    144.7
+   ],
+   "blue": [
+    134.1,
+    95.7
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       136,
+       96
+      ],
+      [
+       "blue",
+       134
+      ]
+     ],
+     [
+      182,
+      [
+       119,
+       80
+      ],
+      [
+       "blue",
+       114
+      ]
+     ],
+     [
+      467,
+      null,
+      null
+     ],
+     [
+      688,
+      [
+       140,
+       176
+      ],
+      [
+       "blue",
+       157
+      ]
+     ],
+     [
+      847,
+      [
+       109,
+       168
+      ],
+      [
+       "blue",
+       133
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 181,
+      "coord": [
+       127,
+       79
+      ],
+      "cube_px": [
+       116.8,
+       79.3
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 5.4
+     },
+     {
+      "t_end": 364,
+      "coord": [
+       81,
+       90
+      ],
+      "cube_px": [
+       70.6,
+       87.9
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.6
+     },
+     {
+      "t_end": 687,
+      "coord": [
+       140,
+       174
+      ],
+      "cube_px": [
+       139.3,
+       176.4
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.1
+     },
+     {
+      "t_end": 846,
+      "coord": null,
+      "cube_px": [
+       108.3,
+       168.1
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 3.3
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1017,
+    "end_vs_t0_px": 0.9
+   },
+   {
+    "color": "green",
+    "picks": [
+     [
+      1018,
+      [
+       93,
+       145
+      ],
+      [
+       "green",
+       109
+      ]
+     ],
+     [
+      1215,
+      [
+       140,
+       177
+      ],
+      [
+       "green",
+       157
+      ]
+     ],
+     [
+      1374,
+      [
+       109,
+       169
+      ],
+      [
+       "green",
+       135
+      ]
+     ],
+     [
+      1531,
+      [
+       119,
+       80
+      ],
+      [
+       "green",
+       112
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 1214,
+      "coord": [
+       140,
+       174
+      ],
+      "cube_px": [
+       139.5,
+       177.4
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.9
+     },
+     {
+      "t_end": 1373,
+      "coord": [
+       109,
+       157
+      ],
+      "cube_px": [
+       108.5,
+       168.5
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 3.4
+     },
+     {
+      "t_end": 1530,
+      "coord": [
+       121,
+       82
+      ],
+      "cube_px": [
+       117.3,
+       78.8
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 5.4
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1692,
+    "end_vs_t0_px": 0.5
+   }
+  ],
+  "visit_counts": [
+   4,
+   3
+  ],
+  "button_after_nth_visit": 2,
+  "exec_pick": [
+   92,
+   145
+  ],
+  "exec_pick_color": [
+   "green",
+   110
+  ],
+  "exec_target_grounded": [
+   140,
+   174
+  ],
+  "answer_target_t0_idx": 3,
+  "swap": {
+   "swap_start": 1740,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    1
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 3,
+  "final_cube_px": [
+   138.6,
+   176.8
+  ],
+  "final_nearest_t0_target_idx": 3,
+  "final_cube_to_expected_px": 2.9,
+  "exec_target_grounded_to_expected_px": 1.1,
+  "non_demo_cubes": [
+   "red"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     2,
+     0,
+     3,
+     1
+    ],
+    [
+     3,
+     1,
+     2
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     5.4,
+     6.6,
+     2.1,
+     3.3
+    ],
+    [
+     2.9,
+     3.4,
+     5.4
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "seed": "13100301",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed13100301.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/VideoPlaceOrder_ep3_seed13100301_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__410e09c388eb.mp4",
+  "goal": [
+   "watch the video carefully, then place the blue cube on the third target it was previously placed on",
+   "watch the video carefully and place the blue cube on the third target where it was placed"
+  ],
+  "lang_color": "blue",
+  "lang_ordinal": 3,
+  "n_steps": 2010,
+  "first_exec_step": 1825,
+  "targets_t0": [
+   [
+    76.1,
+    90.7,
+    191
+   ],
+   [
+    80.4,
+    165.2,
+    211
+   ],
+   [
+    97.5,
+    88.5,
+    261
+   ],
+   [
+    141.1,
+    146.2,
+    447
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    121.0,
+    164.0
+   ],
+   "green": [
+    71.0,
+    137.5
+   ],
+   "blue": [
+    96.5,
+    163.8
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       99,
+       163
+      ],
+      [
+       "blue",
+       98
+      ]
+     ],
+     [
+      204,
+      [
+       73,
+       89
+      ],
+      [
+       "blue",
+       68
+      ]
+     ],
+     [
+      382,
+      [
+       140,
+       146
+      ],
+      [
+       "blue",
+       152
+      ]
+     ],
+     [
+      560,
+      [
+       78,
+       168
+      ],
+      [
+       "blue",
+       88
+      ]
+     ],
+     [
+      820,
+      [
+       99,
+       85
+      ],
+      [
+       "blue",
+       20
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 203,
+      "coord": [
+       76,
+       90
+      ],
+      "cube_px": [
+       70.9,
+       88.4
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.7
+     },
+     {
+      "t_end": 381,
+      "coord": [
+       141,
+       146
+      ],
+      "cube_px": [
+       139.2,
+       146.5
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 1.9
+     },
+     {
+      "t_end": 559,
+      "coord": null,
+      "cube_px": [
+       75.8,
+       168.4
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.6
+     },
+     {
+      "t_end": 733,
+      "coord": [
+       97,
+       88
+      ],
+      "cube_px": [
+       93.2,
+       85.1
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 5.5
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 989,
+    "end_vs_t0_px": 0.6
+   },
+   {
+    "color": "red",
+    "picks": [
+     [
+      990,
+      [
+       122,
+       164
+      ],
+      [
+       "red",
+       142
+      ]
+     ],
+     [
+      1201,
+      [
+       73,
+       89
+      ],
+      [
+       "red",
+       68
+      ]
+     ],
+     [
+      1373,
+      [
+       77,
+       167
+      ],
+      [
+       "red",
+       106
+      ]
+     ],
+     [
+      1545,
+      [
+       140,
+       147
+      ],
+      [
+       "red",
+       155
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 1200,
+      "coord": [
+       76,
+       90
+      ],
+      "cube_px": [
+       70.4,
+       88.7
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.0
+     },
+     {
+      "t_end": 1372,
+      "coord": [
+       80,
+       165
+      ],
+      "cube_px": [
+       76.2,
+       167.0
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 4.6
+     },
+     {
+      "t_end": 1544,
+      "coord": [
+       141,
+       146
+      ],
+      "cube_px": [
+       139.6,
+       147.4
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 1.9
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1706,
+    "end_vs_t0_px": 1.1
+   }
+  ],
+  "visit_counts": [
+   4,
+   3
+  ],
+  "button_after_nth_visit": 4,
+  "exec_pick": [
+   99,
+   164
+  ],
+  "exec_pick_color": [
+   "blue",
+   107
+  ],
+  "exec_target_grounded": [
+   81,
+   163
+  ],
+  "answer_target_t0_idx": 1,
+  "swap": {
+   "swap_start": 1765,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    3
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 1,
+  "final_cube_px": [
+   75.5,
+   167.3
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 5.3,
+  "exec_target_grounded_to_expected_px": 2.3,
+  "non_demo_cubes": [
+   "green"
+  ],
+  "non_demo_cube_shift_px": {
+   "green": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     0,
+     3,
+     1,
+     2
+    ],
+    [
+     0,
+     1,
+     3
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     5.7,
+     1.9,
+     5.6,
+     5.5
+    ],
+    [
+     6.0,
+     4.6,
+     1.9
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "seed": "13100600",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed13100600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/VideoPlaceOrder_ep6_seed13100600_xhard3_watch_the_video_carefully_then_place_the_blue_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__f6ffa7d6494b.mp4",
+  "goal": [
+   "watch the video carefully, then place the blue cube on the first target it was previously placed on",
+   "watch the video carefully and place the blue cube on the first target where it was placed"
+  ],
+  "lang_color": "blue",
+  "lang_ordinal": 1,
+  "n_steps": 2129,
+  "first_exec_step": 1906,
+  "targets_t0": [
+   [
+    76.6,
+    91.2,
+    198
+   ],
+   [
+    98.9,
+    87.6,
+    266
+   ],
+   [
+    102.1,
+    164.9,
+    283
+   ],
+   [
+    141.6,
+    111.5,
+    444
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    113.1,
+    102.0
+   ],
+   "green": [
+    145.4,
+    81.0
+   ],
+   "blue": [
+    68.5,
+    149.2
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       72,
+       148
+      ],
+      [
+       "blue",
+       59
+      ]
+     ],
+     [
+      227,
+      [
+       140,
+       110
+      ],
+      [
+       "blue",
+       134
+      ]
+     ],
+     [
+      395,
+      [
+       100,
+       166
+      ],
+      [
+       "blue",
+       83
+      ]
+     ],
+     [
+      649,
+      [
+       97,
+       86
+      ],
+      [
+       "blue",
+       88
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 226,
+      "coord": [
+       141,
+       111
+      ],
+      "cube_px": [
+       138.7,
+       109.4
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 3.6
+     },
+     {
+      "t_end": 394,
+      "coord": [
+       102,
+       164
+      ],
+      "cube_px": [
+       97.4,
+       167.8
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 5.5
+     },
+     {
+      "t_end": 558,
+      "coord": [
+       99,
+       87
+      ],
+      "cube_px": [
+       94.8,
+       85.2
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 4.8
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 842,
+    "end_vs_t0_px": 0.5
+   },
+   {
+    "color": "green",
+    "picks": [
+     [
+      843,
+      [
+       147,
+       82
+      ],
+      [
+       "green",
+       140
+      ]
+     ],
+     [
+      1087,
+      [
+       96,
+       85
+      ],
+      [
+       "green",
+       89
+      ]
+     ],
+     [
+      1251,
+      [
+       73,
+       88
+      ],
+      [
+       "green",
+       76
+      ]
+     ],
+     [
+      1425,
+      [
+       142,
+       106
+      ],
+      [
+       "green",
+       56
+      ]
+     ],
+     [
+      1590,
+      [
+       98,
+       165
+      ],
+      [
+       "green",
+       128
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 1086,
+      "coord": [
+       99,
+       87
+      ],
+      "cube_px": [
+       93.7,
+       84.3
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 6.2
+     },
+     {
+      "t_end": 1250,
+      "coord": [
+       77,
+       91
+      ],
+      "cube_px": [
+       70.9,
+       87.5
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.8
+     },
+     {
+      "t_end": 1424,
+      "coord": [
+       141,
+       111
+      ],
+      "cube_px": [
+       140.4,
+       105.2
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 6.4
+     },
+     {
+      "t_end": 1589,
+      "coord": [
+       102,
+       164
+      ],
+      "cube_px": [
+       97.4,
+       164.7
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.7
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1767,
+    "end_vs_t0_px": 2.6
+   }
+  ],
+  "visit_counts": [
+   3,
+   4
+  ],
+  "button_after_nth_visit": 3,
+  "exec_pick": [
+   72,
+   147
+  ],
+  "exec_pick_color": [
+   "blue",
+   58
+  ],
+  "exec_target_grounded": [
+   141,
+   111
+  ],
+  "answer_target_t0_idx": 3,
+  "swap": {
+   "swap_start": 1846,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    1,
+    2
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 3,
+  "final_cube_px": [
+   139.1,
+   109.2
+  ],
+  "final_nearest_t0_target_idx": 3,
+  "final_cube_to_expected_px": 3.4,
+  "exec_target_grounded_to_expected_px": 0.8,
+  "non_demo_cubes": [
+   "red"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     3,
+     2,
+     1
+    ],
+    [
+     1,
+     0,
+     3,
+     2
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     3.6,
+     5.5,
+     4.8
+    ],
+    [
+     6.2,
+     6.8,
+     6.4,
+     4.7
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "seed": "7100000",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed7100000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_0/videos/VideoPlaceOrder_ep0_seed7100000_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_fourth_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__5d2356e3d4bd.mp4",
+  "goal": [
+   "watch the video carefully, then place the green cube on the fourth target it was previously placed on",
+   "watch the video carefully and place the green cube on the fourth target where it was placed"
+  ],
+  "lang_color": "green",
+  "lang_ordinal": 4,
+  "n_steps": 2166,
+  "first_exec_step": 1970,
+  "targets_t0": [
+   [
+    73.6,
+    92.7,
+    183
+   ],
+   [
+    76.9,
+    163.9,
+    200
+   ],
+   [
+    133.3,
+    163.8,
+    407
+   ],
+   [
+    135.1,
+    127.4,
+    412
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    96.3,
+    124.1
+   ],
+   "green": [
+    94.9,
+    176.0
+   ],
+   "blue": [
+    109.1,
+    139.2
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "green",
+    "picks": [
+     [
+      0,
+      [
+       97,
+       175
+      ],
+      [
+       "green",
+       96
+      ]
+     ],
+     [
+      191,
+      [
+       132,
+       165
+      ],
+      [
+       "green",
+       133
+      ]
+     ],
+     [
+      373,
+      [
+       71,
+       90
+      ],
+      [
+       "green",
+       64
+      ]
+     ],
+     [
+      547,
+      [
+       134,
+       126
+      ],
+      [
+       "green",
+       137
+      ]
+     ],
+     [
+      723,
+      [
+       74,
+       166
+      ],
+      [
+       "green",
+       72
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 190,
+      "coord": [
+       133,
+       163
+      ],
+      "cube_px": [
+       130.9,
+       166.0
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 3.3
+     },
+     {
+      "t_end": 372,
+      "coord": [
+       74,
+       92
+      ],
+      "cube_px": [
+       68.0,
+       89.6
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.4
+     },
+     {
+      "t_end": 546,
+      "coord": [
+       135,
+       127
+      ],
+      "cube_px": [
+       132.9,
+       126.7
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.3
+     },
+     {
+      "t_end": 722,
+      "coord": [
+       71,
+       167
+      ],
+      "cube_px": [
+       71.5,
+       167.0
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 6.2
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 875,
+    "end_vs_t0_px": 0.6
+   },
+   {
+    "color": "blue",
+    "picks": [
+     [
+      876,
+      [
+       111,
+       139
+      ],
+      [
+       "blue",
+       117
+      ]
+     ],
+     [
+      1060,
+      [
+       132,
+       166
+      ],
+      [
+       "blue",
+       152
+      ]
+     ],
+     [
+      1238,
+      [
+       71,
+       91
+      ],
+      [
+       "blue",
+       67
+      ]
+     ],
+     [
+      1500,
+      [
+       74,
+       166
+      ],
+      [
+       "blue",
+       96
+      ]
+     ],
+     [
+      1706,
+      [
+       134,
+       127
+      ],
+      [
+       "blue",
+       136
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 1059,
+      "coord": [
+       133,
+       163
+      ],
+      "cube_px": [
+       131.3,
+       166.3
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 3.2
+     },
+     {
+      "t_end": 1237,
+      "coord": [
+       74,
+       92
+      ],
+      "cube_px": [
+       68.0,
+       90.6
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.0
+     },
+     {
+      "t_end": 1408,
+      "coord": [
+       77,
+       163
+      ],
+      "cube_px": [
+       72.0,
+       165.5
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.2
+     },
+     {
+      "t_end": 1705,
+      "coord": [
+       135,
+       127
+      ],
+      "cube_px": [
+       132.6,
+       127.7
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.5
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1857,
+    "end_vs_t0_px": 0.4
+   }
+  ],
+  "visit_counts": [
+   4,
+   4
+  ],
+  "button_after_nth_visit": 7,
+  "exec_pick": [
+   97,
+   174
+  ],
+  "exec_pick_color": [
+   "green",
+   93
+  ],
+  "exec_target_grounded": [
+   77,
+   163
+  ],
+  "answer_target_t0_idx": 1,
+  "swap": {
+   "swap_start": 1910,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    3
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 1,
+  "final_cube_px": [
+   71.5,
+   166.8
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 6.1,
+  "exec_target_grounded_to_expected_px": 0.9,
+  "non_demo_cubes": [
+   "red"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     2,
+     0,
+     3,
+     1
+    ],
+    [
+     2,
+     0,
+     1,
+     3
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     3.3,
+     6.4,
+     2.3,
+     6.2
+    ],
+    [
+     3.2,
+     6.0,
+     5.2,
+     2.5
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "seed": "7100301",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed7100301.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_3/videos/VideoPlaceOrder_ep3_seed7100301_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__f2a1912f9e06.mp4",
+  "goal": [
+   "watch the video carefully, then place the green cube on the first target it was previously placed on",
+   "watch the video carefully and place the green cube on the first target where it was placed"
+  ],
+  "lang_color": "green",
+  "lang_ordinal": 1,
+  "n_steps": 2168,
+  "first_exec_step": 1978,
+  "targets_t0": [
+   [
+    75.2,
+    91.0,
+    192
+   ],
+   [
+    104.2,
+    87.2,
+    288
+   ],
+   [
+    133.1,
+    81.9,
+    401
+   ],
+   [
+    143.0,
+    113.9,
+    454
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    105.0,
+    117.1
+   ],
+   "green": [
+    89.6,
+    107.5
+   ],
+   "blue": [
+    86.9,
+    167.7
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       88,
+       168
+      ],
+      [
+       "blue",
+       117
+      ]
+     ],
+     [
+      212,
+      [
+       142,
+       113
+      ],
+      [
+       "blue",
+       140
+      ]
+     ],
+     [
+      403,
+      [
+       72,
+       89
+      ],
+      [
+       "blue",
+       68
+      ]
+     ],
+     [
+      581,
+      [
+       132,
+       79
+      ],
+      [
+       "blue",
+       138
+      ]
+     ],
+     [
+      737,
+      [
+       103,
+       85
+      ],
+      [
+       "blue",
+       99
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 211,
+      "coord": [
+       143,
+       113
+      ],
+      "cube_px": [
+       140.3,
+       113.5
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.7
+     },
+     {
+      "t_end": 402,
+      "coord": null,
+      "cube_px": [
+       69.6,
+       88.5
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.1
+     },
+     {
+      "t_end": 580,
+      "coord": [
+       133,
+       82
+      ],
+      "cube_px": [
+       130.8,
+       78.6
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.0
+     },
+     {
+      "t_end": 736,
+      "coord": [
+       105,
+       88
+      ],
+      "cube_px": [
+       100.7,
+       84.7
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 4.3
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 903,
+    "end_vs_t0_px": 0.9
+   },
+   {
+    "color": "green",
+    "picks": [
+     [
+      904,
+      [
+       91,
+       109
+      ],
+      [
+       "green",
+       102
+      ]
+     ],
+     [
+      1091,
+      [
+       101,
+       85
+      ],
+      [
+       "green",
+       103
+      ]
+     ],
+     [
+      1345,
+      [
+       131,
+       79
+      ],
+      [
+       "green",
+       128
+      ]
+     ],
+     [
+      1532,
+      [
+       142,
+       114
+      ],
+      [
+       "green",
+       143
+      ]
+     ],
+     [
+      1717,
+      [
+       72,
+       89
+      ],
+      [
+       "green",
+       84
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 1090,
+      "coord": [
+       104,
+       87
+      ],
+      "cube_px": [
+       99.6,
+       84.3
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.4
+     },
+     {
+      "t_end": 1245,
+      "coord": [
+       133,
+       82
+      ],
+      "cube_px": [
+       129.9,
+       78.4
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.7
+     },
+     {
+      "t_end": 1531,
+      "coord": [
+       143,
+       113
+      ],
+      "cube_px": [
+       140.9,
+       114.0
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.1
+     },
+     {
+      "t_end": 1716,
+      "coord": null,
+      "cube_px": [
+       70.5,
+       87.9
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.6
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1864,
+    "end_vs_t0_px": 1.4
+   }
+  ],
+  "visit_counts": [
+   4,
+   4
+  ],
+  "button_after_nth_visit": 6,
+  "exec_pick": [
+   90,
+   110
+  ],
+  "exec_pick_color": [
+   "green",
+   102
+  ],
+  "exec_target_grounded": [
+   104,
+   87
+  ],
+  "answer_target_t0_idx": 1,
+  "swap": {
+   "swap_start": 1918,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    2
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 1,
+  "final_cube_px": [
+   99.6,
+   84.7
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 5.2,
+  "exec_target_grounded_to_expected_px": 0.3,
+  "non_demo_cubes": [
+   "red"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.1
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     3,
+     0,
+     2,
+     1
+    ],
+    [
+     1,
+     2,
+     3,
+     0
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     2.7,
+     6.1,
+     4.0,
+     4.3
+    ],
+    [
+     5.4,
+     4.7,
+     2.1,
+     5.6
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "seed": "7100600",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed7100600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_6/videos/VideoPlaceOrder_ep6_seed7100600_xhard4_watch_the_video_carefully_then_place_the_red_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4ff10aa5857b.mp4",
+  "goal": [
+   "watch the video carefully, then place the red cube on the second target it was previously placed on",
+   "watch the video carefully and place the red cube on the second target where it was placed"
+  ],
+  "lang_color": "red",
+  "lang_ordinal": 2,
+  "n_steps": 2111,
+  "first_exec_step": 1913,
+  "targets_t0": [
+   [
+    74.9,
+    92.1,
+    192
+   ],
+   [
+    98.4,
+    166.2,
+    267
+   ],
+   [
+    101.9,
+    89.1,
+    279
+   ],
+   [
+    137.7,
+    108.9,
+    427
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    74.0,
+    116.0
+   ],
+   "green": [
+    87.6,
+    141.0
+   ],
+   "blue": [
+    65.3,
+    133.1
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "red",
+    "picks": [
+     [
+      0,
+      [
+       77,
+       116
+      ],
+      [
+       "red",
+       71
+      ]
+     ],
+     [
+      218,
+      [
+       137,
+       107
+      ],
+      [
+       "red",
+       134
+      ]
+     ],
+     [
+      375,
+      [
+       100,
+       86
+      ],
+      [
+       "red",
+       92
+      ]
+     ],
+     [
+      539,
+      [
+       72,
+       90
+      ],
+      [
+       "red",
+       67
+      ]
+     ],
+     [
+      712,
+      [
+       96,
+       168
+      ],
+      [
+       "red",
+       88
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 217,
+      "coord": [
+       137,
+       108
+      ],
+      "cube_px": [
+       135.6,
+       106.8
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 3.0
+     },
+     {
+      "t_end": 374,
+      "coord": null,
+      "cube_px": [
+       97.8,
+       85.4
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 5.5
+     },
+     {
+      "t_end": 538,
+      "coord": [
+       76,
+       92
+      ],
+      "cube_px": [
+       69.5,
+       89.8
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.9
+     },
+     {
+      "t_end": 711,
+      "coord": [
+       98,
+       166
+      ],
+      "cube_px": [
+       93.7,
+       169.3
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.6
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 871,
+    "end_vs_t0_px": 0.7
+   },
+   {
+    "color": "green",
+    "picks": [
+     [
+      872,
+      [
+       91,
+       140
+      ],
+      [
+       "green",
+       77
+      ]
+     ],
+     [
+      1042,
+      [
+       96,
+       167
+      ],
+      [
+       "green",
+       87
+      ]
+     ],
+     [
+      1204,
+      [
+       137,
+       107
+      ],
+      [
+       "green",
+       139
+      ]
+     ],
+     [
+      1452,
+      [
+       100,
+       87
+      ],
+      [
+       "green",
+       91
+      ]
+     ],
+     [
+      1639,
+      [
+       72,
+       90
+      ],
+      [
+       "green",
+       64
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 1041,
+      "coord": [
+       98,
+       166
+      ],
+      "cube_px": [
+       93.3,
+       168.0
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.4
+     },
+     {
+      "t_end": 1203,
+      "coord": [
+       137,
+       108
+      ],
+      "cube_px": [
+       136.0,
+       107.1
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.5
+     },
+     {
+      "t_end": 1364,
+      "coord": null,
+      "cube_px": [
+       97.7,
+       85.9
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 5.3
+     },
+     {
+      "t_end": 1638,
+      "coord": [
+       75,
+       92
+      ],
+      "cube_px": [
+       68.9,
+       89.2
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.7
+     }
+    ],
+    "end": "put the cube back to its original position",
+    "t_end": 1804,
+    "end_vs_t0_px": 0.6
+   }
+  ],
+  "visit_counts": [
+   4,
+   4
+  ],
+  "button_after_nth_visit": 7,
+  "exec_pick": [
+   77,
+   115
+  ],
+  "exec_pick_color": [
+   "red",
+   66
+  ],
+  "exec_target_grounded": [
+   102,
+   89
+  ],
+  "answer_target_t0_idx": 2,
+  "swap": {
+   "swap_start": 1853,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    1,
+    3
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 2,
+  "final_cube_px": [
+   97.5,
+   85.9
+  ],
+  "final_nearest_t0_target_idx": 2,
+  "final_cube_to_expected_px": 5.4,
+  "exec_target_grounded_to_expected_px": 0.1,
+  "non_demo_cubes": [
+   "blue"
+  ],
+  "non_demo_cube_shift_px": {
+   "blue": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     3,
+     2,
+     0,
+     1
+    ],
+    [
+     1,
+     3,
+     2,
+     0
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     3.0,
+     5.5,
+     5.9,
+     5.6
+    ],
+    [
+     5.4,
+     2.5,
+     5.3,
+     6.7
+    ]
+   ],
+   "unique_per_cube": [
+    true,
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "seed": "11003",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed11003.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_0/videos/VideoPlaceOrder_ep0_seed11003_FailRecoverZ_easy_watch_the_video_carefully_then_place_the_blue_cube_on_the_first_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__f6ffa7d6494b.mp4",
+  "goal": [
+   "watch the video carefully, then place the blue cube on the first target it was previously placed on",
+   "watch the video carefully and place the blue cube on the first target where it was placed"
+  ],
+  "lang_color": "blue",
+  "lang_ordinal": 1,
+  "n_steps": 1200,
+  "first_exec_step": 940,
+  "targets_t0": [
+   [
+    78.9,
+    165.0,
+    206
+   ],
+   [
+    101.0,
+    168.1,
+    278
+   ],
+   [
+    105.9,
+    88.8,
+    290
+   ],
+   [
+    138.9,
+    79.0,
+    436
+   ]
+  ],
+  "cubes_t0": {
+   "red": null,
+   "green": null,
+   "blue": [
+    117.3,
+    167.8
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       120,
+       166
+      ],
+      [
+       "blue",
+       100
+      ]
+     ],
+     [
+      282,
+      [
+       98,
+       169
+      ],
+      [
+       "blue",
+       90
+      ]
+     ],
+     [
+      479,
+      [
+       138,
+       76
+      ],
+      [
+       "blue",
+       129
+      ]
+     ],
+     [
+      666,
+      [
+       76,
+       165
+      ],
+      [
+       "blue",
+       65
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 185,
+      "coord": [
+       102,
+       165
+      ],
+      "cube_px": [
+       96.2,
+       170.8
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.5
+     },
+     {
+      "t_end": 478,
+      "coord": [
+       139,
+       79
+      ],
+      "cube_px": [
+       136.4,
+       74.9
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 4.8
+     },
+     {
+      "t_end": 665,
+      "coord": [
+       79,
+       165
+      ],
+      "cube_px": [
+       73.3,
+       167.1
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.0
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 823,
+    "end_vs_t0_px": 56.9
+   }
+  ],
+  "visit_counts": [
+   3
+  ],
+  "button_after_nth_visit": 1,
+  "exec_pick": [
+   81,
+   126
+  ],
+  "exec_pick_color": [
+   "blue",
+   75
+  ],
+  "exec_target_grounded": [
+   101,
+   168
+  ],
+  "answer_target_t0_idx": 1,
+  "swap": {
+   "swap_start": 880,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 1,
+  "final_cube_px": [
+   96.2,
+   170.7
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 5.5,
+  "exec_target_grounded_to_expected_px": 0.1,
+  "non_demo_cubes": [],
+  "non_demo_cube_shift_px": {},
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     1,
+     3,
+     0
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     5.5,
+     4.8,
+     6.0
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "seed": "11103",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_1/hdf5_files/VideoPlaceOrder_ep1_seed11103.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_1/videos/VideoPlaceOrder_ep1_seed11103_FailRecoverZ_easy_watch_the_video_carefully_then_place_the_green_cube_on_the_fourth_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on__HASH__5d2356e3d4bd.mp4",
+  "goal": [
+   "watch the video carefully, then place the green cube on the fourth target it was previously placed on",
+   "watch the video carefully and place the green cube on the fourth target where it was placed"
+  ],
+  "lang_color": "green",
+  "lang_ordinal": 4,
+  "n_steps": 1367,
+  "first_exec_step": 1105,
+  "targets_t0": [
+   [
+    73.7,
+    161.8,
+    189
+   ],
+   [
+    96.4,
+    87.2,
+    257
+   ],
+   [
+    110.2,
+    169.5,
+    314
+   ],
+   [
+    132.2,
+    158.7,
+    406
+   ]
+  ],
+  "cubes_t0": {
+   "red": null,
+   "green": [
+    68.0,
+    93.7
+   ],
+   "blue": null
+  },
+  "demo_blocks": [
+   {
+    "color": "green",
+    "picks": [
+     [
+      0,
+      [
+       71,
+       94
+      ],
+      [
+       "green",
+       69
+      ]
+     ],
+     [
+      298,
+      [
+       131,
+       160
+      ],
+      [
+       "green",
+       138
+      ]
+     ],
+     [
+      498,
+      [
+       70,
+       163
+      ],
+      [
+       "green",
+       76
+      ]
+     ],
+     [
+      668,
+      [
+       94,
+       85
+      ],
+      [
+       "green",
+       88
+      ]
+     ],
+     [
+      821,
+      [
+       108,
+       172
+      ],
+      [
+       "green",
+       125
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 216,
+      "coord": [
+       132,
+       158
+      ],
+      "cube_px": [
+       129.7,
+       160.1
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.9
+     },
+     {
+      "t_end": 497,
+      "coord": null,
+      "cube_px": [
+       68.2,
+       163.4
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.7
+     },
+     {
+      "t_end": 667,
+      "coord": [
+       96,
+       87
+      ],
+      "cube_px": [
+       91.6,
+       84.0
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.8
+     },
+     {
+      "t_end": 820,
+      "coord": [
+       110,
+       169
+      ],
+      "cube_px": [
+       106.7,
+       172.5
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.6
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 988,
+    "end_vs_t0_px": 35.2
+   }
+  ],
+  "visit_counts": [
+   4
+  ],
+  "button_after_nth_visit": 1,
+  "exec_pick": [
+   81,
+   127
+  ],
+  "exec_pick_color": [
+   "green",
+   76
+  ],
+  "exec_target_grounded": [
+   110,
+   169
+  ],
+  "answer_target_t0_idx": 2,
+  "swap": {
+   "swap_start": 1045,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 2,
+  "final_cube_px": [
+   106.8,
+   171.7
+  ],
+  "final_nearest_t0_target_idx": 2,
+  "final_cube_to_expected_px": 4.0,
+  "exec_target_grounded_to_expected_px": 0.5,
+  "non_demo_cubes": [],
+  "non_demo_cube_shift_px": {},
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     3,
+     0,
+     1,
+     2
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     2.9,
+     5.7,
+     5.8,
+     4.6
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "green": 0.0
+   }
+  }
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "seed": "12002",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_10/hdf5_files/VideoPlaceOrder_ep10_seed12002.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_10/videos/VideoPlaceOrder_ep10_seed12002_medium_watch_the_video_carefully_then_place_the_blue_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__6d87dc0c78ba.mp4",
+  "goal": [
+   "watch the video carefully, then place the blue cube on the second target it was previously placed on",
+   "watch the video carefully and place the blue cube on the second target where it was placed"
+  ],
+  "lang_color": "blue",
+  "lang_ordinal": 2,
+  "n_steps": 1342,
+  "first_exec_step": 1140,
+  "targets_t0": [
+   [
+    76.1,
+    90.6,
+    191
+   ],
+   [
+    98.5,
+    87.0,
+    263
+   ],
+   [
+    117.3,
+    104.1,
+    337
+   ],
+   [
+    138.6,
+    121.6,
+    431
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    81.3,
+    169.2
+   ],
+   "green": [
+    78.1,
+    116.5
+   ],
+   "blue": [
+    143.5,
+    85.1
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       145,
+       86
+      ],
+      [
+       "blue",
+       137
+      ]
+     ],
+     [
+      343,
+      [
+       73,
+       89
+      ],
+      [
+       "blue",
+       76
+      ]
+     ],
+     [
+      545,
+      [
+       96,
+       86
+      ],
+      [
+       "blue",
+       88
+      ]
+     ],
+     [
+      693,
+      [
+       116,
+       103
+      ],
+      [
+       "blue",
+       113
+      ]
+     ],
+     [
+      851,
+      [
+       137,
+       122
+      ],
+      [
+       "blue",
+       141
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 235,
+      "coord": null,
+      "cube_px": [
+       70.8,
+       88.0
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.9
+     },
+     {
+      "t_end": 544,
+      "coord": [
+       98,
+       87
+      ],
+      "cube_px": [
+       94.0,
+       84.7
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.1
+     },
+     {
+      "t_end": 692,
+      "coord": [
+       117,
+       104
+      ],
+      "cube_px": [
+       114.0,
+       102.6
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 3.6
+     },
+     {
+      "t_end": 850,
+      "coord": [
+       138,
+       121
+      ],
+      "cube_px": [
+       136.3,
+       121.7
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.3
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 1023,
+    "end_vs_t0_px": 75.7
+   }
+  ],
+  "visit_counts": [
+   4
+  ],
+  "button_after_nth_visit": 1,
+  "exec_pick": [
+   81,
+   127
+  ],
+  "exec_pick_color": [
+   "blue",
+   107
+  ],
+  "exec_target_grounded": [
+   98,
+   87
+  ],
+  "answer_target_t0_idx": 1,
+  "swap": {
+   "swap_start": 1080,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 1,
+  "final_cube_px": [
+   93.8,
+   84.8
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 5.2,
+  "exec_target_grounded_to_expected_px": 0.5,
+  "non_demo_cubes": [
+   "red",
+   "green"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0,
+   "green": 9.6
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     5.9,
+     5.1,
+     3.6,
+     2.3
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "seed": "12100",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_11/hdf5_files/VideoPlaceOrder_ep11_seed12100.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_11/videos/VideoPlaceOrder_ep11_seed12100_hard_watch_the_video_carefully_then_place_the_green_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__305030b69467.mp4",
+  "goal": [
+   "watch the video carefully, then place the green cube on the third target it was previously placed on",
+   "watch the video carefully and place the green cube on the third target where it was placed"
+  ],
+  "lang_color": "green",
+  "lang_ordinal": 3,
+  "n_steps": 1311,
+  "first_exec_step": 1114,
+  "targets_t0": [
+   [
+    75.0,
+    163.5,
+    196
+   ],
+   [
+    108.5,
+    90.2,
+    304
+   ],
+   [
+    108.1,
+    167.5,
+    301
+   ],
+   [
+    133.5,
+    81.3,
+    408
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    91.2,
+    161.9
+   ],
+   "green": [
+    127.9,
+    175.4
+   ],
+   "blue": [
+    75.0,
+    107.3
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "green",
+    "picks": [
+     [
+      0,
+      [
+       127,
+       175
+      ],
+      [
+       "green",
+       155
+      ]
+     ],
+     [
+      193,
+      [
+       106,
+       88
+      ],
+      [
+       "green",
+       108
+      ]
+     ],
+     [
+      466,
+      null,
+      null
+     ],
+     [
+      662,
+      [
+       105,
+       170
+      ],
+      [
+       "green",
+       95
+      ]
+     ],
+     [
+      821,
+      [
+       132,
+       79
+      ],
+      [
+       "green",
+       126
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 192,
+      "coord": [
+       108,
+       90
+      ],
+      "cube_px": [
+       104.7,
+       87.2
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 4.8
+     },
+     {
+      "t_end": 365,
+      "coord": [
+       75,
+       163
+      ],
+      "cube_px": [
+       71.3,
+       163.9
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 3.7
+     },
+     {
+      "t_end": 661,
+      "coord": [
+       108,
+       167
+      ],
+      "cube_px": [
+       103.2,
+       171.4
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 6.3
+     },
+     {
+      "t_end": 820,
+      "coord": [
+       133,
+       81
+      ],
+      "cube_px": [
+       130.5,
+       78.2
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 4.3
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 991,
+    "end_vs_t0_px": 68.7
+   }
+  ],
+  "visit_counts": [
+   4
+  ],
+  "button_after_nth_visit": 2,
+  "exec_pick": [
+   81,
+   127
+  ],
+  "exec_pick_color": [
+   "green",
+   71
+  ],
+  "exec_target_grounded": [
+   108,
+   167
+  ],
+  "answer_target_t0_idx": 2,
+  "swap": {
+   "swap_start": 1054,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    1
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 2,
+  "final_cube_px": [
+   103.6,
+   171.4
+  ],
+  "final_nearest_t0_target_idx": 2,
+  "final_cube_to_expected_px": 6.0,
+  "exec_target_grounded_to_expected_px": 0.5,
+  "non_demo_cubes": [
+   "red",
+   "blue"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0,
+   "blue": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     1,
+     0,
+     2,
+     3
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     4.8,
+     3.7,
+     6.3,
+     4.3
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.6,
+    "green": 0.0,
+    "blue": 0.2
+   }
+  }
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "seed": "11206",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_2/hdf5_files/VideoPlaceOrder_ep2_seed11206.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_2/videos/VideoPlaceOrder_ep2_seed11206_FailRecoverZ_medium_watch_the_video_carefully_then_place_the_red_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4ff10aa5857b.mp4",
+  "goal": [
+   "watch the video carefully, then place the red cube on the second target it was previously placed on",
+   "watch the video carefully and place the red cube on the second target where it was placed"
+  ],
+  "lang_color": "red",
+  "lang_ordinal": 2,
+  "n_steps": 1222,
+  "first_exec_step": 957,
+  "targets_t0": [
+   [
+    74.3,
+    163.8,
+    193
+   ],
+   [
+    95.0,
+    166.3,
+    255
+   ],
+   [
+    123.4,
+    120.2,
+    363
+   ],
+   [
+    125.4,
+    81.2,
+    365
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    71.0,
+    130.5
+   ],
+   "green": [
+    89.3,
+    85.0
+   ],
+   "blue": [
+    100.0,
+    85.6
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "red",
+    "picks": [
+     [
+      0,
+      [
+       75,
+       130
+      ],
+      [
+       "red",
+       60
+      ]
+     ],
+     [
+      213,
+      [
+       93,
+       168
+      ],
+      [
+       "red",
+       109
+      ]
+     ],
+     [
+      469,
+      null,
+      null
+     ],
+     [
+      673,
+      [
+       124,
+       79
+      ],
+      [
+       "red",
+       115
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 212,
+      "coord": [
+       95,
+       166
+      ],
+      "cube_px": [
+       91.2,
+       168.1
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 4.2
+     },
+     {
+      "t_end": 373,
+      "coord": [
+       74,
+       163
+      ],
+      "cube_px": [
+       69.6,
+       165.0
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 4.9
+     },
+     {
+      "t_end": 672,
+      "coord": [
+       125,
+       81
+      ],
+      "cube_px": [
+       122.1,
+       77.9
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 4.7
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 840,
+    "end_vs_t0_px": 7.9
+   }
+  ],
+  "visit_counts": [
+   3
+  ],
+  "button_after_nth_visit": 2,
+  "exec_pick": [
+   81,
+   128
+  ],
+  "exec_pick_color": [
+   "red",
+   87
+  ],
+  "exec_target_grounded": [
+   74,
+   163
+  ],
+  "answer_target_t0_idx": 0,
+  "swap": {
+   "swap_start": 897,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 0,
+  "final_cube_px": [
+   69.5,
+   165.4
+  ],
+  "final_nearest_t0_target_idx": 0,
+  "final_cube_to_expected_px": 5.1,
+  "exec_target_grounded_to_expected_px": 0.9,
+  "non_demo_cubes": [
+   "green",
+   "blue"
+  ],
+  "non_demo_cube_shift_px": {
+   "green": 0.0,
+   "blue": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     1,
+     0,
+     3
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     4.2,
+     4.9,
+     4.7
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "seed": "11305",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed11305.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_3/videos/VideoPlaceOrder_ep3_seed11305_FailRecoverXY_hard_watch_the_video_carefully_then_place_the_green_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_green_cube_on___HASH__305030b69467.mp4",
+  "goal": [
+   "watch the video carefully, then place the green cube on the third target it was previously placed on",
+   "watch the video carefully and place the green cube on the third target where it was placed"
+  ],
+  "lang_color": "green",
+  "lang_ordinal": 3,
+  "n_steps": 1408,
+  "first_exec_step": 1124,
+  "targets_t0": [
+   [
+    74.1,
+    92.6,
+    190
+   ],
+   [
+    115.3,
+    101.5,
+    329
+   ],
+   [
+    140.0,
+    85.8,
+    439
+   ],
+   [
+    142.4,
+    116.6,
+    452
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    80.4,
+    150.8
+   ],
+   "green": [
+    89.3,
+    108.1
+   ],
+   "blue": [
+    88.4,
+    171.1
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "green",
+    "picks": [
+     [
+      0,
+      [
+       92,
+       108
+      ],
+      [
+       "green",
+       83
+      ]
+     ],
+     [
+      209,
+      [
+       138,
+       84
+      ],
+      [
+       "green",
+       132
+      ]
+     ],
+     [
+      361,
+      [
+       114,
+       99
+      ],
+      [
+       "green",
+       103
+      ]
+     ],
+     [
+      529,
+      [
+       141,
+       115
+      ],
+      [
+       "green",
+       142
+      ]
+     ],
+     [
+      812,
+      [
+       71,
+       90
+      ],
+      [
+       "green",
+       64
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 208,
+      "coord": [
+       140,
+       86
+      ],
+      "cube_px": [
+       137.0,
+       82.7
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.3
+     },
+     {
+      "t_end": 360,
+      "coord": [
+       114,
+       106
+      ],
+      "cube_px": [
+       111.6,
+       98.7
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 4.6
+     },
+     {
+      "t_end": 528,
+      "coord": [
+       142,
+       116
+      ],
+      "cube_px": [
+       140.3,
+       115.2
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 2.5
+     },
+     {
+      "t_end": 710,
+      "coord": null,
+      "cube_px": [
+       68.1,
+       90.0
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 6.5
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 1007,
+    "end_vs_t0_px": 22.2
+   }
+  ],
+  "visit_counts": [
+   4
+  ],
+  "button_after_nth_visit": 4,
+  "exec_pick": [
+   81,
+   127
+  ],
+  "exec_pick_color": [
+   "green",
+   73
+  ],
+  "exec_target_grounded": [
+   115,
+   101
+  ],
+  "answer_target_t0_idx": 3,
+  "swap": {
+   "swap_start": 1064,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    1,
+    2,
+    3
+   ],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 3,
+  "final_cube_px": [
+   111.2,
+   99.1
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 35.8,
+  "exec_target_grounded_to_expected_px": 31.5,
+  "non_demo_cubes": [
+   "red",
+   "blue"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0,
+   "blue": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": false
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     2,
+     1,
+     3,
+     0
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     4.3,
+     4.6,
+     2.5,
+     6.5
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "seed": "11401",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_4/hdf5_files/VideoPlaceOrder_ep4_seed11401.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_4/videos/VideoPlaceOrder_ep4_seed11401_FailRecoverXY_easy_watch_the_video_carefully_then_place_the_blue_cube_on_the_third_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_th__HASH__410e09c388eb.mp4",
+  "goal": [
+   "watch the video carefully, then place the blue cube on the third target it was previously placed on",
+   "watch the video carefully and place the blue cube on the third target where it was placed"
+  ],
+  "lang_color": "blue",
+  "lang_ordinal": 3,
+  "n_steps": 1411,
+  "first_exec_step": 1118,
+  "targets_t0": [
+   [
+    74.1,
+    91.6,
+    188
+   ],
+   [
+    95.4,
+    88.9,
+    256
+   ],
+   [
+    118.8,
+    84.1,
+    343
+   ],
+   [
+    143.2,
+    171.6,
+    462
+   ]
+  ],
+  "cubes_t0": {
+   "red": null,
+   "green": null,
+   "blue": [
+    98.2,
+    163.6
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       98,
+       164
+      ],
+      [
+       "blue",
+       136
+      ]
+     ],
+     [
+      194,
+      [
+       146,
+       173
+      ],
+      [
+       "blue",
+       82
+      ]
+     ],
+     [
+      356,
+      [
+       117,
+       82
+      ],
+      [
+       "blue",
+       111
+      ]
+     ],
+     [
+      646,
+      null,
+      null
+     ],
+     [
+      855,
+      [
+       92,
+       88
+      ],
+      [
+       "blue",
+       98
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 193,
+      "coord": [
+       143,
+       171
+      ],
+      "cube_px": [
+       146.0,
+       173.1
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 3.2
+     },
+     {
+      "t_end": 355,
+      "coord": [
+       119,
+       84
+      ],
+      "cube_px": [
+       115.3,
+       81.3
+      ],
+      "target_idx_t0": 2,
+      "cube_to_target_px": 4.5
+     },
+     {
+      "t_end": 542,
+      "coord": [
+       75,
+       92
+      ],
+      "cube_px": [
+       69.9,
+       88.7
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.1
+     },
+     {
+      "t_end": 854,
+      "coord": [
+       95,
+       89
+      ],
+      "cube_px": [
+       90.8,
+       86.5
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.2
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 1001,
+    "end_vs_t0_px": 41.1
+   }
+  ],
+  "visit_counts": [
+   4
+  ],
+  "button_after_nth_visit": 3,
+  "exec_pick": [
+   81,
+   127
+  ],
+  "exec_pick_color": [
+   "blue",
+   112
+  ],
+  "exec_target_grounded": [
+   74,
+   91
+  ],
+  "answer_target_t0_idx": 0,
+  "swap": {
+   "swap_start": 1058,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 0,
+  "final_cube_px": [
+   69.7,
+   88.6
+  ],
+  "final_nearest_t0_target_idx": 0,
+  "final_cube_to_expected_px": 5.3,
+  "exec_target_grounded_to_expected_px": 0.6,
+  "non_demo_cubes": [],
+  "non_demo_cube_shift_px": {},
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     3,
+     2,
+     0,
+     1
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     3.2,
+     4.5,
+     5.1,
+     5.2
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "seed": "11603",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed11603.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_6/videos/VideoPlaceOrder_ep6_seed11603_medium_watch_the_video_carefully_then_place_the_blue_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_blue_cube_on_t__HASH__6d87dc0c78ba.mp4",
+  "goal": [
+   "watch the video carefully, then place the blue cube on the second target it was previously placed on",
+   "watch the video carefully and place the blue cube on the second target where it was placed"
+  ],
+  "lang_color": "blue",
+  "lang_ordinal": 2,
+  "n_steps": 917,
+  "first_exec_step": 715,
+  "targets_t0": [
+   [
+    104.1,
+    91.6,
+    283
+   ],
+   [
+    115.4,
+    155.4,
+    329
+   ],
+   [
+    130.9,
+    82.5,
+    395
+   ],
+   [
+    140.8,
+    174.8,
+    449
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    73.2,
+    147.2
+   ],
+   "green": [
+    71.2,
+    107.1
+   ],
+   "blue": [
+    99.3,
+    126.5
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "blue",
+    "picks": [
+     [
+      0,
+      [
+       102,
+       126
+      ],
+      [
+       "blue",
+       93
+      ]
+     ],
+     [
+      264,
+      [
+       105,
+       87
+      ],
+      [
+       "blue",
+       29
+      ]
+     ],
+     [
+      432,
+      [
+       114,
+       157
+      ],
+      [
+       "blue",
+       119
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 176,
+      "coord": [
+       104,
+       91
+      ],
+      "cube_px": [
+       99.7,
+       88.1
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 5.6
+     },
+     {
+      "t_end": 431,
+      "coord": [
+       115,
+       155
+      ],
+      "cube_px": [
+       111.9,
+       157.4
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 4.0
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 598,
+    "end_vs_t0_px": 21.2
+   }
+  ],
+  "visit_counts": [
+   2
+  ],
+  "button_after_nth_visit": 1,
+  "exec_pick": [
+   81,
+   126
+  ],
+  "exec_pick_color": [
+   "blue",
+   75
+  ],
+  "exec_target_grounded": [
+   115,
+   155
+  ],
+  "answer_target_t0_idx": 1,
+  "swap": {
+   "swap_start": 655,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [],
+   "t0_to_post_min_px": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 1,
+  "final_cube_px": [
+   112.1,
+   156.8
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 3.6,
+  "exec_target_grounded_to_expected_px": 0.6,
+  "non_demo_cubes": [
+   "red",
+   "green"
+  ],
+  "non_demo_cube_shift_px": {
+   "red": 0.0,
+   "green": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     0,
+     1
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     5.6,
+     4.0
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "seed": "11705",
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_7/hdf5_files/VideoPlaceOrder_ep7_seed11705.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_7/videos/VideoPlaceOrder_ep7_seed11705_hard_watch_the_video_carefully_then_place_the_red_cube_on_the_second_target_it_was_previously_placed_on__ALT__watch_the_video_carefully_and_place_the_red_cube_on_the__HASH__4ff10aa5857b.mp4",
+  "goal": [
+   "watch the video carefully, then place the red cube on the second target it was previously placed on",
+   "watch the video carefully and place the red cube on the second target where it was placed"
+  ],
+  "lang_color": "red",
+  "lang_ordinal": 2,
+  "n_steps": 1131,
+  "first_exec_step": 930,
+  "targets_t0": [
+   [
+    75.9,
+    164.5,
+    171
+   ],
+   [
+    97.2,
+    88.4,
+    257
+   ],
+   [
+    115.0,
+    163.8,
+    333
+   ],
+   [
+    134.5,
+    140.6,
+    416
+   ]
+  ],
+  "cubes_t0": {
+   "red": [
+    80.8,
+    150.7
+   ],
+   "green": [
+    136.9,
+    171.2
+   ],
+   "blue": [
+    67.1,
+    107.7
+   ]
+  },
+  "demo_blocks": [
+   {
+    "color": "red",
+    "picks": [
+     [
+      0,
+      [
+       82,
+       151
+      ],
+      [
+       "red",
+       111
+      ]
+     ],
+     [
+      195,
+      [
+       73,
+       165
+      ],
+      [
+       "red",
+       105
+      ]
+     ],
+     [
+      455,
+      [
+       101,
+       85
+      ],
+      [
+       "red",
+       0
+      ]
+     ],
+     [
+      641,
+      [
+       134,
+       141
+      ],
+      [
+       "red",
+       146
+      ]
+     ]
+    ],
+    "visits": [
+     {
+      "t_end": 194,
+      "coord": [
+       76,
+       163
+      ],
+      "cube_px": [
+       72.2,
+       164.6
+      ],
+      "target_idx_t0": 0,
+      "cube_to_target_px": 3.7
+     },
+     {
+      "t_end": 366,
+      "coord": [
+       97,
+       88
+      ],
+      "cube_px": [
+       92.9,
+       85.1
+      ],
+      "target_idx_t0": 1,
+      "cube_to_target_px": 5.4
+     },
+     {
+      "t_end": 640,
+      "coord": [
+       134,
+       140
+      ],
+      "cube_px": [
+       133.1,
+       141.3
+      ],
+      "target_idx_t0": 3,
+      "cube_to_target_px": 1.6
+     }
+    ],
+    "end": "drop the cube onto table",
+    "t_end": 813,
+    "end_vs_t0_px": 24.0
+   }
+  ],
+  "visit_counts": [
+   3
+  ],
+  "button_after_nth_visit": 2,
+  "exec_pick": [
+   82,
+   128
+  ],
+  "exec_pick_color": [
+   "red",
+   95
+  ],
+  "exec_target_grounded": [
+   97,
+   88
+  ],
+  "answer_target_t0_idx": 1,
+  "swap": {
+   "swap_start": 870,
+   "n_targets_t0": 4,
+   "moved_t0_idx_mid": [
+    0,
+    2
+   ],
+   "t0_to_post_min_px": [
+    1.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "expected_answer_target_post_swap_idx": 1,
+  "final_cube_px": [
+   92.7,
+   85.7
+  ],
+  "final_nearest_t0_target_idx": 1,
+  "final_cube_to_expected_px": 5.2,
+  "exec_target_grounded_to_expected_px": 0.4,
+  "non_demo_cubes": [
+   "green",
+   "blue"
+  ],
+  "non_demo_cube_shift_px": {
+   "green": 0.0,
+   "blue": 0.0
+  },
+  "checks": {
+   "color_match": true,
+   "answer_cube_demoed": true,
+   "visit_counts_ok": true,
+   "ordinal_in_range": true,
+   "final_on_expected": true
+  },
+  "extra": {
+   "visit_target_idx": [
+    [
+     0,
+     1,
+     3
+    ]
+   ],
+   "cube_to_target_px": [
+    [
+     3.7,
+     5.4,
+     1.6
+    ]
+   ],
+   "unique_per_cube": [
+    true
+   ],
+   "cube_shift_across_swap_px": {
+    "red": 0.0,
+    "green": 0.0,
+    "blue": 0.0
+   }
+  }
+ }
+]

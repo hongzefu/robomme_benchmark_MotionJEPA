@@ -1,0 +1,15 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+progress 250/2400 t=30s
+progress 500/2400 t=52s
+progress 750/2400 t=74s
+progress 1000/2400 t=100s
+progress 1250/2400 t=128s
+progress 1500/2400 t=155s
+progress 1750/2400 t=183s
+progress 2000/2400 t=210s
+progress 2250/2400 t=240s
+全部完成 /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/videorepick/big_sim_2400.json t=260s
+EXIT_CODE=0

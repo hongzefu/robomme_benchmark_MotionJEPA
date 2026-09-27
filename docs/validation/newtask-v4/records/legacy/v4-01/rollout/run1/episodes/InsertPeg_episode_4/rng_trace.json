@@ -1,0 +1,217 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "objects.head_rgb",
+      "drawn": [
+        0.6172630190849304,
+        0.8295499682426453,
+        0.09943008422851562
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.sampling_trace.random_peg_idx",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "initializations.0.box_jitter",
+      "drawn": [
+        -0.0664372444152832,
+        -0.037826633453369146
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "initializations.0.box_yaw",
+      "drawn": 1.449545431972247,
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "initializations.0.pegs.0",
+      "drawn": [
+        [
+          0.09286355972290039,
+          -0.23284141719341278
+        ],
+        -1.1585157706148763
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "initializations.0.pegs.1",
+      "drawn": [
+        [
+          -0.12456998974084854,
+          -0.21189865469932556
+        ],
+        -1.524707244851065
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "initializations.0.pegs.2",
+      "drawn": [
+        [
+          -0.07441675662994385,
+          -0.10734400898218155
+        ],
+        1.7998343391017317
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "initializations.0.obj_sample",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "initializations.0.dir_sample",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "initializations.0.peg_placement",
+      "drawn": {
+        "requested": 4,
+        "placed": 4
+      },
+      "source": "record"
+    },
+    {
+      "index": 10,
+      "path": "initializations.0.pegs.3",
+      "drawn": [
+        [
+          0.017248980700969696,
+          -0.2333371639251709
+        ],
+        -2.5507606285729785
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "initializations.0.near_target_distance",
+      "drawn": 0.07561620324850082,
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "initializations.0.near_target_attempts",
+      "drawn": 1,
+      "source": "record"
+    },
+    {
+      "index": 13,
+      "path": "initializations.1.box_jitter",
+      "drawn": [
+        0.07532809972763062,
+        0.020356869697570803
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "initializations.1.box_yaw",
+      "drawn": 1.5122399891029952,
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "initializations.1.pegs.0",
+      "drawn": [
+        [
+          0.18012411892414093,
+          -0.175047367811203
+        ],
+        -1.3234467933397047
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "initializations.1.pegs.1",
+      "drawn": [
+        [
+          -0.11057586967945099,
+          -0.2822036147117615
+        ],
+        -2.854091098110289
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "initializations.1.pegs.2",
+      "drawn": [
+        [
+          -0.15885517001152039,
+          0.08679449558258057
+        ],
+        1.8567286978258555
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "initializations.1.obj_sample",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "initializations.1.dir_sample",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "initializations.1.peg_placement",
+      "drawn": {
+        "requested": 4,
+        "placed": 4
+      },
+      "source": "record"
+    },
+    {
+      "index": 21,
+      "path": "initializations.1.pegs.3",
+      "drawn": [
+        [
+          0.10145585238933563,
+          -0.18560820817947388
+        ],
+        -2.8893681621473193
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 22,
+      "path": "initializations.1.near_target_distance",
+      "drawn": 0.07937397062778473,
+      "source": "record"
+    },
+    {
+      "index": 23,
+      "path": "initializations.1.near_target_attempts",
+      "drawn": 2,
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "_hb_generator": "f8f3af9d66846d7ea1ce61a20567e2466b8f5de661422656982a3bbff122e271"
+  }
+}

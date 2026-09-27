@@ -1,0 +1,51 @@
+{
+  "utc": "2026-09-27T00:12:58.527000+00:00",
+  "files": [
+    {
+      "identity": "VideoUnmask_episode_3",
+      "files": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed6300.h5",
+          "bytes": 96,
+          "mtime": 1790467968.9452055
+        }
+      ]
+    },
+    {
+      "identity": "VideoUnmask_episode_10",
+      "files": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_10/hdf5_files/VideoUnmask_ep10_seed7001.h5",
+          "bytes": 112016464,
+          "mtime": 1790467961.9932125
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_10/videos/VideoUnmask_ep10_seed7001_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube.mp4",
+          "bytes": 2782449,
+          "mtime": 1790467961.8852124
+        }
+      ]
+    },
+    {
+      "identity": "VideoUnmask_episode_6",
+      "files": [
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed6600.h5",
+          "bytes": 115349400,
+          "mtime": 1790467904.4742692
+        },
+        {
+          "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/VideoUnmask_episode_6/videos/VideoUnmask_ep6_seed6600_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube.mp4",
+          "bytes": 2935561,
+          "mtime": 1790467904.3692694
+        }
+      ]
+    }
+  ],
+  "cgroup": {
+    "path": "/sys/fs/cgroup/user.slice/user-114466650.slice/user@114466650.service/tmux-spawn-e4e912bc-3960-4a21-b73f-4dcafcd2a5e1.scope",
+    "cpu.max": "max 100000\n",
+    "cpu.stat": "usage_usec 2367141563\nuser_usec 2049561061\nsystem_usec 317580502\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+    "cpu.pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=3502071\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2915826\n"
+  }
+}

@@ -1,0 +1,64 @@
+[内部产出，英文] Verification summary for finding VideoUnmask-01
+AUDIT_BASE=82e3d922b78d48ec1e825b168cccc0e1b8c690c1 (read via git show only)
+
+VERDICT: CONFIRMED
+
+Independent evidence reproduced in this dir:
+- check_native.py / check_native_output.txt: all 9 native VideoUnmask episodes
+  (easy 6000/6100/6400, medium 6200/6600/7001, hard 6300/6700/7100) have
+  coordinates in grounded_subgoal for every pick boundary (9/9 picks incl.
+  the 2-pick hard episodes' both picks).
+- check_newtier.py / check_newtier_output.txt: across all 12 delivered
+  new-tier VideoUnmask episodes (xhard1/2/3/4 x 3 eps each), 35 total pick
+  boundaries were inspected; exactly ONE (xhard2 ep0 seed10600000, t=388,
+  3rd pick, blue) has grounded_subgoal without <y,x> coordinates, falling
+  back verbatim to the task name "pick up the container that hides the
+  blue cube" -- matching segmentation_utils.process_segmentation's
+  missing_placeholder -> current_task_name fallback confirmed by reading
+  the AUDIT_BASE source. All other 34 picks (incl. the other 2 picks of
+  this same episode) carry coordinates.
+- new-tier-index.json cross-check: only this episode's mp4 list has 2
+  entries (main + success_NO_OBJECT_...), matching RecordWrapper's
+  generic (non-xhard-specific) no_object_flag frame-buffering path.
+- frames/front_t{238..483}.png extracted directly from the HDF5
+  obs/front_rgb dataset (not the mp4) for the same episode:
+  t=387/t=388 show the gripper/arm body occupying the exact cluster area
+  where the choice_action point [87,138] / [138,87] region sits, fully
+  covering the containers there; t=420 shows the arm has moved away and
+  the container cluster is fully visible again; t=483 shows a blue cube
+  exposed directly under the container currently being lifted by the
+  gripper -- consistent with the grounded task's stated colour (blue).
+- VideoUnmask.py config_hard (bin=15) vs config_xhard2 (bin=8 inner +
+  a close-orbit distractor ring of 10, "_newvalue_distractor(10,[5,5])")
+  confirms the close-packed distractor ring is an xhard-only mechanic
+  that raises occlusion odds around a switch-frame target; native hard
+  has no such close ring, consistent with 0/9 occurrences there.
+
+Category: new_tier_only is correct as given -- the code path
+(segmentation_utils.process_segmentation, RecordWrapper NO_OBJECT
+buffering) is byte-identical between native and xhard branches, so this
+is not a native_vs_new_mismatch (no code divergence, no plan violation);
+it never occurred in any of the 9 native episodes so it is not
+native_same; but the *mechanic* that makes the occurrence likely (a
+close-orbit distractor ring placed only under xhard1/2/3, config_xhard2
+bin=8+ring vs config_hard bin=15/no ring) exists only in the xhard
+branch, so the observed manifestation is properly new_tier_only.
+
+Not a duplicate of any excluded item (F1-F6, VPB, D1-D7, left/right,
+website-text) -- distinct env (VideoUnmask, not VideoUnmaskSwap/
+ButtonUnmask*/BinFill/VideoPlaceButton/PatternLock/InsertPeg/VPB), and
+this is a missing-coordinate-under-occlusion issue, not a
+stale-coordinate-after-swap issue (F4) or a text-wording issue.
+
+No new simulation needed to confirm; everything reproduced from already
+delivered artifacts (H5 obs/info fields, existing mp4/H5 files,
+new-tier-index.json, and AUDIT_BASE source).
+
+Minor unverifiable detail (not load-bearing for confirm/refute): the
+finding's precise pixel-distance figures for native grounding accuracy
+(1.9-4.5px) and new-tier accuracy (1.5-8.2px) require the per-frame
+segmentation id map, which is not stored in the delivered HDF5 files
+(only rgb/depth/info/action). These figures were not independently
+recomputed; they are plausible given the shared centroid-computation
+code but are UNVERIFIABLE from the artifacts available to this
+sub-agent.

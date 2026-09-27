@@ -1,0 +1,29 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+screw plan failed
+screw plan failed
+screw plan failed
+DEMOP1 hw=0.25 seed=4100000 ok=True cls=None  steps=None/2332 tgt_reach=0.7268 layout_diff=0.0  109.0s
+screw plan failed
+screw plan failed
+screw plan failed
+DEMOP1 hw=0.25 seed=4100100 ok=True cls=None  steps=None/2257 tgt_reach=0.3867 layout_diff=0.0  110.6s
+DEMOP1 hw=0.25 seed=4100200 ok=True cls=None  steps=None/2067 tgt_reach=0.5936 layout_diff=0.0  92.6s
+DEMOP1 hw=0.25 seed=4100300 ok=True cls=None  steps=None/3045 tgt_reach=0.6991 layout_diff=0.0  140.8s
+screw plan failed
+screw plan failed
+screw plan failed
+DEMOP1 hw=0.25 seed=4100400 ok=True cls=None  steps=None/2090 tgt_reach=0.5766 layout_diff=0.0  95.8s
+DEMOP1 hw=0.25 seed=4100500 ok=True cls=None  steps=None/2084 tgt_reach=0.5048 layout_diff=0.0  249.3s
+screw plan failed
+screw plan failed
+screw plan failed
+DEMOP1 hw=0.25 seed=4100600 ok=True cls=None  steps=None/2209 tgt_reach=0.5313 layout_diff=0.0  264.6s
+DEMOP1 hw=0.25 seed=4100700 ok=True cls=None  steps=None/2195 tgt_reach=0.6834 layout_diff=0.0  264.7s
+DEMOP1 hw=0.25 seed=4100800 ok=True cls=None  steps=None/2174 tgt_reach=0.6706 layout_diff=0.0  253.9s
+DEMOP1 hw=0.25 seed=4100900 ok=True cls=None  steps=None/2249 tgt_reach=0.596 layout_diff=0.0  261.2s
+DEMOP1 hw=0.25 seed=4100003 ok=True cls=None  steps=None/2177 tgt_reach=0.765 layout_diff=0.0  241.0s
+DEMOP1 hw=0.25 seed=4100009 ok=True cls=None  steps=None/2098 tgt_reach=0.7525 layout_diff=0.0  234.0s
+DEMOP1 hw=0.25 seed=4100020 ok=True cls=None  steps=None/2085 tgt_reach=0.7528 layout_diff=0.0  231.8s

@@ -1,0 +1,374 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "t5": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 0
+  },
+  "spec_cube_colors": [
+   "yellow",
+   "cyan"
+  ],
+  "spec_bins_placed": 4
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "t5": {
+   "yellow": 0,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "spec_cube_colors": [
+   "magenta",
+   "cyan"
+  ],
+  "spec_bins_placed": 4
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "t5": {
+   "yellow": 1,
+   "cyan": 0,
+   "magenta": 1
+  },
+  "t30": {
+   "yellow": 1,
+   "cyan": 0,
+   "magenta": 1
+  },
+  "spec_cube_colors": [
+   "magenta",
+   "yellow"
+  ],
+  "spec_bins_placed": 4
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "t5": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t30": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "spec_cube_colors": [
+   "magenta",
+   "yellow",
+   "cyan"
+  ],
+  "spec_bins_placed": 6
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "t5": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t30": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "spec_cube_colors": [
+   "magenta",
+   "cyan",
+   "yellow"
+  ],
+  "spec_bins_placed": 6
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "t5": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t30": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "spec_cube_colors": [
+   "yellow",
+   "magenta",
+   "cyan"
+  ],
+  "spec_bins_placed": 6
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "t5": {
+   "yellow": 2,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t30": {
+   "yellow": 2,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "spec_cube_colors": [
+   "yellow",
+   "cyan",
+   "magenta",
+   "yellow"
+  ],
+  "spec_bins_placed": 8
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "t5": {
+   "yellow": 1,
+   "cyan": 2,
+   "magenta": 1
+  },
+  "t30": {
+   "yellow": 1,
+   "cyan": 2,
+   "magenta": 1
+  },
+  "spec_cube_colors": [
+   "cyan",
+   "magenta",
+   "yellow",
+   "cyan"
+  ],
+  "spec_bins_placed": 8
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "t5": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 2
+  },
+  "t30": {
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 2
+  },
+  "spec_cube_colors": [
+   "magenta",
+   "cyan",
+   "yellow",
+   "magenta"
+  ],
+  "spec_bins_placed": 8
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "t5": {
+   "yellow": 2,
+   "cyan": 1,
+   "magenta": 2
+  },
+  "t30": {
+   "yellow": 2,
+   "cyan": 1,
+   "magenta": 2
+  },
+  "spec_cube_colors": [
+   "magenta",
+   "yellow",
+   "cyan",
+   "magenta",
+   "yellow"
+  ],
+  "spec_bins_placed": 10
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "t5": {
+   "yellow": 1,
+   "cyan": 2,
+   "magenta": 2
+  },
+  "t30": {
+   "yellow": 1,
+   "cyan": 2,
+   "magenta": 2
+  },
+  "spec_cube_colors": [
+   "magenta",
+   "cyan",
+   "yellow",
+   "magenta",
+   "cyan"
+  ],
+  "spec_bins_placed": 10
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "t5": {
+   "yellow": 2,
+   "cyan": 1,
+   "magenta": 2
+  },
+  "t30": {
+   "yellow": 2,
+   "cyan": 1,
+   "magenta": 2
+  },
+  "spec_cube_colors": [
+   "magenta",
+   "yellow",
+   "cyan",
+   "magenta",
+   "yellow"
+  ],
+  "spec_bins_placed": 10
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "t5": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  },
+  "t30": {
+   "yellow": 0,
+   "cyan": 0,
+   "magenta": 0
+  }
+ }
+]

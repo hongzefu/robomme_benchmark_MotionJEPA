@@ -1,0 +1,39 @@
+.................................F.......F.............................. [ 16%]
+........................................................................ [ 33%]
+........................................................................ [ 50%]
+........................................................................ [ 67%]
+........................................................................ [ 83%]
+.....................................................................    [100%]
+=================================== FAILURES ===================================
+_______________ test_unknown_env_returns_single_goal_when_equal ________________
+tests/lightweight/test_TaskGoal.py:75: in test_unknown_env_returns_single_goal_when_equal
+    assert result == [""]
+E   AssertionError: assert [] == ['']
+E     
+E     Right contains one more item: ''
+E     Use -v to get more diff
+----------------------------- Captured stdout call -----------------------------
+
+__________________________ test_swingxtimes_multiple ___________________________
+tests/lightweight/test_TaskGoal.py:169: in test_swingxtimes_multiple
+    assert "repeating this back and forth motion five times" in result[0]
+E   AssertionError: assert 'repeating this back and forth motion five times' in 'pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop'
+----------------------------- Captured stdout call -----------------------------
+
+[SwingXtimes] goal1: pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop
+[SwingXtimes] goal2: pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion five times, then put down the cube and press the button to stop
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal
+FAILED tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple - Assert...
+2 failed, 427 passed, 64 deselected, 2 warnings in 16.97s
+EXIT_CODE=123

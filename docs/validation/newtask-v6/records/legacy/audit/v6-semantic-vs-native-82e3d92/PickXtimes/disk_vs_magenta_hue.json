@@ -1,0 +1,164 @@
+[
+ {
+  "ep": "new_xhard1_ep0",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "new_xhard1_ep3",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "new_xhard1_ep6",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "new_xhard2_ep0",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "new_xhard2_ep3",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "new_xhard2_ep6",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "new_xhard3_ep0",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": [
+   [
+    102.9,
+    82.5,
+    171
+   ]
+  ]
+ },
+ {
+  "ep": "new_xhard3_ep3",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": [
+   [
+    80.9,
+    55.4,
+    147
+   ]
+  ]
+ },
+ {
+  "ep": "new_xhard3_ep6",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": [
+   [
+    167.9,
+    130.0,
+    246
+   ]
+  ]
+ },
+ {
+  "ep": "new_xhard4_ep0",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": [
+   [
+    144.1,
+    104.7,
+    190
+   ]
+  ]
+ },
+ {
+  "ep": "new_xhard4_ep3",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": [
+   [
+    181.4,
+    86.8,
+    198
+   ]
+  ]
+ },
+ {
+  "ep": "new_xhard4_ep6",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": [
+   [
+    122.2,
+    110.3,
+    186
+   ]
+  ]
+ },
+ {
+  "ep": "native_easy_ep0",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "native_easy_ep1",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "native_medium_ep10",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "native_hard_ep11",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "native_medium_ep2",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "native_hard_ep3",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "native_easy_ep4",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "native_medium_ep6",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ },
+ {
+  "ep": "native_hard_ep7",
+  "disk_ring_h": 142.0,
+  "disk_ring_s": 153.0,
+  "magenta_blob": []
+ }
+]

@@ -1,0 +1,182 @@
+{
+  "native": [
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed3000.h5",
+      "difficulty": "easy",
+      "goal0_has_putdown": false,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the red cube, move it to the top of the right-side t"
+    },
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_1/hdf5_files/SwingXtimes_ep1_seed3100.h5",
+      "difficulty": "easy",
+      "goal0_has_putdown": false,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+    },
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_10/hdf5_files/SwingXtimes_ep10_seed4000.h5",
+      "difficulty": "medium",
+      "goal0_has_putdown": false,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+    },
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_11/hdf5_files/SwingXtimes_ep11_seed4101.h5",
+      "difficulty": "hard",
+      "goal0_has_putdown": false,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the blue cube, move it to the top of the right-side "
+    },
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_2/hdf5_files/SwingXtimes_ep2_seed3200.h5",
+      "difficulty": "medium",
+      "goal0_has_putdown": true,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+    },
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed3301.h5",
+      "difficulty": "hard",
+      "goal0_has_putdown": false,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the red cube, move it to the top of the right-side t"
+    },
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_4/hdf5_files/SwingXtimes_ep4_seed3400.h5",
+      "difficulty": "easy",
+      "goal0_has_putdown": false,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the blue cube, move it to the top of the right-side "
+    },
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed3600.h5",
+      "difficulty": "medium",
+      "goal0_has_putdown": false,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the red cube, move it to the top of the right-side t"
+    },
+    {
+      "path": "artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_7/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+      "difficulty": "hard",
+      "goal0_has_putdown": false,
+      "goal1_has_putdown": true,
+      "chain_putdown_before_button": true,
+      "goal0_snippet": "pick up the blue cube, move it to the top of the right-side "
+    }
+  ],
+  "new_tier": {
+    "xhard1": [
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed8300000.h5",
+        "difficulty": "xhard1",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+      },
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed8300300.h5",
+        "difficulty": "xhard1",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+      },
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed8300600.h5",
+        "difficulty": "xhard1",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the red cube, move it to the top of the right-side t"
+      }
+    ],
+    "xhard2": [
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed10300000.h5",
+        "difficulty": "xhard2",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the blue cube, move it to the top of the right-side "
+      },
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed10300300.h5",
+        "difficulty": "xhard2",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+      },
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed10300600.h5",
+        "difficulty": "xhard2",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+      }
+    ],
+    "xhard3": [
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed12300000.h5",
+        "difficulty": "xhard3",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the blue cube, move it to the top of the right-side "
+      },
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed12300300.h5",
+        "difficulty": "xhard3",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the blue cube, move it to the top of the right-side "
+      },
+      {
+        "path": "artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed12300600.h5",
+        "difficulty": "xhard3",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+      }
+    ],
+    "xhard4": [
+      {
+        "path": "artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed6300000.h5",
+        "difficulty": "xhard4",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the red cube, move it to the top of the right-side t"
+      },
+      {
+        "path": "artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed6300300.h5",
+        "difficulty": "xhard4",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the red cube, move it to the top of the right-side t"
+      },
+      {
+        "path": "artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed6300600.h5",
+        "difficulty": "xhard4",
+        "goal0_has_putdown": false,
+        "goal1_has_putdown": true,
+        "chain_putdown_before_button": true,
+        "goal0_snippet": "pick up the green cube, move it to the top of the right-side"
+      }
+    ]
+  }
+}

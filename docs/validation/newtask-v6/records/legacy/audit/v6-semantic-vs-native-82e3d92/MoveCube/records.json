@@ -1,0 +1,2408 @@
+[
+ {
+  "tag": "xhard4_ep0",
+  "kind": "new",
+  "difficulty": "xhard4",
+  "seed": 7400000,
+  "episode": 0,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed7400000.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_0/videos/MoveCube_ep0_seed7400000_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4",
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "gripper_push",
+  "demo_chain": [
+   "Close the gripper and push the cube to the target"
+  ],
+  "exec_chain": [
+   "Close the gripper and push the cube to the target"
+  ],
+  "same_manner": true,
+  "n_steps": 286,
+  "n_demo": 180,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <74, 89> to the target at <124, 129>"
+   },
+   {
+    "step": 120,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 180,
+    "demo": false,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <84, 92> to the target at <119, 100>"
+   },
+   {
+    "step": 281,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Close the gripper and push the cube at <84, 92> to the target at <119, 100>"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 0,
+    "what": "cube@start",
+    "grounded": [
+     74,
+     89
+    ],
+    "detected": [
+     74.8,
+     89.4
+    ],
+    "err_px": 0.9
+   },
+   {
+    "step": 0,
+    "what": "target",
+    "grounded": [
+     124,
+     129
+    ],
+    "detected": [
+     124.2,
+     129.4
+    ],
+    "err_px": 0.4
+   },
+   {
+    "step": 180,
+    "what": "cube@start",
+    "grounded": [
+     84,
+     92
+    ],
+    "detected": [
+     84.9,
+     92.4
+    ],
+    "err_px": 1.0
+   },
+   {
+    "step": 180,
+    "what": "target",
+    "grounded": [
+     119,
+     100
+    ],
+    "detected": [
+     119.2,
+     100.2
+    ],
+    "err_px": 0.3
+   }
+  ],
+  "max_grounding_err_px": 1.0,
+  "demo_end": {
+   "step": 120,
+   "cube_px": [
+    124.1,
+    135.5
+   ],
+   "cube_visible_px": 104,
+   "target_px": [
+    129.1,
+    127.9
+   ],
+   "cube_target_px": 9.1
+  },
+  "exec_start": {
+   "step": 180,
+   "cube_px": [
+    84.9,
+    92.4
+   ],
+   "target_px": [
+    119.2,
+    100.2
+   ],
+   "target_ring_px": 196
+  },
+  "exec_done": {
+   "step": 281,
+   "cube_px": [
+    118.5,
+    102.5
+   ],
+   "target_px": [
+    122.8,
+    99.1
+   ],
+   "cube_target_px": 5.5
+  },
+  "last": {
+   "step": 285,
+   "cube_px": [
+    118.5,
+    102.5
+   ],
+   "target_px": [
+    122.6,
+    98.9
+   ],
+   "cube_target_px": 5.5,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "C"
+  ],
+  "spec_world": {
+   "demo": {
+    "cube_world": [
+     -0.1356694316864014,
+     -0.15869760513305664,
+     3.3133456963419956
+    ],
+    "goal_world": [
+     0.08888448715209962,
+     0.006927490234375
+    ],
+    "peg_root": [
+     -0.030849505783974378,
+     -0.26746791505896605
+    ],
+    "peg_yaw": -1.6129706867719877,
+    "peg_grasp": [
+     -0.02663331991756239,
+     -0.16755683570967733
+    ],
+    "cube_px": [
+     90.0,
+     75.4
+    ],
+    "goal_px": [
+     130.0,
+     125.2
+    ],
+    "peg_grasp_px": [
+     84.7,
+     97.5
+    ],
+    "peg_root_px": [
+     59.1,
+     96.7
+    ],
+    "cube_goal_dist_m": 0.279,
+    "cube_r_center": 0.1758,
+    "goal_r_center": 0.149,
+    "grasp_r_center": 0.1708,
+    "dy_cube_minus_goal": -0.1656
+   },
+   "execution": {
+    "cube_world": [
+     -0.0804488754272461,
+     -0.13915972709655763,
+     4.735746983739286
+    ],
+    "goal_world": [
+     0.0683006429672241,
+     -0.09371485710144044
+    ],
+    "peg_root": [
+     0.07469984051249177,
+     -0.01724019846955102
+    ],
+    "peg_yaw": -1.747288381483111,
+    "peg_grasp": [
+     0.09225756142202435,
+     0.08120636793305626
+    ],
+    "cube_px": [
+     93.1,
+     85.2
+    ],
+    "goal_px": [
+     102.0,
+     120.1
+    ],
+    "peg_grasp_px": [
+     151.5,
+     124.7
+    ],
+    "peg_root_px": [
+     123.1,
+     120.3
+    ],
+    "cube_goal_dist_m": 0.1555,
+    "cube_r_center": 0.1407,
+    "goal_r_center": 0.1589,
+    "grasp_r_center": 0.1726,
+    "dy_cube_minus_goal": -0.0454
+   },
+   "way_idx": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "extrinsic_changes": false
+  }
+ },
+ {
+  "tag": "xhard4_ep3",
+  "kind": "new",
+  "difficulty": "xhard4",
+  "seed": 7400300,
+  "episode": 3,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_3/hdf5_files/MoveCube_ep3_seed7400300.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_3/videos/MoveCube_ep3_seed7400300_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4",
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "gripper_push",
+  "demo_chain": [
+   "Close the gripper and push the cube to the target"
+  ],
+  "exec_chain": [
+   "Close the gripper and push the cube to the target"
+  ],
+  "same_manner": true,
+  "n_steps": 263,
+  "n_demo": 158,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <86, 158> to the target at <82, 88>"
+   },
+   {
+    "step": 98,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 158,
+    "demo": false,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <95, 92> to the target at <122, 133>"
+   },
+   {
+    "step": 258,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Close the gripper and push the cube at <95, 92> to the target at <122, 133>"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 0,
+    "what": "cube@start",
+    "grounded": [
+     86,
+     158
+    ],
+    "detected": [
+     86.5,
+     158.7
+    ],
+    "err_px": 0.9
+   },
+   {
+    "step": 0,
+    "what": "target",
+    "grounded": [
+     82,
+     88
+    ],
+    "detected": [
+     82.1,
+     88.7
+    ],
+    "err_px": 0.7
+   },
+   {
+    "step": 158,
+    "what": "cube@start",
+    "grounded": [
+     95,
+     92
+    ],
+    "detected": [
+     95.5,
+     92.2
+    ],
+    "err_px": 0.5
+   },
+   {
+    "step": 158,
+    "what": "target",
+    "grounded": [
+     122,
+     133
+    ],
+    "detected": [
+     122.4,
+     133.5
+    ],
+    "err_px": 0.6
+   }
+  ],
+  "max_grounding_err_px": 0.9,
+  "demo_end": {
+   "step": 98,
+   "cube_px": null,
+   "cube_visible_px": 0,
+   "target_px": [
+    81.8,
+    94.5
+   ],
+   "cube_target_px": null
+  },
+  "exec_start": {
+   "step": 158,
+   "cube_px": [
+    95.5,
+    92.2
+   ],
+   "target_px": [
+    122.4,
+    133.5
+   ],
+   "target_ring_px": 211
+  },
+  "exec_done": {
+   "step": 258,
+   "cube_px": [
+    121.7,
+    136.1
+   ],
+   "target_px": [
+    128.1,
+    134.2
+   ],
+   "cube_target_px": 6.7
+  },
+  "last": {
+   "step": 262,
+   "cube_px": [
+    121.7,
+    136.1
+   ],
+   "target_px": [
+    127.8,
+    134.3
+   ],
+   "cube_target_px": 6.4,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "C"
+  ],
+  "spec_world": {
+   "demo": {
+    "cube_world": [
+     -0.07023416519165038,
+     0.12302558422088622,
+     0.9797238682659183
+    ],
+    "goal_world": [
+     -0.10934895038604739,
+     -0.16183717250823976
+    ],
+    "peg_root": [
+     -0.30063983496967533,
+     0.052927406199943294
+    ],
+    "peg_yaw": 2.3959978461733167,
+    "peg_grasp": [
+     -0.22717138399881798,
+     -0.014913486423479116
+    ],
+    "cube_px": [
+     159.2,
+     87.2
+    ],
+    "goal_px": [
+     89.7,
+     83.7
+    ],
+    "peg_grasp_px": [
+     124.7,
+     62.9
+    ],
+    "peg_root_px": [
+     139.0,
+     52.8
+    ],
+    "cube_goal_dist_m": 0.2875,
+    "cube_r_center": 0.1235,
+    "goal_r_center": 0.1692,
+    "grasp_r_center": 0.1678,
+    "dy_cube_minus_goal": 0.2849
+   },
+   "execution": {
+    "cube_world": [
+     -0.024262342453002933,
+     -0.13355941772460939,
+     0.6463789074531423
+    ],
+    "goal_world": [
+     0.08199566841125489,
+     0.020923805236816417
+    ],
+    "peg_root": [
+     -0.13020398390770457,
+     -0.21812063074048305
+    ],
+    "peg_yaw": -1.3804280376943923,
+    "peg_grasp": [
+     -0.14912603826936996,
+     -0.11992716935565263
+    ],
+    "cube_px": [
+     92.7,
+     96.3
+    ],
+    "goal_px": [
+     133.9,
+     123.5
+    ],
+    "peg_grasp_px": [
+     100.1,
+     75.1
+    ],
+    "peg_root_px": [
+     76.4,
+     78.2
+    ],
+    "cube_goal_dist_m": 0.1875,
+    "cube_r_center": 0.1383,
+    "goal_r_center": 0.1435,
+    "grasp_r_center": 0.1494,
+    "dy_cube_minus_goal": -0.1545
+   },
+   "way_idx": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "extrinsic_changes": false
+  }
+ },
+ {
+  "tag": "xhard4_ep6",
+  "kind": "new",
+  "difficulty": "xhard4",
+  "seed": 7400600,
+  "episode": 6,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_6/hdf5_files/MoveCube_ep6_seed7400600.h5",
+  "mp4": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/MoveCube_episode_6/videos/MoveCube_ep6_seed7400600_xhard4_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4",
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "grasp_putdown",
+  "demo_chain": [
+   "Pick up the cube",
+   "place the cube onto the target"
+  ],
+  "exec_chain": [
+   "Pick up the cube",
+   "place the cube onto the target"
+  ],
+  "same_manner": true,
+  "n_steps": 479,
+  "n_demo": 273,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <71, 151>"
+   },
+   {
+    "step": 126,
+    "demo": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <115, 150>"
+   },
+   {
+    "step": 213,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 273,
+    "demo": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <70, 157>"
+   },
+   {
+    "step": 394,
+    "demo": false,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <107, 165>"
+   },
+   {
+    "step": 467,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the target at <107, 165>"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 0,
+    "what": "cube@start",
+    "grounded": [
+     71,
+     151
+    ],
+    "detected": [
+     71.8,
+     151.0
+    ],
+    "err_px": 0.8
+   },
+   {
+    "step": 126,
+    "what": "target",
+    "grounded": [
+     115,
+     150
+    ],
+    "detected": [
+     115.0,
+     150.4
+    ],
+    "err_px": 0.4
+   },
+   {
+    "step": 273,
+    "what": "cube@start",
+    "grounded": [
+     70,
+     157
+    ],
+    "detected": [
+     70.6,
+     157.5
+    ],
+    "err_px": 0.8
+   },
+   {
+    "step": 394,
+    "what": "target",
+    "grounded": [
+     107,
+     165
+    ],
+    "detected": [
+     107.6,
+     166.0
+    ],
+    "err_px": 1.2
+   }
+  ],
+  "max_grounding_err_px": 1.2,
+  "demo_end": {
+   "step": 213,
+   "cube_px": [
+    113.0,
+    150.7
+   ],
+   "cube_visible_px": 199,
+   "target_px": [
+    117.1,
+    149.7
+   ],
+   "cube_target_px": 4.2
+  },
+  "exec_start": {
+   "step": 273,
+   "cube_px": [
+    70.6,
+    157.5
+   ],
+   "target_px": [
+    107.6,
+    166.0
+   ],
+   "target_ring_px": 179
+  },
+  "exec_done": {
+   "step": 467,
+   "cube_px": [
+    106.1,
+    167.2
+   ],
+   "target_px": [
+    109.2,
+    164.9
+   ],
+   "cube_target_px": 3.9
+  },
+  "last": {
+   "step": 478,
+   "cube_px": [
+    106.1,
+    167.2
+   ],
+   "target_px": [
+    109.2,
+    164.9
+   ],
+   "cube_target_px": 3.9,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "D",
+   "E"
+  ],
+  "spec_world": {
+   "demo": {
+    "cube_world": [
+     -0.1529029703140259,
+     0.09932956695556638,
+     3.96499653923241
+    ],
+    "goal_world": [
+     0.05157507896423341,
+     0.08263747692108153
+    ],
+    "peg_root": [
+     0.1538745311642406,
+     -0.16177682884475292
+    ],
+    "peg_yaw": -0.3999001028387301,
+    "peg_grasp": [
+     0.061764542044848034,
+     -0.1228441959460472
+    ],
+    "cube_px": [
+     151.4,
+     72.5
+    ],
+    "goal_px": [
+     150.6,
+     116.2
+    ],
+    "peg_grasp_px": [
+     93.5,
+     117.1
+    ],
+    "peg_root_px": [
+     78.0,
+     141.5
+    ],
+    "cube_goal_dist_m": 0.2052,
+    "cube_r_center": 0.136,
+    "goal_r_center": 0.1388,
+    "grasp_r_center": 0.173,
+    "dy_cube_minus_goal": 0.0167
+   },
+   "execution": {
+    "cube_world": [
+     -0.16001158714294433,
+     0.12778682708740235,
+     5.954756125620176
+    ],
+    "goal_world": [
+     0.019125833511352552,
+     0.14380550384521484
+    ],
+    "peg_root": [
+     0.12737652007701503,
+     0.19159804955272372
+    ],
+    "peg_yaw": 1.3965760317403033,
+    "peg_grasp": [
+     0.11004249121746468,
+     0.09311185029873546
+    ],
+    "cube_px": [
+     158.0,
+     71.3
+    ],
+    "goal_px": [
+     166.1,
+     108.8
+    ],
+    "peg_grasp_px": [
+     155.5,
+     129.3
+    ],
+    "peg_root_px": [
+     185.6,
+     134.0
+    ],
+    "cube_goal_dist_m": 0.1799,
+    "cube_r_center": 0.1623,
+    "goal_r_center": 0.1641,
+    "grasp_r_center": 0.1939,
+    "dy_cube_minus_goal": -0.016
+   },
+   "way_idx": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "extrinsic_changes": false
+  }
+ },
+ {
+  "tag": "easy_ep0",
+  "kind": "native",
+  "difficulty": "easy",
+  "seed": 14000,
+  "episode": 0,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_0/hdf5_files/MoveCube_ep0_seed14000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_0/videos/MoveCube_ep0_seed14000_easy_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "peg_push",
+  "demo_chain": [
+   "Pick up the peg",
+   "Hook the cube to the target with the peg"
+  ],
+  "exec_chain": [
+   "Pick up the peg",
+   "Hook the cube to the target with the peg"
+  ],
+  "same_manner": true,
+  "n_steps": 425,
+  "n_demo": 234,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <85, 74>"
+   },
+   {
+    "step": 119,
+    "demo": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <96, 138> to the target at <121, 116> with the peg"
+   },
+   {
+    "step": 204,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 234,
+    "demo": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <87, 170>"
+   },
+   {
+    "step": 352,
+    "demo": false,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <98, 116> to the target at <106, 140> with the peg"
+   },
+   {
+    "step": 419,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <98, 116> to the target at <106, 140> with the peg"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 119,
+    "what": "cube@start",
+    "grounded": [
+     96,
+     138
+    ],
+    "detected": [
+     96.3,
+     138.7
+    ],
+    "err_px": 0.8
+   },
+   {
+    "step": 119,
+    "what": "target",
+    "grounded": [
+     121,
+     116
+    ],
+    "detected": [
+     121.3,
+     116.9
+    ],
+    "err_px": 0.9
+   },
+   {
+    "step": 352,
+    "what": "cube@start",
+    "grounded": [
+     98,
+     116
+    ],
+    "detected": [
+     98.3,
+     116.4
+    ],
+    "err_px": 0.5
+   },
+   {
+    "step": 352,
+    "what": "target",
+    "grounded": [
+     106,
+     140
+    ],
+    "detected": [
+     106.4,
+     140.0
+    ],
+    "err_px": 0.4
+   }
+  ],
+  "max_grounding_err_px": 0.9,
+  "demo_end": {
+   "step": 204,
+   "cube_px": [
+    116.9,
+    116.1
+   ],
+   "cube_visible_px": 203,
+   "target_px": [
+    125.4,
+    116.3
+   ],
+   "cube_target_px": 8.5
+  },
+  "exec_start": {
+   "step": 234,
+   "cube_px": [
+    98.3,
+    116.4
+   ],
+   "target_px": [
+    106.4,
+    140.0
+   ],
+   "target_ring_px": 179
+  },
+  "exec_done": {
+   "step": 419,
+   "cube_px": [
+    103.3,
+    140.3
+   ],
+   "target_px": [
+    110.0,
+    143.7
+   ],
+   "cube_target_px": 7.5
+  },
+  "last": {
+   "step": 424,
+   "cube_px": [
+    103.3,
+    140.3
+   ],
+   "target_px": [
+    110.0,
+    143.7
+   ],
+   "cube_target_px": 7.5,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "A",
+   "B"
+  ]
+ },
+ {
+  "tag": "easy_ep1",
+  "kind": "native",
+  "difficulty": "easy",
+  "seed": 14100,
+  "episode": 1,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_1/hdf5_files/MoveCube_ep1_seed14100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_1/videos/MoveCube_ep1_seed14100_easy_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "grasp_putdown",
+  "demo_chain": [
+   "Pick up the cube",
+   "place the cube onto the target"
+  ],
+  "exec_chain": [
+   "Pick up the cube",
+   "place the cube onto the target"
+  ],
+  "same_manner": true,
+  "n_steps": 441,
+  "n_demo": 258,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <86, 142>"
+   },
+   {
+    "step": 114,
+    "demo": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <82, 104>"
+   },
+   {
+    "step": 198,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 258,
+    "demo": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <101, 141>"
+   },
+   {
+    "step": 364,
+    "demo": false,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <95, 119>"
+   },
+   {
+    "step": 424,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the target at <95, 119>"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 0,
+    "what": "cube@start",
+    "grounded": [
+     86,
+     142
+    ],
+    "detected": [
+     86.4,
+     142.3
+    ],
+    "err_px": 0.5
+   },
+   {
+    "step": 114,
+    "what": "target",
+    "grounded": [
+     82,
+     104
+    ],
+    "detected": [
+     82.5,
+     104.2
+    ],
+    "err_px": 0.5
+   },
+   {
+    "step": 258,
+    "what": "cube@start",
+    "grounded": [
+     101,
+     141
+    ],
+    "detected": [
+     101.4,
+     141.9
+    ],
+    "err_px": 1.0
+   },
+   {
+    "step": 364,
+    "what": "target",
+    "grounded": [
+     95,
+     119
+    ],
+    "detected": [
+     95.3,
+     119.0
+    ],
+    "err_px": 0.3
+   }
+  ],
+  "max_grounding_err_px": 1.0,
+  "demo_end": {
+   "step": 198,
+   "cube_px": [
+    79.8,
+    103.1
+   ],
+   "cube_visible_px": 142,
+   "target_px": [
+    83.9,
+    104.9
+   ],
+   "cube_target_px": 4.5
+  },
+  "exec_start": {
+   "step": 258,
+   "cube_px": [
+    101.4,
+    141.9
+   ],
+   "target_px": [
+    95.3,
+    119.0
+   ],
+   "target_ring_px": 149
+  },
+  "exec_done": {
+   "step": 424,
+   "cube_px": [
+    94.0,
+    118.6
+   ],
+   "target_px": [
+    97.0,
+    119.2
+   ],
+   "cube_target_px": 3.1
+  },
+  "last": {
+   "step": 440,
+   "cube_px": [
+    94.0,
+    118.6
+   ],
+   "target_px": [
+    97.0,
+    119.2
+   ],
+   "cube_target_px": 3.1,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "D",
+   "E"
+  ]
+ },
+ {
+  "tag": "medium_ep10",
+  "kind": "native",
+  "difficulty": "medium",
+  "seed": 15000,
+  "episode": 10,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_10/hdf5_files/MoveCube_ep10_seed15000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_10/videos/MoveCube_ep10_seed15000_medium_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "peg_push",
+  "demo_chain": [
+   "Pick up the peg",
+   "Hook the cube to the target with the peg"
+  ],
+  "exec_chain": [
+   "Pick up the peg",
+   "Hook the cube to the target with the peg"
+  ],
+  "same_manner": true,
+  "n_steps": 482,
+  "n_demo": 272,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <90, 66>"
+   },
+   {
+    "step": 114,
+    "demo": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <108, 125> to the target at <84, 109> with the peg"
+   },
+   {
+    "step": 242,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 272,
+    "demo": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <92, 49>"
+   },
+   {
+    "step": 402,
+    "demo": false,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <121, 111> to the target at <116, 141> with the peg"
+   },
+   {
+    "step": 476,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <121, 111> to the target at <116, 141> with the peg"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 114,
+    "what": "cube@start",
+    "grounded": [
+     108,
+     125
+    ],
+    "detected": [
+     108.5,
+     125.8
+    ],
+    "err_px": 0.9
+   },
+   {
+    "step": 114,
+    "what": "target",
+    "grounded": [
+     84,
+     109
+    ],
+    "detected": [
+     83.6,
+     109.2
+    ],
+    "err_px": 0.4
+   },
+   {
+    "step": 402,
+    "what": "cube@start",
+    "grounded": [
+     121,
+     111
+    ],
+    "detected": [
+     121.0,
+     111.0
+    ],
+    "err_px": 0.0
+   },
+   {
+    "step": 402,
+    "what": "target",
+    "grounded": [
+     116,
+     141
+    ],
+    "detected": [
+     116.2,
+     141.2
+    ],
+    "err_px": 0.3
+   }
+  ],
+  "max_grounding_err_px": 0.9,
+  "demo_end": {
+   "step": 242,
+   "cube_px": [
+    78.4,
+    108.8
+   ],
+   "cube_visible_px": 128,
+   "target_px": [
+    83.8,
+    106.0
+   ],
+   "cube_target_px": 6.1
+  },
+  "exec_start": {
+   "step": 272,
+   "cube_px": [
+    121.0,
+    111.0
+   ],
+   "target_px": [
+    116.2,
+    141.2
+   ],
+   "target_ring_px": 200
+  },
+  "exec_done": {
+   "step": 476,
+   "cube_px": [
+    110.6,
+    142.2
+   ],
+   "target_px": [
+    118.9,
+    145.0
+   ],
+   "cube_target_px": 8.8
+  },
+  "last": {
+   "step": 481,
+   "cube_px": [
+    110.6,
+    142.2
+   ],
+   "target_px": [
+    118.9,
+    145.0
+   ],
+   "cube_target_px": 8.8,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "A",
+   "B"
+  ]
+ },
+ {
+  "tag": "hard_ep11",
+  "kind": "native",
+  "difficulty": "hard",
+  "seed": 15100,
+  "episode": 11,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_11/hdf5_files/MoveCube_ep11_seed15100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_11/videos/MoveCube_ep11_seed15100_hard_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "gripper_push",
+  "demo_chain": [
+   "Close the gripper and push the cube to the target"
+  ],
+  "exec_chain": [
+   "Close the gripper and push the cube to the target"
+  ],
+  "same_manner": true,
+  "n_steps": 257,
+  "n_demo": 162,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <109, 131> to the target at <86, 121>"
+   },
+   {
+    "step": 102,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 162,
+    "demo": false,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <97, 137> to the target at <106, 112>"
+   },
+   {
+    "step": 252,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Close the gripper and push the cube at <97, 137> to the target at <106, 112>"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 0,
+    "what": "cube@start",
+    "grounded": [
+     109,
+     131
+    ],
+    "detected": [
+     109.5,
+     131.7
+    ],
+    "err_px": 0.9
+   },
+   {
+    "step": 0,
+    "what": "target",
+    "grounded": [
+     86,
+     121
+    ],
+    "detected": [
+     86.3,
+     121.3
+    ],
+    "err_px": 0.4
+   },
+   {
+    "step": 162,
+    "what": "cube@start",
+    "grounded": [
+     97,
+     137
+    ],
+    "detected": [
+     97.4,
+     137.1
+    ],
+    "err_px": 0.4
+   },
+   {
+    "step": 162,
+    "what": "target",
+    "grounded": [
+     106,
+     112
+    ],
+    "detected": [
+     106.2,
+     112.2
+    ],
+    "err_px": 0.3
+   }
+  ],
+  "max_grounding_err_px": 0.9,
+  "demo_end": {
+   "step": 102,
+   "cube_px": [
+    85.4,
+    126.5
+   ],
+   "cube_visible_px": 20,
+   "target_px": [
+    89.6,
+    121.8
+   ],
+   "cube_target_px": 6.3
+  },
+  "exec_start": {
+   "step": 162,
+   "cube_px": [
+    97.4,
+    137.1
+   ],
+   "target_px": [
+    106.2,
+    112.2
+   ],
+   "target_ring_px": 176
+  },
+  "exec_done": {
+   "step": 252,
+   "cube_px": [
+    102.3,
+    109.0
+   ],
+   "target_px": [
+    110.5,
+    108.5
+   ],
+   "cube_target_px": 8.2
+  },
+  "last": {
+   "step": 256,
+   "cube_px": [
+    102.4,
+    109.3
+   ],
+   "target_px": [
+    110.5,
+    108.5
+   ],
+   "cube_target_px": 8.1,
+   "cube_drift_done_to_last_px": 0.3
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "C"
+  ]
+ },
+ {
+  "tag": "medium_ep2",
+  "kind": "native",
+  "difficulty": "medium",
+  "seed": 14200,
+  "episode": 2,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_2/hdf5_files/MoveCube_ep2_seed14200.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_2/videos/MoveCube_ep2_seed14200_medium_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "peg_push",
+  "demo_chain": [
+   "Pick up the peg",
+   "Hook the cube to the target with the peg"
+  ],
+  "exec_chain": [
+   "Pick up the peg",
+   "Hook the cube to the target with the peg"
+  ],
+  "same_manner": true,
+  "n_steps": 478,
+  "n_demo": 243,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <94, 170>"
+   },
+   {
+    "step": 114,
+    "demo": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <83, 146> to the target at <124, 109> with the peg"
+   },
+   {
+    "step": 213,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 243,
+    "demo": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <93, 176>"
+   },
+   {
+    "step": 357,
+    "demo": false,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <118, 148> to the target at <99, 136> with the peg"
+   },
+   {
+    "step": 472,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <118, 148> to the target at <99, 136> with the peg"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 114,
+    "what": "cube@start",
+    "grounded": [
+     83,
+     146
+    ],
+    "detected": [
+     83.6,
+     146.8
+    ],
+    "err_px": 1.0
+   },
+   {
+    "step": 114,
+    "what": "target",
+    "grounded": [
+     124,
+     109
+    ],
+    "detected": [
+     124.5,
+     110.0
+    ],
+    "err_px": 1.1
+   },
+   {
+    "step": 357,
+    "what": "cube@start",
+    "grounded": [
+     118,
+     148
+    ],
+    "detected": [
+     118.8,
+     148.5
+    ],
+    "err_px": 0.9
+   },
+   {
+    "step": 357,
+    "what": "target",
+    "grounded": [
+     99,
+     136
+    ],
+    "detected": [
+     99.4,
+     136.5
+    ],
+    "err_px": 0.6
+   }
+  ],
+  "max_grounding_err_px": 1.1,
+  "demo_end": {
+   "step": 213,
+   "cube_px": [
+    123.6,
+    111.8
+   ],
+   "cube_visible_px": 212,
+   "target_px": [
+    127.4,
+    106.7
+   ],
+   "cube_target_px": 6.4
+  },
+  "exec_start": {
+   "step": 243,
+   "cube_px": [
+    118.8,
+    148.5
+   ],
+   "target_px": [
+    99.4,
+    136.5
+   ],
+   "target_ring_px": 160
+  },
+  "exec_done": {
+   "step": 472,
+   "cube_px": [
+    94.1,
+    134.5
+   ],
+   "target_px": [
+    99.9,
+    137.1
+   ],
+   "cube_target_px": 6.4
+  },
+  "last": {
+   "step": 477,
+   "cube_px": [
+    94.1,
+    134.5
+   ],
+   "target_px": [
+    99.9,
+    137.1
+   ],
+   "cube_target_px": 6.4,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "A",
+   "B"
+  ]
+ },
+ {
+  "tag": "hard_ep3",
+  "kind": "native",
+  "difficulty": "hard",
+  "seed": 14300,
+  "episode": 3,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_3/hdf5_files/MoveCube_ep3_seed14300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_3/videos/MoveCube_ep3_seed14300_hard_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "gripper_push",
+  "demo_chain": [
+   "Close the gripper and push the cube to the target"
+  ],
+  "exec_chain": [
+   "Close the gripper and push the cube to the target"
+  ],
+  "same_manner": true,
+  "n_steps": 266,
+  "n_demo": 161,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <87, 119> to the target at <110, 130>"
+   },
+   {
+    "step": 101,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 161,
+    "demo": false,
+    "simple": "Close the gripper and push the cube to the target",
+    "grounded": "Close the gripper and push the cube at <83, 104> to the target at <109, 135>"
+   },
+   {
+    "step": 261,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Close the gripper and push the cube at <83, 104> to the target at <109, 135>"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 0,
+    "what": "cube@start",
+    "grounded": [
+     87,
+     119
+    ],
+    "detected": [
+     87.7,
+     119.9
+    ],
+    "err_px": 1.1
+   },
+   {
+    "step": 0,
+    "what": "target",
+    "grounded": [
+     110,
+     130
+    ],
+    "detected": [
+     110.3,
+     130.2
+    ],
+    "err_px": 0.4
+   },
+   {
+    "step": 161,
+    "what": "cube@start",
+    "grounded": [
+     83,
+     104
+    ],
+    "detected": [
+     83.1,
+     104.2
+    ],
+    "err_px": 0.2
+   },
+   {
+    "step": 161,
+    "what": "target",
+    "grounded": [
+     109,
+     135
+    ],
+    "detected": [
+     108.8,
+     135.6
+    ],
+    "err_px": 0.6
+   }
+  ],
+  "max_grounding_err_px": 1.1,
+  "demo_end": {
+   "step": 101,
+   "cube_px": [
+    110.4,
+    130.7
+   ],
+   "cube_visible_px": 142,
+   "target_px": [
+    112.8,
+    131.4
+   ],
+   "cube_target_px": 2.5
+  },
+  "exec_start": {
+   "step": 161,
+   "cube_px": [
+    83.1,
+    104.2
+   ],
+   "target_px": [
+    108.8,
+    135.6
+   ],
+   "target_ring_px": 186
+  },
+  "exec_done": {
+   "step": 261,
+   "cube_px": [
+    108.1,
+    138.6
+   ],
+   "target_px": [
+    113.0,
+    135.6
+   ],
+   "cube_target_px": 5.7
+  },
+  "last": {
+   "step": 265,
+   "cube_px": [
+    108.1,
+    138.6
+   ],
+   "target_px": [
+    113.1,
+    136.0
+   ],
+   "cube_target_px": 5.6,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "C"
+  ]
+ },
+ {
+  "tag": "easy_ep4",
+  "kind": "native",
+  "difficulty": "easy",
+  "seed": 14400,
+  "episode": 4,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_4/hdf5_files/MoveCube_ep4_seed14400.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_4/videos/MoveCube_ep4_seed14400_easy_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "grasp_putdown",
+  "demo_chain": [
+   "Pick up the cube",
+   "place the cube onto the target"
+  ],
+  "exec_chain": [
+   "Pick up the cube",
+   "place the cube onto the target"
+  ],
+  "same_manner": true,
+  "n_steps": 440,
+  "n_demo": 236,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <103, 155>"
+   },
+   {
+    "step": 103,
+    "demo": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <109, 110>"
+   },
+   {
+    "step": 176,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 236,
+    "demo": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <114, 107>"
+   },
+   {
+    "step": 348,
+    "demo": false,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <98, 136>"
+   },
+   {
+    "step": 422,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the target at <98, 136>"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 0,
+    "what": "cube@start",
+    "grounded": [
+     103,
+     155
+    ],
+    "detected": [
+     103.2,
+     155.7
+    ],
+    "err_px": 0.7
+   },
+   {
+    "step": 103,
+    "what": "target",
+    "grounded": [
+     109,
+     110
+    ],
+    "detected": [
+     109.0,
+     109.9
+    ],
+    "err_px": 0.1
+   },
+   {
+    "step": 236,
+    "what": "cube@start",
+    "grounded": [
+     114,
+     107
+    ],
+    "detected": [
+     115.0,
+     107.3
+    ],
+    "err_px": 1.0
+   },
+   {
+    "step": 348,
+    "what": "target",
+    "grounded": [
+     98,
+     136
+    ],
+    "detected": [
+     98.6,
+     136.6
+    ],
+    "err_px": 0.8
+   }
+  ],
+  "max_grounding_err_px": 1.0,
+  "demo_end": {
+   "step": 176,
+   "cube_px": [
+    107.4,
+    108.4
+   ],
+   "cube_visible_px": 183,
+   "target_px": [
+    110.8,
+    110.9
+   ],
+   "cube_target_px": 4.2
+  },
+  "exec_start": {
+   "step": 236,
+   "cube_px": [
+    115.0,
+    107.3
+   ],
+   "target_px": [
+    98.6,
+    136.6
+   ],
+   "target_ring_px": 159
+  },
+  "exec_done": {
+   "step": 422,
+   "cube_px": [
+    97.1,
+    137.8
+   ],
+   "target_px": [
+    100.5,
+    135.9
+   ],
+   "cube_target_px": 3.9
+  },
+  "last": {
+   "step": 439,
+   "cube_px": [
+    97.1,
+    137.8
+   ],
+   "target_px": [
+    100.5,
+    135.9
+   ],
+   "cube_target_px": 3.9,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "D",
+   "E"
+  ]
+ },
+ {
+  "tag": "medium_ep6",
+  "kind": "native",
+  "difficulty": "medium",
+  "seed": 14602,
+  "episode": 6,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_6/hdf5_files/MoveCube_ep6_seed14602.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_6/videos/MoveCube_ep6_seed14602_medium_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "grasp_putdown",
+  "demo_chain": [
+   "Pick up the cube",
+   "place the cube onto the target"
+  ],
+  "exec_chain": [
+   "Pick up the cube",
+   "place the cube onto the target"
+  ],
+  "same_manner": true,
+  "n_steps": 443,
+  "n_demo": 240,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <113, 138>"
+   },
+   {
+    "step": 106,
+    "demo": true,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <108, 102>"
+   },
+   {
+    "step": 180,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 240,
+    "demo": false,
+    "simple": "Pick up the cube",
+    "grounded": "Pick up the cube at <126, 124>"
+   },
+   {
+    "step": 349,
+    "demo": false,
+    "simple": "place the cube onto the target",
+    "grounded": "place the cube onto the target at <102, 145>"
+   },
+   {
+    "step": 427,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "place the cube onto the target at <102, 145>"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 0,
+    "what": "cube@start",
+    "grounded": [
+     113,
+     138
+    ],
+    "detected": [
+     113.9,
+     138.8
+    ],
+    "err_px": 1.2
+   },
+   {
+    "step": 106,
+    "what": "target",
+    "grounded": [
+     108,
+     102
+    ],
+    "detected": [
+     108.1,
+     102.2
+    ],
+    "err_px": 0.2
+   },
+   {
+    "step": 240,
+    "what": "cube@start",
+    "grounded": [
+     126,
+     124
+    ],
+    "detected": [
+     126.2,
+     124.0
+    ],
+    "err_px": 0.2
+   },
+   {
+    "step": 349,
+    "what": "target",
+    "grounded": [
+     102,
+     145
+    ],
+    "detected": [
+     102.5,
+     145.9
+    ],
+    "err_px": 1.0
+   }
+  ],
+  "max_grounding_err_px": 1.2,
+  "demo_end": {
+   "step": 180,
+   "cube_px": [
+    105.9,
+    99.7
+   ],
+   "cube_visible_px": 188,
+   "target_px": [
+    110.0,
+    104.2
+   ],
+   "cube_target_px": 6.1
+  },
+  "exec_start": {
+   "step": 240,
+   "cube_px": [
+    126.2,
+    124.0
+   ],
+   "target_px": [
+    97.5,
+    140.2
+   ],
+   "target_ring_px": 149
+  },
+  "exec_done": {
+   "step": 427,
+   "cube_px": [
+    95.0,
+    139.8
+   ],
+   "target_px": [
+    99.3,
+    140.6
+   ],
+   "cube_target_px": 4.4
+  },
+  "last": {
+   "step": 442,
+   "cube_px": [
+    95.0,
+    139.8
+   ],
+   "target_px": [
+    99.3,
+    140.6
+   ],
+   "cube_target_px": 4.4,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "D",
+   "E"
+  ]
+ },
+ {
+  "tag": "hard_ep7",
+  "kind": "native",
+  "difficulty": "hard",
+  "seed": 14700,
+  "episode": 7,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_7/hdf5_files/MoveCube_ep7_seed14700.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/MoveCube_episode_7/videos/MoveCube_ep7_seed14700_hard_watch_the_video_carefully_then_move_the_cube_to_the_target_in_the_same_manner_as_before__ALT__watch_the_video_carefully_then_move_the_cube_to_the_target_in_the___HASH__721434f5409c.mp4"
+  ],
+  "language_goal": [
+   "watch the video carefully, then move the cube to the target in the same manner as before",
+   "watch the video carefully, then move the cube to the target in the same manner shown in the video"
+  ],
+  "choices": [
+   "pick up the peg",
+   "hook the cube to the target with the peg",
+   "close gripper and push the cube to the target",
+   "pick up the cube",
+   "place the cube onto the target"
+  ],
+  "way": "peg_push",
+  "demo_chain": [
+   "Pick up the peg",
+   "Hook the cube to the target with the peg"
+  ],
+  "exec_chain": [
+   "Pick up the peg",
+   "Hook the cube to the target with the peg"
+  ],
+  "same_manner": true,
+  "n_steps": 512,
+  "n_demo": 267,
+  "boundaries": [
+   {
+    "step": 0,
+    "demo": true,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <86, 74>"
+   },
+   {
+    "step": 115,
+    "demo": true,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <86, 135> to the target at <113, 153> with the peg"
+   },
+   {
+    "step": 237,
+    "demo": true,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "step": 267,
+    "demo": false,
+    "simple": "Pick up the peg",
+    "grounded": "Pick up the peg at <85, 68>"
+   },
+   {
+    "step": 385,
+    "demo": false,
+    "simple": "Hook the cube to the target with the peg",
+    "grounded": "Hook the cube at <113, 138> to the target at <94, 118> with the peg"
+   },
+   {
+    "step": 506,
+    "demo": false,
+    "simple": "All tasks completed",
+    "grounded": "Hook the cube at <113, 138> to the target at <94, 118> with the peg"
+   }
+  ],
+  "grounding_checks": [
+   {
+    "step": 115,
+    "what": "cube@start",
+    "grounded": [
+     86,
+     135
+    ],
+    "detected": [
+     86.6,
+     135.7
+    ],
+    "err_px": 0.9
+   },
+   {
+    "step": 115,
+    "what": "target",
+    "grounded": [
+     113,
+     153
+    ],
+    "detected": [
+     113.4,
+     153.7
+    ],
+    "err_px": 0.8
+   },
+   {
+    "step": 385,
+    "what": "cube@start",
+    "grounded": [
+     113,
+     138
+    ],
+    "detected": [
+     113.2,
+     138.3
+    ],
+    "err_px": 0.4
+   },
+   {
+    "step": 385,
+    "what": "target",
+    "grounded": [
+     94,
+     118
+    ],
+    "detected": [
+     94.3,
+     118.5
+    ],
+    "err_px": 0.6
+   }
+  ],
+  "max_grounding_err_px": 0.9,
+  "demo_end": {
+   "step": 237,
+   "cube_px": [
+    109.4,
+    152.0
+   ],
+   "cube_visible_px": 194,
+   "target_px": [
+    116.3,
+    155.2
+   ],
+   "cube_target_px": 7.6
+  },
+  "exec_start": {
+   "step": 267,
+   "cube_px": [
+    113.2,
+    138.3
+   ],
+   "target_px": [
+    94.3,
+    118.5
+   ],
+   "target_ring_px": 153
+  },
+  "exec_done": {
+   "step": 506,
+   "cube_px": [
+    90.1,
+    118.7
+   ],
+   "target_px": [
+    95.3,
+    112.3
+   ],
+   "cube_target_px": 8.2
+  },
+  "last": {
+   "step": 511,
+   "cube_px": [
+    90.1,
+    118.7
+   ],
+   "target_px": [
+    95.3,
+    112.3
+   ],
+   "cube_target_px": 8.2,
+   "cube_drift_done_to_last_px": 0.0
+  },
+  "final_completed": true,
+  "choice_letters": [
+   "",
+   "A",
+   "B"
+  ]
+ }
+]

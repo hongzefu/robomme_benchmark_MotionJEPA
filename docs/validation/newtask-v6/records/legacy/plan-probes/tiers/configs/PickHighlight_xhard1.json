@@ -1,0 +1,133 @@
+{
+ "task": "PickHighlight",
+ "tier": "xhard1",
+ "overrides": {
+  "highlight_count.xhard": [
+   4,
+   4
+  ],
+  "spawn_count.xhard": [
+   7,
+   7
+  ]
+ },
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "layout_mode": "native_region",
+   "cube_region": {
+    "region_center": [
+     -0.1,
+     0
+    ],
+    "region_half_size": 0.2
+   },
+   "highlight_count": {
+    "hard": 3,
+    "easy": 1,
+    "medium": 2,
+    "xhard": [
+     4,
+     4
+    ]
+   },
+   "spawn_count": {
+    "hard": 6,
+    "easy": 3,
+    "medium": 4,
+    "xhard": [
+     7,
+     7
+    ]
+   },
+   "block_color_policy": "native_per_cube_uniform",
+   "xhard": {
+    "block_color_policy": "hsv_floor",
+    "block_color_hsv": {
+     "h_range": [
+      0.0,
+      1.0
+     ],
+     "s_range": [
+      0.5,
+      1.0
+     ],
+     "v_range": [
+      0.4,
+      1.0
+     ]
+    },
+    "subgoal_color_suffix": "omit"
+   }
+  },
+  "native": {
+   "parameters": {
+    "color_pool": [
+     {
+      "rgba": [
+       1,
+       0,
+       0,
+       1
+      ],
+      "name": "red"
+     },
+     {
+      "rgba": [
+       0,
+       0,
+       1,
+       1
+      ],
+      "name": "blue"
+     },
+     {
+      "rgba": [
+       0,
+       1,
+       0,
+       1
+      ],
+      "name": "green"
+     }
+    ],
+    "color_draw": {
+     "sampler": "torch.randint",
+     "low": 0,
+     "high_exclusive": "len(color_pool)"
+    },
+    "target_selection": {
+     "sampler": "torch.randperm(len(all_cubes))[:pickup]"
+    },
+    "spawn_failure": "生成失败 break，保存实际数量，不补抽",
+    "recovery": "沿用入口给定的 fail recover 模式与原 generator"
+   },
+   "positions": {
+    "button": {
+     "center_xy": [
+      -0.2,
+      0
+     ],
+     "scale": 1.5
+    },
+    "cubes": {
+     "region_center": [
+      -0.1,
+      0
+     ],
+     "region_half_size": 0.2,
+     "min_gap_factor": 2,
+     "random_yaw": true,
+     "include_existing": false,
+     "include_goal": false
+    },
+    "highlight_window": {
+     "start_step": 10,
+     "end_step": 100,
+     "simultaneous": true
+    }
+   }
+  }
+ }
+}

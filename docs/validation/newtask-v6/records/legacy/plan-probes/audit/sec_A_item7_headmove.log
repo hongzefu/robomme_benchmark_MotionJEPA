@@ -1,0 +1,31 @@
+commit 0b1d54250956e5d7187d3882fc2ff04f3dbaa7e5
+Author: 你的名字 <你的邮箱@example.com>
+Date:   Fri Sep 25 17:13:02 2026 -0400
+
+    12.139 V6 计划 MoveCube 固化为圆环版统一区域 U（圆心 (−0.06,0)、内孔 0.12、外径 0.20），GL 144 局复测 120/144
+    
+    ## 用户指令原话
+    - 「圆形 放在可达范围的中心 而不是现在这样」
+    - 「movecube这个同意 就这么做 固化到plan内」
+    - 「你现在有GL两个job的submit权限 …这个的意思是连接现有两个job 不允许开新job！」
+    
+    ## 计划与过程
+# 新值模式 V6：hard 与 xhard 之间插入 xhard1/2/3、交换对象均匀化、MoveCube 环带外推
+
+> 本方案以用户 2026-09-25 的两轮要求为准，**只规划，不实施**。工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，
+> 分支 `newtaskRelease-v5`，代码锚点 HEAD `da77662`（12.134）。commit 编号沿用 `<大版本>.<小版本> <中文描述>`。
+> 依赖锚点：`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
+137:- 由此定 U（2.6），离线图 `reach/U/unified_region.png`；GL 复测 `reach/U/gl/u_results.png`：**118/144，peg_push 35/48、gripper_push 35/48、grasp_putdown 48/48**（V5 基线 5/8、6/8、8/8），失败全是推动接触（推没到位 22、抓杆 4），与位置无关。
+146:| MoveCube 能推多远 | 实测：三种 way 的可达硬边界是离基座 0.31～0.80 m（与 yaw 无关）；统一区域 U 在 GL 真演示 118/144，失败与位置无关；V5 另有 2.7% 的局方块生成时压在杆身，U 带离杆 ≥ 0.04 顺带修 |
+279:| U 第一版（绕桌心挖洞 0.14，已否定）：greatlakes A40 真演示 144 局 | 35/48 | 35/48 | 48/48 | 118/144 |
+280:| **U 圆环版（C0 (−0.06,0)，0.12～0.20）：greatlakes A40 真演示 144 局** | **35/48** | **37/48** | **48/48** | **120/144** |
+285:- 验收：`MC_REGION=PASS violations=0 layout_fail=0`（三物体、推起点、杆身全部按 U 复核）；`MC_DEMO=REPORT ok=…/12`，与 GL 118/144 同量级。
+462:| 4 | MoveCube 两种推法约 27% 推没到位（V5 同量级，与位置无关） | 已实测（GL 118/144）；S3 只做回归 12 局 |
+4:> 分支 `newtaskRelease-v5`，代码锚点 HEAD `da77662`（12.134）。commit 编号沿用 `<大版本>.<小版本> <中文描述>`。
+403:| S1 | 管道改造（2.0）：族判断、档位表、守卫、specs/rollout 按档、tests 扩 7 档；三新档 config 先复制 xhard 值 | 12.136 + 报告 |
+404:| S2 | 共用件：S5 内环/外环/VR 均衡贪心 + 离线均匀性单测；MoveCube 统一区域 U 参数与采样器；VP `return_last_only`；单调性检查器 | 12.137～12.139 |
+405:| S3 | 逐环境填新档值并做本机演示探针（每格 ≥2 局，MoveCube 12 局，VUS/BUS/VR 各档 4 局）；opus subagent 按环境组在独立 worktree 并行，主会话审核合并 | 12.140～12.148 + 逐环境报告 |
+406:| S4 | 重导 `newtask-v6` 快照、测试改指 | 12.149 |
+407:| S5 | V1 V6 侧 144 条 + X0 36 局回放 | 12.150 |
+408:| S6 | 一次多 worker 生成 v6-01（43 格）；tmux 起、Monitor 挂 | 12.151 + 生成报告 |
+409:| S7 | 总报告、`scripts/README.md` 更新、收尾只留正式产物 | 12.152 |

@@ -1,0 +1,76 @@
+
+===== BinFill（103 局）=====
+  official easy   n= 50 T 均值   448.2 中位    451 最大   711  单位数(pick) 1~3
+  official hard   n= 25 T 均值   851.8 中位    868 最大  1044  单位数(pick) 3~5
+  official medium n= 25 T 均值   663.0 中位    655 最大   926  单位数(pick) 2~4
+  v5-01    xhard  n=  3 T 均值  1222.0 中位   1187 最大  1523  单位数(pick) 5~7
+  段长（帧）：
+    official button     n= 100 均值   64.5 sd   9.3 p95     78 最大  107
+    official pick       n= 278 均值  110.2 sd  19.3 p95    134 最大  240
+    official place      n= 278 均值   69.7 sd  10.0 p95     88 最大  101
+    official tail       n= 100 均值   38.4 sd   3.9 p95     45 最大   58
+    v5xhard button     n=   3 均值   75.0 sd  20.5 p95    100 最大  104
+    v5xhard pick       n=  18 均值  111.4 sd  15.5 p95    139 最大  153
+    v5xhard place      n=  18 均值   73.6 sd  11.6 p95     92 最大   94
+    v5xhard tail       n=   3 均值   37.0 sd   3.6 p95     41 最大   42
+  拟合 T ≈ 107.2 + 178.7·u（残差 sd 47.2，最大 171.9）
+  每单位帧数（局内均值）: 均值 181.8 p95 215.5 最大 265.0；固定开销（非单位段）均值 103.2 p95 122 最大 165
+  5000 帧下单位数上限：按均值 26.9，按最坏（固定开销最大 + 每单位最大）18.2
+
+===== PickXtimes（103 局）=====
+  official easy   n= 50 T 均值   460.7 中位    450 最大   645  单位数(pick) 1~3
+  official hard   n= 25 T 均值   796.2 中位    812 最大  1025  单位数(pick) 4~5
+  official medium n= 25 T 均值   431.1 中位    439 最大   593  单位数(pick) 1~3
+  v5-01    xhard  n=  3 T 均值  1149.3 中位   1122 最大  1309  单位数(pick) 6~7
+  段长（帧）：
+    official button     n= 100 均值   62.9 sd   7.4 p95     75 最大   84
+    official pick       n= 267 均值   91.5 sd  23.6 p95    133 最大  186
+    official place      n= 267 均值   71.9 sd  15.3 p95     97 最大  113
+    official tail       n= 100 均值   37.9 sd   2.8 p95     43 最大   47
+    v5xhard button     n=   3 均值   56.7 sd   2.9 p95     60 最大   60
+    v5xhard pick       n=  20 均值   82.5 sd  14.3 p95    112 最大  118
+    v5xhard place      n=  20 均值   75.5 sd  16.3 p95    109 最大  122
+    v5xhard tail       n=   3 均值   38.7 sd   3.8 p95     43 最大   44
+  拟合 T ≈ 160.3 + 141.6·u（残差 sd 41.7，最大 157.1）
+  每单位帧数（局内均值）: 均值 171.6 p95 216.7 最大 243.0；固定开销（非单位段）均值 100.7 p95 113 最大 122
+  5000 帧下单位数上限：按均值 28.6，按最坏（固定开销最大 + 每单位最大）20.1
+
+===== SwingXtimes（103 局）=====
+  official easy   n= 50 T 均值   433.4 中位    430 最大   608  单位数(swingR) 1~3
+  official hard   n= 25 T 均值   490.2 中位    488 最大   570  单位数(swingR) 3~3
+  official medium n= 25 T 均值   379.8 中位    392 最大   471  单位数(swingR) 1~2
+  v5-01    xhard  n=  3 T 均值   800.3 中位    826 最大   926  单位数(swingR) 5~8
+  段长（帧）：
+    official button     n= 100 均值   63.4 sd   8.3 p95     78 最大   84
+    official pick       n= 100 均值  122.3 sd  22.5 p95    178 最大  201
+    official putdown    n= 100 均值   36.2 sd   2.0 p95     40 最大   43
+    official swingL     n= 223 均值   40.5 sd   3.3 p95     46 最大   49
+    official swingR     n= 223 均值   37.4 sd   7.2 p95     46 最大   53
+    official tail       n= 100 均值   38.7 sd   3.9 p95     45 最大   55
+    v5xhard button     n=   3 均值   58.7 sd   0.9 p95     60 最大   60
+    v5xhard pick       n=   3 均值  124.7 sd  23.0 p95    152 最大  157
+    v5xhard putdown    n=   3 均值   35.7 sd   0.9 p95     37 最大   37
+    v5xhard swingL     n=  20 均值   41.7 sd   1.5 p95     43 最大   44
+    v5xhard swingR     n=  20 均值   40.2 sd   3.6 p95     43 最大   43
+    v5xhard tail       n=   3 均值   35.3 sd   1.2 p95     37 最大   37
+  拟合 T ≈ 252.8 + 81.4·u（残差 sd 32.6，最大 111.0）
+  每单位帧数（局内均值）: 均值 77.3 p95 88.0 最大 95.0；固定开销（非单位段）均值 260.5 p95 318 最大 340
+  5000 帧下单位数上限：按均值 61.3，按最坏（固定开销最大 + 每单位最大）49.1
+
+===== PickHighlight（103 局）=====
+  official easy   n= 50 T 均值   228.8 中位    224 最大   320  单位数(pick) 1~1
+  official hard   n= 25 T 均值   540.0 中位    539 最大   652  单位数(pick) 3~3
+  official medium n= 25 T 均值   384.9 中位    384 最大   435  单位数(pick) 2~2
+  v5-01    xhard  n=  3 T 均值   988.0 中位   1032 最大  1060  单位数(pick) 5~6
+  段长（帧）：
+    official button     n= 100 均值  116.5 sd   5.0 p95    125 最大  128
+    official pick       n= 175 均值   98.0 sd  18.4 p95    126 最大  196
+    official putback    n=  75 均值   56.4 sd   7.2 p95     72 最大   75
+    official tail       n= 100 均值   15.3 sd   2.5 p95     20 最大   24
+    v5xhard button     n=   3 均值  120.3 sd   5.3 p95    126 最大  127
+    v5xhard pick       n=  17 均值  103.6 sd  10.5 p95    118 最大  132
+    v5xhard putback    n=  14 均值   56.2 sd   7.5 p95     70 最大   76
+    v5xhard tail       n=   3 均值   18.3 sd   4.1 p95     23 最大   23
+  拟合 T ≈ 67.8 + 159.0·u（残差 sd 25.9，最大 107.0）
+  每单位帧数（局内均值）: 均值 115.2 p95 151.5 最大 189.0；固定开销（非单位段）均值 132.0 p95 142 最大 150
+  5000 帧下单位数上限：按均值 42.3，按最坏（固定开销最大 + 每单位最大）25.7

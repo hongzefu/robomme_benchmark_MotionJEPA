@@ -1,0 +1,43 @@
+LAUNCH_DOCUMENT path=AGENTS.md sha256=d902d745f142eeb089c70fa6d427502a87c1db0050b7792c3cb91f1e51f6f796 bytes=491190
+LAUNCH_DOCUMENT path=NEWTASK_RELEASE_V6_PLAN.md sha256=c81c17e350652fcb0289d2590ff62f07c2716013fd7fcc63cddd75150e63e485 bytes=52877
+LAUNCH_DOCUMENT path=scripts/README.md sha256=33fbf8f79caf845bfcb51d84eb20fdbd9f81ca53c2abc1b68c075d1f61e0cbb0 bytes=86824
+RECOVERY_SOURCE=PASS anchor=c8c06ab755ef448baa24abe245d2f9ec2ffc0add allowed_modified_documents=3 code_frozen=1
+RECOVERY_APPROVAL=PASS anchor=c8c06ab755ef448baa24abe245d2f9ec2ffc0add max_attempts=76
+/home/hongzefu/.local/bin/uv
+/tmp/v6-s4-v6-01-infra-recovery-01/control/manifest.json: OK
+/tmp/v6-s4-v6-01-infra-recovery-01/control/approval.json: OK
+/tmp/v6-s4-v6-01-infra-recovery-01/control/recovery.py: OK
+/tmp/v6-s4-v6-01-infra-recovery-01/control/launch-source.json: OK
+/tmp/v6-s4-v6-01-infra-recovery-01/control/runtime-manifest.json: OK
+/tmp/v6-s4-v6-01-infra-recovery-01/control/runtime_guard.py: OK
+RUNTIME_TREE=PASS baseline=38488db08954ed10c0dd5450a5ccca9b6294d9dd files=397 extra=0 manifest_sha256=a781578c35820f386631887a56fc51dc310c171d439877b2bc29a342710717bd
+ROBOMME_IMPORT=PASS path=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src/robomme/__init__.py
+ROUND 0 jobs=1 ok=1 wall_s=41
+RECOVERY_RESULT task=StopCube episode=3 category=success attempted=1
+ROUND 1 jobs=8 ok=7 wall_s=178
+RECOVERY_RESULT task=StopCube episode=6 category=success attempted=9
+RECOVERY_RESULT task=SwingXtimes episode=0 category=success attempted=9
+RECOVERY_RESULT task=VideoUnmaskSwap episode=0 category=success attempted=9
+RECOVERY_RESULT task=VideoUnmask episode=0 category=success attempted=9
+RECOVERY_RESULT task=VideoRepick episode=0 category=success attempted=9
+RECOVERY_RESULT task=VideoPlaceButton episode=0 category=success attempted=9
+RECOVERY_RESULT task=VideoPlaceOrder episode=0 category=success attempted=9
+RECOVERY_RESULT task=InsertPeg episode=1 category=true_task_failure attempted=9
+ROUND 2 jobs=7 ok=7 wall_s=111
+RECOVERY_RESULT task=SwingXtimes episode=3 category=success attempted=16
+RECOVERY_RESULT task=VideoUnmaskSwap episode=3 category=success attempted=16
+RECOVERY_RESULT task=VideoUnmask episode=3 category=success attempted=16
+RECOVERY_RESULT task=VideoRepick episode=3 category=success attempted=16
+RECOVERY_RESULT task=VideoPlaceButton episode=3 category=success attempted=16
+RECOVERY_RESULT task=VideoPlaceOrder episode=3 category=success attempted=16
+RECOVERY_RESULT task=InsertPeg episode=2 category=success attempted=16
+ROUND 3 jobs=7 ok=7 wall_s=108
+RECOVERY_RESULT task=SwingXtimes episode=6 category=success attempted=23
+RECOVERY_RESULT task=VideoUnmaskSwap episode=6 category=success attempted=23
+RECOVERY_RESULT task=VideoUnmask episode=6 category=success attempted=23
+RECOVERY_RESULT task=VideoRepick episode=6 category=success attempted=23
+RECOVERY_RESULT task=VideoPlaceButton episode=6 category=success attempted=23
+RECOVERY_RESULT task=VideoPlaceOrder episode=6 category=success attempted=23
+RECOVERY_RESULT task=InsertPeg episode=4 category=success attempted=23
+RECOVERY_DONE {"run_name": "v6-01-infra-recovery-01", "attempted": 23, "max_attempts": 76, "stop_reason": null, "success_with_original": {"StopCube": 3, "SwingXtimes": 3, "VideoUnmaskSwap": 3, "VideoUnmask": 3, "VideoRepick": 3, "VideoPlaceButton": 3, "VideoPlaceOrder": 3, "InsertPeg": 3}, "per_task_attempts": {"StopCube": 2, "SwingXtimes": 3, "VideoUnmaskSwap": 3, "VideoUnmask": 3, "VideoRepick": 3, "VideoPlaceButton": 3, "VideoPlaceOrder": 3, "InsertPeg": 3}, "shortfall": {"StopCube": 0, "SwingXtimes": 0, "VideoUnmaskSwap": 0, "VideoUnmask": 0, "VideoRepick": 0, "VideoPlaceButton": 0, "VideoPlaceOrder": 0, "InsertPeg": 0}}
+EXIT_CODE=0

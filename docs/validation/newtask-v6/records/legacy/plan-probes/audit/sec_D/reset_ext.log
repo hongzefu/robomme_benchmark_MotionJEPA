@@ -1,0 +1,9 @@
+DONE PickHighlight n10 n=800 ok=586 fail=214 t=725s
+DONE PickHighlight xhard n=800 ok=713 fail=87 t=785s
+DONE PickHighlight n9 n=800 ok=742 fail=58 t=792s
+DONE PickHighlight xhard3 n=800 ok=770 fail=30 t=806s
+DONE PickHighlight xhard1 n=800 ok=799 fail=1 t=809s
+DONE PickHighlight xhard2 n=800 ok=791 fail=9 t=812s
+DONE PickHighlight n8 n=800 ok=791 fail=9 t=820s
+ALL_DONE
+EXIT_CODE=0

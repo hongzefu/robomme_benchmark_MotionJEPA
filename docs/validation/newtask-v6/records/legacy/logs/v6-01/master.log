@@ -1,0 +1,107 @@
+WORKER 2 EXIT=0
+WORKER 8 EXIT=0
+WORKER 12 EXIT=0
+WORKER 6 EXIT=0
+WORKER 4 EXIT=0
+WORKER 10 EXIT=0
+WORKER 5 EXIT=0
+WORKER 7 EXIT=0
+WORKER 3 EXIT=0
+WORKER 0 EXIT=0
+WORKER 9 EXIT=0
+WORKER 11 EXIT=0
+WORKER 1 EXIT=0
+WORKER 13 EXIT=0
+COMBO_COVERAGE=PASS combos=91 missing_combinations=0 zero_success_combinations=0
+# BinFill [put_in=5,put_in_color=2] reset 5/5 demo 2/5 {'task:DatasetGenerationError': 3}
+# BinFill [put_in=5,put_in_color=3] reset 5/5 demo 4/5 {'task:DatasetGenerationError': 1}
+# BinFill [put_in=6,put_in_color=2] reset 5/5 demo 4/5 {'task:DatasetGenerationError': 1}
+# BinFill [put_in=6,put_in_color=3] reset 5/5 demo 5/5 
+# BinFill [put_in=7,put_in_color=2] reset 5/5 demo 2/5 {'task:DatasetGenerationError': 3}
+# BinFill [put_in=7,put_in_color=3] reset 5/5 demo 2/5 {'task:DatasetGenerationError': 3}
+# ButtonUnmask [distractor_cubes=1] reset 5/5 demo 5/5 
+# ButtonUnmask [distractor_cubes=2] reset 5/5 demo 5/5 
+# ButtonUnmaskSwap [swap=6,distractor_cubes=1] reset 5/5 demo 4/5 {'task:BinCollisionError': 1}
+# ButtonUnmaskSwap [swap=6,distractor_cubes=2] reset 5/5 demo 3/5 {'task:BinCollisionError': 2}
+# ButtonUnmaskSwap [swap=7,distractor_cubes=1] reset 5/5 demo 4/5 {'task:BinCollisionError': 1}
+# ButtonUnmaskSwap [swap=7,distractor_cubes=2] reset 5/5 demo 5/5 
+# ButtonUnmaskSwap [swap=8,distractor_cubes=1] reset 5/5 demo 4/5 {'task:BinCollisionError': 1}
+# ButtonUnmaskSwap [swap=8,distractor_cubes=2] reset 5/5 demo 4/5 {'task:BinCollisionError': 1}
+# InsertPeg [default] reset 5/5 demo 5/5 
+# MoveCube [default] reset 5/5 demo 5/5 
+# PatternLock [length=20] reset 5/5 demo 5/5 
+# PatternLock [length=21] reset 5/5 demo 5/5 
+# PatternLock [length=22] reset 5/5 demo 5/5 
+# PatternLock [length=23] reset 5/5 demo 5/5 
+# PatternLock [length=24] reset 5/5 demo 5/5 
+# PatternLock [length=25] reset 5/5 demo 5/5 
+# PickHighlight [highlight=5,spawn=8] reset 5/5 demo 5/5 
+# PickHighlight [highlight=5,spawn=9] reset 5/5 demo 5/5 
+# PickHighlight [highlight=5,spawn=10] reset 5/5 demo 3/5 {'task:DatasetGenerationError': 2}
+# PickHighlight [highlight=6,spawn=8] reset 5/5 demo 5/5 
+# PickHighlight [highlight=6,spawn=9] reset 5/5 demo 5/5 
+# PickHighlight [highlight=6,spawn=10] reset 5/5 demo 5/5 
+# PickHighlight [highlight=7,spawn=8] reset 5/5 demo 5/5 
+# PickHighlight [highlight=7,spawn=9] reset 5/5 demo 5/5 
+# PickHighlight [highlight=7,spawn=10] reset 5/5 demo 5/5 
+# PickXtimes [num=6] reset 5/5 demo 4/5 {'task:DatasetGenerationError': 1}
+# PickXtimes [num=7] reset 5/5 demo 5/5 
+# PickXtimes [num=8] reset 5/5 demo 5/5 
+# PickXtimes [num=9] reset 5/5 demo 5/5 
+# PickXtimes [num=10] reset 5/5 demo 4/5 {'task:DatasetGenerationError': 1}
+# PickXtimes [num=11] reset 5/5 demo 4/5 {'task:DatasetGenerationError': 1}
+# PickXtimes [num=12] reset 5/5 demo 5/5 
+# PickXtimes [num=13] reset 5/5 demo 5/5 
+# PickXtimes [num=14] reset 5/5 demo 5/5 
+# PickXtimes [num=15] reset 5/5 demo 4/5 {'task:DatasetGenerationError': 1}
+# RouteStick [L=12] reset 5/5 demo 5/5 
+# RouteStick [L=13] reset 5/5 demo 5/5 
+# RouteStick [L=14] reset 5/5 demo 5/5 
+# RouteStick [L=15] reset 5/5 demo 5/5 
+# StopCube [stop_time=6] reset 5/5 demo 5/5 
+# StopCube [stop_time=7] reset 5/5 demo 5/5 
+# StopCube [stop_time=8] reset 5/5 demo 5/5 
+# StopCube [stop_time=9] reset 5/5 demo 5/5 
+# StopCube [stop_time=10] reset 5/5 demo 5/5 
+# StopCube [stop_time=11] reset 5/5 demo 5/5 
+# StopCube [stop_time=12] reset 5/5 demo 5/5 
+# StopCube [stop_time=13] reset 5/5 demo 5/5 
+# StopCube [stop_time=14] reset 5/5 demo 5/5 
+# StopCube [stop_time=15] reset 5/5 demo 5/5 
+# SwingXtimes [num=4] reset 5/5 demo 5/5 
+# SwingXtimes [num=5] reset 5/5 demo 5/5 
+# SwingXtimes [num=6] reset 5/5 demo 4/5 {'task:DatasetGenerationError': 1}
+# SwingXtimes [num=7] reset 5/5 demo 5/5 
+# SwingXtimes [num=8] reset 5/5 demo 5/5 
+# SwingXtimes [num=9] reset 5/5 demo 5/5 
+# SwingXtimes [num=10] reset 5/5 demo 5/5 
+# VideoPlaceButton [default] reset 4/5 demo 4/5 {'task:SceneGenerationError': 1}
+# VideoPlaceOrder [default] reset 3/5 demo 3/5 {'code:TypeError': 2}
+# VideoRepick [swap=8,repeats=4] reset 5/5 demo 3/5 {'task:BinCollisionError': 2}
+# VideoRepick [swap=8,repeats=5] reset 5/5 demo 2/5 {'task:BinCollisionError': 3}
+# VideoRepick [swap=8,repeats=6] reset 5/5 demo 2/5 {'task:BinCollisionError': 3}
+# VideoRepick [swap=9,repeats=4] reset 5/5 demo 4/5 {'task:BinCollisionError': 1}
+# VideoRepick [swap=9,repeats=5] reset 5/5 demo 2/5 {'task:DatasetGenerationError': 1, 'task:BinCollisionError': 2}
+# VideoRepick [swap=9,repeats=6] reset 5/5 demo 3/5 {'task:DatasetGenerationError': 1, 'task:BinCollisionError': 1}
+# VideoRepick [swap=10,repeats=4] reset 5/5 demo 3/5 {'task:BinCollisionError': 2}
+# VideoRepick [swap=10,repeats=5] reset 5/5 demo 3/5 {'task:BinCollisionError': 2}
+# VideoRepick [swap=10,repeats=6] reset 5/5 demo 3/5 {'task:BinCollisionError': 2}
+# VideoRepick [swap=11,repeats=4] reset 5/5 demo 4/5 {'task:BinCollisionError': 1}
+# VideoRepick [swap=11,repeats=5] reset 5/5 demo 4/5 {'task:BinCollisionError': 1}
+# VideoRepick [swap=11,repeats=6] reset 5/5 demo 5/5 
+# VideoRepick [swap=12,repeats=4] reset 5/5 demo 2/5 {'task:BinCollisionError': 3}
+# VideoRepick [swap=12,repeats=5] reset 5/5 demo 5/5 
+# VideoRepick [swap=12,repeats=6] reset 5/5 demo 5/5 
+# VideoUnmask [distractor_cubes=1] reset 5/5 demo 5/5 
+# VideoUnmask [distractor_cubes=2] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=8,distractor_cubes=1] reset 5/5 demo 4/5 {'task:BinCollisionError': 1}
+# VideoUnmaskSwap [swap=8,distractor_cubes=2] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=9,distractor_cubes=1] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=9,distractor_cubes=2] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=10,distractor_cubes=1] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=10,distractor_cubes=2] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=11,distractor_cubes=1] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=11,distractor_cubes=2] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=12,distractor_cubes=1] reset 5/5 demo 5/5 
+# VideoUnmaskSwap [swap=12,distractor_cubes=2] reset 5/5 demo 5/5 
+EXIT_CODE=0

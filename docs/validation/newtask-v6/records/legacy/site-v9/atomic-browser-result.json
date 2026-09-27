@@ -1,0 +1,278 @@
+{
+  "status": "PASS",
+  "samples": [
+    {
+      "task": "VideoPlaceButton",
+      "tier": "hard",
+      "id": "88cd8afb207a509b36ac4667",
+      "demo_subgoals": 9,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "hard",
+      "id": "2d8f82cde1e12c7a72445521",
+      "demo_subgoals": 9,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "hard",
+      "id": "472eaf1be6f71e9358efbf2e",
+      "demo_subgoals": 9,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard1",
+      "id": "81ac9faf048ff482643dcdf8",
+      "demo_subgoals": 11,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard1",
+      "id": "caf0c2c73b0542f5c8b86ae4",
+      "demo_subgoals": 11,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard1",
+      "id": "5bbb4f0947278a0575da4c51",
+      "demo_subgoals": 11,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard2",
+      "id": "7f860bb2ecf2a4c76eac98bf",
+      "demo_subgoals": 13,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard2",
+      "id": "4b787ce57e57b71e0fe94449",
+      "demo_subgoals": 13,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard2",
+      "id": "1da999ca4ed5da085bbd90e7",
+      "demo_subgoals": 13,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard3",
+      "id": "aff3336b4343cae02ad6d767",
+      "demo_subgoals": 17,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard3",
+      "id": "6b87bdeb088af47999a03623",
+      "demo_subgoals": 17,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard3",
+      "id": "2e88732211d3f6de43580fcd",
+      "demo_subgoals": 17,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard4",
+      "id": "ff2a72799a4e7734ae2e6b63",
+      "demo_subgoals": 19,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard4",
+      "id": "8e67b3129d0de9ee558f1cb2",
+      "demo_subgoals": 19,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "tier": "xhard4",
+      "id": "d5e20a74ab0f182dc9f6e867",
+      "demo_subgoals": 19,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "hard",
+      "id": "b91c44b2e40e4df9070653dd",
+      "demo_subgoals": 13,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "hard",
+      "id": "22f7d8e02cf7cf21d111fb17",
+      "demo_subgoals": 11,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "hard",
+      "id": "2d6d2cff285699fba5bc53e3",
+      "demo_subgoals": 13,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard1",
+      "id": "e227e18d965e14a247e86fc4",
+      "demo_subgoals": 17,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard1",
+      "id": "08444a6b3bd255c7694a6aff",
+      "demo_subgoals": 17,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard1",
+      "id": "dd6b6ebb25b7d661a4b0e379",
+      "demo_subgoals": 17,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard2",
+      "id": "3e15095a06d5c6cc689f51fd",
+      "demo_subgoals": 19,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard2",
+      "id": "6ebb1d88d84a69e41a35db10",
+      "demo_subgoals": 19,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard2",
+      "id": "6de1f74c9a1fd6c6050629a6",
+      "demo_subgoals": 19,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard3",
+      "id": "70e12ba3f61de11ce8e49ee1",
+      "demo_subgoals": 21,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard3",
+      "id": "89e48e8124ab65ef7adf8a85",
+      "demo_subgoals": 21,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard3",
+      "id": "4a9d61471d37b60faff15777",
+      "demo_subgoals": 21,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard4",
+      "id": "18475ff9a26958dda6588a4b",
+      "demo_subgoals": 23,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard4",
+      "id": "e72501eab405879262cfa4bb",
+      "demo_subgoals": 23,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "tier": "xhard4",
+      "id": "381aa0388c629a33ed1105f1",
+      "demo_subgoals": 23,
+      "execution_subgoals": 2,
+      "list_exact": true,
+      "playback": true
+    }
+  ],
+  "page_errors": [],
+  "mobile_no_overflow": true,
+  "other_tasks_unchanged": true
+}

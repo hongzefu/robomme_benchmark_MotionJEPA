@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """轻量测试：官方比较器的稀疏范围适配（闸门 G5，不加载仿真、不占 GPU）。
 
-对应 0921-newtask-release-v3-plan.md 第二部分 9.6：连续范围与官方原函数同结果、
+对应 docs/plans/0921-newtask-release-v3-plan.md 第二部分 9.6：连续范围与官方原函数同结果、
 稀疏范围精确对应、重复／缺失／额外／身份不符必须拒绝，dtype 变化与非有限值
 保留原失败结果。夹具是离线合成的小 HDF5，不算官方 train 覆盖。
 

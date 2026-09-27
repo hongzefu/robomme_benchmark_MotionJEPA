@@ -1,0 +1,30 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src",
+  "src_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base-source",
+  "official_module": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base-source/src/robomme/__init__.py",
+  "removed_sys_path_entries": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/src"
+  ],
+  "workers": 1,
+  "gpu": "0",
+  "sampling_config": null,
+  "episode_specs": null,
+  "worker": "official._worker",
+  "elapsed_seconds": 26.044,
+  "results": [
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "seed": 4000,
+      "difficulty": "easy",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "ok": true,
+      "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/s0/base-smoke/B/BinFill_episode_0/hdf5_files/BinFill_ep0_seed4000.h5",
+      "timestep_count": 550
+    }
+  ]
+}

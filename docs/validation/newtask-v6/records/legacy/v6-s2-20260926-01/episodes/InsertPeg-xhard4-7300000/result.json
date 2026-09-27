@@ -1,0 +1,32 @@
+{
+  "id": "InsertPeg-xhard4-7300000",
+  "task": "InsertPeg",
+  "difficulty": "xhard4",
+  "seed": 7300000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/InsertPeg.json",
+  "ok": false,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 52.673,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "InsertPeg",
+      "seed": 7300000,
+      "difficulty": "xhard4",
+      "ok": false,
+      "failure_class": "task",
+      "error_type": "DatasetGenerationError",
+      "error": "InsertPeg/episode_9: 跑完整个 task_list 仍未成功",
+      "wall_s": 48.3,
+      "timesteps": null
+    }
+  ],
+  "hdf5": [],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/InsertPeg-xhard4-7300000/videos/FAILED_InsertPeg_ep9_seed7300000_xhard4_watch_the_video_carefully_then_grasp_the_same_end_of_the_same_peg_you_ve_picked_before_and_insert_it_into_the_same_side_of_the_box__ALT__watch_the_video_careful__HASH__ccd30e506455.mp4"
+  ]
+}

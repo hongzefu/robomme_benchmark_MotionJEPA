@@ -1,0 +1,1449 @@
+{
+  "cells": [
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "BinFill-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 4,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/BinFill-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        8400000,
+        8400100
+      ],
+      "task": "BinFill"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "BinFill-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 4,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/BinFill-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        10400000,
+        10400100
+      ],
+      "task": "BinFill"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "BinFill-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 4,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/BinFill-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        12400000,
+        12400100
+      ],
+      "task": "BinFill"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PickXtimes-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 1,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PickXtimes-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        8100000,
+        8100100
+      ],
+      "task": "PickXtimes"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PickXtimes-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 1,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PickXtimes-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        10100000,
+        10100100
+      ],
+      "task": "PickXtimes"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PickXtimes-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 1,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PickXtimes-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        12100000,
+        12100100
+      ],
+      "task": "PickXtimes"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "SwingXtimes-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 3,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/SwingXtimes-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        8300000,
+        8300100
+      ],
+      "task": "SwingXtimes"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "SwingXtimes-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 3,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/SwingXtimes-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        10300000,
+        10300100
+      ],
+      "task": "SwingXtimes"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "SwingXtimes-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 3,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/SwingXtimes-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        12300000,
+        12300100
+      ],
+      "task": "SwingXtimes"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PickHighlight-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 12,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PickHighlight-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        9200000,
+        9200100
+      ],
+      "task": "PickHighlight"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PickHighlight-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 12,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PickHighlight-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        11200000,
+        11200100
+      ],
+      "task": "PickHighlight"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PickHighlight-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 12,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PickHighlight-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        13200000,
+        13200100
+      ],
+      "task": "PickHighlight"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoUnmask-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 6,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoUnmask-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        8600000,
+        8600100
+      ],
+      "task": "VideoUnmask"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoUnmask-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 6,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoUnmask-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        10600000,
+        10600100
+      ],
+      "task": "VideoUnmask"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoUnmask-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 6,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoUnmask-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        12600000,
+        12600100
+      ],
+      "task": "VideoUnmask"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "ButtonUnmask-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 8,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/ButtonUnmask-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        8800000,
+        8800100
+      ],
+      "task": "ButtonUnmask"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "ButtonUnmask-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 8,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/ButtonUnmask-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        10800000,
+        10800100
+      ],
+      "task": "ButtonUnmask"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "ButtonUnmask-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 8,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/ButtonUnmask-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        12800000,
+        12800100
+      ],
+      "task": "ButtonUnmask"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "VideoUnmaskSwap-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 5,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoUnmaskSwap-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        8500000,
+        8500100,
+        8500200,
+        8500300
+      ],
+      "task": "VideoUnmaskSwap"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "VideoUnmaskSwap-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 5,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoUnmaskSwap-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        10500000,
+        10500100,
+        10500200,
+        10500300
+      ],
+      "task": "VideoUnmaskSwap"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "VideoUnmaskSwap-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 5,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoUnmaskSwap-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        12500000,
+        12500100,
+        12500200,
+        12500300
+      ],
+      "task": "VideoUnmaskSwap"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "ButtonUnmaskSwap-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 7,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/ButtonUnmaskSwap-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        8700000,
+        8700100,
+        8700200,
+        8700300
+      ],
+      "task": "ButtonUnmaskSwap"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "ButtonUnmaskSwap-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 7,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/ButtonUnmaskSwap-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        10700000,
+        10700100,
+        10700200,
+        10700300
+      ],
+      "task": "ButtonUnmaskSwap"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "ButtonUnmaskSwap-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 7,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/ButtonUnmaskSwap-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        12700000,
+        12700100,
+        12700200,
+        12700300
+      ],
+      "task": "ButtonUnmaskSwap"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "VideoRepick-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 9,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoRepick-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        8900000,
+        8900100,
+        8900200,
+        8900300
+      ],
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "VideoRepick-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 9,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoRepick-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        10900000,
+        10900100,
+        10900200,
+        10900300
+      ],
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "VideoRepick-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 9,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoRepick-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        12900000,
+        12900100,
+        12900200,
+        12900300
+      ],
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PatternLock-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 15,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PatternLock-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        9500000,
+        9500100
+      ],
+      "task": "PatternLock"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PatternLock-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 15,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PatternLock-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        11500000,
+        11500100
+      ],
+      "task": "PatternLock"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PatternLock-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 15,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PatternLock-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        13500000,
+        13500100
+      ],
+      "task": "PatternLock"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "RouteStick-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 16,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/RouteStick-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        9600000,
+        9600100
+      ],
+      "task": "RouteStick"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "RouteStick-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 16,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/RouteStick-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        11600000,
+        11600100
+      ],
+      "task": "RouteStick"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "RouteStick-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 16,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/RouteStick-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        13600000,
+        13600100
+      ],
+      "task": "RouteStick"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoPlaceButton-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 10,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoPlaceButton-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        9000000,
+        9000100
+      ],
+      "task": "VideoPlaceButton"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoPlaceButton-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 10,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoPlaceButton-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        11000000,
+        11000100
+      ],
+      "task": "VideoPlaceButton"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoPlaceButton-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 10,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoPlaceButton-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        13000000,
+        13000100
+      ],
+      "task": "VideoPlaceButton"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoPlaceOrder-xhard1",
+      "difficulty": "xhard1",
+      "env_code": 11,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoPlaceOrder-xhard1",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 8000000,
+      "seeds": [
+        9100000,
+        9100100
+      ],
+      "task": "VideoPlaceOrder"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoPlaceOrder-xhard2",
+      "difficulty": "xhard2",
+      "env_code": 11,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoPlaceOrder-xhard2",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 10000000,
+      "seeds": [
+        11100000,
+        11100100
+      ],
+      "task": "VideoPlaceOrder"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoPlaceOrder-xhard3",
+      "difficulty": "xhard3",
+      "env_code": 11,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoPlaceOrder-xhard3",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 12000000,
+      "seeds": [
+        13100000,
+        13100100
+      ],
+      "task": "VideoPlaceOrder"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PickXtimes-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 1,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PickXtimes-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6100000,
+        6100100
+      ],
+      "task": "PickXtimes"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "StopCube-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 2,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/StopCube-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/StopCube.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6200000,
+        6200100
+      ],
+      "task": "StopCube"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "SwingXtimes-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 3,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/SwingXtimes-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/SwingXtimes.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6300000,
+        6300100
+      ],
+      "task": "SwingXtimes"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "BinFill-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 4,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/BinFill-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6400000,
+        6400100
+      ],
+      "task": "BinFill"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "VideoUnmaskSwap-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 5,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoUnmaskSwap-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6500000,
+        6500100,
+        6500200,
+        6500300
+      ],
+      "task": "VideoUnmaskSwap"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoUnmask-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 6,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoUnmask-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmask.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6600000,
+        6600100
+      ],
+      "task": "VideoUnmask"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "ButtonUnmaskSwap-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 7,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/ButtonUnmaskSwap-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6700000,
+        6700100,
+        6700200,
+        6700300
+      ],
+      "task": "ButtonUnmaskSwap"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "ButtonUnmask-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 8,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/ButtonUnmask-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmask.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6800000,
+        6800100
+      ],
+      "task": "ButtonUnmask"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 4,
+      "candidate_episode_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "cell_id": "VideoRepick-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 9,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoRepick-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        6900000,
+        6900100,
+        6900200,
+        6900300
+      ],
+      "task": "VideoRepick"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoPlaceButton-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 10,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoPlaceButton-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        7000000,
+        7000100
+      ],
+      "task": "VideoPlaceButton"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "VideoPlaceOrder-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 11,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/VideoPlaceOrder-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        7100000,
+        7100100
+      ],
+      "task": "VideoPlaceOrder"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PickHighlight-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 12,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PickHighlight-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        7200000,
+        7200100
+      ],
+      "task": "PickHighlight"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "InsertPeg-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 13,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/InsertPeg-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/InsertPeg.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        7300000,
+        7300100
+      ],
+      "task": "InsertPeg"
+    },
+    {
+      "attempted_demos": 12,
+      "cell_id": "MoveCube-xhard4",
+      "difficulty": "xhard4",
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/MoveCube-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/MoveCube.json",
+      "seed_selection": {
+        "rule": "仅取 reset_ok=true；按 episode、attempt、seed 升序；按 way_idx=0/1/2 各取前4条",
+        "seed_formula": "6000000 + 14*100000 + episode*100 + attempt",
+        "selected_seeds": null,
+        "shortfall_action": "若某分支不足4条，单独扩充 MoveCube xhard4 抽签候选后重按相同排序选取；不得用其他分支替代",
+        "source": "artifacts/newtask-v6/s1-reset/xhard4/drafts.jsonl",
+        "spec_path": "spec.initializations.0.way_idx",
+        "way_idx_map": {
+          "0": "peg_push",
+          "1": "gripper_push",
+          "2": "grasp_putdown"
+        },
+        "candidate_episode_range": [
+          0,
+          199
+        ],
+        "candidate_attempt_zero_seed_range": [
+          7400000,
+          7419900
+        ],
+        "candidate_rule": "S1 xhard4 MoveCube 成功 reset 的 episode 0..199；实际选中 seed 取 drafts 行，失败重试时含 attempt 项"
+      },
+      "task": "MoveCube"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "PatternLock-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 15,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/PatternLock-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        7500000,
+        7500100
+      ],
+      "task": "PatternLock"
+    },
+    {
+      "attempt": 0,
+      "attempted_demos": 2,
+      "candidate_episode_indices": [
+        0,
+        1
+      ],
+      "cell_id": "RouteStick-xhard4",
+      "difficulty": "xhard4",
+      "env_code": 16,
+      "failure_accounting": "固定尝试数内失败保留在分母，不自动重抽；成功局数另报",
+      "output_dir": "artifacts/newtask-v6/plan-probes/s2/RouteStick-xhard4",
+      "probe_episode_arg": 9,
+      "probe_recovery": "关闭：v4_demo_probe 的 episode=9 不触发 recovery",
+      "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json",
+      "seed_formula": "offset + env_code*100000 + episode*100 + attempt",
+      "seed_offset": 6000000,
+      "seeds": [
+        7600000,
+        7600100
+      ],
+      "task": "RouteStick"
+    }
+  ],
+  "movecube_branch_selection": {
+    "drafts_path": "artifacts/newtask-v6/s1-reset/xhard4/drafts.jsonl",
+    "mapping": {
+      "0": "peg_push",
+      "1": "gripper_push",
+      "2": "grasp_putdown"
+    },
+    "probe_reproduction": "用选中的12个seed重跑v4_demo_probe，episode参数固定9（无recovery）；探针summary不带way_idx，报告须附seed到way_idx映射。",
+    "required_header_difficulty": "xhard4",
+    "required_header_tasks_contains": "MoveCube",
+    "selection": "reset_ok=true；按episode、attempt、seed升序；每个way_idx各取前4条，并保留所选seed及way_idx的映射表。",
+    "spec_path": "spec.initializations.0.way_idx",
+    "candidate_episode_range": [
+      0,
+      199
+    ],
+    "candidate_attempt_zero_seed_range": [
+      7400000,
+      7419900
+    ]
+  },
+  "schema": "v6-s2-demo-probe-plan/1",
+  "scope": {
+    "attempted_demo_count": 144,
+    "cell_count": 55,
+    "count_breakdown": {
+      "four_per_cell": 12,
+      "movecube_xhard4_twelve": 1,
+      "two_per_cell": 42
+    },
+    "gradient_tasks": [
+      "BinFill",
+      "PickXtimes",
+      "SwingXtimes",
+      "PickHighlight",
+      "VideoUnmask",
+      "ButtonUnmask",
+      "VideoUnmaskSwap",
+      "ButtonUnmaskSwap",
+      "VideoRepick",
+      "PatternLock",
+      "RouteStick",
+      "VideoPlaceButton",
+      "VideoPlaceOrder"
+    ],
+    "interpretation": "只覆盖V6新值发布格：13个梯度环境的xhard1/xhard2/xhard3，加全部16个环境的xhard4；不包含原easy/medium/hard V1对拍格。",
+    "newvalue_tiers": [
+      "xhard1",
+      "xhard2",
+      "xhard3",
+      "xhard4"
+    ],
+    "xhard4_tasks": [
+      "PickXtimes",
+      "StopCube",
+      "SwingXtimes",
+      "BinFill",
+      "VideoUnmaskSwap",
+      "VideoUnmask",
+      "ButtonUnmaskSwap",
+      "ButtonUnmask",
+      "VideoRepick",
+      "VideoPlaceButton",
+      "VideoPlaceOrder",
+      "PickHighlight",
+      "InsertPeg",
+      "MoveCube",
+      "PatternLock",
+      "RouteStick"
+    ]
+  },
+  "seed_rules": {
+    "env_codes": {
+      "BinFill": 4,
+      "ButtonUnmask": 8,
+      "ButtonUnmaskSwap": 7,
+      "InsertPeg": 13,
+      "MoveCube": 14,
+      "PatternLock": 15,
+      "PickHighlight": 12,
+      "PickXtimes": 1,
+      "RouteStick": 16,
+      "StopCube": 2,
+      "SwingXtimes": 3,
+      "VideoPlaceButton": 10,
+      "VideoPlaceOrder": 11,
+      "VideoRepick": 9,
+      "VideoUnmask": 6,
+      "VideoUnmaskSwap": 5
+    },
+    "formula": "offset + env_code*100000 + episode*100 + attempt",
+    "offsets": {
+      "xhard1": 8000000,
+      "xhard2": 10000000,
+      "xhard3": 12000000,
+      "xhard4": 6000000
+    },
+    "ordinary_cells": "episode取0起的attempted_demos个索引，attempt=0；v4_demo_probe以显式--seeds接收seed。",
+    "probe_episode_arg": 9
+  },
+  "source": {
+    "git_head_at_preparation": "75865a26cb7ebc3d9c1ab30fc284241503f59493",
+    "plan_path": "NEWTASK_RELEASE_V6_PLAN.md",
+    "plan_sha256": "8fe37e2753801d1e8a026388a1be8e5308eae6ca0894341c8dd384fe28198109",
+    "sampling_snapshot_path": "scripts/configs/newtask-v6/sampling_config.json",
+    "sampling_snapshot_sha256": "6ab3b0c218ad77e29f765f98f2e670c7462d386db9f23257e282242094a5dab3"
+  },
+  "special_sampling": {
+    "BUS": "ButtonUnmaskSwap",
+    "MoveCube": "xhard4共12局，peg_push/gripper_push/grasp_putdown三分支各4局；seed在S1 xhard4 drafts完成后按spec中的way_idx确定。",
+    "VR": "VideoRepick",
+    "VUS": "VideoUnmaskSwap",
+    "rule": "上述三个环境的xhard1/xhard2/xhard3/xhard4每格4次尝试。"
+  },
+  "videorepick_xhard4_reset_rate": {
+    "fallback_attempts": 200,
+    "fallback_manifest": "artifacts/newtask-v6/s2-prep/videorepick_xhard4_reset_manifest.json",
+    "filter": "task=VideoRepick 且 difficulty=xhard4",
+    "preferred_source": "artifacts/newtask-v6/s1-reset/xhard4/drafts.jsonl",
+    "rate": "sum(reset_ok=true) / drafts行数（成功与失败尝试都计入分母）",
+    "report": "同时列总尝试数、成功数、失败数及fail_class分布；这是S1抽签过程的经验reset接受率。"
+  }
+}

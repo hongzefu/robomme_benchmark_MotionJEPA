@@ -1,0 +1,26 @@
+=== START seed=5500000 ep=0 03:24:41
+Traceback (most recent call last):
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v5/plan-probes-r2/patternlock_2425/demo_probe.py", line 13, in <module>
+    assert "/robomme_v5_probe_wt/" in PLm.__file__, PLm.__file__
+                                      ^^^^^^^^^^^^
+AttributeError: type object 'PatternLock' has no attribute '__file__'. Did you mean: '__le__'?
+=== START seed=5500300 ep=3 03:24:45
+Traceback (most recent call last):
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v5/plan-probes-r2/patternlock_2425/demo_probe.py", line 13, in <module>
+    assert "/robomme_v5_probe_wt/" in PLm.__file__, PLm.__file__
+                                      ^^^^^^^^^^^^
+AttributeError: type object 'PatternLock' has no attribute '__file__'. Did you mean: '__le__'?
+=== START seed=5500600 ep=6 03:24:48
+Traceback (most recent call last):
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v5/plan-probes-r2/patternlock_2425/demo_probe.py", line 13, in <module>
+    assert "/robomme_v5_probe_wt/" in PLm.__file__, PLm.__file__
+                                      ^^^^^^^^^^^^
+AttributeError: type object 'PatternLock' has no attribute '__file__'. Did you mean: '__le__'?
+=== START seed=5500900 ep=9 03:24:51
+Traceback (most recent call last):
+  File "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v5/plan-probes-r2/patternlock_2425/demo_probe.py", line 13, in <module>
+    assert "/robomme_v5_probe_wt/" in PLm.__file__, PLm.__file__
+                                      ^^^^^^^^^^^^
+AttributeError: type object 'PatternLock' has no attribute '__file__'. Did you mean: '__le__'?
+DEMO_BATCH_DONE
+EXIT_CODE=0

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V6 组合覆盖（口径 14 / N11 / H3 / J8；0922-newtask-release-v4-plan.md 步 3c）。
+"""V6 组合覆盖（口径 14 / N11 / H3 / J8；docs/plans/0922-newtask-release-v4-plan.md 步 3c）。
 
 对冻结组合清单里的每个组合，把 xhard 声明范围收窄到该组合的取值（离散量逐值、连续量取端点，与其他参数交叉），
 用与正式生成逐字相同的 ``generate_dataset_newseed._worker`` 跑 ``--samples`` 条演示，两级都报：

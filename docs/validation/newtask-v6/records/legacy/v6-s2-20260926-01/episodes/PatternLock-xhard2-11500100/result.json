@@ -1,0 +1,34 @@
+{
+  "id": "PatternLock-xhard2-11500100",
+  "task": "PatternLock",
+  "difficulty": "xhard2",
+  "seed": 11500100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 63.276,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "PatternLock",
+      "seed": 11500100,
+      "difficulty": "xhard2",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 58.3,
+      "timesteps": 1018
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PatternLock-xhard2-11500100/hdf5_files/PatternLock_ep9_seed11500100.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PatternLock-xhard2-11500100/videos/PatternLock_ep9_seed11500100_xhard2_watch_the_video_carefully_then_use_the_stick_attached_to_the_robot_to_retrace_the_same_pattern__ALT__watch_the_video_carefully_then_use_the_stick_attached_to_th__HASH__61214aacd7ae.mp4"
+  ]
+}

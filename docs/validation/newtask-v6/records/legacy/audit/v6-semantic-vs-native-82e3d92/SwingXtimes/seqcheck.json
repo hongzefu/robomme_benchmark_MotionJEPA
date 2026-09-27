@@ -1,0 +1,432 @@
+[
+ {
+  "tier": "xhard1",
+  "ep": 0,
+  "chain_match": true,
+  "n": 4,
+  "frames": 630,
+  "video": [
+   [
+    630,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard1",
+  "ep": 3,
+  "chain_match": true,
+  "n": 4,
+  "frames": 522,
+  "video": [
+   [
+    522,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard1",
+  "ep": 6,
+  "chain_match": true,
+  "n": 5,
+  "frames": 680,
+  "video": [
+   [
+    680,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "ep": 0,
+  "chain_match": true,
+  "n": 6,
+  "frames": 775,
+  "video": [
+   [
+    775,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "ep": 3,
+  "chain_match": true,
+  "n": 7,
+  "frames": 859,
+  "video": [
+   [
+    859,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "ep": 6,
+  "chain_match": true,
+  "n": 6,
+  "frames": 658,
+  "video": [
+   [
+    658,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "ep": 0,
+  "chain_match": true,
+  "n": 8,
+  "frames": 917,
+  "video": [
+   [
+    917,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "ep": 3,
+  "chain_match": true,
+  "n": 8,
+  "frames": 838,
+  "video": [
+   [
+    838,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "ep": 6,
+  "chain_match": true,
+  "n": 8,
+  "frames": 957,
+  "video": [
+   [
+    957,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "ep": 0,
+  "chain_match": true,
+  "n": 11,
+  "frames": 1261,
+  "video": [
+   [
+    1261,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "ep": 3,
+  "chain_match": true,
+  "n": 10,
+  "frames": 1007,
+  "video": [
+   [
+    1007,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "ep": 6,
+  "chain_match": true,
+  "n": 11,
+  "frames": 1106,
+  "video": [
+   [
+    1106,
+    1280,
+    816
+   ],
+   [
+    1,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "easy",
+  "ep": 0,
+  "chain_match": true,
+  "n": 2,
+  "frames": 482,
+  "video": [
+   [
+    482,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "easy",
+  "ep": 1,
+  "chain_match": true,
+  "n": 3,
+  "frames": 608,
+  "video": [
+   [
+    608,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "medium",
+  "ep": 10,
+  "chain_match": true,
+  "n": 2,
+  "frames": 380,
+  "video": [
+   [
+    380,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "hard",
+  "ep": 11,
+  "chain_match": true,
+  "n": 3,
+  "frames": 486,
+  "video": [
+   [
+    486,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "medium",
+  "ep": 2,
+  "chain_match": true,
+  "n": 1,
+  "frames": 396,
+  "video": [
+   [
+    396,
+    1280,
+    768
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "hard",
+  "ep": 3,
+  "chain_match": true,
+  "n": 3,
+  "frames": 535,
+  "video": [
+   [
+    535,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "easy",
+  "ep": 4,
+  "chain_match": true,
+  "n": 2,
+  "frames": 488,
+  "video": [
+   [
+    488,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "medium",
+  "ep": 6,
+  "chain_match": true,
+  "n": 2,
+  "frames": 392,
+  "video": [
+   [
+    392,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ {
+  "tier": "hard",
+  "ep": 7,
+  "chain_match": true,
+  "n": 3,
+  "frames": 504,
+  "video": [
+   [
+    504,
+    1280,
+    816
+   ],
+   [
+    1,
+    1280,
+    816
+   ]
+  ],
+  "letters_head": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ }
+]

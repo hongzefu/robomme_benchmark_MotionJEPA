@@ -1,0 +1,1 @@
+{"task": "VideoPlaceOrder", "seed": 9100100, "difficulty": "xhard1", "ok": false, "failure_class": "task", "error_type": "SceneGenerationError", "error": "Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decrease min_gap.", "wall_s": 1.1, "timesteps": null}

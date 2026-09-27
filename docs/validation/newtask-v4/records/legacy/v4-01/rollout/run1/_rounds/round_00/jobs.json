@@ -1,0 +1,386 @@
+[
+ {
+  "task": "BinFill",
+  "episode": 0,
+  "seed": 4400000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/BinFill_episode_0"
+ },
+ {
+  "task": "BinFill",
+  "episode": 3,
+  "seed": 4400300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/BinFill_episode_3"
+ },
+ {
+  "task": "BinFill",
+  "episode": 6,
+  "seed": 4400600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/BinFill_episode_6"
+ },
+ {
+  "task": "ButtonUnmask",
+  "episode": 0,
+  "seed": 4800000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/ButtonUnmask_episode_0"
+ },
+ {
+  "task": "ButtonUnmask",
+  "episode": 3,
+  "seed": 4800300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/ButtonUnmask_episode_3"
+ },
+ {
+  "task": "ButtonUnmask",
+  "episode": 6,
+  "seed": 4800600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/ButtonUnmask_episode_6"
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "episode": 0,
+  "seed": 4700000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/ButtonUnmaskSwap_episode_0"
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "episode": 3,
+  "seed": 4700300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/ButtonUnmaskSwap_episode_3"
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "episode": 6,
+  "seed": 4700600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/ButtonUnmaskSwap_episode_6"
+ },
+ {
+  "task": "InsertPeg",
+  "episode": 0,
+  "seed": 5300000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/InsertPeg_episode_0"
+ },
+ {
+  "task": "InsertPeg",
+  "episode": 3,
+  "seed": 5300300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/InsertPeg_episode_3"
+ },
+ {
+  "task": "InsertPeg",
+  "episode": 6,
+  "seed": 5300600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/InsertPeg_episode_6"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 0,
+  "seed": 5400000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/MoveCube_episode_0"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 3,
+  "seed": 5400300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/MoveCube_episode_3"
+ },
+ {
+  "task": "MoveCube",
+  "episode": 6,
+  "seed": 5400600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/MoveCube_episode_6"
+ },
+ {
+  "task": "PatternLock",
+  "episode": 0,
+  "seed": 5500000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PatternLock_episode_0"
+ },
+ {
+  "task": "PatternLock",
+  "episode": 3,
+  "seed": 5500300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PatternLock_episode_3"
+ },
+ {
+  "task": "PatternLock",
+  "episode": 6,
+  "seed": 5500600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PatternLock_episode_6"
+ },
+ {
+  "task": "PickHighlight",
+  "episode": 0,
+  "seed": 5200000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PickHighlight_episode_0"
+ },
+ {
+  "task": "PickHighlight",
+  "episode": 3,
+  "seed": 5200300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PickHighlight_episode_3"
+ },
+ {
+  "task": "PickHighlight",
+  "episode": 6,
+  "seed": 5200600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PickHighlight_episode_6"
+ },
+ {
+  "task": "PickXtimes",
+  "episode": 0,
+  "seed": 4100000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PickXtimes_episode_0"
+ },
+ {
+  "task": "PickXtimes",
+  "episode": 3,
+  "seed": 4100300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PickXtimes_episode_3"
+ },
+ {
+  "task": "PickXtimes",
+  "episode": 6,
+  "seed": 4100600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/PickXtimes_episode_6"
+ },
+ {
+  "task": "RouteStick",
+  "episode": 0,
+  "seed": 5600000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/RouteStick_episode_0"
+ },
+ {
+  "task": "RouteStick",
+  "episode": 3,
+  "seed": 5600300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/RouteStick_episode_3"
+ },
+ {
+  "task": "RouteStick",
+  "episode": 6,
+  "seed": 5600600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/RouteStick_episode_6"
+ },
+ {
+  "task": "StopCube",
+  "episode": 0,
+  "seed": 4200000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/StopCube_episode_0"
+ },
+ {
+  "task": "StopCube",
+  "episode": 3,
+  "seed": 4200300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/StopCube_episode_3"
+ },
+ {
+  "task": "StopCube",
+  "episode": 6,
+  "seed": 4200600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/StopCube_episode_6"
+ },
+ {
+  "task": "SwingXtimes",
+  "episode": 0,
+  "seed": 4300000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/SwingXtimes_episode_0"
+ },
+ {
+  "task": "SwingXtimes",
+  "episode": 3,
+  "seed": 4300300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/SwingXtimes_episode_3"
+ },
+ {
+  "task": "SwingXtimes",
+  "episode": 6,
+  "seed": 4300600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/SwingXtimes_episode_6"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "episode": 0,
+  "seed": 5000000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoPlaceButton_episode_0"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "episode": 3,
+  "seed": 5000300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoPlaceButton_episode_3"
+ },
+ {
+  "task": "VideoPlaceButton",
+  "episode": 6,
+  "seed": 5000601,
+  "attempt": 1,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoPlaceButton_episode_6"
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "episode": 0,
+  "seed": 5100000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoPlaceOrder_episode_0"
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "episode": 3,
+  "seed": 5100302,
+  "attempt": 2,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoPlaceOrder_episode_3"
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "episode": 6,
+  "seed": 5100602,
+  "attempt": 2,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoPlaceOrder_episode_6"
+ },
+ {
+  "task": "VideoRepick",
+  "episode": 0,
+  "seed": 4900000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoRepick_episode_0"
+ },
+ {
+  "task": "VideoRepick",
+  "episode": 3,
+  "seed": 4900300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoRepick_episode_3"
+ },
+ {
+  "task": "VideoRepick",
+  "episode": 6,
+  "seed": 4900600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoRepick_episode_6"
+ },
+ {
+  "task": "VideoUnmask",
+  "episode": 0,
+  "seed": 4600000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoUnmask_episode_0"
+ },
+ {
+  "task": "VideoUnmask",
+  "episode": 3,
+  "seed": 4600300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoUnmask_episode_3"
+ },
+ {
+  "task": "VideoUnmask",
+  "episode": 6,
+  "seed": 4600600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoUnmask_episode_6"
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "episode": 0,
+  "seed": 4500000,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoUnmaskSwap_episode_0"
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "episode": 3,
+  "seed": 4500300,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoUnmaskSwap_episode_3"
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "episode": 6,
+  "seed": 4500600,
+  "attempt": 0,
+  "difficulty": "xhard",
+  "worker_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/VideoUnmaskSwap_episode_6"
+ }
+]

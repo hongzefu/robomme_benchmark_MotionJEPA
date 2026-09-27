@@ -1,0 +1,33 @@
+{"task": "BinFill", "combo": "put_in=5,put_in_color=2", "sample": 0, "seed": 7400000, "reset_ok": true, "demo_ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "BinFill/episode_9: 环境报告失败", "wall_s": 66.9}
+{"task": "BinFill", "combo": "put_in=6,put_in_color=2", "sample": 4, "seed": 7400204, "reset_ok": true, "demo_ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "BinFill/episode_9: 环境报告失败", "wall_s": 61.9}
+{"task": "BinFill", "combo": "put_in=7,put_in_color=3", "sample": 3, "seed": 7400503, "reset_ok": true, "demo_ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "BinFill/episode_9: 环境报告失败", "wall_s": 80.5}
+{"task": "ButtonUnmaskSwap", "combo": "swap=6,distractor_cubes=1", "sample": 2, "seed": 7700002, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 44.9}
+{"task": "ButtonUnmaskSwap", "combo": "swap=7,distractor_cubes=2", "sample": 1, "seed": 7700301, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 77.2}
+{"task": "InsertPeg", "combo": "default", "sample": 0, "seed": 8300000, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 59.8}
+{"task": "PatternLock", "combo": "length=20", "sample": 4, "seed": 8500004, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 167.2}
+{"task": "PatternLock", "combo": "length=23", "sample": 3, "seed": 8500303, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 205.4}
+{"task": "PickHighlight", "combo": "highlight=5,spawn=8", "sample": 2, "seed": 8200002, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 116.0}
+{"task": "PickHighlight", "combo": "highlight=6,spawn=8", "sample": 1, "seed": 8200301, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 124.3}
+{"task": "PickHighlight", "combo": "highlight=7,spawn=8", "sample": 0, "seed": 8200600, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 160.0}
+{"task": "PickHighlight", "combo": "highlight=7,spawn=10", "sample": 4, "seed": 8200804, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 158.7}
+{"task": "PickXtimes", "combo": "num=8", "sample": 3, "seed": 7100203, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 167.3}
+{"task": "PickXtimes", "combo": "num=11", "sample": 2, "seed": 7100502, "reset_ok": true, "demo_ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "PickXtimes/episode_9: 环境报告失败", "wall_s": 486.2}
+{"task": "PickXtimes", "combo": "num=14", "sample": 1, "seed": 7100801, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 598.1}
+{"task": "RouteStick", "combo": "L=13", "sample": 0, "seed": 8600100, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 280.3}
+{"task": "RouteStick", "combo": "L=15", "sample": 4, "seed": 8600304, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 352.1}
+{"task": "StopCube", "combo": "stop_time=8", "sample": 3, "seed": 7200203, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 95.4}
+{"task": "StopCube", "combo": "stop_time=11", "sample": 2, "seed": 7200502, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 127.8}
+{"task": "StopCube", "combo": "stop_time=14", "sample": 1, "seed": 7200801, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 152.7}
+{"task": "SwingXtimes", "combo": "num=5", "sample": 0, "seed": 7300100, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 137.1}
+{"task": "SwingXtimes", "combo": "num=7", "sample": 4, "seed": 7300304, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 197.7}
+{"task": "SwingXtimes", "combo": "num=10", "sample": 3, "seed": 7300603, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 249.8}
+{"task": "VideoRepick", "combo": "swap=8,repeats=4", "sample": 2, "seed": 7900002, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 274.8}
+{"task": "VideoRepick", "combo": "swap=9,repeats=4", "sample": 1, "seed": 7900301, "reset_ok": true, "demo_ok": false, "failure_class": "task", "error_type": "BinCollisionError", "error": "碰撞排除[contact] sweep#0 对象 bin_2(形状0) 与 bin_0(形状0) g=-0.0102919297636 s=0.75 中点判定", "wall_s": 47.5}
+{"task": "VideoRepick", "combo": "swap=10,repeats=4", "sample": 0, "seed": 7900600, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 314.5}
+{"task": "VideoRepick", "combo": "swap=10,repeats=6", "sample": 4, "seed": 7900804, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 369.7}
+{"task": "VideoRepick", "combo": "swap=11,repeats=6", "sample": 3, "seed": 7901103, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 440.3}
+{"task": "VideoRepick", "combo": "swap=12,repeats=6", "sample": 2, "seed": 7901402, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 429.0}
+{"task": "VideoUnmaskSwap", "combo": "swap=8,distractor_cubes=1", "sample": 1, "seed": 7500001, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 231.9}
+{"task": "VideoUnmaskSwap", "combo": "swap=9,distractor_cubes=2", "sample": 0, "seed": 7500300, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 302.5}
+{"task": "VideoUnmaskSwap", "combo": "swap=10,distractor_cubes=2", "sample": 4, "seed": 7500504, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 288.7}
+{"task": "VideoUnmaskSwap", "combo": "swap=12,distractor_cubes=1", "sample": 3, "seed": 7500803, "reset_ok": true, "demo_ok": true, "failure_class": null, "error_type": null, "error": null, "wall_s": 280.0}

@@ -1,6 +1,6 @@
 # 步 4 报告：`episode_spec` 的只读导出与原值回注（2026-09-21）
 
-对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 4，闸门 G4（`SPEC_BINDING`）与 P4（`INJECTION_PARITY` 的 B↔C↔D 与 A1↔D）。本报告即用户要求的「`src/robomme` 改完出 md 报告」。
+对应 [0921-newtask-release-v3-plan.md](../../plans/0921-newtask-release-v3-plan.md) 第五节步 4，闸门 G4（`SPEC_BINDING`）与 P4（`INJECTION_PARITY` 的 B↔C↔D 与 A1↔D）。本报告即用户要求的「`src/robomme` 改完出 md 报告」。
 
 ## 一、机制：一个记录器同时承担导出与回注
 

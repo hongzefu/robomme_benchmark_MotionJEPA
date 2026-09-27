@@ -1,0 +1,827 @@
+{
+  "schema": "v6-infra-recovery/1",
+  "run_name": "v6-01-infra-recovery-01",
+  "output": "/tmp/v6-s4-v6-01-infra-recovery-01",
+  "source_specs": "/tmp/v6-s4-v6-01/xhard4/specs.jsonl",
+  "source_specs_sha256": "c860fe93df0a67f9b24536ddfd8ed080ca13e41b5df29425dd32716ca09c351a",
+  "source_identity_sha256": "bd27d39b57027bcd4dc495a40721a671db8d18cfed2b37f348db6682771f4265",
+  "max_attempts": 76,
+  "first": {
+    "task": "StopCube",
+    "episode": 3
+  },
+  "order": [
+    0,
+    3,
+    6,
+    1,
+    2,
+    4,
+    5,
+    7,
+    8,
+    9
+  ],
+  "limits": {
+    "StopCube": {
+      "existing_success": 1,
+      "prior_attempts": 9,
+      "recovery_limit": 9,
+      "cumulative_limit": 18
+    },
+    "SwingXtimes": {
+      "existing_success": 0,
+      "prior_attempts": 9,
+      "recovery_limit": 10,
+      "cumulative_limit": 19
+    },
+    "VideoUnmaskSwap": {
+      "existing_success": 0,
+      "prior_attempts": 9,
+      "recovery_limit": 10,
+      "cumulative_limit": 19
+    },
+    "VideoUnmask": {
+      "existing_success": 0,
+      "prior_attempts": 9,
+      "recovery_limit": 10,
+      "cumulative_limit": 19
+    },
+    "VideoRepick": {
+      "existing_success": 0,
+      "prior_attempts": 9,
+      "recovery_limit": 10,
+      "cumulative_limit": 19
+    },
+    "VideoPlaceButton": {
+      "existing_success": 0,
+      "prior_attempts": 9,
+      "recovery_limit": 10,
+      "cumulative_limit": 19
+    },
+    "VideoPlaceOrder": {
+      "existing_success": 0,
+      "prior_attempts": 9,
+      "recovery_limit": 10,
+      "cumulative_limit": 19
+    },
+    "InsertPeg": {
+      "existing_success": 1,
+      "prior_attempts": 9,
+      "recovery_limit": 7,
+      "cumulative_limit": 16
+    }
+  },
+  "eligible": [
+    {
+      "task": "StopCube",
+      "episode": 1,
+      "seed": 6200100,
+      "attempt": 0,
+      "spec_sha256": "3a38f219b4633f414bbbdc1707ff8536d923754ab5bc1f3b430a88d4d187ae6b",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "StopCube",
+      "episode": 2,
+      "seed": 6200200,
+      "attempt": 0,
+      "spec_sha256": "e5ebfa6bd27bc4ed913a04931fc87e061fd1ac1cd163217cef5e3a08b3df7975",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "StopCube",
+      "episode": 3,
+      "seed": 6200300,
+      "attempt": 0,
+      "spec_sha256": "2ecb0a621d6d6d4f57279480927eb2910b025493cbe032dd548f20cefb395dc7",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "StopCube",
+      "episode": 4,
+      "seed": 6200400,
+      "attempt": 0,
+      "spec_sha256": "5a4835d18f82527d92814daf5eebfbc91855a309b768e03a2cfb4fd6619da56f",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "StopCube",
+      "episode": 5,
+      "seed": 6200500,
+      "attempt": 0,
+      "spec_sha256": "b8b031793d03cad0165a8d4ab62435f739a2d374bff812c9d75eaf89c76c58c3",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "StopCube",
+      "episode": 6,
+      "seed": 6200600,
+      "attempt": 0,
+      "spec_sha256": "ba77fbd9479d430ece63e0cdd37c2431e7009c7af4dae3a74b34c64db96ac4c5",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "StopCube",
+      "episode": 7,
+      "seed": 6200700,
+      "attempt": 0,
+      "spec_sha256": "b471ecaed1aa70a1f2f0dab5a511637b1679d23bc826badb226499cdad9d72f9",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "StopCube",
+      "episode": 8,
+      "seed": 6200800,
+      "attempt": 0,
+      "spec_sha256": "671ac9a2fc8300c51686de0fb0d0829d52758787619b0075a92a91043f69df0d",
+      "category": "cancelled_unknown"
+    },
+    {
+      "task": "StopCube",
+      "episode": 9,
+      "seed": 6200900,
+      "attempt": 0,
+      "spec_sha256": "005ad36108a4818ecf41401ba521af3da420d06425c9c07971af851ceea65b7b",
+      "category": "never_scheduled"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 0,
+      "seed": 6300000,
+      "attempt": 0,
+      "spec_sha256": "f203fa2e619dd747d2c261ec7e928694ae70e487de5e792d103c61f16a0371d2",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 1,
+      "seed": 6300100,
+      "attempt": 0,
+      "spec_sha256": "9f1d3a86a8e7a2cddbd1b534c50192052125f9449458e046d91c5e664483deb3",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 2,
+      "seed": 6300200,
+      "attempt": 0,
+      "spec_sha256": "682e5a0fe15b97a0876fdbcdd61fd7de215a0374fb76c175d0215a5173f49b54",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 3,
+      "seed": 6300300,
+      "attempt": 0,
+      "spec_sha256": "1500ee4e4e8ac844b191a20909376ad9424ca4b8289fcff5fe1eeeb9e4f0170f",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 4,
+      "seed": 6300400,
+      "attempt": 0,
+      "spec_sha256": "b0d1cb577aec9e01e67358e7690951604d49045d0cb8036e163bf2df831ac7f2",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 5,
+      "seed": 6300500,
+      "attempt": 0,
+      "spec_sha256": "82b5c36325ceade49d2c3d6ba3f9bde1c357a01d7c2fd3b86444eba2cae8c79c",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 6,
+      "seed": 6300600,
+      "attempt": 0,
+      "spec_sha256": "ed4a0fc99f112ce3e700d6478f7e323790dc3fbda41446b97cd2658771bc650f",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 7,
+      "seed": 6300700,
+      "attempt": 0,
+      "spec_sha256": "41566832dc7cd12503c0c988ff9e1acda3e269a61bac52b784451724334b09b0",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 8,
+      "seed": 6300800,
+      "attempt": 0,
+      "spec_sha256": "4c82c39a449c758a1777e369d251e292dbd338e073dac9b6dafa4552facd088b",
+      "category": "cancelled_unknown"
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 9,
+      "seed": 6300900,
+      "attempt": 0,
+      "spec_sha256": "e72c03bd538a100bc525da553895e1ef9c69149a91b97c1d4659a7c91d34d4d8",
+      "category": "never_scheduled"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 0,
+      "seed": 6500000,
+      "attempt": 0,
+      "spec_sha256": "57b0672336d87b672fd689f67ded17a28112b0e28c7ea635e462bf9bfbbb2ce8",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 1,
+      "seed": 6500100,
+      "attempt": 0,
+      "spec_sha256": "0ee930224134c673af19eb8f05651f7e69d9ddf8857dce25056addcbbc1a3f73",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 2,
+      "seed": 6500200,
+      "attempt": 0,
+      "spec_sha256": "7ea09d45eca245688e06ac5ef9a3db12d39f6c8c936176b99ec4a0bafcc9a90d",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 3,
+      "seed": 6500300,
+      "attempt": 0,
+      "spec_sha256": "aff8b14178c55927ba21421234166fe01e2fdf4f967a8723408d48527cd77535",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 4,
+      "seed": 6500400,
+      "attempt": 0,
+      "spec_sha256": "6e0e9d1bcfa974d94e38c24b349543f57c5068c276aec7f391e65bf89466b8c1",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 5,
+      "seed": 6500500,
+      "attempt": 0,
+      "spec_sha256": "865418fd23abf18583fe63bffe2b17c8dcb7282750c173caa3c8cfcb39adec0d",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 6,
+      "seed": 6500601,
+      "attempt": 1,
+      "spec_sha256": "7699f8d35e9eb56ffa6457c5c038cf69fe11d3924aa240337ce4952b99a25c76",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 7,
+      "seed": 6500700,
+      "attempt": 0,
+      "spec_sha256": "4a49c997068a7f21fa4a99cf62a028d5e31fd7fb74e3094dac087290037a483d",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 8,
+      "seed": 6500800,
+      "attempt": 0,
+      "spec_sha256": "dc967a5943e9777a1c295ed16b9fbdbb13ac2566b2c149f1c5009997fa95771a",
+      "category": "cancelled_unknown"
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 9,
+      "seed": 6500900,
+      "attempt": 0,
+      "spec_sha256": "4f62c5db78098bdfca83dc7258055fc31defd4c06cb4183c0d2cb69886dd6e96",
+      "category": "never_scheduled"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 0,
+      "seed": 6600000,
+      "attempt": 0,
+      "spec_sha256": "7ac72bd02c753a983797cfa7f8539dbdf68616050be01b6ea79b19eff528b20d",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 1,
+      "seed": 6600100,
+      "attempt": 0,
+      "spec_sha256": "02ad1659762fd76f85e6701d4ec4247b3126d3483f2820aa0b2836d9aabf8006",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 2,
+      "seed": 6600200,
+      "attempt": 0,
+      "spec_sha256": "cccd8fcc834763b0c24a726b75dd83da601bb234130a6885fb53f06d9ba1d1ef",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 3,
+      "seed": 6600300,
+      "attempt": 0,
+      "spec_sha256": "876ddeada0d285defb799225d92aa86af10c2903068b83919d442faa4234cc08",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 4,
+      "seed": 6600400,
+      "attempt": 0,
+      "spec_sha256": "a8085eb11b1d8f34e03e1ccabbeb244d22fe31b5565b26ba3b0c7c756574b0d2",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 5,
+      "seed": 6600500,
+      "attempt": 0,
+      "spec_sha256": "5647b1343b861ae3e14ac02d0dc5d155de72c14795d659a54e71d77b448da4a1",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 6,
+      "seed": 6600600,
+      "attempt": 0,
+      "spec_sha256": "1760566a2525eaacccbe473d7e0137ad1600be820f42cbcceca2564beebc8dad",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 7,
+      "seed": 6600700,
+      "attempt": 0,
+      "spec_sha256": "cfc00d48ac1a49b37d74f4d5fddeab2814d45a9a18f0dfb3d5905e8507efd483",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 8,
+      "seed": 6600800,
+      "attempt": 0,
+      "spec_sha256": "c42a11eddf1d08ddb41e9f529f02850fe3c8b3c0dd6660c1b98e11ac26ef7258",
+      "category": "cancelled_unknown"
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 9,
+      "seed": 6600900,
+      "attempt": 0,
+      "spec_sha256": "685442c6be375315d87d9479ac13e3a7853f408b04b12c347407e46c3cd818ec",
+      "category": "never_scheduled"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "seed": 6900003,
+      "attempt": 3,
+      "spec_sha256": "3bffef8d78d51786ba1cd2ce037c8f17628066d5c2890ecfce1cb3c1fabbac55",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 1,
+      "seed": 6900100,
+      "attempt": 0,
+      "spec_sha256": "3ea66887ccb231895ff379ea2f41eba4af61197b745e77c59d71dba65763c845",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 2,
+      "seed": 6900200,
+      "attempt": 0,
+      "spec_sha256": "02f484bf783832d0a345c108acfe86c17a04cfb7bda0ad07ffc7d1e47d82f251",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "seed": 6900300,
+      "attempt": 0,
+      "spec_sha256": "a890db59a09bb3d8b30ae23a30429b837e54c49f3837047d55cbcbf97503203a",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 4,
+      "seed": 6900400,
+      "attempt": 0,
+      "spec_sha256": "8548fb5510fa8dcc2866c5d6fc2455b1a0bd22074f714479e7978a3c6ad7855e",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 5,
+      "seed": 6900501,
+      "attempt": 1,
+      "spec_sha256": "d817d659eaa2732cb3e177ca181a396234c15d7461b016daa9124d17a325c1f5",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 6,
+      "seed": 6900600,
+      "attempt": 0,
+      "spec_sha256": "6466d91c0b86621cca26478f7e3360f785dcd8bae7330c6158c333b999f73f92",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 7,
+      "seed": 6900704,
+      "attempt": 4,
+      "spec_sha256": "9691c1f35c93e303359da4651e36e59257112983a10b3736d1aef7a28575dddb",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 8,
+      "seed": 6900803,
+      "attempt": 3,
+      "spec_sha256": "c90c800d109ccf8d4791281b6f62525d8995234095256cf7d9ecb62756d83daa",
+      "category": "cancelled_unknown"
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 9,
+      "seed": 6900901,
+      "attempt": 1,
+      "spec_sha256": "4dfdb359f0797421e1ea82b07bdfac1bae5f4c20977345a651db3d1d1cb41081",
+      "category": "never_scheduled"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 0,
+      "seed": 7000000,
+      "attempt": 0,
+      "spec_sha256": "5e0fee0899d2719863b3c7ffaebeec9f8476f05bec2a0bf545857b329f75c159",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 1,
+      "seed": 7000100,
+      "attempt": 0,
+      "spec_sha256": "3c6f57a19dddcc30bbae48e0854e137511068fd7d390611a4ee286e7bbcec0b8",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 2,
+      "seed": 7000200,
+      "attempt": 0,
+      "spec_sha256": "09ad2e30dcf1ace90a7d1a3c087326912eafad71d709601df457bc929367dc9b",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 3,
+      "seed": 7000302,
+      "attempt": 2,
+      "spec_sha256": "384ad7e64be716143e367cadf0b824d751d5b55f090ab5f5e9a0d678f5631cd0",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 4,
+      "seed": 7000400,
+      "attempt": 0,
+      "spec_sha256": "d2dc8fa9da3da5b198b4bd3f1071db5c828f6606c2a67b6c18c27af41a6bb65d",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 5,
+      "seed": 7000500,
+      "attempt": 0,
+      "spec_sha256": "f08a26a6450a8fd1f20be62b25914f97f8ea287873fbbd6dadfde87233b18a31",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 6,
+      "seed": 7000600,
+      "attempt": 0,
+      "spec_sha256": "c2844c44045de757028a927afef75acc37b0e3c5108cc8a1886b6aabb9f3c2f5",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 7,
+      "seed": 7000700,
+      "attempt": 0,
+      "spec_sha256": "a7ba8fb39e50e8a5f396205c9cc72c067e4cc7bf4eff9048d86e69178a8144a3",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 8,
+      "seed": 7000800,
+      "attempt": 0,
+      "spec_sha256": "7618775bad9787d76ec0d676655bb39967b3fecff3fe9ff695ba0c6f189f19c9",
+      "category": "cancelled_unknown"
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 9,
+      "seed": 7000900,
+      "attempt": 0,
+      "spec_sha256": "68cda15c2318e627f54a7677d8486291c951db0348e8e4747248e03aab27c011",
+      "category": "never_scheduled"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 0,
+      "seed": 7100000,
+      "attempt": 0,
+      "spec_sha256": "b2e000b3a394bd6e159bf8f63c2d76c978f49ac9d804164e244ec19e24e3f7e8",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 1,
+      "seed": 7100104,
+      "attempt": 4,
+      "spec_sha256": "9a212887773b5c1c22bba1d0a4aaeb9ec8ae309a45671b63abf0a5295ac2df21",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 2,
+      "seed": 7100200,
+      "attempt": 0,
+      "spec_sha256": "43c0ed477fbd5280b2628fdb90ba40b6c43bd518c92da8ff98b9e5480afda2bf",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 3,
+      "seed": 7100301,
+      "attempt": 1,
+      "spec_sha256": "ed3c422869a1d53d19e902620ba1d28888a85cc5ac5174bf4c6deb9f49bb8114",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 4,
+      "seed": 7100400,
+      "attempt": 0,
+      "spec_sha256": "34625630952ad279e241d5564ae4b1666cf6550eae24dceb3e29826fd993763a",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 5,
+      "seed": 7100500,
+      "attempt": 0,
+      "spec_sha256": "aada227818ed7bd01a573b1591a7303e4631b26748ccb694a0085015e08dbfa4",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 6,
+      "seed": 7100600,
+      "attempt": 0,
+      "spec_sha256": "ed68f933b605fb5a78ed2d85449b83325a3e429fa0cb935a784e251264520428",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 7,
+      "seed": 7100703,
+      "attempt": 3,
+      "spec_sha256": "d1fb5c83b937ded0f7537c9ee4e346183322f869b947cf753cf8c49698c4c129",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 8,
+      "seed": 7100800,
+      "attempt": 0,
+      "spec_sha256": "a4b01d4d27ff70635daefa331c85361c2a48078b7bf82b12ef91c9362c59d007",
+      "category": "cancelled_unknown"
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 9,
+      "seed": 7100903,
+      "attempt": 3,
+      "spec_sha256": "f18209e018702accb34198c4949a1008fc3f03619d926edc178ea194b6074f89",
+      "category": "never_scheduled"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 1,
+      "seed": 7300100,
+      "attempt": 0,
+      "spec_sha256": "a87f2a3a102d73d3be43fbd5760978fafcd1e022c7482a3c0a3f5dc345b3b4b4",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 2,
+      "seed": 7300200,
+      "attempt": 0,
+      "spec_sha256": "24a65defea3d68f8c6f81262da61b15735cac4758d8b1029296c615b1b8da1e2",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 4,
+      "seed": 7300400,
+      "attempt": 0,
+      "spec_sha256": "e053dffe7b172881cf05bb3c4cecb4026e30dbdc0d97d4d0a194d8db8e765999",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 5,
+      "seed": 7300500,
+      "attempt": 0,
+      "spec_sha256": "b1a80a880c44c7d95b325eaa7fbf5ff4dc4614dbe76ef97add310ac67c830f57",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 7,
+      "seed": 7300700,
+      "attempt": 0,
+      "spec_sha256": "6f0f6d0edde0a08009c4fff9649836bd6eb79da1248fde59ecfd525a65842cac",
+      "category": "vulkan_initialization_failure"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 8,
+      "seed": 7300800,
+      "attempt": 0,
+      "spec_sha256": "1462e42bc40d9568a154473960fa0e9ba6cc638ac81dd01f5f5647b5da7e96c4",
+      "category": "cancelled_unknown"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 9,
+      "seed": 7300900,
+      "attempt": 0,
+      "spec_sha256": "f1d0a3aa236e9c789c768b27385c3b23525f3bbb440cc2de8b576e4f0a4af3c3",
+      "category": "never_scheduled"
+    }
+  ],
+  "excluded": [
+    {
+      "task": "PickXtimes",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 3,
+      "reason": "existing_success"
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 6,
+      "reason": "existing_success"
+    },
+    {
+      "task": "StopCube",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "BinFill",
+      "episode": 3,
+      "reason": "existing_success"
+    },
+    {
+      "task": "BinFill",
+      "episode": 6,
+      "reason": "existing_success"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 3,
+      "reason": "existing_success"
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 6,
+      "reason": "existing_success"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 3,
+      "reason": "existing_success"
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 6,
+      "reason": "existing_success"
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 3,
+      "reason": "existing_success"
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 6,
+      "reason": "existing_success"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 0,
+      "reason": "true_task_failure"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 3,
+      "reason": "true_task_failure"
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 6,
+      "reason": "existing_success"
+    },
+    {
+      "task": "MoveCube",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "MoveCube",
+      "episode": 3,
+      "reason": "existing_success"
+    },
+    {
+      "task": "MoveCube",
+      "episode": 6,
+      "reason": "existing_success"
+    },
+    {
+      "task": "PatternLock",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "PatternLock",
+      "episode": 3,
+      "reason": "existing_success"
+    },
+    {
+      "task": "PatternLock",
+      "episode": 6,
+      "reason": "existing_success"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "reason": "existing_success"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 3,
+      "reason": "existing_success"
+    },
+    {
+      "task": "RouteStick",
+      "episode": 6,
+      "reason": "existing_success"
+    }
+  ]
+}

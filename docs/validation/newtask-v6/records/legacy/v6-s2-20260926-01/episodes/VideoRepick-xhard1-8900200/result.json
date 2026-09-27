@@ -1,0 +1,34 @@
+{
+  "id": "VideoRepick-xhard1-8900200",
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "seed": 8900200,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoRepick.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 47.171,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "VideoRepick",
+      "seed": 8900200,
+      "difficulty": "xhard1",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 41.9,
+      "timesteps": 852
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoRepick-xhard1-8900200/hdf5_files/VideoRepick_ep9_seed8900200.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoRepick-xhard1-8900200/videos/VideoRepick_ep9_seed8900200_xhard1_watch_the_video_carefully_then_repeatedly_pick_up_and_put_down_the_same_block_that_was_previously_picked_up_for_two_times_finally_put_it_down_and_press_the_butt__HASH__0cb4ced1022e.mp4"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "ButtonUnmaskSwap-xhard1-8700100",
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "seed": 8700100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 33.871,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "ButtonUnmaskSwap",
+      "seed": 8700100,
+      "difficulty": "xhard1",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 29.5,
+      "timesteps": 512
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/ButtonUnmaskSwap-xhard1-8700100/hdf5_files/ButtonUnmaskSwap_ep9_seed8700100.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/ButtonUnmaskSwap-xhard1-8700100/videos/ButtonUnmaskSwap_ep9_seed8700100_xhard1_first_press_both_buttons_on_the_table_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ]
+}

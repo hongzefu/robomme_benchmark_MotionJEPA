@@ -1,0 +1,216 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.button_xy",
+      "drawn": [
+        -0.23914161920547486,
+        0.12771036624908447
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.n_cubes",
+      "drawn": 8,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_rgba.0",
+      "drawn": [
+        0.5137789487838745,
+        0.13738497909417688,
+        0.24008206837337243,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.0",
+      "drawn": [
+        0.04967844247817993,
+        0.1290696144104004,
+        5.462820546071562
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "objects.color_rgba.1",
+      "drawn": [
+        0.32315654820353645,
+        0.962507688999176,
+        0.3637175720897121,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.1",
+      "drawn": [
+        -0.1827526926994324,
+        -0.16271829128265383,
+        1.3234580285505535
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "objects.color_rgba.2",
+      "drawn": [
+        0.05362483301678367,
+        0.6643814086914063,
+        0.07851631052235603,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.cubes.2",
+      "drawn": [
+        0.07402313709259034,
+        -0.10177792310714723,
+        3.175329744726485
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "objects.color_rgba.3",
+      "drawn": [
+        0.5432851076126098,
+        0.14172144818931187,
+        0.37026095762222533,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.cubes.3",
+      "drawn": [
+        -0.1354021120071411,
+        -0.046743671894073496,
+        4.884374217494433
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.color_rgba.4",
+      "drawn": [
+        0.9852692365646363,
+        0.4630907224902657,
+        0.9725375447888814,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "layout.cubes.4",
+      "drawn": [
+        -0.08541552066802979,
+        0.14725306034088134,
+        5.308828124629098
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.color_rgba.5",
+      "drawn": [
+        0.6272442221641541,
+        0.10828557055492745,
+        0.2162389634645601,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "layout.cubes.5",
+      "drawn": [
+        -0.0156481099128723,
+        -0.015915627479553218,
+        0.27142247072679854
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "objects.color_rgba.6",
+      "drawn": [
+        0.04231260928261982,
+        0.6551031470298767,
+        0.6039473926348463,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "layout.cubes.6",
+      "drawn": [
+        -0.24092600822448734,
+        -0.036820034980773936,
+        5.938805871285203
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.color_rgba.7",
+      "drawn": [
+        0.2647748654031528,
+        0.17689963791584162,
+        0.911410641670227,
+        1.0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "layout.cubes.7",
+      "drawn": [
+        -0.11203474998474122,
+        0.03711070060729982,
+        2.849853176578132
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "objects.n_cubes_spawned",
+      "drawn": 8,
+      "source": "record"
+    },
+    {
+      "index": 19,
+      "path": "objects.highlight_count",
+      "drawn": 5,
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "objects.highlight_ids",
+      "drawn": [
+        6,
+        2,
+        5,
+        4,
+        7
+      ],
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "bd59af2e03f5891c589609083ced096b1aa50e939356871bc3a9bc08c9075115"
+  }
+}

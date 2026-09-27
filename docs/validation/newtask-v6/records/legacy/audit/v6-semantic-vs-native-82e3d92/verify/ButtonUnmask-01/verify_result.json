@@ -1,0 +1,175 @@
+{
+  "audit_base": "82e3d922b78d48ec1e825b168cccc0e1b8c690c1",
+  "finding_id": "ButtonUnmask-01",
+  "xhard4_ep6_blue_segment": {
+    "n_steps": 105,
+    "grounded_subgoal_unique_values": [
+      "pick up the container that hides the blue cube"
+    ],
+    "grounded_subgoal_online_unique_values": [
+      "pick up the container at <78, 111> that hides the blue cube",
+      "put down the container"
+    ],
+    "gs_has_no_coords_for_whole_segment": true,
+    "gso_has_coords": true,
+    "choice_action_t280": {
+      "choice": "B",
+      "point": [
+        75,
+        112
+      ]
+    },
+    "choice_action_t356_near_grasp": {
+      "choice": "B",
+      "point": [
+        75,
+        112
+      ]
+    }
+  },
+  "no_object_mp4_frame_count": 1,
+  "new_tier_index_ep6_mp4_counts": {
+    "xhard1": 1,
+    "xhard2": 1,
+    "xhard3": 1,
+    "xhard4": 2
+  },
+  "native_tier_rows": [
+    {
+      "episode": 0,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 116,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "grounded_subgoal": "pick up the container at <85, 155> that hides the red cube",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "episode": 1,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 112,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "grounded_subgoal": "pick up the container at <129, 148> that hides the green cube",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "episode": 2,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 115,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "grounded_subgoal": "pick up the container at <88, 154> that hides the red cube",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "episode": 3,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 115,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "grounded_subgoal": "pick up the container at <130, 90> that hides the red cube",
+          "has_coords": true
+        },
+        {
+          "timestep": 358,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "grounded_subgoal": "pick up the container at <97, 139> that hides the blue cube",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "episode": 4,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 111,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "grounded_subgoal": "pick up the container at <129, 125> that hides the green cube",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "episode": 6,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 117,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "grounded_subgoal": "pick up the container at <76, 167> that hides the red cube",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "episode": 7,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 115,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "grounded_subgoal": "pick up the container at <75, 158> that hides the blue cube",
+          "has_coords": true
+        },
+        {
+          "timestep": 277,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "grounded_subgoal": "pick up the container at <103, 104> that hides the red cube",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "episode": 10,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 117,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "grounded_subgoal": "pick up the container at <119, 138> that hides the blue cube",
+          "has_coords": true
+        }
+      ]
+    },
+    {
+      "episode": 11,
+      "n_no_object_videos": 0,
+      "picks": [
+        {
+          "timestep": 123,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "grounded_subgoal": "pick up the container at <140, 160> that hides the red cube",
+          "has_coords": true
+        },
+        {
+          "timestep": 286,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "grounded_subgoal": "pick up the container at <95, 130> that hides the blue cube",
+          "has_coords": true
+        }
+      ]
+    }
+  ],
+  "native_all_picks_have_coords": true,
+  "native_total_no_object_videos": 0,
+  "source_anchor_present": {
+    "process_segmentation_def": true,
+    "switch_gate": true,
+    "no_object_flag_var": true,
+    "_append_xhard_pick_tasks_def": true,
+    "subgoal_segment_template": true
+  },
+  "plan_mentions_no_object_or_occlusion": false
+}

@@ -1,0 +1,2 @@
+RING_SAMPLER_MATCH ok=40/40 t_fast_total=0.1s t_repo_total=190.0s (repo sample_distractors mean 4.75s/reset)
+EXIT_CODE=0

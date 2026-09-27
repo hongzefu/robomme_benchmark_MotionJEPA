@@ -1,0 +1,34 @@
+{
+  "id": "StopCube-xhard4-6200100",
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "seed": 6200100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/StopCube.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 34.771,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "StopCube",
+      "seed": 6200100,
+      "difficulty": "xhard4",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 30.4,
+      "timesteps": 788
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/StopCube-xhard4-6200100/hdf5_files/StopCube_ep9_seed6200100.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/StopCube-xhard4-6200100/videos/StopCube_ep9_seed6200100_xhard4_press_the_button_to_stop_the_cube_just_as_it_reaches_the_target_for_the_thirteenth_time__ALT__press_the_button_to_stop_the_cube_exactly_at_the_target_on_its_thirteenth_visit.mp4"
+  ]
+}

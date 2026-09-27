@@ -1,0 +1,21 @@
+new xhard1 0 1209 put three red cubes and three blue cubes into the bin, then press the button to stop {'red': 3, 'green': 0, 'blue': 3} {'red': 3, 'green': 0, 'blue': 3} True demo 0 done True
+new xhard1 3 1140 put two red cubes, one blue cube and three green cubes into the bin, then press the button {'red': 2, 'green': 3, 'blue': 1} {'red': 2, 'green': 3, 'blue': 1} True demo 0 done True
+new xhard1 6 1144 put five red cubes and one green cube into the bin, then press the button to stop {'red': 5, 'green': 1, 'blue': 0} {'red': 5, 'green': 1, 'blue': 0} True demo 0 done True
+new xhard2 0 1241 put one red cube and six blue cubes into the bin, then press the button to stop {'red': 1, 'green': 0, 'blue': 6} {'red': 1, 'green': 0, 'blue': 6} True demo 0 done True
+new xhard2 3 1306 put two red cubes, three blue cubes and two green cubes into the bin, then press the butto {'red': 2, 'green': 2, 'blue': 3} {'red': 2, 'green': 2, 'blue': 3} True demo 0 done True
+new xhard2 6 1290 put five red cubes and two green cubes into the bin, then press the button to stop {'red': 5, 'green': 2, 'blue': 0} {'red': 5, 'green': 2, 'blue': 0} True demo 0 done True
+new xhard3 0 1550 put two red cubes and six blue cubes into the bin, then press the button to stop {'red': 2, 'green': 0, 'blue': 6} {'red': 2, 'green': 0, 'blue': 6} True demo 0 done True
+new xhard3 3 1479 put six red cubes and two green cubes into the bin, then press the button to stop {'red': 6, 'green': 2, 'blue': 0} {'red': 6, 'green': 2, 'blue': 0} True demo 0 done True
+new xhard3 6 1403 put three red cubes, three blue cubes and two green cubes into the bin, then press the but {'red': 3, 'green': 2, 'blue': 3} {'red': 3, 'green': 2, 'blue': 3} True demo 0 done True
+new xhard4 0 1748 put two red cubes and seven blue cubes into the bin, then press the button to stop {'red': 2, 'green': 0, 'blue': 7} {'red': 2, 'green': 0, 'blue': 7} True demo 0 done True
+new xhard4 3 1591 put one red cube, two blue cubes and six green cubes into the bin, then press the button t {'red': 1, 'green': 6, 'blue': 2} {'red': 1, 'green': 6, 'blue': 2} True demo 0 done True
+new xhard4 6 1699 put three red cubes, three blue cubes and three green cubes into the bin, then press the b {'red': 3, 'green': 3, 'blue': 3} {'red': 3, 'green': 3, 'blue': 3} True demo 0 done True
+native easy 0 550 put two red cubes into the bin, then press the button to stop {'red': 2, 'green': 0, 'blue': 0} {'red': 2, 'green': 0, 'blue': 0} True demo 0 done True
+native easy 1 366 put one red cube into the bin, then press the button to stop {'red': 1, 'green': 0, 'blue': 0} {'red': 1, 'green': 0, 'blue': 0} True demo 0 done True
+native medium 10 635 put three green cubes into the bin, then press the button to stop {'red': 0, 'green': 3, 'blue': 0} {'red': 0, 'green': 3, 'blue': 0} True demo 0 done True
+native hard 11 576 put two red cubes and one green cube into the bin, then press the button to stop {'red': 2, 'green': 1, 'blue': 0} {'red': 2, 'green': 1, 'blue': 0} True demo 0 done True
+native medium 2 883 put two red cubes and two green cubes into the bin, then press the button to stop {'red': 2, 'green': 2, 'blue': 0} {'red': 2, 'green': 2, 'blue': 0} True demo 0 done True
+native hard 3 940 put one blue cube and three green cubes into the bin, then press the button to stop {'red': 0, 'green': 3, 'blue': 1} {'red': 0, 'green': 3, 'blue': 1} True demo 0 done True
+native easy 4 625 put two blue cubes into the bin, then press the button to stop {'red': 0, 'green': 0, 'blue': 2} {'red': 0, 'green': 0, 'blue': 2} True demo 0 done True
+native medium 6 622 put three blue cubes into the bin, then press the button to stop {'red': 0, 'green': 0, 'blue': 3} {'red': 0, 'green': 0, 'blue': 3} True demo 0 done True
+native hard 7 785 put two red cubes and two blue cubes into the bin, then press the button to stop {'red': 2, 'green': 0, 'blue': 2} {'red': 2, 'green': 0, 'blue': 2} True demo 0 done True

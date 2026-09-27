@@ -1,0 +1,190 @@
+[
+  {
+    "episode": 3,
+    "segments": [
+      {
+        "start": 0,
+        "end": 118,
+        "name": "pick up the green cube for the first time"
+      },
+      {
+        "start": 119,
+        "end": 206,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 207,
+        "end": 366,
+        "name": "pick up the green cube for the second time"
+      },
+      {
+        "start": 367,
+        "end": 433,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 434,
+        "end": 503,
+        "name": "pick up the green cube for the third time"
+      },
+      {
+        "start": 504,
+        "end": 570,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 571,
+        "end": 639,
+        "name": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 640,
+        "end": 705,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 706,
+        "end": 769,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 770,
+        "end": 813,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "episode": 7,
+    "segments": [
+      {
+        "start": 0,
+        "end": 118,
+        "name": "pick up the green cube for the first time"
+      },
+      {
+        "start": 119,
+        "end": 221,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 222,
+        "end": 297,
+        "name": "pick up the green cube for the second time"
+      },
+      {
+        "start": 298,
+        "end": 368,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 369,
+        "end": 445,
+        "name": "pick up the green cube for the third time"
+      },
+      {
+        "start": 446,
+        "end": 511,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 512,
+        "end": 587,
+        "name": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 588,
+        "end": 653,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 654,
+        "end": 733,
+        "name": "pick up the green cube for the fifth time"
+      },
+      {
+        "start": 734,
+        "end": 800,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 801,
+        "end": 859,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 860,
+        "end": 896,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "episode": 11,
+    "segments": [
+      {
+        "start": 0,
+        "end": 107,
+        "name": "pick up the green cube for the first time"
+      },
+      {
+        "start": 108,
+        "end": 187,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 188,
+        "end": 257,
+        "name": "pick up the green cube for the second time"
+      },
+      {
+        "start": 258,
+        "end": 325,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 326,
+        "end": 394,
+        "name": "pick up the green cube for the third time"
+      },
+      {
+        "start": 395,
+        "end": 450,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 451,
+        "end": 519,
+        "name": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 520,
+        "end": 587,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 588,
+        "end": 656,
+        "name": "pick up the green cube for the fifth time"
+      },
+      {
+        "start": 657,
+        "end": 724,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 725,
+        "end": 784,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 785,
+        "end": 821,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  }
+]

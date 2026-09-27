@@ -1,0 +1,34 @@
+{
+  "id": "VideoUnmaskSwap-xhard2-10500300",
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "seed": 10500300,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 42.121,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "VideoUnmaskSwap",
+      "seed": 10500300,
+      "difficulty": "xhard2",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 37.9,
+      "timesteps": 697
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoUnmaskSwap-xhard2-10500300/hdf5_files/VideoUnmaskSwap_ep9_seed10500300.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoUnmaskSwap-xhard2-10500300/videos/VideoUnmaskSwap_ep9_seed10500300_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ]
+}

@@ -1,0 +1,2 @@
+PREFILTER_EQUIV VideoUnmaskSwap same=36/36 plan_s_on mean=0.209 p95=1.075 | off mean=30.9 p95=40.1 max=54.3
+PREFILTER_EQUIV ButtonUnmaskSwap same=36/36 plan_s_on mean=0.096 p95=0.449 | off mean=19.6 p95=27.1 max=30.0

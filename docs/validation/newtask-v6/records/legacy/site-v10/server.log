@@ -1,0 +1,1449 @@
+V6_SITE_READY host=0.0.0.0 port=8060 videos=213
+127.0.0.1 - - [26/Sep/2026 21:47:04] "GET /api/catalog HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /api/catalog HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/da4d177ec58f41b59a4aac80 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/894d51f35ce0755668dbba0a HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/3797fce21151674a3b05d3ab HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/ec885a66a81a898d71fb496d HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/ec885a66a81a898d71fb496d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/ec885a66a81a898d71fb496d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /api/catalog HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/81ac9faf048ff482643dcdf8 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/88cd8afb207a509b36ac4667 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/aff3336b4343cae02ad6d767 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /poster/2d8f82cde1e12c7a72445521 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 45392)
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/2d8f82cde1e12c7a72445521 HTTP/1.1" 206 -
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/2d8f82cde1e12c7a72445521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:10] "GET /media/2d8f82cde1e12c7a72445521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/2d8f82cde1e12c7a72445521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /poster/472eaf1be6f71e9358efbf2e HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/472eaf1be6f71e9358efbf2e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/472eaf1be6f71e9358efbf2e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/472eaf1be6f71e9358efbf2e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/472eaf1be6f71e9358efbf2e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /poster/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:11] "GET /media/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /poster/5bbb4f0947278a0575da4c51 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/5bbb4f0947278a0575da4c51 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/5bbb4f0947278a0575da4c51 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/5bbb4f0947278a0575da4c51 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/5bbb4f0947278a0575da4c51 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /poster/4b787ce57e57b71e0fe94449 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/4b787ce57e57b71e0fe94449 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/4b787ce57e57b71e0fe94449 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:12] "GET /media/4b787ce57e57b71e0fe94449 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /poster/1da999ca4ed5da085bbd90e7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/1da999ca4ed5da085bbd90e7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/1da999ca4ed5da085bbd90e7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/1da999ca4ed5da085bbd90e7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/1da999ca4ed5da085bbd90e7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /poster/6b87bdeb088af47999a03623 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:13] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /poster/2e88732211d3f6de43580fcd HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/2e88732211d3f6de43580fcd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/2e88732211d3f6de43580fcd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/2e88732211d3f6de43580fcd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/2e88732211d3f6de43580fcd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /poster/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:14] "GET /media/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /poster/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /poster/b91c44b2e40e4df9070653dd HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /poster/e227e18d965e14a247e86fc4 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /poster/3e15095a06d5c6cc689f51fd HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /poster/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /poster/18475ff9a26958dda6588a4b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /poster/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:15] "GET /media/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /poster/2d6d2cff285699fba5bc53e3 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/2d6d2cff285699fba5bc53e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/2d6d2cff285699fba5bc53e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/2d6d2cff285699fba5bc53e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/2d6d2cff285699fba5bc53e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /poster/08444a6b3bd255c7694a6aff HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/08444a6b3bd255c7694a6aff HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/08444a6b3bd255c7694a6aff HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/08444a6b3bd255c7694a6aff HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:16] "GET /media/08444a6b3bd255c7694a6aff HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /poster/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /poster/6ebb1d88d84a69e41a35db10 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/6ebb1d88d84a69e41a35db10 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/6ebb1d88d84a69e41a35db10 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/6ebb1d88d84a69e41a35db10 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:17] "GET /media/6ebb1d88d84a69e41a35db10 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /poster/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /poster/89e48e8124ab65ef7adf8a85 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/89e48e8124ab65ef7adf8a85 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/89e48e8124ab65ef7adf8a85 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/89e48e8124ab65ef7adf8a85 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:18] "GET /media/89e48e8124ab65ef7adf8a85 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /poster/4a9d61471d37b60faff15777 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/4a9d61471d37b60faff15777 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/4a9d61471d37b60faff15777 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/4a9d61471d37b60faff15777 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/4a9d61471d37b60faff15777 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /poster/e72501eab405879262cfa4bb HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/e72501eab405879262cfa4bb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/e72501eab405879262cfa4bb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/e72501eab405879262cfa4bb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:19] "GET /media/e72501eab405879262cfa4bb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/381aa0388c629a33ed1105f1 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/381aa0388c629a33ed1105f1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/381aa0388c629a33ed1105f1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/381aa0388c629a33ed1105f1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/381aa0388c629a33ed1105f1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/ec885a66a81a898d71fb496d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/ec885a66a81a898d71fb496d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/621719c2600228ad08a74348 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/d1b7f72c0f004635ef5fd17b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/adfbd5711b9f2996bcd146b7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/27509cfbb93093d44ba0fe88 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/9ba550a36ad81b8a44490966 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d1b7f72c0f004635ef5fd17b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/621719c2600228ad08a74348 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/27509cfbb93093d44ba0fe88 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/9ba550a36ad81b8a44490966 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/adfbd5711b9f2996bcd146b7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d1b7f72c0f004635ef5fd17b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d1b7f72c0f004635ef5fd17b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/621719c2600228ad08a74348 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/adfbd5711b9f2996bcd146b7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/9ba550a36ad81b8a44490966 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/27509cfbb93093d44ba0fe88 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/adfbd5711b9f2996bcd146b7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/951ae276bc982fbca9a59521 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/99ec93b31b76a6cd8c559332 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/86a4f13ee0a4a94304f0f02f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/d54638c768306ffc1bf7d6f2 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/5aa82f6955d02aa27593fb14 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/951ae276bc982fbca9a59521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d54638c768306ffc1bf7d6f2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/99ec93b31b76a6cd8c559332 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/86a4f13ee0a4a94304f0f02f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/5aa82f6955d02aa27593fb14 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/99ec93b31b76a6cd8c559332 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/951ae276bc982fbca9a59521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/86a4f13ee0a4a94304f0f02f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d54638c768306ffc1bf7d6f2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/5aa82f6955d02aa27593fb14 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/86a4f13ee0a4a94304f0f02f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/99ec93b31b76a6cd8c559332 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/951ae276bc982fbca9a59521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/5aa82f6955d02aa27593fb14 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/c6a755f36addc7d74fe83cb5 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/d5aa10f9b7ec1d9c5ba9a23f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/0b03a0e72ae4e70abe67770e HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/ddd6cb180f5fbf32f11dae1f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/86d08729e00184d18f73aa4a HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d5aa10f9b7ec1d9c5ba9a23f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/0b03a0e72ae4e70abe67770e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/ddd6cb180f5fbf32f11dae1f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/0b03a0e72ae4e70abe67770e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/86d08729e00184d18f73aa4a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/c6a755f36addc7d74fe83cb5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/ddd6cb180f5fbf32f11dae1f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d5aa10f9b7ec1d9c5ba9a23f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/86d08729e00184d18f73aa4a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d54638c768306ffc1bf7d6f2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/0b03a0e72ae4e70abe67770e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/c6a755f36addc7d74fe83cb5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/86d08729e00184d18f73aa4a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/ddd6cb180f5fbf32f11dae1f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/b6ea2b7e986249a230d0ef7c HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/6a6df167d8448176e1fff548 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/15be62d5347b4bb508b15ba5 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/417f7aab5302e65d2414b8a1 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/1d80e476a635e54952e27064 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/417f7aab5302e65d2414b8a1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/b6ea2b7e986249a230d0ef7c HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40032)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/6a6df167d8448176e1fff548 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/15be62d5347b4bb508b15ba5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/1d80e476a635e54952e27064 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/417f7aab5302e65d2414b8a1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/b6ea2b7e986249a230d0ef7c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/d5aa10f9b7ec1d9c5ba9a23f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/c6a755f36addc7d74fe83cb5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/6a6df167d8448176e1fff548 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/1d80e476a635e54952e27064 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/15be62d5347b4bb508b15ba5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/b6ea2b7e986249a230d0ef7c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/417f7aab5302e65d2414b8a1 HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40092)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/1d80e476a635e54952e27064 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/15be62d5347b4bb508b15ba5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/f13f7cbd4fd9a84b87e6dad7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/ddc953f2de1b20fefa0b8da7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/c138a157d2939feccc48f730 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/8802c2f2e12b95825dd5910d HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /poster/be5e4f51f10eaf663a1f234b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/f13f7cbd4fd9a84b87e6dad7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:20] "GET /media/8802c2f2e12b95825dd5910d HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40120)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/ddc953f2de1b20fefa0b8da7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/be5e4f51f10eaf663a1f234b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/c138a157d2939feccc48f730 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/8802c2f2e12b95825dd5910d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/f13f7cbd4fd9a84b87e6dad7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/6a6df167d8448176e1fff548 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/ddc953f2de1b20fefa0b8da7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/be5e4f51f10eaf663a1f234b HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40186)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/c138a157d2939feccc48f730 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/f13f7cbd4fd9a84b87e6dad7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/c138a157d2939feccc48f730 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/7a4a26df7522a6fd166a7078 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/65e275384cd996db7b3032e9 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/06e463aa9ea71b1bc6a086e3 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/1b72bf56d51bf6bac802b0d4 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/4285faf24942a318415b562f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a4a26df7522a6fd166a7078 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/65e275384cd996db7b3032e9 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/1b72bf56d51bf6bac802b0d4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/06e463aa9ea71b1bc6a086e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/ddc953f2de1b20fefa0b8da7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/4285faf24942a318415b562f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/be5e4f51f10eaf663a1f234b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a4a26df7522a6fd166a7078 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/65e275384cd996db7b3032e9 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/2b3d74ccb008615cc9c9b0de HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/06e463aa9ea71b1bc6a086e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/1b72bf56d51bf6bac802b0d4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/4285faf24942a318415b562f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/7a94fb94a208a4227c6bc38e HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/6d4c5fd96fb660f93c97a772 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/612906fe8b91153010615963 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/76af908fb6bada3fb907b3b3 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/2b3d74ccb008615cc9c9b0de HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a94fb94a208a4227c6bc38e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/6d4c5fd96fb660f93c97a772 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/612906fe8b91153010615963 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/76af908fb6bada3fb907b3b3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/f6f1ddc0b1480b0e286fcac7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a4a26df7522a6fd166a7078 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/65e275384cd996db7b3032e9 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/d941834086fccae05488f51b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/1b72bf56d51bf6bac802b0d4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/21d0acd9ece5e4b3f300ef95 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/406a5041cbdcc339816ad721 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40302)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/d941834086fccae05488f51b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/29e5c3a0f92f544dd4f5c466 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/f6f1ddc0b1480b0e286fcac7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/21d0acd9ece5e4b3f300ef95 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/2b3d74ccb008615cc9c9b0de HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/406a5041cbdcc339816ad721 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/6d4c5fd96fb660f93c97a772 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/29e5c3a0f92f544dd4f5c466 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a94fb94a208a4227c6bc38e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/612906fe8b91153010615963 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/06e463aa9ea71b1bc6a086e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/4285faf24942a318415b562f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/76af908fb6bada3fb907b3b3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/d941834086fccae05488f51b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/f6f1ddc0b1480b0e286fcac7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/21d0acd9ece5e4b3f300ef95 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/406a5041cbdcc339816ad721 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/6d4c5fd96fb660f93c97a772 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/29e5c3a0f92f544dd4f5c466 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/6ce351f236450fbc31be090f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/06b162996c58740d78b23a21 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/c613550e49fd20a4462d636a HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/f6e8f932d721572140b47265 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/7c89e616a0eec80d0f827456 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/6ce351f236450fbc31be090f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/06b162996c58740d78b23a21 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/f6e8f932d721572140b47265 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/c613550e49fd20a4462d636a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7c89e616a0eec80d0f827456 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/d941834086fccae05488f51b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/76af908fb6bada3fb907b3b3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/406a5041cbdcc339816ad721 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a94fb94a208a4227c6bc38e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/7e5e2989f6587835974c554f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/612906fe8b91153010615963 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/fa43236b669e39e0870326e1 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/fe694559e2b0ca1349424735 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/96f797aaa685604bdac6068d HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/0946f0080e3dce8fe8e2269b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7e5e2989f6587835974c554f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/fa43236b669e39e0870326e1 HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40512)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/96f797aaa685604bdac6068d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/fe694559e2b0ca1349424735 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/21d0acd9ece5e4b3f300ef95 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/f6f1ddc0b1480b0e286fcac7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/0946f0080e3dce8fe8e2269b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/06b162996c58740d78b23a21 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/6ce351f236450fbc31be090f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/f6e8f932d721572140b47265 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/7a28a02a6b3fc13aa60e9f5e HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/d7077a37f13e4a5fb498ed66 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/c613550e49fd20a4462d636a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7c89e616a0eec80d0f827456 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a28a02a6b3fc13aa60e9f5e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/d7077a37f13e4a5fb498ed66 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7e5e2989f6587835974c554f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/fa43236b669e39e0870326e1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/fe694559e2b0ca1349424735 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/96f797aaa685604bdac6068d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/6ce351f236450fbc31be090f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/0946f0080e3dce8fe8e2269b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/f6e8f932d721572140b47265 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/06b162996c58740d78b23a21 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/c613550e49fd20a4462d636a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7c89e616a0eec80d0f827456 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a28a02a6b3fc13aa60e9f5e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/fe694559e2b0ca1349424735 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/d7077a37f13e4a5fb498ed66 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/96f797aaa685604bdac6068d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/0946f0080e3dce8fe8e2269b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/bacb0e38ac23b930c1fb8eed HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/4c3ea1b1be2f1c392df265fb HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/bacb0e38ac23b930c1fb8eed HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/4c3ea1b1be2f1c392df265fb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7a28a02a6b3fc13aa60e9f5e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/d7077a37f13e4a5fb498ed66 HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40682)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40674)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/bacb0e38ac23b930c1fb8eed HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/4c3ea1b1be2f1c392df265fb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/a9f66c186f89367b2f2b39cf HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/774eaecbcf2885cd5d6228f7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/a9f66c186f89367b2f2b39cf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/774eaecbcf2885cd5d6228f7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/bacb0e38ac23b930c1fb8eed HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40564)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+----------------------------------------
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception occurred during processing of request from  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ ('127.0.0.1', 40572)
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/a9f66c186f89367b2f2b39cf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/774eaecbcf2885cd5d6228f7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/774eaecbcf2885cd5d6228f7 HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40714)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/a9f66c186f89367b2f2b39cf HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 40684)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /api/catalog HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/88cd8afb207a509b36ac4667 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/aff3336b4343cae02ad6d767 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/81ac9faf048ff482643dcdf8 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /poster/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:47:21] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:48:50] "GET /api/catalog HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /api/catalog HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/894d51f35ce0755668dbba0a HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/da4d177ec58f41b59a4aac80 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/3797fce21151674a3b05d3ab HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/ec885a66a81a898d71fb496d HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/ec885a66a81a898d71fb496d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/ec885a66a81a898d71fb496d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /api/catalog HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/81ac9faf048ff482643dcdf8 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/88cd8afb207a509b36ac4667 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /poster/aff3336b4343cae02ad6d767 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:47] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /poster/2d8f82cde1e12c7a72445521 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 59616)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/2d8f82cde1e12c7a72445521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/2d8f82cde1e12c7a72445521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/2d8f82cde1e12c7a72445521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/2d8f82cde1e12c7a72445521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /poster/472eaf1be6f71e9358efbf2e HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 59634)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/472eaf1be6f71e9358efbf2e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/472eaf1be6f71e9358efbf2e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/472eaf1be6f71e9358efbf2e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/472eaf1be6f71e9358efbf2e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:48] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /poster/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/caf0c2c73b0542f5c8b86ae4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /poster/5bbb4f0947278a0575da4c51 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/5bbb4f0947278a0575da4c51 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/5bbb4f0947278a0575da4c51 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/5bbb4f0947278a0575da4c51 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/5bbb4f0947278a0575da4c51 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:49] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /poster/4b787ce57e57b71e0fe94449 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/4b787ce57e57b71e0fe94449 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/4b787ce57e57b71e0fe94449 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/4b787ce57e57b71e0fe94449 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/4b787ce57e57b71e0fe94449 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /poster/1da999ca4ed5da085bbd90e7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/1da999ca4ed5da085bbd90e7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/1da999ca4ed5da085bbd90e7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/1da999ca4ed5da085bbd90e7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/1da999ca4ed5da085bbd90e7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:50] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /poster/6b87bdeb088af47999a03623 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /poster/2e88732211d3f6de43580fcd HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/2e88732211d3f6de43580fcd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/2e88732211d3f6de43580fcd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/2e88732211d3f6de43580fcd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:51] "GET /poster/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/8e67b3129d0de9ee558f1cb2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /poster/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/d5e20a74ab0f182dc9f6e867 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /poster/b91c44b2e40e4df9070653dd HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /poster/e227e18d965e14a247e86fc4 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /poster/3e15095a06d5c6cc689f51fd HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /poster/18475ff9a26958dda6588a4b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /poster/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:52] "GET /media/b91c44b2e40e4df9070653dd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /poster/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/22f7d8e02cf7cf21d111fb17 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /poster/2d6d2cff285699fba5bc53e3 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/2d6d2cff285699fba5bc53e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/2d6d2cff285699fba5bc53e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/2d6d2cff285699fba5bc53e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/2d6d2cff285699fba5bc53e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:53] "GET /media/e227e18d965e14a247e86fc4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /poster/08444a6b3bd255c7694a6aff HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/08444a6b3bd255c7694a6aff HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/08444a6b3bd255c7694a6aff HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/08444a6b3bd255c7694a6aff HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/08444a6b3bd255c7694a6aff HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /poster/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/dd6b6ebb25b7d661a4b0e379 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:54] "GET /media/3e15095a06d5c6cc689f51fd HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /poster/6ebb1d88d84a69e41a35db10 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/6ebb1d88d84a69e41a35db10 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/6ebb1d88d84a69e41a35db10 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/6ebb1d88d84a69e41a35db10 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /poster/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/6de1f74c9a1fd6c6050629a6 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/70e12ba3f61de11ce8e49ee1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /poster/89e48e8124ab65ef7adf8a85 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/89e48e8124ab65ef7adf8a85 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:55] "GET /media/89e48e8124ab65ef7adf8a85 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/89e48e8124ab65ef7adf8a85 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/89e48e8124ab65ef7adf8a85 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /poster/4a9d61471d37b60faff15777 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/4a9d61471d37b60faff15777 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/4a9d61471d37b60faff15777 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/4a9d61471d37b60faff15777 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/18475ff9a26958dda6588a4b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /poster/e72501eab405879262cfa4bb HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/e72501eab405879262cfa4bb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/e72501eab405879262cfa4bb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/e72501eab405879262cfa4bb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:56] "GET /media/e72501eab405879262cfa4bb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/381aa0388c629a33ed1105f1 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/381aa0388c629a33ed1105f1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/381aa0388c629a33ed1105f1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/381aa0388c629a33ed1105f1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/381aa0388c629a33ed1105f1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/6b87bdeb088af47999a03623 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/ec885a66a81a898d71fb496d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/da4d177ec58f41b59a4aac80 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/6e5ab035b94d1463a5bd0b1c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/ec885a66a81a898d71fb496d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/3797fce21151674a3b05d3ab HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/894d51f35ce0755668dbba0a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/9ba550a36ad81b8a44490966 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/d1b7f72c0f004635ef5fd17b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/adfbd5711b9f2996bcd146b7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/621719c2600228ad08a74348 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/27509cfbb93093d44ba0fe88 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/d1b7f72c0f004635ef5fd17b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/9ba550a36ad81b8a44490966 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/621719c2600228ad08a74348 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/27509cfbb93093d44ba0fe88 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/adfbd5711b9f2996bcd146b7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/d1b7f72c0f004635ef5fd17b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/9ba550a36ad81b8a44490966 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/27509cfbb93093d44ba0fe88 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/621719c2600228ad08a74348 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/adfbd5711b9f2996bcd146b7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/d1b7f72c0f004635ef5fd17b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/621719c2600228ad08a74348 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/27509cfbb93093d44ba0fe88 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/9ba550a36ad81b8a44490966 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /media/adfbd5711b9f2996bcd146b7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/951ae276bc982fbca9a59521 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/d54638c768306ffc1bf7d6f2 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/99ec93b31b76a6cd8c559332 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/86a4f13ee0a4a94304f0f02f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:57] "GET /poster/5aa82f6955d02aa27593fb14 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/951ae276bc982fbca9a59521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/99ec93b31b76a6cd8c559332 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d54638c768306ffc1bf7d6f2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/5aa82f6955d02aa27593fb14 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/86a4f13ee0a4a94304f0f02f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/951ae276bc982fbca9a59521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/5aa82f6955d02aa27593fb14 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d54638c768306ffc1bf7d6f2 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/99ec93b31b76a6cd8c559332 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/86a4f13ee0a4a94304f0f02f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/951ae276bc982fbca9a59521 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/0b03a0e72ae4e70abe67770e HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/ddd6cb180f5fbf32f11dae1f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/d5aa10f9b7ec1d9c5ba9a23f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/86d08729e00184d18f73aa4a HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/c6a755f36addc7d74fe83cb5 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d5aa10f9b7ec1d9c5ba9a23f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/0b03a0e72ae4e70abe67770e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/ddd6cb180f5fbf32f11dae1f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/c6a755f36addc7d74fe83cb5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/86d08729e00184d18f73aa4a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d5aa10f9b7ec1d9c5ba9a23f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/0b03a0e72ae4e70abe67770e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/ddd6cb180f5fbf32f11dae1f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/86d08729e00184d18f73aa4a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/c6a755f36addc7d74fe83cb5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/417f7aab5302e65d2414b8a1 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/b6ea2b7e986249a230d0ef7c HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/6a6df167d8448176e1fff548 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/15be62d5347b4bb508b15ba5 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/1d80e476a635e54952e27064 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/417f7aab5302e65d2414b8a1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/b6ea2b7e986249a230d0ef7c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/6a6df167d8448176e1fff548 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/15be62d5347b4bb508b15ba5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/1d80e476a635e54952e27064 HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35172)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/8802c2f2e12b95825dd5910d HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/f13f7cbd4fd9a84b87e6dad7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/ddd6cb180f5fbf32f11dae1f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/86d08729e00184d18f73aa4a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/0b03a0e72ae4e70abe67770e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/be5e4f51f10eaf663a1f234b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/ddc953f2de1b20fefa0b8da7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/c138a157d2939feccc48f730 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/f13f7cbd4fd9a84b87e6dad7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/8802c2f2e12b95825dd5910d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/be5e4f51f10eaf663a1f234b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/ddc953f2de1b20fefa0b8da7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/65e275384cd996db7b3032e9 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/7a4a26df7522a6fd166a7078 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/c138a157d2939feccc48f730 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/417f7aab5302e65d2414b8a1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/b6ea2b7e986249a230d0ef7c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/15be62d5347b4bb508b15ba5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/6a6df167d8448176e1fff548 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/1d80e476a635e54952e27064 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/1b72bf56d51bf6bac802b0d4 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/06e463aa9ea71b1bc6a086e3 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/4285faf24942a318415b562f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7a4a26df7522a6fd166a7078 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/65e275384cd996db7b3032e9 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/1b72bf56d51bf6bac802b0d4 HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35388)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/06e463aa9ea71b1bc6a086e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/4285faf24942a318415b562f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/ddc953f2de1b20fefa0b8da7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/f13f7cbd4fd9a84b87e6dad7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/8802c2f2e12b95825dd5910d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/be5e4f51f10eaf663a1f234b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/2b3d74ccb008615cc9c9b0de HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/c138a157d2939feccc48f730 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/15be62d5347b4bb508b15ba5 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/7a94fb94a208a4227c6bc38e HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/6d4c5fd96fb660f93c97a772 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/612906fe8b91153010615963 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/76af908fb6bada3fb907b3b3 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/2b3d74ccb008615cc9c9b0de HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7a94fb94a208a4227c6bc38e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/6d4c5fd96fb660f93c97a772 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/612906fe8b91153010615963 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/76af908fb6bada3fb907b3b3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/d941834086fccae05488f51b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/f6f1ddc0b1480b0e286fcac7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/b6ea2b7e986249a230d0ef7c HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/6a6df167d8448176e1fff548 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7a4a26df7522a6fd166a7078 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/65e275384cd996db7b3032e9 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/1d80e476a635e54952e27064 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/1b72bf56d51bf6bac802b0d4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/06e463aa9ea71b1bc6a086e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/4285faf24942a318415b562f HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35438)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/f13f7cbd4fd9a84b87e6dad7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/2b3d74ccb008615cc9c9b0de HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7a94fb94a208a4227c6bc38e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/6d4c5fd96fb660f93c97a772 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/21d0acd9ece5e4b3f300ef95 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/406a5041cbdcc339816ad721 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/29e5c3a0f92f544dd4f5c466 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/f6f1ddc0b1480b0e286fcac7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d941834086fccae05488f51b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/21d0acd9ece5e4b3f300ef95 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/406a5041cbdcc339816ad721 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/29e5c3a0f92f544dd4f5c466 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/612906fe8b91153010615963 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/76af908fb6bada3fb907b3b3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/06b162996c58740d78b23a21 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/6ce351f236450fbc31be090f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/c138a157d2939feccc48f730 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/1b72bf56d51bf6bac802b0d4 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/2b3d74ccb008615cc9c9b0de HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/6d4c5fd96fb660f93c97a772 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/f6e8f932d721572140b47265 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/c613550e49fd20a4462d636a HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/7c89e616a0eec80d0f827456 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/6ce351f236450fbc31be090f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/06b162996c58740d78b23a21 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/f6e8f932d721572140b47265 HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35636)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/7e5e2989f6587835974c554f HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/fa43236b669e39e0870326e1 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/c613550e49fd20a4462d636a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7c89e616a0eec80d0f827456 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/f6f1ddc0b1480b0e286fcac7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/06e463aa9ea71b1bc6a086e3 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/4285faf24942a318415b562f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d941834086fccae05488f51b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/406a5041cbdcc339816ad721 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7a94fb94a208a4227c6bc38e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/21d0acd9ece5e4b3f300ef95 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/29e5c3a0f92f544dd4f5c466 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/fe694559e2b0ca1349424735 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/612906fe8b91153010615963 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/96f797aaa685604bdac6068d HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/0946f0080e3dce8fe8e2269b HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7e5e2989f6587835974c554f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/fa43236b669e39e0870326e1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/fe694559e2b0ca1349424735 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/96f797aaa685604bdac6068d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/0946f0080e3dce8fe8e2269b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/06b162996c58740d78b23a21 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/f6e8f932d721572140b47265 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/6ce351f236450fbc31be090f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7c89e616a0eec80d0f827456 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/c613550e49fd20a4462d636a HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d941834086fccae05488f51b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/406a5041cbdcc339816ad721 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/7a28a02a6b3fc13aa60e9f5e HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/d7077a37f13e4a5fb498ed66 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/29e5c3a0f92f544dd4f5c466 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7e5e2989f6587835974c554f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/fa43236b669e39e0870326e1 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7a28a02a6b3fc13aa60e9f5e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d7077a37f13e4a5fb498ed66 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/fe694559e2b0ca1349424735 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/0946f0080e3dce8fe8e2269b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/96f797aaa685604bdac6068d HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35778)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35792)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/bacb0e38ac23b930c1fb8eed HTTP/1.1" 200 -
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/4c3ea1b1be2f1c392df265fb HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/f6f1ddc0b1480b0e286fcac7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/bacb0e38ac23b930c1fb8eed HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/4c3ea1b1be2f1c392df265fb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7a28a02a6b3fc13aa60e9f5e HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d7077a37f13e4a5fb498ed66 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7e5e2989f6587835974c554f HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/fe694559e2b0ca1349424735 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/bacb0e38ac23b930c1fb8eed HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/0946f0080e3dce8fe8e2269b HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/96f797aaa685604bdac6068d HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/a9f66c186f89367b2f2b39cf HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/774eaecbcf2885cd5d6228f7 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/a9f66c186f89367b2f2b39cf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/4c3ea1b1be2f1c392df265fb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/774eaecbcf2885cd5d6228f7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/d7077a37f13e4a5fb498ed66 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7a28a02a6b3fc13aa60e9f5e HTTP/1.1" 206 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35880)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35860)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35864)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+----------------------------------------
+Exception occurred during processing of request from  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+   File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+('127.0.0.1', 35854)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/a9f66c186f89367b2f2b39cf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/774eaecbcf2885cd5d6228f7 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/4c3ea1b1be2f1c392df265fb HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/a9f66c186f89367b2f2b39cf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 35774)
+Traceback (most recent call last):
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socketserver.py", line 755, in __init__
+    self.handle()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 438, in handle
+    self.handle_one_request()
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hongzefu/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /api/catalog HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/88cd8afb207a509b36ac4667 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/81ac9faf048ff482643dcdf8 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /poster/aff3336b4343cae02ad6d767 HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+127.0.0.1 - - [26/Sep/2026 21:49:58] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:48] "GET / HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /api/catalog HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:50:49] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET / HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /api/catalog HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /poster/81ac9faf048ff482643dcdf8 HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /poster/88cd8afb207a509b36ac4667 HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /poster/aff3336b4343cae02ad6d767 HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /poster/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /poster/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 200 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:54] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:55] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:55] "GET /media/7f860bb2ecf2a4c76eac98bf HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:55] "GET /media/aff3336b4343cae02ad6d767 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:55] "GET /media/81ac9faf048ff482643dcdf8 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:55] "GET /media/ff2a72799a4e7734ae2e6b63 HTTP/1.1" 206 -
+35.3.218.13 - - [26/Sep/2026 21:54:55] "GET /media/88cd8afb207a509b36ac4667 HTTP/1.1" 206 -

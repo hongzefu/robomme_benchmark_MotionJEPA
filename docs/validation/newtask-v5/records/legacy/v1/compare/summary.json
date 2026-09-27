@@ -1,0 +1,21 @@
+{
+  "schema": "train-parity-compare-summary/1",
+  "compared_at": "2026-09-24T11:36:12.091705+00:00",
+  "runs": {
+    "base": "artifacts/newtask-v5/v1/base",
+    "v5": "artifacts/newtask-v5/v1/v5"
+  },
+  "pairs": [
+    {
+      "pair": "base.B|v5.B",
+      "left": "base/B",
+      "right": "v5/B",
+      "compared": 144,
+      "sha_equal": 144,
+      "field_mismatch": 0,
+      "sidecar_mismatch": 0,
+      "only_left": [],
+      "only_right": []
+    }
+  ]
+}

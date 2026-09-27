@@ -1,0 +1,17 @@
+V5 S6 墙钟
+
+## 一、命令与环境
+
+- 代码：`17867d2`（12.130，S4 快照已重导）；采样快照 `scripts/configs/newtask-v5/sampling_config.json`（sha256 前缀 `c45d4408a5b87d71`）。
+- 命令（tmux 会话 `v5-gen`，日志 `artifacts/logs/v5-gen-v5-01.log`，`EXIT_CODE=0`）：
+  `uv run --no-sync python -m scripts.parity.v5_generation pipeline --run-id v5-01 --release newtask-v5 --draw-workers 8 --draw-gpus 0,1 --workers 8 --rollout-gpu 0 --official-root artifacts/train-parity/local-smoke-01/official-src`
+- 墙钟：抽签约 5 分钟；实跑第 0 轮 48 局 749 s，递补 4 轮 65～86 s；总计约 25 分钟。同期本机另有 V1 两侧各 1 个单 worker 在 GPU 1 上运行。
+- 生成后补跑 `v4_specs reselect`，得到 `scripts/configs/newtask-v5/v5-01/specs.selected.jsonl`（48 条，含递补替换）。
+
+## 二、判定行
+
+```text
+DRAW_DONE rows=188 ok=160
+FREEZE_DONE rows=160 selected=48 envs=16 candidate_shortfall=0
+ROLLOUT_DONE label=run1 rollout_attempted=52 rollout_ok=48 backfilled=2 selected_shortfall=0
+V5_GENERATION=REPORT tasks=16 draft_ok=160 rollout_ok=48 backfilled=2 selected_shortfall=0 demo_frames_out_of_band=0 outer_swap_mismatch=0 bin_collision=0 vr_min_participants=6

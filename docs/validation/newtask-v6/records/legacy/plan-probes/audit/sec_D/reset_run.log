@@ -1,0 +1,211 @@
+PROGRESS BinFill xhard2 20/200 ok=20 t=44s
+PROGRESS BinFill xhard 20/200 ok=20 t=45s
+PROGRESS PickHighlight n8 20/200 ok=20 t=42s
+PROGRESS PickHighlight xhard1 20/200 ok=20 t=43s
+PROGRESS PickHighlight xhard3 20/200 ok=20 t=46s
+PROGRESS BinFill xhard3 20/200 ok=20 t=43s
+PROGRESS PickHighlight xhard2 20/200 ok=20 t=47s
+PROGRESS PickHighlight n10 20/200 ok=12 t=42s
+PROGRESS BinFill xhard1 20/200 ok=20 t=43s
+PROGRESS PickHighlight n9 20/200 ok=20 t=43s
+PROGRESS PickXtimes xhard3 20/200 ok=20 t=48s
+PROGRESS PickXtimes xhard2 20/200 ok=20 t=49s
+PROGRESS PickXtimes xhard1 20/200 ok=20 t=49s
+PROGRESS PickHighlight xhard 20/200 ok=19 t=53s
+PROGRESS SwingXtimes xhard1 20/200 ok=20 t=55s
+PROGRESS PickXtimes xhard 20/200 ok=20 t=51s
+PROGRESS SwingXtimes xhard2 20/200 ok=20 t=51s
+PROGRESS SwingXtimes xhard 20/200 ok=20 t=54s
+PROGRESS SwingXtimes xhard3 20/200 ok=20 t=54s
+PROGRESS PickHighlight xhard3 40/200 ok=37 t=65s
+PROGRESS PickHighlight n10 40/200 ok=26 t=60s
+PROGRESS PickHighlight n8 40/200 ok=39 t=65s
+PROGRESS BinFill xhard2 40/200 ok=40 t=68s
+PROGRESS PickHighlight xhard1 40/200 ok=40 t=66s
+PROGRESS PickHighlight xhard2 40/200 ok=39 t=68s
+PROGRESS BinFill xhard3 40/200 ok=40 t=65s
+PROGRESS PickHighlight n9 40/200 ok=37 t=63s
+PROGRESS BinFill xhard 40/200 ok=40 t=70s
+PROGRESS BinFill xhard1 40/200 ok=40 t=66s
+PROGRESS PickHighlight xhard 40/200 ok=35 t=70s
+PROGRESS PickXtimes xhard1 40/200 ok=40 t=72s
+PROGRESS PickXtimes xhard2 40/200 ok=40 t=73s
+PROGRESS PickXtimes xhard3 40/200 ok=40 t=73s
+PROGRESS PickXtimes xhard 40/200 ok=40 t=76s
+PROGRESS PickHighlight n10 60/200 ok=42 t=77s
+PROGRESS SwingXtimes xhard1 40/200 ok=40 t=83s
+PROGRESS PickHighlight xhard3 60/200 ok=57 t=85s
+PROGRESS SwingXtimes xhard2 40/200 ok=40 t=80s
+PROGRESS SwingXtimes xhard 40/200 ok=40 t=82s
+PROGRESS BinFill xhard2 60/200 ok=60 t=88s
+PROGRESS BinFill xhard 60/200 ok=60 t=88s
+PROGRESS PickHighlight xhard1 60/200 ok=60 t=86s
+PROGRESS PickHighlight n8 60/200 ok=59 t=86s
+PROGRESS PickHighlight xhard2 60/200 ok=59 t=88s
+PROGRESS BinFill xhard3 60/200 ok=60 t=85s
+PROGRESS PickHighlight n9 60/200 ok=56 t=82s
+PROGRESS SwingXtimes xhard3 40/200 ok=40 t=83s
+PROGRESS BinFill xhard1 60/200 ok=60 t=86s
+PROGRESS PickHighlight xhard 60/200 ok=54 t=88s
+PROGRESS PickHighlight n10 80/200 ok=55 t=89s
+PROGRESS PickXtimes xhard1 60/200 ok=60 t=93s
+PROGRESS PickXtimes xhard2 60/200 ok=60 t=94s
+PROGRESS PickXtimes xhard3 60/200 ok=60 t=96s
+PROGRESS PickXtimes xhard 60/200 ok=60 t=97s
+PROGRESS PickHighlight xhard3 80/200 ok=77 t=102s
+PROGRESS SwingXtimes xhard1 60/200 ok=57 t=102s
+PROGRESS BinFill xhard2 80/200 ok=80 t=105s
+PROGRESS PickHighlight xhard1 80/200 ok=80 t=103s
+PROGRESS PickHighlight n8 80/200 ok=79 t=103s
+PROGRESS BinFill xhard3 80/200 ok=80 t=102s
+PROGRESS SwingXtimes xhard2 60/200 ok=57 t=100s
+PROGRESS SwingXtimes xhard 60/200 ok=57 t=101s
+PROGRESS PickHighlight n9 80/200 ok=76 t=100s
+PROGRESS PickHighlight xhard 80/200 ok=73 t=104s
+PROGRESS BinFill xhard 80/200 ok=80 t=107s
+PROGRESS BinFill xhard1 80/200 ok=80 t=102s
+PROGRESS PickHighlight xhard2 80/200 ok=79 t=106s
+PROGRESS PickHighlight n10 100/200 ok=71 t=102s
+PROGRESS SwingXtimes xhard3 60/200 ok=57 t=102s
+PROGRESS PickXtimes xhard1 80/200 ok=80 t=110s
+PROGRESS PickXtimes xhard2 80/200 ok=80 t=112s
+PROGRESS PickHighlight xhard3 100/200 ok=97 t=117s
+PROGRESS PickXtimes xhard3 80/200 ok=80 t=113s
+PROGRESS PickHighlight n8 100/200 ok=99 t=117s
+PROGRESS BinFill xhard3 100/200 ok=100 t=117s
+PROGRESS PickXtimes xhard 80/200 ok=80 t=115s
+PROGRESS PickHighlight xhard1 100/200 ok=100 t=119s
+PROGRESS PickHighlight xhard 100/200 ok=92 t=119s
+PROGRESS PickHighlight n10 120/200 ok=87 t=116s
+PROGRESS BinFill xhard2 100/200 ok=100 t=124s
+PROGRESS BinFill xhard 100/200 ok=100 t=124s
+PROGRESS PickHighlight n9 100/200 ok=96 t=118s
+PROGRESS BinFill xhard1 100/200 ok=100 t=122s
+PROGRESS PickHighlight xhard2 100/200 ok=99 t=126s
+PROGRESS SwingXtimes xhard1 80/200 ok=76 t=125s
+PROGRESS SwingXtimes xhard 80/200 ok=76 t=127s
+PROGRESS SwingXtimes xhard2 80/200 ok=76 t=126s
+PROGRESS SwingXtimes xhard3 80/200 ok=76 t=129s
+PROGRESS PickXtimes xhard1 100/200 ok=100 t=135s
+PROGRESS PickHighlight xhard3 120/200 ok=116 t=141s
+PROGRESS PickHighlight n10 140/200 ok=102 t=136s
+PROGRESS PickHighlight xhard 120/200 ok=110 t=142s
+PROGRESS PickHighlight n8 120/200 ok=118 t=143s
+PROGRESS BinFill xhard3 120/200 ok=120 t=142s
+PROGRESS PickHighlight xhard1 120/200 ok=120 t=144s
+PROGRESS PickXtimes xhard2 100/200 ok=100 t=141s
+PROGRESS PickXtimes xhard3 100/200 ok=100 t=141s
+PROGRESS BinFill xhard 120/200 ok=120 t=149s
+PROGRESS PickHighlight n9 120/200 ok=115 t=142s
+PROGRESS BinFill xhard2 120/200 ok=120 t=149s
+PROGRESS PickHighlight xhard2 120/200 ok=118 t=148s
+PROGRESS BinFill xhard1 120/200 ok=120 t=145s
+PROGRESS PickXtimes xhard 100/200 ok=100 t=145s
+PROGRESS SwingXtimes xhard1 100/200 ok=95 t=157s
+PROGRESS PickHighlight n10 160/200 ok=117 t=154s
+PROGRESS SwingXtimes xhard 100/200 ok=95 t=157s
+PROGRESS SwingXtimes xhard2 100/200 ok=95 t=156s
+PROGRESS PickHighlight xhard3 140/200 ok=135 t=161s
+PROGRESS PickHighlight xhard 140/200 ok=128 t=161s
+PROGRESS PickHighlight n8 140/200 ok=138 t=163s
+PROGRESS PickHighlight xhard1 140/200 ok=140 t=164s
+PROGRESS BinFill xhard3 140/200 ok=140 t=162s
+PROGRESS SwingXtimes xhard3 100/200 ok=95 t=161s
+PROGRESS PickHighlight n9 140/200 ok=133 t=160s
+PROGRESS PickXtimes xhard1 120/200 ok=120 t=161s
+PROGRESS PickHighlight xhard2 140/200 ok=138 t=171s
+PROGRESS BinFill xhard2 140/200 ok=140 t=175s
+PROGRESS BinFill xhard 140/200 ok=140 t=175s
+PROGRESS BinFill xhard1 140/200 ok=140 t=171s
+PROGRESS PickXtimes xhard2 120/200 ok=120 t=171s
+PROGRESS PickXtimes xhard3 120/200 ok=120 t=172s
+PROGRESS PickHighlight n10 180/200 ok=132 t=175s
+PROGRESS PickXtimes xhard 120/200 ok=120 t=176s
+PROGRESS PickHighlight xhard3 160/200 ok=155 t=188s
+PROGRESS PickHighlight xhard 160/200 ok=147 t=187s
+PROGRESS PickHighlight n8 160/200 ok=158 t=190s
+PROGRESS SwingXtimes xhard1 120/200 ok=113 t=192s
+PROGRESS PickHighlight xhard1 160/200 ok=160 t=192s
+PROGRESS PickHighlight n9 160/200 ok=152 t=189s
+PROGRESS BinFill xhard3 160/200 ok=160 t=197s
+PROGRESS SwingXtimes xhard 120/200 ok=113 t=197s
+PROGRESS PickHighlight n10 200/200 ok=144 t=196s
+DONE PickHighlight n10 n=200 ok=144 fail=56 t=196s
+PROGRESS SwingXtimes xhard2 120/200 ok=113 t=198s
+PROGRESS PickHighlight xhard2 160/200 ok=158 t=204s
+PROGRESS BinFill xhard 160/200 ok=160 t=205s
+PROGRESS BinFill xhard2 160/200 ok=160 t=206s
+PROGRESS BinFill xhard1 160/200 ok=160 t=202s
+PROGRESS SwingXtimes xhard3 120/200 ok=113 t=202s
+PROGRESS PickXtimes xhard1 140/200 ok=140 t=202s
+PROGRESS PickXtimes xhard2 140/200 ok=140 t=208s
+PROGRESS PickXtimes xhard3 140/200 ok=140 t=208s
+PROGRESS PickXtimes xhard 140/200 ok=140 t=212s
+PROGRESS PickHighlight xhard 180/200 ok=164 t=217s
+PROGRESS PickHighlight xhard3 180/200 ok=173 t=219s
+PROGRESS PickHighlight n9 180/200 ok=169 t=216s
+PROGRESS PickHighlight n8 180/200 ok=177 t=222s
+PROGRESS PickHighlight xhard1 180/200 ok=180 t=225s
+PROGRESS BinFill xhard3 180/200 ok=180 t=226s
+PROGRESS PickHighlight xhard2 180/200 ok=177 t=230s
+PROGRESS BinFill xhard2 180/200 ok=180 t=233s
+PROGRESS BinFill xhard 180/200 ok=180 t=233s
+PROGRESS BinFill xhard1 180/200 ok=180 t=229s
+PROGRESS SwingXtimes xhard1 140/200 ok=133 t=238s
+PROGRESS PickHighlight xhard 200/200 ok=181 t=241s
+DONE PickHighlight xhard n=200 ok=181 fail=19 t=241s
+PROGRESS PickXtimes xhard1 160/200 ok=160 t=239s
+PROGRESS SwingXtimes xhard2 140/200 ok=133 t=239s
+PROGRESS SwingXtimes xhard 140/200 ok=133 t=241s
+PROGRESS PickHighlight xhard3 200/200 ok=192 t=247s
+DONE PickHighlight xhard3 n=200 ok=192 fail=8 t=247s
+PROGRESS PickHighlight n9 200/200 ok=187 t=241s
+DONE PickHighlight n9 n=200 ok=187 fail=13 t=241s
+PROGRESS PickXtimes xhard2 160/200 ok=160 t=243s
+PROGRESS PickXtimes xhard3 160/200 ok=160 t=244s
+PROGRESS SwingXtimes xhard3 140/200 ok=133 t=244s
+PROGRESS PickHighlight n8 200/200 ok=196 t=249s
+DONE PickHighlight n8 n=200 ok=196 fail=4 t=249s
+PROGRESS PickXtimes xhard 160/200 ok=160 t=248s
+PROGRESS PickHighlight xhard1 200/200 ok=200 t=253s
+DONE PickHighlight xhard1 n=200 ok=200 fail=0 t=253s
+PROGRESS PickHighlight xhard2 200/200 ok=196 t=257s
+DONE PickHighlight xhard2 n=200 ok=196 fail=4 t=257s
+PROGRESS BinFill xhard3 200/200 ok=200 t=255s
+DONE BinFill xhard3 n=200 ok=200 fail=0 t=255s
+PROGRESS BinFill xhard 200/200 ok=200 t=260s
+DONE BinFill xhard n=200 ok=200 fail=0 t=260s
+PROGRESS BinFill xhard1 200/200 ok=200 t=257s
+DONE BinFill xhard1 n=200 ok=200 fail=0 t=257s
+PROGRESS BinFill xhard2 200/200 ok=200 t=263s
+DONE BinFill xhard2 n=200 ok=200 fail=0 t=263s
+PROGRESS PickXtimes xhard1 180/200 ok=180 t=278s
+PROGRESS SwingXtimes xhard1 160/200 ok=153 t=284s
+PROGRESS PickXtimes xhard3 180/200 ok=180 t=282s
+PROGRESS PickXtimes xhard2 180/200 ok=180 t=282s
+PROGRESS SwingXtimes xhard2 160/200 ok=153 t=284s
+PROGRESS SwingXtimes xhard 160/200 ok=153 t=288s
+PROGRESS PickXtimes xhard 180/200 ok=180 t=289s
+PROGRESS SwingXtimes xhard3 160/200 ok=153 t=291s
+PROGRESS PickXtimes xhard1 200/200 ok=200 t=313s
+DONE PickXtimes xhard1 n=200 ok=200 fail=0 t=313s
+PROGRESS PickXtimes xhard3 200/200 ok=200 t=315s
+DONE PickXtimes xhard3 n=200 ok=200 fail=0 t=315s
+PROGRESS PickXtimes xhard2 200/200 ok=200 t=316s
+DONE PickXtimes xhard2 n=200 ok=200 fail=0 t=316s
+PROGRESS PickXtimes xhard 200/200 ok=200 t=323s
+DONE PickXtimes xhard n=200 ok=200 fail=0 t=323s
+PROGRESS SwingXtimes xhard1 180/200 ok=173 t=327s
+PROGRESS SwingXtimes xhard2 180/200 ok=173 t=329s
+PROGRESS SwingXtimes xhard 180/200 ok=173 t=331s
+PROGRESS SwingXtimes xhard3 180/200 ok=173 t=334s
+PROGRESS SwingXtimes xhard1 200/200 ok=192 t=358s
+DONE SwingXtimes xhard1 n=200 ok=192 fail=8 t=358s
+PROGRESS SwingXtimes xhard2 200/200 ok=192 t=361s
+DONE SwingXtimes xhard2 n=200 ok=192 fail=8 t=361s
+PROGRESS SwingXtimes xhard 200/200 ok=192 t=363s
+DONE SwingXtimes xhard n=200 ok=192 fail=8 t=363s
+PROGRESS SwingXtimes xhard3 200/200 ok=192 t=364s
+DONE SwingXtimes xhard3 n=200 ok=192 fail=8 t=364s
+ALL_DONE
+EXIT_CODE=0

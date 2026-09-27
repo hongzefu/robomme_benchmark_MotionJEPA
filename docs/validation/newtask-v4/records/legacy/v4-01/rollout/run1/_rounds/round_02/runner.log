@@ -1,0 +1,14 @@
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 1.440700 is greater than threshold 0.001000.
+IK Failed! Distance 1.022883 is greater than threshold 0.001000.
+IK Failed! Distance 0.801770 is greater than threshold 0.001000.
+RUNNER_DONE jobs=1 ok=0 failed=1
+# 失败 InsertPeg/episode_2: PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed
+
+--- stderr ---
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources

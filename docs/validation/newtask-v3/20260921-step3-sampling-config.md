@@ -1,6 +1,6 @@
 # 步 3 报告：十六环境切出 `sampling_config`（decision／native）（2026-09-21）
 
-对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 3，闸门 G2／G3（离线部分）与 P4 的 B↔C 部分。本报告即用户要求的「`src/robomme` 改完出 md 报告」。
+对应 [0921-newtask-release-v3-plan.md](../../plans/0921-newtask-release-v3-plan.md) 第五节步 3，闸门 G2／G3（离线部分）与 P4 的 B↔C 部分。本报告即用户要求的「`src/robomme` 改完出 md 报告」。
 
 ## 一、形态：一个新工具 + 每环境两块
 

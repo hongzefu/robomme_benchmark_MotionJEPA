@@ -1,0 +1,3662 @@
+[
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 111,
+  "t_obs": 208,
+  "rc": [
+   90,
+   166
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 132
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 257,
+  "t_obs": 353,
+  "rc": [
+   138,
+   170
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 136,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 113,
+  "t_obs": 209,
+  "rc": [
+   91,
+   138
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 121
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 258,
+  "t_obs": 352,
+  "rc": [
+   128,
+   140
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 84,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 117,
+  "t_obs": 223,
+  "rc": [
+   84,
+   141
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 111,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 276,
+  "t_obs": 374,
+  "rc": [
+   140,
+   121
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 45
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 123,
+  "t_obs": 220,
+  "rc": [
+   78,
+   84
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 127
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 272,
+  "t_obs": 362,
+  "rc": [
+   80,
+   107
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 111,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 414,
+  "t_obs": 499,
+  "rc": [
+   106,
+   114
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 126,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 111,
+  "t_obs": 214,
+  "rc": [
+   103,
+   173
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 147
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 266,
+  "t_obs": 354,
+  "rc": [
+   90,
+   88
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 135,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 403,
+  "t_obs": 474,
+  "rc": [
+   100,
+   123
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 108,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 115,
+  "t_obs": 233,
+  "rc": [
+   142,
+   167
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 179,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 275,
+  "t_obs": 384,
+  "rc": [
+   93,
+   125
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 117
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 433,
+  "t_obs": 534,
+  "rc": [
+   126,
+   76
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 173,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 122,
+  "t_obs": 233,
+  "rc": [
+   110,
+   82
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 150,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 280,
+  "t_obs": 377,
+  "rc": [
+   140,
+   99
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 139,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 419,
+  "t_obs": 520,
+  "rc": [
+   92,
+   150
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 116
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 111,
+  "t_obs": 214,
+  "rc": [
+   104,
+   85
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 145,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 265,
+  "t_obs": 379,
+  "rc": [
+   133,
+   154
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 156
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 421,
+  "t_obs": 510,
+  "rc": [
+   100,
+   143
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 118,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 118,
+  "t_obs": 234,
+  "rc": [
+   142,
+   96
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 154,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 276,
+  "t_obs": 375,
+  "rc": [
+   105,
+   169
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 148
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 427,
+  "t_obs": 529,
+  "rc": [
+   82,
+   139
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 113,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 112,
+  "t_obs": 213,
+  "rc": [
+   93,
+   102
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 129,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 262,
+  "t_obs": 361,
+  "rc": [
+   119,
+   135
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 140,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 409,
+  "t_obs": 490,
+  "rc": [
+   130,
+   98
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 106
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 122,
+  "t_obs": 225,
+  "rc": [
+   103,
+   91
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 140,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 277,
+  "t_obs": 375,
+  "rc": [
+   106,
+   172
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 149,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 428,
+  "t_obs": 517,
+  "rc": [
+   138,
+   127
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 57
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 114,
+  "t_obs": 231,
+  "rc": [
+   124,
+   94
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 154,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 280,
+  "t_obs": 385,
+  "rc": [
+   75,
+   112
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 106
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 438,
+  "t_obs": 522,
+  "rc": [
+   87,
+   158
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 120,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 265,
+  "t_obs": 368,
+  "rc": [
+   96,
+   185
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 149,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 419,
+  "t_obs": 506,
+  "rc": [
+   128,
+   192
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 163
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 268,
+  "t_obs": 380,
+  "rc": [
+   135,
+   179
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 187
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 422,
+  "t_obs": 511,
+  "rc": [
+   126,
+   118
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 84,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 266,
+  "t_obs": 368,
+  "rc": [
+   95,
+   114
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 124,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 417,
+  "t_obs": 508,
+  "rc": [
+   133,
+   165
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 110,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 229,
+  "t_obs": 329,
+  "rc": [
+   100,
+   152
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 133,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 380,
+  "t_obs": 465,
+  "rc": [
+   104,
+   109
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 131
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 516,
+  "t_obs": 603,
+  "rc": [
+   134,
+   110
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 78,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 234,
+  "t_obs": 329,
+  "rc": [
+   90,
+   159
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 131
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 378,
+  "t_obs": 489,
+  "rc": [
+   130,
+   126
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 141,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 531,
+  "t_obs": 613,
+  "rc": [
+   111,
+   114
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 116,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 233,
+  "t_obs": 337,
+  "rc": [
+   105,
+   166
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 146
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 389,
+  "t_obs": 488,
+  "rc": [
+   128,
+   93
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 158,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 530,
+  "t_obs": 624,
+  "rc": [
+   105,
+   130
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 105,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 263,
+  "t_obs": 379,
+  "rc": [
+   113,
+   196
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 170
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 427,
+  "t_obs": 523,
+  "rc": [
+   101,
+   160
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 141,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 573,
+  "t_obs": 668,
+  "rc": [
+   134,
+   134
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 78,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 262,
+  "t_obs": 375,
+  "rc": [
+   121,
+   112
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 134
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 423,
+  "t_obs": 511,
+  "rc": [
+   131,
+   183
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 185,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 553,
+  "t_obs": 648,
+  "rc": [
+   91,
+   105
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 124,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 295,
+  "t_obs": 397,
+  "rc": [
+   105,
+   114
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 126
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 448,
+  "t_obs": 554,
+  "rc": [
+   127,
+   177
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 170,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 596,
+  "t_obs": 676,
+  "rc": [
+   126,
+   95
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 106,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 333,
+  "t_obs": 427,
+  "rc": [
+   95,
+   110
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 125
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 476,
+  "t_obs": 582,
+  "rc": [
+   123,
+   106
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 145,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 630,
+  "t_obs": 710,
+  "rc": [
+   131,
+   190
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 167,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 332,
+  "t_obs": 427,
+  "rc": [
+   97,
+   137
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 126,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 476,
+  "t_obs": 561,
+  "rc": [
+   99,
+   187
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 152
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 612,
+  "t_obs": 705,
+  "rc": [
+   134,
+   176
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 156,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 333,
+  "t_obs": 442,
+  "rc": [
+   134,
+   156
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 160
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 484,
+  "t_obs": 580,
+  "rc": [
+   101,
+   96
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 138,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 632,
+  "t_obs": 722,
+  "rc": [
+   129,
+   104
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 92,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 163,
+  "rc": [
+   135,
+   135
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 135,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 205,
+  "t_obs": 292,
+  "rc": [
+   118,
+   115
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 117,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 166,
+  "rc": [
+   103,
+   172
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 148,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 218,
+  "t_obs": 320,
+  "rc": [
+   107,
+   100
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 133,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 165,
+  "rc": [
+   133,
+   127
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 134
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 207,
+  "t_obs": 298,
+  "rc": [
+   105,
+   79
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 144,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 182,
+  "rc": [
+   66,
+   162
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 109,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 237,
+  "t_obs": 346,
+  "rc": [
+   140,
+   131
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 144,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 388,
+  "t_obs": 483,
+  "rc": [
+   87,
+   138
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 122
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 175,
+  "rc": [
+   83,
+   125
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 96,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 228,
+  "t_obs": 323,
+  "rc": [
+   107,
+   92
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 143
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 375,
+  "t_obs": 451,
+  "rc": [
+   110,
+   126
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 111,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 175,
+  "rc": [
+   84,
+   163
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 129,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 223,
+  "t_obs": 322,
+  "rc": [
+   117,
+   148
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 141,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 370,
+  "t_obs": 450,
+  "rc": [
+   134,
+   110
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 83
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 179,
+  "rc": [
+   89,
+   156
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 118,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 228,
+  "t_obs": 317,
+  "rc": [
+   79,
+   126
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 96
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 370,
+  "t_obs": 462,
+  "rc": [
+   70,
+   108
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 105,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 167,
+  "rc": [
+   100,
+   122
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 122,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 217,
+  "t_obs": 315,
+  "rc": [
+   119,
+   89
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 159
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 364,
+  "t_obs": 441,
+  "rc": [
+   105,
+   166
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 144,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 178,
+  "rc": [
+   89,
+   134
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 106,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 227,
+  "t_obs": 330,
+  "rc": [
+   116,
+   177
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 161,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 378,
+  "t_obs": 465,
+  "rc": [
+   131,
+   124
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 79
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 174,
+  "rc": [
+   74,
+   86
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 115,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 224,
+  "t_obs": 329,
+  "rc": [
+   121,
+   121
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 139
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 377,
+  "t_obs": 454,
+  "rc": [
+   133,
+   154
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 99,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 170,
+  "rc": [
+   140,
+   89
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 169,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 212,
+  "t_obs": 318,
+  "rc": [
+   117,
+   86
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 151
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 371,
+  "t_obs": 458,
+  "rc": [
+   142,
+   134
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 43,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 66,
+  "t_obs": 180,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 115
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 229,
+  "t_obs": 337,
+  "rc": [
+   141,
+   141
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 142,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 379,
+  "t_obs": 469,
+  "rc": [
+   109,
+   103
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 129,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 264,
+  "t_obs": 365,
+  "rc": [
+   93,
+   160
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 133,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 414,
+  "t_obs": 503,
+  "rc": [
+   125,
+   140
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 95,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 264,
+  "t_obs": 369,
+  "rc": [
+   90,
+   163
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 134
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 418,
+  "t_obs": 513,
+  "rc": [
+   141,
+   148
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 65,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 264,
+  "t_obs": 360,
+  "rc": [
+   131,
+   140
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 142
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 402,
+  "t_obs": 488,
+  "rc": [
+   98,
+   97
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 127,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 300,
+  "t_obs": 403,
+  "rc": [
+   91,
+   83
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 129
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 451,
+  "t_obs": 551,
+  "rc": [
+   134,
+   119
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 132,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 593,
+  "t_obs": 706,
+  "rc": [
+   64,
+   122
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 96,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 300,
+  "t_obs": 405,
+  "rc": [
+   116,
+   97
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 155
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 453,
+  "t_obs": 554,
+  "rc": [
+   76,
+   149
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 110,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 607,
+  "t_obs": 688,
+  "rc": [
+   74,
+   120
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 96,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 300,
+  "t_obs": 400,
+  "rc": [
+   140,
+   137
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 111,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 442,
+  "t_obs": 555,
+  "rc": [
+   76,
+   125
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 114,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 608,
+  "t_obs": 699,
+  "rc": [
+   116,
+   103
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 98
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 366,
+  "t_obs": 474,
+  "rc": [
+   103,
+   160
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 138,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 526,
+  "t_obs": 643,
+  "rc": [
+   86,
+   86
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 126
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 693,
+  "t_obs": 775,
+  "rc": [
+   73,
+   121
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 106,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 330,
+  "t_obs": 456,
+  "rc": [
+   70,
+   127
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 96,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 507,
+  "t_obs": 615,
+  "rc": [
+   133,
+   133
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 130,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 657,
+  "t_obs": 749,
+  "rc": [
+   89,
+   100
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 129
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 330,
+  "t_obs": 445,
+  "rc": [
+   73,
+   114
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 103,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 495,
+  "t_obs": 605,
+  "rc": [
+   122,
+   140
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 141
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 654,
+  "t_obs": 732,
+  "rc": [
+   101,
+   95
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 129,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 432,
+  "t_obs": 535,
+  "rc": [
+   91,
+   165
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 133
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 584,
+  "t_obs": 679,
+  "rc": [
+   84,
+   98
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 117,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t_pick": 732,
+  "t_obs": 829,
+  "rc": [
+   68,
+   139
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 95,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 432,
+  "t_obs": 533,
+  "rc": [
+   106,
+   89
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 145,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 585,
+  "t_obs": 684,
+  "rc": [
+   77,
+   118
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 106,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t_pick": 737,
+  "t_obs": 818,
+  "rc": [
+   91,
+   144
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 125
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 462,
+  "t_obs": 563,
+  "rc": [
+   142,
+   154
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 132
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 605,
+  "t_obs": 705,
+  "rc": [
+   107,
+   107
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 141,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t_pick": 757,
+  "t_obs": 855,
+  "rc": [
+   88,
+   159
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 127,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t_pick": 213,
+  "t_obs": 380,
+  "rc": [
+   93,
+   163
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 134
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t_pick": 429,
+  "t_obs": 506,
+  "rc": [
+   96,
+   92
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 127,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t_pick": 218,
+  "t_obs": 383,
+  "rc": [
+   102,
+   162
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 142,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t_pick": 435,
+  "t_obs": 512,
+  "rc": [
+   90,
+   92
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 124,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t_pick": 207,
+  "t_obs": 313,
+  "rc": [
+   99,
+   166
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 139
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t_pick": 203,
+  "t_obs": 300,
+  "rc": [
+   98,
+   105
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 131,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t_pick": 349,
+  "t_obs": 446,
+  "rc": [
+   95,
+   151
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 125,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t_pick": 204,
+  "t_obs": 353,
+  "rc": [
+   99,
+   91
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 138,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t_pick": 218,
+  "t_obs": 415,
+  "rc": [
+   123,
+   160
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 153,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t_pick": 464,
+  "t_obs": 548,
+  "rc": [
+   103,
+   181
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 150
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t_pick": 206,
+  "t_obs": 387,
+  "rc": [
+   88,
+   162
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 122
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t_pick": 435,
+  "t_obs": 524,
+  "rc": [
+   101,
+   93
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 139,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t_pick": 206,
+  "t_obs": 295,
+  "rc": [
+   95,
+   99
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 129,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t_pick": 209,
+  "t_obs": 308,
+  "rc": [
+   102,
+   166
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 143,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t_pick": 360,
+  "t_obs": 444,
+  "rc": [
+   128,
+   175
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 154,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t_pick": 116,
+  "t_obs": 279,
+  "rc": [
+   85,
+   155
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 117,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t_pick": 112,
+  "t_obs": 281,
+  "rc": [
+   129,
+   148
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 96,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t_pick": 117,
+  "t_obs": 216,
+  "rc": [
+   119,
+   138
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 101
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t_pick": 123,
+  "t_obs": 244,
+  "rc": [
+   140,
+   160
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 171,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t_pick": 286,
+  "t_obs": 390,
+  "rc": [
+   95,
+   130
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 102
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t_pick": 115,
+  "t_obs": 259,
+  "rc": [
+   88,
+   154
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 125,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t_pick": 115,
+  "t_obs": 316,
+  "rc": [
+   130,
+   90
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 162,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t_pick": 358,
+  "t_obs": 444,
+  "rc": [
+   97,
+   139
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 114
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t_pick": 111,
+  "t_obs": 311,
+  "rc": [
+   129,
+   125
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 93,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t_pick": 117,
+  "t_obs": 211,
+  "rc": [
+   76,
+   167
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 117,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t_pick": 115,
+  "t_obs": 226,
+  "rc": [
+   75,
+   158
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 112
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t_pick": 277,
+  "t_obs": 369,
+  "rc": [
+   103,
+   104
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 127,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t_pick": 168,
+  "t_obs": 318,
+  "rc": [
+   100,
+   139
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 115,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t_pick": 168,
+  "t_obs": 318,
+  "rc": [
+   105,
+   116
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 127
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t_pick": 114,
+  "t_obs": 210,
+  "rc": [
+   108,
+   91
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 142
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t_pick": 168,
+  "t_obs": 266,
+  "rc": [
+   140,
+   142
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 121,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t_pick": 308,
+  "t_obs": 398,
+  "rc": [
+   121,
+   77
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 157,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t_pick": 114,
+  "t_obs": 264,
+  "rc": [
+   103,
+   159
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 140,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t_pick": 216,
+  "t_obs": 332,
+  "rc": [
+   83,
+   164
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 119
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t_pick": 385,
+  "t_obs": 579,
+  "rc": [
+   141,
+   141
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 33,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t_pick": 168,
+  "t_obs": 357,
+  "rc": [
+   98,
+   131
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 109,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t_pick": 168,
+  "t_obs": 266,
+  "rc": [
+   82,
+   100
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 117,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t_pick": 168,
+  "t_obs": 272,
+  "rc": [
+   119,
+   163
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 152
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t_pick": 321,
+  "t_obs": 413,
+  "rc": [
+   88,
+   102
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 126,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 226,
+  "rc": [
+   129,
+   89
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 116
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 217,
+  "rc": [
+   92,
+   87
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 136,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 160,
+  "rc": [
+   94,
+   152
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 117,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 162,
+  "rc": [
+   127,
+   85
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 161,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t_pick": 204,
+  "t_obs": 303,
+  "rc": [
+   79,
+   160
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 117
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 220,
+  "rc": [
+   94,
+   162
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 134,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 244,
+  "rc": [
+   119,
+   128
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 138,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t_pick": 292,
+  "t_obs": 388,
+  "rc": [
+   92,
+   164
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 124
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 251,
+  "rc": [
+   84,
+   156
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 115
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 165,
+  "rc": [
+   143,
+   165
+  ],
+  "subgoal_color": "green",
+  "pixel_counts": {
+   "red": 0,
+   "green": 77,
+   "blue": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t_pick": 66,
+  "t_obs": 177,
+  "rc": [
+   81,
+   95
+  ],
+  "subgoal_color": "blue",
+  "pixel_counts": {
+   "red": 0,
+   "green": 0,
+   "blue": 117
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t_pick": 230,
+  "t_obs": 327,
+  "rc": [
+   66,
+   143
+  ],
+  "subgoal_color": "red",
+  "pixel_counts": {
+   "red": 96,
+   "green": 0,
+   "blue": 0
+  },
+  "seen": "red",
+  "ok": true
+ }
+]

@@ -1,0 +1,6294 @@
+[
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   70,
+   129
+  ],
+  "subgoal": "pick up the first blue cube at <70, 129>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 145,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 202,
+  "rc": [
+   92,
+   71
+  ],
+  "subgoal": "pick up the second blue cube at <92, 71>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 150,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 386,
+  "rc": [
+   77,
+   77
+  ],
+  "subgoal": "pick up the third blue cube at <77, 77>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 151,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 574,
+  "rc": [
+   101,
+   126
+  ],
+  "subgoal": "pick up the first red cube at <101, 126>",
+  "counts": {
+   "red": 156,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 722,
+  "rc": [
+   73,
+   166
+  ],
+  "subgoal": "pick up the second red cube at <73, 166>",
+  "counts": {
+   "red": 158,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 907,
+  "rc": [
+   109,
+   85
+  ],
+  "subgoal": "pick up the third red cube at <109, 85>",
+  "counts": {
+   "red": 150,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   57,
+   112
+  ],
+  "subgoal": "pick up the first red cube at <57, 112>",
+  "counts": {
+   "red": 123,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 205,
+  "rc": [
+   73,
+   77
+  ],
+  "subgoal": "pick up the second red cube at <73, 77>",
+  "counts": {
+   "red": 132,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 371,
+  "rc": [
+   114,
+   77
+  ],
+  "subgoal": "pick up the first blue cube at <114, 77>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 162,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 536,
+  "rc": [
+   101,
+   184
+  ],
+  "subgoal": "pick up the first green cube at <101, 184>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 156,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 698,
+  "rc": [
+   117,
+   159
+  ],
+  "subgoal": "pick up the second green cube at <117, 159>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 153,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 864,
+  "rc": [
+   81,
+   152
+  ],
+  "subgoal": "pick up the third green cube at <81, 152>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 133,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   62,
+   147
+  ],
+  "subgoal": "pick up the first red cube at <62, 147>",
+  "counts": {
+   "red": 140,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 201,
+  "rc": [
+   77,
+   167
+  ],
+  "subgoal": "pick up the second red cube at <77, 167>",
+  "counts": {
+   "red": 147,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 389,
+  "rc": [
+   115,
+   158
+  ],
+  "subgoal": "pick up the third red cube at <115, 158>",
+  "counts": {
+   "red": 168,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 550,
+  "rc": [
+   83,
+   147
+  ],
+  "subgoal": "pick up the fourth red cube at <83, 147>",
+  "counts": {
+   "red": 153,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 709,
+  "rc": [
+   78,
+   78
+  ],
+  "subgoal": "pick up the fifth red cube at <78, 78>",
+  "counts": {
+   "red": 126,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 873,
+  "rc": [
+   107,
+   191
+  ],
+  "subgoal": "pick up the first green cube at <107, 191>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 167,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   106,
+   71
+  ],
+  "subgoal": "pick up the first red cube at <106, 71>",
+  "counts": {
+   "red": 148,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 164,
+  "rc": [
+   86,
+   172
+  ],
+  "subgoal": "pick up the first blue cube at <86, 172>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 139,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 313,
+  "rc": [
+   74,
+   152
+  ],
+  "subgoal": "pick up the second blue cube at <74, 152>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 153,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 486,
+  "rc": [
+   57,
+   77
+  ],
+  "subgoal": "pick up the third blue cube at <57, 77>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 122,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 659,
+  "rc": [
+   57,
+   131
+  ],
+  "subgoal": "pick up the fourth blue cube at <57, 131>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 130,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 848,
+  "rc": [
+   92,
+   149
+  ],
+  "subgoal": "pick up the fifth blue cube at <92, 149>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 160,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 982,
+  "rc": [
+   103,
+   185
+  ],
+  "subgoal": "pick up the sixth blue cube at <103, 185>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 167,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   75,
+   101
+  ],
+  "subgoal": "pick up the first red cube at <75, 101>",
+  "counts": {
+   "red": 136,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 189,
+  "rc": [
+   109,
+   127
+  ],
+  "subgoal": "pick up the second red cube at <109, 127>",
+  "counts": {
+   "red": 156,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 349,
+  "rc": [
+   106,
+   105
+  ],
+  "subgoal": "pick up the first green cube at <106, 105>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 156,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 518,
+  "rc": [
+   55,
+   96
+  ],
+  "subgoal": "pick up the second green cube at <55, 96>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 121,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 722,
+  "rc": [
+   108,
+   153
+  ],
+  "subgoal": "pick up the first blue cube at <108, 153>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 152,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 880,
+  "rc": [
+   66,
+   87
+  ],
+  "subgoal": "pick up the second blue cube at <66, 87>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 144,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 1054,
+  "rc": [
+   113,
+   179
+  ],
+  "subgoal": "pick up the third blue cube at <113, 179>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 162,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   73,
+   143
+  ],
+  "subgoal": "pick up the first green cube at <73, 143>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 154,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 187,
+  "rc": [
+   104,
+   189
+  ],
+  "subgoal": "pick up the second green cube at <104, 189>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 149,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 335,
+  "rc": [
+   65,
+   161
+  ],
+  "subgoal": "pick up the first red cube at <65, 161>",
+  "counts": {
+   "red": 149,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 497,
+  "rc": [
+   84,
+   125
+  ],
+  "subgoal": "pick up the second red cube at <84, 125>",
+  "counts": {
+   "red": 153,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 661,
+  "rc": [
+   104,
+   98
+  ],
+  "subgoal": "pick up the third red cube at <104, 98>",
+  "counts": {
+   "red": 153,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 812,
+  "rc": [
+   53,
+   100
+  ],
+  "subgoal": "pick up the fourth red cube at <53, 100>",
+  "counts": {
+   "red": 134,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 1006,
+  "rc": [
+   53,
+   148
+  ],
+  "subgoal": "pick up the fifth red cube at <53, 148>",
+  "counts": {
+   "red": 125,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   65,
+   158
+  ],
+  "subgoal": "pick up the first blue cube at <65, 158>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 144,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 212,
+  "rc": [
+   85,
+   131
+  ],
+  "subgoal": "pick up the second blue cube at <85, 131>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 154,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 400,
+  "rc": [
+   109,
+   86
+  ],
+  "subgoal": "pick up the third blue cube at <109, 86>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 162,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 552,
+  "rc": [
+   88,
+   80
+  ],
+  "subgoal": "pick up the fourth blue cube at <88, 80>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 155,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 731,
+  "rc": [
+   65,
+   135
+  ],
+  "subgoal": "pick up the fifth blue cube at <65, 135>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 55,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 928,
+  "rc": [
+   55,
+   86
+  ],
+  "subgoal": "pick up the sixth blue cube at <55, 86>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 141,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 1139,
+  "rc": [
+   115,
+   179
+  ],
+  "subgoal": "pick up the first red cube at <115, 179>",
+  "counts": {
+   "red": 158,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 1293,
+  "rc": [
+   101,
+   110
+  ],
+  "subgoal": "pick up the second red cube at <101, 110>",
+  "counts": {
+   "red": 154,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   82,
+   167
+  ],
+  "subgoal": "pick up the first green cube at <82, 167>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 135,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 190,
+  "rc": [
+   111,
+   85
+  ],
+  "subgoal": "pick up the second green cube at <111, 85>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 161,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 346,
+  "rc": [
+   114,
+   188
+  ],
+  "subgoal": "pick up the first red cube at <114, 188>",
+  "counts": {
+   "red": 160,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 504,
+  "rc": [
+   92,
+   96
+  ],
+  "subgoal": "pick up the second red cube at <92, 96>",
+  "counts": {
+   "red": 150,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 674,
+  "rc": [
+   97,
+   165
+  ],
+  "subgoal": "pick up the third red cube at <97, 165>",
+  "counts": {
+   "red": 144,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 839,
+  "rc": [
+   99,
+   68
+  ],
+  "subgoal": "pick up the fourth red cube at <99, 68>",
+  "counts": {
+   "red": 165,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 1007,
+  "rc": [
+   62,
+   95
+  ],
+  "subgoal": "pick up the fifth red cube at <62, 95>",
+  "counts": {
+   "red": 142,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 1191,
+  "rc": [
+   69,
+   117
+  ],
+  "subgoal": "pick up the sixth red cube at <69, 117>",
+  "counts": {
+   "red": 148,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   118,
+   69
+  ],
+  "subgoal": "pick up the first blue cube at <118, 69>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 168,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 183,
+  "rc": [
+   85,
+   90
+  ],
+  "subgoal": "pick up the second blue cube at <85, 90>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 163,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 336,
+  "rc": [
+   57,
+   175
+  ],
+  "subgoal": "pick up the third blue cube at <57, 175>",
+  "counts": {
+   "red": 6,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 124,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 519,
+  "rc": [
+   108,
+   93
+  ],
+  "subgoal": "pick up the first green cube at <108, 93>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 162,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 670,
+  "rc": [
+   63,
+   78
+  ],
+  "subgoal": "pick up the second green cube at <63, 78>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 125,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 835,
+  "rc": [
+   68,
+   167
+  ],
+  "subgoal": "pick up the first red cube at <68, 167>",
+  "counts": {
+   "red": 141,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 980,
+  "rc": [
+   71,
+   146
+  ],
+  "subgoal": "pick up the second red cube at <71, 146>",
+  "counts": {
+   "red": 145,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 1143,
+  "rc": [
+   109,
+   168
+  ],
+  "subgoal": "pick up the third red cube at <109, 168>",
+  "counts": {
+   "red": 148,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   94,
+   179
+  ],
+  "subgoal": "pick up the first blue cube at <94, 179>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 163,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 171,
+  "rc": [
+   85,
+   144
+  ],
+  "subgoal": "pick up the second blue cube at <85, 144>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 154,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 342,
+  "rc": [
+   70,
+   116
+  ],
+  "subgoal": "pick up the third blue cube at <70, 116>",
+  "counts": {
+   "red": 4,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 142,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 531,
+  "rc": [
+   63,
+   161
+  ],
+  "subgoal": "pick up the fourth blue cube at <63, 161>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 89,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 731,
+  "rc": [
+   104,
+   100
+  ],
+  "subgoal": "pick up the fifth blue cube at <104, 100>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 157,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 878,
+  "rc": [
+   100,
+   75
+  ],
+  "subgoal": "pick up the sixth blue cube at <100, 75>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 165,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1059,
+  "rc": [
+   92,
+   123
+  ],
+  "subgoal": "pick up the seventh blue cube at <92, 123>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 156,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1231,
+  "rc": [
+   58,
+   119
+  ],
+  "subgoal": "pick up the first red cube at <58, 119>",
+  "counts": {
+   "red": 135,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1432,
+  "rc": [
+   54,
+   143
+  ],
+  "subgoal": "pick up the second red cube at <54, 143>",
+  "counts": {
+   "red": 112,
+   "yellow": 0,
+   "green": 18,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   62,
+   97
+  ],
+  "subgoal": "pick up the first red cube at <62, 97>",
+  "counts": {
+   "red": 136,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 194,
+  "rc": [
+   90,
+   166
+  ],
+  "subgoal": "pick up the first blue cube at <90, 166>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 146,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 333,
+  "rc": [
+   115,
+   82
+  ],
+  "subgoal": "pick up the second blue cube at <115, 82>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 159,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 497,
+  "rc": [
+   90,
+   87
+  ],
+  "subgoal": "pick up the first green cube at <90, 87>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 160,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 661,
+  "rc": [
+   76,
+   123
+  ],
+  "subgoal": "pick up the second green cube at <76, 123>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 152,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 820,
+  "rc": [
+   106,
+   67
+  ],
+  "subgoal": "pick up the third green cube at <106, 67>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 164,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 990,
+  "rc": [
+   107,
+   170
+  ],
+  "subgoal": "pick up the fourth green cube at <107, 170>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 152,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1138,
+  "rc": [
+   54,
+   112
+  ],
+  "subgoal": "pick up the fifth green cube at <54, 112>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 129,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1327,
+  "rc": [
+   106,
+   104
+  ],
+  "subgoal": "pick up the sixth green cube at <106, 104>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 163,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   69,
+   139
+  ],
+  "subgoal": "pick up the first green cube at <69, 139>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 135,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 203,
+  "rc": [
+   62,
+   89
+  ],
+  "subgoal": "pick up the second green cube at <62, 89>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 132,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 393,
+  "rc": [
+   58,
+   131
+  ],
+  "subgoal": "pick up the third green cube at <58, 131>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 142,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 589,
+  "rc": [
+   76,
+   121
+  ],
+  "subgoal": "pick up the first red cube at <76, 121>",
+  "counts": {
+   "red": 142,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 760,
+  "rc": [
+   118,
+   185
+  ],
+  "subgoal": "pick up the second red cube at <118, 185>",
+  "counts": {
+   "red": 150,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 923,
+  "rc": [
+   53,
+   147
+  ],
+  "subgoal": "pick up the third red cube at <53, 147>",
+  "counts": {
+   "red": 135,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1141,
+  "rc": [
+   108,
+   81
+  ],
+  "subgoal": "pick up the first blue cube at <108, 81>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 162,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1293,
+  "rc": [
+   105,
+   159
+  ],
+  "subgoal": "pick up the second blue cube at <105, 159>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 166,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1437,
+  "rc": [
+   91,
+   117
+  ],
+  "subgoal": "pick up the third blue cube at <91, 117>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 159,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   49,
+   157
+  ],
+  "subgoal": "pick up the blue cube at <49, 157> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 132,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 239,
+  "rc": [
+   110,
+   98
+  ],
+  "subgoal": "pick up the blue cube at <110, 98> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 151,
+   "magenta": 5
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 366,
+  "rc": [
+   110,
+   98
+  ],
+  "subgoal": "pick up the blue cube at <110, 98> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 151,
+   "magenta": 6
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 492,
+  "rc": [
+   110,
+   99
+  ],
+  "subgoal": "pick up the blue cube at <110, 99> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 152,
+   "magenta": 10
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 619,
+  "rc": [
+   110,
+   98
+  ],
+  "subgoal": "pick up the blue cube at <110, 98> for the fifth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 150,
+   "magenta": 7
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 746,
+  "rc": [
+   110,
+   98
+  ],
+  "subgoal": "pick up the blue cube at <110, 98> for the sixth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 150,
+   "magenta": 7
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   95,
+   86
+  ],
+  "subgoal": "pick up the green cube at <95, 86> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 164,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 183,
+  "rc": [
+   112,
+   135
+  ],
+  "subgoal": "pick up the green cube at <112, 135> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 150,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 313,
+  "rc": [
+   113,
+   135
+  ],
+  "subgoal": "pick up the green cube at <113, 135> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 151,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 444,
+  "rc": [
+   112,
+   135
+  ],
+  "subgoal": "pick up the green cube at <112, 135> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 152,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 573,
+  "rc": [
+   112,
+   135
+  ],
+  "subgoal": "pick up the green cube at <112, 135> for the fifth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 155,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 702,
+  "rc": [
+   112,
+   135
+  ],
+  "subgoal": "pick up the green cube at <112, 135> for the sixth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 151,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 831,
+  "rc": [
+   112,
+   135
+  ],
+  "subgoal": "pick up the green cube at <112, 135> for the seventh time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 155,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   57,
+   106
+  ],
+  "subgoal": "pick up the red cube at <57, 106> for the first time",
+  "counts": {
+   "red": 142,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 230,
+  "rc": [
+   106,
+   129
+  ],
+  "subgoal": "pick up the red cube at <106, 129> for the second time",
+  "counts": {
+   "red": 151,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 352,
+  "rc": [
+   106,
+   130
+  ],
+  "subgoal": "pick up the red cube at <106, 130> for the third time",
+  "counts": {
+   "red": 151,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 10
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 477,
+  "rc": [
+   106,
+   129
+  ],
+  "subgoal": "pick up the red cube at <106, 129> for the fourth time",
+  "counts": {
+   "red": 151,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 9
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 600,
+  "rc": [
+   106,
+   129
+  ],
+  "subgoal": "pick up the red cube at <106, 129> for the fifth time",
+  "counts": {
+   "red": 152,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 723,
+  "rc": [
+   106,
+   130
+  ],
+  "subgoal": "pick up the red cube at <106, 130> for the sixth time",
+  "counts": {
+   "red": 152,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   105,
+   175
+  ],
+  "subgoal": "pick up the blue cube at <105, 175> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 164,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 190,
+  "rc": [
+   80,
+   148
+  ],
+  "subgoal": "pick up the blue cube at <80, 148> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 146,
+   "magenta": 4
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 324,
+  "rc": [
+   80,
+   149
+  ],
+  "subgoal": "pick up the blue cube at <80, 149> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 147,
+   "magenta": 7
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 459,
+  "rc": [
+   80,
+   149
+  ],
+  "subgoal": "pick up the blue cube at <80, 149> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 148,
+   "magenta": 7
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 593,
+  "rc": [
+   81,
+   149
+  ],
+  "subgoal": "pick up the blue cube at <81, 149> for the fifth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 148,
+   "magenta": 7
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 740,
+  "rc": [
+   80,
+   149
+  ],
+  "subgoal": "pick up the blue cube at <80, 149> for the sixth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 147,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 881,
+  "rc": [
+   80,
+   149
+  ],
+  "subgoal": "pick up the blue cube at <80, 149> for the seventh time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 148,
+   "magenta": 8
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 1021,
+  "rc": [
+   80,
+   148
+  ],
+  "subgoal": "pick up the blue cube at <80, 148> for the eighth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 145,
+   "magenta": 4
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 1160,
+  "rc": [
+   80,
+   149
+  ],
+  "subgoal": "pick up the blue cube at <80, 149> for the ninth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 146,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   84,
+   90
+  ],
+  "subgoal": "pick up the red cube at <84, 90> for the first time",
+  "counts": {
+   "red": 143,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 206,
+  "rc": [
+   99,
+   162
+  ],
+  "subgoal": "pick up the red cube at <99, 162> for the second time",
+  "counts": {
+   "red": 151,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 331,
+  "rc": [
+   99,
+   162
+  ],
+  "subgoal": "pick up the red cube at <99, 162> for the third time",
+  "counts": {
+   "red": 151,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 456,
+  "rc": [
+   100,
+   162
+  ],
+  "subgoal": "pick up the red cube at <100, 162> for the fourth time",
+  "counts": {
+   "red": 152,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 583,
+  "rc": [
+   99,
+   162
+  ],
+  "subgoal": "pick up the red cube at <99, 162> for the fifth time",
+  "counts": {
+   "red": 150,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 709,
+  "rc": [
+   99,
+   162
+  ],
+  "subgoal": "pick up the red cube at <99, 162> for the sixth time",
+  "counts": {
+   "red": 149,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 836,
+  "rc": [
+   99,
+   162
+  ],
+  "subgoal": "pick up the red cube at <99, 162> for the seventh time",
+  "counts": {
+   "red": 150,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 963,
+  "rc": [
+   100,
+   163
+  ],
+  "subgoal": "pick up the red cube at <100, 163> for the eighth time",
+  "counts": {
+   "red": 152,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 9
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 1092,
+  "rc": [
+   99,
+   162
+  ],
+  "subgoal": "pick up the red cube at <99, 162> for the ninth time",
+  "counts": {
+   "red": 150,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   125,
+   67
+  ],
+  "subgoal": "pick up the red cube at <125, 67> for the first time",
+  "counts": {
+   "red": 159,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 190,
+  "rc": [
+   108,
+   107
+  ],
+  "subgoal": "pick up the red cube at <108, 107> for the second time",
+  "counts": {
+   "red": 151,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 4
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 315,
+  "rc": [
+   109,
+   106
+  ],
+  "subgoal": "pick up the red cube at <109, 106> for the third time",
+  "counts": {
+   "red": 154,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 441,
+  "rc": [
+   109,
+   106
+  ],
+  "subgoal": "pick up the red cube at <109, 106> for the fourth time",
+  "counts": {
+   "red": 153,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 570,
+  "rc": [
+   109,
+   106
+  ],
+  "subgoal": "pick up the red cube at <109, 106> for the fifth time",
+  "counts": {
+   "red": 154,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 696,
+  "rc": [
+   109,
+   106
+  ],
+  "subgoal": "pick up the red cube at <109, 106> for the sixth time",
+  "counts": {
+   "red": 153,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 822,
+  "rc": [
+   109,
+   106
+  ],
+  "subgoal": "pick up the red cube at <109, 106> for the seventh time",
+  "counts": {
+   "red": 153,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 950,
+  "rc": [
+   109,
+   106
+  ],
+  "subgoal": "pick up the red cube at <109, 106> for the eighth time",
+  "counts": {
+   "red": 153,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 1076,
+  "rc": [
+   109,
+   106
+  ],
+  "subgoal": "pick up the red cube at <109, 106> for the ninth time",
+  "counts": {
+   "red": 152,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   105,
+   102
+  ],
+  "subgoal": "pick up the red cube at <105, 102> for the first time",
+  "counts": {
+   "red": 153,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 189,
+  "rc": [
+   80,
+   139
+  ],
+  "subgoal": "pick up the red cube at <80, 139> for the second time",
+  "counts": {
+   "red": 141,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 9
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 323,
+  "rc": [
+   80,
+   138
+  ],
+  "subgoal": "pick up the red cube at <80, 138> for the third time",
+  "counts": {
+   "red": 140,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 458,
+  "rc": [
+   80,
+   137
+  ],
+  "subgoal": "pick up the red cube at <80, 137> for the fourth time",
+  "counts": {
+   "red": 139,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 593,
+  "rc": [
+   80,
+   138
+  ],
+  "subgoal": "pick up the red cube at <80, 138> for the fifth time",
+  "counts": {
+   "red": 144,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 4
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 728,
+  "rc": [
+   80,
+   138
+  ],
+  "subgoal": "pick up the red cube at <80, 138> for the sixth time",
+  "counts": {
+   "red": 143,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 863,
+  "rc": [
+   80,
+   138
+  ],
+  "subgoal": "pick up the red cube at <80, 138> for the seventh time",
+  "counts": {
+   "red": 145,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 4
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 997,
+  "rc": [
+   80,
+   138
+  ],
+  "subgoal": "pick up the red cube at <80, 138> for the eighth time",
+  "counts": {
+   "red": 143,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 1133,
+  "rc": [
+   80,
+   138
+  ],
+  "subgoal": "pick up the red cube at <80, 138> for the ninth time",
+  "counts": {
+   "red": 144,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 4
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 1267,
+  "rc": [
+   80,
+   138
+  ],
+  "subgoal": "pick up the red cube at <80, 138> for the tenth time",
+  "counts": {
+   "red": 144,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 1401,
+  "rc": [
+   80,
+   139
+  ],
+  "subgoal": "pick up the red cube at <80, 139> for the eleventh time",
+  "counts": {
+   "red": 144,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   73,
+   74
+  ],
+  "subgoal": "pick up the red cube at <73, 74> for the first time",
+  "counts": {
+   "red": 155,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 209,
+  "rc": [
+   103,
+   167
+  ],
+  "subgoal": "pick up the red cube at <103, 167> for the second time",
+  "counts": {
+   "red": 148,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 335,
+  "rc": [
+   104,
+   167
+  ],
+  "subgoal": "pick up the red cube at <104, 167> for the third time",
+  "counts": {
+   "red": 148,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 10
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 462,
+  "rc": [
+   103,
+   167
+  ],
+  "subgoal": "pick up the red cube at <103, 167> for the fourth time",
+  "counts": {
+   "red": 149,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 587,
+  "rc": [
+   104,
+   167
+  ],
+  "subgoal": "pick up the red cube at <104, 167> for the fifth time",
+  "counts": {
+   "red": 150,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 714,
+  "rc": [
+   104,
+   167
+  ],
+  "subgoal": "pick up the red cube at <104, 167> for the sixth time",
+  "counts": {
+   "red": 150,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 841,
+  "rc": [
+   103,
+   167
+  ],
+  "subgoal": "pick up the red cube at <103, 167> for the seventh time",
+  "counts": {
+   "red": 149,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 968,
+  "rc": [
+   104,
+   167
+  ],
+  "subgoal": "pick up the red cube at <104, 167> for the eighth time",
+  "counts": {
+   "red": 151,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 10
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 1096,
+  "rc": [
+   103,
+   167
+  ],
+  "subgoal": "pick up the red cube at <103, 167> for the ninth time",
+  "counts": {
+   "red": 146,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 10
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 1221,
+  "rc": [
+   103,
+   167
+  ],
+  "subgoal": "pick up the red cube at <103, 167> for the tenth time",
+  "counts": {
+   "red": 145,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 11
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 1349,
+  "rc": [
+   103,
+   168
+  ],
+  "subgoal": "pick up the red cube at <103, 168> for the eleventh time",
+  "counts": {
+   "red": 148,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   111,
+   89
+  ],
+  "subgoal": "pick up the green cube at <111, 89> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 159,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 190,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 148,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 320,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 151,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 449,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 148,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 4
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 587,
+  "rc": [
+   88,
+   109
+  ],
+  "subgoal": "pick up the green cube at <88, 109> for the fifth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 146,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 717,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the sixth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 150,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 857,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the seventh time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 150,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 997,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the eighth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 151,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 1136,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the ninth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 151,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 1275,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the tenth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 150,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 4
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 1411,
+  "rc": [
+   88,
+   110
+  ],
+  "subgoal": "pick up the green cube at <88, 110> for the eleventh time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 151,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   95,
+   117
+  ],
+  "subgoal": "pick up the green cube at <95, 117> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 145,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 204,
+  "rc": [
+   77,
+   159
+  ],
+  "subgoal": "pick up the green cube at <77, 159> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 148,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 9
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 339,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 142,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 473,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 144,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 618,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the fifth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 145,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 761,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the sixth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 141,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 903,
+  "rc": [
+   77,
+   159
+  ],
+  "subgoal": "pick up the green cube at <77, 159> for the seventh time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 146,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1044,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the eighth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 140,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1183,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the ninth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 141,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1319,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the tenth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 141,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1452,
+  "rc": [
+   77,
+   159
+  ],
+  "subgoal": "pick up the green cube at <77, 159> for the eleventh time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 147,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1585,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the twelfth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 151,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1721,
+  "rc": [
+   77,
+   158
+  ],
+  "subgoal": "pick up the green cube at <77, 158> for the thirteenth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 144,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 1865,
+  "rc": [
+   77,
+   159
+  ],
+  "subgoal": "pick up the green cube at <77, 159> for the fourteenth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 149,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   47,
+   155
+  ],
+  "subgoal": "pick up the blue cube at <47, 155> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 117,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 266,
+  "rc": [
+   94,
+   156
+  ],
+  "subgoal": "pick up the blue cube at <94, 156> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 151,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 400,
+  "rc": [
+   94,
+   156
+  ],
+  "subgoal": "pick up the blue cube at <94, 156> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 151,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 532,
+  "rc": [
+   95,
+   156
+  ],
+  "subgoal": "pick up the blue cube at <95, 156> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 152,
+   "magenta": 11
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 666,
+  "rc": [
+   94,
+   156
+  ],
+  "subgoal": "pick up the blue cube at <94, 156> for the fifth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 148,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 799,
+  "rc": [
+   94,
+   156
+  ],
+  "subgoal": "pick up the blue cube at <94, 156> for the sixth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 152,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 932,
+  "rc": [
+   94,
+   156
+  ],
+  "subgoal": "pick up the blue cube at <94, 156> for the seventh time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 151,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1062,
+  "rc": [
+   94,
+   157
+  ],
+  "subgoal": "pick up the blue cube at <94, 157> for the eighth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 154,
+   "magenta": 10
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1192,
+  "rc": [
+   95,
+   157
+  ],
+  "subgoal": "pick up the blue cube at <95, 157> for the ninth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 159,
+   "magenta": 5
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1322,
+  "rc": [
+   94,
+   156
+  ],
+  "subgoal": "pick up the blue cube at <94, 156> for the tenth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 153,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1448,
+  "rc": [
+   94,
+   156
+  ],
+  "subgoal": "pick up the blue cube at <94, 156> for the eleventh time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 152,
+   "magenta": 9
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1583,
+  "rc": [
+   94,
+   157
+  ],
+  "subgoal": "pick up the blue cube at <94, 157> for the twelfth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 159,
+   "magenta": 5
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1720,
+  "rc": [
+   94,
+   157
+  ],
+  "subgoal": "pick up the blue cube at <94, 157> for the thirteenth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 159,
+   "magenta": 6
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1853,
+  "rc": [
+   94,
+   157
+  ],
+  "subgoal": "pick up the blue cube at <94, 157> for the fourteenth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 160,
+   "magenta": 5
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 1986,
+  "rc": [
+   94,
+   157
+  ],
+  "subgoal": "pick up the blue cube at <94, 157> for the fifteenth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 156,
+   "magenta": 7
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   87,
+   164
+  ],
+  "subgoal": "pick up the red cube at <87, 164> for the first time",
+  "counts": {
+   "red": 141,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 218,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the second time",
+  "counts": {
+   "red": 146,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 361,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the third time",
+  "counts": {
+   "red": 142,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 504,
+  "rc": [
+   74,
+   92
+  ],
+  "subgoal": "pick up the red cube at <74, 92> for the fourth time",
+  "counts": {
+   "red": 142,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 645,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the fifth time",
+  "counts": {
+   "red": 145,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 784,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the sixth time",
+  "counts": {
+   "red": 144,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 921,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the seventh time",
+  "counts": {
+   "red": 144,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1056,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the eighth time",
+  "counts": {
+   "red": 143,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1192,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the ninth time",
+  "counts": {
+   "red": 142,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1333,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the tenth time",
+  "counts": {
+   "red": 147,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1478,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the eleventh time",
+  "counts": {
+   "red": 145,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 6
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1616,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the twelfth time",
+  "counts": {
+   "red": 141,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 1753,
+  "rc": [
+   74,
+   93
+  ],
+  "subgoal": "pick up the red cube at <74, 93> for the thirteenth time",
+  "counts": {
+   "red": 145,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   83,
+   140
+  ],
+  "subgoal": "pick up the green cube at <83, 140>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 138,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   71,
+   81
+  ],
+  "subgoal": "pick up the green cube at <71, 81>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 155,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   64,
+   152
+  ],
+  "subgoal": "pick up the red cube at <64, 152>",
+  "counts": {
+   "red": 138,
+   "yellow": 0,
+   "green": 4,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   48,
+   169
+  ],
+  "subgoal": "pick up the blue cube at <48, 169>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 139,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   120,
+   141
+  ],
+  "subgoal": "pick up the green cube at <120, 141>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 157,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   108,
+   145
+  ],
+  "subgoal": "pick up the green cube at <108, 145>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 164,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   110,
+   168
+  ],
+  "subgoal": "pick up the blue cube at <110, 168>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 158,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   127,
+   84
+  ],
+  "subgoal": "pick up the blue cube at <127, 84>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 157,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   58,
+   128
+  ],
+  "subgoal": "pick up the green cube at <58, 128>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 141,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   88,
+   86
+  ],
+  "subgoal": "pick up the red cube at <88, 86>",
+  "counts": {
+   "red": 161,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   104,
+   147
+  ],
+  "subgoal": "pick up the red cube at <104, 147>",
+  "counts": {
+   "red": 165,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "t": 0,
+  "rc": [
+   131,
+   85
+  ],
+  "subgoal": "pick up the green cube at <131, 85>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 169,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   105,
+   118
+  ],
+  "subgoal": "pick up the first red cube at <105, 118>",
+  "counts": {
+   "red": 146,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t": 168,
+  "rc": [
+   58,
+   163
+  ],
+  "subgoal": "pick up the second red cube at <58, 163>",
+  "counts": {
+   "red": 116,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   118,
+   193
+  ],
+  "subgoal": "pick up the first red cube at <118, 193>",
+  "counts": {
+   "red": 167,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   81,
+   176
+  ],
+  "subgoal": "pick up the first green cube at <81, 176>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 140,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t": 181,
+  "rc": [
+   62,
+   87
+  ],
+  "subgoal": "pick up the second green cube at <62, 87>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 124,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t": 357,
+  "rc": [
+   58,
+   177
+  ],
+  "subgoal": "pick up the third green cube at <58, 177>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 127,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   96,
+   75
+  ],
+  "subgoal": "pick up the first red cube at <96, 75>",
+  "counts": {
+   "red": 149,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 171,
+  "rc": [
+   96,
+   125
+  ],
+  "subgoal": "pick up the second red cube at <96, 125>",
+  "counts": {
+   "red": 142,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 314,
+  "rc": [
+   109,
+   139
+  ],
+  "subgoal": "pick up the first green cube at <109, 139>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 162,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   85,
+   76
+  ],
+  "subgoal": "pick up the first green cube at <85, 76>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 160,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t": 235,
+  "rc": [
+   67,
+   115
+  ],
+  "subgoal": "pick up the second green cube at <67, 115>",
+  "counts": {
+   "red": 5,
+   "yellow": 0,
+   "green": 136,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t": 400,
+  "rc": [
+   60,
+   83
+  ],
+  "subgoal": "pick up the first red cube at <60, 83>",
+  "counts": {
+   "red": 132,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t": 598,
+  "rc": [
+   60,
+   135
+  ],
+  "subgoal": "pick up the second red cube at <60, 135>",
+  "counts": {
+   "red": 138,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   109,
+   185
+  ],
+  "subgoal": "pick up the first green cube at <109, 185>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 165,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 175,
+  "rc": [
+   83,
+   163
+  ],
+  "subgoal": "pick up the second green cube at <83, 163>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 134,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 354,
+  "rc": [
+   55,
+   121
+  ],
+  "subgoal": "pick up the third green cube at <55, 121>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 114,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 669,
+  "rc": [
+   99,
+   140
+  ],
+  "subgoal": "pick up the first blue cube at <99, 140>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 155,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   57,
+   138
+  ],
+  "subgoal": "pick up the first blue cube at <57, 138>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 141,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t": 326,
+  "rc": [
+   58,
+   169
+  ],
+  "subgoal": "pick up the second blue cube at <58, 169>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 139,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   92,
+   184
+  ],
+  "subgoal": "pick up the first blue cube at <92, 184>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 139,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t": 167,
+  "rc": [
+   76,
+   73
+  ],
+  "subgoal": "pick up the second blue cube at <76, 73>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 152,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t": 354,
+  "rc": [
+   118,
+   169
+  ],
+  "subgoal": "pick up the third blue cube at <118, 169>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 166,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   70,
+   83
+  ],
+  "subgoal": "pick up the first red cube at <70, 83>",
+  "counts": {
+   "red": 145,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 194,
+  "rc": [
+   90,
+   88
+  ],
+  "subgoal": "pick up the second red cube at <90, 88>",
+  "counts": {
+   "red": 162,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 354,
+  "rc": [
+   91,
+   161
+  ],
+  "subgoal": "pick up the first blue cube at <91, 161>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 148,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 516,
+  "rc": [
+   87,
+   109
+  ],
+  "subgoal": "pick up the second blue cube at <87, 109>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 156,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   89,
+   122
+  ],
+  "subgoal": "pick up the red cube at <89, 122> for the first time",
+  "counts": {
+   "red": 155,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t": 201,
+  "rc": [
+   76,
+   97
+  ],
+  "subgoal": "pick up the red cube at <76, 97> for the second time",
+  "counts": {
+   "red": 141,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   118,
+   178
+  ],
+  "subgoal": "pick up the blue cube at <118, 178> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 167,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t": 207,
+  "rc": [
+   96,
+   133
+  ],
+  "subgoal": "pick up the blue cube at <96, 133> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 145,
+   "magenta": 6
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t": 401,
+  "rc": [
+   96,
+   133
+  ],
+  "subgoal": "pick up the blue cube at <96, 133> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 145,
+   "magenta": 6
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   64,
+   125
+  ],
+  "subgoal": "pick up the red cube at <64, 125> for the first time",
+  "counts": {
+   "red": 142,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t": 212,
+  "rc": [
+   79,
+   99
+  ],
+  "subgoal": "pick up the red cube at <79, 99> for the second time",
+  "counts": {
+   "red": 145,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   90,
+   87
+  ],
+  "subgoal": "pick up the green cube at <90, 87> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 156,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 188,
+  "rc": [
+   98,
+   109
+  ],
+  "subgoal": "pick up the green cube at <98, 109> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 149,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 3
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 326,
+  "rc": [
+   98,
+   109
+  ],
+  "subgoal": "pick up the green cube at <98, 109> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 150,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 2
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 451,
+  "rc": [
+   99,
+   109
+  ],
+  "subgoal": "pick up the green cube at <99, 109> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 149,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 588,
+  "rc": [
+   98,
+   109
+  ],
+  "subgoal": "pick up the green cube at <98, 109> for the fifth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 148,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 4
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   117,
+   139
+  ],
+  "subgoal": "pick up the red cube at <117, 139> for the first time",
+  "counts": {
+   "red": 158,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t": 256,
+  "rc": [
+   97,
+   165
+  ],
+  "subgoal": "pick up the red cube at <97, 165> for the second time",
+  "counts": {
+   "red": 159,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   76,
+   136
+  ],
+  "subgoal": "pick up the green cube at <76, 136> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 141,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 207,
+  "rc": [
+   97,
+   136
+  ],
+  "subgoal": "pick up the green cube at <97, 136> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 148,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 434,
+  "rc": [
+   97,
+   137
+  ],
+  "subgoal": "pick up the green cube at <97, 137> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 147,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 7
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 571,
+  "rc": [
+   97,
+   137
+  ],
+  "subgoal": "pick up the green cube at <97, 137> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 150,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 8
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   84,
+   121
+  ],
+  "subgoal": "pick up the blue cube at <84, 121> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 142,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t": 192,
+  "rc": [
+   107,
+   163
+  ],
+  "subgoal": "pick up the blue cube at <107, 163> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 165,
+   "magenta": 2
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t": 317,
+  "rc": [
+   107,
+   163
+  ],
+  "subgoal": "pick up the blue cube at <107, 163> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 165,
+   "magenta": 2
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   55,
+   155
+  ],
+  "subgoal": "pick up the green cube at <55, 155> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 132,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t": 230,
+  "rc": [
+   93,
+   166
+  ],
+  "subgoal": "pick up the green cube at <93, 166> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 153,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 5
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   73,
+   167
+  ],
+  "subgoal": "pick up the green cube at <73, 167> for the first time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 155,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 222,
+  "rc": [
+   65,
+   99
+  ],
+  "subgoal": "pick up the green cube at <65, 99> for the second time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 115,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 15
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 369,
+  "rc": [
+   66,
+   99
+  ],
+  "subgoal": "pick up the green cube at <66, 99> for the third time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 120,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 16
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 512,
+  "rc": [
+   66,
+   99
+  ],
+  "subgoal": "pick up the green cube at <66, 99> for the fourth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 123,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 16
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 654,
+  "rc": [
+   66,
+   98
+  ],
+  "subgoal": "pick up the green cube at <66, 98> for the fifth time",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 125,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 19
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   64,
+   113
+  ],
+  "subgoal": "pick up the red cube at <64, 113>",
+  "counts": {
+   "red": 149,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   127,
+   192
+  ],
+  "subgoal": "pick up the green cube at <127, 192>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 158,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   86,
+   75
+  ],
+  "subgoal": "pick up the green cube at <86, 75>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 146,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   95,
+   76
+  ],
+  "subgoal": "pick up the blue cube at <95, 76>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 165,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   66,
+   83
+  ],
+  "subgoal": "pick up the green cube at <66, 83>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 148,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "green",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   98,
+   151
+  ],
+  "subgoal": "pick up the red cube at <98, 151>",
+  "counts": {
+   "red": 152,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   77,
+   116
+  ],
+  "subgoal": "pick up the blue cube at <77, 116>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 136,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   125,
+   190
+  ],
+  "subgoal": "pick up the red cube at <125, 190>",
+  "counts": {
+   "red": 168,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 0,
+   "magenta": 0
+  },
+  "seen": "red",
+  "ok": true
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "t": 0,
+  "rc": [
+   119,
+   86
+  ],
+  "subgoal": "pick up the blue cube at <119, 86>",
+  "counts": {
+   "red": 0,
+   "yellow": 0,
+   "green": 0,
+   "cyan": 0,
+   "blue": 162,
+   "magenta": 0
+  },
+  "seen": "blue",
+  "ok": true
+ }
+]

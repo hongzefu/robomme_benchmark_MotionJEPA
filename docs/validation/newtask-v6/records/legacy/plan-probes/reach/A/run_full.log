@@ -1,0 +1,23 @@
+[grasp x=-0.40] TYPE_DONE grasp n=2112 ok=1255 耗时=25.0s 每条=11.8ms
+[grasp x=-0.20] TYPE_DONE grasp n=2112 ok=1607 耗时=24.4s 每条=11.6ms
+[push2 x=-0.20] TYPE_DONE push2 n=2112 ok=2033 耗时=24.8s 每条=11.7ms
+[push2 x=-0.40] TYPE_DONE push2 n=2112 ok=1585 耗时=27.3s 每条=12.9ms
+[push x=-0.40] TYPE_DONE push n=2112 ok=12 耗时=30.7s 每条=14.6ms
+[push x=-0.20] TYPE_DONE push n=2112 ok=198 耗时=30.3s 每条=14.3ms
+[peg2 x=-0.20] TYPE_DONE peg2 n=4224 ok=3214 耗时=50.2s 每条=11.9ms
+[grasp x=0.0] TYPE_DONE grasp n=2112 ok=1396 耗时=50.7s 每条=24.0ms
+[peg2 x=-0.40] TYPE_DONE peg2 n=4224 ok=2510 耗时=52.7s 每条=12.5ms
+[push2 x=0.0] TYPE_DONE push2 n=2112 ok=1780 耗时=53.8s 每条=25.5ms
+[peg x=-0.20] TYPE_DONE peg n=4224 ok=726 耗时=55.5s 每条=13.1ms
+[peg x=-0.40] TYPE_DONE peg n=4224 ok=24 耗时=57.1s 每条=13.5ms
+[push x=0.0] TYPE_DONE push n=2112 ok=132 耗时=57.9s 每条=27.4ms
+[peg2 x=0.0] TYPE_DONE peg2 n=4224 ok=2792 耗时=104.4s 每条=24.7ms
+[peg x=0.0] TYPE_DONE peg n=4224 ok=444 耗时=108.9s 每条=25.8ms
+[push x=0.2] TYPE_DONE push n=1848 ok=0 耗时=267.0s 每条=144.5ms
+[grasp x=0.2] TYPE_DONE grasp n=1848 ok=0 耗时=339.1s 每条=183.5ms
+[push2 x=0.2] TYPE_DONE push2 n=1848 ok=0 耗时=439.8s 每条=238.0ms
+[peg x=0.2] TYPE_DONE peg n=3696 ok=0 耗时=524.6s 每条=141.9ms
+[peg2 x=0.2] TYPE_DONE peg2 n=3696 ok=0 耗时=759.1s 每条=205.4ms
+ALL_SHARDS_FINISHED 用时 781s
+DONE
+EXIT_CODE=0

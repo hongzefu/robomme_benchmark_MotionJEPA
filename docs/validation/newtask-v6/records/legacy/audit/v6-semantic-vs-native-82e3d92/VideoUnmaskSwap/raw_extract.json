@@ -1,0 +1,12548 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "seed": 8500000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed8500000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed8500000_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "xhard1",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 515,
+  "ts_min": 0,
+  "ts_max": 514,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 263
+   },
+   {
+    "start": 264,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <93, 160> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <93, 160> that hides the red cube",
+    "demo": false,
+    "end": 365
+   },
+   {
+    "start": 366,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 413
+   },
+   {
+    "start": 414,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <125, 140> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <125, 140> that hides the green cube",
+    "demo": false,
+    "end": 503
+   },
+   {
+    "start": 504,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <125, 140> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <125, 140> that hides the green cube",
+    "demo": false,
+    "end": 514
+   }
+  ],
+  "demo_last_step": 263,
+  "boundaries": [
+   0,
+   264,
+   366,
+   414,
+   504
+  ],
+  "choice_runs": [
+   {
+    "start": 264,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      162
+     ]
+    },
+    "end": 338
+   },
+   {
+    "start": 339,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      161
+     ]
+    },
+    "end": 346
+   },
+   {
+    "start": 347,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      161
+     ]
+    },
+    "end": 347
+   },
+   {
+    "start": 348,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      162
+     ]
+    },
+    "end": 348
+   },
+   {
+    "start": 349,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      162
+     ]
+    },
+    "end": 349
+   },
+   {
+    "start": 350,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      162
+     ]
+    },
+    "end": 350
+   },
+   {
+    "start": 351,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      162
+     ]
+    },
+    "end": 351
+   },
+   {
+    "start": 352,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      163
+     ]
+    },
+    "end": 352
+   },
+   {
+    "start": 353,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      164
+     ]
+    },
+    "end": 353
+   },
+   {
+    "start": 354,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      164
+     ]
+    },
+    "end": 354
+   },
+   {
+    "start": 355,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      165
+     ]
+    },
+    "end": 355
+   },
+   {
+    "start": 356,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      166
+     ]
+    },
+    "end": 356
+   },
+   {
+    "start": 357,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      167
+     ]
+    },
+    "end": 357
+   },
+   {
+    "start": 358,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      168
+     ]
+    },
+    "end": 358
+   },
+   {
+    "start": 359,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      169
+     ]
+    },
+    "end": 359
+   },
+   {
+    "start": 360,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      170
+     ]
+    },
+    "end": 360
+   },
+   {
+    "start": 361,
+    "choice": {
+     "choice": "A",
+     "point": [
+      60,
+      170
+     ]
+    },
+    "end": 361
+   },
+   {
+    "start": 362,
+    "choice": {
+     "choice": "A",
+     "point": [
+      58,
+      171
+     ]
+    },
+    "end": 362
+   },
+   {
+    "start": 363,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      172
+     ]
+    },
+    "end": 363
+   },
+   {
+    "start": 364,
+    "choice": {
+     "choice": "A",
+     "point": [
+      56,
+      172
+     ]
+    },
+    "end": 364
+   },
+   {
+    "start": 365,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      172
+     ]
+    },
+    "end": 365
+   },
+   {
+    "start": 366,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 413
+   },
+   {
+    "start": 414,
+    "choice": {
+     "choice": "A",
+     "point": [
+      122,
+      142
+     ]
+    },
+    "end": 483
+   },
+   {
+    "start": 484,
+    "choice": {
+     "choice": "A",
+     "point": [
+      122,
+      141
+     ]
+    },
+    "end": 485
+   },
+   {
+    "start": 486,
+    "choice": {
+     "choice": "A",
+     "point": [
+      122,
+      140
+     ]
+    },
+    "end": 493
+   },
+   {
+    "start": 494,
+    "choice": {
+     "choice": "A",
+     "point": [
+      121,
+      141
+     ]
+    },
+    "end": 494
+   },
+   {
+    "start": 495,
+    "choice": {
+     "choice": "A",
+     "point": [
+      120,
+      141
+     ]
+    },
+    "end": 496
+   },
+   {
+    "start": 497,
+    "choice": {
+     "choice": "A",
+     "point": [
+      118,
+      141
+     ]
+    },
+    "end": 497
+   },
+   {
+    "start": 498,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      141
+     ]
+    },
+    "end": 498
+   },
+   {
+    "start": 499,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      141
+     ]
+    },
+    "end": 499
+   },
+   {
+    "start": 500,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      142
+     ]
+    },
+    "end": 500
+   },
+   {
+    "start": 501,
+    "choice": {
+     "choice": "A",
+     "point": [
+      110,
+      142
+     ]
+    },
+    "end": 501
+   },
+   {
+    "start": 502,
+    "choice": {
+     "choice": "A",
+     "point": [
+      108,
+      142
+     ]
+    },
+    "end": 502
+   },
+   {
+    "start": 503,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      143
+     ]
+    },
+    "end": 503
+   },
+   {
+    "start": 504,
+    "choice": {
+     "choice": "A",
+     "point": [
+      102,
+      143
+     ]
+    },
+    "end": 504
+   },
+   {
+    "start": 505,
+    "choice": {
+     "choice": "A",
+     "point": [
+      99,
+      144
+     ]
+    },
+    "end": 505
+   },
+   {
+    "start": 506,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      144
+     ]
+    },
+    "end": 506
+   },
+   {
+    "start": 507,
+    "choice": {
+     "choice": "A",
+     "point": [
+      94,
+      144
+     ]
+    },
+    "end": 507
+   },
+   {
+    "start": 508,
+    "choice": {
+     "choice": "A",
+     "point": [
+      92,
+      144
+     ]
+    },
+    "end": 508
+   },
+   {
+    "start": 509,
+    "choice": {
+     "choice": "A",
+     "point": [
+      91,
+      145
+     ]
+    },
+    "end": 509
+   },
+   {
+    "start": 510,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      145
+     ]
+    },
+    "end": 510
+   },
+   {
+    "start": 511,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      145
+     ]
+    },
+    "end": 513
+   },
+   {
+    "start": 514,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      145
+     ]
+    },
+    "end": 514
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    338,
+    true
+   ],
+   [
+    389,
+    false
+   ],
+   [
+    484,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "seed": 8500300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed8500300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed8500300_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "xhard1",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 520,
+  "ts_min": 0,
+  "ts_max": 519,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 263
+   },
+   {
+    "start": 264,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <90, 163> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <90, 163> that hides the blue cube",
+    "demo": false,
+    "end": 369
+   },
+   {
+    "start": 370,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 417
+   },
+   {
+    "start": 418,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <141, 148> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <141, 148> that hides the green cube",
+    "demo": false,
+    "end": 513
+   },
+   {
+    "start": 514,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <141, 148> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <141, 148> that hides the green cube",
+    "demo": false,
+    "end": 519
+   }
+  ],
+  "demo_last_step": 263,
+  "boundaries": [
+   0,
+   264,
+   370,
+   418,
+   514
+  ],
+  "choice_runs": [
+   {
+    "start": 264,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      165
+     ]
+    },
+    "end": 350
+   },
+   {
+    "start": 351,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      165
+     ]
+    },
+    "end": 352
+   },
+   {
+    "start": 353,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      165
+     ]
+    },
+    "end": 353
+   },
+   {
+    "start": 354,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      166
+     ]
+    },
+    "end": 354
+   },
+   {
+    "start": 355,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      166
+     ]
+    },
+    "end": 355
+   },
+   {
+    "start": 356,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      167
+     ]
+    },
+    "end": 356
+   },
+   {
+    "start": 357,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      167
+     ]
+    },
+    "end": 357
+   },
+   {
+    "start": 358,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      168
+     ]
+    },
+    "end": 358
+   },
+   {
+    "start": 359,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      169
+     ]
+    },
+    "end": 359
+   },
+   {
+    "start": 360,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      170
+     ]
+    },
+    "end": 360
+   },
+   {
+    "start": 361,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      171
+     ]
+    },
+    "end": 361
+   },
+   {
+    "start": 362,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      173
+     ]
+    },
+    "end": 362
+   },
+   {
+    "start": 363,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      174
+     ]
+    },
+    "end": 363
+   },
+   {
+    "start": 364,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      175
+     ]
+    },
+    "end": 364
+   },
+   {
+    "start": 365,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      175
+     ]
+    },
+    "end": 365
+   },
+   {
+    "start": 366,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      176
+     ]
+    },
+    "end": 366
+   },
+   {
+    "start": 367,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      177
+     ]
+    },
+    "end": 367
+   },
+   {
+    "start": 368,
+    "choice": {
+     "choice": "A",
+     "point": [
+      51,
+      177
+     ]
+    },
+    "end": 368
+   },
+   {
+    "start": 369,
+    "choice": {
+     "choice": "A",
+     "point": [
+      51,
+      178
+     ]
+    },
+    "end": 369
+   },
+   {
+    "start": 370,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 417
+   },
+   {
+    "start": 418,
+    "choice": {
+     "choice": "A",
+     "point": [
+      139,
+      151
+     ]
+    },
+    "end": 493
+   },
+   {
+    "start": 494,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      150
+     ]
+    },
+    "end": 494
+   },
+   {
+    "start": 495,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      149
+     ]
+    },
+    "end": 501
+   },
+   {
+    "start": 502,
+    "choice": {
+     "choice": "A",
+     "point": [
+      137,
+      149
+     ]
+    },
+    "end": 504
+   },
+   {
+    "start": 505,
+    "choice": {
+     "choice": "A",
+     "point": [
+      136,
+      149
+     ]
+    },
+    "end": 505
+   },
+   {
+    "start": 506,
+    "choice": {
+     "choice": "A",
+     "point": [
+      135,
+      150
+     ]
+    },
+    "end": 506
+   },
+   {
+    "start": 507,
+    "choice": {
+     "choice": "A",
+     "point": [
+      134,
+      150
+     ]
+    },
+    "end": 507
+   },
+   {
+    "start": 508,
+    "choice": {
+     "choice": "A",
+     "point": [
+      133,
+      150
+     ]
+    },
+    "end": 508
+   },
+   {
+    "start": 509,
+    "choice": {
+     "choice": "A",
+     "point": [
+      131,
+      151
+     ]
+    },
+    "end": 509
+   },
+   {
+    "start": 510,
+    "choice": {
+     "choice": "A",
+     "point": [
+      129,
+      152
+     ]
+    },
+    "end": 510
+   },
+   {
+    "start": 511,
+    "choice": {
+     "choice": "A",
+     "point": [
+      127,
+      152
+     ]
+    },
+    "end": 511
+   },
+   {
+    "start": 512,
+    "choice": {
+     "choice": "A",
+     "point": [
+      125,
+      153
+     ]
+    },
+    "end": 512
+   },
+   {
+    "start": 513,
+    "choice": {
+     "choice": "A",
+     "point": [
+      122,
+      154
+     ]
+    },
+    "end": 513
+   },
+   {
+    "start": 514,
+    "choice": {
+     "choice": "A",
+     "point": [
+      120,
+      155
+     ]
+    },
+    "end": 514
+   },
+   {
+    "start": 515,
+    "choice": {
+     "choice": "A",
+     "point": [
+      118,
+      156
+     ]
+    },
+    "end": 515
+   },
+   {
+    "start": 516,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      156
+     ]
+    },
+    "end": 516
+   },
+   {
+    "start": 517,
+    "choice": {
+     "choice": "A",
+     "point": [
+      114,
+      157
+     ]
+    },
+    "end": 517
+   },
+   {
+    "start": 518,
+    "choice": {
+     "choice": "A",
+     "point": [
+      112,
+      157
+     ]
+    },
+    "end": 518
+   },
+   {
+    "start": 519,
+    "choice": {
+     "choice": "A",
+     "point": [
+      112,
+      158
+     ]
+    },
+    "end": 519
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    342,
+    true
+   ],
+   [
+    393,
+    false
+   ],
+   [
+    494,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "seed": 8500601,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed8500601.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed8500601_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "xhard1",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 496,
+  "ts_min": 0,
+  "ts_max": 495,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 263
+   },
+   {
+    "start": 264,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <131, 140> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <131, 140> that hides the blue cube",
+    "demo": false,
+    "end": 360
+   },
+   {
+    "start": 361,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 401
+   },
+   {
+    "start": 402,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <98, 97> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <96, 102> that hides the green cube",
+    "demo": false,
+    "end": 488
+   },
+   {
+    "start": 489,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <98, 97> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <96, 102> that hides the green cube",
+    "demo": false,
+    "end": 495
+   }
+  ],
+  "demo_last_step": 263,
+  "boundaries": [
+   0,
+   264,
+   361,
+   402,
+   489
+  ],
+  "choice_runs": [
+   {
+    "start": 264,
+    "choice": {
+     "choice": "A",
+     "point": [
+      129,
+      141
+     ]
+    },
+    "end": 334
+   },
+   {
+    "start": 335,
+    "choice": {
+     "choice": "A",
+     "point": [
+      129,
+      142
+     ]
+    },
+    "end": 343
+   },
+   {
+    "start": 344,
+    "choice": {
+     "choice": "A",
+     "point": [
+      128,
+      142
+     ]
+    },
+    "end": 345
+   },
+   {
+    "start": 346,
+    "choice": {
+     "choice": "A",
+     "point": [
+      127,
+      142
+     ]
+    },
+    "end": 346
+   },
+   {
+    "start": 347,
+    "choice": {
+     "choice": "A",
+     "point": [
+      126,
+      142
+     ]
+    },
+    "end": 347
+   },
+   {
+    "start": 348,
+    "choice": {
+     "choice": "A",
+     "point": [
+      125,
+      143
+     ]
+    },
+    "end": 348
+   },
+   {
+    "start": 349,
+    "choice": {
+     "choice": "A",
+     "point": [
+      124,
+      143
+     ]
+    },
+    "end": 349
+   },
+   {
+    "start": 350,
+    "choice": {
+     "choice": "A",
+     "point": [
+      122,
+      144
+     ]
+    },
+    "end": 350
+   },
+   {
+    "start": 351,
+    "choice": {
+     "choice": "A",
+     "point": [
+      120,
+      144
+     ]
+    },
+    "end": 351
+   },
+   {
+    "start": 352,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      145
+     ]
+    },
+    "end": 352
+   },
+   {
+    "start": 353,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      146
+     ]
+    },
+    "end": 353
+   },
+   {
+    "start": 354,
+    "choice": {
+     "choice": "A",
+     "point": [
+      112,
+      146
+     ]
+    },
+    "end": 354
+   },
+   {
+    "start": 355,
+    "choice": {
+     "choice": "A",
+     "point": [
+      109,
+      147
+     ]
+    },
+    "end": 355
+   },
+   {
+    "start": 356,
+    "choice": {
+     "choice": "A",
+     "point": [
+      107,
+      148
+     ]
+    },
+    "end": 356
+   },
+   {
+    "start": 357,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      148
+     ]
+    },
+    "end": 357
+   },
+   {
+    "start": 358,
+    "choice": {
+     "choice": "A",
+     "point": [
+      103,
+      149
+     ]
+    },
+    "end": 358
+   },
+   {
+    "start": 359,
+    "choice": {
+     "choice": "A",
+     "point": [
+      102,
+      149
+     ]
+    },
+    "end": 359
+   },
+   {
+    "start": 360,
+    "choice": {
+     "choice": "A",
+     "point": [
+      101,
+      149
+     ]
+    },
+    "end": 360
+   },
+   {
+    "start": 361,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 401
+   },
+   {
+    "start": 402,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      106
+     ]
+    },
+    "end": 477
+   },
+   {
+    "start": 478,
+    "choice": {
+     "choice": "A",
+     "point": [
+      94,
+      106
+     ]
+    },
+    "end": 478
+   },
+   {
+    "start": 479,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      106
+     ]
+    },
+    "end": 479
+   },
+   {
+    "start": 480,
+    "choice": {
+     "choice": "A",
+     "point": [
+      92,
+      105
+     ]
+    },
+    "end": 480
+   },
+   {
+    "start": 481,
+    "choice": {
+     "choice": "A",
+     "point": [
+      91,
+      105
+     ]
+    },
+    "end": 481
+   },
+   {
+    "start": 482,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      105
+     ]
+    },
+    "end": 482
+   },
+   {
+    "start": 483,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      104
+     ]
+    },
+    "end": 483
+   },
+   {
+    "start": 484,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      104
+     ]
+    },
+    "end": 484
+   },
+   {
+    "start": 485,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      103
+     ]
+    },
+    "end": 485
+   },
+   {
+    "start": 486,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      103
+     ]
+    },
+    "end": 486
+   },
+   {
+    "start": 487,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      102
+     ]
+    },
+    "end": 487
+   },
+   {
+    "start": 488,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      101
+     ]
+    },
+    "end": 488
+   },
+   {
+    "start": 489,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      101
+     ]
+    },
+    "end": 489
+   },
+   {
+    "start": 490,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      100
+     ]
+    },
+    "end": 490
+   },
+   {
+    "start": 491,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      99
+     ]
+    },
+    "end": 491
+   },
+   {
+    "start": 492,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      99
+     ]
+    },
+    "end": 492
+   },
+   {
+    "start": 493,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      99
+     ]
+    },
+    "end": 493
+   },
+   {
+    "start": 494,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      98
+     ]
+    },
+    "end": 494
+   },
+   {
+    "start": 495,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      98
+     ]
+    },
+    "end": 495
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    335,
+    true
+   ],
+   [
+    382,
+    false
+   ],
+   [
+    468,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "seed": 10500000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed10500000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed10500000_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/success_NO_OBJECT_VideoUnmaskSwap_ep0_seed10500000_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "difficulty_attr": "xhard2",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 717,
+  "ts_min": 0,
+  "ts_max": 716,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 299
+   },
+   {
+    "start": 300,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <91, 83> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <91, 83> that hides the blue cube",
+    "demo": false,
+    "end": 403
+   },
+   {
+    "start": 404,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 450
+   },
+   {
+    "start": 451,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <134, 119> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <134, 119> that hides the green cube",
+    "demo": false,
+    "end": 551
+   },
+   {
+    "start": 552,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 592
+   },
+   {
+    "start": 593,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container that hides the red cube",
+    "demo": false,
+    "end": 706
+   },
+   {
+    "start": 707,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container that hides the red cube",
+    "demo": false,
+    "end": 716
+   }
+  ],
+  "demo_last_step": 299,
+  "boundaries": [
+   0,
+   300,
+   404,
+   451,
+   552,
+   593,
+   707
+  ],
+  "choice_runs": [
+   {
+    "start": 300,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      82
+     ]
+    },
+    "end": 385
+   },
+   {
+    "start": 386,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      82
+     ]
+    },
+    "end": 386
+   },
+   {
+    "start": 387,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      81
+     ]
+    },
+    "end": 387
+   },
+   {
+    "start": 388,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      81
+     ]
+    },
+    "end": 388
+   },
+   {
+    "start": 389,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      80
+     ]
+    },
+    "end": 389
+   },
+   {
+    "start": 390,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      79
+     ]
+    },
+    "end": 390
+   },
+   {
+    "start": 391,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      78
+     ]
+    },
+    "end": 391
+   },
+   {
+    "start": 392,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      77
+     ]
+    },
+    "end": 392
+   },
+   {
+    "start": 393,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      76
+     ]
+    },
+    "end": 393
+   },
+   {
+    "start": 394,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      75
+     ]
+    },
+    "end": 394
+   },
+   {
+    "start": 395,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      73
+     ]
+    },
+    "end": 395
+   },
+   {
+    "start": 396,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      71
+     ]
+    },
+    "end": 396
+   },
+   {
+    "start": 397,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      70
+     ]
+    },
+    "end": 397
+   },
+   {
+    "start": 398,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      69
+     ]
+    },
+    "end": 398
+   },
+   {
+    "start": 399,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      68
+     ]
+    },
+    "end": 399
+   },
+   {
+    "start": 400,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      67
+     ]
+    },
+    "end": 400
+   },
+   {
+    "start": 401,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      66
+     ]
+    },
+    "end": 401
+   },
+   {
+    "start": 402,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      65
+     ]
+    },
+    "end": 402
+   },
+   {
+    "start": 403,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      65
+     ]
+    },
+    "end": 403
+   },
+   {
+    "start": 404,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 450
+   },
+   {
+    "start": 451,
+    "choice": {
+     "choice": "A",
+     "point": [
+      132,
+      120
+     ]
+    },
+    "end": 525
+   },
+   {
+    "start": 526,
+    "choice": {
+     "choice": "A",
+     "point": [
+      132,
+      119
+     ]
+    },
+    "end": 533
+   },
+   {
+    "start": 534,
+    "choice": {
+     "choice": "A",
+     "point": [
+      131,
+      119
+     ]
+    },
+    "end": 536
+   },
+   {
+    "start": 537,
+    "choice": {
+     "choice": "A",
+     "point": [
+      130,
+      119
+     ]
+    },
+    "end": 537
+   },
+   {
+    "start": 538,
+    "choice": {
+     "choice": "A",
+     "point": [
+      129,
+      118
+     ]
+    },
+    "end": 538
+   },
+   {
+    "start": 539,
+    "choice": {
+     "choice": "A",
+     "point": [
+      128,
+      118
+     ]
+    },
+    "end": 539
+   },
+   {
+    "start": 540,
+    "choice": {
+     "choice": "A",
+     "point": [
+      127,
+      118
+     ]
+    },
+    "end": 540
+   },
+   {
+    "start": 541,
+    "choice": {
+     "choice": "A",
+     "point": [
+      125,
+      118
+     ]
+    },
+    "end": 541
+   },
+   {
+    "start": 542,
+    "choice": {
+     "choice": "A",
+     "point": [
+      123,
+      117
+     ]
+    },
+    "end": 542
+   },
+   {
+    "start": 543,
+    "choice": {
+     "choice": "A",
+     "point": [
+      120,
+      117
+     ]
+    },
+    "end": 543
+   },
+   {
+    "start": 544,
+    "choice": {
+     "choice": "A",
+     "point": [
+      118,
+      116
+     ]
+    },
+    "end": 544
+   },
+   {
+    "start": 545,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      116
+     ]
+    },
+    "end": 545
+   },
+   {
+    "start": 546,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      115
+     ]
+    },
+    "end": 546
+   },
+   {
+    "start": 547,
+    "choice": {
+     "choice": "A",
+     "point": [
+      111,
+      115
+     ]
+    },
+    "end": 547
+   },
+   {
+    "start": 548,
+    "choice": {
+     "choice": "A",
+     "point": [
+      109,
+      114
+     ]
+    },
+    "end": 548
+   },
+   {
+    "start": 549,
+    "choice": {
+     "choice": "A",
+     "point": [
+      107,
+      114
+     ]
+    },
+    "end": 549
+   },
+   {
+    "start": 550,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      114
+     ]
+    },
+    "end": 550
+   },
+   {
+    "start": 551,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      114
+     ]
+    },
+    "end": 551
+   },
+   {
+    "start": 552,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 592
+   },
+   {
+    "start": 593,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      122
+     ]
+    },
+    "end": 690
+   },
+   {
+    "start": 691,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      122
+     ]
+    },
+    "end": 693
+   },
+   {
+    "start": 694,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      122
+     ]
+    },
+    "end": 695
+   },
+   {
+    "start": 696,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      122
+     ]
+    },
+    "end": 696
+   },
+   {
+    "start": 697,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      122
+     ]
+    },
+    "end": 697
+   },
+   {
+    "start": 698,
+    "choice": {
+     "choice": "A",
+     "point": [
+      58,
+      122
+     ]
+    },
+    "end": 698
+   },
+   {
+    "start": 699,
+    "choice": {
+     "choice": "A",
+     "point": [
+      56,
+      122
+     ]
+    },
+    "end": 699
+   },
+   {
+    "start": 700,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      122
+     ]
+    },
+    "end": 700
+   },
+   {
+    "start": 701,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      122
+     ]
+    },
+    "end": 701
+   },
+   {
+    "start": 702,
+    "choice": {
+     "choice": "A",
+     "point": [
+      50,
+      122
+     ]
+    },
+    "end": 702
+   },
+   {
+    "start": 703,
+    "choice": {
+     "choice": "A",
+     "point": [
+      48,
+      122
+     ]
+    },
+    "end": 703
+   },
+   {
+    "start": 704,
+    "choice": {
+     "choice": "A",
+     "point": [
+      45,
+      122
+     ]
+    },
+    "end": 704
+   },
+   {
+    "start": 705,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      121
+     ]
+    },
+    "end": 705
+   },
+   {
+    "start": 706,
+    "choice": {
+     "choice": "A",
+     "point": [
+      39,
+      121
+     ]
+    },
+    "end": 706
+   },
+   {
+    "start": 707,
+    "choice": {
+     "choice": "A",
+     "point": [
+      37,
+      121
+     ]
+    },
+    "end": 707
+   },
+   {
+    "start": 708,
+    "choice": {
+     "choice": "A",
+     "point": [
+      34,
+      121
+     ]
+    },
+    "end": 708
+   },
+   {
+    "start": 709,
+    "choice": {
+     "choice": "A",
+     "point": [
+      32,
+      121
+     ]
+    },
+    "end": 709
+   },
+   {
+    "start": 710,
+    "choice": {
+     "choice": "A",
+     "point": [
+      30,
+      121
+     ]
+    },
+    "end": 710
+   },
+   {
+    "start": 711,
+    "choice": {
+     "choice": "A",
+     "point": [
+      28,
+      121
+     ]
+    },
+    "end": 711
+   },
+   {
+    "start": 712,
+    "choice": {
+     "choice": "A",
+     "point": [
+      27,
+      121
+     ]
+    },
+    "end": 712
+   },
+   {
+    "start": 713,
+    "choice": {
+     "choice": "A",
+     "point": [
+      26,
+      121
+     ]
+    },
+    "end": 713
+   },
+   {
+    "start": 714,
+    "choice": {
+     "choice": "A",
+     "point": [
+      25,
+      121
+     ]
+    },
+    "end": 714
+   },
+   {
+    "start": 715,
+    "choice": {
+     "choice": "A",
+     "point": [
+      24,
+      121
+     ]
+    },
+    "end": 716
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    376,
+    true
+   ],
+   [
+    426,
+    false
+   ],
+   [
+    526,
+    true
+   ],
+   [
+    573,
+    false
+   ],
+   [
+    683,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "seed": 10500300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed10500300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed10500300_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "xhard2",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 697,
+  "ts_min": 0,
+  "ts_max": 696,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 299
+   },
+   {
+    "start": 300,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <116, 97> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <116, 98> that hides the blue cube",
+    "demo": false,
+    "end": 405
+   },
+   {
+    "start": 406,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 452
+   },
+   {
+    "start": 453,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <76, 149> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <76, 149> that hides the red cube",
+    "demo": false,
+    "end": 554
+   },
+   {
+    "start": 555,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 606
+   },
+   {
+    "start": 607,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <74, 120> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <74, 120> that hides the green cube",
+    "demo": false,
+    "end": 688
+   },
+   {
+    "start": 689,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <74, 120> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <74, 120> that hides the green cube",
+    "demo": false,
+    "end": 696
+   }
+  ],
+  "demo_last_step": 299,
+  "boundaries": [
+   0,
+   300,
+   406,
+   453,
+   555,
+   607,
+   689
+  ],
+  "choice_runs": [
+   {
+    "start": 300,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      98
+     ]
+    },
+    "end": 376
+   },
+   {
+    "start": 377,
+    "choice": {
+     "choice": "A",
+     "point": [
+      114,
+      98
+     ]
+    },
+    "end": 383
+   },
+   {
+    "start": 384,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      98
+     ]
+    },
+    "end": 386
+   },
+   {
+    "start": 387,
+    "choice": {
+     "choice": "A",
+     "point": [
+      112,
+      97
+     ]
+    },
+    "end": 387
+   },
+   {
+    "start": 388,
+    "choice": {
+     "choice": "A",
+     "point": [
+      111,
+      97
+     ]
+    },
+    "end": 388
+   },
+   {
+    "start": 389,
+    "choice": {
+     "choice": "A",
+     "point": [
+      110,
+      97
+     ]
+    },
+    "end": 389
+   },
+   {
+    "start": 390,
+    "choice": {
+     "choice": "A",
+     "point": [
+      108,
+      96
+     ]
+    },
+    "end": 390
+   },
+   {
+    "start": 391,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      95
+     ]
+    },
+    "end": 391
+   },
+   {
+    "start": 392,
+    "choice": {
+     "choice": "A",
+     "point": [
+      104,
+      94
+     ]
+    },
+    "end": 392
+   },
+   {
+    "start": 393,
+    "choice": {
+     "choice": "A",
+     "point": [
+      101,
+      93
+     ]
+    },
+    "end": 393
+   },
+   {
+    "start": 394,
+    "choice": {
+     "choice": "A",
+     "point": [
+      99,
+      92
+     ]
+    },
+    "end": 394
+   },
+   {
+    "start": 395,
+    "choice": {
+     "choice": "A",
+     "point": [
+      96,
+      91
+     ]
+    },
+    "end": 395
+   },
+   {
+    "start": 396,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      90
+     ]
+    },
+    "end": 396
+   },
+   {
+    "start": 397,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      89
+     ]
+    },
+    "end": 397
+   },
+   {
+    "start": 398,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      88
+     ]
+    },
+    "end": 398
+   },
+   {
+    "start": 399,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      87
+     ]
+    },
+    "end": 399
+   },
+   {
+    "start": 400,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      86
+     ]
+    },
+    "end": 400
+   },
+   {
+    "start": 401,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      86
+     ]
+    },
+    "end": 401
+   },
+   {
+    "start": 402,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      85
+     ]
+    },
+    "end": 405
+   },
+   {
+    "start": 406,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 452
+   },
+   {
+    "start": 453,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      150
+     ]
+    },
+    "end": 533
+   },
+   {
+    "start": 534,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      150
+     ]
+    },
+    "end": 535
+   },
+   {
+    "start": 536,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      150
+     ]
+    },
+    "end": 536
+   },
+   {
+    "start": 537,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      151
+     ]
+    },
+    "end": 537
+   },
+   {
+    "start": 538,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      151
+     ]
+    },
+    "end": 538
+   },
+   {
+    "start": 539,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      151
+     ]
+    },
+    "end": 539
+   },
+   {
+    "start": 540,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      151
+     ]
+    },
+    "end": 540
+   },
+   {
+    "start": 541,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      152
+     ]
+    },
+    "end": 541
+   },
+   {
+    "start": 542,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      152
+     ]
+    },
+    "end": 542
+   },
+   {
+    "start": 543,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      153
+     ]
+    },
+    "end": 543
+   },
+   {
+    "start": 544,
+    "choice": {
+     "choice": "A",
+     "point": [
+      56,
+      153
+     ]
+    },
+    "end": 544
+   },
+   {
+    "start": 545,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      154
+     ]
+    },
+    "end": 545
+   },
+   {
+    "start": 546,
+    "choice": {
+     "choice": "A",
+     "point": [
+      51,
+      154
+     ]
+    },
+    "end": 546
+   },
+   {
+    "start": 547,
+    "choice": {
+     "choice": "A",
+     "point": [
+      48,
+      155
+     ]
+    },
+    "end": 547
+   },
+   {
+    "start": 548,
+    "choice": {
+     "choice": "A",
+     "point": [
+      45,
+      155
+     ]
+    },
+    "end": 548
+   },
+   {
+    "start": 549,
+    "choice": {
+     "choice": "A",
+     "point": [
+      43,
+      156
+     ]
+    },
+    "end": 549
+   },
+   {
+    "start": 550,
+    "choice": {
+     "choice": "A",
+     "point": [
+      41,
+      156
+     ]
+    },
+    "end": 550
+   },
+   {
+    "start": 551,
+    "choice": {
+     "choice": "A",
+     "point": [
+      39,
+      157
+     ]
+    },
+    "end": 551
+   },
+   {
+    "start": 552,
+    "choice": {
+     "choice": "A",
+     "point": [
+      38,
+      157
+     ]
+    },
+    "end": 552
+   },
+   {
+    "start": 553,
+    "choice": {
+     "choice": "A",
+     "point": [
+      37,
+      157
+     ]
+    },
+    "end": 553
+   },
+   {
+    "start": 554,
+    "choice": {
+     "choice": "A",
+     "point": [
+      36,
+      157
+     ]
+    },
+    "end": 554
+   },
+   {
+    "start": 555,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 606
+   },
+   {
+    "start": 607,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      121
+     ]
+    },
+    "end": 674
+   },
+   {
+    "start": 675,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      121
+     ]
+    },
+    "end": 676
+   },
+   {
+    "start": 677,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      121
+     ]
+    },
+    "end": 677
+   },
+   {
+    "start": 678,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      121
+     ]
+    },
+    "end": 678
+   },
+   {
+    "start": 679,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      121
+     ]
+    },
+    "end": 679
+   },
+   {
+    "start": 680,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      121
+     ]
+    },
+    "end": 680
+   },
+   {
+    "start": 681,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      120
+     ]
+    },
+    "end": 681
+   },
+   {
+    "start": 682,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      120
+     ]
+    },
+    "end": 682
+   },
+   {
+    "start": 683,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      120
+     ]
+    },
+    "end": 683
+   },
+   {
+    "start": 684,
+    "choice": {
+     "choice": "A",
+     "point": [
+      58,
+      120
+     ]
+    },
+    "end": 684
+   },
+   {
+    "start": 685,
+    "choice": {
+     "choice": "A",
+     "point": [
+      56,
+      120
+     ]
+    },
+    "end": 685
+   },
+   {
+    "start": 686,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      120
+     ]
+    },
+    "end": 686
+   },
+   {
+    "start": 687,
+    "choice": {
+     "choice": "A",
+     "point": [
+      50,
+      120
+     ]
+    },
+    "end": 687
+   },
+   {
+    "start": 688,
+    "choice": {
+     "choice": "A",
+     "point": [
+      47,
+      119
+     ]
+    },
+    "end": 688
+   },
+   {
+    "start": 689,
+    "choice": {
+     "choice": "A",
+     "point": [
+      45,
+      119
+     ]
+    },
+    "end": 689
+   },
+   {
+    "start": 690,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      119
+     ]
+    },
+    "end": 690
+   },
+   {
+    "start": 691,
+    "choice": {
+     "choice": "A",
+     "point": [
+      40,
+      119
+     ]
+    },
+    "end": 691
+   },
+   {
+    "start": 692,
+    "choice": {
+     "choice": "A",
+     "point": [
+      38,
+      119
+     ]
+    },
+    "end": 692
+   },
+   {
+    "start": 693,
+    "choice": {
+     "choice": "A",
+     "point": [
+      37,
+      119
+     ]
+    },
+    "end": 693
+   },
+   {
+    "start": 694,
+    "choice": {
+     "choice": "A",
+     "point": [
+      35,
+      119
+     ]
+    },
+    "end": 694
+   },
+   {
+    "start": 695,
+    "choice": {
+     "choice": "A",
+     "point": [
+      34,
+      119
+     ]
+    },
+    "end": 696
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    376,
+    true
+   ],
+   [
+    432,
+    false
+   ],
+   [
+    525,
+    true
+   ],
+   [
+    583,
+    false
+   ],
+   [
+    666,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "seed": 10500600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed10500600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed10500600_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/success_NO_OBJECT_VideoUnmaskSwap_ep6_seed10500600_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "difficulty_attr": "xhard2",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 710,
+  "ts_min": 0,
+  "ts_max": 709,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 299
+   },
+   {
+    "start": 300,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <140, 137> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <140, 137> that hides the red cube",
+    "demo": false,
+    "end": 400
+   },
+   {
+    "start": 401,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 441
+   },
+   {
+    "start": 442,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <74, 117> that hides the green cube",
+    "demo": false,
+    "end": 555
+   },
+   {
+    "start": 556,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 607
+   },
+   {
+    "start": 608,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <116, 103> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <116, 103> that hides the blue cube",
+    "demo": false,
+    "end": 699
+   },
+   {
+    "start": 700,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <116, 103> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <116, 103> that hides the blue cube",
+    "demo": false,
+    "end": 709
+   }
+  ],
+  "demo_last_step": 299,
+  "boundaries": [
+   0,
+   300,
+   401,
+   442,
+   556,
+   608,
+   700
+  ],
+  "choice_runs": [
+   {
+    "start": 300,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      138
+     ]
+    },
+    "end": 374
+   },
+   {
+    "start": 375,
+    "choice": {
+     "choice": "A",
+     "point": [
+      139,
+      139
+     ]
+    },
+    "end": 375
+   },
+   {
+    "start": 376,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      138
+     ]
+    },
+    "end": 385
+   },
+   {
+    "start": 386,
+    "choice": {
+     "choice": "A",
+     "point": [
+      137,
+      138
+     ]
+    },
+    "end": 386
+   },
+   {
+    "start": 387,
+    "choice": {
+     "choice": "A",
+     "point": [
+      136,
+      138
+     ]
+    },
+    "end": 387
+   },
+   {
+    "start": 388,
+    "choice": {
+     "choice": "A",
+     "point": [
+      135,
+      139
+     ]
+    },
+    "end": 388
+   },
+   {
+    "start": 389,
+    "choice": {
+     "choice": "A",
+     "point": [
+      134,
+      139
+     ]
+    },
+    "end": 389
+   },
+   {
+    "start": 390,
+    "choice": {
+     "choice": "A",
+     "point": [
+      132,
+      139
+     ]
+    },
+    "end": 390
+   },
+   {
+    "start": 391,
+    "choice": {
+     "choice": "A",
+     "point": [
+      130,
+      139
+     ]
+    },
+    "end": 391
+   },
+   {
+    "start": 392,
+    "choice": {
+     "choice": "A",
+     "point": [
+      128,
+      139
+     ]
+    },
+    "end": 392
+   },
+   {
+    "start": 393,
+    "choice": {
+     "choice": "A",
+     "point": [
+      126,
+      140
+     ]
+    },
+    "end": 393
+   },
+   {
+    "start": 394,
+    "choice": {
+     "choice": "A",
+     "point": [
+      123,
+      140
+     ]
+    },
+    "end": 394
+   },
+   {
+    "start": 395,
+    "choice": {
+     "choice": "A",
+     "point": [
+      121,
+      140
+     ]
+    },
+    "end": 395
+   },
+   {
+    "start": 396,
+    "choice": {
+     "choice": "A",
+     "point": [
+      119,
+      141
+     ]
+    },
+    "end": 396
+   },
+   {
+    "start": 397,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      141
+     ]
+    },
+    "end": 397
+   },
+   {
+    "start": 398,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      141
+     ]
+    },
+    "end": 398
+   },
+   {
+    "start": 399,
+    "choice": {
+     "choice": "A",
+     "point": [
+      114,
+      141
+     ]
+    },
+    "end": 400
+   },
+   {
+    "start": 401,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 441
+   },
+   {
+    "start": 442,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      125
+     ]
+    },
+    "end": 535
+   },
+   {
+    "start": 536,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      125
+     ]
+    },
+    "end": 537
+   },
+   {
+    "start": 538,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      125
+     ]
+    },
+    "end": 538
+   },
+   {
+    "start": 539,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      125
+     ]
+    },
+    "end": 539
+   },
+   {
+    "start": 540,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      125
+     ]
+    },
+    "end": 540
+   },
+   {
+    "start": 541,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      125
+     ]
+    },
+    "end": 541
+   },
+   {
+    "start": 542,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      125
+     ]
+    },
+    "end": 542
+   },
+   {
+    "start": 543,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      125
+     ]
+    },
+    "end": 543
+   },
+   {
+    "start": 544,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      125
+     ]
+    },
+    "end": 544
+   },
+   {
+    "start": 545,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      125
+     ]
+    },
+    "end": 545
+   },
+   {
+    "start": 546,
+    "choice": {
+     "choice": "A",
+     "point": [
+      56,
+      125
+     ]
+    },
+    "end": 546
+   },
+   {
+    "start": 547,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      125
+     ]
+    },
+    "end": 547
+   },
+   {
+    "start": 548,
+    "choice": {
+     "choice": "A",
+     "point": [
+      51,
+      124
+     ]
+    },
+    "end": 548
+   },
+   {
+    "start": 549,
+    "choice": {
+     "choice": "A",
+     "point": [
+      48,
+      124
+     ]
+    },
+    "end": 549
+   },
+   {
+    "start": 550,
+    "choice": {
+     "choice": "A",
+     "point": [
+      46,
+      124
+     ]
+    },
+    "end": 550
+   },
+   {
+    "start": 551,
+    "choice": {
+     "choice": "A",
+     "point": [
+      44,
+      124
+     ]
+    },
+    "end": 551
+   },
+   {
+    "start": 552,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      124
+     ]
+    },
+    "end": 552
+   },
+   {
+    "start": 553,
+    "choice": {
+     "choice": "A",
+     "point": [
+      40,
+      124
+     ]
+    },
+    "end": 553
+   },
+   {
+    "start": 554,
+    "choice": {
+     "choice": "A",
+     "point": [
+      39,
+      124
+     ]
+    },
+    "end": 555
+   },
+   {
+    "start": 556,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 607
+   },
+   {
+    "start": 608,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      103
+     ]
+    },
+    "end": 679
+   },
+   {
+    "start": 680,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      104
+     ]
+    },
+    "end": 680
+   },
+   {
+    "start": 681,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      103
+     ]
+    },
+    "end": 682
+   },
+   {
+    "start": 683,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      104
+     ]
+    },
+    "end": 689
+   },
+   {
+    "start": 690,
+    "choice": {
+     "choice": "A",
+     "point": [
+      112,
+      103
+     ]
+    },
+    "end": 691
+   },
+   {
+    "start": 692,
+    "choice": {
+     "choice": "A",
+     "point": [
+      111,
+      103
+     ]
+    },
+    "end": 692
+   },
+   {
+    "start": 693,
+    "choice": {
+     "choice": "A",
+     "point": [
+      109,
+      103
+     ]
+    },
+    "end": 693
+   },
+   {
+    "start": 694,
+    "choice": {
+     "choice": "A",
+     "point": [
+      108,
+      102
+     ]
+    },
+    "end": 694
+   },
+   {
+    "start": 695,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      102
+     ]
+    },
+    "end": 695
+   },
+   {
+    "start": 696,
+    "choice": {
+     "choice": "A",
+     "point": [
+      104,
+      101
+     ]
+    },
+    "end": 696
+   },
+   {
+    "start": 697,
+    "choice": {
+     "choice": "A",
+     "point": [
+      101,
+      100
+     ]
+    },
+    "end": 697
+   },
+   {
+    "start": 698,
+    "choice": {
+     "choice": "A",
+     "point": [
+      98,
+      99
+     ]
+    },
+    "end": 698
+   },
+   {
+    "start": 699,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      98
+     ]
+    },
+    "end": 699
+   },
+   {
+    "start": 700,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      97
+     ]
+    },
+    "end": 700
+   },
+   {
+    "start": 701,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      96
+     ]
+    },
+    "end": 701
+   },
+   {
+    "start": 702,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      96
+     ]
+    },
+    "end": 702
+   },
+   {
+    "start": 703,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      95
+     ]
+    },
+    "end": 703
+   },
+   {
+    "start": 704,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      94
+     ]
+    },
+    "end": 704
+   },
+   {
+    "start": 705,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      94
+     ]
+    },
+    "end": 705
+   },
+   {
+    "start": 706,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      94
+     ]
+    },
+    "end": 706
+   },
+   {
+    "start": 707,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      93
+     ]
+    },
+    "end": 708
+   },
+   {
+    "start": 709,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      94
+     ]
+    },
+    "end": 709
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    375,
+    true
+   ],
+   [
+    422,
+    false
+   ],
+   [
+    526,
+    true
+   ],
+   [
+    584,
+    false
+   ],
+   [
+    680,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "seed": 12500000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed12500000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed12500000_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "difficulty_attr": "xhard3",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 784,
+  "ts_min": 0,
+  "ts_max": 783,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 365
+   },
+   {
+    "start": 366,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <103, 160> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <103, 160> that hides the green cube",
+    "demo": false,
+    "end": 474
+   },
+   {
+    "start": 475,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 525
+   },
+   {
+    "start": 526,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <86, 86> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <86, 86> that hides the blue cube",
+    "demo": false,
+    "end": 643
+   },
+   {
+    "start": 644,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 692
+   },
+   {
+    "start": 693,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <73, 121> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <73, 121> that hides the red cube",
+    "demo": false,
+    "end": 775
+   },
+   {
+    "start": 776,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <73, 121> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <73, 121> that hides the red cube",
+    "demo": false,
+    "end": 783
+   }
+  ],
+  "demo_last_step": 365,
+  "boundaries": [
+   0,
+   366,
+   475,
+   526,
+   644,
+   693,
+   776
+  ],
+  "choice_runs": [
+   {
+    "start": 366,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      162
+     ]
+    },
+    "end": 446
+   },
+   {
+    "start": 447,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      161
+     ]
+    },
+    "end": 447
+   },
+   {
+    "start": 448,
+    "choice": {
+     "choice": "A",
+     "point": [
+      99,
+      161
+     ]
+    },
+    "end": 456
+   },
+   {
+    "start": 457,
+    "choice": {
+     "choice": "A",
+     "point": [
+      98,
+      161
+     ]
+    },
+    "end": 458
+   },
+   {
+    "start": 459,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      161
+     ]
+    },
+    "end": 459
+   },
+   {
+    "start": 460,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      162
+     ]
+    },
+    "end": 460
+   },
+   {
+    "start": 461,
+    "choice": {
+     "choice": "A",
+     "point": [
+      94,
+      162
+     ]
+    },
+    "end": 461
+   },
+   {
+    "start": 462,
+    "choice": {
+     "choice": "A",
+     "point": [
+      92,
+      163
+     ]
+    },
+    "end": 462
+   },
+   {
+    "start": 463,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      164
+     ]
+    },
+    "end": 463
+   },
+   {
+    "start": 464,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      164
+     ]
+    },
+    "end": 464
+   },
+   {
+    "start": 465,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      165
+     ]
+    },
+    "end": 465
+   },
+   {
+    "start": 466,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      166
+     ]
+    },
+    "end": 466
+   },
+   {
+    "start": 467,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      167
+     ]
+    },
+    "end": 467
+   },
+   {
+    "start": 468,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      168
+     ]
+    },
+    "end": 468
+   },
+   {
+    "start": 469,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      169
+     ]
+    },
+    "end": 469
+   },
+   {
+    "start": 470,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      170
+     ]
+    },
+    "end": 470
+   },
+   {
+    "start": 471,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      171
+     ]
+    },
+    "end": 471
+   },
+   {
+    "start": 472,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      171
+     ]
+    },
+    "end": 472
+   },
+   {
+    "start": 473,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      171
+     ]
+    },
+    "end": 473
+   },
+   {
+    "start": 474,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      172
+     ]
+    },
+    "end": 474
+   },
+   {
+    "start": 475,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 525
+   },
+   {
+    "start": 526,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      85
+     ]
+    },
+    "end": 608
+   },
+   {
+    "start": 609,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      84
+     ]
+    },
+    "end": 618
+   },
+   {
+    "start": 619,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      84
+     ]
+    },
+    "end": 619
+   },
+   {
+    "start": 620,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      84
+     ]
+    },
+    "end": 621
+   },
+   {
+    "start": 622,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      83
+     ]
+    },
+    "end": 622
+   },
+   {
+    "start": 623,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      83
+     ]
+    },
+    "end": 623
+   },
+   {
+    "start": 624,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      82
+     ]
+    },
+    "end": 624
+   },
+   {
+    "start": 625,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      81
+     ]
+    },
+    "end": 625
+   },
+   {
+    "start": 626,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      80
+     ]
+    },
+    "end": 626
+   },
+   {
+    "start": 627,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      79
+     ]
+    },
+    "end": 627
+   },
+   {
+    "start": 628,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      77
+     ]
+    },
+    "end": 628
+   },
+   {
+    "start": 629,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      76
+     ]
+    },
+    "end": 629
+   },
+   {
+    "start": 630,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      75
+     ]
+    },
+    "end": 630
+   },
+   {
+    "start": 631,
+    "choice": {
+     "choice": "A",
+     "point": [
+      56,
+      73
+     ]
+    },
+    "end": 631
+   },
+   {
+    "start": 632,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      72
+     ]
+    },
+    "end": 632
+   },
+   {
+    "start": 633,
+    "choice": {
+     "choice": "A",
+     "point": [
+      51,
+      71
+     ]
+    },
+    "end": 633
+   },
+   {
+    "start": 634,
+    "choice": {
+     "choice": "A",
+     "point": [
+      48,
+      70
+     ]
+    },
+    "end": 634
+   },
+   {
+    "start": 635,
+    "choice": {
+     "choice": "A",
+     "point": [
+      46,
+      69
+     ]
+    },
+    "end": 635
+   },
+   {
+    "start": 636,
+    "choice": {
+     "choice": "A",
+     "point": [
+      45,
+      68
+     ]
+    },
+    "end": 636
+   },
+   {
+    "start": 637,
+    "choice": {
+     "choice": "A",
+     "point": [
+      43,
+      68
+     ]
+    },
+    "end": 637
+   },
+   {
+    "start": 638,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      67
+     ]
+    },
+    "end": 641
+   },
+   {
+    "start": 642,
+    "choice": {
+     "choice": "A",
+     "point": [
+      43,
+      68
+     ]
+    },
+    "end": 643
+   },
+   {
+    "start": 644,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 692
+   },
+   {
+    "start": 693,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      122
+     ]
+    },
+    "end": 761
+   },
+   {
+    "start": 762,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      122
+     ]
+    },
+    "end": 763
+   },
+   {
+    "start": 764,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      122
+     ]
+    },
+    "end": 764
+   },
+   {
+    "start": 765,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      122
+     ]
+    },
+    "end": 765
+   },
+   {
+    "start": 766,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      122
+     ]
+    },
+    "end": 766
+   },
+   {
+    "start": 767,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      122
+     ]
+    },
+    "end": 767
+   },
+   {
+    "start": 768,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      122
+     ]
+    },
+    "end": 768
+   },
+   {
+    "start": 769,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      122
+     ]
+    },
+    "end": 769
+   },
+   {
+    "start": 770,
+    "choice": {
+     "choice": "A",
+     "point": [
+      60,
+      122
+     ]
+    },
+    "end": 770
+   },
+   {
+    "start": 771,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      122
+     ]
+    },
+    "end": 771
+   },
+   {
+    "start": 772,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      122
+     ]
+    },
+    "end": 772
+   },
+   {
+    "start": 773,
+    "choice": {
+     "choice": "A",
+     "point": [
+      52,
+      122
+     ]
+    },
+    "end": 773
+   },
+   {
+    "start": 774,
+    "choice": {
+     "choice": "A",
+     "point": [
+      49,
+      122
+     ]
+    },
+    "end": 774
+   },
+   {
+    "start": 775,
+    "choice": {
+     "choice": "A",
+     "point": [
+      46,
+      122
+     ]
+    },
+    "end": 775
+   },
+   {
+    "start": 776,
+    "choice": {
+     "choice": "A",
+     "point": [
+      44,
+      122
+     ]
+    },
+    "end": 776
+   },
+   {
+    "start": 777,
+    "choice": {
+     "choice": "A",
+     "point": [
+      41,
+      122
+     ]
+    },
+    "end": 777
+   },
+   {
+    "start": 778,
+    "choice": {
+     "choice": "A",
+     "point": [
+      39,
+      121
+     ]
+    },
+    "end": 778
+   },
+   {
+    "start": 779,
+    "choice": {
+     "choice": "A",
+     "point": [
+      37,
+      121
+     ]
+    },
+    "end": 779
+   },
+   {
+    "start": 780,
+    "choice": {
+     "choice": "A",
+     "point": [
+      36,
+      121
+     ]
+    },
+    "end": 780
+   },
+   {
+    "start": 781,
+    "choice": {
+     "choice": "A",
+     "point": [
+      34,
+      121
+     ]
+    },
+    "end": 781
+   },
+   {
+    "start": 782,
+    "choice": {
+     "choice": "A",
+     "point": [
+      33,
+      121
+     ]
+    },
+    "end": 783
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    447,
+    true
+   ],
+   [
+    500,
+    false
+   ],
+   [
+    609,
+    true
+   ],
+   [
+    668,
+    false
+   ],
+   [
+    753,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "seed": 12500300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed12500300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed12500300_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/success_NO_OBJECT_VideoUnmaskSwap_ep3_seed12500300_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "difficulty_attr": "xhard3",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, next pick up another container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 757,
+  "ts_min": 0,
+  "ts_max": 756,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 329
+   },
+   {
+    "start": 330,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <70, 127> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <70, 127> that hides the green cube",
+    "demo": false,
+    "end": 456
+   },
+   {
+    "start": 457,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 506
+   },
+   {
+    "start": 507,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <133, 133> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <133, 133> that hides the red cube",
+    "demo": false,
+    "end": 615
+   },
+   {
+    "start": 616,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 656
+   },
+   {
+    "start": 657,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <83, 97> that hides the blue cube",
+    "demo": false,
+    "end": 749
+   },
+   {
+    "start": 750,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <83, 97> that hides the blue cube",
+    "demo": false,
+    "end": 756
+   }
+  ],
+  "demo_last_step": 329,
+  "boundaries": [
+   0,
+   330,
+   457,
+   507,
+   616,
+   657,
+   750
+  ],
+  "choice_runs": [
+   {
+    "start": 330,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      128
+     ]
+    },
+    "end": 420
+   },
+   {
+    "start": 421,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      127
+     ]
+    },
+    "end": 421
+   },
+   {
+    "start": 422,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      128
+     ]
+    },
+    "end": 429
+   },
+   {
+    "start": 430,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      128
+     ]
+    },
+    "end": 431
+   },
+   {
+    "start": 432,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      128
+     ]
+    },
+    "end": 432
+   },
+   {
+    "start": 433,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      128
+     ]
+    },
+    "end": 433
+   },
+   {
+    "start": 434,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      128
+     ]
+    },
+    "end": 434
+   },
+   {
+    "start": 435,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      128
+     ]
+    },
+    "end": 435
+   },
+   {
+    "start": 436,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      128
+     ]
+    },
+    "end": 436
+   },
+   {
+    "start": 437,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      127
+     ]
+    },
+    "end": 437
+   },
+   {
+    "start": 438,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      127
+     ]
+    },
+    "end": 438
+   },
+   {
+    "start": 439,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      127
+     ]
+    },
+    "end": 439
+   },
+   {
+    "start": 440,
+    "choice": {
+     "choice": "A",
+     "point": [
+      52,
+      127
+     ]
+    },
+    "end": 440
+   },
+   {
+    "start": 441,
+    "choice": {
+     "choice": "A",
+     "point": [
+      49,
+      127
+     ]
+    },
+    "end": 441
+   },
+   {
+    "start": 442,
+    "choice": {
+     "choice": "A",
+     "point": [
+      46,
+      127
+     ]
+    },
+    "end": 442
+   },
+   {
+    "start": 443,
+    "choice": {
+     "choice": "A",
+     "point": [
+      44,
+      127
+     ]
+    },
+    "end": 443
+   },
+   {
+    "start": 444,
+    "choice": {
+     "choice": "A",
+     "point": [
+      41,
+      127
+     ]
+    },
+    "end": 444
+   },
+   {
+    "start": 445,
+    "choice": {
+     "choice": "A",
+     "point": [
+      38,
+      127
+     ]
+    },
+    "end": 445
+   },
+   {
+    "start": 446,
+    "choice": {
+     "choice": "A",
+     "point": [
+      36,
+      127
+     ]
+    },
+    "end": 446
+   },
+   {
+    "start": 447,
+    "choice": {
+     "choice": "A",
+     "point": [
+      33,
+      127
+     ]
+    },
+    "end": 447
+   },
+   {
+    "start": 448,
+    "choice": {
+     "choice": "A",
+     "point": [
+      31,
+      127
+     ]
+    },
+    "end": 448
+   },
+   {
+    "start": 449,
+    "choice": {
+     "choice": "A",
+     "point": [
+      30,
+      127
+     ]
+    },
+    "end": 449
+   },
+   {
+    "start": 450,
+    "choice": {
+     "choice": "A",
+     "point": [
+      28,
+      127
+     ]
+    },
+    "end": 450
+   },
+   {
+    "start": 451,
+    "choice": {
+     "choice": "A",
+     "point": [
+      27,
+      127
+     ]
+    },
+    "end": 451
+   },
+   {
+    "start": 452,
+    "choice": {
+     "choice": "A",
+     "point": [
+      26,
+      127
+     ]
+    },
+    "end": 455
+   },
+   {
+    "start": 456,
+    "choice": {
+     "choice": "A",
+     "point": [
+      27,
+      127
+     ]
+    },
+    "end": 456
+   },
+   {
+    "start": 457,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 506
+   },
+   {
+    "start": 507,
+    "choice": {
+     "choice": "A",
+     "point": [
+      130,
+      134
+     ]
+    },
+    "end": 589
+   },
+   {
+    "start": 590,
+    "choice": {
+     "choice": "A",
+     "point": [
+      130,
+      133
+     ]
+    },
+    "end": 590
+   },
+   {
+    "start": 591,
+    "choice": {
+     "choice": "A",
+     "point": [
+      131,
+      133
+     ]
+    },
+    "end": 596
+   },
+   {
+    "start": 597,
+    "choice": {
+     "choice": "A",
+     "point": [
+      130,
+      133
+     ]
+    },
+    "end": 600
+   },
+   {
+    "start": 601,
+    "choice": {
+     "choice": "A",
+     "point": [
+      129,
+      133
+     ]
+    },
+    "end": 601
+   },
+   {
+    "start": 602,
+    "choice": {
+     "choice": "A",
+     "point": [
+      128,
+      133
+     ]
+    },
+    "end": 602
+   },
+   {
+    "start": 603,
+    "choice": {
+     "choice": "A",
+     "point": [
+      127,
+      133
+     ]
+    },
+    "end": 603
+   },
+   {
+    "start": 604,
+    "choice": {
+     "choice": "A",
+     "point": [
+      125,
+      134
+     ]
+    },
+    "end": 604
+   },
+   {
+    "start": 605,
+    "choice": {
+     "choice": "A",
+     "point": [
+      124,
+      134
+     ]
+    },
+    "end": 605
+   },
+   {
+    "start": 606,
+    "choice": {
+     "choice": "A",
+     "point": [
+      122,
+      134
+     ]
+    },
+    "end": 606
+   },
+   {
+    "start": 607,
+    "choice": {
+     "choice": "A",
+     "point": [
+      119,
+      134
+     ]
+    },
+    "end": 607
+   },
+   {
+    "start": 608,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      135
+     ]
+    },
+    "end": 608
+   },
+   {
+    "start": 609,
+    "choice": {
+     "choice": "A",
+     "point": [
+      114,
+      135
+     ]
+    },
+    "end": 609
+   },
+   {
+    "start": 610,
+    "choice": {
+     "choice": "A",
+     "point": [
+      112,
+      135
+     ]
+    },
+    "end": 610
+   },
+   {
+    "start": 611,
+    "choice": {
+     "choice": "A",
+     "point": [
+      110,
+      136
+     ]
+    },
+    "end": 611
+   },
+   {
+    "start": 612,
+    "choice": {
+     "choice": "A",
+     "point": [
+      108,
+      136
+     ]
+    },
+    "end": 612
+   },
+   {
+    "start": 613,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      136
+     ]
+    },
+    "end": 613
+   },
+   {
+    "start": 614,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      136
+     ]
+    },
+    "end": 614
+   },
+   {
+    "start": 615,
+    "choice": {
+     "choice": "A",
+     "point": [
+      104,
+      137
+     ]
+    },
+    "end": 615
+   },
+   {
+    "start": 616,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 656
+   },
+   {
+    "start": 657,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      100
+     ]
+    },
+    "end": 737
+   },
+   {
+    "start": 738,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      100
+     ]
+    },
+    "end": 739
+   },
+   {
+    "start": 740,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      100
+     ]
+    },
+    "end": 740
+   },
+   {
+    "start": 741,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      99
+     ]
+    },
+    "end": 741
+   },
+   {
+    "start": 742,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      99
+     ]
+    },
+    "end": 742
+   },
+   {
+    "start": 743,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      99
+     ]
+    },
+    "end": 743
+   },
+   {
+    "start": 744,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      98
+     ]
+    },
+    "end": 744
+   },
+   {
+    "start": 745,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      98
+     ]
+    },
+    "end": 745
+   },
+   {
+    "start": 746,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      97
+     ]
+    },
+    "end": 746
+   },
+   {
+    "start": 747,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      96
+     ]
+    },
+    "end": 747
+   },
+   {
+    "start": 748,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      95
+     ]
+    },
+    "end": 748
+   },
+   {
+    "start": 749,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      95
+     ]
+    },
+    "end": 749
+   },
+   {
+    "start": 750,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      94
+     ]
+    },
+    "end": 750
+   },
+   {
+    "start": 751,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      93
+     ]
+    },
+    "end": 751
+   },
+   {
+    "start": 752,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      93
+     ]
+    },
+    "end": 752
+   },
+   {
+    "start": 753,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      92
+     ]
+    },
+    "end": 753
+   },
+   {
+    "start": 754,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      92
+     ]
+    },
+    "end": 754
+   },
+   {
+    "start": 755,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      91
+     ]
+    },
+    "end": 755
+   },
+   {
+    "start": 756,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      91
+     ]
+    },
+    "end": 756
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    421,
+    true
+   ],
+   [
+    483,
+    false
+   ],
+   [
+    590,
+    true
+   ],
+   [
+    637,
+    false
+   ],
+   [
+    729,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "seed": 12500600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed12500600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed12500600_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "xhard3",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 740,
+  "ts_min": 0,
+  "ts_max": 739,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 329
+   },
+   {
+    "start": 330,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <73, 114> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <73, 114> that hides the red cube",
+    "demo": false,
+    "end": 445
+   },
+   {
+    "start": 446,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 494
+   },
+   {
+    "start": 495,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <122, 140> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <122, 140> that hides the blue cube",
+    "demo": false,
+    "end": 605
+   },
+   {
+    "start": 606,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 653
+   },
+   {
+    "start": 654,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <101, 95> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <100, 94> that hides the green cube",
+    "demo": false,
+    "end": 732
+   },
+   {
+    "start": 733,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <101, 95> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <100, 94> that hides the green cube",
+    "demo": false,
+    "end": 739
+   }
+  ],
+  "demo_last_step": 329,
+  "boundaries": [
+   0,
+   330,
+   446,
+   495,
+   606,
+   654,
+   733
+  ],
+  "choice_runs": [
+   {
+    "start": 330,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      114
+     ]
+    },
+    "end": 415
+   },
+   {
+    "start": 416,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      113
+     ]
+    },
+    "end": 424
+   },
+   {
+    "start": 425,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      113
+     ]
+    },
+    "end": 426
+   },
+   {
+    "start": 427,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      113
+     ]
+    },
+    "end": 427
+   },
+   {
+    "start": 428,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      113
+     ]
+    },
+    "end": 428
+   },
+   {
+    "start": 429,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      113
+     ]
+    },
+    "end": 429
+   },
+   {
+    "start": 430,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      112
+     ]
+    },
+    "end": 430
+   },
+   {
+    "start": 431,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      112
+     ]
+    },
+    "end": 431
+   },
+   {
+    "start": 432,
+    "choice": {
+     "choice": "A",
+     "point": [
+      60,
+      112
+     ]
+    },
+    "end": 432
+   },
+   {
+    "start": 433,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      111
+     ]
+    },
+    "end": 433
+   },
+   {
+    "start": 434,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      111
+     ]
+    },
+    "end": 434
+   },
+   {
+    "start": 435,
+    "choice": {
+     "choice": "A",
+     "point": [
+      52,
+      110
+     ]
+    },
+    "end": 435
+   },
+   {
+    "start": 436,
+    "choice": {
+     "choice": "A",
+     "point": [
+      49,
+      110
+     ]
+    },
+    "end": 436
+   },
+   {
+    "start": 437,
+    "choice": {
+     "choice": "A",
+     "point": [
+      46,
+      110
+     ]
+    },
+    "end": 437
+   },
+   {
+    "start": 438,
+    "choice": {
+     "choice": "A",
+     "point": [
+      43,
+      109
+     ]
+    },
+    "end": 438
+   },
+   {
+    "start": 439,
+    "choice": {
+     "choice": "A",
+     "point": [
+      41,
+      109
+     ]
+    },
+    "end": 439
+   },
+   {
+    "start": 440,
+    "choice": {
+     "choice": "A",
+     "point": [
+      38,
+      108
+     ]
+    },
+    "end": 440
+   },
+   {
+    "start": 441,
+    "choice": {
+     "choice": "A",
+     "point": [
+      36,
+      108
+     ]
+    },
+    "end": 441
+   },
+   {
+    "start": 442,
+    "choice": {
+     "choice": "A",
+     "point": [
+      35,
+      108
+     ]
+    },
+    "end": 442
+   },
+   {
+    "start": 443,
+    "choice": {
+     "choice": "A",
+     "point": [
+      33,
+      107
+     ]
+    },
+    "end": 443
+   },
+   {
+    "start": 444,
+    "choice": {
+     "choice": "A",
+     "point": [
+      32,
+      107
+     ]
+    },
+    "end": 444
+   },
+   {
+    "start": 445,
+    "choice": {
+     "choice": "A",
+     "point": [
+      31,
+      107
+     ]
+    },
+    "end": 445
+   },
+   {
+    "start": 446,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 494
+   },
+   {
+    "start": 495,
+    "choice": {
+     "choice": "A",
+     "point": [
+      120,
+      141
+     ]
+    },
+    "end": 584
+   },
+   {
+    "start": 585,
+    "choice": {
+     "choice": "A",
+     "point": [
+      119,
+      141
+     ]
+    },
+    "end": 586
+   },
+   {
+    "start": 587,
+    "choice": {
+     "choice": "A",
+     "point": [
+      118,
+      141
+     ]
+    },
+    "end": 587
+   },
+   {
+    "start": 588,
+    "choice": {
+     "choice": "A",
+     "point": [
+      116,
+      142
+     ]
+    },
+    "end": 588
+   },
+   {
+    "start": 589,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      142
+     ]
+    },
+    "end": 589
+   },
+   {
+    "start": 590,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      142
+     ]
+    },
+    "end": 590
+   },
+   {
+    "start": 591,
+    "choice": {
+     "choice": "A",
+     "point": [
+      111,
+      143
+     ]
+    },
+    "end": 591
+   },
+   {
+    "start": 592,
+    "choice": {
+     "choice": "A",
+     "point": [
+      109,
+      143
+     ]
+    },
+    "end": 592
+   },
+   {
+    "start": 593,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      144
+     ]
+    },
+    "end": 593
+   },
+   {
+    "start": 594,
+    "choice": {
+     "choice": "A",
+     "point": [
+      103,
+      144
+     ]
+    },
+    "end": 594
+   },
+   {
+    "start": 595,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      145
+     ]
+    },
+    "end": 595
+   },
+   {
+    "start": 596,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      145
+     ]
+    },
+    "end": 596
+   },
+   {
+    "start": 597,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      146
+     ]
+    },
+    "end": 597
+   },
+   {
+    "start": 598,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      146
+     ]
+    },
+    "end": 598
+   },
+   {
+    "start": 599,
+    "choice": {
+     "choice": "A",
+     "point": [
+      91,
+      146
+     ]
+    },
+    "end": 599
+   },
+   {
+    "start": 600,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      147
+     ]
+    },
+    "end": 600
+   },
+   {
+    "start": 601,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      147
+     ]
+    },
+    "end": 601
+   },
+   {
+    "start": 602,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      147
+     ]
+    },
+    "end": 604
+   },
+   {
+    "start": 605,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      147
+     ]
+    },
+    "end": 605
+   },
+   {
+    "start": 606,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 653
+   },
+   {
+    "start": 654,
+    "choice": {
+     "choice": "A",
+     "point": [
+      98,
+      95
+     ]
+    },
+    "end": 711
+   },
+   {
+    "start": 712,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      94
+     ]
+    },
+    "end": 721
+   },
+   {
+    "start": 722,
+    "choice": {
+     "choice": "A",
+     "point": [
+      96,
+      94
+     ]
+    },
+    "end": 723
+   },
+   {
+    "start": 724,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      93
+     ]
+    },
+    "end": 724
+   },
+   {
+    "start": 725,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      93
+     ]
+    },
+    "end": 725
+   },
+   {
+    "start": 726,
+    "choice": {
+     "choice": "A",
+     "point": [
+      92,
+      92
+     ]
+    },
+    "end": 726
+   },
+   {
+    "start": 727,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      92
+     ]
+    },
+    "end": 727
+   },
+   {
+    "start": 728,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      91
+     ]
+    },
+    "end": 728
+   },
+   {
+    "start": 729,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      90
+     ]
+    },
+    "end": 729
+   },
+   {
+    "start": 730,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      89
+     ]
+    },
+    "end": 730
+   },
+   {
+    "start": 731,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      88
+     ]
+    },
+    "end": 731
+   },
+   {
+    "start": 732,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      86
+     ]
+    },
+    "end": 732
+   },
+   {
+    "start": 733,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      85
+     ]
+    },
+    "end": 733
+   },
+   {
+    "start": 734,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      84
+     ]
+    },
+    "end": 734
+   },
+   {
+    "start": 735,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      83
+     ]
+    },
+    "end": 735
+   },
+   {
+    "start": 736,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      83
+     ]
+    },
+    "end": 736
+   },
+   {
+    "start": 737,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      82
+     ]
+    },
+    "end": 737
+   },
+   {
+    "start": 738,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      82
+     ]
+    },
+    "end": 738
+   },
+   {
+    "start": 739,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      81
+     ]
+    },
+    "end": 739
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    415,
+    true
+   ],
+   [
+    471,
+    false
+   ],
+   [
+    575,
+    true
+   ],
+   [
+    633,
+    false
+   ],
+   [
+    712,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "seed": 6500000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed6500000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed6500000_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "difficulty_attr": "xhard4",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 841,
+  "ts_min": 0,
+  "ts_max": 840,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 431
+   },
+   {
+    "start": 432,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <91, 165> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <91, 165> that hides the blue cube",
+    "demo": false,
+    "end": 535
+   },
+   {
+    "start": 536,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 583
+   },
+   {
+    "start": 584,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <84, 98> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <84, 98> that hides the green cube",
+    "demo": false,
+    "end": 679
+   },
+   {
+    "start": 680,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 731
+   },
+   {
+    "start": 732,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <68, 139> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <68, 139> that hides the red cube",
+    "demo": false,
+    "end": 829
+   },
+   {
+    "start": 830,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <68, 139> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <68, 139> that hides the red cube",
+    "demo": false,
+    "end": 840
+   }
+  ],
+  "demo_last_step": 431,
+  "boundaries": [
+   0,
+   432,
+   536,
+   584,
+   680,
+   732,
+   830
+  ],
+  "choice_runs": [
+   {
+    "start": 432,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      168
+     ]
+    },
+    "end": 516
+   },
+   {
+    "start": 517,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      168
+     ]
+    },
+    "end": 518
+   },
+   {
+    "start": 519,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      168
+     ]
+    },
+    "end": 519
+   },
+   {
+    "start": 520,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      169
+     ]
+    },
+    "end": 520
+   },
+   {
+    "start": 521,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      169
+     ]
+    },
+    "end": 521
+   },
+   {
+    "start": 522,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      170
+     ]
+    },
+    "end": 522
+   },
+   {
+    "start": 523,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      171
+     ]
+    },
+    "end": 523
+   },
+   {
+    "start": 524,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      172
+     ]
+    },
+    "end": 524
+   },
+   {
+    "start": 525,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      173
+     ]
+    },
+    "end": 525
+   },
+   {
+    "start": 526,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      174
+     ]
+    },
+    "end": 526
+   },
+   {
+    "start": 527,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      175
+     ]
+    },
+    "end": 527
+   },
+   {
+    "start": 528,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      177
+     ]
+    },
+    "end": 528
+   },
+   {
+    "start": 529,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      178
+     ]
+    },
+    "end": 529
+   },
+   {
+    "start": 530,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      179
+     ]
+    },
+    "end": 530
+   },
+   {
+    "start": 531,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      180
+     ]
+    },
+    "end": 531
+   },
+   {
+    "start": 532,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      181
+     ]
+    },
+    "end": 532
+   },
+   {
+    "start": 533,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      182
+     ]
+    },
+    "end": 533
+   },
+   {
+    "start": 534,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      182
+     ]
+    },
+    "end": 534
+   },
+   {
+    "start": 535,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      182
+     ]
+    },
+    "end": 535
+   },
+   {
+    "start": 536,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 583
+   },
+   {
+    "start": 584,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      98
+     ]
+    },
+    "end": 646
+   },
+   {
+    "start": 647,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      97
+     ]
+    },
+    "end": 647
+   },
+   {
+    "start": 648,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      98
+     ]
+    },
+    "end": 655
+   },
+   {
+    "start": 656,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      98
+     ]
+    },
+    "end": 657
+   },
+   {
+    "start": 658,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      97
+     ]
+    },
+    "end": 658
+   },
+   {
+    "start": 659,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      97
+     ]
+    },
+    "end": 659
+   },
+   {
+    "start": 660,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      97
+     ]
+    },
+    "end": 660
+   },
+   {
+    "start": 661,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      96
+     ]
+    },
+    "end": 661
+   },
+   {
+    "start": 662,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      96
+     ]
+    },
+    "end": 662
+   },
+   {
+    "start": 663,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      95
+     ]
+    },
+    "end": 663
+   },
+   {
+    "start": 664,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      95
+     ]
+    },
+    "end": 664
+   },
+   {
+    "start": 665,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      94
+     ]
+    },
+    "end": 665
+   },
+   {
+    "start": 666,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      93
+     ]
+    },
+    "end": 666
+   },
+   {
+    "start": 667,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      92
+     ]
+    },
+    "end": 667
+   },
+   {
+    "start": 668,
+    "choice": {
+     "choice": "A",
+     "point": [
+      58,
+      91
+     ]
+    },
+    "end": 668
+   },
+   {
+    "start": 669,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      90
+     ]
+    },
+    "end": 669
+   },
+   {
+    "start": 670,
+    "choice": {
+     "choice": "A",
+     "point": [
+      52,
+      90
+     ]
+    },
+    "end": 670
+   },
+   {
+    "start": 671,
+    "choice": {
+     "choice": "A",
+     "point": [
+      50,
+      89
+     ]
+    },
+    "end": 671
+   },
+   {
+    "start": 672,
+    "choice": {
+     "choice": "A",
+     "point": [
+      48,
+      88
+     ]
+    },
+    "end": 672
+   },
+   {
+    "start": 673,
+    "choice": {
+     "choice": "A",
+     "point": [
+      46,
+      88
+     ]
+    },
+    "end": 673
+   },
+   {
+    "start": 674,
+    "choice": {
+     "choice": "A",
+     "point": [
+      44,
+      87
+     ]
+    },
+    "end": 674
+   },
+   {
+    "start": 675,
+    "choice": {
+     "choice": "A",
+     "point": [
+      43,
+      87
+     ]
+    },
+    "end": 675
+   },
+   {
+    "start": 676,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      87
+     ]
+    },
+    "end": 676
+   },
+   {
+    "start": 677,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      86
+     ]
+    },
+    "end": 678
+   },
+   {
+    "start": 679,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      87
+     ]
+    },
+    "end": 679
+   },
+   {
+    "start": 680,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 731
+   },
+   {
+    "start": 732,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      140
+     ]
+    },
+    "end": 805
+   },
+   {
+    "start": 806,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      139
+     ]
+    },
+    "end": 806
+   },
+   {
+    "start": 807,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      140
+     ]
+    },
+    "end": 815
+   },
+   {
+    "start": 816,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      140
+     ]
+    },
+    "end": 817
+   },
+   {
+    "start": 818,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      140
+     ]
+    },
+    "end": 818
+   },
+   {
+    "start": 819,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      140
+     ]
+    },
+    "end": 819
+   },
+   {
+    "start": 820,
+    "choice": {
+     "choice": "A",
+     "point": [
+      60,
+      140
+     ]
+    },
+    "end": 820
+   },
+   {
+    "start": 821,
+    "choice": {
+     "choice": "A",
+     "point": [
+      58,
+      140
+     ]
+    },
+    "end": 821
+   },
+   {
+    "start": 822,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      140
+     ]
+    },
+    "end": 822
+   },
+   {
+    "start": 823,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      140
+     ]
+    },
+    "end": 823
+   },
+   {
+    "start": 824,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      141
+     ]
+    },
+    "end": 824
+   },
+   {
+    "start": 825,
+    "choice": {
+     "choice": "A",
+     "point": [
+      50,
+      141
+     ]
+    },
+    "end": 825
+   },
+   {
+    "start": 826,
+    "choice": {
+     "choice": "A",
+     "point": [
+      48,
+      141
+     ]
+    },
+    "end": 826
+   },
+   {
+    "start": 827,
+    "choice": {
+     "choice": "A",
+     "point": [
+      45,
+      141
+     ]
+    },
+    "end": 827
+   },
+   {
+    "start": 828,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      141
+     ]
+    },
+    "end": 828
+   },
+   {
+    "start": 829,
+    "choice": {
+     "choice": "A",
+     "point": [
+      40,
+      142
+     ]
+    },
+    "end": 829
+   },
+   {
+    "start": 830,
+    "choice": {
+     "choice": "A",
+     "point": [
+      37,
+      142
+     ]
+    },
+    "end": 830
+   },
+   {
+    "start": 831,
+    "choice": {
+     "choice": "A",
+     "point": [
+      34,
+      142
+     ]
+    },
+    "end": 831
+   },
+   {
+    "start": 832,
+    "choice": {
+     "choice": "A",
+     "point": [
+      32,
+      142
+     ]
+    },
+    "end": 832
+   },
+   {
+    "start": 833,
+    "choice": {
+     "choice": "A",
+     "point": [
+      30,
+      142
+     ]
+    },
+    "end": 833
+   },
+   {
+    "start": 834,
+    "choice": {
+     "choice": "A",
+     "point": [
+      28,
+      142
+     ]
+    },
+    "end": 834
+   },
+   {
+    "start": 835,
+    "choice": {
+     "choice": "A",
+     "point": [
+      27,
+      142
+     ]
+    },
+    "end": 835
+   },
+   {
+    "start": 836,
+    "choice": {
+     "choice": "A",
+     "point": [
+      26,
+      142
+     ]
+    },
+    "end": 836
+   },
+   {
+    "start": 837,
+    "choice": {
+     "choice": "A",
+     "point": [
+      25,
+      143
+     ]
+    },
+    "end": 837
+   },
+   {
+    "start": 838,
+    "choice": {
+     "choice": "A",
+     "point": [
+      24,
+      143
+     ]
+    },
+    "end": 840
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    508,
+    true
+   ],
+   [
+    559,
+    false
+   ],
+   [
+    647,
+    true
+   ],
+   [
+    709,
+    false
+   ],
+   [
+    806,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "seed": 6500300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed6500300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed6500300_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "difficulty_attr": "xhard4",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, next pick up another container hiding the red cube, finally pick up another container hiding the blue cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 826,
+  "ts_min": 0,
+  "ts_max": 825,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 431
+   },
+   {
+    "start": 432,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <106, 89> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <106, 89> that hides the green cube",
+    "demo": false,
+    "end": 533
+   },
+   {
+    "start": 534,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 584
+   },
+   {
+    "start": 585,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <77, 118> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <77, 120> that hides the red cube",
+    "demo": false,
+    "end": 684
+   },
+   {
+    "start": 685,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 736
+   },
+   {
+    "start": 737,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <91, 144> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <91, 144> that hides the blue cube",
+    "demo": false,
+    "end": 818
+   },
+   {
+    "start": 819,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <91, 144> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <91, 144> that hides the blue cube",
+    "demo": false,
+    "end": 825
+   }
+  ],
+  "demo_last_step": 431,
+  "boundaries": [
+   0,
+   432,
+   534,
+   585,
+   685,
+   737,
+   819
+  ],
+  "choice_runs": [
+   {
+    "start": 432,
+    "choice": {
+     "choice": "A",
+     "point": [
+      103,
+      89
+     ]
+    },
+    "end": 513
+   },
+   {
+    "start": 514,
+    "choice": {
+     "choice": "A",
+     "point": [
+      102,
+      89
+     ]
+    },
+    "end": 514
+   },
+   {
+    "start": 515,
+    "choice": {
+     "choice": "A",
+     "point": [
+      102,
+      88
+     ]
+    },
+    "end": 515
+   },
+   {
+    "start": 516,
+    "choice": {
+     "choice": "A",
+     "point": [
+      101,
+      88
+     ]
+    },
+    "end": 516
+   },
+   {
+    "start": 517,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      88
+     ]
+    },
+    "end": 517
+   },
+   {
+    "start": 518,
+    "choice": {
+     "choice": "A",
+     "point": [
+      99,
+      87
+     ]
+    },
+    "end": 518
+   },
+   {
+    "start": 519,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      86
+     ]
+    },
+    "end": 519
+   },
+   {
+    "start": 520,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      85
+     ]
+    },
+    "end": 520
+   },
+   {
+    "start": 521,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      84
+     ]
+    },
+    "end": 521
+   },
+   {
+    "start": 522,
+    "choice": {
+     "choice": "A",
+     "point": [
+      91,
+      83
+     ]
+    },
+    "end": 522
+   },
+   {
+    "start": 523,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      82
+     ]
+    },
+    "end": 523
+   },
+   {
+    "start": 524,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      80
+     ]
+    },
+    "end": 524
+   },
+   {
+    "start": 525,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      79
+     ]
+    },
+    "end": 525
+   },
+   {
+    "start": 526,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      77
+     ]
+    },
+    "end": 526
+   },
+   {
+    "start": 527,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      76
+     ]
+    },
+    "end": 527
+   },
+   {
+    "start": 528,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      75
+     ]
+    },
+    "end": 528
+   },
+   {
+    "start": 529,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      74
+     ]
+    },
+    "end": 529
+   },
+   {
+    "start": 530,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      74
+     ]
+    },
+    "end": 530
+   },
+   {
+    "start": 531,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      73
+     ]
+    },
+    "end": 531
+   },
+   {
+    "start": 532,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      73
+     ]
+    },
+    "end": 533
+   },
+   {
+    "start": 534,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 584
+   },
+   {
+    "start": 585,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      119
+     ]
+    },
+    "end": 664
+   },
+   {
+    "start": 665,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      119
+     ]
+    },
+    "end": 666
+   },
+   {
+    "start": 667,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      119
+     ]
+    },
+    "end": 667
+   },
+   {
+    "start": 668,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      119
+     ]
+    },
+    "end": 668
+   },
+   {
+    "start": 669,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      119
+     ]
+    },
+    "end": 669
+   },
+   {
+    "start": 670,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      119
+     ]
+    },
+    "end": 670
+   },
+   {
+    "start": 671,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      119
+     ]
+    },
+    "end": 671
+   },
+   {
+    "start": 672,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      119
+     ]
+    },
+    "end": 672
+   },
+   {
+    "start": 673,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      118
+     ]
+    },
+    "end": 673
+   },
+   {
+    "start": 674,
+    "choice": {
+     "choice": "A",
+     "point": [
+      58,
+      118
+     ]
+    },
+    "end": 674
+   },
+   {
+    "start": 675,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      118
+     ]
+    },
+    "end": 675
+   },
+   {
+    "start": 676,
+    "choice": {
+     "choice": "A",
+     "point": [
+      52,
+      118
+     ]
+    },
+    "end": 676
+   },
+   {
+    "start": 677,
+    "choice": {
+     "choice": "A",
+     "point": [
+      50,
+      118
+     ]
+    },
+    "end": 677
+   },
+   {
+    "start": 678,
+    "choice": {
+     "choice": "A",
+     "point": [
+      47,
+      117
+     ]
+    },
+    "end": 678
+   },
+   {
+    "start": 679,
+    "choice": {
+     "choice": "A",
+     "point": [
+      45,
+      117
+     ]
+    },
+    "end": 679
+   },
+   {
+    "start": 680,
+    "choice": {
+     "choice": "A",
+     "point": [
+      43,
+      117
+     ]
+    },
+    "end": 680
+   },
+   {
+    "start": 681,
+    "choice": {
+     "choice": "A",
+     "point": [
+      41,
+      117
+     ]
+    },
+    "end": 681
+   },
+   {
+    "start": 682,
+    "choice": {
+     "choice": "A",
+     "point": [
+      39,
+      117
+     ]
+    },
+    "end": 682
+   },
+   {
+    "start": 683,
+    "choice": {
+     "choice": "A",
+     "point": [
+      38,
+      117
+     ]
+    },
+    "end": 684
+   },
+   {
+    "start": 685,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 736
+   },
+   {
+    "start": 737,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      146
+     ]
+    },
+    "end": 807
+   },
+   {
+    "start": 808,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      146
+     ]
+    },
+    "end": 809
+   },
+   {
+    "start": 810,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      146
+     ]
+    },
+    "end": 810
+   },
+   {
+    "start": 811,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      147
+     ]
+    },
+    "end": 811
+   },
+   {
+    "start": 812,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      147
+     ]
+    },
+    "end": 812
+   },
+   {
+    "start": 813,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      147
+     ]
+    },
+    "end": 813
+   },
+   {
+    "start": 814,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      148
+     ]
+    },
+    "end": 814
+   },
+   {
+    "start": 815,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      148
+     ]
+    },
+    "end": 815
+   },
+   {
+    "start": 816,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      148
+     ]
+    },
+    "end": 816
+   },
+   {
+    "start": 817,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      149
+     ]
+    },
+    "end": 817
+   },
+   {
+    "start": 818,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      149
+     ]
+    },
+    "end": 818
+   },
+   {
+    "start": 819,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      150
+     ]
+    },
+    "end": 819
+   },
+   {
+    "start": 820,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      150
+     ]
+    },
+    "end": 820
+   },
+   {
+    "start": 821,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      151
+     ]
+    },
+    "end": 821
+   },
+   {
+    "start": 822,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      151
+     ]
+    },
+    "end": 822
+   },
+   {
+    "start": 823,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      151
+     ]
+    },
+    "end": 823
+   },
+   {
+    "start": 824,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      151
+     ]
+    },
+    "end": 824
+   },
+   {
+    "start": 825,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      152
+     ]
+    },
+    "end": 825
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    505,
+    true
+   ],
+   [
+    559,
+    false
+   ],
+   [
+    655,
+    true
+   ],
+   [
+    713,
+    false
+   ],
+   [
+    798,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "seed": 6500601,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed6500601.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed6500601_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "difficulty_attr": "xhard4",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 863,
+  "ts_min": 0,
+  "ts_max": 862,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 461
+   },
+   {
+    "start": 462,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <142, 154> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <142, 154> that hides the blue cube",
+    "demo": false,
+    "end": 563
+   },
+   {
+    "start": 564,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 604
+   },
+   {
+    "start": 605,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <107, 107> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <108, 108> that hides the green cube",
+    "demo": false,
+    "end": 705
+   },
+   {
+    "start": 706,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 756
+   },
+   {
+    "start": 757,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <88, 159> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <88, 159> that hides the red cube",
+    "demo": false,
+    "end": 855
+   },
+   {
+    "start": 856,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <88, 159> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <88, 159> that hides the red cube",
+    "demo": false,
+    "end": 862
+   }
+  ],
+  "demo_last_step": 461,
+  "boundaries": [
+   0,
+   462,
+   564,
+   605,
+   706,
+   757,
+   856
+  ],
+  "choice_runs": [
+   {
+    "start": 462,
+    "choice": {
+     "choice": "A",
+     "point": [
+      140,
+      156
+     ]
+    },
+    "end": 463
+   },
+   {
+    "start": 464,
+    "choice": {
+     "choice": "A",
+     "point": [
+      141,
+      156
+     ]
+    },
+    "end": 464
+   },
+   {
+    "start": 465,
+    "choice": {
+     "choice": "A",
+     "point": [
+      140,
+      156
+     ]
+    },
+    "end": 466
+   },
+   {
+    "start": 467,
+    "choice": {
+     "choice": "A",
+     "point": [
+      141,
+      156
+     ]
+    },
+    "end": 467
+   },
+   {
+    "start": 468,
+    "choice": {
+     "choice": "A",
+     "point": [
+      140,
+      156
+     ]
+    },
+    "end": 529
+   },
+   {
+    "start": 530,
+    "choice": {
+     "choice": "A",
+     "point": [
+      141,
+      156
+     ]
+    },
+    "end": 540
+   },
+   {
+    "start": 541,
+    "choice": {
+     "choice": "A",
+     "point": [
+      141,
+      155
+     ]
+    },
+    "end": 546
+   },
+   {
+    "start": 547,
+    "choice": {
+     "choice": "A",
+     "point": [
+      140,
+      155
+     ]
+    },
+    "end": 547
+   },
+   {
+    "start": 548,
+    "choice": {
+     "choice": "A",
+     "point": [
+      140,
+      156
+     ]
+    },
+    "end": 548
+   },
+   {
+    "start": 549,
+    "choice": {
+     "choice": "A",
+     "point": [
+      139,
+      156
+     ]
+    },
+    "end": 549
+   },
+   {
+    "start": 550,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      156
+     ]
+    },
+    "end": 550
+   },
+   {
+    "start": 551,
+    "choice": {
+     "choice": "A",
+     "point": [
+      137,
+      157
+     ]
+    },
+    "end": 551
+   },
+   {
+    "start": 552,
+    "choice": {
+     "choice": "A",
+     "point": [
+      136,
+      157
+     ]
+    },
+    "end": 552
+   },
+   {
+    "start": 553,
+    "choice": {
+     "choice": "A",
+     "point": [
+      135,
+      158
+     ]
+    },
+    "end": 553
+   },
+   {
+    "start": 554,
+    "choice": {
+     "choice": "A",
+     "point": [
+      133,
+      159
+     ]
+    },
+    "end": 554
+   },
+   {
+    "start": 555,
+    "choice": {
+     "choice": "A",
+     "point": [
+      131,
+      161
+     ]
+    },
+    "end": 555
+   },
+   {
+    "start": 556,
+    "choice": {
+     "choice": "A",
+     "point": [
+      128,
+      162
+     ]
+    },
+    "end": 556
+   },
+   {
+    "start": 557,
+    "choice": {
+     "choice": "A",
+     "point": [
+      126,
+      164
+     ]
+    },
+    "end": 557
+   },
+   {
+    "start": 558,
+    "choice": {
+     "choice": "A",
+     "point": [
+      124,
+      165
+     ]
+    },
+    "end": 558
+   },
+   {
+    "start": 559,
+    "choice": {
+     "choice": "A",
+     "point": [
+      122,
+      166
+     ]
+    },
+    "end": 559
+   },
+   {
+    "start": 560,
+    "choice": {
+     "choice": "A",
+     "point": [
+      120,
+      167
+     ]
+    },
+    "end": 560
+   },
+   {
+    "start": 561,
+    "choice": {
+     "choice": "A",
+     "point": [
+      118,
+      168
+     ]
+    },
+    "end": 561
+   },
+   {
+    "start": 562,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      169
+     ]
+    },
+    "end": 562
+   },
+   {
+    "start": 563,
+    "choice": {
+     "choice": "A",
+     "point": [
+      116,
+      169
+     ]
+    },
+    "end": 563
+   },
+   {
+    "start": 564,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 604
+   },
+   {
+    "start": 605,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      109
+     ]
+    },
+    "end": 677
+   },
+   {
+    "start": 678,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      108
+     ]
+    },
+    "end": 685
+   },
+   {
+    "start": 686,
+    "choice": {
+     "choice": "A",
+     "point": [
+      104,
+      108
+     ]
+    },
+    "end": 687
+   },
+   {
+    "start": 688,
+    "choice": {
+     "choice": "A",
+     "point": [
+      103,
+      108
+     ]
+    },
+    "end": 688
+   },
+   {
+    "start": 689,
+    "choice": {
+     "choice": "A",
+     "point": [
+      102,
+      108
+     ]
+    },
+    "end": 689
+   },
+   {
+    "start": 690,
+    "choice": {
+     "choice": "A",
+     "point": [
+      101,
+      108
+     ]
+    },
+    "end": 690
+   },
+   {
+    "start": 691,
+    "choice": {
+     "choice": "A",
+     "point": [
+      99,
+      107
+     ]
+    },
+    "end": 691
+   },
+   {
+    "start": 692,
+    "choice": {
+     "choice": "A",
+     "point": [
+      98,
+      107
+     ]
+    },
+    "end": 692
+   },
+   {
+    "start": 693,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      106
+     ]
+    },
+    "end": 693
+   },
+   {
+    "start": 694,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      106
+     ]
+    },
+    "end": 694
+   },
+   {
+    "start": 695,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      105
+     ]
+    },
+    "end": 695
+   },
+   {
+    "start": 696,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      104
+     ]
+    },
+    "end": 696
+   },
+   {
+    "start": 697,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      103
+     ]
+    },
+    "end": 697
+   },
+   {
+    "start": 698,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      103
+     ]
+    },
+    "end": 698
+   },
+   {
+    "start": 699,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      102
+     ]
+    },
+    "end": 699
+   },
+   {
+    "start": 700,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      101
+     ]
+    },
+    "end": 700
+   },
+   {
+    "start": 701,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      101
+     ]
+    },
+    "end": 701
+   },
+   {
+    "start": 702,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      101
+     ]
+    },
+    "end": 702
+   },
+   {
+    "start": 703,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      100
+     ]
+    },
+    "end": 704
+   },
+   {
+    "start": 705,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      100
+     ]
+    },
+    "end": 705
+   },
+   {
+    "start": 706,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 756
+   },
+   {
+    "start": 757,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      161
+     ]
+    },
+    "end": 842
+   },
+   {
+    "start": 843,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      161
+     ]
+    },
+    "end": 845
+   },
+   {
+    "start": 846,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      161
+     ]
+    },
+    "end": 846
+   },
+   {
+    "start": 847,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      161
+     ]
+    },
+    "end": 847
+   },
+   {
+    "start": 848,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      162
+     ]
+    },
+    "end": 848
+   },
+   {
+    "start": 849,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      162
+     ]
+    },
+    "end": 849
+   },
+   {
+    "start": 850,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      163
+     ]
+    },
+    "end": 850
+   },
+   {
+    "start": 851,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      163
+     ]
+    },
+    "end": 851
+   },
+   {
+    "start": 852,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      164
+     ]
+    },
+    "end": 852
+   },
+   {
+    "start": 853,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      165
+     ]
+    },
+    "end": 853
+   },
+   {
+    "start": 854,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      166
+     ]
+    },
+    "end": 854
+   },
+   {
+    "start": 855,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      167
+     ]
+    },
+    "end": 855
+   },
+   {
+    "start": 856,
+    "choice": {
+     "choice": "A",
+     "point": [
+      60,
+      168
+     ]
+    },
+    "end": 856
+   },
+   {
+    "start": 857,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      168
+     ]
+    },
+    "end": 857
+   },
+   {
+    "start": 858,
+    "choice": {
+     "choice": "A",
+     "point": [
+      55,
+      169
+     ]
+    },
+    "end": 858
+   },
+   {
+    "start": 859,
+    "choice": {
+     "choice": "A",
+     "point": [
+      52,
+      170
+     ]
+    },
+    "end": 859
+   },
+   {
+    "start": 860,
+    "choice": {
+     "choice": "A",
+     "point": [
+      51,
+      170
+     ]
+    },
+    "end": 860
+   },
+   {
+    "start": 861,
+    "choice": {
+     "choice": "A",
+     "point": [
+      49,
+      171
+     ]
+    },
+    "end": 862
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    538,
+    true
+   ],
+   [
+    585,
+    false
+   ],
+   [
+    677,
+    true
+   ],
+   [
+    731,
+    false
+   ],
+   [
+    835,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "seed": 5000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed5000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed5000_FailRecoverZ_easy_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "easy",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 326,
+  "ts_min": 0,
+  "ts_max": 325,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 167
+   },
+   {
+    "start": 168,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <100, 139> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <100, 139> that hides the green cube",
+    "demo": false,
+    "end": 318
+   },
+   {
+    "start": 319,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <100, 139> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <100, 139> that hides the green cube",
+    "demo": false,
+    "end": 325
+   }
+  ],
+  "demo_last_step": 167,
+  "boundaries": [
+   0,
+   168,
+   319
+  ],
+  "choice_runs": [
+   {
+    "start": 168,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      140
+     ]
+    },
+    "end": 303
+   },
+   {
+    "start": 304,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      141
+     ]
+    },
+    "end": 307
+   },
+   {
+    "start": 308,
+    "choice": {
+     "choice": "A",
+     "point": [
+      96,
+      141
+     ]
+    },
+    "end": 308
+   },
+   {
+    "start": 309,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      141
+     ]
+    },
+    "end": 309
+   },
+   {
+    "start": 310,
+    "choice": {
+     "choice": "A",
+     "point": [
+      94,
+      141
+     ]
+    },
+    "end": 310
+   },
+   {
+    "start": 311,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      141
+     ]
+    },
+    "end": 311
+   },
+   {
+    "start": 312,
+    "choice": {
+     "choice": "A",
+     "point": [
+      91,
+      141
+     ]
+    },
+    "end": 312
+   },
+   {
+    "start": 313,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      142
+     ]
+    },
+    "end": 313
+   },
+   {
+    "start": 314,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      142
+     ]
+    },
+    "end": 314
+   },
+   {
+    "start": 315,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      142
+     ]
+    },
+    "end": 315
+   },
+   {
+    "start": 316,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      143
+     ]
+    },
+    "end": 316
+   },
+   {
+    "start": 317,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      143
+     ]
+    },
+    "end": 317
+   },
+   {
+    "start": 318,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      144
+     ]
+    },
+    "end": 318
+   },
+   {
+    "start": 319,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      144
+     ]
+    },
+    "end": 319
+   },
+   {
+    "start": 320,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      145
+     ]
+    },
+    "end": 320
+   },
+   {
+    "start": 321,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      145
+     ]
+    },
+    "end": 321
+   },
+   {
+    "start": 322,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      145
+     ]
+    },
+    "end": 322
+   },
+   {
+    "start": 323,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      146
+     ]
+    },
+    "end": 323
+   },
+   {
+    "start": 324,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      146
+     ]
+    },
+    "end": 324
+   },
+   {
+    "start": 325,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      146
+     ]
+    },
+    "end": 325
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    235,
+    true
+   ],
+   [
+    262,
+    false
+   ],
+   [
+    298,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "seed": 5100,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_1/hdf5_files/VideoUnmaskSwap_ep1_seed5100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_1/videos/VideoUnmaskSwap_ep1_seed5100_FailRecoverZ_easy_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube.mp4"
+  ],
+  "difficulty_attr": "easy",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 326,
+  "ts_min": 0,
+  "ts_max": 325,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 167
+   },
+   {
+    "start": 168,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <105, 116> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <105, 116> that hides the blue cube",
+    "demo": false,
+    "end": 318
+   },
+   {
+    "start": 319,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <105, 116> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <105, 116> that hides the blue cube",
+    "demo": false,
+    "end": 325
+   }
+  ],
+  "demo_last_step": 167,
+  "boundaries": [
+   0,
+   168,
+   319
+  ],
+  "choice_runs": [
+   {
+    "start": 168,
+    "choice": {
+     "choice": "A",
+     "point": [
+      102,
+      117
+     ]
+    },
+    "end": 306
+   },
+   {
+    "start": 307,
+    "choice": {
+     "choice": "A",
+     "point": [
+      101,
+      117
+     ]
+    },
+    "end": 308
+   },
+   {
+    "start": 309,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      117
+     ]
+    },
+    "end": 309
+   },
+   {
+    "start": 310,
+    "choice": {
+     "choice": "A",
+     "point": [
+      99,
+      116
+     ]
+    },
+    "end": 310
+   },
+   {
+    "start": 311,
+    "choice": {
+     "choice": "A",
+     "point": [
+      98,
+      116
+     ]
+    },
+    "end": 311
+   },
+   {
+    "start": 312,
+    "choice": {
+     "choice": "A",
+     "point": [
+      96,
+      116
+     ]
+    },
+    "end": 312
+   },
+   {
+    "start": 313,
+    "choice": {
+     "choice": "A",
+     "point": [
+      94,
+      116
+     ]
+    },
+    "end": 313
+   },
+   {
+    "start": 314,
+    "choice": {
+     "choice": "A",
+     "point": [
+      92,
+      116
+     ]
+    },
+    "end": 314
+   },
+   {
+    "start": 315,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      115
+     ]
+    },
+    "end": 315
+   },
+   {
+    "start": 316,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      115
+     ]
+    },
+    "end": 316
+   },
+   {
+    "start": 317,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      115
+     ]
+    },
+    "end": 317
+   },
+   {
+    "start": 318,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      114
+     ]
+    },
+    "end": 318
+   },
+   {
+    "start": 319,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      114
+     ]
+    },
+    "end": 319
+   },
+   {
+    "start": 320,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      114
+     ]
+    },
+    "end": 320
+   },
+   {
+    "start": 321,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      113
+     ]
+    },
+    "end": 321
+   },
+   {
+    "start": 322,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      113
+     ]
+    },
+    "end": 322
+   },
+   {
+    "start": 323,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      113
+     ]
+    },
+    "end": 323
+   },
+   {
+    "start": 324,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      113
+     ]
+    },
+    "end": 325
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    236,
+    true
+   ],
+   [
+    262,
+    false
+   ],
+   [
+    298,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "seed": 6000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_10/hdf5_files/VideoUnmaskSwap_ep10_seed6000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_10/videos/VideoUnmaskSwap_ep10_seed6000_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube.mp4"
+  ],
+  "difficulty_attr": "medium",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 219,
+  "ts_min": 0,
+  "ts_max": 218,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 113
+   },
+   {
+    "start": 114,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <108, 91> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <108, 91> that hides the blue cube",
+    "demo": false,
+    "end": 210
+   },
+   {
+    "start": 211,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <108, 91> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <108, 91> that hides the blue cube",
+    "demo": false,
+    "end": 218
+   }
+  ],
+  "demo_last_step": 113,
+  "boundaries": [
+   0,
+   114,
+   211
+  ],
+  "choice_runs": [
+   {
+    "start": 114,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      91
+     ]
+    },
+    "end": 189
+   },
+   {
+    "start": 190,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      92
+     ]
+    },
+    "end": 190
+   },
+   {
+    "start": 191,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      91
+     ]
+    },
+    "end": 198
+   },
+   {
+    "start": 199,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      91
+     ]
+    },
+    "end": 200
+   },
+   {
+    "start": 201,
+    "choice": {
+     "choice": "A",
+     "point": [
+      104,
+      91
+     ]
+    },
+    "end": 201
+   },
+   {
+    "start": 202,
+    "choice": {
+     "choice": "A",
+     "point": [
+      103,
+      91
+     ]
+    },
+    "end": 202
+   },
+   {
+    "start": 203,
+    "choice": {
+     "choice": "A",
+     "point": [
+      102,
+      90
+     ]
+    },
+    "end": 203
+   },
+   {
+    "start": 204,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      89
+     ]
+    },
+    "end": 204
+   },
+   {
+    "start": 205,
+    "choice": {
+     "choice": "A",
+     "point": [
+      98,
+      89
+     ]
+    },
+    "end": 205
+   },
+   {
+    "start": 206,
+    "choice": {
+     "choice": "A",
+     "point": [
+      96,
+      88
+     ]
+    },
+    "end": 206
+   },
+   {
+    "start": 207,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      87
+     ]
+    },
+    "end": 207
+   },
+   {
+    "start": 208,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      85
+     ]
+    },
+    "end": 208
+   },
+   {
+    "start": 209,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      84
+     ]
+    },
+    "end": 209
+   },
+   {
+    "start": 210,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      83
+     ]
+    },
+    "end": 210
+   },
+   {
+    "start": 211,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      81
+     ]
+    },
+    "end": 211
+   },
+   {
+    "start": 212,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      80
+     ]
+    },
+    "end": 212
+   },
+   {
+    "start": 213,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      79
+     ]
+    },
+    "end": 213
+   },
+   {
+    "start": 214,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      79
+     ]
+    },
+    "end": 214
+   },
+   {
+    "start": 215,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      78
+     ]
+    },
+    "end": 215
+   },
+   {
+    "start": 216,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      78
+     ]
+    },
+    "end": 216
+   },
+   {
+    "start": 217,
+    "choice": {
+     "choice": "A",
+     "point": [
+      72,
+      77
+     ]
+    },
+    "end": 217
+   },
+   {
+    "start": 218,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      77
+     ]
+    },
+    "end": 218
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    190,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "seed": 6100,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_11/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_11/videos/VideoUnmaskSwap_ep11_seed6100_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "difficulty_attr": "hard",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 410,
+  "ts_min": 0,
+  "ts_max": 409,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 167
+   },
+   {
+    "start": 168,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <140, 142> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <140, 142> that hides the green cube",
+    "demo": false,
+    "end": 266
+   },
+   {
+    "start": 267,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 307
+   },
+   {
+    "start": 308,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <121, 77> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <121, 77> that hides the red cube",
+    "demo": false,
+    "end": 398
+   },
+   {
+    "start": 399,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <121, 77> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <121, 77> that hides the red cube",
+    "demo": false,
+    "end": 409
+   }
+  ],
+  "demo_last_step": 167,
+  "boundaries": [
+   0,
+   168,
+   267,
+   308,
+   399
+  ],
+  "choice_runs": [
+   {
+    "start": 168,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      144
+     ]
+    },
+    "end": 241
+   },
+   {
+    "start": 242,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      145
+     ]
+    },
+    "end": 250
+   },
+   {
+    "start": 251,
+    "choice": {
+     "choice": "A",
+     "point": [
+      137,
+      145
+     ]
+    },
+    "end": 251
+   },
+   {
+    "start": 252,
+    "choice": {
+     "choice": "A",
+     "point": [
+      137,
+      146
+     ]
+    },
+    "end": 252
+   },
+   {
+    "start": 253,
+    "choice": {
+     "choice": "A",
+     "point": [
+      136,
+      146
+     ]
+    },
+    "end": 253
+   },
+   {
+    "start": 254,
+    "choice": {
+     "choice": "A",
+     "point": [
+      135,
+      146
+     ]
+    },
+    "end": 254
+   },
+   {
+    "start": 255,
+    "choice": {
+     "choice": "A",
+     "point": [
+      133,
+      147
+     ]
+    },
+    "end": 255
+   },
+   {
+    "start": 256,
+    "choice": {
+     "choice": "A",
+     "point": [
+      132,
+      148
+     ]
+    },
+    "end": 256
+   },
+   {
+    "start": 257,
+    "choice": {
+     "choice": "A",
+     "point": [
+      130,
+      148
+     ]
+    },
+    "end": 257
+   },
+   {
+    "start": 258,
+    "choice": {
+     "choice": "A",
+     "point": [
+      128,
+      149
+     ]
+    },
+    "end": 258
+   },
+   {
+    "start": 259,
+    "choice": {
+     "choice": "A",
+     "point": [
+      125,
+      150
+     ]
+    },
+    "end": 259
+   },
+   {
+    "start": 260,
+    "choice": {
+     "choice": "A",
+     "point": [
+      123,
+      150
+     ]
+    },
+    "end": 260
+   },
+   {
+    "start": 261,
+    "choice": {
+     "choice": "A",
+     "point": [
+      121,
+      151
+     ]
+    },
+    "end": 261
+   },
+   {
+    "start": 262,
+    "choice": {
+     "choice": "A",
+     "point": [
+      119,
+      152
+     ]
+    },
+    "end": 262
+   },
+   {
+    "start": 263,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      153
+     ]
+    },
+    "end": 263
+   },
+   {
+    "start": 264,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      154
+     ]
+    },
+    "end": 264
+   },
+   {
+    "start": 265,
+    "choice": {
+     "choice": "A",
+     "point": [
+      114,
+      154
+     ]
+    },
+    "end": 265
+   },
+   {
+    "start": 266,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      154
+     ]
+    },
+    "end": 266
+   },
+   {
+    "start": 267,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 307
+   },
+   {
+    "start": 308,
+    "choice": {
+     "choice": "A",
+     "point": [
+      119,
+      77
+     ]
+    },
+    "end": 386
+   },
+   {
+    "start": 387,
+    "choice": {
+     "choice": "A",
+     "point": [
+      118,
+      77
+     ]
+    },
+    "end": 389
+   },
+   {
+    "start": 390,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      76
+     ]
+    },
+    "end": 390
+   },
+   {
+    "start": 391,
+    "choice": {
+     "choice": "A",
+     "point": [
+      116,
+      76
+     ]
+    },
+    "end": 391
+   },
+   {
+    "start": 392,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      75
+     ]
+    },
+    "end": 392
+   },
+   {
+    "start": 393,
+    "choice": {
+     "choice": "A",
+     "point": [
+      113,
+      74
+     ]
+    },
+    "end": 393
+   },
+   {
+    "start": 394,
+    "choice": {
+     "choice": "A",
+     "point": [
+      111,
+      73
+     ]
+    },
+    "end": 394
+   },
+   {
+    "start": 395,
+    "choice": {
+     "choice": "A",
+     "point": [
+      109,
+      71
+     ]
+    },
+    "end": 395
+   },
+   {
+    "start": 396,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      69
+     ]
+    },
+    "end": 396
+   },
+   {
+    "start": 397,
+    "choice": {
+     "choice": "A",
+     "point": [
+      103,
+      67
+     ]
+    },
+    "end": 397
+   },
+   {
+    "start": 398,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      65
+     ]
+    },
+    "end": 398
+   },
+   {
+    "start": 399,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      63
+     ]
+    },
+    "end": 399
+   },
+   {
+    "start": 400,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      61
+     ]
+    },
+    "end": 400
+   },
+   {
+    "start": 401,
+    "choice": {
+     "choice": "A",
+     "point": [
+      92,
+      59
+     ]
+    },
+    "end": 401
+   },
+   {
+    "start": 402,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      57
+     ]
+    },
+    "end": 402
+   },
+   {
+    "start": 403,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      56
+     ]
+    },
+    "end": 403
+   },
+   {
+    "start": 404,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      55
+     ]
+    },
+    "end": 404
+   },
+   {
+    "start": 405,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      54
+     ]
+    },
+    "end": 408
+   },
+   {
+    "start": 409,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      55
+     ]
+    },
+    "end": 409
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    241,
+    true
+   ],
+   [
+    288,
+    false
+   ],
+   [
+    379,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "seed": 5200,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_2/hdf5_files/VideoUnmaskSwap_ep2_seed5200.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_2/videos/VideoUnmaskSwap_ep2_seed5200_FailRecoverZ_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "medium",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 272,
+  "ts_min": 0,
+  "ts_max": 271,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 113
+   },
+   {
+    "start": 114,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <103, 159> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <103, 159> that hides the green cube",
+    "demo": false,
+    "end": 264
+   },
+   {
+    "start": 265,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <103, 159> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <103, 159> that hides the green cube",
+    "demo": false,
+    "end": 271
+   }
+  ],
+  "demo_last_step": 113,
+  "boundaries": [
+   0,
+   114,
+   265
+  ],
+  "choice_runs": [
+   {
+    "start": 114,
+    "choice": {
+     "choice": "A",
+     "point": [
+      101,
+      161
+     ]
+    },
+    "end": 244
+   },
+   {
+    "start": 245,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      160
+     ]
+    },
+    "end": 253
+   },
+   {
+    "start": 254,
+    "choice": {
+     "choice": "A",
+     "point": [
+      99,
+      161
+     ]
+    },
+    "end": 255
+   },
+   {
+    "start": 256,
+    "choice": {
+     "choice": "A",
+     "point": [
+      98,
+      161
+     ]
+    },
+    "end": 256
+   },
+   {
+    "start": 257,
+    "choice": {
+     "choice": "A",
+     "point": [
+      96,
+      162
+     ]
+    },
+    "end": 257
+   },
+   {
+    "start": 258,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      162
+     ]
+    },
+    "end": 258
+   },
+   {
+    "start": 259,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      163
+     ]
+    },
+    "end": 259
+   },
+   {
+    "start": 260,
+    "choice": {
+     "choice": "A",
+     "point": [
+      90,
+      164
+     ]
+    },
+    "end": 260
+   },
+   {
+    "start": 261,
+    "choice": {
+     "choice": "A",
+     "point": [
+      88,
+      165
+     ]
+    },
+    "end": 261
+   },
+   {
+    "start": 262,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      166
+     ]
+    },
+    "end": 262
+   },
+   {
+    "start": 263,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      167
+     ]
+    },
+    "end": 263
+   },
+   {
+    "start": 264,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      168
+     ]
+    },
+    "end": 264
+   },
+   {
+    "start": 265,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      169
+     ]
+    },
+    "end": 265
+   },
+   {
+    "start": 266,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      170
+     ]
+    },
+    "end": 266
+   },
+   {
+    "start": 267,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      171
+     ]
+    },
+    "end": 267
+   },
+   {
+    "start": 268,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      171
+     ]
+    },
+    "end": 268
+   },
+   {
+    "start": 269,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      172
+     ]
+    },
+    "end": 269
+   },
+   {
+    "start": 270,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      172
+     ]
+    },
+    "end": 271
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    182,
+    true
+   ],
+   [
+    208,
+    false
+   ],
+   [
+    244,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "seed": 5300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed5300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed5300_FailRecoverXY_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "difficulty_attr": "hard",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 586,
+  "ts_min": 0,
+  "ts_max": 585,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 215
+   },
+   {
+    "start": 216,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <83, 164> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <83, 164> that hides the blue cube",
+    "demo": false,
+    "end": 332
+   },
+   {
+    "start": 333,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 384
+   },
+   {
+    "start": 385,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <141, 141> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <141, 141> that hides the red cube",
+    "demo": false,
+    "end": 579
+   },
+   {
+    "start": 580,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <141, 141> that hides the red cube",
+    "simple_online": "pick up the container that hides the red cube",
+    "grounded_online": "pick up the container at <141, 141> that hides the red cube",
+    "demo": false,
+    "end": 585
+   }
+  ],
+  "demo_last_step": 215,
+  "boundaries": [
+   0,
+   216,
+   333,
+   385,
+   580
+  ],
+  "choice_runs": [
+   {
+    "start": 216,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      166
+     ]
+    },
+    "end": 299
+   },
+   {
+    "start": 300,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      165
+     ]
+    },
+    "end": 309
+   },
+   {
+    "start": 310,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      166
+     ]
+    },
+    "end": 310
+   },
+   {
+    "start": 311,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      166
+     ]
+    },
+    "end": 312
+   },
+   {
+    "start": 313,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      166
+     ]
+    },
+    "end": 313
+   },
+   {
+    "start": 314,
+    "choice": {
+     "choice": "A",
+     "point": [
+      75,
+      167
+     ]
+    },
+    "end": 314
+   },
+   {
+    "start": 315,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      167
+     ]
+    },
+    "end": 315
+   },
+   {
+    "start": 316,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      168
+     ]
+    },
+    "end": 316
+   },
+   {
+    "start": 317,
+    "choice": {
+     "choice": "A",
+     "point": [
+      69,
+      169
+     ]
+    },
+    "end": 317
+   },
+   {
+    "start": 318,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      169
+     ]
+    },
+    "end": 318
+   },
+   {
+    "start": 319,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      170
+     ]
+    },
+    "end": 319
+   },
+   {
+    "start": 320,
+    "choice": {
+     "choice": "A",
+     "point": [
+      60,
+      171
+     ]
+    },
+    "end": 320
+   },
+   {
+    "start": 321,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      172
+     ]
+    },
+    "end": 321
+   },
+   {
+    "start": 322,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      173
+     ]
+    },
+    "end": 322
+   },
+   {
+    "start": 323,
+    "choice": {
+     "choice": "A",
+     "point": [
+      52,
+      174
+     ]
+    },
+    "end": 323
+   },
+   {
+    "start": 324,
+    "choice": {
+     "choice": "A",
+     "point": [
+      49,
+      175
+     ]
+    },
+    "end": 324
+   },
+   {
+    "start": 325,
+    "choice": {
+     "choice": "A",
+     "point": [
+      47,
+      175
+     ]
+    },
+    "end": 325
+   },
+   {
+    "start": 326,
+    "choice": {
+     "choice": "A",
+     "point": [
+      45,
+      176
+     ]
+    },
+    "end": 326
+   },
+   {
+    "start": 327,
+    "choice": {
+     "choice": "A",
+     "point": [
+      43,
+      176
+     ]
+    },
+    "end": 327
+   },
+   {
+    "start": 328,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      177
+     ]
+    },
+    "end": 328
+   },
+   {
+    "start": 329,
+    "choice": {
+     "choice": "A",
+     "point": [
+      41,
+      177
+     ]
+    },
+    "end": 332
+   },
+   {
+    "start": 333,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 384
+   },
+   {
+    "start": 385,
+    "choice": {
+     "choice": "A",
+     "point": [
+      139,
+      143
+     ]
+    },
+    "end": 468
+   },
+   {
+    "start": 469,
+    "choice": {
+     "choice": "A",
+     "point": [
+      141,
+      141
+     ]
+    },
+    "end": 469
+   },
+   {
+    "start": 470,
+    "choice": {
+     "choice": "A",
+     "point": [
+      142,
+      140
+     ]
+    },
+    "end": 567
+   },
+   {
+    "start": 568,
+    "choice": {
+     "choice": "A",
+     "point": [
+      141,
+      140
+     ]
+    },
+    "end": 570
+   },
+   {
+    "start": 571,
+    "choice": {
+     "choice": "A",
+     "point": [
+      140,
+      140
+     ]
+    },
+    "end": 571
+   },
+   {
+    "start": 572,
+    "choice": {
+     "choice": "A",
+     "point": [
+      139,
+      140
+     ]
+    },
+    "end": 572
+   },
+   {
+    "start": 573,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      141
+     ]
+    },
+    "end": 573
+   },
+   {
+    "start": 574,
+    "choice": {
+     "choice": "A",
+     "point": [
+      137,
+      141
+     ]
+    },
+    "end": 574
+   },
+   {
+    "start": 575,
+    "choice": {
+     "choice": "A",
+     "point": [
+      136,
+      142
+     ]
+    },
+    "end": 575
+   },
+   {
+    "start": 576,
+    "choice": {
+     "choice": "A",
+     "point": [
+      134,
+      142
+     ]
+    },
+    "end": 576
+   },
+   {
+    "start": 577,
+    "choice": {
+     "choice": "A",
+     "point": [
+      132,
+      143
+     ]
+    },
+    "end": 577
+   },
+   {
+    "start": 578,
+    "choice": {
+     "choice": "A",
+     "point": [
+      130,
+      143
+     ]
+    },
+    "end": 578
+   },
+   {
+    "start": 579,
+    "choice": {
+     "choice": "A",
+     "point": [
+      127,
+      144
+     ]
+    },
+    "end": 579
+   },
+   {
+    "start": 580,
+    "choice": {
+     "choice": "A",
+     "point": [
+      125,
+      145
+     ]
+    },
+    "end": 580
+   },
+   {
+    "start": 581,
+    "choice": {
+     "choice": "A",
+     "point": [
+      123,
+      145
+     ]
+    },
+    "end": 581
+   },
+   {
+    "start": 582,
+    "choice": {
+     "choice": "A",
+     "point": [
+      121,
+      146
+     ]
+    },
+    "end": 582
+   },
+   {
+    "start": 583,
+    "choice": {
+     "choice": "A",
+     "point": [
+      120,
+      146
+     ]
+    },
+    "end": 583
+   },
+   {
+    "start": 584,
+    "choice": {
+     "choice": "A",
+     "point": [
+      119,
+      147
+     ]
+    },
+    "end": 584
+   },
+   {
+    "start": 585,
+    "choice": {
+     "choice": "A",
+     "point": [
+      118,
+      147
+     ]
+    },
+    "end": 585
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    300,
+    true
+   ],
+   [
+    362,
+    false
+   ],
+   [
+    469,
+    true
+   ],
+   [
+    503,
+    false
+   ],
+   [
+    560,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "seed": 5400,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_4/hdf5_files/VideoUnmaskSwap_ep4_seed5400.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_4/videos/VideoUnmaskSwap_ep4_seed5400_FailRecoverXY_easy_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "easy",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 365,
+  "ts_min": 0,
+  "ts_max": 364,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 167
+   },
+   {
+    "start": 168,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <98, 131> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <98, 131> that hides the green cube",
+    "demo": false,
+    "end": 357
+   },
+   {
+    "start": 358,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <98, 131> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <98, 131> that hides the green cube",
+    "demo": false,
+    "end": 364
+   }
+  ],
+  "demo_last_step": 167,
+  "boundaries": [
+   0,
+   168,
+   358
+  ],
+  "choice_runs": [
+   {
+    "start": 168,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      133
+     ]
+    },
+    "end": 241
+   },
+   {
+    "start": 242,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      132
+     ]
+    },
+    "end": 243
+   },
+   {
+    "start": 244,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      133
+     ]
+    },
+    "end": 345
+   },
+   {
+    "start": 346,
+    "choice": {
+     "choice": "A",
+     "point": [
+      94,
+      133
+     ]
+    },
+    "end": 347
+   },
+   {
+    "start": 348,
+    "choice": {
+     "choice": "A",
+     "point": [
+      93,
+      134
+     ]
+    },
+    "end": 348
+   },
+   {
+    "start": 349,
+    "choice": {
+     "choice": "A",
+     "point": [
+      92,
+      134
+     ]
+    },
+    "end": 349
+   },
+   {
+    "start": 350,
+    "choice": {
+     "choice": "A",
+     "point": [
+      91,
+      134
+     ]
+    },
+    "end": 350
+   },
+   {
+    "start": 351,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      134
+     ]
+    },
+    "end": 351
+   },
+   {
+    "start": 352,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      134
+     ]
+    },
+    "end": 352
+   },
+   {
+    "start": 353,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      134
+     ]
+    },
+    "end": 353
+   },
+   {
+    "start": 354,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      134
+     ]
+    },
+    "end": 354
+   },
+   {
+    "start": 355,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      135
+     ]
+    },
+    "end": 355
+   },
+   {
+    "start": 356,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      135
+     ]
+    },
+    "end": 356
+   },
+   {
+    "start": 357,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      135
+     ]
+    },
+    "end": 357
+   },
+   {
+    "start": 358,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      135
+     ]
+    },
+    "end": 358
+   },
+   {
+    "start": 359,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      136
+     ]
+    },
+    "end": 359
+   },
+   {
+    "start": 360,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      136
+     ]
+    },
+    "end": 360
+   },
+   {
+    "start": 361,
+    "choice": {
+     "choice": "A",
+     "point": [
+      64,
+      136
+     ]
+    },
+    "end": 361
+   },
+   {
+    "start": 362,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      136
+     ]
+    },
+    "end": 362
+   },
+   {
+    "start": 363,
+    "choice": {
+     "choice": "A",
+     "point": [
+      61,
+      136
+     ]
+    },
+    "end": 364
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    246,
+    true
+   ],
+   [
+    283,
+    false
+   ],
+   [
+    337,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "seed": 5600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed5600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed5600_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "medium",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 278,
+  "ts_min": 0,
+  "ts_max": 277,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 167
+   },
+   {
+    "start": 168,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <82, 100> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <82, 100> that hides the green cube",
+    "demo": false,
+    "end": 266
+   },
+   {
+    "start": 267,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <82, 100> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <82, 100> that hides the green cube",
+    "demo": false,
+    "end": 277
+   }
+  ],
+  "demo_last_step": 167,
+  "boundaries": [
+   0,
+   168,
+   267
+  ],
+  "choice_runs": [
+   {
+    "start": 168,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      101
+     ]
+    },
+    "end": 244
+   },
+   {
+    "start": 245,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      100
+     ]
+    },
+    "end": 245
+   },
+   {
+    "start": 246,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      101
+     ]
+    },
+    "end": 254
+   },
+   {
+    "start": 255,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      101
+     ]
+    },
+    "end": 255
+   },
+   {
+    "start": 256,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      100
+     ]
+    },
+    "end": 256
+   },
+   {
+    "start": 257,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      100
+     ]
+    },
+    "end": 257
+   },
+   {
+    "start": 258,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      100
+     ]
+    },
+    "end": 258
+   },
+   {
+    "start": 259,
+    "choice": {
+     "choice": "A",
+     "point": [
+      74,
+      100
+     ]
+    },
+    "end": 259
+   },
+   {
+    "start": 260,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      99
+     ]
+    },
+    "end": 260
+   },
+   {
+    "start": 261,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      99
+     ]
+    },
+    "end": 261
+   },
+   {
+    "start": 262,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      98
+     ]
+    },
+    "end": 262
+   },
+   {
+    "start": 263,
+    "choice": {
+     "choice": "A",
+     "point": [
+      66,
+      98
+     ]
+    },
+    "end": 263
+   },
+   {
+    "start": 264,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      97
+     ]
+    },
+    "end": 264
+   },
+   {
+    "start": 265,
+    "choice": {
+     "choice": "A",
+     "point": [
+      60,
+      96
+     ]
+    },
+    "end": 265
+   },
+   {
+    "start": 266,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      95
+     ]
+    },
+    "end": 266
+   },
+   {
+    "start": 267,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      95
+     ]
+    },
+    "end": 267
+   },
+   {
+    "start": 268,
+    "choice": {
+     "choice": "A",
+     "point": [
+      51,
+      94
+     ]
+    },
+    "end": 268
+   },
+   {
+    "start": 269,
+    "choice": {
+     "choice": "A",
+     "point": [
+      49,
+      93
+     ]
+    },
+    "end": 269
+   },
+   {
+    "start": 270,
+    "choice": {
+     "choice": "A",
+     "point": [
+      47,
+      93
+     ]
+    },
+    "end": 270
+   },
+   {
+    "start": 271,
+    "choice": {
+     "choice": "A",
+     "point": [
+      45,
+      92
+     ]
+    },
+    "end": 271
+   },
+   {
+    "start": 272,
+    "choice": {
+     "choice": "A",
+     "point": [
+      43,
+      92
+     ]
+    },
+    "end": 272
+   },
+   {
+    "start": 273,
+    "choice": {
+     "choice": "A",
+     "point": [
+      42,
+      92
+     ]
+    },
+    "end": 273
+   },
+   {
+    "start": 274,
+    "choice": {
+     "choice": "A",
+     "point": [
+      41,
+      91
+     ]
+    },
+    "end": 274
+   },
+   {
+    "start": 275,
+    "choice": {
+     "choice": "A",
+     "point": [
+      40,
+      91
+     ]
+    },
+    "end": 277
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    245,
+    true
+   ]
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "seed": 5700,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_7/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_7/videos/VideoUnmaskSwap_ep7_seed5700_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "difficulty_attr": "hard",
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "choices": [
+   {
+    "label": "a",
+    "action": "pick up the container",
+    "need_parameter": true
+   },
+   {
+    "label": "b",
+    "action": "put down the container",
+    "need_parameter": false
+   }
+  ],
+  "n_steps": 421,
+  "ts_min": 0,
+  "ts_max": 420,
+  "segments": [
+   {
+    "start": 0,
+    "simple": "static",
+    "grounded": "static",
+    "simple_online": "static",
+    "grounded_online": "static",
+    "demo": true,
+    "end": 167
+   },
+   {
+    "start": 168,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <119, 163> that hides the blue cube",
+    "simple_online": "pick up the container that hides the blue cube",
+    "grounded_online": "pick up the container at <119, 163> that hides the blue cube",
+    "demo": false,
+    "end": 272
+   },
+   {
+    "start": 273,
+    "simple": "put down the container",
+    "grounded": "put down the container",
+    "simple_online": "put down the container",
+    "grounded_online": "put down the container",
+    "demo": false,
+    "end": 320
+   },
+   {
+    "start": 321,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <88, 102> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <88, 102> that hides the green cube",
+    "demo": false,
+    "end": 413
+   },
+   {
+    "start": 414,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <88, 102> that hides the green cube",
+    "simple_online": "pick up the container that hides the green cube",
+    "grounded_online": "pick up the container at <88, 102> that hides the green cube",
+    "demo": false,
+    "end": 420
+   }
+  ],
+  "demo_last_step": 167,
+  "boundaries": [
+   0,
+   168,
+   273,
+   321,
+   414
+  ],
+  "choice_runs": [
+   {
+    "start": 168,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      165
+     ]
+    },
+    "end": 243
+   },
+   {
+    "start": 244,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      166
+     ]
+    },
+    "end": 244
+   },
+   {
+    "start": 245,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      165
+     ]
+    },
+    "end": 251
+   },
+   {
+    "start": 252,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      166
+     ]
+    },
+    "end": 252
+   },
+   {
+    "start": 253,
+    "choice": {
+     "choice": "A",
+     "point": [
+      116,
+      166
+     ]
+    },
+    "end": 253
+   },
+   {
+    "start": 254,
+    "choice": {
+     "choice": "A",
+     "point": [
+      115,
+      166
+     ]
+    },
+    "end": 254
+   },
+   {
+    "start": 255,
+    "choice": {
+     "choice": "A",
+     "point": [
+      114,
+      167
+     ]
+    },
+    "end": 255
+   },
+   {
+    "start": 256,
+    "choice": {
+     "choice": "A",
+     "point": [
+      112,
+      168
+     ]
+    },
+    "end": 256
+   },
+   {
+    "start": 257,
+    "choice": {
+     "choice": "A",
+     "point": [
+      110,
+      169
+     ]
+    },
+    "end": 257
+   },
+   {
+    "start": 258,
+    "choice": {
+     "choice": "A",
+     "point": [
+      108,
+      170
+     ]
+    },
+    "end": 258
+   },
+   {
+    "start": 259,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      171
+     ]
+    },
+    "end": 259
+   },
+   {
+    "start": 260,
+    "choice": {
+     "choice": "A",
+     "point": [
+      103,
+      173
+     ]
+    },
+    "end": 260
+   },
+   {
+    "start": 261,
+    "choice": {
+     "choice": "A",
+     "point": [
+      100,
+      174
+     ]
+    },
+    "end": 261
+   },
+   {
+    "start": 262,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      176
+     ]
+    },
+    "end": 262
+   },
+   {
+    "start": 263,
+    "choice": {
+     "choice": "A",
+     "point": [
+      94,
+      177
+     ]
+    },
+    "end": 263
+   },
+   {
+    "start": 264,
+    "choice": {
+     "choice": "A",
+     "point": [
+      92,
+      179
+     ]
+    },
+    "end": 264
+   },
+   {
+    "start": 265,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      180
+     ]
+    },
+    "end": 265
+   },
+   {
+    "start": 266,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      181
+     ]
+    },
+    "end": 266
+   },
+   {
+    "start": 267,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      182
+     ]
+    },
+    "end": 267
+   },
+   {
+    "start": 268,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      182
+     ]
+    },
+    "end": 268
+   },
+   {
+    "start": 269,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      182
+     ]
+    },
+    "end": 269
+   },
+   {
+    "start": 270,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      183
+     ]
+    },
+    "end": 270
+   },
+   {
+    "start": 271,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      182
+     ]
+    },
+    "end": 272
+   },
+   {
+    "start": 273,
+    "choice": {
+     "choice": "B",
+     "point": []
+    },
+    "end": 320
+   },
+   {
+    "start": 321,
+    "choice": {
+     "choice": "A",
+     "point": [
+      85,
+      102
+     ]
+    },
+    "end": 398
+   },
+   {
+    "start": 399,
+    "choice": {
+     "choice": "A",
+     "point": [
+      84,
+      102
+     ]
+    },
+    "end": 402
+   },
+   {
+    "start": 403,
+    "choice": {
+     "choice": "A",
+     "point": [
+      83,
+      102
+     ]
+    },
+    "end": 403
+   },
+   {
+    "start": 404,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      102
+     ]
+    },
+    "end": 404
+   },
+   {
+    "start": 405,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      101
+     ]
+    },
+    "end": 405
+   },
+   {
+    "start": 406,
+    "choice": {
+     "choice": "A",
+     "point": [
+      79,
+      101
+     ]
+    },
+    "end": 406
+   },
+   {
+    "start": 407,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      100
+     ]
+    },
+    "end": 407
+   },
+   {
+    "start": 408,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      100
+     ]
+    },
+    "end": 408
+   },
+   {
+    "start": 409,
+    "choice": {
+     "choice": "A",
+     "point": [
+      73,
+      99
+     ]
+    },
+    "end": 409
+   },
+   {
+    "start": 410,
+    "choice": {
+     "choice": "A",
+     "point": [
+      70,
+      99
+     ]
+    },
+    "end": 410
+   },
+   {
+    "start": 411,
+    "choice": {
+     "choice": "A",
+     "point": [
+      68,
+      98
+     ]
+    },
+    "end": 411
+   },
+   {
+    "start": 412,
+    "choice": {
+     "choice": "A",
+     "point": [
+      65,
+      97
+     ]
+    },
+    "end": 412
+   },
+   {
+    "start": 413,
+    "choice": {
+     "choice": "A",
+     "point": [
+      62,
+      96
+     ]
+    },
+    "end": 413
+   },
+   {
+    "start": 414,
+    "choice": {
+     "choice": "A",
+     "point": [
+      59,
+      95
+     ]
+    },
+    "end": 414
+   },
+   {
+    "start": 415,
+    "choice": {
+     "choice": "A",
+     "point": [
+      57,
+      95
+     ]
+    },
+    "end": 415
+   },
+   {
+    "start": 416,
+    "choice": {
+     "choice": "A",
+     "point": [
+      54,
+      94
+     ]
+    },
+    "end": 416
+   },
+   {
+    "start": 417,
+    "choice": {
+     "choice": "A",
+     "point": [
+      53,
+      94
+     ]
+    },
+    "end": 417
+   },
+   {
+    "start": 418,
+    "choice": {
+     "choice": "A",
+     "point": [
+      51,
+      93
+     ]
+    },
+    "end": 418
+   },
+   {
+    "start": 419,
+    "choice": {
+     "choice": "A",
+     "point": [
+      50,
+      93
+     ]
+    },
+    "end": 419
+   },
+   {
+    "start": 420,
+    "choice": {
+     "choice": "A",
+     "point": [
+      49,
+      93
+     ]
+    },
+    "end": 420
+   }
+  ],
+  "completed_last": true,
+  "gripper_close_runs": [
+   [
+    0,
+    false
+   ],
+   [
+    242,
+    true
+   ],
+   [
+    300,
+    false
+   ],
+   [
+    392,
+    true
+   ]
+  ]
+ }
+]

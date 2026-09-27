@@ -1,0 +1,178 @@
+[
+ {
+  "difficulty": "xhard1",
+  "episode": 0,
+  "spec_cube_count": 4,
+  "visible_color_blobs_frame0": 4,
+  "blob_areas": [
+   104,
+   152,
+   133,
+   158
+  ],
+  "hue_deg": 70.0
+ },
+ {
+  "difficulty": "xhard1",
+  "episode": 3,
+  "spec_cube_count": 4,
+  "visible_color_blobs_frame0": 7,
+  "blob_areas": [
+   18,
+   16,
+   16,
+   16,
+   45,
+   50,
+   64
+  ],
+  "hue_deg": 206.1
+ },
+ {
+  "difficulty": "xhard1",
+  "episode": 6,
+  "spec_cube_count": 4,
+  "visible_color_blobs_frame0": 4,
+  "blob_areas": [
+   128,
+   144,
+   184,
+   192
+  ],
+  "hue_deg": 267.7
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 0,
+  "spec_cube_count": 5,
+  "visible_color_blobs_frame0": 6,
+  "blob_areas": [
+   112,
+   163,
+   191,
+   213,
+   221,
+   225
+  ],
+  "hue_deg": 2.2
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 3,
+  "spec_cube_count": 5,
+  "visible_color_blobs_frame0": 5,
+  "blob_areas": [
+   128,
+   146,
+   156,
+   146,
+   199
+  ],
+  "hue_deg": 54.7
+ },
+ {
+  "difficulty": "xhard2",
+  "episode": 6,
+  "spec_cube_count": 5,
+  "visible_color_blobs_frame0": 3,
+  "blob_areas": [
+   20,
+   30,
+   22
+  ],
+  "hue_deg": 207.1
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 0,
+  "spec_cube_count": 6,
+  "visible_color_blobs_frame0": 6,
+  "blob_areas": [
+   100,
+   140,
+   148,
+   176,
+   196,
+   172
+  ],
+  "hue_deg": 274.5
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 3,
+  "spec_cube_count": 6,
+  "visible_color_blobs_frame0": 6,
+  "blob_areas": [
+   136,
+   173,
+   179,
+   187,
+   225,
+   252
+  ],
+  "hue_deg": 43.3
+ },
+ {
+  "difficulty": "xhard3",
+  "episode": 6,
+  "spec_cube_count": 6,
+  "visible_color_blobs_frame0": 6,
+  "blob_areas": [
+   116,
+   132,
+   159,
+   176,
+   162,
+   234
+  ],
+  "hue_deg": 299.5
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 0,
+  "spec_cube_count": 7,
+  "visible_color_blobs_frame0": 7,
+  "blob_areas": [
+   132,
+   104,
+   132,
+   168,
+   184,
+   176,
+   160
+  ],
+  "hue_deg": 253.3
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 3,
+  "spec_cube_count": 7,
+  "visible_color_blobs_frame0": 7,
+  "blob_areas": [
+   96,
+   136,
+   144,
+   142,
+   140,
+   162,
+   196
+  ],
+  "hue_deg": 192.2
+ },
+ {
+  "difficulty": "xhard4",
+  "episode": 6,
+  "spec_cube_count": 7,
+  "visible_color_blobs_frame0": 7,
+  "blob_areas": [
+   136,
+   168,
+   169,
+   197,
+   185,
+   217,
+   233
+  ],
+  "hue_deg": 336.7
+ }
+]

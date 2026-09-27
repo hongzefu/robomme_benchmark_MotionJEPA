@@ -1,0 +1,704 @@
+[
+  {
+    "tier": "hard",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed5300.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed5300_FailRecoverXY_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+    "seed": 5300,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 216,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 333,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 385,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 580,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      332,
+      585,
+      216,
+      333,
+      385
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "hard",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_7/hdf5_files/VideoUnmaskSwap_ep7_seed5700.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_7/videos/VideoUnmaskSwap_ep7_seed5700_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+    "seed": 5700,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 168,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 273,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 321,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 414,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      272,
+      420,
+      168,
+      273,
+      321
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "hard",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_11/hdf5_files/VideoUnmaskSwap_ep11_seed6100.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmaskSwap_episode_11/videos/VideoUnmaskSwap_ep11_seed6100_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+    "seed": 6100,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 168,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 267,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 308,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 399,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      266,
+      409,
+      168,
+      267,
+      308
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard1",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed8500000.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed8500000_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+    "seed": 8500000,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 264,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 366,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 414,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 504,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      365,
+      514,
+      264,
+      366,
+      414
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard1",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed8500300.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed8500300_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+    "seed": 8500300,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 264,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 370,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 418,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 514,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      369,
+      519,
+      264,
+      370,
+      418
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard1",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed8500601.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed8500601_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+    "seed": 8500601,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 264,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 361,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 402,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 489,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      360,
+      495,
+      264,
+      361,
+      402
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard2",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed10500000.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed10500000_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+    "seed": 10500000,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 300,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 404,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 451,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 552,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 593,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 707,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      403,
+      551,
+      716,
+      300,
+      404
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard2",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed10500300.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed10500300_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+    "seed": 10500300,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 300,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 406,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 453,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 555,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 607,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 689,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      405,
+      554,
+      696,
+      300,
+      406
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard2",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed10500600.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed10500600_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+    "seed": 10500600,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the green cube, finally pick up another container hiding the blue cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 300,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 401,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 442,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 556,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 608,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 700,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      400,
+      555,
+      709,
+      300,
+      401
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard3",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed12500000.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed12500000_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+    "seed": 12500000,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 366,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 475,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 526,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 644,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 693,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 776,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      474,
+      643,
+      783,
+      366,
+      475
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard3",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed12500300.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed12500300_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+    "seed": 12500300,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the green cube, next pick up another container hiding the red cube, finally pick up another container hiding the blue cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 330,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 457,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 507,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 616,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 657,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 750,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      456,
+      615,
+      756,
+      330,
+      457
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard3",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed12500600.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed12500600_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+    "seed": 12500600,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the blue cube, finally pick up another container hiding the green cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 330,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 446,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 495,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 606,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 654,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 733,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      445,
+      605,
+      739,
+      330,
+      446
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_0/hdf5_files/VideoUnmaskSwap_ep0_seed6500000.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_0/videos/VideoUnmaskSwap_ep0_seed6500000_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+    "seed": 6500000,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 432,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 536,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 584,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 680,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 732,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 830,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      535,
+      679,
+      840,
+      432,
+      536
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_3/hdf5_files/VideoUnmaskSwap_ep3_seed6500300.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_3/videos/VideoUnmaskSwap_ep3_seed6500300_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+    "seed": 6500300,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the green cube, next pick up another container hiding the red cube, finally pick up another container hiding the blue cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 432,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 534,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 585,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 685,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 737,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 819,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      533,
+      684,
+      825,
+      432,
+      534
+    ],
+    "last_completed": true
+  },
+  {
+    "tier": "xhard4",
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_6/hdf5_files/VideoUnmaskSwap_ep6_seed6500601.h5",
+    "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_6/videos/VideoUnmaskSwap_ep6_seed6500601_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+    "seed": 6500601,
+    "goal": [
+      "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "runs": [
+      {
+        "frame": 0,
+        "subgoal": "static"
+      },
+      {
+        "frame": 462,
+        "subgoal": "pick up the container that hides the blue cube"
+      },
+      {
+        "frame": 564,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 605,
+        "subgoal": "pick up the container that hides the green cube"
+      },
+      {
+        "frame": 706,
+        "subgoal": "put down the container"
+      },
+      {
+        "frame": 757,
+        "subgoal": "pick up the container that hides the red cube"
+      },
+      {
+        "frame": 856,
+        "subgoal": "All tasks completed"
+      }
+    ],
+    "frames": [
+      8,
+      31,
+      63,
+      563,
+      705,
+      862,
+      462,
+      564
+    ],
+    "last_completed": true
+  }
+]

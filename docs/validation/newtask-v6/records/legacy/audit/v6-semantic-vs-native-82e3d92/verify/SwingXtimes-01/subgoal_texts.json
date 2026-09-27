@@ -1,0 +1,699 @@
+{
+  "xhard4_ep0": [
+    {
+      "ts": 0,
+      "field": "simple_subgoal",
+      "text": "pick up the red cube",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 0,
+      "field": "grounded_subgoal",
+      "text": "pick up the red cube at <88, 86>",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 114,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the first time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 114,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the first time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 138,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the first time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 138,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the first time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 185,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the second time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 185,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the second time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 231,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the second time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 231,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the second time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 277,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the third time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 277,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the third time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 322,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the third time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 322,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the third time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 368,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the fourth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 368,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the fourth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 413,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the fourth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 413,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the fourth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 459,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the fifth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 459,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the fifth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 504,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the fifth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 504,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the fifth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 550,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the sixth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 550,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the sixth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 595,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the sixth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 595,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the sixth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 641,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the seventh time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 641,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the seventh time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 686,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the seventh time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 686,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the seventh time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 732,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the eighth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 732,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the eighth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 776,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the eighth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 776,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the eighth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 822,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the ninth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 822,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the ninth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 866,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the ninth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 866,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the ninth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 911,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the tenth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 911,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the tenth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 955,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the tenth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 955,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the tenth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 1000,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the 11th time",
+      "numeric_ordinal_match": "11th",
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1000,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <86, 64> for the 11th time",
+      "numeric_ordinal_match": "11th",
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1044,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the 11th time",
+      "numeric_ordinal_match": "11th",
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1044,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <76, 178> for the 11th time",
+      "numeric_ordinal_match": "11th",
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1089,
+      "field": "simple_subgoal",
+      "text": "put the red cube on the table",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1129,
+      "field": "simple_subgoal",
+      "text": "press the button",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1129,
+      "field": "grounded_subgoal",
+      "text": "press the button at <57, 113>",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1205,
+      "field": "simple_subgoal",
+      "text": "All tasks completed",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    }
+  ],
+  "xhard4_ep6": [
+    {
+      "ts": 0,
+      "field": "simple_subgoal",
+      "text": "pick up the green cube",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 0,
+      "field": "grounded_subgoal",
+      "text": "pick up the green cube at <131, 85>",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 111,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the first time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 153,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the first time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 153,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the first time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 193,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the second time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 193,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the second time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 232,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the second time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 232,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the second time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 271,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the third time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 271,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the third time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 310,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the third time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 310,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the third time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 349,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the fourth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 349,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the fourth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 388,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the fourth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 388,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the fourth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 427,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the fifth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 427,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the fifth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 466,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the fifth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 466,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the fifth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 505,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the sixth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 505,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the sixth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 544,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the sixth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 544,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the sixth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 583,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the seventh time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 583,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the seventh time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 622,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the seventh time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 622,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the seventh time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 661,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the eighth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 661,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the eighth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 700,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the eighth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 700,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the eighth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 739,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the ninth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 739,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the ninth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 778,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the ninth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 778,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the ninth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 817,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the tenth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 817,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the tenth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 856,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the tenth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 856,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the tenth time",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": true
+    },
+    {
+      "ts": 895,
+      "field": "simple_subgoal",
+      "text": "move to the top of the right-side target for the 11th time",
+      "numeric_ordinal_match": "11th",
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 895,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the right-side target at <93, 90> for the 11th time",
+      "numeric_ordinal_match": "11th",
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 934,
+      "field": "simple_subgoal",
+      "text": "move to the top of the left-side target for the 11th time",
+      "numeric_ordinal_match": "11th",
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 934,
+      "field": "grounded_subgoal",
+      "text": "move to the top of the left-side target at <93, 189> for the 11th time",
+      "numeric_ordinal_match": "11th",
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 973,
+      "field": "simple_subgoal",
+      "text": "put the green cube on the table",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1010,
+      "field": "simple_subgoal",
+      "text": "press the button",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1010,
+      "field": "grounded_subgoal",
+      "text": "press the button at <70, 131>",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    },
+    {
+      "ts": 1068,
+      "field": "simple_subgoal",
+      "text": "All tasks completed",
+      "numeric_ordinal_match": null,
+      "has_word_ordinal": false
+    }
+  ]
+}

@@ -1,0 +1,1649 @@
+[
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed10900000.h5",
+    "difficulty": "xhard2",
+    "seed": 10900000,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 108
+      },
+      {
+        "start": 109,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 163
+      },
+      {
+        "start": 164,
+        "demo": true,
+        "subgoal": "static",
+        "end": 549
+      },
+      {
+        "start": 550,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 677
+      },
+      {
+        "start": 678,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 733
+      },
+      {
+        "start": 734,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 811
+      },
+      {
+        "start": 812,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 867
+      },
+      {
+        "start": 868,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 939
+      },
+      {
+        "start": 940,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 999
+      },
+      {
+        "start": 1000,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1079
+      },
+      {
+        "start": 1080,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1119
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 3
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed10900301.h5",
+    "difficulty": "xhard2",
+    "seed": 10900301,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 131
+      },
+      {
+        "start": 132,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 197
+      },
+      {
+        "start": 198,
+        "demo": true,
+        "subgoal": "static",
+        "end": 588
+      },
+      {
+        "start": 589,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 730
+      },
+      {
+        "start": 731,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 799
+      },
+      {
+        "start": 800,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 891
+      },
+      {
+        "start": 892,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 968
+      },
+      {
+        "start": 969,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 1064
+      },
+      {
+        "start": 1065,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1146
+      },
+      {
+        "start": 1147,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1201
+      },
+      {
+        "start": 1202,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1246
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 3
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed10900601.h5",
+    "difficulty": "xhard2",
+    "seed": 10900601,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 117
+      },
+      {
+        "start": 118,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 176
+      },
+      {
+        "start": 177,
+        "demo": true,
+        "subgoal": "static",
+        "end": 568
+      },
+      {
+        "start": 569,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 687
+      },
+      {
+        "start": 688,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 753
+      },
+      {
+        "start": 754,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 828
+      },
+      {
+        "start": 829,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 893
+      },
+      {
+        "start": 894,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 968
+      },
+      {
+        "start": 969,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1031
+      },
+      {
+        "start": 1032,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1084
+      },
+      {
+        "start": 1085,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1127
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 3
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed12900002.h5",
+    "difficulty": "xhard3",
+    "seed": 12900002,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for four times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up four times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube four times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 118
+      },
+      {
+        "start": 119,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 174
+      },
+      {
+        "start": 175,
+        "demo": true,
+        "subgoal": "static",
+        "end": 617
+      },
+      {
+        "start": 618,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 719
+      },
+      {
+        "start": 720,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 769
+      },
+      {
+        "start": 770,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 838
+      },
+      {
+        "start": 839,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 888
+      },
+      {
+        "start": 889,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 957
+      },
+      {
+        "start": 958,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1007
+      },
+      {
+        "start": 1008,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fourth time",
+        "end": 1076
+      },
+      {
+        "start": 1077,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1126
+      },
+      {
+        "start": 1127,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1183
+      },
+      {
+        "start": 1184,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1221
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 4
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed12900302.h5",
+    "difficulty": "xhard3",
+    "seed": 12900302,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for four times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up four times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube four times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 107
+      },
+      {
+        "start": 108,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 151
+      },
+      {
+        "start": 152,
+        "demo": true,
+        "subgoal": "static",
+        "end": 644
+      },
+      {
+        "start": 645,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 761
+      },
+      {
+        "start": 762,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 815
+      },
+      {
+        "start": 816,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 893
+      },
+      {
+        "start": 894,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 947
+      },
+      {
+        "start": 948,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 1024
+      },
+      {
+        "start": 1025,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1078
+      },
+      {
+        "start": 1079,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fourth time",
+        "end": 1154
+      },
+      {
+        "start": 1155,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1208
+      },
+      {
+        "start": 1209,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1262
+      },
+      {
+        "start": 1263,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1300
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 4
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed12900600.h5",
+    "difficulty": "xhard3",
+    "seed": 12900600,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for four times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up four times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube four times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 113
+      },
+      {
+        "start": 114,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 169
+      },
+      {
+        "start": 170,
+        "demo": true,
+        "subgoal": "static",
+        "end": 611
+      },
+      {
+        "start": 612,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 716
+      },
+      {
+        "start": 717,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 766
+      },
+      {
+        "start": 767,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 837
+      },
+      {
+        "start": 838,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 887
+      },
+      {
+        "start": 888,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 958
+      },
+      {
+        "start": 959,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1008
+      },
+      {
+        "start": 1009,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fourth time",
+        "end": 1081
+      },
+      {
+        "start": 1082,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1131
+      },
+      {
+        "start": 1132,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1196
+      },
+      {
+        "start": 1197,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1233
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 4
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed8900000.h5",
+    "difficulty": "xhard1",
+    "seed": 8900000,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 111
+      },
+      {
+        "start": 112,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 169
+      },
+      {
+        "start": 170,
+        "demo": true,
+        "subgoal": "static",
+        "end": 444
+      },
+      {
+        "start": 445,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 559
+      },
+      {
+        "start": 560,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 614
+      },
+      {
+        "start": 615,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 692
+      },
+      {
+        "start": 693,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 746
+      },
+      {
+        "start": 747,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 806
+      },
+      {
+        "start": 807,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 849
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 2
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed8900302.h5",
+    "difficulty": "xhard1",
+    "seed": 8900302,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 119
+      },
+      {
+        "start": 120,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 169
+      },
+      {
+        "start": 170,
+        "demo": true,
+        "subgoal": "static",
+        "end": 387
+      },
+      {
+        "start": 388,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 500
+      },
+      {
+        "start": 501,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 554
+      },
+      {
+        "start": 555,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 629
+      },
+      {
+        "start": 630,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 683
+      },
+      {
+        "start": 684,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 737
+      },
+      {
+        "start": 738,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 780
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 2
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed8900600.h5",
+    "difficulty": "xhard1",
+    "seed": 8900600,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 103
+      },
+      {
+        "start": 104,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 149
+      },
+      {
+        "start": 150,
+        "demo": true,
+        "subgoal": "static",
+        "end": 418
+      },
+      {
+        "start": 419,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 543
+      },
+      {
+        "start": 544,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 601
+      },
+      {
+        "start": 602,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 674
+      },
+      {
+        "start": 675,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 735
+      },
+      {
+        "start": 736,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 809
+      },
+      {
+        "start": 810,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 848
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 2
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed6900003.h5",
+    "difficulty": "xhard4",
+    "seed": 6900003,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for five times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up five times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube five times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 116
+      },
+      {
+        "start": 117,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 175
+      },
+      {
+        "start": 176,
+        "demo": true,
+        "subgoal": "static",
+        "end": 882
+      },
+      {
+        "start": 883,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 987
+      },
+      {
+        "start": 988,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1037
+      },
+      {
+        "start": 1038,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 1106
+      },
+      {
+        "start": 1107,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1156
+      },
+      {
+        "start": 1157,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 1226
+      },
+      {
+        "start": 1227,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1276
+      },
+      {
+        "start": 1277,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fourth time",
+        "end": 1345
+      },
+      {
+        "start": 1346,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1395
+      },
+      {
+        "start": 1396,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fifth time",
+        "end": 1465
+      },
+      {
+        "start": 1466,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1515
+      },
+      {
+        "start": 1516,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1582
+      },
+      {
+        "start": 1583,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1620
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 5
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed6900300.h5",
+    "difficulty": "xhard4",
+    "seed": 6900300,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for six times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up six times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube six times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 112
+      },
+      {
+        "start": 113,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 162
+      },
+      {
+        "start": 163,
+        "demo": true,
+        "subgoal": "static",
+        "end": 815
+      },
+      {
+        "start": 816,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 927
+      },
+      {
+        "start": 928,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 982
+      },
+      {
+        "start": 983,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 1060
+      },
+      {
+        "start": 1061,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1114
+      },
+      {
+        "start": 1115,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 1192
+      },
+      {
+        "start": 1193,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1246
+      },
+      {
+        "start": 1247,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fourth time",
+        "end": 1321
+      },
+      {
+        "start": 1322,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1375
+      },
+      {
+        "start": 1376,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fifth time",
+        "end": 1448
+      },
+      {
+        "start": 1449,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1502
+      },
+      {
+        "start": 1503,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the sixth time",
+        "end": 1575
+      },
+      {
+        "start": 1576,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1629
+      },
+      {
+        "start": 1630,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1680
+      },
+      {
+        "start": 1681,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1714
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 6
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed6900600.h5",
+    "difficulty": "xhard4",
+    "seed": 6900600,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for five times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up five times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube five times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 112
+      },
+      {
+        "start": 113,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 162
+      },
+      {
+        "start": 163,
+        "demo": true,
+        "subgoal": "static",
+        "end": 759
+      },
+      {
+        "start": 760,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 870
+      },
+      {
+        "start": 871,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 930
+      },
+      {
+        "start": 931,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 999
+      },
+      {
+        "start": 1000,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1060
+      },
+      {
+        "start": 1061,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 1129
+      },
+      {
+        "start": 1130,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1190
+      },
+      {
+        "start": 1191,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fourth time",
+        "end": 1260
+      },
+      {
+        "start": 1261,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1316
+      },
+      {
+        "start": 1317,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the fifth time",
+        "end": 1385
+      },
+      {
+        "start": 1386,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 1440
+      },
+      {
+        "start": 1441,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 1512
+      },
+      {
+        "start": 1513,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1552
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 5
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_2/hdf5_files/VideoRepick_ep2_seed9200.h5",
+    "difficulty": "medium",
+    "seed": 9200,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 106
+      },
+      {
+        "start": 107,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 157
+      },
+      {
+        "start": 158,
+        "demo": true,
+        "subgoal": "static",
+        "end": 312
+      },
+      {
+        "start": 313,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 476
+      },
+      {
+        "start": 477,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 528
+      },
+      {
+        "start": 529,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 598
+      },
+      {
+        "start": 599,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 650
+      },
+      {
+        "start": 651,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 718
+      },
+      {
+        "start": 719,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 761
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 2
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_4/hdf5_files/VideoRepick_ep4_seed9400.h5",
+    "difficulty": "easy",
+    "seed": 9400,
+    "goals": [
+      "watch the video carefully, then pick up the same block that was previously picked up again, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up again, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 101
+      },
+      {
+        "start": 102,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 156
+      },
+      {
+        "start": 157,
+        "demo": true,
+        "subgoal": "static",
+        "end": 254
+      },
+      {
+        "start": 255,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 445
+      },
+      {
+        "start": 446,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 496
+      },
+      {
+        "start": 497,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 570
+      },
+      {
+        "start": 571,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 606
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 1
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_0/hdf5_files/VideoRepick_ep0_seed9000.h5",
+    "difficulty": "easy",
+    "seed": 9000,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for two times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up twice, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube twice, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 103
+      },
+      {
+        "start": 104,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 158
+      },
+      {
+        "start": 159,
+        "demo": true,
+        "subgoal": "static",
+        "end": 320
+      },
+      {
+        "start": 321,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 424
+      },
+      {
+        "start": 425,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 474
+      },
+      {
+        "start": 475,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 603
+      },
+      {
+        "start": 604,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 653
+      },
+      {
+        "start": 654,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 720
+      },
+      {
+        "start": 721,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 755
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 2
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_11/hdf5_files/VideoRepick_ep11_seed10102.h5",
+    "difficulty": "hard",
+    "seed": 10102,
+    "goals": [
+      "watch the video carefully, then pick up the same block that was previously picked up again, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up again, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 112
+      },
+      {
+        "start": 113,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 161
+      },
+      {
+        "start": 162,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 273
+      },
+      {
+        "start": 274,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 332
+      },
+      {
+        "start": 333,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 392
+      },
+      {
+        "start": 393,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 433
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 1
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_7/hdf5_files/VideoRepick_ep7_seed9700.h5",
+    "difficulty": "hard",
+    "seed": 9700,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 103
+      },
+      {
+        "start": 104,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 158
+      },
+      {
+        "start": 159,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 262
+      },
+      {
+        "start": 263,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 312
+      },
+      {
+        "start": 313,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 382
+      },
+      {
+        "start": 383,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 432
+      },
+      {
+        "start": 433,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 503
+      },
+      {
+        "start": 504,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 553
+      },
+      {
+        "start": 554,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 616
+      },
+      {
+        "start": 617,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 656
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 3
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_10/hdf5_files/VideoRepick_ep10_seed10000.h5",
+    "difficulty": "medium",
+    "seed": 10000,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 103
+      },
+      {
+        "start": 104,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 155
+      },
+      {
+        "start": 156,
+        "demo": true,
+        "subgoal": "static",
+        "end": 362
+      },
+      {
+        "start": 363,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 478
+      },
+      {
+        "start": 479,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 534
+      },
+      {
+        "start": 535,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 608
+      },
+      {
+        "start": 609,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 664
+      },
+      {
+        "start": 665,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 737
+      },
+      {
+        "start": 738,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 793
+      },
+      {
+        "start": 794,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 847
+      },
+      {
+        "start": 848,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 886
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 3
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_1/hdf5_files/VideoRepick_ep1_seed9100.h5",
+    "difficulty": "easy",
+    "seed": 9100,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 120
+      },
+      {
+        "start": 121,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 175
+      },
+      {
+        "start": 176,
+        "demo": true,
+        "subgoal": "static",
+        "end": 342
+      },
+      {
+        "start": 343,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 453
+      },
+      {
+        "start": 454,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 509
+      },
+      {
+        "start": 510,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 631
+      },
+      {
+        "start": 632,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 688
+      },
+      {
+        "start": 689,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 759
+      },
+      {
+        "start": 760,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 817
+      },
+      {
+        "start": 818,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 893
+      },
+      {
+        "start": 894,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 932
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 3
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed9301.h5",
+    "difficulty": "hard",
+    "seed": 9301,
+    "goals": [
+      "watch the video carefully, then repeatedly pick up and put down the same block that was previously picked up for three times, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up three times, and finally press the button to stop",
+      "watch the video carefully, identify the cube that was picked up, then pick up and place down the same cube three times, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 141
+      },
+      {
+        "start": 142,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 213
+      },
+      {
+        "start": 214,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 355
+      },
+      {
+        "start": 356,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 438
+      },
+      {
+        "start": 439,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the second time",
+        "end": 536
+      },
+      {
+        "start": 537,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 621
+      },
+      {
+        "start": 622,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the third time",
+        "end": 837
+      },
+      {
+        "start": 838,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 931
+      },
+      {
+        "start": 932,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 984
+      },
+      {
+        "start": 985,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 1026
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 3
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoRepick_episode_6/hdf5_files/VideoRepick_ep6_seed9600.h5",
+    "difficulty": "medium",
+    "seed": 9600,
+    "goals": [
+      "watch the video carefully, then pick up the same block that was previously picked up again, finally put it down and press the button to stop",
+      "watch the video carefully, then pick up the same cube that was previously picked up again, finally press the button to stop"
+    ],
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "pick up the cube",
+        "end": 106
+      },
+      {
+        "start": 107,
+        "demo": true,
+        "subgoal": "drop the cube on the table",
+        "end": 157
+      },
+      {
+        "start": 158,
+        "demo": true,
+        "subgoal": "static",
+        "end": 316
+      },
+      {
+        "start": 317,
+        "demo": false,
+        "subgoal": "pick up the correct cube for the first time",
+        "end": 423
+      },
+      {
+        "start": 424,
+        "demo": false,
+        "subgoal": "put it down",
+        "end": 480
+      },
+      {
+        "start": 481,
+        "demo": false,
+        "subgoal": "press the button to finish",
+        "end": 542
+      },
+      {
+        "start": 543,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 580
+      }
+    ],
+    "demo_pick_segments": 1,
+    "exec_pick_segments": 1
+  }
+]

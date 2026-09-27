@@ -1,0 +1,10 @@
+ROUND 0 jobs=48 ok=44 wall_s=1465
+ROUND 1 jobs=2 ok=1 wall_s=292
+ROUND 2 jobs=1 ok=0 wall_s=82
+ROUND 3 jobs=1 ok=1 wall_s=188
+ROUND 4 jobs=1 ok=1 wall_s=228
+ROUND 5 jobs=1 ok=0 wall_s=227
+ROUND 6 jobs=1 ok=0 wall_s=213
+ROUND 7 jobs=1 ok=0 wall_s=189
+ROLLOUT_DONE label=run1 rollout_attempted=56 rollout_ok=47 backfilled=3 selected_shortfall=1
+EXIT_CODE=0

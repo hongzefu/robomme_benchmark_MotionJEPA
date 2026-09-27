@@ -1,0 +1,11251 @@
+[
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 3,
+   "blue": 3
+  },
+  "picks": {
+   "blue": 3,
+   "red": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "blue": [
+    1,
+    2,
+    3
+   ],
+   "red": [
+    1,
+    2,
+    3
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   3,
+   3,
+   0
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   6
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 2,
+   "blue": 1,
+   "green": 3
+  },
+  "picks": {
+   "red": 2,
+   "blue": 1,
+   "green": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1,
+    2
+   ],
+   "blue": [
+    1
+   ],
+   "green": [
+    1,
+    2,
+    3
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   2,
+   1,
+   3
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   6
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 5,
+   "green": 1
+  },
+  "picks": {
+   "red": 5,
+   "green": 1
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "green": [
+    1
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   5,
+   0,
+   1
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   6
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 1,
+   "blue": 6
+  },
+  "picks": {
+   "red": 1,
+   "blue": 6
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1
+   ],
+   "blue": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   1,
+   6,
+   0
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   7,
+   7
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 2,
+   "blue": 3,
+   "green": 2
+  },
+  "picks": {
+   "red": 2,
+   "green": 2,
+   "blue": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1,
+    2
+   ],
+   "green": [
+    1,
+    2
+   ],
+   "blue": [
+    1,
+    2,
+    3
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   2,
+   3,
+   2
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   7,
+   7
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 5,
+   "green": 2
+  },
+  "picks": {
+   "green": 2,
+   "red": 5
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "green": [
+    1,
+    2
+   ],
+   "red": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   5,
+   0,
+   2
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   7,
+   7
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 2,
+   "blue": 6
+  },
+  "picks": {
+   "blue": 6,
+   "red": 2
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "blue": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "red": [
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   2,
+   6,
+   0
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   8
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 6,
+   "green": 2
+  },
+  "picks": {
+   "green": 2,
+   "red": 6
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "green": [
+    1,
+    2
+   ],
+   "red": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   6,
+   0,
+   2
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   8
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 3,
+   "blue": 3,
+   "green": 2
+  },
+  "picks": {
+   "blue": 3,
+   "green": 2,
+   "red": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "blue": [
+    1,
+    2,
+    3
+   ],
+   "green": [
+    1,
+    2
+   ],
+   "red": [
+    1,
+    2,
+    3
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   3,
+   3,
+   2
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   8
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 2,
+   "blue": 7
+  },
+  "picks": {
+   "blue": 7,
+   "red": 2
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "blue": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "red": [
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   2,
+   7,
+   0
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 9,
+  "plan": [
+   9,
+   9
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 1,
+   "blue": 2,
+   "green": 6
+  },
+  "picks": {
+   "red": 1,
+   "blue": 2,
+   "green": 6
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1
+   ],
+   "blue": [
+    1,
+    2
+   ],
+   "green": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   1,
+   2,
+   6
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 9,
+  "plan": [
+   9,
+   9
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 3,
+   "blue": 3,
+   "green": 3
+  },
+  "picks": {
+   "green": 3,
+   "red": 3,
+   "blue": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "green": [
+    1,
+    2,
+    3
+   ],
+   "red": [
+    1,
+    2,
+    3
+   ],
+   "blue": [
+    1,
+    2,
+    3
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_target_numbers",
+  "ok": true,
+  "spec": [
+   3,
+   3,
+   3
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 9,
+  "plan": [
+   9,
+   9
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   5,
+   5
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   5,
+   5
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   5,
+   5
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   9,
+   12
+  ],
+  "n_exec_subgoals": 6
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 10,
+  "plan": [
+   9,
+   12
+  ],
+  "n_exec_subgoals": 9
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 12,
+  "plan": [
+   9,
+   12
+  ],
+  "n_exec_subgoals": 10
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 14,
+  "plan": [
+   13,
+   16
+  ],
+  "n_exec_subgoals": 13
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 14,
+  "plan": [
+   13,
+   16
+  ],
+  "n_exec_subgoals": 12
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 16,
+  "plan": [
+   13,
+   16
+  ],
+  "n_exec_subgoals": 13
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 17,
+  "plan": [
+   17,
+   20
+  ],
+  "n_exec_subgoals": 14
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 17,
+  "plan": [
+   17,
+   20
+  ],
+  "n_exec_subgoals": 16
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 17,
+  "plan": [
+   17,
+   20
+  ],
+  "n_exec_subgoals": 16
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 21,
+  "plan": [
+   21,
+   25
+  ],
+  "n_exec_subgoals": 18
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 21,
+  "plan": [
+   21,
+   25
+  ],
+  "n_exec_subgoals": 15
+ },
+ {
+  "task": "PatternLock",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_nodes",
+  "ok": true,
+  "value": 23,
+  "plan": [
+   21,
+   25
+  ],
+  "n_exec_subgoals": 17
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 4,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 4,
+  "picks": 4
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ],
+  "n_cubes": 7
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 4,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 4,
+  "picks": 4
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ],
+  "n_cubes": 7
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 4,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 4,
+  "picks": 4
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ],
+  "n_cubes": 7
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 5,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 5,
+  "picks": 5
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   5,
+   5
+  ],
+  "n_cubes": 8
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 5,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 5,
+  "picks": 5
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   5,
+   5
+  ],
+  "n_cubes": 8
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 5,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 5,
+  "picks": 5
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   5,
+   5
+  ],
+  "n_cubes": 8
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 6,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 6,
+  "picks": 6
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   6
+  ],
+  "n_cubes": 9
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 6,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 6,
+  "picks": 6
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   6
+  ],
+  "n_cubes": 9
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 6,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 6,
+  "picks": 6
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   6
+  ],
+  "n_cubes": 9
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 7,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 7,
+  "picks": 7
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   7,
+   7
+  ],
+  "n_cubes": 10
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 7,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 7,
+  "picks": 7
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   7,
+   7
+  ],
+  "n_cubes": 10
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "color_suffix_present",
+  "ok": false,
+  "n": 7,
+  "with_suffix": 0
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_highlight_count",
+  "ok": true,
+  "spec": 7,
+  "picks": 7
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   7,
+   7
+  ],
+  "n_cubes": 10
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 6,
+  "subgoal_n": 6
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   6
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 6,
+  "goal": 6
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 7,
+  "subgoal_n": 7
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   7
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 7,
+  "goal": 7
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 6,
+  "subgoal_n": 6
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   6
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 6,
+  "goal": 6
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 9,
+  "subgoal_n": 9
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 9,
+  "goal": 9
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 9,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 9,
+  "subgoal_n": 9
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 9,
+  "goal": 9
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 9,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 9,
+  "subgoal_n": 9
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 9,
+  "goal": 9
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 9,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 11,
+  "subgoal_n": 11
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   11
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 11,
+  "goal": 11
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   10,
+   12
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 11,
+  "subgoal_n": 11
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   11
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 11,
+  "goal": 11
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   10,
+   12
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 11,
+  "subgoal_n": 11
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   11
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 11,
+  "goal": 11
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   10,
+   12
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 14,
+  "subgoal_n": 14
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   14
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 14,
+  "goal": 14
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 14,
+  "plan": [
+   13,
+   15
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 15,
+  "subgoal_n": 15
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   15
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 15,
+  "goal": 15
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 15,
+  "plan": [
+   13,
+   15
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 13,
+  "subgoal_n": 13
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   13
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 13,
+  "goal": 13
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 13,
+  "plan": [
+   13,
+   15
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 10,
+  "plan": [
+   8,
+   10
+  ],
+  "n_exec_subgoals": 8
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 9,
+  "plan": [
+   8,
+   10
+  ],
+  "n_exec_subgoals": 9
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 10,
+  "plan": [
+   8,
+   10
+  ],
+  "n_exec_subgoals": 9
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 13,
+  "plan": [
+   11,
+   13
+  ],
+  "n_exec_subgoals": 11
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   11,
+   13
+  ],
+  "n_exec_subgoals": 11
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 13,
+  "plan": [
+   11,
+   13
+  ],
+  "n_exec_subgoals": 10
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 16,
+  "plan": [
+   14,
+   16
+  ],
+  "n_exec_subgoals": 15
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 14,
+  "plan": [
+   14,
+   16
+  ],
+  "n_exec_subgoals": 12
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 15,
+  "plan": [
+   14,
+   16
+  ],
+  "n_exec_subgoals": 16
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 18,
+  "plan": [
+   17,
+   21
+  ],
+  "n_exec_subgoals": 16
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 18,
+  "plan": [
+   17,
+   21
+  ],
+  "n_exec_subgoals": 15
+ },
+ {
+  "task": "RouteStick",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_L",
+  "ok": true,
+  "value": 18,
+  "plan": [
+   17,
+   21
+  ],
+  "n_exec_subgoals": 16
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 4,
+  "subgoal_n": 4
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   4
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 4,
+  "goal": 4
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 4,
+  "subgoal_n": 4
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   4
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 4,
+  "goal": 4
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 5,
+  "subgoal_n": 5
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   5
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 5,
+  "goal": 5
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 6,
+  "subgoal_n": 6
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   6
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 6,
+  "goal": 6
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 7,
+  "subgoal_n": 7
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   7
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 7,
+  "goal": 7
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 6,
+  "subgoal_n": 6
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   6
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 6,
+  "goal": 6
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 8,
+  "subgoal_n": 8
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   8
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 8,
+  "goal": 8
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 8,
+  "subgoal_n": 8
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   8
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 8,
+  "goal": 8
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 8,
+  "subgoal_n": 8
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   8
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 8,
+  "goal": 8
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 11,
+  "subgoal_n": 11
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": false,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   null
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   11
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 11,
+  "goal": 11
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   10,
+   11
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 10,
+  "subgoal_n": 10
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   10
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 10,
+  "goal": 10
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 10,
+  "plan": [
+   10,
+   11
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 11,
+  "subgoal_n": 11
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": false,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   null
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   11
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 11,
+  "goal": 11
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   10,
+   11
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 3
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 3
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 3
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 4
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 4
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 4
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 5
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 5
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 5
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 6
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 6
+ },
+ {
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_placements_plan",
+  "ok": true,
+  "spec": 6
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 1,
+  "goal": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   2,
+   0,
+   1
+  ],
+  "which": 1,
+  "target_target_id": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   2,
+   0,
+   1
+  ],
+  "which": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   3,
+   2
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   3,
+   2
+  ],
+  "which": 2,
+  "target_target_id": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   3,
+   2
+  ],
+  "which": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   1,
+   2,
+   3
+  ],
+  "which": 3,
+  "target_target_id": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   1,
+   2,
+   3
+  ],
+  "which": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   0,
+   2,
+   3
+  ],
+  "which": 2,
+  "target_target_id": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   0,
+   2,
+   3
+  ],
+  "which": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   2,
+   0,
+   1
+  ],
+  "which": 3,
+  "target_target_id": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   2,
+   0,
+   1
+  ],
+  "which": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   0,
+   1,
+   2
+  ],
+  "which": 3,
+  "target_target_id": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   0,
+   1,
+   2
+  ],
+  "which": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 1,
+  "goal": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   2,
+   0,
+   1
+  ],
+  "which": 1,
+  "target_target_id": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   2,
+   0,
+   1
+  ],
+  "which": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   4,
+   3
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   2,
+   0,
+   3,
+   1
+  ],
+  "which": 3,
+  "target_target_id": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   2,
+   0,
+   3,
+   1
+  ],
+  "which": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   4,
+   3
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 1,
+  "goal": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   2,
+   1,
+   0
+  ],
+  "which": 1,
+  "target_target_id": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   2,
+   1,
+   0
+  ],
+  "which": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   3,
+   4
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 4,
+  "goal": 4
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   0,
+   2,
+   1,
+   3
+  ],
+  "which": 4,
+  "target_target_id": 3
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   0,
+   2,
+   1,
+   3
+  ],
+  "which": 4
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 1,
+  "goal": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "which": 1,
+  "target_target_id": 0
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "which": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_which_in_subset",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "answer_target_is_nth_visit",
+  "ok": true,
+  "visits": [
+   0,
+   1,
+   3,
+   2
+  ],
+  "which": 2,
+  "target_target_id": 1
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "nth_visit_target_unique_in_cube_history",
+  "ok": true,
+  "visits": [
+   0,
+   1,
+   3,
+   2
+  ],
+  "which": 2
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "total_placements_plan",
+  "ok": true,
+  "counts": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 5,
+  "n_swaps": 4
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   3,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 4,
+  "n_swaps": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 5,
+  "n_swaps": 4
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   3,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 7,
+  "n_swaps": 6
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   5,
+   6
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 7,
+  "n_swaps": 6
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   5,
+   6
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 7,
+  "n_swaps": 6
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   5,
+   6
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 8,
+  "n_swaps": 7
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   7,
+   8
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 4,
+  "subgoal_n": 4
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 4,
+  "goal": 4
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 9,
+  "n_swaps": 8
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   7,
+   8
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 4,
+  "subgoal_n": 4
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 4,
+  "goal": 4
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 8,
+  "n_swaps": 7
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   7,
+   8
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 4,
+  "subgoal_n": 4
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 4,
+  "goal": 4
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   4
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 13,
+  "n_swaps": 12
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 12,
+  "plan": [
+   9,
+   12
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 5,
+  "subgoal_n": 5
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   5
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 5,
+  "goal": 5
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   5,
+   6
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": false,
+  "static": 12,
+  "n_swaps": 12
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 12,
+  "plan": [
+   9,
+   12
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 6,
+  "subgoal_n": 6
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   6
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 6,
+  "goal": 6
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   5,
+   6
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "vr_static_eq_swaps_plus1",
+  "ok": true,
+  "static": 11,
+  "n_swaps": 10
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 10,
+  "plan": [
+   9,
+   12
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 5,
+  "subgoal_n": 5
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   5
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_num_repeats",
+  "ok": true,
+  "spec": 5,
+  "goal": 5
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   5,
+   6
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 2,
+  "goal": 2
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 7,
+  "plan": [
+   6,
+   7
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 9,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "red",
+   "blue"
+  ],
+  "subgoal": [
+   "green",
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 8,
+  "plan": [
+   8,
+   9
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   10,
+   12
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "red",
+   "blue"
+  ],
+  "subgoal": [
+   "green",
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 11,
+  "plan": [
+   10,
+   12
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_n_picks",
+  "ok": true,
+  "spec": 3,
+  "goal": 3
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_swaps",
+  "ok": true,
+  "value": 12,
+  "plan": [
+   10,
+   12
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "sixth",
+  "b": "sixth"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "spec_stop_time",
+  "ok": true,
+  "spec": 6,
+  "goal": 6
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 6,
+  "plan": [
+   6,
+   15
+  ]
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "fourteenth",
+  "b": "fourteenth"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "spec_stop_time",
+  "ok": true,
+  "spec": 14,
+  "goal": 14
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 14,
+  "plan": [
+   6,
+   15
+  ]
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "fifteenth",
+  "b": "fifteenth"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "spec_stop_time",
+  "ok": true,
+  "spec": 15,
+  "goal": 15
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "kind": "new",
+  "check": "plan_range",
+  "ok": true,
+  "value": 15,
+  "plan": [
+   6,
+   15
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 2
+  },
+  "picks": {
+   "red": 2
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 1
+  },
+  "picks": {
+   "red": 1
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "green": 3
+  },
+  "picks": {
+   "green": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "green": [
+    1,
+    2,
+    3
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 2,
+   "green": 1
+  },
+  "picks": {
+   "red": 2,
+   "green": 1
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1,
+    2
+   ],
+   "green": [
+    1
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   5
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 2,
+   "green": 2
+  },
+  "picks": {
+   "green": 2,
+   "red": 2
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "green": [
+    1,
+    2
+   ],
+   "red": [
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "blue": 1,
+   "green": 3
+  },
+  "picks": {
+   "green": 3,
+   "blue": 1
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "green": [
+    1,
+    2,
+    3
+   ],
+   "blue": [
+    1
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   3,
+   5
+  ]
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "blue": 2
+  },
+  "picks": {
+   "blue": 2
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "blue": [
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "blue": 3
+  },
+  "picks": {
+   "blue": 3
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "blue": [
+    1,
+    2,
+    3
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal": {
+   "red": 2,
+   "blue": 2
+  },
+  "picks": {
+   "red": 2,
+   "blue": 2
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": {
+   "red": [
+    1,
+    2
+   ],
+   "blue": [
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "plural_forms",
+  "ok": true,
+  "bad": []
+ },
+ {
+  "task": "BinFill",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "plan_range_total",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   3,
+   5
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "green"
+  ],
+  "subgoal": [
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue"
+  ],
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red"
+  ],
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red"
+  ],
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue"
+  ],
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red"
+  ],
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue"
+  ],
+  "subgoal": [
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red",
+   "blue"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red"
+  ],
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   null
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 1,
+  "with_suffix": 1
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   null
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 1,
+  "with_suffix": 1
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 2,
+  "with_suffix": 2
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 3,
+  "with_suffix": 3
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 2,
+  "with_suffix": 2
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 3,
+  "with_suffix": 3
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   null
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 1,
+  "with_suffix": 1
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 2,
+  "with_suffix": 2
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "PickHighlight",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "color_suffix_present",
+  "ok": true,
+  "n": 3,
+  "with_suffix": 3
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 5,
+  "subgoal_n": 5
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   5
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "plan_range",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 4,
+  "subgoal_n": 4
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   4
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "plan_range",
+  "ok": true,
+  "value": 4,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 5,
+  "subgoal_n": 5
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   5
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "plan_range",
+  "ok": true,
+  "value": 5,
+  "plan": [
+   4,
+   5
+  ]
+ },
+ {
+  "task": "PickXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "fourth",
+  "b": "fourth"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "third",
+  "b": "third"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "third",
+  "b": "third"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "third",
+  "b": "third"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "third",
+  "b": "third"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "fourth",
+  "b": "fourth"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "second",
+  "b": "second"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "fourth",
+  "b": "fourth"
+ },
+ {
+  "task": "StopCube",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "alt_ordinals_agree",
+  "ok": true,
+  "a": "fifth",
+  "b": "fifth"
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "plan_range",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 1,
+  "subgoal_n": 1
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": []
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "green",
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "plan_range",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "red",
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "plan_range",
+  "ok": true,
+  "value": 3,
+  "plan": [
+   3,
+   3
+  ]
+ },
+ {
+  "task": "SwingXtimes",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_color_vs_subgoal_color",
+  "ok": true,
+  "goal": "blue",
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 1,
+  "subgoal_n": 1
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": []
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 2,
+  "subgoal_n": 2
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   2
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 1,
+  "subgoal_n": 1
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": []
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 1,
+  "subgoal_n": 1
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": []
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_vs_subgoal_counts",
+  "ok": true,
+  "goal_n": 3,
+  "subgoal_n": 3
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "ordinals_sequential",
+  "ok": true,
+  "ords": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "task": "VideoRepick",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "alt_goal_numbers_agree",
+  "ok": true,
+  "nums": [
+   3
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue"
+  ],
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue"
+  ],
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "red"
+  ],
+  "subgoal": [
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ],
+  "subgoal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue"
+  ],
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 0,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 1,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red"
+  ],
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 10,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 11,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "red"
+  ],
+  "subgoal": [
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 2,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue"
+  ],
+  "subgoal": [
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green",
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 3,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue"
+  ],
+  "subgoal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "easy",
+  "episode": 4,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "green"
+  ],
+  "subgoal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "medium",
+  "episode": 6,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "green"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_colors_vs_subgoal_colors",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red"
+  ],
+  "subgoal": [
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "goal_colors_distinct",
+  "ok": true,
+  "goal": [
+   "blue",
+   "red"
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "difficulty": "hard",
+  "episode": 7,
+  "kind": "native",
+  "check": "plan_range_picks",
+  "ok": true,
+  "value": 2,
+  "plan": [
+   2,
+   2
+  ]
+ }
+]

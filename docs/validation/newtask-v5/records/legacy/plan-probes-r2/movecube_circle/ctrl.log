@@ -1,0 +1,39 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+DEMOR2 seed=5400000 way=peg_push ok=True steps=444    20.4s
+DEMOR2 seed=5400100 way=grasp_putdown ok=True steps=261    12.2s
+DEMOR2 seed=5400200 way=grasp_putdown ok=True steps=450    20.5s
+DEMOR2 seed=5400300 way=gripper_push ok=True steps=281    13.9s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+DEMOR2 seed=5400400 way=grasp_putdown ok=False steps=None task DatasetGenerationError MoveCube/episode_4: 跑完整个 task_list 仍未成功 30.6s
+DEMOR2 seed=5400500 way=peg_push ok=False steps=None task DatasetGenerationError MoveCube/episode_5: 跑完整个 task_list 仍未成功 14.0s
+screw plan failed
+screw plan failed
+screw plan failed
+DEMOR2 seed=5400600 way=peg_push ok=True steps=497    23.8s
+DEMOR2 seed=5400700 way=grasp_putdown ok=True steps=421    18.4s
+DEMOR2 seed=5400800 way=gripper_push ok=True steps=414    18.1s
+DEMOR2 seed=5400900 way=peg_push ok=True steps=437    19.0s
+DEMOR2 seed=5400001 way=gripper_push ok=True steps=449    19.4s
+DEMOR2 seed=5400005 way=peg_push ok=True steps=420    45.2s
+DEMOR2 seed=5400002 way=grasp_putdown ok=True steps=279    32.0s
+DEMOR2 seed=5400003 way=peg_push ok=True steps=440    50.7s
+DEMOR2 seed=5400004 way=peg_push ok=True steps=253    31.2s
+DEMOR2 seed=5400006 way=peg_push ok=True steps=449    50.3s
+DEMOR2 seed=5400007 way=gripper_push ok=True steps=490    54.6s
+DEMOR2 seed=5400008 way=gripper_push ok=True steps=432    50.7s
+DEMOR2 seed=5400009 way=peg_push ok=True steps=265    31.9s
+DEMOR2 seed=5400010 way=peg_push ok=True steps=942    102.3s
+DEMOR2 seed=5400011 way=peg_push ok=True steps=266    31.7s
+DEMOR2 seed=5400012 way=gripper_push ok=True steps=263    30.4s
+DEMOR2 seed=5400013 way=peg_push ok=True steps=438    50.5s
+DEMOR2 seed=5400014 way=peg_push ok=True steps=432    50.0s
+DEMOR2_DONE
+EXIT_CODE=0

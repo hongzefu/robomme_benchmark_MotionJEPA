@@ -1,0 +1,20 @@
+src lines with quoted xhard (' or "):
+143
+src robomme_env/*.py only:
+134
+src outside robomme_env:
+== scripts lines:
+scripts/parity/v4_demo_probe.py:36:    parser.add_argument("--difficulty", default="xhard")
+scripts/parity/v4_specs.py:64:DIFFICULTY = "xhard"
+scripts/generate_dataset_newseed.py:572:            task_parameters["configs"]["xhard"] = _assigned_literal(class_def, "config_xhard")
+scripts/parity/v4_combos.py:56:    configs["xhard"] = {**configs["xhard"], "length": [length, length]}
+scripts/parity/v4_combos.py:168:        job = gen.EpisodeJob(task=task, episode=9, attempt=0, seed=seed, difficulty="xhard",
+scripts/injection/candidates/specs.py:93:    ("RouteStick", "xhard"),
+scripts/injection/candidates/specs.py:94:    ("VideoUnmaskSwap", "xhard"),
+scripts/injection/candidates/specs.py:95:    ("VideoRepick", "xhard"),
+scripts/injection/candidates/specs.py:102:    ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"), ("RouteStick", "xhard"),
+scripts/injection/candidates/specs.py:103:    ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"), ("VideoUnmaskSwap", "xhar
+scripts/injection/candidates/specs.py:104:    ("VideoRepick", "easy"), ("VideoRepick", "medium"), ("VideoRepick", "xhard"),
+scripts/injection/rollout/windows.py:33:    ("RouteStick", "easy"), ("RouteStick", "medium"), ("RouteStick", "hard"), ("RouteStick", "xhard"),
+scripts/injection/rollout/windows.py:34:    ("VideoUnmaskSwap", "easy"), ("VideoUnmaskSwap", "medium"), ("VideoUnmaskSwap", "hard"), ("VideoUnmaskSwap", "xhard"
+scripts/injection/rollout/windows.py:35:    ("VideoRepick", "easy"), ("VideoRepick", "medium"), ("VideoRepick", "xhard"),

@@ -1,0 +1,6 @@
+ROW {"task": "VideoUnmask", "mode": "v4", "seed": 910000, "reset_s": 2.3, "n_distractors": 3, "n_dcubes": 1, "step_ms_reveal_0_31": 38.4, "step_ms_after_33_71": 9.0, "max_xy_err_after_reveal_mm": 0.03, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+SIM_DONE VideoUnmask v4
+ROW {"task": "ButtonUnmask", "mode": "v4", "seed": 910000, "reset_s": 2.1, "n_distractors": 3, "n_dcubes": 2, "step_ms_reveal_0_31": 44.8, "step_ms_after_33_71": 5.3, "max_xy_err_after_reveal_mm": 0.05, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+SIM_DONE ButtonUnmask v4
+ROW {"task": "VideoUnmaskSwap", "mode": "v4", "seed": 910000, "reset_s": 15.5, "n_distractors": 3, "n_dcubes": 1, "step_ms_reveal_0_31": 25.3, "step_ms_after_33_71": 49.8, "max_xy_err_after_reveal_mm": 28.08, "z_range": [0.052, 0.0534], "ok": true, "distractor_spec": "..."}
+SIM_DONE VideoUnmaskSwap v4

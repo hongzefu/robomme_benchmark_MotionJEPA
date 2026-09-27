@@ -1,0 +1,35 @@
+{
+  "id": "VideoPlaceButton-xhard4-7000100",
+  "task": "VideoPlaceButton",
+  "difficulty": "xhard4",
+  "seed": 7000100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceButton.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 84.778,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "VideoPlaceButton",
+      "seed": 7000100,
+      "difficulty": "xhard4",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 80.3,
+      "timesteps": 1822
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoPlaceButton-xhard4-7000100/hdf5_files/VideoPlaceButton_ep9_seed7000100.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoPlaceButton-xhard4-7000100/videos/VideoPlaceButton_ep9_seed7000100_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4",
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoPlaceButton-xhard4-7000100/videos/success_NO_OBJECT_VideoPlaceButton_ep9_seed7000100_xhard4_watch_the_video_carefully_then_place_the_green_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_green_cube_o__HASH__b0b59c38a4ad.mp4"
+  ]
+}

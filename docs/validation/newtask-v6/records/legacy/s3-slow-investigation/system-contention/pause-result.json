@@ -1,0 +1,818 @@
+{
+  "paused_seconds": 30.001303672790527,
+  "summary": {
+    "before": {
+      "samples": 10,
+      "driver_lock_samples": 7,
+      "running_samples": 3,
+      "cpu_seconds": 0.95,
+      "wall_seconds": 4.505436897277832
+    },
+    "paused": {
+      "samples": 60,
+      "driver_lock_samples": 1,
+      "running_samples": 55,
+      "cpu_seconds": 27.1,
+      "wall_seconds": 29.527398586273193
+    },
+    "after": {
+      "samples": 16,
+      "driver_lock_samples": 12,
+      "running_samples": 4,
+      "cpu_seconds": 1.8,
+      "wall_seconds": 7.509989023208618
+    }
+  },
+  "samples": [
+    {
+      "time": 1790469203.9359388,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 187449,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469204.4366448,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 187462,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469204.9370685,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187469,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469205.4378083,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 187481,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469205.938531,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 187494,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469206.4389763,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187507,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469206.9397242,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 187514,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469207.4404655,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 187526,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469207.9409308,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 187539,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469208.4413757,
+      "phase": "before",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187544,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469208.9379246,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 187555,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469209.4384274,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187575,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469209.9389074,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187626,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469210.439431,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187676,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469210.9399,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187725,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469211.440368,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187776,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469211.9408002,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187826,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469212.441322,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187875,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469212.9417872,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187925,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469213.442252,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 187975,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469213.9427412,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188025,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469214.4432414,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188075,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469214.94374,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188125,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469215.444257,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188175,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469215.9446905,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188225,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469216.4451418,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188276,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469216.9455802,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188326,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469217.446041,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188376,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469217.946472,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "S",
+      "starttime": "2043179066",
+      "cpu_ticks": 188410,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469218.4467797,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "S",
+      "starttime": "2043179066",
+      "cpu_ticks": 188427,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469218.9471972,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "S",
+      "starttime": "2043179066",
+      "cpu_ticks": 188444,
+      "wchan": "pipe_write"
+    },
+    {
+      "time": 1790469219.4476893,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188458,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469219.9481766,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188508,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469220.4486609,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188558,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469220.9491324,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188614,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469221.4496143,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188665,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469221.9500926,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188714,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469222.4504993,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188765,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469222.9509618,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188814,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469223.4514353,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188865,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469223.951933,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188914,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469224.452407,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 188965,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469224.952871,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189015,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469225.4533463,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189065,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469225.9538352,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189115,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469226.4543345,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189165,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469226.954798,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189215,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469227.4552624,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189265,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469227.9557493,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189315,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469228.4562056,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189365,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469228.9566712,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189415,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469229.4570715,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189465,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469229.9575498,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189515,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469230.4580238,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189565,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469230.958515,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189615,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469231.4589143,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189665,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469231.959385,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189715,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469232.4598408,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189765,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469232.9603367,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189815,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469233.4607902,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189865,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469233.9612734,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189914,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469234.4617743,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 189965,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469234.9622116,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190015,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469235.4626594,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190066,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469235.9631667,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190115,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469236.4634647,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "S",
+      "starttime": "2043179066",
+      "cpu_ticks": 190131,
+      "wchan": "pipe_write"
+    },
+    {
+      "time": 1790469236.963841,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190148,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469237.4643588,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190166,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469237.9648237,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190216,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469238.4653232,
+      "phase": "paused",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190265,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469238.9384263,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190319,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469239.4391606,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190335,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469239.939865,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190352,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469240.4403489,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190357,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469240.9410586,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190375,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469241.4415772,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190387,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469241.9422562,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190394,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469242.442937,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190408,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469242.9436185,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190420,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469243.4443295,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190427,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469243.9450333,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190440,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469244.4457312,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190453,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469244.9461372,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "R",
+      "starttime": "2043179066",
+      "cpu_ticks": 190464,
+      "wchan": "0"
+    },
+    {
+      "time": 1790469245.4468863,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190473,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469245.9476628,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190486,
+      "wchan": "os_acquire_rwlock_write"
+    },
+    {
+      "time": 1790469246.4484153,
+      "phase": "after",
+      "pid": 1843953,
+      "state": "D",
+      "starttime": "2043179066",
+      "cpu_ticks": 190499,
+      "wchan": "os_acquire_rwlock_write"
+    }
+  ],
+  "restored": {
+    "1275035": {
+      "pid": 1275035,
+      "state": "S",
+      "starttime": "2042338906",
+      "cpu_ticks": 5866,
+      "wchan": "pipe_read"
+    },
+    "1488784": {
+      "pid": 1488784,
+      "state": "S",
+      "starttime": "2042560089",
+      "cpu_ticks": 6329,
+      "wchan": "pipe_read"
+    }
+  }
+}

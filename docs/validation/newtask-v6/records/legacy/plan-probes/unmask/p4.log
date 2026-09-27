@@ -1,0 +1,4 @@
+P4 task=VideoUnmask layouts=300 N10=1.000 N12=1.000 N14=1.000 N16=1.000 N18=0.950 N20=0.583 N22=0.093 N24=0.000 N26=0.000 N28=0.000 N30=0.000 sat_min=16 sat_p5=17 sat_med=20 sat_max=23 wall=181s
+P4 task=ButtonUnmask layouts=300 N10=1.000 N12=1.000 N14=1.000 N16=0.997 N18=0.913 N20=0.480 N22=0.080 N24=0.003 N26=0.000 N28=0.000 N30=0.000 sat_min=16 sat_p5=17 sat_med=19 sat_max=23 wall=143s
+P4 task=VideoUnmaskSwap layouts=300 N10=1.000 N12=1.000 N14=1.000 N16=1.000 N18=1.000 N20=1.000 N22=1.000 N24=1.000 N26=1.000 N28=1.000 N30=0.977 sat_min=29 sat_p5=31 sat_med=33 sat_max=39 wall=42s
+P4 task=ButtonUnmaskSwap layouts=300 N10=1.000 N12=1.000 N14=1.000 N16=1.000 N18=1.000 N20=1.000 N22=1.000 N24=1.000 N26=1.000 N28=0.997 N30=0.943 sat_min=27 sat_p5=29 sat_med=33 sat_max=38 wall=34s

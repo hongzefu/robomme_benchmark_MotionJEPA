@@ -1,0 +1,29 @@
+{
+  "id": "VideoUnmaskSwap-xhard3-12500200",
+  "task": "VideoUnmaskSwap",
+  "difficulty": "xhard3",
+  "seed": 12500200,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json",
+  "command": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+    "-m",
+    "scripts.parity.v4_demo_probe",
+    "--task",
+    "VideoUnmaskSwap",
+    "--difficulty",
+    "xhard3",
+    "--seeds",
+    "12500200",
+    "--episode",
+    "9",
+    "--sampling-config",
+    "artifacts/newtask-v6/s2-prep/sampling/VideoUnmaskSwap.json",
+    "--gpu",
+    "1",
+    "--out",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/VideoUnmaskSwap-xhard3-12500200"
+  ],
+  "started_at": 1790458804.7553942,
+  "gpu": "1"
+}

@@ -1,0 +1,310 @@
+- marker: [内部产出，英文] 以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。
+- topic_key: binfill_cluster
+- summary: I rebuilt the BinFill xhard clutter sampler in plain torch and numpy (no simulator). It reproduces all 10 frozen V4 BinFill candidates bit for bit: every meta value plus all 120 cube (x, y, yaw) values. I then used it to generate 3000 V4 layouts and 3000 counterfactual layouts. Placement works like this: each cube's candidate position is drawn uniformly in the rectangle x∈[-0.28,0.08], y∈[-0.23,0.23] and rejected if it hits the button, the board or an earlier cube. So within one episode each cube is uniform over the free area that is left. Pooled over episodes it is not uniform over the rectangle. The button and board take about 34% of the area on average. Cell density ranges from 0.65 to 1.38 of the uniform level (KS p<1e-43 on 36000 cubes). Edges and corners are 20-46% denser than uniform, a normal side effect of packing non-overlapping cubes one by one, and the band where the button usually sits is about 30% emptier. Colour is independent of position. Colours are fixed before placement, but the spawn order is a random permutation. In 2000 simulated layouts the clustering permutation tests fire at the nominal rate (4.9% at α=0.05, mean z=+0.02). A test on spawn order (first 4 spawned vs the rest) shows no spatial segregation (5.0%, z=+0.005). The red clump in episode 3 comes from three things: 7 of 12 cubes are red (P(majority colour ≥7)=22%), the button and board leave a strip along the back edge that the reds fill, and chance. After correcting for picking the colour and the axis, the episode is at p=0.0086, which about 4.0% of V4 episodes reach or exceed. The chance that at least one of the 3 selected episodes looks like this is 11.5%. The clump also looks tighter because of a real bug. For 66.45% of placed cubes, the 2D obstacle box computed from the trimesh bounding box collapses into a 4 cm line segment, so the 2 cm min_gap is not enforced against them. 23.3% of cubes sit closer than 2 cm to a neighbour; in episode 3, red_0 and red_2 are 8.4 mm apart. Recommendation for V5 (xhard only): (A) block placed cubes with their true cube box, which removes all min_gap violations, and (B) after placing all 12 slots, re-shuffle the colour assignment (extra draws appended after placement) until no same-colour group linked at under 9 cm has more than 3 cubes. At T=3 only 3.8% of layouts need a re-shuffle (mean 0.047 re-shuffles, 0 failures in 3000) and groups of 4 or more disappear. Simply shuffling colours after placement or interleaving the spawn order changes nothing statistically, because V4 already does the equivalent.
+## current_mechanism
+  [0]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/BinFill.py :: BinFill.config_xhard / configs['xhard']
+    - behavior: xhard = {color 3, spawn_cubes [12,12], put_in_color [2,3], put_in_numbers [5,7], layout_mode 'clutter'}. Region, spacing and button/board are inherited from hard unchanged (V4 B1/J6).
+  [1]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/BinFill.py :: BinFill.__init__ (xhard branch, XHARD_LAYOUT_DYNAMIC)
+    - behavior: torch.Generator().manual_seed(seed). xhard does NOT draw the `dynamic` randint (fixed False, D6), so the xhard stream starts with the button draw. Records layout.mode='clutter' and layout.dynamic=false.
+  [2]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/BinFill.py :: BinFill._load_scene (button) + utils/object_generation.py :: build_button / create_button_obb; NATIVE_SAMPLING.positions.button
+    - behavior: Draws torch.rand(2): centre = [-0.2,0] + (u-0.5)*[0.1,0.4], so x∈[-0.25,-0.15], y∈[-0.2,0.2]. That is fully inside the cube region. The avoid OBB is axis-aligned with half 0.025*1.5*1.5 = 0.05625 and no pad. Spec key layout.button_xy.
+  [3]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/BinFill.py :: BinFill._load_scene (board) + utils/object_generation.py :: build_board_with_hole; spawn_random_cube::_push_actor_as_obb2d (_board_side special case); NATIVE_SAMPLING.positions.board
+    - behavior: Three torch.rand(1) draws: x = 0.15 + (u*0.2-0.2) ∈ [-0.05,0.15], y ∈ [-0.2,0.2], yaw ∈ ±20°. Spec key layout.board.offsets. Obstacle = 4 axis-aligned strips of a 0.1 m board with a 0.08 m hole (board yaw ignored; the 0.02 min_gap pad still covers the ≤14 mm corner overhang). The hole interior is not an obstacle, but a padded cube cannot fit inside it.
+  [4]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/BinFill.py :: BinFill._load_scene (colour quota); spec objects.color_pool / put_in_color / target_numbers / spawn_numbers
+    - behavior: Draw order: color_pool = randperm(3). put_in_color = randint[2,3]. total_target = randint[5,7], each target unit assigned by randint over the active colours. total_spawn = randint[12,12]. Each colour in the pool gets max(target, 1). The remaining spawns go one at a time to randint(0,3) over the pool. Measured majority-colour count over 3000 layouts: 4:5.9%, 5:39.7%, 6:32.3%, 7:16.4%, 8:4.5%, 9:1.1%, so P(≥7) = 22.1%. Episode 3 has [7 red, 1 blue, 4 green].
+  [5]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/BinFill.py :: BinFill._load_scene (cube_tasks + objects.spawn_order)
+    - behavior: Colours are fixed BEFORE placement. cube_tasks is built grouped by colour (red_0..red_{n-1}, then blue_*, then green_*) and permuted by objects.spawn_order = torch.randperm(12). So the spawn order interleaves colours at random; it does NOT spawn all reds first. Each cube's colour is baked into actors.build_cube at spawn time. Episode 3 order: green_2, green_3, green_0, green_1, red_6, red_3, red_4, red_0, red_1, blue_0, red_5, red_2 (all 4 greens first: chance 1/495).
+  [6]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/utils/object_generation.py :: spawn_random_cube (trial loop, max_trials=256)
+    - behavior: Each trial draws u1, u2, yaw_u (3 torch.rand calls, always, even when the trial is rejected): x = x_low + u1*(x_high-x_low) with centre-feasible x∈[-0.28,0.08] (region_center [-0.1,0], half [0.2,0.25] shrunk by half_size 0.02), and y likewise ∈ [-0.23,0.23]. yaw = 2π*yaw_u. corner_bias = 0 for BinFill. The candidate OBB has half 0.02 + min_gap 0.02 = 0.04. It is rejected on SAT intersection (_obb2d_intersect, touching counts as a hit) with any obstacle. There is no dependence on earlier objects other than rejection: this is plain random sequential adsorption. include_existing=False and include_goal=False; earlier cubes enter only through `avoid`, since _load_scene appends each actor. The accepted [x,y,yaw] is recorded at layout.cubes.<color>_<idx>. Measured: mean 3.12 trials per cube, p99 17, max 75; 0/3000 layouts failed to place 12 cubes.
+  [7]
+    - env: BinFill (and every env passing actors to spawn_random_* avoid)
+    - anchor: src/robomme/robomme_env/utils/object_generation.py :: _push_actor_as_obb2d -> mani_skill ... base_motionplanner/utils.py :: get_actor_obb -> object_generation.py :: _trimesh_box_to_obb2d / _safe_unit
+    - behavior: BUG: a placed cube's obstacle box comes from trimesh's `bounding_box_oriented`, whose axis order is arbitrary for a cube. When world-z lands in column 0 or 1, R[:2,col] ≈ 0, _safe_unit returns the ~zero vector unchanged, and the 2D obstacle collapses to a 4 cm line segment. min_gap is then not enforced across that axis. Measured on BinFill xhard: 23922/36000 = 66.45% of placed cubes (≈2/3, i.e. a random axis order); in the real simulator for seed 4400100, 5/11. The V4 G2 report (docs/validation/newtask-v4/20260922-step0-g2-capacity.md, item 3) already flagged this for VideoRepick; it was left unfixed.
+  [8]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/BinFill.py :: BinFill._load_scene (xhard D1 tail): objects.spawn_requested / spawn_actual, SceneGenerationError
+    - behavior: xhard records requested vs actual cube counts and raises SceneGenerationError unless all 12 are placed. With the current region this never fires: 0/3000.
+  [9]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/BinFill.py :: BinFill._initialize_episode (initializations.<i>.color_order)
+    - behavior: Each initialisation draws torch.randperm(3) from the SAME self.generator after _load_scene. Any draws appended in _load_scene shift these (xhard only). Targets are cube_collection[0..target-1] per colour, i.e. by colour index, not by position.
+  [10]
+    - env: BinFill
+    - anchor: src/robomme/robomme_env/utils/episode_spec.py :: SpecRecorder.value / record; BinFill._load_scene spec-injection branch (fixed_xy/fixed_yaw)
+    - behavior: In replay, value() always returns the frozen value while the original draws still happen, so the loop keeps consuming RNG. Frozen cube poses replace accepted ones immediately, so later rejection checks use the frozen obstacles. The old spec-injection path (spec['layout']['cubes'] list) builds cubes with fixed poses and draws nothing.
+## user_question_answers
+  [0]
+    - question: Is BinFill's current cube placement uniform? (binfill现在生成cube的位置均匀吗)
+    - answer: Only in a limited sense. Each cube's candidate is uniform over the centre-feasible rectangle x∈[-0.28,0.08] m, y∈[-0.23,0.23] m. It is accepted only if it misses the button (0.1125 m square), the board strips and earlier cubes (with a 2 cm gap), so each cube ends up uniform over the free area that remains. Pooled over episodes, positions are NOT uniform over the rectangle. (1) The button and board sit inside the region and remove 34% of it on average (range 12.5-49.5%). The button band x∈[-0.22,-0.16] gets only 0.65-0.74x the uniform density, and the half nearer the camera (x≥-0.1) holds 53.4% of cubes vs 46.6% for the far half. (2) Placing non-overlapping cubes one by one piles them up against walls: edge and corner cells reach 1.2-1.46x. Relative to independent uniform points in the same free space, the x-edge bins are 1.24x and 1.17x. Colour, on the other hand, is independent of position.
+    - evidence: analyze.py on 3000 bit-exact simulated layouts (36000 cubes): KS vs uniform x D=0.0374 p=3.8e-44, y D=0.0408 p=1.4e-52. Quadrant counts [8249, 8544, 9747, 9460], chi2 p=6.7e-37. 6x6 relative density min 0.65, max 1.38, CV 0.195. y-marginal edge bins 1.42 and 1.46. Two-sample KS vs independent uniform points in the same free space: x D=0.022 (p=3.9e-4). Free-area fraction: mean 0.659, min 0.505, max 0.875 (500 layouts x 400 Monte Carlo points). The 10 frozen candidates alone (120 cubes) are too few to detect any of this: KS p=0.98 (x), 0.14 (y). Heat map: scratch fig_ep3_topdown_and_density.png.
+  [1]
+    - question: Why is there a bunch of red cubes together in episode 3? (为什么会有一堆红色在一起的情况)
+    - answer: Mostly chance, helped by the colour counts and the scene geometry, and made to look tighter by a real min_gap bug. It is not caused by spawn order or by any colour-position bias. (a) 7 of the 12 cubes are red (spawn [7,1,4]); a majority colour of ≥7 happens in 22% of episodes. (b) The button at (-0.155, 0.178) and the board at (0.050, -0.006) leave free space mainly in a strip along the back edge, x≈-0.25 (the robot side, top of the image). Three reds sit on that wall, where packing already crowds cubes. (c) General clustering statistics for episode 3 are not significant (p=0.07-0.18). Red-specific tests chosen after seeing the video give p=0.028 (red-to-red nearest-neighbour distance) and p=0.009 (red vs non-red x separation). After correcting for picking the colour and the test (min p over colours × {NN, x, y}), p=0.0086: about 4.0% of V4 episodes are at least this extreme, so 11.5% chance for at least one of the 3 selected episodes and 33.5% for at least one of the 10 candidates. (d) Spawn order (4 greens first) does not explain it: splitting cubes into the first 4 spawned vs the rest shows no spatial segregation. (e) The degenerate-OBB bug let red_0 and red_2 sit 8.4 mm apart, below the 20 mm min_gap, which makes the clump look tighter. The far side is also compressed in the image, by about 15-27% relative to the near side.
+    - evidence: specs.jsonl episode 3 (seed 4400300) cube coordinates. The first front_rgb frame with projected coordinates matches the visible cubes (ep3_frame0_annot.png). analyze.log: episode 3 p_nn=0.123, p_frac=0.109, p_join=0.178, p_comp=0.074 (R=20000); red NN p=0.0283; x separation of -0.146 m, two-sided p=0.0091. tailprob.log: episode 3 min p=0.0086 (red, x). Under the V4 process over 1500 layouts, P(min p ≤ 0.0086) = 0.040. P(largest same-colour 9 cm-linked group ≥ 4) = 6.3% overall and 15% given ≥7 of one colour. Face gaps in episode 3: red_0-red_2 8.4 mm, green_3-blue_0 23.4 mm.
+  [2]
+    - question: Are colours assigned before or after placement, and in what order?
+    - answer: Before placement. The task list is built grouped by colour (all reds by idx, then blues, then greens) and reordered by objects.spawn_order = torch.randperm(12). Cubes are then spawned one by one in that random, colour-interleaved order, and each cube's colour is fixed when its actor is built. Because the permutation is drawn independently of placement and all cubes have the same size, the colour labels are exchangeable across the placed positions. That makes V4 statistically identical to placing first and shuffling colours afterwards.
+    - evidence: BinFill._load_scene code path (cube_tasks, spawn_order, spawn_random_cube(color=...)). Calibration: across 2000 V4 layouts the permutation p-values fall below 0.05 at 4.9% (NN statistic), 3.5%, 1.7% and 0.9% for the more discrete statistics; mean z_nn=+0.024 (t-test p=0.28).
+  [3]
+    - question: Does sequential rejection sampling create ordering bias (earlier-spawned cubes more central or peripheral)?
+    - answer: Yes, but it is tiny and has no effect on colour. Later cubes sit slightly closer to the region border and slightly farther from the centre, because the free space left near walls is less often blocked by earlier cubes. There is no x or y shift and no dependence on the button or board. Since colour is independent of spawn index, this cannot create colour clusters. The 'first 4 vs rest' segregation test is null.
+    - evidence: analyze.log [C], 36000 cubes. Distance to border by spawn index 0→11: 63.2→57.2 mm (Spearman rho=-0.067, p=1e-36). Distance to centre: 163.9→170.6 mm (rho=+0.049). NN distance: 85.1→83.7 mm (rho=-0.035). x: rho=+0.006 (p=0.29). y: rho=+0.004 (p=0.42). Distance to button: p=0.55; to board: p=0.93. First 4 vs rest: p<0.05 in 5.0% of layouts (nominal), mean z=+0.005 (p=0.83).
+  [4]
+    - question: How likely is a cluster like episode 3's under a truly uniform, colour-independent process?
+    - answer: The V4 process already is colour-independent. An episode with at least episode 3's degree of same-colour segregation (adjusted for choosing the colour and the axis) occurs with about 4.0% probability per episode. A same-colour group of 4 or more cubes, each within 9 cm of another in the group, occurs in 6.3% of episodes (3.8% once min_gap is enforced). Given a colour with ≥7 cubes the rate is 15%.
+    - evidence: tailprob.py (1500 layouts, R=1000 permutations each; episode 3 with R=20000) and analyze.py (3000 layouts; largest-group distribution {1: 12.2%, 2: 58.5%, 3: 23.0%, 4: 4.9%, 5: 1.1%, 6: 0.2%}).
+## measurements
+  [0]
+    - name: Bit-exact replication of the V4 xhard sampler
+    - script_or_command: cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask && uv run --no-sync python <scratch>/binfill_cluster/verify_replication.py  (sampler: <scratch>/binfill_cluster/binfill_sampler.py)
+    - settings: All 10 BinFill rows of scripts/configs/newtask-v4/v4-01/specs.jsonl (seeds 4400000..4400900). Placed-cube OBB built as sapien float32 Pose -> trimesh box(extents=2*float32 half) -> bounding_box_oriented -> repo _trimesh_box_to_obb2d.
+    - result: exact: 10/10 layouts reproduced with max |Δ| = 0.0 over 120 cubes plus button, board, colour_pool, targets, spawn numbers and spawn_order. Same sampler with the TRUE cube OBB: only 2/10 match, so the degenerate OBB changes real layouts.
+    - conclusion: The pure-CPU sampler is exact and can stand in for the simulator for placement statistics.
+  [1]
+    - name: Real-simulator OBB logging (ground truth for the replica)
+    - script_or_command: CUDA_VISIBLE_DEVICES=1 timeout 290 uv run --no-sync python <scratch>/binfill_cluster/sim_obb_probe.py 4400100 ; then obb_match.py
+    - settings: 1 gym.make + reset of BinFill xhard, seed 4400100, V4 sampling_config. Monkeypatched _trimesh_box_to_obb2d in memory only.
+    - result: 66 OBB calls, 11 distinct placed-cube OBBs, 5/11 degenerate (one column ≈ [0,0]). The sapien-based replica matches 11/11.
+    - conclusion: The degenerate obstacle OBB happens in the real env, not only in the replica.
+  [2]
+    - name: Layout simulation: V4 exact vs true-OBB counterfactual
+    - script_or_command: uv run --no-sync python <scratch>/binfill_cluster/simulate.py 3000 90000000 {1|0} <out.pkl>
+    - settings: 3000 seeds (90000000..90002999) per variant, single thread.
+    - result: Fails 0/3000 in both. Degenerate placed-cube OBB: 23922/36000 = 66.45%. Trials per cube: mean 3.12, p99 17, max 75 (≈112 torch.rand calls per layout). The true-OBB fix changes 2585/3000 = 86.2% of layouts; first differing spawn index has median 7.
+    - conclusion: 12 cubes always fit (B1 holds). The OBB fix changes most xhard layouts but never causes a placement failure.
+  [3]
+    - name: Spatial uniformity
+    - script_or_command: uv run --no-sync python <scratch>/binfill_cluster/analyze.py  (section [A]; log analyze.log)
+    - settings: Pooled cube centres: specs (120), V4 simulations (36000), true-OBB simulations (36000). Uniform reference = centre-feasible rectangle. Free-space-uniform reference = 12 independent points per layout drawn with the same button/board rejection (1500 layouts).
+    - result: V4 simulations: KS x D=0.0374 (p=3.8e-44), y D=0.0408 (p=1.4e-52). Quadrants [8249, 8544, 9747, 9460] (chi2 p=6.7e-37). 6x6 relative density 0.65-1.38 (CV 0.195). x-marginal [1.22, 0.86, 0.78, 0.84, 0.88, 1.02, 1.11, 1.11, 1.09, 0.96, 0.95, 1.19]; y-marginal edges 1.42 and 1.46. V4 vs free-space-uniform, x ratio: edges 1.24 and 1.17, interior 0.88-1.02. Free-area fraction 0.659 (0.505-0.875). 10 specs alone: KS p=0.98 (x), 0.14 (y).
+    - conclusion: Uniform within the free space of each episode; pooled over episodes it is non-uniform by ±35-45%, driven by the button and board obstacles and by wall crowding.
+  [4]
+    - name: Colour-position permutation tests
+    - script_or_command: analyze.py section [B]
+    - settings: Statistics: mean same-colour NN distance (S_nn), fraction of cubes whose NN has the same colour (S_frac), same-colour share of edges shorter than 0.09 m (S_join), largest same-colour 0.09 m-linked group (S_comp). R=1000 permutations for the specs, 500 for 2000 simulated layouts, 20000 for episode 3.
+    - result: Simulations: fraction of layouts with p<0.05 = 0.049 (nn), 0.035 (frac), 0.017 (join), 0.009 (comp); mean z_nn = +0.024 (p=0.28). Specs: 1/10 below 0.05 (episode 0, p_nn=0.013). Episode 3: S_comp=4, p_nn=0.123, p_frac=0.109, p_join=0.178, p_comp=0.074.
+    - conclusion: No colour-space dependence in the mechanism; episode 3 is not significant on the general statistics.
+  [5]
+    - name: Episode 3 red-specific tests and tail probability with multiplicity control
+    - script_or_command: analyze.py [B] + uv run --no-sync python <scratch>/binfill_cluster/tailprob.py
+    - settings: Episode 3 with R=20000. Process tail: 1500 V4 layouts x R=1000, statistic = min p over colours with ≥3 cubes × {same-colour NN, |Δmean x|, |Δmean y|}.
+    - result: Red NN: observed 0.0796 m vs null 0.1013 m, p=0.0283. Red vs non-red x separation: -0.146 m, p=0.0091. Episode 3 min p=0.0086. P_V4(min p ≤ 0.0086) = 0.040; P(min p ≤ 0.05) = 0.259. Given majority colour ≥7: 0.024. At least 1 of 3 selected episodes: 0.115; at least 1 of 10 candidates: 0.335. Other candidates' min p: 0.018-0.24.
+    - conclusion: The episode 3 clump is in the ~4% tail of a colour-independent process: unusual but consistent with chance.
+  [6]
+    - name: Colour-count distribution
+    - script_or_command: analyze.py section [E]
+    - settings: 3000 V4 layouts
+    - result: Majority-colour count: 4:5.93%, 5:39.7%, 6:32.3%, 7:16.43%, 8:4.5%, 9:1.1%, 10:0.03%; P(≥7) = 22.07%. Specs: [5,5,5,7,7,6,6,5,5,5].
+    - conclusion: A 7-cube majority (as in episode 3) is common and raises the visual chance of same-colour neighbours.
+  [7]
+    - name: Spawn-order bias
+    - script_or_command: analyze.py section [C]
+    - settings: 36000 cubes grouped by spawn index; Spearman + Kruskal-Wallis. Group test: first 4 vs last 8, permutation R=300 over 2000 layouts.
+    - result: Distance to border 63.2→57.2 mm (rho=-0.0665, p=1.3e-36). Distance to centre rho=+0.049. NN distance rho=-0.035. x and y rho ≈ 0.005 (p>0.29). Button and board distances p>0.39. Group test: p<0.05 in 5.0% (nn), 2.5% (frac); z=+0.005 (p=0.83).
+    - conclusion: Spawn-order effects are negligible and cannot produce colour clusters.
+  [8]
+    - name: min_gap enforcement (true polygon face gaps)
+    - script_or_command: analyze.py section [D]
+    - settings: 1000 layouts per variant; exact square-polygon distance for pairs within 0.12 m.
+    - result: V4: nearest face gap <20 mm for 23.3% of cubes, <10 mm for 7.6%, <2 mm for 0.3%; median 31.2 mm. True-OBB: 0.0% / 0.0% / 0.0%; median 36.7 mm. Episode 3: red_0-red_2 8.4 mm; all others ≥23 mm.
+    - conclusion: V4 does not enforce the nominal min_gap between cubes. This tightens clumps and may hurt grasp planning (the V4 step3b report logged a put_in=7 demo failure attributed to adjacent touching cubes).
+  [9]
+    - name: V5 option counterfactuals
+    - script_or_command: uv run --no-sync python <scratch>/binfill_cluster/v5_options.py ; v5b_by_count.py
+    - settings: V5a = true-OBB layouts (3000). V5b = V5a positions plus colour re-permutation until largest same-colour group ≤ T (link 0.09 m, K=64). V5c = best-candidate sampling k ∈ {2,4}, true OBB (1500 each). Link sensitivity 0.08 / 0.09 / 0.10 m.
+    - result: V4: P(group≥4)=6.30%, P(≥3)=29.3%, NN centre-distance p5 55.3 mm, median 80.0 mm, CV 0.195. V5a: 3.80% / 19.7%, 68.6 / 85.8 mm, CV 0.216. V5b T=3: 0% / 16.55%; re-shuffle needed in 3.8%, mean 0.047, max 4, K=64 failures 0; anti-cluster over-mixing 2.8%. V5b T=2: 0% / 0.05%; re-shuffle needed in 19.7% (27.8% given 7 of a colour, 48.5% given 9), mean 0.38, failures 0 at link 0.09, but 0.2% overall (12% given 9 of a colour) at link 0.10. V5c k=2: 1.33% / 9.9%, CV 0.283, 324 draws per layout. V5c k=4: 0.40% / 3.8%, CV 0.332, 659 draws per layout. Neither V5c variant failed.
+    - conclusion: V5a+V5b(T=3) removes large same-colour clumps with almost no cost. Blue-noise sampling (V5c) pushes cubes toward the walls, making the pooled layout LESS uniform, and costs 3-6x the random draws.
+  [10]
+    - name: Episode 3 visual check
+    - script_or_command: uv run --no-sync python <scratch>/binfill_cluster/ep3_frame.py ; figs.py
+    - settings: h5 episode_3/timestep_0 obs/front_rgb 256x256 with front_camera_extrinsic and intrinsic; spec coordinates projected at z=0.02.
+    - result: Projected centres land on the rendered cubes. Reds r6, r3, r0, r2, r4, r5 lie at x∈[-0.26,-0.18] (image rows v≈57-68, far side next to the robot). Image scale is ~157 px/m along x on the far side vs ~214 px/m near the camera.
+    - conclusion: The visual clump matches the coordinates; perspective compresses the far side by about 15-27%, which makes it look denser.
+## proposals
+  [0]
+    - title: V5-BF-A: Use the true cube OBB for placed cubes (enforce min_gap), xhard only
+    - recommended: True
+    - envs: BinFill xhard (the same bug exists in other envs; flagged cross-topic)
+    - anchors_to_change: src/robomme/robomme_env/BinFill.py :: BinFill._load_scene (xhard branch of the spawn loop, where avoid.append(cube) happens); src/robomme/robomme_env/utils/object_generation.py :: spawn_random_cube::_finalize_cube (optionally stash cube._spawn_pose2d = (x, y, yaw); no RNG change); BinFill.py :: _resolve_sampling_config / _native_decision (new decision key); scripts/configs/<v5>/sampling_config.json
+    - design: In the xhard branch only, append a pre-made OBB tuple `_build_new_cube_obb2d(x, y, self.cube_half_size, yaw, 0.0)` (numpy center, axes, half) to `avoid` instead of the cube actor. spawn_random_cube already accepts pre-made 3-tuples of np.ndarray. (x, y, yaw) is the accepted pose: read it from cube._spawn_pose2d, or in replay from the frozen value. New decision key decision.configs.xhard.cube_obstacle_obb ∈ {"trimesh_v4", "true_cube"}, default "true_cube" for V5, validated in _resolve_sampling_config. easy/medium/hard keep appending actors verbatim.
+    - rationale: This makes V4 decision B1's nominal 2 cm spacing real. It removes the 23.3% of cubes that touch or crowd a neighbour, which visually tighten clumps and likely hurt grasp planning. It is a bug fix, not a new distribution choice.
+    - rng_impact: xhard: no new or removed draws, but acceptance outcomes change, so 2585/3000 (86%) of layouts differ from the first affected cube onward (median spawn index 7). V4 specs stay replayable through the frozen-value path, but V5 must re-draw its specs. easy/medium/hard: none, because the branch is gated on difficulty=='xhard' and the actor path is unchanged (V1 NATIVE_REGRESSION must stay diff=0).
+    - overturned_v4_decisions: None overturned. It honours B1 (region and spacing unchanged; spacing now actually enforced), J6, D1 and H2 (the fix lives only in xhard). The G2 report's item 3 (degeneracy noted, not fixed) becomes resolved for BinFill xhard.
+    - spec_and_test_changes: The sampling_config snapshot gains decision.configs.xhard.cube_obstacle_obb. The spec schema is unchanged (layout.cubes.<c>_<i>). New lightweight test: every placed-cube avoid entry in xhard is a 3-tuple of arrays. New geometry test: min true face gap ≥ 0.02 - 1e-9 over the V5 candidates. Rerun the reset probe for the original tiers (diff=0). Re-draw the 160-row specs for BinFill.
+    - expected_numbers: Face gaps <20 mm: 23.3% -> 0.0% of cubes (<10 mm: 7.6% -> 0). Placement failures 0/3000. Median NN centre distance 80.0 -> 85.8 mm. P(same-colour group ≥4 at 9 cm link) 6.3% -> 3.8%; P(≥3) 29.3% -> 19.7%. Pooled density CV 0.195 -> 0.216, i.e. uniformity roughly unchanged.
+  [1]
+    - title: V5-BF-B: Place all slots first, then assign colours with a same-colour clustering cap (appended re-shuffles)
+    - recommended: True
+    - envs: BinFill xhard
+    - anchors_to_change: src/robomme/robomme_env/BinFill.py :: BinFill._load_scene (xhard clutter branch split into 3 phases); new pure function src/robomme/robomme_env/utils/xhard.py :: sample_clutter_slots (plus a helper such as max_same_color_component); BinFill.py :: _resolve_sampling_config (new decision keys); src/robomme/robomme_env/utils/object_generation.py :: spawn_random_cube (reused with fixed_xy/fixed_yaw, which draws nothing)
+    - design: Phase 0 (unchanged draws): button, board, quotas, objects.spawn_order = randperm(12). Phase 1 (geometry only, same per-trial draw order u1, u2, yaw, max_trials 256): for slot k=0..11, rejection-sample against [button OBB, board strips, true OBBs of slots < k]. At each acceptance call recorder.value('layout.slots.<k>', [x,y,yaw]) so replay injects frozen slots immediately, as V4 does today. Phase 2 (colour assignment): slot k initially gets cube_tasks[spawn_order[k]], exactly V4's semantics. Compute the largest group of same-colour slots whose centres are linked at distance < link_m (the connected component). While it exceeds max_component and r < max_redraws: perm = torch.randperm(12, generator), an APPENDED draw; permute the assignment; r += 1. If never satisfied, keep the assignment with the smallest group and record objects.color_mix_fallback=true. Record objects.color_redraws=r and objects.slot_assignment=[[color, idx], ...] via value(). Phase 3: build actors in slot order with spawn_random_cube(fixed_xy, fixed_yaw) and record layout.cubes.<color>_<idx> via record() for downstream readers. Config: decision.configs.xhard.color_mix = {"link_m": 0.09, "max_component": 3, "max_redraws": 64}. With max_component ≥ 12 (disabled), positions and colours equal V5-BF-A exactly.
+    - rationale: Shuffling colours after placement alone is a statistical no-op, because V4 labels are already exchangeable. The only way to make same-colour clumps rarer than chance is a colour constraint. Re-shuffling labels over fixed slots never moves cubes, keeps geometric difficulty and positional uniformity unchanged, is cheap, and needs only appended draws.
+    - rng_impact: xhard: slot draws are identical to V5-BF-A. Extra randperm(12) draws are appended after all slots, only in the 3.8% of episodes (T=3) that violate the cap, and they shift the later _initialize_episode randperm(3) calls (initializations.{0,1}.color_order) for those episodes. The cube positions and all earlier draws stay the same. easy/medium/hard: none (native_dynamic path verbatim; gated on xhard).
+    - overturned_v4_decisions: None explicitly. It adds a new constraint not covered by A1..K5. J6's 'scatter in the original region with the original spacing' is kept for positions; the colour arrangement becomes 'more mixed than random', which needs a new user decision (see pending decisions).
+    - spec_and_test_changes: New spec keys: layout.slots.<k>, objects.slot_assignment, objects.color_redraws, objects.color_mix_fallback. layout.cubes.* stays for compatibility (now via record()). The V5 specs header embeds the color_mix config. Tests: (1) append-only: for the same seed, positions with the cap enabled equal positions with it disabled; (2) every V5 candidate satisfies group ≤ max_component; (3) spec replay mismatches=0, unused=[]; (4) original-tier reset probe diff=0; (5) a pure-geometry sampler vs real env reset parity on the V5 candidates.
+    - expected_numbers: link 0.09, T=3: 3.8% of layouts need ≥1 re-shuffle, mean 0.047, max 4, 0/3000 fallbacks; P(group≥4) = 0 (V4 6.3%); P(group≥3) = 16.6%; anti-cluster over-mixing 2.8% (<5%, so not artificially regular). T=2: 19.7% need a re-shuffle, mean 0.38, 0 fallbacks at link 0.09 (0.2% at link 0.10, 12% when 9 cubes share a colour); P(group≥3) = 0.05%. Link sensitivity at T=3: 0.08 -> 0.6% re-shuffled; 0.10 -> 9.8% re-shuffled, 0 fallbacks.
+  [2]
+    - title: V5-BF-C (rejected as ineffective): shuffle colours after placement / interleave spawn order
+    - recommended: False
+    - envs: BinFill xhard
+    - anchors_to_change: BinFill.py :: _load_scene (spawn_order handling)
+    - design: Place 12 anonymous cubes, then shuffle the colour labels; or enforce a round-robin colour spawn order (R, G, B, R, ...).
+    - rationale: V4 already draws spawn_order = randperm(12) independently of placement and all cubes are the same size, so the labels are exchangeable over positions. Post-placement shuffling produces the same joint distribution. Spawn order has no measurable spatial effect (first-4 vs rest segregation at nominal 5.0%, z=+0.005), so interleaving cannot help either.
+    - rng_impact: Would change the xhard draw sequence (a label shuffle after placement) for zero statistical benefit; easy/medium/hard none.
+    - overturned_v4_decisions: None.
+    - spec_and_test_changes: n/a
+    - expected_numbers: Identical distribution to V4: P(group≥4) stays about 6.3% (3.8% with V5-BF-A); permutation p-values stay calibrated at about 5%.
+  [3]
+    - title: V5-BF-D (optional, not recommended): blue-noise best-candidate placement
+    - recommended: False
+    - envs: BinFill xhard
+    - anchors_to_change: new utils/xhard.py :: best_candidate_slots; BinFill.py :: _load_scene xhard branch; new config positions.cubes.placement='best_candidate', positions.cubes.best_candidate_k
+    - design: For each slot, collect k valid candidates (each via the usual rejection loop, true OBB) and keep the one maximising the minimum centre distance to already-placed slots (Mitchell's best-candidate).
+    - rationale: Spreads cubes more evenly and reduces clumps of any colour.
+    - rng_impact: xhard: 3-6x more draws per layout (324 for k=2, 659 for k=4, vs ≈112 in V4) and a completely different stream; easy/medium/hard none.
+    - overturned_v4_decisions: Weakens J6's intent ('clutter' in the original spacing), since the scene becomes less cluttered and more regular. B1 is formally kept.
+    - spec_and_test_changes: New positions keys; spec schema unchanged; must re-check demo success because the clutter difficulty drops.
+    - expected_numbers: k=2: P(group≥4)=1.33%, P(≥3)=9.9%, NN p5 75 mm, median 94 mm, density CV 0.283. k=4: 0.40% / 3.8%, NN p5 82 mm, median 100 mm, density CV 0.332 (MORE wall crowding, i.e. less uniform over the rectangle). Placement failures 0/1500.
+  [4]
+    - title: V5-BF-E (optional, not recommended): cap per-colour spawn count
+    - recommended: False
+    - envs: BinFill xhard
+    - anchors_to_change: BinFill.py :: _load_scene (remainder distribution loop); decision.configs.xhard.max_spawn_per_color
+    - design: While distributing the remaining spawns, re-draw the colour index whenever the chosen colour is at its cap = max(target_c, cap), e.g. cap 6.
+    - rationale: A 7+ majority happens in 22% of episodes (episode 3 has 7 reds) and raises the visual chance of same-colour neighbours. This targets the colour counts, not placement.
+    - rng_impact: xhard: extra draws inside the quota loop shift spawn_order and everything after it (the whole xhard layout stream); easy/medium/hard none.
+    - overturned_v4_decisions: Changes the quota rule, which V4 kept native. Not covered by A1..K5 and touches the J6 wording that put_in_color follows hard.
+    - spec_and_test_changes: New decision key; spawn_numbers distribution tests.
+    - expected_numbers: P(majority ≥7) 22.1% -> ≈0 except when a single-colour target is 7. Not simulated further.
+## risks
+  [0]
+    - risk: The OBB fix (V5-BF-A) changes 86% of BinFill xhard layouts, so the V4 BinFill specs and rollouts are not reproducible by fresh sampling under V5 code.
+    - mitigation: Treat V5 as a new spec draw (new run id). Keep the V4 specs replayable through the frozen-value path (SpecRecorder.value returns frozen values) and verify it with a replay test.
+  [1]
+    - risk: Refactoring _load_scene into slot, colour and build phases could accidentally touch the native_dynamic path and break V1 byte identity.
+    - mitigation: Put the new code in a separate `if self.difficulty == 'xhard'` block or a new helper, leave the original loop untouched, and gate on v4_reset_probe BinFill easy/medium/hard diff=0.
+  [2]
+    - risk: Spec schema and value-point order change (layout.slots.*, objects.slot_assignment, layout.cubes.* moved to record()). Downstream readers (scripts/parity/v4_specs.py, v4_rollout replay, INJECTION_BINDING evidence) may assume the V4 schema.
+    - mitigation: Keep layout.cubes.<c>_<i> populated. Update the spec kind or version for V5. Add a replay test requiring mismatches=0 and unused=[] on all V5 candidates.
+  [3]
+    - risk: The colour cap introduces a deliberate colour-position anti-correlation, so colours become 'more mixed than random'.
+    - mitigation: Use a light cap (T=3 touches 3.8% of layouts) and verify there is no over-mixing (anti-cluster p<0.05 in 2.8%, should stay ≤6%).
+  [4]
+    - risk: The 0.09 m link threshold is a heuristic and may not match what a viewer perceives as a 'bunch'. The camera compresses the far side by about 15-27%.
+    - mitigation: Expose link_m and max_component in config. Optionally visualise 20 V5 candidates before freezing. At T=3, link 0.08 and 0.10 give 0.6% and 9.8% re-shuffle rates with no fallbacks.
+  [5]
+    - risk: Enforcing min_gap could change grasp and demo success, either way. It removes adjacency, which a V4 put_in=7 demo failure was attributed to, but it also changes clutter density.
+    - mitigation: Run a demo-level probe (v4_demo_probe) on at least 8 V5 seeds including the put_in 5 and 7 endpoints, and compare with V4's 9/10.
+  [6]
+    - risk: Fixing the OBB only in BinFill leaves the same degeneracy in the other 11 envs that call spawn_random_* with actor avoidance, so min_gap semantics become inconsistent across xhard envs.
+    - mitigation: Raise it as a cross-topic decision: either fix all xhard envs the same way (pre-made tuples) or document the per-env semantics.
+## pending_decisions
+  [0]
+    - question: What does the user mean by 'uniform' for BinFill?
+    - options: (a) Uniform positions within the free space: already true, no change. (b) Colours well mixed, i.e. no big same-colour clumps: V5-BF-B. (c) Spatially even coverage (blue noise): V5-BF-D. (d) Equal pooled density over the whole rectangle: would require moving the button or board out of the region, which conflicts with 2.3/B1.
+    - recommendation: (b) plus the V5-BF-A bug fix.
+    - reason: The complaint is about colour clumps. Positions are already uniform in free space. (c) makes pooled density less uniform (CV 0.195 -> 0.28-0.33) and costs 3-6x the draws. (d) changes native geometry.
+  [1]
+    - question: Should the degenerate-OBB min_gap bug be fixed for BinFill xhard (V5-BF-A)? Only BinFill, or all xhard envs that use spawn_random_*?
+    - options: (1) BinFill xhard only. (2) All xhard envs with actor avoidance. (3) Leave as is.
+    - recommendation: (1) now; open a separate cross-env decision for (2).
+    - reason: 23.3% of BinFill xhard cubes violate the nominal 2 cm gap. The fix adds no draws, keeps 100% fill, and cannot affect the original tiers when gated.
+  [2]
+    - question: Colour-cap parameters for V5-BF-B
+    - options: T=3 (max same-colour linked group ≤3) or T=2; link_m ∈ {0.08, 0.09, 0.10}; max_redraws=64 with a fallback to the best assignment seen.
+    - recommendation: T=3, link_m=0.09, max_redraws=64.
+    - reason: Groups of 4+ disappear with only 3.8% of layouts re-shuffled (mean 0.047) and 0 fallbacks. T=2 re-shuffles 19.7% overall and 48.5% when 9 cubes share a colour, and starts to fall back at link 0.10.
+  [3]
+    - question: Should per-colour spawn counts be capped (V5-BF-E) to avoid 7+ majorities (22% of episodes)?
+    - options: No cap (V4 rule) / cap = max(target, 6).
+    - recommendation: No cap.
+    - reason: It changes the quota rule, which V4 kept native, and shifts the whole xhard stream. With V5-BF-B the clump problem is solved without touching the counts.
+  [4]
+    - question: Re-draw V5 BinFill specs and re-run the demo-level check?
+    - options: Re-draw 10 candidates and select 3 with the same F1-F3/H4 rules / keep V4 specs.
+    - recommendation: Re-draw, because V5-BF-A and V5-BF-B change the layouts.
+    - reason: 86% of layouts change under the OBB fix; frozen V4 specs would not reflect V5 code.
+## verification_checks
+  [0]
+    - check: Original tiers untouched
+    - how: uv run --no-sync python -m scripts.parity.v4_reset_probe probe --tasks BinFill --out <new.json>; then diff against the V4 baseline probe
+    - judgement_line: BINFILL_NATIVE_REGRESSION=PASS rows=9 diff=0
+  [1]
+    - check: xhard always places 12 cubes
+    - how: Pure-geometry sampler over ≥3000 seeds plus ≥10 real resets (spawn_requested == spawn_actual == 12)
+    - judgement_line: BINFILL_V5_FILL=PASS layouts=3000 fails=0 real_resets=10/10
+  [2]
+    - check: min_gap actually enforced (V5-BF-A)
+    - how: Exact square-polygon face gaps between all cube pairs over ≥2000 simulated layouts and all V5 candidates
+    - judgement_line: BINFILL_MIN_GAP=PASS violations=0 min_face_gap_mm>=20.0 layouts=2000
+  [3]
+    - check: Colour cap satisfied (V5-BF-B)
+    - how: Largest same-colour group (link 0.09 m) on ≥2000 simulated layouts and all V5 candidates; count re-shuffles and fallbacks
+    - judgement_line: BINFILL_COLOR_MIX=PASS T=3 link=0.09 violations=0 redraw_rate<=0.05 mean_redraws<=0.1 fallback=0
+  [4]
+    - check: Re-shuffles are append-only (N5)
+    - how: Same seeds with max_component=12 (disabled) vs T=3: slot positions must be identical and only labels may differ; draws before Phase 2 unchanged
+    - judgement_line: BINFILL_REDRAW_APPEND_ONLY=PASS pos_equal=2000/2000
+  [5]
+    - check: Colours not over-regularised
+    - how: Permutation test of S_frac in the anti-cluster direction on 500 V5 layouts
+    - judgement_line: BINFILL_NOT_OVERMIXED=PASS anti_p05_frac<=0.06
+  [6]
+    - check: Pure-geometry sampler matches the real env
+    - how: Replicate the sampler (as in scratch binfill_sampler.py) against real gym.make+reset specs for the 10 V5 candidates
+    - judgement_line: BINFILL_SIM_GEOM_PARITY=PASS match=10/10 max_abs_diff=0.0
+  [7]
+    - check: Spec replay binding
+    - how: Replay the V5 specs through native_episode_spec (v4_rollout-style) and inspect spec_replay.json
+    - judgement_line: BINFILL_SPEC_REPLAY=PASS episodes=10 mismatches=0 unused=0
+  [8]
+    - check: Demo-level generability (G4/H3)
+    - how: v4_demo_probe on ≥8 V5 seeds including the put_in [5,5] and [7,7] endpoints
+    - judgement_line: BINFILL_DEMO=REPORT ok=k/n endpoints_nonzero=true
+## blind_spots
+  * Demo or grasp success under V5-BF-A/B was not measured; no simulator demos were run. The V4 step3b report's put_in=7 failure from adjacent touching cubes suggests a benefit, but this is unquantified.
+  * The 'cluster' definitions (0.09 m link, NN statistics, axis separation) are my heuristics. How viewers perceive clumps in the image was checked only for episode 3 (perspective compression about 15-27%), not systematically.
+  * The real simulator was used for exactly 1 reset (seed 4400100) to confirm the OBB degeneracy. Everything else relies on the pure-CPU replica, which reproduces all 10 frozen V4 candidates bit for bit but was not checked against more real resets.
+  * The degenerate-OBB rate and its effect were not measured for the other 11 envs using spawn_random_* (the V4 G2 report found 70% for VideoRepick hard).
+  * The Phase-1/2/3 spec schema for V5-BF-B is a design proposal. Compatibility with scripts/parity/v4_specs.py, v4_rollout replay and INJECTION_BINDING evidence was not tested.
+  * The board's axis-aligned strips ignore its ±20° yaw. I reasoned that the 0.02 min_gap pad covers the ≤14 mm corner overhang, leaving at least about 6 mm of true gap, but did not measure it.
+## scratch_files
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/binfill_sampler.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/verify_replication.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/sim_obb_probe.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/sim_obb_probe.pkl
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/obb_match.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/simulate.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/sim_v4_exact.pkl
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/sim_trueobb.pkl
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/analyze.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/analyze_lib.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/analyze.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/tailprob.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/tailprob.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/v5_options.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/v5_options.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/v5b_by_count.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/v5b_by_count.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/ep3_frame.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/ep3_frame0_raw.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/ep3_frame0_annot.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/figs.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/fig_ep3_topdown_and_density.png
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/debug_rep.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/debug_rep2.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/binfill_cluster/debug_rep3.py

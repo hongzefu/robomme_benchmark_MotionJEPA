@@ -1,0 +1,69 @@
+PREFLIGHT=job_61890467_RUNNING_gl1526
+RUN_ID=/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z
+JOB_HOST=gl1526.arc-ts.umich.edu
+CUDA_VISIBLE_DEVICES=0
+RUN_ROOT=/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z
+/home/hongzefu/.local/bin/uv
+PIPELINE_STEP draw start :: -m scripts.parity.v4_specs draw --run-id /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z --tasks BinFill --sampling-config scripts/configs/newtask-v6/sampling_config.json --candidates-per-env 1 --max-reset-attempts 30 --workers 1 --out /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/draft/drafts.jsonl --gpus 0 --difficulty xhard1 --seed-profile v6
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+DRAW BinFill ep=0 attempt=0 seed=8400000 ok=True 
+DRAW_TASK BinFill ok=1 attempted=1 shortfall=0
+DRAW_DONE rows=1 ok=1 out=/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/draft/drafts.jsonl
+PIPELINE_STEP draw done
+PIPELINE_STEP freeze start :: -m scripts.parity.v4_specs freeze --drafts /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/draft/drafts.jsonl --sampling-config scripts/configs/newtask-v6/sampling_config.json --select 0 --candidates-per-env 1 --out /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/specs.jsonl
+FREEZE_DONE rows=1 selected=1 envs=1 candidate_shortfall=0 out=/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/specs.jsonl
+PIPELINE_STEP freeze done
+PIPELINE_STEP run start :: -m scripts.parity.v4_rollout run --specs /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/specs.jsonl --label run1 --tasks BinFill --official-root artifacts/train-parity/local-smoke-01/official-src --workers 1 --gpu 0 --output /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout
+ROUND 0 jobs=1 ok=1 wall_s=59
+ROLLOUT_DONE label=run1 rollout_attempted=1 rollout_ok=1 backfilled=0 selected_shortfall=0
+PIPELINE_STEP run done
+PIPELINE_STEP report start :: -m scripts.parity.v5_generation report --drafts /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/draft/drafts.jsonl --specs /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/specs.jsonl --rollout /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1 --candidates-per-env 1 --out /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/report
+V5_GENERATION=REPORT tasks=1 draft_ok=1 rollout_ok=1 backfilled=0 selected_shortfall=0 demo_frames_out_of_band=N/A outer_swap_mismatch=N/A bin_collision=0 vr_min_participants=N/A
+# 报告：/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/report/generation_report.md、/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/report/generation_report.json
+PIPELINE_STEP report done
+PIPELINE_DONE run_id=/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z report=/tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/report/generation_report.md
+PIPELINE_RC=0
+OUTPUT_FILE=xhard1/draft/drafts.jsonl bytes=5610
+OUTPUT_FILE=xhard1/report/generation_report.json bytes=1636
+OUTPUT_FILE=xhard1/report/generation_report.md bytes=1670
+OUTPUT_FILE=xhard1/rollout/run1/episodes/BinFill_episode_0/hdf5_files/BinFill_ep0_seed8400000.h5 bytes=806055656
+OUTPUT_FILE=xhard1/rollout/run1/episodes/BinFill_episode_0/rng_trace.json bytes=7697
+OUTPUT_FILE=xhard1/rollout/run1/episodes/BinFill_episode_0/spec_replay.json bytes=1165
+OUTPUT_FILE=xhard1/rollout/run1/episodes/BinFill_episode_0/videos/BinFill_ep0_seed8400000_xhard1_put_three_red_cubes_and_three_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_three_red_cubes_and_three_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4 bytes=27079634
+OUTPUT_FILE=xhard1/rollout/run1/results.jsonl bytes=515
+OUTPUT_FILE=xhard1/rollout/run1/_rounds/round_00/jobs.json bytes=389
+OUTPUT_FILE=xhard1/rollout/run1/_rounds/round_00/results.json bytes=1657
+OUTPUT_FILE=xhard1/rollout/run1/_rounds/round_00/runner.log bytes=1174
+OUTPUT_FILE=xhard1/rollout/run1/_rounds/round_00/sampling.json bytes=2320
+OUTPUT_FILE=xhard1/rollout/run1/_rounds/round_00/specs.json bytes=2750
+OUTPUT_FILE=xhard1/rollout/run1/summary.json bytes=331
+OUTPUT_FILE=xhard1/specs.jsonl bytes=5844
+SPEC_FILE /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/specs.jsonl exists= True bytes= 5844
+SPEC_SUMMARY rows= 1 selected= 1 identity_sha256= bc8e8b1533f114e02e168bc4c919d0052765272a05366c8ebd2952050dfbbda1 select_indices= [0]
+SPEC_RECORD BinFill xhard1 0 8400000 selected= True spec_kind= native-newvalue/2 spec_sha256= 916b71a5e4a8c2f20c6bbec561e4436af29a24031123a8f02a7e3f3924257a29
+DRAFT_SUMMARY rows= 1 reset_ok= 1 tasks= ['BinFill'] tiers= ['xhard1']
+ROLLOUT_RESULTS rows= 1 path= /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1/results.jsonl
+ROLLOUT_RECORD BinFill xhard1 0 8400000 ok= True error_type= None h5= /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1/episodes/BinFill_episode_0/hdf5_files/BinFill_ep0_seed8400000.h5 spec_binding= {'mismatch': 0, 'unattributed_mismatch': 0, 'unused': 0, 'value_points': 41} video= None video_status= None
+SPEC_REPLAY /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1/episodes/BinFill_episode_0/spec_replay.json mismatches= 0 unused= 0 value_points= 41
+H5_COUNT 1
+H5_VALID /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1/episodes/BinFill_episode_0/hdf5_files/BinFill_ep0_seed8400000.h5 bytes= 806055656 root_keys= ['episode_0'] root_attrs= [] timestep_groups= 1209
+VIDEO_COUNT 1
+VIDEO_FILE /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1/episodes/BinFill_episode_0/videos/BinFill_ep0_seed8400000_xhard1_put_three_red_cubes_and_three_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_three_red_cubes_and_three_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4 bytes= 27079634 sha256= b18c31ca1bc04ef130b29e7f22b63fb19041288219b9c632a165b099856157e9
+VIDEO_FFPROBE_UNAVAILABLE /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1/episodes/BinFill_episode_0/videos/BinFill_ep0_seed8400000_xhard1_put_three_red_cubes_and_three_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_three_red_cubes_and_three_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4
+GENERATION_REPORT V5_GENERATION=REPORT tasks=1 draft_ok=1 rollout_ok=1 backfilled=0 selected_shortfall=0 demo_frames_out_of_band=N/A outer_swap_mismatch=N/A bin_collision=0 vr_min_participants=N/A totals= {'tasks': 1, 'draft_attempted': 1, 'draft_ok': 1, 'candidate_shortfall': 0, 'rollout_attempted': 1, 'rollout_ok': 1, 'backfilled': 0, 'selected_shortfall': 0, 'demo_frames_checked': 0, 'demo_frames_out_of_band': 'N/A', 'outer_swap_checked': 0, 'outer_swap_mismatch': 'N/A', 'bin_collision': 0, 'draft_bin_collision': 0, 'vr_checked': 0, 'vr_min_participants': 'N/A'} per_env= {'BinFill': {'draft_attempted': 1, 'draft_ok': 1, 'candidate_shortfall': 0, 'draft_fail_classes': {}, 'selected_target': 1, 'rollout_attempted': 1, 'rollout_ok': 1, 'backfilled': 0, 'selected_shortfall': 0, 'by_class': {}}}
+ARTIFACT_AUDIT_RC=0
+EXIT_CODE=0
+/home/hongzefu/.local/bin/uv
+VIDEO_CV2_FIRST_FRAME opened= True read= True shape= (768, 1280, 3) path= /tmp/v6-gl-smoke-61890467-binf-xhard1-20260926T195419Z/xhard1/rollout/run1/episodes/BinFill_episode_0/videos/BinFill_ep0_seed8400000_xhard1_put_three_red_cubes_and_three_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_three_red_cubes_and_three_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4
+VIDEO_CV2_AUDIT_RC=0
+VIDEO_AUDIT_EXIT_CODE=0
+ARTIFACT_STREAM_RC=0
+a0a5e6305e0c6b5ea6734f0fa5c80f0069865e6b74cc405d01bf6fd9e376b54c  xhard1/specs.jsonl
+1d0b6cc85609ac2d976b02089de579d807f7b929df1502d035c547b0163444b7  xhard1/report/generation_report.json
+3f77f6a2c7b6ef87972894ef8ec9a935562878a3a514a2fcbdd386fc497d41b5  xhard1/rollout/run1/episodes/BinFill_episode_0/hdf5_files/BinFill_ep0_seed8400000.h5
+b18c31ca1bc04ef130b29e7f22b63fb19041288219b9c632a165b099856157e9  xhard1/rollout/run1/episodes/BinFill_episode_0/videos/BinFill_ep0_seed8400000_xhard1_put_three_red_cubes_and_three_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_three_red_cubes_and_three_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4

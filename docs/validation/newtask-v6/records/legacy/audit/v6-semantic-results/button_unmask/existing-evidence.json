@@ -1,0 +1,762 @@
+{
+  "audit_base": "0a3f989b0dfcff12a3cbb34a8112cb56864c7ee8",
+  "rows": [
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed8800000.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_0/videos/ButtonUnmask_ep0_seed8800000_xhard1_first_press_the_button_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+      "difficulty": "xhard1",
+      "frames": 360,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          74,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          203,
+          "put down the container"
+        ],
+        [
+          232,
+          "pick up the container that hides the green cube"
+        ]
+      ],
+      "first_pick_frame": 74,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.2600696086883545,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the green cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard1-ButtonUnmask_ep0_seed8800000.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed8800300.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_3/videos/ButtonUnmask_ep3_seed8800300_xhard1_first_press_the_button_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+      "difficulty": "xhard1",
+      "frames": 365,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          78,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          204,
+          "put down the container"
+        ],
+        [
+          233,
+          "pick up the container that hides the green cube"
+        ]
+      ],
+      "first_pick_frame": 78,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.2602308690547943,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the green cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard1-ButtonUnmask_ep3_seed8800300.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed8800601.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_6/videos/ButtonUnmask_ep6_seed8800601_xhard1_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "difficulty": "xhard1",
+      "frames": 381,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          82,
+          "pick up the container that hides the red cube"
+        ],
+        [
+          214,
+          "put down the container"
+        ],
+        [
+          253,
+          "pick up the container that hides the blue cube"
+        ]
+      ],
+      "first_pick_frame": 82,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.27432429790496826,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube",
+        "pick up the container that hides the blue cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard1-ButtonUnmask_ep6_seed8800601.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed10800000.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_0/videos/ButtonUnmask_ep0_seed10800000_xhard2_first_press_the_button_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4",
+      "difficulty": "xhard2",
+      "frames": 507,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          79,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          213,
+          "put down the container"
+        ],
+        [
+          249,
+          "pick up the container that hides the red cube"
+        ],
+        [
+          355,
+          "put down the container"
+        ],
+        [
+          391,
+          "pick up the container that hides the green cube"
+        ]
+      ],
+      "first_pick_frame": 79,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.2847365140914917,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the red cube",
+        "pick up the container that hides the green cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard2-ButtonUnmask_ep0_seed10800000.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed10800300.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_3/videos/ButtonUnmask_ep3_seed10800300_xhard2_first_press_the_button_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+      "difficulty": "xhard2",
+      "frames": 482,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          76,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          209,
+          "put down the container"
+        ],
+        [
+          240,
+          "pick up the container that hides the green cube"
+        ],
+        [
+          349,
+          "put down the container"
+        ],
+        [
+          378,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 76,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.2671073079109192,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the green cube",
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard2-ButtonUnmask_ep3_seed10800300.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed10800600.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_6/videos/ButtonUnmask_ep6_seed10800600_xhard2_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+      "difficulty": "xhard2",
+      "frames": 546,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          78,
+          "pick up the container that hides the green cube"
+        ],
+        [
+          228,
+          "put down the container"
+        ],
+        [
+          255,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          379,
+          "put down the container"
+        ],
+        [
+          408,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 78,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.26309770345687866,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the green cube",
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard2-ButtonUnmask_ep6_seed10800600.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed12800000.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_0/videos/ButtonUnmask_ep0_seed12800000_xhard3_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "difficulty": "xhard3",
+      "frames": 528,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          85,
+          "pick up the container that hides the red cube"
+        ],
+        [
+          227,
+          "put down the container"
+        ],
+        [
+          259,
+          "pick up the container that hides the green cube"
+        ],
+        [
+          373,
+          "put down the container"
+        ],
+        [
+          399,
+          "pick up the container that hides the blue cube"
+        ]
+      ],
+      "first_pick_frame": 85,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.2955555319786072,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube",
+        "pick up the container that hides the green cube",
+        "pick up the container that hides the blue cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard3-ButtonUnmask_ep0_seed12800000.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed12800300.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_3/videos/ButtonUnmask_ep3_seed12800300_xhard3_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+      "difficulty": "xhard3",
+      "frames": 518,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          76,
+          "pick up the container that hides the green cube"
+        ],
+        [
+          209,
+          "put down the container"
+        ],
+        [
+          239,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          369,
+          "put down the container"
+        ],
+        [
+          401,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 76,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.2689816355705261,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the green cube",
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard3-ButtonUnmask_ep3_seed12800300.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed12800600.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_6/videos/ButtonUnmask_ep6_seed12800600_xhard3_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+      "difficulty": "xhard3",
+      "frames": 539,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          79,
+          "pick up the container that hides the green cube"
+        ],
+        [
+          230,
+          "put down the container"
+        ],
+        [
+          256,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          369,
+          "put down the container"
+        ],
+        [
+          401,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 79,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.28516268730163574,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the green cube",
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard3-ButtonUnmask_ep6_seed12800600.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed6800000.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_0/videos/ButtonUnmask_ep0_seed6800000_xhard4_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "difficulty": "xhard4",
+      "frames": 503,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          76,
+          "pick up the container that hides the red cube"
+        ],
+        [
+          208,
+          "put down the container"
+        ],
+        [
+          237,
+          "pick up the container that hides the green cube"
+        ],
+        [
+          353,
+          "put down the container"
+        ],
+        [
+          388,
+          "pick up the container that hides the blue cube"
+        ]
+      ],
+      "first_pick_frame": 76,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.26644814014434814,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube",
+        "pick up the container that hides the green cube",
+        "pick up the container that hides the blue cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard4-ButtonUnmask_ep0_seed6800000.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed6800300.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_3/videos/ButtonUnmask_ep3_seed6800300_xhard4_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "difficulty": "xhard4",
+      "frames": 524,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          84,
+          "pick up the container that hides the red cube"
+        ],
+        [
+          220,
+          "put down the container"
+        ],
+        [
+          251,
+          "pick up the container that hides the green cube"
+        ],
+        [
+          369,
+          "put down the container"
+        ],
+        [
+          401,
+          "pick up the container that hides the blue cube"
+        ]
+      ],
+      "first_pick_frame": 84,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.2919149100780487,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube",
+        "pick up the container that hides the green cube",
+        "pick up the container that hides the blue cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard4-ButtonUnmask_ep3_seed6800300.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed6800600.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/videos/success_NO_OBJECT_ButtonUnmask_ep6_seed6800600_xhard4_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+      "difficulty": "xhard4",
+      "frames": 535,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          78,
+          "pick up the container that hides the green cube"
+        ],
+        [
+          222,
+          "put down the container"
+        ],
+        [
+          259,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          379,
+          "put down the container"
+        ],
+        [
+          414,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 78,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.25838199257850647,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the green cube",
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/xhard4-ButtonUnmask_ep6_seed6800600.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed8000.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_0/videos/ButtonUnmask_ep0_seed8000_FailRecoverZ_easy_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube.mp4",
+      "difficulty": "easy",
+      "frames": 291,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          82,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 82,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.27139508724212646,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/easy-ButtonUnmask_ep0_seed8000.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_1/hdf5_files/ButtonUnmask_ep1_seed8100.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_1/videos/ButtonUnmask_ep1_seed8100_FailRecoverZ_easy_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube.mp4",
+      "difficulty": "easy",
+      "frames": 294,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          76,
+          "pick up the container that hides the green cube"
+        ]
+      ],
+      "first_pick_frame": 76,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.26576194167137146,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the green cube"
+      ],
+      "all_images_existing": true
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_10/hdf5_files/ButtonUnmask_ep10_seed9000.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_10/videos/ButtonUnmask_ep10_seed9000_medium_first_press_the_button_then_pick_up_the_container_hiding_the_blue_cube.mp4",
+      "difficulty": "medium",
+      "frames": 227,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          76,
+          "pick up the container that hides the blue cube"
+        ]
+      ],
+      "first_pick_frame": 76,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.26017534732818604,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the blue cube"
+      ],
+      "all_images_existing": true
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_11/hdf5_files/ButtonUnmask_ep11_seed9100.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_11/videos/ButtonUnmask_ep11_seed9100_hard_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "difficulty": "hard",
+      "frames": 398,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          85,
+          "pick up the container that hides the red cube"
+        ],
+        [
+          240,
+          "put down the container"
+        ],
+        [
+          266,
+          "pick up the container that hides the blue cube"
+        ]
+      ],
+      "first_pick_frame": 85,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.2875702381134033,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube",
+        "pick up the container that hides the blue cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/hard-ButtonUnmask_ep11_seed9100.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_2/hdf5_files/ButtonUnmask_ep2_seed8200.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_2/videos/ButtonUnmask_ep2_seed8200_FailRecoverZ_medium_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube.mp4",
+      "difficulty": "medium",
+      "frames": 267,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          78,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 78,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.26049286127090454,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed8300.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_3/videos/ButtonUnmask_ep3_seed8300_FailRecoverXY_hard_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+      "difficulty": "hard",
+      "frames": 452,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          79,
+          "pick up the container that hides the red cube"
+        ],
+        [
+          312,
+          "put down the container"
+        ],
+        [
+          338,
+          "pick up the container that hides the blue cube"
+        ]
+      ],
+      "first_pick_frame": 79,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.27679798007011414,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube",
+        "pick up the container that hides the blue cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/hard-ButtonUnmask_ep3_seed8300.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_4/hdf5_files/ButtonUnmask_ep4_seed8400.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_4/videos/ButtonUnmask_ep4_seed8400_FailRecoverXY_easy_first_press_the_button_then_pick_up_the_container_hiding_the_green_cube.mp4",
+      "difficulty": "easy",
+      "frames": 323,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          76,
+          "pick up the container that hides the green cube"
+        ]
+      ],
+      "first_pick_frame": 76,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.26761752367019653,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the green cube"
+      ],
+      "all_images_existing": true
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed8600.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_6/videos/ButtonUnmask_ep6_seed8600_medium_first_press_the_button_then_pick_up_the_container_hiding_the_red_cube.mp4",
+      "difficulty": "medium",
+      "frames": 220,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          81,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 81,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.27775514125823975,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true,
+      "contact_sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/button_unmask/medium-ButtonUnmask_ep6_seed8600.jpg"
+    },
+    {
+      "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_7/hdf5_files/ButtonUnmask_ep7_seed8700.h5",
+      "video": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/ButtonUnmask_episode_7/videos/ButtonUnmask_ep7_seed8700_hard_first_press_the_button_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4",
+      "difficulty": "hard",
+      "frames": 377,
+      "spans": [
+        [
+          0,
+          "press the button"
+        ],
+        [
+          80,
+          "pick up the container that hides the blue cube"
+        ],
+        [
+          221,
+          "put down the container"
+        ],
+        [
+          253,
+          "pick up the container that hides the red cube"
+        ]
+      ],
+      "first_pick_frame": 80,
+      "reveal_returns_frame": 32,
+      "eef_z_frame31": 0.27137190103530884,
+      "final_completed": true,
+      "has_demo": false,
+      "pickup_names": [
+        "pick up the container that hides the blue cube",
+        "pick up the container that hides the red cube"
+      ],
+      "all_images_existing": true
+    }
+  ]
+}

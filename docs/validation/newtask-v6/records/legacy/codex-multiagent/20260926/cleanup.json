@@ -1,0 +1,191 @@
+{
+  "root_model": "gpt-6-astra",
+  "cleanup": "PASS",
+  "interrupted_count": 16,
+  "last_agent_list": {
+    "agents": [
+      {
+        "agent_name": "/root",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe01",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe02",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe03",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe04",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe05",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe06",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe07",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe08",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe09",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe10",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe11",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe12",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe13",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe14",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe15",
+        "agent_status": "interrupted"
+      },
+      {
+        "agent_name": "/root/probe16",
+        "agent_status": "interrupted"
+      }
+    ]
+  },
+  "interruptions": [
+    {
+      "target": "probe01",
+      "timestamp": "2026-09-26T18:26:55.289Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe02",
+      "timestamp": "2026-09-26T18:26:58.347Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe03",
+      "timestamp": "2026-09-26T18:27:00.281Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe04",
+      "timestamp": "2026-09-26T18:27:01.977Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe05",
+      "timestamp": "2026-09-26T18:27:04.157Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe06",
+      "timestamp": "2026-09-26T18:27:05.840Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe07",
+      "timestamp": "2026-09-26T18:27:07.874Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe08",
+      "timestamp": "2026-09-26T18:27:09.765Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe09",
+      "timestamp": "2026-09-26T18:27:11.653Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe10",
+      "timestamp": "2026-09-26T18:27:13.285Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe11",
+      "timestamp": "2026-09-26T18:27:14.964Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe12",
+      "timestamp": "2026-09-26T18:27:17.429Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe13",
+      "timestamp": "2026-09-26T18:27:20.035Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe14",
+      "timestamp": "2026-09-26T18:27:21.949Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe15",
+      "timestamp": "2026-09-26T18:27:24.098Z",
+      "result": {
+        "previous_status": "running"
+      }
+    },
+    {
+      "target": "probe16",
+      "timestamp": "2026-09-26T18:27:26.014Z",
+      "result": {
+        "previous_status": "running"
+      }
+    }
+  ]
+}

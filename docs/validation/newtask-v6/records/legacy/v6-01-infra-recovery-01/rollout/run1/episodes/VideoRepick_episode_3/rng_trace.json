@@ -1,0 +1,527 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "objects.num_repeats",
+      "drawn": 6,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.n_swaps",
+      "drawn": 12,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_rgb",
+      "drawn": [
+        0.20231457238125294,
+        0.6761422724989601,
+        0.7969377160072326
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.0.xy_yaw",
+      "drawn": [
+        0.04221690177917481,
+        -0.21060482144355774,
+        4.751571778219781
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.1.xy_yaw",
+      "drawn": [
+        -0.06788619041442873,
+        -0.15185970902442933,
+        3.9676776350479552
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.2.xy_yaw",
+      "drawn": [
+        -0.0710504674911499,
+        0.20709946751594546,
+        2.7037958100511275
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.cubes.3.xy_yaw",
+      "drawn": [
+        -0.24649015426635745,
+        -0.21757272958755494,
+        4.405614918722231
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.cubes.4.xy_yaw",
+      "drawn": [
+        -0.2687017631530762,
+        0.16210649728775026,
+        2.9240179269119597
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.cubes.5.xy_yaw",
+      "drawn": [
+        0.01329268932342531,
+        0.10262611269950869,
+        1.574713670310835
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.cubes.6.xy_yaw",
+      "drawn": [
+        -0.06772068738937378,
+        -0.0032389044761657604,
+        6.206368298071392
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.cube_count.requested",
+      "drawn": 7,
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "objects.cube_count.actual",
+      "drawn": 7,
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "objects.target",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.swap_initiators_remaining",
+      "drawn": [
+        4,
+        5,
+        3,
+        2,
+        1,
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "objects.swap_plan_seed",
+      "drawn": 4185702524977999524,
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "layout.swap_graph",
+      "drawn": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "source": "record"
+    },
+    {
+      "index": 16,
+      "path": "actions.swap_pairs.0",
+      "drawn": {
+        "initiator": "bin_5",
+        "partner": "bin_6"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "actions.swap_pairs.1",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_1"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "actions.swap_pairs.2",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_2"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "actions.swap_pairs.3",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_0"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "actions.swap_pairs.4",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_1"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 21,
+      "path": "actions.swap_pairs.5",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_2"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 22,
+      "path": "actions.swap_pairs.6",
+      "drawn": {
+        "initiator": "bin_6",
+        "partner": "bin_5"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 23,
+      "path": "actions.swap_pairs.7",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_2"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 24,
+      "path": "actions.swap_pairs.8",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_1"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 25,
+      "path": "actions.swap_pairs.9",
+      "drawn": {
+        "initiator": "bin_6",
+        "partner": "bin_5"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 26,
+      "path": "actions.swap_pairs.10",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_3"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 27,
+      "path": "actions.swap_pairs.11",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_0"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 28,
+      "path": "objects.swap_plan",
+      "drawn": {
+        "counts": [
+          4,
+          4,
+          3,
+          4,
+          3,
+          3,
+          3
+        ],
+        "range": 1,
+        "tries": 1,
+        "undo": 0
+      },
+      "source": "record"
+    },
+    {
+      "index": 29,
+      "path": "objects.swap_initiators",
+      "drawn": [
+        "bin_5",
+        "bin_0",
+        "bin_4",
+        "bin_3",
+        "bin_3",
+        "bin_4",
+        "bin_6",
+        "bin_4",
+        "bin_3",
+        "bin_6",
+        "bin_0",
+        "bin_1"
+      ],
+      "source": "record"
+    },
+    {
+      "index": 30,
+      "path": "actions.swap_pairs.0",
+      "drawn": {
+        "initiator": "bin_5",
+        "partner": "bin_6"
+      },
+      "source": "record"
+    },
+    {
+      "index": 31,
+      "path": "actions.swap_windows.0",
+      "drawn": [
+        205,
+        255
+      ],
+      "source": "record"
+    },
+    {
+      "index": 32,
+      "path": "actions.swap_pairs.1",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 33,
+      "path": "actions.swap_windows.1",
+      "drawn": [
+        255,
+        305
+      ],
+      "source": "record"
+    },
+    {
+      "index": 34,
+      "path": "actions.swap_pairs.2",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 35,
+      "path": "actions.swap_windows.2",
+      "drawn": [
+        305,
+        355
+      ],
+      "source": "record"
+    },
+    {
+      "index": 36,
+      "path": "actions.swap_pairs.3",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_0"
+      },
+      "source": "record"
+    },
+    {
+      "index": 37,
+      "path": "actions.swap_windows.3",
+      "drawn": [
+        355,
+        405
+      ],
+      "source": "record"
+    },
+    {
+      "index": 38,
+      "path": "actions.swap_pairs.4",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 39,
+      "path": "actions.swap_windows.4",
+      "drawn": [
+        405,
+        455
+      ],
+      "source": "record"
+    },
+    {
+      "index": 40,
+      "path": "actions.swap_pairs.5",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 41,
+      "path": "actions.swap_windows.5",
+      "drawn": [
+        455,
+        505
+      ],
+      "source": "record"
+    },
+    {
+      "index": 42,
+      "path": "actions.swap_pairs.6",
+      "drawn": {
+        "initiator": "bin_6",
+        "partner": "bin_5"
+      },
+      "source": "record"
+    },
+    {
+      "index": 43,
+      "path": "actions.swap_windows.6",
+      "drawn": [
+        505,
+        555
+      ],
+      "source": "record"
+    },
+    {
+      "index": 44,
+      "path": "actions.swap_pairs.7",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 45,
+      "path": "actions.swap_windows.7",
+      "drawn": [
+        555,
+        605
+      ],
+      "source": "record"
+    },
+    {
+      "index": 46,
+      "path": "actions.swap_pairs.8",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 47,
+      "path": "actions.swap_windows.8",
+      "drawn": [
+        605,
+        655
+      ],
+      "source": "record"
+    },
+    {
+      "index": 48,
+      "path": "actions.swap_pairs.9",
+      "drawn": {
+        "initiator": "bin_6",
+        "partner": "bin_5"
+      },
+      "source": "record"
+    },
+    {
+      "index": 49,
+      "path": "actions.swap_windows.9",
+      "drawn": [
+        655,
+        705
+      ],
+      "source": "record"
+    },
+    {
+      "index": 50,
+      "path": "actions.swap_pairs.10",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_3"
+      },
+      "source": "record"
+    },
+    {
+      "index": 51,
+      "path": "actions.swap_windows.10",
+      "drawn": [
+        705,
+        755
+      ],
+      "source": "record"
+    },
+    {
+      "index": 52,
+      "path": "actions.swap_pairs.11",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_0"
+      },
+      "source": "record"
+    },
+    {
+      "index": 53,
+      "path": "actions.swap_windows.11",
+      "drawn": [
+        755,
+        805
+      ],
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "e8c13a06b5997ab09fb20600afc46467ef60e5429833f0d94b73c726a37e14f3"
+  }
+}

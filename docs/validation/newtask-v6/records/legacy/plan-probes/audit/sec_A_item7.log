@@ -1,0 +1,24 @@
+NATIVE_SAMPLING per env:
+16
+config_easy per env:
+13
+902:| V0 | 静态 `git diff`：`config_easy/medium/hard`，以及原三档消费的 `NATIVE_SAMPLING` 键；另对剥掉 xhard 的 decision 跑 `assert_native_decision` | V5 的改动只许落在 `decision.xhard` 或 xhard 分支，这些块里出现任何 diff 都直接违反 H2/N12 | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
+953:| V0 | 每步零改动；新快照剥掉全部 xhard 键后 16 环境与 V4 快照逐字相同 |
+1048:| V0 | 无（静态，每步收尾都跑） | `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0` |
+11:| V0 原三档定义 | 每步 `git diff` 中 `config_easy/medium/hard` 与原三档 `NATIVE_SAMPLING` 零改动；新快照剥掉全部 xhard 键后 16 环境与 V4 快照逐字相同 | PASS |
+== commit numbers
+ 12.130   12.131   12.132   12.133   12.134   12.135   12.136   12.137   12.138   12.139  
+0b1d542 12.139 V6 计划 MoveCube 固化为圆环版统一区域 U（圆心 (−0.06,0)、内孔 0.12、外径 0.20），GL 144 局复测 120/144
+e1755f9 12.138 V6 计划 MoveCube 改为实测定界的统一区域 U：三路可达探针 + greatlakes 144 局真演示（118/144）
+1bb4190 12.137 算力规则第 10 条：GL 一律 48h 占位 job 塞跑、跑完 scancel，多 worker 生成按每 worker 1 CPU + 12 G 定席位规格
+215531e 12.136 V6 计划改为 hard 与 xhard 之间插入 xhard1/2/3（xhard 最难档），补 Swap 均匀性问答与 MoveCube 采样可视化
+== v6-draft branches
+e1755f9 12.138 V6 计划 MoveCube 改为实测定界的统一区域 U：三路可达探针 + greatlakes 144 局真演示（118/144）
+1bb4190 12.137 算力规则第 10 条：GL 一律 48h 占位 job 塞跑、跑完 scancel，多 worker 生成按每 worker 1 CPU + 12 G 定席位规格
+215531e 12.136 V6 计划改为 hard 与 xhard 之间插入 xhard1/2/3（xhard 最难档），补 Swap 均匀性问答与 MoveCube 采样可视化
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask                                                                         0b1d542 [newtaskRelease-v5]
+/data/hongzefu/v6-draft/movecube                                                                                           e1755f9 [v6-draft-movecube]
+/data/hongzefu/v6-draft/pipeline                                                                                           e1755f9 [v6-draft-pipeline]
+/data/hongzefu/v6-draft/swap                                                                                               e1755f9 [v6-draft-swap]
+/data/hongzefu/v6-draft/vp                                                                                                 e1755f9 [v6-draft-vp]
+/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/34637e22-b1a7-4754-a153-cae509fb6261/baseline-wt  504daee (detached HEAD)

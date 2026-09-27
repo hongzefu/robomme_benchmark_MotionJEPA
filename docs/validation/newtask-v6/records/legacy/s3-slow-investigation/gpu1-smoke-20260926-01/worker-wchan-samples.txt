@@ -1,0 +1,60 @@
+2026-09-27T00:30:20.329106576Z
+PID=1843953 state=D utime=155880 stime=27627 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=747 stime=253 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:21.343557084Z
+PID=1843953 state=D utime=155898 stime=27628 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=764 stime=255 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:22.360515235Z
+PID=1843953 state=D utime=155915 stime=27630 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=781 stime=257 wchan=os_acquire_rwlock_read
+2026-09-27T00:30:23.377136020Z
+PID=1843953 state=R utime=155933 stime=27633 wchan=0
+PID=2137044 state=R utime=800 stime=260 wchan=0
+2026-09-27T00:30:24.393776714Z
+PID=1843953 state=D utime=155955 stime=27635 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=820 stime=262 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:25.409508555Z
+PID=1843953 state=D utime=155972 stime=27637 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=837 stime=265 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:26.427104393Z
+PID=1843953 state=D utime=155989 stime=27639 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=854 stime=267 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:27.443534151Z
+PID=1843953 state=D utime=156006 stime=27641 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=871 stime=269 wchan=0
+2026-09-27T00:30:28.459748085Z
+PID=1843953 state=D utime=156029 stime=27644 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=894 stime=272 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:29.476323392Z
+PID=1843953 state=D utime=156047 stime=27646 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=910 stime=274 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:30.492256464Z
+PID=1843953 state=D utime=156063 stime=27649 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=928 stime=276 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:31.506547333Z
+PID=1843953 state=R utime=156081 stime=27651 wchan=0
+PID=2137044 state=R utime=946 stime=279 wchan=0
+2026-09-27T00:30:32.523836080Z
+PID=1843953 state=D utime=156103 stime=27654 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=968 stime=281 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:33.540485948Z
+PID=1843953 state=D utime=156120 stime=27656 wchan=os_acquire_rwlock_read
+PID=2137044 state=D utime=985 stime=283 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:34.559845532Z
+PID=1843953 state=D utime=156137 stime=27658 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=1002 stime=286 wchan=os_acquire_rwlock_read
+2026-09-27T00:30:35.577499096Z
+PID=1843953 state=R utime=156157 stime=27660 wchan=0
+PID=2137044 state=R utime=1023 stime=289 wchan=0
+2026-09-27T00:30:36.593112169Z
+PID=1843953 state=D utime=156175 stime=27662 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=1043 stime=292 wchan=os_acquire_rwlock_write
+2026-09-27T00:30:37.607295966Z
+PID=1843953 state=D utime=156192 stime=27664 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=1060 stime=294 wchan=os_acquire_rwlock_read
+2026-09-27T00:30:38.624214428Z
+PID=1843953 state=D utime=156209 stime=27666 wchan=os_acquire_rwlock_write
+PID=2137044 state=D utime=1078 stime=296 wchan=os_acquire_rwlock_read
+2026-09-27T00:30:39.641213910Z
+PID=1843953 state=R utime=156232 stime=27669 wchan=0
+PID=2137044 state=R utime=1100 stime=299 wchan=os_acquire_rwlock_write

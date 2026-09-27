@@ -1,0 +1,161 @@
+{
+  "decision": {
+    "demo_object_count": 1,
+    "demo_return_policy": "native_random_goal_site",
+    "swap": {
+      "easy": false,
+      "hard": true,
+      "medium": false,
+      "xhard1": true,
+      "xhard2": true,
+      "xhard3": true,
+      "xhard4": true
+    },
+    "targets": {
+      "easy": 4,
+      "hard": 4,
+      "medium": 4,
+      "xhard1": 4,
+      "xhard2": 4,
+      "xhard3": 4,
+      "xhard4": 4
+    },
+    "xhard1": {
+      "demo_object_count": 2,
+      "demo_return_policy": "return_to_origin",
+      "visit_counts": [
+        2,
+        3
+      ]
+    },
+    "xhard2": {
+      "demo_object_count": 2,
+      "demo_return_policy": "return_to_origin",
+      "visit_counts": [
+        3,
+        3
+      ]
+    },
+    "xhard3": {
+      "demo_object_count": 2,
+      "demo_return_policy": "return_to_origin",
+      "visit_counts": [
+        3,
+        4
+      ]
+    },
+    "xhard4": {
+      "demo_object_count": 2,
+      "demo_return_policy": "return_to_origin",
+      "visit_counts": [
+        4,
+        4
+      ]
+    }
+  },
+  "native": {
+    "parameters": {
+      "answer_selection": {
+        "mapping": "target_target = visit_ids[which_in_subset - 1]",
+        "sampler": "torch.randint(1, len(subset) + 1)"
+      },
+      "button_insertion": {
+        "mapping": "button_task_index = k * 2 + 2",
+        "sampler": "torch.randint(0, len(subset))"
+      },
+      "color": {
+        "easy": 1,
+        "hard": 3,
+        "medium": 3,
+        "xhard1": 3,
+        "xhard2": 3,
+        "xhard3": 3,
+        "xhard4": 3
+      },
+      "color_order": {
+        "sampler": "torch.randperm(3)"
+      },
+      "color_pool": [
+        {
+          "name": "red",
+          "rgba": [
+            1,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "blue",
+          "rgba": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "green",
+          "rgba": [
+            0,
+            1,
+            0,
+            1
+          ]
+        }
+      ],
+      "goal_site_z_override": -0.05,
+      "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+      "swap_duration_steps": 50,
+      "swap_selection": {
+        "sampler": "torch.randperm(len(targets))[:2]"
+      },
+      "target_selection": {
+        "sampler": "torch.randint(0, len(all_cubes))"
+      },
+      "target_slots": 4,
+      "visit_selection": {
+        "count_sampler": "torch.randint(2, len(targets) + 1)",
+        "order_sampler": "torch.randperm(len(targets))[:count]"
+      }
+    },
+    "positions": {
+      "button": {
+        "center_xy": [
+          0.1,
+          0
+        ],
+        "randomize_range": [
+          0.05,
+          0.3
+        ],
+        "scale": 1.5
+      },
+      "cubes": {
+        "region_center": [
+          0,
+          0
+        ],
+        "region_half_size": 0.2
+      },
+      "goal": {
+        "radius_factor": 5,
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": 0.1,
+        "thickness": 0.005
+      },
+      "targets": {
+        "radius_factor": 2,
+        "region_center": [
+          0,
+          0
+        ],
+        "region_half_size": 0.2,
+        "thickness": 0.005
+      }
+    }
+  }
+}

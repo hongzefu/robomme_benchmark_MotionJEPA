@@ -1,0 +1,93 @@
+[
+  {
+    "episode": 0,
+    "frames": 286,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Close the gripper and push the cube to the target"
+      },
+      {
+        "frame": 120,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 180,
+        "demo": false,
+        "text": "Close the gripper and push the cube to the target"
+      },
+      {
+        "frame": 281,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "episode": 3,
+    "frames": 263,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Close the gripper and push the cube to the target"
+      },
+      {
+        "frame": 98,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 158,
+        "demo": false,
+        "text": "Close the gripper and push the cube to the target"
+      },
+      {
+        "frame": 258,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  },
+  {
+    "episode": 6,
+    "frames": 479,
+    "boundaries": [
+      {
+        "frame": 0,
+        "demo": true,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 126,
+        "demo": true,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 213,
+        "demo": true,
+        "text": "static"
+      },
+      {
+        "frame": 273,
+        "demo": false,
+        "text": "Pick up the cube"
+      },
+      {
+        "frame": 394,
+        "demo": false,
+        "text": "place the cube onto the target"
+      },
+      {
+        "frame": 467,
+        "demo": false,
+        "text": "All tasks completed"
+      }
+    ],
+    "final_completed": true
+  }
+]

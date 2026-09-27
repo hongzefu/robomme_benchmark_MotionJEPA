@@ -1,0 +1,458 @@
+[
+ {
+  "task": "VideoUnmask",
+  "file": "VideoUnmask_ep0_seed4600000.h5",
+  "total": 507,
+  "demo": 66,
+  "nondemo": 441,
+  "segs": [
+   [
+    "static",
+    66
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    125
+   ],
+   [
+    "put down the container",
+    50
+   ],
+   [
+    "pick up the container that hides the green cube",
+    96
+   ],
+   [
+    "put down the container",
+    52
+   ],
+   [
+    "pick up the container that hides the red cube",
+    106
+   ],
+   [
+    "All tasks completed",
+    12
+   ]
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "file": "VideoUnmask_ep3_seed4600300.h5",
+  "total": 441,
+  "demo": 66,
+  "nondemo": 375,
+  "segs": [
+   [
+    "static",
+    66
+   ],
+   [
+    "pick up the container that hides the red cube",
+    102
+   ],
+   [
+    "put down the container",
+    47
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    90
+   ],
+   [
+    "put down the container",
+    48
+   ],
+   [
+    "pick up the container that hides the green cube",
+    81
+   ],
+   [
+    "All tasks completed",
+    7
+   ]
+  ]
+ },
+ {
+  "task": "VideoUnmask",
+  "file": "VideoUnmask_ep6_seed4600600.h5",
+  "total": 466,
+  "demo": 66,
+  "nondemo": 400,
+  "segs": [
+   [
+    "static",
+    66
+   ],
+   [
+    "pick up the container that hides the green cube",
+    99
+   ],
+   [
+    "put down the container",
+    41
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    111
+   ],
+   [
+    "put down the container",
+    51
+   ],
+   [
+    "pick up the container that hides the red cube",
+    90
+   ],
+   [
+    "All tasks completed",
+    8
+   ]
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "file": "ButtonUnmask_ep0_seed4800000.h5",
+  "total": 538,
+  "demo": 0,
+  "nondemo": 538,
+  "segs": [
+   [
+    "press the button",
+    119
+   ],
+   [
+    "pick up the container that hides the green cube",
+    109
+   ],
+   [
+    "put down the container",
+    51
+   ],
+   [
+    "pick up the container that hides the red cube",
+    99
+   ],
+   [
+    "put down the container",
+    51
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    97
+   ],
+   [
+    "All tasks completed",
+    12
+   ]
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "file": "ButtonUnmask_ep3_seed4800300.h5",
+  "total": 516,
+  "demo": 0,
+  "nondemo": 516,
+  "segs": [
+   [
+    "press the button",
+    111
+   ],
+   [
+    "pick up the container that hides the green cube",
+    109
+   ],
+   [
+    "put down the container",
+    51
+   ],
+   [
+    "pick up the container that hides the red cube",
+    106
+   ],
+   [
+    "put down the container",
+    41
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    91
+   ],
+   [
+    "All tasks completed",
+    7
+   ]
+  ]
+ },
+ {
+  "task": "ButtonUnmask",
+  "file": "ButtonUnmask_ep6_seed4800600.h5",
+  "total": 511,
+  "demo": 0,
+  "nondemo": 511,
+  "segs": [
+   [
+    "press the button",
+    116
+   ],
+   [
+    "pick up the container that hides the green cube",
+    109
+   ],
+   [
+    "put down the container",
+    51
+   ],
+   [
+    "pick up the container that hides the red cube",
+    105
+   ],
+   [
+    "put down the container",
+    41
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    82
+   ],
+   [
+    "All tasks completed",
+    7
+   ]
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "file": "VideoUnmaskSwap_ep0_seed4500000.h5",
+  "total": 802,
+  "demo": 396,
+  "nondemo": 406,
+  "segs": [
+   [
+    "static",
+    396
+   ],
+   [
+    "pick up the container that hides the green cube",
+    113
+   ],
+   [
+    "put down the container",
+    53
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    106
+   ],
+   [
+    "put down the container",
+    53
+   ],
+   [
+    "pick up the container that hides the red cube",
+    75
+   ],
+   [
+    "All tasks completed",
+    6
+   ]
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "file": "VideoUnmaskSwap_ep3_seed4500301.h5",
+  "total": 807,
+  "demo": 396,
+  "nondemo": 411,
+  "segs": [
+   [
+    "static",
+    396
+   ],
+   [
+    "pick up the container that hides the green cube",
+    126
+   ],
+   [
+    "put down the container",
+    50
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    99
+   ],
+   [
+    "put down the container",
+    51
+   ],
+   [
+    "pick up the container that hides the red cube",
+    79
+   ],
+   [
+    "All tasks completed",
+    6
+   ]
+  ]
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "file": "VideoUnmaskSwap_ep6_seed4500600.h5",
+  "total": 780,
+  "demo": 366,
+  "nondemo": 414,
+  "segs": [
+   [
+    "static",
+    366
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    107
+   ],
+   [
+    "put down the container",
+    48
+   ],
+   [
+    "pick up the container that hides the red cube",
+    104
+   ],
+   [
+    "put down the container",
+    48
+   ],
+   [
+    "pick up the container that hides the green cube",
+    100
+   ],
+   [
+    "All tasks completed",
+    7
+   ]
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "file": "ButtonUnmaskSwap_ep0_seed4700000.h5",
+  "total": 716,
+  "demo": 0,
+  "nondemo": 716,
+  "segs": [
+   [
+    "press the first button",
+    115
+   ],
+   [
+    "press the second button",
+    214
+   ],
+   [
+    "pick up the container that hides the red cube",
+    114
+   ],
+   [
+    "put down the container",
+    51
+   ],
+   [
+    "pick up the container that hides the green cube",
+    104
+   ],
+   [
+    "put down the container",
+    41
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    71
+   ],
+   [
+    "All tasks completed",
+    6
+   ]
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "file": "ButtonUnmaskSwap_ep3_seed4700300.h5",
+  "total": 689,
+  "demo": 0,
+  "nondemo": 689,
+  "segs": [
+   [
+    "press the first button",
+    109
+   ],
+   [
+    "press the second button",
+    189
+   ],
+   [
+    "pick up the container that hides the green cube",
+    105
+   ],
+   [
+    "put down the container",
+    51
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    94
+   ],
+   [
+    "put down the container",
+    41
+   ],
+   [
+    "pick up the container that hides the red cube",
+    93
+   ],
+   [
+    "All tasks completed",
+    7
+   ]
+  ]
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "file": "ButtonUnmaskSwap_ep6_seed4700600.h5",
+  "total": 721,
+  "demo": 0,
+  "nondemo": 721,
+  "segs": [
+   [
+    "press the first button",
+    119
+   ],
+   [
+    "press the second button",
+    210
+   ],
+   [
+    "pick up the container that hides the red cube",
+    113
+   ],
+   [
+    "put down the container",
+    41
+   ],
+   [
+    "pick up the container that hides the green cube",
+    101
+   ],
+   [
+    "put down the container",
+    49
+   ],
+   [
+    "pick up the container that hides the blue cube",
+    80
+   ],
+   [
+    "All tasks completed",
+    8
+   ]
+  ]
+ }
+]

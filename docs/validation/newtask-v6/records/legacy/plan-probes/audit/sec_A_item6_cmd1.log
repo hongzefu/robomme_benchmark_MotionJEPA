@@ -1,0 +1,75 @@
+diff --git a/src/robomme/env_record_wrapper/RecordWrapper.py b/src/robomme/env_record_wrapper/RecordWrapper.py
+index 1705290..c794aba 100644
+--- a/src/robomme/env_record_wrapper/RecordWrapper.py
++++ b/src/robomme/env_record_wrapper/RecordWrapper.py
+@@ -1095,8 +1095,11 @@ class RobommeRecordWrapper(gym.Wrapper):
+ 
+         # Failsafe: enforce a hard cap on episode length so planners can't run forever
+         # Keep English comment to retain original meaning: Force truncate when planner stuck, protect recording process
+-        # Force terminate episode if environment steps exceed preset safety limit (2000 steps)
+-        fail_safe_limit = 2000
++        # Force terminate episode if environment steps exceed preset safety limit (原 2000 steps，V4 起 5000)
++        # V4（2026-09-22 用户明确授权解冻此一处：「录像放开2000步 改为5000步」）：
++        # PickXtimes xhard num 取到 15 时演示约 136+138×num≈2206 步，原 2000 步上限必然误杀。
++        # 原三档成功局都在 2000 步内结束，放宽上限不改变它们的任何产物（V1 本机前后对比验证）。
++        fail_safe_limit = 5000
+         env_steps = int(getattr(self.env.unwrapped, "elapsed_steps", getattr(self.env, "elapsed_steps", 0)))
+         #print(env_steps)
+         if env_steps >= fail_safe_limit:
+749158e 12.76 V4：落实四项用户决策（录像器上限 5000、MoveCube corner_bias 0.5、InsertPeg 维持现状、V4 全链路不开 recover）
+7ed2c87 change chinese to english
+68a65a0 remove in dataset generation: obs/eef_state_raw action/eef_action_raw setup/fail_recover
+a73b8e7 choice action data format
+a42b4a6 opencv yx annotation, change to is_subgoal_boundary
+3094018 v2 xy pixel
+211de4c v1 change to xyz pos
+d582122 v6 fix boundary routestick patternlock
+aad9158 v5 fix routestick waypoint boundary
+73347c5 v3 no waypoint=nan
+749158e NOT ancestor of 13e5151
+13e5151 before 749158e
+rc vs 12.116=0
+== runbook cmd1 verbatim
+chain rc=1
+scripts/dataset_replay.py
+scripts/evaluation.py
+scripts/generate_dataset_newseed.py
+scripts/run_example.py
+scripts/seed_layout.py
+== V5 plan runbook 1060
+## 三、runbook
+
+```bash
+# 只读核验：录像器未改、五入口未增
+git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py && echo RECORDER_FROZEN=PASS
+ls -1 scripts/*.py    # 应恰好五个
+
+# 每次提交前（≤5 分钟）
+timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q
+
+# 单环境演示探针（本机，≤5 分钟一条命令；S3 各步用）
+CUDA_VISIBLE_DEVICES=0 timeout 290 uv run --no-sync python -m scripts.parity.v4_demo_probe --task MoveCube --n 4 \
+  --sampling-config <v5 单任务配置> --out artifacts/newtask-v5/demo-probe/<name>
+
+# V1：原三档 16×9（144 条）与最原始基线逐位比（S5；基线侧在基线提交的工作树里跑同一命令，单 worker）
+tmux new-session -d -s v5-v1 \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.parity.train_split_parity run \
+   --subset 16x9 --workers 1 --output artifacts/newtask-v5/v1/<side> 2>&1 | tee artifacts/logs/v5-v1-<side>.log; \
+   echo \"EXIT_CODE=\$?\" >> artifacts/logs/v5-v1-<side>.log"
+uv run --no-sync python -m scripts.parity.train_split_parity compare artifacts/newtask-v5/v1/base artifacts/newtask-v5/v1/v5
+
+# 一次多 worker 生成：抽 10 候选 → 冻结 → 实跑 48 条（S6；参数名以 S4 参数化后的实现为准）
+tmux new-session -d -s v5-gen \
+  "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v5-01 \
+   --sampling-config scripts/configs/newtask-v5/sampling_config.json --candidates-per-env 10 --max-reset-attempts 30 --workers <n> \
+   --out artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
+   && uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
+   --sampling-config scripts/configs/newtask-v5/sampling_config.json --out scripts/configs/newtask-v5/v5-01/specs.jsonl \
+   && uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v5/v5-01/specs.jsonl --label run1 \
+   --official-root artifacts/train-parity/local-smoke-01/official-src --workers <n> --output artifacts/newtask-v5/v5-01/rollout \
+   2>&1 | tee artifacts/logs/v5-gen-v5-01.log; echo \"EXIT_CODE=\$?\" >> artifacts/logs/v5-gen-v5-01.log"
+```
+
+等待 tmux 任务一律挂 Monitor 在日志上，按 CLAUDE.md 的写法过滤 `EXIT_CODE=|Error|Traceback`，管道各级都要行缓冲，不得用 sleep 轮询。
+不跑第二遍、不跑 compare、不跑 V6、不跑推理。
+

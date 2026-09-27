@@ -1,0 +1,100 @@
+[
+ {
+  "task": "SwingXtimes",
+  "episode": 3,
+  "seed": 6300300,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_3",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "episode": 3,
+  "seed": 6500300,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmaskSwap_episode_3",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoUnmask",
+  "episode": 3,
+  "seed": 6600300,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_3",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "episode": 3,
+  "seed": 6900300,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_3",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoPlaceButton",
+  "episode": 3,
+  "seed": 7000302,
+  "attempt": 2,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "episode": 3,
+  "seed": 7100301,
+  "attempt": 1,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_3",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "InsertPeg",
+  "episode": 2,
+  "seed": 7300200,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_2",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ }
+]

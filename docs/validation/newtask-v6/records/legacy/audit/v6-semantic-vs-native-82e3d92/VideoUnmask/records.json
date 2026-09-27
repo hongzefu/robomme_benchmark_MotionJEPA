@@ -1,0 +1,4460 @@
+[
+ {
+  "tier": "xhard1",
+  "episode": 0,
+  "seed": 8600000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed8600000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmask_episode_0/videos/VideoUnmask_ep0_seed8600000_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 2,
+   "ring": 8,
+   "ring_cubes": [
+    4,
+    4
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, finally pick up another container hiding the green cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 301,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   164,
+   205,
+   293
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 163,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <135, 135> that hides the red cube"
+   },
+   {
+    "start": 164,
+    "end": 204,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 205,
+    "end": 292,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <118, 115> that hides the green cube"
+   },
+   {
+    "start": 293,
+    "end": 300,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <118, 115> that hides the green cube"
+   }
+  ],
+  "goal_colors": [
+   "red",
+   "green"
+  ],
+  "subgoal_colors": [
+   "red",
+   "green"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 1,
+   "green": 1,
+   "cyan": 2,
+   "blue": 1,
+   "magenta": 1
+  },
+  "ring_cubes_seen": 4,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     163
+    ],
+    "grounded": [
+     135,
+     135
+    ],
+    "reveal_cube_pos": [
+     137.0,
+     135.9
+    ],
+    "grounded_to_cube_px": 2.2,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "green",
+    "seg": [
+     205,
+     292
+    ],
+    "grounded": [
+     118,
+     115
+    ],
+    "reveal_cube_pos": [
+     112.0,
+     117.5
+    ],
+    "grounded_to_cube_px": 6.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard1",
+    "ep": 0,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      133,
+      137
+     ]
+    },
+    "point_to_cube_px": 4.1,
+    "nearest_other_rgb_px": 28.7
+   },
+   {
+    "tier": "xhard1",
+    "ep": 0,
+    "seg": "put down the container",
+    "start": 164,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard1",
+    "ep": 0,
+    "seg": "pick up the container that hides the green cube",
+    "start": 205,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      117
+     ]
+    },
+    "point_to_cube_px": 6.0,
+    "nearest_other_rgb_px": 36.3
+   }
+  ],
+  "grip_close_runs": [
+   [
+    138,
+    184
+   ],
+   [
+    272,
+    300
+   ]
+  ],
+  "completed_first_step": 293,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard1_ep0_seed8600000.png"
+ },
+ {
+  "tier": "xhard1",
+  "episode": 3,
+  "seed": 8600300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed8600300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmask_episode_3/videos/VideoUnmask_ep3_seed8600300_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 2,
+   "ring": 8,
+   "ring_cubes": [
+    4,
+    4
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 328,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   167,
+   218,
+   321
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 166,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <103, 172> that hides the green cube"
+   },
+   {
+    "start": 167,
+    "end": 217,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 218,
+    "end": 320,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <107, 100> that hides the red cube"
+   },
+   {
+    "start": 321,
+    "end": 327,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <107, 100> that hides the red cube"
+   }
+  ],
+  "goal_colors": [
+   "green",
+   "red"
+  ],
+  "subgoal_colors": [
+   "green",
+   "red"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 2,
+   "green": 1,
+   "cyan": 1,
+   "blue": 1,
+   "magenta": 1
+  },
+  "ring_cubes_seen": 4,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "green",
+    "seg": [
+     66,
+     166
+    ],
+    "grounded": [
+     103,
+     172
+    ],
+    "reveal_cube_pos": [
+     106.1,
+     171.4
+    ],
+    "grounded_to_cube_px": 3.2,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "red",
+    "seg": [
+     218,
+     320
+    ],
+    "grounded": [
+     107,
+     100
+    ],
+    "reveal_cube_pos": [
+     110.0,
+     101.8
+    ],
+    "grounded_to_cube_px": 3.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard1",
+    "ep": 3,
+    "seg": "pick up the container that hides the green cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      101,
+      175
+     ]
+    },
+    "point_to_cube_px": 6.2,
+    "nearest_other_rgb_px": 34.7
+   },
+   {
+    "tier": "xhard1",
+    "ep": 3,
+    "seg": "put down the container",
+    "start": 167,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard1",
+    "ep": 3,
+    "seg": "pick up the container that hides the red cube",
+    "start": 218,
+    "choice": {
+     "choice": "A",
+     "point": [
+      104,
+      100
+     ]
+    },
+    "point_to_cube_px": 6.3,
+    "nearest_other_rgb_px": 71.4
+   }
+  ],
+  "grip_close_runs": [
+   [
+    139,
+    191
+   ],
+   [
+    300,
+    327
+   ]
+  ],
+  "completed_first_step": 321,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard1_ep3_seed8600300.png"
+ },
+ {
+  "tier": "xhard1",
+  "episode": 6,
+  "seed": 8600600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed8600600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoUnmask_episode_6/videos/VideoUnmask_ep6_seed8600600_xhard1_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 2,
+   "ring": 8,
+   "ring_cubes": [
+    4,
+    4
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 306,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   166,
+   207,
+   299
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 165,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <133, 127> that hides the blue cube"
+   },
+   {
+    "start": 166,
+    "end": 206,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 207,
+    "end": 298,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <105, 79> that hides the green cube"
+   },
+   {
+    "start": 299,
+    "end": 305,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <105, 79> that hides the green cube"
+   }
+  ],
+  "goal_colors": [
+   "blue",
+   "green"
+  ],
+  "subgoal_colors": [
+   "blue",
+   "green"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 1,
+   "green": 1,
+   "cyan": 1,
+   "blue": 1,
+   "magenta": 2
+  },
+  "ring_cubes_seen": 4,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "blue",
+    "seg": [
+     66,
+     165
+    ],
+    "grounded": [
+     133,
+     127
+    ],
+    "reveal_cube_pos": [
+     135.0,
+     127.5
+    ],
+    "grounded_to_cube_px": 2.1,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "green",
+    "seg": [
+     207,
+     298
+    ],
+    "grounded": [
+     105,
+     79
+    ],
+    "reveal_cube_pos": [
+     100.9,
+     82.3
+    ],
+    "grounded_to_cube_px": 5.3,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard1",
+    "ep": 6,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      131,
+      128
+     ]
+    },
+    "point_to_cube_px": 4.0,
+    "nearest_other_rgb_px": 33.5
+   },
+   {
+    "tier": "xhard1",
+    "ep": 6,
+    "seg": "put down the container",
+    "start": 166,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard1",
+    "ep": 6,
+    "seg": "pick up the container that hides the green cube",
+    "start": 207,
+    "choice": {
+     "choice": "A",
+     "point": [
+      95,
+      80
+     ]
+    },
+    "point_to_cube_px": 6.3,
+    "nearest_other_rgb_px": 48.1
+   }
+  ],
+  "grip_close_runs": [
+   [
+    140,
+    186
+   ],
+   [
+    278,
+    305
+   ]
+  ],
+  "completed_first_step": 299,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard1_ep6_seed8600600.png"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 0,
+  "seed": 10600000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed10600000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmask_episode_0/videos/VideoUnmask_ep0_seed10600000_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmask_episode_0/videos/success_NO_OBJECT_VideoUnmask_ep0_seed10600000_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 10,
+   "ring_cubes": [
+    5,
+    5
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 490,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   183,
+   237,
+   347,
+   388,
+   484
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 182,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <66, 162> that hides the red cube"
+   },
+   {
+    "start": 183,
+    "end": 236,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 237,
+    "end": 346,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <140, 131> that hides the green cube"
+   },
+   {
+    "start": 347,
+    "end": 387,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 388,
+    "end": 483,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container that hides the blue cube"
+   },
+   {
+    "start": 484,
+    "end": 489,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container that hides the blue cube"
+   }
+  ],
+  "goal_colors": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal_colors": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 2,
+   "green": 1,
+   "cyan": 2,
+   "blue": 1,
+   "magenta": 1
+  },
+  "ring_cubes_seen": 5,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     182
+    ],
+    "grounded": [
+     66,
+     162
+    ],
+    "reveal_cube_pos": [
+     69.5,
+     161.7
+    ],
+    "grounded_to_cube_px": 3.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "green",
+    "seg": [
+     237,
+     346
+    ],
+    "grounded": [
+     140,
+     131
+    ],
+    "reveal_cube_pos": [
+     141.5,
+     131.0
+    ],
+    "grounded_to_cube_px": 1.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "blue",
+    "seg": [
+     388,
+     483
+    ],
+    "grounded": null,
+    "reveal_cube_pos": [
+     93.5,
+     137.0
+    ],
+    "grounded_to_cube_px": null,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard2",
+    "ep": 0,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      164
+     ]
+    },
+    "point_to_cube_px": 6.9,
+    "nearest_other_rgb_px": 40.7
+   },
+   {
+    "tier": "xhard2",
+    "ep": 0,
+    "seg": "put down the container",
+    "start": 183,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard2",
+    "ep": 0,
+    "seg": "pick up the container that hides the green cube",
+    "start": 237,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      132
+     ]
+    },
+    "point_to_cube_px": 3.6,
+    "nearest_other_rgb_px": 44.8
+   },
+   {
+    "tier": "xhard2",
+    "ep": 0,
+    "seg": "put down the container",
+    "start": 347,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard2",
+    "ep": 0,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 388,
+    "choice": {
+     "choice": "A",
+     "point": [
+      87,
+      138
+     ]
+    },
+    "point_to_cube_px": 6.6,
+    "nearest_other_rgb_px": 29.5
+   }
+  ],
+  "grip_close_runs": [
+   [
+    151,
+    211
+   ],
+   [
+    321,
+    367
+   ],
+   [
+    462,
+    489
+   ]
+  ],
+  "completed_first_step": 484,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard2_ep0_seed10600000.png"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 3,
+  "seed": 10600300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed10600300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmask_episode_3/videos/VideoUnmask_ep3_seed10600300_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 10,
+   "ring_cubes": [
+    5,
+    5
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 460,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   176,
+   228,
+   324,
+   375,
+   452
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 175,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <83, 125> that hides the red cube"
+   },
+   {
+    "start": 176,
+    "end": 227,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 228,
+    "end": 323,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <107, 92> that hides the blue cube"
+   },
+   {
+    "start": 324,
+    "end": 374,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 375,
+    "end": 451,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <110, 126> that hides the green cube"
+   },
+   {
+    "start": 452,
+    "end": 459,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <110, 126> that hides the green cube"
+   }
+  ],
+  "goal_colors": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal_colors": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 2,
+   "green": 1,
+   "cyan": 1,
+   "blue": 1,
+   "magenta": 2
+  },
+  "ring_cubes_seen": 5,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     175
+    ],
+    "grounded": [
+     83,
+     125
+    ],
+    "reveal_cube_pos": [
+     86.4,
+     125.8
+    ],
+    "grounded_to_cube_px": 3.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "blue",
+    "seg": [
+     228,
+     323
+    ],
+    "grounded": [
+     107,
+     92
+    ],
+    "reveal_cube_pos": [
+     109.9,
+     93.3
+    ],
+    "grounded_to_cube_px": 3.2,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "green",
+    "seg": [
+     375,
+     451
+    ],
+    "grounded": [
+     110,
+     126
+    ],
+    "reveal_cube_pos": [
+     113.0,
+     126.5
+    ],
+    "grounded_to_cube_px": 3.0,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard2",
+    "ep": 3,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      80,
+      126
+     ]
+    },
+    "point_to_cube_px": 6.4,
+    "nearest_other_rgb_px": 33.0
+   },
+   {
+    "tier": "xhard2",
+    "ep": 3,
+    "seg": "put down the container",
+    "start": 176,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard2",
+    "ep": 3,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 228,
+    "choice": {
+     "choice": "A",
+     "point": [
+      104,
+      91
+     ]
+    },
+    "point_to_cube_px": 6.3,
+    "nearest_other_rgb_px": 36.6
+   },
+   {
+    "tier": "xhard2",
+    "ep": 3,
+    "seg": "put down the container",
+    "start": 324,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard2",
+    "ep": 3,
+    "seg": "pick up the container that hides the green cube",
+    "start": 375,
+    "choice": {
+     "choice": "A",
+     "point": [
+      107,
+      127
+     ]
+    },
+    "point_to_cube_px": 6.0,
+    "nearest_other_rgb_px": 20.6
+   }
+  ],
+  "grip_close_runs": [
+   [
+    143,
+    204
+   ],
+   [
+    295,
+    348
+   ],
+   [
+    431,
+    459
+   ]
+  ],
+  "completed_first_step": 452,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard2_ep3_seed10600300.png"
+ },
+ {
+  "tier": "xhard2",
+  "episode": 6,
+  "seed": 10600600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed10600600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoUnmask_episode_6/videos/VideoUnmask_ep6_seed10600600_xhard2_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 10,
+   "ring_cubes": [
+    5,
+    5
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 457,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   176,
+   223,
+   323,
+   370,
+   451
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 175,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <84, 163> that hides the red cube"
+   },
+   {
+    "start": 176,
+    "end": 222,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 223,
+    "end": 322,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <117, 148> that hides the green cube"
+   },
+   {
+    "start": 323,
+    "end": 369,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 370,
+    "end": 450,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <134, 110> that hides the blue cube"
+   },
+   {
+    "start": 451,
+    "end": 456,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <134, 110> that hides the blue cube"
+   }
+  ],
+  "goal_colors": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal_colors": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 2,
+   "green": 1,
+   "cyan": 1,
+   "blue": 1,
+   "magenta": 2
+  },
+  "ring_cubes_seen": 5,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     175
+    ],
+    "grounded": [
+     84,
+     163
+    ],
+    "reveal_cube_pos": [
+     87.9,
+     162.2
+    ],
+    "grounded_to_cube_px": 4.0,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "green",
+    "seg": [
+     223,
+     322
+    ],
+    "grounded": [
+     117,
+     148
+    ],
+    "reveal_cube_pos": [
+     119.6,
+     148.2
+    ],
+    "grounded_to_cube_px": 2.6,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "blue",
+    "seg": [
+     370,
+     450
+    ],
+    "grounded": [
+     134,
+     110
+    ],
+    "reveal_cube_pos": [
+     136.0,
+     111.5
+    ],
+    "grounded_to_cube_px": 2.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard2",
+    "ep": 6,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      165
+     ]
+    },
+    "point_to_cube_px": 7.4,
+    "nearest_other_rgb_px": 42.1
+   },
+   {
+    "tier": "xhard2",
+    "ep": 6,
+    "seg": "put down the container",
+    "start": 176,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard2",
+    "ep": 6,
+    "seg": "pick up the container that hides the green cube",
+    "start": 223,
+    "choice": {
+     "choice": "A",
+     "point": [
+      114,
+      150
+     ]
+    },
+    "point_to_cube_px": 5.9,
+    "nearest_other_rgb_px": 28.8
+   },
+   {
+    "tier": "xhard2",
+    "ep": 6,
+    "seg": "put down the container",
+    "start": 323,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard2",
+    "ep": 6,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 370,
+    "choice": {
+     "choice": "A",
+     "point": [
+      132,
+      111
+     ]
+    },
+    "point_to_cube_px": 4.0,
+    "nearest_other_rgb_px": 39.2
+   }
+  ],
+  "grip_close_runs": [
+   [
+    142,
+    198
+   ],
+   [
+    293,
+    348
+   ],
+   [
+    431,
+    456
+   ]
+  ],
+  "completed_first_step": 451,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard2_ep6_seed10600600.png"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 0,
+  "seed": 12600000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed12600000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmask_episode_0/videos/VideoUnmask_ep0_seed12600000_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 13,
+   "ring_cubes": [
+    6,
+    7
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 471,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   180,
+   228,
+   318,
+   370,
+   463
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 179,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <89, 156> that hides the green cube"
+   },
+   {
+    "start": 180,
+    "end": 227,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 228,
+    "end": 317,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <79, 126> that hides the blue cube"
+   },
+   {
+    "start": 318,
+    "end": 369,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 370,
+    "end": 462,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <70, 108> that hides the red cube"
+   },
+   {
+    "start": 463,
+    "end": 470,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <70, 108> that hides the red cube"
+   }
+  ],
+  "goal_colors": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "subgoal_colors": [
+   "green",
+   "blue",
+   "red"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 2,
+   "green": 1,
+   "cyan": 2,
+   "blue": 1,
+   "magenta": 2
+  },
+  "ring_cubes_seen": 6,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "green",
+    "seg": [
+     66,
+     179
+    ],
+    "grounded": [
+     89,
+     156
+    ],
+    "reveal_cube_pos": [
+     92.5,
+     155.9
+    ],
+    "grounded_to_cube_px": 3.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "blue",
+    "seg": [
+     228,
+     317
+    ],
+    "grounded": [
+     79,
+     126
+    ],
+    "reveal_cube_pos": [
+     83.0,
+     126.5
+    ],
+    "grounded_to_cube_px": 4.0,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "red",
+    "seg": [
+     370,
+     462
+    ],
+    "grounded": [
+     70,
+     108
+    ],
+    "reveal_cube_pos": [
+     73.4,
+     109.1
+    ],
+    "grounded_to_cube_px": 3.6,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard3",
+    "ep": 0,
+    "seg": "pick up the container that hides the green cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      158
+     ]
+    },
+    "point_to_cube_px": 6.8,
+    "nearest_other_rgb_px": 31.6
+   },
+   {
+    "tier": "xhard3",
+    "ep": 0,
+    "seg": "put down the container",
+    "start": 180,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard3",
+    "ep": 0,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 228,
+    "choice": {
+     "choice": "A",
+     "point": [
+      76,
+      127
+     ]
+    },
+    "point_to_cube_px": 7.0,
+    "nearest_other_rgb_px": 18.1
+   },
+   {
+    "tier": "xhard3",
+    "ep": 0,
+    "seg": "put down the container",
+    "start": 318,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard3",
+    "ep": 0,
+    "seg": "pick up the container that hides the red cube",
+    "start": 370,
+    "choice": {
+     "choice": "A",
+     "point": [
+      67,
+      109
+     ]
+    },
+    "point_to_cube_px": 6.4,
+    "nearest_other_rgb_px": 23.7
+   }
+  ],
+  "grip_close_runs": [
+   [
+    145,
+    202
+   ],
+   [
+    287,
+    345
+   ],
+   [
+    440,
+    470
+   ]
+  ],
+  "completed_first_step": 463,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard3_ep0_seed12600000.png"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 3,
+  "seed": 12600300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed12600300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmask_episode_3/videos/VideoUnmask_ep3_seed12600300_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 13,
+   "ring_cubes": [
+    6,
+    7
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 449,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   168,
+   217,
+   316,
+   364,
+   442
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 167,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <100, 122> that hides the red cube"
+   },
+   {
+    "start": 168,
+    "end": 216,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 217,
+    "end": 315,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <119, 89> that hides the blue cube"
+   },
+   {
+    "start": 316,
+    "end": 363,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 364,
+    "end": 441,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <105, 166> that hides the green cube"
+   },
+   {
+    "start": 442,
+    "end": 448,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <105, 166> that hides the green cube"
+   }
+  ],
+  "goal_colors": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal_colors": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 2,
+   "green": 1,
+   "cyan": 2,
+   "blue": 1,
+   "magenta": 2
+  },
+  "ring_cubes_seen": 6,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     167
+    ],
+    "grounded": [
+     100,
+     122
+    ],
+    "reveal_cube_pos": [
+     103.0,
+     122.8
+    ],
+    "grounded_to_cube_px": 3.1,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "blue",
+    "seg": [
+     217,
+     315
+    ],
+    "grounded": [
+     119,
+     89
+    ],
+    "reveal_cube_pos": [
+     122.0,
+     90.9
+    ],
+    "grounded_to_cube_px": 3.6,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "green",
+    "seg": [
+     364,
+     441
+    ],
+    "grounded": [
+     105,
+     166
+    ],
+    "reveal_cube_pos": [
+     108.9,
+     165.3
+    ],
+    "grounded_to_cube_px": 4.0,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard3",
+    "ep": 3,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      97,
+      123
+     ]
+    },
+    "point_to_cube_px": 6.0,
+    "nearest_other_rgb_px": 40.7
+   },
+   {
+    "tier": "xhard3",
+    "ep": 3,
+    "seg": "put down the container",
+    "start": 168,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard3",
+    "ep": 3,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 217,
+    "choice": {
+     "choice": "A",
+     "point": [
+      117,
+      89
+     ]
+    },
+    "point_to_cube_px": 5.3,
+    "nearest_other_rgb_px": 36.6
+   },
+   {
+    "tier": "xhard3",
+    "ep": 3,
+    "seg": "put down the container",
+    "start": 316,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard3",
+    "ep": 3,
+    "seg": "pick up the container that hides the green cube",
+    "start": 364,
+    "choice": {
+     "choice": "A",
+     "point": [
+      103,
+      169
+     ]
+    },
+    "point_to_cube_px": 7.0,
+    "nearest_other_rgb_px": 46.2
+   }
+  ],
+  "grip_close_runs": [
+   [
+    140,
+    190
+   ],
+   [
+    285,
+    342
+   ],
+   [
+    421,
+    448
+   ]
+  ],
+  "completed_first_step": 442,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard3_ep3_seed12600300.png"
+ },
+ {
+  "tier": "xhard3",
+  "episode": 6,
+  "seed": 12600600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed12600600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoUnmask_episode_6/videos/VideoUnmask_ep6_seed12600600_xhard3_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 13,
+   "ring_cubes": [
+    6,
+    7
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 478,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   179,
+   227,
+   331,
+   378,
+   466
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 178,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <89, 134> that hides the red cube"
+   },
+   {
+    "start": 179,
+    "end": 226,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 227,
+    "end": 330,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <116, 177> that hides the green cube"
+   },
+   {
+    "start": 331,
+    "end": 377,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 378,
+    "end": 465,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <131, 124> that hides the blue cube"
+   },
+   {
+    "start": 466,
+    "end": 477,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <131, 124> that hides the blue cube"
+   }
+  ],
+  "goal_colors": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "subgoal_colors": [
+   "red",
+   "green",
+   "blue"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 2,
+   "green": 1,
+   "cyan": 2,
+   "blue": 1,
+   "magenta": 2
+  },
+  "ring_cubes_seen": 6,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     178
+    ],
+    "grounded": [
+     89,
+     134
+    ],
+    "reveal_cube_pos": [
+     92.4,
+     134.9
+    ],
+    "grounded_to_cube_px": 3.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "green",
+    "seg": [
+     227,
+     330
+    ],
+    "grounded": [
+     116,
+     177
+    ],
+    "reveal_cube_pos": [
+     119.0,
+     175.6
+    ],
+    "grounded_to_cube_px": 3.3,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "blue",
+    "seg": [
+     378,
+     465
+    ],
+    "grounded": [
+     131,
+     124
+    ],
+    "reveal_cube_pos": [
+     133.4,
+     124.1
+    ],
+    "grounded_to_cube_px": 2.4,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard3",
+    "ep": 6,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      86,
+      136
+     ]
+    },
+    "point_to_cube_px": 6.5,
+    "nearest_other_rgb_px": 48.9
+   },
+   {
+    "tier": "xhard3",
+    "ep": 6,
+    "seg": "put down the container",
+    "start": 179,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard3",
+    "ep": 6,
+    "seg": "pick up the container that hides the green cube",
+    "start": 227,
+    "choice": {
+     "choice": "A",
+     "point": [
+      114,
+      180
+     ]
+    },
+    "point_to_cube_px": 6.7,
+    "nearest_other_rgb_px": 50.0
+   },
+   {
+    "tier": "xhard3",
+    "ep": 6,
+    "seg": "put down the container",
+    "start": 331,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard3",
+    "ep": 6,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 378,
+    "choice": {
+     "choice": "A",
+     "point": [
+      129,
+      124
+     ]
+    },
+    "point_to_cube_px": 4.4,
+    "nearest_other_rgb_px": 38.2
+   }
+  ],
+  "grip_close_runs": [
+   [
+    144,
+    202
+   ],
+   [
+    300,
+    356
+   ],
+   [
+    446,
+    477
+   ]
+  ],
+  "completed_first_step": 466,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard3_ep6_seed12600600.png"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "seed": 6600000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed6600000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_0/videos/VideoUnmask_ep0_seed6600000_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 15,
+   "ring_cubes": [
+    7,
+    8
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 461,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   175,
+   224,
+   330,
+   377,
+   455
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 174,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <74, 86> that hides the red cube"
+   },
+   {
+    "start": 175,
+    "end": 223,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 224,
+    "end": 329,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <121, 121> that hides the blue cube"
+   },
+   {
+    "start": 330,
+    "end": 376,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 377,
+    "end": 454,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <133, 154> that hides the green cube"
+   },
+   {
+    "start": 455,
+    "end": 460,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <133, 154> that hides the green cube"
+   }
+  ],
+  "goal_colors": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal_colors": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 3,
+   "green": 1,
+   "cyan": 2,
+   "blue": 1,
+   "magenta": 2
+  },
+  "ring_cubes_seen": 7,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     174
+    ],
+    "grounded": [
+     74,
+     86
+    ],
+    "reveal_cube_pos": [
+     77.5,
+     87.5
+    ],
+    "grounded_to_cube_px": 3.8,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "blue",
+    "seg": [
+     224,
+     329
+    ],
+    "grounded": [
+     121,
+     121
+    ],
+    "reveal_cube_pos": [
+     124.0,
+     121.5
+    ],
+    "grounded_to_cube_px": 3.0,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "green",
+    "seg": [
+     377,
+     454
+    ],
+    "grounded": [
+     133,
+     154
+    ],
+    "reveal_cube_pos": [
+     135.5,
+     153.8
+    ],
+    "grounded_to_cube_px": 2.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard4",
+    "ep": 0,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      86
+     ]
+    },
+    "point_to_cube_px": 6.7,
+    "nearest_other_rgb_px": 63.8
+   },
+   {
+    "tier": "xhard4",
+    "ep": 0,
+    "seg": "put down the container",
+    "start": 175,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard4",
+    "ep": 0,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 224,
+    "choice": {
+     "choice": "A",
+     "point": [
+      119,
+      122
+     ]
+    },
+    "point_to_cube_px": 5.0,
+    "nearest_other_rgb_px": 35.8
+   },
+   {
+    "tier": "xhard4",
+    "ep": 0,
+    "seg": "put down the container",
+    "start": 330,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard4",
+    "ep": 0,
+    "seg": "pick up the container that hides the green cube",
+    "start": 377,
+    "choice": {
+     "choice": "A",
+     "point": [
+      131,
+      156
+     ]
+    },
+    "point_to_cube_px": 5.0,
+    "nearest_other_rgb_px": 35.2
+   }
+  ],
+  "grip_close_runs": [
+   [
+    145,
+    200
+   ],
+   [
+    299,
+    355
+   ],
+   [
+    435,
+    460
+   ]
+  ],
+  "completed_first_step": 455,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard4_ep0_seed6600000.png"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "seed": 6600300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed6600300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_3/videos/VideoUnmask_ep3_seed6600300_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube_next_pick_up_another_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_green_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 15,
+   "ring_cubes": [
+    7,
+    8
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the blue cube, finally pick up another container hiding the green cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 465,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   171,
+   212,
+   319,
+   371,
+   459
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 170,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <140, 89> that hides the red cube"
+   },
+   {
+    "start": 171,
+    "end": 211,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 212,
+    "end": 318,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <117, 86> that hides the blue cube"
+   },
+   {
+    "start": 319,
+    "end": 370,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 371,
+    "end": 458,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <142, 134> that hides the green cube"
+   },
+   {
+    "start": 459,
+    "end": 464,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <142, 134> that hides the green cube"
+   }
+  ],
+  "goal_colors": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "subgoal_colors": [
+   "red",
+   "blue",
+   "green"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 2,
+   "green": 1,
+   "cyan": 2,
+   "blue": 1,
+   "magenta": 3
+  },
+  "ring_cubes_seen": 7,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     170
+    ],
+    "grounded": [
+     140,
+     89
+    ],
+    "reveal_cube_pos": [
+     141.5,
+     90.2
+    ],
+    "grounded_to_cube_px": 1.9,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "blue",
+    "seg": [
+     212,
+     318
+    ],
+    "grounded": [
+     117,
+     86
+    ],
+    "reveal_cube_pos": [
+     110.0,
+     83.0
+    ],
+    "grounded_to_cube_px": 7.6,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "green",
+    "seg": [
+     371,
+     458
+    ],
+    "grounded": [
+     142,
+     134
+    ],
+    "reveal_cube_pos": [
+     143.5,
+     135.0
+    ],
+    "grounded_to_cube_px": 1.8,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard4",
+    "ep": 3,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      138,
+      88
+     ]
+    },
+    "point_to_cube_px": 4.1,
+    "nearest_other_rgb_px": 28.4
+   },
+   {
+    "tier": "xhard4",
+    "ep": 3,
+    "seg": "put down the container",
+    "start": 171,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard4",
+    "ep": 3,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 212,
+    "choice": {
+     "choice": "A",
+     "point": [
+      105,
+      80
+     ]
+    },
+    "point_to_cube_px": 5.8,
+    "nearest_other_rgb_px": 37.9
+   },
+   {
+    "tier": "xhard4",
+    "ep": 3,
+    "seg": "put down the container",
+    "start": 319,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard4",
+    "ep": 3,
+    "seg": "pick up the container that hides the green cube",
+    "start": 371,
+    "choice": {
+     "choice": "A",
+     "point": [
+      140,
+      136
+     ]
+    },
+    "point_to_cube_px": 3.6,
+    "nearest_other_rgb_px": 45.8
+   }
+  ],
+  "grip_close_runs": [
+   [
+    145,
+    191
+   ],
+   [
+    290,
+    343
+   ],
+   [
+    439,
+    464
+   ]
+  ],
+  "completed_first_step": 459,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard4_ep3_seed6600300.png"
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "seed": 6600600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed6600600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoUnmask_episode_6/videos/VideoUnmask_ep6_seed6600600_xhard4_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_next_pick_up_another_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 8,
+   "pick": 3,
+   "ring": 15,
+   "ring_cubes": [
+    7,
+    8
+   ]
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 477,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   181,
+   229,
+   338,
+   379,
+   470
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 180,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <74, 93> that hides the blue cube"
+   },
+   {
+    "start": 181,
+    "end": 228,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 229,
+    "end": 337,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <141, 141> that hides the green cube"
+   },
+   {
+    "start": 338,
+    "end": 378,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 379,
+    "end": 469,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <109, 103> that hides the red cube"
+   },
+   {
+    "start": 470,
+    "end": 476,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <109, 103> that hides the red cube"
+   }
+  ],
+  "goal_colors": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "subgoal_colors": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 3,
+   "green": 1,
+   "cyan": 3,
+   "blue": 1,
+   "magenta": 2
+  },
+  "ring_cubes_seen": 8,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "blue",
+    "seg": [
+     66,
+     180
+    ],
+    "grounded": [
+     74,
+     93
+    ],
+    "reveal_cube_pos": [
+     77.5,
+     94.3
+    ],
+    "grounded_to_cube_px": 3.7,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "green",
+    "seg": [
+     229,
+     337
+    ],
+    "grounded": [
+     141,
+     141
+    ],
+    "reveal_cube_pos": [
+     142.5,
+     141.1
+    ],
+    "grounded_to_cube_px": 1.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   },
+   {
+    "k": 2,
+    "text_color": "red",
+    "seg": [
+     379,
+     469
+    ],
+    "grounded": [
+     109,
+     103
+    ],
+    "reveal_cube_pos": [
+     111.0,
+     111.0
+    ],
+    "grounded_to_cube_px": 8.2,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "xhard4",
+    "ep": 6,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      71,
+      93
+     ]
+    },
+    "point_to_cube_px": 6.6,
+    "nearest_other_rgb_px": 43.9
+   },
+   {
+    "tier": "xhard4",
+    "ep": 6,
+    "seg": "put down the container",
+    "start": 181,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard4",
+    "ep": 6,
+    "seg": "pick up the container that hides the green cube",
+    "start": 229,
+    "choice": {
+     "choice": "A",
+     "point": [
+      139,
+      143
+     ]
+    },
+    "point_to_cube_px": 4.0,
+    "nearest_other_rgb_px": 42.5
+   },
+   {
+    "tier": "xhard4",
+    "ep": 6,
+    "seg": "put down the container",
+    "start": 338,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "xhard4",
+    "ep": 6,
+    "seg": "pick up the container that hides the red cube",
+    "start": 379,
+    "choice": {
+     "choice": "A",
+     "point": [
+      106,
+      110
+     ]
+    },
+    "point_to_cube_px": 5.1,
+    "nearest_other_rgb_px": 32.5
+   }
+  ],
+  "grip_close_runs": [
+   [
+    151,
+    205
+   ],
+   [
+    312,
+    358
+   ],
+   [
+    449,
+    476
+   ]
+  ],
+  "completed_first_step": 470,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_xhard4_ep6_seed6600600.png"
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "seed": 6000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_0/hdf5_files/VideoUnmask_ep0_seed6000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_0/videos/VideoUnmask_ep0_seed6000_FailRecoverZ_easy_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 3,
+   "pick": 1,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 239,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   227
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 226,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <129, 89> that hides the blue cube"
+   },
+   {
+    "start": 227,
+    "end": 238,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <129, 89> that hides the blue cube"
+   }
+  ],
+  "goal_colors": [
+   "blue"
+  ],
+  "subgoal_colors": [
+   "blue"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "blue",
+    "seg": [
+     66,
+     226
+    ],
+    "grounded": [
+     129,
+     89
+    ],
+    "reveal_cube_pos": [
+     131.5,
+     91.1
+    ],
+    "grounded_to_cube_px": 3.3,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "easy",
+    "ep": 0,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      127,
+      89
+     ]
+    },
+    "point_to_cube_px": 5.0,
+    "nearest_other_rgb_px": 63.5
+   }
+  ],
+  "grip_close_runs": [
+   [
+    139,
+    166
+   ],
+   [
+    207,
+    238
+   ]
+  ],
+  "completed_first_step": 227,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_easy_ep0_seed6000.png"
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "seed": 6100,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_1/hdf5_files/VideoUnmask_ep1_seed6100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_1/videos/VideoUnmask_ep1_seed6100_FailRecoverZ_easy_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 3,
+   "pick": 1,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 225,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   218
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 217,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <92, 87> that hides the green cube"
+   },
+   {
+    "start": 218,
+    "end": 224,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <92, 87> that hides the green cube"
+   }
+  ],
+  "goal_colors": [
+   "green"
+  ],
+  "subgoal_colors": [
+   "green"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "green",
+    "seg": [
+     66,
+     217
+    ],
+    "grounded": [
+     92,
+     87
+    ],
+    "reveal_cube_pos": [
+     95.0,
+     88.4
+    ],
+    "grounded_to_cube_px": 3.3,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "easy",
+    "ep": 1,
+    "seg": "pick up the container that hides the green cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      89,
+      86
+     ]
+    },
+    "point_to_cube_px": 6.5,
+    "nearest_other_rgb_px": 45.0
+   }
+  ],
+  "grip_close_runs": [
+   [
+    134,
+    160
+   ],
+   [
+    197,
+    224
+   ]
+  ],
+  "completed_first_step": 218,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_easy_ep1_seed6100.png"
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "seed": 7001,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_10/hdf5_files/VideoUnmask_ep10_seed7001.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_10/videos/VideoUnmask_ep10_seed7001_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 5,
+   "pick": 1,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 168,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   161
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 160,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <94, 152> that hides the red cube"
+   },
+   {
+    "start": 161,
+    "end": 167,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <94, 152> that hides the red cube"
+   }
+  ],
+  "goal_colors": [
+   "red"
+  ],
+  "subgoal_colors": [
+   "red"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     160
+    ],
+    "grounded": [
+     94,
+     152
+    ],
+    "reveal_cube_pos": [
+     97.0,
+     151.7
+    ],
+    "grounded_to_cube_px": 3.0,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "medium",
+    "ep": 10,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      91,
+      154
+     ]
+    },
+    "point_to_cube_px": 6.4,
+    "nearest_other_rgb_px": 40.6
+   }
+  ],
+  "grip_close_runs": [
+   [
+    140,
+    167
+   ]
+  ],
+  "completed_first_step": 161,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_medium_ep10_seed7001.png"
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "seed": 7100,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_11/hdf5_files/VideoUnmask_ep11_seed7100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_11/videos/VideoUnmask_ep11_seed7100_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 15,
+   "pick": 2,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 313,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   163,
+   204,
+   304
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 162,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <127, 85> that hides the green cube"
+   },
+   {
+    "start": 163,
+    "end": 203,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 204,
+    "end": 303,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <79, 160> that hides the blue cube"
+   },
+   {
+    "start": 304,
+    "end": 312,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <79, 160> that hides the blue cube"
+   }
+  ],
+  "goal_colors": [
+   "green",
+   "blue"
+  ],
+  "subgoal_colors": [
+   "green",
+   "blue"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "green",
+    "seg": [
+     66,
+     162
+    ],
+    "grounded": [
+     127,
+     85
+    ],
+    "reveal_cube_pos": [
+     129.6,
+     87.0
+    ],
+    "grounded_to_cube_px": 3.3,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "blue",
+    "seg": [
+     204,
+     303
+    ],
+    "grounded": [
+     79,
+     160
+    ],
+    "reveal_cube_pos": [
+     83.5,
+     159.5
+    ],
+    "grounded_to_cube_px": 4.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "hard",
+    "ep": 11,
+    "seg": "pick up the container that hides the green cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      125,
+      84
+     ]
+    },
+    "point_to_cube_px": 5.5,
+    "nearest_other_rgb_px": 64.0
+   },
+   {
+    "tier": "hard",
+    "ep": 11,
+    "seg": "put down the container",
+    "start": 163,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "hard",
+    "ep": 11,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 204,
+    "choice": {
+     "choice": "A",
+     "point": [
+      77,
+      162
+     ]
+    },
+    "point_to_cube_px": 7.0,
+    "nearest_other_rgb_px": 38.9
+   }
+  ],
+  "grip_close_runs": [
+   [
+    137,
+    183
+   ],
+   [
+    282,
+    312
+   ]
+  ],
+  "completed_first_step": 304,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_hard_ep11_seed7100.png"
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "seed": 6200,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_2/hdf5_files/VideoUnmask_ep2_seed6200.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_2/videos/VideoUnmask_ep2_seed6200_FailRecoverZ_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_red_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 5,
+   "pick": 1,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the red cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 228,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   221
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 220,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <94, 162> that hides the red cube"
+   },
+   {
+    "start": 221,
+    "end": 227,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <94, 162> that hides the red cube"
+   }
+  ],
+  "goal_colors": [
+   "red"
+  ],
+  "subgoal_colors": [
+   "red"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "red",
+    "seg": [
+     66,
+     220
+    ],
+    "grounded": [
+     94,
+     162
+    ],
+    "reveal_cube_pos": [
+     97.0,
+     161.9
+    ],
+    "grounded_to_cube_px": 3.0,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "medium",
+    "ep": 2,
+    "seg": "pick up the container that hides the red cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      91,
+      165
+     ]
+    },
+    "point_to_cube_px": 6.8,
+    "nearest_other_rgb_px": 48.0
+   }
+  ],
+  "grip_close_runs": [
+   [
+    137,
+    163
+   ],
+   [
+    200,
+    227
+   ]
+  ],
+  "completed_first_step": 221,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_medium_ep2_seed6200.png"
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "seed": 6300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_3/hdf5_files/VideoUnmask_ep3_seed6300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_3/videos/VideoUnmask_ep3_seed6300_FailRecoverXY_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube_finally_pick_up_another_container_hiding_the_blue_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 15,
+   "pick": 2,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube, finally pick up another container hiding the blue cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 399,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   245,
+   292,
+   389
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 244,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <119, 128> that hides the green cube"
+   },
+   {
+    "start": 245,
+    "end": 291,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 292,
+    "end": 388,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <92, 164> that hides the blue cube"
+   },
+   {
+    "start": 389,
+    "end": 398,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <92, 164> that hides the blue cube"
+   }
+  ],
+  "goal_colors": [
+   "green",
+   "blue"
+  ],
+  "subgoal_colors": [
+   "green",
+   "blue"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "green",
+    "seg": [
+     66,
+     244
+    ],
+    "grounded": [
+     119,
+     128
+    ],
+    "reveal_cube_pos": [
+     121.0,
+     128.5
+    ],
+    "grounded_to_cube_px": 2.1,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "blue",
+    "seg": [
+     292,
+     388
+    ],
+    "grounded": [
+     92,
+     164
+    ],
+    "reveal_cube_pos": [
+     87.9,
+     162.1
+    ],
+    "grounded_to_cube_px": 4.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "hard",
+    "ep": 3,
+    "seg": "pick up the container that hides the green cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      116,
+      129
+     ]
+    },
+    "point_to_cube_px": 5.0,
+    "nearest_other_rgb_px": 43.4
+   },
+   {
+    "tier": "hard",
+    "ep": 3,
+    "seg": "put down the container",
+    "start": 245,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "hard",
+    "ep": 3,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 292,
+    "choice": {
+     "choice": "A",
+     "point": [
+      82,
+      165
+     ]
+    },
+    "point_to_cube_px": 6.6,
+    "nearest_other_rgb_px": 53.4
+   }
+  ],
+  "grip_close_runs": [
+   [
+    139,
+    172
+   ],
+   [
+    215,
+    270
+   ],
+   [
+    367,
+    398
+   ]
+  ],
+  "completed_first_step": 389,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_hard_ep3_seed6300.png"
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "seed": 6400,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_4/hdf5_files/VideoUnmask_ep4_seed6400.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_4/videos/VideoUnmask_ep4_seed6400_FailRecoverXY_easy_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 3,
+   "pick": 1,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 263,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   252
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 251,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <84, 156> that hides the blue cube"
+   },
+   {
+    "start": 252,
+    "end": 262,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <84, 156> that hides the blue cube"
+   }
+  ],
+  "goal_colors": [
+   "blue"
+  ],
+  "subgoal_colors": [
+   "blue"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "blue",
+    "seg": [
+     66,
+     251
+    ],
+    "grounded": [
+     84,
+     156
+    ],
+    "reveal_cube_pos": [
+     87.5,
+     155.5
+    ],
+    "grounded_to_cube_px": 3.5,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "easy",
+    "ep": 4,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      81,
+      158
+     ]
+    },
+    "point_to_cube_px": 7.0,
+    "nearest_other_rgb_px": 56.0
+   }
+  ],
+  "grip_close_runs": [
+   [
+    146,
+    177
+   ],
+   [
+    230,
+    262
+   ]
+  ],
+  "completed_first_step": 252,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_easy_ep4_seed6400.png"
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "seed": 6600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_6/hdf5_files/VideoUnmask_ep6_seed6600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_6/videos/VideoUnmask_ep6_seed6600_medium_watch_the_video_carefully_then_pick_up_the_container_hiding_the_green_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 5,
+   "pick": 1,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the green cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 173,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   166
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 165,
+    "simple": "pick up the container that hides the green cube",
+    "grounded": "pick up the container at <143, 165> that hides the green cube"
+   },
+   {
+    "start": 166,
+    "end": 172,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <143, 165> that hides the green cube"
+   }
+  ],
+  "goal_colors": [
+   "green"
+  ],
+  "subgoal_colors": [
+   "green"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "green",
+    "seg": [
+     66,
+     165
+    ],
+    "grounded": [
+     143,
+     165
+    ],
+    "reveal_cube_pos": [
+     144.5,
+     163.8
+    ],
+    "grounded_to_cube_px": 1.9,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 1,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "green"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "medium",
+    "ep": 6,
+    "seg": "pick up the container that hides the green cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      141,
+      167
+     ]
+    },
+    "point_to_cube_px": 4.7,
+    "nearest_other_rgb_px": 66.0
+   }
+  ],
+  "grip_close_runs": [
+   [
+    146,
+    172
+   ]
+  ],
+  "completed_first_step": 166,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_medium_ep6_seed6600.png"
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "seed": 6700,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_7/hdf5_files/VideoUnmask_ep7_seed6700.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoUnmask_episode_7/videos/VideoUnmask_ep7_seed6700_hard_watch_the_video_carefully_then_pick_up_the_container_hiding_the_blue_cube_finally_pick_up_another_container_hiding_the_red_cube.mp4"
+  ],
+  "config_at_audit_base": {
+   "bins": 15,
+   "pick": 2,
+   "ring": 0,
+   "ring_cubes": 0
+  },
+  "task_goal": [
+   "watch the video carefully, then pick up the container hiding the blue cube, finally pick up another container hiding the red cube"
+  ],
+  "available_multi_choices": "[{\"label\": \"a\", \"action\": \"pick up the container\", \"need_parameter\": true}, {\"label\": \"b\", \"action\": \"put down the container\", \"need_parameter\": false}]",
+  "n_steps": 338,
+  "video_demo_steps": [
+   0,
+   65,
+   66
+  ],
+  "subgoal_boundaries": [
+   0,
+   66,
+   178,
+   230,
+   328
+  ],
+  "segments": [
+   {
+    "start": 0,
+    "end": 65,
+    "simple": "static",
+    "grounded": "static"
+   },
+   {
+    "start": 66,
+    "end": 177,
+    "simple": "pick up the container that hides the blue cube",
+    "grounded": "pick up the container at <81, 95> that hides the blue cube"
+   },
+   {
+    "start": 178,
+    "end": 229,
+    "simple": "put down the container",
+    "grounded": "put down the container"
+   },
+   {
+    "start": 230,
+    "end": 327,
+    "simple": "pick up the container that hides the red cube",
+    "grounded": "pick up the container at <66, 143> that hides the red cube"
+   },
+   {
+    "start": 328,
+    "end": 337,
+    "simple": "All tasks completed",
+    "grounded": "pick up the container at <66, 143> that hides the red cube"
+   }
+  ],
+  "goal_colors": [
+   "blue",
+   "red"
+  ],
+  "subgoal_colors": [
+   "blue",
+   "red"
+  ],
+  "reveal_t10_cube_counts": {
+   "red": 1,
+   "yellow": 0,
+   "green": 1,
+   "cyan": 0,
+   "blue": 1,
+   "magenta": 0
+  },
+  "ring_cubes_seen": 0,
+  "ring_cubes_in_range": true,
+  "all_cubes_covered_t40": true,
+  "picks": [
+   {
+    "k": 0,
+    "text_color": "blue",
+    "seg": [
+     66,
+     177
+    ],
+    "grounded": [
+     81,
+     95
+    ],
+    "reveal_cube_pos": [
+     85.0,
+     96.2
+    ],
+    "grounded_to_cube_px": 4.2,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 0,
+     "green": 0,
+     "blue": 1
+    },
+    "newly_uncovered": [
+     "blue"
+    ]
+   },
+   {
+    "k": 1,
+    "text_color": "red",
+    "seg": [
+     230,
+     327
+    ],
+    "grounded": [
+     66,
+     143
+    ],
+    "reveal_cube_pos": [
+     70.4,
+     142.9
+    ],
+    "grounded_to_cube_px": 4.4,
+    "rgb_visible_start": {
+     "red": 0,
+     "green": 0,
+     "blue": 0
+    },
+    "rgb_visible_end": {
+     "red": 1,
+     "green": 0,
+     "blue": 0
+    },
+    "newly_uncovered": [
+     "red"
+    ]
+   }
+  ],
+  "choice_checks": [
+   {
+    "tier": "hard",
+    "ep": 7,
+    "seg": "pick up the container that hides the blue cube",
+    "start": 66,
+    "choice": {
+     "choice": "A",
+     "point": [
+      78,
+      95
+     ]
+    },
+    "point_to_cube_px": 7.1,
+    "nearest_other_rgb_px": 48.5
+   },
+   {
+    "tier": "hard",
+    "ep": 7,
+    "seg": "put down the container",
+    "start": 178,
+    "choice": {
+     "choice": "B",
+     "point": []
+    }
+   },
+   {
+    "tier": "hard",
+    "ep": 7,
+    "seg": "pick up the container that hides the red cube",
+    "start": 230,
+    "choice": {
+     "choice": "A",
+     "point": [
+      63,
+      144
+     ]
+    },
+    "point_to_cube_px": 7.5,
+    "nearest_other_rgb_px": 49.6
+   }
+  ],
+  "grip_close_runs": [
+   [
+    146,
+    206
+   ],
+   [
+    304,
+    337
+   ]
+  ],
+  "completed_first_step": 328,
+  "sheet": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-vs-native-82e3d92/VideoUnmask/frames/sheet_hard_ep7_seed6700.png"
+ }
+]

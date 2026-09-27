@@ -1,0 +1,115 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.demo.peg_offsets",
+      "drawn": [
+        0.2,
+        0.038919126101017325,
+        -0.03776272200818998
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.demo.peg_yaw",
+      "drawn": 2.6123029940252396,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.execution.peg_offsets",
+      "drawn": [
+        -0.2,
+        -0.04649271553506196,
+        0.04580451547948588
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.execution.peg_yaw",
+      "drawn": -1.8985693720407384,
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "objects.obj_sample",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "objects.sampling_trace.dir_sample",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.demo.goal_xy",
+      "drawn": [
+        0.018236830234527573,
+        -0.0743798792362213
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.execution.goal_xy",
+      "drawn": [
+        0.04793639659881593,
+        0.024830718040466306
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.demo.cube_pose",
+      "drawn": [
+        -0.10891274789863194,
+        0.06851420318768078,
+        1.392074457260229
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.execution.cube_pose",
+      "drawn": [
+        -0.022846512881053632,
+        0.07884499407203811,
+        3.252027286092654
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "layout.demo.corner_bias",
+      "drawn": 0.5,
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "layout.execution.corner_bias",
+      "drawn": 0.5,
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "initializations.0.way_idx",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "initializations.1.way_idx",
+      "drawn": 1,
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "_hb_generator": "38816657b99b72b756c1f7c757dcf466d56b8ffeebf640031692406bdf0c4bf6"
+  }
+}

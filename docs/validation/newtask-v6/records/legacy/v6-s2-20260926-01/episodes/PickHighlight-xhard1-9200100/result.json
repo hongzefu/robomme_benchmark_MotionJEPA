@@ -1,0 +1,34 @@
+{
+  "id": "PickHighlight-xhard1-9200100",
+  "task": "PickHighlight",
+  "difficulty": "xhard1",
+  "seed": 9200100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 46.176,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "PickHighlight",
+      "seed": 9200100,
+      "difficulty": "xhard1",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 41.5,
+      "timesteps": 742
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickHighlight-xhard1-9200100/hdf5_files/PickHighlight_ep9_seed9200100.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickHighlight-xhard1-9200100/videos/PickHighlight_ep9_seed9200100_xhard1_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ]
+}

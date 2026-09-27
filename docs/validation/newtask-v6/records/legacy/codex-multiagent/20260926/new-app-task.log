@@ -1,0 +1,2 @@
+{"event": "created", "threadId": "01a0def6-52e3-7fa2-b191-b984a663bf93", "model": "gpt-6-astra", "cwd": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask"}
+{"event": "started", "threadId": "01a0def6-52e3-7fa2-b191-b984a663bf93", "turnId": "01a0def6-5564-7fb1-b136-60a4b6c29e02"}

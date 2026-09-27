@@ -1,0 +1,11 @@
+{
+  "kind": "single_identity_diagnostic_not_formal_S3",
+  "limit_attempts": 1,
+  "timeout_seconds": 280,
+  "gpu": "1",
+  "source_content_anchor": "c8c06ab755ef448baa24abe245d2f9ec2ffc0add",
+  "head": "716f992f436011e7efd7164b8bd19dff0ed1a718",
+  "working_tree": "网站及静态报告在途，实际环境源码及runner/worker/lock对c8c06ab无差异",
+  "main_worker_untouched": 1843953,
+  "user_request": "单独用另外一个进程来同步做s3 调查为什么这么慢"
+}

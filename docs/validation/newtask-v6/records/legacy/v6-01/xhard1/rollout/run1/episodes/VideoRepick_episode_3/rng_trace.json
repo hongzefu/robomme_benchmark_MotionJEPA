@@ -1,0 +1,231 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "objects.num_repeats",
+      "drawn": 2,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.n_swaps",
+      "drawn": 3,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_rgb",
+      "drawn": [
+        0.2895500141958607,
+        0.5362032211349022,
+        0.7267031073570251
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.0.xy_yaw",
+      "drawn": [
+        -0.06189709663391113,
+        0.015352538824081413,
+        2.178133251055585
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.1.xy_yaw",
+      "drawn": [
+        -0.08070738554000856,
+        -0.17051824450492858,
+        3.881897549231639
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.2.xy_yaw",
+      "drawn": [
+        -0.21536931991577152,
+        -0.10629082083702088,
+        3.130897481875819
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.cubes.3.xy_yaw",
+      "drawn": [
+        -0.09779271364212036,
+        0.15979816436767577,
+        2.2834888192407448
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "objects.cube_count.requested",
+      "drawn": 4,
+      "source": "record"
+    },
+    {
+      "index": 8,
+      "path": "objects.cube_count.actual",
+      "drawn": 4,
+      "source": "record"
+    },
+    {
+      "index": 9,
+      "path": "objects.target",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.swap_initiators_remaining",
+      "drawn": [
+        0,
+        1,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "objects.swap_plan_seed",
+      "drawn": 2926187569922979842,
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "layout.swap_graph",
+      "drawn": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "source": "record"
+    },
+    {
+      "index": 13,
+      "path": "actions.swap_pairs.0",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_1"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "actions.swap_pairs.1",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_1"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "actions.swap_pairs.2",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_2"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "objects.swap_plan",
+      "drawn": {
+        "counts": [
+          2,
+          2,
+          1,
+          1
+        ],
+        "range": 1,
+        "tries": 1,
+        "undo": 0
+      },
+      "source": "record"
+    },
+    {
+      "index": 17,
+      "path": "objects.swap_initiators",
+      "drawn": [
+        "bin_0",
+        "bin_3",
+        "bin_0"
+      ],
+      "source": "record"
+    },
+    {
+      "index": 18,
+      "path": "actions.swap_pairs.0",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 19,
+      "path": "actions.swap_windows.0",
+      "drawn": [
+        213,
+        263
+      ],
+      "source": "record"
+    },
+    {
+      "index": 20,
+      "path": "actions.swap_pairs.1",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 21,
+      "path": "actions.swap_windows.1",
+      "drawn": [
+        263,
+        313
+      ],
+      "source": "record"
+    },
+    {
+      "index": 22,
+      "path": "actions.swap_pairs.2",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 23,
+      "path": "actions.swap_windows.2",
+      "drawn": [
+        313,
+        363
+      ],
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "ce46b7198fcef5099b6089f48cb24df857cb449e1586e281cbad316653f5fede"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "actions.path_nodes",
+      "drawn": [
+        15,
+        10,
+        16,
+        11,
+        5,
+        1,
+        2,
+        6,
+        7,
+        3,
+        9,
+        13,
+        18,
+        23,
+        22,
+        21,
+        17,
+        12,
+        8,
+        14,
+        19
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "actions.path_attempts",
+      "drawn": 11,
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {}
+}

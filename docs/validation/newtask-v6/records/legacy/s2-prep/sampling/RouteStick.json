@@ -1,0 +1,105 @@
+{
+  "decision": {
+    "demo_duration_seconds_range": null,
+    "demonstration_duration_policy": "native",
+    "xhard1": {
+      "segment_count_range": [
+        8,
+        10
+      ]
+    },
+    "xhard2": {
+      "segment_count_range": [
+        11,
+        13
+      ]
+    },
+    "xhard3": {
+      "segment_count_range": [
+        14,
+        16
+      ]
+    },
+    "xhard4": {
+      "segment_count_range": [
+        17,
+        21
+      ]
+    }
+  },
+  "native": {
+    "parameters": {
+      "configs_fallback_difficulty": "easy",
+      "walk": {
+        "direction": {
+          "less_than": "clockwise",
+          "otherwise": "counterclockwise",
+          "sampler": "torch.rand",
+          "shape": [
+            1
+          ],
+          "threshold": 0.5
+        },
+        "force_reverse_at_endpoint": true,
+        "neighbor_order": [
+          -1,
+          1
+        ],
+        "node_indices": [
+          0,
+          2,
+          4,
+          6,
+          8
+        ],
+        "start_selection": "randint"
+      }
+    },
+    "positions": {
+      "button_highlight": {
+        "disk_radius_scale": 1.002,
+        "end_offset_steps": 40,
+        "native_note": "官方与现行一致，未改动"
+      },
+      "cylinder_height": 0.1,
+      "cylinder_radius": 0.015,
+      "grid_center": [
+        -0.1,
+        0
+      ],
+      "grid_spacing_x": 0.07,
+      "grid_spacing_x_effect": "num_rows=1 使 row 偏移恒为 0，该参数对结果无影响（死参数）",
+      "grid_spacing_y": 0.07,
+      "obstacle_builder": "_load_scene 内联 create_actor_builder",
+      "obstacle_color": {
+        "count": 4,
+        "position_in_stream": "theta 之后、steps 之前，每根障碍柱一次",
+        "sampler": "torch.rand",
+        "shape": [
+          3
+        ]
+      },
+      "rotation_center": [
+        0,
+        0
+      ],
+      "target_builder": "build_gray_white_target",
+      "tcp_trail": {
+        "disk_radius": 0.005,
+        "end_offset_steps": 40,
+        "native_note": "官方 dataset-gen d53f21a 的 highlight_position 尾迹存活 40 步"
+      },
+      "walk_start": {
+        "high_exclusive": 5,
+        "low": 0,
+        "note": "generate_dynamic_walk 未传 start_idx 时抽取，是路线随机流的第一次抽取",
+        "sampler": "torch.randint"
+      },
+      "yaw_deg": {
+        "scale": 60,
+        "subtract": 30
+      },
+      "yaw_expression": "math.radians(u * 60 - 30)"
+    }
+  }
+}

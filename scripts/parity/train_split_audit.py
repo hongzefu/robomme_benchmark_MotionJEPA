@@ -41,7 +41,7 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 from seed_layout import ALL_TASKS  # noqa: E402
 
 ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
-PLAN = REPO_ROOT / "0921-newtask-release-v3-plan.md"
+PLAN = REPO_ROOT / "docs/plans/0921-newtask-release-v3-plan.md"
 
 # 方案第二节的字段名是「概念名」，与快照里的实际键名有少数是同义改写；
 # 每条都写清楚为什么，不允许无理由的放行。

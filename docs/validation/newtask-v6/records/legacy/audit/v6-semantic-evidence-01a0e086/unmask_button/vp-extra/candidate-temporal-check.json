@@ -1,0 +1,702 @@
+[
+  {
+    "tier": "xhard1",
+    "ep": 0,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      0
+    ],
+    "selected": true,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      3,
+      2
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 1,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      3,
+      0
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 2,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      1,
+      0
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 3,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": true,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      2,
+      1
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 4,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      0,
+      2
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 5,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      1,
+      2
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 6,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": true,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      3,
+      0
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 7,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      2,
+      0
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 8,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      1
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      0,
+      1
+    ]
+  },
+  {
+    "tier": "xhard1",
+    "ep": 9,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      1
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      3,
+      1
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 0,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      1
+    ],
+    "selected": true,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      3,
+      2
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 1,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      0
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      3,
+      0
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 2,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      1,
+      2
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 3,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": true,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      3,
+      0
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 4,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      0
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 1,
+    "match": false,
+    "swap_pair": [
+      1,
+      2
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 5,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      1
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 2,
+    "match": false,
+    "swap_pair": [
+      3,
+      1
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 6,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      0
+    ],
+    "selected": true,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      0,
+      3
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 7,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      1
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      2,
+      3
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 8,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      2
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      2,
+      3
+    ]
+  },
+  {
+    "tier": "xhard2",
+    "ep": 9,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      1
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 3,
+    "match": false,
+    "swap_pair": [
+      1,
+      0
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 0,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      1,
+      2
+    ],
+    "selected": true,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      1,
+      2
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 1,
+    "before": false,
+    "answer_index": 1,
+    "demo_ids": [
+      2,
+      0
+    ],
+    "selected": false,
+    "target": 3,
+    "expected": 3,
+    "match": true,
+    "swap_pair": [
+      0,
+      3
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 2,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      2,
+      0
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      0,
+      2
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 3,
+    "before": true,
+    "answer_index": 1,
+    "demo_ids": [
+      0,
+      1
+    ],
+    "selected": true,
+    "target": 2,
+    "expected": 3,
+    "match": false,
+    "swap_pair": [
+      0,
+      3
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 4,
+    "before": true,
+    "answer_index": 1,
+    "demo_ids": [
+      2,
+      0
+    ],
+    "selected": false,
+    "target": 2,
+    "expected": 2,
+    "match": true,
+    "swap_pair": [
+      0,
+      3
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 5,
+    "before": true,
+    "answer_index": 1,
+    "demo_ids": [
+      1,
+      2
+    ],
+    "selected": false,
+    "target": 2,
+    "expected": 2,
+    "match": true,
+    "swap_pair": [
+      0,
+      3
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 6,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      2,
+      0
+    ],
+    "selected": true,
+    "target": 0,
+    "expected": 1,
+    "match": false,
+    "swap_pair": [
+      0,
+      1
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 7,
+    "before": true,
+    "answer_index": 1,
+    "demo_ids": [
+      1,
+      0
+    ],
+    "selected": false,
+    "target": 2,
+    "expected": 2,
+    "match": true,
+    "swap_pair": [
+      2,
+      1
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 8,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      1,
+      0
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      3,
+      2
+    ]
+  },
+  {
+    "tier": "xhard3",
+    "ep": 9,
+    "before": true,
+    "answer_index": 1,
+    "demo_ids": [
+      1,
+      0
+    ],
+    "selected": false,
+    "target": 2,
+    "expected": 2,
+    "match": true,
+    "swap_pair": [
+      3,
+      2
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 0,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      2,
+      0
+    ],
+    "selected": true,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      3,
+      2
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 1,
+    "before": true,
+    "answer_index": 1,
+    "demo_ids": [
+      1,
+      2
+    ],
+    "selected": false,
+    "target": 2,
+    "expected": 3,
+    "match": false,
+    "swap_pair": [
+      2,
+      3
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 2,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      0,
+      2
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      1,
+      0
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 3,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      2,
+      1
+    ],
+    "selected": true,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      2,
+      0
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 4,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      2,
+      1
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      2,
+      3
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 5,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      0,
+      2
+    ],
+    "selected": false,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      0,
+      2
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 6,
+    "before": true,
+    "answer_index": 0,
+    "demo_ids": [
+      0,
+      1
+    ],
+    "selected": true,
+    "target": 0,
+    "expected": 0,
+    "match": true,
+    "swap_pair": [
+      3,
+      0
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 7,
+    "before": false,
+    "answer_index": 1,
+    "demo_ids": [
+      0,
+      2
+    ],
+    "selected": false,
+    "target": 3,
+    "expected": 3,
+    "match": true,
+    "swap_pair": [
+      2,
+      1
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 8,
+    "before": false,
+    "answer_index": 0,
+    "demo_ids": [
+      1,
+      2
+    ],
+    "selected": false,
+    "target": 1,
+    "expected": 1,
+    "match": true,
+    "swap_pair": [
+      0,
+      1
+    ]
+  },
+  {
+    "tier": "xhard4",
+    "ep": 9,
+    "before": false,
+    "answer_index": 1,
+    "demo_ids": [
+      2,
+      1
+    ],
+    "selected": false,
+    "target": 3,
+    "expected": 3,
+    "match": true,
+    "swap_pair": [
+      3,
+      2
+    ]
+  }
+]

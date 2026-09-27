@@ -1,0 +1,114 @@
+[
+ {
+  "task": "StopCube",
+  "episode": 5,
+  "seed": 6200500,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/StopCube_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "episode": 5,
+  "seed": 6300500,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/SwingXtimes_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "episode": 5,
+  "seed": 6500500,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoUnmaskSwap_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoUnmask",
+  "episode": 5,
+  "seed": 6600500,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoUnmask_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "episode": 5,
+  "seed": 6900501,
+  "attempt": 1,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoRepick_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoPlaceButton",
+  "episode": 5,
+  "seed": 7000500,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoPlaceButton_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "episode": 5,
+  "seed": 7100500,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/VideoPlaceOrder_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ },
+ {
+  "task": "InsertPeg",
+  "episode": 5,
+  "seed": 7300500,
+  "attempt": 0,
+  "difficulty": "xhard4",
+  "worker_dir": "/tmp/v6-s4-v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_5",
+  "seed_rule": {
+   "env_block": 100000,
+   "episode_stride": 100,
+   "formula": "offset + env_code*env_block + episode*100 + attempt",
+   "offset": 6000000
+  }
+ }
+]

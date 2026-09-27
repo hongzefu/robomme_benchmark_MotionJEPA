@@ -1,0 +1,12 @@
+tests/lightweight/test_candidates_refactor.py::test_end_to_end_and_role_rewrite
+tests/lightweight/test_candidates_refactor.py::test_projection_deep_copy
+tests/lightweight/test_candidates_refactor.py::test_source_fingerprint_checked_even_after_resealing
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[collision]
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[duplicate]
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[key]
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[missing]
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[seed]
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[snapshot]
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[spec]
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[split]
+tests/lightweight/test_candidates_refactor.py::test_tampering_rejected[unknown]

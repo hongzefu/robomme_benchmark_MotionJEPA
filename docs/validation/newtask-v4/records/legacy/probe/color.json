@@ -1,0 +1,5137 @@
+{
+ "manifest": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v3/subset_manifest.json",
+ "rows": [
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.c06ca00000000p-6",
+        "-0x1.43fefc0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.ff432e0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.b78d500000000p-5"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.665ad40000000p-9",
+        "0x1.8511de0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.69d8460000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a3b800000000p-1"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.5216400000000p-7",
+        "-0x1.5dc4ec0000000p-6",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.790a6a0000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.dc078e0000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "d74c474ebef74af3a43c5656e99d6676a58e3181c40f0ffbd2f3553d41991efe"
+    },
+    "spec": {
+     "identity": {
+      "seed": 9000
+     },
+     "objects": {
+      "color_idx": 1,
+      "color_order": [
+       3,
+       1,
+       2,
+       0
+      ],
+      "n_swaps": 2,
+      "swap_initiators_remaining": [
+       1,
+       0
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 4
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the second time",
+      "subgoal_segment": "pick up the correct cube at <> for the second time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.color_idx",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       3,
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.swap_initiators_remaining",
+      "source": "draw",
+      "value": [
+       1,
+       0
+      ]
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 0,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 9000,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.07f99c0000000p-3",
+        "-0x1.9595760000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.73ac2c0000000p-2",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.dd156e0000000p-1"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.2fba000000000p-3",
+        "0x1.da7c540000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f1b2140000000p-5",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.ff0de20000000p-1"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.9d20200000000p-6",
+        "0x1.86cba00000000p-6",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.441bb00000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.e5ad640000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "01a11507f5288a5898440f9b80cee3c0df0085e15c15a4ad2b64dc7384f8f2f8"
+    },
+    "spec": {
+     "identity": {
+      "seed": 9100
+     },
+     "objects": {
+      "color_idx": 0,
+      "color_order": [
+       2,
+       0,
+       3,
+       1
+      ],
+      "n_swaps": 2,
+      "swap_initiators_remaining": [
+       0,
+       1
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 4
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the second time",
+      "subgoal_segment": "pick up the correct cube at <> for the second time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the third time",
+      "subgoal_segment": "pick up the correct cube at <> for the third time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.color_idx",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       3,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiators_remaining",
+      "source": "draw",
+      "value": [
+       0,
+       1
+      ]
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 1,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 9100,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.7031f00000000p-4",
+        "-0x1.bb7d780000000p-6",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f978d40000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.45fef40000000p-3"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.74c7be0000000p-4",
+        "0x1.f89b120000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.961e7e0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.37c9880000000p-1"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "0x1.2bae5a0000000p-6",
+        "-0x1.41811c0000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f5d11c0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.966cfc0000000p-3"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "30820a3834d14515f2b04e5f4c543a81617f8566d8959ef257fed9f677905abf"
+    },
+    "spec": {
+     "identity": {
+      "seed": 9400
+     },
+     "objects": {
+      "color_idx": 1,
+      "color_order": [
+       1,
+       2,
+       0,
+       3
+      ],
+      "n_swaps": 1,
+      "swap_initiators_remaining": [
+       1,
+       0
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 4
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.color_idx",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0,
+       3
+      ]
+     },
+     {
+      "path": "objects.swap_initiators_remaining",
+      "source": "draw",
+      "value": [
+       1,
+       0
+      ]
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 4,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 9400,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "0x1.532b400000000p-3",
+        "0x1.5bb6d80000000p-6",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f683b80000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.88640c0000000p-3"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "-0x1.92388e0000000p-4",
+        "-0x1.7002b40000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d425ce0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.9ea4120000000p-2"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.6855e60000000p-6",
+        "0x1.764c640000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.ed29420000000p-3",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.f0ef200000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "9f3ea7b968ca4530b0f5e62b20e7bce64a42142bab2946f3ba77b9a4237caa9c"
+    },
+    "spec": {
+     "identity": {
+      "seed": 9200
+     },
+     "objects": {
+      "color_idx": 1,
+      "color_order": [
+       0,
+       1,
+       3,
+       2
+      ],
+      "n_swaps": 2,
+      "swap_initiators_remaining": [
+       1,
+       0
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 4
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the second time",
+      "subgoal_segment": "pick up the correct cube at <> for the second time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.color_idx",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       3,
+       2
+      ]
+     },
+     {
+      "path": "objects.swap_initiators_remaining",
+      "source": "draw",
+      "value": [
+       1,
+       0
+      ]
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 2,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 9200,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.1d12dc0000000p-4",
+        "0x1.aac9a40000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d2b65e0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.a510300000000p-2"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.53c8020000000p-4",
+        "0x1.eb914a0000000p-6",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.fd250a0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.affa220000000p-4"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.1970200000000p-5",
+        "-0x1.05d9180000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.c706f80000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.d571760000000p-2"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "98d8b95b0c1e0e79687de8419507f0c1cb8ef72516284cf3e54235e47efbd70a"
+    },
+    "spec": {
+     "identity": {
+      "seed": 9600
+     },
+     "objects": {
+      "color_idx": 0,
+      "color_order": [
+       3,
+       0,
+       2,
+       1
+      ],
+      "n_swaps": 2,
+      "swap_initiators_remaining": [
+       0,
+       1
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 4
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "objects.color_idx",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       3,
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.swap_initiators_remaining",
+      "source": "draw",
+      "value": [
+       0,
+       1
+      ]
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 6,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 9600,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "bin_0": {
+      "p": [
+       [
+        "-0x1.b55d740000000p-4",
+        "0x1.609bee0000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.4448280000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.8c36b40000000p-1"
+       ]
+      ]
+     },
+     "bin_1": {
+      "p": [
+       [
+        "0x1.bdb4a20000000p-4",
+        "0x1.04ec4c0000000p-10",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.27e39c0000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.a1d8120000000p-1"
+       ]
+      ]
+     },
+     "bin_2": {
+      "p": [
+       [
+        "-0x1.f079cc0000000p-8",
+        "-0x1.97dee60000000p-8",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.510fb20000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.8166920000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "c3a566604fa53d1fe0e80e38acc3e29d0556d91e71454c1f5b3b6beaafb3b059"
+    },
+    "spec": {
+     "identity": {
+      "seed": 10000
+     },
+     "objects": {
+      "color_idx": 0,
+      "color_order": [
+       2,
+       0,
+       1,
+       3
+      ],
+      "n_swaps": 3,
+      "swap_initiators_remaining": [
+       1,
+       0
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 4
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "static",
+      "subgoal_segment": "static"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the second time",
+      "subgoal_segment": "pick up the correct cube at <> for the second time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the third time",
+      "subgoal_segment": "pick up the correct cube at <> for the third time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 3
+     },
+     {
+      "path": "objects.color_idx",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.color_order",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1,
+       3
+      ]
+     },
+     {
+      "path": "objects.swap_initiators_remaining",
+      "source": "draw",
+      "value": [
+       1,
+       0
+      ]
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 10,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 10000,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "0x1.6054860000000p-5",
+        "-0x1.1424d80000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.7669c40000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.5d39da0000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_1": {
+      "p": [
+       [
+        "-0x1.a4ec360000000p-3",
+        "0x1.c48d340000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.ffc7bc0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.e00b080000000p-6"
+       ]
+      ]
+     },
+     "cube_blue_2": {
+      "p": [
+       [
+        "-0x1.1bc5a40000000p-2",
+        "-0x1.48a9da0000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.864e3a0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.4b5e840000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_3": {
+      "p": [
+       [
+        "0x1.21b4d80000000p-4",
+        "0x1.87b5dc0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.42c8180000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.8d6fd40000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_4": {
+      "p": [
+       [
+        "-0x1.aea4da0000000p-6",
+        "0x1.4acda80000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f74d1c0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.77e99a0000000p-3"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.c8d03e0000000p-4",
+        "-0x1.57fbd00000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.64d8f40000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.dfe7b80000000p-1"
+       ]
+      ]
+     },
+     "cube_green_1": {
+      "p": [
+       [
+        "-0x1.f5ab0a0000000p-8",
+        "-0x1.5381760000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.e99b100000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.2b88dc0000000p-2"
+       ]
+      ]
+     },
+     "cube_green_2": {
+      "p": [
+       [
+        "-0x1.05fcac0000000p-4",
+        "-0x1.44024c0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d9c4b60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.8443f20000000p-2"
+       ]
+      ]
+     },
+     "cube_green_3": {
+      "p": [
+       [
+        "-0x1.7df44a0000000p-4",
+        "0x1.1f8bd00000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f50ca40000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.a54d860000000p-3"
+       ]
+      ]
+     },
+     "cube_green_4": {
+      "p": [
+       [
+        "-0x1.ff07d00000000p-4",
+        "-0x1.b2279a0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.1e467c0000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.a87d0c0000000p-1"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "0x1.a03a5a0000000p-6",
+        "0x1.e098420000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.9b45420000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.30f5be0000000p-1"
+       ]
+      ]
+     },
+     "cube_red_1": {
+      "p": [
+       [
+        "0x1.09b55a0000000p-4",
+        "-0x1.3c9a380000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f59ec20000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.9a4ada0000000p-3"
+       ]
+      ]
+     },
+     "cube_red_2": {
+      "p": [
+       [
+        "-0x1.afd9f00000000p-3",
+        "-0x1.058ae20000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.333cbc0000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.9992740000000p-1"
+       ]
+      ]
+     },
+     "cube_red_3": {
+      "p": [
+       [
+        "-0x1.06391e0000000p-2",
+        "-0x1.9394dc0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.5bc6f40000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.77c2600000000p-1"
+       ]
+      ]
+     },
+     "cube_red_4": {
+      "p": [
+       [
+        "-0x1.6d683c0000000p-5",
+        "0x1.b1eee80000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.9f48840000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.2b78f80000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "0aa948b7b8ca13f97b82e4906d59493b48f0b433a84da11da56c3a51413a251d"
+    },
+    "spec": {
+     "identity": {
+      "seed": 9301
+     },
+     "objects": {
+      "hard_round_order": {
+       "0": [
+        0,
+        2,
+        1
+       ],
+       "1": [
+        1,
+        0,
+        2
+       ],
+       "2": [
+        0,
+        2,
+        1
+       ],
+       "3": [
+        2,
+        1,
+        0
+       ],
+       "4": [
+        2,
+        0,
+        1
+       ]
+      },
+      "n_swaps": 0,
+      "target": 8
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 7
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the second time",
+      "subgoal_segment": "pick up the correct cube at <> for the second time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the third time",
+      "subgoal_segment": "pick up the correct cube at <> for the third time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.hard_round_order.0",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.1",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.2",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.3",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.4",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.target",
+      "source": "draw",
+      "value": 8
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 3,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 9301,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.02fcd00000000p-3",
+        "0x1.303f300000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.ff4bec0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.ad43a60000000p-5"
+       ]
+      ]
+     },
+     "cube_blue_1": {
+      "p": [
+       [
+        "-0x1.ae761a0000000p-5",
+        "-0x1.2a08080000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d4f9c20000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.9ae19e0000000p-2"
+       ]
+      ]
+     },
+     "cube_blue_2": {
+      "p": [
+       [
+        "-0x1.98d9b80000000p-5",
+        "-0x1.ffcd580000000p-6",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.ffd7920000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.96e1ee0000000p-6"
+       ]
+      ]
+     },
+     "cube_blue_3": {
+      "p": [
+       [
+        "-0x1.0d08200000000p-2",
+        "0x1.2c1fee0000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.e51bc00000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.477fa40000000p-2"
+       ]
+      ]
+     },
+     "cube_blue_4": {
+      "p": [
+       [
+        "-0x1.0f4de60000000p-2",
+        "-0x1.0a88460000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.a3524a0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.25caac0000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.a960c80000000p-3",
+        "0x1.4e133a0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d4dfc40000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.9b58360000000p-2"
+       ]
+      ]
+     },
+     "cube_green_1": {
+      "p": [
+       [
+        "-0x1.eb2fda0000000p-5",
+        "0x1.a961780000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.e11f500000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.5e3af00000000p-2"
+       ]
+      ]
+     },
+     "cube_green_2": {
+      "p": [
+       [
+        "0x1.d008000000000p-5",
+        "0x1.f699140000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.765ca60000000p-3",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.f75f980000000p-1"
+       ]
+      ]
+     },
+     "cube_green_3": {
+      "p": [
+       [
+        "-0x1.91e8120000000p-6",
+        "0x1.3901e60000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.e51e920000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.476ef80000000p-2"
+       ]
+      ]
+     },
+     "cube_green_4": {
+      "p": [
+       [
+        "0x1.67410a0000000p-6",
+        "-0x1.802af80000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.fffc080000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.fe25360000000p-8"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.245afa0000000p-3",
+        "-0x1.a9794a0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.4844da0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.88eaaa0000000p-1"
+       ]
+      ]
+     },
+     "cube_red_1": {
+      "p": [
+       [
+        "-0x1.91e8c80000000p-3",
+        "-0x1.3325a00000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d206560000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.a819460000000p-2"
+       ]
+      ]
+     },
+     "cube_red_2": {
+      "p": [
+       [
+        "0x1.3fc3bc0000000p-5",
+        "0x1.a821400000000p-6",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.e6f6ec0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.3c49c00000000p-2"
+       ]
+      ]
+     },
+     "cube_red_3": {
+      "p": [
+       [
+        "0x1.43a3080000000p-4",
+        "-0x1.60388a0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.9a61320000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.d515de0000000p-1"
+       ]
+      ]
+     },
+     "cube_red_4": {
+      "p": [
+       [
+        "0x1.2535d80000000p-7",
+        "0x1.4514480000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6d8b9e0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.667f660000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "7e845c6936f3c3dd7346f9f59ecfa251107e00e16e51d242f0e6a3c3d6860eb9"
+    },
+    "spec": {
+     "identity": {
+      "seed": 9700
+     },
+     "objects": {
+      "hard_round_order": {
+       "0": [
+        1,
+        2,
+        0
+       ],
+       "1": [
+        1,
+        2,
+        0
+       ],
+       "2": [
+        1,
+        2,
+        0
+       ],
+       "3": [
+        2,
+        1,
+        0
+       ],
+       "4": [
+        1,
+        2,
+        0
+       ]
+      },
+      "n_swaps": 0,
+      "target": 14
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 7
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the second time",
+      "subgoal_segment": "pick up the correct cube at <> for the second time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the third time",
+      "subgoal_segment": "pick up the correct cube at <> for the third time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.hard_round_order.0",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.1",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.2",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.3",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.4",
+      "source": "draw",
+      "value": [
+       1,
+       2,
+       0
+      ]
+     },
+     {
+      "path": "objects.target",
+      "source": "draw",
+      "value": 14
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 7,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 9700,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.303c360000000p-3",
+        "-0x1.3fee500000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.bb2e360000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.0063700000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_1": {
+      "p": [
+       [
+        "0x1.a9f7340000000p-5",
+        "-0x1.cfeaee0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.b2f88e0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.0e15000000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_2": {
+      "p": [
+       [
+        "0x1.16236a0000000p-4",
+        "0x1.bce1ca0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d7eb900000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.8d2ab20000000p-2"
+       ]
+      ]
+     },
+     "cube_blue_3": {
+      "p": [
+       [
+        "-0x1.3287280000000p-6",
+        "-0x1.416a8c0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.2b99660000000p-4",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.fea0e80000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_4": {
+      "p": [
+       [
+        "-0x1.21eb140000000p-4",
+        "0x1.9da4fa0000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f9aca80000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.40ee9a0000000p-3"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.d3547e0000000p-5",
+        "0x1.79ab9e0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.cae8f00000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.c612d20000000p-2"
+       ]
+      ]
+     },
+     "cube_green_1": {
+      "p": [
+       [
+        "0x1.0c40740000000p-6",
+        "0x1.bdaccc0000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d757d60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.8fe5fa0000000p-2"
+       ]
+      ]
+     },
+     "cube_green_2": {
+      "p": [
+       [
+        "-0x1.b1a62a0000000p-3",
+        "0x1.06c2160000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.8341cc0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.4eed480000000p-1"
+       ]
+      ]
+     },
+     "cube_green_3": {
+      "p": [
+       [
+        "0x1.39096c0000000p-4",
+        "-0x1.438bbe0000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.827b020000000p-6",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.ffdb880000000p-1"
+       ]
+      ]
+     },
+     "cube_green_4": {
+      "p": [
+       [
+        "-0x1.098df60000000p-2",
+        "-0x1.c10c920000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.8aa2520000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.4633cc0000000p-1"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.00e3220000000p-3",
+        "0x1.a5f44a0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.a03af20000000p-5",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.ff56b40000000p-1"
+       ]
+      ]
+     },
+     "cube_red_1": {
+      "p": [
+       [
+        "-0x1.0f84f60000000p-6",
+        "0x1.21f4120000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f711d80000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.7cd6ae0000000p-3"
+       ]
+      ]
+     },
+     "cube_red_2": {
+      "p": [
+       [
+        "-0x1.b4a8500000000p-5",
+        "0x1.6cbca40000000p-10",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.4abc8e0000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.86d7820000000p-1"
+       ]
+      ]
+     },
+     "cube_red_3": {
+      "p": [
+       [
+        "0x1.3b86a80000000p-6",
+        "0x1.60f30a0000000p-9",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.aec9c60000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.d07d020000000p-1"
+       ]
+      ]
+     },
+     "cube_red_4": {
+      "p": [
+       [
+        "0x1.2c41560000000p-4",
+        "0x1.0da65c0000000p-9",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.fbecc80000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.01e0920000000p-3"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "6de9f0fd06de381254fc74c934c8da27ee0faa2e6b6a4d967170cd7aa131ee50"
+    },
+    "spec": {
+     "identity": {
+      "seed": 10102
+     },
+     "objects": {
+      "hard_round_order": {
+       "0": [
+        2,
+        0,
+        1
+       ],
+       "1": [
+        0,
+        1,
+        2
+       ],
+       "2": [
+        0,
+        2,
+        1
+       ],
+       "3": [
+        1,
+        0,
+        2
+       ],
+       "4": [
+        2,
+        1,
+        0
+       ]
+      },
+      "n_swaps": 0,
+      "target": 0
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 7
+     },
+     "spec_kind": "native-parity/1",
+     "task": "VideoRepick"
+    },
+    "task_list": [
+     {
+      "demonstration": true,
+      "name": "pick up the cube",
+      "subgoal_segment": "pick up the cube at <>"
+     },
+     {
+      "demonstration": true,
+      "name": "drop the cube on the table",
+      "subgoal_segment": "drop the cube on the table"
+     },
+     {
+      "demonstration": true,
+      "name": "NO RECORD",
+      "subgoal_segment": "NO RECORD"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the correct cube for the first time",
+      "subgoal_segment": "pick up the correct cube at <> for the first time"
+     },
+     {
+      "demonstration": false,
+      "name": "put it down",
+      "subgoal_segment": "put it down"
+     },
+     {
+      "demonstration": false,
+      "name": "press the button to finish",
+      "subgoal_segment": "press the button at <> to finish"
+     }
+    ],
+    "trace": [
+     {
+      "path": "objects.n_swaps",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "objects.hard_round_order.0",
+      "source": "draw",
+      "value": [
+       2,
+       0,
+       1
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.1",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       2
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.2",
+      "source": "draw",
+      "value": [
+       0,
+       2,
+       1
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.3",
+      "source": "draw",
+      "value": [
+       1,
+       0,
+       2
+      ]
+     },
+     {
+      "path": "objects.hard_round_order.4",
+      "source": "draw",
+      "value": [
+       2,
+       1,
+       0
+      ]
+     },
+     {
+      "path": "objects.target",
+      "source": "draw",
+      "value": 0
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 11,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 10102,
+   "task": "VideoRepick"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_2": {
+      "p": [
+       [
+        "-0x1.16303a0000000p-4",
+        "-0x1.4916b40000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.535cb80000000p-4",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.fe3d5c0000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.0787100000000p-2",
+        "0x1.00fcd40000000p-6",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.22c1820000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.a56e9e0000000p-1"
+       ]
+      ]
+     },
+     "cube_red_1": {
+      "p": [
+       [
+        "-0x1.6380300000000p-3",
+        "-0x1.0df2300000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f190720000000p-3",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.f0a8e20000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "08199f3eff08d3ce5f4554cd152250144ffbec636192c9a5dfaf84972b761a08"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 12000
+     },
+     "layout": {
+      "button_xy": [
+       -0.231682425737381,
+       0.19501869678497316
+      ],
+      "cubes": {
+       "0": [
+        -0.25735114812850957,
+        0.015685279369354238,
+        1.933730338898998
+       ],
+       "1": [
+        -0.17358434438705445,
+        -0.13180958747863772,
+        3.6324069590956998
+       ],
+       "2": [
+        -0.06791708946228028,
+        -0.16068783760070804,
+        3.3074869083913896
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 2,
+       "1": 0,
+       "2": 1
+      },
+      "highlight_ids": [
+       1
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the highlighted cube, which is red",
+      "subgoal_segment": "pick up the highlighted cube at <>, which is red"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.231682425737381,
+       0.19501869678497316
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.25735114812850957,
+       0.015685279369354238,
+       1.933730338898998
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       -0.17358434438705445,
+       -0.13180958747863772,
+       3.6324069590956998
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       -0.06791708946228028,
+       -0.16068783760070804,
+       3.3074869083913896
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       1
+      ]
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 0,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 12000,
+   "task": "PickHighlight"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_2": {
+      "p": [
+       [
+        "-0x1.2356680000000p-5",
+        "0x1.1529080000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.7a14b20000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.dbd2be0000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.e48f440000000p-4",
+        "-0x1.7f07740000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d346380000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.a2901a0000000p-2"
+       ]
+      ]
+     },
+     "cube_red_1": {
+      "p": [
+       [
+        "0x1.26c8d40000000p-5",
+        "-0x1.ee6eec0000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.91dd480000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.3d40960000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "9c905d8df99f457ddf4023858c34d50a48208d1e6c61215afba158823097bf1b"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 12100
+     },
+     "layout": {
+      "button_xy": [
+       -0.16259410977363586,
+       0.1751643180847168
+      ],
+      "cubes": {
+       "0": [
+        -0.11830069065093995,
+        -0.04675648212432862,
+        0.8421741779006316
+       ],
+       "1": [
+        0.03598443508148197,
+        -0.0603556251525879,
+        4.946634512919931
+       ],
+       "2": [
+        -0.03556366205215453,
+        0.06766608238220215,
+        2.385254363052693
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 2,
+       "1": 0,
+       "2": 1
+      },
+      "highlight_ids": [
+       1
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the highlighted cube, which is red",
+      "subgoal_segment": "pick up the highlighted cube at <>, which is red"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.16259410977363586,
+       0.1751643180847168
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.11830069065093995,
+       -0.04675648212432862,
+       0.8421741779006316
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       0.03598443508148197,
+       -0.0603556251525879,
+       4.946634512919931
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       -0.03556366205215453,
+       0.06766608238220215,
+       2.385254363052693
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       1
+      ]
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 1,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 12100,
+   "task": "PickHighlight"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_1": {
+      "p": [
+       [
+        "-0x1.098ce00000000p-3",
+        "0x1.579ac60000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.8796b40000000p-4",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.fda7a20000000p-1"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.a799620000000p-3",
+        "-0x1.017d120000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.155bba0000000p-2",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.ecdc720000000p-1"
+       ]
+      ]
+     },
+     "cube_red_2": {
+      "p": [
+       [
+        "-0x1.7dbdac0000000p-6",
+        "-0x1.1a56c00000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.e411480000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.c32e280000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "5cd561ad8fcf32e17067b0b5d248f276320f72622d9b8c54b7d2315e5e282eac"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "easy",
+      "seed": 12400
+     },
+     "layout": {
+      "button_xy": [
+       -0.18003714680671692,
+       0.02547588348388672
+      ],
+      "cubes": {
+       "0": [
+        -0.2068355178833008,
+        -0.12572683095932008,
+        3.690160436942726
+       ],
+       "1": [
+        -0.12966323614120484,
+        0.1677756714820862,
+        3.333090455887627
+       ],
+       "2": [
+        -0.023299615383148176,
+        -0.06893038988113404,
+        2.156838032412823
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 0,
+       "1": 1,
+       "2": 0
+      },
+      "highlight_ids": [
+       0
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 8
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the highlighted cube, which is red",
+      "subgoal_segment": "pick up the highlighted cube at <>, which is red"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.18003714680671692,
+       0.02547588348388672
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.2068355178833008,
+       -0.12572683095932008,
+       3.690160436942726
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       -0.12966323614120484,
+       0.1677756714820862,
+       3.333090455887627
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       -0.023299615383148176,
+       -0.06893038988113404,
+       2.156838032412823
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       0
+      ]
+     }
+    ]
+   },
+   "difficulty": "easy",
+   "episode": 4,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 12400,
+   "task": "PickHighlight"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_1": {
+      "p": [
+       [
+        "-0x1.76c6a80000000p-7",
+        "0x1.f2873e0000000p-7",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.c483600000000p-3",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.f358760000000p-1"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.5548920000000p-5",
+        "0x1.1a64a80000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.86a65e0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.4af6980000000p-1"
+       ]
+      ]
+     },
+     "cube_green_2": {
+      "p": [
+       [
+        "-0x1.a14a360000000p-5",
+        "-0x1.4c54700000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.78fa900000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.5a74780000000p-1"
+       ]
+      ]
+     },
+     "cube_green_3": {
+      "p": [
+       [
+        "-0x1.7dc5d00000000p-3",
+        "0x1.a1cac80000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.c9db380000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.ca4ee40000000p-2"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "66564a7e0be9e5a2bcea685651dd0e7258902b506218d9a95b6df5079c11ad23"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 12200
+     },
+     "layout": {
+      "button_xy": [
+       -0.17879139780998232,
+       -0.09087555408477783
+      ],
+      "cubes": {
+       "0": [
+        -0.041660580635070804,
+        0.13788730144500735,
+        1.4057465853420996
+       ],
+       "1": [
+        -0.011437256336212176,
+        0.015213875770568847,
+        2.696008310904815
+       ],
+       "2": [
+        -0.050938706398010264,
+        -0.16227042675018313,
+        4.796724967099911
+       ],
+       "3": [
+        -0.18641244888305664,
+        0.10200003147125244,
+        5.355100715016793
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 2,
+       "1": 1,
+       "2": 2,
+       "3": 2
+      },
+      "highlight_ids": [
+       0,
+       3
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 10
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the first highlighted cube, which is green",
+      "subgoal_segment": "pick up the first highlighted cube at <>, which is green"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the second highlighted cube, which is green",
+      "subgoal_segment": "pick up the second highlighted cube at <>, which is green"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.17879139780998232,
+       -0.09087555408477783
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.041660580635070804,
+       0.13788730144500735,
+       1.4057465853420996
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       -0.011437256336212176,
+       0.015213875770568847,
+       2.696008310904815
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       -0.050938706398010264,
+       -0.16227042675018313,
+       4.796724967099911
+      ]
+     },
+     {
+      "path": "objects.color_choice.3",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.3",
+      "source": "draw",
+      "value": [
+       -0.18641244888305664,
+       0.10200003147125244,
+       5.355100715016793
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       0,
+       3
+      ]
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 2,
+   "ok": true,
+   "recovery_mode": "z",
+   "seed": 12200,
+   "task": "PickHighlight"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.c83a9c0000000p-5",
+        "0x1.29a7d40000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.51aa2c0000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.e35ce20000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_3": {
+      "p": [
+       [
+        "-0x1.b23b9a0000000p-8",
+        "-0x1.33b5ae0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f466ae0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.b174c00000000p-3"
+       ]
+      ]
+     },
+     "cube_green_2": {
+      "p": [
+       [
+        "0x1.bec0c80000000p-6",
+        "0x1.6faedc0000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0ea0aa0000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.b2a1b60000000p-1"
+       ]
+      ]
+     },
+     "cube_red_1": {
+      "p": [
+       [
+        "-0x1.a8ff040000000p-3",
+        "0x1.9f12d60000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.c0a2de0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.ed6f640000000p-2"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "53ef6dd00983d0110b359517db398ac709698731e1f2a0eba8e15ab9895a642f"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 12600
+     },
+     "layout": {
+      "button_xy": [
+       -0.16080863475799562,
+       -0.12009003162384034
+      ],
+      "cubes": {
+       "0": [
+        -0.05569200992584228,
+        0.07266981840133666,
+        2.4695135758271136
+       ],
+       "1": [
+        -0.2075176572799683,
+        0.1013363242149353,
+        1.005575713921914
+       ],
+       "2": [
+        0.027267642021179206,
+        0.04488318443298339,
+        4.2554214965747645
+       ],
+       "3": [
+        -0.006625866889953591,
+        -0.15024887323379518,
+        0.4265226839589516
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 1,
+       "1": 0,
+       "2": 2,
+       "3": 1
+      },
+      "highlight_ids": [
+       0,
+       1
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 10
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the first highlighted cube, which is blue",
+      "subgoal_segment": "pick up the first highlighted cube at <>, which is blue"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the second highlighted cube, which is red",
+      "subgoal_segment": "pick up the second highlighted cube at <>, which is red"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.16080863475799562,
+       -0.12009003162384034
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.05569200992584228,
+       0.07266981840133666,
+       2.4695135758271136
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       -0.2075176572799683,
+       0.1013363242149353,
+       1.005575713921914
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       0.027267642021179206,
+       0.04488318443298339,
+       4.2554214965747645
+      ]
+     },
+     {
+      "path": "objects.color_choice.3",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.3",
+      "source": "draw",
+      "value": [
+       -0.006625866889953591,
+       -0.15024887323379518,
+       0.4265226839589516
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       0,
+       1
+      ]
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 6,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 12600,
+   "task": "PickHighlight"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_2": {
+      "p": [
+       [
+        "-0x1.1e61680000000p-4",
+        "0x1.dddcae0000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.2d95ea0000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.e94a760000000p-1"
+       ]
+      ]
+     },
+     "cube_green_1": {
+      "p": [
+       [
+        "-0x1.19e1760000000p-2",
+        "0x1.ef78780000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.7be31c0000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.db76a00000000p-1"
+       ]
+      ]
+     },
+     "cube_red_0": {
+      "p": [
+       [
+        "-0x1.79c8380000000p-3",
+        "0x1.1f38340000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.b88cc80000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.04e1f80000000p-1"
+       ]
+      ]
+     },
+     "cube_red_3": {
+      "p": [
+       [
+        "-0x1.66fa7a0000000p-9",
+        "-0x1.906b420000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.ff3ede0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.bc8dfc0000000p-5"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "6dfc5f31cc5311144e79a0b04402b7510d501324427f51ac630f0a0b21aefb12"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "medium",
+      "seed": 13000
+     },
+     "layout": {
+      "button_xy": [
+       -0.20118932127952577,
+       -0.07130467891693115
+      ],
+      "cubes": {
+       "0": [
+        -0.18446392059326172,
+        0.14024391174316406,
+        1.0692920926734117
+       ],
+       "1": [
+        -0.2752741408348084,
+        0.12096449375152588,
+        2.381456861785808
+       ],
+       "2": [
+        -0.06991711616516114,
+        0.05833276748657226,
+        2.5436921829209878
+       ],
+       "3": [
+        -0.0027387881278991832,
+        -0.09775853633880617,
+        0.10858718933229443
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 0,
+       "1": 2,
+       "2": 1,
+       "3": 0
+      },
+      "highlight_ids": [
+       0,
+       1
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 10
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the first highlighted cube, which is red",
+      "subgoal_segment": "pick up the first highlighted cube at <>, which is red"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the second highlighted cube, which is green",
+      "subgoal_segment": "pick up the second highlighted cube at <>, which is green"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.20118932127952577,
+       -0.07130467891693115
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.18446392059326172,
+       0.14024391174316406,
+       1.0692920926734117
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       -0.2752741408348084,
+       0.12096449375152588,
+       2.381456861785808
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       -0.06991711616516114,
+       0.05833276748657226,
+       2.5436921829209878
+      ]
+     },
+     {
+      "path": "objects.color_choice.3",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.cubes.3",
+      "source": "draw",
+      "value": [
+       -0.0027387881278991832,
+       -0.09775853633880617,
+       0.10858718933229443
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       0,
+       1
+      ]
+     }
+    ]
+   },
+   "difficulty": "medium",
+   "episode": 10,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 13000,
+   "task": "PickHighlight"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.0480de0000000p-2",
+        "-0x1.f32bb80000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.d180c20000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.aa62820000000p-2"
+       ]
+      ]
+     },
+     "cube_blue_2": {
+      "p": [
+       [
+        "0x1.a243140000000p-5",
+        "0x1.47317c0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.9a29700000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.32730e0000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_3": {
+      "p": [
+       [
+        "-0x1.1c2e9c0000000p-3",
+        "0x1.4f59220000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.1645720000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.adc7280000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_4": {
+      "p": [
+       [
+        "0x1.5142e20000000p-8",
+        "-0x1.08aeb40000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.b154960000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.10b4d40000000p-1"
+       ]
+      ]
+     },
+     "cube_green_1": {
+      "p": [
+       [
+        "-0x1.9a83bc0000000p-4",
+        "-0x1.6a98340000000p-8",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.8e19300000000p-5",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.ff65240000000p-1"
+       ]
+      ]
+     },
+     "cube_green_5": {
+      "p": [
+       [
+        "-0x1.809ec80000000p-5",
+        "-0x1.3f17f80000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.eaa7500000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "-0x1.2498820000000p-2"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "3ede79a0c1ceb3e80b38a80dbf57fa77b68081fe2ee9915c2c3991af42a38fc3"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 12300
+     },
+     "layout": {
+      "button_xy": [
+       -0.24304931163787843,
+       0.04977307319641114
+      ],
+      "cubes": {
+       "0": [
+        -0.25439784288406375,
+        -0.12186786174774172,
+        0.8589453516416216
+       ],
+       "1": [
+        -0.10022328853607179,
+        -0.0055327534675598256,
+        3.2388229172891205
+       ],
+       "2": [
+        0.0510573768615723,
+        0.15976234674453735,
+        1.2833397121587875
+       ],
+       "3": [
+        -0.1387607741355896,
+        0.1637442255020142,
+        1.9923938688247749
+       ],
+       "4": [
+        0.0051461982727050715,
+        -0.032309868335723885,
+        1.123409107275719
+       ],
+       "5": [
+        -0.04695071220397948,
+        -0.1558074402809143,
+        5.7036323103338535
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 1,
+       "1": 2,
+       "2": 1,
+       "3": 1,
+       "4": 1,
+       "5": 2
+      },
+      "highlight_ids": [
+       0,
+       1,
+       2
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 14
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the first highlighted cube, which is blue",
+      "subgoal_segment": "pick up the first highlighted cube at <>, which is blue"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the second highlighted cube, which is green",
+      "subgoal_segment": "pick up the second highlighted cube at <>, which is green"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the third highlighted cube, which is blue",
+      "subgoal_segment": "pick up the third highlighted cube at <>, which is blue"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.24304931163787843,
+       0.04977307319641114
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.25439784288406375,
+       -0.12186786174774172,
+       0.8589453516416216
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       -0.10022328853607179,
+       -0.0055327534675598256,
+       3.2388229172891205
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       0.0510573768615723,
+       0.15976234674453735,
+       1.2833397121587875
+      ]
+     },
+     {
+      "path": "objects.color_choice.3",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.3",
+      "source": "draw",
+      "value": [
+       -0.1387607741355896,
+       0.1637442255020142,
+       1.9923938688247749
+      ]
+     },
+     {
+      "path": "objects.color_choice.4",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.4",
+      "source": "draw",
+      "value": [
+       0.0051461982727050715,
+       -0.032309868335723885,
+       1.123409107275719
+      ]
+     },
+     {
+      "path": "objects.color_choice.5",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.5",
+      "source": "draw",
+      "value": [
+       -0.04695071220397948,
+       -0.1558074402809143,
+       5.7036323103338535
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       0,
+       1,
+       2
+      ]
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 3,
+   "ok": true,
+   "recovery_mode": "xy",
+   "seed": 12300,
+   "task": "PickHighlight"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_1": {
+      "p": [
+       [
+        "0x1.e7ba1e0000000p-7",
+        "0x1.7e3f900000000p-8",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.9e44220000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.2ce0c40000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_3": {
+      "p": [
+       [
+        "-0x1.ac5fd20000000p-5",
+        "0x1.b247900000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.cce7620000000p-3",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.f2dd9e0000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_4": {
+      "p": [
+       [
+        "0x1.bdbe240000000p-7",
+        "0x1.6bf2520000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.9c233a0000000p-3",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.f5868c0000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_5": {
+      "p": [
+       [
+        "0x1.25acc40000000p-4",
+        "0x1.878e840000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.c04cdc0000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.eea7ae0000000p-2"
+       ]
+      ]
+     },
+     "cube_green_0": {
+      "p": [
+       [
+        "-0x1.0141ec0000000p-4",
+        "-0x1.e85c5a0000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.f667480000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.8aa8e80000000p-3"
+       ]
+      ]
+     },
+     "cube_green_2": {
+      "p": [
+       [
+        "-0x1.f495f00000000p-4",
+        "0x1.4536540000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.db25340000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.7d79c40000000p-2"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "f101e72444a826d663aa9f5594ecbb204ee2f052f042b061e8517fceaf086995"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 12700
+     },
+     "layout": {
+      "button_xy": [
+       -0.2239807426929474,
+       -0.015700221061706543
+      ],
+      "cubes": {
+       "0": [
+        -0.0628070092201233,
+        -0.05961434841156006,
+        0.38783610793634743
+       ],
+       "1": [
+        0.014884247779846205,
+        0.005832645893096927,
+        1.2563085438706991
+       ],
+       "2": [
+        -0.12221330404281616,
+        0.1587950348854065,
+        0.7634778925244662
+       ],
+       "3": [
+        -0.05229178428649903,
+        0.10602527618408206,
+        2.6876025006547923
+       ],
+       "4": [
+        0.013602988719940201,
+        0.17770827770233158,
+        3.546838095243341
+       ],
+       "5": [
+        0.07169796228408815,
+        0.09559489488601688,
+        1.0082957584684016
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 2,
+       "1": 1,
+       "2": 2,
+       "3": 1,
+       "4": 1,
+       "5": 1
+      },
+      "highlight_ids": [
+       0,
+       4,
+       5
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 14
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the first highlighted cube, which is green",
+      "subgoal_segment": "pick up the first highlighted cube at <>, which is green"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the second highlighted cube, which is blue",
+      "subgoal_segment": "pick up the second highlighted cube at <>, which is blue"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the third highlighted cube, which is blue",
+      "subgoal_segment": "pick up the third highlighted cube at <>, which is blue"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.2239807426929474,
+       -0.015700221061706543
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.0628070092201233,
+       -0.05961434841156006,
+       0.38783610793634743
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       0.014884247779846205,
+       0.005832645893096927,
+       1.2563085438706991
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       -0.12221330404281616,
+       0.1587950348854065,
+       0.7634778925244662
+      ]
+     },
+     {
+      "path": "objects.color_choice.3",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.3",
+      "source": "draw",
+      "value": [
+       -0.05229178428649903,
+       0.10602527618408206,
+       2.6876025006547923
+      ]
+     },
+     {
+      "path": "objects.color_choice.4",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.4",
+      "source": "draw",
+      "value": [
+       0.013602988719940201,
+       0.17770827770233158,
+       3.546838095243341
+      ]
+     },
+     {
+      "path": "objects.color_choice.5",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.5",
+      "source": "draw",
+      "value": [
+       0.07169796228408815,
+       0.09559489488601688,
+       1.0082957584684016
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       0,
+       4,
+       5
+      ]
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 7,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 12700,
+   "task": "PickHighlight"
+  },
+  {
+   "capture": {
+    "actors": {
+     "cube_blue_0": {
+      "p": [
+       [
+        "-0x1.fd6c4a0000000p-3",
+        "0x1.09a89c0000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.a8e9900000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.d1d6e60000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_1": {
+      "p": [
+       [
+        "0x1.c2aa240000000p-7",
+        "0x1.e8250c0000000p-4",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.c5e1a40000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.d9dc060000000p-2"
+       ]
+      ]
+     },
+     "cube_blue_2": {
+      "p": [
+       [
+        "0x1.38ea160000000p-5",
+        "-0x1.8d257e0000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.9163580000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.3ddad00000000p-1"
+       ]
+      ]
+     },
+     "cube_blue_3": {
+      "p": [
+       [
+        "-0x1.348ec80000000p-5",
+        "-0x1.4a17de0000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.cb5bf40000000p-2",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.c997ca0000000p-1"
+       ]
+      ]
+     },
+     "cube_green_5": {
+      "p": [
+       [
+        "-0x1.5155700000000p-3",
+        "0x1.5646a00000000p-3",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.a973060000000p-4",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.fd3b060000000p-1"
+       ]
+      ]
+     },
+     "cube_red_4": {
+      "p": [
+       [
+        "-0x1.8d011a0000000p-4",
+        "0x1.a448360000000p-5",
+        "0x1.47ae140000000p-6"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.660b6e0000000p-1",
+        "-0x0.0p+0",
+        "-0x0.0p+0",
+        "-0x1.6dfd380000000p-1"
+       ]
+      ]
+     },
+     "ground": {
+      "p": [
+       [
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.0000000000000p+0",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x0.0p+0"
+       ]
+      ]
+     },
+     "table-workspace": {
+      "p": [
+       [
+        "-0x1.eb851e0000000p-4",
+        "0x0.0p+0",
+        "-0x1.d6db700000000p-1"
+       ]
+      ],
+      "q": [
+       [
+        "0x1.6a09e60000000p-1",
+        "0x0.0p+0",
+        "0x0.0p+0",
+        "0x1.6a09e60000000p-1"
+       ]
+      ]
+     }
+    },
+    "generator_states": {
+     "generator": "d997b77911ed7653480171b01d23e246bec01977247befdb1ff5d1d27ff7a337"
+    },
+    "spec": {
+     "identity": {
+      "difficulty": "hard",
+      "seed": 13100
+     },
+     "layout": {
+      "button_xy": [
+       -0.23938090801239015,
+       -0.08785698413848878
+      ],
+      "cubes": {
+       "0": [
+        -0.24874170780181887,
+        0.06485806703567507,
+        2.2858092647880444
+       ],
+       "1": [
+        0.013753192424774185,
+        0.11917595386505128,
+        0.9621973138488625
+       ],
+       "2": [
+        0.038197557926178016,
+        -0.04847979068756103,
+        1.339550970063306
+       ],
+       "3": [
+        -0.03766574144363402,
+        -0.16117833852767946,
+        2.211211958836539
+       ],
+       "4": [
+        -0.09692487955093385,
+        0.05130396366119386,
+        4.690444741061897
+       ],
+       "5": [
+        -0.1647137427330017,
+        0.167126898765564,
+        2.933478348953654
+       ]
+      }
+     },
+     "objects": {
+      "color_choice": {
+       "0": 1,
+       "1": 1,
+       "2": 1,
+       "3": 1,
+       "4": 0,
+       "5": 2
+      },
+      "highlight_ids": [
+       5,
+       0,
+       3
+      ]
+     },
+     "provenance": {
+      "mismatches": 0,
+      "mode": "export",
+      "value_points": 14
+     },
+     "spec_kind": "native-parity/1",
+     "task": "PickHighlight"
+    },
+    "task_list": [
+     {
+      "demonstration": false,
+      "name": "press the button",
+      "subgoal_segment": "press the button at <>"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the first highlighted cube, which is green",
+      "subgoal_segment": "pick up the first highlighted cube at <>, which is green"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the second highlighted cube, which is blue",
+      "subgoal_segment": "pick up the second highlighted cube at <>, which is blue"
+     },
+     {
+      "demonstration": false,
+      "name": "place the cube onto the table",
+      "subgoal_segment": "place the cube onto the table"
+     },
+     {
+      "demonstration": false,
+      "name": "pick up the third highlighted cube, which is blue",
+      "subgoal_segment": "pick up the third highlighted cube at <>, which is blue"
+     }
+    ],
+    "trace": [
+     {
+      "path": "layout.button_xy",
+      "source": "draw",
+      "value": [
+       -0.23938090801239015,
+       -0.08785698413848878
+      ]
+     },
+     {
+      "path": "objects.color_choice.0",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.0",
+      "source": "draw",
+      "value": [
+       -0.24874170780181887,
+       0.06485806703567507,
+       2.2858092647880444
+      ]
+     },
+     {
+      "path": "objects.color_choice.1",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.1",
+      "source": "draw",
+      "value": [
+       0.013753192424774185,
+       0.11917595386505128,
+       0.9621973138488625
+      ]
+     },
+     {
+      "path": "objects.color_choice.2",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.2",
+      "source": "draw",
+      "value": [
+       0.038197557926178016,
+       -0.04847979068756103,
+       1.339550970063306
+      ]
+     },
+     {
+      "path": "objects.color_choice.3",
+      "source": "draw",
+      "value": 1
+     },
+     {
+      "path": "layout.cubes.3",
+      "source": "draw",
+      "value": [
+       -0.03766574144363402,
+       -0.16117833852767946,
+       2.211211958836539
+      ]
+     },
+     {
+      "path": "objects.color_choice.4",
+      "source": "draw",
+      "value": 0
+     },
+     {
+      "path": "layout.cubes.4",
+      "source": "draw",
+      "value": [
+       -0.09692487955093385,
+       0.05130396366119386,
+       4.690444741061897
+      ]
+     },
+     {
+      "path": "objects.color_choice.5",
+      "source": "draw",
+      "value": 2
+     },
+     {
+      "path": "layout.cubes.5",
+      "source": "draw",
+      "value": [
+       -0.1647137427330017,
+       0.167126898765564,
+       2.933478348953654
+      ]
+     },
+     {
+      "path": "objects.highlight_ids",
+      "source": "draw",
+      "value": [
+       5,
+       0,
+       3
+      ]
+     }
+    ]
+   },
+   "difficulty": "hard",
+   "episode": 11,
+   "ok": true,
+   "recovery_mode": null,
+   "seed": 13100,
+   "task": "PickHighlight"
+  }
+ ],
+ "schema": "v4-reset-probe/1"
+}

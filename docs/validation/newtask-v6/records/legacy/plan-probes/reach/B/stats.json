@@ -1,0 +1,412 @@
+{
+ "missing": 0,
+ "n_rows": 12276,
+ "按杆根 root": {
+  "n": 535,
+  "area_m2": 0.3344,
+  "d_base_max": 0.7505,
+  "d_base_min": 0.3387,
+  "x_range": [
+   -0.4,
+   0.125
+  ],
+  "y_range": [
+   -0.4,
+   0.4
+  ],
+  "r_inscribed": 0.1,
+  "r_inscribed_capped": false,
+  "x_hits_grid_edge": [
+   true,
+   false
+  ],
+  "y_hits_grid_edge": [
+   true,
+   true
+  ]
+ },
+ "按杆身中点 root−0.05·u": {
+  "n": 548,
+  "area_m2": 0.3425,
+  "d_base_max": 0.7735,
+  "d_base_min": 0.293,
+  "x_range": [
+   -0.35,
+   0.15
+  ],
+  "y_range": [
+   -0.35,
+   0.35
+  ],
+  "r_inscribed": 0.15,
+  "r_inscribed_capped": false,
+  "x_hits_grid_edge": [
+   true,
+   false
+  ],
+  "y_hits_grid_edge": [
+   true,
+   true
+  ]
+ },
+ "按抓取点 root−0.10·u": {
+  "n": 479,
+  "area_m2": 0.2994,
+  "d_base_max": 0.8092,
+  "d_base_min": 0.315,
+  "x_range": [
+   -0.3,
+   0.175
+  ],
+  "y_range": [
+   -0.3,
+   0.3
+  ],
+  "r_inscribed": 0.2,
+  "r_inscribed_capped": false,
+  "x_hits_grid_edge": [
+   true,
+   false
+  ],
+  "y_hits_grid_edge": [
+   true,
+   true
+  ]
+ },
+ "per_yaw": [
+  {
+   "yaw": 0,
+   "n_ok": 841,
+   "area": 0.5256,
+   "flip_frac_all": 0.0,
+   "flip_frac_ok": 0.0,
+   "grasp_d_ok_max": 0.852,
+   "grasp_d_fail_min": 0.115,
+   "root_r_inscribed": 0.2761,
+   "box_ok": "50/50",
+   "x_max_ok": 0.325
+  },
+  {
+   "yaw": 30,
+   "n_ok": 827,
+   "area": 0.5169,
+   "flip_frac_all": 0.031,
+   "flip_frac_ok": 0.039,
+   "grasp_d_ok_max": 0.854,
+   "grasp_d_fail_min": 0.128,
+   "root_r_inscribed": 0.2761,
+   "box_ok": "50/50",
+   "x_max_ok": 0.325
+  },
+  {
+   "yaw": 60,
+   "n_ok": 792,
+   "area": 0.495,
+   "flip_frac_all": 0.229,
+   "flip_frac_ok": 0.268,
+   "grasp_d_ok_max": 0.85,
+   "grasp_d_fail_min": 0.165,
+   "root_r_inscribed": 0.25,
+   "box_ok": "50/50",
+   "x_max_ok": 0.25
+  },
+  {
+   "yaw": 90,
+   "n_ok": 747,
+   "area": 0.4669,
+   "flip_frac_all": 0.606,
+   "flip_frac_ok": 0.596,
+   "grasp_d_ok_max": 0.838,
+   "grasp_d_fail_min": 0.215,
+   "root_r_inscribed": 0.2016,
+   "box_ok": "50/50",
+   "x_max_ok": 0.2
+  },
+  {
+   "yaw": 120,
+   "n_ok": 700,
+   "area": 0.4375,
+   "flip_frac_all": 0.956,
+   "flip_frac_ok": 0.936,
+   "grasp_d_ok_max": 0.847,
+   "grasp_d_fail_min": 0.802,
+   "root_r_inscribed": 0.1346,
+   "box_ok": "50/50",
+   "x_max_ok": 0.15
+  },
+  {
+   "yaw": 150,
+   "n_ok": 656,
+   "area": 0.41,
+   "flip_frac_all": 1.0,
+   "flip_frac_ok": 1.0,
+   "grasp_d_ok_max": 0.852,
+   "grasp_d_fail_min": 0.807,
+   "root_r_inscribed": 0.125,
+   "box_ok": "50/50",
+   "x_max_ok": 0.15
+  },
+  {
+   "yaw": 180,
+   "n_ok": 645,
+   "area": 0.4031,
+   "flip_frac_all": 1.0,
+   "flip_frac_ok": 1.0,
+   "grasp_d_ok_max": 0.852,
+   "grasp_d_fail_min": 0.807,
+   "root_r_inscribed": 0.1,
+   "box_ok": "50/50",
+   "x_max_ok": 0.125
+  },
+  {
+   "yaw": 210,
+   "n_ok": 657,
+   "area": 0.4106,
+   "flip_frac_all": 1.0,
+   "flip_frac_ok": 1.0,
+   "grasp_d_ok_max": 0.852,
+   "grasp_d_fail_min": 0.807,
+   "root_r_inscribed": 0.1275,
+   "box_ok": "50/50",
+   "x_max_ok": 0.15
+  },
+  {
+   "yaw": 240,
+   "n_ok": 700,
+   "area": 0.4375,
+   "flip_frac_all": 0.956,
+   "flip_frac_ok": 0.936,
+   "grasp_d_ok_max": 0.847,
+   "grasp_d_fail_min": 0.802,
+   "root_r_inscribed": 0.1346,
+   "box_ok": "50/50",
+   "x_max_ok": 0.15
+  },
+  {
+   "yaw": 270,
+   "n_ok": 750,
+   "area": 0.4688,
+   "flip_frac_all": 0.636,
+   "flip_frac_ok": 0.624,
+   "grasp_d_ok_max": 0.838,
+   "grasp_d_fail_min": 0.215,
+   "root_r_inscribed": 0.2016,
+   "box_ok": "50/50",
+   "x_max_ok": 0.2
+  },
+  {
+   "yaw": 300,
+   "n_ok": 793,
+   "area": 0.4956,
+   "flip_frac_all": 0.229,
+   "flip_frac_ok": 0.267,
+   "grasp_d_ok_max": 0.85,
+   "grasp_d_fail_min": 0.165,
+   "root_r_inscribed": 0.25,
+   "box_ok": "50/50",
+   "x_max_ok": 0.25
+  },
+  {
+   "yaw": 330,
+   "n_ok": 827,
+   "area": 0.5169,
+   "flip_frac_all": 0.031,
+   "flip_frac_ok": 0.039,
+   "grasp_d_ok_max": 0.854,
+   "grasp_d_fail_min": 0.128,
+   "root_r_inscribed": 0.275,
+   "box_ok": "50/50",
+   "x_max_ok": 0.325
+  }
+ ],
+ "err_counts": {
+  "OK": 8935,
+  "PlanExhausted": 2543,
+  "NotLifted": 738,
+  "NotGrasping": 60
+ },
+ "err_by_yaw": {
+  "0": {
+   "PlanExhausted": 156,
+   "NotLifted": 26
+  },
+  "30": {
+   "PlanExhausted": 157,
+   "NotLifted": 39
+  },
+  "60": {
+   "PlanExhausted": 167,
+   "NotLifted": 64
+  },
+  "90": {
+   "PlanExhausted": 200,
+   "NotLifted": 76
+  },
+  "120": {
+   "PlanExhausted": 239,
+   "NotLifted": 83,
+   "NotGrasping": 1
+  },
+  "150": {
+   "PlanExhausted": 284,
+   "NotGrasping": 16,
+   "NotLifted": 67
+  },
+  "180": {
+   "PlanExhausted": 297,
+   "NotGrasping": 26,
+   "NotLifted": 55
+  },
+  "210": {
+   "PlanExhausted": 283,
+   "NotGrasping": 15,
+   "NotLifted": 68
+  },
+  "240": {
+   "PlanExhausted": 238,
+   "NotGrasping": 2,
+   "NotLifted": 83
+  },
+  "270": {
+   "PlanExhausted": 201,
+   "NotLifted": 72
+  },
+  "300": {
+   "PlanExhausted": 163,
+   "NotLifted": 67
+  },
+  "330": {
+   "PlanExhausted": 158,
+   "NotLifted": 38
+  }
+ },
+ "msg_top": [
+  [
+   "screw→RRT* 全部失败",
+   2543
+  ],
+  [
+   "",
+   798
+  ]
+ ],
+ "rrt_rescued": 396,
+ "sec_total": 14128.5,
+ "grasp_dist_rate": [
+  [
+   0.15,
+   0.2,
+   102,
+   0.0
+  ],
+  [
+   0.2,
+   0.25,
+   204,
+   0.24
+  ],
+  [
+   0.25,
+   0.3,
+   340,
+   0.956
+  ],
+  [
+   0.3,
+   0.35,
+   540,
+   1.0
+  ],
+  [
+   0.35,
+   0.4,
+   698,
+   1.0
+  ],
+  [
+   0.4,
+   0.45,
+   788,
+   1.0
+  ],
+  [
+   0.45,
+   0.5,
+   882,
+   1.0
+  ],
+  [
+   0.5,
+   0.55,
+   900,
+   1.0
+  ],
+  [
+   0.55,
+   0.6,
+   908,
+   1.0
+  ],
+  [
+   0.6,
+   0.65,
+   876,
+   1.0
+  ],
+  [
+   0.65,
+   0.7,
+   874,
+   1.0
+  ],
+  [
+   0.7,
+   0.75,
+   840,
+   1.0
+  ],
+  [
+   0.75,
+   0.8,
+   846,
+   1.0
+  ],
+  [
+   0.8,
+   0.85,
+   832,
+   0.482
+  ],
+  [
+   0.85,
+   0.9,
+   815,
+   0.01
+  ],
+  [
+   0.9,
+   0.95,
+   678,
+   0.0
+  ],
+  [
+   0.95,
+   1.0,
+   516,
+   0.0
+  ],
+  [
+   1.0,
+   1.05,
+   362,
+   0.0
+  ],
+  [
+   1.05,
+   1.1,
+   205,
+   0.0
+  ]
+ ],
+ "box_all_yaw": "50/50"
+}

@@ -1,0 +1,5 @@
+DEMOR2 seed=5400400 way=peg_push ok=False steps=None task DatasetGenerationError MoveCube/episode_0: 跑完整个 task_list 仍未成功 83.6s
+DEMOR2 seed=5400200 way=peg_push ok=False steps=None task PlannerExhausted screw 三次与 RRTStar 三次均失败: screw plan failed 57.1s
+DEMOR2 seed=5400500 way=gripper_push ok=False steps=None task DatasetGenerationError MoveCube/episode_2: 跑完整个 task_list 仍未成功 36.5s
+DEMOR2 seed=5400008 way=peg_push ok=False steps=None task PlannerExhausted screw 三次与 RRTStar 三次均失败: screw plan failed 31.4s
+DEMOR2_DONE

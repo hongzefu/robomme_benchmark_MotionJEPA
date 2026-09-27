@@ -1,0 +1,719 @@
+[
+ {
+  "kind": "new",
+  "diff": "xhard1",
+  "ep": 0,
+  "picks": [
+   [
+    "pick up the first blue cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    167,
+    0
+   ],
+   [
+    "pick up the third blue cube",
+    356,
+    0
+   ],
+   [
+    "pick up the first red cube",
+    544,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    687,
+    0
+   ],
+   [
+    "pick up the third red cube",
+    872,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard1",
+  "ep": 3,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    176,
+    0
+   ],
+   [
+    "pick up the first blue cube",
+    341,
+    0
+   ],
+   [
+    "pick up the first green cube",
+    507,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    667,
+    0
+   ],
+   [
+    "pick up the third green cube",
+    835,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard1",
+  "ep": 6,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    171,
+    0
+   ],
+   [
+    "pick up the third red cube",
+    357,
+    0
+   ],
+   [
+    "pick up the fourth red cube",
+    519,
+    0
+   ],
+   [
+    "pick up the fifth red cube",
+    679,
+    0
+   ],
+   [
+    "pick up the first green cube",
+    844,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard2",
+  "ep": 0,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ],
+   [
+    "pick up the first blue cube",
+    135,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    284,
+    0
+   ],
+   [
+    "pick up the third blue cube",
+    457,
+    0
+   ],
+   [
+    "pick up the fourth blue cube",
+    630,
+    0
+   ],
+   [
+    "pick up the fifth blue cube",
+    818,
+    0
+   ],
+   [
+    "pick up the sixth blue cube",
+    953,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard2",
+  "ep": 3,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    156,
+    0
+   ],
+   [
+    "pick up the first green cube",
+    318,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    486,
+    0
+   ],
+   [
+    "pick up the first blue cube",
+    691,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    852,
+    0
+   ],
+   [
+    "pick up the third blue cube",
+    1027,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard2",
+  "ep": 6,
+  "picks": [
+   [
+    "pick up the first green cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    158,
+    0
+   ],
+   [
+    "pick up the first red cube",
+    305,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    468,
+    0
+   ],
+   [
+    "pick up the third red cube",
+    632,
+    0
+   ],
+   [
+    "pick up the fourth red cube",
+    783,
+    0
+   ],
+   [
+    "pick up the fifth red cube",
+    977,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard3",
+  "ep": 0,
+  "picks": [
+   [
+    "pick up the first blue cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    173,
+    0
+   ],
+   [
+    "pick up the third blue cube",
+    363,
+    0
+   ],
+   [
+    "pick up the fourth blue cube",
+    519,
+    0
+   ],
+   [
+    "pick up the sixth blue cube",
+    895,
+    0
+   ],
+   [
+    "pick up the first red cube",
+    1106,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    1256,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard3",
+  "ep": 3,
+  "picks": [
+   [
+    "pick up the first green cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    156,
+    0
+   ],
+   [
+    "pick up the first red cube",
+    311,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    469,
+    0
+   ],
+   [
+    "pick up the third red cube",
+    640,
+    0
+   ],
+   [
+    "pick up the fourth red cube",
+    805,
+    0
+   ],
+   [
+    "pick up the fifth red cube",
+    971,
+    0
+   ],
+   [
+    "pick up the sixth red cube",
+    1156,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard3",
+  "ep": 6,
+  "picks": [
+   [
+    "pick up the first blue cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    153,
+    0
+   ],
+   [
+    "pick up the third blue cube",
+    306,
+    0
+   ],
+   [
+    "pick up the first green cube",
+    490,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    641,
+    0
+   ],
+   [
+    "pick up the first red cube",
+    804,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    951,
+    0
+   ],
+   [
+    "pick up the third red cube",
+    1114,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard4",
+  "ep": 0,
+  "picks": [
+   [
+    "pick up the first blue cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    139,
+    0
+   ],
+   [
+    "pick up the third blue cube",
+    310,
+    0
+   ],
+   [
+    "pick up the fifth blue cube",
+    699,
+    0
+   ],
+   [
+    "pick up the sixth blue cube",
+    844,
+    0
+   ],
+   [
+    "pick up the seventh blue cube",
+    1023,
+    0
+   ],
+   [
+    "pick up the first red cube",
+    1199,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    1399,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard4",
+  "ep": 3,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ],
+   [
+    "pick up the first blue cube",
+    165,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    304,
+    0
+   ],
+   [
+    "pick up the first green cube",
+    468,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    632,
+    0
+   ],
+   [
+    "pick up the third green cube",
+    791,
+    0
+   ],
+   [
+    "pick up the fourth green cube",
+    960,
+    0
+   ],
+   [
+    "pick up the fifth green cube",
+    1108,
+    0
+   ],
+   [
+    "pick up the sixth green cube",
+    1298,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "new",
+  "diff": "xhard4",
+  "ep": 6,
+  "picks": [
+   [
+    "pick up the first green cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    169,
+    0
+   ],
+   [
+    "pick up the third green cube",
+    358,
+    0
+   ],
+   [
+    "pick up the first red cube",
+    554,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    727,
+    0
+   ],
+   [
+    "pick up the third red cube",
+    888,
+    0
+   ],
+   [
+    "pick up the first blue cube",
+    1107,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    1260,
+    0
+   ],
+   [
+    "pick up the third blue cube",
+    1403,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "easy",
+  "ep": 0,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    136,
+    50
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "easy",
+  "ep": 1,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "medium",
+  "ep": 10,
+  "picks": [
+   [
+    "pick up the first green cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    148,
+    50
+   ],
+   [
+    "pick up the third green cube",
+    327,
+    100
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "hard",
+  "ep": 11,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    138,
+    50
+   ],
+   [
+    "pick up the first green cube",
+    285,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "medium",
+  "ep": 2,
+  "picks": [
+   [
+    "pick up the first green cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    202,
+    50
+   ],
+   [
+    "pick up the first red cube",
+    370,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    568,
+    50
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "hard",
+  "ep": 3,
+  "picks": [
+   [
+    "pick up the first green cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second green cube",
+    143,
+    0
+   ],
+   [
+    "pick up the third green cube",
+    322,
+    0
+   ],
+   [
+    "pick up the first blue cube",
+    637,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "easy",
+  "ep": 4,
+  "picks": [
+   [
+    "pick up the first blue cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    294,
+    0
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "medium",
+  "ep": 6,
+  "picks": [
+   [
+    "pick up the first blue cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    137,
+    50
+   ],
+   [
+    "pick up the third blue cube",
+    324,
+    100
+   ]
+  ]
+ },
+ {
+  "kind": "native",
+  "diff": "hard",
+  "ep": 7,
+  "picks": [
+   [
+    "pick up the first red cube",
+    0,
+    0
+   ],
+   [
+    "pick up the second red cube",
+    164,
+    50
+   ],
+   [
+    "pick up the first blue cube",
+    324,
+    0
+   ],
+   [
+    "pick up the second blue cube",
+    480,
+    50
+   ]
+  ]
+ }
+]

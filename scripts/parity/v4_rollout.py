@@ -24,7 +24,7 @@
         --identities-from artifacts/newtask-v4/<id>/rollout/run1/results.jsonl ...
     uv run --no-sync python -m scripts.parity.v4_rollout compare artifacts/newtask-v4/<id>/rollout/run1 artifacts/newtask-v4/<id>/rollout/run2
 
-V5（0924-newtask-release-v5-plan.md 3.1④）只跑 ``run`` 一遍（口径 12），不跑 run2 / compare；本文件没有写死 V4 的路径或 run id，
+V5（docs/plans/0924-newtask-release-v5-plan.md 3.1④）只跑 ``run`` 一遍（口径 12），不跑 run2 / compare；本文件没有写死 V4 的路径或 run id，
 换 ``--specs`` 与 ``--output`` 即可：
 
     uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v5/v5-01/specs.jsonl \

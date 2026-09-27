@@ -1,0 +1,3599 @@
+[
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "n_candidates_frame0": 6,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 111,
+    "lift_frame": 96,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     77.94117647058823,
+     101.01604278074866
+    ],
+    "target_area_start": 187,
+    "target_centroid_lift": [
+     74.18493150684931,
+     98.51369863013699
+    ],
+    "target_disp_px": 4.513435772858022,
+    "grounded_point": [
+     76,
+     101
+    ],
+    "grounded_to_target_px": 1.9412427619387367,
+    "other_cube_disp_px": [
+     4.09,
+     0.0,
+     0.0,
+     0.0,
+     0.83
+    ],
+    "max_other_disp": 4.09
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 445,
+    "end": 559,
+    "lift_frame": 543,
+    "target_panel_color": [
+     207.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     83.4559585492228,
+     159.1658031088083
+    ],
+    "target_area_start": 193,
+    "target_centroid_lift": [
+     79.1556886227545,
+     160.92215568862275
+    ],
+    "target_disp_px": 4.645115264997051,
+    "grounded_point": [
+     81,
+     159
+    ],
+    "grounded_to_target_px": 2.461548916107712,
+    "other_cube_disp_px": [
+     0.0,
+     null,
+     0.0,
+     0.13,
+     0.0
+    ],
+    "max_other_disp": 0.13
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 615,
+    "end": 692,
+    "lift_frame": 676,
+    "target_panel_color": [
+     208.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     83.7421052631579,
+     159.58947368421053
+    ],
+    "target_area_start": 190,
+    "target_centroid_lift": [
+     79.6358024691358,
+     161.44444444444446
+    ],
+    "target_disp_px": 4.505844999277774,
+    "grounded_point": [
+     82,
+     159
+    ],
+    "grounded_to_target_px": 1.8391329403550956,
+    "other_cube_disp_px": [
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   }
+  ],
+  "target_seg_color": [
+   209.0,
+   117.0,
+   53.0
+  ],
+  "exec_pick_count": 2,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "n_candidates_frame0": 7,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 119,
+    "lift_frame": 102,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     85.83417085427136,
+     84.57286432160804
+    ],
+    "target_area_start": 199,
+    "target_centroid_lift": [
+     80.6896551724138,
+     84.70114942528735
+    ],
+    "target_disp_px": 5.146114910172962,
+    "grounded_point": [
+     84,
+     84
+    ],
+    "grounded_to_target_px": 1.9215504816761853,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     2.12,
+     1.47,
+     0.0
+    ],
+    "max_other_disp": 2.12
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 388,
+    "end": 500,
+    "lift_frame": 484,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     82.665,
+     167.09
+    ],
+    "target_area_start": 200,
+    "target_centroid_lift": [
+     78.0,
+     171.4471544715447
+    ],
+    "target_disp_px": 6.383339258483922,
+    "grounded_point": [
+     81,
+     167
+    ],
+    "grounded_to_target_px": 1.6674306582284077,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 555,
+    "end": 629,
+    "lift_frame": 614,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     82.16582914572864,
+     168.71356783919597
+    ],
+    "target_area_start": 199,
+    "target_centroid_lift": [
+     77.59663865546219,
+     173.30252100840337
+    ],
+    "target_disp_px": 6.475800562518892,
+    "grounded_point": [
+     80,
+     168
+    ],
+    "grounded_to_target_px": 2.280349742829474,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   }
+  ],
+  "target_seg_color": [
+   88.0,
+   67.0,
+   230.0
+  ],
+  "exec_pick_count": 2,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "n_candidates_frame0": 6,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 103,
+    "lift_frame": 89,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     111.5061224489796,
+     82.35918367346939
+    ],
+    "target_area_start": 245,
+    "target_centroid_lift": [
+     109.18627450980392,
+     79.42156862745098
+    ],
+    "target_disp_px": 3.74316398511892,
+    "grounded_point": [
+     109,
+     82
+    ],
+    "grounded_to_target_px": 2.531731154875346,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 419,
+    "end": 543,
+    "lift_frame": 527,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     71.13872832369943,
+     166.23699421965318
+    ],
+    "target_area_start": 173,
+    "target_centroid_lift": [
+     65.63855421686748,
+     166.03614457831324
+    ],
+    "target_disp_px": 5.503840094324236,
+    "grounded_point": [
+     70,
+     166
+    ],
+    "grounded_to_target_px": 1.1631287354993531,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.05,
+     0.0
+    ],
+    "max_other_disp": 0.05
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 602,
+    "end": 674,
+    "lift_frame": 659,
+    "target_panel_color": [
+     208.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     70.15428571428572,
+     165.33142857142857
+    ],
+    "target_area_start": 175,
+    "target_centroid_lift": [
+     64.44444444444444,
+     165.19298245614036
+    ],
+    "target_disp_px": 5.7115194697751885,
+    "grounded_point": [
+     69,
+     165
+    ],
+    "grounded_to_target_px": 1.2009248137012078,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   }
+  ],
+  "target_seg_color": [
+   209.0,
+   117.0,
+   53.0
+  ],
+  "exec_pick_count": 2,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "n_candidates_frame0": 7,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 108,
+    "lift_frame": 94,
+    "target_panel_color": [
+     220.0,
+     38.0,
+     220.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     74.79057591623037,
+     180.53403141361255
+    ],
+    "target_area_start": 191,
+    "target_centroid_lift": [
+     70.15254237288136,
+     185.864406779661
+    ],
+    "target_disp_px": 7.0657099213176595,
+    "grounded_point": [
+     73,
+     180
+    ],
+    "grounded_to_target_px": 1.8685158983827883,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 550,
+    "end": 677,
+    "lift_frame": 658,
+    "target_panel_color": [
+     220.0,
+     38.0,
+     219.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     73.39784946236558,
+     181.48387096774192
+    ],
+    "target_area_start": 186,
+    "target_centroid_lift": [
+     67.68681318681318,
+     182.04395604395606
+    ],
+    "target_disp_px": 5.738434510672161,
+    "grounded_point": [
+     72,
+     181
+    ],
+    "grounded_to_target_px": 1.4792275798061834,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 734,
+    "end": 811,
+    "lift_frame": 795,
+    "target_panel_color": [
+     220.0,
+     38.0,
+     219.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     72.57297297297298,
+     180.40540540540542
+    ],
+    "target_area_start": 185,
+    "target_centroid_lift": [
+     66.71751412429379,
+     181.06214689265536
+    ],
+    "target_disp_px": 5.892173428341253,
+    "grounded_point": [
+     71,
+     180
+    ],
+    "grounded_to_target_px": 1.6243760391102107,
+    "other_cube_disp_px": [
+     0.0,
+     0.02,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.02
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 868,
+    "end": 939,
+    "lift_frame": 925,
+    "target_panel_color": [
+     220.0,
+     38.0,
+     219.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     71.94535519125684,
+     179.0601092896175
+    ],
+    "target_area_start": 183,
+    "target_centroid_lift": [
+     65.29255319148936,
+     179.93617021276594
+    ],
+    "target_disp_px": 6.710235255874257,
+    "grounded_point": [
+     70,
+     179
+    ],
+    "grounded_to_target_px": 1.9462836244618216,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   }
+  ],
+  "target_seg_color": [
+   220.0,
+   38.0,
+   220.0
+  ],
+  "exec_pick_count": 3,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "n_candidates_frame0": 9,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 131,
+    "lift_frame": 112,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     59.0,
+     90.83108108108108
+    ],
+    "target_area_start": 148,
+    "target_centroid_lift": [
+     54.703448275862065,
+     89.80689655172414
+    ],
+    "target_disp_px": 4.4169345329500596,
+    "grounded_point": [
+     58,
+     90
+    ],
+    "grounded_to_target_px": 1.3002675737443035,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 589,
+    "end": 730,
+    "lift_frame": 706,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     58.53237410071942,
+     90.89208633093526
+    ],
+    "target_area_start": 139,
+    "target_centroid_lift": [
+     54.157534246575345,
+     90.12328767123287
+    ],
+    "target_disp_px": 4.44187743286187,
+    "grounded_point": [
+     57,
+     90
+    ],
+    "grounded_to_target_px": 1.7731295514984766,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 800,
+    "end": 891,
+    "lift_frame": 865,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     58.34782608695652,
+     90.8695652173913
+    ],
+    "target_area_start": 138,
+    "target_centroid_lift": [
+     53.65806451612903,
+     90.07096774193549
+    ],
+    "target_disp_px": 4.757270385317061,
+    "grounded_point": [
+     57,
+     90
+    ],
+    "grounded_to_target_px": 1.6039884126692774,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 969,
+    "end": 1064,
+    "lift_frame": 1040,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     57.714285714285715,
+     90.50340136054422
+    ],
+    "target_area_start": 147,
+    "target_centroid_lift": [
+     53.9078947368421,
+     89.73684210526316
+    ],
+    "target_disp_px": 3.8828115283929483,
+    "grounded_point": [
+     56,
+     90
+    ],
+    "grounded_to_target_px": 1.7866696504955397,
+    "other_cube_disp_px": [
+     0.0,
+     0.09,
+     0.0,
+     0.19,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.19
+   }
+  ],
+  "target_seg_color": [
+   88.0,
+   67.0,
+   230.0
+  ],
+  "exec_pick_count": 3,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "n_candidates_frame0": 7,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 117,
+    "lift_frame": 102,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     66.98245614035088,
+     176.35672514619884
+    ],
+    "target_area_start": 171,
+    "target_centroid_lift": [
+     62.30718954248366,
+     179.0
+    ],
+    "target_disp_px": 5.370755972288298,
+    "grounded_point": [
+     65,
+     176
+    ],
+    "grounded_to_target_px": 2.0142952063551856,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 569,
+    "end": 687,
+    "lift_frame": 672,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     76.01923076923077,
+     110.96794871794872
+    ],
+    "target_area_start": 156,
+    "target_centroid_lift": [
+     72.14093959731544,
+     110.32885906040268
+    ],
+    "target_disp_px": 3.930595120912194,
+    "grounded_point": [
+     75,
+     111
+    ],
+    "grounded_to_target_px": 1.0197345956806043,
+    "other_cube_disp_px": [
+     2.59,
+     1.16,
+     0.0,
+     0.0,
+     4.24,
+     0.0
+    ],
+    "max_other_disp": 4.24
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 754,
+    "end": 828,
+    "lift_frame": 813,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     75.96774193548387,
+     110.3225806451613
+    ],
+    "target_area_start": 155,
+    "target_centroid_lift": [
+     71.35329341317366,
+     109.63473053892216
+    ],
+    "target_disp_px": 4.665433841959834,
+    "grounded_point": [
+     74,
+     110
+    ],
+    "grounded_to_target_px": 1.9940076723258844,
+    "other_cube_disp_px": [
+     1.67,
+     0.51,
+     0.0,
+     0.0,
+     2.91,
+     0.0
+    ],
+    "max_other_disp": 2.91
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 894,
+    "end": 968,
+    "lift_frame": 953,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     75.98709677419355,
+     110.6
+    ],
+    "target_area_start": 155,
+    "target_centroid_lift": [
+     71.88198757763975,
+     109.3975155279503
+    ],
+    "target_disp_px": 4.277603350142599,
+    "grounded_point": [
+     74,
+     110
+    ],
+    "grounded_to_target_px": 2.0757055643829614,
+    "other_cube_disp_px": [
+     1.84,
+     0.93,
+     0.0,
+     0.0,
+     2.91,
+     0.0
+    ],
+    "max_other_disp": 2.91
+   }
+  ],
+  "target_seg_color": [
+   41.0,
+   198.0,
+   9.0
+  ],
+  "exec_pick_count": 3,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "n_candidates_frame0": 10,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 118,
+    "lift_frame": 102,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     54.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     64.84180790960453,
+     83.12994350282486
+    ],
+    "target_area_start": 177,
+    "target_centroid_lift": [
+     60.1948051948052,
+     80.77922077922078
+    ],
+    "target_disp_px": 5.207737661847119,
+    "grounded_point": [
+     63,
+     83
+    ],
+    "grounded_to_target_px": 1.8463861161220283,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 618,
+    "end": 719,
+    "lift_frame": 707,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     102.49767441860465,
+     124.09302325581395
+    ],
+    "target_area_start": 215,
+    "target_centroid_lift": [
+     99.76146788990826,
+     121.44036697247707
+    ],
+    "target_disp_px": 3.810959396950768,
+    "grounded_point": [
+     100,
+     124
+    ],
+    "grounded_to_target_px": 2.4994060949502153,
+    "other_cube_disp_px": [
+     null,
+     null,
+     0.36,
+     0.0,
+     0.0,
+     null,
+     0.07,
+     null,
+     0.0
+    ],
+    "max_other_disp": 0.36
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 770,
+    "end": 838,
+    "lift_frame": 826,
+    "target_panel_color": [
+     208.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     102.10091743119266,
+     122.55963302752293
+    ],
+    "target_area_start": 218,
+    "target_centroid_lift": [
+     99.17699115044248,
+     119.53097345132744
+    ],
+    "target_disp_px": 4.209765281312279,
+    "grounded_point": [
+     100,
+     122
+    ],
+    "grounded_to_target_px": 2.174176436764881,
+    "other_cube_disp_px": [
+     null,
+     null,
+     0.05,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     null,
+     0.0
+    ],
+    "max_other_disp": 0.05
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 889,
+    "end": 957,
+    "lift_frame": 945,
+    "target_panel_color": [
+     208.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     101.8,
+     120.61860465116278
+    ],
+    "target_area_start": 215,
+    "target_centroid_lift": [
+     98.95689655172414,
+     117.90517241379311
+    ],
+    "target_disp_px": 3.9301338048971117,
+    "grounded_point": [
+     100,
+     120
+    ],
+    "grounded_to_target_px": 1.903331740511942,
+    "other_cube_disp_px": [
+     null,
+     null,
+     0.1,
+     0.0,
+     0.35,
+     null,
+     0.0,
+     null,
+     0.0
+    ],
+    "max_other_disp": 0.35
+   },
+   {
+    "seg": "pick up the correct cube for the fourth time",
+    "demo": false,
+    "start": 1008,
+    "end": 1076,
+    "lift_frame": 1064,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     101.59813084112149,
+     118.87383177570094
+    ],
+    "target_area_start": 214,
+    "target_centroid_lift": [
+     98.52,
+     116.152
+    ],
+    "target_disp_px": 4.108924152412479,
+    "grounded_point": [
+     100,
+     118
+    ],
+    "grounded_to_target_px": 1.821429152497655,
+    "other_cube_disp_px": [
+     null,
+     null,
+     0.0,
+     0.0,
+     0.94,
+     null,
+     0.0,
+     null,
+     0.0
+    ],
+    "max_other_disp": 0.94
+   }
+  ],
+  "target_seg_color": [
+   209.0,
+   117.0,
+   54.0
+  ],
+  "exec_pick_count": 4,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "n_candidates_frame0": 10,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 107,
+    "lift_frame": 93,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     112.1328125,
+     188.04296875
+    ],
+    "target_area_start": 256,
+    "target_centroid_lift": [
+     109.08771929824562,
+     191.19883040935673
+    ],
+    "target_disp_px": 4.385436742260522,
+    "grounded_point": [
+     110,
+     188
+    ],
+    "grounded_to_target_px": 2.1332452914826305,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     2.52,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 2.52
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 645,
+    "end": 761,
+    "lift_frame": 744,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     84.60335195530726,
+     165.0167597765363
+    ],
+    "target_area_start": 179,
+    "target_centroid_lift": [
+     80.04848484848485,
+     166.04848484848486
+    ],
+    "target_disp_px": 4.670253845873909,
+    "grounded_point": [
+     83,
+     165
+    ],
+    "grounded_to_target_px": 1.6034395475655336,
+    "other_cube_disp_px": [
+     0.0,
+     1.51,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 1.51
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 816,
+    "end": 893,
+    "lift_frame": 877,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     84.75706214689265,
+     164.3728813559322
+    ],
+    "target_area_start": 177,
+    "target_centroid_lift": [
+     79.62146892655367,
+     165.67796610169492
+    ],
+    "target_disp_px": 5.298826654875037,
+    "grounded_point": [
+     83,
+     164
+    ],
+    "grounded_to_target_px": 1.7961926103970174,
+    "other_cube_disp_px": [
+     0.0,
+     1.51,
+     0.0,
+     0.0,
+     1.06,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 1.51
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 948,
+    "end": 1024,
+    "lift_frame": 1009,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     84.72222222222223,
+     164.16666666666666
+    ],
+    "target_area_start": 180,
+    "target_centroid_lift": [
+     79.49717514124293,
+     165.4858757062147
+    ],
+    "target_disp_px": 5.389010065724086,
+    "grounded_point": [
+     83,
+     164
+    ],
+    "grounded_to_target_px": 1.7302679447108318,
+    "other_cube_disp_px": [
+     0.0,
+     1.02,
+     0.0,
+     0.0,
+     1.06,
+     0.0,
+     0.0,
+     0.14,
+     0.0
+    ],
+    "max_other_disp": 1.06
+   },
+   {
+    "seg": "pick up the correct cube for the fourth time",
+    "demo": false,
+    "start": 1079,
+    "end": 1154,
+    "lift_frame": 1139,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     84.59668508287292,
+     164.08839779005524
+    ],
+    "target_area_start": 181,
+    "target_centroid_lift": [
+     79.83233532934132,
+     165.10179640718562
+    ],
+    "target_disp_px": 4.870934749222004,
+    "grounded_point": [
+     83,
+     164
+    ],
+    "grounded_to_target_px": 1.5991302083181234,
+    "other_cube_disp_px": [
+     0.0,
+     1.22,
+     0.0,
+     0.0,
+     1.06,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 1.22
+   }
+  ],
+  "target_seg_color": [
+   51.0,
+   240.0,
+   185.0
+  ],
+  "exec_pick_count": 4,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "n_candidates_frame0": 10,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 113,
+    "lift_frame": 99,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     76.76881720430107,
+     171.44623655913978
+    ],
+    "target_area_start": 186,
+    "target_centroid_lift": [
+     71.81818181818181,
+     173.7159090909091
+    ],
+    "target_disp_px": 5.446118262374067,
+    "grounded_point": [
+     75,
+     171
+    ],
+    "grounded_to_target_px": 1.8242372019406823,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 612,
+    "end": 716,
+    "lift_frame": 704,
+    "target_panel_color": [
+     50.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     107.70984455958549,
+     136.4559585492228
+    ],
+    "target_area_start": 193,
+    "target_centroid_lift": [
+     105.2,
+     135.76
+    ],
+    "target_disp_px": 2.604549484175179,
+    "grounded_point": [
+     106,
+     136
+    ],
+    "grounded_to_target_px": 1.769595043096997,
+    "other_cube_disp_px": [
+     null,
+     null,
+     0.04,
+     5.85,
+     null,
+     0.0,
+     0.0,
+     null,
+     0.0
+    ],
+    "max_other_disp": 5.85
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 767,
+    "end": 837,
+    "lift_frame": 825,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     107.68911917098445,
+     135.77720207253887
+    ],
+    "target_area_start": 193,
+    "target_centroid_lift": [
+     104.94656488549619,
+     134.9083969465649
+    ],
+    "target_disp_px": 2.876877883360488,
+    "grounded_point": [
+     106,
+     135
+    ],
+    "grounded_to_target_px": 1.8593457546529444,
+    "other_cube_disp_px": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     0.0,
+     0.0,
+     null,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 888,
+    "end": 958,
+    "lift_frame": 945,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     108.04102564102564,
+     134.98461538461538
+    ],
+    "target_area_start": 195,
+    "target_centroid_lift": [
+     105.42222222222222,
+     133.86666666666667
+    ],
+    "target_disp_px": 2.8474445880999437,
+    "grounded_point": [
+     106,
+     134
+    ],
+    "grounded_to_target_px": 2.2661096890806993,
+    "other_cube_disp_px": [
+     null,
+     null,
+     null,
+     8.11,
+     null,
+     0.0,
+     0.0,
+     null,
+     0.0
+    ],
+    "max_other_disp": 8.11
+   },
+   {
+    "seg": "pick up the correct cube for the fourth time",
+    "demo": false,
+    "start": 1009,
+    "end": 1081,
+    "lift_frame": 1068,
+    "target_panel_color": [
+     51.0,
+     240.0,
+     185.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     108.47474747474747,
+     134.12626262626262
+    ],
+    "target_area_start": 198,
+    "target_centroid_lift": [
+     106.32786885245902,
+     133.02459016393442
+    ],
+    "target_disp_px": 2.4130416558964423,
+    "grounded_point": [
+     107,
+     134
+    ],
+    "grounded_to_target_px": 1.4801426840223157,
+    "other_cube_disp_px": [
+     null,
+     null,
+     null,
+     7.05,
+     null,
+     0.0,
+     0.0,
+     null,
+     0.0
+    ],
+    "max_other_disp": 7.05
+   }
+  ],
+  "target_seg_color": [
+   51.0,
+   240.0,
+   185.0
+  ],
+  "exec_pick_count": 4,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "n_candidates_frame0": 10,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 116,
+    "lift_frame": 102,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     79.65921787709497,
+     178.10055865921788
+    ],
+    "target_area_start": 179,
+    "target_centroid_lift": [
+     73.35795454545455,
+     178.9659090909091
+    ],
+    "target_disp_px": 6.360404935560659,
+    "grounded_point": [
+     78,
+     178
+    ],
+    "grounded_to_target_px": 1.6622623161268053,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     1.84,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 1.84
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 883,
+    "end": 987,
+    "lift_frame": 975,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     103.37333333333333,
+     158.25333333333333
+    ],
+    "target_area_start": 225,
+    "target_centroid_lift": [
+     100.73504273504274,
+     161.27350427350427
+    ],
+    "target_disp_px": 4.010238121219435,
+    "grounded_point": [
+     101,
+     158
+    ],
+    "grounded_to_target_px": 2.386815637808856,
+    "other_cube_disp_px": [
+     3.0,
+     0.0,
+     4.82,
+     null,
+     0.0,
+     null,
+     0.0,
+     0.5,
+     0.0
+    ],
+    "max_other_disp": 4.82
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 1038,
+    "end": 1106,
+    "lift_frame": 1094,
+    "target_panel_color": [
+     40.0,
+     198.0,
+     8.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     103.30044843049328,
+     159.61883408071748
+    ],
+    "target_area_start": 223,
+    "target_centroid_lift": [
+     100.25190839694656,
+     162.40458015267177
+    ],
+    "target_disp_px": 4.129646172923993,
+    "grounded_point": [
+     101,
+     159
+    ],
+    "grounded_to_target_px": 2.382229753994442,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.37,
+     null,
+     0.0,
+     null,
+     0.0,
+     2.25,
+     0.0
+    ],
+    "max_other_disp": 2.25
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 1157,
+    "end": 1226,
+    "lift_frame": 1214,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     103.69506726457399,
+     160.61883408071748
+    ],
+    "target_area_start": 223,
+    "target_centroid_lift": [
+     100.89075630252101,
+     163.48739495798318
+    ],
+    "target_disp_px": 4.011583412877005,
+    "grounded_point": [
+     102,
+     160
+    ],
+    "grounded_to_target_px": 1.8044967860563796,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.39,
+     null,
+     0.0,
+     null,
+     0.0,
+     2.27,
+     0.0
+    ],
+    "max_other_disp": 2.27
+   },
+   {
+    "seg": "pick up the correct cube for the fourth time",
+    "demo": false,
+    "start": 1277,
+    "end": 1345,
+    "lift_frame": 1333,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     103.68303571428571,
+     161.76785714285714
+    ],
+    "target_area_start": 224,
+    "target_centroid_lift": [
+     100.5530303030303,
+     164.93939393939394
+    ],
+    "target_disp_px": 4.455960000524584,
+    "grounded_point": [
+     102,
+     161
+    ],
+    "grounded_to_target_px": 1.8499226490310163,
+    "other_cube_disp_px": [
+     1.0,
+     0.0,
+     0.87,
+     null,
+     0.0,
+     null,
+     0.0,
+     1.36,
+     0.0
+    ],
+    "max_other_disp": 1.36
+   },
+   {
+    "seg": "pick up the correct cube for the fifth time",
+    "demo": false,
+    "start": 1396,
+    "end": 1465,
+    "lift_frame": 1453,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     104.03982300884955,
+     162.80973451327435
+    ],
+    "target_area_start": 226,
+    "target_centroid_lift": [
+     100.92682926829268,
+     166.21138211382114
+    ],
+    "target_disp_px": 4.611066734178984,
+    "grounded_point": [
+     102,
+     162
+    ],
+    "grounded_to_target_px": 2.1946635025487824,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     2.12,
+     null,
+     0.0,
+     null,
+     0.0,
+     0.57,
+     0.0
+    ],
+    "max_other_disp": 2.12
+   }
+  ],
+  "target_seg_color": [
+   41.0,
+   198.0,
+   9.0
+  ],
+  "exec_pick_count": 5,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "n_candidates_frame0": 9,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 112,
+    "lift_frame": 94,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     88.44554455445545,
+     88.93564356435644
+    ],
+    "target_area_start": 202,
+    "target_centroid_lift": [
+     84.37391304347825,
+     84.51304347826087
+    ],
+    "target_disp_px": 6.011453624766228,
+    "grounded_point": [
+     86,
+     88
+    ],
+    "grounded_to_target_px": 2.6184188067130014,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 816,
+    "end": 927,
+    "lift_frame": 909,
+    "target_panel_color": [
+     89.0,
+     67.0,
+     229.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     86.35,
+     87.95
+    ],
+    "target_area_start": 200,
+    "target_centroid_lift": [
+     82.17796610169492,
+     83.51694915254237
+    ],
+    "target_disp_px": 6.087512354381837,
+    "grounded_point": [
+     84,
+     87
+    ],
+    "grounded_to_target_px": 2.534758371127311,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 983,
+    "end": 1060,
+    "lift_frame": 1044,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     85.58910891089108,
+     86.61386138613861
+    ],
+    "target_area_start": 202,
+    "target_centroid_lift": [
+     81.06363636363636,
+     81.96363636363637
+    ],
+    "target_disp_px": 6.488797618654947,
+    "grounded_point": [
+     84,
+     86
+    ],
+    "grounded_to_target_px": 1.703553031773729,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.07,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.07
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 1115,
+    "end": 1192,
+    "lift_frame": 1176,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     84.74111675126903,
+     85.52791878172589
+    ],
+    "target_area_start": 197,
+    "target_centroid_lift": [
+     80.10526315789474,
+     80.65789473684211
+    ],
+    "target_disp_px": 6.72370974514423,
+    "grounded_point": [
+     83,
+     85
+    ],
+    "grounded_to_target_px": 1.8193915965642404,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the fourth time",
+    "demo": false,
+    "start": 1247,
+    "end": 1321,
+    "lift_frame": 1306,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     83.7537688442211,
+     84.23618090452261
+    ],
+    "target_area_start": 199,
+    "target_centroid_lift": [
+     78.94957983193277,
+     79.3781512605042
+    ],
+    "target_disp_px": 6.832326403792023,
+    "grounded_point": [
+     82,
+     84
+    ],
+    "grounded_to_target_px": 1.7696006833807818,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the fifth time",
+    "demo": false,
+    "start": 1376,
+    "end": 1448,
+    "lift_frame": 1434,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     83.06666666666666,
+     82.74358974358974
+    ],
+    "target_area_start": 195,
+    "target_centroid_lift": [
+     77.98319327731092,
+     77.4201680672269
+    ],
+    "target_disp_px": 7.360741813476258,
+    "grounded_point": [
+     81,
+     82
+    ],
+    "grounded_to_target_px": 2.196369007676749,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the sixth time",
+    "demo": false,
+    "start": 1503,
+    "end": 1575,
+    "lift_frame": 1561,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     82.4278350515464,
+     81.34536082474227
+    ],
+    "target_area_start": 194,
+    "target_centroid_lift": [
+     77.5909090909091,
+     75.95454545454545
+    ],
+    "target_disp_px": 7.242702748576484,
+    "grounded_point": [
+     80,
+     81
+    ],
+    "grounded_to_target_px": 2.4522759095958087,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   }
+  ],
+  "target_seg_color": [
+   88.0,
+   67.0,
+   230.0
+  ],
+  "exec_pick_count": 6,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "n_candidates_frame0": 9,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 112,
+    "lift_frame": 100,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     89.97596153846153,
+     183.1153846153846
+    ],
+    "target_area_start": 208,
+    "target_centroid_lift": [
+     84.8936170212766,
+     185.61170212765958
+    ],
+    "target_disp_px": 5.662316391146867,
+    "grounded_point": [
+     88,
+     183
+    ],
+    "grounded_to_target_px": 1.9793275653480713,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     1.9,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 1.9
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 760,
+    "end": 870,
+    "lift_frame": 858,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     88.68341708542714,
+     181.60804020100502
+    ],
+    "target_area_start": 199,
+    "target_centroid_lift": [
+     83.43406593406593,
+     184.02747252747253
+    ],
+    "target_disp_px": 5.780081339622584,
+    "grounded_point": [
+     87,
+     181
+    ],
+    "grounded_to_target_px": 1.789861997346787,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     2.13,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 2.13
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 931,
+    "end": 999,
+    "lift_frame": 987,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     88.76354679802955,
+     181.29064039408868
+    ],
+    "target_area_start": 203,
+    "target_centroid_lift": [
+     83.05365853658536,
+     183.17560975609757
+    ],
+    "target_disp_px": 6.012980413562842,
+    "grounded_point": [
+     87,
+     181
+    ],
+    "grounded_to_target_px": 1.7873357679843789,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     2.06,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 2.06
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 1061,
+    "end": 1129,
+    "lift_frame": 1117,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     89.8030303030303,
+     180.57575757575756
+    ],
+    "target_area_start": 198,
+    "target_centroid_lift": [
+     84.23115577889448,
+     183.04522613065328
+    ],
+    "target_disp_px": 6.094592739169084,
+    "grounded_point": [
+     88,
+     180
+    ],
+    "grounded_to_target_px": 1.8927268846000347,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     2.42,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 2.42
+   },
+   {
+    "seg": "pick up the correct cube for the fourth time",
+    "demo": false,
+    "start": 1191,
+    "end": 1260,
+    "lift_frame": 1248,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     90.92156862745098,
+     180.2156862745098
+    ],
+    "target_area_start": 204,
+    "target_centroid_lift": [
+     85.6497461928934,
+     182.2030456852792
+    ],
+    "target_disp_px": 5.633978098029688,
+    "grounded_point": [
+     89,
+     180
+    ],
+    "grounded_to_target_px": 1.9336355807172574,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     2.89,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 2.89
+   },
+   {
+    "seg": "pick up the correct cube for the fifth time",
+    "demo": false,
+    "start": 1317,
+    "end": 1385,
+    "lift_frame": 1373,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     90.96,
+     179.52
+    ],
+    "target_area_start": 200,
+    "target_centroid_lift": [
+     85.87958115183245,
+     181.42931937172776
+    ],
+    "target_disp_px": 5.42735258998997,
+    "grounded_point": [
+     89,
+     179
+    ],
+    "grounded_to_target_px": 2.0278066969018487,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     3.32,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 3.32
+   }
+  ],
+  "target_seg_color": [
+   41.0,
+   198.0,
+   9.0
+  ],
+  "exec_pick_count": 5,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 0,
+  "n_candidates_frame0": 6,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 103,
+    "lift_frame": 90,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     102.99579831932773,
+     179.28151260504202
+    ],
+    "target_area_start": 238,
+    "target_centroid_lift": [
+     99.54970760233918,
+     182.16374269005848
+    ],
+    "target_disp_px": 4.492526181636413,
+    "grounded_point": [
+     101,
+     179
+    ],
+    "grounded_to_target_px": 2.0155545832918915,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 321,
+    "end": 424,
+    "lift_frame": 411,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     102.45814977973568,
+     178.74008810572687
+    ],
+    "target_area_start": 227,
+    "target_centroid_lift": [
+     99.21666666666667,
+     181.81666666666666
+    ],
+    "target_disp_px": 4.469065720477372,
+    "grounded_point": [
+     100,
+     178
+    ],
+    "grounded_to_target_px": 2.5671444727270307,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 475,
+    "end": 603,
+    "lift_frame": 529,
+    "target_panel_color": [
+     88.0,
+     67.0,
+     230.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     102.65811965811966,
+     178.75641025641025
+    ],
+    "target_area_start": 234,
+    "target_centroid_lift": [
+     102.65811965811966,
+     178.75641025641025
+    ],
+    "target_disp_px": 0.0,
+    "grounded_point": [
+     101,
+     178
+    ],
+    "grounded_to_target_px": 1.8225030251402805,
+    "other_cube_disp_px": [
+     41.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 41.0
+   }
+  ],
+  "target_seg_color": [
+   88.0,
+   67.0,
+   230.0
+  ],
+  "exec_pick_count": 2,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 1,
+  "n_candidates_frame0": 7,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 120,
+    "lift_frame": 105,
+    "target_panel_color": [
+     41.0,
+     197.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     77.12290502793296,
+     103.64245810055866
+    ],
+    "target_area_start": 179,
+    "target_centroid_lift": [
+     72.45652173913044,
+     104.65942028985508
+    ],
+    "target_disp_px": 4.775913011401485,
+    "grounded_point": [
+     75,
+     103
+    ],
+    "grounded_to_target_px": 2.2179896682799205,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 343,
+    "end": 453,
+    "lift_frame": 437,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     140.56457564575646,
+     164.25461254612546
+    ],
+    "target_area_start": 271,
+    "target_centroid_lift": [
+     135.88888888888889,
+     164.11111111111111
+    ],
+    "target_disp_px": 4.677888338791128,
+    "grounded_point": [
+     138,
+     164
+    ],
+    "grounded_to_target_px": 2.5771836937734314,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     1.18,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 1.18
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 510,
+    "end": 631,
+    "lift_frame": 564,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     140.4,
+     163.65185185185186
+    ],
+    "target_area_start": 270,
+    "target_centroid_lift": [
+     141.13692946058092,
+     163.11618257261412
+    ],
+    "target_disp_px": 0.911046983745157,
+    "grounded_point": [
+     137,
+     163
+    ],
+    "grounded_to_target_px": 3.4619229969429903,
+    "other_cube_disp_px": [
+     3.0,
+     5.19,
+     2.09,
+     3.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 5.19
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 689,
+    "end": 759,
+    "lift_frame": 749,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     141.6,
+     163.53333333333333
+    ],
+    "target_area_start": 270,
+    "target_centroid_lift": [
+     135.6,
+     164.2
+    ],
+    "target_disp_px": 6.036923425424943,
+    "grounded_point": [
+     139,
+     163
+    ],
+    "grounded_to_target_px": 2.6541372316525784,
+    "other_cube_disp_px": [
+     3.5,
+     5.0,
+     2.21,
+     4.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 5.0
+   }
+  ],
+  "target_seg_color": [
+   41.0,
+   197.0,
+   9.0
+  ],
+  "exec_pick_count": 3,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 10,
+  "n_candidates_frame0": 6,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 103,
+    "lift_frame": 91,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     100.49732620320856,
+     125.90374331550802
+    ],
+    "target_area_start": 187,
+    "target_centroid_lift": [
+     97.64444444444445,
+     126.42222222222222
+    ],
+    "target_disp_px": 2.899612854537061,
+    "grounded_point": [
+     99,
+     125
+    ],
+    "grounded_to_target_px": 1.7489247379862842,
+    "other_cube_disp_px": [
+     null,
+     null,
+     null,
+     0.0,
+     null
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 363,
+    "end": 478,
+    "lift_frame": 463,
+    "target_panel_color": [
+     208.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     81.25925925925925,
+     148.62345679012347
+    ],
+    "target_area_start": 162,
+    "target_centroid_lift": [
+     76.46451612903226,
+     149.09032258064516
+    ],
+    "target_disp_px": 4.81741895118313,
+    "grounded_point": [
+     79,
+     148
+    ],
+    "grounded_to_target_px": 2.343704497094232,
+    "other_cube_disp_px": [
+     0.0,
+     0.08,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.08
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 535,
+    "end": 608,
+    "lift_frame": 593,
+    "target_panel_color": [
+     208.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     81.4,
+     148.5
+    ],
+    "target_area_start": 160,
+    "target_centroid_lift": [
+     76.33333333333333,
+     148.8846153846154
+    ],
+    "target_disp_px": 5.081243952537022,
+    "grounded_point": [
+     79,
+     148
+    ],
+    "grounded_to_target_px": 2.451530134426258,
+    "other_cube_disp_px": [
+     0.0,
+     0.05,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.05
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 665,
+    "end": 737,
+    "lift_frame": 723,
+    "target_panel_color": [
+     208.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     81.58895705521472,
+     148.28220858895705
+    ],
+    "target_area_start": 163,
+    "target_centroid_lift": [
+     76.11949685534591,
+     148.52201257861634
+    ],
+    "target_disp_px": 5.4747146803651265,
+    "grounded_point": [
+     80,
+     148
+    ],
+    "grounded_to_target_px": 1.613823475785925,
+    "other_cube_disp_px": [
+     0.0,
+     0.05,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.05
+   }
+  ],
+  "target_seg_color": [
+   209.0,
+   117.0,
+   53.0
+  ],
+  "exec_pick_count": 3,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 181,
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 11,
+  "n_candidates_frame0": 17,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 112,
+    "lift_frame": 100,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     90.08163265306122,
+     175.0
+    ],
+    "target_area_start": 196,
+    "target_centroid_lift": [
+     85.56190476190476,
+     179.97142857142856
+    ],
+    "target_disp_px": 6.718857213166081,
+    "grounded_point": [
+     89,
+     174
+    ],
+    "grounded_to_target_px": 1.4730679536831468,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.18,
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.18,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.18
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 162,
+    "end": 273,
+    "lift_frame": 261,
+    "target_panel_color": [
+     41.0,
+     198.0,
+     9.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     88.40721649484536,
+     175.10309278350516
+    ],
+    "target_area_start": 194,
+    "target_centroid_lift": [
+     83.89622641509433,
+     180.08490566037736
+    ],
+    "target_disp_px": 6.720676382610741,
+    "grounded_point": [
+     87,
+     175
+    ],
+    "grounded_to_target_px": 1.4109877339564991,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.14,
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     0.04,
+     0.06,
+     0.18,
+     0.0,
+     0.0,
+     0.0,
+     0.05
+    ],
+    "max_other_disp": 0.18
+   }
+  ],
+  "target_seg_color": [
+   41.0,
+   198.0,
+   9.0
+  ],
+  "exec_pick_count": 1,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 2,
+  "n_candidates_frame0": 5,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 106,
+    "lift_frame": 94,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     97.53846153846153,
+     139.72115384615384
+    ],
+    "target_area_start": 208,
+    "target_centroid_lift": [
+     94.45454545454545,
+     142.61157024793388
+    ],
+    "target_disp_px": 4.226706210314999,
+    "grounded_point": [
+     96,
+     139
+    ],
+    "grounded_to_target_px": 1.6990958699107896,
+    "other_cube_disp_px": [
+     null,
+     0.05,
+     0.33,
+     null
+    ],
+    "max_other_disp": 0.33
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 313,
+    "end": 476,
+    "lift_frame": 402,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     96.48058252427184,
+     140.64563106796118
+    ],
+    "target_area_start": 206,
+    "target_centroid_lift": [
+     96.48058252427184,
+     140.64563106796118
+    ],
+    "target_disp_px": 0.0,
+    "grounded_point": [
+     94,
+     140
+    ],
+    "grounded_to_target_px": 2.563226313777138,
+    "other_cube_disp_px": [
+     null,
+     0.0,
+     0.0,
+     null
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 529,
+    "end": 598,
+    "lift_frame": 586,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     52.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     96.6298076923077,
+     141.87980769230768
+    ],
+    "target_area_start": 208,
+    "target_centroid_lift": [
+     93.17037037037036,
+     144.64444444444445
+    ],
+    "target_disp_px": 4.428422174508461,
+    "grounded_point": [
+     95,
+     141
+    ],
+    "grounded_to_target_px": 1.8521162731721497,
+    "other_cube_disp_px": [
+     null,
+     0.0,
+     0.0,
+     null
+    ],
+    "max_other_disp": 0.0
+   }
+  ],
+  "target_seg_color": [
+   209.0,
+   117.0,
+   53.0
+  ],
+  "exec_pick_count": 2,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 3,
+  "n_candidates_frame0": 19,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 141,
+    "lift_frame": 117,
+    "target_panel_color": [
+     71.0,
+     241.0,
+     100.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     53.7248322147651,
+     110.28859060402685
+    ],
+    "target_area_start": 149,
+    "target_centroid_lift": [
+     50.18,
+     109.6
+    ],
+    "target_disp_px": 3.6110929717733002,
+    "grounded_point": [
+     53,
+     110
+    ],
+    "grounded_to_target_px": 0.780170671259734,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 214,
+    "end": 355,
+    "lift_frame": 330,
+    "target_panel_color": [
+     71.0,
+     241.0,
+     100.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     53.16216216216216,
+     110.0
+    ],
+    "target_area_start": 148,
+    "target_centroid_lift": [
+     49.651006711409394,
+     109.18791946308725
+    ],
+    "target_disp_px": 3.603843420264449,
+    "grounded_point": [
+     52,
+     110
+    ],
+    "grounded_to_target_px": 1.1621621621621614,
+    "other_cube_disp_px": [
+     0.0,
+     0.05,
+     0.0,
+     0.0,
+     0.01,
+     0.0,
+     0.01,
+     0.0,
+     0.06,
+     0.0,
+     0.06,
+     0.0,
+     0.0,
+     0.04,
+     0.13,
+     0.12,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.13
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 439,
+    "end": 536,
+    "lift_frame": 509,
+    "target_panel_color": [
+     71.0,
+     240.0,
+     100.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     52.857142857142854,
+     109.2312925170068
+    ],
+    "target_area_start": 147,
+    "target_centroid_lift": [
+     49.473333333333336,
+     108.34
+    ],
+    "target_disp_px": 3.499224091751816,
+    "grounded_point": [
+     52,
+     109
+    ],
+    "grounded_to_target_px": 0.8878007129836962,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.06,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.06
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 622,
+    "end": 837,
+    "lift_frame": 697,
+    "target_panel_color": [
+     71.0,
+     240.0,
+     100.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     52.49664429530201,
+     108.32885906040268
+    ],
+    "target_area_start": 149,
+    "target_centroid_lift": [
+     53.34586466165413,
+     108.19548872180451
+    ],
+    "target_disp_px": 0.8596295003343131,
+    "grounded_point": [
+     52,
+     108
+    ],
+    "grounded_to_target_px": 0.5956541258691694,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     5.76,
+     0.0,
+     3.24,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 5.76
+   }
+  ],
+  "target_seg_color": [
+   71.0,
+   241.0,
+   100.0
+  ],
+  "exec_pick_count": 3,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 181,
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 4,
+  "n_candidates_frame0": 6,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 101,
+    "lift_frame": 89,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     105.96954314720813,
+     116.74111675126903
+    ],
+    "target_area_start": 197,
+    "target_centroid_lift": [
+     103.56666666666666,
+     117.34166666666667
+    ],
+    "target_disp_px": 2.476787350909126,
+    "grounded_point": [
+     104,
+     116
+    ],
+    "grounded_to_target_px": 2.1043655214163874,
+    "other_cube_disp_px": [
+     null,
+     null,
+     0.0,
+     2.6,
+     null
+    ],
+    "max_other_disp": 2.6
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 255,
+    "end": 445,
+    "lift_frame": 343,
+    "target_panel_color": [
+     207.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     123.53539823008849,
+     119.23008849557522
+    ],
+    "target_area_start": 226,
+    "target_centroid_lift": [
+     123.53539823008849,
+     119.23008849557522
+    ],
+    "target_disp_px": 0.0,
+    "grounded_point": [
+     122,
+     119
+    ],
+    "grounded_to_target_px": 1.5525425729283344,
+    "other_cube_disp_px": [
+     39.62,
+     null,
+     null,
+     5.43,
+     null
+    ],
+    "max_other_disp": 39.62
+   }
+  ],
+  "target_seg_color": [
+   209.0,
+   117.0,
+   53.0
+  ],
+  "exec_pick_count": 1,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 181,
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 6,
+  "n_candidates_frame0": 6,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 106,
+    "lift_frame": 94,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     94.6896551724138,
+     93.86699507389163
+    ],
+    "target_area_start": 203,
+    "target_centroid_lift": [
+     91.19469026548673,
+     90.59292035398231
+    ],
+    "target_disp_px": 4.788981621618632,
+    "grounded_point": [
+     93,
+     93
+    ],
+    "grounded_to_target_px": 1.89910901735973,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 317,
+    "end": 423,
+    "lift_frame": 411,
+    "target_panel_color": [
+     209.0,
+     117.0,
+     53.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     93.33495145631068,
+     92.70873786407768
+    ],
+    "target_area_start": 206,
+    "target_centroid_lift": [
+     89.49137931034483,
+     89.06896551724138
+    ],
+    "target_disp_px": 5.293485579279378,
+    "grounded_point": [
+     92,
+     92
+    ],
+    "grounded_to_target_px": 1.5114247419846556,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_other_disp": 0.0
+   }
+  ],
+  "target_seg_color": [
+   209.0,
+   117.0,
+   53.0
+  ],
+  "exec_pick_count": 1,
+  "demo_pick_count": 1
+ },
+ {
+  "Y0": 224,
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 7,
+  "n_candidates_frame0": 19,
+  "picks": [
+   {
+    "seg": "pick up the cube",
+    "demo": true,
+    "start": 0,
+    "end": 103,
+    "lift_frame": 90,
+    "target_panel_color": [
+     10.0,
+     27.0,
+     220.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     103.32075471698113,
+     171.5188679245283
+    ],
+    "target_area_start": 212,
+    "target_centroid_lift": [
+     101.25153374233129,
+     173.5521472392638
+    ],
+    "target_disp_px": 2.9010170998568876,
+    "grounded_point": [
+     101,
+     171
+    ],
+    "grounded_to_target_px": 2.3780509623417387,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     38.76,
+     0.0,
+     1.07,
+     0.0,
+     0.0,
+     0.09,
+     0.0,
+     0.0,
+     0.0,
+     6.37
+    ],
+    "max_other_disp": 38.76
+   },
+   {
+    "seg": "pick up the correct cube for the first time",
+    "demo": false,
+    "start": 159,
+    "end": 262,
+    "lift_frame": 249,
+    "target_panel_color": [
+     9.0,
+     27.0,
+     219.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     103.0343137254902,
+     170.7156862745098
+    ],
+    "target_area_start": 204,
+    "target_centroid_lift": [
+     100.87261146496816,
+     173.03821656050957
+    ],
+    "target_disp_px": 3.1728699299738405,
+    "grounded_point": [
+     101,
+     170
+    ],
+    "grounded_to_target_px": 2.1565340658657624,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     12.59,
+     0.0,
+     1.11,
+     0.0,
+     0.0,
+     0.0,
+     0.09,
+     0.0,
+     0.0,
+     null
+    ],
+    "max_other_disp": 12.59
+   },
+   {
+    "seg": "pick up the correct cube for the second time",
+    "demo": false,
+    "start": 313,
+    "end": 382,
+    "lift_frame": 370,
+    "target_panel_color": [
+     10.0,
+     26.0,
+     220.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     103.05365853658536,
+     170.44878048780487
+    ],
+    "target_area_start": 205,
+    "target_centroid_lift": [
+     100.33142857142857,
+     172.72571428571428
+    ],
+    "target_disp_px": 3.548938362843129,
+    "grounded_point": [
+     101,
+     170
+    ],
+    "grounded_to_target_px": 2.102122097101949,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     84.79,
+     0.0,
+     0.0,
+     0.09,
+     0.0,
+     0.0,
+     0.0,
+     5.21
+    ],
+    "max_other_disp": 84.79
+   },
+   {
+    "seg": "pick up the correct cube for the third time",
+    "demo": false,
+    "start": 433,
+    "end": 503,
+    "lift_frame": 490,
+    "target_panel_color": [
+     10.0,
+     27.0,
+     220.0
+    ],
+    "target_same_as_demo": true,
+    "target_centroid_start": [
+     103.45641025641025,
+     170.2974358974359
+    ],
+    "target_area_start": 195,
+    "target_centroid_lift": [
+     101.72222222222223,
+     172.19753086419752
+    ],
+    "target_disp_px": 2.5725024821433684,
+    "grounded_point": [
+     102,
+     170
+    ],
+    "grounded_to_target_px": 1.486471980247346,
+    "other_cube_disp_px": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     0.0,
+     null,
+     0.0,
+     1.27,
+     0.0,
+     0.0,
+     0.57,
+     0.0,
+     0.0,
+     0.0,
+     null
+    ],
+    "max_other_disp": 1.27
+   }
+  ],
+  "target_seg_color": [
+   10.0,
+   27.0,
+   220.0
+  ],
+  "exec_pick_count": 3,
+  "demo_pick_count": 1
+ }
+]

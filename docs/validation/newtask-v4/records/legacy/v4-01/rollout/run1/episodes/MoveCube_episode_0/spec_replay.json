@@ -1,0 +1,21 @@
+{
+  "mismatches": [],
+  "value_points": 14,
+  "consumed": [
+    "initializations.0.way_idx",
+    "initializations.1.way_idx",
+    "layout.demo.corner_bias",
+    "layout.demo.cube_pose",
+    "layout.demo.goal_xy",
+    "layout.demo.peg_offsets",
+    "layout.demo.peg_yaw",
+    "layout.execution.corner_bias",
+    "layout.execution.cube_pose",
+    "layout.execution.goal_xy",
+    "layout.execution.peg_offsets",
+    "layout.execution.peg_yaw",
+    "objects.obj_sample",
+    "objects.sampling_trace.dir_sample"
+  ],
+  "unused": []
+}

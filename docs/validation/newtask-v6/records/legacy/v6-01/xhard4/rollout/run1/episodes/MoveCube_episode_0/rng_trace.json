@@ -1,0 +1,187 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.demo.peg_offsets",
+      "drawn": [
+        0.0,
+        -0.030849505783974378,
+        -0.26746791505896605
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.demo.peg_yaw",
+      "drawn": -1.6129706867719877,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.execution.peg_offsets",
+      "drawn": [
+        0.0,
+        0.07469984051249177,
+        -0.01724019846955102
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.execution.peg_yaw",
+      "drawn": -1.747288381483111,
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "objects.obj_sample",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "objects.sampling_trace.dir_sample",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.demo.goal_xy",
+      "drawn": [
+        0.08888448715209962,
+        0.006927490234375
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.execution.goal_xy",
+      "drawn": [
+        0.0683006429672241,
+        -0.09371485710144044
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.demo.cube_pose",
+      "drawn": [
+        -0.1356694316864014,
+        -0.15869760513305664,
+        3.3133456963419956
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "layout.execution.cube_pose",
+      "drawn": [
+        -0.0804488754272461,
+        -0.13915972709655763,
+        4.735746983739286
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "layout.demo.region",
+      "drawn": {
+        "base_dist": [
+          0.35,
+          0.76
+        ],
+        "center": [
+          -0.06,
+          0.0
+        ],
+        "cube_max_trials": 4096,
+        "goal_max_trials": 256,
+        "goal_peg_gap": 0.02,
+        "peg_gap": 0.04,
+        "peg_max_trials": 128,
+        "push_len_max": 0.3,
+        "r_in": 0.12,
+        "r_out": 0.2,
+        "peg_axis_extent_m": [
+          -0.15000000223517418,
+          0.05000000074505806
+        ],
+        "robot_base_xy": [
+          -0.615,
+          0.0
+        ],
+        "push_backoff_m": 0.1,
+        "peg_push_lateral_m": 0.1,
+        "min_cube_goal_m": 0.1
+      },
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "layout.demo.region_trials",
+      "drawn": {
+        "peg_trials": 7
+      },
+      "source": "record"
+    },
+    {
+      "index": 12,
+      "path": "layout.execution.region",
+      "drawn": {
+        "base_dist": [
+          0.35,
+          0.76
+        ],
+        "center": [
+          -0.06,
+          0.0
+        ],
+        "cube_max_trials": 4096,
+        "goal_max_trials": 256,
+        "goal_peg_gap": 0.02,
+        "peg_gap": 0.04,
+        "peg_max_trials": 128,
+        "push_len_max": 0.3,
+        "r_in": 0.12,
+        "r_out": 0.2,
+        "peg_axis_extent_m": [
+          -0.15000000223517418,
+          0.05000000074505806
+        ],
+        "robot_base_xy": [
+          -0.615,
+          0.0
+        ],
+        "push_backoff_m": 0.1,
+        "peg_push_lateral_m": 0.1,
+        "min_cube_goal_m": 0.1
+      },
+      "source": "record"
+    },
+    {
+      "index": 13,
+      "path": "layout.execution.region_trials",
+      "drawn": {
+        "peg_trials": 1
+      },
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "initializations.0.way_idx",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "initializations.1.way_idx",
+      "drawn": 1,
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {
+    "_hb_generator": "bedebf125f01dd910651a3d3e434d73a9e440d08d40ffa848313d0b33fad8c65"
+  }
+}

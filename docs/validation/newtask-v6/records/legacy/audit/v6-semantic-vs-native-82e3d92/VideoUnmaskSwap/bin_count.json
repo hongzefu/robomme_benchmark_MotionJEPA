@@ -1,0 +1,170 @@
+[
+ {
+  "tier": "xhard1",
+  "seed": 8500000,
+  "t50": 10,
+  "t63": 10,
+  "demo_last": 10,
+  "expected": 8
+ },
+ {
+  "tier": "xhard1",
+  "seed": 8500300,
+  "t50": 10,
+  "t63": 10,
+  "demo_last": 11,
+  "expected": 8
+ },
+ {
+  "tier": "xhard1",
+  "seed": 8500601,
+  "t50": 9,
+  "t63": 9,
+  "demo_last": 9,
+  "expected": 8
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500000,
+  "t50": 12,
+  "t63": 12,
+  "demo_last": 12,
+  "expected": 10
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500300,
+  "t50": 13,
+  "t63": 13,
+  "demo_last": 13,
+  "expected": 10
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500600,
+  "t50": 12,
+  "t63": 12,
+  "demo_last": 12,
+  "expected": 10
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500000,
+  "t50": 15,
+  "t63": 15,
+  "demo_last": 15,
+  "expected": 12
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500300,
+  "t50": 16,
+  "t63": 16,
+  "demo_last": 16,
+  "expected": 12
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500600,
+  "t50": 16,
+  "t63": 16,
+  "demo_last": 16,
+  "expected": 12
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500000,
+  "t50": 16,
+  "t63": 16,
+  "demo_last": 16,
+  "expected": 14
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500300,
+  "t50": 18,
+  "t63": 18,
+  "demo_last": 18,
+  "expected": 14
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500601,
+  "t50": 20,
+  "t63": 20,
+  "demo_last": 20,
+  "expected": 14
+ },
+ {
+  "tier": "easy",
+  "seed": 5000,
+  "t50": 5,
+  "t63": 5,
+  "demo_last": 5,
+  "expected": 3
+ },
+ {
+  "tier": "easy",
+  "seed": 5100,
+  "t50": 4,
+  "t63": 4,
+  "demo_last": 4,
+  "expected": 3
+ },
+ {
+  "tier": "medium",
+  "seed": 6000,
+  "t50": 5,
+  "t63": 5,
+  "demo_last": 5,
+  "expected": 4
+ },
+ {
+  "tier": "hard",
+  "seed": 6100,
+  "t50": 6,
+  "t63": 6,
+  "demo_last": 6,
+  "expected": 4
+ },
+ {
+  "tier": "medium",
+  "seed": 5200,
+  "t50": 6,
+  "t63": 6,
+  "demo_last": 6,
+  "expected": 4
+ },
+ {
+  "tier": "hard",
+  "seed": 5300,
+  "t50": 5,
+  "t63": 5,
+  "demo_last": 6,
+  "expected": 4
+ },
+ {
+  "tier": "easy",
+  "seed": 5400,
+  "t50": 5,
+  "t63": 5,
+  "demo_last": 5,
+  "expected": 3
+ },
+ {
+  "tier": "medium",
+  "seed": 5600,
+  "t50": 5,
+  "t63": 5,
+  "demo_last": 5,
+  "expected": 4
+ },
+ {
+  "tier": "hard",
+  "seed": 5700,
+  "t50": 6,
+  "t63": 6,
+  "demo_last": 6,
+  "expected": 4
+ }
+]

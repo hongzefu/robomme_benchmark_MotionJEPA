@@ -1,0 +1,34 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src",
+  "src_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask",
+  "official_module": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/src/robomme/__init__.py",
+  "removed_sys_path_entries": [],
+  "workers": 8,
+  "gpu": "0",
+  "sampling_config": "artifacts/newtask-v5/v5-01/rollout/run1/_rounds/round_03/sampling.json",
+  "episode_specs": "artifacts/newtask-v5/v5-01/rollout/run1/_rounds/round_03/specs.json",
+  "worker": "train_split_worker.run_one",
+  "elapsed_seconds": 85.906,
+  "results": [
+    {
+      "task": "InsertPeg",
+      "episode": 4,
+      "seed": 5300400,
+      "difficulty": "xhard",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "5f191789c1342fe3af6437819db2e28692366cd9464b2e8de2488ed956aa666a",
+        "episode_spec_sha256": "e80d658bc34d814ad3decc7a123f899b3140a1650426b7f3e87ab389e3ddc419",
+        "spec_mode": "replay"
+      },
+      "ok": false,
+      "error_type": "DatasetGenerationError",
+      "error": "InsertPeg/episode_4: did not succeed after the complete task_list",
+      "traceback": "Traceback (most recent call last):\n  File \"/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/parity/train_split_worker.py\", line 112, in run_one\n    official._execute_tasks(record_env, planner, torch, job)\n  File \"/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py\", line 203, in _execute_tasks\n    raise DatasetGenerationError(\ngenerate_dataset.DatasetGenerationError: InsertPeg/episode_4: did not succeed after the complete task_list\n"
+    }
+  ]
+}

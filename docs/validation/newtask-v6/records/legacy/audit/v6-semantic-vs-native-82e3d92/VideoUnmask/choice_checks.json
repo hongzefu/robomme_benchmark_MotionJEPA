@@ -1,0 +1,917 @@
+[
+ {
+  "tier": "xhard1",
+  "ep": 0,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    133,
+    137
+   ]
+  },
+  "point_to_cube_px": 4.1,
+  "nearest_other_rgb_px": 28.7
+ },
+ {
+  "tier": "xhard1",
+  "ep": 0,
+  "seg": "put down the container",
+  "start": 164,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard1",
+  "ep": 0,
+  "seg": "pick up the container that hides the green cube",
+  "start": 205,
+  "choice": {
+   "choice": "A",
+   "point": [
+    106,
+    117
+   ]
+  },
+  "point_to_cube_px": 6.0,
+  "nearest_other_rgb_px": 36.3
+ },
+ {
+  "tier": "xhard1",
+  "ep": 3,
+  "seg": "pick up the container that hides the green cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    101,
+    175
+   ]
+  },
+  "point_to_cube_px": 6.2,
+  "nearest_other_rgb_px": 34.7
+ },
+ {
+  "tier": "xhard1",
+  "ep": 3,
+  "seg": "put down the container",
+  "start": 167,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard1",
+  "ep": 3,
+  "seg": "pick up the container that hides the red cube",
+  "start": 218,
+  "choice": {
+   "choice": "A",
+   "point": [
+    104,
+    100
+   ]
+  },
+  "point_to_cube_px": 6.3,
+  "nearest_other_rgb_px": 71.4
+ },
+ {
+  "tier": "xhard1",
+  "ep": 6,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    131,
+    128
+   ]
+  },
+  "point_to_cube_px": 4.0,
+  "nearest_other_rgb_px": 33.5
+ },
+ {
+  "tier": "xhard1",
+  "ep": 6,
+  "seg": "put down the container",
+  "start": 166,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard1",
+  "ep": 6,
+  "seg": "pick up the container that hides the green cube",
+  "start": 207,
+  "choice": {
+   "choice": "A",
+   "point": [
+    95,
+    80
+   ]
+  },
+  "point_to_cube_px": 6.3,
+  "nearest_other_rgb_px": 48.1
+ },
+ {
+  "tier": "xhard2",
+  "ep": 0,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    63,
+    164
+   ]
+  },
+  "point_to_cube_px": 6.9,
+  "nearest_other_rgb_px": 40.7
+ },
+ {
+  "tier": "xhard2",
+  "ep": 0,
+  "seg": "put down the container",
+  "start": 183,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 0,
+  "seg": "pick up the container that hides the green cube",
+  "start": 237,
+  "choice": {
+   "choice": "A",
+   "point": [
+    138,
+    132
+   ]
+  },
+  "point_to_cube_px": 3.6,
+  "nearest_other_rgb_px": 44.8
+ },
+ {
+  "tier": "xhard2",
+  "ep": 0,
+  "seg": "put down the container",
+  "start": 347,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 0,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 388,
+  "choice": {
+   "choice": "A",
+   "point": [
+    87,
+    138
+   ]
+  },
+  "point_to_cube_px": 6.6,
+  "nearest_other_rgb_px": 29.5
+ },
+ {
+  "tier": "xhard2",
+  "ep": 3,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    80,
+    126
+   ]
+  },
+  "point_to_cube_px": 6.4,
+  "nearest_other_rgb_px": 33.0
+ },
+ {
+  "tier": "xhard2",
+  "ep": 3,
+  "seg": "put down the container",
+  "start": 176,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 3,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 228,
+  "choice": {
+   "choice": "A",
+   "point": [
+    104,
+    91
+   ]
+  },
+  "point_to_cube_px": 6.3,
+  "nearest_other_rgb_px": 36.6
+ },
+ {
+  "tier": "xhard2",
+  "ep": 3,
+  "seg": "put down the container",
+  "start": 324,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 3,
+  "seg": "pick up the container that hides the green cube",
+  "start": 375,
+  "choice": {
+   "choice": "A",
+   "point": [
+    107,
+    127
+   ]
+  },
+  "point_to_cube_px": 6.0,
+  "nearest_other_rgb_px": 20.6
+ },
+ {
+  "tier": "xhard2",
+  "ep": 6,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    81,
+    165
+   ]
+  },
+  "point_to_cube_px": 7.4,
+  "nearest_other_rgb_px": 42.1
+ },
+ {
+  "tier": "xhard2",
+  "ep": 6,
+  "seg": "put down the container",
+  "start": 176,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 6,
+  "seg": "pick up the container that hides the green cube",
+  "start": 223,
+  "choice": {
+   "choice": "A",
+   "point": [
+    114,
+    150
+   ]
+  },
+  "point_to_cube_px": 5.9,
+  "nearest_other_rgb_px": 28.8
+ },
+ {
+  "tier": "xhard2",
+  "ep": 6,
+  "seg": "put down the container",
+  "start": 323,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 6,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 370,
+  "choice": {
+   "choice": "A",
+   "point": [
+    132,
+    111
+   ]
+  },
+  "point_to_cube_px": 4.0,
+  "nearest_other_rgb_px": 39.2
+ },
+ {
+  "tier": "xhard3",
+  "ep": 0,
+  "seg": "pick up the container that hides the green cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    86,
+    158
+   ]
+  },
+  "point_to_cube_px": 6.8,
+  "nearest_other_rgb_px": 31.6
+ },
+ {
+  "tier": "xhard3",
+  "ep": 0,
+  "seg": "put down the container",
+  "start": 180,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 0,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 228,
+  "choice": {
+   "choice": "A",
+   "point": [
+    76,
+    127
+   ]
+  },
+  "point_to_cube_px": 7.0,
+  "nearest_other_rgb_px": 18.1
+ },
+ {
+  "tier": "xhard3",
+  "ep": 0,
+  "seg": "put down the container",
+  "start": 318,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 0,
+  "seg": "pick up the container that hides the red cube",
+  "start": 370,
+  "choice": {
+   "choice": "A",
+   "point": [
+    67,
+    109
+   ]
+  },
+  "point_to_cube_px": 6.4,
+  "nearest_other_rgb_px": 23.7
+ },
+ {
+  "tier": "xhard3",
+  "ep": 3,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    97,
+    123
+   ]
+  },
+  "point_to_cube_px": 6.0,
+  "nearest_other_rgb_px": 40.7
+ },
+ {
+  "tier": "xhard3",
+  "ep": 3,
+  "seg": "put down the container",
+  "start": 168,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 3,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 217,
+  "choice": {
+   "choice": "A",
+   "point": [
+    117,
+    89
+   ]
+  },
+  "point_to_cube_px": 5.3,
+  "nearest_other_rgb_px": 36.6
+ },
+ {
+  "tier": "xhard3",
+  "ep": 3,
+  "seg": "put down the container",
+  "start": 316,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 3,
+  "seg": "pick up the container that hides the green cube",
+  "start": 364,
+  "choice": {
+   "choice": "A",
+   "point": [
+    103,
+    169
+   ]
+  },
+  "point_to_cube_px": 7.0,
+  "nearest_other_rgb_px": 46.2
+ },
+ {
+  "tier": "xhard3",
+  "ep": 6,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    86,
+    136
+   ]
+  },
+  "point_to_cube_px": 6.5,
+  "nearest_other_rgb_px": 48.9
+ },
+ {
+  "tier": "xhard3",
+  "ep": 6,
+  "seg": "put down the container",
+  "start": 179,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 6,
+  "seg": "pick up the container that hides the green cube",
+  "start": 227,
+  "choice": {
+   "choice": "A",
+   "point": [
+    114,
+    180
+   ]
+  },
+  "point_to_cube_px": 6.7,
+  "nearest_other_rgb_px": 50.0
+ },
+ {
+  "tier": "xhard3",
+  "ep": 6,
+  "seg": "put down the container",
+  "start": 331,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 6,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 378,
+  "choice": {
+   "choice": "A",
+   "point": [
+    129,
+    124
+   ]
+  },
+  "point_to_cube_px": 4.4,
+  "nearest_other_rgb_px": 38.2
+ },
+ {
+  "tier": "xhard4",
+  "ep": 0,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    71,
+    86
+   ]
+  },
+  "point_to_cube_px": 6.7,
+  "nearest_other_rgb_px": 63.8
+ },
+ {
+  "tier": "xhard4",
+  "ep": 0,
+  "seg": "put down the container",
+  "start": 175,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 0,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 224,
+  "choice": {
+   "choice": "A",
+   "point": [
+    119,
+    122
+   ]
+  },
+  "point_to_cube_px": 5.0,
+  "nearest_other_rgb_px": 35.8
+ },
+ {
+  "tier": "xhard4",
+  "ep": 0,
+  "seg": "put down the container",
+  "start": 330,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 0,
+  "seg": "pick up the container that hides the green cube",
+  "start": 377,
+  "choice": {
+   "choice": "A",
+   "point": [
+    131,
+    156
+   ]
+  },
+  "point_to_cube_px": 5.0,
+  "nearest_other_rgb_px": 35.2
+ },
+ {
+  "tier": "xhard4",
+  "ep": 3,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    138,
+    88
+   ]
+  },
+  "point_to_cube_px": 4.1,
+  "nearest_other_rgb_px": 28.4
+ },
+ {
+  "tier": "xhard4",
+  "ep": 3,
+  "seg": "put down the container",
+  "start": 171,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 3,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 212,
+  "choice": {
+   "choice": "A",
+   "point": [
+    105,
+    80
+   ]
+  },
+  "point_to_cube_px": 5.8,
+  "nearest_other_rgb_px": 37.9
+ },
+ {
+  "tier": "xhard4",
+  "ep": 3,
+  "seg": "put down the container",
+  "start": 319,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 3,
+  "seg": "pick up the container that hides the green cube",
+  "start": 371,
+  "choice": {
+   "choice": "A",
+   "point": [
+    140,
+    136
+   ]
+  },
+  "point_to_cube_px": 3.6,
+  "nearest_other_rgb_px": 45.8
+ },
+ {
+  "tier": "xhard4",
+  "ep": 6,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    71,
+    93
+   ]
+  },
+  "point_to_cube_px": 6.6,
+  "nearest_other_rgb_px": 43.9
+ },
+ {
+  "tier": "xhard4",
+  "ep": 6,
+  "seg": "put down the container",
+  "start": 181,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 6,
+  "seg": "pick up the container that hides the green cube",
+  "start": 229,
+  "choice": {
+   "choice": "A",
+   "point": [
+    139,
+    143
+   ]
+  },
+  "point_to_cube_px": 4.0,
+  "nearest_other_rgb_px": 42.5
+ },
+ {
+  "tier": "xhard4",
+  "ep": 6,
+  "seg": "put down the container",
+  "start": 338,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 6,
+  "seg": "pick up the container that hides the red cube",
+  "start": 379,
+  "choice": {
+   "choice": "A",
+   "point": [
+    106,
+    110
+   ]
+  },
+  "point_to_cube_px": 5.1,
+  "nearest_other_rgb_px": 32.5
+ },
+ {
+  "tier": "easy",
+  "ep": 0,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    127,
+    89
+   ]
+  },
+  "point_to_cube_px": 5.0,
+  "nearest_other_rgb_px": 63.5
+ },
+ {
+  "tier": "easy",
+  "ep": 1,
+  "seg": "pick up the container that hides the green cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    89,
+    86
+   ]
+  },
+  "point_to_cube_px": 6.5,
+  "nearest_other_rgb_px": 45.0
+ },
+ {
+  "tier": "medium",
+  "ep": 10,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    91,
+    154
+   ]
+  },
+  "point_to_cube_px": 6.4,
+  "nearest_other_rgb_px": 40.6
+ },
+ {
+  "tier": "hard",
+  "ep": 11,
+  "seg": "pick up the container that hides the green cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    125,
+    84
+   ]
+  },
+  "point_to_cube_px": 5.5,
+  "nearest_other_rgb_px": 64.0
+ },
+ {
+  "tier": "hard",
+  "ep": 11,
+  "seg": "put down the container",
+  "start": 163,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "hard",
+  "ep": 11,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 204,
+  "choice": {
+   "choice": "A",
+   "point": [
+    77,
+    162
+   ]
+  },
+  "point_to_cube_px": 7.0,
+  "nearest_other_rgb_px": 38.9
+ },
+ {
+  "tier": "medium",
+  "ep": 2,
+  "seg": "pick up the container that hides the red cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    91,
+    165
+   ]
+  },
+  "point_to_cube_px": 6.8,
+  "nearest_other_rgb_px": 48.0
+ },
+ {
+  "tier": "hard",
+  "ep": 3,
+  "seg": "pick up the container that hides the green cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    116,
+    129
+   ]
+  },
+  "point_to_cube_px": 5.0,
+  "nearest_other_rgb_px": 43.4
+ },
+ {
+  "tier": "hard",
+  "ep": 3,
+  "seg": "put down the container",
+  "start": 245,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "hard",
+  "ep": 3,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 292,
+  "choice": {
+   "choice": "A",
+   "point": [
+    82,
+    165
+   ]
+  },
+  "point_to_cube_px": 6.6,
+  "nearest_other_rgb_px": 53.4
+ },
+ {
+  "tier": "easy",
+  "ep": 4,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    81,
+    158
+   ]
+  },
+  "point_to_cube_px": 7.0,
+  "nearest_other_rgb_px": 56.0
+ },
+ {
+  "tier": "medium",
+  "ep": 6,
+  "seg": "pick up the container that hides the green cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    141,
+    167
+   ]
+  },
+  "point_to_cube_px": 4.7,
+  "nearest_other_rgb_px": 66.0
+ },
+ {
+  "tier": "hard",
+  "ep": 7,
+  "seg": "pick up the container that hides the blue cube",
+  "start": 66,
+  "choice": {
+   "choice": "A",
+   "point": [
+    78,
+    95
+   ]
+  },
+  "point_to_cube_px": 7.1,
+  "nearest_other_rgb_px": 48.5
+ },
+ {
+  "tier": "hard",
+  "ep": 7,
+  "seg": "put down the container",
+  "start": 178,
+  "choice": {
+   "choice": "B",
+   "point": []
+  }
+ },
+ {
+  "tier": "hard",
+  "ep": 7,
+  "seg": "pick up the container that hides the red cube",
+  "start": 230,
+  "choice": {
+   "choice": "A",
+   "point": [
+    63,
+    144
+   ]
+  },
+  "point_to_cube_px": 7.5,
+  "nearest_other_rgb_px": 49.6
+ }
+]

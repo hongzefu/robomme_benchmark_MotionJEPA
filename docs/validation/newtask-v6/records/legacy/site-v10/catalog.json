@@ -1,0 +1,4933 @@
+{
+  "schema": "v6-site-catalog/1",
+  "tasks": [
+    {
+      "id": "BinFill",
+      "name": "分类投放",
+      "note": "原版 hard 总块数为10–12；新四档固定12块，逐档增加需要投入的块数。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "总块数10–12；投入块数3–5",
+          "videos": [
+            {
+              "id": "894d51f35ce0755668dbba0a",
+              "label": "示例 4",
+              "url": "/media/894d51f35ce0755668dbba0a"
+            },
+            {
+              "id": "d185c268ced280444d49762b",
+              "label": "示例 8",
+              "url": "/media/d185c268ced280444d49762b"
+            },
+            {
+              "id": "403fa92fc3aad399eae7cace",
+              "label": "示例 12",
+              "url": "/media/403fa92fc3aad399eae7cace"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "总块数12；投入块数：6",
+          "videos": [
+            {
+              "id": "da4d177ec58f41b59a4aac80",
+              "label": "示例 1",
+              "url": "/media/da4d177ec58f41b59a4aac80"
+            },
+            {
+              "id": "89ef638e17fae3eea822389f",
+              "label": "示例 4",
+              "url": "/media/89ef638e17fae3eea822389f"
+            },
+            {
+              "id": "02577eed2c36e63c118aad9a",
+              "label": "示例 7",
+              "url": "/media/02577eed2c36e63c118aad9a"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "总块数12；投入块数：7",
+          "videos": [
+            {
+              "id": "6e5ab035b94d1463a5bd0b1c",
+              "label": "示例 1",
+              "url": "/media/6e5ab035b94d1463a5bd0b1c"
+            },
+            {
+              "id": "8196f2cc17a96b5ab6fe08f7",
+              "label": "示例 4",
+              "url": "/media/8196f2cc17a96b5ab6fe08f7"
+            },
+            {
+              "id": "a8cb3b5c75028b1f4caa9a72",
+              "label": "示例 7",
+              "url": "/media/a8cb3b5c75028b1f4caa9a72"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "总块数12；投入块数：8",
+          "videos": [
+            {
+              "id": "3797fce21151674a3b05d3ab",
+              "label": "示例 1",
+              "url": "/media/3797fce21151674a3b05d3ab"
+            },
+            {
+              "id": "95c72b5062b1c8cd1af2b0f6",
+              "label": "示例 4",
+              "url": "/media/95c72b5062b1c8cd1af2b0f6"
+            },
+            {
+              "id": "fee11b986bf714a57b7ad197",
+              "label": "示例 7",
+              "url": "/media/fee11b986bf714a57b7ad197"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "总块数12；投入块数：9",
+          "videos": [
+            {
+              "id": "ec885a66a81a898d71fb496d",
+              "label": "示例 1",
+              "url": "/media/ec885a66a81a898d71fb496d"
+            },
+            {
+              "id": "b3a02bc3ba9e9e60a6801645",
+              "label": "示例 4",
+              "url": "/media/b3a02bc3ba9e9e60a6801645"
+            },
+            {
+              "id": "3cf614812ec91585cd3a0669",
+              "label": "示例 7",
+              "url": "/media/3cf614812ec91585cd3a0669"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PickXtimes",
+      "name": "重复抓取",
+      "note": "逐档增加抓取次数，并增加干扰块；最高两档干扰块均为3。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "次数 / 干扰块：[4,5] / 0",
+          "videos": [
+            {
+              "id": "d1b7f72c0f004635ef5fd17b",
+              "label": "示例 4",
+              "url": "/media/d1b7f72c0f004635ef5fd17b"
+            },
+            {
+              "id": "fe928fc4dabf52ba21c735b4",
+              "label": "示例 8",
+              "url": "/media/fe928fc4dabf52ba21c735b4"
+            },
+            {
+              "id": "7aa9baccdc20786f1c318289",
+              "label": "示例 12",
+              "url": "/media/7aa9baccdc20786f1c318289"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "次数 / 干扰块：[6,7] / 1",
+          "videos": [
+            {
+              "id": "621719c2600228ad08a74348",
+              "label": "示例 1",
+              "url": "/media/621719c2600228ad08a74348"
+            },
+            {
+              "id": "1248014ad7c3b991add5fc37",
+              "label": "示例 4",
+              "url": "/media/1248014ad7c3b991add5fc37"
+            },
+            {
+              "id": "a4acfdb47af74cc56dc839cb",
+              "label": "示例 7",
+              "url": "/media/a4acfdb47af74cc56dc839cb"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "次数 / 干扰块：[8,9] / 2",
+          "videos": [
+            {
+              "id": "9ba550a36ad81b8a44490966",
+              "label": "示例 1",
+              "url": "/media/9ba550a36ad81b8a44490966"
+            },
+            {
+              "id": "c3b401592f8d890565542cd0",
+              "label": "示例 4",
+              "url": "/media/c3b401592f8d890565542cd0"
+            },
+            {
+              "id": "7699f4b6c7d669c4c80e1f9b",
+              "label": "示例 7",
+              "url": "/media/7699f4b6c7d669c4c80e1f9b"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "次数 / 干扰块：[10,12] / 3",
+          "videos": [
+            {
+              "id": "27509cfbb93093d44ba0fe88",
+              "label": "示例 1",
+              "url": "/media/27509cfbb93093d44ba0fe88"
+            },
+            {
+              "id": "97ce4c8e93b78cdf046bef52",
+              "label": "示例 4",
+              "url": "/media/97ce4c8e93b78cdf046bef52"
+            },
+            {
+              "id": "0aefad114817e3ef6b47bab1",
+              "label": "示例 7",
+              "url": "/media/0aefad114817e3ef6b47bab1"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "次数 / 干扰块：[13,15] / 3",
+          "videos": [
+            {
+              "id": "adfbd5711b9f2996bcd146b7",
+              "label": "示例 1",
+              "url": "/media/adfbd5711b9f2996bcd146b7"
+            },
+            {
+              "id": "e5342b14a4b2bed700dde592",
+              "label": "示例 4",
+              "url": "/media/e5342b14a4b2bed700dde592"
+            },
+            {
+              "id": "b2dab4455b9bb148b71c50f9",
+              "label": "示例 7",
+              "url": "/media/b2dab4455b9bb148b71c50f9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SwingXtimes",
+      "name": "重复摆动",
+      "note": "逐档增加摆动轮数，并增加干扰块；最高两档干扰块均为3。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "轮数 / 干扰块：3 / 0",
+          "videos": [
+            {
+              "id": "951ae276bc982fbca9a59521",
+              "label": "示例 4",
+              "url": "/media/951ae276bc982fbca9a59521"
+            },
+            {
+              "id": "69a22ef6c705627dfbe670ba",
+              "label": "示例 8",
+              "url": "/media/69a22ef6c705627dfbe670ba"
+            },
+            {
+              "id": "4537fdae68d68c6be90227c0",
+              "label": "示例 12",
+              "url": "/media/4537fdae68d68c6be90227c0"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "轮数 / 干扰块：[4,5] / 1",
+          "videos": [
+            {
+              "id": "99ec93b31b76a6cd8c559332",
+              "label": "示例 1",
+              "url": "/media/99ec93b31b76a6cd8c559332"
+            },
+            {
+              "id": "0620d0f069c5b2f5293bc36d",
+              "label": "示例 4",
+              "url": "/media/0620d0f069c5b2f5293bc36d"
+            },
+            {
+              "id": "69fbe6ca43221b764862930f",
+              "label": "示例 7",
+              "url": "/media/69fbe6ca43221b764862930f"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "轮数 / 干扰块：[6,7] / 2",
+          "videos": [
+            {
+              "id": "d54638c768306ffc1bf7d6f2",
+              "label": "示例 1",
+              "url": "/media/d54638c768306ffc1bf7d6f2"
+            },
+            {
+              "id": "a2206680294146d951347a8c",
+              "label": "示例 4",
+              "url": "/media/a2206680294146d951347a8c"
+            },
+            {
+              "id": "3f728c661b70abc027ecb791",
+              "label": "示例 7",
+              "url": "/media/3f728c661b70abc027ecb791"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "轮数 / 干扰块：[8,9] / 3",
+          "videos": [
+            {
+              "id": "86a4f13ee0a4a94304f0f02f",
+              "label": "示例 1",
+              "url": "/media/86a4f13ee0a4a94304f0f02f"
+            },
+            {
+              "id": "9f0aa19b477047b04bfa089c",
+              "label": "示例 4",
+              "url": "/media/9f0aa19b477047b04bfa089c"
+            },
+            {
+              "id": "fa31365b39e3c120460c3e68",
+              "label": "示例 7",
+              "url": "/media/fa31365b39e3c120460c3e68"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "轮数 / 干扰块：[10,11] / 3",
+          "videos": [
+            {
+              "id": "5aa82f6955d02aa27593fb14",
+              "label": "示例 1",
+              "url": "/media/5aa82f6955d02aa27593fb14"
+            },
+            {
+              "id": "2546b1e63d245b0002d054fa",
+              "label": "示例 4",
+              "url": "/media/2546b1e63d245b0002d054fa"
+            },
+            {
+              "id": "ffa1475858a312490197afc1",
+              "label": "示例 7",
+              "url": "/media/ffa1475858a312490197afc1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PickHighlight",
+      "name": "高亮目标抓取",
+      "note": "逐档增加需抓取的高亮块和总块数，干扰块始终为3。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "pick / 总块：3 / 6",
+          "videos": [
+            {
+              "id": "d5aa10f9b7ec1d9c5ba9a23f",
+              "label": "示例 4",
+              "url": "/media/d5aa10f9b7ec1d9c5ba9a23f"
+            },
+            {
+              "id": "d177703f9f2684b37b859ff9",
+              "label": "示例 8",
+              "url": "/media/d177703f9f2684b37b859ff9"
+            },
+            {
+              "id": "edf2d21938a880068e4b9433",
+              "label": "示例 12",
+              "url": "/media/edf2d21938a880068e4b9433"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "pick / 总块：4 / 7",
+          "videos": [
+            {
+              "id": "0b03a0e72ae4e70abe67770e",
+              "label": "示例 1",
+              "url": "/media/0b03a0e72ae4e70abe67770e"
+            },
+            {
+              "id": "2fbf4f56850b348d88062b15",
+              "label": "示例 4",
+              "url": "/media/2fbf4f56850b348d88062b15"
+            },
+            {
+              "id": "5b92e8c92a718c5eb6c69f3c",
+              "label": "示例 7",
+              "url": "/media/5b92e8c92a718c5eb6c69f3c"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "pick / 总块：5 / 8",
+          "videos": [
+            {
+              "id": "ddd6cb180f5fbf32f11dae1f",
+              "label": "示例 1",
+              "url": "/media/ddd6cb180f5fbf32f11dae1f"
+            },
+            {
+              "id": "fd512da7df4684d519bb2b5a",
+              "label": "示例 4",
+              "url": "/media/fd512da7df4684d519bb2b5a"
+            },
+            {
+              "id": "8b4f88cd78bf03b590c5b56b",
+              "label": "示例 7",
+              "url": "/media/8b4f88cd78bf03b590c5b56b"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "pick / 总块：6 / 9",
+          "videos": [
+            {
+              "id": "c6a755f36addc7d74fe83cb5",
+              "label": "示例 1",
+              "url": "/media/c6a755f36addc7d74fe83cb5"
+            },
+            {
+              "id": "1052218bf00ee262e2cdd87a",
+              "label": "示例 4",
+              "url": "/media/1052218bf00ee262e2cdd87a"
+            },
+            {
+              "id": "48fd5b65dcb7bc9e574a24e2",
+              "label": "示例 7",
+              "url": "/media/48fd5b65dcb7bc9e574a24e2"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "pick / 总块：7 / 10",
+          "videos": [
+            {
+              "id": "86d08729e00184d18f73aa4a",
+              "label": "示例 1",
+              "url": "/media/86d08729e00184d18f73aa4a"
+            },
+            {
+              "id": "60d4d15a215bcd101f02fa02",
+              "label": "示例 4",
+              "url": "/media/60d4d15a215bcd101f02fa02"
+            },
+            {
+              "id": "7ce11ea6905e479f482e7338",
+              "label": "示例 7",
+              "url": "/media/7ce11ea6905e479f482e7338"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VideoUnmask",
+      "name": "视频遮挡记忆",
+      "note": "抓取数量最多为3，主要通过增加干扰容器区分更高档位。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "干扰容器 / pick：0（15 容器）/ 2",
+          "videos": [
+            {
+              "id": "417f7aab5302e65d2414b8a1",
+              "label": "示例 4",
+              "url": "/media/417f7aab5302e65d2414b8a1"
+            },
+            {
+              "id": "d5a14d168c6826d141cc252d",
+              "label": "示例 8",
+              "url": "/media/d5a14d168c6826d141cc252d"
+            },
+            {
+              "id": "5e5a1f57df10072fb4099760",
+              "label": "示例 12",
+              "url": "/media/5e5a1f57df10072fb4099760"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "干扰容器 / pick：8 / 2",
+          "videos": [
+            {
+              "id": "b6ea2b7e986249a230d0ef7c",
+              "label": "示例 1",
+              "url": "/media/b6ea2b7e986249a230d0ef7c"
+            },
+            {
+              "id": "136185a8b541133cea4043a1",
+              "label": "示例 4",
+              "url": "/media/136185a8b541133cea4043a1"
+            },
+            {
+              "id": "76c7f4a8729096d54da56801",
+              "label": "示例 7",
+              "url": "/media/76c7f4a8729096d54da56801"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "干扰容器 / pick：10 / 3",
+          "videos": [
+            {
+              "id": "6a6df167d8448176e1fff548",
+              "label": "示例 1",
+              "url": "/media/6a6df167d8448176e1fff548"
+            },
+            {
+              "id": "d4ae1b68b4a00e793d62010f",
+              "label": "示例 4",
+              "url": "/media/d4ae1b68b4a00e793d62010f"
+            },
+            {
+              "id": "26b7a1fd6853ffb77f0dff9b",
+              "label": "示例 7",
+              "url": "/media/26b7a1fd6853ffb77f0dff9b"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "干扰容器 / pick：13 / 3",
+          "videos": [
+            {
+              "id": "15be62d5347b4bb508b15ba5",
+              "label": "示例 1",
+              "url": "/media/15be62d5347b4bb508b15ba5"
+            },
+            {
+              "id": "ddc7fc85b7fe88d7eeada16c",
+              "label": "示例 4",
+              "url": "/media/ddc7fc85b7fe88d7eeada16c"
+            },
+            {
+              "id": "77daca92b88239f56ef6d833",
+              "label": "示例 7",
+              "url": "/media/77daca92b88239f56ef6d833"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "干扰容器 / pick：15 / 3",
+          "videos": [
+            {
+              "id": "1d80e476a635e54952e27064",
+              "label": "示例 1",
+              "url": "/media/1d80e476a635e54952e27064"
+            },
+            {
+              "id": "d7662c59067052a1b23ecf80",
+              "label": "示例 4",
+              "url": "/media/d7662c59067052a1b23ecf80"
+            },
+            {
+              "id": "fc603290c2f5bc7b148c568e",
+              "label": "示例 7",
+              "url": "/media/fc603290c2f5bc7b148c568e"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ButtonUnmask",
+      "name": "按钮遮挡记忆",
+      "note": "抓取数量最多为3，主要通过增加干扰容器区分更高档位。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "干扰容器 / pick：0 / 2",
+          "videos": [
+            {
+              "id": "f13f7cbd4fd9a84b87e6dad7",
+              "label": "示例 4",
+              "url": "/media/f13f7cbd4fd9a84b87e6dad7"
+            },
+            {
+              "id": "545addf195a714e0cc22faad",
+              "label": "示例 8",
+              "url": "/media/545addf195a714e0cc22faad"
+            },
+            {
+              "id": "e38a4a04c8ac436ee6901ea5",
+              "label": "示例 12",
+              "url": "/media/e38a4a04c8ac436ee6901ea5"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "干扰容器 / pick：8 / 2",
+          "videos": [
+            {
+              "id": "8802c2f2e12b95825dd5910d",
+              "label": "示例 1",
+              "url": "/media/8802c2f2e12b95825dd5910d"
+            },
+            {
+              "id": "90e5e0ca66f2ad229a0cfa6b",
+              "label": "示例 4",
+              "url": "/media/90e5e0ca66f2ad229a0cfa6b"
+            },
+            {
+              "id": "20bd012f32f8459d29009dbc",
+              "label": "示例 7",
+              "url": "/media/20bd012f32f8459d29009dbc"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "干扰容器 / pick：10 / 3",
+          "videos": [
+            {
+              "id": "be5e4f51f10eaf663a1f234b",
+              "label": "示例 1",
+              "url": "/media/be5e4f51f10eaf663a1f234b"
+            },
+            {
+              "id": "9a4c9255143ee68c22dfc0c4",
+              "label": "示例 4",
+              "url": "/media/9a4c9255143ee68c22dfc0c4"
+            },
+            {
+              "id": "93bb2f10468940c97b061d3c",
+              "label": "示例 7",
+              "url": "/media/93bb2f10468940c97b061d3c"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "干扰容器 / pick：12 / 3",
+          "videos": [
+            {
+              "id": "ddc953f2de1b20fefa0b8da7",
+              "label": "示例 1",
+              "url": "/media/ddc953f2de1b20fefa0b8da7"
+            },
+            {
+              "id": "6e24a1140c1f0a59bf349805",
+              "label": "示例 4",
+              "url": "/media/6e24a1140c1f0a59bf349805"
+            },
+            {
+              "id": "cc905ffd2ca37e918b9d5857",
+              "label": "示例 7",
+              "url": "/media/cc905ffd2ca37e918b9d5857"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "干扰容器 / pick：14 / 3",
+          "videos": [
+            {
+              "id": "c138a157d2939feccc48f730",
+              "label": "示例 1",
+              "url": "/media/c138a157d2939feccc48f730"
+            },
+            {
+              "id": "ac6241550fcb04d5c1730c16",
+              "label": "示例 4",
+              "url": "/media/ac6241550fcb04d5c1730c16"
+            },
+            {
+              "id": "348f119be0d94f6bfd2bafe3",
+              "label": "示例 7",
+              "url": "/media/348f119be0d94f6bfd2bafe3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VideoUnmaskSwap",
+      "name": "视频遮挡交换",
+      "note": "通过交换次数、抓取数量和外环干扰数量共同增加难度。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "swap / pick / 外环干扰：[2,3] / 2 / 0",
+          "videos": [
+            {
+              "id": "7a4a26df7522a6fd166a7078",
+              "label": "示例 4",
+              "url": "/media/7a4a26df7522a6fd166a7078"
+            },
+            {
+              "id": "790918cbf02e125bfb933375",
+              "label": "示例 8",
+              "url": "/media/790918cbf02e125bfb933375"
+            },
+            {
+              "id": "236fc157d87c53b89be1150e",
+              "label": "示例 12",
+              "url": "/media/236fc157d87c53b89be1150e"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "swap / pick / 外环干扰：[4,5] / 2 / 4",
+          "videos": [
+            {
+              "id": "65e275384cd996db7b3032e9",
+              "label": "示例 1",
+              "url": "/media/65e275384cd996db7b3032e9"
+            },
+            {
+              "id": "4f7c9e3837415bc37deb4aa9",
+              "label": "示例 4",
+              "url": "/media/4f7c9e3837415bc37deb4aa9"
+            },
+            {
+              "id": "1e347cc71e23ced483adb955",
+              "label": "示例 7",
+              "url": "/media/1e347cc71e23ced483adb955"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "swap / pick / 外环干扰：[6,7] / 3 / 6",
+          "videos": [
+            {
+              "id": "1b72bf56d51bf6bac802b0d4",
+              "label": "示例 1",
+              "url": "/media/1b72bf56d51bf6bac802b0d4"
+            },
+            {
+              "id": "d1ca2037a6b0ca9d9d974db9",
+              "label": "示例 4",
+              "url": "/media/d1ca2037a6b0ca9d9d974db9"
+            },
+            {
+              "id": "55eeb75663ab477b7cef1daa",
+              "label": "示例 7",
+              "url": "/media/55eeb75663ab477b7cef1daa"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "swap / pick / 外环干扰：[8,9] / 3 / 8",
+          "videos": [
+            {
+              "id": "06e463aa9ea71b1bc6a086e3",
+              "label": "示例 1",
+              "url": "/media/06e463aa9ea71b1bc6a086e3"
+            },
+            {
+              "id": "b28efd7ed7945527b68efac1",
+              "label": "示例 4",
+              "url": "/media/b28efd7ed7945527b68efac1"
+            },
+            {
+              "id": "43673031fdc2c0bdb37d8566",
+              "label": "示例 7",
+              "url": "/media/43673031fdc2c0bdb37d8566"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "swap / pick / 外环干扰：[10,12] / 3 / 10",
+          "videos": [
+            {
+              "id": "4285faf24942a318415b562f",
+              "label": "示例 1",
+              "url": "/media/4285faf24942a318415b562f"
+            },
+            {
+              "id": "51ffd871ae7e212ca7d118c3",
+              "label": "示例 4",
+              "url": "/media/51ffd871ae7e212ca7d118c3"
+            },
+            {
+              "id": "33baecb4ea4c19d0993aa884",
+              "label": "示例 7",
+              "url": "/media/33baecb4ea4c19d0993aa884"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ButtonUnmaskSwap",
+      "name": "按钮遮挡交换",
+      "note": "通过交换次数、抓取数量和外环干扰数量共同增加难度。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "swap / pick / 外环干扰：[2,3] / 2 / 0",
+          "videos": [
+            {
+              "id": "2b3d74ccb008615cc9c9b0de",
+              "label": "示例 4",
+              "url": "/media/2b3d74ccb008615cc9c9b0de"
+            },
+            {
+              "id": "892b9a5bf33f43dd1d0a95f0",
+              "label": "示例 8",
+              "url": "/media/892b9a5bf33f43dd1d0a95f0"
+            },
+            {
+              "id": "ab8067f8fd6b2bc949ae246c",
+              "label": "示例 12",
+              "url": "/media/ab8067f8fd6b2bc949ae246c"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "swap / pick / 外环干扰：4 / 2 / 4",
+          "videos": [
+            {
+              "id": "7a94fb94a208a4227c6bc38e",
+              "label": "示例 1",
+              "url": "/media/7a94fb94a208a4227c6bc38e"
+            },
+            {
+              "id": "6fa7808b429d2d0fb38cc7b0",
+              "label": "示例 4",
+              "url": "/media/6fa7808b429d2d0fb38cc7b0"
+            },
+            {
+              "id": "85bfb0759be17049c0fc4e5b",
+              "label": "示例 7",
+              "url": "/media/85bfb0759be17049c0fc4e5b"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "swap / pick / 外环干扰：5 / 3 / 6",
+          "videos": [
+            {
+              "id": "6d4c5fd96fb660f93c97a772",
+              "label": "示例 1",
+              "url": "/media/6d4c5fd96fb660f93c97a772"
+            },
+            {
+              "id": "43c374a13826f31a8d4b6c8f",
+              "label": "示例 4",
+              "url": "/media/43c374a13826f31a8d4b6c8f"
+            },
+            {
+              "id": "e22b81f75c970b3b34bc9b27",
+              "label": "示例 7",
+              "url": "/media/e22b81f75c970b3b34bc9b27"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "swap / pick / 外环干扰：[6,7] / 3 / 8",
+          "videos": [
+            {
+              "id": "612906fe8b91153010615963",
+              "label": "示例 1",
+              "url": "/media/612906fe8b91153010615963"
+            },
+            {
+              "id": "008a35af91b1df3fb21fa764",
+              "label": "示例 4",
+              "url": "/media/008a35af91b1df3fb21fa764"
+            },
+            {
+              "id": "529801ff0db8e6d526e1163c",
+              "label": "示例 7",
+              "url": "/media/529801ff0db8e6d526e1163c"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "swap / pick / 外环干扰：[8,9] / 3 / 10",
+          "videos": [
+            {
+              "id": "76af908fb6bada3fb907b3b3",
+              "label": "示例 1",
+              "url": "/media/76af908fb6bada3fb907b3b3"
+            },
+            {
+              "id": "ae3daa1d19398076c458c1ac",
+              "label": "示例 4",
+              "url": "/media/ae3daa1d19398076c458c1ac"
+            },
+            {
+              "id": "2bd78ae58be55901b1db6bee",
+              "label": "示例 7",
+              "url": "/media/2bd78ae58be55901b1db6bee"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VideoRepick",
+      "name": "视频重复抓取",
+      "note": "原版 hard 是静态布局的另一种任务，不能与新档直接比较；新四档增加块数、交换与重复抓取次数。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "块数 / swap / repick：另一种任务",
+          "videos": [
+            {
+              "id": "f6f1ddc0b1480b0e286fcac7",
+              "label": "示例 4",
+              "url": "/media/f6f1ddc0b1480b0e286fcac7"
+            },
+            {
+              "id": "adbdae39404e310ec399df4e",
+              "label": "示例 8",
+              "url": "/media/adbdae39404e310ec399df4e"
+            },
+            {
+              "id": "2e38486ff6dcb124b0fbc663",
+              "label": "示例 12",
+              "url": "/media/2e38486ff6dcb124b0fbc663"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "块数 / swap / repick：4 / [3,4] / 2",
+          "videos": [
+            {
+              "id": "d941834086fccae05488f51b",
+              "label": "示例 1",
+              "url": "/media/d941834086fccae05488f51b"
+            },
+            {
+              "id": "4bfaf9994a65db0760f27d1b",
+              "label": "示例 4",
+              "url": "/media/4bfaf9994a65db0760f27d1b"
+            },
+            {
+              "id": "a01f5c10f138be295181d7ea",
+              "label": "示例 7",
+              "url": "/media/a01f5c10f138be295181d7ea"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "块数 / swap / repick：5 / [5,6] / 3",
+          "videos": [
+            {
+              "id": "21d0acd9ece5e4b3f300ef95",
+              "label": "示例 1",
+              "url": "/media/21d0acd9ece5e4b3f300ef95"
+            },
+            {
+              "id": "acb3294d54349a57ec4f5346",
+              "label": "示例 4",
+              "url": "/media/acb3294d54349a57ec4f5346"
+            },
+            {
+              "id": "e0297b2db1273a01ed16b5f2",
+              "label": "示例 7",
+              "url": "/media/e0297b2db1273a01ed16b5f2"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "块数 / swap / repick：6 / [7,8] / 4",
+          "videos": [
+            {
+              "id": "406a5041cbdcc339816ad721",
+              "label": "示例 1",
+              "url": "/media/406a5041cbdcc339816ad721"
+            },
+            {
+              "id": "2afbe1ce42246cc44421f25e",
+              "label": "示例 4",
+              "url": "/media/2afbe1ce42246cc44421f25e"
+            },
+            {
+              "id": "d831b0aa05c3fe718af43cad",
+              "label": "示例 7",
+              "url": "/media/d831b0aa05c3fe718af43cad"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "块数 / swap / repick：7 / [9,12] / [5,6]",
+          "videos": [
+            {
+              "id": "29e5c3a0f92f544dd4f5c466",
+              "label": "示例 1",
+              "url": "/media/29e5c3a0f92f544dd4f5c466"
+            },
+            {
+              "id": "bdd939ebeffaa01f978af1af",
+              "label": "示例 4",
+              "url": "/media/bdd939ebeffaa01f978af1af"
+            },
+            {
+              "id": "1e27c9eb4da7903c1e0a81c2",
+              "label": "示例 7",
+              "url": "/media/1e27c9eb4da7903c1e0a81c2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PatternLock",
+      "name": "图案解锁",
+      "note": "在5×5网格中逐档增加不重复访问的路径节点数。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[4,8]",
+          "videos": [
+            {
+              "id": "6ce351f236450fbc31be090f",
+              "label": "示例 4",
+              "url": "/media/6ce351f236450fbc31be090f"
+            },
+            {
+              "id": "3ad9c4a80cc51749218d088d",
+              "label": "示例 8",
+              "url": "/media/3ad9c4a80cc51749218d088d"
+            },
+            {
+              "id": "b1322a90a71ffb695cb771d2",
+              "label": "示例 12",
+              "url": "/media/b1322a90a71ffb695cb771d2"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[9,12]",
+          "videos": [
+            {
+              "id": "06b162996c58740d78b23a21",
+              "label": "示例 1",
+              "url": "/media/06b162996c58740d78b23a21"
+            },
+            {
+              "id": "40bab8cc9a34f5edaa107226",
+              "label": "示例 4",
+              "url": "/media/40bab8cc9a34f5edaa107226"
+            },
+            {
+              "id": "b5c2ade5ffbd0d13042f8028",
+              "label": "示例 7",
+              "url": "/media/b5c2ade5ffbd0d13042f8028"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[13,16]",
+          "videos": [
+            {
+              "id": "f6e8f932d721572140b47265",
+              "label": "示例 1",
+              "url": "/media/f6e8f932d721572140b47265"
+            },
+            {
+              "id": "9420c2287a0740f8a552fc2e",
+              "label": "示例 4",
+              "url": "/media/9420c2287a0740f8a552fc2e"
+            },
+            {
+              "id": "e807a582ddcde117ccaa37c2",
+              "label": "示例 7",
+              "url": "/media/e807a582ddcde117ccaa37c2"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[17,20]",
+          "videos": [
+            {
+              "id": "c613550e49fd20a4462d636a",
+              "label": "示例 1",
+              "url": "/media/c613550e49fd20a4462d636a"
+            },
+            {
+              "id": "c14bc04c5957bd3bd3608067",
+              "label": "示例 4",
+              "url": "/media/c14bc04c5957bd3bd3608067"
+            },
+            {
+              "id": "00ca80b1d91cefdcca5c4302",
+              "label": "示例 7",
+              "url": "/media/00ca80b1d91cefdcca5c4302"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[21,25]",
+          "videos": [
+            {
+              "id": "7c89e616a0eec80d0f827456",
+              "label": "示例 1",
+              "url": "/media/7c89e616a0eec80d0f827456"
+            },
+            {
+              "id": "f3d367beb9a1e0e63ace3bc4",
+              "label": "示例 4",
+              "url": "/media/f3d367beb9a1e0e63ace3bc4"
+            },
+            {
+              "id": "6f12ff4249b1e613c2ead665",
+              "label": "示例 7",
+              "url": "/media/6f12ff4249b1e613c2ead665"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RouteStick",
+      "name": "路线引导",
+      "note": "逐档增加路线段数，需要连续完成更长的路线。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "段数 L：[4,7]",
+          "videos": [
+            {
+              "id": "7e5e2989f6587835974c554f",
+              "label": "示例 4",
+              "url": "/media/7e5e2989f6587835974c554f"
+            },
+            {
+              "id": "c0718111f1a37c118f877f37",
+              "label": "示例 8",
+              "url": "/media/c0718111f1a37c118f877f37"
+            },
+            {
+              "id": "273cb211fab82788d26c6da5",
+              "label": "示例 12",
+              "url": "/media/273cb211fab82788d26c6da5"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "段数 L：[8,10]",
+          "videos": [
+            {
+              "id": "fa43236b669e39e0870326e1",
+              "label": "示例 1",
+              "url": "/media/fa43236b669e39e0870326e1"
+            },
+            {
+              "id": "6b4b50ccbe86135e74f4af78",
+              "label": "示例 4",
+              "url": "/media/6b4b50ccbe86135e74f4af78"
+            },
+            {
+              "id": "dff5dc22d43c81a3ac529a45",
+              "label": "示例 7",
+              "url": "/media/dff5dc22d43c81a3ac529a45"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "段数 L：[11,13]",
+          "videos": [
+            {
+              "id": "fe694559e2b0ca1349424735",
+              "label": "示例 1",
+              "url": "/media/fe694559e2b0ca1349424735"
+            },
+            {
+              "id": "39a4e0a52eb4bafe3c991034",
+              "label": "示例 4",
+              "url": "/media/39a4e0a52eb4bafe3c991034"
+            },
+            {
+              "id": "953fed5f6efe55612bfa0b7b",
+              "label": "示例 7",
+              "url": "/media/953fed5f6efe55612bfa0b7b"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "段数 L：[14,16]",
+          "videos": [
+            {
+              "id": "96f797aaa685604bdac6068d",
+              "label": "示例 1",
+              "url": "/media/96f797aaa685604bdac6068d"
+            },
+            {
+              "id": "c9b00c0887bb8dbeb6ab29f7",
+              "label": "示例 4",
+              "url": "/media/c9b00c0887bb8dbeb6ab29f7"
+            },
+            {
+              "id": "533100141421c2ee1a24441c",
+              "label": "示例 7",
+              "url": "/media/533100141421c2ee1a24441c"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "段数 L：[17,21]",
+          "videos": [
+            {
+              "id": "0946f0080e3dce8fe8e2269b",
+              "label": "示例 1",
+              "url": "/media/0946f0080e3dce8fe8e2269b"
+            },
+            {
+              "id": "932b6e5b026335f95a993075",
+              "label": "示例 4",
+              "url": "/media/932b6e5b026335f95a993075"
+            },
+            {
+              "id": "9b6d28ab168a14df57ae24ee",
+              "label": "示例 7",
+              "url": "/media/9b6d28ab168a14df57ae24ee"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VideoPlaceButton",
+      "name": "视频放置与按钮",
+      "note": "新四档均放回原位，按演示中放到台上的总次数区分难度。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "1块，放台2次；演示后放到桌面",
+          "videos": [
+            {
+              "id": "88cd8afb207a509b36ac4667",
+              "label": "示例 4",
+              "url": "/media/88cd8afb207a509b36ac4667",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它在按按钮前最后一次放置的台",
+                "cubes": [
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放到桌面（演示结束）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "1278c12b286ca7d981d6f250556bfa28f829753377924fce7a225f36332e9e85"
+            },
+            {
+              "id": "2d8f82cde1e12c7a72445521",
+              "label": "示例 8",
+              "url": "/media/2d8f82cde1e12c7a72445521",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它在按按钮前最后一次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放到桌面（演示结束）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "b28fdefd7cced11e17b91ac664916a9f007b8fe2d2ad5a3bf10dbeabcd6e676b"
+            },
+            {
+              "id": "472eaf1be6f71e9358efbf2e",
+              "label": "示例 12",
+              "url": "/media/472eaf1be6f71e9358efbf2e",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它在按按钮前最后一次放置的台",
+                "cubes": [
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放到桌面（演示结束）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "9ef372593a5e70618d2cb1154a19fd159336a238992c3ae654c13c637326f5b8"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "放台次数（都放回原位）：1 块 3 次",
+          "videos": [
+            {
+              "id": "81ac9faf048ff482643dcdf8",
+              "label": "示例 1",
+              "url": "/media/81ac9faf048ff482643dcdf8",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它在按按钮后第一次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮后第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "931e27fe3870c9e4342df0ac5768ebaa8c1a59124e47b325edf407af30c44965"
+            },
+            {
+              "id": "caf0c2c73b0542f5c8b86ae4",
+              "label": "示例 4",
+              "url": "/media/caf0c2c73b0542f5c8b86ae4",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它在按按钮前最后一次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮后第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "81a1ec81fe48fab1b4e2b5972b9d7590d8c1263c8cb68b278ce421249f0dd6a3"
+            },
+            {
+              "id": "5bbb4f0947278a0575da4c51",
+              "label": "示例 7",
+              "url": "/media/5bbb4f0947278a0575da4c51",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它在按按钮后第一次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮后第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "f8165bad81e497013c362ebad87688781b8f2f631a18bd933f526af11b25a000"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "放台次数（都放回原位）：1 块 4 次",
+          "videos": [
+            {
+              "id": "7f860bb2ecf2a4c76eac98bf",
+              "label": "示例 1",
+              "url": "/media/7f860bb2ecf2a4c76eac98bf",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它在按按钮后第一次放置的台",
+                "cubes": [
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮前第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "fa2638d65c28f2cff16ced56131a8f528733a872392a345c51fb09df8ee5a8c6"
+            },
+            {
+              "id": "4b787ce57e57b71e0fe94449",
+              "label": "示例 4",
+              "url": "/media/4b787ce57e57b71e0fe94449",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它在按按钮后第一次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮前第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（按钮后第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "61d8c036dba6472930a52139563aca7c19fad554f71d7b28701905965d19170e"
+            },
+            {
+              "id": "1da999ca4ed5da085bbd90e7",
+              "label": "示例 7",
+              "url": "/media/1da999ca4ed5da085bbd90e7",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它在按按钮后第一次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮前第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（按钮后第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "1a6053a4937f66ba4e34479aff3b0579696a8668f29622fc7f4cba4a3bd9337c"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "放台次数（都放回原位）：2 块 5 次",
+          "videos": [
+            {
+              "id": "aff3336b4343cae02ad6d767",
+              "label": "示例 1",
+              "url": "/media/aff3336b4343cae02ad6d767",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它在按按钮后第一次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（按钮前第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（按钮前第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "1677fd3365d495549c8d194a747c339935b014eb6535ce3151094c380da98bb6"
+            },
+            {
+              "id": "6b87bdeb088af47999a03623",
+              "label": "示例 4",
+              "url": "/media/6b87bdeb088af47999a03623",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它在按按钮前最后一次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "distractor"
+                  },
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮前第 2 次放置）",
+                    "role": "correct",
+                    "asked": true,
+                    "note": "程序判定的答案台与题意不同，见上方已知问题"
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（按钮后第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "55c609ed9ee12c630bea6e94923e1fcc2949b518d7ab78c059f7d8b4f9a39210"
+            },
+            {
+              "id": "2e88732211d3f6de43580fcd",
+              "label": "示例 7",
+              "url": "/media/2e88732211d3f6de43580fcd",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它在按按钮前最后一次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（按钮前第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮前第 2 次放置）",
+                    "role": "correct",
+                    "asked": true,
+                    "note": "程序判定的答案台与题意不同，见上方已知问题"
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（按钮后第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "24cf2278b775fd05027df1203e767d6072b8d3114de92042326a67c75db7d8db"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "放台次数（都放回原位）：2 块 6 次",
+          "videos": [
+            {
+              "id": "ff2a72799a4e7734ae2e6b63",
+              "label": "示例 1",
+              "url": "/media/ff2a72799a4e7734ae2e6b63",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它在按按钮前最后一次放置的台",
+                "cubes": [
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "蓝",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（按钮前第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（按钮前第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "d796c6db7ae7a740596c3ee52577e191b7f9ff2b6f55fd2ac66afe8ccb5fd803"
+            },
+            {
+              "id": "8e67b3129d0de9ee558f1cb2",
+              "label": "示例 4",
+              "url": "/media/8e67b3129d0de9ee558f1cb2",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它在按按钮后第一次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（按钮前第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（按钮前第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（按钮后第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "0bba167ef24b92197728361042be03b39f4e4adb07fbe32df55f6d28e3c4f34e"
+            },
+            {
+              "id": "d5e20a74ab0f182dc9f6e867",
+              "label": "示例 7",
+              "url": "/media/d5e20a74ab0f182dc9f6e867",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它在按按钮前最后一次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（按钮前第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（按钮前第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（按钮前第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（按钮后第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（按钮后第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（按钮后第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "474190883209f61016c1aa9c011a99662e5cac7857a8ba9dfe613e4188c7be14"
+            }
+          ]
+        }
+      ],
+      "known_issue": {
+        "title": "已知问题：部分视频的程序答案与题目含义不一致",
+        "steps": [
+          "已确认受影响的是 xhard3 示例4和示例7（episode 3、6）。",
+          "以示例4为例：蓝色方块（正确方块）先放到台B，再被拿起放到台C，然后按按钮。",
+          "题目问蓝色方块在按钮前最后一次放到的台，因此按演示应回答台C，并追踪该台交换后的所在位置。",
+          "当前程序仍将更早的台B绑定为正确答案；视频中的执行按这个答案完成，所以内部记录显示成功。"
+        ],
+        "note": "台代号与下方演示子目标列表一致（按首次放置顺序编 A、B、C、D），不是视频中的标签；列表里带「题目所问」标记的是按题意应答的那次放置。视频显示的成功只代表通过当前程序判定，不能证明符合题目含义。此处保留原视频并说明问题，没有修复源码或重生成数据；其他所列样例不因此被判定为错误。"
+      }
+    },
+    {
+      "id": "VideoPlaceOrder",
+      "name": "视频放置顺序",
+      "note": "新四档均放回原位，两个物体的总放台次数从5增加到8。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "1块，访问2–4台；演示后放到桌面",
+          "videos": [
+            {
+              "id": "b91c44b2e40e4df9070653dd",
+              "label": "示例 4",
+              "url": "/media/b91c44b2e40e4df9070653dd",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它先前第 3 次放置的台",
+                "cubes": [
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（第 4 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放到桌面（演示结束）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "fae2447a804d23b0fafdc0a4f3c77a9558336ce569c70c7f75ce41bcc4428d4c"
+            },
+            {
+              "id": "22f7d8e02cf7cf21d111fb17",
+              "label": "示例 8",
+              "url": "/media/22f7d8e02cf7cf21d111fb17",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它先前第 2 次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放到桌面（演示结束）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "593d6e3d3b49375345cce3c2cc7b3ae438e3f618f2fb19007a7c6e872580241a"
+            },
+            {
+              "id": "2d6d2cff285699fba5bc53e3",
+              "label": "示例 12",
+              "url": "/media/2d6d2cff285699fba5bc53e3",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它先前第 3 次放置的台",
+                "cubes": [
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（第 4 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放到桌面（演示结束）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "26775a14a6b592867bb1ec1e39a2efc62afa01c642d4b5e2fcdb5d1d328438ad"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "总放台次数（都放回原位）：2 块 (2,3)=5",
+          "videos": [
+            {
+              "id": "e227e18d965e14a247e86fc4",
+              "label": "示例 1",
+              "url": "/media/e227e18d965e14a247e86fc4",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它先前第 1 次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "fb202c22945c9e88dd5bdc238595b8033cdbcfeeafa9befcdb3a72494e582999"
+            },
+            {
+              "id": "08444a6b3bd255c7694a6aff",
+              "label": "示例 4",
+              "url": "/media/08444a6b3bd255c7694a6aff",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它先前第 2 次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "蓝",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "42ba91e1a6ac4f50312063d9f7d3ee7b3d7b0303394a6441eba0fe21cb003acf"
+            },
+            {
+              "id": "dd6b6ebb25b7d661a4b0e379",
+              "label": "示例 7",
+              "url": "/media/dd6b6ebb25b7d661a4b0e379",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它先前第 3 次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "distractor"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（第 3 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "9e19aa5a516bbafb95113c90798a8fb105d79f660da0230e73d89afc1b092fd6"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "总放台次数（都放回原位）：2 块 (3,3)=6",
+          "videos": [
+            {
+              "id": "3e15095a06d5c6cc689f51fd",
+              "label": "示例 1",
+              "url": "/media/3e15095a06d5c6cc689f51fd",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它先前第 2 次放置的台",
+                "cubes": [
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "红",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "972d3cf89e62e09271c8137c73f9c7b5fbd562c9f3bf00c613e9fbc82f120ab1"
+            },
+            {
+              "id": "6ebb1d88d84a69e41a35db10",
+              "label": "示例 4",
+              "url": "/media/6ebb1d88d84a69e41a35db10",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它先前第 3 次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "蓝",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "02bb44f470f5ff73e94cf77b3d6603e9fd7e2db2332bcbe5fb3b8a7c660d955c"
+            },
+            {
+              "id": "6de1f74c9a1fd6c6050629a6",
+              "label": "示例 7",
+              "url": "/media/6de1f74c9a1fd6c6050629a6",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它先前第 3 次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "蓝",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "b0a4b626ea86139abe99558b6edb6f5fc3e3a05749d5cb010de308905f44c9e2"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "总放台次数（都放回原位）：2 块 (3,4)=7",
+          "videos": [
+            {
+              "id": "70e12ba3f61de11ce8e49ee1",
+              "label": "示例 1",
+              "url": "/media/70e12ba3f61de11ce8e49ee1",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它先前第 1 次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "distractor"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 4 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 3 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "ecf01a6c43ee476b1798facf6e2b3acf09aec77e17037ad6f9072dd806e5ee70"
+            },
+            {
+              "id": "89e48e8124ab65ef7adf8a85",
+              "label": "示例 4",
+              "url": "/media/89e48e8124ab65ef7adf8a85",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它先前第 3 次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "红",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（第 4 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（红）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "1d1fab4bf8cd525f9fe4ab953dfb1271a4200cefe00c203fabc01a8853631e73"
+            },
+            {
+              "id": "4a9d61471d37b60faff15777",
+              "label": "示例 7",
+              "url": "/media/4a9d61471d37b60faff15777",
+              "subgoal_flow": {
+                "question": "题目：把蓝色方块放到它先前第 1 次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 4 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（蓝）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "ed0bc60816333fc6932aa20162ec5d846ee0d184b742646e2558a179bd07a8a7"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "总放台次数（都放回原位）：2 块 (4,4)=8",
+          "videos": [
+            {
+              "id": "18475ff9a26958dda6588a4b",
+              "label": "示例 1",
+              "url": "/media/18475ff9a26958dda6588a4b",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它先前第 4 次放置的台",
+                "cubes": [
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "蓝",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（第 4 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 4 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "e1c9b4246a77893f0b27ac1821521d1ac8538d397b07c966b2092376179cbd63"
+            },
+            {
+              "id": "e72501eab405879262cfa4bb",
+              "label": "示例 4",
+              "url": "/media/e72501eab405879262cfa4bb",
+              "subgoal_flow": {
+                "question": "题目：把绿色方块放到它先前第 1 次放置的台",
+                "cubes": [
+                  {
+                    "color": "蓝",
+                    "role": "distractor"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "correct"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 4 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（蓝）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（第 1 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 2 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 3 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 4 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（绿）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "e9ad9d9df5d057e8ff65702176d213ea1938a79cdad58c1f028580e57126b19e"
+            },
+            {
+              "id": "381aa0388c629a33ed1105f1",
+              "label": "示例 7",
+              "url": "/media/381aa0388c629a33ed1105f1",
+              "subgoal_flow": {
+                "question": "题目：把红色方块放到它先前第 2 次放置的台",
+                "cubes": [
+                  {
+                    "color": "红",
+                    "role": "correct"
+                  },
+                  {
+                    "color": "绿",
+                    "role": "distractor"
+                  }
+                ],
+                "demo_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 A（第 1 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 B（第 2 次放置）",
+                    "role": "correct",
+                    "asked": true
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 C（第 3 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块 → 台 D（第 4 次放置）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "正确方块放回原位",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 D（第 1 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 A（第 2 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 B（第 3 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "按按钮",
+                    "role": "button",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块 → 台 C（第 4 次放置）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "抓起干扰方块（绿）",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "干扰方块放回原位",
+                    "role": "distractor",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  },
+                  {
+                    "text": "静止",
+                    "role": "static",
+                    "asked": false
+                  }
+                ],
+                "execution_steps": [
+                  {
+                    "text": "抓起正确方块（红）",
+                    "role": "correct",
+                    "asked": false
+                  },
+                  {
+                    "text": "放到答案台",
+                    "role": "correct",
+                    "asked": false
+                  }
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "e0092933ef00b387a69814802fd374ea0c34a15d9507cfea2ee1b639e8d6ced8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MoveCube",
+      "name": "移动方块",
+      "note": "不增加中间档位；xhard4 将方块中心、目标中心和杆抓取点统一放在圆环区域，并扩大杆的朝向范围。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "原版位置布局；杆朝向 −45°～45°",
+          "videos": [
+            {
+              "id": "7a28a02a6b3fc13aa60e9f5e",
+              "label": "示例 4",
+              "url": "/media/7a28a02a6b3fc13aa60e9f5e"
+            },
+            {
+              "id": "d5570818e07b1641be7c3560",
+              "label": "示例 8",
+              "url": "/media/d5570818e07b1641be7c3560"
+            },
+            {
+              "id": "2d736ab95433c5eb017530d9",
+              "label": "示例 12",
+              "url": "/media/2d736ab95433c5eb017530d9"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "圆环圆心 (−0.06, 0) 米、半径0.12–0.20米；杆朝向 −180°～180°",
+          "videos": [
+            {
+              "id": "d7077a37f13e4a5fb498ed66",
+              "label": "示例 1",
+              "url": "/media/d7077a37f13e4a5fb498ed66"
+            },
+            {
+              "id": "757856397228d2d73bf5838f",
+              "label": "示例 4",
+              "url": "/media/757856397228d2d73bf5838f"
+            },
+            {
+              "id": "86c6273686df25a74b91b80a",
+              "label": "示例 7",
+              "url": "/media/86c6273686df25a74b91b80a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "InsertPeg",
+      "name": "插入插销",
+      "note": "不增加中间档位；xhard4 增加1根干扰杆并扩大杆朝向范围，不是要求插入4根杆。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "3根杆；杆朝向 −45°～45°",
+          "videos": [
+            {
+              "id": "bacb0e38ac23b930c1fb8eed",
+              "label": "示例 4",
+              "url": "/media/bacb0e38ac23b930c1fb8eed"
+            },
+            {
+              "id": "53a13572a88972f9d27ddd19",
+              "label": "示例 8",
+              "url": "/media/53a13572a88972f9d27ddd19"
+            },
+            {
+              "id": "5b4978840f7d88b6f6ec04d4",
+              "label": "示例 12",
+              "url": "/media/5b4978840f7d88b6f6ec04d4"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "4根杆（增加1根干扰杆）；杆朝向 −180°～180°",
+          "videos": [
+            {
+              "id": "4c3ea1b1be2f1c392df265fb",
+              "label": "示例 7",
+              "url": "/media/4c3ea1b1be2f1c392df265fb"
+            },
+            {
+              "id": "faeb5be504cf10b84bf189ae",
+              "label": "示例 3",
+              "url": "/media/faeb5be504cf10b84bf189ae"
+            },
+            {
+              "id": "3a4b55236059371c83ad3d11",
+              "label": "示例 5",
+              "url": "/media/3a4b55236059371c83ad3d11"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "StopCube",
+      "name": "停止方块",
+      "note": "不增加中间档位；xhard4 固定采用原版范围中最快的单程60步，并将停止序号延后至6–15。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "单程60、80或120步；停止序号2–5",
+          "videos": [
+            {
+              "id": "a9f66c186f89367b2f2b39cf",
+              "label": "示例 4",
+              "url": "/media/a9f66c186f89367b2f2b39cf"
+            },
+            {
+              "id": "adf86528938c304f7bb903f6",
+              "label": "示例 8",
+              "url": "/media/adf86528938c304f7bb903f6"
+            },
+            {
+              "id": "20e493cf97a70390e6eb6ffa",
+              "label": "示例 12",
+              "url": "/media/20e493cf97a70390e6eb6ffa"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "单程固定60步；停止序号6–15",
+          "videos": [
+            {
+              "id": "774eaecbcf2885cd5d6228f7",
+              "label": "示例 1",
+              "url": "/media/774eaecbcf2885cd5d6228f7"
+            },
+            {
+              "id": "c63d931df736c4b9609fd16a",
+              "label": "示例 4",
+              "url": "/media/c63d931df736c4b9609fd16a"
+            },
+            {
+              "id": "542de503fa28db6c006de1d1",
+              "label": "示例 7",
+              "url": "/media/542de503fa28db6c006de1d1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

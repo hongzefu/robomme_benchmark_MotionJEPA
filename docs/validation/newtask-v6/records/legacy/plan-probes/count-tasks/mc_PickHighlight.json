@@ -1,0 +1,369 @@
+[
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04",
+  "N": 6,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.09965255799593228,
+  "kw": {},
+  "sec": 5.2
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04",
+  "N": 8,
+  "success": 0.9873046875,
+  "wilson_lo": 0.9784007059815509,
+  "fails": {
+   "cube": 13
+  },
+  "min_pair_median": 0.09309933186826136,
+  "kw": {},
+  "sec": 5.6
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04",
+  "N": 9,
+  "success": 0.93359375,
+  "wilson_lo": 0.9166649894275997,
+  "fails": {
+   "cube": 68
+  },
+  "min_pair_median": 0.09066198007722615,
+  "kw": {},
+  "sec": 8.2
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04",
+  "N": 10,
+  "success": 0.7177734375,
+  "wilson_lo": 0.6894314450791867,
+  "fails": {
+   "cube": 289
+  },
+  "min_pair_median": 0.08979096064690513,
+  "kw": {},
+  "sec": 7.1
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04",
+  "N": 11,
+  "success": 0.3984375,
+  "wilson_lo": 0.36888422248555885,
+  "fails": {
+   "cube": 616
+  },
+  "min_pair_median": 0.08864094711434298,
+  "kw": {},
+  "sec": 13.2
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04",
+  "N": 12,
+  "success": 0.1337890625,
+  "wilson_lo": 0.11430076936083489,
+  "fails": {
+   "cube": 887
+  },
+  "min_pair_median": 0.08675319279290972,
+  "kw": {},
+  "sec": 13.0
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04",
+  "N": 13,
+  "success": 0.0244140625,
+  "wilson_lo": 0.016590522319669204,
+  "fails": {
+   "cube": 999
+  },
+  "min_pair_median": 0.08736311801583471,
+  "kw": {},
+  "sec": 13.8
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04",
+  "N": 14,
+  "success": 0.0029296875,
+  "wilson_lo": 0.000996829459082154,
+  "fails": {
+   "cube": 1021
+  },
+  "min_pair_median": 0.08236636008872855,
+  "kw": {},
+  "sec": 8.4
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04 预算1024",
+  "N": 10,
+  "success": 0.9326171875,
+  "wilson_lo": 0.915589540570183,
+  "fails": {
+   "cube": 69
+  },
+  "min_pair_median": 0.08908287912918741,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 32.7
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04 预算1024",
+  "N": 11,
+  "success": 0.7001953125,
+  "wilson_lo": 0.6714265228136899,
+  "fails": {
+   "cube": 307
+  },
+  "min_pair_median": 0.08818797736893161,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 28.2
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04 预算1024",
+  "N": 12,
+  "success": 0.41796875,
+  "wilson_lo": 0.3881202653529089,
+  "fails": {
+   "cube": 596
+  },
+  "min_pair_median": 0.08704649502896306,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 44.7
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04 预算1024",
+  "N": 13,
+  "success": 0.1435546875,
+  "wilson_lo": 0.1234091768364291,
+  "fails": {
+   "cube": 877
+  },
+  "min_pair_median": 0.08608757168584048,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 60.6
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04 预算1024",
+  "N": 14,
+  "success": 0.0234375,
+  "wilson_lo": 0.01579964348131805,
+  "fails": {
+   "cube": 1000
+  },
+  "min_pair_median": 0.08607866911367387,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 76.5
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04 预算1024",
+  "N": 15,
+  "success": 0.0029296875,
+  "wilson_lo": 0.000996829459082154,
+  "fails": {
+   "cube": 1021
+  },
+  "min_pair_median": 0.0872145906862183,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 62.2
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "现值 0.2 gap=0.04 预算1024",
+  "N": 16,
+  "success": 0.0,
+  "wilson_lo": 0.0,
+  "fails": {
+   "cube": 1024
+  },
+  "min_pair_median": null,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 60.0
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04",
+  "N": 10,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.09544918983705386,
+  "kw": {
+   "region_half": 0.25
+  },
+  "sec": 16.3
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04",
+  "N": 12,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.09191641667547812,
+  "kw": {
+   "region_half": 0.25
+  },
+  "sec": 15.7
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04",
+  "N": 14,
+  "success": 0.9775390625,
+  "wilson_lo": 0.9665212187439923,
+  "fails": {
+   "cube": 23
+  },
+  "min_pair_median": 0.08981041855201453,
+  "kw": {
+   "region_half": 0.25
+  },
+  "sec": 27.8
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04",
+  "N": 16,
+  "success": 0.7705078125,
+  "wilson_lo": 0.743769073341107,
+  "fails": {
+   "cube": 235
+  },
+  "min_pair_median": 0.08831810234397754,
+  "kw": {
+   "region_half": 0.25
+  },
+  "sec": 16.1
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04",
+  "N": 18,
+  "success": 0.2685546875,
+  "wilson_lo": 0.2423102253439519,
+  "fails": {
+   "cube": 749
+  },
+  "min_pair_median": 0.08675522540143442,
+  "kw": {
+   "region_half": 0.25
+  },
+  "sec": 26.1
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04",
+  "N": 20,
+  "success": 0.015625,
+  "wilson_lo": 0.009640242424765594,
+  "fails": {
+   "cube": 1008
+  },
+  "min_pair_median": 0.08633002216349642,
+  "kw": {
+   "region_half": 0.25
+  },
+  "sec": 31.3
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04 预算1024",
+  "N": 10,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.09500265041651275,
+  "kw": {
+   "region_half": 0.25,
+   "trials": 1024
+  },
+  "sec": 26.7
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04 预算1024",
+  "N": 12,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.09200600119560129,
+  "kw": {
+   "region_half": 0.25,
+   "trials": 1024
+  },
+  "sec": 36.9
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04 预算1024",
+  "N": 14,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.09004281936436537,
+  "kw": {
+   "region_half": 0.25,
+   "trials": 1024
+  },
+  "sec": 39.2
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04 预算1024",
+  "N": 16,
+  "success": 0.9658203125,
+  "wilson_lo": 0.9528359474502368,
+  "fails": {
+   "cube": 35
+  },
+  "min_pair_median": 0.08798602468384728,
+  "kw": {
+   "region_half": 0.25,
+   "trials": 1024
+  },
+  "sec": 50.5
+ },
+ {
+  "env": "PickHighlight",
+  "variant": "半宽 0.25 gap=0.04 预算1024",
+  "N": 18,
+  "success": 0.6689453125,
+  "wilson_lo": 0.6395370570499643,
+  "fails": {
+   "cube": 339
+  },
+  "min_pair_median": 0.08678085713793743,
+  "kw": {
+   "region_half": 0.25,
+   "trials": 1024
+  },
+  "sec": 62.5
+ }
+]

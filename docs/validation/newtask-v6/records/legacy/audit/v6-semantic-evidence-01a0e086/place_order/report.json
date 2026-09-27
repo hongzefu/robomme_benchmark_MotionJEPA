@@ -1,0 +1,736 @@
+[
+  {
+    "tier": "xhard1",
+    "episode": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed9100001.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the first target it was previously placed on",
+      "watch the video carefully and place the blue cube on the first target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 186,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 332,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 584,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 730,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 921,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1075,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1235,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1523,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard1-ep0.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard1",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed9100302.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the second target it was previously placed on",
+      "watch the video carefully and place the red cube on the second target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 185,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 362,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 540,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 740,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 904,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1168,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1316,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1617,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard1-ep3.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard1",
+    "episode": 6,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed9100600.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the third target it was previously placed on",
+      "watch the video carefully and place the green cube on the third target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 198,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 354,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 529,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 708,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 868,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1149,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1300,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1616,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard1-ep6.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard2",
+    "episode": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed11100001.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the second target it was previously placed on",
+      "watch the video carefully and place the green cube on the second target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 209,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 373,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 673,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 822,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1050,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1210,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1370,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1548,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1885,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard2-ep0.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard2",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed11100304.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the third target it was previously placed on",
+      "watch the video carefully and place the red cube on the third target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 207,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 364,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 647,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 788,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 996,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1154,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1331,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1494,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1800,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard2-ep3.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard2",
+    "episode": 6,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed11100600.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the third target it was previously placed on",
+      "watch the video carefully and place the red cube on the third target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 178,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 342,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 508,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 792,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1007,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1175,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1353,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1543,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1859,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard2-ep6.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard3",
+    "episode": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed13100002.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the first target it was previously placed on",
+      "watch the video carefully and place the green cube on the first target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 182,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 365,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 688,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 847,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1018,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1215,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1374,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1531,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1693,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 2004,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard3-ep0.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard3",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed13100301.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the third target it was previously placed on",
+      "watch the video carefully and place the blue cube on the third target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 204,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 382,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 560,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 734,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 990,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1201,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1373,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1545,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1707,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 2009,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard3-ep3.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard3",
+    "episode": 6,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed13100600.h5",
+    "goal": [
+      "watch the video carefully, then place the blue cube on the first target it was previously placed on",
+      "watch the video carefully and place the blue cube on the first target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 227,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 395,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 559,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 843,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1087,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1251,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1425,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1590,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1768,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 2128,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard3-ep6.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard4",
+    "episode": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_0/hdf5_files/VideoPlaceOrder_ep0_seed7100000.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the fourth target it was previously placed on",
+      "watch the video carefully and place the green cube on the fourth target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 191,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 373,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 547,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 723,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 876,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1060,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1238,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1409,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1706,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1858,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 2165,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard4-ep0.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard4",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed7100301.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the first target it was previously placed on",
+      "watch the video carefully and place the green cube on the first target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 212,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 403,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 581,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 737,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 904,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1091,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1246,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1532,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1717,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1865,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 2167,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard4-ep3.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "xhard4",
+    "episode": 6,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceOrder_episode_6/hdf5_files/VideoPlaceOrder_ep6_seed7100600.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the second target it was previously placed on",
+      "watch the video carefully and place the red cube on the second target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 218,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 375,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 539,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 712,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 872,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 1042,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1204,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1365,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1639,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1805,
+        "name": "put the cube back to its original position"
+      },
+      {
+        "t": 2110,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/xhard4-ep6.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "hard",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_3/hdf5_files/VideoPlaceOrder_ep3_seed11305.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the third target it was previously placed on",
+      "watch the video carefully and place the green cube on the third target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 209,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 361,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 529,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 711,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 1008,
+        "name": "drop the cube onto table"
+      },
+      {
+        "t": 1407,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/hard-ep3.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "hard",
+    "episode": 7,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_7/hdf5_files/VideoPlaceOrder_ep7_seed11705.h5",
+    "goal": [
+      "watch the video carefully, then place the red cube on the second target it was previously placed on",
+      "watch the video carefully and place the red cube on the second target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 195,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 367,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 641,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 814,
+        "name": "drop the cube onto table"
+      },
+      {
+        "t": 1130,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/hard-ep7.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  },
+  {
+    "tier": "hard",
+    "episode": 11,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/VideoPlaceOrder_episode_11/hdf5_files/VideoPlaceOrder_ep11_seed12100.h5",
+    "goal": [
+      "watch the video carefully, then place the green cube on the third target it was previously placed on",
+      "watch the video carefully and place the green cube on the third target where it was placed"
+    ],
+    "frames": [
+      {
+        "t": 193,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 366,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 662,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 821,
+        "name": "drop the cube onto target"
+      },
+      {
+        "t": 992,
+        "name": "drop the cube onto table"
+      },
+      {
+        "t": 1310,
+        "name": "place the cube onto the correct target"
+      }
+    ],
+    "montage": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-evidence-01a0e086/place_order/hard-ep11.jpg",
+    "terminal_complete": true,
+    "visual_review": "逐个放台后帧、回原位后帧、末帧目视未见台外放置；未逐帧验证交换途中"
+  }
+]

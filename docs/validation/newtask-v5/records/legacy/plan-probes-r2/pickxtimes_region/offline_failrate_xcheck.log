@@ -1,0 +1,6 @@
+uniform_exact_8cm_256: fail=0/3000 = 0.0000
+uniform_exact_8cm_1024: fail=0/3000 = 0.0000
+cb0.5_exact_8cm_256: fail=0/3000 = 0.0000
+cb0.5_exact_8cm_1024: fail=0/3000 = 0.0000
+uniform_trimesh_8cm_256: fail=0/3000 = 0.0000
+hw0.25_uniform_exact_8cm_256: fail=0/3000 = 0.0000

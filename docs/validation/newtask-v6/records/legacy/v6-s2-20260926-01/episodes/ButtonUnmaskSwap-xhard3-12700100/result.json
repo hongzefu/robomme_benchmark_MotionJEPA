@@ -1,0 +1,30 @@
+{
+  "id": "ButtonUnmaskSwap-xhard3-12700100",
+  "task": "ButtonUnmaskSwap",
+  "difficulty": "xhard3",
+  "seed": 12700100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/ButtonUnmaskSwap.json",
+  "ok": false,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 5.467,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "ButtonUnmaskSwap",
+      "seed": 12700100,
+      "difficulty": "xhard3",
+      "ok": false,
+      "failure_class": "task",
+      "error_type": "SceneGenerationError",
+      "error": "xhard3 内环可行槽对图不连通（可行槽对 [(0, 3), (1, 2)]），按 V6 S5 拒绝本次布局",
+      "wall_s": 1.5,
+      "timesteps": null
+    }
+  ],
+  "hdf5": [],
+  "videos": []
+}

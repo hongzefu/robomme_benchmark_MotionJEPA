@@ -1,0 +1,256 @@
+PIPELINE_STEP draw start :: -m scripts.parity.v4_specs draw --run-id v5-01 --tasks all --sampling-config scripts/configs/newtask-v5/sampling_config.json --candidates-per-env 10 --max-reset-attempts 30 --workers 8 --out artifacts/newtask-v5/v5-01/draft/drafts.jsonl --gpus 0,1
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+DRAW PickXtimes ep=0 attempt=0 seed=4100000 ok=True 
+DRAW StopCube ep=0 attempt=0 seed=4200000 ok=True 
+DRAW SwingXtimes ep=0 attempt=0 seed=4300000 ok=True 
+DRAW BinFill ep=0 attempt=0 seed=4400000 ok=True 
+DRAW ButtonUnmask ep=0 attempt=0 seed=4800000 ok=True 
+DRAW ButtonUnmaskSwap ep=0 attempt=0 seed=4700000 ok=True 
+DRAW VideoUnmask ep=0 attempt=0 seed=4600000 ok=True 
+DRAW VideoUnmaskSwap ep=0 attempt=0 seed=4500000 ok=True 
+DRAW StopCube ep=1 attempt=0 seed=4200100 ok=True 
+DRAW PickXtimes ep=1 attempt=0 seed=4100100 ok=True 
+DRAW BinFill ep=1 attempt=0 seed=4400100 ok=True 
+DRAW SwingXtimes ep=1 attempt=0 seed=4300100 ok=True 
+DRAW ButtonUnmaskSwap ep=1 attempt=0 seed=4700100 ok=True 
+DRAW ButtonUnmask ep=1 attempt=0 seed=4800100 ok=True 
+DRAW VideoUnmask ep=1 attempt=0 seed=4600100 ok=True 
+DRAW VideoUnmaskSwap ep=1 attempt=0 seed=4500100 ok=True 
+DRAW PickXtimes ep=2 attempt=0 seed=4100200 ok=True 
+DRAW StopCube ep=2 attempt=0 seed=4200200 ok=True 
+DRAW BinFill ep=2 attempt=0 seed=4400200 ok=True 
+DRAW SwingXtimes ep=2 attempt=0 seed=4300200 ok=True 
+DRAW VideoUnmask ep=2 attempt=0 seed=4600200 ok=True 
+DRAW ButtonUnmask ep=2 attempt=0 seed=4800200 ok=True 
+DRAW ButtonUnmaskSwap ep=2 attempt=0 seed=4700200 ok=True 
+DRAW VideoUnmaskSwap ep=2 attempt=0 seed=4500200 ok=True 
+DRAW PickXtimes ep=3 attempt=0 seed=4100300 ok=True 
+DRAW StopCube ep=3 attempt=0 seed=4200300 ok=True 
+DRAW BinFill ep=3 attempt=0 seed=4400300 ok=True 
+DRAW SwingXtimes ep=3 attempt=0 seed=4300300 ok=True 
+DRAW VideoUnmaskSwap ep=3 attempt=0 seed=4500300 ok=False SceneGenerationError
+DRAW VideoUnmask ep=3 attempt=0 seed=4600300 ok=True 
+DRAW ButtonUnmask ep=3 attempt=0 seed=4800300 ok=True 
+DRAW ButtonUnmaskSwap ep=3 attempt=0 seed=4700300 ok=True 
+DRAW PickXtimes ep=4 attempt=0 seed=4100400 ok=True 
+DRAW StopCube ep=4 attempt=0 seed=4200400 ok=True 
+DRAW BinFill ep=4 attempt=0 seed=4400400 ok=True 
+DRAW SwingXtimes ep=4 attempt=0 seed=4300400 ok=True 
+DRAW VideoUnmask ep=4 attempt=0 seed=4600400 ok=True 
+DRAW ButtonUnmask ep=4 attempt=0 seed=4800400 ok=True 
+DRAW VideoUnmaskSwap ep=3 attempt=1 seed=4500301 ok=True 
+DRAW PickXtimes ep=5 attempt=0 seed=4100500 ok=True 
+DRAW ButtonUnmaskSwap ep=4 attempt=0 seed=4700400 ok=True 
+DRAW BinFill ep=5 attempt=0 seed=4400500 ok=True 
+DRAW StopCube ep=5 attempt=0 seed=4200500 ok=True 
+DRAW SwingXtimes ep=5 attempt=0 seed=4300500 ok=True 
+DRAW VideoUnmask ep=5 attempt=0 seed=4600500 ok=True 
+DRAW ButtonUnmaskSwap ep=5 attempt=0 seed=4700500 ok=False SceneGenerationError
+DRAW ButtonUnmask ep=5 attempt=0 seed=4800500 ok=True 
+DRAW VideoUnmaskSwap ep=4 attempt=0 seed=4500400 ok=True 
+DRAW PickXtimes ep=6 attempt=0 seed=4100600 ok=True 
+DRAW StopCube ep=6 attempt=0 seed=4200600 ok=True 
+DRAW BinFill ep=6 attempt=0 seed=4400600 ok=True 
+DRAW SwingXtimes ep=6 attempt=0 seed=4300600 ok=True 
+DRAW ButtonUnmask ep=6 attempt=0 seed=4800600 ok=True 
+DRAW VideoUnmask ep=6 attempt=0 seed=4600600 ok=True 
+DRAW VideoUnmaskSwap ep=5 attempt=0 seed=4500500 ok=True 
+DRAW PickXtimes ep=7 attempt=0 seed=4100700 ok=True 
+DRAW ButtonUnmaskSwap ep=5 attempt=1 seed=4700501 ok=True 
+DRAW BinFill ep=7 attempt=0 seed=4400700 ok=True 
+DRAW StopCube ep=7 attempt=0 seed=4200700 ok=True 
+DRAW SwingXtimes ep=7 attempt=0 seed=4300700 ok=True 
+DRAW VideoUnmask ep=7 attempt=0 seed=4600700 ok=True 
+DRAW ButtonUnmask ep=7 attempt=0 seed=4800700 ok=True 
+DRAW VideoUnmaskSwap ep=6 attempt=0 seed=4500600 ok=True 
+DRAW PickXtimes ep=8 attempt=0 seed=4100800 ok=True 
+DRAW BinFill ep=8 attempt=0 seed=4400800 ok=True 
+DRAW StopCube ep=8 attempt=0 seed=4200800 ok=True 
+DRAW SwingXtimes ep=8 attempt=0 seed=4300800 ok=True 
+DRAW ButtonUnmaskSwap ep=6 attempt=0 seed=4700600 ok=True 
+DRAW VideoUnmask ep=8 attempt=0 seed=4600800 ok=True 
+DRAW ButtonUnmask ep=8 attempt=0 seed=4800800 ok=True 
+DRAW VideoUnmaskSwap ep=7 attempt=0 seed=4500700 ok=True 
+DRAW PickXtimes ep=9 attempt=0 seed=4100900 ok=True 
+DRAW_TASK PickXtimes ok=10 attempted=10 shortfall=0
+DRAW BinFill ep=9 attempt=0 seed=4400900 ok=True 
+DRAW_TASK BinFill ok=10 attempted=10 shortfall=0
+DRAW StopCube ep=9 attempt=0 seed=4200900 ok=True 
+DRAW_TASK StopCube ok=10 attempted=10 shortfall=0
+DRAW SwingXtimes ep=9 attempt=0 seed=4300900 ok=True 
+DRAW_TASK SwingXtimes ok=10 attempted=10 shortfall=0
+DRAW VideoRepick ep=0 attempt=0 seed=4900000 ok=False SceneGenerationError
+DRAW ButtonUnmaskSwap ep=7 attempt=0 seed=4700700 ok=True 
+DRAW VideoUnmask ep=9 attempt=0 seed=4600900 ok=True 
+DRAW_TASK VideoUnmask ok=10 attempted=10 shortfall=0
+DRAW ButtonUnmask ep=9 attempt=0 seed=4800900 ok=True 
+DRAW_TASK ButtonUnmask ok=10 attempted=10 shortfall=0
+DRAW VideoUnmaskSwap ep=8 attempt=0 seed=4500800 ok=True 
+DRAW VideoPlaceOrder ep=0 attempt=0 seed=5100000 ok=False SceneGenerationError
+DRAW VideoPlaceButton ep=0 attempt=0 seed=5000000 ok=True 
+DRAW PickHighlight ep=0 attempt=0 seed=5200000 ok=True 
+DRAW ButtonUnmaskSwap ep=8 attempt=0 seed=4700800 ok=False SceneGenerationError
+DRAW VideoRepick ep=0 attempt=1 seed=4900001 ok=True 
+DRAW VideoPlaceOrder ep=0 attempt=1 seed=5100001 ok=False SceneGenerationError
+DRAW InsertPeg ep=0 attempt=0 seed=5300000 ok=True 
+DRAW MoveCube ep=0 attempt=0 seed=5400000 ok=True 
+DRAW VideoUnmaskSwap ep=9 attempt=0 seed=4500900 ok=True 
+DRAW_TASK VideoUnmaskSwap ok=10 attempted=11 shortfall=0
+DRAW PickHighlight ep=1 attempt=0 seed=5200100 ok=True 
+DRAW VideoPlaceOrder ep=0 attempt=2 seed=5100002 ok=False SceneGenerationError
+DRAW VideoPlaceButton ep=1 attempt=0 seed=5000100 ok=True 
+DRAW VideoRepick ep=1 attempt=0 seed=4900100 ok=True 
+DRAW InsertPeg ep=1 attempt=0 seed=5300100 ok=True 
+DRAW ButtonUnmaskSwap ep=8 attempt=1 seed=4700801 ok=True 
+DRAW MoveCube ep=1 attempt=0 seed=5400100 ok=True 
+DRAW PickHighlight ep=2 attempt=0 seed=5200200 ok=True 
+DRAW VideoPlaceOrder ep=0 attempt=3 seed=5100003 ok=True 
+DRAW PatternLock ep=0 attempt=0 seed=5500000 ok=True 
+DRAW VideoPlaceButton ep=2 attempt=0 seed=5000200 ok=True 
+DRAW VideoRepick ep=2 attempt=0 seed=4900200 ok=True 
+DRAW InsertPeg ep=2 attempt=0 seed=5300200 ok=True 
+DRAW ButtonUnmaskSwap ep=9 attempt=0 seed=4700900 ok=True 
+DRAW_TASK ButtonUnmaskSwap ok=10 attempted=12 shortfall=0
+DRAW MoveCube ep=2 attempt=0 seed=5400200 ok=True 
+DRAW PickHighlight ep=3 attempt=0 seed=5200300 ok=True 
+DRAW VideoPlaceOrder ep=1 attempt=0 seed=5100100 ok=False SceneGenerationError
+DRAW VideoPlaceButton ep=3 attempt=0 seed=5000300 ok=False SceneGenerationError
+DRAW VideoRepick ep=3 attempt=0 seed=4900300 ok=True 
+DRAW VideoPlaceButton ep=3 attempt=1 seed=5000301 ok=False SceneGenerationError
+DRAW PickHighlight ep=4 attempt=0 seed=5200400 ok=False SceneGenerationError
+DRAW InsertPeg ep=3 attempt=0 seed=5300300 ok=True 
+DRAW MoveCube ep=3 attempt=0 seed=5400300 ok=True 
+DRAW PatternLock ep=1 attempt=0 seed=5500100 ok=True 
+DRAW RouteStick ep=0 attempt=0 seed=5600000 ok=True 
+DRAW VideoPlaceOrder ep=1 attempt=1 seed=5100101 ok=True 
+DRAW VideoRepick ep=4 attempt=0 seed=4900400 ok=True 
+DRAW PickHighlight ep=4 attempt=1 seed=5200401 ok=False SceneGenerationError
+DRAW VideoPlaceButton ep=3 attempt=2 seed=5000302 ok=True 
+DRAW InsertPeg ep=4 attempt=0 seed=5300400 ok=True 
+DRAW MoveCube ep=4 attempt=0 seed=5400400 ok=True 
+DRAW VideoPlaceOrder ep=2 attempt=0 seed=5100200 ok=False SceneGenerationError
+DRAW VideoRepick ep=5 attempt=0 seed=4900500 ok=False SceneGenerationError
+DRAW RouteStick ep=1 attempt=0 seed=5600100 ok=True 
+DRAW PatternLock ep=2 attempt=0 seed=5500200 ok=True 
+DRAW PickHighlight ep=4 attempt=2 seed=5200402 ok=True 
+DRAW VideoPlaceButton ep=4 attempt=0 seed=5000400 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=2 attempt=1 seed=5100201 ok=False SceneGenerationError
+DRAW VideoRepick ep=5 attempt=1 seed=4900501 ok=False SceneGenerationError
+DRAW InsertPeg ep=5 attempt=0 seed=5300500 ok=True 
+DRAW MoveCube ep=5 attempt=0 seed=5400500 ok=True 
+DRAW VideoPlaceButton ep=4 attempt=1 seed=5000401 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=2 attempt=2 seed=5100202 ok=False SceneGenerationError
+DRAW PickHighlight ep=5 attempt=0 seed=5200500 ok=True 
+DRAW RouteStick ep=2 attempt=0 seed=5600200 ok=True 
+DRAW VideoRepick ep=5 attempt=2 seed=4900502 ok=True 
+DRAW PatternLock ep=3 attempt=0 seed=5500300 ok=True 
+DRAW VideoPlaceOrder ep=2 attempt=3 seed=5100203 ok=False SceneGenerationError
+DRAW InsertPeg ep=6 attempt=0 seed=5300600 ok=True 
+DRAW MoveCube ep=6 attempt=0 seed=5400600 ok=True 
+DRAW VideoPlaceButton ep=4 attempt=2 seed=5000402 ok=True 
+DRAW PickHighlight ep=6 attempt=0 seed=5200600 ok=True 
+DRAW VideoRepick ep=6 attempt=0 seed=4900600 ok=False SceneGenerationError
+DRAW RouteStick ep=3 attempt=0 seed=5600300 ok=True 
+DRAW VideoPlaceButton ep=5 attempt=0 seed=5000500 ok=False SceneGenerationError
+DRAW InsertPeg ep=7 attempt=0 seed=5300700 ok=True 
+DRAW VideoPlaceOrder ep=2 attempt=4 seed=5100204 ok=True 
+DRAW MoveCube ep=7 attempt=0 seed=5400700 ok=True 
+DRAW PickHighlight ep=7 attempt=0 seed=5200700 ok=True 
+DRAW PatternLock ep=4 attempt=0 seed=5500400 ok=True 
+DRAW VideoRepick ep=6 attempt=1 seed=4900601 ok=True 
+DRAW RouteStick ep=4 attempt=0 seed=5600400 ok=True 
+DRAW VideoPlaceOrder ep=3 attempt=0 seed=5100300 ok=False SceneGenerationError
+DRAW VideoPlaceButton ep=5 attempt=1 seed=5000501 ok=True 
+DRAW InsertPeg ep=8 attempt=0 seed=5300800 ok=True 
+DRAW MoveCube ep=8 attempt=0 seed=5400800 ok=True 
+DRAW VideoPlaceOrder ep=3 attempt=1 seed=5100301 ok=False SceneGenerationError
+DRAW PickHighlight ep=8 attempt=0 seed=5200800 ok=True 
+DRAW VideoRepick ep=7 attempt=0 seed=4900700 ok=True 
+DRAW VideoPlaceButton ep=6 attempt=0 seed=5000600 ok=False SceneGenerationError
+DRAW PatternLock ep=5 attempt=0 seed=5500500 ok=True 
+DRAW RouteStick ep=5 attempt=0 seed=5600500 ok=True 
+DRAW VideoPlaceOrder ep=3 attempt=2 seed=5100302 ok=False SceneGenerationError
+DRAW InsertPeg ep=9 attempt=0 seed=5300900 ok=True 
+DRAW_TASK InsertPeg ok=10 attempted=10 shortfall=0
+DRAW MoveCube ep=9 attempt=0 seed=5400900 ok=True 
+DRAW_TASK MoveCube ok=10 attempted=10 shortfall=0
+DRAW PickHighlight ep=9 attempt=0 seed=5200900 ok=True 
+DRAW_TASK PickHighlight ok=10 attempted=12 shortfall=0
+DRAW VideoRepick ep=8 attempt=0 seed=4900800 ok=True 
+DRAW VideoPlaceButton ep=6 attempt=1 seed=5000601 ok=True 
+DRAW RouteStick ep=6 attempt=0 seed=5600600 ok=True 
+DRAW VideoPlaceOrder ep=3 attempt=3 seed=5100303 ok=True 
+DRAW PatternLock ep=6 attempt=0 seed=5500600 ok=True 
+DRAW VideoRepick ep=9 attempt=0 seed=4900900 ok=True 
+DRAW_TASK VideoRepick ok=10 attempted=14 shortfall=0
+DRAW VideoPlaceButton ep=7 attempt=0 seed=5000700 ok=True 
+DRAW RouteStick ep=7 attempt=0 seed=5600700 ok=True 
+DRAW VideoPlaceOrder ep=4 attempt=0 seed=5100400 ok=True 
+DRAW PatternLock ep=7 attempt=0 seed=5500700 ok=True 
+DRAW VideoPlaceButton ep=8 attempt=0 seed=5000800 ok=True 
+DRAW RouteStick ep=8 attempt=0 seed=5600800 ok=True 
+DRAW VideoPlaceOrder ep=5 attempt=0 seed=5100500 ok=True 
+DRAW VideoPlaceButton ep=9 attempt=0 seed=5000900 ok=True 
+DRAW_TASK VideoPlaceButton ok=10 attempted=16 shortfall=0
+DRAW PatternLock ep=8 attempt=0 seed=5500800 ok=True 
+DRAW RouteStick ep=9 attempt=0 seed=5600900 ok=True 
+DRAW_TASK RouteStick ok=10 attempted=10 shortfall=0
+DRAW VideoPlaceOrder ep=6 attempt=0 seed=5100600 ok=True 
+DRAW VideoPlaceOrder ep=7 attempt=0 seed=5100700 ok=False SceneGenerationError
+DRAW PatternLock ep=9 attempt=0 seed=5500900 ok=True 
+DRAW_TASK PatternLock ok=10 attempted=10 shortfall=0
+DRAW VideoPlaceOrder ep=7 attempt=1 seed=5100701 ok=True 
+DRAW VideoPlaceOrder ep=8 attempt=0 seed=5100800 ok=False SceneGenerationError
+DRAW VideoPlaceOrder ep=8 attempt=1 seed=5100801 ok=True 
+DRAW VideoPlaceOrder ep=9 attempt=0 seed=5100900 ok=True 
+DRAW_TASK VideoPlaceOrder ok=10 attempted=23 shortfall=0
+DRAW_DONE rows=188 ok=160 out=artifacts/newtask-v5/v5-01/draft/drafts.jsonl
+PIPELINE_STEP draw done
+PIPELINE_STEP freeze start :: -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl --sampling-config scripts/configs/newtask-v5/sampling_config.json --select 0,3,6 --candidates-per-env 10 --out scripts/configs/newtask-v5/v5-01/specs.jsonl
+FREEZE_DONE rows=160 selected=48 envs=16 candidate_shortfall=0 out=scripts/configs/newtask-v5/v5-01/specs.jsonl
+PIPELINE_STEP freeze done
+PIPELINE_STEP run start :: -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v5/v5-01/specs.jsonl --label run1 --tasks all --official-root artifacts/train-parity/local-smoke-01/official-src --workers 8 --gpu 0 --output artifacts/newtask-v5/v5-01/rollout
+ROUND 0 jobs=48 ok=46 wall_s=749
+ROUND 1 jobs=1 ok=1 wall_s=67
+ROUND 2 jobs=1 ok=0 wall_s=74
+ROUND 3 jobs=1 ok=0 wall_s=86
+ROUND 4 jobs=1 ok=1 wall_s=65
+ROLLOUT_DONE label=run1 rollout_attempted=52 rollout_ok=48 backfilled=2 selected_shortfall=0
+PIPELINE_STEP run done
+PIPELINE_STEP report start :: -m scripts.parity.v5_generation report --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl --specs scripts/configs/newtask-v5/v5-01/specs.jsonl --rollout artifacts/newtask-v5/v5-01/rollout/run1 --candidates-per-env 10 --out artifacts/newtask-v5/v5-01/report
+V5_GENERATION=REPORT tasks=16 draft_ok=160 rollout_ok=48 backfilled=2 selected_shortfall=0 demo_frames_out_of_band=0 outer_swap_mismatch=0 bin_collision=0 vr_min_participants=6
+# 报告：artifacts/newtask-v5/v5-01/report/generation_report.md、artifacts/newtask-v5/v5-01/report/generation_report.json
+PIPELINE_STEP report done
+PIPELINE_DONE run_id=v5-01 report=artifacts/newtask-v5/v5-01/report/generation_report.md
+EXIT_CODE=0

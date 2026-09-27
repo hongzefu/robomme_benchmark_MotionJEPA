@@ -1,0 +1,35 @@
+{
+  "id": "PickHighlight-xhard4-7200000",
+  "task": "PickHighlight",
+  "difficulty": "xhard4",
+  "seed": 7200000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickHighlight.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 73.875,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "PickHighlight",
+      "seed": 7200000,
+      "difficulty": "xhard4",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 69.3,
+      "timesteps": 1256
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickHighlight-xhard4-7200000/hdf5_files/PickHighlight_ep9_seed7200000.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickHighlight-xhard4-7200000/videos/PickHighlight_ep9_seed7200000_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4",
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickHighlight-xhard4-7200000/videos/success_NO_OBJECT_PickHighlight_ep9_seed7200000_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ]
+}

@@ -1,0 +1,1409 @@
+[
+ {
+  "tier": "xhard1",
+  "seed": 8500000,
+  "episode": 0,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "cyan": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "cyan": 1,
+   "yellow": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "red",
+    "start": 264,
+    "end": 365,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      159,
+      95,
+      133
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 414,
+    "end": 503,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      139,
+      129,
+      95
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard1",
+  "seed": 8500300,
+  "episode": 3,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "cyan": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "cyan": 1,
+   "yellow": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 264,
+    "end": 369,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      162,
+      93,
+      134
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 418,
+    "end": 513,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      145,
+      144,
+      65
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard1",
+  "seed": 8500601,
+  "episode": 6,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "magenta": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "magenta": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 264,
+    "end": 360,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      139,
+      133,
+      142
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 402,
+    "end": 488,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      106,
+      101,
+      127
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500000,
+  "episode": 0,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 300,
+    "end": 403,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      84,
+      94,
+      129
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 451,
+    "end": 551,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      119,
+      136,
+      132
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 593,
+    "end": 706,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      121,
+      70,
+      96
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500300,
+  "episode": 3,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "magenta": 1,
+   "yellow": 1,
+   "cyan": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 300,
+    "end": 405,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      99,
+      118,
+      155
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 453,
+    "end": 554,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      148,
+      79,
+      110
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 607,
+    "end": 688,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      120,
+      77,
+      96
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard2",
+  "seed": 10500600,
+  "episode": 6,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "magenta": 1,
+   "yellow": 1,
+   "cyan": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "red",
+    "start": 300,
+    "end": 400,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      136,
+      143,
+      111
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 442,
+    "end": 555,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      124,
+      82,
+      114
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "blue",
+    "start": 608,
+    "end": 699,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      104,
+      119,
+      98
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500000,
+  "episode": 0,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 2,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 2,
+   "magenta": 1,
+   "cyan": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "green",
+    "start": 366,
+    "end": 474,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      158,
+      105,
+      138
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "blue",
+    "start": 526,
+    "end": 643,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      86,
+      89,
+      126
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 693,
+    "end": 775,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      122,
+      76,
+      106
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500300,
+  "episode": 3,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "cyan": 1,
+   "magenta": 2
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "magenta": 2,
+   "cyan": 1,
+   "yellow": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "green",
+    "start": 330,
+    "end": 456,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      127,
+      73,
+      96
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 507,
+    "end": 615,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      132,
+      135,
+      130
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "blue",
+    "start": 657,
+    "end": 749,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      101,
+      95,
+      129
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard3",
+  "seed": 12500600,
+  "episode": 6,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 2,
+   "cyan": 1,
+   "magenta": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 2,
+   "magenta": 1,
+   "cyan": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "red",
+    "start": 330,
+    "end": 445,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      114,
+      77,
+      103
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "blue",
+    "start": 495,
+    "end": 605,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      139,
+      124,
+      141
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 654,
+    "end": 732,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      96,
+      103,
+      129
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500000,
+  "episode": 0,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 1,
+   "cyan": 2,
+   "magenta": 2
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "magenta": 2,
+   "cyan": 2,
+   "yellow": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 432,
+    "end": 535,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      164,
+      94,
+      133
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 584,
+    "end": 679,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      99,
+      87,
+      117
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 732,
+    "end": 829,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      138,
+      70,
+      95
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500300,
+  "episode": 3,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 2,
+   "cyan": 2,
+   "magenta": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 2,
+   "cyan": 2,
+   "magenta": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "green",
+    "start": 432,
+    "end": 533,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      90,
+      108,
+      145
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 585,
+    "end": 684,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      119,
+      81,
+      106
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "blue",
+    "start": 737,
+    "end": 818,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      144,
+      94,
+      125
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "xhard4",
+  "seed": 6500601,
+  "episode": 6,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 2,
+   "cyan": 2,
+   "magenta": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1,
+   "yellow": 2,
+   "cyan": 2,
+   "magenta": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 462,
+    "end": 563,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      152,
+      144,
+      132
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 605,
+    "end": 705,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      109,
+      110,
+      141
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 757,
+    "end": 855,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      158,
+      90,
+      127
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "easy",
+  "seed": 5000,
+  "episode": 0,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "green",
+    "start": 168,
+    "end": 318,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      139,
+      103,
+      115
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "easy",
+  "seed": 5100,
+  "episode": 1,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 168,
+    "end": 318,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      116,
+      107,
+      127
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "medium",
+  "seed": 6000,
+  "episode": 10,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 114,
+    "end": 210,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      93,
+      111,
+      142
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "hard",
+  "seed": 6100,
+  "episode": 11,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "green",
+    "start": 168,
+    "end": 266,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      142,
+      142,
+      121
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 308,
+    "end": 398,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      80,
+      124,
+      157
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "medium",
+  "seed": 5200,
+  "episode": 2,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "green",
+    "start": 114,
+    "end": 264,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      158,
+      106,
+      140
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "hard",
+  "seed": 5300,
+  "episode": 3,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 216,
+    "end": 332,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      162,
+      86,
+      119
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "red",
+    "start": 385,
+    "end": 579,
+    "start_counts": {},
+    "end_counts": {
+     "red": 1
+    },
+    "newly_visible": [
+     "red"
+    ],
+    "named_blob_end": [
+     [
+      141,
+      148,
+      33
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "easy",
+  "seed": 5400,
+  "episode": 4,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "green",
+    "start": 168,
+    "end": 357,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      132,
+      101,
+      109
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "medium",
+  "seed": 5600,
+  "episode": 6,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "green",
+    "start": 168,
+    "end": 266,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      101,
+      85,
+      117
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ },
+ {
+  "tier": "hard",
+  "seed": 5700,
+  "episode": 7,
+  "t5": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t50": {},
+  "demo_last": {},
+  "t5_expected": {
+   "red": 1,
+   "green": 1,
+   "blue": 1
+  },
+  "t5_ok": true,
+  "picks": [
+   {
+    "color": "blue",
+    "start": 168,
+    "end": 272,
+    "start_counts": {},
+    "end_counts": {
+     "blue": 1
+    },
+    "newly_visible": [
+     "blue"
+    ],
+    "named_blob_end": [
+     [
+      161,
+      121,
+      152
+     ]
+    ],
+    "ok": true
+   },
+   {
+    "color": "green",
+    "start": 321,
+    "end": 413,
+    "start_counts": {},
+    "end_counts": {
+     "green": 1
+    },
+    "newly_visible": [
+     "green"
+    ],
+    "named_blob_end": [
+     [
+      103,
+      91,
+      126
+     ]
+    ],
+    "ok": true
+   }
+  ],
+  "all_picks_ok": true
+ }
+]

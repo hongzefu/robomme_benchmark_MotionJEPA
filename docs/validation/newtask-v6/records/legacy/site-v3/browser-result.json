@@ -1,0 +1,122 @@
+{
+  "status": "PASS",
+  "tasks": [
+    {
+      "task": "BinFill",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "PickXtimes",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "SwingXtimes",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "PickHighlight",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "VideoUnmask",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "ButtonUnmask",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "VideoRepick",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "PatternLock",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "RouteStick",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "VideoPlaceButton",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "cards": 5,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "MoveCube",
+      "cards": 2,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "InsertPeg",
+      "cards": 2,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    },
+    {
+      "task": "StopCube",
+      "cards": 2,
+      "play": true,
+      "seek": true,
+      "sample_switch": true
+    }
+  ],
+  "cards": 71,
+  "page_errors": [],
+  "mobile_navigation": true,
+  "search": true,
+  "no_table": true
+}

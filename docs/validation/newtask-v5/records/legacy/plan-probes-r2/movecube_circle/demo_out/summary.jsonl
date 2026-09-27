@@ -1,0 +1,24 @@
+{"seed": 5400000, "way": "gripper_push", "model_redraw": 1, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 481, "wall_s": 22.6}
+{"seed": 5400100, "way": "grasp_putdown", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 261, "wall_s": 12.8}
+{"seed": 5400200, "way": "peg_push", "model_redraw": 2, "ok": false, "failure_class": "task", "error_type": "PlannerExhausted", "error": "screw 三次与 RRTStar 三次均失败: screw plan failed", "timestep_count": null, "wall_s": 21.8}
+{"seed": 5400300, "way": "gripper_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 281, "wall_s": 13.3}
+{"seed": 5400400, "way": "grasp_putdown", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 657, "wall_s": 28.7}
+{"seed": 5400500, "way": "peg_push", "model_redraw": 0, "ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "MoveCube/episode_5: 跑完整个 task_list 仍未成功", "timestep_count": null, "wall_s": 13.3}
+{"seed": 5400600, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 486, "wall_s": 25.9}
+{"seed": 5400700, "way": "grasp_putdown", "model_redraw": 3, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 429, "wall_s": 23.7}
+{"seed": 5400800, "way": "peg_push", "model_redraw": 5, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 432, "wall_s": 18.8}
+{"seed": 5400900, "way": "gripper_push", "model_redraw": 1, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 263, "wall_s": 12.1}
+{"seed": 5400001, "way": "grasp_putdown", "model_redraw": 4, "ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "MoveCube/episode_10: 跑完整个 task_list 仍未成功", "timestep_count": null, "wall_s": 23.2}
+{"seed": 5400005, "way": "gripper_push", "model_redraw": 1, "ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "MoveCube/episode_11: 跑完整个 task_list 仍未成功", "timestep_count": null, "wall_s": 12.5}
+{"R": 0.05, "seed": 5400002, "way": "grasp_putdown", "model_redraw": 7, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 489, "wall_s": 22.1}
+{"R": 0.05, "seed": 5400003, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 440, "wall_s": 19.4}
+{"R": 0.05, "seed": 5400004, "way": "peg_push", "model_redraw": 2, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 456, "wall_s": 21.2}
+{"R": 0.05, "seed": 5400006, "way": "peg_push", "model_redraw": 2, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 448, "wall_s": 19.5}
+{"R": 0.05, "seed": 5400007, "way": "gripper_push", "model_redraw": 1, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 439, "wall_s": 18.7}
+{"R": 0.05, "seed": 5400008, "way": "grasp_putdown", "model_redraw": 3, "ok": false, "failure_class": "task", "error_type": "PlannerExhausted", "error": "screw 三次与 RRTStar 三次均失败: screw plan failed", "timestep_count": null, "wall_s": 12.5}
+{"R": 0.05, "seed": 5400009, "way": "peg_push", "model_redraw": 1, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 262, "wall_s": 12.4}
+{"R": 0.05, "seed": 5400010, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 942, "wall_s": 40.3}
+{"R": 0.05, "seed": 5400011, "way": "peg_push", "model_redraw": 1, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 257, "wall_s": 13.1}
+{"R": 0.05, "seed": 5400012, "way": "peg_push", "model_redraw": 1, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 433, "wall_s": 18.9}
+{"R": 0.05, "seed": 5400013, "way": "gripper_push", "model_redraw": 2, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 441, "wall_s": 19.7}
+{"R": 0.05, "seed": 5400014, "way": "gripper_push", "model_redraw": 4, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 246, "wall_s": 30.5}

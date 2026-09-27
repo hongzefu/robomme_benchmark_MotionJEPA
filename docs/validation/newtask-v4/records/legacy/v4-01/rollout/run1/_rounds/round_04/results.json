@@ -1,0 +1,33 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src",
+  "src_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask",
+  "official_module": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/src/robomme/__init__.py",
+  "removed_sys_path_entries": [],
+  "workers": 12,
+  "gpu": "0",
+  "sampling_config": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/_rounds/round_04/sampling.json",
+  "episode_specs": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/_rounds/round_04/specs.json",
+  "worker": "train_split_worker.run_one",
+  "elapsed_seconds": 227.93,
+  "results": [
+    {
+      "task": "InsertPeg",
+      "episode": 5,
+      "seed": 5300500,
+      "difficulty": "xhard",
+      "gpu": "0",
+      "recovery_mode": "xy",
+      "attempt_count": 1,
+      "inputs": {
+        "sampling_config_sha256": "31073efb40d07d367bc1751e38084503ae1ac9f328e13722fd4fbc7782975221",
+        "episode_spec_sha256": "0cb2be6fbb9ff1028de2232e165c12e99338b7aba0257b06d0f5a51c9adaa74e",
+        "spec_mode": "replay"
+      },
+      "ok": true,
+      "raw_h5_path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v4/v4-01/rollout/run1/episodes/InsertPeg_episode_5/hdf5_files/InsertPeg_ep5_seed5300500.h5",
+      "timestep_count": 556
+    }
+  ]
+}

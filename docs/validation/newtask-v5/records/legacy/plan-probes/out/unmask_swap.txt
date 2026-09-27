@@ -1,0 +1,451 @@
+- marker: [内部产出，英文] 以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。
+- topic_key: unmask_swap
+- summary: Inner partner rule, answering the user's "最近2邻？": the inner swap partner is the single nearest other inner bin, measured by Euclidean distance on 2 axes (x,y). It is not "the 2 nearest neighbours". The only "2 nearest" code is the helper pair _compute_dynamic_swap_candidates / _select_swap_pair_from_positions, and nothing calls it (dead code in VideoUnmaskSwap, ButtonUnmaskSwap and VideoRepick). Initiators are a fixed a,b,c,a,b,c rotation taken from two main-stream draws. Each partner is resolved lazily at the first step of its window from actual poses. Hidden cubes do not travel with their bins: they are teleported away for the whole swap span and re-placed under their bin's final XY at the last swap end. A pure numpy/torch replica of the sampling was checked value-for-value against all 20 frozen V4 spec rows (20/20 exact). The same replica reproduces all 8 observed runtime BinCollisionErrors (1 in the rollout, 7 in V6). All 8 are an inner swap path hitting a third, static inner bin; none involves a distractor. Over 300 synthetic layouts per env, 1.3% of VUS and 10.7% of BUS episodes have such an inner-vs-inner collision that V4 never checks at reset. Making the outer bins swap by copying the rule literally (3 distractors in the V4 ring, nearest-neighbour partner, same two-lane path) mostly fails. The median path length is 0.46-0.49 m, so paths cross the inner area. Only 31% (VUS) and 29% (BUS) of episodes are collision-free and stay in camera view, and in BUS 38% of outer swap windows (787/2084) pass within the button keep-out circle. The recommended V5 design mirrors the inner rule exactly (same window, nearest-neighbour partner among distractors, the same swap_flat_two_lane path, cubes follow their bins). It is planned at reset on the existing dedicated distractor RNG stream with one appended randperm. If a window's first choice fails, the planner deterministically tries the next initiator in the permutation, and it redraws the whole distractor layout only as a last resort. Every window is certified by a joint 2-pair continuous-sweep proof, which reuses the repo's _prove_pair unchanged (scratch generalisation matches check_swap_sweep 15/15). With 6 distractors in the V4 ring, the first layout attempt is fully feasible for 99.0% (VUS) and 96.7% (BUS) of episodes under the strict criterion; with 10 distractors both reach 100%. The design adds zero control steps. Without a cheap certified pre-filter, it roughly doubles the per-window collision-check wall-clock (0.8-1.8 s vs 0.4-0.9 s now); with the pre-filter it drops to 3-55 ms. easy/medium/hard are untouched, and the xhard main RNG stream is unchanged.
+## current_mechanism
+  [0]
+    - env: VideoUnmaskSwap
+    - anchor: src/robomme/robomme_env/VideoUnmaskSwap.py :: VideoUnmaskSwap.__init__ / config_xhard / NATIVE_SAMPLING.parameters.configs
+    - behavior: n_swaps = torch.randint(swap_min, swap_max+1) on a constructor-local torch.Generator(seed) (first draw), then n_picks. xhard config_xhard = {bin 4, swap [8,12], pick [3,3]} read from native parameters.configs (decision.swap_count_range is a dead key here). Recorded as objects.n_swaps / objects.n_picks.
+  [1]
+    - env: ButtonUnmaskSwap
+    - anchor: src/robomme/robomme_env/ButtonUnmaskSwap.py :: ButtonUnmaskSwap.__init__ / decision.swap_count_range
+    - behavior: n_swaps = randint over decision.swap_count_range[difficulty] (xhard [6,8]) on a constructor-local Generator(seed). Window start comes from native parameters.swap_window.start_step (64), length from duration_steps (50) scaled by the multiplier.
+  [2]
+    - env: both
+    - anchor: src/robomme/robomme_env/utils/unmask_swap_xhard.py :: SWAP_WINDOW_START, SWAP_WINDOW_STEPS, XHARD_SWAP_SPEED_MULTIPLIER, scaled_window_steps
+    - behavior: SWAP_WINDOW_START=64 and SWAP_WINDOW_STEPS=50 (the constant is 50, not 33). xhard uses decision.xhard.swap_speed_multiplier=1.5, so scaled_window_steps(50, 1.5) = round(33.3) = 33. Multiplier 1 returns the int 50 unchanged for the original tiers. Recorded as actions.swap_window {start_step 64, duration_steps 33, speed_multiplier 1.5}.
+  [3]
+    - env: both
+    - anchor: VideoUnmaskSwap.py / ButtonUnmaskSwap.py :: _refresh_swap_schedule
+    - behavior: swap_schedule[k] = (swap_pair{k+1}_idx1, swap_pair{k+1}_idx2, 64+33k, 64+33(k+1)). Windows are back-to-back and share endpoints. The last swap ends at 64+33n: 328-460 steps for VUS (n 8-12), 262-328 for BUS (n 6-8). BUS's old three-branch version was replaced by this general formula in V4.
+  [4]
+    - env: both
+    - anchor: VideoUnmaskSwap.py / ButtonUnmaskSwap.py :: _load_scene (objects.swap_initiator_indices, objects.swap_initiator_third, the `for k in range(3, self.swap_times)` loop)
+    - behavior: Initiators come from main-stream draws after color_order/selected/target_choice. target_indices = randperm(3)[:2] (positions in selected order, but used directly as spawned_bins indices: the known U5 index mix-up). third = randint over the spawned indices not in target_indices. swap_indices=[a,b,c], and window k's initiator is spawned_bins[swap_indices[k % 3]], a fixed a,b,c,a,b,c rotation. a,b are in {bin_0,bin_1,bin_2}; bin_3 can only be the third; exactly one of the 4 bins never initiates. swap_pair{k}_idx2 starts as None.
+  [5]
+    - env: VideoUnmaskSwap
+    - anchor: VideoUnmaskSwap.py :: step (the single `for i in range(len(self.swap_schedule))` loop) + NATIVE_SAMPLING.parameters.swap_selection.partner
+    - behavior: When timestep is in range(start, end) and idx2 is None, it scans all spawned_bins except the initiator and picks the minimum np.linalg.norm(reference_pos[axes] - candidate_pos[axes]) with axes = partner.position_axes = [0,1] (XY). Comparison is strict '<', so ties go to the earliest spawn index. Positions are read from actual actors at the first step of the window, so the partner is the single nearest neighbour. It sets swap_pair{i+1}_idx2 and refreshes the schedule. In the xhard B-channel, _check_swap_sweep_from_actual runs before any motion.
+  [6]
+    - env: ButtonUnmaskSwap
+    - anchor: ButtonUnmaskSwap.py :: step (partner loop)
+    - behavior: Same semantics, but the axes are hard-coded as reference_pos[:2] - candidate_pos[:2] (no config key). There is no _verify_swap_binding. The xhard sweep check is always on (_xhard_collision_checks = is_xhard).
+  [7]
+    - env: both
+    - anchor: VideoUnmaskSwap.py / ButtonUnmaskSwap.py :: _compute_dynamic_swap_candidates, _select_swap_pair_from_positions
+    - behavior: Dead code (no caller anywhere in src/scripts/tests). It returns the 2 nearest neighbours (distances[:2]) and would randomly pick an initiator and one of those 2. This is the only '2 nearest neighbours' logic in the code, and it never runs.
+  [8]
+    - env: both
+    - anchor: src/robomme/robomme_env/utils/statechange.py :: swap_flat_two_lane
+    - behavior: Endpoints and quaternions are captured at cur_step == start. alpha = smoothstep((t-start)/L). A moves along a + d*alpha + n*0.07*sin(pi*alpha) and B along b - d*alpha - n*0.07*sin(pi*alpha), where n is the left normal of a->b. So the two lanes bulge 0.07 m to opposite sides, 0.14 m apart at mid. Quaternions are linearly blended and normalised; z is constant. At t == end both bins are set to the exact swapped poses. other_cube (the other spawned bins) is re-pinned to its captured pose every step. keep_upright and lock_cube_offset are never referenced. Call sites pass lane_offset=0.07, smooth=True, keep_upright=True.
+  [9]
+    - env: both
+    - anchor: statechange.py :: lift_and_drop_objectA_onto_objectB (called in step over cube_bin_pairs with start=swap_window_start, end=swap_schedule[-1][3])
+    - behavior: The hidden cube does not move with its bin. For every step in [64, last_end) it is teleported to (10,10,10) with zero velocity. At last_end it is teleported to its own bin actor's final XY at its original z. Because the pairing is by actor, the cube ends under the same bin actor, i.e. the logical 'cube travels with its bin'. Sim observation: bins rest at z=0.05336 on the cube before swaps (the central collision box overlaps the cube top by about 1.3 mm) and at z=0.05200 during swaps.
+  [10]
+    - env: both
+    - anchor: utils/unmask_swap_xhard.py :: predict_swap_sweeps, sample_distractors, distractor_generator, DISTRACTOR_STREAM_SALT, XHARD_DISTRACTOR, build_distractors; VideoUnmaskSwap._spawn_xhard_distractors / ButtonUnmaskSwap._spawn_xhard_distractors
+    - behavior: At the end of _load_scene (after all main-stream draws; N5) the 3 distractors are drawn on a dedicated stream Generator(seed + 0x5D157AC7), in this order: n_with_cube randint(1,2), colour randperm(3), then per distractor per trial x,y,yaw draws. A candidate is accepted if it is in the ring max(|x|,|y|) in [0.2675,0.45], passes visible_on_camera (footprint radius 0.0424, fitted camera boundary), keeps a circumcircle gap of at least 0.04 to bins/buttons/earlier distractors, and every predicted inner sweep (predict_swap_sweeps = nominal a,b,c rotation + XY nearest partner + exact post-swap poses) certifies it as a static bystander. Budget 512 trials per distractor, else SceneGenerationError. Distractors are stored in distractor_bins, never in spawned_bins, so they are never partners and never move.
+  [11]
+    - env: both
+    - anchor: utils/bin_collision.py :: check_bin_state/check_bin_layout (SAT, 6 boxes per bin), check_swap_sweep (_Mover/_Static/_prove_pair interval bisection, EPS_M 1e-6, MAX_DEPTH 20, MAX_INTERVALS 4096, LANE_OFFSET 0.07), nearest_partner_index
+    - behavior: Static check is exact 3D SAT on real collision boxes. The sweep check replays swap_flat_two_lane: mover pair plus each mover against every static bystander. It has a bounding-sphere coarse filter, then a per-box-pair bisection proof over s in [0,1]. Anything not provable is rejected ('uncertified'). It returns the first failing pair. Only one moving pair is supported.
+  [12]
+    - env: both
+    - anchor: VideoUnmaskSwap.py / ButtonUnmaskSwap.py :: _initialize_episode, _object_states_for_collision, _check_swap_sweep_from_actual, _before_simulation_step/_after_simulation_step, _in_swap_window
+    - behavior: xhard (H1): at reset, _check_state_readonly('initial') runs over spawned_bins + distractor_bins and raises BinCollisionError, failing the reset. At each window start (inside step, at partner resolution) _check_swap_sweep_from_actual(pair, bystanders = other spawned bins + ALL distractor_bins as static) raises BinCollisionError from env.step. The episode then fails at demo level: solve_hold_obj_xhard (VUS) and solve_hold_obj_absTimestep (BUS) let it propagate, _worker classifies it failure_class=task, and H4 backfill takes over. Substep checks run only when _episode_spec is not None (retired A-channel), i.e. never in V4. Inner-vs-inner sweep collisions are never predicted at reset.
+  [13]
+    - env: both
+    - anchor: utils/unmask_distractors.py :: reveal_distractor_bins, add_distractor_misgrasp_failure, any_distractor_bin_lifted
+    - behavior: Distractors join the [0,64) reveal: lifted away before step 32 and dropped back at step 32. Every pick/put-down task gets an extra failure if any distractor has z > 0.15. Both only touch distractor_bins identity/positions, so they are independent of swaps.
+  [14]
+    - env: both
+    - anchor: scripts/configs/newtask-v4/v4-01/specs.jsonl header per_env; artifacts/newtask-v4/v4-01/rollout/run1/results.jsonl; artifacts/newtask-v4/combos/v6-01/samples-*.jsonl
+    - behavior: Observed V4 rates. Reset level: VUS attempted 10 / candidates 10, BUS 10/10, so 0 reset rejections. Rollout: VUS 1/4 BinCollisionError (ep3 seed 4500300, sweep#1 bin_2 vs bin_1, g=-0.00207, s=0.5625), BUS 0/3. V6: VUS 1/50, BUS 6/30 BinCollisionError. All 7 are an inner mover against an inner static bin; none involves a distractor.
+## user_question_answers
+  [0]
+    - question: 现在内部swap的机制是什么？
+    - answer: 1. Count and timing. The swap count is drawn once per episode: VUS xhard [8,12] from native configs.xhard, BUS xhard [6,8] from decision.swap_count_range.xhard. Swaps run back-to-back in windows [64+33k, 64+33(k+1)]; 33 = round(50/1.5).
+2. Initiators. Swap k's initiator is fixed in advance by a cyclic rotation a,b,c,a,b,c,... of 3 initiators drawn once from the main stream (swap_initiator_indices + swap_initiator_third).
+3. Partner. At the first step of window k, the code picks the nearest other inner bin in XY from the actual current positions (strict <, ties to the lower spawn index).
+4. Motion. Both bins move along swap_flat_two_lane: straight chord plus opposite ±0.07 m sinusoidal lane offsets, smoothstep timing, blended yaw, exact swapped poses at the window end. The other inner bins are pinned.
+5. Hidden cubes. They are teleported off-table during [64, last_end) and put back under their own bin at last_end.
+6. Resulting structure. Because partners are mutual nearest neighbours, 60.7% of VUS and 81.9% of BUS episodes only ever use 2 disjoint pairs. 23.9% / 26.7% of swaps immediately undo the previous one, and 64% (VUS) / 84% (BUS) of hidden cubes visit only 2 positions.
+    - evidence: Code: VideoUnmaskSwap.py/ButtonUnmaskSwap.py :: __init__, _load_scene, _refresh_swap_schedule, step; statechange.py :: swap_flat_two_lane, lift_and_drop_objectA_onto_objectB. Replica verified 20/20 against specs.jsonl (m0_verify_replica.py). Structure stats: m1_inner_stats.py, 300 synthetic layouts/env: distinct unordered pairs per episode VUS {2:182,3:38,4:53,5:22,6:5}, BUS {2:245,3:30,4:14,5:10}; hidden-cube slots visited VUS {1:18,2:579,3:243,4:60}, BUS {1:12,2:755,3:110,4:20}.
+  [1]
+    - question: 最近2邻？(is it 'nearest on 2 axes' or 'the 2 nearest neighbours')
+    - answer: It is the single nearest neighbour, measured with a 2D (x,y) Euclidean distance. Not two neighbours. VUS reads the axes from NATIVE_SAMPLING.parameters.swap_selection.partner.position_axes = [0,1]; BUS hard-codes [:2]. The only '2 nearest neighbours' logic (_compute_dynamic_swap_candidates keeps distances[:2]; _select_swap_pair_from_positions picks one of them at random) is dead code with no caller in src/, scripts/ or tests/.
+    - evidence: step(): `dist = np.linalg.norm(reference_pos[axes] - candidate_pos[axes]); if dist < closest_dist: ...` (VUS) and `reference_pos[:2] - candidate_pos[:2]` (BUS). A grep for callers of _select_swap_pair_from_positions finds only the definitions (also in VideoRepick). bin_collision.nearest_partner_index documents the same strict-< / first-in-spawn-order tie rule. Measured inner partner distance: VUS median 0.153 m (min 0.099, p95 0.206); BUS median 0.127 m (min 0.098, p95 0.165).
+  [2]
+    - question: 外部的也要支持swap，每次内部swap外部也swap——能否做到？代价？
+    - answer: Yes. Put exactly one distractor swap in each inner window, simultaneous and with the same 33-step schedule, so zero control steps are added (swap_schedule[-1][3] and all waits are unchanged).
+
+A literal copy of the inner rule on the V4 layout (3 distractors, V4 ring) is mostly infeasible. The nearest distractor is usually across the scene: median path 0.46-0.49 m, p95 0.77-0.78 m. Only 36% (VUS) / 35% (BUS) of episodes are collision-free, and 31% / 29% when the paths must also stay on camera. In BUS, 787 of 2084 windows bring a moving bin within 0.122 m of a button centre, 650 of them within 0.0955 m (possible contact with the button base). On the 20 frozen V4 spec rows as-is: 0/10 VUS and 5/10 BUS are collision-free without fallback.
+
+It becomes feasible if (a) the distractor count is at least 6 and (b) the reset-time planner may fall back to the next initiator in a permutation. With the strict criterion (collision-free proof + on camera + at least 0.04 m circle clearance to inner bins + BUS button clearance), first-attempt feasibility is:
+- V4 ring, 6 distractors: 99.0% (VUS) / 96.7% (BUS)
+- V4 ring, 10 distractors: 100% / 100%
+- V4 ring, 3 distractors: 63.3% / 45.2%, so it needs whole-layout redraws
+Redraws succeed with probability 1 - (1-p)^B: B=16 gives failure below 1e-4 even at p=0.45.
+    - evidence: m2_outer_sim.py (no fallback, N=300 layouts per config, lane 0.07, perm initiators) and m2b_fallback.py (fallback, N=300 per config); m2c_spec_rows.py (the 20 V4 spec rows). Examples. No fallback, V4 ring, exact / exact+visible: VUS n=3 36.0%/31.0%, n=6 70.3%/32.0%, n=10 74.7%/16.0%, n=15 56.3%/5.7%, n=20 21.0%/2.0%; BUS n=3 35.1%/28.8%, n=6 57.9%/22.7%, n=10 71.6%/11.7%, n=20 33.0%/2.7%. Fallback, strict (evc): see measurements.
+  [3]
+    - question: 外部swap也要这样（最近邻）？
+    - answer: Recommended: the same metric and the same rule. Partner = nearest other distractor bin in XY (position_axes [0,1], strict <, ties to the lower distractor index, self excluded), searching distractors only, so outer bins never pair with inner bins and the inner partner search stays on spawned_bins exactly as in V4.
+
+On the initiator, a literal mirror would be 'draw 3 initiators, cycle them'. I recommend a permutation of all distractors, cycled (randperm(count) once): for count = 3 it is the literal rot3 mirror, and for larger counts it spreads motion to all bins (mean distinct moved distractors 5.9 of 6, 9.4 of 10). The deterministic fallback also needs an ordered list of alternatives.
+
+Outer pairs should be pre-resolved at reset from exact nominal positions, not at runtime. Runtime resolution reads the previous swap at only 99.7% completion, and near-ties then flip. This happened in V6 seed 7700102 (distances 0.17822 vs 0.17812 m) and in 0.08% (VUS) / 0.18% (BUS) of inner windows in simulation. Outer windows are near-tied too: nearest-vs-second gap < 1 mm in 0.2-2.5% of windows depending on count.
+    - evidence: m1c_tie.py: VUS 7/8969, BUS 11/5982 inner windows flip partner when resolved at smoothstep(32/33) progress; nearest-vs-second gap < 1 mm in 1.03% (VUS) / 0.47% (BUS) of windows. m3_sim_probe.py: at sweep#1 the actual start pose of bin_0 differs from nominal by 0.686 mm. m2 win_nn_margin_lt_1mm: VUS v4 n=10 33/3020, n=20 68/3020.
+  [4]
+    - question: 也要支持碰撞检测
+    - answer: Supported by a joint 2-pair continuous check. The inner and outer pairs share the same window and the same smoothstep, so every pose is a function of one parameter s. The repo's _prove_pair already proves pairs where both objects move. Generalising check_swap_sweep to check_multi_swap_sweep(pairs, bystanders) needs no new math: it checks each pair against itself, all mover-mover pairs across pairs, and each mover against each static object.
+
+The scratch implementation matches check_swap_sweep bit-for-bit with one pair (15/15, including 3 contact rejections), and a far-away second pair leaves the result unchanged.
+
+Use it at reset (planning, rejection) and at runtime (re-check from actual states at window start; same BinCollisionError path as V4). Failures it catches in the straight mirror design: outer mover vs inner mover (e.g. 634/3020 windows for VUS n=3), vs inner static (361), and vs outer static (dominant at 15-20 distractors: 239 and 538 of 3020 windows).
+
+Wall-clock per window (loaded machine): current single-pair check 0.42-0.86 s; joint check 0.77-1.79 s; joint check with a certified circle pre-filter 3-55 ms, same decisions.
+    - evidence: multi_sweep.py + m0c_multi_sweep_equiv.py (MULTI_SWEEP_EQUIV ok=15/15); m4_timing.py (6 layouts/env, first 4 windows each, counts 3 and 10); m2 win_fail_kinds.
+  [5]
+    - question: 内部swap时下面的cube怎么动？外部cube要怎样？
+    - answer: Inner cubes are not moved along the path. They are teleported to (10,10,10) for all of [64, last_end) and placed under their own bin's final XY at last_end (lift_and_drop_objectA_onto_objectB keyed by the (cube, bin) actor pair). For outer cubes, use the identical call over a new list distractor_cube_bin_pairs (build_distractors already puts cube i in bin i for i < n_with_cube), with the same [swap_window_start, swap_schedule[-1][3]] span. Reveal [0,64) and misgrasp failure are unaffected: they depend only on distractor_bins identity and z, and swaps keep z ≈ 0.052.
+    - evidence: statechange.py :: lift_and_drop_objectA_onto_objectB; VideoUnmaskSwap.step / ButtonUnmaskSwap.step cube loop; unmask_swap_xhard.build_distractors; unmask_distractors.reveal_distractor_bins / any_distractor_bin_lifted. Sim: bins at z 0.05336 before swaps and 0.05200 during swaps (m3_sim_probe.py).
+## measurements
+  [0]
+    - name: M0 replica exactness vs frozen V4 specs
+    - script_or_command: cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask && uv run --no-sync python <scratch>/m0_verify_replica.py
+    - settings: All 20 Swap rows of scripts/configs/newtask-v4/v4-01/specs.jsonl (VUS seeds 4500000..4500900, BUS 4700000..4700900); compares bins xyz/yaw, n_swaps, color_order, selected, target_choice, initiators, type_choice, and distractors from repo sample_distractors
+    - result: REPLICA_MATCH ok=20/20 (bin_err 0, dis_err 0)
+    - conclusion: The numpy/torch replica of both envs' main-stream sampling and the V4 distractor sampling is exact, so synthetic statistics are trustworthy.
+  [1]
+    - name: M0b fast (circle-prefiltered) distractor sampler equivalence + V4 reset cost
+    - script_or_command: uv run --no-sync python <scratch>/m0b_verify_ring_sampler.py
+    - settings: 40 layouts (20 spec seeds + 10 synthetic per env); scratch sample_ring (v4 ring, count 3, circle pre-filter) vs repo unmask_swap_xhard.sample_distractors
+    - result: RING_SAMPLER_MATCH ok=40/40; repo sample_distractors mean 4.75 s per reset vs 0.0025 s with the pre-filter (loaded machine, load avg 35-95)
+    - conclusion: A certified circle pre-filter keeps decisions and RNG consumption identical while removing about 4.7 s of reset time. It is a useful optional V5 optimisation.
+  [2]
+    - name: M0c multi-pair sweep checker equivalence
+    - script_or_command: uv run --no-sync python <scratch>/m0c_multi_sweep_equiv.py
+    - settings: 15 windows from 5 spec rows (incl. VUS ep3 sweep#1 and BUS ep8 sweep#0/2 contact cases) + one far-away second pair
+    - result: MULTI_SWEEP_EQUIV ok=15/15 (identical gap and rejection dict); far pair: rejection None both ways
+    - conclusion: check_multi_swap_sweep (joint proof reusing repo _prove_pair) is a strict generalisation of check_swap_sweep.
+  [3]
+    - name: M1 inner swap structure and inner-vs-inner sweep collision rate
+    - script_or_command: uv run --no-sync python <scratch>/m1_inner_stats.py 300 6  (tmux v5us-m1, log m1.log)
+    - settings: 300 synthetic layouts per env (seeds 9_100_000+i VUS, 9_300_000+i BUS), V4 xhard ranges, 3 distractors via the V4 rule; exact repo proof with circle pre-filter; plus the 8 known runtime-failure seeds and the 20 spec rows
+    - result: Known failures reproduced 8/8: same window; 7/8 same objects and s (4500300 s=0.5625, 7700504 s=0.5, ...); 7700102 same window but a different partner because of a near-tie. Spec rows: 2/20 predicted (VUS ep3 = the observed rollout failure; BUS ep8 was never rolled out). Synthetic: VUS 4/300 = 1.3% episodes, BUS 32/299 = 10.7%, all inner_bystander, none distractor-related. Partner distance VUS median 0.153 (min 0.0989, p95 0.206) m, BUS median 0.127 (min 0.0979, p95 0.165) m. Fixed 2-pair matching VUS 60.7%, BUS 81.9%; immediate undo 23.9% / 26.7%.
+    - conclusion: All V4 runtime BinCollisionErrors are inner-vs-inner sweeps that a reset-time prediction would catch. The nearest-neighbour rule makes inner swaps highly periodic (ping-pong).
+  [4]
+    - name: M1b inner bin spawn failures
+    - script_or_command: uv run --no-sync python <scratch>/m1b_spawn_fail.py
+    - settings: 2000 seeds per env, replica of spawn_random_bin (bin obstacle OBB approximated as a yawed 0.03 half square padded by min_gap)
+    - result: VUS 4 bins 2000/2000; BUS 4 bins 1999/2000 (1 layout with 2 bins)
+    - conclusion: Negligible.
+  [5]
+    - name: M1c partner flips from reading unfinished previous swaps
+    - script_or_command: uv run --no-sync python <scratch>/m1c_tie.py
+    - settings: 1000 synthetic layouts per env; partner recomputed with the previous pair at smoothstep(32/33) = 0.99727 progress + lateral offset
+    - result: Seed 7700102 window 1: d(bin1,bin0)=0.17822 vs d(bin1,bin2)=0.17812 (0.1 mm tie). Flips: VUS 7/8969 windows, BUS 11/5982. nn-margin < 1 mm: 1.03% / 0.47% of windows.
+    - conclusion: Runtime resolution can deviate from any reset-time plan. Outer pairs should be pre-resolved, and runtime must re-check jointly from actual states.
+  [6]
+    - name: M2 outer swap = literal mirror (straight two-lane, nearest partner, no fallback)
+    - script_or_command: bash <scratch>/run_m2_batch.sh (tmux v5us-m2, log m2.log; summary: python3 <scratch>/summ_m2.py m2.log)
+    - settings: N=300 layouts per config per env; rings: V4 [0.2675,0.45] and 'tight' (inner rectangle = inner-bin centre extent + 0.03 + 0.03 + 0.04, width 0.10; VUS ±0.3015..±0.4015, BUS x[-0.1425,0.2425]/y[-0.2425,0.3425] expanded by 0.10); counts 3/6/10/15/20; initiator perm (plus rot3/rand variants); lane 0.07 (plus 0.05). Exact joint proof on windows at circle risk; visibility via visible_on_camera on 2x401 path samples.
+    - result: Episode exact / exact+visible. V4 ring VUS: n3 0.360/0.310, n6 0.703/0.320, n10 0.747/0.160, n15 0.563/0.057, n20 0.210/0.020. BUS: n3 0.351/0.288, n6 0.579/0.227, n10 0.716/0.117, n15 0.609/0.090, n20 0.330/0.027. Chord median (p95): n3 0.462 (0.769) VUS, 0.485 (0.781) BUS; n6 0.256/0.244; n10 0.182/0.180; n15 0.151/0.147; n20 0.137/0.135. Failure kinds VUS n3: outer-vs-inner mover 634, outer-vs-inner static 361 of 3020 windows; n20: outer-vs-outer static 538. BUS n3 button zone: 787/2084 windows < 0.122 m, 650 < 0.0955 m. Tight ring VUS: n3 0.310/0.250, n6 0.790/0.277, n10 0.937/0.030, n15 0.842/0.007 (2 placement fails). Tight ring BUS: n3 0.191/0.134, n6 0.462/0.201, n10 0.716/0.176, n15 placement fail 297/299. Lane 0.05, V4 ring n10: VUS 0.923/0.473, BUS 0.866/0.365. rot3, n10: VUS 0.870/0.453, BUS 0.819/0.308.
+    - conclusion: Without fallback, too few episodes pass. With few distractors the chords cross the inner area; with many, bulging lanes hit neighbouring distractors and leave the camera. The tight ring as defined (width 0.10 < lane needs) makes visibility worse.
+  [7]
+    - name: M2b outer swap with deterministic initiator fallback (recommended design)
+    - script_or_command: bash <scratch>/run_m2b_batch.sh (tmux v5us-m2b, log m2b.log; summary: python3 <scratch>/summ_m2b.py m2b.log)
+    - settings: N=300 layouts per config per env; perm initiators, fallback to perm[(k+j)%N]; criteria: ev = joint proof + on camera + BUS button centre distance ≥ 0.1219 m; evc = ev + ≥ 0.04 m circle clearance to every inner bin (static or moving). Rings: v4, v4pad (centre band [0.3375,0.45] and camera check with radius 0.0424+0.07), tight.
+    - result: evc, first layout attempt feasible. V4 ring: n3 VUS 190/300 = 0.633, BUS 135/299 = 0.452; n6 VUS 297/300 = 0.990, BUS 289/299 = 0.967; n10 VUS 300/300, BUS 299/299. ev variant: n3 VUS 0.813, BUS 0.542; n10 1.0/1.0. v4pad: n3 VUS 1.0, BUS 0.896; n6 1.0/1.0 (lane 0.05 also 1.0/1.0); n10 1.0/1.0 of placed but placement fails 34/300 and 30/299; n15 placement fails 299/300 and 299/299. Tight ring: n6 0.970/0.920; n10 1.0/1.0. First-try share of windows: V4 ring n6 VUS 2181/2988 = 73%; v4pad n6 VUS 2976/3020 = 98.5%. Outer immediate undo: 0.11-0.75, highest at n3.
+    - conclusion: Fallback plus at least 6 distractors gives about 97-100% first-attempt feasibility in the unchanged V4 ring. Whole-layout redraws (appended on the dedicated stream) cover the rest.
+  [8]
+    - name: M2c outer swap on the 20 frozen V4 layouts
+    - script_or_command: uv run --no-sync python <scratch>/m2c_spec_rows.py
+    - settings: Spec rows as-is (3 distractors); the V4 dedicated-stream placement reproduced exactly (asserted), then randperm(3) appended
+    - result: No fallback, all windows collision-free: VUS 0/10, BUS 5/10. Fallback ev: VUS 7/10, BUS 5/10. Fallback evc: VUS 4/10, BUS 4/10.
+    - conclusion: V4 layouts cannot simply be reused; a V5 re-draw/freeze is needed.
+  [9]
+    - name: M2d where distractors land (layout-distribution shift)
+    - script_or_command: uv run --no-sync python <scratch>/m2d_where.py
+    - settings: 150 layouts per env per ring, counts 3/6/10
+    - result: V4 ring VUS: -x (robot side) 34-37%, ±y 47-48%, +x (far) 16-18%. v4pad VUS: -x 53-62%, ±y 38-47%, +x 0%. BUS similar (v4 +x 21%, v4pad 0%). v4pad n10 placement fail 18/150 (VUS), 13/149 (BUS).
+    - conclusion: Padding the ring for lane visibility removes the far side entirely and caps capacity below 15. Prefer the V4 ring (or the sibling topic's ring) plus fallback.
+  [10]
+    - name: M3 simulator probe of the V4 runtime check
+    - script_or_command: cd repo && CUDA_VISIBLE_DEVICES=1 timeout 290 uv run --no-sync python <scratch>/m3_sim_probe.py
+    - settings: 1 gym.make+reset, VUS xhard seed 4500300 with native_episode_spec from specs.jsonl; hold-qpos actions; check_swap_sweep spied in-process
+    - result: make+reset 7.3 s; mean control step 12 ms (max 422 ms incl. check). Sweep#0 (bin_0,bin_1) passes, 413 ms. Sweep#1 (bin_2,bin_0) rejects: contact with bin_2 shape1 vs bin_1 shape1, g=-0.00207220814741, s=0.5625 (rollout: -0.00207219285049). bin_0's actual start pose is 0.686 mm off nominal (unfinished previous swap). Quaternions are pure flipped-yaw (|w|,|z| ≤ 2e-4), consistent signs.
+    - conclusion: The geometric replica equals runtime to about 1e-8 m in g. Runtime checks run on slightly unfinished start states.
+  [11]
+    - name: M4 per-window collision-check wall-clock
+    - script_or_command: uv run --no-sync python <scratch>/m4_timing.py
+    - settings: 6 layouts per env × first 4 windows; counts 3 and 10; single process on a machine at load avg ~35-95
+    - result: A (current inner-only check_swap_sweep): VUS 857/595 ms, BUS 540/420 ms per window (n3/n10). B (joint 2-pair, no pre-filter): VUS 1789/1233 ms, BUS 1340/773 ms. C (joint + certified circle pre-filter): VUS 5.1/2.9 ms, BUS 55.1/5.7 ms.
+    - conclusion: Without a pre-filter, joint checks add about 0.4-0.9 s per window (4-11 s per episode at 8-12 windows) at runtime, and reset planning with fallback would cost roughly 10-30 s. With a certified pre-filter both become negligible. Control steps added by outer swaps: 0.
+## proposals
+  [0]
+    - title: P1 (recommended): simultaneous outer nearest-neighbour swaps, pre-planned at reset with deterministic initiator fallback and joint 2-pair collision certification
+    - recommended: True
+    - envs: VideoUnmaskSwap, ButtonUnmaskSwap (xhard only). VideoUnmask/ButtonUnmask have no swaps and are untouched.
+    - anchors_to_change: utils/unmask_swap_xhard.py: XHARD_DISTRACTOR (+ new XHARD_DISTRACTOR_SWAP), sample_distractors (defer recorder.value to after acceptance; whole-layout attempt loop), predict_swap_sweeps (also return inner pairs and states per window), new plan_distractor_swaps, build_distractors (also return the (cube, bin) list). utils/bin_collision.py: new check_multi_swap_sweep (check_swap_sweep left unchanged). VideoUnmaskSwap.py and ButtonUnmaskSwap.py: _native_decision (decision.xhard.distractor_swap), _spawn_xhard_distractors (keep the dedicated generator, plan, record, set self.distractor_swap_schedule / self.distractor_cube_bin_pairs), _check_swap_sweep_from_actual (xhard: joint pairs), step (extra swap_flat_two_lane loop over distractor_swap_schedule + extra lift_and_drop_objectA_onto_objectB loop over distractor_cube_bin_pairs, placed outside the unique `for i in range(len(self.swap_schedule))` loop).
+    - design: Config (decision.xhard.distractor_swap, xhard-only, declared in _native_decision): {enabled: true, initiator_rule: 'permutation_cycle', fallback: 'next_in_permutation', partner: {selection: 'nearest', position_axes: [0,1], exclude_self: true, tie_break: 'first_in_index_order', population: 'distractor_bins', resolve_at: 'reset_plan'}, lane_offset: 0.07, smooth: true, path_constraints: {camera_visible: true, min_inner_circle_clearance_m: 0.04, min_button_center_dist_m: 0.122}, layout_max_attempts: 16}.
+
+Reset algorithm, inside _spawn_xhard_distractors (still the last statement of _load_scene):
+1. gen = distractor_generator(seed).
+2. For attempt in range(layout_max_attempts):
+   a. Draw placements with the unchanged V4 rule (same draw order; recorder.value deferred).
+   b. perm = randperm(count, gen), appended.
+   c. inner_plan = predicted inner (initiator, partner, start states) per window, as in predict_swap_sweeps.
+   d. For each window k, for j in 0..count-1: o = perm[(k+j) % count]; p = argmin XY distance among distractors (strict <, lowest index on ties).
+   e. Accept (o,p) if all hold:
+      - check_multi_swap_sweep([(inner_a_k, inner_b_k), (o,p)], statics = other inner bins + other distractors) returns None;
+      - both outer centre paths (401 samples + Lipschitz margin) pass visible_on_camera(r = 0.0424);
+      - circle clearance to every inner bin ≥ 0.04;
+      - (BUS) centre distance to both button centres ≥ 0.122.
+   f. Swap the nominal positions/yaws of o and p.
+   g. If some window has no feasible j, retry the whole attempt; if all attempts fail, raise SceneGenerationError (candidate-level F2 re-draw).
+3. Record:
+   - value points: layout.distractors.<i>, objects.distractors.swap_order (the perm);
+   - record points: actions.distractor_swap_pairs = [[init, partner] per window], actions.distractor_swap_fallback = [j+1 per window], layout.distractor_layout_attempts; optionally actions.swap_pairs (predicted inner pairs).
+4. Build actors, self.distractor_swap_schedule = [(bin_o, bin_p, 64+33k, 64+33(k+1))], self.distractor_cube_bin_pairs = [(cube_i, bin_i)].
+
+Runtime (step):
+- Inner partner resolution is unchanged.
+- _check_swap_sweep_from_actual(i, ...) for xhard builds pairs = [(initiator, partner), (outer pair i)] and statics = all other bins, from actual poses, calls check_multi_swap_sweep and raises BinCollisionError as today.
+- Optionally verify binding: runtime inner partner == planned inner partner; on mismatch keep the runtime pair (the joint check still guards) and log it into _runtime_checks.
+- After the inner swap_flat_two_lane loop: swap_flat_two_lane(oa, ob, start, end, cur_step, lane_offset=0.07, smooth=True, keep_upright=True, other_cube=[other distractors]).
+- After the inner cube loop: lift_and_drop_objectA_onto_objectB(cube, bin, 64, swap_schedule[-1][3]) for distractor pairs.
+
+Reveal, misgrasp failure, task list, task_goal, vqa_options, windows and waits are unchanged, so added steps = 0.
+    - rationale: Matches the user's wording: every inner swap has a simultaneous outer swap using the same nearest-neighbour rule and the same visual motion, with collision detection. The literal mirror without fallback is infeasible for 64-71% of episodes (M2). The deterministic fallback lifts first-attempt feasibility to 99.0%/96.7% (6 distractors) and 100%/100% (10) in the unchanged V4 ring (M2b), with no extra RNG and no change to B13's ring. Pre-resolving outer pairs removes runtime near-tie ambiguity (M1c). The joint proof is the existing verified math (M0c).
+    - rng_impact: easy/medium/hard: none. The branch is guarded by self._is_xhard; decision.xhard.* is stripped by _strip_xhard; NATIVE_SAMPLING is unchanged; V1 NATIVE_REGRESSION must remain byte-identical. xhard main stream: unchanged (no new main-stream draws; step draws nothing). xhard dedicated distractor stream (seed + 0x5D157AC7): attempt 0 consumes exactly the V4 draws (n_with_cube randint, colour randperm, per-trial x/y/yaw), then appends one randperm(count). Later attempts append further draws. So accepted distractor layouts differ from V4 whenever attempt 0 fails (e.g. 3/10 VUS spec rows under ev), and the V4 v4-01 specs cannot be reused byte-identically; a v5 freeze is required.
+    - overturned_v4_decisions: Overturns B3 ('不参与 swap'), the J1 clause 'still not in swap', and the 2.7① sentence that distractors never move. Extends H1 from 'distractors as static bystanders' to a joint 2-pair sweep. Keeps: B2 colours, B4 (64/33 windows), B13 ring (unless the sibling topic changes count/ring), J1 reveal + misgrasp failure, H2 (xhard-only), N5, I3, F1-F4, H4, K5; distractors still never partner inner bins and never enter spawned_bins.
+    - spec_and_test_changes: New spec paths: objects.distractors.swap_order (value), actions.distractor_swap_pairs, actions.distractor_swap_fallback, layout.distractor_layout_attempts (records), optionally actions.swap_pairs. Each new decision leaf needs a consuming decision_key, or scripts/parity/train_split_audit.py fails the consumption rule. Re-export the sampling_config snapshot (tests/lightweight/test_sampling_config_split.py::test_snapshot_matches_source) and a new combos/specs run id.
+
+Tests to update:
+- tests/lightweight/test_v4_xhard_unmaskswap.py: XHARD_DISTRACTOR shape; test_干扰容器落在外环且可见且避障 recorder paths; test_预演搭档取最近邻并互换位姿; test_干扰容器在load_scene末尾且不用主流 (still valid, extend to assert the randperm is on the dedicated generator).
+
+Tests to add:
+- check_multi_swap_sweep: equals check_swap_sweep for one pair; rejects a constructed crossing of two pairs; certifies far pairs.
+- plan_distractor_swaps: determinism, fallback order, one outer swap per window, nearest-partner tie rule, BUS button clearance.
+- Fake-env step test: outer bins end swapped at each window end; cubes are placed under their bins at the last end.
+
+Must keep passing: tests/lightweight/test_episode_action_sampling.py::test_real_swap_resolution_matches_baseline_and_preserves_ties (it AST-extracts the single `range(len(self.swap_schedule))` loop and runs it on a SimpleNamespace, so new code there must use getattr defaults or live outside the loop), test_swap_schedule_generic.py, test_window_timeline.py, test_v4_xhard_swap_hold.py, test_v4_xhard_unmask_distractor_reveal.py, test_bin_collision.py.
+    - expected_numbers: Strict criterion (evc), first layout attempt:
+- V4 ring, 6 distractors: VUS 99.0%, BUS 96.7%
+- V4 ring, 10 distractors: 100% / 100%
+- V4 ring, 3 distractors: 63.3% / 45.2%; failure after B=16 attempts is (1-p)^16 ≈ 1e-7 / 6.8e-5
+Windows solved at the first initiator: 73% (VUS, n=6, V4 ring). Mean distinct moved distractors 4.7 of 6, 7.5 of 10. Outer immediate undo 25-32% at n=6-10 (inner: 24-27%). Added control steps: 0.
+Wall-clock:
+- runtime +0.4-0.9 s per window without pre-filter (+4-11 s per episode), about +0.01-0.05 s with the P5 pre-filter;
+- reset planning about 10-30 s without the pre-filter, <1 s with it (V4 reset already spends 4.75 s in sample_distractors).
+Runtime BinCollisionError on outer-related pairs is expected to be about 0 (planned against nominal states). Residual runtime risk comes from inner-partner flips (0.08-0.18% of windows).
+  [1]
+    - title: P2: literal mirror (3-initiator rot3, nearest partner) with whole-layout redraw only, no fallback
+    - recommended: False
+    - envs: VideoUnmaskSwap, ButtonUnmaskSwap (xhard)
+    - anchors_to_change: Same as P1 minus the fallback loop.
+    - design: Outer initiators = randperm(count)[:3] cycled k%3 (exact structural mirror of the inner a,b,c rule). If any window fails certification, visibility or clearance, redraw the whole distractor layout on the dedicated stream, up to layout_max_attempts.
+    - rationale: Closest to the literal inner rule, but the acceptance rate is low, so redraws are many and layouts are strongly biased toward clustered distractors.
+    - rng_impact: Same as P1: none on easy/medium/hard; xhard main stream unchanged; dedicated stream gets an appended randperm plus more redraws (expected attempts 1/p ≈ 3-10 at count 3-10).
+    - overturned_v4_decisions: Same as P1 (B3, J1 clause, H1 extension).
+    - spec_and_test_changes: Same as P1 without actions.distractor_swap_fallback.
+    - expected_numbers: Per-attempt feasibility with only exact + visible required (the strict clearance criterion would be lower), V4 ring: VUS n3 31.0%, n10 (rot3) 45.3%; BUS n3 28.8%, n10 (rot3) 30.8%. With the full strict criterion: VUS n10 rot3 10.7%, BUS 12.0%, i.e. about 8-10 redraws on average.
+  [2]
+    - title: P3: padded ring (lane-aware placement) instead of fallback
+    - recommended: False
+    - envs: VideoUnmaskSwap, ButtonUnmaskSwap (xhard)
+    - anchors_to_change: unmask_swap_xhard.XHARD_DISTRACTOR.ring_half_extent -> [0.3375, 0.45] plus a camera check with radius footprint + lane_offset (0.1124) in sample_distractors / visible_on_camera.
+    - design: Place distractor centres so that any ±0.07 lane bulge stays inside the ring and the camera view. Then P1's planner almost never needs fallback (98.5% of windows solved at the first try at n=6).
+    - rationale: Fewer runtime surprises, but it overturns B13, removes the far (+x) side entirely (0% vs 16-21% in the V4 ring), puts 53-62% of distractors on the robot side, and cannot host ≥15 distractors (placement fails 299/300), which conflicts with the sibling topic's possible 10-20 bins.
+    - rng_impact: None on easy/medium/hard. xhard main stream unchanged. Dedicated stream acceptance changes (placement values differ from V4).
+    - overturned_v4_decisions: B13 (ring bounds and visibility criterion), in addition to P1's.
+    - spec_and_test_changes: XHARD_DISTRACTOR ring change; test_干扰容器落在外环且可见且避障 bounds.
+    - expected_numbers: With fallback, strict criterion: VUS n3/n6/n10 100%/100%/100% (n10: 34/300 placement fails); BUS 89.6%/100%/100% (n10: 30/299 placement fails); n15 placement fails 99.7-100%.
+  [3]
+    - title: P4 (recommended add-on): reject inner-vs-inner sweep collisions at reset using the same planner
+    - recommended: True
+    - envs: VideoUnmaskSwap, ButtonUnmaskSwap (xhard)
+    - anchors_to_change: unmask_swap_xhard.predict_swap_sweeps / new planner. VUS/BUS _spawn_xhard_distractors, or a check right before it, raises SceneGenerationError when a predicted inner sweep fails against inner bystanders.
+    - design: During reset planning, also certify inner pair k against the other inner bins (the joint check already covers inner-vs-outer). A failure means the inner layout itself is bad; since the main stream cannot be redrawn, raise SceneGenerationError so the candidate is dropped at draw time (F2 fill-up) instead of failing at demo time.
+    - rationale: All 8 observed V4 runtime BinCollisionErrors (rollout VUS ep3, 7 V6) are predictable at reset (8/8 reproduced). This moves 1.3% (VUS) / 10.7% (BUS) of episodes from demo-level failure (H4 backfill) to reset-level rejection.
+    - rng_impact: No change to any draw order. It only adds a reset rejection for xhard candidates: the candidate-level seed sequence is unchanged, but accepted candidates may shift (attempted count rises about 1-11%). easy/medium/hard: none.
+    - overturned_v4_decisions: None formally. Changes the J2-style 'accept runtime rejection + H4 backfill' practice for these two envs.
+    - spec_and_test_changes: Add a record point (e.g. actions.inner_sweep_certified=true); unit test with seed 4500300's layout rejecting at reset.
+    - expected_numbers: Reset-level rejection VUS about 1.3%, BUS about 10.7% (synthetic N=300). Among spec rows 2/20 would have been rejected. Runtime inner-inner BinCollisionError should drop to about the near-tie flip rate (≤0.2% of windows).
+  [4]
+    - title: P5 (recommended add-on): certified bounding-circle/sphere pre-filter in bin_collision
+    - recommended: True
+    - envs: all users of check_swap_sweep / check_multi_swap_sweep (xhard paths; VideoRepick could also benefit)
+    - anchors_to_change: utils/bin_collision.py :: check_multi_swap_sweep (new) and optionally sample_distractors' candidate loop.
+    - design: Before any _prove_pair, sample each object's actor-origin path at 401 s values. Skip a pair when min centre distance - (r_a + r_b) > (v_a + v_b)*Δs/2. Use r = ObjectState.radii max (3D vertex radius, rotation-agnostic) to stay valid for any quaternion. The 0.0424 footprint radius is only valid for the flipped-yaw family. Skips only pairs proven separated, so decisions are identical.
+    - rationale: Measured 0.4-1.8 s → 3-55 ms per window, and 4.75 s → 0.0025 s for V4 distractor sampling, with identical outputs (40/40).
+    - rng_impact: None anywhere (decisions and draw counts identical).
+    - overturned_v4_decisions: None.
+    - spec_and_test_changes: Test: pre-filtered vs unfiltered give identical (reject/accept, reason) on randomized cases; keep test_bin_collision.py::test_粗筛不改变判定结论 style.
+    - expected_numbers: Per-window joint check about 3-55 ms. Reset planning <1 s. Runtime overhead of V5 collision checks <0.5 s per episode.
+## risks
+  [0]
+    - risk: BUS: the robot arm presses buttons while swaps run. The collision model covers bins only (no robot, no button geometry), and a literal mirror sends outer bins through the button zone (650/2084 windows within 0.0955 m of a button centre at 3 distractors).
+    - mitigation: Include the button clearance ≥ 0.122 m in the planner's path constraints (P1). Validate at demo level: V6-style combos with at least 5 demos per combo on BUS, and compare demo success against V4's 24/30.
+  [1]
+    - risk: Layout-distribution bias. Fallback and whole-layout redraws favour clustered or short-chord distractor layouts, and a padded ring removes the far side entirely.
+    - mitigation: Prefer fallback over redraw (P1). Keep the V4 or sibling ring. Report the side-distribution histogram and redraw counts per episode in the spec (layout.distractor_layout_attempts) and in the V5 report.
+  [2]
+    - risk: Runtime vs plan mismatch. The inner partner is resolved at runtime from a previous swap at 99.7% progress, so it can differ from the reset prediction in 0.08-0.18% of windows, and the outer plan was certified against the predicted inner pair.
+    - mitigation: Keep the runtime joint check from actual poses (a BinCollisionError then fails the episode as in V4) and log binding mismatches. Optionally (decision D8) pin xhard inner partners to the reset plan.
+  [3]
+    - risk: Wall-clock. The joint check without a pre-filter doubles per-window cost (0.8-1.8 s) and makes reset planning take about 10-30 s. Reset already spends 4.75 s in sample_distractors.
+    - mitigation: Adopt P5, whose decisions are proven identical.
+  [4]
+    - risk: AST-locked structure. test_real_swap_resolution_matches_baseline_and_preserves_ties extracts the single `range(len(self.swap_schedule))` loop and executes it on a SimpleNamespace. generate_dataset_newseed._require_ast checks expressions in step/_load_scene. test_干扰容器在load_scene末尾且不用主流 requires _spawn_xhard_distractors to be the last statement of _load_scene.
+    - mitigation: Add outer logic in separate loops outside that loop and use getattr defaults. Keep the _spawn_xhard_distractors call last. Run these tests plus the V1 reset probe before each commit.
+  [5]
+    - risk: Spec replay. SpecRecorder.value inside a rejection loop would return frozen final values on early attempts in replay mode.
+    - mitigation: Draw all attempts without the recorder, then call recorder.value once for the accepted layout. Record the attempt count and pairs as record() values so replay flags drift.
+  [6]
+    - risk: Ping-pong. The nearest-neighbour rule makes outer swaps oscillate between fixed pairs (immediate undo 11-75% depending on count), as the inner swaps already do (24-27%), which limits the tracking difficulty that outer swaps add.
+    - mitigation: Accept it as a mirror of the inner rule, or (a separate decision) exclude the immediately previous pair.
+  [7]
+    - risk: Dependence on the sibling topic. Distractor count and ring may change. At 15-20 distractors, straight lanes hit neighbouring distractors (VUS n=20 exact 21%), and a tight/padded ring cannot host 15 (BUS placement fails 297/299).
+    - mitigation: Make count and ring config-driven. Re-run m2b_fallback.py for the sibling's final count/ring before freezing (≥300 layouts per env).
+  [8]
+    - risk: The visibility criterion is the conservative fitted line from B13 (circle radius 0.0424) and ignores the robot arm occluding part of the image.
+    - mitigation: After implementation, add a rendered check: distractor segmentation ids present in front_rgb in every frame of [64, end].
+## pending_decisions
+  [0]
+    - question: D1 Outer initiator rule
+    - options: (a) exact mirror: randperm(count)[:3] cycled k%3; (b) randperm(count) cycled over all distractors; (c) fresh randint per window
+    - recommendation: (b)
+    - reason: Identical to (a) at count 3. At larger counts it moves nearly all distractors (5.9/6, 9.4/10) and gives the fallback an ordered candidate list. (c) raises immediate undo to 50% at count 3 (1509/3020 windows).
+  [1]
+    - question: D2 What to do when the first-choice outer swap of a window is infeasible
+    - options: (a) deterministic fallback to the next initiator, then whole-layout redraw as last resort; (b) whole-layout redraw only; (c) skip the outer swap in that window
+    - recommendation: (a)
+    - reason: (a) reaches 99.0%/96.7% (6 distractors) and 100% (10) at the first attempt. (b) passes 11-32% per attempt at 10 or fewer distractors, which is heavy bias. (c) violates the user's rule that every inner swap has an outer swap.
+  [2]
+    - question: D3 Meaning of 'lanes must not enter the inner region'
+    - options: (a) only collision-free (joint proof); (b) collision-free and ≥0.04 m circle clearance to every inner bin (evc); (c) centre path never crosses the ring's inner boundary
+    - recommendation: (b)
+    - reason: (c) is almost never satisfiable with a ±0.07 lane (a mover bulges inward in most windows: 1329 of 3020 windows intrude at count 10 in the V4 ring). (b) is achievable (99.0%/96.7% at 6 distractors) and keeps outer bins visually apart from the inner game.
+  [3]
+    - question: D4 Distractor count (coordinate with the sibling density topic)
+    - options: 3 (V4) / 6 / 10 / 15-20
+    - recommendation: ≥6; 10 if the sibling agrees
+    - reason: At 3 distractors the nearest partner is about 0.47 m away (paths cross the scene): 63.3% (VUS) / 45.2% (BUS) even with fallback. At 6 it is 99.0%/96.7%; at 10 it is 100%/100%. At 15-20, straight lanes increasingly hit neighbouring distractors (without fallback).
+  [4]
+    - question: D5 Ring for distractors when outer swaps exist
+    - options: (a) keep V4 [0.2675,0.45] (or the sibling's ring); (b) pad the ring by the lane offset (centre band [0.3375,0.45] + camera margin); (c) tight ring hugging the inner extent
+    - recommendation: (a)
+    - reason: (b) removes the far side (0% vs 16-21%) and caps capacity below 15. (c) with width 0.10 cannot contain ±0.07 lanes, so visibility fails (VUS n10 exact+visible 3% without fallback), although with fallback it reaches 97-100%.
+  [5]
+    - question: D6 Also reject inner-inner sweep collisions at reset (P4)?
+    - options: yes / no (keep V4: runtime BinCollisionError + H4 backfill)
+    - recommendation: yes
+    - reason: It turns 1.3% (VUS) / 10.7% (BUS) of demo-level failures into reset-level candidate rejections at no RNG-order cost. All 8 observed V4 collisions are of this kind.
+  [6]
+    - question: D7 Outer lane offset
+    - options: 0.07 (same as inner) / 0.05
+    - recommendation: 0.07
+    - reason: Same look as the inner swaps. With fallback, 0.07 is already 100% feasible at v4pad n=6. 0.05 helps the no-fallback mirror (VUS n=10 exact+visible 16% → 47%) but makes outer swaps visually different.
+  [7]
+    - question: D8 Inner partner resolution in xhard
+    - options: (a) keep V4 runtime resolution (semantics unchanged); (b) pin to the reset plan (changes the inner pair in about 0.08-0.18% of windows vs V4)
+    - recommendation: (a) plus the runtime joint check and mismatch logging
+    - reason: Keeps V4 xhard inner behaviour. Rare mismatches are still guarded by the runtime joint check.
+  [8]
+    - question: D9 Add the certified pre-filter to bin_collision (P5)?
+    - options: yes / no
+    - recommendation: yes
+    - reason: Identical decisions (40/40 on sampling). Reduces the joint check from 0.8-1.8 s to 3-55 ms per window and reset planning to under 1 s.
+## verification_checks
+  [0]
+    - check: Original tiers byte-identical (V1)
+    - how: scripts/parity/v4_reset_probe.py probe --tasks VideoUnmaskSwap,ButtonUnmaskSwap, diffed against the V4 base probe; then the A40 V1 144-episode regression
+    - judgement_line: NATIVE_REGRESSION=PASS compared=18 diff=0 (VideoUnmaskSwap,ButtonUnmaskSwap)
+  [1]
+    - check: xhard main RNG stream unchanged (N5)
+    - how: For N xhard seeds, compare the main-stream spec values (n_swaps, bins, color_order, selected, target_choice, swap_initiator_*) and the main generator state after _load_scene between V4 HEAD and V5
+    - judgement_line: RNG_N5=PASS seeds=40 main_stream_diff=0
+  [2]
+    - check: Every inner window has exactly one planned outer swap
+    - how: Reset 50 xhard seeds per env; assert len(actions.distractor_swap_pairs) == n_swaps and every pair uses distinct distractor_bin_* names
+    - judgement_line: OUTER_SWAP_PLAN=PASS resets=100 windows_planned_eq_n_swaps=100
+  [3]
+    - check: Plan certification replay
+    - how: Re-run check_multi_swap_sweep plus the visibility, inner-clearance and button constraints on every recorded plan in the frozen v5 specs
+    - judgement_line: OUTER_SWAP_CERT=PASS specs=N windows=W rejected=0
+  [4]
+    - check: Outer swap execution in sim
+    - how: Step hold-qpos for ≥1 seed per env through all windows; at each window end compare the outer pair's actual XY with the partner's start XY
+    - judgement_line: OUTER_SWAP_EXEC=PASS windows=W max_err_m<1e-3
+  [5]
+    - check: Distractor cubes follow their bins
+    - how: At swap_schedule[-1][3]+1, compare each distractor cube XY with its bin actor XY
+    - judgement_line: CUBE_FOLLOW=PASS cubes=C max_err_m<2e-3
+  [6]
+    - check: Zero added steps
+    - how: Same seed and n_swaps: swap_schedule[-1][3] and the static/button wait targets are identical to V4; demo episode lengths are compared
+    - judgement_line: STEP_BUDGET=PASS added_steps=0
+  [7]
+    - check: Outer bins stay visible
+    - how: Rendered front_rgb segmentation: every distractor bin id is present in every frame of [64, last_end]
+    - judgement_line: OUTER_VISIBLE=PASS frames=F missing=0
+  [8]
+    - check: Runtime collision rate
+    - how: V5 rollout and V6 combos; classify BinCollisionError by pair type from _runtime_checks
+    - judgement_line: RUNTIME_COLLISION=REPORT outer_related=0 inner_inner=k/N
+  [9]
+    - check: Demo-level generability
+    - how: V6-style combos (5 demos per combo) including BUS at max swaps
+    - judgement_line: COMBO_COVERAGE=PASS zero_success_combinations=0
+  [10]
+    - check: Spec replay binding
+    - how: Replay frozen v5 specs through native_episode_spec
+    - judgement_line: SPEC_BINDING=PASS specs=N mismatch=0 unused=0
+  [11]
+    - check: Structure locks still green
+    - how: pytest tests/lightweight/test_episode_action_sampling.py::test_real_swap_resolution_matches_baseline_and_preserves_ties test_swap_schedule_generic.py test_window_timeline.py test_v4_xhard_swap_hold.py test_v4_xhard_unmask_distractor_reveal.py test_bin_collision.py test_v4_xhard_unmaskswap.py
+    - judgement_line: UNMASKSWAP_TESTS=PASS failed=0 (new failures vs V4 baseline=0)
+  [12]
+    - check: Pre-filter equivalence (if P5)
+    - how: Randomised 1000-window comparison of the pre-filtered vs unfiltered joint check (reject/accept and reason)
+    - judgement_line: PREFILTER_EQUIV=PASS cases=1000 diff=0
+## blind_spots
+  * Only one simulator reset (VUS seed 4500300) was run. No V5 code exists, so the effect of outer swaps on demo success (especially BUS, where the robot presses buttons during swaps) is not measured.
+  * The robot arm and button geometry are not in the collision model. Button risk is approximated by centre-distance thresholds (0.122 m keep-out, 0.0955 m possible base contact).
+  * Camera visibility uses the conservative B13 fitted formula (visible_on_camera), not rendering, and ignores occlusion by the arm.
+  * Synthetic inner layouts use a replica whose spawn_random_bin obstacle OBB is approximated (yawed 0.03 half-square padded by min_gap). It is exact on all 20 spec rows but was not cross-checked with get_actor_obb elsewhere.
+  * M2/M2b use nominal positions and exact swapped end states. Real start states deviate up to about 0.7 mm (unfinished previous swap) and z differs by 1.3 mm before swaps; the effect on certification margins is not quantified.
+  * The 'tight ring' is my own assumption (inner rectangle = centre extent + 0.03 + 0.03 + 0.04, width 0.10). The sibling topic may define it differently.
+  * The sibling topic's final distractor count and ring are unknown. Numbers are given for 3/6/10/15/20 distractors in the V4, padded and tight rings.
+  * Alternative trajectories (asymmetric lane offsets, arcs that follow the ring) were not simulated.
+  * The layout bias from fallback and redraws is characterised only by side distribution and redraw rates, not by any downstream difficulty metric.
+  * Machine load was 35-95 during timing, so absolute wall-clock numbers are inflated; the ratios are the meaningful part.
+## scratch_files
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/replica.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/ring_sampler.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/multi_sweep.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m0_verify_replica.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m0b_verify_ring_sampler.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m0b.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m0c_multi_sweep_equiv.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m1_inner_stats.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m1.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m1b_spawn_fail.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m1c_tie.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m2_outer_sim.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/run_m2_batch.sh
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m2.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/summ_m2.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m2b_fallback.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/run_m2b_batch.sh
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m2b.log
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/summ_m2b.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m2c_spec_rows.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m2d_where.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m3_sim_probe.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/m4_timing.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/t_check.py
+  * /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/unmask_swap/t_prof.py

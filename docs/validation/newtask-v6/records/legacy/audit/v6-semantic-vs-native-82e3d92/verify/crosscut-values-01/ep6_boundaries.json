@@ -1,0 +1,112 @@
+[
+ {
+  "t": 0,
+  "s": "pick up the cube",
+  "demo": true
+ },
+ {
+  "t": 121,
+  "s": "drop the cube onto target",
+  "demo": true
+ },
+ {
+  "t": 212,
+  "s": "pick up the cube",
+  "demo": true
+ },
+ {
+  "t": 332,
+  "s": "drop the cube onto target",
+  "demo": true
+ },
+ {
+  "t": 424,
+  "s": "pick up the cube",
+  "demo": true
+ },
+ {
+  "t": 492,
+  "s": "drop the cube onto target",
+  "demo": true
+ },
+ {
+  "t": 581,
+  "s": "press the button",
+  "demo": true
+ },
+ {
+  "t": 676,
+  "s": "pick up the cube",
+  "demo": true
+ },
+ {
+  "t": 763,
+  "s": "drop the cube onto target",
+  "demo": true
+ },
+ {
+  "t": 854,
+  "s": "pick up the cube",
+  "demo": true
+ },
+ {
+  "t": 963,
+  "s": "drop the cube onto target",
+  "demo": true
+ },
+ {
+  "t": 1024,
+  "s": "pick up the cube",
+  "demo": true
+ },
+ {
+  "t": 1140,
+  "s": "drop the cube onto target",
+  "demo": true
+ },
+ {
+  "t": 1217,
+  "s": "pick up the cube",
+  "demo": true
+ },
+ {
+  "t": 1286,
+  "s": "put the cube back to its original position",
+  "demo": true
+ },
+ {
+  "t": 1385,
+  "s": "pick up the cube",
+  "demo": true
+ },
+ {
+  "t": 1496,
+  "s": "put the cube back to its original position",
+  "demo": true
+ },
+ {
+  "t": 1589,
+  "s": "static",
+  "demo": true
+ },
+ {
+  "t": 1663,
+  "s": "static",
+  "demo": true
+ },
+ {
+  "t": 1723,
+  "s": "pick up the cube",
+  "demo": false
+ },
+ {
+  "t": 1846,
+  "s": "place the cube onto the correct target",
+  "demo": false
+ },
+ {
+  "t": 1934,
+  "s": "All tasks completed",
+  "demo": false
+ }
+]

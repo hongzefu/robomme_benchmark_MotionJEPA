@@ -1,0 +1,1185 @@
+[
+ {
+  "task": "BinFill",
+  "ep": 0,
+  "seed": 4400000,
+  "timesteps": 1523,
+  "demo": 0,
+  "objects": {
+   "color_mix_fallback": false,
+   "color_mix_max_component": 2,
+   "color_pool": [
+    0,
+    2,
+    1
+   ],
+   "color_redraws": 0,
+   "put_in_color": 2,
+   "spawn_actual": 12,
+   "spawn_numbers": [
+    5,
+    2,
+    5
+   ],
+   "spawn_order": [
+    11,
+    10,
+    6,
+    5,
+    9,
+    1,
+    8,
+    3,
+    7,
+    4,
+    0,
+    2
+   ],
+   "spawn_requested": 12,
+   "target_numbers": [
+    3,
+    0,
+    4
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "ep": 3,
+  "seed": 4400300,
+  "timesteps": 1187,
+  "demo": 0,
+  "objects": {
+   "color_mix_fallback": false,
+   "color_mix_max_component": 2,
+   "color_pool": [
+    0,
+    2,
+    1
+   ],
+   "color_redraws": 1,
+   "put_in_color": 3,
+   "slot_assignment": [
+    "green_0",
+    "blue_0",
+    "red_6",
+    "red_5",
+    "red_4",
+    "green_2",
+    "green_3",
+    "red_2",
+    "red_1",
+    "red_3",
+    "red_0",
+    "green_1"
+   ],
+   "spawn_actual": 12,
+   "spawn_numbers": [
+    7,
+    1,
+    4
+   ],
+   "spawn_order": [
+    10,
+    11,
+    8,
+    9,
+    6,
+    3,
+    4,
+    0,
+    1,
+    7,
+    5,
+    2
+   ],
+   "spawn_requested": 12,
+   "target_numbers": [
+    4,
+    0,
+    2
+   ]
+  }
+ },
+ {
+  "task": "BinFill",
+  "ep": 6,
+  "seed": 4400600,
+  "timesteps": 956,
+  "demo": 0,
+  "objects": {
+   "color_mix_fallback": false,
+   "color_mix_max_component": 2,
+   "color_pool": [
+    1,
+    2,
+    0
+   ],
+   "color_redraws": 0,
+   "put_in_color": 3,
+   "slot_assignment": [
+    "red_3",
+    "red_4",
+    "blue_0",
+    "green_1",
+    "red_5",
+    "green_2",
+    "blue_2",
+    "red_1",
+    "red_2",
+    "green_0",
+    "red_0",
+    "blue_1"
+   ],
+   "spawn_actual": 12,
+   "spawn_numbers": [
+    6,
+    3,
+    3
+   ],
+   "spawn_order": [
+    3,
+    4,
+    6,
+    10,
+    5,
+    11,
+    8,
+    1,
+    2,
+    9,
+    0,
+    7
+   ],
+   "spawn_requested": 12,
+   "target_numbers": [
+    2,
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "ep": 0,
+  "seed": 4700000,
+  "timesteps": 716,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    0,
+    1,
+    2
+   ],
+   "n_picks": 3,
+   "n_swaps": 8,
+   "selected": [
+    2,
+    0,
+    1
+   ],
+   "swap_initiator_indices": [
+    0,
+    2
+   ],
+   "swap_initiator_third": 1,
+   "target_choice": 2
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "ep": 3,
+  "seed": 4700300,
+  "timesteps": 689,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    1,
+    2,
+    0
+   ],
+   "n_picks": 3,
+   "n_swaps": 7,
+   "selected": [
+    2,
+    1,
+    0
+   ],
+   "swap_initiator_indices": [
+    1,
+    2
+   ],
+   "swap_initiator_third": 0,
+   "target_choice": 0
+  }
+ },
+ {
+  "task": "ButtonUnmaskSwap",
+  "ep": 6,
+  "seed": 4700600,
+  "timesteps": 721,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    0,
+    1,
+    2
+   ],
+   "n_picks": 3,
+   "n_swaps": 8,
+   "selected": [
+    2,
+    0,
+    1
+   ],
+   "swap_initiator_indices": [
+    1,
+    2
+   ],
+   "swap_initiator_third": 0,
+   "target_choice": 0
+  }
+ },
+ {
+  "task": "ButtonUnmask",
+  "ep": 0,
+  "seed": 4800000,
+  "timesteps": 538,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    1,
+    0,
+    2
+   ],
+   "n_picks": 3,
+   "pick_order": [
+    0,
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "ButtonUnmask",
+  "ep": 3,
+  "seed": 4800300,
+  "timesteps": 516,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    1,
+    0,
+    2
+   ],
+   "n_picks": 3,
+   "pick_order": [
+    0,
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "ButtonUnmask",
+  "ep": 6,
+  "seed": 4800600,
+  "timesteps": 511,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    1,
+    0,
+    2
+   ],
+   "n_picks": 3,
+   "pick_order": [
+    0,
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "InsertPeg",
+  "ep": 0,
+  "seed": 5300000,
+  "timesteps": 451,
+  "demo": 238,
+  "objects": {
+   "head_rgb": [
+    0.4517098665237427,
+    0.07937651872634888,
+    0.3983730673789978
+   ],
+   "sampling_trace": {
+    "random_peg_idx": 1
+   }
+  }
+ },
+ {
+  "task": "InsertPeg",
+  "ep": 1,
+  "seed": 5300100,
+  "timesteps": 496,
+  "demo": 248,
+  "objects": {
+   "head_rgb": [
+    0.10497599840164185,
+    0.947341799736023,
+    0.11050015687942505
+   ],
+   "sampling_trace": {
+    "random_peg_idx": 1
+   }
+  }
+ },
+ {
+  "task": "InsertPeg",
+  "ep": 5,
+  "seed": 5300500,
+  "timesteps": 484,
+  "demo": 242,
+  "objects": {
+   "head_rgb": [
+    0.6546037197113037,
+    0.9139472842216492,
+    0.9905912280082703
+   ],
+   "sampling_trace": {
+    "random_peg_idx": 0
+   }
+  }
+ },
+ {
+  "task": "MoveCube",
+  "ep": 0,
+  "seed": 5400000,
+  "timesteps": 481,
+  "demo": 263,
+  "objects": {
+   "obj_sample": 1,
+   "sampling_trace": {
+    "dir_sample": 0
+   }
+  }
+ },
+ {
+  "task": "MoveCube",
+  "ep": 3,
+  "seed": 5400300,
+  "timesteps": 281,
+  "demo": 167,
+  "objects": {
+   "obj_sample": 1,
+   "sampling_trace": {
+    "dir_sample": 0
+   }
+  }
+ },
+ {
+  "task": "MoveCube",
+  "ep": 6,
+  "seed": 5400600,
+  "timesteps": 280,
+  "demo": 170,
+  "objects": {
+   "obj_sample": 1,
+   "sampling_trace": {
+    "dir_sample": 0
+   }
+  }
+ },
+ {
+  "task": "PatternLock",
+  "ep": 0,
+  "seed": 5500000,
+  "timesteps": 1636,
+  "demo": 818,
+  "objects": {}
+ },
+ {
+  "task": "PatternLock",
+  "ep": 3,
+  "seed": 5500300,
+  "timesteps": 1744,
+  "demo": 872,
+  "objects": {}
+ },
+ {
+  "task": "PatternLock",
+  "ep": 6,
+  "seed": 5500600,
+  "timesteps": 1674,
+  "demo": 837,
+  "objects": {}
+ },
+ {
+  "task": "PickHighlight",
+  "ep": 0,
+  "seed": 5200000,
+  "timesteps": 1032,
+  "demo": 0,
+  "objects": {
+   "highlight_count": 6,
+   "highlight_ids": [
+    2,
+    8,
+    3,
+    4,
+    1,
+    0
+   ],
+   "n_cubes": 9,
+   "n_cubes_spawned": 9
+  }
+ },
+ {
+  "task": "PickHighlight",
+  "ep": 3,
+  "seed": 5200300,
+  "timesteps": 872,
+  "demo": 0,
+  "objects": {
+   "highlight_count": 5,
+   "highlight_ids": [
+    4,
+    8,
+    6,
+    1,
+    7
+   ],
+   "n_cubes": 10,
+   "n_cubes_spawned": 10
+  }
+ },
+ {
+  "task": "PickHighlight",
+  "ep": 6,
+  "seed": 5200600,
+  "timesteps": 1060,
+  "demo": 0,
+  "objects": {
+   "highlight_count": 6,
+   "highlight_ids": [
+    2,
+    7,
+    3,
+    1,
+    5,
+    6
+   ],
+   "n_cubes": 8,
+   "n_cubes_spawned": 8
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "ep": 0,
+  "seed": 4100000,
+  "timesteps": 1017,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    0,
+    1,
+    2
+   ],
+   "cube_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "distractor_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "num_repeats": 6,
+   "target_candidates": [
+    "red",
+    "blue",
+    "green"
+   ],
+   "target_color_idx": 2,
+   "target_cube_idx": 2
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "ep": 3,
+  "seed": 4100300,
+  "timesteps": 1309,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    2,
+    1,
+    0
+   ],
+   "cube_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "distractor_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "num_repeats": 7,
+   "target_candidates": [
+    "green",
+    "blue",
+    "red"
+   ],
+   "target_color_idx": 1,
+   "target_cube_idx": 0
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "ep": 6,
+  "seed": 4100600,
+  "timesteps": 1122,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    1,
+    0,
+    2
+   ],
+   "cube_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "distractor_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "num_repeats": 7,
+   "target_candidates": [
+    "blue",
+    "red",
+    "green"
+   ],
+   "target_color_idx": 1,
+   "target_cube_idx": 0
+  }
+ },
+ {
+  "task": "RouteStick",
+  "ep": 0,
+  "seed": 5600000,
+  "timesteps": 2100,
+  "demo": 1050,
+  "objects": {
+   "L": 21
+  }
+ },
+ {
+  "task": "RouteStick",
+  "ep": 3,
+  "seed": 5600300,
+  "timesteps": 1700,
+  "demo": 850,
+  "objects": {
+   "L": 17
+  }
+ },
+ {
+  "task": "RouteStick",
+  "ep": 6,
+  "seed": 5600600,
+  "timesteps": 1600,
+  "demo": 800,
+  "objects": {
+   "L": 16
+  }
+ },
+ {
+  "task": "StopCube",
+  "ep": 0,
+  "seed": 4200000,
+  "timesteps": 428,
+  "demo": 0,
+  "objects": {
+   "cube_rgb": [
+    0.8874674439430237,
+    0.37073636054992676,
+    0.4680398106575012
+   ]
+  }
+ },
+ {
+  "task": "StopCube",
+  "ep": 3,
+  "seed": 4200300,
+  "timesteps": 846,
+  "demo": 0,
+  "objects": {
+   "cube_rgb": [
+    0.6913653016090393,
+    0.3887658715248108,
+    0.5356501936912537
+   ]
+  }
+ },
+ {
+  "task": "StopCube",
+  "ep": 6,
+  "seed": 4200600,
+  "timesteps": 553,
+  "demo": 0,
+  "objects": {
+   "cube_rgb": [
+    0.8037262558937073,
+    0.24707669019699097,
+    0.2213534116744995
+   ]
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "ep": 0,
+  "seed": 4300000,
+  "timesteps": 649,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    1,
+    0,
+    2
+   ],
+   "cube_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "distractor_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "num_repeats": 5,
+   "target_candidates": [
+    "blue",
+    "red",
+    "green"
+   ],
+   "target_color_idx": 0,
+   "target_cube_idx": 2
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "ep": 3,
+  "seed": 4300300,
+  "timesteps": 826,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    2,
+    0,
+    1
+   ],
+   "cube_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "distractor_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "num_repeats": 7,
+   "target_candidates": [
+    "green",
+    "red",
+    "blue"
+   ],
+   "target_color_idx": 1,
+   "target_cube_idx": 0
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "ep": 6,
+  "seed": 4300600,
+  "timesteps": 926,
+  "demo": 0,
+  "objects": {
+   "color_order": [
+    0,
+    1,
+    2
+   ],
+   "cube_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "distractor_count": {
+    "actual": 3,
+    "requested": 3
+   },
+   "num_repeats": 8,
+   "target_candidates": [
+    "red",
+    "blue",
+    "green"
+   ],
+   "target_color_idx": 1,
+   "target_cube_idx": 2
+  }
+ },
+ {
+  "task": "VideoPlaceButton",
+  "ep": 0,
+  "seed": 5000000,
+  "timesteps": 1552,
+  "demo": 1365,
+  "objects": {
+   "answer_demo_index": 1,
+   "color_order": [
+    1,
+    2,
+    0
+   ],
+   "demo_ids": [
+    2,
+    1
+   ],
+   "swap_pair_ids": [
+    1,
+    2,
+    0,
+    3
+   ],
+   "task_flag": false
+  }
+ },
+ {
+  "task": "VideoPlaceButton",
+  "ep": 3,
+  "seed": 5000302,
+  "timesteps": 1568,
+  "demo": 1373,
+  "objects": {
+   "answer_demo_index": 1,
+   "color_order": [
+    0,
+    1,
+    2
+   ],
+   "demo_ids": [
+    0,
+    2
+   ],
+   "swap_pair_ids": [
+    3,
+    2,
+    0,
+    1
+   ],
+   "task_flag": false
+  }
+ },
+ {
+  "task": "VideoPlaceButton",
+  "ep": 6,
+  "seed": 5000601,
+  "timesteps": 1589,
+  "demo": 1368,
+  "objects": {
+   "answer_demo_index": 0,
+   "color_order": [
+    2,
+    0,
+    1
+   ],
+   "demo_ids": [
+    1,
+    2
+   ],
+   "swap_pair_ids": [
+    3,
+    1,
+    0,
+    2
+   ],
+   "task_flag": true
+  }
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "ep": 0,
+  "seed": 5100003,
+  "timesteps": 1700,
+  "demo": 1520,
+  "objects": {
+   "answer_demo_index": 1,
+   "button_after_visit_index": 2,
+   "color_order": [
+    0,
+    2,
+    1
+   ],
+   "demo_ids": [
+    0,
+    1
+   ],
+   "num_targets_by_object": {
+    "0": 2,
+    "1": 3
+   },
+   "swap_pair_ids": [
+    2,
+    3,
+    1,
+    0
+   ],
+   "visit_ids_by_object": {
+    "0": [
+     1,
+     2
+    ],
+    "1": [
+     0,
+     3,
+     1
+    ]
+   },
+   "which_in_subset": 2
+  }
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "ep": 3,
+  "seed": 5100303,
+  "timesteps": 2171,
+  "demo": 1952,
+  "objects": {
+   "answer_demo_index": 0,
+   "button_after_visit_index": 3,
+   "color_order": [
+    2,
+    0,
+    1
+   ],
+   "demo_ids": [
+    0,
+    2
+   ],
+   "num_targets_by_object": {
+    "0": 4,
+    "1": 4
+   },
+   "swap_pair_ids": [
+    1,
+    2,
+    3,
+    0
+   ],
+   "visit_ids_by_object": {
+    "0": [
+     0,
+     3,
+     2,
+     1
+    ],
+    "1": [
+     0,
+     2,
+     1,
+     3
+    ]
+   },
+   "which_in_subset": 3
+  }
+ },
+ {
+  "task": "VideoPlaceOrder",
+  "ep": 6,
+  "seed": 5100600,
+  "timesteps": 1832,
+  "demo": 1606,
+  "objects": {
+   "answer_demo_index": 1,
+   "button_after_visit_index": 3,
+   "color_order": [
+    1,
+    0,
+    2
+   ],
+   "demo_ids": [
+    0,
+    2
+   ],
+   "num_targets_by_object": {
+    "0": 3,
+    "1": 3
+   },
+   "swap_pair_ids": [
+    1,
+    3,
+    2,
+    0
+   ],
+   "visit_ids_by_object": {
+    "0": [
+     0,
+     1,
+     2
+    ],
+    "1": [
+     0,
+     2,
+     1
+    ]
+   },
+   "which_in_subset": 2
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "ep": 0,
+  "seed": 4900001,
+  "timesteps": 1324,
+  "demo": 655,
+  "objects": {
+   "color_rgb": [
+    0.6890593767166138,
+    0.1675998198840034,
+    0.4930326432110993
+   ],
+   "cube_count": {
+    "actual": 6,
+    "requested": 6
+   },
+   "n_swaps": 8,
+   "num_repeats": 4,
+   "swap_initiators": [
+    "bin_1",
+    "bin_2",
+    "bin_4",
+    "bin_5",
+    "bin_3",
+    "bin_0"
+   ],
+   "swap_initiators_remaining": [
+    1,
+    3,
+    4,
+    2,
+    0
+   ],
+   "target": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "ep": 3,
+  "seed": 4900300,
+  "timesteps": 1696,
+  "demo": 851,
+  "objects": {
+   "color_rgb": [
+    0.7816750168800355,
+    0.5661336988373336,
+    0.18786457768831435
+   ],
+   "cube_count": {
+    "actual": 6,
+    "requested": 6
+   },
+   "n_swaps": 12,
+   "num_repeats": 5,
+   "swap_initiators": [
+    "bin_1",
+    "bin_0",
+    "bin_3",
+    "bin_2",
+    "bin_5",
+    "bin_4"
+   ],
+   "swap_initiators_remaining": [
+    0,
+    2,
+    1,
+    4,
+    3
+   ],
+   "target": 1
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "ep": 6,
+  "seed": 4900601,
+  "timesteps": 1346,
+  "demo": 699,
+  "objects": {
+   "color_rgb": [
+    0.19219011574116582,
+    0.1452511697729051,
+    0.518315315246582
+   ],
+   "cube_count": {
+    "actual": 6,
+    "requested": 6
+   },
+   "n_swaps": 9,
+   "num_repeats": 4,
+   "swap_initiators": [
+    "bin_0",
+    "bin_1",
+    "bin_4",
+    "bin_5",
+    "bin_3",
+    "bin_2"
+   ],
+   "swap_initiators_remaining": [
+    0,
+    3,
+    4,
+    2,
+    1
+   ],
+   "target": 0
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "ep": 0,
+  "seed": 4500000,
+  "timesteps": 802,
+  "demo": 396,
+  "objects": {
+   "color_order": [
+    1,
+    2,
+    0
+   ],
+   "n_picks": 3,
+   "n_swaps": 10,
+   "selected": [
+    1,
+    2,
+    0
+   ],
+   "swap_initiator_indices": [
+    0,
+    2
+   ],
+   "swap_initiator_third": 1,
+   "target_choice": 2
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "ep": 3,
+  "seed": 4500301,
+  "timesteps": 807,
+  "demo": 396,
+  "objects": {
+   "color_order": [
+    1,
+    2,
+    0
+   ],
+   "n_picks": 3,
+   "n_swaps": 10,
+   "selected": [
+    2,
+    1,
+    0
+   ],
+   "swap_initiator_indices": [
+    1,
+    2
+   ],
+   "swap_initiator_third": 3,
+   "target_choice": 0
+  }
+ },
+ {
+  "task": "VideoUnmaskSwap",
+  "ep": 6,
+  "seed": 4500600,
+  "timesteps": 780,
+  "demo": 366,
+  "objects": {
+   "color_order": [
+    2,
+    0,
+    1
+   ],
+   "n_picks": 3,
+   "n_swaps": 9,
+   "selected": [
+    0,
+    2,
+    1
+   ],
+   "swap_initiator_indices": [
+    1,
+    2
+   ],
+   "swap_initiator_third": 3,
+   "target_choice": 2
+  }
+ },
+ {
+  "task": "VideoUnmask",
+  "ep": 0,
+  "seed": 4600000,
+  "timesteps": 507,
+  "demo": 66,
+  "objects": {
+   "color_order": [
+    2,
+    1,
+    0
+   ],
+   "n_picks": 3,
+   "pick_order": [
+    0,
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "VideoUnmask",
+  "ep": 3,
+  "seed": 4600300,
+  "timesteps": 441,
+  "demo": 66,
+  "objects": {
+   "color_order": [
+    0,
+    2,
+    1
+   ],
+   "n_picks": 3,
+   "pick_order": [
+    0,
+    1,
+    2
+   ]
+  }
+ },
+ {
+  "task": "VideoUnmask",
+  "ep": 6,
+  "seed": 4600600,
+  "timesteps": 466,
+  "demo": 66,
+  "objects": {
+   "color_order": [
+    1,
+    2,
+    0
+   ],
+   "n_picks": 3,
+   "pick_order": [
+    0,
+    1,
+    2
+   ]
+  }
+ }
+]

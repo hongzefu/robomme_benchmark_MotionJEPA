@@ -1,0 +1,22 @@
+t=0	demo=True	pick up the cube
+t=111	demo=True	drop the cube onto target
+t=206	demo=True	pick up the cube
+t=328	demo=True	drop the cube onto target
+t=418	demo=True	pick up the cube
+t=492	demo=True	drop the cube onto target
+t=590	demo=True	press the button
+t=691	demo=True	pick up the cube
+t=784	demo=True	drop the cube onto target
+t=877	demo=True	pick up the cube
+t=973	demo=True	drop the cube onto target
+t=1031	demo=True	pick up the cube
+t=1126	demo=True	drop the cube onto target
+t=1230	demo=True	pick up the cube
+t=1305	demo=True	put the cube back to its original position
+t=1408	demo=True	pick up the cube
+t=1516	demo=True	put the cube back to its original position
+t=1603	demo=True	static
+t=1664	demo=True	static
+t=1724	demo=False	pick up the cube
+t=1835	demo=False	place the cube onto the correct target
+t=1917	demo=False	All tasks completed

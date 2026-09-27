@@ -1,0 +1,477 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "objects.num_repeats",
+      "drawn": 5,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.n_swaps",
+      "drawn": 12,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "objects.color_rgb",
+      "drawn": [
+        0.7816750168800355,
+        0.5661336988373336,
+        0.18786457768831435
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.cubes.0.xy_yaw",
+      "drawn": [
+        -0.17537569522857666,
+        0.16384883761405947,
+        5.444213164370854
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.cubes.1.xy_yaw",
+      "drawn": [
+        0.06794647455215458,
+        -0.12772453784942628,
+        6.063705463248829
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.cubes.2.xy_yaw",
+      "drawn": [
+        -0.03328925609588623,
+        0.003178941011428821,
+        2.018063329557992
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.cubes.3.xy_yaw",
+      "drawn": [
+        -0.01744072675704955,
+        -0.2222270131111145,
+        0.1332825572849231
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.cubes.4.xy_yaw",
+      "drawn": [
+        -0.0071617293357849054,
+        0.15312639951705934,
+        3.904650349228515
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "layout.cubes.5.xy_yaw",
+      "drawn": [
+        -0.15030294179916384,
+        -0.1108531165122986,
+        3.5949536347172626
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "objects.cube_count.requested",
+      "drawn": 6,
+      "source": "record"
+    },
+    {
+      "index": 10,
+      "path": "objects.cube_count.actual",
+      "drawn": 6,
+      "source": "record"
+    },
+    {
+      "index": 11,
+      "path": "objects.target",
+      "drawn": 1,
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.swap_initiators_remaining",
+      "drawn": [
+        0,
+        2,
+        1,
+        4,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "objects.swap_initiators",
+      "drawn": [
+        "bin_1",
+        "bin_0",
+        "bin_3",
+        "bin_2",
+        "bin_5",
+        "bin_4"
+      ],
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "objects.swap_partner_u",
+      "drawn": [
+        0.4270946979522705,
+        0.6446214318275452,
+        0.09092265367507935,
+        0.4213365912437439,
+        0.23701471090316772,
+        0.5890099406242371,
+        0.9076204895973206,
+        0.8355482816696167,
+        0.7219118475914001,
+        0.1134641170501709,
+        0.29769545793533325,
+        0.665518581867218
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "actions.swap_pairs.0",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_2"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "actions.swap_pairs.1",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_2"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "actions.swap_pairs.2",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_0"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "actions.swap_pairs.3",
+      "drawn": {
+        "initiator": "bin_2",
+        "partner": "bin_4"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "actions.swap_pairs.4",
+      "drawn": {
+        "initiator": "bin_5",
+        "partner": "bin_1"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "actions.swap_pairs.5",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_3"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 21,
+      "path": "actions.swap_pairs.6",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_0"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 22,
+      "path": "actions.swap_pairs.7",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_1"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 23,
+      "path": "actions.swap_pairs.8",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_4"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 24,
+      "path": "actions.swap_pairs.9",
+      "drawn": {
+        "initiator": "bin_2",
+        "partner": "bin_5"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 25,
+      "path": "actions.swap_pairs.10",
+      "drawn": {
+        "initiator": "bin_5",
+        "partner": "bin_2"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 26,
+      "path": "actions.swap_pairs.11",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_3"
+      },
+      "source": "spec"
+    },
+    {
+      "index": 27,
+      "path": "actions.swap_pairs.0",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 28,
+      "path": "actions.swap_windows.0",
+      "drawn": [
+        191,
+        241
+      ],
+      "source": "record"
+    },
+    {
+      "index": 29,
+      "path": "actions.swap_pairs.1",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 30,
+      "path": "actions.swap_windows.1",
+      "drawn": [
+        241,
+        291
+      ],
+      "source": "record"
+    },
+    {
+      "index": 31,
+      "path": "actions.swap_pairs.2",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_0"
+      },
+      "source": "record"
+    },
+    {
+      "index": 32,
+      "path": "actions.swap_windows.2",
+      "drawn": [
+        291,
+        341
+      ],
+      "source": "record"
+    },
+    {
+      "index": 33,
+      "path": "actions.swap_pairs.3",
+      "drawn": {
+        "initiator": "bin_2",
+        "partner": "bin_4"
+      },
+      "source": "record"
+    },
+    {
+      "index": 34,
+      "path": "actions.swap_windows.3",
+      "drawn": [
+        341,
+        391
+      ],
+      "source": "record"
+    },
+    {
+      "index": 35,
+      "path": "actions.swap_pairs.4",
+      "drawn": {
+        "initiator": "bin_5",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 36,
+      "path": "actions.swap_windows.4",
+      "drawn": [
+        391,
+        441
+      ],
+      "source": "record"
+    },
+    {
+      "index": 37,
+      "path": "actions.swap_pairs.5",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_3"
+      },
+      "source": "record"
+    },
+    {
+      "index": 38,
+      "path": "actions.swap_windows.5",
+      "drawn": [
+        441,
+        491
+      ],
+      "source": "record"
+    },
+    {
+      "index": 39,
+      "path": "actions.swap_pairs.6",
+      "drawn": {
+        "initiator": "bin_1",
+        "partner": "bin_0"
+      },
+      "source": "record"
+    },
+    {
+      "index": 40,
+      "path": "actions.swap_windows.6",
+      "drawn": [
+        491,
+        541
+      ],
+      "source": "record"
+    },
+    {
+      "index": 41,
+      "path": "actions.swap_pairs.7",
+      "drawn": {
+        "initiator": "bin_0",
+        "partner": "bin_1"
+      },
+      "source": "record"
+    },
+    {
+      "index": 42,
+      "path": "actions.swap_windows.7",
+      "drawn": [
+        541,
+        591
+      ],
+      "source": "record"
+    },
+    {
+      "index": 43,
+      "path": "actions.swap_pairs.8",
+      "drawn": {
+        "initiator": "bin_3",
+        "partner": "bin_4"
+      },
+      "source": "record"
+    },
+    {
+      "index": 44,
+      "path": "actions.swap_windows.8",
+      "drawn": [
+        591,
+        641
+      ],
+      "source": "record"
+    },
+    {
+      "index": 45,
+      "path": "actions.swap_pairs.9",
+      "drawn": {
+        "initiator": "bin_2",
+        "partner": "bin_5"
+      },
+      "source": "record"
+    },
+    {
+      "index": 46,
+      "path": "actions.swap_windows.9",
+      "drawn": [
+        641,
+        691
+      ],
+      "source": "record"
+    },
+    {
+      "index": 47,
+      "path": "actions.swap_pairs.10",
+      "drawn": {
+        "initiator": "bin_5",
+        "partner": "bin_2"
+      },
+      "source": "record"
+    },
+    {
+      "index": 48,
+      "path": "actions.swap_windows.10",
+      "drawn": [
+        691,
+        741
+      ],
+      "source": "record"
+    },
+    {
+      "index": 49,
+      "path": "actions.swap_pairs.11",
+      "drawn": {
+        "initiator": "bin_4",
+        "partner": "bin_3"
+      },
+      "source": "record"
+    },
+    {
+      "index": 50,
+      "path": "actions.swap_windows.11",
+      "drawn": [
+        741,
+        791
+      ],
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {
+    "generator": "eda6de282b5f5dd051db57fd819fb9bd3da73aee1d5a06a53401744e8b24554a"
+  }
+}

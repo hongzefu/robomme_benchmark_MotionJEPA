@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V4 步 3b PickXtimes 的 xhard 档（0922-newtask-release-v4-plan.md 2.4 / 2.21）。
+"""轻量测试：V4 步 3b PickXtimes 的 xhard 档（docs/plans/0922-newtask-release-v4-plan.md 2.4 / 2.21）。
 
 纯 CPU、不起 sapien 场景，只验结构：
 * 原三档 ``configs`` 与 decision 可见部分（去掉 xhard 键后）逐字不变；

@@ -1,0 +1,90 @@
+{
+  "decision": {
+    "move_interval_choices": [
+      60,
+      80,
+      120
+    ],
+    "stop_time_range": {
+      "high_exclusive": 6,
+      "low": 2
+    },
+    "xhard4": {
+      "move_interval_choices": [
+        60
+      ],
+      "stop_time_range": {
+        "high_exclusive": 16,
+        "low": 6
+      }
+    }
+  },
+  "native": {
+    "parameters": {
+      "interval_sample": {
+        "high_exclusive": 33,
+        "low": 27,
+        "note": "原代码抽完立刻被常量 30 覆盖；保留这次抽样以免随机流平移（红线 R8）",
+        "overridden_to": 30,
+        "sampler": "torch.randint",
+        "shape": [
+          1
+        ]
+      },
+      "motion_segments": 5,
+      "press_lead_steps": "self.interval",
+      "recovery": "StopCube 原本就没有失败抓取注入，只接收入口给定的恢复模式",
+      "route_endpoints": {
+        "end": [
+          0,
+          0.3
+        ],
+        "start": [
+          0,
+          -0.3
+        ]
+      },
+      "route_rotation_deg": {
+        "high": 30,
+        "low": -30,
+        "sampler": "torch.FloatTensor(1).uniform_"
+      },
+      "steps_press_expression": "move_interval * stop_time - move_interval / 2",
+      "stop_window_expression": "[move_interval * (stop_time - 1), move_interval * stop_time]"
+    },
+    "positions": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "scale": 1.5
+      },
+      "cube_color": {
+        "alpha": 1.0,
+        "sampler": "torch.rand",
+        "shape": [
+          3
+        ]
+      },
+      "cube_initial_position": [
+        -0.3,
+        -0.3
+      ],
+      "target": {
+        "euler_deg": [
+          0.0,
+          90.0,
+          0.0
+        ],
+        "high": 0.1,
+        "low": -0.1,
+        "radius_factor": 1.8,
+        "thickness": 0.01,
+        "xy_sampler": "torch.FloatTensor(1).uniform_",
+        "z": 0.01
+      }
+    }
+  }
+}

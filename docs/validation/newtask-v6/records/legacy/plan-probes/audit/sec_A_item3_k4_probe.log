@@ -1,0 +1,14 @@
+  import pkg_resources
+  import pynvml  # type: ignore[import]
+StopCube {'easy': False, 'medium': False, 'hard': False, 'xhard': False}
+  L234: self.difficulty = "easy"
+  L236: self.difficulty = "medium"
+  L238: self.difficulty = "hard"
+MoveCube {'easy': False, 'medium': False, 'hard': False, 'xhard': True}
+  L263: self.difficulty = "easy"
+  L265: self.difficulty = "medium"
+  L267: self.difficulty = "hard"
+InsertPeg {'easy': False, 'medium': False, 'hard': False, 'xhard': True}
+  L300: self.difficulty = "easy"
+  L302: self.difficulty = "medium"
+  L304: self.difficulty = "hard"

@@ -1,0 +1,480 @@
+{
+  "decision": {
+    "block_color_policy": "native_by_difficulty",
+    "layout_mode": "native_by_difficulty",
+    "num_repeats_range": {
+      "high_exclusive": 4,
+      "low": 1,
+      "xhard1": {
+        "high_exclusive": 3,
+        "low": 2
+      },
+      "xhard2": {
+        "high_exclusive": 4,
+        "low": 3
+      },
+      "xhard3": {
+        "high_exclusive": 5,
+        "low": 4
+      },
+      "xhard4": {
+        "high_exclusive": 7,
+        "low": 5
+      }
+    },
+    "swap": {
+      "easy": {
+        "swap_max": 2,
+        "swap_min": 1
+      },
+      "hard": {
+        "swap_max": 0,
+        "swap_min": 0
+      },
+      "medium": {
+        "swap_max": 3,
+        "swap_min": 2
+      },
+      "xhard1": {
+        "swap_max": 4,
+        "swap_min": 3
+      },
+      "xhard2": {
+        "swap_max": 6,
+        "swap_min": 5
+      },
+      "xhard3": {
+        "swap_max": 8,
+        "swap_min": 7
+      },
+      "xhard4": {
+        "swap_max": 12,
+        "swap_min": 9
+      }
+    },
+    "xhard1": {
+      "block_color": {
+        "h_range": [
+          0.0,
+          1.0
+        ],
+        "policy": "same_color_hsv_floor",
+        "s_range": [
+          0.5,
+          1.0
+        ],
+        "sampler": "torch.rand",
+        "v_range": [
+          0.4,
+          1.0
+        ]
+      },
+      "layout": {
+        "cube_count": 4,
+        "min_center_dist_m": 0.12,
+        "mode": "clutter",
+        "region_center": [
+          -0.1,
+          0.0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ]
+      },
+      "swap_plan": {
+        "button_obstacle": true,
+        "initiator_rule": "s5_balanced_pair",
+        "partner_rule": "s5_balanced_greedy",
+        "s5": {
+          "accept_range": 1,
+          "forbid_immediate_undo": true,
+          "plan_seed_high_exclusive": 4611686018427387904,
+          "range_retry_budget": 20,
+          "require_connected_graph": false,
+          "rule": "s5_balanced_greedy",
+          "score": "sum_max"
+        },
+        "sweep_margin_m": 0.005
+      }
+    },
+    "xhard2": {
+      "block_color": {
+        "h_range": [
+          0.0,
+          1.0
+        ],
+        "policy": "same_color_hsv_floor",
+        "s_range": [
+          0.5,
+          1.0
+        ],
+        "sampler": "torch.rand",
+        "v_range": [
+          0.4,
+          1.0
+        ]
+      },
+      "layout": {
+        "cube_count": 5,
+        "min_center_dist_m": 0.12,
+        "mode": "clutter",
+        "region_center": [
+          -0.1,
+          0.0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ]
+      },
+      "swap_plan": {
+        "button_obstacle": true,
+        "initiator_rule": "s5_balanced_pair",
+        "partner_rule": "s5_balanced_greedy",
+        "s5": {
+          "accept_range": 1,
+          "forbid_immediate_undo": true,
+          "plan_seed_high_exclusive": 4611686018427387904,
+          "range_retry_budget": 20,
+          "require_connected_graph": false,
+          "rule": "s5_balanced_greedy",
+          "score": "sum_max"
+        },
+        "sweep_margin_m": 0.005
+      }
+    },
+    "xhard3": {
+      "block_color": {
+        "h_range": [
+          0.0,
+          1.0
+        ],
+        "policy": "same_color_hsv_floor",
+        "s_range": [
+          0.5,
+          1.0
+        ],
+        "sampler": "torch.rand",
+        "v_range": [
+          0.4,
+          1.0
+        ]
+      },
+      "layout": {
+        "cube_count": 6,
+        "min_center_dist_m": 0.12,
+        "mode": "clutter",
+        "region_center": [
+          -0.1,
+          0.0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ]
+      },
+      "swap_plan": {
+        "button_obstacle": true,
+        "initiator_rule": "s5_balanced_pair",
+        "partner_rule": "s5_balanced_greedy",
+        "s5": {
+          "accept_range": 1,
+          "forbid_immediate_undo": true,
+          "plan_seed_high_exclusive": 4611686018427387904,
+          "range_retry_budget": 20,
+          "require_connected_graph": false,
+          "rule": "s5_balanced_greedy",
+          "score": "sum_max"
+        },
+        "sweep_margin_m": 0.005
+      }
+    },
+    "xhard4": {
+      "block_color": {
+        "h_range": [
+          0.0,
+          1.0
+        ],
+        "policy": "same_color_hsv_floor",
+        "s_range": [
+          0.5,
+          1.0
+        ],
+        "sampler": "torch.rand",
+        "v_range": [
+          0.4,
+          1.0
+        ]
+      },
+      "layout": {
+        "cube_count": 7,
+        "min_center_dist_m": 0.12,
+        "mode": "clutter",
+        "region_center": [
+          -0.1,
+          0.0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ]
+      },
+      "swap_plan": {
+        "button_obstacle": true,
+        "initiator_rule": "s5_balanced_pair",
+        "partner_rule": "s5_balanced_greedy",
+        "s5": {
+          "accept_range": 1,
+          "forbid_immediate_undo": true,
+          "plan_seed_high_exclusive": 4611686018427387904,
+          "range_retry_budget": 20,
+          "require_connected_graph": false,
+          "rule": "s5_balanced_greedy",
+          "score": "sum_max"
+        },
+        "sweep_margin_m": 0.005
+      }
+    }
+  },
+  "native": {
+    "parameters": {
+      "configs": {
+        "easy": {
+          "cube": 3,
+          "swap_max": 2,
+          "swap_min": 1
+        },
+        "hard": {
+          "cluster": true,
+          "swap": null,
+          "swap_max": 0,
+          "swap_min": 0
+        },
+        "medium": {
+          "cube": 3,
+          "swap_max": 3,
+          "swap_min": 2
+        },
+        "xhard1": {
+          "cube": 4,
+          "layout_mode": "clutter",
+          "min_center_dist_m": 0.12,
+          "num_repeats_high_exclusive": 3,
+          "num_repeats_low": 2,
+          "partner_button_obstacle": true,
+          "partner_sweep_margin_m": 0.005,
+          "region_center": [
+            -0.1,
+            0.0
+          ],
+          "region_half_size": [
+            0.2,
+            0.25
+          ],
+          "swap_max": 4,
+          "swap_min": 3
+        },
+        "xhard2": {
+          "cube": 5,
+          "layout_mode": "clutter",
+          "min_center_dist_m": 0.12,
+          "num_repeats_high_exclusive": 4,
+          "num_repeats_low": 3,
+          "partner_button_obstacle": true,
+          "partner_sweep_margin_m": 0.005,
+          "region_center": [
+            -0.1,
+            0.0
+          ],
+          "region_half_size": [
+            0.2,
+            0.25
+          ],
+          "swap_max": 6,
+          "swap_min": 5
+        },
+        "xhard3": {
+          "cube": 6,
+          "layout_mode": "clutter",
+          "min_center_dist_m": 0.12,
+          "num_repeats_high_exclusive": 5,
+          "num_repeats_low": 4,
+          "partner_button_obstacle": true,
+          "partner_sweep_margin_m": 0.005,
+          "region_center": [
+            -0.1,
+            0.0
+          ],
+          "region_half_size": [
+            0.2,
+            0.25
+          ],
+          "swap_max": 8,
+          "swap_min": 7
+        },
+        "xhard4": {
+          "cube": 7,
+          "layout_mode": "clutter",
+          "min_center_dist_m": 0.12,
+          "num_repeats_high_exclusive": 7,
+          "num_repeats_low": 5,
+          "partner_button_obstacle": true,
+          "partner_sweep_margin_m": 0.005,
+          "region_center": [
+            -0.1,
+            0.0
+          ],
+          "region_half_size": [
+            0.2,
+            0.25
+          ],
+          "swap_max": 12,
+          "swap_min": 9
+        }
+      },
+      "hard_spawn_rounds": 5,
+      "num_repeats": {
+        "high_exclusive": 4,
+        "low": 1,
+        "sampler": "torch.randint",
+        "shape": [
+          1
+        ]
+      },
+      "object_selection": {
+        "easy_medium_target_count": 1,
+        "hard_target_low": 0,
+        "swap_remaining_count": 2
+      },
+      "swap_selection": {
+        "initiator_mapping": "target_then_permuted_remaining_spawned_indices",
+        "partner": {
+          "exclude_self": true,
+          "position_axes": [
+            0,
+            1
+          ],
+          "resolve_at": "swap_start",
+          "selection": "nearest",
+          "tie_break": "first_in_spawn_order"
+        },
+        "remaining_selection": "randperm_without_target"
+      }
+    },
+    "positions": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "randomize_range": [
+          0.1,
+          0.1
+        ],
+        "randomize_range_origin": "VideoRepick 调用点显式传入",
+        "sampling_expression": "(torch.rand(2, generator=generator) - 0.5) * randomize_range",
+        "scale": 1.5
+      },
+      "easy_medium_cubes": {
+        "include_existing": true,
+        "include_flags_origin": "原值取自 spawn_random_cube 形参默认 True；原调用点未传，现由本快照显式传入",
+        "include_goal": true,
+        "layout_rotation_range_rad": [
+          0,
+          180
+        ],
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "random_yaw": true,
+        "region3_choice": {
+          "high_exclusive": 2,
+          "low": 0,
+          "order": [
+            "region3_tri",
+            "region3_line"
+          ],
+          "sampler": "torch.randint"
+        },
+        "region3_line": [
+          [
+            0,
+            -0.15
+          ],
+          [
+            0,
+            0.15
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "region3_tri": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0
+          ]
+        ],
+        "region4": [
+          [
+            -0.05,
+            -0.1
+          ],
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            0.1,
+            0.1
+          ],
+          [
+            0.1,
+            -0.1
+          ]
+        ],
+        "region4_reachable": false,
+        "region_half_size": 0.07,
+        "rotation_center": [
+          0,
+          0
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi",
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ]
+      },
+      "hard_cubes": {
+        "include_existing": false,
+        "include_goal": false,
+        "min_gap": "self.cube_half_size",
+        "min_gap_value": 0.02,
+        "random_yaw": true,
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": [
+          0.2,
+          0.25
+        ],
+        "yaw_expression": "yaw_sample * 2 * np.pi",
+        "yaw_range_rad": [
+          0,
+          6.283185307179586
+        ]
+      }
+    }
+  }
+}

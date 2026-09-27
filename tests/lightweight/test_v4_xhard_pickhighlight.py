@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：PickHighlight 的 V4 xhard 档（0922-newtask-release-v4-plan.md 2.12）。
+"""轻量测试：PickHighlight 的 V4 xhard 档（docs/plans/0922-newtask-release-v4-plan.md 2.12）。
 
 纯结构性检查，不起 sapien 场景：
 

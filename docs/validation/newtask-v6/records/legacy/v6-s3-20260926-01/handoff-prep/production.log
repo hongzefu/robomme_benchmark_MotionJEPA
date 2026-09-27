@@ -1,0 +1,7 @@
+RUN_PATH path=B identities=143 ok=143 failed=0 exit=0 elapsed_s=10343.707
+RUN_DONE paths=1 identities=143 failed=0
+S3_H5_SEMANTICS=PASS side=smoke identities=1 terminal_success=1 timesteps=550
+S3_H5_SEMANTICS=PASS side=remaining identities=143 terminal_success=143 timesteps=74854
+S3_H5_SEMANTICS=PASS side=base identities=144 terminal_success=144 timesteps=75404
+NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0 mode=original_finalized
+EXIT_CODE=0

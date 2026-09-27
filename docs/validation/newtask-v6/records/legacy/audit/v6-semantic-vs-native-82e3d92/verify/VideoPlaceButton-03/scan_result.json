@@ -1,0 +1,866 @@
+[
+  {
+    "difficulty": "xhard1",
+    "episode": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed9000000.h5",
+    "n_steps": 1160,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <116, 138>"
+      },
+      {
+        "start": 104,
+        "text": "drop the cube onto target"
+      },
+      {
+        "start": 210,
+        "text": "press the button at <122, 86>"
+      },
+      {
+        "start": 308,
+        "text": "pick up the cube at <76, 153>"
+      },
+      {
+        "start": 418,
+        "text": "drop the cube onto target at <78, 90>"
+      },
+      {
+        "start": 517,
+        "text": "pick up the cube at <74, 88>"
+      },
+      {
+        "start": 591,
+        "text": "drop the cube onto target at <132, 165>"
+      },
+      {
+        "start": 687,
+        "text": "pick up the cube at <131, 167>"
+      },
+      {
+        "start": 756,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 841,
+        "text": "static"
+      },
+      {
+        "start": 953,
+        "text": "pick up the cube at <116, 137>"
+      },
+      {
+        "start": 1057,
+        "text": "place the cube onto the correct target at <78, 90>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed9000300.h5",
+    "n_steps": 1110,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <74, 163>"
+      },
+      {
+        "start": 118,
+        "text": "drop the cube onto target at <104, 133>"
+      },
+      {
+        "start": 197,
+        "text": "press the button at <123, 101>"
+      },
+      {
+        "start": 282,
+        "text": "pick up the cube at <102, 133>"
+      },
+      {
+        "start": 371,
+        "text": "drop the cube onto target at <101, 159>"
+      },
+      {
+        "start": 454,
+        "text": "pick up the cube at <99, 161>"
+      },
+      {
+        "start": 525,
+        "text": "drop the cube onto target at <74, 99>"
+      },
+      {
+        "start": 621,
+        "text": "pick up the cube at <72, 98>"
+      },
+      {
+        "start": 696,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 793,
+        "text": "static"
+      },
+      {
+        "start": 912,
+        "text": "pick up the cube at <74, 164>"
+      },
+      {
+        "start": 1031,
+        "text": "place the cube onto the correct target at <104, 133>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 6,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed9000601.h5",
+    "n_steps": 1151,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <123, 176>"
+      },
+      {
+        "start": 109,
+        "text": "drop the cube onto target at <98, 91>"
+      },
+      {
+        "start": 212,
+        "text": "press the button at <122, 114>"
+      },
+      {
+        "start": 294,
+        "text": "pick up the cube at <99, 89>"
+      },
+      {
+        "start": 389,
+        "text": "drop the cube onto target at <138, 149>"
+      },
+      {
+        "start": 478,
+        "text": "pick up the cube at <137, 151>"
+      },
+      {
+        "start": 552,
+        "text": "drop the cube onto target at <78, 90>"
+      },
+      {
+        "start": 668,
+        "text": "pick up the cube at <75, 88>"
+      },
+      {
+        "start": 744,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 843,
+        "text": "static"
+      },
+      {
+        "start": 964,
+        "text": "pick up the cube at <123, 176>"
+      },
+      {
+        "start": 1073,
+        "text": "place the cube onto the correct target at <138, 149>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed11000000.h5",
+    "n_steps": 1296,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <85, 162>"
+      },
+      {
+        "start": 113,
+        "text": "drop the cube onto target at <111, 167>"
+      },
+      {
+        "start": 192,
+        "text": "pick up the cube at <109, 170>"
+      },
+      {
+        "start": 267,
+        "text": "drop the cube onto target at <75, 147>"
+      },
+      {
+        "start": 363,
+        "text": "press the button at <120, 135>"
+      },
+      {
+        "start": 456,
+        "text": "pick up the cube"
+      },
+      {
+        "start": 566,
+        "text": "drop the cube onto target at <102, 101>"
+      },
+      {
+        "start": 654,
+        "text": "pick up the cube at <100, 100>"
+      },
+      {
+        "start": 724,
+        "text": "drop the cube onto target at <75, 149>"
+      },
+      {
+        "start": 818,
+        "text": "pick up the cube at <72, 150>"
+      },
+      {
+        "start": 902,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 983,
+        "text": "static"
+      },
+      {
+        "start": 1096,
+        "text": "pick up the cube at <85, 162>"
+      },
+      {
+        "start": 1209,
+        "text": "place the cube onto the correct target at <102, 101>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed11000301.h5",
+    "n_steps": 1358,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <69, 153>"
+      },
+      {
+        "start": 123,
+        "text": "drop the cube onto target at <79, 93>"
+      },
+      {
+        "start": 226,
+        "text": "pick up the cube at <75, 91>"
+      },
+      {
+        "start": 300,
+        "text": "drop the cube onto target at <143, 168>"
+      },
+      {
+        "start": 408,
+        "text": "press the button at <129, 112>"
+      },
+      {
+        "start": 504,
+        "text": "pick up the cube at <142, 169>"
+      },
+      {
+        "start": 613,
+        "text": "drop the cube onto target at <117, 154>"
+      },
+      {
+        "start": 698,
+        "text": "pick up the cube at <114, 155>"
+      },
+      {
+        "start": 773,
+        "text": "drop the cube onto target at <96, 168>"
+      },
+      {
+        "start": 863,
+        "text": "pick up the cube at <87, 165>"
+      },
+      {
+        "start": 932,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1023,
+        "text": "static"
+      },
+      {
+        "start": 1145,
+        "text": "pick up the cube at <70, 153>"
+      },
+      {
+        "start": 1269,
+        "text": "place the cube onto the correct target at <117, 154>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 6,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed11000600.h5",
+    "n_steps": 1282,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <116, 134>"
+      },
+      {
+        "start": 105,
+        "text": "drop the cube onto target at <97, 93>"
+      },
+      {
+        "start": 193,
+        "text": "pick up the cube at <95, 91>"
+      },
+      {
+        "start": 264,
+        "text": "drop the cube onto target at <82, 164>"
+      },
+      {
+        "start": 354,
+        "text": "press the button at <130, 173>"
+      },
+      {
+        "start": 453,
+        "text": "pick up the cube"
+      },
+      {
+        "start": 567,
+        "text": "drop the cube onto target at <138, 79>"
+      },
+      {
+        "start": 671,
+        "text": "pick up the cube at <138, 77>"
+      },
+      {
+        "start": 740,
+        "text": "drop the cube onto target at <103, 157>"
+      },
+      {
+        "start": 839,
+        "text": "pick up the cube at <100, 156>"
+      },
+      {
+        "start": 907,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 982,
+        "text": "static"
+      },
+      {
+        "start": 1094,
+        "text": "pick up the cube at <116, 133>"
+      },
+      {
+        "start": 1199,
+        "text": "place the cube onto the correct target at <138, 79>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed13000001.h5",
+    "n_steps": 1738,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <145, 74>"
+      },
+      {
+        "start": 122,
+        "text": "drop the cube onto target at <90, 98>"
+      },
+      {
+        "start": 232,
+        "text": "pick up the cube at <102, 158>"
+      },
+      {
+        "start": 334,
+        "text": "drop the cube onto target at <130, 166>"
+      },
+      {
+        "start": 418,
+        "text": "pick up the cube at <129, 169>"
+      },
+      {
+        "start": 492,
+        "text": "drop the cube onto target at <115, 91>"
+      },
+      {
+        "start": 573,
+        "text": "press the button at <120, 126>"
+      },
+      {
+        "start": 652,
+        "text": "pick up the cube at <90, 96>"
+      },
+      {
+        "start": 755,
+        "text": "drop the cube onto target at <78, 164>"
+      },
+      {
+        "start": 845,
+        "text": "pick up the cube at <113, 89>"
+      },
+      {
+        "start": 948,
+        "text": "drop the cube onto target at <115, 91>"
+      },
+      {
+        "start": 1003,
+        "text": "pick up the cube at <74, 167>"
+      },
+      {
+        "start": 1108,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1222,
+        "text": "pick up the cube at <113, 90>"
+      },
+      {
+        "start": 1329,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1412,
+        "text": "static"
+      },
+      {
+        "start": 1526,
+        "text": "pick up the cube at <144, 75>"
+      },
+      {
+        "start": 1649,
+        "text": "place the cube onto the correct target at <130, 166>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed13000300.h5",
+    "n_steps": 1823,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <93, 162>"
+      },
+      {
+        "start": 105,
+        "text": "drop the cube onto target at <96, 91>"
+      },
+      {
+        "start": 196,
+        "text": "pick up the cube at <144, 70>"
+      },
+      {
+        "start": 316,
+        "text": "drop the cube onto target at <74, 103>"
+      },
+      {
+        "start": 435,
+        "text": "pick up the cube at <71, 103>"
+      },
+      {
+        "start": 521,
+        "text": "drop the cube onto target at <77, 151>"
+      },
+      {
+        "start": 608,
+        "text": "press the button at <125, 113>"
+      },
+      {
+        "start": 704,
+        "text": "pick up the cube at <101, 89>"
+      },
+      {
+        "start": 801,
+        "text": "drop the cube onto target at <115, 150>"
+      },
+      {
+        "start": 879,
+        "text": "pick up the cube at <78, 152>"
+      },
+      {
+        "start": 983,
+        "text": "drop the cube onto target at <77, 151>"
+      },
+      {
+        "start": 1046,
+        "text": "pick up the cube at <113, 151>"
+      },
+      {
+        "start": 1155,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1230,
+        "text": "pick up the cube at <74, 152>"
+      },
+      {
+        "start": 1336,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1448,
+        "text": "static"
+      },
+      {
+        "start": 1585,
+        "text": "pick up the cube at <144, 71>"
+      },
+      {
+        "start": 1704,
+        "text": "place the cube onto the correct target at <74, 103>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 6,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed13000600.h5",
+    "n_steps": 1781,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <124, 175>"
+      },
+      {
+        "start": 108,
+        "text": "drop the cube onto target at <83, 105>"
+      },
+      {
+        "start": 209,
+        "text": "pick up the cube at <69, 133>"
+      },
+      {
+        "start": 324,
+        "text": "drop the cube onto target at <141, 148>"
+      },
+      {
+        "start": 427,
+        "text": "pick up the cube at <79, 104>"
+      },
+      {
+        "start": 546,
+        "text": "drop the cube onto target at <91, 165>"
+      },
+      {
+        "start": 629,
+        "text": "press the button at <124, 110>"
+      },
+      {
+        "start": 718,
+        "text": "pick up the cube at <88, 167>"
+      },
+      {
+        "start": 819,
+        "text": "drop the cube onto target at <91, 165>"
+      },
+      {
+        "start": 877,
+        "text": "pick up the cube at <140, 148>"
+      },
+      {
+        "start": 981,
+        "text": "drop the cube onto target at <100, 87>"
+      },
+      {
+        "start": 1084,
+        "text": "pick up the cube at <89, 168>"
+      },
+      {
+        "start": 1175,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1266,
+        "text": "pick up the cube at <98, 84>"
+      },
+      {
+        "start": 1363,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1459,
+        "text": "static"
+      },
+      {
+        "start": 1582,
+        "text": "pick up the cube at <124, 175>"
+      },
+      {
+        "start": 1690,
+        "text": "place the cube onto the correct target at <91, 162>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed7000000.h5",
+    "n_steps": 1930,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <125, 181>"
+      },
+      {
+        "start": 111,
+        "text": "drop the cube onto target at <100, 89>"
+      },
+      {
+        "start": 206,
+        "text": "pick up the cube at <72, 142>"
+      },
+      {
+        "start": 328,
+        "text": "drop the cube onto target at <75, 92>"
+      },
+      {
+        "start": 418,
+        "text": "pick up the cube at <72, 91>"
+      },
+      {
+        "start": 492,
+        "text": "drop the cube onto target at <82, 161>"
+      },
+      {
+        "start": 590,
+        "text": "press the button at <128, 134>"
+      },
+      {
+        "start": 691,
+        "text": "pick up the cube at <99, 86>"
+      },
+      {
+        "start": 784,
+        "text": "drop the cube onto target at <104, 168>"
+      },
+      {
+        "start": 877,
+        "text": "pick up the cube at <80, 162>"
+      },
+      {
+        "start": 973,
+        "text": "drop the cube onto target at <82, 161>"
+      },
+      {
+        "start": 1031,
+        "text": "pick up the cube at <102, 170>"
+      },
+      {
+        "start": 1126,
+        "text": "drop the cube onto target at <75, 92>"
+      },
+      {
+        "start": 1230,
+        "text": "pick up the cube at <72, 91>"
+      },
+      {
+        "start": 1305,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1408,
+        "text": "pick up the cube at <79, 160>"
+      },
+      {
+        "start": 1516,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1603,
+        "text": "static"
+      },
+      {
+        "start": 1724,
+        "text": "pick up the cube at <126, 180>"
+      },
+      {
+        "start": 1835,
+        "text": "place the cube onto the correct target at <100, 89>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 3,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed7000302.h5",
+    "n_steps": 1849,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <77, 167>"
+      },
+      {
+        "start": 111,
+        "text": "drop the cube onto target at <96, 100>"
+      },
+      {
+        "start": 202,
+        "text": "pick up the cube at <96, 146>"
+      },
+      {
+        "start": 282,
+        "text": "drop the cube onto target at <110, 123>"
+      },
+      {
+        "start": 354,
+        "text": "pick up the cube at <95, 100>"
+      },
+      {
+        "start": 435,
+        "text": "drop the cube onto target at <142, 176>"
+      },
+      {
+        "start": 536,
+        "text": "press the button at <125, 84>"
+      },
+      {
+        "start": 618,
+        "text": "pick up the cube at <140, 178>"
+      },
+      {
+        "start": 709,
+        "text": "drop the cube onto target at <135, 144>"
+      },
+      {
+        "start": 787,
+        "text": "pick up the cube"
+      },
+      {
+        "start": 882,
+        "text": "drop the cube onto target at <142, 176>"
+      },
+      {
+        "start": 972,
+        "text": "pick up the cube at <144, 177>"
+      },
+      {
+        "start": 1051,
+        "text": "drop the cube onto target at <96, 100>"
+      },
+      {
+        "start": 1156,
+        "text": "pick up the cube at <135, 145>"
+      },
+      {
+        "start": 1257,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1355,
+        "text": "pick up the cube at <93, 99>"
+      },
+      {
+        "start": 1460,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1538,
+        "text": "static"
+      },
+      {
+        "start": 1644,
+        "text": "pick up the cube at <77, 167>"
+      },
+      {
+        "start": 1755,
+        "text": "place the cube onto the correct target at <135, 144>"
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 6,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed7000600.h5",
+    "n_steps": 1949,
+    "segments": [
+      {
+        "start": 0,
+        "text": "pick up the cube at <69, 142>"
+      },
+      {
+        "start": 121,
+        "text": "drop the cube onto target at <112, 89>"
+      },
+      {
+        "start": 212,
+        "text": "pick up the cube at <142, 177>"
+      },
+      {
+        "start": 332,
+        "text": "drop the cube onto target at <104, 160>"
+      },
+      {
+        "start": 424,
+        "text": "pick up the cube at <101, 161>"
+      },
+      {
+        "start": 492,
+        "text": "drop the cube onto target at <138, 83>"
+      },
+      {
+        "start": 581,
+        "text": "press the button at <126, 123>"
+      },
+      {
+        "start": 676,
+        "text": "pick up the cube at <110, 87>"
+      },
+      {
+        "start": 763,
+        "text": "drop the cube onto target at <84, 160>"
+      },
+      {
+        "start": 854,
+        "text": "pick up the cube at <136, 80>"
+      },
+      {
+        "start": 963,
+        "text": "drop the cube onto target at <138, 84>"
+      },
+      {
+        "start": 1024,
+        "text": "pick up the cube at <81, 161>"
+      },
+      {
+        "start": 1140,
+        "text": "drop the cube onto target at <104, 160>"
+      },
+      {
+        "start": 1217,
+        "text": "pick up the cube at <102, 161>"
+      },
+      {
+        "start": 1286,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1385,
+        "text": "pick up the cube at <136, 79>"
+      },
+      {
+        "start": 1496,
+        "text": "put the cube back to its original position"
+      },
+      {
+        "start": 1589,
+        "text": "static"
+      },
+      {
+        "start": 1723,
+        "text": "pick up the cube at <70, 142>"
+      },
+      {
+        "start": 1846,
+        "text": "place the cube onto the correct target at <138, 83>"
+      }
+    ]
+  }
+]

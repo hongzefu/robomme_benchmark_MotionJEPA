@@ -1,0 +1,653 @@
+[
+ {
+  "identity": "BinFill/0",
+  "path": "layout.board.offsets",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "BinFill/0",
+  "path": "layout.cubes.red_1",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "BinFill/3",
+  "path": "layout.board.offsets",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "BinFill/3",
+  "path": "layout.cubes.red_3",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "BinFill/6",
+  "path": "layout.board.offsets",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "BinFill/6",
+  "path": "layout.cubes.red_2",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmask/0",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmask/0",
+  "path": "layout.bins.7",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmask/3",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmask/3",
+  "path": "layout.bins.7",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmask/6",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmask/6",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmaskSwap/0",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": false,
+  "error": "SceneGenerationError: 干扰容器 0 在 512 次尝试内找不到合法位置（外环 0.2675~0.45）"
+ },
+ {
+  "identity": "ButtonUnmaskSwap/0",
+  "path": "objects.color_order",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmaskSwap/3",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": false,
+  "error": "SceneGenerationError: 干扰容器 0 在 512 次尝试内找不到合法位置（外环 0.2675~0.45）"
+ },
+ {
+  "identity": "ButtonUnmaskSwap/3",
+  "path": "objects.color_order",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmaskSwap/6",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "ButtonUnmaskSwap/6",
+  "path": "objects.color_order",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "InsertPeg/0",
+  "path": "objects.head_rgb",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "InsertPeg/0",
+  "path": "initializations.1.box_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "InsertPeg/3",
+  "path": "objects.head_rgb",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "InsertPeg/3",
+  "path": "initializations.1.box_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "InsertPeg/6",
+  "path": "objects.head_rgb",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "InsertPeg/6",
+  "path": "initializations.1.box_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "MoveCube/0",
+  "path": "layout.demo.cube_pose",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "MoveCube/0",
+  "path": "layout.execution.goal_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "MoveCube/3",
+  "path": "layout.demo.cube_pose",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "MoveCube/3",
+  "path": "layout.execution.goal_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "MoveCube/6",
+  "path": "layout.demo.cube_pose",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "MoveCube/6",
+  "path": "layout.execution.goal_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PatternLock/0",
+  "path": "actions.path_nodes",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PatternLock/3",
+  "path": "actions.path_nodes",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PatternLock/6",
+  "path": "actions.path_nodes",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickHighlight/0",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickHighlight/0",
+  "path": "objects.color_rgba.1",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickHighlight/3",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickHighlight/3",
+  "path": "objects.color_rgba.1",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickHighlight/6",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickHighlight/6",
+  "path": "objects.color_rgba.1",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickXtimes/0",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickXtimes/0",
+  "path": "layout.distractors.yellow_0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickXtimes/3",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickXtimes/3",
+  "path": "layout.distractors.yellow_0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickXtimes/6",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "PickXtimes/6",
+  "path": "layout.distractors.yellow_0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "RouteStick/0",
+  "path": "layout.obstacle_rgb.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "RouteStick/0",
+  "path": "layout.obstacle_rgb.3",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "RouteStick/3",
+  "path": "layout.obstacle_rgb.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "RouteStick/3",
+  "path": "layout.obstacle_rgb.3",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "RouteStick/6",
+  "path": "layout.obstacle_rgb.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "RouteStick/6",
+  "path": "layout.obstacle_rgb.3",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "StopCube/0",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "StopCube/0",
+  "path": "actions.move_interval_idx",
+  "changed": true,
+  "replay_ok": false,
+  "error": "IndexError: list index out of range"
+ },
+ {
+  "identity": "StopCube/3",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "StopCube/3",
+  "path": "actions.move_interval_idx",
+  "changed": true,
+  "replay_ok": false,
+  "error": "IndexError: list index out of range"
+ },
+ {
+  "identity": "StopCube/6",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "StopCube/6",
+  "path": "actions.move_interval_idx",
+  "changed": true,
+  "replay_ok": false,
+  "error": "IndexError: list index out of range"
+ },
+ {
+  "identity": "SwingXtimes/0",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": false,
+  "error": "TypeError: catching classes that do not inherit from BaseException is not allowed was raised from the environment creator for SwingXtimes with kwargs ({'sampling_config': {'decision': {'color': {'easy': 1, 'hard': 3, 'medium': 3, 'xhard': 3}, 'distractor': None, 'number_range': {'easy': [1, 3], 'har"
+ },
+ {
+  "identity": "SwingXtimes/0",
+  "path": "layout.distractors.yellow_0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "SwingXtimes/3",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "SwingXtimes/3",
+  "path": "layout.distractors.yellow_0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "SwingXtimes/6",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": false,
+  "error": "TypeError: catching classes that do not inherit from BaseException is not allowed was raised from the environment creator for SwingXtimes with kwargs ({'sampling_config': {'decision': {'color': {'easy': 1, 'hard': 3, 'medium': 3, 'xhard': 3}, 'distractor': None, 'number_range': {'easy': [1, 3], 'har"
+ },
+ {
+  "identity": "SwingXtimes/6",
+  "path": "layout.distractors.yellow_0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceButton/0",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceButton/0",
+  "path": "layout.targets.2",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceButton/3",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceButton/3",
+  "path": "layout.targets.2",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceButton/6",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceButton/6",
+  "path": "layout.targets.2",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceOrder/0",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceOrder/0",
+  "path": "objects.answer_demo_index",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceOrder/3",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceOrder/3",
+  "path": "objects.answer_demo_index",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceOrder/6",
+  "path": "layout.button_xy",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoPlaceOrder/6",
+  "path": "objects.answer_demo_index",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoRepick/0",
+  "path": "layout.cubes.0.xy_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoRepick/0",
+  "path": "layout.cubes.5.xy_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoRepick/3",
+  "path": "layout.cubes.0.xy_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoRepick/3",
+  "path": "layout.cubes.5.xy_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoRepick/6",
+  "path": "layout.cubes.0.xy_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoRepick/6",
+  "path": "layout.cubes.5.xy_yaw",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmask/0",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmask/0",
+  "path": "layout.bins.7",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmask/3",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmask/3",
+  "path": "layout.bins.7",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmask/6",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmask/6",
+  "path": "layout.bins.7",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmaskSwap/0",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmaskSwap/0",
+  "path": "objects.color_order",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmaskSwap/3",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmaskSwap/3",
+  "path": "objects.color_order",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ },
+ {
+  "identity": "VideoUnmaskSwap/6",
+  "path": "layout.bins.0",
+  "changed": true,
+  "replay_ok": false,
+  "error": "SceneGenerationError: 干扰容器 0 在 512 次尝试内找不到合法位置（外环 0.2675~0.45）"
+ },
+ {
+  "identity": "VideoUnmaskSwap/6",
+  "path": "objects.color_order",
+  "changed": true,
+  "replay_ok": true,
+  "error": null
+ }
+]

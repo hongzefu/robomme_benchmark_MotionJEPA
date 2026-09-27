@@ -1,0 +1,8 @@
+{
+  "schema": "s3-handoff-outcome/1",
+  "child_exit_code": 0,
+  "child_starttime": 2043179015,
+  "old_finished": true,
+  "all_child_group_finished": true,
+  "stdout_eof": true
+}

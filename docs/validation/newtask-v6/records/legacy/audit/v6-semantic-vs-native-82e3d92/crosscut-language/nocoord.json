@@ -1,0 +1,322 @@
+{
+ "totals": {
+  "new/exec": 1011,
+  "new/demo": 352,
+  "native/exec": 407,
+  "native/demo": 177
+ },
+ "missing": {
+  "new/exec": 11,
+  "new/demo": 12,
+  "native/exec": 2,
+  "native/demo": 9
+ },
+ "rows": [
+  {
+   "task": "ButtonUnmask",
+   "difficulty": "xhard4",
+   "episode": 6,
+   "t": 280,
+   "seg": "exec",
+   "grounded": "pick up the container that hides the blue cube",
+   "choice": "{\"choice\": \"B\", \"point\": [75, 112]}"
+  },
+  {
+   "task": "PickHighlight",
+   "difficulty": "xhard2",
+   "episode": 6,
+   "t": 480,
+   "seg": "exec",
+   "grounded": "pick up the third highlighted cube",
+   "choice": "{\"choice\": \"B\", \"point\": [88, 122]}"
+  },
+  {
+   "task": "PickHighlight",
+   "difficulty": "xhard3",
+   "episode": 3,
+   "t": 701,
+   "seg": "exec",
+   "grounded": "pick up the fifth highlighted cube",
+   "choice": "{\"choice\": \"B\", \"point\": [57, 92]}"
+  },
+  {
+   "task": "PickHighlight",
+   "difficulty": "xhard4",
+   "episode": 0,
+   "t": 785,
+   "seg": "exec",
+   "grounded": "pick up the fifth highlighted cube",
+   "choice": "{\"choice\": \"B\", \"point\": [56, 118]}"
+  },
+  {
+   "task": "PickXtimes",
+   "difficulty": "xhard1",
+   "episode": 3,
+   "t": 960,
+   "seg": "exec",
+   "grounded": "press the button to stop",
+   "choice": "{\"choice\": \"C\", \"point\": [60, 129]}"
+  },
+  {
+   "task": "SwingXtimes",
+   "difficulty": "xhard4",
+   "episode": 6,
+   "t": 111,
+   "seg": "exec",
+   "grounded": "move to the top of the right-side target for the first time",
+   "choice": "{\"choice\": \"B\", \"point\": [94, 91]}"
+  },
+  {
+   "task": "VideoPlaceButton",
+   "difficulty": "xhard1",
+   "episode": 0,
+   "t": 104,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [80, 153]}"
+  },
+  {
+   "task": "VideoPlaceButton",
+   "difficulty": "xhard2",
+   "episode": 0,
+   "t": 456,
+   "seg": "demo",
+   "grounded": "pick up the cube",
+   "choice": "{\"choice\": \"A\", \"point\": [74, 151]}"
+  },
+  {
+   "task": "VideoPlaceButton",
+   "difficulty": "xhard2",
+   "episode": 6,
+   "t": 453,
+   "seg": "demo",
+   "grounded": "pick up the cube",
+   "choice": "{\"choice\": \"A\", \"point\": [81, 166]}"
+  },
+  {
+   "task": "VideoPlaceButton",
+   "difficulty": "xhard4",
+   "episode": 3,
+   "t": 787,
+   "seg": "demo",
+   "grounded": "pick up the cube",
+   "choice": "{\"choice\": \"A\", \"point\": [110, 125]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard1",
+   "episode": 3,
+   "t": 1532,
+   "seg": "exec",
+   "grounded": "place the cube onto the correct target",
+   "choice": "{\"choice\": \"B\", \"point\": [105, 170]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard2",
+   "episode": 0,
+   "t": 572,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [100, 88]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard3",
+   "episode": 0,
+   "t": 467,
+   "seg": "demo",
+   "grounded": "pick up the cube",
+   "choice": "{\"choice\": \"A\", \"point\": [75, 90]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard3",
+   "episode": 0,
+   "t": 760,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [112, 167]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard3",
+   "episode": 3,
+   "t": 456,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [81, 166]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard4",
+   "episode": 3,
+   "t": 286,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [76, 92]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard4",
+   "episode": 3,
+   "t": 1601,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [76, 92]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard4",
+   "episode": 6,
+   "t": 287,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [103, 90]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "xhard4",
+   "episode": 6,
+   "t": 1277,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [103, 90]}"
+  },
+  {
+   "task": "VideoUnmask",
+   "difficulty": "xhard2",
+   "episode": 0,
+   "t": 388,
+   "seg": "exec",
+   "grounded": "pick up the container that hides the blue cube",
+   "choice": "{\"choice\": \"A\", \"point\": [87, 138]}"
+  },
+  {
+   "task": "VideoUnmaskSwap",
+   "difficulty": "xhard2",
+   "episode": 0,
+   "t": 593,
+   "seg": "exec",
+   "grounded": "pick up the container that hides the red cube",
+   "choice": "{\"choice\": \"A\", \"point\": [64, 122]}"
+  },
+  {
+   "task": "VideoUnmaskSwap",
+   "difficulty": "xhard2",
+   "episode": 6,
+   "t": 442,
+   "seg": "exec",
+   "grounded": "pick up the container that hides the green cube",
+   "choice": "{\"choice\": \"A\", \"point\": [76, 125]}"
+  },
+  {
+   "task": "VideoUnmaskSwap",
+   "difficulty": "xhard3",
+   "episode": 3,
+   "t": 657,
+   "seg": "exec",
+   "grounded": "pick up the container that hides the blue cube",
+   "choice": "{\"choice\": \"A\", \"point\": [89, 100]}"
+  },
+  {
+   "task": "SwingXtimes",
+   "difficulty": "hard",
+   "episode": 7,
+   "t": 106,
+   "seg": "exec",
+   "grounded": "move to the top of the right-side target for the first time",
+   "choice": "{\"choice\": \"B\", \"point\": [89, 84]}"
+  },
+  {
+   "task": "VideoPlaceButton",
+   "difficulty": "medium",
+   "episode": 10,
+   "t": 111,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [76, 147]}"
+  },
+  {
+   "task": "VideoPlaceButton",
+   "difficulty": "medium",
+   "episode": 10,
+   "t": 315,
+   "seg": "demo",
+   "grounded": "pick up the cube",
+   "choice": "{\"choice\": \"A\", \"point\": [74, 148]}"
+  },
+  {
+   "task": "VideoPlaceButton",
+   "difficulty": "hard",
+   "episode": 7,
+   "t": 369,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [81, 164]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "easy",
+   "episode": 1,
+   "t": 389,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [74, 162]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "medium",
+   "episode": 10,
+   "t": 115,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [77, 91]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "hard",
+   "episode": 11,
+   "t": 466,
+   "seg": "demo",
+   "grounded": "pick up the cube",
+   "choice": "{\"choice\": \"A\", \"point\": [73, 165]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "medium",
+   "episode": 2,
+   "t": 469,
+   "seg": "demo",
+   "grounded": "pick up the cube",
+   "choice": "{\"choice\": \"A\", \"point\": [73, 166]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "hard",
+   "episode": 3,
+   "t": 601,
+   "seg": "demo",
+   "grounded": "drop the cube onto target",
+   "choice": "{\"choice\": \"B\", \"point\": [75, 93]}"
+  },
+  {
+   "task": "VideoPlaceOrder",
+   "difficulty": "easy",
+   "episode": 4,
+   "t": 646,
+   "seg": "demo",
+   "grounded": "pick up the cube",
+   "choice": "{\"choice\": \"A\", \"point\": [73, 91]}"
+  },
+  {
+   "task": "VideoRepick",
+   "difficulty": "easy",
+   "episode": 4,
+   "t": 497,
+   "seg": "exec",
+   "grounded": "press the button to finish",
+   "choice": "{\"choice\": \"C\", \"point\": [70, 121]}"
+  }
+ ]
+}

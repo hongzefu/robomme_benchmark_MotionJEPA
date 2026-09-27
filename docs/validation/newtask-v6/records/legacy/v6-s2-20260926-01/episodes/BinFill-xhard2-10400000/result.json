@@ -1,0 +1,34 @@
+{
+  "id": "BinFill-xhard2-10400000",
+  "task": "BinFill",
+  "difficulty": "xhard2",
+  "seed": 10400000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/BinFill.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 74.93,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "BinFill",
+      "seed": 10400000,
+      "difficulty": "xhard2",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 66.2,
+      "timesteps": 1241
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/BinFill-xhard2-10400000/hdf5_files/BinFill_ep9_seed10400000.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/BinFill-xhard2-10400000/videos/BinFill_ep9_seed10400000_xhard2_put_one_red_cube_and_six_blue_cubes_into_the_bin_then_press_the_button_to_stop__ALT__put_one_red_cube_and_six_blue_cubes_into_the_bin_and_press_the_button_to_stop.mp4"
+  ]
+}

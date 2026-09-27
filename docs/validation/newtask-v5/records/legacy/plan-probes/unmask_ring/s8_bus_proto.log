@@ -1,0 +1,4 @@
+ROW {"task": "ButtonUnmaskSwap", "seed": 910000, "ok": true, "reset_s": 24.3, "n": 16, "n_cubes": 8, "sweep_calls": 112, "sweep_s": 22.4, "all_exact_visible": true}
+ROW {"task": "ButtonUnmaskSwap", "seed": 910101, "ok": true, "reset_s": 25.9, "n": 16, "n_cubes": 8, "sweep_calls": 128, "sweep_s": 25.5, "all_exact_visible": true}
+DEMO {"task": "ButtonUnmaskSwap", "seed": 910000, "ok": true, "class": null, "etype": null, "err": "", "wall_s": 58.7, "sweep_s_in_sampling": 22.1, "timesteps": 704}
+SIM_DONE

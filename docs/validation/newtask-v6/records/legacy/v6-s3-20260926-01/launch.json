@@ -1,0 +1,8 @@
+{
+  "schema": "v6-s3-launch/1",
+  "cwd": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask",
+  "git_commit": "c8c06ab755ef448baa24abe245d2f9ec2ffc0add",
+  "runner_sha256": "db91a1b3d9e02c62537bcac54dec3ee77b6921ba25add77d2850db1a12f0acff",
+  "baseline_config": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/run_config.json",
+  "attempt_limit": 144
+}

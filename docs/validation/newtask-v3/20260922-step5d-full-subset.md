@@ -1,6 +1,6 @@
 # 步 5d 报告：144 条身份 × 五路完整验收（2026-09-22）
 
-对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 5d，闸门 C1 及 P1～P7 在 144 条上的落地。运行目录 `artifacts/train-parity/gl-5d`，greatlakes A40 四个占位 job 按 `ALL_TASKS` 顺序分 4 片并行，**单 worker**。
+对应 [0921-newtask-release-v3-plan.md](../../plans/0921-newtask-release-v3-plan.md) 第五节步 5d，闸门 C1 及 P1～P7 在 144 条上的落地。运行目录 `artifacts/train-parity/gl-5d`，greatlakes A40 四个占位 job 按 `ALL_TASKS` 顺序分 4 片并行，**单 worker**。
 
 ## 一、为什么是单 worker
 

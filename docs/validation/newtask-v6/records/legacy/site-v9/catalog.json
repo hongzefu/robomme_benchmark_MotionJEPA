@@ -1,0 +1,2473 @@
+{
+  "schema": "v6-site-catalog/1",
+  "tasks": [
+    {
+      "id": "BinFill",
+      "name": "分类投放",
+      "note": "原版 hard 总块数为10–12；新四档固定12块，逐档增加需要投入的块数。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "总块数10–12；投入块数3–5",
+          "videos": [
+            {
+              "id": "894d51f35ce0755668dbba0a",
+              "label": "示例 4",
+              "url": "/media/894d51f35ce0755668dbba0a"
+            },
+            {
+              "id": "d185c268ced280444d49762b",
+              "label": "示例 8",
+              "url": "/media/d185c268ced280444d49762b"
+            },
+            {
+              "id": "403fa92fc3aad399eae7cace",
+              "label": "示例 12",
+              "url": "/media/403fa92fc3aad399eae7cace"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "总块数12；投入块数：6",
+          "videos": [
+            {
+              "id": "da4d177ec58f41b59a4aac80",
+              "label": "示例 1",
+              "url": "/media/da4d177ec58f41b59a4aac80"
+            },
+            {
+              "id": "89ef638e17fae3eea822389f",
+              "label": "示例 4",
+              "url": "/media/89ef638e17fae3eea822389f"
+            },
+            {
+              "id": "02577eed2c36e63c118aad9a",
+              "label": "示例 7",
+              "url": "/media/02577eed2c36e63c118aad9a"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "总块数12；投入块数：7",
+          "videos": [
+            {
+              "id": "6e5ab035b94d1463a5bd0b1c",
+              "label": "示例 1",
+              "url": "/media/6e5ab035b94d1463a5bd0b1c"
+            },
+            {
+              "id": "8196f2cc17a96b5ab6fe08f7",
+              "label": "示例 4",
+              "url": "/media/8196f2cc17a96b5ab6fe08f7"
+            },
+            {
+              "id": "a8cb3b5c75028b1f4caa9a72",
+              "label": "示例 7",
+              "url": "/media/a8cb3b5c75028b1f4caa9a72"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "总块数12；投入块数：8",
+          "videos": [
+            {
+              "id": "3797fce21151674a3b05d3ab",
+              "label": "示例 1",
+              "url": "/media/3797fce21151674a3b05d3ab"
+            },
+            {
+              "id": "95c72b5062b1c8cd1af2b0f6",
+              "label": "示例 4",
+              "url": "/media/95c72b5062b1c8cd1af2b0f6"
+            },
+            {
+              "id": "fee11b986bf714a57b7ad197",
+              "label": "示例 7",
+              "url": "/media/fee11b986bf714a57b7ad197"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "总块数12；投入块数：9",
+          "videos": [
+            {
+              "id": "ec885a66a81a898d71fb496d",
+              "label": "示例 1",
+              "url": "/media/ec885a66a81a898d71fb496d"
+            },
+            {
+              "id": "b3a02bc3ba9e9e60a6801645",
+              "label": "示例 4",
+              "url": "/media/b3a02bc3ba9e9e60a6801645"
+            },
+            {
+              "id": "3cf614812ec91585cd3a0669",
+              "label": "示例 7",
+              "url": "/media/3cf614812ec91585cd3a0669"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PickXtimes",
+      "name": "重复抓取",
+      "note": "逐档增加抓取次数，并增加干扰块；最高两档干扰块均为3。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "次数 / 干扰块：[4,5] / 0",
+          "videos": [
+            {
+              "id": "d1b7f72c0f004635ef5fd17b",
+              "label": "示例 4",
+              "url": "/media/d1b7f72c0f004635ef5fd17b"
+            },
+            {
+              "id": "fe928fc4dabf52ba21c735b4",
+              "label": "示例 8",
+              "url": "/media/fe928fc4dabf52ba21c735b4"
+            },
+            {
+              "id": "7aa9baccdc20786f1c318289",
+              "label": "示例 12",
+              "url": "/media/7aa9baccdc20786f1c318289"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "次数 / 干扰块：[6,7] / 1",
+          "videos": [
+            {
+              "id": "621719c2600228ad08a74348",
+              "label": "示例 1",
+              "url": "/media/621719c2600228ad08a74348"
+            },
+            {
+              "id": "1248014ad7c3b991add5fc37",
+              "label": "示例 4",
+              "url": "/media/1248014ad7c3b991add5fc37"
+            },
+            {
+              "id": "a4acfdb47af74cc56dc839cb",
+              "label": "示例 7",
+              "url": "/media/a4acfdb47af74cc56dc839cb"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "次数 / 干扰块：[8,9] / 2",
+          "videos": [
+            {
+              "id": "9ba550a36ad81b8a44490966",
+              "label": "示例 1",
+              "url": "/media/9ba550a36ad81b8a44490966"
+            },
+            {
+              "id": "c3b401592f8d890565542cd0",
+              "label": "示例 4",
+              "url": "/media/c3b401592f8d890565542cd0"
+            },
+            {
+              "id": "7699f4b6c7d669c4c80e1f9b",
+              "label": "示例 7",
+              "url": "/media/7699f4b6c7d669c4c80e1f9b"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "次数 / 干扰块：[10,12] / 3",
+          "videos": [
+            {
+              "id": "27509cfbb93093d44ba0fe88",
+              "label": "示例 1",
+              "url": "/media/27509cfbb93093d44ba0fe88"
+            },
+            {
+              "id": "97ce4c8e93b78cdf046bef52",
+              "label": "示例 4",
+              "url": "/media/97ce4c8e93b78cdf046bef52"
+            },
+            {
+              "id": "0aefad114817e3ef6b47bab1",
+              "label": "示例 7",
+              "url": "/media/0aefad114817e3ef6b47bab1"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "次数 / 干扰块：[13,15] / 3",
+          "videos": [
+            {
+              "id": "adfbd5711b9f2996bcd146b7",
+              "label": "示例 1",
+              "url": "/media/adfbd5711b9f2996bcd146b7"
+            },
+            {
+              "id": "e5342b14a4b2bed700dde592",
+              "label": "示例 4",
+              "url": "/media/e5342b14a4b2bed700dde592"
+            },
+            {
+              "id": "b2dab4455b9bb148b71c50f9",
+              "label": "示例 7",
+              "url": "/media/b2dab4455b9bb148b71c50f9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SwingXtimes",
+      "name": "重复摆动",
+      "note": "逐档增加摆动轮数，并增加干扰块；最高两档干扰块均为3。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "轮数 / 干扰块：3 / 0",
+          "videos": [
+            {
+              "id": "951ae276bc982fbca9a59521",
+              "label": "示例 4",
+              "url": "/media/951ae276bc982fbca9a59521"
+            },
+            {
+              "id": "69a22ef6c705627dfbe670ba",
+              "label": "示例 8",
+              "url": "/media/69a22ef6c705627dfbe670ba"
+            },
+            {
+              "id": "4537fdae68d68c6be90227c0",
+              "label": "示例 12",
+              "url": "/media/4537fdae68d68c6be90227c0"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "轮数 / 干扰块：[4,5] / 1",
+          "videos": [
+            {
+              "id": "99ec93b31b76a6cd8c559332",
+              "label": "示例 1",
+              "url": "/media/99ec93b31b76a6cd8c559332"
+            },
+            {
+              "id": "0620d0f069c5b2f5293bc36d",
+              "label": "示例 4",
+              "url": "/media/0620d0f069c5b2f5293bc36d"
+            },
+            {
+              "id": "69fbe6ca43221b764862930f",
+              "label": "示例 7",
+              "url": "/media/69fbe6ca43221b764862930f"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "轮数 / 干扰块：[6,7] / 2",
+          "videos": [
+            {
+              "id": "d54638c768306ffc1bf7d6f2",
+              "label": "示例 1",
+              "url": "/media/d54638c768306ffc1bf7d6f2"
+            },
+            {
+              "id": "a2206680294146d951347a8c",
+              "label": "示例 4",
+              "url": "/media/a2206680294146d951347a8c"
+            },
+            {
+              "id": "3f728c661b70abc027ecb791",
+              "label": "示例 7",
+              "url": "/media/3f728c661b70abc027ecb791"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "轮数 / 干扰块：[8,9] / 3",
+          "videos": [
+            {
+              "id": "86a4f13ee0a4a94304f0f02f",
+              "label": "示例 1",
+              "url": "/media/86a4f13ee0a4a94304f0f02f"
+            },
+            {
+              "id": "9f0aa19b477047b04bfa089c",
+              "label": "示例 4",
+              "url": "/media/9f0aa19b477047b04bfa089c"
+            },
+            {
+              "id": "fa31365b39e3c120460c3e68",
+              "label": "示例 7",
+              "url": "/media/fa31365b39e3c120460c3e68"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "轮数 / 干扰块：[10,11] / 3",
+          "videos": [
+            {
+              "id": "5aa82f6955d02aa27593fb14",
+              "label": "示例 1",
+              "url": "/media/5aa82f6955d02aa27593fb14"
+            },
+            {
+              "id": "2546b1e63d245b0002d054fa",
+              "label": "示例 4",
+              "url": "/media/2546b1e63d245b0002d054fa"
+            },
+            {
+              "id": "ffa1475858a312490197afc1",
+              "label": "示例 7",
+              "url": "/media/ffa1475858a312490197afc1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PickHighlight",
+      "name": "高亮目标抓取",
+      "note": "逐档增加需抓取的高亮块和总块数，干扰块始终为3。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "pick / 总块：3 / 6",
+          "videos": [
+            {
+              "id": "d5aa10f9b7ec1d9c5ba9a23f",
+              "label": "示例 4",
+              "url": "/media/d5aa10f9b7ec1d9c5ba9a23f"
+            },
+            {
+              "id": "d177703f9f2684b37b859ff9",
+              "label": "示例 8",
+              "url": "/media/d177703f9f2684b37b859ff9"
+            },
+            {
+              "id": "edf2d21938a880068e4b9433",
+              "label": "示例 12",
+              "url": "/media/edf2d21938a880068e4b9433"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "pick / 总块：4 / 7",
+          "videos": [
+            {
+              "id": "0b03a0e72ae4e70abe67770e",
+              "label": "示例 1",
+              "url": "/media/0b03a0e72ae4e70abe67770e"
+            },
+            {
+              "id": "2fbf4f56850b348d88062b15",
+              "label": "示例 4",
+              "url": "/media/2fbf4f56850b348d88062b15"
+            },
+            {
+              "id": "5b92e8c92a718c5eb6c69f3c",
+              "label": "示例 7",
+              "url": "/media/5b92e8c92a718c5eb6c69f3c"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "pick / 总块：5 / 8",
+          "videos": [
+            {
+              "id": "ddd6cb180f5fbf32f11dae1f",
+              "label": "示例 1",
+              "url": "/media/ddd6cb180f5fbf32f11dae1f"
+            },
+            {
+              "id": "fd512da7df4684d519bb2b5a",
+              "label": "示例 4",
+              "url": "/media/fd512da7df4684d519bb2b5a"
+            },
+            {
+              "id": "8b4f88cd78bf03b590c5b56b",
+              "label": "示例 7",
+              "url": "/media/8b4f88cd78bf03b590c5b56b"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "pick / 总块：6 / 9",
+          "videos": [
+            {
+              "id": "c6a755f36addc7d74fe83cb5",
+              "label": "示例 1",
+              "url": "/media/c6a755f36addc7d74fe83cb5"
+            },
+            {
+              "id": "1052218bf00ee262e2cdd87a",
+              "label": "示例 4",
+              "url": "/media/1052218bf00ee262e2cdd87a"
+            },
+            {
+              "id": "48fd5b65dcb7bc9e574a24e2",
+              "label": "示例 7",
+              "url": "/media/48fd5b65dcb7bc9e574a24e2"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "pick / 总块：7 / 10",
+          "videos": [
+            {
+              "id": "86d08729e00184d18f73aa4a",
+              "label": "示例 1",
+              "url": "/media/86d08729e00184d18f73aa4a"
+            },
+            {
+              "id": "60d4d15a215bcd101f02fa02",
+              "label": "示例 4",
+              "url": "/media/60d4d15a215bcd101f02fa02"
+            },
+            {
+              "id": "7ce11ea6905e479f482e7338",
+              "label": "示例 7",
+              "url": "/media/7ce11ea6905e479f482e7338"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VideoUnmask",
+      "name": "视频遮挡记忆",
+      "note": "抓取数量最多为3，主要通过增加干扰容器区分更高档位。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "干扰容器 / pick：0（15 容器）/ 2",
+          "videos": [
+            {
+              "id": "417f7aab5302e65d2414b8a1",
+              "label": "示例 4",
+              "url": "/media/417f7aab5302e65d2414b8a1"
+            },
+            {
+              "id": "d5a14d168c6826d141cc252d",
+              "label": "示例 8",
+              "url": "/media/d5a14d168c6826d141cc252d"
+            },
+            {
+              "id": "5e5a1f57df10072fb4099760",
+              "label": "示例 12",
+              "url": "/media/5e5a1f57df10072fb4099760"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "干扰容器 / pick：8 / 2",
+          "videos": [
+            {
+              "id": "b6ea2b7e986249a230d0ef7c",
+              "label": "示例 1",
+              "url": "/media/b6ea2b7e986249a230d0ef7c"
+            },
+            {
+              "id": "136185a8b541133cea4043a1",
+              "label": "示例 4",
+              "url": "/media/136185a8b541133cea4043a1"
+            },
+            {
+              "id": "76c7f4a8729096d54da56801",
+              "label": "示例 7",
+              "url": "/media/76c7f4a8729096d54da56801"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "干扰容器 / pick：10 / 3",
+          "videos": [
+            {
+              "id": "6a6df167d8448176e1fff548",
+              "label": "示例 1",
+              "url": "/media/6a6df167d8448176e1fff548"
+            },
+            {
+              "id": "d4ae1b68b4a00e793d62010f",
+              "label": "示例 4",
+              "url": "/media/d4ae1b68b4a00e793d62010f"
+            },
+            {
+              "id": "26b7a1fd6853ffb77f0dff9b",
+              "label": "示例 7",
+              "url": "/media/26b7a1fd6853ffb77f0dff9b"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "干扰容器 / pick：13 / 3",
+          "videos": [
+            {
+              "id": "15be62d5347b4bb508b15ba5",
+              "label": "示例 1",
+              "url": "/media/15be62d5347b4bb508b15ba5"
+            },
+            {
+              "id": "ddc7fc85b7fe88d7eeada16c",
+              "label": "示例 4",
+              "url": "/media/ddc7fc85b7fe88d7eeada16c"
+            },
+            {
+              "id": "77daca92b88239f56ef6d833",
+              "label": "示例 7",
+              "url": "/media/77daca92b88239f56ef6d833"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "干扰容器 / pick：15 / 3",
+          "videos": [
+            {
+              "id": "1d80e476a635e54952e27064",
+              "label": "示例 1",
+              "url": "/media/1d80e476a635e54952e27064"
+            },
+            {
+              "id": "d7662c59067052a1b23ecf80",
+              "label": "示例 4",
+              "url": "/media/d7662c59067052a1b23ecf80"
+            },
+            {
+              "id": "fc603290c2f5bc7b148c568e",
+              "label": "示例 7",
+              "url": "/media/fc603290c2f5bc7b148c568e"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ButtonUnmask",
+      "name": "按钮遮挡记忆",
+      "note": "抓取数量最多为3，主要通过增加干扰容器区分更高档位。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "干扰容器 / pick：0 / 2",
+          "videos": [
+            {
+              "id": "f13f7cbd4fd9a84b87e6dad7",
+              "label": "示例 4",
+              "url": "/media/f13f7cbd4fd9a84b87e6dad7"
+            },
+            {
+              "id": "545addf195a714e0cc22faad",
+              "label": "示例 8",
+              "url": "/media/545addf195a714e0cc22faad"
+            },
+            {
+              "id": "e38a4a04c8ac436ee6901ea5",
+              "label": "示例 12",
+              "url": "/media/e38a4a04c8ac436ee6901ea5"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "干扰容器 / pick：8 / 2",
+          "videos": [
+            {
+              "id": "8802c2f2e12b95825dd5910d",
+              "label": "示例 1",
+              "url": "/media/8802c2f2e12b95825dd5910d"
+            },
+            {
+              "id": "90e5e0ca66f2ad229a0cfa6b",
+              "label": "示例 4",
+              "url": "/media/90e5e0ca66f2ad229a0cfa6b"
+            },
+            {
+              "id": "20bd012f32f8459d29009dbc",
+              "label": "示例 7",
+              "url": "/media/20bd012f32f8459d29009dbc"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "干扰容器 / pick：10 / 3",
+          "videos": [
+            {
+              "id": "be5e4f51f10eaf663a1f234b",
+              "label": "示例 1",
+              "url": "/media/be5e4f51f10eaf663a1f234b"
+            },
+            {
+              "id": "9a4c9255143ee68c22dfc0c4",
+              "label": "示例 4",
+              "url": "/media/9a4c9255143ee68c22dfc0c4"
+            },
+            {
+              "id": "93bb2f10468940c97b061d3c",
+              "label": "示例 7",
+              "url": "/media/93bb2f10468940c97b061d3c"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "干扰容器 / pick：12 / 3",
+          "videos": [
+            {
+              "id": "ddc953f2de1b20fefa0b8da7",
+              "label": "示例 1",
+              "url": "/media/ddc953f2de1b20fefa0b8da7"
+            },
+            {
+              "id": "6e24a1140c1f0a59bf349805",
+              "label": "示例 4",
+              "url": "/media/6e24a1140c1f0a59bf349805"
+            },
+            {
+              "id": "cc905ffd2ca37e918b9d5857",
+              "label": "示例 7",
+              "url": "/media/cc905ffd2ca37e918b9d5857"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "干扰容器 / pick：14 / 3",
+          "videos": [
+            {
+              "id": "c138a157d2939feccc48f730",
+              "label": "示例 1",
+              "url": "/media/c138a157d2939feccc48f730"
+            },
+            {
+              "id": "ac6241550fcb04d5c1730c16",
+              "label": "示例 4",
+              "url": "/media/ac6241550fcb04d5c1730c16"
+            },
+            {
+              "id": "348f119be0d94f6bfd2bafe3",
+              "label": "示例 7",
+              "url": "/media/348f119be0d94f6bfd2bafe3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VideoUnmaskSwap",
+      "name": "视频遮挡交换",
+      "note": "通过交换次数、抓取数量和外环干扰数量共同增加难度。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "swap / pick / 外环干扰：[2,3] / 2 / 0",
+          "videos": [
+            {
+              "id": "7a4a26df7522a6fd166a7078",
+              "label": "示例 4",
+              "url": "/media/7a4a26df7522a6fd166a7078"
+            },
+            {
+              "id": "790918cbf02e125bfb933375",
+              "label": "示例 8",
+              "url": "/media/790918cbf02e125bfb933375"
+            },
+            {
+              "id": "236fc157d87c53b89be1150e",
+              "label": "示例 12",
+              "url": "/media/236fc157d87c53b89be1150e"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "swap / pick / 外环干扰：[4,5] / 2 / 4",
+          "videos": [
+            {
+              "id": "65e275384cd996db7b3032e9",
+              "label": "示例 1",
+              "url": "/media/65e275384cd996db7b3032e9"
+            },
+            {
+              "id": "4f7c9e3837415bc37deb4aa9",
+              "label": "示例 4",
+              "url": "/media/4f7c9e3837415bc37deb4aa9"
+            },
+            {
+              "id": "1e347cc71e23ced483adb955",
+              "label": "示例 7",
+              "url": "/media/1e347cc71e23ced483adb955"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "swap / pick / 外环干扰：[6,7] / 3 / 6",
+          "videos": [
+            {
+              "id": "1b72bf56d51bf6bac802b0d4",
+              "label": "示例 1",
+              "url": "/media/1b72bf56d51bf6bac802b0d4"
+            },
+            {
+              "id": "d1ca2037a6b0ca9d9d974db9",
+              "label": "示例 4",
+              "url": "/media/d1ca2037a6b0ca9d9d974db9"
+            },
+            {
+              "id": "55eeb75663ab477b7cef1daa",
+              "label": "示例 7",
+              "url": "/media/55eeb75663ab477b7cef1daa"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "swap / pick / 外环干扰：[8,9] / 3 / 8",
+          "videos": [
+            {
+              "id": "06e463aa9ea71b1bc6a086e3",
+              "label": "示例 1",
+              "url": "/media/06e463aa9ea71b1bc6a086e3"
+            },
+            {
+              "id": "b28efd7ed7945527b68efac1",
+              "label": "示例 4",
+              "url": "/media/b28efd7ed7945527b68efac1"
+            },
+            {
+              "id": "43673031fdc2c0bdb37d8566",
+              "label": "示例 7",
+              "url": "/media/43673031fdc2c0bdb37d8566"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "swap / pick / 外环干扰：[10,12] / 3 / 10",
+          "videos": [
+            {
+              "id": "4285faf24942a318415b562f",
+              "label": "示例 1",
+              "url": "/media/4285faf24942a318415b562f"
+            },
+            {
+              "id": "51ffd871ae7e212ca7d118c3",
+              "label": "示例 4",
+              "url": "/media/51ffd871ae7e212ca7d118c3"
+            },
+            {
+              "id": "33baecb4ea4c19d0993aa884",
+              "label": "示例 7",
+              "url": "/media/33baecb4ea4c19d0993aa884"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ButtonUnmaskSwap",
+      "name": "按钮遮挡交换",
+      "note": "通过交换次数、抓取数量和外环干扰数量共同增加难度。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "swap / pick / 外环干扰：[2,3] / 2 / 0",
+          "videos": [
+            {
+              "id": "2b3d74ccb008615cc9c9b0de",
+              "label": "示例 4",
+              "url": "/media/2b3d74ccb008615cc9c9b0de"
+            },
+            {
+              "id": "892b9a5bf33f43dd1d0a95f0",
+              "label": "示例 8",
+              "url": "/media/892b9a5bf33f43dd1d0a95f0"
+            },
+            {
+              "id": "ab8067f8fd6b2bc949ae246c",
+              "label": "示例 12",
+              "url": "/media/ab8067f8fd6b2bc949ae246c"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "swap / pick / 外环干扰：4 / 2 / 4",
+          "videos": [
+            {
+              "id": "7a94fb94a208a4227c6bc38e",
+              "label": "示例 1",
+              "url": "/media/7a94fb94a208a4227c6bc38e"
+            },
+            {
+              "id": "6fa7808b429d2d0fb38cc7b0",
+              "label": "示例 4",
+              "url": "/media/6fa7808b429d2d0fb38cc7b0"
+            },
+            {
+              "id": "85bfb0759be17049c0fc4e5b",
+              "label": "示例 7",
+              "url": "/media/85bfb0759be17049c0fc4e5b"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "swap / pick / 外环干扰：5 / 3 / 6",
+          "videos": [
+            {
+              "id": "6d4c5fd96fb660f93c97a772",
+              "label": "示例 1",
+              "url": "/media/6d4c5fd96fb660f93c97a772"
+            },
+            {
+              "id": "43c374a13826f31a8d4b6c8f",
+              "label": "示例 4",
+              "url": "/media/43c374a13826f31a8d4b6c8f"
+            },
+            {
+              "id": "e22b81f75c970b3b34bc9b27",
+              "label": "示例 7",
+              "url": "/media/e22b81f75c970b3b34bc9b27"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "swap / pick / 外环干扰：[6,7] / 3 / 8",
+          "videos": [
+            {
+              "id": "612906fe8b91153010615963",
+              "label": "示例 1",
+              "url": "/media/612906fe8b91153010615963"
+            },
+            {
+              "id": "008a35af91b1df3fb21fa764",
+              "label": "示例 4",
+              "url": "/media/008a35af91b1df3fb21fa764"
+            },
+            {
+              "id": "529801ff0db8e6d526e1163c",
+              "label": "示例 7",
+              "url": "/media/529801ff0db8e6d526e1163c"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "swap / pick / 外环干扰：[8,9] / 3 / 10",
+          "videos": [
+            {
+              "id": "76af908fb6bada3fb907b3b3",
+              "label": "示例 1",
+              "url": "/media/76af908fb6bada3fb907b3b3"
+            },
+            {
+              "id": "ae3daa1d19398076c458c1ac",
+              "label": "示例 4",
+              "url": "/media/ae3daa1d19398076c458c1ac"
+            },
+            {
+              "id": "2bd78ae58be55901b1db6bee",
+              "label": "示例 7",
+              "url": "/media/2bd78ae58be55901b1db6bee"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VideoRepick",
+      "name": "视频重复抓取",
+      "note": "原版 hard 是静态布局的另一种任务，不能与新档直接比较；新四档增加块数、交换与重复抓取次数。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "块数 / swap / repick：另一种任务",
+          "videos": [
+            {
+              "id": "f6f1ddc0b1480b0e286fcac7",
+              "label": "示例 4",
+              "url": "/media/f6f1ddc0b1480b0e286fcac7"
+            },
+            {
+              "id": "adbdae39404e310ec399df4e",
+              "label": "示例 8",
+              "url": "/media/adbdae39404e310ec399df4e"
+            },
+            {
+              "id": "2e38486ff6dcb124b0fbc663",
+              "label": "示例 12",
+              "url": "/media/2e38486ff6dcb124b0fbc663"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "块数 / swap / repick：4 / [3,4] / 2",
+          "videos": [
+            {
+              "id": "d941834086fccae05488f51b",
+              "label": "示例 1",
+              "url": "/media/d941834086fccae05488f51b"
+            },
+            {
+              "id": "4bfaf9994a65db0760f27d1b",
+              "label": "示例 4",
+              "url": "/media/4bfaf9994a65db0760f27d1b"
+            },
+            {
+              "id": "a01f5c10f138be295181d7ea",
+              "label": "示例 7",
+              "url": "/media/a01f5c10f138be295181d7ea"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "块数 / swap / repick：5 / [5,6] / 3",
+          "videos": [
+            {
+              "id": "21d0acd9ece5e4b3f300ef95",
+              "label": "示例 1",
+              "url": "/media/21d0acd9ece5e4b3f300ef95"
+            },
+            {
+              "id": "acb3294d54349a57ec4f5346",
+              "label": "示例 4",
+              "url": "/media/acb3294d54349a57ec4f5346"
+            },
+            {
+              "id": "e0297b2db1273a01ed16b5f2",
+              "label": "示例 7",
+              "url": "/media/e0297b2db1273a01ed16b5f2"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "块数 / swap / repick：6 / [7,8] / 4",
+          "videos": [
+            {
+              "id": "406a5041cbdcc339816ad721",
+              "label": "示例 1",
+              "url": "/media/406a5041cbdcc339816ad721"
+            },
+            {
+              "id": "2afbe1ce42246cc44421f25e",
+              "label": "示例 4",
+              "url": "/media/2afbe1ce42246cc44421f25e"
+            },
+            {
+              "id": "d831b0aa05c3fe718af43cad",
+              "label": "示例 7",
+              "url": "/media/d831b0aa05c3fe718af43cad"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "块数 / swap / repick：7 / [9,12] / [5,6]",
+          "videos": [
+            {
+              "id": "29e5c3a0f92f544dd4f5c466",
+              "label": "示例 1",
+              "url": "/media/29e5c3a0f92f544dd4f5c466"
+            },
+            {
+              "id": "bdd939ebeffaa01f978af1af",
+              "label": "示例 4",
+              "url": "/media/bdd939ebeffaa01f978af1af"
+            },
+            {
+              "id": "1e27c9eb4da7903c1e0a81c2",
+              "label": "示例 7",
+              "url": "/media/1e27c9eb4da7903c1e0a81c2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PatternLock",
+      "name": "图案解锁",
+      "note": "在5×5网格中逐档增加不重复访问的路径节点数。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[4,8]",
+          "videos": [
+            {
+              "id": "6ce351f236450fbc31be090f",
+              "label": "示例 4",
+              "url": "/media/6ce351f236450fbc31be090f"
+            },
+            {
+              "id": "3ad9c4a80cc51749218d088d",
+              "label": "示例 8",
+              "url": "/media/3ad9c4a80cc51749218d088d"
+            },
+            {
+              "id": "b1322a90a71ffb695cb771d2",
+              "label": "示例 12",
+              "url": "/media/b1322a90a71ffb695cb771d2"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[9,12]",
+          "videos": [
+            {
+              "id": "06b162996c58740d78b23a21",
+              "label": "示例 1",
+              "url": "/media/06b162996c58740d78b23a21"
+            },
+            {
+              "id": "40bab8cc9a34f5edaa107226",
+              "label": "示例 4",
+              "url": "/media/40bab8cc9a34f5edaa107226"
+            },
+            {
+              "id": "b5c2ade5ffbd0d13042f8028",
+              "label": "示例 7",
+              "url": "/media/b5c2ade5ffbd0d13042f8028"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[13,16]",
+          "videos": [
+            {
+              "id": "f6e8f932d721572140b47265",
+              "label": "示例 1",
+              "url": "/media/f6e8f932d721572140b47265"
+            },
+            {
+              "id": "9420c2287a0740f8a552fc2e",
+              "label": "示例 4",
+              "url": "/media/9420c2287a0740f8a552fc2e"
+            },
+            {
+              "id": "e807a582ddcde117ccaa37c2",
+              "label": "示例 7",
+              "url": "/media/e807a582ddcde117ccaa37c2"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[17,20]",
+          "videos": [
+            {
+              "id": "c613550e49fd20a4462d636a",
+              "label": "示例 1",
+              "url": "/media/c613550e49fd20a4462d636a"
+            },
+            {
+              "id": "c14bc04c5957bd3bd3608067",
+              "label": "示例 4",
+              "url": "/media/c14bc04c5957bd3bd3608067"
+            },
+            {
+              "id": "00ca80b1d91cefdcca5c4302",
+              "label": "示例 7",
+              "url": "/media/00ca80b1d91cefdcca5c4302"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "节点数（5×5，不重访，预算 20000）：[21,25]",
+          "videos": [
+            {
+              "id": "7c89e616a0eec80d0f827456",
+              "label": "示例 1",
+              "url": "/media/7c89e616a0eec80d0f827456"
+            },
+            {
+              "id": "f3d367beb9a1e0e63ace3bc4",
+              "label": "示例 4",
+              "url": "/media/f3d367beb9a1e0e63ace3bc4"
+            },
+            {
+              "id": "6f12ff4249b1e613c2ead665",
+              "label": "示例 7",
+              "url": "/media/6f12ff4249b1e613c2ead665"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RouteStick",
+      "name": "路线引导",
+      "note": "逐档增加路线段数，需要连续完成更长的路线。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "段数 L：[4,7]",
+          "videos": [
+            {
+              "id": "7e5e2989f6587835974c554f",
+              "label": "示例 4",
+              "url": "/media/7e5e2989f6587835974c554f"
+            },
+            {
+              "id": "c0718111f1a37c118f877f37",
+              "label": "示例 8",
+              "url": "/media/c0718111f1a37c118f877f37"
+            },
+            {
+              "id": "273cb211fab82788d26c6da5",
+              "label": "示例 12",
+              "url": "/media/273cb211fab82788d26c6da5"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "段数 L：[8,10]",
+          "videos": [
+            {
+              "id": "fa43236b669e39e0870326e1",
+              "label": "示例 1",
+              "url": "/media/fa43236b669e39e0870326e1"
+            },
+            {
+              "id": "6b4b50ccbe86135e74f4af78",
+              "label": "示例 4",
+              "url": "/media/6b4b50ccbe86135e74f4af78"
+            },
+            {
+              "id": "dff5dc22d43c81a3ac529a45",
+              "label": "示例 7",
+              "url": "/media/dff5dc22d43c81a3ac529a45"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "段数 L：[11,13]",
+          "videos": [
+            {
+              "id": "fe694559e2b0ca1349424735",
+              "label": "示例 1",
+              "url": "/media/fe694559e2b0ca1349424735"
+            },
+            {
+              "id": "39a4e0a52eb4bafe3c991034",
+              "label": "示例 4",
+              "url": "/media/39a4e0a52eb4bafe3c991034"
+            },
+            {
+              "id": "953fed5f6efe55612bfa0b7b",
+              "label": "示例 7",
+              "url": "/media/953fed5f6efe55612bfa0b7b"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "段数 L：[14,16]",
+          "videos": [
+            {
+              "id": "96f797aaa685604bdac6068d",
+              "label": "示例 1",
+              "url": "/media/96f797aaa685604bdac6068d"
+            },
+            {
+              "id": "c9b00c0887bb8dbeb6ab29f7",
+              "label": "示例 4",
+              "url": "/media/c9b00c0887bb8dbeb6ab29f7"
+            },
+            {
+              "id": "533100141421c2ee1a24441c",
+              "label": "示例 7",
+              "url": "/media/533100141421c2ee1a24441c"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "段数 L：[17,21]",
+          "videos": [
+            {
+              "id": "0946f0080e3dce8fe8e2269b",
+              "label": "示例 1",
+              "url": "/media/0946f0080e3dce8fe8e2269b"
+            },
+            {
+              "id": "932b6e5b026335f95a993075",
+              "label": "示例 4",
+              "url": "/media/932b6e5b026335f95a993075"
+            },
+            {
+              "id": "9b6d28ab168a14df57ae24ee",
+              "label": "示例 7",
+              "url": "/media/9b6d28ab168a14df57ae24ee"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VideoPlaceButton",
+      "name": "视频放置与按钮",
+      "note": "新四档均放回原位，按演示中放到台上的总次数区分难度。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "1块，放台2次；演示后放到桌面",
+          "videos": [
+            {
+              "id": "88cd8afb207a509b36ac4667",
+              "label": "示例 4",
+              "url": "/media/88cd8afb207a509b36ac4667",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 74, 110）",
+                  "放下方块到目标台（图像坐标 98, 165）",
+                  "按按钮（图像坐标 119, 115）",
+                  "抓起方块（图像坐标 96, 168）",
+                  "放下方块到目标台（图像坐标 129, 173）",
+                  "抓起方块（图像坐标 129, 175）",
+                  "放下方块到桌面",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 88, 128）",
+                  "将方块放到答案台（图像坐标 98, 165）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "ccb7e6c90b807098f76fbd61a2cf9ec160602b4484bb9651fc12f9ff67898525"
+            },
+            {
+              "id": "2d8f82cde1e12c7a72445521",
+              "label": "示例 8",
+              "url": "/media/2d8f82cde1e12c7a72445521",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 73, 143）",
+                  "放下方块到目标台（图像坐标 126, 145）",
+                  "按按钮（图像坐标 123, 92）",
+                  "抓起方块（图像坐标 125, 146）",
+                  "放下方块到目标台",
+                  "抓起方块（图像坐标 77, 166）",
+                  "放下方块到桌面",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 83, 121）",
+                  "将方块放到答案台（图像坐标 126, 145）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "87a4cadccff17a70773f748a6913c7d7572f66f89d26e724be691698bf37d8ac"
+            },
+            {
+              "id": "472eaf1be6f71e9358efbf2e",
+              "label": "示例 12",
+              "url": "/media/472eaf1be6f71e9358efbf2e",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 99, 148）",
+                  "放下方块到目标台（图像坐标 124, 162）",
+                  "按按钮（图像坐标 122, 121）",
+                  "抓起方块（图像坐标 123, 163）",
+                  "放下方块到目标台（图像坐标 96, 160）",
+                  "抓起方块（图像坐标 93, 166）",
+                  "放下方块到桌面",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 82, 131）",
+                  "将方块放到答案台（图像坐标 140, 81）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "abfd35299cfd181e462b6e598991a15b31a86bdc7ecd9f3d11f7124ea9476427"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "放台次数（都放回原位）：1 块 3 次",
+          "videos": [
+            {
+              "id": "81ac9faf048ff482643dcdf8",
+              "label": "示例 1",
+              "url": "/media/81ac9faf048ff482643dcdf8",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 116, 138）",
+                  "放下方块到目标台",
+                  "按按钮（图像坐标 122, 86）",
+                  "抓起方块（图像坐标 76, 153）",
+                  "放下方块到目标台（图像坐标 78, 90）",
+                  "抓起方块（图像坐标 74, 88）",
+                  "放下方块到目标台（图像坐标 132, 165）",
+                  "抓起方块（图像坐标 131, 167）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 116, 137）",
+                  "将方块放到答案台（图像坐标 78, 90）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "5bdadde6172542ae2dd88f3511a2c88f1a468808afb023e13780ffc52a650c9c"
+            },
+            {
+              "id": "caf0c2c73b0542f5c8b86ae4",
+              "label": "示例 4",
+              "url": "/media/caf0c2c73b0542f5c8b86ae4",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 74, 163）",
+                  "放下方块到目标台（图像坐标 104, 133）",
+                  "按按钮（图像坐标 123, 101）",
+                  "抓起方块（图像坐标 102, 133）",
+                  "放下方块到目标台（图像坐标 101, 159）",
+                  "抓起方块（图像坐标 99, 161）",
+                  "放下方块到目标台（图像坐标 74, 99）",
+                  "抓起方块（图像坐标 72, 98）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 74, 164）",
+                  "将方块放到答案台（图像坐标 104, 133）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "4463ac561ac83aadc93c0c361b2c92f1e1ad86986bad801e83d27bbfb2464f8f"
+            },
+            {
+              "id": "5bbb4f0947278a0575da4c51",
+              "label": "示例 7",
+              "url": "/media/5bbb4f0947278a0575da4c51",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 123, 176）",
+                  "放下方块到目标台（图像坐标 98, 91）",
+                  "按按钮（图像坐标 122, 114）",
+                  "抓起方块（图像坐标 99, 89）",
+                  "放下方块到目标台（图像坐标 138, 149）",
+                  "抓起方块（图像坐标 137, 151）",
+                  "放下方块到目标台（图像坐标 78, 90）",
+                  "抓起方块（图像坐标 75, 88）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 123, 176）",
+                  "将方块放到答案台（图像坐标 138, 149）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "2377d4ff52024c5e75a9fe399f211dc53a1a25a6e3f7122de6094c883a68b254"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "放台次数（都放回原位）：1 块 4 次",
+          "videos": [
+            {
+              "id": "7f860bb2ecf2a4c76eac98bf",
+              "label": "示例 1",
+              "url": "/media/7f860bb2ecf2a4c76eac98bf",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 85, 162）",
+                  "放下方块到目标台（图像坐标 111, 167）",
+                  "抓起方块（图像坐标 109, 170）",
+                  "放下方块到目标台（图像坐标 75, 147）",
+                  "按按钮（图像坐标 120, 135）",
+                  "抓起方块",
+                  "放下方块到目标台（图像坐标 102, 101）",
+                  "抓起方块（图像坐标 100, 100）",
+                  "放下方块到目标台（图像坐标 75, 149）",
+                  "抓起方块（图像坐标 72, 150）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 85, 162）",
+                  "将方块放到答案台（图像坐标 102, 101）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "7fb0f10066a7e46a3f646ae28d1f71df962b1c5dd3d26327d1aa6e7bb5f0bd9c"
+            },
+            {
+              "id": "4b787ce57e57b71e0fe94449",
+              "label": "示例 4",
+              "url": "/media/4b787ce57e57b71e0fe94449",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 69, 153）",
+                  "放下方块到目标台（图像坐标 79, 93）",
+                  "抓起方块（图像坐标 75, 91）",
+                  "放下方块到目标台（图像坐标 143, 168）",
+                  "按按钮（图像坐标 129, 112）",
+                  "抓起方块（图像坐标 142, 169）",
+                  "放下方块到目标台（图像坐标 117, 154）",
+                  "抓起方块（图像坐标 114, 155）",
+                  "放下方块到目标台（图像坐标 96, 168）",
+                  "抓起方块（图像坐标 87, 165）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 70, 153）",
+                  "将方块放到答案台（图像坐标 117, 154）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "68015ecf5f9b633a466590a2d5144ff2cd321a48c50b3c0ca5d109ceab9f18e9"
+            },
+            {
+              "id": "1da999ca4ed5da085bbd90e7",
+              "label": "示例 7",
+              "url": "/media/1da999ca4ed5da085bbd90e7",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 116, 134）",
+                  "放下方块到目标台（图像坐标 97, 93）",
+                  "抓起方块（图像坐标 95, 91）",
+                  "放下方块到目标台（图像坐标 82, 164）",
+                  "按按钮（图像坐标 130, 173）",
+                  "抓起方块",
+                  "放下方块到目标台（图像坐标 138, 79）",
+                  "抓起方块（图像坐标 138, 77）",
+                  "放下方块到目标台（图像坐标 103, 157）",
+                  "抓起方块（图像坐标 100, 156）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 116, 133）",
+                  "将方块放到答案台（图像坐标 138, 79）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "2544200596cb320758bee6698932e75a65453cba1bce4096ba22ee2211a08c41"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "放台次数（都放回原位）：2 块 5 次",
+          "videos": [
+            {
+              "id": "aff3336b4343cae02ad6d767",
+              "label": "示例 1",
+              "url": "/media/aff3336b4343cae02ad6d767",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 145, 74）",
+                  "放下方块到目标台（图像坐标 90, 98）",
+                  "抓起方块（图像坐标 102, 158）",
+                  "放下方块到目标台（图像坐标 130, 166）",
+                  "抓起方块（图像坐标 129, 169）",
+                  "放下方块到目标台（图像坐标 115, 91）",
+                  "按按钮（图像坐标 120, 126）",
+                  "抓起方块（图像坐标 90, 96）",
+                  "放下方块到目标台（图像坐标 78, 164）",
+                  "抓起方块（图像坐标 113, 89）",
+                  "放下方块到目标台（图像坐标 115, 91）",
+                  "抓起方块（图像坐标 74, 167）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 113, 90）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 144, 75）",
+                  "将方块放到答案台（图像坐标 130, 166）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "8c564d038c92d0d59c51accdde8c463248760ff55d2e259cd6235d006368f6f1"
+            },
+            {
+              "id": "6b87bdeb088af47999a03623",
+              "label": "示例 4",
+              "url": "/media/6b87bdeb088af47999a03623",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 93, 162）",
+                  "放下方块到目标台（图像坐标 96, 91）",
+                  "抓起方块（图像坐标 144, 70）",
+                  "放下方块到目标台（图像坐标 74, 103）",
+                  "抓起方块（图像坐标 71, 103）",
+                  "放下方块到目标台（图像坐标 77, 151）",
+                  "按按钮（图像坐标 125, 113）",
+                  "抓起方块（图像坐标 101, 89）",
+                  "放下方块到目标台（图像坐标 115, 150）",
+                  "抓起方块（图像坐标 78, 152）",
+                  "放下方块到目标台（图像坐标 77, 151）",
+                  "抓起方块（图像坐标 113, 151）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 74, 152）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 144, 71）",
+                  "将方块放到答案台（图像坐标 74, 103）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "6f4ae29ebea56b68cca838afaf592a48dc0f2fb0ee0ac08d8392114ca32f1d40"
+            },
+            {
+              "id": "2e88732211d3f6de43580fcd",
+              "label": "示例 7",
+              "url": "/media/2e88732211d3f6de43580fcd",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 124, 175）",
+                  "放下方块到目标台（图像坐标 83, 105）",
+                  "抓起方块（图像坐标 69, 133）",
+                  "放下方块到目标台（图像坐标 141, 148）",
+                  "抓起方块（图像坐标 79, 104）",
+                  "放下方块到目标台（图像坐标 91, 165）",
+                  "按按钮（图像坐标 124, 110）",
+                  "抓起方块（图像坐标 88, 167）",
+                  "放下方块到目标台（图像坐标 91, 165）",
+                  "抓起方块（图像坐标 140, 148）",
+                  "放下方块到目标台（图像坐标 100, 87）",
+                  "抓起方块（图像坐标 89, 168）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 98, 84）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 124, 175）",
+                  "将方块放到答案台（图像坐标 91, 162）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "c5b327f1e5169c024b9542e1260b8d6faf39d89f38dfa34dae55446631bf39c7"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "放台次数（都放回原位）：2 块 6 次",
+          "videos": [
+            {
+              "id": "ff2a72799a4e7734ae2e6b63",
+              "label": "示例 1",
+              "url": "/media/ff2a72799a4e7734ae2e6b63",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 125, 181）",
+                  "放下方块到目标台（图像坐标 100, 89）",
+                  "抓起方块（图像坐标 72, 142）",
+                  "放下方块到目标台（图像坐标 75, 92）",
+                  "抓起方块（图像坐标 72, 91）",
+                  "放下方块到目标台（图像坐标 82, 161）",
+                  "按按钮（图像坐标 128, 134）",
+                  "抓起方块（图像坐标 99, 86）",
+                  "放下方块到目标台（图像坐标 104, 168）",
+                  "抓起方块（图像坐标 80, 162）",
+                  "放下方块到目标台（图像坐标 82, 161）",
+                  "抓起方块（图像坐标 102, 170）",
+                  "放下方块到目标台（图像坐标 75, 92）",
+                  "抓起方块（图像坐标 72, 91）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 79, 160）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 126, 180）",
+                  "将方块放到答案台（图像坐标 100, 89）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "b40de4f7be4f70436f395f47114cd6ab3160bdd4741661c166b876f061e621f6"
+            },
+            {
+              "id": "8e67b3129d0de9ee558f1cb2",
+              "label": "示例 4",
+              "url": "/media/8e67b3129d0de9ee558f1cb2",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 77, 167）",
+                  "放下方块到目标台（图像坐标 96, 100）",
+                  "抓起方块（图像坐标 96, 146）",
+                  "放下方块到目标台（图像坐标 110, 123）",
+                  "抓起方块（图像坐标 95, 100）",
+                  "放下方块到目标台（图像坐标 142, 176）",
+                  "按按钮（图像坐标 125, 84）",
+                  "抓起方块（图像坐标 140, 178）",
+                  "放下方块到目标台（图像坐标 135, 144）",
+                  "抓起方块",
+                  "放下方块到目标台（图像坐标 142, 176）",
+                  "抓起方块（图像坐标 144, 177）",
+                  "放下方块到目标台（图像坐标 96, 100）",
+                  "抓起方块（图像坐标 135, 145）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 93, 99）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 77, 167）",
+                  "将方块放到答案台（图像坐标 135, 144）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "e067c996e3c022ee70bb5133e267317cde117d12e3c4fa024c8a09eef52b0e9f"
+            },
+            {
+              "id": "d5e20a74ab0f182dc9f6e867",
+              "label": "示例 7",
+              "url": "/media/d5e20a74ab0f182dc9f6e867",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 69, 142）",
+                  "放下方块到目标台（图像坐标 112, 89）",
+                  "抓起方块（图像坐标 142, 177）",
+                  "放下方块到目标台（图像坐标 104, 160）",
+                  "抓起方块（图像坐标 101, 161）",
+                  "放下方块到目标台（图像坐标 138, 83）",
+                  "按按钮（图像坐标 126, 123）",
+                  "抓起方块（图像坐标 110, 87）",
+                  "放下方块到目标台（图像坐标 84, 160）",
+                  "抓起方块（图像坐标 136, 80）",
+                  "放下方块到目标台（图像坐标 138, 84）",
+                  "抓起方块（图像坐标 81, 161）",
+                  "放下方块到目标台（图像坐标 104, 160）",
+                  "抓起方块（图像坐标 102, 161）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 136, 79）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 70, 142）",
+                  "将方块放到答案台（图像坐标 138, 83）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "1e262f9ff98b0230dde9232adc8a9c05ca8f072ee9723723029c23ea262d4a9a"
+            }
+          ]
+        }
+      ],
+      "known_issue": {
+        "title": "已知问题：部分视频的程序答案与题目含义不一致",
+        "steps": [
+          "已确认受影响的是 xhard3 示例4和示例7（episode 3、6）。",
+          "以示例4为例：蓝色方块先放到平台A，再被拿起放到平台B，然后按按钮。",
+          "题目问蓝色方块在按钮前最后一次放到的平台，因此按演示应回答平台B，并追踪该平台交换后的所在位置。",
+          "当前程序仍将更早的平台A绑定为正确答案；视频中的执行按这个答案完成，所以内部记录显示成功。"
+        ],
+        "note": "A、B仅为这里解释先后访问的平台所用的代号，不是视频中的标签。视频显示的成功只代表通过当前程序判定，不能证明符合题目含义。此处保留原视频并说明问题，没有修复源码或重生成数据；其他所列样例不因此被判定为错误。"
+      }
+    },
+    {
+      "id": "VideoPlaceOrder",
+      "name": "视频放置顺序",
+      "note": "新四档均放回原位，两个物体的总放台次数从5增加到8。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "1块，访问2–4台；演示后放到桌面",
+          "videos": [
+            {
+              "id": "b91c44b2e40e4df9070653dd",
+              "label": "示例 4",
+              "url": "/media/b91c44b2e40e4df9070653dd",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 92, 108）",
+                  "放下方块到目标台（图像坐标 140, 86）",
+                  "抓起方块（图像坐标 138, 84）",
+                  "放下方块到目标台（图像坐标 114, 106）",
+                  "抓起方块（图像坐标 114, 99）",
+                  "放下方块到目标台（图像坐标 142, 116）",
+                  "抓起方块（图像坐标 141, 115）",
+                  "放下方块到目标台",
+                  "按按钮（图像坐标 126, 157）",
+                  "抓起方块（图像坐标 71, 90）",
+                  "放下方块到桌面",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 81, 127）",
+                  "将方块放到答案台（图像坐标 115, 101）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "bbde83f372ce97c5cafd0652175f47dc0d0ce438c0f0facb77b555dcd90b5aa8"
+            },
+            {
+              "id": "22f7d8e02cf7cf21d111fb17",
+              "label": "示例 8",
+              "url": "/media/22f7d8e02cf7cf21d111fb17",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 82, 151）",
+                  "放下方块到目标台（图像坐标 76, 163）",
+                  "抓起方块（图像坐标 73, 165）",
+                  "放下方块到目标台（图像坐标 97, 88）",
+                  "按按钮（图像坐标 124, 105）",
+                  "抓起方块（图像坐标 101, 85）",
+                  "放下方块到目标台（图像坐标 134, 140）",
+                  "抓起方块（图像坐标 134, 141）",
+                  "放下方块到桌面",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 82, 128）",
+                  "将方块放到答案台（图像坐标 97, 88）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "c97d307bf1dc8ef9d5296f78a8222717eabd397ea5dda1129902df9e20ee3a6e"
+            },
+            {
+              "id": "2d6d2cff285699fba5bc53e3",
+              "label": "示例 12",
+              "url": "/media/2d6d2cff285699fba5bc53e3",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 127, 175）",
+                  "放下方块到目标台（图像坐标 108, 90）",
+                  "抓起方块（图像坐标 106, 88）",
+                  "放下方块到目标台（图像坐标 75, 163）",
+                  "按按钮（图像坐标 127, 122）",
+                  "抓起方块",
+                  "放下方块到目标台（图像坐标 108, 167）",
+                  "抓起方块（图像坐标 105, 170）",
+                  "放下方块到目标台（图像坐标 133, 81）",
+                  "抓起方块（图像坐标 132, 79）",
+                  "放下方块到桌面",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 81, 127）",
+                  "将方块放到答案台（图像坐标 108, 167）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "67d43a1ffa9b55788e9d81dcbb652990e42f2fb535f1e34cff6ef2f93b152c70"
+            }
+          ]
+        },
+        {
+          "id": "xhard1",
+          "label": "xhard1",
+          "gradient": "总放台次数（都放回原位）：2 块 (2,3)=5",
+          "videos": [
+            {
+              "id": "e227e18d965e14a247e86fc4",
+              "label": "示例 1",
+              "url": "/media/e227e18d965e14a247e86fc4",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 115, 106）",
+                  "放下方块到目标台（图像坐标 140, 115）",
+                  "抓起方块（图像坐标 139, 114）",
+                  "放下方块到目标台（图像坐标 135, 81）",
+                  "按按钮（图像坐标 121, 153）",
+                  "抓起方块（图像坐标 135, 77）",
+                  "放下方块到目标台（图像坐标 116, 83）",
+                  "抓起方块（图像坐标 106, 84）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 84, 131）",
+                  "放下方块到目标台（图像坐标 78, 90）",
+                  "抓起方块（图像坐标 75, 87）",
+                  "放下方块到目标台（图像坐标 108, 86）",
+                  "抓起方块（图像坐标 106, 84）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 116, 106）",
+                  "将方块放到答案台（图像坐标 108, 86）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "7d1f33a80d06070f11ec5eb772b40e00d7f6c8ac631e4e573ee89a6feba26803"
+            },
+            {
+              "id": "08444a6b3bd255c7694a6aff",
+              "label": "示例 4",
+              "url": "/media/08444a6b3bd255c7694a6aff",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 133, 174）",
+                  "放下方块到目标台（图像坐标 128, 146）",
+                  "抓起方块（图像坐标 126, 147）",
+                  "放下方块到目标台（图像坐标 74, 91）",
+                  "抓起方块（图像坐标 71, 90）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 103, 147）",
+                  "放下方块到目标台（图像坐标 74, 91）",
+                  "抓起方块（图像坐标 71, 90）",
+                  "放下方块到目标台（图像坐标 104, 169）",
+                  "按按钮（图像坐标 123, 98）",
+                  "抓起方块（图像坐标 101, 171）",
+                  "放下方块到目标台（图像坐标 95, 89）",
+                  "抓起方块（图像坐标 93, 88）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 134, 173）",
+                  "将方块放到答案台"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "2fb57ef8459a84fa80a7c652aa71db39df81372534dc2d48c21951e5f9e33d1d"
+            },
+            {
+              "id": "dd6b6ebb25b7d661a4b0e379",
+              "label": "示例 7",
+              "url": "/media/dd6b6ebb25b7d661a4b0e379",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 79, 135）",
+                  "放下方块到目标台（图像坐标 102, 87）",
+                  "抓起方块（图像坐标 100, 85）",
+                  "放下方块到目标台（图像坐标 119, 163）",
+                  "抓起方块（图像坐标 118, 165）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 89, 168）",
+                  "放下方块到目标台（图像坐标 102, 87）",
+                  "抓起方块（图像坐标 100, 84）",
+                  "放下方块到目标台（图像坐标 135, 83）",
+                  "按按钮（图像坐标 120, 119）",
+                  "抓起方块（图像坐标 134, 80）",
+                  "放下方块到目标台（图像坐标 74, 162）",
+                  "抓起方块（图像坐标 71, 164）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 90, 168）",
+                  "将方块放到答案台（图像坐标 135, 83）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "28b3f5abace585f2c96119dabb750a1bcf8d4b82dacf959baf60c716c6538aa2"
+            }
+          ]
+        },
+        {
+          "id": "xhard2",
+          "label": "xhard2",
+          "gradient": "总放台次数（都放回原位）：2 块 (3,3)=6",
+          "videos": [
+            {
+              "id": "3e15095a06d5c6cc689f51fd",
+              "label": "示例 1",
+              "url": "/media/3e15095a06d5c6cc689f51fd",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 75, 88）",
+                  "放下方块到目标台（图像坐标 113, 107）",
+                  "抓起方块（图像坐标 111, 106）",
+                  "放下方块到目标台（图像坐标 140, 110）",
+                  "按按钮（图像坐标 128, 156）",
+                  "抓起方块（图像坐标 139, 109）",
+                  "放下方块到目标台",
+                  "抓起方块（图像坐标 96, 86）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 78, 168）",
+                  "放下方块到目标台（图像坐标 140, 79）",
+                  "抓起方块（图像坐标 139, 77）",
+                  "放下方块到目标台（图像坐标 113, 107）",
+                  "抓起方块（图像坐标 112, 106）",
+                  "放下方块到目标台（图像坐标 140, 110）",
+                  "抓起方块（图像坐标 140, 108）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 75, 88）",
+                  "将方块放到答案台（图像坐标 140, 110）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "d69262b8295f84256515020570fb6e7b98ab46607cd47548988e5d85e8375e0c"
+            },
+            {
+              "id": "6ebb1d88d84a69e41a35db10",
+              "label": "示例 4",
+              "url": "/media/6ebb1d88d84a69e41a35db10",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 93, 131）",
+                  "放下方块到目标台（图像坐标 139, 175）",
+                  "抓起方块（图像坐标 139, 177）",
+                  "放下方块到目标台（图像坐标 106, 93）",
+                  "按按钮（图像坐标 126, 134）",
+                  "抓起方块（图像坐标 105, 92）",
+                  "放下方块到目标台（图像坐标 103, 163）",
+                  "抓起方块（图像坐标 101, 166）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 68, 136）",
+                  "放下方块到目标台（图像坐标 139, 175）",
+                  "抓起方块（图像坐标 140, 175）",
+                  "放下方块到目标台（图像坐标 103, 163）",
+                  "抓起方块（图像坐标 102, 167）",
+                  "放下方块到目标台（图像坐标 74, 93）",
+                  "抓起方块（图像坐标 70, 92）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 92, 131）",
+                  "将方块放到答案台（图像坐标 103, 163）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "3b46782bfda3615392c67e70b6680f8f4f5d6c993d9b114427e823fb9cc79e17"
+            },
+            {
+              "id": "6de1f74c9a1fd6c6050629a6",
+              "label": "示例 7",
+              "url": "/media/6de1f74c9a1fd6c6050629a6",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 120, 151）",
+                  "放下方块到目标台（图像坐标 108, 169）",
+                  "抓起方块（图像坐标 104, 170）",
+                  "放下方块到目标台（图像坐标 95, 88）",
+                  "抓起方块（图像坐标 93, 87）",
+                  "放下方块到目标台（图像坐标 143, 165）",
+                  "按按钮（图像坐标 121, 110）",
+                  "抓起方块（图像坐标 143, 167）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 67, 114）",
+                  "放下方块到目标台（图像坐标 107, 167）",
+                  "抓起方块（图像坐标 104, 169）",
+                  "放下方块到目标台（图像坐标 74, 157）",
+                  "抓起方块（图像坐标 70, 164）",
+                  "放下方块到目标台（图像坐标 143, 165）",
+                  "抓起方块（图像坐标 146, 168）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 120, 150）",
+                  "将方块放到答案台（图像坐标 143, 165）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "ffc5b8f5807306e75567ebe2db724479137cd97062478b3bcbfff3654bcc2061"
+            }
+          ]
+        },
+        {
+          "id": "xhard3",
+          "label": "xhard3",
+          "gradient": "总放台次数（都放回原位）：2 块 (3,4)=7",
+          "videos": [
+            {
+              "id": "70e12ba3f61de11ce8e49ee1",
+              "label": "示例 1",
+              "url": "/media/70e12ba3f61de11ce8e49ee1",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 136, 96）",
+                  "放下方块到目标台（图像坐标 127, 79）",
+                  "抓起方块（图像坐标 119, 80）",
+                  "放下方块到目标台（图像坐标 81, 90）",
+                  "按按钮（图像坐标 128, 130）",
+                  "抓起方块",
+                  "放下方块到目标台（图像坐标 140, 174）",
+                  "抓起方块（图像坐标 140, 176）",
+                  "放下方块到目标台",
+                  "抓起方块（图像坐标 109, 168）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 93, 145）",
+                  "放下方块到目标台（图像坐标 140, 174）",
+                  "抓起方块（图像坐标 140, 177）",
+                  "放下方块到目标台（图像坐标 109, 157）",
+                  "抓起方块（图像坐标 109, 169）",
+                  "放下方块到目标台（图像坐标 121, 82）",
+                  "抓起方块（图像坐标 119, 80）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 92, 145）",
+                  "将方块放到答案台（图像坐标 140, 174）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "475b8fb2f76f3c89fbf87613e2e7cda7505d114f3922cb2549c735b9c7a13587"
+            },
+            {
+              "id": "89e48e8124ab65ef7adf8a85",
+              "label": "示例 4",
+              "url": "/media/89e48e8124ab65ef7adf8a85",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 99, 163）",
+                  "放下方块到目标台（图像坐标 76, 90）",
+                  "抓起方块（图像坐标 73, 89）",
+                  "放下方块到目标台（图像坐标 141, 146）",
+                  "抓起方块（图像坐标 140, 146）",
+                  "放下方块到目标台",
+                  "抓起方块（图像坐标 78, 168）",
+                  "放下方块到目标台（图像坐标 97, 88）",
+                  "按按钮（图像坐标 122, 108）",
+                  "抓起方块（图像坐标 99, 85）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 122, 164）",
+                  "放下方块到目标台（图像坐标 76, 90）",
+                  "抓起方块（图像坐标 73, 89）",
+                  "放下方块到目标台（图像坐标 80, 165）",
+                  "抓起方块（图像坐标 77, 167）",
+                  "放下方块到目标台（图像坐标 141, 146）",
+                  "抓起方块（图像坐标 140, 147）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 99, 164）",
+                  "将方块放到答案台（图像坐标 81, 163）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "4799017b11b403b0d784b5edda43cc66fc7b69bf17059375b0d28d32d838801a"
+            },
+            {
+              "id": "4a9d61471d37b60faff15777",
+              "label": "示例 7",
+              "url": "/media/4a9d61471d37b60faff15777",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 72, 148）",
+                  "放下方块到目标台（图像坐标 141, 111）",
+                  "抓起方块（图像坐标 140, 110）",
+                  "放下方块到目标台（图像坐标 102, 164）",
+                  "抓起方块（图像坐标 100, 166）",
+                  "放下方块到目标台（图像坐标 99, 87）",
+                  "按按钮（图像坐标 131, 163）",
+                  "抓起方块（图像坐标 97, 86）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 147, 82）",
+                  "放下方块到目标台（图像坐标 99, 87）",
+                  "抓起方块（图像坐标 96, 85）",
+                  "放下方块到目标台（图像坐标 77, 91）",
+                  "抓起方块（图像坐标 73, 88）",
+                  "放下方块到目标台（图像坐标 141, 111）",
+                  "抓起方块（图像坐标 142, 106）",
+                  "放下方块到目标台（图像坐标 102, 164）",
+                  "抓起方块（图像坐标 98, 165）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 72, 147）",
+                  "将方块放到答案台（图像坐标 141, 111）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "61c17644aa13aa6c7c19438c99836c53e46e4fa8c38d65993a594d853da31b08"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "总放台次数（都放回原位）：2 块 (4,4)=8",
+          "videos": [
+            {
+              "id": "18475ff9a26958dda6588a4b",
+              "label": "示例 1",
+              "url": "/media/18475ff9a26958dda6588a4b",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 97, 175）",
+                  "放下方块到目标台（图像坐标 133, 163）",
+                  "抓起方块（图像坐标 132, 165）",
+                  "放下方块到目标台（图像坐标 74, 92）",
+                  "抓起方块（图像坐标 71, 90）",
+                  "放下方块到目标台（图像坐标 135, 127）",
+                  "抓起方块（图像坐标 134, 126）",
+                  "放下方块到目标台（图像坐标 71, 167）",
+                  "抓起方块（图像坐标 74, 166）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 111, 139）",
+                  "放下方块到目标台（图像坐标 133, 163）",
+                  "抓起方块（图像坐标 132, 166）",
+                  "放下方块到目标台（图像坐标 74, 92）",
+                  "抓起方块（图像坐标 71, 91）",
+                  "放下方块到目标台（图像坐标 77, 163）",
+                  "按按钮（图像坐标 120, 92）",
+                  "抓起方块（图像坐标 74, 166）",
+                  "放下方块到目标台（图像坐标 135, 127）",
+                  "抓起方块（图像坐标 134, 127）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 97, 174）",
+                  "将方块放到答案台（图像坐标 77, 163）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "1ec0e2c34b5a8680c3d3f54babfe00ff60868d1d4c35e30e30e23c644f8991b6"
+            },
+            {
+              "id": "e72501eab405879262cfa4bb",
+              "label": "示例 4",
+              "url": "/media/e72501eab405879262cfa4bb",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 88, 168）",
+                  "放下方块到目标台（图像坐标 143, 113）",
+                  "抓起方块（图像坐标 142, 113）",
+                  "放下方块到目标台",
+                  "抓起方块（图像坐标 72, 89）",
+                  "放下方块到目标台（图像坐标 133, 82）",
+                  "抓起方块（图像坐标 132, 79）",
+                  "放下方块到目标台（图像坐标 105, 88）",
+                  "抓起方块（图像坐标 103, 85）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 91, 109）",
+                  "放下方块到目标台（图像坐标 104, 87）",
+                  "抓起方块（图像坐标 101, 85）",
+                  "放下方块到目标台（图像坐标 133, 82）",
+                  "按按钮（图像坐标 120, 166）",
+                  "抓起方块（图像坐标 131, 79）",
+                  "放下方块到目标台（图像坐标 143, 113）",
+                  "抓起方块（图像坐标 142, 114）",
+                  "放下方块到目标台",
+                  "抓起方块（图像坐标 72, 89）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 90, 110）",
+                  "将方块放到答案台（图像坐标 104, 87）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "72d90b8d8c5bf97c25fcf3497c8b46deb5294c43f246a18da413d46060396590"
+            },
+            {
+              "id": "381aa0388c629a33ed1105f1",
+              "label": "示例 7",
+              "url": "/media/381aa0388c629a33ed1105f1",
+              "subgoal_flow": {
+                "demo_steps": [
+                  "抓起方块（图像坐标 77, 116）",
+                  "放下方块到目标台（图像坐标 137, 108）",
+                  "抓起方块（图像坐标 137, 107）",
+                  "放下方块到目标台",
+                  "抓起方块（图像坐标 100, 86）",
+                  "放下方块到目标台（图像坐标 76, 92）",
+                  "抓起方块（图像坐标 72, 90）",
+                  "放下方块到目标台（图像坐标 98, 166）",
+                  "抓起方块（图像坐标 96, 168）",
+                  "将方块放回原位",
+                  "抓起方块（图像坐标 91, 140）",
+                  "放下方块到目标台（图像坐标 98, 166）",
+                  "抓起方块（图像坐标 96, 167）",
+                  "放下方块到目标台（图像坐标 137, 108）",
+                  "抓起方块（图像坐标 137, 107）",
+                  "放下方块到目标台",
+                  "按按钮（图像坐标 126, 156）",
+                  "抓起方块（图像坐标 100, 87）",
+                  "放下方块到目标台（图像坐标 75, 92）",
+                  "抓起方块（图像坐标 72, 90）",
+                  "将方块放回原位",
+                  "静止",
+                  "静止"
+                ],
+                "execution_steps": [
+                  "抓起方块（图像坐标 77, 115）",
+                  "将方块放到答案台（图像坐标 102, 89）"
+                ]
+              },
+              "flow_terminal": "全部任务完成",
+              "flow_sha256": "295d3635f179dc81f799057ba7cb443d542ecd9a949865559c7994e55289c39e"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MoveCube",
+      "name": "移动方块",
+      "note": "不增加中间档位；xhard4 将方块中心、目标中心和杆抓取点统一放在圆环区域，并扩大杆的朝向范围。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "原版位置布局；杆朝向 −45°～45°",
+          "videos": [
+            {
+              "id": "7a28a02a6b3fc13aa60e9f5e",
+              "label": "示例 4",
+              "url": "/media/7a28a02a6b3fc13aa60e9f5e"
+            },
+            {
+              "id": "d5570818e07b1641be7c3560",
+              "label": "示例 8",
+              "url": "/media/d5570818e07b1641be7c3560"
+            },
+            {
+              "id": "2d736ab95433c5eb017530d9",
+              "label": "示例 12",
+              "url": "/media/2d736ab95433c5eb017530d9"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "圆环圆心 (−0.06, 0) 米、半径0.12–0.20米；杆朝向 −180°～180°",
+          "videos": [
+            {
+              "id": "d7077a37f13e4a5fb498ed66",
+              "label": "示例 1",
+              "url": "/media/d7077a37f13e4a5fb498ed66"
+            },
+            {
+              "id": "757856397228d2d73bf5838f",
+              "label": "示例 4",
+              "url": "/media/757856397228d2d73bf5838f"
+            },
+            {
+              "id": "86c6273686df25a74b91b80a",
+              "label": "示例 7",
+              "url": "/media/86c6273686df25a74b91b80a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "InsertPeg",
+      "name": "插入插销",
+      "note": "不增加中间档位；xhard4 增加1根干扰杆并扩大杆朝向范围，不是要求插入4根杆。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "3根杆；杆朝向 −45°～45°",
+          "videos": [
+            {
+              "id": "bacb0e38ac23b930c1fb8eed",
+              "label": "示例 4",
+              "url": "/media/bacb0e38ac23b930c1fb8eed"
+            },
+            {
+              "id": "53a13572a88972f9d27ddd19",
+              "label": "示例 8",
+              "url": "/media/53a13572a88972f9d27ddd19"
+            },
+            {
+              "id": "5b4978840f7d88b6f6ec04d4",
+              "label": "示例 12",
+              "url": "/media/5b4978840f7d88b6f6ec04d4"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "4根杆（增加1根干扰杆）；杆朝向 −180°～180°",
+          "videos": [
+            {
+              "id": "4c3ea1b1be2f1c392df265fb",
+              "label": "示例 7",
+              "url": "/media/4c3ea1b1be2f1c392df265fb"
+            },
+            {
+              "id": "faeb5be504cf10b84bf189ae",
+              "label": "示例 3",
+              "url": "/media/faeb5be504cf10b84bf189ae"
+            },
+            {
+              "id": "3a4b55236059371c83ad3d11",
+              "label": "示例 5",
+              "url": "/media/3a4b55236059371c83ad3d11"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "StopCube",
+      "name": "停止方块",
+      "note": "不增加中间档位；xhard4 固定采用原版范围中最快的单程60步，并将停止序号延后至6–15。",
+      "tiers": [
+        {
+          "id": "hard",
+          "label": "hard",
+          "gradient": "单程60、80或120步；停止序号2–5",
+          "videos": [
+            {
+              "id": "a9f66c186f89367b2f2b39cf",
+              "label": "示例 4",
+              "url": "/media/a9f66c186f89367b2f2b39cf"
+            },
+            {
+              "id": "adf86528938c304f7bb903f6",
+              "label": "示例 8",
+              "url": "/media/adf86528938c304f7bb903f6"
+            },
+            {
+              "id": "20e493cf97a70390e6eb6ffa",
+              "label": "示例 12",
+              "url": "/media/20e493cf97a70390e6eb6ffa"
+            }
+          ]
+        },
+        {
+          "id": "xhard4",
+          "label": "xhard4",
+          "gradient": "单程固定60步；停止序号6–15",
+          "videos": [
+            {
+              "id": "774eaecbcf2885cd5d6228f7",
+              "label": "示例 1",
+              "url": "/media/774eaecbcf2885cd5d6228f7"
+            },
+            {
+              "id": "c63d931df736c4b9609fd16a",
+              "label": "示例 4",
+              "url": "/media/c63d931df736c4b9609fd16a"
+            },
+            {
+              "id": "542de503fa28db6c006de1d1",
+              "label": "示例 7",
+              "url": "/media/542de503fa28db6c006de1d1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

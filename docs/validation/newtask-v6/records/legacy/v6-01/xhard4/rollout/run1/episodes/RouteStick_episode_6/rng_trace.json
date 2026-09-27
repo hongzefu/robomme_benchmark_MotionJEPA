@@ -1,0 +1,193 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "layout.rotation_deg",
+      "drawn": -6.137899160385132,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "layout.obstacle_rgb.0",
+      "drawn": [
+        0.07139545679092407,
+        0.18080401420593262,
+        0.5797106623649597
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "layout.obstacle_rgb.1",
+      "drawn": [
+        0.348463237285614,
+        0.5668759942054749,
+        0.5622954368591309
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 3,
+      "path": "layout.obstacle_rgb.2",
+      "drawn": [
+        0.3932601809501648,
+        0.48699653148651123,
+        0.6479905843734741
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.obstacle_rgb.3",
+      "drawn": [
+        0.17161518335342407,
+        0.9906502366065979,
+        0.6779518723487854
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "objects.L",
+      "drawn": 18,
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "actions.nodes",
+      "drawn": [
+        0,
+        2,
+        4,
+        2,
+        4,
+        6,
+        8,
+        6,
+        8,
+        6,
+        4,
+        2,
+        0,
+        2,
+        0,
+        2,
+        0,
+        2,
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "actions.directions.0",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "actions.directions.1",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "actions.directions.2",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "actions.directions.3",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "actions.directions.4",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "actions.directions.5",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "actions.directions.6",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 14,
+      "path": "actions.directions.7",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 15,
+      "path": "actions.directions.8",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 16,
+      "path": "actions.directions.9",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 17,
+      "path": "actions.directions.10",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "actions.directions.11",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "actions.directions.12",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "actions.directions.13",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 21,
+      "path": "actions.directions.14",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    },
+    {
+      "index": 22,
+      "path": "actions.directions.15",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 23,
+      "path": "actions.directions.16",
+      "drawn": "clockwise",
+      "source": "spec"
+    },
+    {
+      "index": 24,
+      "path": "actions.directions.17",
+      "drawn": "counterclockwise",
+      "source": "spec"
+    }
+  ],
+  "final_generator_states": {}
+}

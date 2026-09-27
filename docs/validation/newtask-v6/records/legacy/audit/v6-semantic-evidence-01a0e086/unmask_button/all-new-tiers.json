@@ -1,0 +1,410 @@
+[
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed8800000.h5",
+    "tier": "xhard1",
+    "episode": "ButtonUnmask_episode_0",
+    "steps": 360,
+    "goal": [
+      "first press the button, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        74,
+        "pick up the container that hides the blue cube"
+      ],
+      [
+        203,
+        "put down the container"
+      ],
+      [
+        232,
+        "pick up the container that hides the green cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed8800300.h5",
+    "tier": "xhard1",
+    "episode": "ButtonUnmask_episode_3",
+    "steps": 365,
+    "goal": [
+      "first press the button, then pick up the container hiding the blue cube, finally pick up another container hiding the green cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        78,
+        "pick up the container that hides the blue cube"
+      ],
+      [
+        204,
+        "put down the container"
+      ],
+      [
+        233,
+        "pick up the container that hides the green cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed8800601.h5",
+    "tier": "xhard1",
+    "episode": "ButtonUnmask_episode_6",
+    "steps": 381,
+    "goal": [
+      "first press the button, then pick up the container hiding the red cube, finally pick up another container hiding the blue cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        82,
+        "pick up the container that hides the red cube"
+      ],
+      [
+        214,
+        "put down the container"
+      ],
+      [
+        253,
+        "pick up the container that hides the blue cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed10800000.h5",
+    "tier": "xhard2",
+    "episode": "ButtonUnmask_episode_0",
+    "steps": 507,
+    "goal": [
+      "first press the button, then pick up the container hiding the blue cube, next pick up another container hiding the red cube, finally pick up another container hiding the green cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        79,
+        "pick up the container that hides the blue cube"
+      ],
+      [
+        213,
+        "put down the container"
+      ],
+      [
+        249,
+        "pick up the container that hides the red cube"
+      ],
+      [
+        355,
+        "put down the container"
+      ],
+      [
+        391,
+        "pick up the container that hides the green cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed10800300.h5",
+    "tier": "xhard2",
+    "episode": "ButtonUnmask_episode_3",
+    "steps": 482,
+    "goal": [
+      "first press the button, then pick up the container hiding the blue cube, next pick up another container hiding the green cube, finally pick up another container hiding the red cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        76,
+        "pick up the container that hides the blue cube"
+      ],
+      [
+        209,
+        "put down the container"
+      ],
+      [
+        240,
+        "pick up the container that hides the green cube"
+      ],
+      [
+        349,
+        "put down the container"
+      ],
+      [
+        378,
+        "pick up the container that hides the red cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed10800600.h5",
+    "tier": "xhard2",
+    "episode": "ButtonUnmask_episode_6",
+    "steps": 546,
+    "goal": [
+      "first press the button, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        78,
+        "pick up the container that hides the green cube"
+      ],
+      [
+        228,
+        "put down the container"
+      ],
+      [
+        255,
+        "pick up the container that hides the blue cube"
+      ],
+      [
+        379,
+        "put down the container"
+      ],
+      [
+        408,
+        "pick up the container that hides the red cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed12800000.h5",
+    "tier": "xhard3",
+    "episode": "ButtonUnmask_episode_0",
+    "steps": 528,
+    "goal": [
+      "first press the button, then pick up the container hiding the red cube, next pick up another container hiding the green cube, finally pick up another container hiding the blue cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        85,
+        "pick up the container that hides the red cube"
+      ],
+      [
+        227,
+        "put down the container"
+      ],
+      [
+        259,
+        "pick up the container that hides the green cube"
+      ],
+      [
+        373,
+        "put down the container"
+      ],
+      [
+        399,
+        "pick up the container that hides the blue cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed12800300.h5",
+    "tier": "xhard3",
+    "episode": "ButtonUnmask_episode_3",
+    "steps": 518,
+    "goal": [
+      "first press the button, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        76,
+        "pick up the container that hides the green cube"
+      ],
+      [
+        209,
+        "put down the container"
+      ],
+      [
+        239,
+        "pick up the container that hides the blue cube"
+      ],
+      [
+        369,
+        "put down the container"
+      ],
+      [
+        401,
+        "pick up the container that hides the red cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed12800600.h5",
+    "tier": "xhard3",
+    "episode": "ButtonUnmask_episode_6",
+    "steps": 539,
+    "goal": [
+      "first press the button, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        79,
+        "pick up the container that hides the green cube"
+      ],
+      [
+        230,
+        "put down the container"
+      ],
+      [
+        256,
+        "pick up the container that hides the blue cube"
+      ],
+      [
+        369,
+        "put down the container"
+      ],
+      [
+        401,
+        "pick up the container that hides the red cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_0/hdf5_files/ButtonUnmask_ep0_seed6800000.h5",
+    "tier": "xhard4",
+    "episode": "ButtonUnmask_episode_0",
+    "steps": 503,
+    "goal": [
+      "first press the button, then pick up the container hiding the red cube, next pick up another container hiding the green cube, finally pick up another container hiding the blue cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        76,
+        "pick up the container that hides the red cube"
+      ],
+      [
+        208,
+        "put down the container"
+      ],
+      [
+        237,
+        "pick up the container that hides the green cube"
+      ],
+      [
+        353,
+        "put down the container"
+      ],
+      [
+        388,
+        "pick up the container that hides the blue cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_3/hdf5_files/ButtonUnmask_ep3_seed6800300.h5",
+    "tier": "xhard4",
+    "episode": "ButtonUnmask_episode_3",
+    "steps": 524,
+    "goal": [
+      "first press the button, then pick up the container hiding the red cube, next pick up another container hiding the green cube, finally pick up another container hiding the blue cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        84,
+        "pick up the container that hides the red cube"
+      ],
+      [
+        220,
+        "put down the container"
+      ],
+      [
+        251,
+        "pick up the container that hides the green cube"
+      ],
+      [
+        369,
+        "put down the container"
+      ],
+      [
+        401,
+        "pick up the container that hides the blue cube"
+      ]
+    ],
+    "completed": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmask_episode_6/hdf5_files/ButtonUnmask_ep6_seed6800600.h5",
+    "tier": "xhard4",
+    "episode": "ButtonUnmask_episode_6",
+    "steps": 535,
+    "goal": [
+      "first press the button, then pick up the container hiding the green cube, next pick up another container hiding the blue cube, finally pick up another container hiding the red cube"
+    ],
+    "online_transitions": [
+      [
+        0,
+        "press the button"
+      ],
+      [
+        78,
+        "pick up the container that hides the green cube"
+      ],
+      [
+        222,
+        "put down the container"
+      ],
+      [
+        259,
+        "pick up the container that hides the blue cube"
+      ],
+      [
+        379,
+        "put down the container"
+      ],
+      [
+        414,
+        "pick up the container that hides the red cube"
+      ]
+    ],
+    "completed": true
+  }
+]

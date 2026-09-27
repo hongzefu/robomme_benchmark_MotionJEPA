@@ -1,0 +1,77 @@
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme1n1p1   14T   11T  2.4T  82% /data
+32G	artifacts/newtask-v5/v5-01
+20M	artifacts/newtask-v5
+plan-probes
+plan-probes-r2
+s0
+v1
+v5-01
+compare
+v5tail2.log
+v5tail.log
+1.2G	artifacts/newtask-v5/v5-01/rollout/run1/episodes/VideoPlaceOrder_episode_6
+1.4G	artifacts/newtask-v5/v5-01/rollout/run1/episodes/RouteStick_episode_0
+1.4G	artifacts/newtask-v5/v5-01/rollout/run1/episodes/VideoPlaceOrder_episode_3
+48
+h5 total GB 33.007 mean MB 687.645
+mp4 total GB 1.01368 59
+| VideoPlaceOrder | 同上 | reset 59.3% → 48.3% | 5/7（两例 reset 失败） | 23 / 3 of 3 |
+| StopCube | 异常类别名（文件内无 raise/except，无需其他改动） | — | — | 10 / 3 of 3 |
+
+## 四、V1 原三档回归（唯一对拍）
+
+- **两侧**：基线 = `13e5151`（V4 V1 所用的改动前基线，即最原始基线），V5 = `17867d2`（12.130，全部 V5 代码 + 新快照）；各自在独立 worktree、本机、单 worker、B 路、默认 144 条身份（`scripts/configs/newtask-v3/subset_manifest.json`，16 任务 × easy/medium/hard × 3 局）。
+- **判定**：`uv run --no-sync python scripts/parity/train_split_parity.py compare --run base=artifacts/newtask-v5/v1/base --run v5=artifacts/newtask-v5/v1/v5 --pair base/B:v5/B --output artifacts/newtask-v5/v1/compare`
+  → `H5_PARITY pair=base.B|v5.B compared=144 sha_equal=144 field_mismatch=0`，无「仅一侧存在」与伴生文件散列提示行。
+- **运行过程**：基线侧 04:27 起跑（与 S2/S3 各 agent 的测试和演示并行，负载较高），约 3 小时跑完。V5 侧 05:43 起跑，主进程按清单顺序跑完前 12 个任务（至 PickHighlight）；为缩短等待，RouteStick / PatternLock / MoveCube / InsertPeg 由同一 worktree、同一命令的 `--env` 单任务运行在 GPU 0 上分担，结果以符号链接并入 `v1/v5/B`。
+- **一处插曲**：停主进程时 PickHighlight 第 11 局的 h5 已关闭、但视频尚未写完，这份 h5 与基线散列不同（`5d326e08…`）。已挪到 `v1/v5_PH11_killed_partial` 留档，并单独重跑该局，重跑结果 `cabc333c…` 与基线逐位相同，采用重跑结果。
+- **意义**：原三档在全部 V5 改动下逐位不变，包括 L4(b) 在共用 `spawn_random_cube/target` 上新加的参数、SwingXtimes 共用循环的 xhard 分支、七个模块的异常类别名、Swap / VideoRepick 在 AST 锁定循环外新加的代码。此前一次中途比对（25 条）也全部相同。
+- **负载**：两侧未严格同负载（V4 V1 报告已知 PickHighlight/3 这类 RRT 墙钟局会随负载变化），本次 144 条全部相同，未触发该现象。
+
+## 五、待用户统一决策
+
+未决之前，代码都按「当前」一栏运行，v5-01 也是按当前实现生成的。
+
+### 5.1 需要拍板（影响难度 / 分布 / 设计意图）
+
+| # | 环境 | 事项 | 当前 | 可选 |
+|---|---|---|---|---|
+docs/validation/newtask-v5/20260924-s2b-multi-swap-sweep.md:31:   - `static_state_from_obb2d(name, (c, A, h), *, z_range, tol=1e-6)`：吃仓库放置逻辑的二维 OBB 三元组（`_trimesh_box_to_obb2d` / `create_button_obb` 的返回格式，A 的列是轴），轴不单位正交即 `ValueError`；左手系轴（扣放容器的投影）接受，只取第一列定朝向；
+docs/validation/newtask-v5/20260924-s2b-multi-swap-sweep.md:59:obstacle = static_state_from_obb2d("keepout", (c, A, h), z_range=(0.0, 0.05))
+docs/validation/newtask-v5/20260924-s2b-multi-swap-sweep.md:82:- **单对逐位等价**（2～5 个同类容器或方块随机撒在 0.36 m 见方，种子 20260924，600 例）：`check_multi_swap_sweep(prefilter=False)` 与 `check_swap_sweep` **600/600 逐位相同**（最小 g 与整份拒绝证据）；预筛开 **600/600 判定与证据相同**；其中接触拒绝 309、通过 291。耗时合计：原函数 81.27 s、新函数预筛关 81.17 s、预筛开 10.62 s（平均每例 135 ms → 18 ms）。
+docs/validation/newtask-v5/20260924-tools-draw-rollout-report.md:20:1. **多 worker 与单 worker 产物一致的依据**：原抽签循环里每个环境的 seed 只由 `(task, episode, attempt)` 经 `SEED_RULE` 决定，环境之间没有共享状态，因此按环境切分不改变任何一行；合并按 header 的 `tasks` 顺序拼接，每环境内保持抽签先后，正是单 worker 的行序。header 仍只构造一份（父进程），字段集合不变，freeze 的 `_exact_keys` 不受影响。唯一不同的是墙钟量 `wall_s`（本来单 worker 两次跑也不同）。
+docs/validation/newtask-v5/20260924-s3a-patternlock-routestick.md:81:产物：`artifacts/newtask-v5/demo-probe/s3a-patternlock/`、`s3a-routestick/`（h5 + 视频 + `summary.jsonl`，共约 10 GB，未进 Git）。
+docs/validation/newtask-v5/20260924-s3a-patternlock-routestick.md:83:| 环境 | seed | 来源 | 节点/段 | reset | 演示成功 | 演示帧 | 秒 | 执行段步数 | 750～1050 | 墙钟 |
+docs/validation/newtask-v5/20260924-s2c-unmask-distractor-sampler.md:265:`park_all` = 再把内环 8 个容器也用 `group="bin"` 停独立点。保持初始关节角步进 70 步，统计揭示前半窗 `[0,32)` 每步耗时与第 33 步所有容器、干扰 cube 相对初位的最大 XY 误差。
+docs/validation/newtask-v5/20260924-s2c-unmask-distractor-sampler.md:268:| 环境 | 方式 | seed | 干扰容器 / cube | 采样耗时 | 最大 trials | 揭示前半窗每步 p50 / p95 / 均值（ms） | 窗口后每步 p50 | 第 33 步最大落回误差 |
+docs/validation/newtask-v5/20260924-v5-final-report.md:68:- **运行过程**：基线侧 04:27 起跑（与 S2/S3 各 agent 的测试和演示并行，负载较高），约 3 小时跑完。V5 侧 05:43 起跑，主进程按清单顺序跑完前 12 个任务（至 PickHighlight）；为缩短等待，RouteStick / PatternLock / MoveCube / InsertPeg 由同一 worktree、同一命令的 `--env` 单任务运行在 GPU 0 上分担，结果以符号链接并入 `v1/v5/B`。
+docs/validation/newtask-v5/20260924-v5-final-report.md:71:- **负载**：两侧未严格同负载（V4 V1 报告已知 PickHighlight/3 这类 RRT 墙钟局会随负载变化），本次 144 条全部相同，未触发该现象。
+docs/validation/newtask-v5/20260924-v5-final-report.md:113:  - **最终产物**：`artifacts/newtask-v5/v5-01/rollout/run1/episodes/<环境>_episode_<n>/`，48 局正式局（16 环境 × 3），各含 `hdf5_files/*.h5` 与 `videos/*.mp4`，约 32 GB；
+docs/validation/newtask-v5/20260924-v5-final-report.md:116:  - **已删除**：`/data/hongzefu/robomme_v5_wt/` 下全部 worktree 与本地分支 `v5wt-*`（约 56 GB，含各组本机演示）；V1 两侧 h5 `v1/base`、`v1/v5` 及分担目录（约 98 GB）；
+docs/validation/newtask-v5/20260924-s2a-shared-sampling-and-scenegen.md:11:| `src/robomme/robomme_env/utils/xhard.py` | 新增 `cube_obb2d_exact`（及私有 `_as_numpy`、`_xy_yaw_from_pose`） | 纯函数：按方块真实 yaw 给出预制 2D 障碍 `(c, A, h)` | 2.0①：`_trimesh_box_to_obb2d` 对正方体轴序任意，竖直轴落进前两列时退化成线段 |
+docs/validation/newtask-v5/20260924-s2a-shared-sampling-and-scenegen.md:28:cube_obb2d_exact(pose_or_xy_yaw, half, pad=0.0) -> (c, A, h)
+docs/validation/newtask-v5/20260924-s3e-binfill.md:97:| seed | reset | 演示 | 失败类别 | 墙钟 | 步数 |
+docs/validation/newtask-v5/20260924-s3e-binfill.md:108:- 单帧：`BinFill_ep9_seed4400300_frame0.png`、`BinFill_ep9_seed4400800_frame0.png`、`BinFill_ep9_seed5512345_frame0.png`（同目录；目录被 `.gitignore` 的 `/artifacts/*` 忽略，含 h5／视频共 2.3 GB，仅留在 worktree）。
+docs/validation/newtask-v5/20260924-s3e-binfill.md:132:  - `_board_strips_obb2d(board_actor) -> list[(c, A, h)]`：孔板四条边的预制障碍；
+docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md:99:逐步记 `step` 耗时（含物理与观测渲染，不含录像器），第 0 步前记下全部被揭示容器的初位，第 32 步（半窗落回步）之后量误差。
+docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md:104:| 环境 | seed | 演示 | 步数 | 墙钟 s（solve s） | 揭示前半窗 [0,32) 每步 p50/p95/均值 ms | 揭示窗口 [0,64) 均值 ms | 整局每步 p50/p95/均值 ms | 落回误差 XY / 3D（mm） | 停放物体数 |
+docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md:123:| 环境 / seed | 方式 | 揭示前半窗每步 p50 / p95 / 均值 ms | 揭示窗口 64 步合计 s | 窗口后每步 p50 / p95 / 均值 ms | 整局 step 合计 s | 墙钟 s | 落回误差 XY / 3D mm |
+docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md:132:- 独立停放把揭示前半窗的每步均值从 215 / 238 ms 降到 35 / 55 ms，揭示窗口合计省 5.7 s（VU）/ 5.7 s（BU），整局墙钟少约 5～6 s；落回误差逐位相同。
+docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md:133:- **p95 仍约 300 ms 的原因不是停放**：逐步耗时显示整局约 20% 的步（窗口内外都有，窗口后 p95 两种方式都是 310 ms 左右）是约 300 ms 的周期性慢步，
+docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md:152:- 演示链路里约 20% 的控制步耗时约 300 ms，与揭示 / 停放无关（窗口外同样存在，V4 叠放对照同样存在）。是否需要单独定位由主会话决定。
+docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md:164:- 本机留档：`artifacts/newtask-v5/s3b/`（`lightweight.log`、`failset.txt`、`gpu_reset.log`、`demo_{vu,bu}.log`、`cmp_{vu,bu}.log`、`s3b_demo_timing.py`、`bu_frames.png`）、`artifacts/newtask-v5/demo-probe/s3b-*`（h5 / 视频 / `timing.jsonl`，约 3.9 GB），均被 git 忽略。
+docs/validation/newtask-v5/20260924-s3g-videorepick.md:55:| reset 取值+规划墙钟（假 actor） | 均值 48 ms，p95 89 ms，最大 1.09 s | 均值 53 ms，p95 99 ms，最大 1.10 s |
+docs/validation/newtask-v5/20260924-s3g-videorepick.md:66:| seed | 来源 | reset | 演示 | n_swaps | 控制步 | 参与块数 | 规划最长/均段 (m) | D5 检查/拒绝 | D5 最小余隙 | 交换窗内逐步最大位移 | 单帧跳变(>25 mm) | 墙钟 |
+docs/validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md:128:本机 GPU0（补跑用 GPU1），与 6 路 reset 统计并行，墙钟偏高。seed：每环境 3 个 v4-01 冻结规格里的 seed（便于与 V4 对照）+ 2 个新 seed（910000、910101，探针默认 seed 规则）；
+docs/validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md:132:| 环境 | seed | 来源 | reset | 演示 | 失败类别 | 墙钟 |
+docs/validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md:170:- 本步没有新 API；只是用了 S2a 的 `cube_obb2d_exact(pose_or_xy_yaw, half, pad=0.0) -> (c, A, h)`，传入 `cube.initial_pose`。
+docs/validation/newtask-v5/20260924-s6-generation-v5-01.md:11:- 墙钟：抽签约 5 分钟；实跑第 0 轮 48 局 749 s，递补 4 轮 65～86 s；总计约 25 分钟。同期本机另有 V1 两侧各 1 个单 worker 在 GPU 1 上运行。
+h5_pairs.jsonl
+summary.json
+total 20
+drwxrwxr-x 3 hongzefu hongzefu 4096 Sep 24 12:11 .
+drwxrwxr-x 7 hongzefu hongzefu 4096 Sep 25 16:18 ..
+drwxrwxr-x 2 hongzefu hongzefu 4096 Sep 24 07:36 compare
+-rw-rw-r-- 1 hongzefu hongzefu  198 Sep 24 07:33 v5tail2.log
+-rw-rw-r-- 1 hongzefu hongzefu  635 Sep 24 07:24 v5tail.log

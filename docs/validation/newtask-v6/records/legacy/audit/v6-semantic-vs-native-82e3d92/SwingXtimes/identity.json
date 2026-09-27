@@ -1,0 +1,485 @@
+[
+ {
+  "tier": "xhard1",
+  "ep": 0,
+  "goal_color": "green",
+  "grounded_pick": [
+   83,
+   140
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 1.2,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 46.8,
+   "blue": 0.0,
+   "yellow": 0.0
+  }
+ },
+ {
+  "tier": "xhard1",
+  "ep": 3,
+  "goal_color": "green",
+  "grounded_pick": [
+   71,
+   81
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 0.5,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 94.5,
+   "blue": 0.0,
+   "yellow": 0.0
+  }
+ },
+ {
+  "tier": "xhard1",
+  "ep": 6,
+  "goal_color": "red",
+  "grounded_pick": [
+   64,
+   152
+  ],
+  "nearest_blob": "red",
+  "nearest_dist": 0.8,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 41.9,
+   "green": 0.2,
+   "blue": 0.0,
+   "yellow": 0.0
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 0,
+  "goal_color": "blue",
+  "grounded_pick": [
+   48,
+   169
+  ],
+  "nearest_blob": "blue",
+  "nearest_dist": 0.5,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 0.0,
+   "blue": 34.7,
+   "yellow": 0.0,
+   "cyan": 0.0
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 3,
+  "goal_color": "green",
+  "grounded_pick": [
+   120,
+   141
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 0.5,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 60.9,
+   "blue": 0.0,
+   "yellow": 0.0,
+   "cyan": 0.0
+  }
+ },
+ {
+  "tier": "xhard2",
+  "ep": 6,
+  "goal_color": "green",
+  "grounded_pick": [
+   108,
+   145
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 0.2,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 40.2,
+   "blue": 0.0,
+   "yellow": 0.0,
+   "cyan": 0.0
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 0,
+  "goal_color": "blue",
+  "grounded_pick": [
+   110,
+   168
+  ],
+  "nearest_blob": "blue",
+  "nearest_dist": 1.0,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "magenta",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 0.0,
+   "blue": 37.6,
+   "yellow": 0.0,
+   "cyan": 0.0,
+   "magenta": 0.0
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 3,
+  "goal_color": "blue",
+  "grounded_pick": [
+   127,
+   84
+  ],
+  "nearest_blob": "blue",
+  "nearest_dist": 0.9,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "magenta",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 0.0,
+   "blue": 97.3,
+   "yellow": 0.0,
+   "cyan": 0.0,
+   "magenta": 0.0
+  }
+ },
+ {
+  "tier": "xhard3",
+  "ep": 6,
+  "goal_color": "green",
+  "grounded_pick": [
+   58,
+   128
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 0.6,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "magenta",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 63.4,
+   "blue": 0.0,
+   "yellow": 0.0,
+   "cyan": 0.0,
+   "magenta": 0.0
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 0,
+  "goal_color": "red",
+  "grounded_pick": [
+   88,
+   86
+  ],
+  "nearest_blob": "red",
+  "nearest_dist": 0.3,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "magenta",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 92.9,
+   "green": 0.0,
+   "blue": 0.0,
+   "yellow": 0.0,
+   "cyan": 0.0,
+   "magenta": 0.0
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 3,
+  "goal_color": "red",
+  "grounded_pick": [
+   104,
+   147
+  ],
+  "nearest_blob": "red",
+  "nearest_dist": 0.3,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "magenta",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 25.4,
+   "green": 0.0,
+   "blue": 0.0,
+   "yellow": 0.0,
+   "cyan": 0.0,
+   "magenta": 0.0
+  }
+ },
+ {
+  "tier": "xhard4",
+  "ep": 6,
+  "goal_color": "green",
+  "grounded_pick": [
+   131,
+   85
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 0.7,
+  "f0_colors": [
+   "blue",
+   "cyan",
+   "green",
+   "magenta",
+   "red",
+   "yellow"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 115.2,
+   "blue": 0.0,
+   "yellow": 0.0,
+   "cyan": 0.0,
+   "magenta": 0.0
+  }
+ },
+ {
+  "tier": "easy",
+  "ep": 0,
+  "goal_color": "red",
+  "grounded_pick": [
+   64,
+   113
+  ],
+  "nearest_blob": "red",
+  "nearest_dist": 0.2,
+  "f0_colors": [
+   "red"
+  ],
+  "moved_px": {
+   "red": 71.4
+  }
+ },
+ {
+  "tier": "easy",
+  "ep": 1,
+  "goal_color": "green",
+  "grounded_pick": [
+   127,
+   192
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 0.9,
+  "f0_colors": [
+   "green"
+  ],
+  "moved_px": {
+   "green": 53.6
+  }
+ },
+ {
+  "tier": "medium",
+  "ep": 10,
+  "goal_color": "green",
+  "grounded_pick": [
+   86,
+   75
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 0.6,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 100.0,
+   "blue": 0.0
+  }
+ },
+ {
+  "tier": "hard",
+  "ep": 11,
+  "goal_color": "blue",
+  "grounded_pick": [
+   95,
+   76
+  ],
+  "nearest_blob": "blue",
+  "nearest_dist": 0.4,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 0.0,
+   "blue": 114.6
+  }
+ },
+ {
+  "tier": "medium",
+  "ep": 2,
+  "goal_color": "green",
+  "grounded_pick": [
+   66,
+   83
+  ],
+  "nearest_blob": "green",
+  "nearest_dist": 0.8,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 80.6,
+   "blue": 0.0
+  }
+ },
+ {
+  "tier": "hard",
+  "ep": 3,
+  "goal_color": "red",
+  "grounded_pick": [
+   98,
+   151
+  ],
+  "nearest_blob": "red",
+  "nearest_dist": 0.7,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "moved_px": {
+   "red": 17.1,
+   "green": 0.0,
+   "blue": 0.0
+  }
+ },
+ {
+  "tier": "easy",
+  "ep": 4,
+  "goal_color": "blue",
+  "grounded_pick": [
+   77,
+   116
+  ],
+  "nearest_blob": "blue",
+  "nearest_dist": 0.6,
+  "f0_colors": [
+   "blue"
+  ],
+  "moved_px": {
+   "blue": 54.8
+  }
+ },
+ {
+  "tier": "medium",
+  "ep": 6,
+  "goal_color": "red",
+  "grounded_pick": [
+   125,
+   190
+  ],
+  "nearest_blob": "red",
+  "nearest_dist": 1.0,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "moved_px": {
+   "red": 47.0,
+   "green": 0.0,
+   "blue": 0.0
+  }
+ },
+ {
+  "tier": "hard",
+  "ep": 7,
+  "goal_color": "blue",
+  "grounded_pick": [
+   119,
+   86
+  ],
+  "nearest_blob": "blue",
+  "nearest_dist": 0.1,
+  "f0_colors": [
+   "blue",
+   "green",
+   "red"
+  ],
+  "moved_px": {
+   "red": 0.0,
+   "green": 0.0,
+   "blue": 103.1
+  }
+ }
+]

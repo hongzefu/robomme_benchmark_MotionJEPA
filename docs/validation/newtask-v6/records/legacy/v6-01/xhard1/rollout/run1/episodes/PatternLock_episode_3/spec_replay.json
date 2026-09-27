@@ -1,0 +1,9 @@
+{
+  "mismatches": [],
+  "value_points": 2,
+  "consumed": [
+    "actions.path_attempts",
+    "actions.path_nodes"
+  ],
+  "unused": []
+}

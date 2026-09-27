@@ -1,0 +1,29 @@
+{
+  "id": "PickXtimes-xhard1-8100100",
+  "task": "PickXtimes",
+  "difficulty": "xhard1",
+  "seed": 8100100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json",
+  "command": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+    "-m",
+    "scripts.parity.v4_demo_probe",
+    "--task",
+    "PickXtimes",
+    "--difficulty",
+    "xhard1",
+    "--seeds",
+    "8100100",
+    "--episode",
+    "9",
+    "--sampling-config",
+    "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json",
+    "--gpu",
+    "1",
+    "--out",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickXtimes-xhard1-8100100"
+  ],
+  "started_at": 1790458579.461534,
+  "gpu": "1"
+}

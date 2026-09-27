@@ -1,0 +1,16 @@
+=== native dynamic (expect first_appear tracking pick order in 50-step steps) ===
+easy 0 [('pick up the first red cube', 0, 0), ('pick up the second red cube', 136, 50)]
+medium 10 [('pick up the first green cube', 0, 0), ('pick up the second green cube', 148, 50), ('pick up the third green cube', 327, 100)]
+hard 11 [('pick up the first red cube', 0, 0), ('pick up the second red cube', 138, 50), ('pick up the first green cube', 285, 0)]
+medium 2 [('pick up the first green cube', 0, 0), ('pick up the second green cube', 202, 50), ('pick up the first red cube', 370, 0), ('pick up the second red cube', 568, 50)]
+medium 6 [('pick up the first blue cube', 0, 0), ('pick up the second blue cube', 137, 50), ('pick up the third blue cube', 324, 100)]
+hard 7 [('pick up the first red cube', 0, 0), ('pick up the second red cube', 164, 50), ('pick up the first blue cube', 324, 0), ('pick up the second blue cube', 480, 50)]
+
+=== native static (expect first_appear==0 for all, incl. 2nd/3rd) ===
+easy 1 [('pick up the first red cube', 0, 0)]
+hard 3 [('pick up the first green cube', 0, 0), ('pick up the second green cube', 143, 0), ('pick up the third green cube', 322, 0), ('pick up the first blue cube', 637, 0)]
+easy 4 [('pick up the first blue cube', 0, 0), ('pick up the second blue cube', 294, 0)]
+
+=== xhard (expect first_appear==0 for all, ordinals up to 7th) ===
+max ordinal index reached in xhard: 7 ( seventh )
+all xhard first_appear==0: True

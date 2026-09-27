@@ -1,0 +1,38 @@
+{
+  "path": "artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed6700000.h5",
+  "n_steps": 717,
+  "press_second_button_segment": [
+    113,
+    332
+  ],
+  "seg_len": 220,
+  "eef_z_min_idx": 175,
+  "eef_z_min": 0.024368569254875183,
+  "eef_z_last": 0.148206889629364,
+  "eef_z_at_min_plus_context": [
+    0.024419553577899933,
+    0.02455105632543564,
+    0.024368569254875183,
+    0.024371296167373657,
+    0.024384841322898865,
+    0.024440623819828033,
+    0.02442556619644165,
+    0.026673167943954468,
+    0.02685786783695221,
+    0.027117744088172913
+  ],
+  "next_subgoal": "pick up the container that hides the blue cube",
+  "trailing_static_steps_within_seg": 123,
+  "diffs_tail": [
+    1.4077457421990403e-07,
+    1.4077457421990403e-07,
+    1.4077457421990403e-07,
+    1.4077457421990403e-07,
+    1.4077457421990403e-07,
+    1.4077457421990403e-07,
+    1.4077457421990403e-07,
+    1.4077457421990403e-07,
+    1.341104507446289e-07,
+    1.341104507446289e-07
+  ]
+}

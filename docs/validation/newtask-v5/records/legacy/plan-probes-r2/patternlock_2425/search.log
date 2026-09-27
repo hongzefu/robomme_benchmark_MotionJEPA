@@ -1,0 +1,37 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+adjacent 源: /data/hongzefu/robomme_v5_probe_wt/src/robomme/robomme_env/utils/adjacent.py
+n24 k=0 seed=5500000 hit=107 wall=0.02s
+n24 k=20 seed=5500020 hit=115 wall=0.01s
+n24 k=40 seed=5500040 hit=100 wall=0.01s
+n24 k=60 seed=5500060 hit=485 wall=0.07s
+n24 k=80 seed=5500080 hit=149 wall=0.02s
+n24 k=100 seed=5500100 hit=2169 wall=0.30s
+n24 k=120 seed=5500120 hit=211 wall=0.03s
+n24 k=140 seed=5500140 hit=741 wall=0.10s
+n24 k=160 seed=5500160 hit=75 wall=0.01s
+n24 k=180 seed=5500180 hit=266 wall=0.04s
+n25 k=0 seed=5600000 hit=1335 wall=0.18s
+n25 k=20 seed=5600020 hit=34 wall=0.00s
+n25 k=40 seed=5600040 hit=217 wall=0.03s
+n25 k=60 seed=5600060 hit=4273 wall=0.58s
+n25 k=80 seed=5600080 hit=833 wall=0.11s
+n25 k=100 seed=5600100 hit=241 wall=0.03s
+n25 k=120 seed=5600120 hit=8 wall=0.00s
+n25 k=140 seed=5600140 hit=3425 wall=0.46s
+n25 k=160 seed=5600160 hit=3245 wall=0.44s
+n25 k=180 seed=5600180 hit=3075 wall=0.42s
+n24_25 k=0 seed=5700000 hit=450 wall=0.06s
+n24_25 k=20 seed=5700020 hit=65 wall=0.01s
+n24_25 k=40 seed=5700040 hit=142 wall=0.02s
+n24_25 k=60 seed=5700060 hit=61 wall=0.01s
+n24_25 k=80 seed=5700080 hit=293 wall=0.04s
+n24_25 k=100 seed=5700100 hit=338 wall=0.05s
+n24_25 k=120 seed=5700120 hit=237 wall=0.03s
+n24_25 k=140 seed=5700140 hit=369 wall=0.05s
+n24_25 k=160 seed=5700160 hit=1666 wall=0.22s
+n24_25 k=180 seed=5700180 hit=69 wall=0.01s
+SEARCH_DONE
+EXIT_CODE=0

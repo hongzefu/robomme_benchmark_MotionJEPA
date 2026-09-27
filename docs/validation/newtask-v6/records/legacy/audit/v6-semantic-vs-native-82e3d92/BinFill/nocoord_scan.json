@@ -1,0 +1,35 @@
+[
+ {
+  "diff": "xhard3",
+  "ep": 0,
+  "start": 698,
+  "end": 827,
+  "simple": "pick up the fifth blue cube",
+  "steps_without_coord": 130,
+  "first_coord_step": null,
+  "later_text": null,
+  "offline_nocoord": 0
+ },
+ {
+  "diff": "xhard3",
+  "ep": 3,
+  "start": 1344,
+  "end": 1478,
+  "simple": "press the button",
+  "steps_without_coord": 135,
+  "first_coord_step": null,
+  "later_text": null,
+  "offline_nocoord": 0
+ },
+ {
+  "diff": "xhard4",
+  "ep": 0,
+  "start": 498,
+  "end": 632,
+  "simple": "pick up the fourth blue cube",
+  "steps_without_coord": 135,
+  "first_coord_step": null,
+  "later_text": null,
+  "offline_nocoord": 0
+ }
+]

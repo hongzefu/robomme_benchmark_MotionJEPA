@@ -1,0 +1,322 @@
+===== new xhard1 ep 0 n 850 demo 445 done True mp4: ['VideoRepick_ep0_seed8900000_xhard1']
+ diff xhard1 seed 8900000 goal0: own the same block that was previously picked up for two times, finally put it down and pr
+ spec target 2 nrep 2 nswap 4 plan {'counts': [2, 2, 2, 2], 'range': 0, 'tries': 2, 'undo': 0} pairs [('3', '0'), ('3', '2'), ('0', '1'), ('1', '2')]
+   0 111 D 'pick up the cube at <76, 101>' 21
+   112 169 D 'drop the cube on the table' 1
+   170 444 D 'static' 1
+   445 559 E 'pick up the correct cube at <81, 159> for the first time' 22
+   560 614 E 'put it down' 1
+   615 692 E 'pick up the correct cube at <82, 159> for the second time' 20
+   693 746 E 'put it down' 1
+   747 806 E 'press the button at <57, 126> to finish' 1
+   807 849 E 'press the button at <57, 126> to finish' 3
+ bounds [0, 112, 170, 229, 283, 337, 391, 445, 560, 615, 693, 747, 807]
+ grip [[81, 139], [528, 585], [661, 717], [779, 849]]
+===== new xhard1 ep 3 n 781 demo 388 done True mp4: ['VideoRepick_ep3_seed8900302_xhard1']
+ diff xhard1 seed 8900302 goal0: own the same block that was previously picked up for two times, finally put it down and pr
+ spec target 1 nrep 2 nswap 3 plan {'counts': [2, 2, 1, 1], 'range': 1, 'tries': 1, 'undo': 0} pairs [('0', '1'), ('3', '1'), ('0', '2')]
+   0 119 D 'pick up the cube at <84, 84>' 22
+   120 169 D 'drop the cube on the table' 1
+   170 387 D 'static' 1
+   388 500 E 'pick up the correct cube at <81, 167> for the first time' 20
+   501 554 E 'put it down' 1
+   555 629 E 'pick up the correct cube at <80, 168> for the second time' 22
+   630 683 E 'put it down' 1
+   684 737 E 'press the button at <61, 126> to finish' 2
+   738 780 E 'press the button at <61, 126> to finish' 4
+ bounds [0, 120, 170, 226, 280, 334, 388, 501, 555, 630, 684, 738]
+ grip [[87, 142], [469, 525], [599, 654], [711, 780]]
+===== new xhard1 ep 6 n 849 demo 419 done True mp4: ['VideoRepick_ep6_seed8900600_xhard1']
+ diff xhard1 seed 8900600 goal0: own the same block that was previously picked up for two times, finally put it down and pr
+ spec target 2 nrep 2 nswap 4 plan {'counts': [2, 2, 2, 2], 'range': 0, 'tries': 1, 'undo': 0} pairs [('2', '0'), ('3', '2'), ('1', '3'), ('0', '1')]
+   0 103 D 'pick up the cube at <109, 82>' 19
+   104 149 D 'drop the cube on the table' 1
+   150 418 D 'static' 1
+   419 543 E 'pick up the correct cube at <70, 166> for the first time' 22
+   544 601 E 'put it down' 1
+   602 674 E 'pick up the correct cube at <69, 165> for the second time' 21
+   675 735 E 'put it down' 1
+   736 809 E 'press the button at <62, 122> to finish' 1
+   810 848 E 'press the button at <62, 122> to finish' 3
+ bounds [0, 104, 150, 203, 257, 311, 365, 419, 544, 602, 675, 736, 810]
+ grip [[74, 124], [512, 570], [644, 704], [783, 848]]
+===== new xhard2 ep 0 n 1120 demo 550 done True mp4: ['VideoRepick_ep0_seed10900000_xhard2']
+ diff xhard2 seed 10900000 goal0: own the same block that was previously picked up for three times, finally put it down and 
+ spec target 4 nrep 3 nswap 6 plan {'counts': [3, 2, 2, 2, 3], 'range': 1, 'tries': 1, 'undo': 0} pairs [('3', '4'), ('2', '1'), ('4', '0'), ('2', '0'), ('0', '1'), ('3', '4')]
+   0 108 D 'pick up the cube at <73, 180>' 20
+   109 163 D 'drop the cube on the table' 1
+   164 549 D 'static' 1
+   550 677 E 'pick up the correct cube at <72, 181> for the first time' 22
+   678 733 E 'put it down' 1
+   734 811 E 'pick up the correct cube at <71, 180> for the second time' 22
+   812 867 E 'put it down' 1
+   868 939 E 'pick up the correct cube at <70, 179> for the third time' 20
+   940 999 E 'put it down' 1
+   1000 1079 E 'press the button at <61, 131> to finish' 2
+   1080 1119 E 'press the button at <61, 131> to finish' 4
+ bounds [0, 109, 164, 226, 280, 334, 388, 442, 496, 550, 678, 734, 812, 868, 940, 1000, 1080]
+ grip [[79, 135], [643, 703], [780, 837], [910, 965], [1052, 1119]]
+===== new xhard2 ep 3 n 1247 demo 589 done True mp4: ['VideoRepick_ep3_seed10900301_xhard2']
+ diff xhard2 seed 10900301 goal0: own the same block that was previously picked up for three times, finally put it down and 
+ spec target 1 nrep 3 nswap 6 plan {'counts': [2, 2, 3, 3, 2], 'range': 1, 'tries': 1, 'undo': 0} pairs [('1', '4'), ('2', '3'), ('3', '0'), ('1', '4'), ('0', '2'), ('2', '3')]
+   0 131 D 'pick up the cube at <58, 90>' 26
+   132 197 D 'drop the cube on the table' 1
+   198 588 D 'static' 1
+   589 730 E 'pick up the correct cube at <57, 90> for the first time' 27
+   731 799 E 'put it down' 1
+   800 891 E 'pick up the correct cube at <57, 90> for the second time' 28
+   892 968 E 'put it down' 1
+   969 1064 E 'pick up the correct cube at <56, 90> for the third time' 28
+   1065 1146 E 'put it down' 1
+   1147 1201 E 'press the button at <63, 118> to finish' 2
+   1202 1246 E 'press the button at <63, 118> to finish' 5
+ bounds [0, 132, 198, 265, 319, 373, 427, 481, 535, 589, 731, 800, 892, 969, 1065, 1147, 1202]
+ grip [[97, 163], [691, 762], [850, 928], [1025, 1102], [1172, 1246]]
+===== new xhard2 ep 6 n 1128 demo 569 done True mp4: ['VideoRepick_ep6_seed10900601_xhard2']
+ diff xhard2 seed 10900601 goal0: own the same block that was previously picked up for three times, finally put it down and 
+ spec target 0 nrep 3 nswap 6 plan {'counts': [3, 3, 2, 2, 2], 'range': 1, 'tries': 1, 'undo': 0} pairs [('3', '1'), ('0', '4'), ('3', '2'), ('0', '1'), ('2', '0'), ('4', '1')]
+   0 117 D 'pick up the cube at <65, 176>' 20
+   118 176 D 'drop the cube on the table' 1
+   177 568 D 'static' 1
+   569 687 E 'pick up the correct cube at <75, 111> for the first time' 21
+   688 753 E 'put it down' 1
+   754 828 E 'pick up the correct cube at <74, 110> for the second time' 19
+   829 893 E 'put it down' 1
+   894 968 E 'pick up the correct cube at <74, 110> for the third time' 20
+   969 1031 E 'put it down' 1
+   1032 1084 E 'press the button at <57, 134> to finish' 1
+   1085 1127 E 'press the button at <57, 134> to finish' 3
+ bounds [0, 118, 177, 245, 299, 353, 407, 461, 515, 569, 688, 754, 829, 894, 969, 1032, 1085]
+ grip [[87, 146], [657, 719], [798, 859], [938, 998], [1057, 1127]]
+===== new xhard3 ep 0 n 1222 demo 618 done True mp4: ['VideoRepick_ep0_seed12900002_xhard3']
+ diff xhard3 seed 12900002 goal0: own the same block that was previously picked up for four times, finally put it down and p
+ spec target 2 nrep 4 nswap 7 plan {'counts': [2, 3, 2, 3, 2, 2], 'range': 1, 'tries': 1, 'undo': 0} pairs [('1', '2'), ('0', '4'), ('5', '4'), ('3', '2'), ('3', '1'), ('5', '0'), ('1', '3')]
+   0 118 D 'pick up the cube at <63, 83>' 21
+   119 174 D 'drop the cube on the table' 1
+   175 617 D 'static' 1
+   618 719 E 'pick up the correct cube at <100, 124> for the first time' 19
+   720 769 E 'put it down' 1
+   770 838 E 'pick up the correct cube at <100, 122> for the second time' 19
+   839 888 E 'put it down' 1
+   889 957 E 'pick up the correct cube at <100, 120> for the third time' 19
+   958 1007 E 'put it down' 1
+   1008 1076 E 'pick up the correct cube at <100, 118> for the fourth time' 18
+   1077 1126 E 'put it down' 1
+   1127 1183 E 'press the button at <70, 121> to finish' 1
+   1184 1221 E 'press the button at <70, 121> to finish' 4
+ bounds [0, 119, 175, 240, 294, 348, 402, 456, 510, 564, 618, 720, 770, 839, 889, 958, 1008, 1077, 1127, 1184]
+ grip [[87, 144], [692, 742], [811, 861], [930, 980], [1049, 1099], [1159, 1221]]
+===== new xhard3 ep 3 n 1301 demo 645 done True mp4: ['VideoRepick_ep3_seed12900302_xhard3']
+ diff xhard3 seed 12900302 goal0: own the same block that was previously picked up for four times, finally put it down and p
+ spec target 3 nrep 4 nswap 8 plan {'counts': [3, 3, 3, 3, 2, 2], 'range': 1, 'tries': 1, 'undo': 0} pairs [('4', '1'), ('0', '5'), ('2', '1'), ('4', '3'), ('0', '5'), ('2', '3'), ('1', '0'), ('2', '3')]
+   0 107 D 'pick up the cube at <110, 188>' 17
+   108 151 D 'drop the cube on the table' 1
+   152 644 D 'static' 1
+   645 761 E 'pick up the correct cube at <83, 165> for the first time' 21
+   762 815 E 'put it down' 1
+   816 893 E 'pick up the correct cube at <83, 164> for the second time' 21
+   894 947 E 'put it down' 1
+   948 1024 E 'pick up the correct cube at <83, 164> for the third time' 20
+   1025 1078 E 'put it down' 1
+   1079 1154 E 'pick up the correct cube at <83, 164> for the fourth time' 21
+   1155 1208 E 'put it down' 1
+   1209 1262 E 'press the button at <65, 135> to finish' 2
+   1263 1300 E 'press the button at <65, 135> to finish' 4
+ bounds [0, 108, 152, 213, 267, 321, 375, 429, 483, 537, 591, 645, 762, 816, 894, 948, 1025, 1079, 1155, 1209, 1263]
+ grip [[78, 127], [729, 786], [862, 918], [994, 1049], [1124, 1179], [1237, 1300]]
+===== new xhard3 ep 6 n 1234 demo 612 done True mp4: ['VideoRepick_ep6_seed12900600_xhard3']
+ diff xhard3 seed 12900600 goal0: own the same block that was previously picked up for four times, finally put it down and p
+ spec target 3 nrep 4 nswap 7 plan {'counts': [2, 3, 2, 3, 2, 2], 'range': 1, 'tries': 1, 'undo': 0} pairs [('5', '4'), ('3', '0'), ('5', '2'), ('0', '1'), ('3', '1'), ('2', '4'), ('3', '1')]
+   0 113 D 'pick up the cube at <75, 171>' 20
+   114 169 D 'drop the cube on the table' 1
+   170 611 D 'static' 1
+   612 716 E 'pick up the correct cube at <106, 136> for the first time' 18
+   717 766 E 'put it down' 1
+   767 837 E 'pick up the correct cube at <106, 135> for the second time' 18
+   838 887 E 'put it down' 1
+   888 958 E 'pick up the correct cube at <106, 134> for the third time' 19
+   959 1008 E 'put it down' 1
+   1009 1081 E 'pick up the correct cube at <107, 134> for the fourth time' 20
+   1082 1131 E 'put it down' 1
+   1132 1196 E 'press the button at <71, 126> to finish' 1
+   1197 1233 E 'press the button at <71, 126> to finish' 4
+ bounds [0, 114, 170, 234, 288, 342, 396, 450, 504, 558, 612, 717, 767, 838, 888, 959, 1009, 1082, 1132, 1197]
+ grip [[84, 140], [689, 739], [810, 860], [930, 981], [1053, 1104], [1172, 1233]]
+===== new xhard4 ep 0 n 1621 demo 883 done True mp4: ['VideoRepick_ep0_seed6900003_xhard4']
+ diff xhard4 seed 6900003 goal0: own the same block that was previously picked up for five times, finally put it down and p
+ spec target 0 nrep 5 nswap 12 plan {'counts': [3, 3, 4, 3, 4, 4, 3], 'range': 1, 'tries': 1, 'undo': 0} pairs [('3', '0'), ('2', '1'), ('4', '1'), ('2', '6'), ('6', '4'), ('5', '3'), ('5', '0'), ('4', '6'), ('2', '1'), ('4', '2'), ('5', '0'), ('5', '3')]
+   0 116 D 'pick up the cube at <78, 178>' 21
+   117 175 D 'drop the cube on the table' 1
+   176 882 D 'static' 1
+   883 987 E 'pick up the correct cube at <101, 158> for the first time' 18
+   988 1037 E 'put it down' 1
+   1038 1106 E 'pick up the correct cube at <101, 159> for the second time' 19
+   1107 1156 E 'put it down' 1
+   1157 1226 E 'pick up the correct cube at <102, 160> for the third time' 19
+   1227 1276 E 'put it down' 1
+   1277 1345 E 'pick up the correct cube at <102, 161> for the fourth time' 19
+   1346 1395 E 'put it down' 1
+   1396 1465 E 'pick up the correct cube at <102, 162> for the fifth time' 19
+   1466 1515 E 'put it down' 1
+   1516 1582 E 'press the button at <58, 136> to finish' 1
+   1583 1620 E 'press the button at <58, 136> to finish' 4
+ bounds [0, 117, 176, 235, 289, 343, 397, 451, 505, 559, 613, 667, 721, 775, 829, 883, 988, 1038, 1107, 1157, 1227, 1277, 1346, 1396, 1466, 1516, 1583]
+ grip [[87, 145], [960, 1010], [1079, 1129], [1199, 1249], [1318, 1368], [1438, 1488], [1556, 1620]]
+===== new xhard4 ep 3 n 1715 demo 816 done True mp4: ['VideoRepick_ep3_seed6900300_xhard4']
+ diff xhard4 seed 6900300 goal0: own the same block that was previously picked up for six times, finally put it down and pr
+ spec target 1 nrep 6 nswap 12 plan {'counts': [4, 4, 3, 4, 3, 3, 3], 'range': 1, 'tries': 1, 'undo': 0} pairs [('5', '6'), ('0', '1'), ('0', '3'), ('1', '0'), ('4', '2'), ('3', '0'), ('3', '1'), ('4', '2'), ('6', '5'), ('4', '2'), ('3', '1'), ('6', '5')]
+   0 112 D 'pick up the cube at <86, 88>' 21
+   113 162 D 'drop the cube on the table' 1
+   163 815 D 'static' 1
+   816 927 E 'pick up the correct cube at <84, 87> for the first time' 21
+   928 982 E 'put it down' 1
+   983 1060 E 'pick up the correct cube at <84, 86> for the second time' 20
+   1061 1114 E 'put it down' 1
+   1115 1192 E 'pick up the correct cube at <83, 85> for the third time' 22
+   1193 1246 E 'put it down' 1
+   1247 1321 E 'pick up the correct cube at <82, 84> for the fourth time' 21
+   1322 1375 E 'put it down' 1
+   1376 1448 E 'pick up the correct cube at <81, 82> for the fifth time' 19
+   1449 1502 E 'put it down' 1
+   1503 1575 E 'pick up the correct cube at <80, 81> for the sixth time' 20
+   1576 1629 E 'put it down' 1
+   1630 1680 E 'press the button at <68, 126> to finish' 2
+   1681 1714 E 'press the button at <68, 126> to finish' 3
+ bounds [0, 113, 163, 222, 276, 330, 384, 438, 492, 546, 600, 654, 708, 762, 816, 928, 983, 1061, 1115, 1193, 1247, 1322, 1376, 1449, 1503, 1576, 1630, 1681]
+ grip [[79, 135], [894, 952], [1029, 1085], [1161, 1217], [1291, 1346], [1419, 1473], [1546, 1600], [1655, 1714]]
+===== new xhard4 ep 6 n 1553 demo 760 done True mp4: ['VideoRepick_ep6_seed6900600_xhard4']
+ diff xhard4 seed 6900600 goal0: own the same block that was previously picked up for five times, finally put it down and p
+ spec target 0 nrep 5 nswap 10 plan {'counts': [2, 3, 3, 3, 3, 3, 3], 'range': 1, 'tries': 1, 'undo': 0} pairs [('1', '4'), ('0', '5'), ('6', '3'), ('4', '2'), ('6', '2'), ('0', '5'), ('2', '1'), ('3', '1'), ('6', '4'), ('3', '5')]
+   0 112 D 'pick up the cube at <88, 183>' 19
+   113 162 D 'drop the cube on the table' 1
+   163 759 D 'static' 1
+   760 870 E 'pick up the correct cube at <87, 181> for the first time' 21
+   871 930 E 'put it down' 1
+   931 999 E 'pick up the correct cube at <87, 181> for the second time' 18
+   1000 1060 E 'put it down' 1
+   1061 1129 E 'pick up the correct cube at <88, 180> for the third time' 21
+   1130 1190 E 'put it down' 1
+   1191 1260 E 'pick up the correct cube at <89, 180> for the fourth time' 19
+   1261 1316 E 'put it down' 1
+   1317 1385 E 'pick up the correct cube at <89, 179> for the fifth time' 20
+   1386 1440 E 'put it down' 1
+   1441 1512 E 'press the button at <58, 127> to finish' 1
+   1513 1552 E 'press the button at <58, 127> to finish' 4
+ bounds [0, 113, 163, 220, 274, 328, 382, 436, 490, 544, 598, 652, 706, 760, 871, 931, 1000, 1061, 1130, 1191, 1261, 1317, 1386, 1441, 1513]
+ grip [[85, 135], [843, 899], [972, 1028], [1102, 1158], [1233, 1283], [1358, 1408], [1485, 1552]]
+===== native None ep 0 n 756 demo 321 done True mp4: ['VideoRepick_ep0_seed9000_FailRecoverZ_easy']
+ diff easy seed 9000 goal0: own the same block that was previously picked up for two times, finally put it down and pr
+   0 103 D 'pick up the cube at <101, 179>' 19
+   104 158 D 'drop the cube on the table' 1
+   159 320 D 'static' 1
+   321 424 E 'pick up the correct cube at <100, 178> for the first time' 19
+   425 474 E 'put it down' 1
+   475 603 E 'pick up the correct cube at <101, 178> for the second time' 18
+   604 653 E 'put it down' 1
+   654 720 E 'press the button at <67, 130> to finish' 1
+   721 755 E 'press the button at <67, 130> to finish' 4
+ bounds [0, 104, 159, 213, 267, 321, 425, 475, 604, 654, 721]
+ grip [[75, 129], [396, 447], [514, 540], [576, 626], [695, 755]]
+===== native None ep 1 n 933 demo 343 done True mp4: ['VideoRepick_ep1_seed9100_FailRecoverZ_easy']
+ diff easy seed 9100 goal0: own the same block that was previously picked up for three times, finally put it down and 
+   0 120 D 'pick up the cube at <75, 103>' 21
+   121 175 D 'drop the cube on the table' 1
+   176 342 D 'static' 1
+   343 453 E 'pick up the correct cube at <138, 164> for the first time' 18
+   454 509 E 'put it down' 1
+   510 631 E 'pick up the correct cube at <137, 163> for the second time' 16
+   632 688 E 'put it down' 1
+   689 759 E 'pick up the correct cube at <139, 163> for the third time' 17
+   760 817 E 'put it down' 1
+   818 893 E 'press the button at <71, 134> to finish' 1
+   894 932 E 'press the button at <71, 134> to finish' 4
+ bounds [0, 121, 176, 235, 289, 343, 454, 510, 632, 689, 760, 818, 894]
+ grip [[90, 146], [422, 480], [549, 571], [606, 658], [734, 787], [869, 932]]
+===== native None ep 10 n 887 demo 363 done True mp4: ['VideoRepick_ep10_seed10000_medium']
+ diff medium seed 10000 goal0: own the same block that was previously picked up for three times, finally put it down and 
+   0 103 D 'pick up the cube at <99, 125>' 19
+   104 155 D 'drop the cube on the table' 1
+   156 362 D 'static' 1
+   363 478 E 'pick up the correct cube at <79, 148> for the first time' 20
+   479 534 E 'put it down' 1
+   535 608 E 'pick up the correct cube at <79, 148> for the second time' 20
+   609 664 E 'put it down' 1
+   665 737 E 'pick up the correct cube at <80, 148> for the third time' 22
+   738 793 E 'put it down' 1
+   794 847 E 'press the button at <71, 116> to finish' 1
+   848 886 E 'press the button at <71, 116> to finish' 4
+ bounds [0, 104, 156, 201, 255, 309, 363, 479, 535, 609, 665, 738, 794, 848]
+ grip [[76, 128], [448, 504], [578, 634], [708, 763], [823, 886]]
+===== native None ep 11 n 434 demo 162 done True mp4: ['VideoRepick_ep11_seed10102_hard']
+ diff hard seed 10102 goal0: was previously picked up again, finally put it down and press the button to stop
+   0 112 D 'pick up the cube at <89, 174>' 19
+   113 161 D 'drop the cube on the table' 1
+   162 273 E 'pick up the correct cube at <87, 175> for the first time' 20
+   274 332 E 'put it down' 1
+   333 392 E 'press the button at <60, 131> to finish' 1
+   393 433 E 'press the button at <60, 131> to finish' 4
+ bounds [0, 113, 162, 274, 333, 393]
+ grip [[85, 134], [246, 301], [366, 433]]
+===== native None ep 2 n 762 demo 313 done True mp4: ['VideoRepick_ep2_seed9200_FailRecoverZ_medium']
+ diff medium seed 9200 goal0: own the same block that was previously picked up for two times, finally put it down and pr
+   0 106 D 'pick up the cube at <96, 139>' 19
+   107 157 D 'drop the cube on the table' 1
+   158 312 D 'static' 1
+   313 476 E 'pick up the correct cube at <94, 140> for the first time' 20
+   477 528 E 'put it down' 1
+   529 598 E 'pick up the correct cube at <95, 141> for the second time' 20
+   599 650 E 'put it down' 1
+   651 718 E 'press the button at <61, 136> to finish' 1
+   719 761 E 'press the button at <61, 136> to finish' 3
+ bounds [0, 107, 158, 205, 259, 313, 477, 529, 599, 651, 719]
+ grip [[79, 130], [387, 412], [449, 500], [571, 622], [691, 761]]
+===== native None ep 3 n 1027 demo 214 done True mp4: ['VideoRepick_ep3_seed9301_FailRecoverXY_hard']
+ diff hard seed 9301 goal0: own the same block that was previously picked up for three times, finally put it down and 
+   0 141 D 'pick up the cube at <53, 110>' 29
+   142 213 D 'drop the cube on the table' 1
+   214 355 E 'pick up the correct cube at <52, 110> for the first time' 29
+   356 438 E 'put it down' 1
+   439 536 E 'pick up the correct cube at <52, 109> for the second time' 31
+   537 621 E 'put it down' 1
+   622 837 E 'pick up the correct cube at <52, 108> for the third time' 30
+   838 931 E 'put it down' 1
+   932 984 E 'press the button at <58, 136> to finish' 2
+   985 1026 E 'press the button at <58, 136> to finish' 4
+ bounds [0, 142, 214, 356, 439, 537, 622, 838, 932, 985]
+ grip [[102, 172], [315, 395], [494, 576], [682, 720], [791, 882], [956, 1026]]
+===== native None ep 4 n 607 demo 255 done True mp4: ['VideoRepick_ep4_seed9400_FailRecoverXY_easy', 'success_NO_OBJECT_VideoRepick_ep4_seed9400_FailRecoverXY_easy']
+ diff easy seed 9400 goal0: was previously picked up again, finally put it down and press the button to stop
+   0 101 D 'pick up the cube at <104, 116>' 18
+   102 156 D 'drop the cube on the table' 1
+   157 254 D 'static' 1
+   255 445 E 'pick up the correct cube at <122, 119> for the first time' 17
+   446 496 E 'put it down' 1
+   497 570 E 'press the button to finish' 1
+   571 606 E 'press the button to finish' 4
+ bounds [0, 102, 157, 201, 255, 446, 497, 571]
+ grip [[74, 127], [328, 359], [415, 468], [545, 606]]
+===== native None ep 6 n 581 demo 317 done True mp4: ['VideoRepick_ep6_seed9600_medium']
+ diff medium seed 9600 goal0: was previously picked up again, finally put it down and press the button to stop
+   0 106 D 'pick up the cube at <93, 93>' 20
+   107 157 D 'drop the cube on the table' 1
+   158 316 D 'static' 1
+   317 423 E 'pick up the correct cube at <92, 92> for the first time' 20
+   424 480 E 'put it down' 1
+   481 542 E 'press the button at <58, 122> to finish' 1
+   543 580 E 'press the button at <58, 122> to finish' 4
+ bounds [0, 107, 158, 209, 263, 317, 424, 481, 543]
+ grip [[79, 130], [396, 447], [516, 580]]
+===== native None ep 7 n 657 demo 159 done True mp4: ['VideoRepick_ep7_seed9700_hard']
+ diff hard seed 9700 goal0: own the same block that was previously picked up for three times, finally put it down and 
+   0 103 D 'pick up the cube at <101, 171>' 17
+   104 158 D 'drop the cube on the table' 1
+   159 262 E 'pick up the correct cube at <101, 170> for the first time' 20
+   263 312 E 'put it down' 1
+   313 382 E 'pick up the correct cube at <101, 170> for the second time' 17
+   383 432 E 'put it down' 1
+   433 503 E 'pick up the correct cube at <102, 170> for the third time' 18
+   504 553 E 'put it down' 1
+   554 616 E 'press the button at <64, 119> to finish' 1
+   617 656 E 'press the button at <64, 119> to finish' 4
+ bounds [0, 104, 159, 263, 313, 383, 433, 504, 554, 617]
+ grip [[75, 129], [234, 285], [355, 405], [475, 526], [591, 656]]

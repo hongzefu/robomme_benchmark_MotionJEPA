@@ -1,0 +1,54 @@
+{
+  "schema": "train-parity-run-config/1",
+  "started_at": "2026-09-26T18:09:12.218715+00:00",
+  "argv": [
+    "run",
+    "--manifest",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v3/subset_manifest.json",
+    "--env",
+    "BinFill",
+    "--episode",
+    "0",
+    "--paths",
+    "B",
+    "--workers",
+    "1",
+    "--gpus",
+    "0",
+    "--official-root",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src",
+    "--output",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/s0/base-smoke"
+  ],
+  "manifest": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v3/subset_manifest.json",
+  "manifest_sha256": "035d3405126d0e4aad3ba026e4d08392d8d269091300bf38c04cd2a372a6b9cd",
+  "source_ref": "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa",
+  "official_tree": "1d4c13697f0c5fbd7a8b05e01c196c984a07406c",
+  "official_root": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src",
+  "paths": [
+    "B"
+  ],
+  "workers": 1,
+  "gpus": "0",
+  "shard": null,
+  "identities": [
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "seed": 4000,
+      "difficulty": "easy",
+      "recovery_mode": "z"
+    }
+  ],
+  "environment": {
+    "hostname": "sled-vail",
+    "platform": "Linux-6.8.0-1018-nvidia-lowlatency-x86_64-with-glibc2.39",
+    "python": "3.11.14",
+    "nvidia_smi": "0, NVIDIA RTX 6000 Ada Generation, 570.211.01\n1, NVIDIA RTX 6000 Ada Generation, 570.211.01",
+    "cuda_visible_devices": "0",
+    "slurm_job_id": null,
+    "slurm_nodelist": null,
+    "uv_lock_sha256": "ff0ffd847a55f77d61c3d11efe4ad11e8776534e044f0ddb2b22396d838fa5f3",
+    "pyproject_sha256": "d03537d6c77a8d8213bc881da6ac470b2d8a80cf5f883df587d9df634374db36"
+  }
+}

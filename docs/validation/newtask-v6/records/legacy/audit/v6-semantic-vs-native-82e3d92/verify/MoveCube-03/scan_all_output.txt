@@ -1,0 +1,20 @@
+=== S2 xhard4 episodes ===
+MoveCube-xhard4-6100001 {'episode_9': (True, 0, 213)}
+MoveCube-xhard4-6100002 {'episode_9': (True, 124, 111)}
+MoveCube-xhard4-6100003 {'episode_9': (False, 0, 0)}
+MoveCube-xhard4-6100005 {'episode_9': (False, 0, 0)}
+MoveCube-xhard4-6100006 {'episode_9': (True, 0, 197)}
+MoveCube-xhard4-6100008 {'episode_9': (False, 0, 0)}
+MoveCube-xhard4-6100009 {'episode_9': (False, 0, 0)}
+MoveCube-xhard4-6100011 {'episode_9': (False, 0, 0)}
+MoveCube-xhard4-6100012 {'episode_9': (False, 0, 0)}
+=== native episodes ===
+MoveCube_episode_0 {'episode_0': (True, 0, 158)}
+MoveCube_episode_1 {'episode_1': (False, 0, 0)}
+MoveCube_episode_10 {'episode_10': (True, 0, 208)}
+MoveCube_episode_11 {'episode_11': (False, 0, 0)}
+MoveCube_episode_2 {'episode_2': (True, 0, 220)}
+MoveCube_episode_3 {'episode_3': (False, 0, 0)}
+MoveCube_episode_4 {'episode_4': (False, 0, 0)}
+MoveCube_episode_6 {'episode_6': (False, 0, 0)}
+MoveCube_episode_7 {'episode_7': (True, 0, 249)}

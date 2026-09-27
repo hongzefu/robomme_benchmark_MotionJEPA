@@ -1,0 +1,29 @@
+{
+  "id": "PatternLock-xhard2-11500100",
+  "task": "PatternLock",
+  "difficulty": "xhard2",
+  "seed": 11500100,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json",
+  "command": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+    "-m",
+    "scripts.parity.v4_demo_probe",
+    "--task",
+    "PatternLock",
+    "--difficulty",
+    "xhard2",
+    "--seeds",
+    "11500100",
+    "--episode",
+    "9",
+    "--sampling-config",
+    "artifacts/newtask-v6/s2-prep/sampling/PatternLock.json",
+    "--gpu",
+    "0",
+    "--out",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/PatternLock-xhard2-11500100"
+  ],
+  "started_at": 1790458987.1944711,
+  "gpu": "0"
+}

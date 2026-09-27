@@ -1,0 +1,241 @@
+{
+  "tier": "xhard3",
+  "checks": [
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "frames": 1550,
+      "videos": 1
+    },
+    {
+      "task": "BinFill",
+      "episode": 3,
+      "frames": 1479,
+      "videos": 1
+    },
+    {
+      "task": "BinFill",
+      "episode": 6,
+      "frames": 1403,
+      "videos": 1
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 0,
+      "frames": 528,
+      "videos": 1
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 3,
+      "frames": 518,
+      "videos": 1
+    },
+    {
+      "task": "ButtonUnmask",
+      "episode": 6,
+      "frames": 539,
+      "videos": 1
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 0,
+      "frames": 681,
+      "videos": 1
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 3,
+      "frames": 656,
+      "videos": 1
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "episode": 6,
+      "frames": 689,
+      "videos": 1
+    },
+    {
+      "task": "PatternLock",
+      "episode": 0,
+      "frames": 1142,
+      "videos": 1
+    },
+    {
+      "task": "PatternLock",
+      "episode": 3,
+      "frames": 1036,
+      "videos": 1
+    },
+    {
+      "task": "PatternLock",
+      "episode": 6,
+      "frames": 1098,
+      "videos": 1
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 0,
+      "frames": 997,
+      "videos": 1
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 3,
+      "frames": 984,
+      "videos": 2
+    },
+    {
+      "task": "PickHighlight",
+      "episode": 6,
+      "frames": 1055,
+      "videos": 1
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 0,
+      "frames": 1627,
+      "videos": 1
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 3,
+      "frames": 1593,
+      "videos": 1
+    },
+    {
+      "task": "PickXtimes",
+      "episode": 6,
+      "frames": 1663,
+      "videos": 1
+    },
+    {
+      "task": "RouteStick",
+      "episode": 0,
+      "frames": 1600,
+      "videos": 1
+    },
+    {
+      "task": "RouteStick",
+      "episode": 3,
+      "frames": 1400,
+      "videos": 1
+    },
+    {
+      "task": "RouteStick",
+      "episode": 6,
+      "frames": 1500,
+      "videos": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 0,
+      "frames": 917,
+      "videos": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 3,
+      "frames": 838,
+      "videos": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 6,
+      "frames": 957,
+      "videos": 1
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 0,
+      "frames": 1738,
+      "videos": 2
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 3,
+      "frames": 1823,
+      "videos": 2
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 6,
+      "frames": 1781,
+      "videos": 2
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 0,
+      "frames": 2005,
+      "videos": 2
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 3,
+      "frames": 2010,
+      "videos": 2
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 6,
+      "frames": 2129,
+      "videos": 2
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "frames": 1222,
+      "videos": 1
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "frames": 1301,
+      "videos": 1
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 6,
+      "frames": 1234,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 0,
+      "frames": 471,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 3,
+      "frames": 449,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 6,
+      "frames": 478,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 0,
+      "frames": 784,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 3,
+      "frames": 757,
+      "videos": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 6,
+      "frames": 740,
+      "videos": 1
+    }
+  ],
+  "errors": [],
+  "video_scope": "first_frame_only"
+}

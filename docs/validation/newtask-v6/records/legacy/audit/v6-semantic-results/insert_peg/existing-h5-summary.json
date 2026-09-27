@@ -1,0 +1,590 @@
+[
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_0/hdf5_files/InsertPeg_ep0_seed7300000.h5",
+    "empty": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_3/hdf5_files/InsertPeg_ep3_seed7300300.h5",
+    "empty": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/InsertPeg_episode_6/hdf5_files/InsertPeg_ep6_seed7300600.h5",
+    "difficulty": "xhard4",
+    "seed": 7300600,
+    "frames": 438,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 108
+      },
+      {
+        "start": 109,
+        "demo": true,
+        "subgoal": "Insert the peg from the right side of the box",
+        "end": 218
+      },
+      {
+        "start": 219,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 327
+      },
+      {
+        "start": 328,
+        "demo": false,
+        "subgoal": "Insert the peg from the right side",
+        "end": 434
+      },
+      {
+        "start": 435,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 437
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep6_seed7300600.png",
+    "chosen_frames": [
+      0,
+      108,
+      218,
+      219,
+      381,
+      437
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_1/hdf5_files/InsertPeg_ep1_seed7300100.h5",
+    "empty": true
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_2/hdf5_files/InsertPeg_ep2_seed7300200.h5",
+    "difficulty": "xhard4",
+    "seed": 7300200,
+    "frames": 464,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 122
+      },
+      {
+        "start": 123,
+        "demo": true,
+        "subgoal": "Insert the peg from the left side of the box",
+        "end": 231
+      },
+      {
+        "start": 232,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 354
+      },
+      {
+        "start": 355,
+        "demo": false,
+        "subgoal": "Insert the peg from the left side",
+        "end": 451
+      },
+      {
+        "start": 452,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 463
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep2_seed7300200.png",
+    "chosen_frames": [
+      0,
+      122,
+      231,
+      232,
+      403,
+      463
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/InsertPeg_episode_4/hdf5_files/InsertPeg_ep4_seed7300400.h5",
+    "difficulty": "xhard4",
+    "seed": 7300400,
+    "frames": 423,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 127
+      },
+      {
+        "start": 128,
+        "demo": true,
+        "subgoal": "Insert the peg from the left side of the box",
+        "end": 213
+      },
+      {
+        "start": 214,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 341
+      },
+      {
+        "start": 342,
+        "demo": false,
+        "subgoal": "Insert the peg from the left side",
+        "end": 415
+      },
+      {
+        "start": 416,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 422
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep4_seed7300400.png",
+    "chosen_frames": [
+      0,
+      127,
+      213,
+      214,
+      378,
+      422
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_0/hdf5_files/InsertPeg_ep0_seed13000.h5",
+    "difficulty": "easy",
+    "seed": 13000,
+    "frames": 475,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 122
+      },
+      {
+        "start": 123,
+        "demo": true,
+        "subgoal": "Insert the peg from the left side of the box",
+        "end": 237
+      },
+      {
+        "start": 238,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 360
+      },
+      {
+        "start": 361,
+        "demo": false,
+        "subgoal": "Insert the peg from the left side",
+        "end": 462
+      },
+      {
+        "start": 463,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 474
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep0_seed13000.png",
+    "chosen_frames": [
+      0,
+      122,
+      237,
+      238,
+      411,
+      474
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_1/hdf5_files/InsertPeg_ep1_seed13101.h5",
+    "difficulty": "easy",
+    "seed": 13101,
+    "frames": 568,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 123
+      },
+      {
+        "start": 124,
+        "demo": true,
+        "subgoal": "Insert the peg from the right side of the box",
+        "end": 283
+      },
+      {
+        "start": 284,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 407
+      },
+      {
+        "start": 408,
+        "demo": false,
+        "subgoal": "Insert the peg from the right side",
+        "end": 561
+      },
+      {
+        "start": 562,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 567
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep1_seed13101.png",
+    "chosen_frames": [
+      0,
+      123,
+      283,
+      284,
+      484,
+      567
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_10/hdf5_files/InsertPeg_ep10_seed14001.h5",
+    "difficulty": "medium",
+    "seed": 14001,
+    "frames": 454,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 117
+      },
+      {
+        "start": 118,
+        "demo": true,
+        "subgoal": "Insert the peg from the left side of the box",
+        "end": 226
+      },
+      {
+        "start": 227,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 344
+      },
+      {
+        "start": 345,
+        "demo": false,
+        "subgoal": "Insert the peg from the left side",
+        "end": 445
+      },
+      {
+        "start": 446,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 453
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep10_seed14001.png",
+    "chosen_frames": [
+      0,
+      117,
+      226,
+      227,
+      395,
+      453
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_11/hdf5_files/InsertPeg_ep11_seed14100.h5",
+    "difficulty": "hard",
+    "seed": 14100,
+    "frames": 494,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 120
+      },
+      {
+        "start": 121,
+        "demo": true,
+        "subgoal": "Insert the peg from the right side of the box",
+        "end": 246
+      },
+      {
+        "start": 247,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 367
+      },
+      {
+        "start": 368,
+        "demo": false,
+        "subgoal": "Insert the peg from the right side",
+        "end": 492
+      },
+      {
+        "start": 493,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 493
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep11_seed14100.png",
+    "chosen_frames": [
+      0,
+      120,
+      246,
+      247,
+      430,
+      493
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_2/hdf5_files/InsertPeg_ep2_seed13201.h5",
+    "difficulty": "medium",
+    "seed": 13201,
+    "frames": 478,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 119
+      },
+      {
+        "start": 120,
+        "demo": true,
+        "subgoal": "Insert the peg from the left side of the box",
+        "end": 239
+      },
+      {
+        "start": 240,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 359
+      },
+      {
+        "start": 360,
+        "demo": false,
+        "subgoal": "Insert the peg from the left side",
+        "end": 469
+      },
+      {
+        "start": 470,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 477
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep2_seed13201.png",
+    "chosen_frames": [
+      0,
+      119,
+      239,
+      240,
+      414,
+      477
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_3/hdf5_files/InsertPeg_ep3_seed13300.h5",
+    "difficulty": "hard",
+    "seed": 13300,
+    "frames": 434,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 117
+      },
+      {
+        "start": 118,
+        "demo": true,
+        "subgoal": "Insert the peg from the right side of the box",
+        "end": 216
+      },
+      {
+        "start": 217,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 334
+      },
+      {
+        "start": 335,
+        "demo": false,
+        "subgoal": "Insert the peg from the right side",
+        "end": 414
+      },
+      {
+        "start": 415,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 433
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep3_seed13300.png",
+    "chosen_frames": [
+      0,
+      117,
+      216,
+      217,
+      374,
+      433
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_4/hdf5_files/InsertPeg_ep4_seed13403.h5",
+    "difficulty": "easy",
+    "seed": 13403,
+    "frames": 482,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 105
+      },
+      {
+        "start": 106,
+        "demo": true,
+        "subgoal": "Insert the peg from the right side of the box",
+        "end": 240
+      },
+      {
+        "start": 241,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the near end",
+        "end": 346
+      },
+      {
+        "start": 347,
+        "demo": false,
+        "subgoal": "Insert the peg from the right side",
+        "end": 480
+      },
+      {
+        "start": 481,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 481
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep4_seed13403.png",
+    "chosen_frames": [
+      0,
+      105,
+      240,
+      241,
+      413,
+      481
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_6/hdf5_files/InsertPeg_ep6_seed13602.h5",
+    "difficulty": "medium",
+    "seed": 13602,
+    "frames": 514,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 128
+      },
+      {
+        "start": 129,
+        "demo": true,
+        "subgoal": "Insert the peg from the left side of the box",
+        "end": 252
+      },
+      {
+        "start": 253,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 381
+      },
+      {
+        "start": 382,
+        "demo": false,
+        "subgoal": "Insert the peg from the left side",
+        "end": 499
+      },
+      {
+        "start": 500,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 513
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep6_seed13602.png",
+    "chosen_frames": [
+      0,
+      128,
+      252,
+      253,
+      440,
+      513
+    ]
+  },
+  {
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/remaining/B/InsertPeg_episode_7/hdf5_files/InsertPeg_ep7_seed13700.h5",
+    "difficulty": "hard",
+    "seed": 13700,
+    "frames": 486,
+    "completed": true,
+    "segments": [
+      {
+        "start": 0,
+        "demo": true,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 109
+      },
+      {
+        "start": 110,
+        "demo": true,
+        "subgoal": "Insert the peg from the left side of the box",
+        "end": 241
+      },
+      {
+        "start": 242,
+        "demo": false,
+        "subgoal": "Pick up the peg by grasping the far end",
+        "end": 351
+      },
+      {
+        "start": 352,
+        "demo": false,
+        "subgoal": "Insert the peg from the left side",
+        "end": 474
+      },
+      {
+        "start": 475,
+        "demo": false,
+        "subgoal": "All tasks completed",
+        "end": 485
+      }
+    ],
+    "image": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/audit/v6-semantic-results/insert_peg/InsertPeg_ep7_seed13700.png",
+    "chosen_frames": [
+      0,
+      109,
+      241,
+      242,
+      413,
+      485
+    ]
+  }
+]

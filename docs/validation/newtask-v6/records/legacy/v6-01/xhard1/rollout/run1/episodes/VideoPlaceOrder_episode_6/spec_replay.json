@@ -1,0 +1,29 @@
+{
+  "mismatches": [],
+  "value_points": 22,
+  "consumed": [
+    "actions.button_task_index",
+    "actions.return_pose_by_object_id",
+    "actions.target_placement_count",
+    "actions.target_target_id",
+    "layout.button_xy",
+    "layout.cubes.blue_0",
+    "layout.cubes.green_0",
+    "layout.cubes.red_0",
+    "layout.goal_xy",
+    "layout.targets.0",
+    "layout.targets.1",
+    "layout.targets.2",
+    "layout.targets.3",
+    "objects.answer_demo_index",
+    "objects.button_after_visit_index",
+    "objects.color_order",
+    "objects.demo_ids",
+    "objects.swap_pair_ids",
+    "objects.visit_counts_by_object",
+    "objects.visit_ids_by_object.0",
+    "objects.visit_ids_by_object.1",
+    "objects.which_in_subset"
+  ],
+  "unused": []
+}

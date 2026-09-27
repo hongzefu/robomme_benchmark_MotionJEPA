@@ -1,0 +1,44 @@
+[
+  {
+    "t": 157,
+    "blue_roi_pixels": 437,
+    "z_min": 0.17616268812703303,
+    "z_max": 0.21672985064844935
+  },
+  {
+    "t": 163,
+    "blue_roi_pixels": 444,
+    "z_min": 0.1795761824539058,
+    "z_max": 0.21945505794092415
+  },
+  {
+    "t": 164,
+    "blue_roi_pixels": 448,
+    "z_min": 0.1798032846113328,
+    "z_max": 0.219549393519539
+  },
+  {
+    "t": 165,
+    "blue_roi_pixels": 483,
+    "z_min": 0.16982482877165414,
+    "z_max": 0.21080776818400584
+  },
+  {
+    "t": 166,
+    "blue_roi_pixels": 0,
+    "z_min": null,
+    "z_max": null
+  },
+  {
+    "t": 167,
+    "blue_roi_pixels": 0,
+    "z_min": null,
+    "z_max": null
+  },
+  {
+    "t": 168,
+    "blue_roi_pixels": 0,
+    "z_min": null,
+    "z_max": null
+  }
+]

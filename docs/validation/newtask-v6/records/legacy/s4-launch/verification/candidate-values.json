@@ -1,0 +1,869 @@
+{
+  "schema": "v6-candidate-values/1",
+  "verdict": "PASS",
+  "cells": {
+    "BinFill/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "BinFill/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "BinFill/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "BinFill/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PickXtimes/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PickXtimes/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PickXtimes/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PickXtimes/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "SwingXtimes/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 1,
+      "missing_episodes": []
+    },
+    "SwingXtimes/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "SwingXtimes/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 1,
+      "missing_episodes": []
+    },
+    "SwingXtimes/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PickHighlight/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PickHighlight/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PickHighlight/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 2,
+      "missing_episodes": []
+    },
+    "PickHighlight/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 4,
+      "missing_episodes": []
+    },
+    "VideoUnmask/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "VideoUnmask/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "VideoUnmask/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "VideoUnmask/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "ButtonUnmask/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 1,
+      "missing_episodes": []
+    },
+    "ButtonUnmask/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "ButtonUnmask/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "ButtonUnmask/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "VideoUnmaskSwap/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 1,
+      "missing_episodes": []
+    },
+    "VideoUnmaskSwap/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "VideoUnmaskSwap/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "VideoUnmaskSwap/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 1,
+      "missing_episodes": []
+    },
+    "ButtonUnmaskSwap/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 4,
+      "missing_episodes": []
+    },
+    "ButtonUnmaskSwap/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 6,
+      "missing_episodes": []
+    },
+    "ButtonUnmaskSwap/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 1,
+      "missing_episodes": []
+    },
+    "ButtonUnmaskSwap/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 3,
+      "missing_episodes": []
+    },
+    "VideoRepick/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 5,
+      "missing_episodes": []
+    },
+    "VideoRepick/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 3,
+      "missing_episodes": []
+    },
+    "VideoRepick/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 10,
+      "missing_episodes": []
+    },
+    "VideoRepick/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 12,
+      "missing_episodes": []
+    },
+    "PatternLock/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PatternLock/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PatternLock/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "PatternLock/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "RouteStick/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "RouteStick/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "RouteStick/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "RouteStick/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 0,
+      "missing_episodes": []
+    },
+    "VideoPlaceButton/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 3,
+      "missing_episodes": []
+    },
+    "VideoPlaceButton/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 2,
+      "missing_episodes": []
+    },
+    "VideoPlaceButton/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 1,
+      "missing_episodes": []
+    },
+    "VideoPlaceButton/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 2,
+      "missing_episodes": []
+    },
+    "VideoPlaceOrder/xhard1": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 8,
+      "missing_episodes": []
+    },
+    "VideoPlaceOrder/xhard2": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 11,
+      "missing_episodes": []
+    },
+    "VideoPlaceOrder/xhard3": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 7,
+      "missing_episodes": []
+    },
+    "VideoPlaceOrder/xhard4": {
+      "episodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "reset_failures": 11,
+      "missing_episodes": []
+    }
+  },
+  "candidates": 520,
+  "shortfall": 0,
+  "mismatches": [],
+  "input_errors": [],
+  "sources": [
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/s4-launch/candidate-inputs/xhard1.jsonl",
+      "sha256": "844b479e8eb9f4b4f70127052052c4f574f9447c6545e8363cb37edcc95470d6",
+      "tier": "xhard1",
+      "failure_counts_available": true
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/s4-launch/candidate-inputs/xhard2.jsonl",
+      "sha256": "642ac6fe44c9f654b5db49ed004ec2eb5d00c8c2cc3a2e897edfa177f1c6cf61",
+      "tier": "xhard2",
+      "failure_counts_available": true
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/s4-launch/candidate-inputs/xhard3.jsonl",
+      "sha256": "11bbefe89bc7318f318e2efd963010e4c51dce4b154db484659c73aee2b03e29",
+      "tier": "xhard3",
+      "failure_counts_available": true
+    },
+    {
+      "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/s4-launch/candidate-inputs/xhard4.jsonl",
+      "sha256": "4f4c446de0fea37938f6f70aacdc866824487e1aad11d9143390665894f83266",
+      "tier": "xhard4",
+      "failure_counts_available": true
+    }
+  ],
+  "sampling_config_sha256": "6ab3b0c218ad77e29f765f98f2e670c7462d386db9f23257e282242094a5dab3"
+}

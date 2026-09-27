@@ -1,0 +1,547 @@
+{
+  "schema": "train-parity-rng-trace/1",
+  "mode": "replay",
+  "calls": [
+    {
+      "index": 0,
+      "path": "objects.n_swaps",
+      "drawn": 10,
+      "source": "spec"
+    },
+    {
+      "index": 1,
+      "path": "objects.n_picks",
+      "drawn": 3,
+      "source": "spec"
+    },
+    {
+      "index": 2,
+      "path": "actions.swap_window",
+      "drawn": {
+        "start_step": 64,
+        "duration_steps": 33,
+        "speed_multiplier": 1.5
+      },
+      "source": "record"
+    },
+    {
+      "index": 3,
+      "path": "layout.type_choice",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 4,
+      "path": "layout.bins.0",
+      "drawn": [
+        -0.02707509338855743,
+        0.1318178513646126,
+        8.509281277656555
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 5,
+      "path": "layout.bins.1",
+      "drawn": [
+        0.15089909732341766,
+        -0.048136304914951335,
+        42.097227573394775
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 6,
+      "path": "layout.bins.2",
+      "drawn": [
+        0.027410415261983876,
+        -0.1456942442059517,
+        43.50042521953583
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 7,
+      "path": "layout.bins.3",
+      "drawn": [
+        -0.1358294567465782,
+        -0.04606854394078255,
+        63.687899708747864
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 8,
+      "path": "objects.color_order",
+      "drawn": [
+        1,
+        2,
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 9,
+      "path": "objects.selected",
+      "drawn": [
+        2,
+        1,
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 10,
+      "path": "objects.target_choice",
+      "drawn": 0,
+      "source": "spec"
+    },
+    {
+      "index": 11,
+      "path": "objects.swap_initiator_indices",
+      "drawn": [
+        1,
+        2
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 12,
+      "path": "objects.swap_initiator_third",
+      "drawn": 3,
+      "source": "spec"
+    },
+    {
+      "index": 13,
+      "path": "actions.predicted_inner_swap_pairs",
+      "drawn": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "source": "record"
+    },
+    {
+      "index": 14,
+      "path": "layout.distractor_layout_attempts",
+      "drawn": 1,
+      "source": "record"
+    },
+    {
+      "index": 15,
+      "path": "layout.distractor_layout_failures",
+      "drawn": [],
+      "source": "record"
+    },
+    {
+      "index": 16,
+      "path": "objects.distractors.requested",
+      "drawn": 10,
+      "source": "record"
+    },
+    {
+      "index": 17,
+      "path": "objects.distractors.bins.0",
+      "drawn": [
+        -0.2156867802143097,
+        -0.37012821435928345,
+        30.593624711036682
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 18,
+      "path": "objects.distractors.bins.1",
+      "drawn": [
+        0.33478066921234134,
+        0.14649860858917235,
+        56.07897162437439
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 19,
+      "path": "objects.distractors.bins.2",
+      "drawn": [
+        -0.4416102647781372,
+        0.2618324160575867,
+        21.093819737434387
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 20,
+      "path": "objects.distractors.bins.3",
+      "drawn": [
+        0.03497697114944459,
+        -0.29824860692024235,
+        75.23298025131226
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 21,
+      "path": "objects.distractors.bins.4",
+      "drawn": [
+        -0.35486714243888856,
+        -0.3684789776802063,
+        38.57674241065979
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 22,
+      "path": "objects.distractors.bins.5",
+      "drawn": [
+        -0.3448932945728302,
+        -0.2312977194786072,
+        63.838146328926086
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 23,
+      "path": "objects.distractors.bins.6",
+      "drawn": [
+        -0.3022373199462891,
+        0.03821949362754823,
+        8.512558937072754
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 24,
+      "path": "objects.distractors.bins.7",
+      "drawn": [
+        -0.3650342166423798,
+        0.39801095724105834,
+        0.40404796600341797
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 25,
+      "path": "objects.distractors.bins.8",
+      "drawn": [
+        0.34008307456970216,
+        -0.1039910137653351,
+        66.8388032913208
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 26,
+      "path": "objects.distractors.bins.9",
+      "drawn": [
+        -0.12300084829330443,
+        0.4365979135036469,
+        79.52013194561005
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 27,
+      "path": "objects.distractors.placed",
+      "drawn": 10,
+      "source": "record"
+    },
+    {
+      "index": 28,
+      "path": "objects.distractors.trials",
+      "drawn": [
+        1,
+        3,
+        1,
+        4,
+        4,
+        1,
+        3,
+        4,
+        5,
+        2
+      ],
+      "source": "record"
+    },
+    {
+      "index": 29,
+      "path": "objects.distractors.cube_count",
+      "drawn": 5,
+      "source": "spec"
+    },
+    {
+      "index": 30,
+      "path": "objects.distractors.cube_bins",
+      "drawn": [
+        5,
+        7,
+        1,
+        2,
+        9
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 31,
+      "path": "objects.distractors.color_order",
+      "drawn": [
+        2,
+        1,
+        0
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 32,
+      "path": "objects.distractors.cube_colors",
+      "drawn": [
+        "magenta",
+        "cyan",
+        "yellow",
+        "magenta",
+        "cyan"
+      ],
+      "source": "record"
+    },
+    {
+      "index": 33,
+      "path": "objects.distractors.cube_names",
+      "drawn": [
+        "distractor_cube_0_magenta",
+        "distractor_cube_1_cyan",
+        "distractor_cube_2_yellow",
+        "distractor_cube_3_magenta",
+        "distractor_cube_4_cyan"
+      ],
+      "source": "record"
+    },
+    {
+      "index": 34,
+      "path": "objects.distractors.swap_order",
+      "drawn": [
+        7,
+        5,
+        8,
+        6,
+        1,
+        9,
+        4,
+        0,
+        2,
+        3
+      ],
+      "source": "spec"
+    },
+    {
+      "index": 35,
+      "path": "actions.distractor_swap_pairs",
+      "drawn": [
+        [
+          7,
+          2
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "source": "record"
+    },
+    {
+      "index": 36,
+      "path": "actions.distractor_swap_fallback",
+      "drawn": [
+        0,
+        0,
+        1,
+        0,
+        2,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "source": "record"
+    },
+    {
+      "index": 37,
+      "path": "actions.distractor_swap_windows.0",
+      "drawn": {
+        "initiator": 7,
+        "partner": 2,
+        "start_step": 64,
+        "end_step": 97
+      },
+      "source": "record"
+    },
+    {
+      "index": 38,
+      "path": "actions.distractor_swap_windows.1",
+      "drawn": {
+        "initiator": 5,
+        "partner": 4,
+        "start_step": 97,
+        "end_step": 130
+      },
+      "source": "record"
+    },
+    {
+      "index": 39,
+      "path": "actions.distractor_swap_windows.2",
+      "drawn": {
+        "initiator": 6,
+        "partner": 7,
+        "start_step": 130,
+        "end_step": 163
+      },
+      "source": "record"
+    },
+    {
+      "index": 40,
+      "path": "actions.distractor_swap_windows.3",
+      "drawn": {
+        "initiator": 6,
+        "partner": 2,
+        "start_step": 163,
+        "end_step": 196
+      },
+      "source": "record"
+    },
+    {
+      "index": 41,
+      "path": "actions.distractor_swap_windows.4",
+      "drawn": {
+        "initiator": 4,
+        "partner": 5,
+        "start_step": 196,
+        "end_step": 229
+      },
+      "source": "record"
+    },
+    {
+      "index": 42,
+      "path": "actions.distractor_swap_windows.5",
+      "drawn": {
+        "initiator": 4,
+        "partner": 5,
+        "start_step": 229,
+        "end_step": 262
+      },
+      "source": "record"
+    },
+    {
+      "index": 43,
+      "path": "actions.distractor_swap_windows.6",
+      "drawn": {
+        "initiator": 4,
+        "partner": 5,
+        "start_step": 262,
+        "end_step": 295
+      },
+      "source": "record"
+    },
+    {
+      "index": 44,
+      "path": "actions.distractor_swap_windows.7",
+      "drawn": {
+        "initiator": 0,
+        "partner": 4,
+        "start_step": 295,
+        "end_step": 328
+      },
+      "source": "record"
+    },
+    {
+      "index": 45,
+      "path": "actions.distractor_swap_windows.8",
+      "drawn": {
+        "initiator": 2,
+        "partner": 6,
+        "start_step": 328,
+        "end_step": 361
+      },
+      "source": "record"
+    },
+    {
+      "index": 46,
+      "path": "actions.distractor_swap_windows.9",
+      "drawn": {
+        "initiator": 3,
+        "partner": 4,
+        "start_step": 361,
+        "end_step": 394
+      },
+      "source": "record"
+    }
+  ],
+  "final_generator_states": {}
+}

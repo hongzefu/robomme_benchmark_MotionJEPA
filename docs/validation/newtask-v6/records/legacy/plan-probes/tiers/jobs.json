@@ -1,0 +1,2471 @@
+[
+{
+"task": "BinFill",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9001000,
+"config": "configs/BinFill_xhard1.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9001101,
+"config": "configs/BinFill_xhard1.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9001202,
+"config": "configs/BinFill_xhard1.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9001303,
+"config": "configs/BinFill_xhard1.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9001404,
+"config": "configs/BinFill_xhard1.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9001505,
+"config": "configs/BinFill_xhard1.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9002000,
+"config": "configs/BinFill_xhard2.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9002101,
+"config": "configs/BinFill_xhard2.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9002202,
+"config": "configs/BinFill_xhard2.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9002303,
+"config": "configs/BinFill_xhard2.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9002404,
+"config": "configs/BinFill_xhard2.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9002505,
+"config": "configs/BinFill_xhard2.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9003000,
+"config": "configs/BinFill_xhard3.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9003101,
+"config": "configs/BinFill_xhard3.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9003202,
+"config": "configs/BinFill_xhard3.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9003303,
+"config": "configs/BinFill_xhard3.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9003404,
+"config": "configs/BinFill_xhard3.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9003505,
+"config": "configs/BinFill_xhard3.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9004000,
+"config": "configs/BinFill_xhard.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9004101,
+"config": "configs/BinFill_xhard.json",
+"patches": []
+},
+{
+"task": "BinFill",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9004202,
+"config": "configs/BinFill_xhard.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9011000,
+"config": "configs/ButtonUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9011101,
+"config": "configs/ButtonUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9011202,
+"config": "configs/ButtonUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9011303,
+"config": "configs/ButtonUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9011404,
+"config": "configs/ButtonUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9011505,
+"config": "configs/ButtonUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9012000,
+"config": "configs/ButtonUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9012101,
+"config": "configs/ButtonUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9012202,
+"config": "configs/ButtonUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9012303,
+"config": "configs/ButtonUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9012404,
+"config": "configs/ButtonUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9012505,
+"config": "configs/ButtonUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9013000,
+"config": "configs/ButtonUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9013101,
+"config": "configs/ButtonUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9013202,
+"config": "configs/ButtonUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9013303,
+"config": "configs/ButtonUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9013404,
+"config": "configs/ButtonUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9013505,
+"config": "configs/ButtonUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9014000,
+"config": "configs/ButtonUnmask_xhard.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9014101,
+"config": "configs/ButtonUnmask_xhard.json",
+"patches": []
+},
+{
+"task": "ButtonUnmask",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9014202,
+"config": "configs/ButtonUnmask_xhard.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9021000,
+"config": "configs/ButtonUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9021101,
+"config": "configs/ButtonUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9021202,
+"config": "configs/ButtonUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9021303,
+"config": "configs/ButtonUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9021404,
+"config": "configs/ButtonUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9021505,
+"config": "configs/ButtonUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9022000,
+"config": "configs/ButtonUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9022101,
+"config": "configs/ButtonUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9022202,
+"config": "configs/ButtonUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9022303,
+"config": "configs/ButtonUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9022404,
+"config": "configs/ButtonUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9022505,
+"config": "configs/ButtonUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9023000,
+"config": "configs/ButtonUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9023101,
+"config": "configs/ButtonUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9023202,
+"config": "configs/ButtonUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9023303,
+"config": "configs/ButtonUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9023404,
+"config": "configs/ButtonUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9023505,
+"config": "configs/ButtonUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9024000,
+"config": "configs/ButtonUnmaskSwap_xhard.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9024101,
+"config": "configs/ButtonUnmaskSwap_xhard.json",
+"patches": []
+},
+{
+"task": "ButtonUnmaskSwap",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9024202,
+"config": "configs/ButtonUnmaskSwap_xhard.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9031000,
+"config": "configs/PatternLock_xhard1.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9031101,
+"config": "configs/PatternLock_xhard1.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9031202,
+"config": "configs/PatternLock_xhard1.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9031303,
+"config": "configs/PatternLock_xhard1.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9031404,
+"config": "configs/PatternLock_xhard1.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9031505,
+"config": "configs/PatternLock_xhard1.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9032000,
+"config": "configs/PatternLock_xhard2.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9032101,
+"config": "configs/PatternLock_xhard2.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9032202,
+"config": "configs/PatternLock_xhard2.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9032303,
+"config": "configs/PatternLock_xhard2.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9032404,
+"config": "configs/PatternLock_xhard2.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9032505,
+"config": "configs/PatternLock_xhard2.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9033000,
+"config": "configs/PatternLock_xhard3.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9033101,
+"config": "configs/PatternLock_xhard3.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9033202,
+"config": "configs/PatternLock_xhard3.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9033303,
+"config": "configs/PatternLock_xhard3.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9033404,
+"config": "configs/PatternLock_xhard3.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9033505,
+"config": "configs/PatternLock_xhard3.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9034000,
+"config": "configs/PatternLock_xhard.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9034101,
+"config": "configs/PatternLock_xhard.json",
+"patches": []
+},
+{
+"task": "PatternLock",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9034202,
+"config": "configs/PatternLock_xhard.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9041000,
+"config": "configs/PickHighlight_xhard1.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9041101,
+"config": "configs/PickHighlight_xhard1.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9041202,
+"config": "configs/PickHighlight_xhard1.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9041303,
+"config": "configs/PickHighlight_xhard1.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9041404,
+"config": "configs/PickHighlight_xhard1.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9041505,
+"config": "configs/PickHighlight_xhard1.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9042000,
+"config": "configs/PickHighlight_xhard2.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9042101,
+"config": "configs/PickHighlight_xhard2.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9042202,
+"config": "configs/PickHighlight_xhard2.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9042303,
+"config": "configs/PickHighlight_xhard2.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9042404,
+"config": "configs/PickHighlight_xhard2.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9042505,
+"config": "configs/PickHighlight_xhard2.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9043000,
+"config": "configs/PickHighlight_xhard3.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9043101,
+"config": "configs/PickHighlight_xhard3.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9043202,
+"config": "configs/PickHighlight_xhard3.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9043303,
+"config": "configs/PickHighlight_xhard3.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9043404,
+"config": "configs/PickHighlight_xhard3.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9043505,
+"config": "configs/PickHighlight_xhard3.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9044000,
+"config": "configs/PickHighlight_xhard.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9044101,
+"config": "configs/PickHighlight_xhard.json",
+"patches": []
+},
+{
+"task": "PickHighlight",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9044202,
+"config": "configs/PickHighlight_xhard.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9051000,
+"config": "configs/PickXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9051101,
+"config": "configs/PickXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9051202,
+"config": "configs/PickXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9051303,
+"config": "configs/PickXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9051404,
+"config": "configs/PickXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9051505,
+"config": "configs/PickXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9052000,
+"config": "configs/PickXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9052101,
+"config": "configs/PickXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9052202,
+"config": "configs/PickXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9052303,
+"config": "configs/PickXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9052404,
+"config": "configs/PickXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9052505,
+"config": "configs/PickXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9053000,
+"config": "configs/PickXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9053101,
+"config": "configs/PickXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9053202,
+"config": "configs/PickXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9053303,
+"config": "configs/PickXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9053404,
+"config": "configs/PickXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9053505,
+"config": "configs/PickXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9054000,
+"config": "configs/PickXtimes_xhard.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9054101,
+"config": "configs/PickXtimes_xhard.json",
+"patches": []
+},
+{
+"task": "PickXtimes",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9054202,
+"config": "configs/PickXtimes_xhard.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9061000,
+"config": "configs/RouteStick_xhard1.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9061101,
+"config": "configs/RouteStick_xhard1.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9061202,
+"config": "configs/RouteStick_xhard1.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9061303,
+"config": "configs/RouteStick_xhard1.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9061404,
+"config": "configs/RouteStick_xhard1.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9061505,
+"config": "configs/RouteStick_xhard1.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9062000,
+"config": "configs/RouteStick_xhard2.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9062101,
+"config": "configs/RouteStick_xhard2.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9062202,
+"config": "configs/RouteStick_xhard2.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9062303,
+"config": "configs/RouteStick_xhard2.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9062404,
+"config": "configs/RouteStick_xhard2.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9062505,
+"config": "configs/RouteStick_xhard2.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9063000,
+"config": "configs/RouteStick_xhard3.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9063101,
+"config": "configs/RouteStick_xhard3.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9063202,
+"config": "configs/RouteStick_xhard3.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9063303,
+"config": "configs/RouteStick_xhard3.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9063404,
+"config": "configs/RouteStick_xhard3.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9063505,
+"config": "configs/RouteStick_xhard3.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9064000,
+"config": "configs/RouteStick_xhard.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9064101,
+"config": "configs/RouteStick_xhard.json",
+"patches": []
+},
+{
+"task": "RouteStick",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9064202,
+"config": "configs/RouteStick_xhard.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9071000,
+"config": "configs/SwingXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9071101,
+"config": "configs/SwingXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9071202,
+"config": "configs/SwingXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9071303,
+"config": "configs/SwingXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9071404,
+"config": "configs/SwingXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9071505,
+"config": "configs/SwingXtimes_xhard1.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9072000,
+"config": "configs/SwingXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9072101,
+"config": "configs/SwingXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9072202,
+"config": "configs/SwingXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9072303,
+"config": "configs/SwingXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9072404,
+"config": "configs/SwingXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9072505,
+"config": "configs/SwingXtimes_xhard2.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9073000,
+"config": "configs/SwingXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9073101,
+"config": "configs/SwingXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9073202,
+"config": "configs/SwingXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9073303,
+"config": "configs/SwingXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9073404,
+"config": "configs/SwingXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9073505,
+"config": "configs/SwingXtimes_xhard3.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9074000,
+"config": "configs/SwingXtimes_xhard.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9074101,
+"config": "configs/SwingXtimes_xhard.json",
+"patches": []
+},
+{
+"task": "SwingXtimes",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9074202,
+"config": "configs/SwingXtimes_xhard.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9081000,
+"config": "configs/VideoPlaceButton_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9081101,
+"config": "configs/VideoPlaceButton_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9081202,
+"config": "configs/VideoPlaceButton_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9081303,
+"config": "configs/VideoPlaceButton_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9081404,
+"config": "configs/VideoPlaceButton_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9081505,
+"config": "configs/VideoPlaceButton_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9082000,
+"config": "configs/VideoPlaceButton_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9082101,
+"config": "configs/VideoPlaceButton_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9082202,
+"config": "configs/VideoPlaceButton_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9082303,
+"config": "configs/VideoPlaceButton_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9082404,
+"config": "configs/VideoPlaceButton_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9082505,
+"config": "configs/VideoPlaceButton_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9083000,
+"config": "configs/VideoPlaceButton_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9083101,
+"config": "configs/VideoPlaceButton_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9083202,
+"config": "configs/VideoPlaceButton_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9083303,
+"config": "configs/VideoPlaceButton_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9083404,
+"config": "configs/VideoPlaceButton_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9083505,
+"config": "configs/VideoPlaceButton_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9084000,
+"config": "configs/VideoPlaceButton_xhard.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9084101,
+"config": "configs/VideoPlaceButton_xhard.json",
+"patches": []
+},
+{
+"task": "VideoPlaceButton",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9084202,
+"config": "configs/VideoPlaceButton_xhard.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9091000,
+"config": "configs/VideoPlaceOrder_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9091101,
+"config": "configs/VideoPlaceOrder_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9091202,
+"config": "configs/VideoPlaceOrder_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9091303,
+"config": "configs/VideoPlaceOrder_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9091404,
+"config": "configs/VideoPlaceOrder_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9091505,
+"config": "configs/VideoPlaceOrder_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9092000,
+"config": "configs/VideoPlaceOrder_xhard2.json",
+"patches": [
+"vpo_visit_max3"
+]
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9092101,
+"config": "configs/VideoPlaceOrder_xhard2.json",
+"patches": [
+"vpo_visit_max3"
+]
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9092202,
+"config": "configs/VideoPlaceOrder_xhard2.json",
+"patches": [
+"vpo_visit_max3"
+]
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9092303,
+"config": "configs/VideoPlaceOrder_xhard2.json",
+"patches": [
+"vpo_visit_max3"
+]
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9092404,
+"config": "configs/VideoPlaceOrder_xhard2.json",
+"patches": [
+"vpo_visit_max3"
+]
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9092505,
+"config": "configs/VideoPlaceOrder_xhard2.json",
+"patches": [
+"vpo_visit_max3"
+]
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9093000,
+"config": "configs/VideoPlaceOrder_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9093101,
+"config": "configs/VideoPlaceOrder_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9093202,
+"config": "configs/VideoPlaceOrder_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9093303,
+"config": "configs/VideoPlaceOrder_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9093404,
+"config": "configs/VideoPlaceOrder_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9093505,
+"config": "configs/VideoPlaceOrder_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9094000,
+"config": "configs/VideoPlaceOrder_xhard.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9094101,
+"config": "configs/VideoPlaceOrder_xhard.json",
+"patches": []
+},
+{
+"task": "VideoPlaceOrder",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9094202,
+"config": "configs/VideoPlaceOrder_xhard.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9101000,
+"config": "configs/VideoRepick_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9101101,
+"config": "configs/VideoRepick_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9101202,
+"config": "configs/VideoRepick_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9101303,
+"config": "configs/VideoRepick_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9101404,
+"config": "configs/VideoRepick_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9101505,
+"config": "configs/VideoRepick_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9102000,
+"config": "configs/VideoRepick_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9102101,
+"config": "configs/VideoRepick_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9102202,
+"config": "configs/VideoRepick_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9102303,
+"config": "configs/VideoRepick_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9102404,
+"config": "configs/VideoRepick_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9102505,
+"config": "configs/VideoRepick_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9103000,
+"config": "configs/VideoRepick_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9103101,
+"config": "configs/VideoRepick_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9103202,
+"config": "configs/VideoRepick_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9103303,
+"config": "configs/VideoRepick_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9103404,
+"config": "configs/VideoRepick_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9103505,
+"config": "configs/VideoRepick_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9104000,
+"config": "configs/VideoRepick_xhard.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9104101,
+"config": "configs/VideoRepick_xhard.json",
+"patches": []
+},
+{
+"task": "VideoRepick",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9104202,
+"config": "configs/VideoRepick_xhard.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9111000,
+"config": "configs/VideoUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9111101,
+"config": "configs/VideoUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9111202,
+"config": "configs/VideoUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9111303,
+"config": "configs/VideoUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9111404,
+"config": "configs/VideoUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9111505,
+"config": "configs/VideoUnmask_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9112000,
+"config": "configs/VideoUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9112101,
+"config": "configs/VideoUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9112202,
+"config": "configs/VideoUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9112303,
+"config": "configs/VideoUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9112404,
+"config": "configs/VideoUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9112505,
+"config": "configs/VideoUnmask_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9113000,
+"config": "configs/VideoUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9113101,
+"config": "configs/VideoUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9113202,
+"config": "configs/VideoUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9113303,
+"config": "configs/VideoUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9113404,
+"config": "configs/VideoUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9113505,
+"config": "configs/VideoUnmask_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9114000,
+"config": "configs/VideoUnmask_xhard.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9114101,
+"config": "configs/VideoUnmask_xhard.json",
+"patches": []
+},
+{
+"task": "VideoUnmask",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9114202,
+"config": "configs/VideoUnmask_xhard.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 0,
+"seed": 9121000,
+"config": "configs/VideoUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 1,
+"seed": 9121101,
+"config": "configs/VideoUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 2,
+"seed": 9121202,
+"config": "configs/VideoUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 3,
+"seed": 9121303,
+"config": "configs/VideoUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 4,
+"seed": 9121404,
+"config": "configs/VideoUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard1",
+"tier_idx": 1,
+"i": 5,
+"seed": 9121505,
+"config": "configs/VideoUnmaskSwap_xhard1.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 0,
+"seed": 9122000,
+"config": "configs/VideoUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 1,
+"seed": 9122101,
+"config": "configs/VideoUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 2,
+"seed": 9122202,
+"config": "configs/VideoUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 3,
+"seed": 9122303,
+"config": "configs/VideoUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 4,
+"seed": 9122404,
+"config": "configs/VideoUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard2",
+"tier_idx": 2,
+"i": 5,
+"seed": 9122505,
+"config": "configs/VideoUnmaskSwap_xhard2.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 0,
+"seed": 9123000,
+"config": "configs/VideoUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 1,
+"seed": 9123101,
+"config": "configs/VideoUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 2,
+"seed": 9123202,
+"config": "configs/VideoUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 3,
+"seed": 9123303,
+"config": "configs/VideoUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 4,
+"seed": 9123404,
+"config": "configs/VideoUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard3",
+"tier_idx": 3,
+"i": 5,
+"seed": 9123505,
+"config": "configs/VideoUnmaskSwap_xhard3.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 0,
+"seed": 9124000,
+"config": "configs/VideoUnmaskSwap_xhard.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 1,
+"seed": 9124101,
+"config": "configs/VideoUnmaskSwap_xhard.json",
+"patches": []
+},
+{
+"task": "VideoUnmaskSwap",
+"tier": "xhard",
+"tier_idx": 4,
+"i": 2,
+"seed": 9124202,
+"config": "configs/VideoUnmaskSwap_xhard.json",
+"patches": []
+}
+]

@@ -1,0 +1,318 @@
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 33%]
+........................................................................ [ 45%]
+........................................................................ [ 56%]
+............FFFF..........FF............................................ [ 67%]
+........................................................................ [ 79%]
+........................................................................ [ 90%]
+.............................................................            [100%]
+=================================== FAILURES ===================================
+______________ test_xhard已放方块间距不小于名义min_gap且障碍无退化[PickHighlight] _______________
+
+env_name = 'PickHighlight'
+fake_scene = <_pytest.monkeypatch.MonkeyPatch object at 0x7a5d0212a790>
+
+    @pytest.mark.parametrize("env_name", ENV_NAMES)
+    def test_xhard已放方块间距不小于名义min_gap且障碍无退化(env_name, fake_scene) -> None:
+        totals = {"violations": 0, "pairs": 0, "exact": 0, "degenerate": 0, "cube_actor": 0}
+        min_margin = math.inf
+        ok = failed = 0
+        for seed in range(N_SEEDS):
+>           probe, exc = _run_layout(env_name, "xhard", 5_000_000 + seed, fake_scene)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_v5_xhard_obb_fix.py:281: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/lightweight/test_v5_xhard_obb_fix.py:167: in _run_layout
+    cls._load_scene(fake, {})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = namespace(_sampling={'parameters': {'color_pool': [{'rgba': [1, 0, 0, 1], 'name': 'red'}, {'rgba': [0, 0, 1, 1], 'name... at 0x7a5d0679ae30>, cap_link=[<object object at 0x7a5d067994e0>], all_cubes=[], all_cube_names=[], all_cube_colors=[])
+options = {}
+
+    def _load_scene(self, options: dict):
+        self.generator.manual_seed(self.seed)
+        self.table_scene = TableSceneBuilder(
+            self, robot_init_qpos_noise=self.robot_init_qpos_noise
+        )
+        self.table_scene.build()
+    
+    
+        button_cfg = self._sampling["positions"]["button"]
+        cubes_cfg = self._sampling["positions"]["cubes"]
+        decision_cfg = self._sampling["decision"]
+        cube_region = decision_cfg["cube_region"]
+        self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
+        button_obb = build_button(
+            self,
+            center_xy=tuple(button_cfg["center_xy"]),
+            scale=button_cfg["scale"],
+            generator=self.generator,
+            recorder=self._spec,
+            spec_path="layout.button_xy",
+        )
+        avoid = [button_obb]
+    
+        self.all_cubes = []  # Save all cube objects
+        self.all_cube_names = []
+        self.all_cube_colors = []
+    
+        # List of available colors
+        # 颜色池取自快照（顺序与原字面量一致：红、蓝、绿）
+        available_colors = [
+            {"color": tuple(entry["rgba"]), "name": entry["name"]}
+            for entry in self._sampling["parameters"]["color_pool"]
+        ]
+    
+        # V4 xhard 分支（H2/N12：原三档一行不走这里）。
+        # V6：新值族四档共用本分支，按本局档位取子树与区间
+        xhard = is_newvalue_difficulty(self.difficulty)
+        tier = self.difficulty
+        if xhard:
+            xhard_cfg = decision_cfg[tier]
+            if xhard_cfg["block_color_policy"] != "hsv_floor":
+                raise SamplingConfigError(
+                    f"PickHighlight: decision.{tier}.block_color_policy 只支持 'hsv_floor'，"
+                    f"收到 {xhard_cfg['block_color_policy']!r}"
+                )
+            if xhard_cfg["subgoal_color_suffix"] != "omit":
+                raise SamplingConfigError(
+                    f"PickHighlight: decision.{tier}.subgoal_color_suffix 目前只实现 'omit'，"
+                    f"收到 {xhard_cfg['subgoal_color_suffix']!r}"
+                )
+            spawn_lo, spawn_hi = _closed_range(decision_cfg["spawn_count"][tier], f"spawn_count.{tier}")
+            highlight_lo, highlight_hi = _closed_range(
+                decision_cfg["highlight_count"][tier], f"highlight_count.{tier}"
+            )
+            # spawn≥highlight 硬断言（计划 2.12）：按生效区间的最坏情形判，外部收窄写坏时当场拒绝
+            if spawn_lo < highlight_hi:
+                raise SamplingConfigError(
+                    f"PickHighlight: {tier} 须 spawn 下界 ≥ highlight 上界，收到 spawn=[{spawn_lo},{spawn_hi}] "
+                    f"highlight=[{highlight_lo},{highlight_hi}]"
+                )
+            # 新增取值点：本局方块数（只在 xhard 抽；它决定下面循环的长度，只能排在方块循环之前）
+            num_cubes_to_spawn = int(self._spec.value(
+                "objects.n_cubes",
+                int(torch.randint(spawn_lo, spawn_hi + 1, (1,), generator=self.generator).item()),
+                decision_key=f"spawn_count.{tier}",
+            ))
+        else:
+            # Get number of cubes to spawn based on difficulty
+>           num_cubes_to_spawn = decision_cfg["spawn_count"][self.difficulty]
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'xhard'
+
+src/robomme/robomme_env/PickHighlight.py:369: KeyError
+_____________ test_xhard已放方块间距不小于名义min_gap且障碍无退化[VideoPlaceButton] _____________
+
+env_name = 'VideoPlaceButton'
+fake_scene = <_pytest.monkeypatch.MonkeyPatch object at 0x7a5d02113f50>
+
+    @pytest.mark.parametrize("env_name", ENV_NAMES)
+    def test_xhard已放方块间距不小于名义min_gap且障碍无退化(env_name, fake_scene) -> None:
+        totals = {"violations": 0, "pairs": 0, "exact": 0, "degenerate": 0, "cube_actor": 0}
+        min_margin = math.inf
+        ok = failed = 0
+        for seed in range(N_SEEDS):
+            probe, exc = _run_layout(env_name, "xhard", 5_000_000 + seed, fake_scene)
+            stats = _layout_stats(probe)
+            for key in totals:
+                totals[key] += stats[key]
+            min_margin = min(min_margin, stats["min_margin"])
+            if exc is None:
+                ok += 1
+            else:
+                failed += 1
+        print(f"V5_XHARD_OBB_FIX env={env_name} seeds={N_SEEDS} ok={ok} scenegen_fail={failed} "
+              f"pairs={totals['pairs']} violations={totals['violations']} min_margin={min_margin:.6f} "
+              f"exact_obstacles={totals['exact']} degenerate={totals['degenerate']} cube_actor={totals['cube_actor']}")
+>       assert ok > 0
+E       assert 0 > 0
+
+tests/lightweight/test_v5_xhard_obb_fix.py:293: AssertionError
+----------------------------- Captured stdout call -----------------------------
+V5_XHARD_OBB_FIX env=VideoPlaceButton seeds=60 ok=0 scenegen_fail=60 pairs=0 violations=0 min_margin=inf exact_obstacles=0 degenerate=0 cube_actor=0
+_____________ test_xhard已放方块间距不小于名义min_gap且障碍无退化[VideoPlaceOrder] ______________
+
+env_name = 'VideoPlaceOrder'
+fake_scene = <_pytest.monkeypatch.MonkeyPatch object at 0x7a5ec53f0910>
+
+    @pytest.mark.parametrize("env_name", ENV_NAMES)
+    def test_xhard已放方块间距不小于名义min_gap且障碍无退化(env_name, fake_scene) -> None:
+        totals = {"violations": 0, "pairs": 0, "exact": 0, "degenerate": 0, "cube_actor": 0}
+        min_margin = math.inf
+        ok = failed = 0
+        for seed in range(N_SEEDS):
+            probe, exc = _run_layout(env_name, "xhard", 5_000_000 + seed, fake_scene)
+            stats = _layout_stats(probe)
+            for key in totals:
+                totals[key] += stats[key]
+            min_margin = min(min_margin, stats["min_margin"])
+            if exc is None:
+                ok += 1
+            else:
+                failed += 1
+        print(f"V5_XHARD_OBB_FIX env={env_name} seeds={N_SEEDS} ok={ok} scenegen_fail={failed} "
+              f"pairs={totals['pairs']} violations={totals['violations']} min_margin={min_margin:.6f} "
+              f"exact_obstacles={totals['exact']} degenerate={totals['degenerate']} cube_actor={totals['cube_actor']}")
+>       assert ok > 0
+E       assert 0 > 0
+
+tests/lightweight/test_v5_xhard_obb_fix.py:293: AssertionError
+----------------------------- Captured stdout call -----------------------------
+V5_XHARD_OBB_FIX env=VideoPlaceOrder seeds=60 ok=0 scenegen_fail=60 pairs=0 violations=0 min_margin=inf exact_obstacles=0 degenerate=0 cube_actor=0
+_____________________________ test_精确三元组与方块初始位姿一致 ______________________________
+
+fake_scene = <_pytest.monkeypatch.MonkeyPatch object at 0x7a5d049cf510>
+
+    def test_精确三元组与方块初始位姿一致(fake_scene) -> None:
+        """xhard 下 avoid 里第 k 块方块的三元组 == 由其 initial_pose 解析算出的正方形（不含 pad）。"""
+>       probe, exc = _run_layout("PickHighlight", "xhard", 5_000_123, fake_scene)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/lightweight/test_v5_xhard_obb_fix.py:306: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/lightweight/test_v5_xhard_obb_fix.py:167: in _run_layout
+    cls._load_scene(fake, {})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = namespace(_sampling={'parameters': {'color_pool': [{'rgba': [1, 0, 0, 1], 'name': 'red'}, {'rgba': [0, 0, 1, 1], 'name... at 0x7a5ec65858a0>, cap_link=[<object object at 0x7a5ec6585810>], all_cubes=[], all_cube_names=[], all_cube_colors=[])
+options = {}
+
+    def _load_scene(self, options: dict):
+        self.generator.manual_seed(self.seed)
+        self.table_scene = TableSceneBuilder(
+            self, robot_init_qpos_noise=self.robot_init_qpos_noise
+        )
+        self.table_scene.build()
+    
+    
+        button_cfg = self._sampling["positions"]["button"]
+        cubes_cfg = self._sampling["positions"]["cubes"]
+        decision_cfg = self._sampling["decision"]
+        cube_region = decision_cfg["cube_region"]
+        self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
+        button_obb = build_button(
+            self,
+            center_xy=tuple(button_cfg["center_xy"]),
+            scale=button_cfg["scale"],
+            generator=self.generator,
+            recorder=self._spec,
+            spec_path="layout.button_xy",
+        )
+        avoid = [button_obb]
+    
+        self.all_cubes = []  # Save all cube objects
+        self.all_cube_names = []
+        self.all_cube_colors = []
+    
+        # List of available colors
+        # 颜色池取自快照（顺序与原字面量一致：红、蓝、绿）
+        available_colors = [
+            {"color": tuple(entry["rgba"]), "name": entry["name"]}
+            for entry in self._sampling["parameters"]["color_pool"]
+        ]
+    
+        # V4 xhard 分支（H2/N12：原三档一行不走这里）。
+        # V6：新值族四档共用本分支，按本局档位取子树与区间
+        xhard = is_newvalue_difficulty(self.difficulty)
+        tier = self.difficulty
+        if xhard:
+            xhard_cfg = decision_cfg[tier]
+            if xhard_cfg["block_color_policy"] != "hsv_floor":
+                raise SamplingConfigError(
+                    f"PickHighlight: decision.{tier}.block_color_policy 只支持 'hsv_floor'，"
+                    f"收到 {xhard_cfg['block_color_policy']!r}"
+                )
+            if xhard_cfg["subgoal_color_suffix"] != "omit":
+                raise SamplingConfigError(
+                    f"PickHighlight: decision.{tier}.subgoal_color_suffix 目前只实现 'omit'，"
+                    f"收到 {xhard_cfg['subgoal_color_suffix']!r}"
+                )
+            spawn_lo, spawn_hi = _closed_range(decision_cfg["spawn_count"][tier], f"spawn_count.{tier}")
+            highlight_lo, highlight_hi = _closed_range(
+                decision_cfg["highlight_count"][tier], f"highlight_count.{tier}"
+            )
+            # spawn≥highlight 硬断言（计划 2.12）：按生效区间的最坏情形判，外部收窄写坏时当场拒绝
+            if spawn_lo < highlight_hi:
+                raise SamplingConfigError(
+                    f"PickHighlight: {tier} 须 spawn 下界 ≥ highlight 上界，收到 spawn=[{spawn_lo},{spawn_hi}] "
+                    f"highlight=[{highlight_lo},{highlight_hi}]"
+                )
+            # 新增取值点：本局方块数（只在 xhard 抽；它决定下面循环的长度，只能排在方块循环之前）
+            num_cubes_to_spawn = int(self._spec.value(
+                "objects.n_cubes",
+                int(torch.randint(spawn_lo, spawn_hi + 1, (1,), generator=self.generator).item()),
+                decision_key=f"spawn_count.{tier}",
+            ))
+        else:
+            # Get number of cubes to spawn based on difficulty
+>           num_cubes_to_spawn = decision_cfg["spawn_count"][self.difficulty]
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'xhard'
+
+src/robomme/robomme_env/PickHighlight.py:369: KeyError
+____________ test_静态自查_精确OBB只在xhard分支且spawn调用逐字不动[VideoPlaceButton] ____________
+
+env_name = 'VideoPlaceButton'
+
+    @pytest.mark.parametrize("env_name", ENV_NAMES)
+    def test_静态自查_精确OBB只在xhard分支且spawn调用逐字不动(env_name) -> None:
+        func = _load_scene_source(env_name)
+        exact_calls = []
+        for node in ast.walk(func):
+            if isinstance(node, ast.If) and _is_xhard_test(node.test):
+                body_src = "\n".join(ast.unparse(s) for s in node.body)
+                else_src = "\n".join(ast.unparse(s) for s in node.orelse)
+                if "cube_obb2d_exact" in body_src:
+                    exact_calls.append(node)
+                    # xhard 分支：精确三元组；else（原三档）：原来的 avoid.append(cube) 一字不差
+                    assert body_src == "avoid.append(cube_obb2d_exact(cube.initial_pose, self.cube_half_size))"
+                    assert else_src == "avoid.append(cube)"
+>       assert len(exact_calls) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/lightweight/test_v5_xhard_obb_fix.py:368: AssertionError
+____________ test_静态自查_精确OBB只在xhard分支且spawn调用逐字不动[VideoPlaceOrder] _____________
+
+env_name = 'VideoPlaceOrder'
+
+    @pytest.mark.parametrize("env_name", ENV_NAMES)
+    def test_静态自查_精确OBB只在xhard分支且spawn调用逐字不动(env_name) -> None:
+        func = _load_scene_source(env_name)
+        exact_calls = []
+        for node in ast.walk(func):
+            if isinstance(node, ast.If) and _is_xhard_test(node.test):
+                body_src = "\n".join(ast.unparse(s) for s in node.body)
+                else_src = "\n".join(ast.unparse(s) for s in node.orelse)
+                if "cube_obb2d_exact" in body_src:
+                    exact_calls.append(node)
+                    # xhard 分支：精确三元组；else（原三档）：原来的 avoid.append(cube) 一字不差
+                    assert body_src == "avoid.append(cube_obb2d_exact(cube.initial_pose, self.cube_half_size))"
+                    assert else_src == "avoid.append(cube)"
+>       assert len(exact_calls) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/lightweight/test_v5_xhard_obb_fix.py:368: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/lightweight/test_v5_xhard_obb_fix.py::test_xhard已放方块间距不小于名义min_gap且障碍无退化[PickHighlight]
+FAILED tests/lightweight/test_v5_xhard_obb_fix.py::test_xhard已放方块间距不小于名义min_gap且障碍无退化[VideoPlaceButton]
+FAILED tests/lightweight/test_v5_xhard_obb_fix.py::test_xhard已放方块间距不小于名义min_gap且障碍无退化[VideoPlaceOrder]
+FAILED tests/lightweight/test_v5_xhard_obb_fix.py::test_精确三元组与方块初始位姿一致
+FAILED tests/lightweight/test_v5_xhard_obb_fix.py::test_静态自查_精确OBB只在xhard分支且spawn调用逐字不动[VideoPlaceButton]
+FAILED tests/lightweight/test_v5_xhard_obb_fix.py::test_静态自查_精确OBB只在xhard分支且spawn调用逐字不动[VideoPlaceOrder]
+6 failed, 631 passed, 5 deselected, 2 warnings in 166.36s (0:02:46)
+EXIT_CODE=123

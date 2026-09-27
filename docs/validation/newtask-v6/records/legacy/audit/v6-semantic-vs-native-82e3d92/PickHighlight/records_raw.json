@@ -1,0 +1,5475 @@
+[
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 0,
+  "seed": 9200000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed9200000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_0/videos/PickHighlight_ep0_seed9200000_xhard1_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 706,
+  "setup": {
+   "difficulty": "xhard1",
+   "seed": 9200000,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 7,
+  "highlight_ids": [
+   0,
+   4,
+   5,
+   1
+  ],
+  "highlight_count": 4,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <60, 97>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [63, 99]}"
+   },
+   {
+    "t": 113,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <71, 138>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [72, 139]}"
+   },
+   {
+    "t": 234,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 295,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <94, 92>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [95, 93]}"
+   },
+   {
+    "t": 402,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 453,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <115, 166>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [116, 167]}"
+   },
+   {
+    "t": 565,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 617,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <91, 165>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [91, 166]}"
+   },
+   {
+    "t": 693,
+    "simple": "All tasks completed",
+    "grounded": "pick up the fourth highlighted cube at <91, 165>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [85, 167]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 49,
+    "eef": [
+     -0.2334303855895996,
+     -0.1269439458847046,
+     0.15386110544204712
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 0,
+    "dist": 0.1924,
+    "is_target": true
+   },
+   {
+    "t": 198,
+    "eef": [
+     -0.15874384343624115,
+     0.04803650081157684,
+     0.018479205667972565
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 0,
+    "dist": 0.0045,
+    "is_target": true
+   },
+   {
+    "t": 374,
+    "eef": [
+     -0.03532472252845764,
+     -0.13389693200588226,
+     0.021155543625354767
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 4,
+    "dist": 0.0067,
+    "is_target": true
+   },
+   {
+    "t": 535,
+    "eef": [
+     0.05706930533051491,
+     0.1337984800338745,
+     0.018184959888458252
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.005,
+    "is_target": true
+   },
+   {
+    "t": 678,
+    "eef": [
+     -0.05387188121676445,
+     0.1438531130552292,
+     0.021358966827392578
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0061,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 0,
+    "xy": [
+     -0.15429400444030764,
+     0.04837831735610962
+    ],
+    "uv": [
+     139.4,
+     72.3
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 4,
+    "xy": [
+     -0.02881930112838743,
+     -0.13243173122406007
+    ],
+    "uv": [
+     93.2,
+     95.4
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 5,
+    "xy": [
+     0.06198892354965213,
+     0.13486172676086425
+    ],
+    "uv": [
+     166.7,
+     115.7
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 1,
+    "xy": [
+     -0.04860799551010131,
+     0.14691668987274173
+    ],
+    "uv": [
+     165.9,
+     91.4
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 2,
+    "xy": [
+     -0.029021904468536364,
+     0.05700578212738039
+    ],
+    "uv": [
+     143.0,
+     95.3
+    ],
+    "nearest_target": 1,
+    "center_dist_to_nearest_target_m": 0.092
+   },
+   {
+    "cube": 3,
+    "xy": [
+     -0.2456849765777588,
+     0.09416922569274902
+    ],
+    "uv": [
+     148.6,
+     58.3
+    ],
+    "nearest_target": 0,
+    "center_dist_to_nearest_target_m": 0.1022
+   },
+   {
+    "cube": 6,
+    "xy": [
+     0.057304220199584976,
+     -0.012876255512237561
+    ],
+    "uv": [
+     124.3,
+     114.5
+    ],
+    "nearest_target": 4,
+    "center_dist_to_nearest_target_m": 0.1473
+   }
+  ],
+  "white_components_t30_areas": [
+   171,
+   231,
+   252,
+   337
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 3,
+  "seed": 9200300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed9200300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_3/videos/PickHighlight_ep3_seed9200300_xhard1_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 705,
+  "setup": {
+   "difficulty": "xhard1",
+   "seed": 9200300,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 7,
+  "highlight_ids": [
+   6,
+   5,
+   1,
+   4
+  ],
+  "highlight_count": 4,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <57, 85>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [60, 87]}"
+   },
+   {
+    "t": 115,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <60, 162>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [61, 163]}"
+   },
+   {
+    "t": 246,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 315,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <109, 116>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [110, 117]}"
+   },
+   {
+    "t": 426,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 476,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <115, 85>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [117, 87]}"
+   },
+   {
+    "t": 568,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 618,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <97, 151>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [98, 152]}"
+   },
+   {
+    "t": 693,
+    "simple": "All tasks completed",
+    "grounded": "pick up the fourth highlighted cube at <97, 151>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [91, 154]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 50,
+    "eef": [
+     -0.25236040353775024,
+     -0.18195168673992157,
+     0.153220072388649
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 2,
+    "dist": 0.1874,
+    "is_target": false
+   },
+   {
+    "t": 211,
+    "eef": [
+     -0.23059318959712982,
+     0.15763650834560394,
+     0.019783176481723785
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 6,
+    "dist": 0.0053,
+    "is_target": true
+   },
+   {
+    "t": 398,
+    "eef": [
+     0.032815445214509964,
+     -0.03961969166994095,
+     0.018913909792900085
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0053,
+    "is_target": true
+   },
+   {
+    "t": 538,
+    "eef": [
+     0.06128346920013428,
+     -0.14274615049362183,
+     0.018165938556194305
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0049,
+    "is_target": true
+   },
+   {
+    "t": 678,
+    "eef": [
+     -0.022639475762844086,
+     0.09183355420827866,
+     0.020305566489696503
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 4,
+    "dist": 0.0067,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 6,
+    "xy": [
+     -0.22524969816207888,
+     0.1578454041481018
+    ],
+    "uv": [
+     163.2,
+     61.2
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 5,
+    "xy": [
+     0.038013172149658214,
+     -0.04063544511795045
+    ],
+    "uv": [
+     116.6,
+     110.0
+    ],
+    "max_white_ring_frac_10_100": 0.875
+   },
+   {
+    "cube": 1,
+    "xy": [
+     0.06602242946624759,
+     -0.14378644466400148
+    ],
+    "uv": [
+     86.6,
+     116.7
+    ],
+    "max_white_ring_frac_10_100": 0.875
+   },
+   {
+    "cube": 4,
+    "xy": [
+     -0.01631125926971433,
+     0.08963178634643557
+    ],
+    "uv": [
+     151.8,
+     98.0
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 0,
+    "xy": [
+     -0.03223570585250854,
+     -0.14136955976486207
+    ],
+    "uv": [
+     91.0,
+     94.7
+    ],
+    "nearest_target": 1,
+    "center_dist_to_nearest_target_m": 0.0983
+   },
+   {
+    "cube": 2,
+    "xy": [
+     -0.21440988302230837,
+     0.0015432143211364657
+    ],
+    "uv": [
+     128.3,
+     62.8
+    ],
+    "nearest_target": 6,
+    "center_dist_to_nearest_target_m": 0.1567
+   },
+   {
+    "cube": 3,
+    "xy": [
+     -0.1536263704299927,
+     0.08341425418853762
+    ],
+    "uv": [
+     147.7,
+     72.4
+    ],
+    "nearest_target": 6,
+    "center_dist_to_nearest_target_m": 0.1033
+   }
+  ],
+  "white_components_t30_areas": [
+   145,
+   258,
+   315,
+   338
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard1",
+  "episode": 6,
+  "seed": 9200600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed9200600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_6/videos/PickHighlight_ep6_seed9200600_xhard1_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 707,
+  "setup": {
+   "difficulty": "xhard1",
+   "seed": 9200600,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 7,
+  "highlight_ids": [
+   5,
+   3,
+   2,
+   0
+  ],
+  "highlight_count": 4,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <61, 162>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [64, 163]}"
+   },
+   {
+    "t": 112,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <91, 173>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [92, 174]}"
+   },
+   {
+    "t": 210,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 269,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <86, 114>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [87, 115]}"
+   },
+   {
+    "t": 366,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 421,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <63, 120>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [64, 121]}"
+   },
+   {
+    "t": 535,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 604,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <107, 108>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [108, 109]}"
+   },
+   {
+    "t": 694,
+    "simple": "All tasks completed",
+    "grounded": "pick up the fourth highlighted cube at <107, 108>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [101, 109]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 49,
+    "eef": [
+     -0.2263956367969513,
+     0.1501157581806183,
+     0.1536961942911148
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 2,
+    "dist": 0.182,
+    "is_target": true
+   },
+   {
+    "t": 182,
+    "eef": [
+     -0.051244162023067474,
+     0.17755082249641418,
+     0.020719699561595917
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0059,
+    "is_target": true
+   },
+   {
+    "t": 333,
+    "eef": [
+     -0.07606955617666245,
+     -0.04893309995532036,
+     0.01924864947795868
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 3,
+    "dist": 0.0046,
+    "is_target": true
+   },
+   {
+    "t": 500,
+    "eef": [
+     -0.2117767333984375,
+     -0.02968655899167061,
+     0.018832676112651825
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 2,
+    "dist": 0.0045,
+    "is_target": true
+   },
+   {
+    "t": 679,
+    "eef": [
+     0.025087056681513786,
+     -0.06627126783132553,
+     0.018893100321292877
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 0,
+    "dist": 0.0052,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 5,
+    "xy": [
+     -0.045440070629119866,
+     0.17828641176223756
+    ],
+    "uv": [
+     174.2,
+     92.0
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   },
+   {
+    "cube": 3,
+    "xy": [
+     -0.07157742500305175,
+     -0.04982312679290771
+    ],
+    "uv": [
+     115.4,
+     86.9
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "cube": 2,
+    "xy": [
+     -0.20744071006774906,
+     -0.030891301631927492
+    ],
+    "uv": [
+     121.0,
+     63.9
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 0,
+    "xy": [
+     0.03023895025253298,
+     -0.06713056325912477
+    ],
+    "uv": [
+     109.3,
+     108.2
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 1,
+    "xy": [
+     -0.06570604801177979,
+     -0.1406074905395508
+    ],
+    "uv": [
+     92.2,
+     88.0
+    ],
+    "nearest_target": 3,
+    "center_dist_to_nearest_target_m": 0.091
+   },
+   {
+    "cube": 4,
+    "xy": [
+     -0.2707252860069275,
+     -0.16870335102081302
+    ],
+    "uv": [
+     91.7,
+     54.8
+    ],
+    "nearest_target": 2,
+    "center_dist_to_nearest_target_m": 0.1516
+   },
+   {
+    "cube": 6,
+    "xy": [
+     -0.03443558931350707,
+     0.07260965108871462
+    ],
+    "uv": [
+     147.0,
+     94.2
+    ],
+    "nearest_target": 5,
+    "center_dist_to_nearest_target_m": 0.1062
+   }
+  ],
+  "white_components_t30_areas": [
+   149,
+   239,
+   235,
+   307
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 0,
+  "seed": 11200000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed11200000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_0/videos/PickHighlight_ep0_seed11200000_xhard2_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 844,
+  "setup": {
+   "difficulty": "xhard2",
+   "seed": 11200000,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 8,
+  "highlight_ids": [
+   6,
+   2,
+   5,
+   4,
+   7
+  ],
+  "highlight_count": 5,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <57, 155>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [60, 156]}"
+   },
+   {
+    "t": 121,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <58, 119>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [59, 120]}"
+   },
+   {
+    "t": 220,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 292,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <117, 97>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [119, 98]}"
+   },
+   {
+    "t": 407,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 458,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <97, 123>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [98, 124]}"
+   },
+   {
+    "t": 546,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 596,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <83, 164>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [84, 165]}"
+   },
+   {
+    "t": 679,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 733,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube at <78, 136>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [80, 137]}"
+   },
+   {
+    "t": 828,
+    "simple": "All tasks completed",
+    "grounded": "pick up the fifth highlighted cube at <78, 136>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [71, 138]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 52,
+    "eef": [
+     -0.25175002217292786,
+     0.12153781950473785,
+     0.1526864767074585
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 6,
+    "dist": 0.1587,
+    "is_target": true
+   },
+   {
+    "t": 185,
+    "eef": [
+     -0.24610412120819092,
+     -0.037741608917713165,
+     0.020483791828155518
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 6,
+    "dist": 0.0053,
+    "is_target": true
+   },
+   {
+    "t": 377,
+    "eef": [
+     0.06953153014183044,
+     -0.10288196802139282,
+     0.01873224973678589
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 2,
+    "dist": 0.0046,
+    "is_target": true
+   },
+   {
+    "t": 518,
+    "eef": [
+     -0.021473636850714684,
+     -0.015757648274302483,
+     0.021143049001693726
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0058,
+    "is_target": true
+   },
+   {
+    "t": 649,
+    "eef": [
+     -0.09066823124885559,
+     0.14708566665649414,
+     0.019404597580432892
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 4,
+    "dist": 0.0053,
+    "is_target": true
+   },
+   {
+    "t": 812,
+    "eef": [
+     -0.11688288301229477,
+     0.03816917538642883,
+     0.018557772040367126
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 7,
+    "dist": 0.005,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 6,
+    "xy": [
+     -0.24092600822448734,
+     -0.036820034980773936
+    ],
+    "uv": [
+     119.9,
+     58.9
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 2,
+    "xy": [
+     0.07402313709259034,
+     -0.10177792310714723
+    ],
+    "uv": [
+     98.5,
+     118.7
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "cube": 5,
+    "xy": [
+     -0.0156481099128723,
+     -0.015915627479553218
+    ],
+    "uv": [
+     123.8,
+     98.1
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 4,
+    "xy": [
+     -0.08541552066802979,
+     0.14725306034088134
+    ],
+    "uv": [
+     164.8,
+     84.3
+    ],
+    "max_white_ring_frac_10_100": 0.7291666666666666
+   },
+   {
+    "cube": 7,
+    "xy": [
+     -0.11203474998474122,
+     0.03711070060729982
+    ],
+    "uv": [
+     137.1,
+     79.5
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 0,
+    "xy": [
+     0.04967844247817993,
+     0.1290696144104004
+    ],
+    "uv": [
+     164.6,
+     112.7
+    ],
+    "nearest_target": 4,
+    "center_dist_to_nearest_target_m": 0.1363
+   },
+   {
+    "cube": 1,
+    "xy": [
+     -0.1827526926994324,
+     -0.16271829128265383
+    ],
+    "uv": [
+     90.5,
+     67.7
+    ],
+    "nearest_target": 6,
+    "center_dist_to_nearest_target_m": 0.1387
+   },
+   {
+    "cube": 3,
+    "xy": [
+     -0.1354021120071411,
+     -0.046743671894073496
+    ],
+    "uv": [
+     116.8,
+     75.4
+    ],
+    "nearest_target": 7,
+    "center_dist_to_nearest_target_m": 0.087
+   }
+  ],
+  "white_components_t30_areas": [
+   142,
+   205,
+   203,
+   266,
+   357
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 3,
+  "seed": 11200300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed11200300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_3/videos/PickHighlight_ep3_seed11200300_xhard2_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 887,
+  "setup": {
+   "difficulty": "xhard2",
+   "seed": 11200300,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 8,
+  "highlight_ids": [
+   1,
+   7,
+   5,
+   3,
+   6
+  ],
+  "highlight_count": 5,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <56, 110>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [59, 111]}"
+   },
+   {
+    "t": 121,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <54, 157>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [55, 158]}"
+   },
+   {
+    "t": 239,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 318,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <78, 86>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [80, 87]}"
+   },
+   {
+    "t": 428,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 483,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <72, 143>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [73, 143]}"
+   },
+   {
+    "t": 571,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 630,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <93, 167>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [94, 168]}"
+   },
+   {
+    "t": 726,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 785,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube at <103, 87>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [104, 88]}"
+   },
+   {
+    "t": 874,
+    "simple": "All tasks completed",
+    "grounded": "pick up the fifth highlighted cube at <103, 87>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [97, 86]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 51,
+    "eef": [
+     -0.26112160086631775,
+     -0.07329080253839493,
+     0.15360751748085022
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 7,
+    "dist": 0.1762,
+    "is_target": true
+   },
+   {
+    "t": 199,
+    "eef": [
+     -0.2730529010295868,
+     0.13878493010997772,
+     0.01813272386789322
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0051,
+    "is_target": true
+   },
+   {
+    "t": 396,
+    "eef": [
+     -0.11672637611627579,
+     -0.165634885430336,
+     0.019043542444705963
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 7,
+    "dist": 0.0051,
+    "is_target": true
+   },
+   {
+    "t": 540,
+    "eef": [
+     -0.1527884304523468,
+     0.06511864811182022,
+     0.021392010152339935
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0055,
+    "is_target": true
+   },
+   {
+    "t": 698,
+    "eef": [
+     -0.04102255776524544,
+     0.1498640775680542,
+     0.021512888371944427
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 3,
+    "dist": 0.0058,
+    "is_target": true
+   },
+   {
+    "t": 859,
+    "eef": [
+     0.00763605535030365,
+     -0.14308388531208038,
+     0.020051538944244385
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 6,
+    "dist": 0.0059,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 1,
+    "xy": [
+     -0.268133134841919,
+     0.13764246940612793
+    ],
+    "uv": [
+     157.7,
+     55.1
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 7,
+    "xy": [
+     -0.11177303075790407,
+     -0.16673493146896365
+    ],
+    "uv": [
+     87.3,
+     79.5
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   },
+   {
+    "cube": 5,
+    "xy": [
+     -0.1472641921043396,
+     0.0651508140563965
+    ],
+    "uv": [
+     143.4,
+     73.4
+    ],
+    "max_white_ring_frac_10_100": 0.75
+   },
+   {
+    "cube": 3,
+    "xy": [
+     -0.035372710227966314,
+     0.1512047266960144
+    ],
+    "uv": [
+     167.5,
+     94.0
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 6,
+    "xy": [
+     0.013282496929168719,
+     -0.14471920967102053
+    ],
+    "uv": [
+     88.4,
+     104.3
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 0,
+    "xy": [
+     -0.038690881729125964,
+     -0.00013647079467773993
+    ],
+    "uv": [
+     128.0,
+     93.4
+    ],
+    "nearest_target": 5,
+    "center_dist_to_nearest_target_m": 0.1267
+   },
+   {
+    "cube": 2,
+    "xy": [
+     0.07290023565292358,
+     -0.06268524169921875
+    ],
+    "uv": [
+     109.8,
+     118.4
+    ],
+    "nearest_target": 6,
+    "center_dist_to_nearest_target_m": 0.1014
+   },
+   {
+    "cube": 4,
+    "xy": [
+     0.07050045251846315,
+     0.08759504556655887
+    ],
+    "uv": [
+     153.3,
+     117.8
+    ],
+    "nearest_target": 3,
+    "center_dist_to_nearest_target_m": 0.1235
+   }
+  ],
+  "white_components_t30_areas": [
+   141,
+   173,
+   197,
+   260,
+   279
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard2",
+  "episode": 6,
+  "seed": 11200600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed11200600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_6/videos/PickHighlight_ep6_seed11200600_xhard2_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_6/videos/success_NO_OBJECT_PickHighlight_ep6_seed11200600_xhard2_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 869,
+  "setup": {
+   "difficulty": "xhard2",
+   "seed": 11200600,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 8,
+  "highlight_ids": [
+   2,
+   7,
+   1,
+   5,
+   0
+  ],
+  "highlight_count": 5,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <57, 90>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [60, 91]}"
+   },
+   {
+    "t": 118,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <53, 134>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [55, 135]}"
+   },
+   {
+    "t": 239,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 315,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <116, 108>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [117, 109]}"
+   },
+   {
+    "t": 430,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 480,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [88, 122]}"
+   },
+   {
+    "t": 586,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 643,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <101, 147>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [103, 148]}"
+   },
+   {
+    "t": 739,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 789,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube at <99, 86>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [100, 87]}"
+   },
+   {
+    "t": 856,
+    "simple": "All tasks completed",
+    "grounded": "pick up the fifth highlighted cube at <99, 86>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [93, 86]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 51,
+    "eef": [
+     -0.2533746063709259,
+     -0.1603299379348755,
+     0.15304748713970184
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 2,
+    "dist": 0.1927,
+    "is_target": true
+   },
+   {
+    "t": 201,
+    "eef": [
+     -0.27714529633522034,
+     0.031518954783678055,
+     0.0201081782579422
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 2,
+    "dist": 0.0051,
+    "is_target": true
+   },
+   {
+    "t": 400,
+    "eef": [
+     0.06326126307249069,
+     -0.06590297818183899,
+     0.018251977860927582
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 7,
+    "dist": 0.0043,
+    "is_target": true
+   },
+   {
+    "t": 553,
+    "eef": [
+     -0.06799080967903137,
+     -0.021856090053915977,
+     0.018615014851093292
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0044,
+    "is_target": true
+   },
+   {
+    "t": 711,
+    "eef": [
+     -0.0005054064095020294,
+     0.07141178846359253,
+     0.020477160811424255
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0058,
+    "is_target": true
+   },
+   {
+    "t": 841,
+    "eef": [
+     -0.011024849489331245,
+     -0.1518227756023407,
+     0.02105797827243805
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 0,
+    "dist": 0.006,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 2,
+    "xy": [
+     -0.27206679821014407,
+     0.03141130685806276
+    ],
+    "uv": [
+     134.7,
+     54.6
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   },
+   {
+    "cube": 7,
+    "xy": [
+     0.06753435850143436,
+     -0.06631484985351563
+    ],
+    "uv": [
+     108.9,
+     117.0
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "cube": 1,
+    "xy": [
+     -0.06364407300949096,
+     -0.022278213500976557
+    ],
+    "uv": [
+     122.3,
+     88.4
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   },
+   {
+    "cube": 5,
+    "xy": [
+     0.005224390029907211,
+     0.07231443643569949
+    ],
+    "uv": [
+     147.6,
+     102.6
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 0,
+    "xy": [
+     -0.005067696571350089,
+     -0.1520231866836548
+    ],
+    "uv": [
+     87.1,
+     100.3
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 3,
+    "xy": [
+     -0.19705867290496829,
+     0.10488250494003296
+    ],
+    "uv": [
+     151.9,
+     65.5
+    ],
+    "nearest_target": 2,
+    "center_dist_to_nearest_target_m": 0.105
+   },
+   {
+    "cube": 4,
+    "xy": [
+     -0.08910224914550782,
+     0.1210934329032898
+    ],
+    "uv": [
+     158.2,
+     83.6
+    ],
+    "nearest_target": 5,
+    "center_dist_to_nearest_target_m": 0.1062
+   },
+   {
+    "cube": 6,
+    "xy": [
+     0.03369157552719115,
+     0.1739981818199158
+    ],
+    "uv": [
+     176.5,
+     109.0
+    ],
+    "nearest_target": 5,
+    "center_dist_to_nearest_target_m": 0.1056
+   }
+  ],
+  "white_components_t30_areas": [
+   132,
+   225,
+   259,
+   291,
+   349
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 0,
+  "seed": 13200000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed13200000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_0/videos/PickHighlight_ep0_seed13200000_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 997,
+  "setup": {
+   "difficulty": "xhard3",
+   "seed": 13200000,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 9,
+  "highlight_ids": [
+   7,
+   3,
+   6,
+   1,
+   8,
+   5
+  ],
+  "highlight_count": 6,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <70, 107>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [72, 109]}"
+   },
+   {
+    "t": 114,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <116, 76>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [117, 77]}"
+   },
+   {
+    "t": 224,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 275,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <97, 98>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [99, 99]}"
+   },
+   {
+    "t": 369,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 429,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <73, 167>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [74, 168]}"
+   },
+   {
+    "t": 523,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 579,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <56, 162>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [58, 163]}"
+   },
+   {
+    "t": 690,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 755,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube at <95, 164>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [96, 165]}"
+   },
+   {
+    "t": 853,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 903,
+    "simple": "pick up the sixth highlighted cube",
+    "grounded": "pick up the sixth highlighted cube at <116, 165>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [117, 166]}"
+   },
+   {
+    "t": 982,
+    "simple": "All tasks completed",
+    "grounded": "pick up the sixth highlighted cube at <116, 165>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [111, 167]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 51,
+    "eef": [
+     -0.17328116297721863,
+     -0.08139102160930634,
+     0.15210002660751343
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 4,
+    "dist": 0.1419,
+    "is_target": false
+   },
+   {
+    "t": 194,
+    "eef": [
+     0.06452793627977371,
+     -0.17539159953594208,
+     0.01839742809534073
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 7,
+    "dist": 0.0044,
+    "is_target": true
+   },
+   {
+    "t": 341,
+    "eef": [
+     -0.019484907388687134,
+     -0.10710100829601288,
+     0.020536400377750397
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 3,
+    "dist": 0.006,
+    "is_target": true
+   },
+   {
+    "t": 492,
+    "eef": [
+     -0.14742009341716766,
+     0.16409681737422943,
+     0.021182633936405182
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 6,
+    "dist": 0.0055,
+    "is_target": true
+   },
+   {
+    "t": 656,
+    "eef": [
+     -0.2555387616157532,
+     0.15906797349452972,
+     0.021357648074626923
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0056,
+    "is_target": true
+   },
+   {
+    "t": 825,
+    "eef": [
+     -0.030149761587381363,
+     0.14006948471069336,
+     0.020923294126987457
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 8,
+    "dist": 0.006,
+    "is_target": true
+   },
+   {
+    "t": 967,
+    "eef": [
+     0.06298716366291046,
+     0.12993156909942627,
+     0.018391303718090057
+    ],
+    "subgoal": "pick up the sixth highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0048,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 7,
+    "xy": [
+     0.06893603801727294,
+     -0.17570591211318973
+    ],
+    "uv": [
+     77.3,
+     117.4
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "cube": 3,
+    "xy": [
+     -0.013539464473724339,
+     -0.10734777688980104
+    ],
+    "uv": [
+     99.4,
+     98.5
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 6,
+    "xy": [
+     -0.14251196146011352,
+     0.1664782762527466
+    ],
+    "uv": [
+     167.6,
+     74.2
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "cube": 1,
+    "xy": [
+     -0.2500367212295532,
+     0.1599716877937317
+    ],
+    "uv": [
+     163.0,
+     57.6
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 8,
+    "xy": [
+     -0.024151978492736814,
+     0.1399987363815308
+    ],
+    "uv": [
+     165.0,
+     96.3
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   },
+   {
+    "cube": 5,
+    "xy": [
+     0.06745142459869385,
+     0.13163526535034178
+    ],
+    "uv": [
+     166.0,
+     117.0
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 0,
+    "xy": [
+     -0.0025460767745971724,
+     0.028376870155334466
+    ],
+    "uv": [
+     135.6,
+     100.9
+    ],
+    "nearest_target": 8,
+    "center_dist_to_nearest_target_m": 0.1137
+   },
+   {
+    "cube": 2,
+    "xy": [
+     -0.277438554763794,
+     0.04660898208618164
+    ],
+    "uv": [
+     138.0,
+     53.8
+    ],
+    "nearest_target": 1,
+    "center_dist_to_nearest_target_m": 0.1166
+   },
+   {
+    "cube": 4,
+    "xy": [
+     -0.1080076599121094,
+     0.04460449218750001
+    ],
+    "uv": [
+     138.9,
+     80.2
+    ],
+    "nearest_target": 6,
+    "center_dist_to_nearest_target_m": 0.1267
+   }
+  ],
+  "white_components_t30_areas": [
+   138,
+   194,
+   594,
+   272,
+   346
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 3,
+  "seed": 13200300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed13200300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_3/videos/PickHighlight_ep3_seed13200300_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_3/videos/success_NO_OBJECT_PickHighlight_ep3_seed13200300_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 984,
+  "setup": {
+   "difficulty": "xhard3",
+   "seed": 13200300,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 9,
+  "highlight_ids": [
+   5,
+   3,
+   4,
+   1,
+   8,
+   2
+  ],
+  "highlight_count": 6,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <65, 166>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [67, 166]}"
+   },
+   {
+    "t": 117,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <84, 127>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [85, 128]}"
+   },
+   {
+    "t": 210,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 266,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <105, 133>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [106, 134]}"
+   },
+   {
+    "t": 359,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 409,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <85, 98>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [86, 99]}"
+   },
+   {
+    "t": 496,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 555,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <112, 101>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [113, 102]}"
+   },
+   {
+    "t": 651,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 701,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [57, 92]}"
+   },
+   {
+    "t": 821,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 885,
+    "simple": "pick up the sixth highlighted cube",
+    "grounded": "pick up the sixth highlighted cube at <58, 115>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [59, 116]}"
+   },
+   {
+    "t": 967,
+    "simple": "All tasks completed",
+    "grounded": "pick up the sixth highlighted cube at <58, 115>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [51, 115]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 52,
+    "eef": [
+     -0.20662960410118103,
+     0.16540588438510895,
+     0.151913583278656
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 5,
+    "dist": 0.2082,
+    "is_target": true
+   },
+   {
+    "t": 178,
+    "eef": [
+     -0.08652186393737793,
+     -0.001226220279932022,
+     0.01896943897008896
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0047,
+    "is_target": true
+   },
+   {
+    "t": 331,
+    "eef": [
+     0.016695542261004448,
+     0.020542770624160767,
+     0.020065054297447205
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 3,
+    "dist": 0.0058,
+    "is_target": true
+   },
+   {
+    "t": 467,
+    "eef": [
+     -0.08216772973537445,
+     -0.11466719210147858,
+     0.022222407162189484
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 4,
+    "dist": 0.006,
+    "is_target": true
+   },
+   {
+    "t": 621,
+    "eef": [
+     0.04695405438542366,
+     -0.09279747307300568,
+     0.018560662865638733
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0051,
+    "is_target": true
+   },
+   {
+    "t": 786,
+    "eef": [
+     -0.26288560032844543,
+     -0.16520382463932037,
+     0.018930427730083466
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 8,
+    "dist": 0.005,
+    "is_target": true
+   },
+   {
+    "t": 949,
+    "eef": [
+     -0.24430154263973236,
+     -0.05242307856678963,
+     0.020353376865386963
+    ],
+    "subgoal": "pick up the sixth highlighted cube",
+    "nearest_initial_cube": 2,
+    "dist": 0.0056,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 5,
+    "xy": [
+     -0.08182889223098755,
+     -0.0012815165519714233
+    ],
+    "uv": [
+     127.7,
+     85.0
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   },
+   {
+    "cube": 3,
+    "xy": [
+     0.02249779462814333,
+     0.020079510211944596
+    ],
+    "uv": [
+     133.5,
+     106.4
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "cube": 4,
+    "xy": [
+     -0.07642024993896485,
+     -0.11631766319274904
+    ],
+    "uv": [
+     98.7,
+     86.0
+    ],
+    "max_white_ring_frac_10_100": 0.75
+   },
+   {
+    "cube": 1,
+    "xy": [
+     0.052018401622772215,
+     -0.09223792791366578
+    ],
+    "uv": [
+     101.8,
+     113.3
+    ],
+    "max_white_ring_frac_10_100": 0.875
+   },
+   {
+    "cube": 8,
+    "xy": [
+     -0.25786726951599126,
+     -0.16493280887603762
+    ],
+    "uv": [
+     92.2,
+     56.5
+    ],
+    "max_white_ring_frac_10_100": 0.75
+   },
+   {
+    "cube": 2,
+    "xy": [
+     -0.23962940692901613,
+     -0.05544093847274781
+    ],
+    "uv": [
+     115.8,
+     59.1
+    ],
+    "max_white_ring_frac_10_100": 0.5833333333333334
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 0,
+    "xy": [
+     0.012707817554473866,
+     0.16104349851608277
+    ],
+    "uv": [
+     172.0,
+     104.2
+    ],
+    "nearest_target": 3,
+    "center_dist_to_nearest_target_m": 0.1413
+   },
+   {
+    "cube": 6,
+    "xy": [
+     -0.1505479669570923,
+     -0.17724449157714847
+    ],
+    "uv": [
+     86.1,
+     72.9
+    ],
+    "nearest_target": 4,
+    "center_dist_to_nearest_target_m": 0.096
+   },
+   {
+    "cube": 7,
+    "xy": [
+     -0.15291818141937258,
+     -0.07316362380981446
+    ],
+    "uv": [
+     110.7,
+     72.5
+    ],
+    "nearest_target": 4,
+    "center_dist_to_nearest_target_m": 0.0878
+   }
+  ],
+  "white_components_t30_areas": [
+   132,
+   115,
+   205,
+   215,
+   312,
+   326
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard3",
+  "episode": 6,
+  "seed": 13200600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed13200600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_6/videos/PickHighlight_ep6_seed13200600_xhard3_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 1055,
+  "setup": {
+   "difficulty": "xhard3",
+   "seed": 13200600,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 9,
+  "highlight_ids": [
+   2,
+   1,
+   7,
+   6,
+   8,
+   5
+  ],
+  "highlight_count": 6,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <68, 136>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [71, 137]}"
+   },
+   {
+    "t": 117,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <60, 95>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [62, 96]}"
+   },
+   {
+    "t": 235,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 300,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <53, 113>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [54, 114]}"
+   },
+   {
+    "t": 410,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 495,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <90, 82>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [91, 83]}"
+   },
+   {
+    "t": 604,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 658,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <112, 83>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [113, 84]}"
+   },
+   {
+    "t": 748,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 798,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube at <115, 134>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [116, 135]}"
+   },
+   {
+    "t": 902,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 950,
+    "simple": "pick up the sixth highlighted cube",
+    "grounded": "pick up the sixth highlighted cube at <74, 92>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [75, 96]}"
+   },
+   {
+    "t": 1040,
+    "simple": "All tasks completed",
+    "grounded": "pick up the sixth highlighted cube at <74, 92>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [68, 95]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 49,
+    "eef": [
+     -0.18256892263889313,
+     0.036118779331445694,
+     0.15307685732841492
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 1,
+    "dist": 0.1386,
+    "is_target": true
+   },
+   {
+    "t": 201,
+    "eef": [
+     -0.2272576093673706,
+     -0.14245837926864624,
+     0.020272299647331238
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 2,
+    "dist": 0.0054,
+    "is_target": true
+   },
+   {
+    "t": 365,
+    "eef": [
+     -0.28006982803344727,
+     -0.06648826599121094,
+     0.020993538200855255
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0047,
+    "is_target": true
+   },
+   {
+    "t": 571,
+    "eef": [
+     -0.05235553905367851,
+     -0.17274218797683716,
+     0.022956743836402893
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 7,
+    "dist": 0.0038,
+    "is_target": true
+   },
+   {
+    "t": 720,
+    "eef": [
+     0.045578669756650925,
+     -0.15631845593452454,
+     0.017659038305282593
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 6,
+    "dist": 0.0061,
+    "is_target": true
+   },
+   {
+    "t": 873,
+    "eef": [
+     0.05890880525112152,
+     0.023367827758193016,
+     0.01930103451013565
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 8,
+    "dist": 0.0061,
+    "is_target": true
+   },
+   {
+    "t": 1024,
+    "eef": [
+     -0.1402752697467804,
+     -0.1351473033428192,
+     0.017884768545627594
+    ],
+    "subgoal": "pick up the sixth highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0107,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 2,
+    "xy": [
+     -0.22188773155212405,
+     -0.14262678623199465
+    ],
+    "uv": [
+     96.2,
+     61.7
+    ],
+    "max_white_ring_frac_10_100": 0.6666666666666666
+   },
+   {
+    "cube": 1,
+    "xy": [
+     -0.27536314725875854,
+     -0.06688189029693604
+    ],
+    "uv": [
+     113.7,
+     54.1
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 7,
+    "xy": [
+     -0.04855615377426148,
+     -0.17259152412414552
+    ],
+    "uv": [
+     83.4,
+     91.4
+    ],
+    "max_white_ring_frac_10_100": 0.75
+   },
+   {
+    "cube": 6,
+    "xy": [
+     0.05119972705841064,
+     -0.1540375900268555
+    ],
+    "uv": [
+     84.3,
+     113.1
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "cube": 8,
+    "xy": [
+     0.06489753246307373,
+     0.024709689617157
+    ],
+    "uv": [
+     135.1,
+     116.4
+    ],
+    "max_white_ring_frac_10_100": 0.9375
+   },
+   {
+    "cube": 5,
+    "xy": [
+     -0.1297242832183838,
+     -0.13665539503097535
+    ],
+    "uv": [
+     95.1,
+     76.4
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 0,
+    "xy": [
+     0.018737273216247574,
+     -0.04617622375488281
+    ],
+    "uv": [
+     115.3,
+     105.6
+    ],
+    "nearest_target": 8,
+    "center_dist_to_nearest_target_m": 0.0846
+   },
+   {
+    "cube": 3,
+    "xy": [
+     -0.26488699674606325,
+     0.17425711154937748
+    ],
+    "uv": [
+     165.6,
+     55.6
+    ],
+    "nearest_target": 1,
+    "center_dist_to_nearest_target_m": 0.2414
+   },
+   {
+    "cube": 4,
+    "xy": [
+     0.019281976222991937,
+     0.13161479473114016
+    ],
+    "uv": [
+     164.2,
+     105.7
+    ],
+    "nearest_target": 8,
+    "center_dist_to_nearest_target_m": 0.1162
+   }
+  ],
+  "white_components_t30_areas": [
+   924,
+   57,
+   345
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 0,
+  "seed": 7200000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed7200000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_0/videos/PickHighlight_ep0_seed7200000_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4",
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_0/videos/success_NO_OBJECT_PickHighlight_ep0_seed7200000_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 1257,
+  "setup": {
+   "difficulty": "xhard4",
+   "seed": 7200000,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 10,
+  "highlight_ids": [
+   3,
+   4,
+   9,
+   2,
+   0,
+   1,
+   8
+  ],
+  "highlight_count": 7,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <68, 174>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [70, 174]}"
+   },
+   {
+    "t": 108,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <52, 95>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [54, 96]}"
+   },
+   {
+    "t": 219,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 297,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <95, 93>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [96, 94]}"
+   },
+   {
+    "t": 398,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 448,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <59, 139>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [61, 140]}"
+   },
+   {
+    "t": 567,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 633,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <105, 115>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [106, 116]}"
+   },
+   {
+    "t": 735,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 785,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [56, 118]}"
+   },
+   {
+    "t": 909,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 988,
+    "simple": "pick up the sixth highlighted cube",
+    "grounded": "pick up the sixth highlighted cube at <99, 142>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [100, 142]}"
+   },
+   {
+    "t": 1096,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 1146,
+    "simple": "pick up the seventh highlighted cube",
+    "grounded": "pick up the seventh highlighted cube at <118, 84>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [119, 86]}"
+   },
+   {
+    "t": 1241,
+    "simple": "All tasks completed",
+    "grounded": "pick up the seventh highlighted cube at <118, 84>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [113, 83]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 47,
+    "eef": [
+     -0.18781739473342896,
+     0.19481153786182404,
+     0.15341396629810333
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 9,
+    "dist": 0.1465,
+    "is_target": true
+   },
+   {
+    "t": 178,
+    "eef": [
+     -0.2845461070537567,
+     -0.14991460740566254,
+     0.020782575011253357
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 3,
+    "dist": 0.0051,
+    "is_target": true
+   },
+   {
+    "t": 370,
+    "eef": [
+     -0.0297381728887558,
+     -0.12710484862327576,
+     0.0205349400639534
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 4,
+    "dist": 0.0057,
+    "is_target": true
+   },
+   {
+    "t": 530,
+    "eef": [
+     -0.23423412442207336,
+     0.055251557379961014,
+     0.01926407963037491
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 9,
+    "dist": 0.0048,
+    "is_target": true
+   },
+   {
+    "t": 707,
+    "eef": [
+     0.015243720263242722,
+     -0.04173535108566284,
+     0.019876711070537567
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 2,
+    "dist": 0.0057,
+    "is_target": true
+   },
+   {
+    "t": 869,
+    "eef": [
+     -0.2668801546096802,
+     -0.045127023011446,
+     0.020780660212039948
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 0,
+    "dist": 0.005,
+    "is_target": true
+   },
+   {
+    "t": 1068,
+    "eef": [
+     -0.010054538957774639,
+     0.0526927188038826,
+     0.02070242166519165
+    ],
+    "subgoal": "pick up the sixth highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0057,
+    "is_target": true
+   },
+   {
+    "t": 1226,
+    "eef": [
+     0.07129344344139099,
+     -0.14454902708530426,
+     0.018170960247516632
+    ],
+    "subgoal": "pick up the seventh highlighted cube",
+    "nearest_initial_cube": 8,
+    "dist": 0.0047,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 3,
+    "xy": [
+     -0.27948879241943364,
+     -0.1505433797836304
+    ],
+    "uv": [
+     95.8,
+     53.6
+    ],
+    "max_white_ring_frac_10_100": 0.75
+   },
+   {
+    "cube": 4,
+    "xy": [
+     -0.024096360206603995,
+     -0.12779820442199707
+    ],
+    "uv": [
+     94.3,
+     96.3
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 9,
+    "xy": [
+     -0.2295391082763672,
+     0.054423265457153314
+    ],
+    "uv": [
+     140.1,
+     60.6
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "cube": 2,
+    "xy": [
+     0.02079354047775267,
+     -0.04319010972976686
+    ],
+    "uv": [
+     116.1,
+     106.0
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 0,
+    "xy": [
+     -0.2619921636581421,
+     -0.04429290533065797
+    ],
+    "uv": [
+     118.4,
+     56.0
+    ],
+    "max_white_ring_frac_10_100": 0.75
+   },
+   {
+    "cube": 1,
+    "xy": [
+     -0.004467654228210438,
+     0.05371795177459718
+    ],
+    "uv": [
+     142.4,
+     100.5
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 8,
+    "xy": [
+     0.07589364528656006,
+     -0.14543984413146974
+    ],
+    "uv": [
+     85.7,
+     119.1
+    ],
+    "max_white_ring_frac_10_100": 0.8541666666666666
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 5,
+    "xy": [
+     -0.1209401559829712,
+     -0.03982136249542237
+    ],
+    "uv": [
+     118.3,
+     77.9
+    ],
+    "nearest_target": 4,
+    "center_dist_to_nearest_target_m": 0.1308
+   },
+   {
+    "cube": 6,
+    "xy": [
+     0.02692393302917484,
+     0.17605627298355106
+    ],
+    "uv": [
+     176.8,
+     107.4
+    ],
+    "nearest_target": 1,
+    "center_dist_to_nearest_target_m": 0.1263
+   },
+   {
+    "cube": 7,
+    "xy": [
+     -0.16025968790054324,
+     -0.16406046867370608
+    ],
+    "uv": [
+     89.5,
+     71.3
+    ],
+    "nearest_target": 3,
+    "center_dist_to_nearest_target_m": 0.12
+   }
+  ],
+  "white_components_t30_areas": [
+   125,
+   298,
+   1162
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 3,
+  "seed": 7200300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed7200300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_3/videos/PickHighlight_ep3_seed7200300_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 1156,
+  "setup": {
+   "difficulty": "xhard4",
+   "seed": 7200300,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 10,
+  "highlight_ids": [
+   4,
+   6,
+   8,
+   1,
+   3,
+   0,
+   9
+  ],
+  "highlight_count": 7,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <68, 132>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [71, 133]}"
+   },
+   {
+    "t": 115,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <112, 149>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [113, 150]}"
+   },
+   {
+    "t": 219,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 269,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <90, 167>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [90, 169]}"
+   },
+   {
+    "t": 355,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 416,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <103, 112>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [105, 113]}"
+   },
+   {
+    "t": 501,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 551,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <104, 81>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [106, 82]}"
+   },
+   {
+    "t": 631,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 681,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube at <64, 165>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [65, 166]}"
+   },
+   {
+    "t": 799,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 864,
+    "simple": "pick up the sixth highlighted cube",
+    "grounded": "pick up the sixth highlighted cube at <58, 101>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [59, 102]}"
+   },
+   {
+    "t": 984,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 1058,
+    "simple": "pick up the seventh highlighted cube",
+    "grounded": "pick up the seventh highlighted cube at <94, 135>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [95, 136]}"
+   },
+   {
+    "t": 1143,
+    "simple": "All tasks completed",
+    "grounded": "pick up the seventh highlighted cube at <94, 135>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [89, 136]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 48,
+    "eef": [
+     -0.18408718705177307,
+     0.02273772843182087,
+     0.15339511632919312
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 3,
+    "dist": 0.1446,
+    "is_target": true
+   },
+   {
+    "t": 190,
+    "eef": [
+     0.045996442437171936,
+     0.07546893507242203,
+     0.019655413925647736
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 4,
+    "dist": 0.0051,
+    "is_target": true
+   },
+   {
+    "t": 327,
+    "eef": [
+     -0.06066522002220154,
+     0.15874840319156647,
+     0.02101418375968933
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 6,
+    "dist": 0.0064,
+    "is_target": true
+   },
+   {
+    "t": 473,
+    "eef": [
+     0.008036928251385689,
+     -0.05511300265789032,
+     0.020722761750221252
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 8,
+    "dist": 0.0061,
+    "is_target": true
+   },
+   {
+    "t": 602,
+    "eef": [
+     0.013356585055589676,
+     -0.16618134081363678,
+     0.019555822014808655
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0058,
+    "is_target": true
+   },
+   {
+    "t": 767,
+    "eef": [
+     -0.2053787261247635,
+     0.16538318991661072,
+     0.020092375576496124
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 3,
+    "dist": 0.0054,
+    "is_target": true
+   },
+   {
+    "t": 947,
+    "eef": [
+     -0.24578621983528137,
+     -0.11885199695825577,
+     0.019120201468467712
+    ],
+    "subgoal": "pick up the sixth highlighted cube",
+    "nearest_initial_cube": 0,
+    "dist": 0.005,
+    "is_target": true
+   },
+   {
+    "t": 1128,
+    "eef": [
+     -0.03650159016251564,
+     0.02853279747068882,
+     0.020753704011440277
+    ],
+    "subgoal": "pick up the seventh highlighted cube",
+    "nearest_initial_cube": 9,
+    "dist": 0.0058,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 4,
+    "xy": [
+     0.05103267908096315,
+     0.07607000112533571
+    ],
+    "uv": [
+     149.6,
+     113.0
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 6,
+    "xy": [
+     -0.054293098449707033,
+     0.15776774883270264
+    ],
+    "uv": [
+     168.5,
+     90.3
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 8,
+    "xy": [
+     0.014143593311309821,
+     -0.05475688934326173
+    ],
+    "uv": [
+     113.0,
+     104.5
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 1,
+    "xy": [
+     0.01912250280380251,
+     -0.16595627546310426
+    ],
+    "uv": [
+     82.4,
+     105.6
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 3,
+    "xy": [
+     -0.20011533975601198,
+     0.1664469051361084
+    ],
+    "uv": [
+     165.8,
+     65.0
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 0,
+    "xy": [
+     -0.24081841945648197,
+     -0.1189245343208313
+    ],
+    "uv": [
+     101.8,
+     59.0
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 9,
+    "xy": [
+     -0.03076969623565673,
+     0.029050683975219732
+    ],
+    "uv": [
+     135.6,
+     95.0
+    ],
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 2,
+    "xy": [
+     -0.07680644512176513,
+     -0.09431322813034058
+    ],
+    "uv": [
+     104.3,
+     85.9
+    ],
+    "nearest_target": 8,
+    "center_dist_to_nearest_target_m": 0.0992
+   },
+   {
+    "cube": 5,
+    "xy": [
+     0.07841296911239626,
+     0.1652573347091675
+    ],
+    "uv": [
+     176.2,
+     119.8
+    ],
+    "nearest_target": 4,
+    "center_dist_to_nearest_target_m": 0.0933
+   },
+   {
+    "cube": 7,
+    "xy": [
+     -0.15603885650634766,
+     -0.1733262348175049
+    ],
+    "uv": [
+     87.2,
+     72.0
+    ],
+    "nearest_target": 0,
+    "center_dist_to_nearest_target_m": 0.1007
+   }
+  ],
+  "white_components_t30_areas": [
+   146,
+   166,
+   229,
+   877,
+   283
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "new",
+  "difficulty": "xhard4",
+  "episode": 6,
+  "seed": 7200600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed7200600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_6/videos/PickHighlight_ep6_seed7200600_xhard4_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 1139,
+  "setup": {
+   "difficulty": "xhard4",
+   "seed": 7200600,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "n_cubes": 10,
+  "highlight_ids": [
+   1,
+   9,
+   5,
+   4,
+   2,
+   8,
+   3
+  ],
+  "highlight_count": 7,
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <58, 146>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [61, 147]}"
+   },
+   {
+    "t": 127,
+    "simple": "pick up the first highlighted cube",
+    "grounded": "pick up the first highlighted cube at <103, 115>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [104, 116]}"
+   },
+   {
+    "t": 234,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 284,
+    "simple": "pick up the second highlighted cube",
+    "grounded": "pick up the second highlighted cube at <77, 166>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [78, 167]}"
+   },
+   {
+    "t": 379,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 433,
+    "simple": "pick up the third highlighted cube",
+    "grounded": "pick up the third highlighted cube at <63, 88>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [64, 89]}"
+   },
+   {
+    "t": 547,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 612,
+    "simple": "pick up the fourth highlighted cube",
+    "grounded": "pick up the fourth highlighted cube at <101, 173>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [102, 174]}"
+   },
+   {
+    "t": 716,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 766,
+    "simple": "pick up the fifth highlighted cube",
+    "grounded": "pick up the fifth highlighted cube at <89, 151>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [90, 152]}"
+   },
+   {
+    "t": 849,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 907,
+    "simple": "pick up the sixth highlighted cube",
+    "grounded": "pick up the sixth highlighted cube at <112, 146>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [113, 147]}"
+   },
+   {
+    "t": 1000,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 1050,
+    "simple": "pick up the seventh highlighted cube",
+    "grounded": "pick up the seventh highlighted cube at <106, 84>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [107, 86]}"
+   },
+   {
+    "t": 1125,
+    "simple": "All tasks completed",
+    "grounded": "pick up the seventh highlighted cube at <106, 84>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [101, 83]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 54,
+    "eef": [
+     -0.24962832033634186,
+     0.08249342441558838,
+     0.1524166464805603
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 0,
+    "dist": 0.1414,
+    "is_target": false
+   },
+   {
+    "t": 206,
+    "eef": [
+     0.008243060670793056,
+     -0.04348080977797508,
+     0.019565582275390625
+    ],
+    "subgoal": "pick up the first highlighted cube",
+    "nearest_initial_cube": 1,
+    "dist": 0.0055,
+    "is_target": true
+   },
+   {
+    "t": 349,
+    "eef": [
+     -0.12600265443325043,
+     0.16089943051338196,
+     0.020522303879261017
+    ],
+    "subgoal": "pick up the second highlighted cube",
+    "nearest_initial_cube": 9,
+    "dist": 0.0056,
+    "is_target": true
+   },
+   {
+    "t": 515,
+    "eef": [
+     -0.21164008975028992,
+     -0.1715589016675949,
+     0.020100854337215424
+    ],
+    "subgoal": "pick up the third highlighted cube",
+    "nearest_initial_cube": 5,
+    "dist": 0.0054,
+    "is_target": true
+   },
+   {
+    "t": 688,
+    "eef": [
+     -0.0012794509530067444,
+     0.16794949769973755,
+     0.019596420228481293
+    ],
+    "subgoal": "pick up the fourth highlighted cube",
+    "nearest_initial_cube": 4,
+    "dist": 0.0057,
+    "is_target": true
+   },
+   {
+    "t": 821,
+    "eef": [
+     -0.06069832295179367,
+     0.08956921100616455,
+     0.02122686058282852
+    ],
+    "subgoal": "pick up the fifth highlighted cube",
+    "nearest_initial_cube": 2,
+    "dist": 0.006,
+    "is_target": true
+   },
+   {
+    "t": 971,
+    "eef": [
+     0.04646527022123337,
+     0.06793242692947388,
+     0.01863154023885727
+    ],
+    "subgoal": "pick up the sixth highlighted cube",
+    "nearest_initial_cube": 8,
+    "dist": 0.005,
+    "is_target": true
+   },
+   {
+    "t": 1110,
+    "eef": [
+     0.021845217794179916,
+     -0.15228308737277985,
+     0.01937469094991684
+    ],
+    "subgoal": "pick up the seventh highlighted cube",
+    "nearest_initial_cube": 3,
+    "dist": 0.0053,
+    "is_target": true
+   }
+  ],
+  "targets": [
+   {
+    "cube": 1,
+    "xy": [
+     0.013734545707702661,
+     -0.044022796154022215
+    ],
+    "uv": [
+     116.0,
+     104.4
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 9,
+    "xy": [
+     -0.12047510385513308,
+     0.16175606489181518
+    ],
+    "uv": [
+     167.2,
+     78.0
+    ],
+    "max_white_ring_frac_10_100": 0.75
+   },
+   {
+    "cube": 5,
+    "xy": [
+     -0.20643181324005128,
+     -0.172890944480896
+    ],
+    "uv": [
+     88.9,
+     64.0
+    ],
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "cube": 4,
+    "xy": [
+     0.00434484004974367,
+     0.16875418424606323
+    ],
+    "uv": [
+     173.8,
+     102.4
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 2,
+    "xy": [
+     -0.05511383295059205,
+     0.09187432765960693
+    ],
+    "uv": [
+     151.6,
+     90.1
+    ],
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "cube": 8,
+    "xy": [
+     0.051406493186950675,
+     0.06844980239868165
+    ],
+    "uv": [
+     147.4,
+     113.1
+    ],
+    "max_white_ring_frac_10_100": 0.875
+   },
+   {
+    "cube": 3,
+    "xy": [
+     0.027112331390380884,
+     -0.15266783952713014
+    ],
+    "uv": [
+     85.7,
+     107.5
+    ],
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   }
+  ],
+  "non_targets": [
+   {
+    "cube": 0,
+    "xy": [
+     -0.2713493609428406,
+     -0.05720834255218507
+    ],
+    "uv": [
+     115.7,
+     54.7
+    ],
+    "nearest_target": 5,
+    "center_dist_to_nearest_target_m": 0.1327
+   },
+   {
+    "cube": 6,
+    "xy": [
+     -0.15614479303359985,
+     -0.04682570457458496
+    ],
+    "uv": [
+     117.0,
+     72.0
+    ],
+    "nearest_target": 5,
+    "center_dist_to_nearest_target_m": 0.1357
+   },
+   {
+    "cube": 7,
+    "xy": [
+     -0.055106129646301266,
+     -0.1321758270263672
+    ],
+    "uv": [
+     94.1,
+     90.1
+    ],
+    "nearest_target": 3,
+    "center_dist_to_nearest_target_m": 0.0847
+   }
+  ],
+  "white_components_t30_areas": [
+   152,
+   701,
+   285,
+   292,
+   334
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 0,
+  "seed": 12000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed12000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_0/videos/PickHighlight_ep0_seed12000_FailRecoverZ_easy_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 308,
+  "setup": {
+   "difficulty": "easy",
+   "seed": 12000,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0.08333333333333333
+   },
+   {
+    "color": "red",
+    "uv": [
+     97.0,
+     68.5
+    ],
+    "xy": [
+     -0.1778,
+     -0.1343
+    ],
+    "area": 151,
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     131.0,
+     56.0
+    ],
+    "xy": [
+     -0.2614,
+     0.0138
+    ],
+    "area": 140,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     86.4,
+     87.0
+    ],
+    "xy": [
+     -0.0714,
+     -0.1645
+    ],
+    "area": 181,
+    "max_white_ring_frac_10_100": 0
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <58, 171>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [61, 171]}"
+   },
+   {
+    "t": 122,
+    "simple": "pick up the highlighted cube, which is red",
+    "grounded": "pick up the highlighted cube at <68, 96>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [69, 97]}"
+   },
+   {
+    "t": 292,
+    "simple": "All tasks completed",
+    "grounded": "pick up the highlighted cube at <68, 96>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [61, 96]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 52,
+    "eef": [
+     -0.24559828639030457,
+     0.18805113434791565,
+     0.15215973556041718
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 0,
+    "color": "red",
+    "dist": 0.1293
+   },
+   {
+    "t": 204,
+    "eef": [
+     -0.17780521512031555,
+     -0.1315116137266159,
+     0.06040430814027786
+    ],
+    "subgoal": "pick up the highlighted cube, which is red",
+    "nearest_initial_cube": 1,
+    "color": "red",
+    "dist": 0.0028
+   },
+   {
+    "t": 275,
+    "eef": [
+     -0.1787128895521164,
+     -0.13224506378173828,
+     0.019346363842487335
+    ],
+    "subgoal": "pick up the highlighted cube, which is red",
+    "nearest_initial_cube": 1,
+    "color": "red",
+    "dist": 0.0022
+   }
+  ],
+  "white_components_t30_areas": [
+   102,
+   175
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 1,
+  "seed": 12100,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_1/hdf5_files/PickHighlight_ep1_seed12100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_1/videos/PickHighlight_ep1_seed12100_FailRecoverZ_easy_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 276,
+  "setup": {
+   "difficulty": "easy",
+   "seed": 12100,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0.1875
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     110.6,
+     108.9
+    ],
+    "xy": [
+     0.0332,
+     -0.0624
+    ],
+    "area": 185,
+    "max_white_ring_frac_10_100": 0.8541666666666666
+   },
+   {
+    "color": "green",
+    "uv": [
+     116.1,
+     77.8
+    ],
+    "xy": [
+     -0.122,
+     -0.0493
+    ],
+    "area": 176,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     145.2,
+     93.3
+    ],
+    "xy": [
+     -0.0391,
+     0.0661
+    ],
+    "area": 192,
+    "max_white_ring_frac_10_100": 0
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <69, 168>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [72, 169]}"
+   },
+   {
+    "t": 112,
+    "simple": "pick up the highlighted cube, which is red",
+    "grounded": "pick up the highlighted cube at <108, 110>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [109, 111]}"
+   },
+   {
+    "t": 262,
+    "simple": "All tasks completed",
+    "grounded": "pick up the highlighted cube at <108, 110>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [103, 111]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 47,
+    "eef": [
+     -0.17727044224739075,
+     0.17154070734977722,
+     0.15276172757148743
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 4,
+    "color": "blue",
+    "dist": 0.1738
+   },
+   {
+    "t": 183,
+    "eef": [
+     0.03166646137833595,
+     -0.060686465352773666,
+     0.059716805815696716
+    ],
+    "subgoal": "pick up the highlighted cube, which is red",
+    "nearest_initial_cube": 2,
+    "color": "red",
+    "dist": 0.0023
+   },
+   {
+    "t": 247,
+    "eef": [
+     0.030513949692249298,
+     -0.06006646901369095,
+     0.019500046968460083
+    ],
+    "subgoal": "pick up the highlighted cube, which is red",
+    "nearest_initial_cube": 2,
+    "color": "red",
+    "dist": 0.0036
+   }
+  ],
+  "white_components_t30_areas": [
+   114,
+   329
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 10,
+  "seed": 13000,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_10/hdf5_files/PickHighlight_ep10_seed13000.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_10/videos/PickHighlight_ep10_seed13000_medium_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 415,
+  "setup": {
+   "difficulty": "medium",
+   "seed": 13000,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     159.7,
+     66.7
+    ],
+    "xy": [
+     -0.1889,
+     0.1384
+    ],
+    "area": 150,
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "color": "red",
+    "uv": [
+     100.9,
+     100.2
+    ],
+    "xy": [
+     -0.0057,
+     -0.1009
+    ],
+    "area": 187,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     153.4,
+     53.4
+    ],
+    "xy": [
+     -0.2806,
+     0.1192
+    ],
+    "area": 148,
+    "max_white_ring_frac_10_100": 0.7083333333333334
+   },
+   {
+    "color": "blue",
+    "uv": [
+     142.3,
+     86.5
+    ],
+    "xy": [
+     -0.074,
+     0.0568
+    ],
+    "area": 174,
+    "max_white_ring_frac_10_100": 0
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <63, 111>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [66, 112]}"
+   },
+   {
+    "t": 120,
+    "simple": "pick up the first highlighted cube, which is red",
+    "grounded": "pick up the first highlighted cube at <66, 159>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [67, 160]}"
+   },
+   {
+    "t": 233,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 300,
+    "simple": "pick up the second highlighted cube, which is green",
+    "grounded": "pick up the second highlighted cube at <53, 153>, which is green",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [54, 154]}"
+   },
+   {
+    "t": 392,
+    "simple": "All tasks completed",
+    "grounded": "pick up the second highlighted cube at <53, 153>, which is green",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [47, 154]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 52,
+    "eef": [
+     -0.21408358216285706,
+     -0.06863360106945038,
+     0.15259847044944763
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 5,
+    "color": "blue",
+    "dist": 0.188
+   },
+   {
+    "t": 201,
+    "eef": [
+     -0.19042745232582092,
+     0.1415271908044815,
+     0.02017403393983841
+    ],
+    "subgoal": "pick up the first highlighted cube, which is red",
+    "nearest_initial_cube": 1,
+    "color": "red",
+    "dist": 0.0035
+   },
+   {
+    "t": 373,
+    "eef": [
+     -0.2797452509403229,
+     0.12123218923807144,
+     0.019120164215564728
+    ],
+    "subgoal": "pick up the second highlighted cube, which is green",
+    "nearest_initial_cube": 4,
+    "color": "green",
+    "dist": 0.0022
+   }
+  ],
+  "white_components_t30_areas": [
+   281,
+   114
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 11,
+  "seed": 13100,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_11/hdf5_files/PickHighlight_ep11_seed13100.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_11/videos/PickHighlight_ep11_seed13100_hard_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 583,
+  "setup": {
+   "difficulty": "hard",
+   "seed": 13100,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     140.3,
+     81.9
+    ],
+    "xy": [
+     -0.0986,
+     0.0496
+    ],
+    "area": 152,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     166.7,
+     70.0
+    ],
+    "xy": [
+     -0.1683,
+     0.166
+    ],
+    "area": 148,
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "color": "blue",
+    "uv": [
+     141.6,
+     57.1
+    ],
+    "xy": [
+     -0.2537,
+     0.0626
+    ],
+    "area": 151,
+    "max_white_ring_frac_10_100": 0.7291666666666666
+   },
+   {
+    "color": "blue",
+    "uv": [
+     85.4,
+     92.8
+    ],
+    "xy": [
+     -0.0412,
+     -0.1638
+    ],
+    "area": 182,
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   },
+   {
+    "color": "blue",
+    "uv": [
+     160.2,
+     103.8
+    ],
+    "xy": [
+     0.0106,
+     0.1179
+    ],
+    "area": 193,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     113.7,
+     109.3
+    ],
+    "xy": [
+     0.0353,
+     -0.0513
+    ],
+    "area": 198,
+    "max_white_ring_frac_10_100": 0
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <57, 108>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [60, 109]}"
+   },
+   {
+    "t": 125,
+    "simple": "pick up the first highlighted cube, which is green",
+    "grounded": "pick up the first highlighted cube at <70, 166>, which is green",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [71, 167]}"
+   },
+   {
+    "t": 243,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 301,
+    "simple": "pick up the second highlighted cube, which is blue",
+    "grounded": "pick up the second highlighted cube at <57, 141>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [58, 142]}"
+   },
+   {
+    "t": 408,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 483,
+    "simple": "pick up the third highlighted cube, which is blue",
+    "grounded": "pick up the third highlighted cube at <92, 85>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [94, 86]}"
+   },
+   {
+    "t": 570,
+    "simple": "All tasks completed",
+    "grounded": "pick up the third highlighted cube at <92, 85>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [87, 83]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 53,
+    "eef": [
+     -0.2517281174659729,
+     -0.0832427442073822,
+     0.15262487530708313
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 4,
+    "color": "blue",
+    "dist": 0.1459
+   },
+   {
+    "t": 208,
+    "eef": [
+     -0.16923187673091888,
+     0.16639216244220734,
+     0.018364258110523224
+    ],
+    "subgoal": "pick up the first highlighted cube, which is green",
+    "nearest_initial_cube": 3,
+    "color": "green",
+    "dist": 0.001
+   },
+   {
+    "t": 369,
+    "eef": [
+     -0.25380051136016846,
+     0.06517273932695389,
+     0.021201610565185547
+    ],
+    "subgoal": "pick up the second highlighted cube, which is blue",
+    "nearest_initial_cube": 4,
+    "color": "blue",
+    "dist": 0.0026
+   },
+   {
+    "t": 555,
+    "eef": [
+     -0.04324083775281906,
+     -0.16002388298511505,
+     0.020520225167274475
+    ],
+    "subgoal": "pick up the third highlighted cube, which is blue",
+    "nearest_initial_cube": 5,
+    "color": "blue",
+    "dist": 0.0043
+   }
+  ],
+  "white_components_t30_areas": [
+   105,
+   136,
+   185,
+   248
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 2,
+  "seed": 12200,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_2/hdf5_files/PickHighlight_ep2_seed12200.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_2/videos/PickHighlight_ep2_seed12200_FailRecoverZ_medium_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 435,
+  "setup": {
+   "difficulty": "medium",
+   "seed": 12200,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     151.0,
+     66.4
+    ],
+    "xy": [
+     -0.1913,
+     0.1007
+    ],
+    "area": 164,
+    "max_white_ring_frac_10_100": 0.7291666666666666
+   },
+   {
+    "color": "green",
+    "uv": [
+     85.5,
+     90.2
+    ],
+    "xy": [
+     -0.0547,
+     -0.1657
+    ],
+    "area": 191,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     163.7,
+     92.2
+    ],
+    "xy": [
+     -0.0447,
+     0.1376
+    ],
+    "area": 184,
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "color": "blue",
+    "uv": [
+     131.5,
+     98.3
+    ],
+    "xy": [
+     -0.0148,
+     0.0131
+    ],
+    "area": 187,
+    "max_white_ring_frac_10_100": 0
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <67, 106>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [69, 107]}"
+   },
+   {
+    "t": 109,
+    "simple": "pick up the first highlighted cube, which is green",
+    "grounded": "pick up the first highlighted cube at <92, 163>, which is green",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [93, 164]}"
+   },
+   {
+    "t": 207,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 259,
+    "simple": "pick up the second highlighted cube, which is green",
+    "grounded": "pick up the second highlighted cube at <66, 150>, which is green",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [67, 151]}"
+   },
+   {
+    "t": 418,
+    "simple": "All tasks completed",
+    "grounded": "pick up the second highlighted cube at <66, 150>, which is green",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [59, 152]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 48,
+    "eef": [
+     -0.19181373715400696,
+     -0.08793643862009048,
+     0.1539606750011444
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 3,
+    "color": "green",
+    "dist": 0.1576
+   },
+   {
+    "t": 179,
+    "eef": [
+     -0.047479212284088135,
+     0.13672824203968048,
+     0.02056977152824402
+    ],
+    "subgoal": "pick up the first highlighted cube, which is green",
+    "nearest_initial_cube": 4,
+    "color": "green",
+    "dist": 0.0029
+   },
+   {
+    "t": 329,
+    "eef": [
+     -0.1900981217622757,
+     0.10091322660446167,
+     0.061131857335567474
+    ],
+    "subgoal": "pick up the second highlighted cube, which is green",
+    "nearest_initial_cube": 2,
+    "color": "green",
+    "dist": 0.0012
+   },
+   {
+    "t": 401,
+    "eef": [
+     -0.1909824162721634,
+     0.1005716472864151,
+     0.019533708691596985
+    ],
+    "subgoal": "pick up the second highlighted cube, which is green",
+    "nearest_initial_cube": 2,
+    "color": "green",
+    "dist": 0.0003
+   }
+  ],
+  "white_components_t30_areas": [
+   154,
+   105,
+   245
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 3,
+  "seed": 12300,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed12300.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_3/videos/PickHighlight_ep3_seed12300_FailRecoverXY_hard_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 655,
+  "setup": {
+   "difficulty": "hard",
+   "seed": 12300,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     126.2,
+     80.9
+    ],
+    "xy": [
+     -0.1042,
+     -0.0073
+    ],
+    "area": 155,
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "color": "green",
+    "uv": [
+     87.1,
+     91.0
+    ],
+    "xy": [
+     -0.0504,
+     -0.1586
+    ],
+    "area": 196,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     100.9,
+     56.3
+    ],
+    "xy": [
+     -0.2594,
+     -0.1247
+    ],
+    "area": 151,
+    "max_white_ring_frac_10_100": 0.75
+   },
+   {
+    "color": "blue",
+    "uv": [
+     166.8,
+     74.2
+    ],
+    "xy": [
+     -0.1425,
+     0.1629
+    ],
+    "area": 176,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     118.6,
+     101.9
+    ],
+    "xy": [
+     0.0021,
+     -0.0347
+    ],
+    "area": 198,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     173.2,
+     112.5
+    ],
+    "xy": [
+     0.0486,
+     0.1597
+    ],
+    "area": 217,
+    "max_white_ring_frac_10_100": 0.8333333333333334
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <57, 138>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [60, 139]}"
+   },
+   {
+    "t": 125,
+    "simple": "pick up the first highlighted cube, which is blue",
+    "grounded": "pick up the first highlighted cube at <56, 100>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [57, 101]}"
+   },
+   {
+    "t": 321,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 392,
+    "simple": "pick up the second highlighted cube, which is green",
+    "grounded": "pick up the second highlighted cube at <80, 126>, which is green",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [82, 127]}"
+   },
+   {
+    "t": 496,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 552,
+    "simple": "pick up the third highlighted cube, which is blue",
+    "grounded": "pick up the third highlighted cube at <112, 173>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [113, 173]}"
+   },
+   {
+    "t": 640,
+    "simple": "All tasks completed",
+    "grounded": "pick up the third highlighted cube at <112, 173>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [106, 177]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 52,
+    "eef": [
+     -0.25505003333091736,
+     0.04686759412288666,
+     0.15308016538619995
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 2,
+    "color": "green",
+    "dist": 0.1603
+   },
+   {
+    "t": 194,
+    "eef": [
+     -0.1914907842874527,
+     -0.09235914051532745,
+     0.052057281136512756
+    ],
+    "subgoal": "pick up the first highlighted cube, which is blue",
+    "nearest_initial_cube": 4,
+    "color": "blue",
+    "dist": 0.0752
+   },
+   {
+    "t": 288,
+    "eef": [
+     -0.20923319458961487,
+     -0.09608267992734909,
+     0.021080486476421356
+    ],
+    "subgoal": "pick up the first highlighted cube, which is blue",
+    "nearest_initial_cube": 4,
+    "color": "blue",
+    "dist": 0.0578
+   },
+   {
+    "t": 465,
+    "eef": [
+     -0.10552139580249786,
+     -0.005159999243915081,
+     0.02015567570924759
+    ],
+    "subgoal": "pick up the second highlighted cube, which is green",
+    "nearest_initial_cube": 2,
+    "color": "green",
+    "dist": 0.0025
+   },
+   {
+    "t": 625,
+    "eef": [
+     0.04650850221514702,
+     0.15827412903308868,
+     0.018556274473667145
+    ],
+    "subgoal": "pick up the third highlighted cube, which is blue",
+    "nearest_initial_cube": 7,
+    "color": "blue",
+    "dist": 0.0025
+   }
+  ],
+  "white_components_t30_areas": [
+   133,
+   97,
+   217,
+   329
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "easy",
+  "episode": 4,
+  "seed": 12400,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_4/hdf5_files/PickHighlight_ep4_seed12400.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_4/videos/PickHighlight_ep4_seed12400_FailRecoverXY_easy_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 320,
+  "setup": {
+   "difficulty": "easy",
+   "seed": 12400,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     99.1,
+     63.4
+    ],
+    "xy": [
+     -0.211,
+     -0.1284
+    ],
+    "area": 148,
+    "max_white_ring_frac_10_100": 0.7916666666666666
+   },
+   {
+    "color": "red",
+    "uv": [
+     109.3,
+     95.9
+    ],
+    "xy": [
+     -0.0264,
+     -0.0711
+    ],
+    "area": 190,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     168.0,
+     75.8
+    ],
+    "xy": [
+     -0.1335,
+     0.1667
+    ],
+    "area": 176,
+    "max_white_ring_frac_10_100": 0
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <66, 133>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [69, 134]}"
+   },
+   {
+    "t": 112,
+    "simple": "pick up the highlighted cube, which is red",
+    "grounded": "pick up the highlighted cube at <63, 99>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [64, 100]}"
+   },
+   {
+    "t": 301,
+    "simple": "All tasks completed",
+    "grounded": "pick up the highlighted cube at <63, 99>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [57, 99]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 48,
+    "eef": [
+     -0.19267892837524414,
+     0.024582505226135254,
+     0.15410801768302917
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 4,
+    "color": "blue",
+    "dist": 0.1539
+   },
+   {
+    "t": 192,
+    "eef": [
+     -0.17191055417060852,
+     -0.08663088083267212,
+     0.019124075770378113
+    ],
+    "subgoal": "pick up the highlighted cube, which is red",
+    "nearest_initial_cube": 1,
+    "color": "red",
+    "dist": 0.0572
+   },
+   {
+    "t": 284,
+    "eef": [
+     -0.2118980586528778,
+     -0.127454474568367,
+     0.018696129322052002
+    ],
+    "subgoal": "pick up the highlighted cube, which is red",
+    "nearest_initial_cube": 1,
+    "color": "red",
+    "dist": 0.0013
+   }
+  ],
+  "white_components_t30_areas": [
+   156,
+   119
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "medium",
+  "episode": 6,
+  "seed": 12600,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed12600.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_6/videos/PickHighlight_ep6_seed12600_medium_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 387,
+  "setup": {
+   "difficulty": "medium",
+   "seed": 12600,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     150.4,
+     63.2
+    ],
+    "xy": [
+     -0.2122,
+     0.0995
+    ],
+    "area": 152,
+    "max_white_ring_frac_10_100": 0.7708333333333334
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     139.8,
+     106.8
+    ],
+    "xy": [
+     0.024,
+     0.0428
+    ],
+    "area": 192,
+    "max_white_ring_frac_10_100": 0.041666666666666664
+   },
+   {
+    "color": "blue",
+    "uv": [
+     146.1,
+     89.3
+    ],
+    "xy": [
+     -0.0592,
+     0.0707
+    ],
+    "area": 185,
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "color": "blue",
+    "uv": [
+     86.9,
+     99.4
+    ],
+    "xy": [
+     -0.0093,
+     -0.1534
+    ],
+    "area": 179,
+    "max_white_ring_frac_10_100": 0
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <69, 99>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [72, 100]}"
+   },
+   {
+    "t": 117,
+    "simple": "pick up the first highlighted cube, which is blue",
+    "grounded": "pick up the first highlighted cube at <89, 146>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [90, 147]}"
+   },
+   {
+    "t": 227,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 287,
+    "simple": "pick up the second highlighted cube, which is red",
+    "grounded": "pick up the second highlighted cube at <63, 150>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [64, 151]}"
+   },
+   {
+    "t": 371,
+    "simple": "All tasks completed",
+    "grounded": "pick up the second highlighted cube at <63, 150>, which is red",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [56, 151]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 50,
+    "eef": [
+     -0.17460431158542633,
+     -0.11755187064409256,
+     0.15210653841495514
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 5,
+    "color": "blue",
+    "dist": 0.1691
+   },
+   {
+    "t": 198,
+    "eef": [
+     -0.06169210374355316,
+     0.07227564603090286,
+     0.021075375378131866
+    ],
+    "subgoal": "pick up the first highlighted cube, which is blue",
+    "nearest_initial_cube": 4,
+    "color": "blue",
+    "dist": 0.0029
+   },
+   {
+    "t": 354,
+    "eef": [
+     -0.21262767910957336,
+     0.10059023648500443,
+     0.020957112312316895
+    ],
+    "subgoal": "pick up the second highlighted cube, which is red",
+    "nearest_initial_cube": 1,
+    "color": "red",
+    "dist": 0.0012
+   }
+  ],
+  "white_components_t30_areas": [
+   155,
+   113,
+   215
+  ],
+  "demo_frames": 0
+ },
+ {
+  "kind": "native",
+  "difficulty": "hard",
+  "episode": 7,
+  "seed": 12700,
+  "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_7/hdf5_files/PickHighlight_ep7_seed12700.h5",
+  "mp4": [
+   "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/PickHighlight_episode_7/videos/PickHighlight_ep7_seed12700_hard_first_press_the_button_then_pick_up_all_cubes_that_have_been_highlighteted_with_white_areas_on_the_table__ALT__first_press_the_button_then_pick_up_all_highlight__HASH__010ece3b06bb.mp4"
+  ],
+  "frames": 530,
+  "setup": {
+   "difficulty": "hard",
+   "seed": 12700,
+   "task_goal": [
+    "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+    "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+   ],
+   "available_multi_choices": "[{\"label\": \"a\", \"action\": \"press button\", \"need_parameter\": false}, {\"label\": \"b\", \"action\": \"pick up the highlighted cube\", \"need_parameter\": true}, {\"label\": \"c\", \"action\": \"place the cube onto the table\", \"need_parameter\": false}]"
+  },
+  "detected_cubes": [
+   {
+    "color": "red",
+    "uv": [
+     183.6,
+     45.3
+    ],
+    "xy": [
+     -0.3433,
+     0.2727
+    ],
+    "area": 13,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "red",
+    "uv": [
+     248.0,
+     94.0
+    ],
+    "xy": [
+     -0.0355,
+     0.4593
+    ],
+    "area": 15,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     166.0,
+     76.9
+    ],
+    "xy": [
+     -0.1267,
+     0.1575
+    ],
+    "area": 174,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "green",
+    "uv": [
+     112.4,
+     87.9
+    ],
+    "xy": [
+     -0.0663,
+     -0.0615
+    ],
+    "area": 169,
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "color": "blue",
+    "uv": [
+     154.8,
+     89.9
+    ],
+    "xy": [
+     -0.056,
+     0.1044
+    ],
+    "area": 172,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     176.3,
+     103.7
+    ],
+    "xy": [
+     0.0105,
+     0.1772
+    ],
+    "area": 219,
+    "max_white_ring_frac_10_100": 0.8125
+   },
+   {
+    "color": "blue",
+    "uv": [
+     129.0,
+     103.9
+    ],
+    "xy": [
+     0.0114,
+     0.0038
+    ],
+    "area": 188,
+    "max_white_ring_frac_10_100": 0
+   },
+   {
+    "color": "blue",
+    "uv": [
+     155.1,
+     117.3
+    ],
+    "xy": [
+     0.0684,
+     0.094
+    ],
+    "area": 200,
+    "max_white_ring_frac_10_100": 0.9166666666666666
+   }
+  ],
+  "segments": [
+   {
+    "t": 0,
+    "simple": "press the button",
+    "grounded": "press the button at <60, 123>",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"A\", \"point\": [62, 125]}"
+   },
+   {
+    "t": 121,
+    "simple": "pick up the first highlighted cube, which is green",
+    "grounded": "pick up the first highlighted cube at <87, 112>, which is green",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [89, 113]}"
+   },
+   {
+    "t": 217,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 276,
+    "simple": "pick up the second highlighted cube, which is blue",
+    "grounded": "pick up the second highlighted cube at <103, 176>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [104, 177]}"
+   },
+   {
+    "t": 373,
+    "simple": "place the cube onto the table",
+    "grounded": "place the cube onto the table",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"C\", \"point\": []}"
+   },
+   {
+    "t": 423,
+    "simple": "pick up the third highlighted cube, which is blue",
+    "grounded": "pick up the third highlighted cube at <117, 155>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [118, 156]}"
+   },
+   {
+    "t": 515,
+    "simple": "All tasks completed",
+    "grounded": "pick up the third highlighted cube at <117, 155>, which is blue",
+    "boundary": true,
+    "choice_action": "{\"choice\": \"B\", \"point\": [111, 158]}"
+   }
+  ],
+  "grasps": [
+   {
+    "t": 50,
+    "eef": [
+     -0.23595894873142242,
+     -0.014852396212518215,
+     0.1540924608707428
+    ],
+    "subgoal": "press the button",
+    "nearest_initial_cube": 3,
+    "color": "green",
+    "dist": 0.176
+   },
+   {
+    "t": 188,
+    "eef": [
+     -0.06894266605377197,
+     -0.061420928686857224,
+     0.02140635997056961
+    ],
+    "subgoal": "pick up the first highlighted cube, which is green",
+    "nearest_initial_cube": 3,
+    "color": "green",
+    "dist": 0.0026
+   },
+   {
+    "t": 344,
+    "eef": [
+     0.00827398058027029,
+     0.17587526142597198,
+     0.019596785306930542
+    ],
+    "subgoal": "pick up the second highlighted cube, which is blue",
+    "nearest_initial_cube": 5,
+    "color": "blue",
+    "dist": 0.0026
+   },
+   {
+    "t": 500,
+    "eef": [
+     0.06672543287277222,
+     0.09613312780857086,
+     0.018293455243110657
+    ],
+    "subgoal": "pick up the third highlighted cube, which is blue",
+    "nearest_initial_cube": 7,
+    "color": "blue",
+    "dist": 0.0027
+   }
+  ],
+  "white_components_t30_areas": [
+   105,
+   232,
+   635
+  ],
+  "demo_frames": 0
+ }
+]

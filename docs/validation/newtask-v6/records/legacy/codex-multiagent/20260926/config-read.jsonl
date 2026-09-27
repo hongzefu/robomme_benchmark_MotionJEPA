@@ -1,0 +1,4 @@
+{"check": "config_file", "agents": {"max_concurrent_threads_per_session": 16}, "default_model_set": false, "time": 1790446421.9197595}
+{"check": "initialize", "result": {"userAgent": "codex_concurrency_acceptance/0.157.0 (Ubuntu 24.4.0; x86_64) dumb (codex_concurrency_acceptance; 1.0)", "codexHome": "/home/hongzefu/.codex", "platformFamily": "unix", "platformOs": "linux"}, "error": null}
+{"check": "config_read", "agents": {"enabled": null, "max_concurrent_threads_per_session": 16, "max_depth": null, "default_subagent_model": null, "default_subagent_reasoning_effort": null, "job_max_runtime_seconds": null, "interrupt_message": null}, "error": null}
+CONFIG_READ=PASS configured_subagents=16 default_model=inherited

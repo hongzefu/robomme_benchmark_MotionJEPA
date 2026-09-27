@@ -1,0 +1,30 @@
+{
+  "id": "VideoPlaceOrder-xhard3-13100000",
+  "task": "VideoPlaceOrder",
+  "difficulty": "xhard3",
+  "seed": 13100000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/VideoPlaceOrder.json",
+  "ok": false,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 4.917,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "VideoPlaceOrder",
+      "seed": 13100000,
+      "difficulty": "xhard3",
+      "ok": false,
+      "failure_class": "task",
+      "error_type": "SceneGenerationError",
+      "error": "Target 4 sampling failed: spawn_random_target: Region crowded or constraints too tight, no feasible position found. Try: increase region/decrease target/decrease min_gap.",
+      "wall_s": 1.0,
+      "timesteps": null
+    }
+  ],
+  "hdf5": [],
+  "videos": []
+}

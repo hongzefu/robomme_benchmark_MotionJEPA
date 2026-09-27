@@ -1,0 +1,160 @@
+[
+ {
+  "env": "BinFill",
+  "variant": "y 半宽 0.32",
+  "N": 16,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.070471116658327,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.32
+   ]
+  },
+  "sec": 17.1
+ },
+ {
+  "env": "BinFill",
+  "variant": "y 半宽 0.32",
+  "N": 18,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.06936719959842064,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.32
+   ]
+  },
+  "sec": 20.8
+ },
+ {
+  "env": "BinFill",
+  "variant": "y 半宽 0.32",
+  "N": 20,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.06816054858635726,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.32
+   ]
+  },
+  "sec": 24.6
+ },
+ {
+  "env": "BinFill",
+  "variant": "y 半宽 0.32",
+  "N": 22,
+  "success": 0.9833984375,
+  "wilson_lo": 0.9735740387217222,
+  "fails": {
+   "cube": 17
+  },
+  "min_pair_median": 0.06742770847845644,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.32
+   ]
+  },
+  "sec": 29.5
+ },
+ {
+  "env": "BinFill",
+  "variant": "y 半宽 0.32",
+  "N": 24,
+  "success": 0.8994140625,
+  "wilson_lo": 0.879472444849016,
+  "fails": {
+   "cube": 103
+  },
+  "min_pair_median": 0.06675702152980707,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.32
+   ]
+  },
+  "sec": 33.5
+ },
+ {
+  "env": "BinFill",
+  "variant": "y 半宽 0.32",
+  "N": 26,
+  "success": 0.6513671875,
+  "wilson_lo": 0.621662629527248,
+  "fails": {
+   "cube": 357
+  },
+  "min_pair_median": 0.06603094178805045,
+  "kw": {
+   "region_half": [
+    0.2,
+    0.32
+   ]
+  },
+  "sec": 38.6
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 预算1024",
+  "N": 14,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.06987801524201867,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 59.3
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 预算1024",
+  "N": 16,
+  "success": 1.0,
+  "wilson_lo": 0.9962624591182143,
+  "fails": {},
+  "min_pair_median": 0.06846980204512945,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 83.0
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 预算1024",
+  "N": 18,
+  "success": 0.9873046875,
+  "wilson_lo": 0.9784007059815509,
+  "fails": {
+   "cube": 13
+  },
+  "min_pair_median": 0.06721455274426874,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 120.3
+ },
+ {
+  "env": "BinFill",
+  "variant": "现值框 预算1024",
+  "N": 20,
+  "success": 0.86328125,
+  "wilson_lo": 0.8408765404950619,
+  "fails": {
+   "cube": 140
+  },
+  "min_pair_median": 0.06607833374072788,
+  "kw": {
+   "trials": 1024
+  },
+  "sec": 111.4
+ }
+]

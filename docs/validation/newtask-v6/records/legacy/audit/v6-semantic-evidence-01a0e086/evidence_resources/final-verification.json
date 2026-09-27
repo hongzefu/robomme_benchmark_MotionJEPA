@@ -1,0 +1,113 @@
+{
+  "checked_at": "2026-09-27T02:03:25.938352+00:00",
+  "audit_base": "0a3f989b0dfcff12a3cbb34a8112cb56864c7ee8",
+  "source_files_checked": 466,
+  "source_mismatches": [],
+  "source_status": "PASS",
+  "copied_files_checked": 9,
+  "copied_bytes": 50031462,
+  "transfer_mismatches": [],
+  "local_extras": [],
+  "transfer_status": "PASS",
+  "files": [
+    {
+      "path": "_rounds/round_00/jobs.json",
+      "bytes": 455,
+      "remote_sha256": "5138c761c4a3304ae221c781bf3315254cee435e8109dc89989bd9242ffd0da2",
+      "local_sha256": "5138c761c4a3304ae221c781bf3315254cee435e8109dc89989bd9242ffd0da2",
+      "equal": true
+    },
+    {
+      "path": "_rounds/round_00/results.json",
+      "bytes": 2550,
+      "remote_sha256": "535318ec7c0f2dd140ac26ed0870f5f02f0d1661e414efce058432551925325d",
+      "local_sha256": "535318ec7c0f2dd140ac26ed0870f5f02f0d1661e414efce058432551925325d",
+      "equal": true
+    },
+    {
+      "path": "_rounds/round_00/runner.log",
+      "bytes": 1415,
+      "remote_sha256": "9ef832b5d9f8fe9fbea9711ea2833c809fb846c96ca554aa598bd72170ecc44c",
+      "local_sha256": "9ef832b5d9f8fe9fbea9711ea2833c809fb846c96ca554aa598bd72170ecc44c",
+      "equal": true
+    },
+    {
+      "path": "_rounds/round_00/sampling.json",
+      "bytes": 2025,
+      "remote_sha256": "f458d6bf9ec24b38170e1461c4df271abaeef5a6c3ab5a0a9eca00fe6bcb7ff7",
+      "local_sha256": "f458d6bf9ec24b38170e1461c4df271abaeef5a6c3ab5a0a9eca00fe6bcb7ff7",
+      "equal": true
+    },
+    {
+      "path": "_rounds/round_00/specs.json",
+      "bytes": 1481,
+      "remote_sha256": "bf57f0696f90e5ce16393f7e9eca4ce38703be0d4038b8e674f1447aa4f35e67",
+      "local_sha256": "bf57f0696f90e5ce16393f7e9eca4ce38703be0d4038b8e674f1447aa4f35e67",
+      "equal": true
+    },
+    {
+      "path": "episodes/VideoPlaceButton_episode_5/hdf5_files/VideoPlaceButton_ep5_seed7000500.h5",
+      "bytes": 800,
+      "remote_sha256": "26c4d449632ea072317c16e9d4857e419b67e1b7751f81a89a87c8e75fe9484e",
+      "local_sha256": "26c4d449632ea072317c16e9d4857e419b67e1b7751f81a89a87c8e75fe9484e",
+      "equal": true
+    },
+    {
+      "path": "episodes/VideoPlaceButton_episode_5/videos/FAILED_VideoPlaceButton_ep5_seed7000500_xhard4_watch_the_video_carefully_then_place_the_red_cube_on_the_target_right_before_the_button_was_pressed__ALT__watch_the_video_carefully_and_place_the_red_cube_on_th__HASH__0c0f751f2c5a.mp4",
+      "bytes": 50021733,
+      "remote_sha256": "63d5a981a0816d07e5053f321d19f6c810c5f64b34ef277178dbfef6f06a30ed",
+      "local_sha256": "63d5a981a0816d07e5053f321d19f6c810c5f64b34ef277178dbfef6f06a30ed",
+      "equal": true
+    },
+    {
+      "path": "results.jsonl",
+      "bytes": 615,
+      "remote_sha256": "cc50f2959eb192b67b59c5ffb23a6f6a2f149a0d03daebd039ef61496afc9825",
+      "local_sha256": "cc50f2959eb192b67b59c5ffb23a6f6a2f149a0d03daebd039ef61496afc9825",
+      "equal": true
+    },
+    {
+      "path": "summary.json",
+      "bytes": 388,
+      "remote_sha256": "d9d793d5858d388a293ece0df2afecd358630d1df1a2acb66fa304c45aaccd40",
+      "local_sha256": "d9d793d5858d388a293ece0df2afecd358630d1df1a2acb66fa304c45aaccd40",
+      "equal": true
+    }
+  ],
+  "slurm_command": [
+    "ssh",
+    "-o",
+    "BatchMode=yes",
+    "greatlakes",
+    "squeue -j 62018665,61890468,61890467 -h -o \"%i|%T|%N\"; squeue --steps -j 62018665,61890468,61890467 -h -o \"%i|%j|%N\""
+  ],
+  "slurm_exit_code": 0,
+  "slurm_stdout": "62018665|RUNNING|gl1510\n61890468|RUNNING|gl1517\n61890467|RUNNING|gl1526\n61890467.batch|batch|gl1526\n61890467.extern|extern|gl1526\n61890468.batch|batch|gl1517\n61890468.extern|extern|gl1517\n62018665.batch|batch|gl1510\n62018665.extern|extern|gl1510\n",
+  "slurm_stderr": "",
+  "three_jobs_running": true,
+  "no_active_workload_steps": true,
+  "rollout_results": [
+    {
+      "attempt": 0,
+      "difficulty": "xhard4",
+      "episode": 5,
+      "error": "VideoPlaceButton/episode_5: did not succeed after the complete task_list",
+      "error_type": "DatasetGenerationError",
+      "h5": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/audit/v6-semantic-01a0e086/rollout/run1/episodes/VideoPlaceButton_episode_5/hdf5_files/VideoPlaceButton_ep5_seed7000500.h5",
+      "ok": false,
+      "role": "semantic_probe",
+      "round": 0,
+      "run_label": "run1",
+      "seed": 7000500,
+      "spec_binding": null,
+      "spec_sha256": "f08a26a6450a8fd1f20be62b25914f97f8ea287873fbbd6dadfde87233b18a31",
+      "task": "VideoPlaceButton"
+    }
+  ],
+  "limits": {
+    "reset_upper_bound": 2,
+    "rollout_attempts": 1,
+    "retries": 0
+  },
+  "generation_status": "FAILED_TASK_NO_RETRY"
+}

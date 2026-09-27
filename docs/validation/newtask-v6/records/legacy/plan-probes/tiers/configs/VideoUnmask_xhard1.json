@@ -1,0 +1,118 @@
+{
+ "task": "VideoUnmask",
+ "tier": "xhard1",
+ "overrides": {
+  "pick_count.xhard": 2,
+  "xhard.distractor.count": 8,
+  "xhard.distractor.cube_count_range": [
+   4,
+   4
+  ]
+ },
+ "note": "",
+ "patches": [],
+ "sampling_config": {
+  "decision": {
+   "pick_count": {
+    "hard": 2,
+    "easy": 1,
+    "medium": 1,
+    "xhard": 2
+   },
+   "bin_layout_policy": {
+    "count": {
+     "hard": 15,
+     "easy": 3,
+     "medium": 5,
+     "xhard": 8
+    },
+    "region_center": [
+     0,
+     0
+    ],
+    "region_half_size": 0.2,
+    "xhard": {
+     "min_gap_factor": 0.75
+    }
+   },
+   "distractor": null,
+   "xhard": {
+    "distractor": {
+     "count": 8,
+     "ring_max_abs_xy": [
+      0.2425,
+      0.3289
+     ],
+     "cube_count_range": [
+      4,
+      4
+     ],
+     "color_pool": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "color_rule": "balanced_cycle",
+     "min_gap_factor": 0.75,
+     "max_trials": 1024
+    }
+   }
+  },
+  "native": {
+   "parameters": {
+    "color_pool": [
+     {
+      "rgba": [
+       1,
+       0,
+       0,
+       1
+      ],
+      "name": "red"
+     },
+     {
+      "rgba": [
+       0,
+       1,
+       0,
+       1
+      ],
+      "name": "green"
+     },
+     {
+      "rgba": [
+       0,
+       0,
+       1,
+       1
+      ],
+      "name": "blue"
+     }
+    ],
+    "color_order": {
+     "sampler": "torch.randperm(3)"
+    },
+    "hidden_rule": "前 3 个容器各藏一块，其余为空",
+    "pick_rule": "先抓 bin_0，pick>1 再抓 bin_1",
+    "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+    "step_bin_scan": 15
+   },
+   "positions": {
+    "bins": {
+     "min_gap_factor": 2,
+     "max_trials": 256,
+     "yaw_expression": "u * 90 度（通过拒绝检查后才抽）"
+    },
+    "hidden_cube": {
+     "half_size_divisor": 1.2,
+     "yaw": 0.0,
+     "dynamic": true
+    },
+    "reveal_window": {
+     "start_step": 0,
+     "end_step": 64
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,254 @@
+[
+  {
+    "seed": 8500000,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "red",
+    "error_px": 0.879087951976739
+  },
+  {
+    "seed": 8500000,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "green",
+    "error_px": 0.797202814028855
+  },
+  {
+    "seed": 8500000,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "blue",
+    "error_px": 0.5410629965858894
+  },
+  {
+    "seed": 8500300,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "blue",
+    "error_px": 0.9033181778583375
+  },
+  {
+    "seed": 8500300,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "green",
+    "error_px": 0.679831122702823
+  },
+  {
+    "seed": 8500300,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "red",
+    "error_px": 0.8937307589118891
+  },
+  {
+    "seed": 8500601,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "blue",
+    "error_px": 0.6537930608710102
+  },
+  {
+    "seed": 8500601,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "green",
+    "error_px": 1.0961189877789657
+  },
+  {
+    "seed": 8500601,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "red",
+    "error_px": 0.5674501316264896
+  },
+  {
+    "seed": 10500000,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "blue",
+    "error_px": 1.0001956398795024
+  },
+  {
+    "seed": 10500000,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "green",
+    "error_px": 0.6653358090943736
+  },
+  {
+    "seed": 10500000,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "red",
+    "error_px": 0.6199331123627458
+  },
+  {
+    "seed": 10500300,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "blue",
+    "error_px": 0.9454148657284976
+  },
+  {
+    "seed": 10500300,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "red",
+    "error_px": 0.8751552856322872
+  },
+  {
+    "seed": 10500300,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "green",
+    "error_px": 0.9574906940924981
+  },
+  {
+    "seed": 10500600,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "red",
+    "error_px": 0.8663530982112932
+  },
+  {
+    "seed": 10500600,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "green",
+    "error_px": 0.7744861949945144
+  },
+  {
+    "seed": 10500600,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "blue",
+    "error_px": 1.1683588440217791
+  },
+  {
+    "seed": 12500000,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "green",
+    "error_px": 1.023145472840446
+  },
+  {
+    "seed": 12500000,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "blue",
+    "error_px": 0.7548936363685498
+  },
+  {
+    "seed": 12500000,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "red",
+    "error_px": 0.9973580916835564
+  },
+  {
+    "seed": 12500300,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "green",
+    "error_px": 1.0669013751193075
+  },
+  {
+    "seed": 12500300,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "red",
+    "error_px": 0.8057258054452182
+  },
+  {
+    "seed": 12500300,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "blue",
+    "error_px": 0.879476653821598
+  },
+  {
+    "seed": 12500600,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "red",
+    "error_px": 0.7790273450110652
+  },
+  {
+    "seed": 12500600,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "blue",
+    "error_px": 0.6009288783022798
+  },
+  {
+    "seed": 12500600,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "green",
+    "error_px": 0.8979617195231611
+  },
+  {
+    "seed": 6500000,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "blue",
+    "error_px": 0.8092945532070982
+  },
+  {
+    "seed": 6500000,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "green",
+    "error_px": 0.944416552423952
+  },
+  {
+    "seed": 6500000,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "red",
+    "error_px": 0.8102891126271423
+  },
+  {
+    "seed": 6500300,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "green",
+    "error_px": 0.5134117348043804
+  },
+  {
+    "seed": 6500300,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "red",
+    "error_px": 0.6586031362536132
+  },
+  {
+    "seed": 6500300,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "blue",
+    "error_px": 0.8340887528684799
+  },
+  {
+    "seed": 6500601,
+    "frame": 8,
+    "bin_id": 1,
+    "color": "blue",
+    "error_px": 0.8827391188070353
+  },
+  {
+    "seed": 6500601,
+    "frame": 8,
+    "bin_id": 2,
+    "color": "green",
+    "error_px": 0.9053366910111679
+  },
+  {
+    "seed": 6500601,
+    "frame": 8,
+    "bin_id": 0,
+    "color": "red",
+    "error_px": 1.2333715685459328
+  }
+]

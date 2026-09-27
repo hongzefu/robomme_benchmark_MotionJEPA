@@ -1,0 +1,75 @@
+[内部产出，英文] Verify pass for finding crosscut-language-03 (VideoRepick, xhard4 ep3)
+AUDIT_BASE=82e3d922b78d48ec1e825b168cccc0e1b8c690c1
+
+VERDICT: CONFIRMED (independently reproduced from source data, no reliance on the
+audit's own precomputed json files for the core numeric claim).
+
+Evidence reproduced from scratch (scripts in ./scripts/):
+1. extract_boundaries.py on
+   artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoRepick_episode_3/hdf5_files/VideoRepick_ep3_seed6900300.h5
+   -> info/is_subgoal_boundary + info/simple_subgoal, all 1715 timesteps read directly.
+   Boundary steps with simple_subgoal=='static': 163(init),222,276,330,384,438,492,546,600,
+   654,708,762  = 12 total (1 initial + 11 swap-tagged), NOT 13 (1+12) as expected for
+   n_swaps=12. Demo (is_video_demo) spans steps 0..815 (816 frames), matching
+   163+59+11*54=816, not 163+59+12*54=870.
+2. rng_trace.json for the same episode: objects.n_swaps=12 (source=spec), and
+   actions.swap_windows.0..11 all present with source=record (i.e. actually executed
+   during rollout), windows [205,255]...[755,805], all 12 inside the 0..815 demo range.
+   This independently confirms "12 executed swaps" and "all completed before demo end".
+3. Cross-check against xhard4 ep0 (seed 6900003, SAME n_swaps=12, same repo/run):
+   static boundaries 176(init),235,...,829 = 13 total (1+12), demo_len 883 =
+   176+59+12*54. Formula holds here. This proves the defect is NOT deterministic on
+   n_swaps=12 alone but is episode-specific (intermittent), consistent with the
+   finding's framing of ep3 as an isolated instance rather than "xhard4 always breaks".
+4. Cross-check against 6 native VideoRepick swap episodes (easy/medium ep0,1,2,4,6,10 in
+   v1/base/B): all 6 satisfy #static == n_swaps+1 exactly (e.g. ep0: 159,213,267 = 3
+   static boundaries for n_swaps=2, matching the finding's cited "easy ep0" example
+   almost exactly -- audit said 159/213/267, I independently got the same three numbers).
+   3 other episodes (3,7,11) have zero 'static' boundaries, consistent with n_swaps=0
+   (task list only appends static tasks when swap_times>=1), so "6 native episodes with
+   swaps" is corroborated.
+5. Source read (git show @ AUDIT_BASE):
+   - VideoRepick.py::_initialize_episode: task_list appends exactly
+     1 + self.swap_times "static"-named tasks when swap_times>=1 (one plain + one per
+     swap with specialflag="swap"). Confirms native_behavior formula's basis in code.
+   - VideoRepick.py::_refresh_swap_schedule: physical swap windows are computed once
+     (50 steps/swap, fixed clock from self.start_step) and run in step() purely on
+     elapsed_steps, decoupled from which task-list index is currently "active".
+   - subgoal_evaluate_func.py::sequential_task_check: self.current_task_index (and the
+     externally-visible current_task_name/current_subgoal_segment that RecordWrapper
+     reads) are only updated when allow_subgoal_change_this_timestep is True; the
+     internal self.timestep can still advance underneath while that flag is False
+     (demonstration_record_traj gating). This is a plausible mechanism for a task-index
+     advance to be invisible to the HDF5 record layer -- i.e. for one "static" task
+     instance (here, presumably the swap-12 task and/or the following "NO RECORD"
+     reset task) to complete without ever producing its own is_subgoal_boundary=True
+     frame. This mechanistic explanation is plausible but not fully nailed down by
+     itself; it does not change the verdict since the *symptom* (missing boundary,
+     matching arithmetic, matching video/rng_trace evidence) is independently
+     reproduced from data regardless of exact mechanism.
+   - RecordWrapper.py: is_subgoal_boundary := (current_task_index != prev_task_index),
+     confirmed to be robust to repeated identical subgoal text ("static") across
+     consecutive tasks -- so the undercount is a genuine index-skip, not a text-dedup
+     artifact.
+
+CATEGORY: new_tier_only is reasonable to keep. The task-chain code
+(1 + n_swaps "static" tasks, decoupled physical swap clock, allow_subgoal_change gating)
+is shared by all difficulties, but native tiers only ever use n_swaps in {0,2,3} (per the
+6/9 checked episodes) while xhard tiers use n_swaps in the [9,12] range per the plan
+(0925-newtask-release-v6-plan.md 三: VR xhard4 swap [9,12]); the defect was observed in
+1/3 checked xhard4 episodes and 0/9 checked native episodes, i.e. it is a latent bug in
+shared code whose *manifestation* is empirically confined to the new xhard tiers because
+only they use large enough n_swaps and/or hit enough physics-settling variance for the
+underlying race to surface. Not native_same (no native episode showed it) and not really
+a "new tier deliberately behaves differently without plan basis" mismatch in the sense of
+a designed difference -- it looks like a genuine intermittent bug, not a design choice,
+so new_tier_only (framed as a defect that only shows up in new-tier data) is the closest
+fit among the three offered buckets.
+
+DUPLICATE CHECK: Not a duplicate of any of F1-F6, D1-D7, VPB button binding, left/right
+wording, or website-text exclusions -- none of those concern subgoal-boundary counts or
+demo-length arithmetic for VideoRepick swap phases.
+
+NO SIMULATION WAS RUN. All evidence above comes from pre-existing HDF5 / rng_trace.json
+files already on disk plus git show of AUDIT_BASE source; no scripts under scripts/ or
+tests/, no robomme/gymnasium/sapien imports, read-only h5py/json only.

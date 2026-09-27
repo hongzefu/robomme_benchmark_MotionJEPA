@@ -1,0 +1,29 @@
+{
+  "id": "RouteStick-xhard1-9600000",
+  "task": "RouteStick",
+  "difficulty": "xhard1",
+  "seed": 9600000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json",
+  "command": [
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/bin/python3",
+    "-m",
+    "scripts.parity.v4_demo_probe",
+    "--task",
+    "RouteStick",
+    "--difficulty",
+    "xhard1",
+    "--seeds",
+    "9600000",
+    "--episode",
+    "9",
+    "--sampling-config",
+    "artifacts/newtask-v6/s2-prep/sampling/RouteStick.json",
+    "--gpu",
+    "1",
+    "--out",
+    "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s2-20260926-01/episodes/RouteStick-xhard1-9600000"
+  ],
+  "started_at": 1790458952.843569,
+  "gpu": "1"
+}

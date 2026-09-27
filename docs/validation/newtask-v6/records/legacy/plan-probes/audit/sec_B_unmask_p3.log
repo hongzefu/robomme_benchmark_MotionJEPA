@@ -1,0 +1,53 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+P3_DONE task=VideoUnmaskSwap count=10 N=2000 wall=503.3s
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+P3_DONE task=ButtonUnmaskSwap count=10 N=2000 wall=361.1s
+=== p3_outer_VideoUnmaskSwap_c10.json 局数 2000 状态 {'ok': 1974, 'inner_prejudge_reject': 26} 每窗可行槽对密度均值 0.123（即 45 对中约 5.5 对可行） 墙钟 p50 1.72s
+  槽的平均可行搭档数：均值 1.10，局内「0 个可行搭档的槽」占比 0.286
+  第 0 窗：按「两者互为第几近邻（取小）」的可行率：r1=0.528 r2=0.226 r3=0.080 r4=0.024 r5=0.005 r6=0.002
+  O0: 整局可行 0.9939 参与频率 min/max 0.0876/0.1054（均匀 0.1000）χ²=86.2 p=9.42e-15 | 局内极差均值 5.55 未参与对象占比 0.403 撤销率 0.419 平均交换距离 0.170 m 失衡事件/局 0.00
+  O1: 整局可行 0.9995 参与频率 min/max 0.0952/0.1028（均匀 0.1000）χ²=22.4 p=0.00758 | 局内极差均值 5.30 未参与对象占比 0.356 撤销率 0.193 平均交换距离 0.227 m 失衡事件/局 0.00
+  O2: 整局可行 0.9995 参与频率 min/max 0.0938/0.1030（均匀 0.1000）χ²=28.8 p=0.00069 | 局内极差均值 5.07 未参与对象占比 0.342 撤销率 0.198 平均交换距离 0.226 m 失衡事件/局 0.00
+  O3: 整局可行 0.9995 参与频率 min/max 0.0917/0.1043（均匀 0.1000）χ²=48.4 p=2.11e-07 | 局内极差均值 5.28 未参与对象占比 0.353 撤销率 0.180 平均交换距离 0.229 m 失衡事件/局 8.76
+  O1k3: 整局可行 0.9985 参与频率 min/max 0.0919/0.1057（均匀 0.1000）χ²=55.0 p=1.22e-08 | 局内极差均值 5.32 未参与对象占比 0.363 撤销率 0.203 平均交换距离 0.218 m 失衡事件/局 0.00
+  O4: 整局可行 0.9995 参与频率 min/max 0.0921/0.1031（均匀 0.1000）χ²=37.5 p=2.1e-05 | 局内极差均值 3.45 未参与对象占比 0.289 撤销率 0.005 平均交换距离 0.227 m 失衡事件/局 0.00
+=== p3_outer_ButtonUnmaskSwap_c10.json 局数 2000 状态 {'ok': 1819, 'inner_prejudge_reject': 180, 'inner_spawn_fail': 1} 每窗可行槽对密度均值 0.080（即 45 对中约 3.6 对可行） 墙钟 p50 1.16s
+  槽的平均可行搭档数：均值 0.72，局内「0 个可行搭档的槽」占比 0.436
+  第 0 窗：按「两者互为第几近邻（取小）」的可行率：r1=0.408 r2=0.117 r3=0.022 r4=0.006 r5=0.000 r6=0.000
+  O0: 整局可行 0.9720 参与频率 min/max 0.0959/0.1052（均匀 0.1000）χ²=18.0 p=0.0354 | 局内极差均值 4.79 未参与对象占比 0.544 撤销率 0.565 平均交换距离 0.163 m 失衡事件/局 0.00
+  O1: 整局可行 0.9868 参与频率 min/max 0.0961/0.1049（均匀 0.1000）χ²=16.6 p=0.0553 | 局内极差均值 4.45 未参与对象占比 0.495 撤销率 0.340 平均交换距离 0.199 m 失衡事件/局 0.00
+  O2: 整局可行 0.9868 参与频率 min/max 0.0941/0.1030（均匀 0.1000）χ²=17.3 p=0.0444 | 局内极差均值 4.35 未参与对象占比 0.488 撤销率 0.352 平均交换距离 0.197 m 失衡事件/局 0.00
+  O3: 整局可行 0.9868 参与频率 min/max 0.0977/0.1040（均匀 0.1000）χ²=8.5 p=0.48 | 局内极差均值 4.41 未参与对象占比 0.492 撤销率 0.326 平均交换距离 0.198 m 失衡事件/局 6.36
+  O1k3: 整局可行 0.9863 参与频率 min/max 0.0956/0.1059（均匀 0.1000）χ²=28.6 p=0.000743 | 局内极差均值 4.46 未参与对象占比 0.498 撤销率 0.347 平均交换距离 0.196 m 失衡事件/局 0.00
+  O4: 整局可行 0.9868 参与频率 min/max 0.0959/0.1037（均匀 0.1000）χ²=17.1 p=0.0477 | 局内极差均值 3.22 未参与对象占比 0.430 撤销率 0.074 平均交换距离 0.199 m 失衡事件/局 0.00
+=== p3_outer_VideoUnmaskSwap_c10.json
+  O0: 全员参与 0.0122 序号参与频率 [0.1054, 0.1002, 0.1016, 0.1008, 0.0998, 0.1052, 0.1011, 0.0979, 0.1004, 0.0876]
+  O1: 全员参与 0.0096 序号参与频率 [0.1012, 0.1016, 0.1028, 0.1009, 0.1022, 0.1016, 0.0997, 0.0978, 0.097, 0.0952]
+  O2: 全员参与 0.0112 序号参与频率 [0.1017, 0.1001, 0.1002, 0.103, 0.1022, 0.1029, 0.1004, 0.0977, 0.0981, 0.0938]
+  O3: 全员参与 0.0076 序号参与频率 [0.1043, 0.1015, 0.1029, 0.102, 0.1022, 0.1017, 0.098, 0.0977, 0.098, 0.0917]
+  O1k3: 全员参与 0.0071 序号参与频率 [0.1057, 0.1013, 0.1004, 0.1032, 0.103, 0.1009, 0.0989, 0.0957, 0.0991, 0.0919]
+  O4: 全员参与 0.0400 序号参与频率 [0.1031, 0.1013, 0.1028, 0.1009, 0.1007, 0.102, 0.1005, 0.0974, 0.0991, 0.0921]
+  O1 逐窗失败率 0.00005 ⇒ 整局可行外推：n=12 0.9994 n=16 0.9992 n=20 0.9990 n=24 0.9988
+=== p3_outer_ButtonUnmaskSwap_c10.json
+  O0: 全员参与 0.0011 序号参与频率 [0.1029, 0.1052, 0.1025, 0.0997, 0.0959, 0.098, 0.1002, 0.0974, 0.0981, 0.1]
+  O1: 全员参与 0.0006 序号参与频率 [0.1001, 0.1049, 0.1041, 0.1003, 0.0999, 0.0998, 0.0974, 0.0986, 0.0961, 0.099]
+  O2: 全员参与 0.0006 序号参与频率 [0.1023, 0.103, 0.1017, 0.101, 0.0992, 0.1002, 0.0941, 0.0983, 0.0977, 0.1025]
+  O3: 全员参与 0.0006 序号参与频率 [0.104, 0.1018, 0.1006, 0.098, 0.1005, 0.0984, 0.0998, 0.0986, 0.0977, 0.1006]
+  O1k3: 全员参与 0.0006 序号参与频率 [0.0986, 0.1059, 0.1052, 0.0991, 0.1009, 0.0965, 0.0982, 0.0973, 0.0956, 0.1027]
+  O4: 全员参与 0.0072 序号参与频率 [0.1021, 0.1037, 0.1035, 0.0998, 0.1004, 0.0981, 0.0991, 0.0959, 0.0962, 0.1011]
+  O1 逐窗失败率 0.00190 ⇒ 整局可行外推：n=12 0.9774 n=16 0.9700 n=20 0.9626 n=24 0.9553
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+P3B VideoUnmaskSwap base 局=593 全部槽对：exact=0.271 inner_clear=0.531 ok=0.123 vis=0.075 | 最近邻对：exact=0.151 inner_clear=0.081 ok=0.532 vis=0.236 | 零可行搭档槽占比 0.317
+P3B VideoUnmaskSwap novis 局=593 全部槽对：exact=0.292 inner_clear=0.552 ok=0.156 | 最近邻对：exact=0.167 inner_clear=0.124 ok=0.709 | 零可行搭档槽占比 0.150
+P3B VideoUnmaskSwap noclr 局=593 全部槽对：exact=0.343 inner_clear=0.440 ok=0.142 vis=0.075 | 最近邻对：exact=0.162 inner_clear=0.029 ok=0.572 vis=0.236 | 零可行搭档槽占比 0.247
+P3B VideoUnmaskSwap both 局=593 全部槽对：exact=0.371 inner_clear=0.446 ok=0.183 | 最近邻对：exact=0.181 inner_clear=0.039 ok=0.780 | 零可行搭档槽占比 0.093
+EXIT_CODE=0

@@ -1,0 +1,1288 @@
+{
+ "PickXtimes": {
+  "configs": {
+   "hard": {
+    "color": 3,
+    "number_min": 4,
+    "number_max": 5
+   },
+   "easy": {
+    "color": 1,
+    "number_min": 1,
+    "number_max": 3
+   },
+   "medium": {
+    "color": 3,
+    "number_min": 1,
+    "number_max": 3
+   },
+   "xhard": {
+    "color": 3,
+    "number_min": 6,
+    "number_max": 15
+   }
+  },
+  "decision_default": {
+   "color": {
+    "hard": 3,
+    "easy": 1,
+    "medium": 3,
+    "xhard": 3
+   },
+   "number_range": {
+    "hard": [
+     4,
+     5
+    ],
+    "easy": [
+     1,
+     3
+    ],
+    "medium": [
+     1,
+     3
+    ],
+    "xhard": [
+     6,
+     15
+    ]
+   },
+   "target_cube_position_policy": {
+    "region_center": [
+     -0.1,
+     0
+    ],
+    "region_half_size": 0.2
+   },
+   "goal_position_policy": {
+    "region_center": [
+     -0.1,
+     0
+    ],
+    "region_half_size": 0.2
+   },
+   "distractor": null,
+   "xhard": {
+    "target_cube_position_policy": {
+     "region_center": [
+      -0.1,
+      0
+     ],
+     "region_half_size": 0.25
+    },
+    "goal_position_policy": {
+     "region_center": [
+      -0.1,
+      0
+     ],
+     "region_half_size": 0.2
+    },
+    "distractor": {
+     "colors": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "region_center": [
+      -0.1,
+      0
+     ],
+     "region_half_size": 0.25
+    },
+    "min_center_dist_m": 0.08
+   }
+  }
+ },
+ "StopCube": {
+  "configs": {
+   "easy": {
+    "move_interval_choices": [
+     60,
+     80,
+     120
+    ],
+    "stop_time_range": {
+     "low": 2,
+     "high_exclusive": 6
+    }
+   },
+   "medium": {
+    "move_interval_choices": [
+     60,
+     80,
+     120
+    ],
+    "stop_time_range": {
+     "low": 2,
+     "high_exclusive": 6
+    }
+   },
+   "hard": {
+    "move_interval_choices": [
+     60,
+     80,
+     120
+    ],
+    "stop_time_range": {
+     "low": 2,
+     "high_exclusive": 6
+    }
+   },
+   "xhard": {
+    "move_interval_choices": [
+     60
+    ],
+    "stop_time_range": {
+     "low": 6,
+     "high_exclusive": 16
+    }
+   }
+  },
+  "decision_default": {
+   "move_interval_choices": [
+    60,
+    80,
+    120
+   ],
+   "stop_time_range": {
+    "low": 2,
+    "high_exclusive": 6
+   },
+   "xhard": {
+    "move_interval_choices": [
+     60
+    ],
+    "stop_time_range": {
+     "low": 6,
+     "high_exclusive": 16
+    }
+   }
+  }
+ },
+ "SwingXtimes": {
+  "configs": {
+   "hard": {
+    "color": 3,
+    "number_min": 3,
+    "number_max": 3
+   },
+   "easy": {
+    "color": 1,
+    "number_min": 1,
+    "number_max": 3
+   },
+   "medium": {
+    "color": 3,
+    "number_min": 1,
+    "number_max": 2
+   },
+   "xhard": {
+    "color": 3,
+    "number_min": 4,
+    "number_max": 10
+   }
+  },
+  "decision_default": {
+   "number_range": {
+    "hard": [
+     3,
+     3
+    ],
+    "easy": [
+     1,
+     3
+    ],
+    "medium": [
+     1,
+     2
+    ],
+    "xhard": [
+     4,
+     10
+    ]
+   },
+   "color": {
+    "hard": 3,
+    "easy": 1,
+    "medium": 3,
+    "xhard": 3
+   },
+   "distractor": null,
+   "xhard": {
+    "distractor": {
+     "colors": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "region_center": [
+      -0.1,
+      0
+     ],
+     "region_half_size": 0.25
+    },
+    "min_center_dist_m": 0.08
+   }
+  }
+ },
+ "BinFill": {
+  "configs": {
+   "hard": {
+    "color": 3,
+    "spawn_cubes": [
+     10,
+     12
+    ],
+    "put_in_color": [
+     2,
+     3
+    ],
+    "put_in_numbers": [
+     3,
+     5
+    ]
+   },
+   "easy": {
+    "color": 1,
+    "spawn_cubes": [
+     4,
+     6
+    ],
+    "put_in_color": [
+     1,
+     1
+    ],
+    "put_in_numbers": [
+     1,
+     3
+    ]
+   },
+   "medium": {
+    "color": 2,
+    "spawn_cubes": [
+     8,
+     10
+    ],
+    "put_in_color": [
+     1,
+     2
+    ],
+    "put_in_numbers": [
+     2,
+     4
+    ]
+   },
+   "xhard": {
+    "color": 3,
+    "spawn_cubes": [
+     12,
+     12
+    ],
+    "put_in_color": [
+     2,
+     3
+    ],
+    "put_in_numbers": [
+     5,
+     7
+    ],
+    "layout_mode": "clutter",
+    "color_mix": {
+     "max_component": 3,
+     "link_m": 0.09,
+     "max_redraws": 64
+    }
+   }
+  },
+  "decision_default": {
+   "layout_mode": "native_dynamic",
+   "configs": {
+    "hard": {
+     "color": 3,
+     "spawn_cubes": [
+      10,
+      12
+     ],
+     "put_in_numbers": [
+      3,
+      5
+     ]
+    },
+    "easy": {
+     "color": 1,
+     "spawn_cubes": [
+      4,
+      6
+     ],
+     "put_in_numbers": [
+      1,
+      3
+     ]
+    },
+    "medium": {
+     "color": 2,
+     "spawn_cubes": [
+      8,
+      10
+     ],
+     "put_in_numbers": [
+      2,
+      4
+     ]
+    },
+    "xhard": {
+     "color": 3,
+     "spawn_cubes": [
+      12,
+      12
+     ],
+     "put_in_numbers": [
+      5,
+      7
+     ],
+     "layout_mode": "clutter",
+     "color_mix": {
+      "max_component": 3,
+      "link_m": 0.09,
+      "max_redraws": 64
+     }
+    }
+   }
+  }
+ },
+ "VideoUnmaskSwap": {
+  "configs": {
+   "hard": {
+    "bin": 4,
+    "swap_min": 2,
+    "swap_max": 3,
+    "pick_min": 2,
+    "pick_max": 2
+   },
+   "easy": {
+    "bin": 3,
+    "swap_min": 1,
+    "swap_max": 2,
+    "pick_min": 1,
+    "pick_max": 2
+   },
+   "medium": {
+    "bin": 4,
+    "swap_min": 1,
+    "swap_max": 2,
+    "pick_min": 1,
+    "pick_max": 1
+   },
+   "xhard": {
+    "bin": 4,
+    "swap_min": 8,
+    "swap_max": 12,
+    "pick_min": 3,
+    "pick_max": 3
+   }
+  },
+  "decision_default": {
+   "swap_count_range": {
+    "hard": [
+     2,
+     3
+    ],
+    "easy": [
+     1,
+     2
+    ],
+    "medium": [
+     1,
+     2
+    ],
+    "xhard": [
+     8,
+     12
+    ]
+   },
+   "pick_count_range": {
+    "hard": [
+     2,
+     2
+    ],
+    "easy": [
+     1,
+     2
+    ],
+    "medium": [
+     1,
+     1
+    ],
+    "xhard": [
+     3,
+     3
+    ]
+   },
+   "swap_speed_multiplier": 1,
+   "distractor": null,
+   "xhard": {
+    "swap_speed_multiplier": 1.5,
+    "distractor": {
+     "count": 10,
+     "ring_max_abs_xy": [
+      0.2675,
+      0.45
+     ],
+     "cube_count_range": [
+      5,
+      5
+     ],
+     "color_pool": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "color_rule": "balanced_cycle",
+     "min_gap_factor": 0.75,
+     "max_trials": 1024
+    },
+    "distractor_swap": {
+     "enabled": true,
+     "initiator_rule": "permutation_cycle",
+     "fallback": "next_in_permutation",
+     "partner": {
+      "selection": "nearest",
+      "position_axes": [
+       0,
+       1
+      ],
+      "tie_break": "first_in_index_order",
+      "population": "distractor_bins",
+      "resolve_at": "reset_plan"
+     },
+     "lane_offset": 0.07,
+     "smooth": true,
+     "path_constraints": {
+      "camera_visible": true,
+      "min_inner_circle_clearance_m": 0.04,
+      "min_button_center_dist_m": null
+     },
+     "path_samples": 401,
+     "plan_pad_m": 0.005,
+     "layout_max_attempts": 16
+    }
+   }
+  }
+ },
+ "VideoUnmask": {
+  "configs": {
+   "hard": {
+    "bin": 15,
+    "pick": 2
+   },
+   "easy": {
+    "bin": 3,
+    "pick": 1
+   },
+   "medium": {
+    "bin": 5,
+    "pick": 1
+   },
+   "xhard": {
+    "bin": 8,
+    "pick": 3
+   }
+  },
+  "decision_default": {
+   "pick_count": {
+    "hard": 2,
+    "easy": 1,
+    "medium": 1,
+    "xhard": 3
+   },
+   "bin_layout_policy": {
+    "count": {
+     "hard": 15,
+     "easy": 3,
+     "medium": 5,
+     "xhard": 8
+    },
+    "region_center": [
+     0,
+     0
+    ],
+    "region_half_size": 0.2,
+    "xhard": {
+     "min_gap_factor": 0.75
+    }
+   },
+   "distractor": null,
+   "xhard": {
+    "distractor": {
+     "count": 15,
+     "ring_max_abs_xy": [
+      0.2425,
+      0.3289
+     ],
+     "cube_count_range": [
+      7,
+      8
+     ],
+     "color_pool": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "color_rule": "balanced_cycle",
+     "min_gap_factor": 0.75,
+     "max_trials": 1024
+    }
+   }
+  }
+ },
+ "ButtonUnmaskSwap": {
+  "configs": {
+   "hard": {
+    "bin": 4,
+    "swap_min": 2,
+    "swap_max": 3,
+    "pick_min": 2,
+    "pick_max": 2
+   },
+   "easy": {
+    "bin": 3,
+    "swap_min": 1,
+    "swap_max": 2,
+    "pick_min": 1,
+    "pick_max": 2
+   },
+   "medium": {
+    "bin": 4,
+    "swap_min": 1,
+    "swap_max": 2,
+    "pick_min": 1,
+    "pick_max": 1
+   },
+   "xhard": {
+    "bin": 4,
+    "swap_min": 6,
+    "swap_max": 8,
+    "pick_min": 3,
+    "pick_max": 3
+   }
+  },
+  "decision_default": {
+   "swap_count_range": {
+    "hard": [
+     2,
+     3
+    ],
+    "easy": [
+     1,
+     2
+    ],
+    "medium": [
+     1,
+     2
+    ],
+    "xhard": [
+     6,
+     8
+    ]
+   },
+   "pick_count_range": {
+    "hard": [
+     2,
+     2
+    ],
+    "easy": [
+     1,
+     2
+    ],
+    "medium": [
+     1,
+     1
+    ],
+    "xhard": [
+     3,
+     3
+    ]
+   },
+   "swap_speed_multiplier": 1,
+   "distractor": null,
+   "xhard": {
+    "swap_speed_multiplier": 1.5,
+    "distractor": {
+     "count": 10,
+     "ring_max_abs_xy": [
+      0.2675,
+      0.45
+     ],
+     "cube_count_range": [
+      5,
+      5
+     ],
+     "color_pool": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "color_rule": "balanced_cycle",
+     "min_gap_factor": 0.75,
+     "max_trials": 1024
+    },
+    "distractor_swap": {
+     "enabled": true,
+     "initiator_rule": "permutation_cycle",
+     "fallback": "next_in_permutation",
+     "partner": {
+      "selection": "nearest",
+      "position_axes": [
+       0,
+       1
+      ],
+      "tie_break": "first_in_index_order",
+      "population": "distractor_bins",
+      "resolve_at": "reset_plan"
+     },
+     "lane_offset": 0.07,
+     "smooth": true,
+     "path_constraints": {
+      "camera_visible": true,
+      "min_inner_circle_clearance_m": 0.04,
+      "min_button_center_dist_m": 0.122
+     },
+     "path_samples": 401,
+     "plan_pad_m": 0.005,
+     "layout_max_attempts": 16
+    }
+   }
+  }
+ },
+ "ButtonUnmask": {
+  "configs": {
+   "hard": {
+    "bin": 15,
+    "pick": 2
+   },
+   "easy": {
+    "bin": 3,
+    "pick": 1
+   },
+   "medium": {
+    "bin": 5,
+    "pick": 1
+   },
+   "xhard": {
+    "bin": 8,
+    "pick": 3
+   }
+  },
+  "decision_default": {
+   "pick_count": {
+    "hard": 2,
+    "easy": 1,
+    "medium": 1,
+    "xhard": 3
+   },
+   "bin_layout_policy": {
+    "count": {
+     "hard": 15,
+     "easy": 3,
+     "medium": 5,
+     "xhard": 8
+    },
+    "region_center": [
+     0,
+     0
+    ],
+    "region_half_size": 0.2,
+    "xhard": {
+     "min_gap_factor": 0.75
+    }
+   },
+   "distractor": null,
+   "xhard": {
+    "distractor": {
+     "count": 14,
+     "ring_max_abs_xy": [
+      0.2425,
+      0.3289
+     ],
+     "cube_count_range": [
+      7,
+      7
+     ],
+     "color_pool": [
+      "yellow",
+      "cyan",
+      "magenta"
+     ],
+     "color_rule": "balanced_cycle",
+     "min_gap_factor": 0.75,
+     "max_trials": 1024
+    }
+   }
+  }
+ },
+ "VideoRepick": {
+  "configs": {
+   "hard": {
+    "cluster": true,
+    "swap": null,
+    "swap_min": 0,
+    "swap_max": 0
+   },
+   "easy": {
+    "cube": 3,
+    "swap_min": 1,
+    "swap_max": 2
+   },
+   "medium": {
+    "cube": 3,
+    "swap_min": 2,
+    "swap_max": 3
+   },
+   "xhard": {
+    "cube": 6,
+    "swap_min": 8,
+    "swap_max": 12,
+    "num_repeats_low": 4,
+    "num_repeats_high_exclusive": 7,
+    "layout_mode": "clutter",
+    "region_center": [
+     -0.1,
+     0.0
+    ],
+    "region_half_size": [
+     0.2,
+     0.25
+    ],
+    "min_center_dist_m": 0.12,
+    "partner_nearest_k": 3,
+    "partner_sweep_margin_m": 0.005,
+    "partner_button_obstacle": true
+   }
+  },
+  "decision_default": {
+   "layout_mode": "native_by_difficulty",
+   "num_repeats_range": {
+    "low": 1,
+    "high_exclusive": 4,
+    "xhard": {
+     "low": 4,
+     "high_exclusive": 7
+    }
+   },
+   "block_color_policy": "native_by_difficulty",
+   "swap": {
+    "hard": {
+     "swap_min": 0,
+     "swap_max": 0
+    },
+    "easy": {
+     "swap_min": 1,
+     "swap_max": 2
+    },
+    "medium": {
+     "swap_min": 2,
+     "swap_max": 3
+    },
+    "xhard": {
+     "swap_min": 8,
+     "swap_max": 12
+    }
+   },
+   "xhard": {
+    "layout": {
+     "mode": "clutter",
+     "cube_count": 6,
+     "region_center": [
+      -0.1,
+      0.0
+     ],
+     "region_half_size": [
+      0.2,
+      0.25
+     ],
+     "min_center_dist_m": 0.12
+    },
+    "block_color": {
+     "policy": "same_color_hsv_floor",
+     "sampler": "torch.rand",
+     "h_range": [
+      0.0,
+      1.0
+     ],
+     "s_range": [
+      0.5,
+      1.0
+     ],
+     "v_range": [
+      0.4,
+      1.0
+     ]
+    },
+    "swap_plan": {
+     "initiator_rule": "target_then_randperm_k_mod_cube_count",
+     "partner_rule": "reset_plan_nearest_feasible",
+     "nearest_k": 3,
+     "sweep_margin_m": 0.005,
+     "button_obstacle": true
+    }
+   }
+  }
+ },
+ "VideoPlaceButton": {
+  "configs": {
+   "hard": {
+    "color": 3,
+    "additional_place": false,
+    "swap": true,
+    "targets": 4
+   },
+   "easy": {
+    "color": 1,
+    "additional_place": false,
+    "swap": false,
+    "targets": 3
+   },
+   "medium": {
+    "color": 3,
+    "additional_place": false,
+    "swap": false,
+    "targets": 4
+   },
+   "xhard": {
+    "color": 3,
+    "additional_place": false,
+    "swap": true,
+    "targets": 4
+   }
+  },
+  "decision_default": {
+   "demo_object_count": 1,
+   "demo_return_policy": "native_random_goal_site",
+   "targets": {
+    "hard": 4,
+    "easy": 3,
+    "medium": 4,
+    "xhard": 4
+   },
+   "swap": {
+    "hard": true,
+    "easy": false,
+    "medium": false,
+    "xhard": true
+   },
+   "additional_place": {
+    "hard": false,
+    "easy": false,
+    "medium": false,
+    "xhard": false
+   },
+   "xhard": {
+    "demo_object_count": 2,
+    "demo_return_policy": "return_to_origin"
+   }
+  }
+ },
+ "VideoPlaceOrder": {
+  "configs": {
+   "hard": {
+    "color": 3,
+    "swap": true,
+    "targets": 4
+   },
+   "easy": {
+    "color": 1,
+    "swap": false,
+    "targets": 4
+   },
+   "medium": {
+    "color": 3,
+    "swap": false,
+    "targets": 4
+   },
+   "xhard": {
+    "color": 3,
+    "swap": true,
+    "targets": 4
+   }
+  },
+  "decision_default": {
+   "demo_object_count": 1,
+   "demo_return_policy": "native_random_goal_site",
+   "targets": {
+    "hard": 4,
+    "easy": 4,
+    "medium": 4,
+    "xhard": 4
+   },
+   "swap": {
+    "hard": true,
+    "easy": false,
+    "medium": false,
+    "xhard": true
+   },
+   "xhard": {
+    "demo_object_count": 2,
+    "demo_return_policy": "return_to_origin"
+   }
+  }
+ },
+ "PickHighlight": {
+  "configs": {
+   "hard": {
+    "spawn": 6,
+    "pickup": 3
+   },
+   "easy": {
+    "spawn": 3,
+    "pickup": 1
+   },
+   "medium": {
+    "spawn": 4,
+    "pickup": 2
+   },
+   "xhard": {
+    "spawn": [
+     8,
+     10
+    ],
+    "pickup": [
+     5,
+     7
+    ]
+   }
+  },
+  "decision_default": {
+   "layout_mode": "native_region",
+   "cube_region": {
+    "region_center": [
+     -0.1,
+     0
+    ],
+    "region_half_size": 0.2
+   },
+   "highlight_count": {
+    "hard": 3,
+    "easy": 1,
+    "medium": 2,
+    "xhard": [
+     5,
+     7
+    ]
+   },
+   "spawn_count": {
+    "hard": 6,
+    "easy": 3,
+    "medium": 4,
+    "xhard": [
+     8,
+     10
+    ]
+   },
+   "block_color_policy": "native_per_cube_uniform",
+   "xhard": {
+    "block_color_policy": "hsv_floor",
+    "block_color_hsv": {
+     "h_range": [
+      0.0,
+      1.0
+     ],
+     "s_range": [
+      0.5,
+      1.0
+     ],
+     "v_range": [
+      0.4,
+      1.0
+     ]
+    },
+    "subgoal_color_suffix": "omit"
+   }
+  }
+ },
+ "InsertPeg": {
+  "configs": {
+   "easy": {
+    "peg_count": 3,
+    "peg_offsets": [
+     0.1,
+     0,
+     -0.1
+    ],
+    "near_target_distractor": null,
+    "peg_yaw_range": {
+     "half_span_deg": 45
+    }
+   },
+   "medium": {
+    "peg_count": 3,
+    "peg_offsets": [
+     0.1,
+     0,
+     -0.1
+    ],
+    "near_target_distractor": null,
+    "peg_yaw_range": {
+     "half_span_deg": 45
+    }
+   },
+   "hard": {
+    "peg_count": 3,
+    "peg_offsets": [
+     0.1,
+     0,
+     -0.1
+    ],
+    "near_target_distractor": null,
+    "peg_yaw_range": {
+     "half_span_deg": 45
+    }
+   },
+   "xhard": {
+    "peg_count": 4,
+    "peg_offsets": [
+     0.1,
+     0,
+     -0.1,
+     -0.2
+    ],
+    "peg_yaw_range": {
+     "half_span_deg": 180
+    },
+    "peg_min_pair_gap_m": 0.03,
+    "peg_box_min_gap_m": 0.01,
+    "peg_x_max_m": 0.1
+   }
+  },
+  "decision_default": {
+   "peg_count": 3,
+   "peg_offsets": [
+    0.1,
+    0,
+    -0.1
+   ],
+   "near_target_distractor": null,
+   "peg_yaw_range": {
+    "half_span_deg": 45
+   },
+   "xhard": {
+    "peg_count": 4,
+    "peg_offsets": [
+     0.1,
+     0,
+     -0.1,
+     -0.2
+    ],
+    "peg_yaw_range": {
+     "half_span_deg": 180
+    },
+    "peg_min_pair_gap_m": 0.03,
+    "peg_box_min_gap_m": 0.01,
+    "peg_x_max_m": 0.1
+   }
+  }
+ },
+ "MoveCube": {
+  "configs": {
+   "easy": {
+    "peg_yaw_range": {
+     "span_rad": 1.5707963267948966,
+     "offset_rad": 0.7853981633974483
+    },
+    "corner_bias": 0.0
+   },
+   "medium": {
+    "peg_yaw_range": {
+     "span_rad": 1.5707963267948966,
+     "offset_rad": 0.7853981633974483
+    },
+    "corner_bias": 0.0
+   },
+   "hard": {
+    "peg_yaw_range": {
+     "span_rad": 1.5707963267948966,
+     "offset_rad": 0.7853981633974483
+    },
+    "corner_bias": 0.0
+   },
+   "xhard": {
+    "peg_yaw_range": {
+     "span_rad": 6.283185307179586,
+     "offset_rad": 3.141592653589793
+    },
+    "center_exclusion": {
+     "shape": "circle",
+     "center": [
+      0.0,
+      0.0
+     ],
+     "radius_m": 0.05,
+     "judge": "object_center",
+     "max_trials": 128
+    }
+   }
+  },
+  "decision_default": {
+   "demo_layout": {
+    "peg_position_policy": {
+     "base_y_abs": 0.2,
+     "base_y_threshold": 0.5,
+     "jitter_span": 0.1
+    },
+    "cube_position_policy": {
+     "center_span": 0.2,
+     "center_offset": -0.1,
+     "region_half_size": 0.05
+    },
+    "xhard": {
+     "center_exclusion": {
+      "shape": "circle",
+      "center": [
+       0.0,
+       0.0
+      ],
+      "radius_m": 0.05,
+      "judge": "object_center",
+      "max_trials": 128
+     }
+    }
+   },
+   "execution_layout": {
+    "peg_position_policy": {
+     "base_y_abs": 0.2,
+     "base_y_threshold": 0.5,
+     "jitter_span": 0.1
+    },
+    "cube_position_policy": {
+     "center_span": 0.2,
+     "center_offset": -0.1,
+     "region_half_size": 0.05
+    },
+    "xhard": {
+     "center_exclusion": {
+      "shape": "circle",
+      "center": [
+       0.0,
+       0.0
+      ],
+      "radius_m": 0.05,
+      "judge": "object_center",
+      "max_trials": 128
+     }
+    }
+   },
+   "peg_yaw_range": {
+    "span_rad": 1.5707963267948966,
+    "offset_rad": 0.7853981633974483,
+    "xhard": {
+     "span_rad": 6.283185307179586,
+     "offset_rad": 3.141592653589793
+    }
+   }
+  }
+ },
+ "PatternLock": {
+  "configs": {
+   "hard": {
+    "grid": 5,
+    "length": [
+     4,
+     8
+    ]
+   },
+   "easy": {
+    "grid": 3,
+    "length": [
+     2,
+     4
+    ]
+   },
+   "medium": {
+    "grid": 4,
+    "length": [
+     3,
+     5
+    ]
+   },
+   "xhard": {
+    "grid": 5,
+    "length": [
+     25,
+     25
+    ]
+   }
+  },
+  "decision_default": {
+   "demo_duration_seconds_range": null,
+   "demonstration_duration_policy": "native",
+   "grid": {
+    "hard": 5,
+    "easy": 3,
+    "medium": 4,
+    "xhard": 5
+   },
+   "path_length_range": {
+    "hard": [
+     4,
+     8
+    ],
+    "easy": [
+     2,
+     4
+    ],
+    "medium": [
+     3,
+     5
+    ],
+    "xhard": [
+     25,
+     25
+    ]
+   },
+   "xhard": {
+    "path_search_max_attempts": 20000
+   }
+  }
+ },
+ "RouteStick": {
+  "configs": {
+   "hard": {
+    "length": [
+     4,
+     7
+    ],
+    "backtrack": true
+   },
+   "easy": {
+    "length": [
+     2,
+     3
+    ],
+    "backtrack": false
+   },
+   "medium": {
+    "length": [
+     4,
+     5
+    ],
+    "backtrack": false
+   },
+   "xhard": {
+    "length": [
+     15,
+     21
+    ],
+    "backtrack": true
+   }
+  },
+  "decision_default": {
+   "demo_duration_seconds_range": null,
+   "demonstration_duration_policy": "native",
+   "xhard": {
+    "segment_count_range": [
+     15,
+     21
+    ]
+   }
+  }
+ }
+}

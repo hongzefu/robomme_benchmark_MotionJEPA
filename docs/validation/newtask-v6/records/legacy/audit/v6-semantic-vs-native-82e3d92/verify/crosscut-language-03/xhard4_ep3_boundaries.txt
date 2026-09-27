@@ -1,0 +1,52 @@
+total timesteps: 1715 range 0 1714
+demo steps count: 816 first 0 last 815
+ALL boundary steps (n=28): [0, 113, 163, 222, 276, 330, 384, 438, 492, 546, 600, 654, 708, 762, 816, 928, 983, 1061, 1115, 1193, 1247, 1322, 1376, 1449, 1503, 1576, 1630, 1681]
+
+simple_subgoal at each boundary (idx, subgoal, is_demo):
+0 'pick up the cube' demo
+113 'drop the cube on the table' demo
+163 'static' demo
+222 'static' demo
+276 'static' demo
+330 'static' demo
+384 'static' demo
+438 'static' demo
+492 'static' demo
+546 'static' demo
+600 'static' demo
+654 'static' demo
+708 'static' demo
+762 'static' demo
+816 'pick up the correct cube for the first time' notdemo
+928 'put it down' notdemo
+983 'pick up the correct cube for the second time' notdemo
+1061 'put it down' notdemo
+1115 'pick up the correct cube for the third time' notdemo
+1193 'put it down' notdemo
+1247 'pick up the correct cube for the fourth time' notdemo
+1322 'put it down' notdemo
+1376 'pick up the correct cube for the fifth time' notdemo
+1449 'put it down' notdemo
+1503 'pick up the correct cube for the sixth time' notdemo
+1576 'put it down' notdemo
+1630 'press the button to finish' notdemo
+1681 'All tasks completed' notdemo
+
+subgoal text change points (idx -> new subgoal):
+0 'pick up the cube'
+113 'drop the cube on the table'
+163 'static'
+816 'pick up the correct cube for the first time'
+928 'put it down'
+983 'pick up the correct cube for the second time'
+1061 'put it down'
+1115 'pick up the correct cube for the third time'
+1193 'put it down'
+1247 'pick up the correct cube for the fourth time'
+1322 'put it down'
+1376 'pick up the correct cube for the fifth time'
+1449 'put it down'
+1503 'pick up the correct cube for the sixth time'
+1576 'put it down'
+1630 'press the button to finish'
+1681 'All tasks completed'

@@ -1,0 +1,200 @@
+{
+  "decision": {
+    "bin_layout_policy": {
+      "count": {
+        "easy": 3,
+        "hard": 15,
+        "medium": 5,
+        "xhard1": 8,
+        "xhard2": 8,
+        "xhard3": 8,
+        "xhard4": 8
+      },
+      "region_center": [
+        0,
+        0
+      ],
+      "region_half_size": 0.2,
+      "xhard1": {
+        "min_gap_factor": 0.75
+      },
+      "xhard2": {
+        "min_gap_factor": 0.75
+      },
+      "xhard3": {
+        "min_gap_factor": 0.75
+      },
+      "xhard4": {
+        "min_gap_factor": 0.75
+      }
+    },
+    "distractor": null,
+    "pick_count": {
+      "easy": 1,
+      "hard": 2,
+      "medium": 1,
+      "xhard1": 2,
+      "xhard2": 3,
+      "xhard3": 3,
+      "xhard4": 3
+    },
+    "xhard1": {
+      "distractor": {
+        "color_pool": [
+          "yellow",
+          "cyan",
+          "magenta"
+        ],
+        "color_rule": "balanced_cycle",
+        "count": 8,
+        "cube_count_range": [
+          4,
+          4
+        ],
+        "max_trials": 1024,
+        "min_gap_factor": 0.75,
+        "ring_max_abs_xy": [
+          0.2425,
+          0.3289
+        ]
+      }
+    },
+    "xhard2": {
+      "distractor": {
+        "color_pool": [
+          "yellow",
+          "cyan",
+          "magenta"
+        ],
+        "color_rule": "balanced_cycle",
+        "count": 10,
+        "cube_count_range": [
+          5,
+          5
+        ],
+        "max_trials": 1024,
+        "min_gap_factor": 0.75,
+        "ring_max_abs_xy": [
+          0.2425,
+          0.3289
+        ]
+      }
+    },
+    "xhard3": {
+      "distractor": {
+        "color_pool": [
+          "yellow",
+          "cyan",
+          "magenta"
+        ],
+        "color_rule": "balanced_cycle",
+        "count": 12,
+        "cube_count_range": [
+          6,
+          6
+        ],
+        "max_trials": 1024,
+        "min_gap_factor": 0.75,
+        "ring_max_abs_xy": [
+          0.2425,
+          0.3289
+        ]
+      }
+    },
+    "xhard4": {
+      "distractor": {
+        "color_pool": [
+          "yellow",
+          "cyan",
+          "magenta"
+        ],
+        "color_rule": "balanced_cycle",
+        "count": 14,
+        "cube_count_range": [
+          7,
+          7
+        ],
+        "max_trials": 1024,
+        "min_gap_factor": 0.75,
+        "ring_max_abs_xy": [
+          0.2425,
+          0.3289
+        ]
+      }
+    }
+  },
+  "native": {
+    "parameters": {
+      "color_order": {
+        "sampler": "torch.randperm(3)"
+      },
+      "color_pool": [
+        {
+          "name": "red",
+          "rgba": [
+            1,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "green",
+          "rgba": [
+            0,
+            1,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "blue",
+          "rgba": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "constructor_rng": {
+        "high_exclusive": 6,
+        "low": 1,
+        "note": "构造器这次抽样不决定抓取数量，但决定后续随机流位置，必须保留（红线 R8）",
+        "sampler": "torch.randint"
+      },
+      "hidden_rule": "前 3 个容器各藏一块，其余为空",
+      "pick_rule": "按按钮后先抓 bin_0，pick>1 再抓 bin_1",
+      "recovery": "构造器的 self.generator 用于恢复；场景另有同 seed 局部 generator，两条流分开",
+      "step_bin_scan": 15
+    },
+    "positions": {
+      "bins": {
+        "max_trials": 256,
+        "min_gap_factor": 2,
+        "yaw_expression": "u * 90 度"
+      },
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "randomize": true,
+        "randomize_range": [
+          0.1,
+          0.1
+        ],
+        "scale": 1.5
+      },
+      "hidden_cube": {
+        "dynamic": true,
+        "half_size_divisor": 1.2,
+        "yaw": 0.0
+      },
+      "reveal_window": {
+        "end_step": 64,
+        "start_step": 0
+      }
+    }
+  }
+}

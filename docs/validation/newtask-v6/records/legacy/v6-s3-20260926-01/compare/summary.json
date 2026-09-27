@@ -1,0 +1,21 @@
+{
+  "schema": "train-parity-compare-summary/1",
+  "compared_at": "2026-09-27T01:07:45.556783+00:00",
+  "runs": {
+    "base": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base",
+    "v6": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-s3-20260926-01/combined"
+  },
+  "pairs": [
+    {
+      "pair": "base.B|v6.B",
+      "left": "base/B",
+      "right": "v6/B",
+      "compared": 144,
+      "sha_equal": 144,
+      "field_mismatch": 0,
+      "sidecar_mismatch": 0,
+      "only_left": [],
+      "only_right": []
+    }
+  ]
+}

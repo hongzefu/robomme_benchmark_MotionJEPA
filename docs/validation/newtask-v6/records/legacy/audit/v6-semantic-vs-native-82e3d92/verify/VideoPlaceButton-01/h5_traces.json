@@ -1,0 +1,340 @@
+{
+  "xhard3_ep0": {
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed13000001.h5",
+    "n_steps": 1738,
+    "boundaries": [
+      {
+        "step": 0,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <145, 74>"
+      },
+      {
+        "step": 122,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <90, 98>"
+      },
+      {
+        "step": 232,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <102, 158>"
+      },
+      {
+        "step": 334,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <130, 166>"
+      },
+      {
+        "step": 418,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <129, 169>"
+      },
+      {
+        "step": 492,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <115, 91>"
+      },
+      {
+        "step": 573,
+        "simple": "press the button",
+        "grounded": "press the button at <120, 126>"
+      },
+      {
+        "step": 652,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <90, 96>"
+      },
+      {
+        "step": 755,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <78, 164>"
+      },
+      {
+        "step": 845,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <113, 89>"
+      },
+      {
+        "step": 948,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <115, 91>"
+      },
+      {
+        "step": 1003,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <74, 167>"
+      },
+      {
+        "step": 1108,
+        "simple": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position"
+      },
+      {
+        "step": 1222,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <113, 90>"
+      },
+      {
+        "step": 1329,
+        "simple": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position"
+      },
+      {
+        "step": 1412,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "step": 1466,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "step": 1526,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <144, 75>"
+      },
+      {
+        "step": 1649,
+        "simple": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <130, 166>"
+      },
+      {
+        "step": 1723,
+        "simple": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <130, 166>"
+      }
+    ]
+  },
+  "xhard4_ep0": {
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed7000000.h5",
+    "n_steps": 1930,
+    "boundaries": [
+      {
+        "step": 0,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <125, 181>"
+      },
+      {
+        "step": 111,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <100, 89>"
+      },
+      {
+        "step": 206,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <72, 142>"
+      },
+      {
+        "step": 328,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <75, 92>"
+      },
+      {
+        "step": 418,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <72, 91>"
+      },
+      {
+        "step": 492,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <82, 161>"
+      },
+      {
+        "step": 590,
+        "simple": "press the button",
+        "grounded": "press the button at <128, 134>"
+      },
+      {
+        "step": 691,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <99, 86>"
+      },
+      {
+        "step": 784,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <104, 168>"
+      },
+      {
+        "step": 877,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <80, 162>"
+      },
+      {
+        "step": 973,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <82, 161>"
+      },
+      {
+        "step": 1031,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <102, 170>"
+      },
+      {
+        "step": 1126,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <75, 92>"
+      },
+      {
+        "step": 1230,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <72, 91>"
+      },
+      {
+        "step": 1305,
+        "simple": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position"
+      },
+      {
+        "step": 1408,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <79, 160>"
+      },
+      {
+        "step": 1516,
+        "simple": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position"
+      },
+      {
+        "step": 1603,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "step": 1664,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "step": 1724,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <126, 180>"
+      },
+      {
+        "step": 1835,
+        "simple": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <100, 89>"
+      },
+      {
+        "step": 1917,
+        "simple": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <100, 89>"
+      }
+    ]
+  },
+  "xhard4_ep3": {
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed7000302.h5",
+    "n_steps": 1849,
+    "boundaries": [
+      {
+        "step": 0,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <77, 167>"
+      },
+      {
+        "step": 111,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <96, 100>"
+      },
+      {
+        "step": 202,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <96, 146>"
+      },
+      {
+        "step": 282,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <110, 123>"
+      },
+      {
+        "step": 354,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <95, 100>"
+      },
+      {
+        "step": 435,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <142, 176>"
+      },
+      {
+        "step": 536,
+        "simple": "press the button",
+        "grounded": "press the button at <125, 84>"
+      },
+      {
+        "step": 618,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <140, 178>"
+      },
+      {
+        "step": 709,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <135, 144>"
+      },
+      {
+        "step": 787,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube"
+      },
+      {
+        "step": 882,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <142, 176>"
+      },
+      {
+        "step": 972,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <144, 177>"
+      },
+      {
+        "step": 1051,
+        "simple": "drop the cube onto target",
+        "grounded": "drop the cube onto target at <96, 100>"
+      },
+      {
+        "step": 1156,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <135, 145>"
+      },
+      {
+        "step": 1257,
+        "simple": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position"
+      },
+      {
+        "step": 1355,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <93, 99>"
+      },
+      {
+        "step": 1460,
+        "simple": "put the cube back to its original position",
+        "grounded": "put the cube back to its original position"
+      },
+      {
+        "step": 1538,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "step": 1584,
+        "simple": "static",
+        "grounded": "static"
+      },
+      {
+        "step": 1644,
+        "simple": "pick up the cube",
+        "grounded": "pick up the cube at <77, 167>"
+      },
+      {
+        "step": 1755,
+        "simple": "place the cube onto the correct target",
+        "grounded": "place the cube onto the correct target at <135, 144>"
+      },
+      {
+        "step": 1834,
+        "simple": "All tasks completed",
+        "grounded": "place the cube onto the correct target at <135, 144>"
+      }
+    ]
+  }
+}

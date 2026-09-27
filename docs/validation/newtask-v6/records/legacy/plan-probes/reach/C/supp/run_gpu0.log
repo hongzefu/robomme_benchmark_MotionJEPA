@@ -1,0 +1,137 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[1/54] ep=204 ok=True   steps=346 wall=16.9 t=23s
+[2/54] ep=200 ok=True   steps=512 wall=24.1 t=29s
+[3/54] ep=202 ok=True   steps=517 wall=23.7 t=31s
+[4/54] ep=206 ok=True   steps=576 wall=26.8 t=33s
+[5/54] ep=210 ok=False DatasetGenerationError MoveCube/episode_210: did not succeed after the complete task_list steps=308 wall=33.8 t=63s
+[6/54] ep=208 ok=True   steps=476 wall=45.2 t=69s
+screw plan failed
+screw plan failed
+screw plan failed
+[7/54] ep=212 ok=True   steps=535 wall=59.2 t=90s
+screw plan failed
+screw plan failed
+screw plan failed
+[8/54] ep=214 ok=True   steps=508 wall=57.6 t=91s
+[9/54] ep=216 ok=True   steps=344 wall=35.2 t=98s
+[10/54] ep=222 ok=True   steps=316 wall=27.8 t=119s
+screw plan failed
+screw plan failed
+screw plan failed
+[11/54] ep=220 ok=True   steps=520 wall=49.3 t=139s
+[12/54] ep=224 ok=True   steps=530 wall=48.9 t=147s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.049355 is greater than threshold 0.001000.
+IK Failed! Distance 0.055812 is greater than threshold 0.001000.
+IK Failed! Distance 0.062139 is greater than threshold 0.001000.
+[13/54] ep=218 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=1066 wall=96.3 t=165s
+[14/54] ep=226 ok=True   steps=513 wall=46.9 t=165s
+[15/54] ep=228 ok=True   steps=302 wall=28.6 t=168s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.014420 is greater than threshold 0.001000.
+IK Failed! Distance 0.014630 is greater than threshold 0.001000.
+IK Failed! Distance 0.014432 is greater than threshold 0.001000.
+[16/54] ep=230 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=414 wall=38.7 t=186s
+[17/54] ep=234 ok=False DatasetGenerationError MoveCube/episode_234: did not succeed after the complete task_list steps=316 wall=26.6 t=192s
+[18/54] ep=240 ok=True   steps=335 wall=29.7 t=222s
+[19/54] ep=238 ok=True   steps=533 wall=44.2 t=230s
+screw plan failed
+screw plan failed
+screw plan failed
+[20/54] ep=232 ok=True   steps=1053 wall=87.9 t=253s
+[21/54] ep=244 ok=True   steps=527 wall=40.8 t=271s
+[22/54] ep=246 ok=True   steps=316 wall=25.0 t=278s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[23/54] ep=248 ok=True   steps=516 wall=40.8 t=312s
+[24/54] ep=250 ok=True   steps=525 wall=39.6 t=317s
+[25/54] ep=252 ok=True   steps=350 wall=26.7 t=338s
+[26/54] ep=254 ok=False DatasetGenerationError MoveCube/episode_254: did not succeed after the complete task_list steps=583 wall=41.6 t=359s
+[27/54] ep=256 ok=True   steps=491 wall=33.3 t=372s
+[28/54] ep=258 ok=False DatasetGenerationError MoveCube/episode_258: did not succeed after the complete task_list steps=342 wall=26.3 t=385s
+[29/54] ep=260 ok=True   steps=529 wall=37.5 t=409s
+[30/54] ep=262 ok=True   steps=461 wall=30.0 t=415s
+screw plan failed
+screw plan failed
+screw plan failed
+[31/54] ep=264 ok=False DatasetGenerationError MoveCube/episode_264: did not succeed after the complete task_list steps=341 wall=20.4 t=429s
+screw plan failed
+screw plan failed
+screw plan failed
+[32/54] ep=266 ok=True   steps=560 wall=38.0 t=453s
+[33/54] ep=268 ok=True   steps=551 wall=38.2 t=468s
+[34/54] ep=242 ok=False DatasetGenerationError MoveCube/episode_242: did not succeed after the complete task_list steps=3816 wall=250.6 t=472s
+[35/54] ep=270 ok=True   steps=306 wall=24.9 t=478s
+[36/54] ep=236 ok=False FailsafeTimeout Episode exceeded failsafe limit (5000 >= 5000) steps=5000 wall=333.7 t=501s
+[37/54] ep=276 ok=True   steps=315 wall=24.4 t=503s
+[38/54] ep=274 ok=True   steps=511 wall=38.2 t=510s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.276709 is greater than threshold 0.001000.
+IK Failed! Distance 0.207241 is greater than threshold 0.001000.
+IK Failed! Distance 0.759109 is greater than threshold 0.001000.
+[39/54] ep=278 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=310 wall=21.9 t=523s
+[40/54] ep=282 ok=False DatasetGenerationError MoveCube/episode_282: did not succeed after the complete task_list steps=303 wall=24.8 t=535s
+[41/54] ep=280 ok=True   steps=469 wall=33.9 t=536s
+[42/54] ep=288 ok=False DatasetGenerationError MoveCube/episode_288: did not succeed after the complete task_list steps=333 wall=24.4 t=561s
+[43/54] ep=286 ok=True   steps=515 wall=37.0 t=572s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[44/54] ep=292 ok=True   steps=1055 wall=65.0 t=637s
+[45/54] ep=290 ok=False DatasetGenerationError MoveCube/episode_290: did not succeed after the complete task_list steps=1410 wall=84.3 t=645s
+[46/54] ep=284 ok=False DatasetGenerationError MoveCube/episode_284: did not succeed after the complete task_list steps=1942 wall=122.3 t=646s
+screw plan failed
+screw plan failed
+screw plan failed
+[47/54] ep=294 ok=False DatasetGenerationError MoveCube/episode_294: did not succeed after the complete task_list steps=308 wall=17.1 t=655s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.040301 is greater than threshold 0.001000.
+IK Failed! Distance 0.040041 is greater than threshold 0.001000.
+IK Failed! Distance 0.040301 is greater than threshold 0.001000.
+[48/54] ep=300 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=6 wall=3.7 t=658s
+screw plan failed
+screw plan failed
+screw plan failed
+[49/54] ep=296 ok=False DatasetGenerationError MoveCube/episode_296: did not succeed after the complete task_list steps=589 wall=33.8 t=679s
+[50/54] ep=298 ok=True   steps=774 wall=46.1 t=692s
+[51/54] ep=302 ok=True   steps=599 wall=37.7 t=696s
+[52/54] ep=304 ok=True   steps=530 wall=31.3 t=710s
+[53/54] ep=306 ok=True   steps=311 wall=19.0 t=711s
+[54/54] ep=272 ok=False FailsafeTimeout Episode exceeded failsafe limit (5000 >= 5000) steps=5000 wall=285.6 t=753s
+DONE gpu=0 jobs=54 t=757s

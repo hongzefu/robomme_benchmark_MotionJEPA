@@ -1,0 +1,348 @@
+GPU 0: NVIDIA A40 (UUID: GPU-dd2731bb-7405-64c2-6124-4487ab37cb31)
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/sapien/_vulkan_tricks.py:73: UserWarning: Failed to find Vulkan ICD file. This is probably due to an incorrect or partial installation of the NVIDIA driver. SAPIEN will attempt to provide an ICD file anyway but it may not work.
+  warn(
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[1/144] ep=610 ok=True   steps=297 wall=24.6 t=38s
+[2/144] ep=604 ok=True   steps=295 wall=25.6 t=39s
+[3/144] ep=607 ok=True   steps=320 wall=27.9 t=41s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[4/144] ep=608 ok=True   steps=509 wall=43.6 t=57s
+[5/144] ep=612 ok=True   steps=545 wall=46.0 t=59s
+[6/144] ep=603 ok=True   steps=532 wall=46.3 t=60s
+[7/144] ep=605 ok=True   steps=501 wall=46.7 t=60s
+[8/144] ep=613 ok=False DatasetGenerationError MoveCube/episode_613: did not succeed after the complete task_list steps=300 wall=33.4 t=61s
+[9/144] ep=611 ok=True   steps=535 wall=47.6 t=61s
+[10/144] ep=615 ok=True   steps=549 wall=49.2 t=63s
+[11/144] ep=601 ok=True   steps=309 wall=35.4 t=64s
+[12/144] ep=616 ok=True   steps=306 wall=29.7 t=68s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 1.697252 is greater than threshold 0.001000.
+IK Failed! Distance 1.689342 is greater than threshold 0.001000.
+IK Failed! Distance 1.559770 is greater than threshold 0.001000.
+[13/144] ep=614 ok=True   steps=516 wall=59.9 t=73s
+[14/144] ep=600 ok=True   steps=458 wall=47.3 t=75s
+[15/144] ep=602 ok=True   steps=521 wall=57.2 t=75s
+[16/144] ep=618 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=287 wall=34.3 t=76s
+screw plan failed
+screw plan failed
+screw plan failed
+[17/144] ep=606 ok=True   steps=531 wall=53.2 t=81s
+screw plan failed
+screw plan failed
+screw plan failed
+[18/144] ep=617 ok=True   steps=488 wall=48.8 t=88s
+[19/144] ep=619 ok=True   steps=296 wall=31.5 t=89s
+[20/144] ep=609 ok=True   steps=599 wall=61.7 t=90s
+[21/144] ep=622 ok=False DatasetGenerationError MoveCube/episode_622: did not succeed after the complete task_list steps=308 wall=32.7 t=93s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 1.876312 is greater than threshold 0.001000.
+IK Failed! Distance 1.698251 is greater than threshold 0.001000.
+IK Failed! Distance 1.950851 is greater than threshold 0.001000.
+[22/144] ep=625 ok=True   steps=301 wall=32.9 t=96s
+[23/144] ep=621 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=341 wall=37.0 t=97s
+[24/144] ep=628 ok=True   steps=308 wall=32.8 t=106s
+[25/144] ep=620 ok=True   steps=473 wall=46.9 t=106s
+[26/144] ep=631 ok=False DatasetGenerationError MoveCube/episode_631: did not succeed after the complete task_list steps=327 wall=31.4 t=107s
+[27/144] ep=623 ok=True   steps=527 wall=49.5 t=110s
+[28/144] ep=624 ok=True   steps=532 wall=50.3 t=112s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[29/144] ep=626 ok=True   steps=518 wall=51.9 t=116s
+[30/144] ep=634 ok=False DatasetGenerationError MoveCube/episode_634: did not succeed after the complete task_list steps=306 wall=31.2 t=120s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[31/144] ep=629 ok=True   steps=522 wall=49.8 t=125s
+[32/144] ep=627 ok=True   steps=576 wall=57.8 t=126s
+[33/144] ep=637 ok=False DatasetGenerationError MoveCube/episode_637: did not succeed after the complete task_list steps=330 wall=34.2 t=130s
+[34/144] ep=632 ok=True   steps=500 wall=51.4 t=132s
+[35/144] ep=630 ok=False DatasetGenerationError MoveCube/episode_630: did not succeed after the complete task_list steps=608 wall=57.4 t=133s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[36/144] ep=640 ok=True   steps=304 wall=33.8 t=140s
+[37/144] ep=635 ok=True   steps=483 wall=50.8 t=141s
+[38/144] ep=633 ok=True   steps=553 wall=54.9 t=143s
+screw plan failed
+screw plan failed
+screw plan failed
+[39/144] ep=643 ok=False DatasetGenerationError MoveCube/episode_643: did not succeed after the complete task_list steps=325 wall=36.5 t=148s
+[40/144] ep=638 ok=True   steps=519 wall=51.4 t=148s
+[41/144] ep=646 ok=True   steps=291 wall=29.8 t=154s
+screw plan failed
+screw plan failed
+screw plan failed
+[42/144] ep=636 ok=True   steps=601 wall=63.5 t=157s
+[43/144] ep=641 ok=True   steps=516 wall=51.0 t=158s
+[44/144] ep=639 ok=True   steps=526 wall=53.1 t=159s
+[45/144] ep=642 ok=True   steps=549 wall=54.8 t=165s
+[46/144] ep=649 ok=True   steps=306 wall=33.3 t=165s
+[47/144] ep=644 ok=True   steps=493 wall=50.0 t=166s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[48/144] ep=645 ok=False DatasetGenerationError MoveCube/episode_645: did not succeed after the complete task_list steps=580 wall=54.2 t=174s
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+screw plan failed
+[49/144] ep=652 ok=True   steps=320 wall=34.7 t=176s
+[50/144] ep=647 ok=True   steps=518 wall=50.9 t=177s
+[51/144] ep=650 ok=True   steps=502 wall=48.4 t=181s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Cannot find valid solution.
+IK Failed! Distance 1.855420 is greater than threshold 0.001000.
+IK Failed! Distance 2.705051 is greater than threshold 0.001000.
+[52/144] ep=655 ok=False DatasetGenerationError MoveCube/episode_655: did not succeed after the complete task_list steps=326 wall=35.7 t=184s
+[53/144] ep=648 ok=False DatasetGenerationError MoveCube/episode_648: did not succeed after the complete task_list steps=554 wall=54.8 t=185s
+[54/144] ep=654 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=343 wall=37.7 t=186s
+[55/144] ep=658 ok=False DatasetGenerationError MoveCube/episode_658: did not succeed after the complete task_list steps=311 wall=30.5 t=189s
+[56/144] ep=653 ok=True   steps=488 wall=50.1 t=193s
+screw plan failed
+screw plan failed
+screw plan failed
+[57/144] ep=661 ok=True   steps=295 wall=32.7 t=198s
+[58/144] ep=651 ok=True   steps=597 wall=59.0 t=199s
+[59/144] ep=656 ok=True   steps=488 wall=46.1 t=201s
+[60/144] ep=664 ok=True   steps=312 wall=34.0 t=210s
+[61/144] ep=659 ok=True   steps=503 wall=50.9 t=210s
+[62/144] ep=657 ok=False DatasetGenerationError MoveCube/episode_657: did not succeed after the complete task_list steps=547 wall=53.9 t=210s
+screw plan failed
+screw plan failed
+screw plan failed
+[63/144] ep=667 ok=False DatasetGenerationError MoveCube/episode_667: did not succeed after the complete task_list steps=329 wall=33.4 t=217s
+[64/144] ep=662 ok=True   steps=516 wall=52.6 t=219s
+[65/144] ep=660 ok=True   steps=529 wall=54.5 t=220s
+[66/144] ep=670 ok=True   steps=299 wall=31.5 t=220s
+[67/144] ep=663 ok=True   steps=526 wall=51.1 t=225s
+[68/144] ep=665 ok=True   steps=513 wall=50.1 t=227s
+[69/144] ep=668 ok=True   steps=477 wall=45.1 t=230s
+[70/144] ep=666 ok=True   steps=552 wall=52.0 t=233s
+[71/144] ep=673 ok=True   steps=312 wall=34.0 t=233s
+screw plan failed
+screw plan failed
+screw plan failed
+[72/144] ep=669 ok=True   steps=558 wall=52.7 t=238s
+[73/144] ep=676 ok=True   steps=309 wall=34.0 t=244s
+[74/144] ep=671 ok=True   steps=529 wall=52.5 t=246s
+[75/144] ep=674 ok=True   steps=497 wall=48.7 t=249s
+[76/144] ep=679 ok=True   steps=298 wall=31.4 t=250s
+screw plan failed
+screw plan failed
+screw plan failed
+[77/144] ep=672 ok=True   steps=596 wall=58.3 t=256s
+[78/144] ep=682 ok=True   steps=325 wall=31.7 t=257s
+[79/144] ep=677 ok=True   steps=503 wall=50.1 t=261s
+[80/144] ep=675 ok=True   steps=554 wall=52.9 t=263s
+[81/144] ep=685 ok=True   steps=308 wall=32.2 t=265s
+screw plan failed
+screw plan failed
+screw plan failed
+[82/144] ep=680 ok=True   steps=504 wall=50.6 t=270s
+[83/144] ep=681 ok=True   steps=580 wall=55.3 t=275s
+[84/144] ep=683 ok=True   steps=481 wall=48.8 t=275s
+[85/144] ep=678 ok=True   steps=603 wall=58.3 t=276s
+[86/144] ep=688 ok=True   steps=298 wall=33.4 t=278s
+[87/144] ep=686 ok=True   steps=506 wall=47.2 t=280s
+screw plan failed
+screw plan failed
+screw plan failed
+[88/144] ep=684 ok=False DatasetGenerationError MoveCube/episode_684: did not succeed after the complete task_list steps=552 wall=52.5 t=282s
+screw plan failed
+screw plan failed
+screw plan failed
+[89/144] ep=691 ok=True   steps=300 wall=34.1 t=284s
+screw plan failed
+screw plan failed
+screw plan failed
+[90/144] ep=694 ok=True   steps=285 wall=31.4 t=292s
+screw plan failed
+screw plan failed
+screw plan failed
+[91/144] ep=687 ok=False DatasetGenerationError MoveCube/episode_687: did not succeed after the complete task_list steps=600 wall=57.4 t=296s
+[92/144] ep=689 ok=True   steps=519 wall=52.1 t=298s
+screw plan failed
+screw plan failed
+screw plan failed
+[93/144] ep=697 ok=True   steps=326 wall=35.0 t=305s
+[94/144] ep=692 ok=True   steps=494 wall=49.4 t=306s
+[95/144] ep=700 ok=False DatasetGenerationError MoveCube/episode_700: did not succeed after the complete task_list steps=317 wall=33.0 t=309s
+[96/144] ep=690 ok=True   steps=592 wall=59.7 t=309s
+[97/144] ep=693 ok=True   steps=600 wall=55.8 t=313s
+[98/144] ep=695 ok=True   steps=488 wall=50.2 t=313s
+[99/144] ep=703 ok=True   steps=323 wall=33.3 t=316s
+[100/144] ep=696 ok=False DatasetGenerationError MoveCube/episode_696: did not succeed after the complete task_list steps=542 wall=53.4 t=319s
+[101/144] ep=698 ok=True   steps=538 wall=51.4 t=327s
+screw plan failed
+screw plan failed
+screw plan failed
+[102/144] ep=699 ok=True   steps=536 wall=54.9 t=330s
+[103/144] ep=706 ok=True   steps=308 wall=35.0 t=331s
+[104/144] ep=701 ok=True   steps=510 wall=53.3 t=331s
+[105/144] ep=702 ok=True   steps=563 wall=53.1 t=334s
+[106/144] ep=704 ok=True   steps=493 wall=50.0 t=334s
+[107/144] ep=709 ok=True   steps=311 wall=34.6 t=341s
+[108/144] ep=705 ok=True   steps=499 wall=50.5 t=343s
+[109/144] ep=712 ok=True   steps=303 wall=32.6 t=345s
+[110/144] ep=707 ok=True   steps=492 wall=51.1 t=349s
+[111/144] ep=715 ok=True   steps=314 wall=32.7 t=352s
+[112/144] ep=710 ok=True   steps=508 wall=47.8 t=356s
+[113/144] ep=708 ok=True   steps=559 wall=54.0 t=359s
+[114/144] ep=718 ok=True   steps=305 wall=29.4 t=360s
+[115/144] ep=713 ok=True   steps=515 wall=51.1 t=364s
+[116/144] ep=714 ok=True   steps=507 wall=49.9 t=366s
+[117/144] ep=721 ok=False DatasetGenerationError MoveCube/episode_721: did not succeed after the complete task_list steps=314 wall=33.6 t=368s
+[118/144] ep=716 ok=True   steps=497 wall=45.6 t=373s
+[119/144] ep=724 ok=True   steps=301 wall=31.0 t=376s
+[120/144] ep=719 ok=True   steps=497 wall=48.8 t=380s
+[121/144] ep=720 ok=True   steps=526 wall=49.4 t=383s
+[122/144] ep=717 ok=True   steps=555 wall=52.8 t=383s
+[123/144] ep=727 ok=True   steps=307 wall=31.0 t=387s
+[124/144] ep=722 ok=True   steps=488 wall=48.3 t=389s
+[125/144] ep=723 ok=False DatasetGenerationError MoveCube/episode_723: did not succeed after the complete task_list steps=547 wall=52.8 t=395s
+[126/144] ep=725 ok=True   steps=470 wall=48.3 t=397s
+[127/144] ep=730 ok=True   steps=305 wall=33.2 t=397s
+[128/144] ep=726 ok=True   steps=563 wall=51.6 t=403s
+[129/144] ep=733 ok=True   steps=320 wall=33.0 t=406s
+[130/144] ep=729 ok=True   steps=523 wall=48.8 t=409s
+[131/144] ep=728 ok=True   steps=521 wall=50.8 t=410s
+screw plan failed
+screw plan failed
+screw plan failed
+[132/144] ep=731 ok=True   steps=515 wall=49.3 t=415s
+[133/144] ep=736 ok=True   steps=316 wall=33.1 t=416s
+screw plan failed
+screw plan failed
+screw plan failed
+[134/144] ep=739 ok=True   steps=302 wall=31.5 t=420s
+[135/144] ep=732 ok=True   steps=579 wall=55.8 t=424s
+[136/144] ep=734 ok=True   steps=513 wall=47.2 t=424s
+[137/144] ep=742 ok=True   steps=313 wall=29.9 t=427s
+[138/144] ep=735 ok=True   steps=534 wall=48.7 t=429s
+[139/144] ep=737 ok=True   steps=519 wall=46.3 t=430s
+[140/144] ep=738 ok=True   steps=551 wall=43.3 t=431s
+[141/144] ep=740 ok=True   steps=492 wall=38.0 t=433s
+[142/144] ep=741 ok=False DatasetGenerationError MoveCube/episode_741: did not succeed after the complete task_list steps=572 wall=39.4 t=437s
+[143/144] ep=743 ok=True   steps=528 wall=33.5 t=437s
+[144/144] ep=711 ok=False FailsafeTimeout Episode exceeded failsafe limit (5000 >= 5000) steps=5000 wall=204.6 t=514s
+DONE gpu=0 jobs=144 t=517s
+EXIT_CODE=0

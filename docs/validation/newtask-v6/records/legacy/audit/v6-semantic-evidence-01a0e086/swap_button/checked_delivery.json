@@ -1,0 +1,969 @@
+{
+  "audit_base": "0a3f989b0dfcff12a3cbb34a8112cb56864c7ee8",
+  "manifest": {
+    "path": "artifacts/newtask-v6/s4-launch/verification/final-delivery.json",
+    "bytes": 482156,
+    "sha256": "575747f43eceb535ee2e2492da49cffb11e3e103180b1fa52fe9707e63ee1509"
+  },
+  "source_files": {
+    "src/robomme/robomme_env/ButtonUnmaskSwap.py": {
+      "sha256": "e06f1cbff5dac6d62af6506f917b6bf4b0841c4647841ba4b924019a6b2e9c84",
+      "bytes": 57998
+    },
+    "src/robomme/robomme_env/utils/vqa_options.py": {
+      "sha256": "3f53265495754b968ec3e6e8831b5e13fa1503274852684c5778b6738a601f0b",
+      "bytes": 37414
+    }
+  },
+  "current_button_mapping": {
+    "press the first button": {
+      "recorded_button": "button_right",
+      "option_button": "button_left",
+      "label": "A",
+      "reversed": true
+    },
+    "press the second button": {
+      "recorded_button": "button_left",
+      "option_button": "button_right",
+      "label": "B",
+      "reversed": true
+    }
+  },
+  "ancestor": {
+    "sha": "903cfcc3f2b0a4d040f9bebedb64e0ffd35d3281",
+    "button_mapping": {
+      "press the first button": {
+        "recorded_button": "button_right",
+        "option_button": "button_left",
+        "label": "A",
+        "reversed": true
+      },
+      "press the second button": {
+        "recorded_button": "button_left",
+        "option_button": "button_right",
+        "label": "B",
+        "reversed": true
+      }
+    },
+    "sources": {
+      "src/robomme/robomme_env/ButtonUnmaskSwap.py": {
+        "bytes": 30253,
+        "sha256": "d71057b3c66ef05e0bc0ed1c51753ddde41f34435910bef185d08c1f0913112d"
+      },
+      "src/robomme/robomme_env/utils/vqa_options.py": {
+        "bytes": 36442,
+        "sha256": "63f00b3652decb297194c094ff353f59157f9bcb69314a977e5f97d03f04fd17"
+      }
+    }
+  },
+  "episodes": [
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard1",
+      "episode": 0,
+      "seed": 8700000,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed8700000.h5",
+      "source_bytes": 342049584,
+      "source_sha256": "065604279c26c1c3b08e6619b3292195e69847d519e0d76dabe9eb7dd9cfd4db",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              63,
+              151
+            ]
+          },
+          "grounded_subgoal": "press the first button at <60, 151>",
+          "grounded_subgoal_online": "press the first button at <60, 151>"
+        },
+        {
+          "timestep": 115,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              67,
+              105
+            ]
+          },
+          "grounded_subgoal": "press the second button at <64, 104>",
+          "grounded_subgoal_online": "press the second button at <64, 104>"
+        },
+        {
+          "timestep": 265,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              93,
+              188
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <96, 185> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <93, 129> that hides the red cube"
+        },
+        {
+          "timestep": 419,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              126,
+              196
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <128, 192> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <128, 192> that hides the blue cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard1",
+      "episode": 3,
+      "seed": 8700300,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed8700300.h5",
+      "source_bytes": 348718136,
+      "source_sha256": "0fbaa481bbead21fd4e29d4057ce1b6ec315bceff3ba56e5309ca6efb87f8dac",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              66,
+              149
+            ]
+          },
+          "grounded_subgoal": "press the first button at <64, 149>",
+          "grounded_subgoal_online": "press the first button at <64, 149>"
+        },
+        {
+          "timestep": 119,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              65,
+              107
+            ]
+          },
+          "grounded_subgoal": "press the second button at <63, 105>",
+          "grounded_subgoal_online": "press the second button at <63, 105>"
+        },
+        {
+          "timestep": 268,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              132,
+              182
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <135, 179> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <126, 118> that hides the blue cube"
+        },
+        {
+          "timestep": 422,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              123,
+              119
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <126, 118> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <126, 118> that hides the red cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard1",
+      "episode": 6,
+      "seed": 8700600,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed8700600.h5",
+      "source_bytes": 343385888,
+      "source_sha256": "f73a433c550e99350fcc6568b3ae5432b2556d738b72450414c0faa2e942630e",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              64,
+              154
+            ]
+          },
+          "grounded_subgoal": "press the first button at <61, 153>",
+          "grounded_subgoal_online": "press the first button at <61, 153>"
+        },
+        {
+          "timestep": 114,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              63,
+              104
+            ]
+          },
+          "grounded_subgoal": "press the second button at <60, 103>",
+          "grounded_subgoal_online": "press the second button at <60, 103>"
+        },
+        {
+          "timestep": 266,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              92,
+              114
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <95, 114> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <95, 114> that hides the red cube"
+        },
+        {
+          "timestep": 417,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              131,
+              168
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <133, 165> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <133, 165> that hides the green cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": false
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard2",
+      "episode": 0,
+      "seed": 10700001,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed10700001.h5",
+      "source_bytes": 406725464,
+      "source_sha256": "25d061e84311b6fa3482614a63a709df4e1e2453e254b5fea069550b6ca8b58c",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              67,
+              154
+            ]
+          },
+          "grounded_subgoal": "press the first button at <64, 153>",
+          "grounded_subgoal_online": "press the first button at <64, 153>"
+        },
+        {
+          "timestep": 118,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              64,
+              102
+            ]
+          },
+          "grounded_subgoal": "press the second button at <61, 101>",
+          "grounded_subgoal_online": "press the second button at <61, 101>"
+        },
+        {
+          "timestep": 229,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              97,
+              154
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <100, 152> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <116, 185> that hides the green cube"
+        },
+        {
+          "timestep": 380,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              101,
+              110
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <104, 109> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <104, 109> that hides the blue cube"
+        },
+        {
+          "timestep": 516,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              131,
+              110
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <134, 110> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <134, 110> that hides the red cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard2",
+      "episode": 3,
+      "seed": 10700300,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed10700300.h5",
+      "source_bytes": 414057512,
+      "source_sha256": "1108e5a31a99a6939946227ea2957ce39d6a534a8803db4a0ee2f045b4ea08f4",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              69,
+              156
+            ]
+          },
+          "grounded_subgoal": "press the first button at <67, 156>",
+          "grounded_subgoal_online": "press the first button at <67, 156>"
+        },
+        {
+          "timestep": 109,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              63,
+              102
+            ]
+          },
+          "grounded_subgoal": "press the second button at <60, 100>",
+          "grounded_subgoal_online": "press the second button at <60, 100>"
+        },
+        {
+          "timestep": 234,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              87,
+              162
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <90, 159> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <126, 132> that hides the blue cube"
+        },
+        {
+          "timestep": 378,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              128,
+              127
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <130, 126> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <130, 126> that hides the red cube"
+        },
+        {
+          "timestep": 531,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              101,
+              110
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <111, 114> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container that hides the green cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard2",
+      "episode": 6,
+      "seed": 10700600,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed10700600.h5",
+      "source_bytes": 421395752,
+      "source_sha256": "41cdee78a20362fa527bdc70317547ce8006eecc17d39f27b951107948120267",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              65,
+              148
+            ]
+          },
+          "grounded_subgoal": "press the first button at <62, 148>",
+          "grounded_subgoal_online": "press the first button at <62, 148>"
+        },
+        {
+          "timestep": 118,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              67,
+              103
+            ]
+          },
+          "grounded_subgoal": "press the second button at <64, 102>",
+          "grounded_subgoal_online": "press the second button at <64, 102>"
+        },
+        {
+          "timestep": 233,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              103,
+              168
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <105, 166> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <133, 177> that hides the blue cube"
+        },
+        {
+          "timestep": 389,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              126,
+              93
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <128, 93> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <128, 93> that hides the red cube"
+        },
+        {
+          "timestep": 530,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              102,
+              131
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <105, 130> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <104, 132> that hides the green cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard3",
+      "episode": 0,
+      "seed": 12700000,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed12700000.h5",
+      "source_bytes": 454062992,
+      "source_sha256": "9b43c631d8806357bb402ddcfef9603f8567d14b2975e0bc3e0290ea309d641c",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              68,
+              155
+            ]
+          },
+          "grounded_subgoal": "press the first button at <65, 155>",
+          "grounded_subgoal_online": "press the first button at <65, 155>"
+        },
+        {
+          "timestep": 104,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              68,
+              110
+            ]
+          },
+          "grounded_subgoal": "press the second button at <65, 109>",
+          "grounded_subgoal_online": "press the second button at <65, 109>"
+        },
+        {
+          "timestep": 263,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              110,
+              200
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <113, 196> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <104, 160> that hides the blue cube"
+        },
+        {
+          "timestep": 427,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              98,
+              162
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <101, 160> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <101, 160> that hides the green cube"
+        },
+        {
+          "timestep": 573,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              132,
+              136
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <134, 134> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <134, 134> that hides the red cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard3",
+      "episode": 3,
+      "seed": 12700300,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed12700300.h5",
+      "source_bytes": 437394520,
+      "source_sha256": "d6207bcc7813753c62cd082a219571b5df1e98528af5936be048523f1da6ce80",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              65,
+              145
+            ]
+          },
+          "grounded_subgoal": "press the first button at <62, 145>",
+          "grounded_subgoal_online": "press the first button at <62, 145>"
+        },
+        {
+          "timestep": 119,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              65,
+              105
+            ]
+          },
+          "grounded_subgoal": "press the second button at <62, 104>",
+          "grounded_subgoal_online": "press the second button at <62, 104>"
+        },
+        {
+          "timestep": 262,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              119,
+              112
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <121, 112> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <91, 105> that hides the blue cube"
+        },
+        {
+          "timestep": 423,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              129,
+              186
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <131, 183> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <131, 183> that hides the red cube"
+        },
+        {
+          "timestep": 553,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              88,
+              105
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <91, 105> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <91, 105> that hides the green cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard3",
+      "episode": 6,
+      "seed": 12700600,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed12700600.h5",
+      "source_bytes": 459399872,
+      "source_sha256": "50aae23b46ef7bbab12d6fb81f4558263201eec0235afeee99371e92a0f9cf32",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              70,
+              147
+            ]
+          },
+          "grounded_subgoal": "press the first button at <67, 147>",
+          "grounded_subgoal_online": "press the first button at <67, 147>"
+        },
+        {
+          "timestep": 110,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              67,
+              111
+            ]
+          },
+          "grounded_subgoal": "press the second button at <65, 109>",
+          "grounded_subgoal_online": "press the second button at <65, 109>"
+        },
+        {
+          "timestep": 295,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              102,
+              115
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <105, 114> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <126, 95> that hides the blue cube"
+        },
+        {
+          "timestep": 448,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              124,
+              180
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <127, 177> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <127, 177> that hides the red cube"
+        },
+        {
+          "timestep": 596,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              124,
+              95
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <126, 95> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <126, 95> that hides the green cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard4",
+      "episode": 0,
+      "seed": 6700000,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed6700000.h5",
+      "source_bytes": 478078112,
+      "source_sha256": "1b08515421a1c8cac6c989b91bedae632467012f1482411fab763b6382672ebf",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              63,
+              155
+            ]
+          },
+          "grounded_subgoal": "press the first button at <60, 155>",
+          "grounded_subgoal_online": "press the first button at <60, 155>"
+        },
+        {
+          "timestep": 113,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              68,
+              106
+            ]
+          },
+          "grounded_subgoal": "press the second button at <65, 105>",
+          "grounded_subgoal_online": "press the second button at <65, 105>"
+        },
+        {
+          "timestep": 333,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              92,
+              111
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <95, 110> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <104, 169> that hides the blue cube"
+        },
+        {
+          "timestep": 476,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              121,
+              106
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <123, 106> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <123, 106> that hides the green cube"
+        },
+        {
+          "timestep": 630,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              129,
+              193
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <131, 190> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <131, 190> that hides the red cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard4",
+      "episode": 3,
+      "seed": 6700300,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed6700300.h5",
+      "source_bytes": 474741608,
+      "source_sha256": "867fdad628c4b17707507a4b4be8daf38aed3cc6627f3821a06210c225e3039d",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              63,
+              151
+            ]
+          },
+          "grounded_subgoal": "press the first button at <60, 150>",
+          "grounded_subgoal_online": "press the first button at <60, 150>"
+        },
+        {
+          "timestep": 114,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              67,
+              103
+            ]
+          },
+          "grounded_subgoal": "press the second button at <64, 102>",
+          "grounded_subgoal_online": "press the second button at <64, 102>"
+        },
+        {
+          "timestep": 332,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              94,
+              138
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <97, 137> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <97, 137> that hides the green cube"
+        },
+        {
+          "timestep": 476,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              96,
+              190
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <99, 187> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <99, 187> that hides the blue cube"
+        },
+        {
+          "timestep": 612,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              132,
+              179
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <134, 176> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <134, 176> that hides the red cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": false
+    },
+    {
+      "task": "ButtonUnmaskSwap",
+      "difficulty": "xhard4",
+      "episode": 6,
+      "seed": 6700600,
+      "source_hdf5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed6700600.h5",
+      "source_bytes": 490078544,
+      "source_sha256": "14ddd9088db2e0ddd62717191c6345776edbc25ca8e681e135676d805c806f76",
+      "boundaries": [
+        {
+          "timestep": 0,
+          "simple_subgoal": "press the first button",
+          "choice_action": {
+            "choice": "A",
+            "point": [
+              63,
+              149
+            ]
+          },
+          "grounded_subgoal": "press the first button at <60, 148>",
+          "grounded_subgoal_online": "press the first button at <60, 148>"
+        },
+        {
+          "timestep": 115,
+          "simple_subgoal": "press the second button",
+          "choice_action": {
+            "choice": "B",
+            "point": [
+              63,
+              102
+            ]
+          },
+          "grounded_subgoal": "press the second button at <60, 100>",
+          "grounded_subgoal_online": "press the second button at <60, 100>"
+        },
+        {
+          "timestep": 333,
+          "simple_subgoal": "pick up the container that hides the blue cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              132,
+              159
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <134, 156> that hides the blue cube",
+          "grounded_subgoal_online": "pick up the container at <118, 117> that hides the blue cube"
+        },
+        {
+          "timestep": 484,
+          "simple_subgoal": "pick up the container that hides the green cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              98,
+              96
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <101, 96> that hides the green cube",
+          "grounded_subgoal_online": "pick up the container at <101, 96> that hides the green cube"
+        },
+        {
+          "timestep": 632,
+          "simple_subgoal": "pick up the container that hides the red cube",
+          "choice_action": {
+            "choice": "C",
+            "point": [
+              127,
+              104
+            ]
+          },
+          "grounded_subgoal": "pick up the container at <129, 104> that hides the red cube",
+          "grounded_subgoal_online": "pick up the container at <129, 104> that hides the red cube"
+        }
+      ],
+      "last_is_completed": true,
+      "first_pick_grounding_difference": true
+    }
+  ],
+  "summary": {
+    "files": 12,
+    "first_pick_grounding_differences": 10,
+    "button_label_pairs": 12,
+    "last_is_completed_true": 12
+  },
+  "limits": [
+    "字段差异不等于全部帧像素错误；代表局截图支持目标位置变化，未逐帧重建全部分割。",
+    "选项反转由冻结源码语法树与交付选择标签共同证明；未执行策略、按钮或仿真。",
+    "祖先已有相同映射，只证明非V6新引入，不证明旧数据全部受到影响。"
+  ]
+}

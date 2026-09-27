@@ -1,0 +1,42 @@
+=== START seed=5500000 ep=0 03:25:01
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+RESULT {"seed": 5500000, "episode": 0, "reset_wall_s": 0.0, "nodes": 24, "path_attempts": 107, "path_nodes": [24, 23, 22, 21, 17, 11, 5, 0, 1, 7, 2, 3, 8, 14, 9, 13, 19, 18, 12, 16, 20, 15, 10, 6], "ok": true, "error": null, "total_wall_s": 76.6, "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v5/plan-probes-r2/patternlock_2425/episodes/PatternLock_episode_0/hdf5_files/PatternLock_ep0_seed5500000.h5", "total_frames": 1588, "demo_frames": 794, "demo_s": 26.47, "exec_frames": 794, "demo_prefix": true, "completed_last": true, "demo_seg_lens": [1, 21, 26, 22, 46, 39, 30, 29, 27, 36, 33, 28, 36, 39, 35, 33, 44, 21, 38, 39, 53, 46, 34, 39], "exec_seg_lens": [21, 26, 22, 46, 39, 30, 29, 27, 36, 33, 28, 36, 39, 35, 33, 44, 21, 38, 39, 53, 46, 34, 32], "demo_seg_mean": 33.12}
+=== START seed=5500300 ep=3 03:26:22
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+RESULT {"seed": 5500300, "episode": 3, "reset_wall_s": 0.0, "nodes": 25, "path_attempts": 141, "path_nodes": [17, 21, 22, 18, 12, 7, 11, 16, 20, 15, 10, 5, 1, 0, 6, 2, 3, 9, 4, 8, 14, 13, 19, 24, 23], "ok": true, "error": null, "total_wall_s": 83.3, "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v5/plan-probes-r2/patternlock_2425/episodes/PatternLock_episode_3/hdf5_files/PatternLock_ep3_seed5500300.h5", "total_frames": 1744, "demo_frames": 872, "demo_s": 29.07, "exec_frames": 872, "demo_prefix": true, "completed_last": true, "demo_seg_lens": [1, 46, 26, 40, 38, 36, 37, 35, 53, 46, 34, 36, 38, 27, 32, 37, 28, 38, 31, 31, 44, 24, 45, 49, 21], "exec_seg_lens": [46, 26, 40, 38, 36, 37, 35, 53, 46, 34, 36, 38, 27, 32, 37, 28, 38, 31, 31, 44, 24, 45, 49, 15], "demo_seg_mean": 34.92}
+=== START seed=5500600 ep=6 03:27:50
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+RESULT {"seed": 5500600, "episode": 6, "reset_wall_s": 0.0, "nodes": 24, "path_attempts": 34, "path_nodes": [0, 1, 5, 10, 15, 20, 16, 21, 22, 17, 12, 8, 14, 18, 24, 23, 19, 13, 9, 3, 2, 7, 6, 11], "ok": true, "error": null, "total_wall_s": 77.3, "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v5/plan-probes-r2/patternlock_2425/episodes/PatternLock_episode_6/hdf5_files/PatternLock_ep6_seed5500600.h5", "total_frames": 1682, "demo_frames": 841, "demo_s": 28.03, "exec_frames": 841, "demo_prefix": true, "completed_last": true, "demo_seg_lens": [1, 30, 38, 36, 36, 49, 52, 44, 26, 40, 33, 36, 39, 31, 54, 21, 37, 47, 31, 38, 27, 31, 32, 33], "exec_seg_lens": [30, 38, 36, 36, 49, 52, 44, 26, 40, 33, 36, 39, 31, 54, 21, 37, 47, 31, 38, 27, 31, 32, 25], "demo_seg_mean": 35.08}
+=== START seed=5500900 ep=9 03:29:12
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+         at line 85 in /workspace/urdfdom/urdf_parser/src/model.cpp
+RESULT {"seed": 5500900, "episode": 9, "reset_wall_s": 0.0, "nodes": 24, "path_attempts": 564, "path_nodes": [5, 6, 0, 1, 2, 3, 4, 8, 12, 7, 11, 17, 13, 14, 19, 23, 24, 18, 22, 21, 20, 15, 16, 10], "ok": true, "error": null, "total_wall_s": 66.3, "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v5/plan-probes-r2/patternlock_2425/episodes/PatternLock_episode_9/hdf5_files/PatternLock_ep9_seed5500900.h5", "total_frames": 1470, "demo_frames": 735, "demo_s": 24.5, "exec_frames": 735, "demo_prefix": true, "completed_last": true, "demo_seg_lens": [1, 30, 30, 29, 28, 28, 28, 30, 31, 36, 39, 34, 33, 25, 36, 41, 22, 52, 41, 22, 23, 46, 21, 30], "exec_seg_lens": [30, 30, 29, 28, 28, 28, 30, 31, 36, 39, 34, 33, 25, 36, 41, 22, 52, 41, 22, 23, 46, 21, 23], "demo_seg_mean": 30.67}
+DEMO_BATCH_DONE
+EXIT_CODE=0

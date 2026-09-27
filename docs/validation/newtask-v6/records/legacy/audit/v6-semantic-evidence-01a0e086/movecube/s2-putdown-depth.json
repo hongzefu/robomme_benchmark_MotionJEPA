@@ -1,0 +1,38 @@
+[
+  {
+    "id": "MoveCube-xhard4-6100003",
+    "first_completed": "timestep_447",
+    "red_surface_z_quantiles": [
+      0.009282140789644826,
+      0.04071287177325972,
+      0.041334779089408
+    ]
+  },
+  {
+    "id": "MoveCube-xhard4-6100005",
+    "first_completed": "timestep_445",
+    "red_surface_z_quantiles": [
+      0.00907949972720632,
+      0.03422128959568034,
+      0.04157236265213978
+    ]
+  },
+  {
+    "id": "MoveCube-xhard4-6100008",
+    "first_completed": "timestep_461",
+    "red_surface_z_quantiles": [
+      0.009079506879763692,
+      0.040775770967917555,
+      0.04153044388266098
+    ]
+  },
+  {
+    "id": "MoveCube-xhard4-6100009",
+    "first_completed": "timestep_456",
+    "red_surface_z_quantiles": [
+      0.003028145989494422,
+      0.04088058511735686,
+      0.04153044388266098
+    ]
+  }
+]

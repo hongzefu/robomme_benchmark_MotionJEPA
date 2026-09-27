@@ -1,0 +1,1452 @@
+[
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard1",
+    "episode": 0,
+    "seed": 8100000,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed8100000.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 142,
+        "name": "pick up the blue cube for the first time"
+      },
+      {
+        "start": 143,
+        "end": 238,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 239,
+        "end": 310,
+        "name": "pick up the blue cube for the second time"
+      },
+      {
+        "start": 311,
+        "end": 365,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 366,
+        "end": 438,
+        "name": "pick up the blue cube for the third time"
+      },
+      {
+        "start": 439,
+        "end": 491,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 492,
+        "end": 564,
+        "name": "pick up the blue cube for the fourth time"
+      },
+      {
+        "start": 565,
+        "end": 618,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 619,
+        "end": 691,
+        "name": "pick up the blue cube for the fifth time"
+      },
+      {
+        "start": 692,
+        "end": 745,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 746,
+        "end": 818,
+        "name": "pick up the blue cube for the sixth time"
+      },
+      {
+        "start": 819,
+        "end": 872,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 873,
+        "end": 945,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 946,
+        "end": 977,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard1",
+    "episode": 3,
+    "seed": 8100300,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed8100300.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 103,
+        "name": "pick up the green cube for the first time"
+      },
+      {
+        "start": 104,
+        "end": 182,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 183,
+        "end": 257,
+        "name": "pick up the green cube for the second time"
+      },
+      {
+        "start": 258,
+        "end": 312,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 313,
+        "end": 388,
+        "name": "pick up the green cube for the third time"
+      },
+      {
+        "start": 389,
+        "end": 443,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 444,
+        "end": 518,
+        "name": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 519,
+        "end": 572,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 573,
+        "end": 647,
+        "name": "pick up the green cube for the fifth time"
+      },
+      {
+        "start": 648,
+        "end": 701,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 702,
+        "end": 776,
+        "name": "pick up the green cube for the sixth time"
+      },
+      {
+        "start": 777,
+        "end": 830,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 831,
+        "end": 905,
+        "name": "pick up the green cube for the seventh time"
+      },
+      {
+        "start": 906,
+        "end": 959,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 960,
+        "end": 1033,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 1034,
+        "end": 1079,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard1",
+    "episode": 6,
+    "seed": 8100600,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed8100600.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 137,
+        "name": "pick up the red cube for the first time"
+      },
+      {
+        "start": 138,
+        "end": 229,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 230,
+        "end": 298,
+        "name": "pick up the red cube for the second time"
+      },
+      {
+        "start": 299,
+        "end": 351,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 352,
+        "end": 422,
+        "name": "pick up the red cube for the third time"
+      },
+      {
+        "start": 423,
+        "end": 476,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 477,
+        "end": 546,
+        "name": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 547,
+        "end": 599,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 600,
+        "end": 669,
+        "name": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 670,
+        "end": 722,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 723,
+        "end": 791,
+        "name": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 792,
+        "end": 844,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 845,
+        "end": 920,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 921,
+        "end": 964,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard2",
+    "episode": 0,
+    "seed": 10100000,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed10100000.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 98,
+        "name": "pick up the blue cube for the first time"
+      },
+      {
+        "start": 99,
+        "end": 189,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 190,
+        "end": 264,
+        "name": "pick up the blue cube for the second time"
+      },
+      {
+        "start": 265,
+        "end": 323,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 324,
+        "end": 398,
+        "name": "pick up the blue cube for the third time"
+      },
+      {
+        "start": 399,
+        "end": 458,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 459,
+        "end": 532,
+        "name": "pick up the blue cube for the fourth time"
+      },
+      {
+        "start": 533,
+        "end": 592,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 593,
+        "end": 668,
+        "name": "pick up the blue cube for the fifth time"
+      },
+      {
+        "start": 669,
+        "end": 739,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 740,
+        "end": 812,
+        "name": "pick up the blue cube for the sixth time"
+      },
+      {
+        "start": 813,
+        "end": 880,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 881,
+        "end": 953,
+        "name": "pick up the blue cube for the seventh time"
+      },
+      {
+        "start": 954,
+        "end": 1020,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1021,
+        "end": 1093,
+        "name": "pick up the blue cube for the eighth time"
+      },
+      {
+        "start": 1094,
+        "end": 1159,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1160,
+        "end": 1232,
+        "name": "pick up the blue cube for the ninth time"
+      },
+      {
+        "start": 1233,
+        "end": 1293,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1294,
+        "end": 1349,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 1350,
+        "end": 1389,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard2",
+    "episode": 3,
+    "seed": 10100300,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed10100300.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 115,
+        "name": "pick up the red cube for the first time"
+      },
+      {
+        "start": 116,
+        "end": 205,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 206,
+        "end": 275,
+        "name": "pick up the red cube for the second time"
+      },
+      {
+        "start": 276,
+        "end": 330,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 331,
+        "end": 400,
+        "name": "pick up the red cube for the third time"
+      },
+      {
+        "start": 401,
+        "end": 455,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 456,
+        "end": 526,
+        "name": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 527,
+        "end": 582,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 583,
+        "end": 652,
+        "name": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 653,
+        "end": 708,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 709,
+        "end": 779,
+        "name": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 780,
+        "end": 835,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 836,
+        "end": 906,
+        "name": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 907,
+        "end": 962,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 963,
+        "end": 1034,
+        "name": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 1035,
+        "end": 1091,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1092,
+        "end": 1162,
+        "name": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1163,
+        "end": 1218,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1219,
+        "end": 1280,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 1281,
+        "end": 1316,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard2",
+    "episode": 6,
+    "seed": 10100600,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed10100600.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 110,
+        "name": "pick up the red cube for the first time"
+      },
+      {
+        "start": 111,
+        "end": 189,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 190,
+        "end": 261,
+        "name": "pick up the red cube for the second time"
+      },
+      {
+        "start": 262,
+        "end": 314,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 315,
+        "end": 386,
+        "name": "pick up the red cube for the third time"
+      },
+      {
+        "start": 387,
+        "end": 440,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 441,
+        "end": 514,
+        "name": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 515,
+        "end": 569,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 570,
+        "end": 641,
+        "name": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 642,
+        "end": 695,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 696,
+        "end": 767,
+        "name": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 768,
+        "end": 821,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 822,
+        "end": 894,
+        "name": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 895,
+        "end": 949,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 950,
+        "end": 1020,
+        "name": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 1021,
+        "end": 1075,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1076,
+        "end": 1147,
+        "name": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1148,
+        "end": 1201,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1202,
+        "end": 1274,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 1275,
+        "end": 1312,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard3",
+    "episode": 0,
+    "seed": 12100000,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed12100000.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 103,
+        "name": "pick up the red cube for the first time"
+      },
+      {
+        "start": 104,
+        "end": 188,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 189,
+        "end": 264,
+        "name": "pick up the red cube for the second time"
+      },
+      {
+        "start": 265,
+        "end": 322,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 323,
+        "end": 398,
+        "name": "pick up the red cube for the third time"
+      },
+      {
+        "start": 399,
+        "end": 457,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 458,
+        "end": 533,
+        "name": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 534,
+        "end": 592,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 593,
+        "end": 668,
+        "name": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 669,
+        "end": 727,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 728,
+        "end": 803,
+        "name": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 804,
+        "end": 862,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 863,
+        "end": 937,
+        "name": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 938,
+        "end": 996,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 997,
+        "end": 1073,
+        "name": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 1074,
+        "end": 1132,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1133,
+        "end": 1207,
+        "name": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1208,
+        "end": 1266,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1267,
+        "end": 1341,
+        "name": "pick up the red cube for the tenth time"
+      },
+      {
+        "start": 1342,
+        "end": 1400,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1401,
+        "end": 1475,
+        "name": "pick up the red cube for the eleventh time"
+      },
+      {
+        "start": 1476,
+        "end": 1534,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1535,
+        "end": 1590,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 1591,
+        "end": 1626,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard3",
+    "episode": 3,
+    "seed": 12100300,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed12100300.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 115,
+        "name": "pick up the red cube for the first time"
+      },
+      {
+        "start": 116,
+        "end": 208,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 209,
+        "end": 279,
+        "name": "pick up the red cube for the second time"
+      },
+      {
+        "start": 280,
+        "end": 334,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 335,
+        "end": 407,
+        "name": "pick up the red cube for the third time"
+      },
+      {
+        "start": 408,
+        "end": 461,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 462,
+        "end": 532,
+        "name": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 533,
+        "end": 586,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 587,
+        "end": 658,
+        "name": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 659,
+        "end": 713,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 714,
+        "end": 786,
+        "name": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 787,
+        "end": 840,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 841,
+        "end": 912,
+        "name": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 913,
+        "end": 967,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 968,
+        "end": 1041,
+        "name": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 1042,
+        "end": 1095,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1096,
+        "end": 1166,
+        "name": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1167,
+        "end": 1220,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1221,
+        "end": 1292,
+        "name": "pick up the red cube for the tenth time"
+      },
+      {
+        "start": 1293,
+        "end": 1348,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1349,
+        "end": 1421,
+        "name": "pick up the red cube for the eleventh time"
+      },
+      {
+        "start": 1422,
+        "end": 1475,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1476,
+        "end": 1546,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 1547,
+        "end": 1592,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard3",
+    "episode": 6,
+    "seed": 12100600,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed12100600.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 102,
+        "name": "pick up the green cube for the first time"
+      },
+      {
+        "start": 103,
+        "end": 189,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 190,
+        "end": 260,
+        "name": "pick up the green cube for the second time"
+      },
+      {
+        "start": 261,
+        "end": 319,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 320,
+        "end": 389,
+        "name": "pick up the green cube for the third time"
+      },
+      {
+        "start": 390,
+        "end": 448,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 449,
+        "end": 527,
+        "name": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 528,
+        "end": 586,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 587,
+        "end": 657,
+        "name": "pick up the green cube for the fifth time"
+      },
+      {
+        "start": 658,
+        "end": 716,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 717,
+        "end": 796,
+        "name": "pick up the green cube for the sixth time"
+      },
+      {
+        "start": 797,
+        "end": 856,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 857,
+        "end": 937,
+        "name": "pick up the green cube for the seventh time"
+      },
+      {
+        "start": 938,
+        "end": 996,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 997,
+        "end": 1076,
+        "name": "pick up the green cube for the eighth time"
+      },
+      {
+        "start": 1077,
+        "end": 1135,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1136,
+        "end": 1215,
+        "name": "pick up the green cube for the ninth time"
+      },
+      {
+        "start": 1216,
+        "end": 1274,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1275,
+        "end": 1352,
+        "name": "pick up the green cube for the tenth time"
+      },
+      {
+        "start": 1353,
+        "end": 1410,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1411,
+        "end": 1488,
+        "name": "pick up the green cube for the eleventh time"
+      },
+      {
+        "start": 1489,
+        "end": 1547,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1548,
+        "end": 1613,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 1614,
+        "end": 1662,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard4",
+    "episode": 0,
+    "seed": 6100000,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickXtimes_episode_0/hdf5_files/PickXtimes_ep0_seed6100000.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 109,
+        "name": "pick up the green cube for the first time"
+      },
+      {
+        "start": 110,
+        "end": 203,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 204,
+        "end": 277,
+        "name": "pick up the green cube for the second time"
+      },
+      {
+        "start": 278,
+        "end": 338,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 339,
+        "end": 413,
+        "name": "pick up the green cube for the third time"
+      },
+      {
+        "start": 414,
+        "end": 472,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 473,
+        "end": 546,
+        "name": "pick up the green cube for the fourth time"
+      },
+      {
+        "start": 547,
+        "end": 617,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 618,
+        "end": 690,
+        "name": "pick up the green cube for the fifth time"
+      },
+      {
+        "start": 691,
+        "end": 760,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 761,
+        "end": 833,
+        "name": "pick up the green cube for the sixth time"
+      },
+      {
+        "start": 834,
+        "end": 902,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 903,
+        "end": 975,
+        "name": "pick up the green cube for the seventh time"
+      },
+      {
+        "start": 976,
+        "end": 1043,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1044,
+        "end": 1117,
+        "name": "pick up the green cube for the eighth time"
+      },
+      {
+        "start": 1118,
+        "end": 1182,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1183,
+        "end": 1255,
+        "name": "pick up the green cube for the ninth time"
+      },
+      {
+        "start": 1256,
+        "end": 1318,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1319,
+        "end": 1390,
+        "name": "pick up the green cube for the tenth time"
+      },
+      {
+        "start": 1391,
+        "end": 1451,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1452,
+        "end": 1523,
+        "name": "pick up the green cube for the eleventh time"
+      },
+      {
+        "start": 1524,
+        "end": 1584,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1585,
+        "end": 1660,
+        "name": "pick up the green cube for the twelfth time"
+      },
+      {
+        "start": 1661,
+        "end": 1720,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1721,
+        "end": 1796,
+        "name": "pick up the green cube for the thirteenth time"
+      },
+      {
+        "start": 1797,
+        "end": 1864,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 1865,
+        "end": 1937,
+        "name": "pick up the green cube for the fourteenth time"
+      },
+      {
+        "start": 1938,
+        "end": 2001,
+        "name": "place the green cube onto the target"
+      },
+      {
+        "start": 2002,
+        "end": 2058,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 2059,
+        "end": 2104,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard4",
+    "episode": 3,
+    "seed": 6100300,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickXtimes_episode_3/hdf5_files/PickXtimes_ep3_seed6100300.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 165,
+        "name": "pick up the blue cube for the first time"
+      },
+      {
+        "start": 166,
+        "end": 265,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 266,
+        "end": 336,
+        "name": "pick up the blue cube for the second time"
+      },
+      {
+        "start": 337,
+        "end": 399,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 400,
+        "end": 469,
+        "name": "pick up the blue cube for the third time"
+      },
+      {
+        "start": 470,
+        "end": 531,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 532,
+        "end": 602,
+        "name": "pick up the blue cube for the fourth time"
+      },
+      {
+        "start": 603,
+        "end": 665,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 666,
+        "end": 736,
+        "name": "pick up the blue cube for the fifth time"
+      },
+      {
+        "start": 737,
+        "end": 798,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 799,
+        "end": 869,
+        "name": "pick up the blue cube for the sixth time"
+      },
+      {
+        "start": 870,
+        "end": 931,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 932,
+        "end": 1001,
+        "name": "pick up the blue cube for the seventh time"
+      },
+      {
+        "start": 1002,
+        "end": 1061,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1062,
+        "end": 1131,
+        "name": "pick up the blue cube for the eighth time"
+      },
+      {
+        "start": 1132,
+        "end": 1191,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1192,
+        "end": 1261,
+        "name": "pick up the blue cube for the ninth time"
+      },
+      {
+        "start": 1262,
+        "end": 1321,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1322,
+        "end": 1390,
+        "name": "pick up the blue cube for the tenth time"
+      },
+      {
+        "start": 1391,
+        "end": 1447,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1448,
+        "end": 1526,
+        "name": "pick up the blue cube for the eleventh time"
+      },
+      {
+        "start": 1527,
+        "end": 1582,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1583,
+        "end": 1662,
+        "name": "pick up the blue cube for the twelfth time"
+      },
+      {
+        "start": 1663,
+        "end": 1719,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1720,
+        "end": 1796,
+        "name": "pick up the blue cube for the thirteenth time"
+      },
+      {
+        "start": 1797,
+        "end": 1852,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1853,
+        "end": 1929,
+        "name": "pick up the blue cube for the fourteenth time"
+      },
+      {
+        "start": 1930,
+        "end": 1985,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 1986,
+        "end": 2061,
+        "name": "pick up the blue cube for the fifteenth time"
+      },
+      {
+        "start": 2062,
+        "end": 2117,
+        "name": "place the blue cube onto the target"
+      },
+      {
+        "start": 2118,
+        "end": 2179,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 2180,
+        "end": 2214,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  },
+  {
+    "task": "PickXtimes",
+    "difficulty": "xhard4",
+    "episode": 6,
+    "seed": 6100600,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickXtimes_episode_6/hdf5_files/PickXtimes_ep6_seed6100600.h5",
+    "segments": [
+      {
+        "start": 0,
+        "end": 115,
+        "name": "pick up the red cube for the first time"
+      },
+      {
+        "start": 116,
+        "end": 217,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 218,
+        "end": 291,
+        "name": "pick up the red cube for the second time"
+      },
+      {
+        "start": 292,
+        "end": 360,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 361,
+        "end": 434,
+        "name": "pick up the red cube for the third time"
+      },
+      {
+        "start": 435,
+        "end": 503,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 504,
+        "end": 576,
+        "name": "pick up the red cube for the fourth time"
+      },
+      {
+        "start": 577,
+        "end": 644,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 645,
+        "end": 717,
+        "name": "pick up the red cube for the fifth time"
+      },
+      {
+        "start": 718,
+        "end": 783,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 784,
+        "end": 856,
+        "name": "pick up the red cube for the sixth time"
+      },
+      {
+        "start": 857,
+        "end": 920,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 921,
+        "end": 993,
+        "name": "pick up the red cube for the seventh time"
+      },
+      {
+        "start": 994,
+        "end": 1055,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1056,
+        "end": 1128,
+        "name": "pick up the red cube for the eighth time"
+      },
+      {
+        "start": 1129,
+        "end": 1191,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1192,
+        "end": 1271,
+        "name": "pick up the red cube for the ninth time"
+      },
+      {
+        "start": 1272,
+        "end": 1332,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1333,
+        "end": 1408,
+        "name": "pick up the red cube for the tenth time"
+      },
+      {
+        "start": 1409,
+        "end": 1477,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1478,
+        "end": 1551,
+        "name": "pick up the red cube for the eleventh time"
+      },
+      {
+        "start": 1552,
+        "end": 1615,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1616,
+        "end": 1688,
+        "name": "pick up the red cube for the twelfth time"
+      },
+      {
+        "start": 1689,
+        "end": 1752,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1753,
+        "end": 1832,
+        "name": "pick up the red cube for the thirteenth time"
+      },
+      {
+        "start": 1833,
+        "end": 1895,
+        "name": "place the red cube onto the target"
+      },
+      {
+        "start": 1896,
+        "end": 1951,
+        "name": "press the button to stop"
+      },
+      {
+        "start": 1952,
+        "end": 1994,
+        "name": "All tasks completed"
+      }
+    ],
+    "completed": true
+  }
+]

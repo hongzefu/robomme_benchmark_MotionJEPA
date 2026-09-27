@@ -1,0 +1,266 @@
+[
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard1",
+    "episode": 0,
+    "t": 265,
+    "online_first_t": 175,
+    "offline_yx": [
+      96,
+      185
+    ],
+    "online_yx": [
+      93,
+      129
+    ],
+    "action_yx": [
+      93,
+      188
+    ],
+    "offline_action_distance": 4.242640687119285,
+    "online_action_distance": 59.0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed8700000.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard1",
+    "episode": 3,
+    "t": 268,
+    "online_first_t": 175,
+    "offline_yx": [
+      135,
+      179
+    ],
+    "online_yx": [
+      126,
+      118
+    ],
+    "action_yx": [
+      132,
+      182
+    ],
+    "offline_action_distance": 4.242640687119285,
+    "online_action_distance": 64.28063471995279,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed8700300.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard1",
+    "episode": 6,
+    "t": 266,
+    "online_first_t": 172,
+    "offline_yx": [
+      95,
+      114
+    ],
+    "online_yx": [
+      95,
+      114
+    ],
+    "action_yx": [
+      92,
+      114
+    ],
+    "offline_action_distance": 3.0,
+    "online_action_distance": 3.0,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed8700600.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard2",
+    "episode": 0,
+    "t": 229,
+    "online_first_t": 176,
+    "offline_yx": [
+      100,
+      152
+    ],
+    "online_yx": [
+      116,
+      185
+    ],
+    "action_yx": [
+      97,
+      154
+    ],
+    "offline_action_distance": 3.605551275463989,
+    "online_action_distance": 36.359317925395686,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed10700001.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard2",
+    "episode": 3,
+    "t": 234,
+    "online_first_t": 169,
+    "offline_yx": [
+      90,
+      159
+    ],
+    "online_yx": [
+      126,
+      132
+    ],
+    "action_yx": [
+      87,
+      162
+    ],
+    "offline_action_distance": 4.242640687119285,
+    "online_action_distance": 49.20365840057018,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed10700300.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard2",
+    "episode": 6,
+    "t": 233,
+    "online_first_t": 173,
+    "offline_yx": [
+      105,
+      166
+    ],
+    "online_yx": [
+      133,
+      177
+    ],
+    "action_yx": [
+      103,
+      168
+    ],
+    "offline_action_distance": 2.8284271247461903,
+    "online_action_distance": 31.32091952673165,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed10700600.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard3",
+    "episode": 0,
+    "t": 263,
+    "online_first_t": 159,
+    "offline_yx": [
+      113,
+      196
+    ],
+    "online_yx": [
+      104,
+      160
+    ],
+    "action_yx": [
+      110,
+      200
+    ],
+    "offline_action_distance": 5.0,
+    "online_action_distance": 40.44749683231337,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed12700000.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard3",
+    "episode": 3,
+    "t": 262,
+    "online_first_t": 176,
+    "offline_yx": [
+      121,
+      112
+    ],
+    "online_yx": [
+      91,
+      105
+    ],
+    "action_yx": [
+      119,
+      112
+    ],
+    "offline_action_distance": 2.0,
+    "online_action_distance": 28.861739379323623,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed12700300.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard3",
+    "episode": 6,
+    "t": 295,
+    "online_first_t": 163,
+    "offline_yx": [
+      105,
+      114
+    ],
+    "online_yx": [
+      126,
+      95
+    ],
+    "action_yx": [
+      102,
+      115
+    ],
+    "offline_action_distance": 3.1622776601683795,
+    "online_action_distance": 31.240998703626616,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed12700600.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard4",
+    "episode": 0,
+    "t": 333,
+    "online_first_t": 170,
+    "offline_yx": [
+      95,
+      110
+    ],
+    "online_yx": [
+      104,
+      169
+    ],
+    "action_yx": [
+      92,
+      111
+    ],
+    "offline_action_distance": 3.1622776601683795,
+    "online_action_distance": 59.22837157984339,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_0/hdf5_files/ButtonUnmaskSwap_ep0_seed6700000.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard4",
+    "episode": 3,
+    "t": 332,
+    "online_first_t": 171,
+    "offline_yx": [
+      97,
+      137
+    ],
+    "online_yx": [
+      97,
+      137
+    ],
+    "action_yx": [
+      94,
+      138
+    ],
+    "offline_action_distance": 3.1622776601683795,
+    "online_action_distance": 3.1622776601683795,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_3/hdf5_files/ButtonUnmaskSwap_ep3_seed6700300.h5"
+  },
+  {
+    "task": "ButtonUnmaskSwap",
+    "difficulty": "xhard4",
+    "episode": 6,
+    "t": 333,
+    "online_first_t": 173,
+    "offline_yx": [
+      134,
+      156
+    ],
+    "online_yx": [
+      118,
+      117
+    ],
+    "action_yx": [
+      132,
+      159
+    ],
+    "offline_action_distance": 3.605551275463989,
+    "online_action_distance": 44.27188724235731,
+    "h5": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/ButtonUnmaskSwap_episode_6/hdf5_files/ButtonUnmaskSwap_ep6_seed6700600.h5"
+  }
+]

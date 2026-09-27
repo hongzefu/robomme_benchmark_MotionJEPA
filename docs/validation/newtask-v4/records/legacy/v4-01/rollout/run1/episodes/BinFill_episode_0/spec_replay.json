@@ -1,0 +1,32 @@
+{
+  "mismatches": [],
+  "value_points": 25,
+  "consumed": [
+    "initializations.0.color_order",
+    "initializations.1.color_order",
+    "layout.board.offsets",
+    "layout.button_xy",
+    "layout.cubes.blue_0",
+    "layout.cubes.blue_1",
+    "layout.cubes.green_0",
+    "layout.cubes.green_1",
+    "layout.cubes.green_2",
+    "layout.cubes.green_3",
+    "layout.cubes.green_4",
+    "layout.cubes.red_0",
+    "layout.cubes.red_1",
+    "layout.cubes.red_2",
+    "layout.cubes.red_3",
+    "layout.cubes.red_4",
+    "layout.dynamic",
+    "layout.mode",
+    "objects.color_pool",
+    "objects.put_in_color",
+    "objects.spawn_actual",
+    "objects.spawn_numbers",
+    "objects.spawn_order",
+    "objects.spawn_requested",
+    "objects.target_numbers"
+  ],
+  "unused": []
+}

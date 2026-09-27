@@ -1,0 +1,146 @@
+[
+  {
+    "dir": "VideoPlaceButton_episode_0",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_0/hdf5_files/VideoPlaceButton_ep0_seed10000.h5",
+    "segments": [
+      "pick up the cube at <75, 140>",
+      "drop the cube onto target at <102, 162>",
+      "press the button at <131, 84>",
+      "pick up the cube at <99, 163>",
+      "drop the cube onto target at <133, 174>",
+      "pick up the cube at <133, 177>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <84, 117>",
+      "place the cube onto the correct target at <133, 174>"
+    ]
+  },
+  {
+    "dir": "VideoPlaceButton_episode_1",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_1/hdf5_files/VideoPlaceButton_ep1_seed10101.h5",
+    "segments": [
+      "pick up the cube at <92, 104>",
+      "drop the cube onto target at <118, 161>",
+      "press the button at <129, 110>",
+      "pick up the cube at <116, 162>",
+      "drop the cube onto target at <81, 155>",
+      "pick up the cube at <78, 161>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <88, 128>",
+      "place the cube onto the correct target at <81, 160>"
+    ]
+  },
+  {
+    "dir": "VideoPlaceButton_episode_10",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_10/hdf5_files/VideoPlaceButton_ep10_seed11000.h5",
+    "segments": [
+      "pick up the cube at <141, 155>",
+      "drop the cube onto target",
+      "press the button at <120, 117>",
+      "pick up the cube",
+      "drop the cube onto target at <105, 154>",
+      "pick up the cube at <103, 155>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <78, 117>",
+      "place the cube onto the correct target at <105, 154>"
+    ]
+  },
+  {
+    "dir": "VideoPlaceButton_episode_11",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_11/hdf5_files/VideoPlaceButton_ep11_seed11100.h5",
+    "segments": [
+      "pick up the cube at <99, 148>",
+      "drop the cube onto target at <124, 162>",
+      "press the button at <122, 121>",
+      "pick up the cube at <123, 163>",
+      "drop the cube onto target at <96, 160>",
+      "pick up the cube at <93, 166>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <82, 131>",
+      "place the cube onto the correct target at <140, 81>"
+    ]
+  },
+  {
+    "dir": "VideoPlaceButton_episode_2",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_2/hdf5_files/VideoPlaceButton_ep2_seed10202.h5",
+    "segments": [
+      "pick up the cube at <96, 126>",
+      "drop the cube onto target at <101, 166>",
+      "press the button at <118, 101>",
+      "pick up the cube at <98, 168>",
+      "drop the cube onto target at <87, 93>",
+      "pick up the cube at <84, 91>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <83, 123>",
+      "place the cube onto the correct target at <87, 93>"
+    ]
+  },
+  {
+    "dir": "VideoPlaceButton_episode_3",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_3/hdf5_files/VideoPlaceButton_ep3_seed10301.h5",
+    "segments": [
+      "pick up the cube at <74, 110>",
+      "drop the cube onto target at <98, 165>",
+      "press the button at <119, 115>",
+      "pick up the cube at <96, 168>",
+      "drop the cube onto target at <129, 173>",
+      "pick up the cube at <129, 175>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <88, 128>",
+      "place the cube onto the correct target at <98, 165>"
+    ]
+  },
+  {
+    "dir": "VideoPlaceButton_episode_4",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_4/hdf5_files/VideoPlaceButton_ep4_seed10402.h5",
+    "segments": [
+      "pick up the cube at <81, 156>",
+      "drop the cube onto target at <140, 175>",
+      "press the button at <124, 126>",
+      "pick up the cube at <139, 176>",
+      "drop the cube onto target at <106, 92>",
+      "pick up the cube at <103, 90>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <76, 126>",
+      "place the cube onto the correct target at <106, 92>"
+    ]
+  },
+  {
+    "dir": "VideoPlaceButton_episode_6",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_6/hdf5_files/VideoPlaceButton_ep6_seed10600.h5",
+    "segments": [
+      "pick up the cube at <79, 113>",
+      "drop the cube onto target at <119, 89>",
+      "press the button at <125, 125>",
+      "pick up the cube at <117, 87>",
+      "drop the cube onto target at <91, 92>",
+      "pick up the cube at <88, 88>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <77, 121>",
+      "place the cube onto the correct target at <90, 90>"
+    ]
+  },
+  {
+    "dir": "VideoPlaceButton_episode_7",
+    "h5": "artifacts/newtask-v6/v1/base/B/VideoPlaceButton_episode_7/hdf5_files/VideoPlaceButton_ep7_seed10701.h5",
+    "segments": [
+      "pick up the cube at <73, 143>",
+      "drop the cube onto target at <126, 145>",
+      "press the button at <123, 92>",
+      "pick up the cube at <125, 146>",
+      "drop the cube onto target",
+      "pick up the cube at <77, 166>",
+      "drop the cube onto table",
+      "static",
+      "pick up the cube at <83, 121>",
+      "place the cube onto the correct target at <126, 145>"
+    ]
+  }
+]

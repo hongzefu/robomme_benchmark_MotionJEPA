@@ -1,0 +1,185 @@
+{
+  "verdict": "PASS",
+  "checks": [
+    {
+      "task": "StopCube",
+      "episode": 3,
+      "difficulty": "xhard4",
+      "seed": 6200300,
+      "frames": 852,
+      "videos": 1
+    },
+    {
+      "task": "StopCube",
+      "episode": 6,
+      "difficulty": "xhard4",
+      "seed": 6200600,
+      "frames": 902,
+      "videos": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 0,
+      "difficulty": "xhard4",
+      "seed": 6300000,
+      "frames": 1261,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 0,
+      "difficulty": "xhard4",
+      "seed": 6500000,
+      "frames": 841,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 0,
+      "difficulty": "xhard4",
+      "seed": 6600000,
+      "frames": 461,
+      "videos": 1
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 0,
+      "difficulty": "xhard4",
+      "seed": 6900003,
+      "frames": 1621,
+      "videos": 1
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 0,
+      "difficulty": "xhard4",
+      "seed": 7000000,
+      "frames": 1930,
+      "videos": 2
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 0,
+      "difficulty": "xhard4",
+      "seed": 7100000,
+      "frames": 2166,
+      "videos": 2
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 3,
+      "difficulty": "xhard4",
+      "seed": 6300300,
+      "frames": 1007,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 3,
+      "difficulty": "xhard4",
+      "seed": 6500300,
+      "frames": 826,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 3,
+      "difficulty": "xhard4",
+      "seed": 6600300,
+      "frames": 465,
+      "videos": 1
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 3,
+      "difficulty": "xhard4",
+      "seed": 6900300,
+      "frames": 1715,
+      "videos": 1
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 3,
+      "difficulty": "xhard4",
+      "seed": 7000302,
+      "frames": 1849,
+      "videos": 2
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 3,
+      "difficulty": "xhard4",
+      "seed": 7100301,
+      "frames": 2168,
+      "videos": 2
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 2,
+      "difficulty": "xhard4",
+      "seed": 7300200,
+      "frames": 464,
+      "videos": 1
+    },
+    {
+      "task": "SwingXtimes",
+      "episode": 6,
+      "difficulty": "xhard4",
+      "seed": 6300600,
+      "frames": 1106,
+      "videos": 2
+    },
+    {
+      "task": "VideoUnmaskSwap",
+      "episode": 6,
+      "difficulty": "xhard4",
+      "seed": 6500601,
+      "frames": 863,
+      "videos": 1
+    },
+    {
+      "task": "VideoUnmask",
+      "episode": 6,
+      "difficulty": "xhard4",
+      "seed": 6600600,
+      "frames": 477,
+      "videos": 1
+    },
+    {
+      "task": "VideoRepick",
+      "episode": 6,
+      "difficulty": "xhard4",
+      "seed": 6900600,
+      "frames": 1553,
+      "videos": 1
+    },
+    {
+      "task": "VideoPlaceButton",
+      "episode": 6,
+      "difficulty": "xhard4",
+      "seed": 7000600,
+      "frames": 1949,
+      "videos": 2
+    },
+    {
+      "task": "VideoPlaceOrder",
+      "episode": 6,
+      "difficulty": "xhard4",
+      "seed": 7100600,
+      "frames": 2111,
+      "videos": 2
+    },
+    {
+      "task": "InsertPeg",
+      "episode": 4,
+      "difficulty": "xhard4",
+      "seed": 7300400,
+      "frames": 423,
+      "videos": 1
+    }
+  ],
+  "errors": [],
+  "video_scope": "每个成功结果的每个视频实际解码首帧，不证明全片解码",
+  "successful_results": 22,
+  "total_results": 23
+}

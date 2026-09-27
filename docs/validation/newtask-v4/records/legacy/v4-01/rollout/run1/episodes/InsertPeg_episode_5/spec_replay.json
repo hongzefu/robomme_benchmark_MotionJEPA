@@ -1,0 +1,31 @@
+{
+  "mismatches": [],
+  "value_points": 24,
+  "consumed": [
+    "initializations.0.box_jitter",
+    "initializations.0.box_yaw",
+    "initializations.0.dir_sample",
+    "initializations.0.near_target_attempts",
+    "initializations.0.near_target_distance",
+    "initializations.0.obj_sample",
+    "initializations.0.peg_placement",
+    "initializations.0.pegs.0",
+    "initializations.0.pegs.1",
+    "initializations.0.pegs.2",
+    "initializations.0.pegs.3",
+    "initializations.1.box_jitter",
+    "initializations.1.box_yaw",
+    "initializations.1.dir_sample",
+    "initializations.1.near_target_attempts",
+    "initializations.1.near_target_distance",
+    "initializations.1.obj_sample",
+    "initializations.1.peg_placement",
+    "initializations.1.pegs.0",
+    "initializations.1.pegs.1",
+    "initializations.1.pegs.2",
+    "initializations.1.pegs.3",
+    "objects.head_rgb",
+    "objects.sampling_trace.random_peg_idx"
+  ],
+  "unused": []
+}

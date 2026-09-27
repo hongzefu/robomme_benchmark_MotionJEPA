@@ -1,0 +1,1736 @@
+[
+  {
+    "difficulty": "xhard1",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed8300000.h5",
+    "goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion four times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion four times, then put down the cube and press the button to stop"
+    ],
+    "frames": 630,
+    "right_count": 4,
+    "left_count": 4,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the green cube",
+        "grounded": "pick up the green cube at <83, 140>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 118,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <76, 68> for the first time",
+        "eef_z": 0.14821481704711914
+      },
+      {
+        "frame": 152,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <95, 184> for the first time",
+        "eef_z": 0.10017727315425873
+      },
+      {
+        "frame": 196,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <76, 68> for the second time",
+        "eef_z": 0.09956319630146027
+      },
+      {
+        "frame": 240,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <95, 184> for the second time",
+        "eef_z": 0.09965874254703522
+      },
+      {
+        "frame": 290,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <76, 68> for the third time",
+        "eef_z": 0.09946189820766449
+      },
+      {
+        "frame": 339,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <95, 184> for the third time",
+        "eef_z": 0.09957041591405869
+      },
+      {
+        "frame": 387,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <76, 68> for the fourth time",
+        "eef_z": 0.09948396682739258
+      },
+      {
+        "frame": 436,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <95, 184> for the fourth time",
+        "eef_z": 0.09957317262887955
+      },
+      {
+        "frame": 484,
+        "name": "put the green cube on the table",
+        "grounded": "put the green cube on the table",
+        "eef_z": 0.09948723763227463
+      },
+      {
+        "frame": 521,
+        "name": "press the button",
+        "grounded": "press the button at <56, 121>",
+        "eef_z": 0.14936450123786926
+      },
+      {
+        "frame": 590,
+        "name": "All tasks completed",
+        "grounded": "press the button at <56, 121>",
+        "eef_z": 0.035016193985939026
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed8300300.h5",
+    "goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion four times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion four times, then put down the cube and press the button to stop"
+    ],
+    "frames": 522,
+    "right_count": 4,
+    "left_count": 4,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the green cube",
+        "grounded": "pick up the green cube at <71, 81>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 118,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <89, 86> for the first time",
+        "eef_z": 0.1473388671875
+      },
+      {
+        "frame": 140,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <88, 176> for the first time",
+        "eef_z": 0.0972588062286377
+      },
+      {
+        "frame": 176,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <89, 86> for the second time",
+        "eef_z": 0.09974409639835358
+      },
+      {
+        "frame": 212,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <88, 176> for the second time",
+        "eef_z": 0.0998208224773407
+      },
+      {
+        "frame": 248,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <89, 86> for the third time",
+        "eef_z": 0.09975944459438324
+      },
+      {
+        "frame": 284,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <88, 176> for the third time",
+        "eef_z": 0.09982141852378845
+      },
+      {
+        "frame": 320,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <89, 86> for the fourth time",
+        "eef_z": 0.09975981712341309
+      },
+      {
+        "frame": 356,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <88, 176> for the fourth time",
+        "eef_z": 0.0998227521777153
+      },
+      {
+        "frame": 392,
+        "name": "put the green cube on the table",
+        "grounded": "put the green cube on the table",
+        "eef_z": 0.09976063668727875
+      },
+      {
+        "frame": 427,
+        "name": "press the button",
+        "grounded": "press the button at <61, 151>",
+        "eef_z": 0.14854061603546143
+      },
+      {
+        "frame": 484,
+        "name": "All tasks completed",
+        "grounded": "press the button at <61, 151>",
+        "eef_z": 0.033688485622406006
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed8300600.h5",
+    "goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion five times, then put down the cube and press the button to stop"
+    ],
+    "frames": 680,
+    "right_count": 5,
+    "left_count": 5,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the red cube",
+        "grounded": "pick up the red cube at <64, 152>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 125,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <94, 67> for the first time",
+        "eef_z": 0.14863260090351105
+      },
+      {
+        "frame": 165,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <92, 186> for the first time",
+        "eef_z": 0.09641855955123901
+      },
+      {
+        "frame": 206,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <94, 67> for the second time",
+        "eef_z": 0.09969021379947662
+      },
+      {
+        "frame": 247,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <92, 186> for the second time",
+        "eef_z": 0.09964130818843842
+      },
+      {
+        "frame": 288,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <94, 67> for the third time",
+        "eef_z": 0.09970951080322266
+      },
+      {
+        "frame": 329,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <92, 186> for the third time",
+        "eef_z": 0.09964608401060104
+      },
+      {
+        "frame": 370,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <94, 67> for the fourth time",
+        "eef_z": 0.09971065819263458
+      },
+      {
+        "frame": 411,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <92, 186> for the fourth time",
+        "eef_z": 0.09964660555124283
+      },
+      {
+        "frame": 452,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <94, 67> for the fifth time",
+        "eef_z": 0.09971226006746292
+      },
+      {
+        "frame": 493,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <92, 186> for the fifth time",
+        "eef_z": 0.0996471643447876
+      },
+      {
+        "frame": 534,
+        "name": "put the red cube on the table",
+        "grounded": "put the red cube on the table",
+        "eef_z": 0.09971246123313904
+      },
+      {
+        "frame": 570,
+        "name": "press the button",
+        "grounded": "press the button at <68, 108>",
+        "eef_z": 0.1491045355796814
+      },
+      {
+        "frame": 645,
+        "name": "All tasks completed",
+        "grounded": "press the button at <68, 108>",
+        "eef_z": 0.034718453884124756
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed10300000.h5",
+    "goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion six times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion six times, then put down the cube and press the button to stop"
+    ],
+    "frames": 775,
+    "right_count": 6,
+    "left_count": 6,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the blue cube",
+        "grounded": "pick up the blue cube at <48, 169>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 149,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <78, 82> for the first time",
+        "eef_z": 0.14784744381904602
+      },
+      {
+        "frame": 198,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <89, 168> for the first time",
+        "eef_z": 0.09627676010131836
+      },
+      {
+        "frame": 236,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <78, 82> for the second time",
+        "eef_z": 0.09976384788751602
+      },
+      {
+        "frame": 278,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <89, 168> for the second time",
+        "eef_z": 0.09969036281108856
+      },
+      {
+        "frame": 318,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <78, 82> for the third time",
+        "eef_z": 0.09965747594833374
+      },
+      {
+        "frame": 359,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <89, 168> for the third time",
+        "eef_z": 0.09969845414161682
+      },
+      {
+        "frame": 400,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <78, 82> for the fourth time",
+        "eef_z": 0.09965638816356659
+      },
+      {
+        "frame": 441,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <89, 168> for the fourth time",
+        "eef_z": 0.09970089793205261
+      },
+      {
+        "frame": 482,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <78, 82> for the fifth time",
+        "eef_z": 0.09965910017490387
+      },
+      {
+        "frame": 523,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <89, 168> for the fifth time",
+        "eef_z": 0.099703349173069
+      },
+      {
+        "frame": 564,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <78, 82> for the sixth time",
+        "eef_z": 0.09966198354959488
+      },
+      {
+        "frame": 605,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <89, 168> for the sixth time",
+        "eef_z": 0.09970638155937195
+      },
+      {
+        "frame": 646,
+        "name": "put the blue cube on the table",
+        "grounded": "put the blue cube on the table",
+        "eef_z": 0.09966421872377396
+      },
+      {
+        "frame": 681,
+        "name": "press the button",
+        "grounded": "press the button at <62, 133>",
+        "eef_z": 0.1485218107700348
+      },
+      {
+        "frame": 738,
+        "name": "All tasks completed",
+        "grounded": "press the button at <62, 133>",
+        "eef_z": 0.03295506536960602
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed10300300.h5",
+    "goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion seven times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion seven times, then put down the cube and press the button to stop"
+    ],
+    "frames": 859,
+    "right_count": 7,
+    "left_count": 7,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the green cube",
+        "grounded": "pick up the green cube at <120, 141>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 106,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <79, 75> for the first time",
+        "eef_z": 0.15088330209255219
+      },
+      {
+        "frame": 147,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <86, 185> for the first time",
+        "eef_z": 0.10003582388162613
+      },
+      {
+        "frame": 188,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <79, 75> for the second time",
+        "eef_z": 0.09976314008235931
+      },
+      {
+        "frame": 234,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <86, 185> for the second time",
+        "eef_z": 0.09966452419757843
+      },
+      {
+        "frame": 279,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <79, 75> for the third time",
+        "eef_z": 0.09966997802257538
+      },
+      {
+        "frame": 324,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <86, 185> for the third time",
+        "eef_z": 0.09968268126249313
+      },
+      {
+        "frame": 369,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <79, 75> for the fourth time",
+        "eef_z": 0.09966835379600525
+      },
+      {
+        "frame": 414,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <86, 185> for the fourth time",
+        "eef_z": 0.09968287497758865
+      },
+      {
+        "frame": 459,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <79, 75> for the fifth time",
+        "eef_z": 0.0996689647436142
+      },
+      {
+        "frame": 504,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <86, 185> for the fifth time",
+        "eef_z": 0.09968273341655731
+      },
+      {
+        "frame": 549,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <79, 75> for the sixth time",
+        "eef_z": 0.09967076778411865
+      },
+      {
+        "frame": 594,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <86, 185> for the sixth time",
+        "eef_z": 0.09968306124210358
+      },
+      {
+        "frame": 639,
+        "name": "move to the top of the right-side target for the seventh time",
+        "grounded": "move to the top of the right-side target at <79, 75> for the seventh time",
+        "eef_z": 0.09967257082462311
+      },
+      {
+        "frame": 684,
+        "name": "move to the top of the left-side target for the seventh time",
+        "grounded": "move to the top of the left-side target at <86, 185> for the seventh time",
+        "eef_z": 0.09968265146017075
+      },
+      {
+        "frame": 729,
+        "name": "put the green cube on the table",
+        "grounded": "put the green cube on the table",
+        "eef_z": 0.0996738001704216
+      },
+      {
+        "frame": 764,
+        "name": "press the button",
+        "grounded": "press the button at <60, 167>",
+        "eef_z": 0.14821961522102356
+      },
+      {
+        "frame": 822,
+        "name": "All tasks completed",
+        "grounded": "press the button at <60, 167>",
+        "eef_z": 0.03439794480800629
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed10300600.h5",
+    "goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion six times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion six times, then put down the cube and press the button to stop"
+    ],
+    "frames": 658,
+    "right_count": 6,
+    "left_count": 6,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the green cube",
+        "grounded": "pick up the green cube at <108, 145>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 102,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <95, 85> for the first time",
+        "eef_z": 0.14978787302970886
+      },
+      {
+        "frame": 133,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <86, 173> for the first time",
+        "eef_z": 0.10004793107509613
+      },
+      {
+        "frame": 170,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <95, 85> for the second time",
+        "eef_z": 0.09969907999038696
+      },
+      {
+        "frame": 206,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <86, 173> for the second time",
+        "eef_z": 0.09969372302293777
+      },
+      {
+        "frame": 242,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <95, 85> for the third time",
+        "eef_z": 0.09972283989191055
+      },
+      {
+        "frame": 278,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <86, 173> for the third time",
+        "eef_z": 0.09969063848257065
+      },
+      {
+        "frame": 314,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <95, 85> for the fourth time",
+        "eef_z": 0.09972480684518814
+      },
+      {
+        "frame": 350,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <86, 173> for the fourth time",
+        "eef_z": 0.09969154745340347
+      },
+      {
+        "frame": 386,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <95, 85> for the fifth time",
+        "eef_z": 0.09972571581602097
+      },
+      {
+        "frame": 422,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <86, 173> for the fifth time",
+        "eef_z": 0.09969336539506912
+      },
+      {
+        "frame": 458,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <95, 85> for the sixth time",
+        "eef_z": 0.09972623735666275
+      },
+      {
+        "frame": 494,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <86, 173> for the sixth time",
+        "eef_z": 0.0996953696012497
+      },
+      {
+        "frame": 531,
+        "name": "put the green cube on the table",
+        "grounded": "put the green cube on the table",
+        "eef_z": 0.09972397983074188
+      },
+      {
+        "frame": 565,
+        "name": "press the button",
+        "grounded": "press the button at <68, 91>",
+        "eef_z": 0.14772221446037292
+      },
+      {
+        "frame": 619,
+        "name": "All tasks completed",
+        "grounded": "press the button at <68, 91>",
+        "eef_z": 0.03557329624891281
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed12300000.h5",
+    "goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+    ],
+    "frames": 917,
+    "right_count": 8,
+    "left_count": 8,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the blue cube",
+        "grounded": "pick up the blue cube at <110, 168>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 103,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <83, 66> for the first time",
+        "eef_z": 0.1477857381105423
+      },
+      {
+        "frame": 143,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <86, 186> for the first time",
+        "eef_z": 0.10023423284292221
+      },
+      {
+        "frame": 186,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <83, 66> for the second time",
+        "eef_z": 0.09975910931825638
+      },
+      {
+        "frame": 229,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <86, 186> for the second time",
+        "eef_z": 0.09970393776893616
+      },
+      {
+        "frame": 272,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <83, 66> for the third time",
+        "eef_z": 0.0997581034898758
+      },
+      {
+        "frame": 315,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <86, 186> for the third time",
+        "eef_z": 0.09970439970493317
+      },
+      {
+        "frame": 358,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <83, 66> for the fourth time",
+        "eef_z": 0.09975875169038773
+      },
+      {
+        "frame": 401,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <86, 186> for the fourth time",
+        "eef_z": 0.0997055321931839
+      },
+      {
+        "frame": 444,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <83, 66> for the fifth time",
+        "eef_z": 0.09976132959127426
+      },
+      {
+        "frame": 487,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <86, 186> for the fifth time",
+        "eef_z": 0.09970635920763016
+      },
+      {
+        "frame": 530,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <83, 66> for the sixth time",
+        "eef_z": 0.09976515918970108
+      },
+      {
+        "frame": 573,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <86, 186> for the sixth time",
+        "eef_z": 0.09970668703317642
+      },
+      {
+        "frame": 616,
+        "name": "move to the top of the right-side target for the seventh time",
+        "grounded": "move to the top of the right-side target at <83, 66> for the seventh time",
+        "eef_z": 0.09976747632026672
+      },
+      {
+        "frame": 659,
+        "name": "move to the top of the left-side target for the seventh time",
+        "grounded": "move to the top of the left-side target at <86, 186> for the seventh time",
+        "eef_z": 0.0997079610824585
+      },
+      {
+        "frame": 702,
+        "name": "move to the top of the right-side target for the eighth time",
+        "grounded": "move to the top of the right-side target at <83, 66> for the eighth time",
+        "eef_z": 0.09976864606142044
+      },
+      {
+        "frame": 745,
+        "name": "move to the top of the left-side target for the eighth time",
+        "grounded": "move to the top of the left-side target at <86, 186> for the eighth time",
+        "eef_z": 0.09970923513174057
+      },
+      {
+        "frame": 788,
+        "name": "put the blue cube on the table",
+        "grounded": "put the blue cube on the table",
+        "eef_z": 0.09977094829082489
+      },
+      {
+        "frame": 822,
+        "name": "press the button",
+        "grounded": "press the button at <61, 108>",
+        "eef_z": 0.14748799800872803
+      },
+      {
+        "frame": 880,
+        "name": "All tasks completed",
+        "grounded": "press the button at <61, 108>",
+        "eef_z": 0.03321664780378342
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed12300300.h5",
+    "goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+    ],
+    "frames": 838,
+    "right_count": 8,
+    "left_count": 8,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the blue cube",
+        "grounded": "pick up the blue cube at <127, 84>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 110,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <90, 91> for the first time",
+        "eef_z": 0.1511191725730896
+      },
+      {
+        "frame": 145,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <85, 169> for the first time",
+        "eef_z": 0.10033724457025528
+      },
+      {
+        "frame": 180,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <93, 81> for the second time",
+        "eef_z": 0.09971927851438522
+      },
+      {
+        "frame": 216,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <85, 169> for the second time",
+        "eef_z": 0.09978301078081131
+      },
+      {
+        "frame": 252,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <93, 81> for the third time",
+        "eef_z": 0.09973432868719101
+      },
+      {
+        "frame": 288,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <85, 169> for the third time",
+        "eef_z": 0.09978459775447845
+      },
+      {
+        "frame": 324,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <93, 81> for the fourth time",
+        "eef_z": 0.09973333030939102
+      },
+      {
+        "frame": 360,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <85, 169> for the fourth time",
+        "eef_z": 0.09978563338518143
+      },
+      {
+        "frame": 396,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <93, 81> for the fifth time",
+        "eef_z": 0.09973303228616714
+      },
+      {
+        "frame": 432,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <85, 169> for the fifth time",
+        "eef_z": 0.09978723526000977
+      },
+      {
+        "frame": 468,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <93, 81> for the sixth time",
+        "eef_z": 0.09973166882991791
+      },
+      {
+        "frame": 504,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <85, 169> for the sixth time",
+        "eef_z": 0.09978858381509781
+      },
+      {
+        "frame": 540,
+        "name": "move to the top of the right-side target for the seventh time",
+        "grounded": "move to the top of the right-side target at <93, 81> for the seventh time",
+        "eef_z": 0.09973125159740448
+      },
+      {
+        "frame": 576,
+        "name": "move to the top of the left-side target for the seventh time",
+        "grounded": "move to the top of the left-side target at <85, 169> for the seventh time",
+        "eef_z": 0.09978949278593063
+      },
+      {
+        "frame": 612,
+        "name": "move to the top of the right-side target for the eighth time",
+        "grounded": "move to the top of the right-side target at <93, 81> for the eighth time",
+        "eef_z": 0.09973040968179703
+      },
+      {
+        "frame": 648,
+        "name": "move to the top of the left-side target for the eighth time",
+        "grounded": "move to the top of the left-side target at <85, 169> for the eighth time",
+        "eef_z": 0.09979067742824554
+      },
+      {
+        "frame": 684,
+        "name": "put the blue cube on the table",
+        "grounded": "put the blue cube on the table",
+        "eef_z": 0.09972909092903137
+      },
+      {
+        "frame": 719,
+        "name": "press the button",
+        "grounded": "press the button at <67, 89>",
+        "eef_z": 0.1473485231399536
+      },
+      {
+        "frame": 801,
+        "name": "All tasks completed",
+        "grounded": "press the button at <67, 89>",
+        "eef_z": 0.03457852452993393
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed12300600.h5",
+    "goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eight times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eight times, then put down the cube and press the button to stop"
+    ],
+    "frames": 957,
+    "right_count": 8,
+    "left_count": 8,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the green cube",
+        "grounded": "pick up the green cube at <58, 128>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 137,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <83, 77> for the first time",
+        "eef_z": 0.14742127060890198
+      },
+      {
+        "frame": 171,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <88, 185> for the first time",
+        "eef_z": 0.09623642265796661
+      },
+      {
+        "frame": 212,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <83, 77> for the second time",
+        "eef_z": 0.09964082390069962
+      },
+      {
+        "frame": 255,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <88, 185> for the second time",
+        "eef_z": 0.09967806190252304
+      },
+      {
+        "frame": 297,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <83, 77> for the third time",
+        "eef_z": 0.09960121661424637
+      },
+      {
+        "frame": 339,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <88, 185> for the third time",
+        "eef_z": 0.09969381242990494
+      },
+      {
+        "frame": 381,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <83, 77> for the fourth time",
+        "eef_z": 0.09960068762302399
+      },
+      {
+        "frame": 423,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <88, 185> for the fourth time",
+        "eef_z": 0.09969516843557358
+      },
+      {
+        "frame": 465,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <83, 77> for the fifth time",
+        "eef_z": 0.09960302710533142
+      },
+      {
+        "frame": 507,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <88, 185> for the fifth time",
+        "eef_z": 0.09969686716794968
+      },
+      {
+        "frame": 549,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <83, 77> for the sixth time",
+        "eef_z": 0.09960572421550751
+      },
+      {
+        "frame": 591,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <88, 185> for the sixth time",
+        "eef_z": 0.09969867020845413
+      },
+      {
+        "frame": 633,
+        "name": "move to the top of the right-side target for the seventh time",
+        "grounded": "move to the top of the right-side target at <83, 77> for the seventh time",
+        "eef_z": 0.09960781037807465
+      },
+      {
+        "frame": 676,
+        "name": "move to the top of the left-side target for the seventh time",
+        "grounded": "move to the top of the left-side target at <88, 185> for the seventh time",
+        "eef_z": 0.09969549626111984
+      },
+      {
+        "frame": 718,
+        "name": "move to the top of the right-side target for the eighth time",
+        "grounded": "move to the top of the right-side target at <83, 77> for the eighth time",
+        "eef_z": 0.09961111098527908
+      },
+      {
+        "frame": 761,
+        "name": "move to the top of the left-side target for the eighth time",
+        "grounded": "move to the top of the left-side target at <88, 185> for the eighth time",
+        "eef_z": 0.09969660639762878
+      },
+      {
+        "frame": 804,
+        "name": "put the green cube on the table",
+        "grounded": "put the green cube on the table",
+        "eef_z": 0.09961098432540894
+      },
+      {
+        "frame": 840,
+        "name": "press the button",
+        "grounded": "press the button at <56, 89>",
+        "eef_z": 0.148955300450325
+      },
+      {
+        "frame": 909,
+        "name": "All tasks completed",
+        "grounded": "press the button at <56, 89>",
+        "eef_z": 0.03569643199443817
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 0,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_0/hdf5_files/SwingXtimes_ep0_seed6300000.h5",
+    "goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eleven times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eleven times, then put down the cube and press the button to stop"
+    ],
+    "frames": 1261,
+    "right_count": 11,
+    "left_count": 11,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the red cube",
+        "grounded": "pick up the red cube at <88, 86>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 114,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the first time",
+        "eef_z": 0.14752230048179626
+      },
+      {
+        "frame": 138,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the first time",
+        "eef_z": 0.09877537190914154
+      },
+      {
+        "frame": 185,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the second time",
+        "eef_z": 0.09962420165538788
+      },
+      {
+        "frame": 231,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the second time",
+        "eef_z": 0.09964890778064728
+      },
+      {
+        "frame": 277,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the third time",
+        "eef_z": 0.09966284781694412
+      },
+      {
+        "frame": 322,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the third time",
+        "eef_z": 0.09966178238391876
+      },
+      {
+        "frame": 368,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the fourth time",
+        "eef_z": 0.09966083616018295
+      },
+      {
+        "frame": 413,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the fourth time",
+        "eef_z": 0.09966560453176498
+      },
+      {
+        "frame": 459,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the fifth time",
+        "eef_z": 0.09966014325618744
+      },
+      {
+        "frame": 504,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the fifth time",
+        "eef_z": 0.09967028349637985
+      },
+      {
+        "frame": 550,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the sixth time",
+        "eef_z": 0.09965792298316956
+      },
+      {
+        "frame": 595,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the sixth time",
+        "eef_z": 0.09967457503080368
+      },
+      {
+        "frame": 641,
+        "name": "move to the top of the right-side target for the seventh time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the seventh time",
+        "eef_z": 0.09965573996305466
+      },
+      {
+        "frame": 686,
+        "name": "move to the top of the left-side target for the seventh time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the seventh time",
+        "eef_z": 0.099678635597229
+      },
+      {
+        "frame": 732,
+        "name": "move to the top of the right-side target for the eighth time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the eighth time",
+        "eef_z": 0.09965413808822632
+      },
+      {
+        "frame": 776,
+        "name": "move to the top of the left-side target for the eighth time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the eighth time",
+        "eef_z": 0.09969105571508408
+      },
+      {
+        "frame": 822,
+        "name": "move to the top of the right-side target for the ninth time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the ninth time",
+        "eef_z": 0.0996522530913353
+      },
+      {
+        "frame": 866,
+        "name": "move to the top of the left-side target for the ninth time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the ninth time",
+        "eef_z": 0.09969522058963776
+      },
+      {
+        "frame": 911,
+        "name": "move to the top of the right-side target for the tenth time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the tenth time",
+        "eef_z": 0.09965216368436813
+      },
+      {
+        "frame": 955,
+        "name": "move to the top of the left-side target for the tenth time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the tenth time",
+        "eef_z": 0.09969457983970642
+      },
+      {
+        "frame": 1000,
+        "name": "move to the top of the right-side target for the 11th time",
+        "grounded": "move to the top of the right-side target at <86, 64> for the 11th time",
+        "eef_z": 0.09965011477470398
+      },
+      {
+        "frame": 1044,
+        "name": "move to the top of the left-side target for the 11th time",
+        "grounded": "move to the top of the left-side target at <76, 178> for the 11th time",
+        "eef_z": 0.09969373792409897
+      },
+      {
+        "frame": 1089,
+        "name": "put the red cube on the table",
+        "grounded": "put the red cube on the table",
+        "eef_z": 0.09964922815561295
+      },
+      {
+        "frame": 1129,
+        "name": "press the button",
+        "grounded": "press the button at <57, 113>",
+        "eef_z": 0.14729151129722595
+      },
+      {
+        "frame": 1205,
+        "name": "All tasks completed",
+        "grounded": "press the button at <57, 113>",
+        "eef_z": 0.03337712585926056
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 3,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed6300300.h5",
+    "goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion ten times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion ten times, then put down the cube and press the button to stop"
+    ],
+    "frames": 1007,
+    "right_count": 10,
+    "left_count": 10,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the red cube",
+        "grounded": "pick up the red cube at <104, 147>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 102,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the first time",
+        "eef_z": 0.14873111248016357
+      },
+      {
+        "frame": 137,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the first time",
+        "eef_z": 0.10049871355295181
+      },
+      {
+        "frame": 178,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the second time",
+        "eef_z": 0.0997423306107521
+      },
+      {
+        "frame": 217,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the second time",
+        "eef_z": 0.09980375319719315
+      },
+      {
+        "frame": 256,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the third time",
+        "eef_z": 0.09979449957609177
+      },
+      {
+        "frame": 295,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the third time",
+        "eef_z": 0.0997987613081932
+      },
+      {
+        "frame": 334,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the fourth time",
+        "eef_z": 0.09979846328496933
+      },
+      {
+        "frame": 373,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the fourth time",
+        "eef_z": 0.09979864954948425
+      },
+      {
+        "frame": 412,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the fifth time",
+        "eef_z": 0.09979929029941559
+      },
+      {
+        "frame": 451,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the fifth time",
+        "eef_z": 0.09979850053787231
+      },
+      {
+        "frame": 490,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the sixth time",
+        "eef_z": 0.09980034828186035
+      },
+      {
+        "frame": 529,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the sixth time",
+        "eef_z": 0.0997987613081932
+      },
+      {
+        "frame": 568,
+        "name": "move to the top of the right-side target for the seventh time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the seventh time",
+        "eef_z": 0.09980117529630661
+      },
+      {
+        "frame": 607,
+        "name": "move to the top of the left-side target for the seventh time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the seventh time",
+        "eef_z": 0.09979835152626038
+      },
+      {
+        "frame": 646,
+        "name": "move to the top of the right-side target for the eighth time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the eighth time",
+        "eef_z": 0.09980136156082153
+      },
+      {
+        "frame": 685,
+        "name": "move to the top of the left-side target for the eighth time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the eighth time",
+        "eef_z": 0.09979849308729172
+      },
+      {
+        "frame": 724,
+        "name": "move to the top of the right-side target for the ninth time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the ninth time",
+        "eef_z": 0.09980232268571854
+      },
+      {
+        "frame": 763,
+        "name": "move to the top of the left-side target for the ninth time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the ninth time",
+        "eef_z": 0.09979856759309769
+      },
+      {
+        "frame": 802,
+        "name": "move to the top of the right-side target for the tenth time",
+        "grounded": "move to the top of the right-side target at <77, 76> for the tenth time",
+        "eef_z": 0.09980257600545883
+      },
+      {
+        "frame": 841,
+        "name": "move to the top of the left-side target for the tenth time",
+        "grounded": "move to the top of the left-side target at <86, 162> for the tenth time",
+        "eef_z": 0.09979861974716187
+      },
+      {
+        "frame": 880,
+        "name": "put the red cube on the table",
+        "grounded": "put the red cube on the table",
+        "eef_z": 0.09980341047048569
+      },
+      {
+        "frame": 915,
+        "name": "press the button",
+        "grounded": "press the button at <64, 113>",
+        "eef_z": 0.14713427424430847
+      },
+      {
+        "frame": 968,
+        "name": "All tasks completed",
+        "grounded": "press the button at <64, 113>",
+        "eef_z": 0.035271055996418
+      }
+    ]
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 6,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01-infra-recovery-01/rollout/run1/episodes/SwingXtimes_episode_6/hdf5_files/SwingXtimes_ep6_seed6300600.h5",
+    "goals": [
+      "pick up the green cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion eleven times, finally press the button to stop",
+      "pick up the green cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion eleven times, then put down the cube and press the button to stop"
+    ],
+    "frames": 1106,
+    "right_count": 11,
+    "left_count": 11,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the green cube",
+        "grounded": "pick up the green cube at <131, 85>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 111,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target for the first time",
+        "eef_z": 0.1509360820055008
+      },
+      {
+        "frame": 153,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the first time",
+        "eef_z": 0.09988507628440857
+      },
+      {
+        "frame": 193,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the second time",
+        "eef_z": 0.09963706135749817
+      },
+      {
+        "frame": 232,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the second time",
+        "eef_z": 0.09968443214893341
+      },
+      {
+        "frame": 271,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the third time",
+        "eef_z": 0.09965752065181732
+      },
+      {
+        "frame": 310,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the third time",
+        "eef_z": 0.09968287497758865
+      },
+      {
+        "frame": 349,
+        "name": "move to the top of the right-side target for the fourth time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the fourth time",
+        "eef_z": 0.099659264087677
+      },
+      {
+        "frame": 388,
+        "name": "move to the top of the left-side target for the fourth time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the fourth time",
+        "eef_z": 0.09968297928571701
+      },
+      {
+        "frame": 427,
+        "name": "move to the top of the right-side target for the fifth time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the fifth time",
+        "eef_z": 0.09966118633747101
+      },
+      {
+        "frame": 466,
+        "name": "move to the top of the left-side target for the fifth time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the fifth time",
+        "eef_z": 0.09968428313732147
+      },
+      {
+        "frame": 505,
+        "name": "move to the top of the right-side target for the sixth time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the sixth time",
+        "eef_z": 0.09966228902339935
+      },
+      {
+        "frame": 544,
+        "name": "move to the top of the left-side target for the sixth time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the sixth time",
+        "eef_z": 0.0996837317943573
+      },
+      {
+        "frame": 583,
+        "name": "move to the top of the right-side target for the seventh time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the seventh time",
+        "eef_z": 0.09966438263654709
+      },
+      {
+        "frame": 622,
+        "name": "move to the top of the left-side target for the seventh time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the seventh time",
+        "eef_z": 0.09968457370996475
+      },
+      {
+        "frame": 661,
+        "name": "move to the top of the right-side target for the eighth time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the eighth time",
+        "eef_z": 0.09966535866260529
+      },
+      {
+        "frame": 700,
+        "name": "move to the top of the left-side target for the eighth time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the eighth time",
+        "eef_z": 0.09968540072441101
+      },
+      {
+        "frame": 739,
+        "name": "move to the top of the right-side target for the ninth time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the ninth time",
+        "eef_z": 0.09966716170310974
+      },
+      {
+        "frame": 778,
+        "name": "move to the top of the left-side target for the ninth time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the ninth time",
+        "eef_z": 0.09968634694814682
+      },
+      {
+        "frame": 817,
+        "name": "move to the top of the right-side target for the tenth time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the tenth time",
+        "eef_z": 0.0996694415807724
+      },
+      {
+        "frame": 856,
+        "name": "move to the top of the left-side target for the tenth time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the tenth time",
+        "eef_z": 0.09968702495098114
+      },
+      {
+        "frame": 895,
+        "name": "move to the top of the right-side target for the 11th time",
+        "grounded": "move to the top of the right-side target at <93, 90> for the 11th time",
+        "eef_z": 0.0996704250574112
+      },
+      {
+        "frame": 934,
+        "name": "move to the top of the left-side target for the 11th time",
+        "grounded": "move to the top of the left-side target at <93, 189> for the 11th time",
+        "eef_z": 0.09968873858451843
+      },
+      {
+        "frame": 973,
+        "name": "put the green cube on the table",
+        "grounded": "put the green cube on the table",
+        "eef_z": 0.09967276453971863
+      },
+      {
+        "frame": 1010,
+        "name": "press the button",
+        "grounded": "press the button at <70, 131>",
+        "eef_z": 0.14940857887268066
+      },
+      {
+        "frame": 1068,
+        "name": "All tasks completed",
+        "grounded": "press the button at <70, 131>",
+        "eef_z": 0.03637469559907913
+      }
+    ]
+  },
+  {
+    "difficulty": "hard",
+    "episode": "示例 4",
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_3/hdf5_files/SwingXtimes_ep3_seed3301.h5",
+    "goals": [
+      "pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+      "pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+    ],
+    "frames": 535,
+    "right_count": 3,
+    "left_count": 3,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the red cube",
+        "grounded": "pick up the red cube at <98, 151>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 179,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <95, 65> for the first time",
+        "eef_z": 0.14839088916778564
+      },
+      {
+        "frame": 214,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <95, 167> for the first time",
+        "eef_z": 0.09962206333875656
+      },
+      {
+        "frame": 252,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <95, 65> for the second time",
+        "eef_z": 0.0996740311384201
+      },
+      {
+        "frame": 290,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <95, 167> for the second time",
+        "eef_z": 0.09966598451137543
+      },
+      {
+        "frame": 328,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <95, 65> for the third time",
+        "eef_z": 0.09967952966690063
+      },
+      {
+        "frame": 366,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <95, 167> for the third time",
+        "eef_z": 0.09966570138931274
+      },
+      {
+        "frame": 404,
+        "name": "put the red cube on the table",
+        "grounded": "put the red cube on the table",
+        "eef_z": 0.09968069940805435
+      },
+      {
+        "frame": 440,
+        "name": "press the button",
+        "grounded": "press the button at <57, 169>",
+        "eef_z": 0.14910727739334106
+      },
+      {
+        "frame": 499,
+        "name": "All tasks completed",
+        "grounded": "press the button at <57, 169>",
+        "eef_z": 0.03283577412366867
+      }
+    ]
+  },
+  {
+    "difficulty": "hard",
+    "episode": "示例 8",
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_7/hdf5_files/SwingXtimes_ep7_seed3700.h5",
+    "goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+    ],
+    "frames": 504,
+    "right_count": 3,
+    "left_count": 3,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the blue cube",
+        "grounded": "pick up the blue cube at <119, 86>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 106,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target for the first time",
+        "eef_z": 0.14952051639556885
+      },
+      {
+        "frame": 139,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <79, 179> for the first time",
+        "eef_z": 0.10048840939998627
+      },
+      {
+        "frame": 177,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <88, 83> for the second time",
+        "eef_z": 0.09978975355625153
+      },
+      {
+        "frame": 220,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <79, 179> for the second time",
+        "eef_z": 0.09971179068088531
+      },
+      {
+        "frame": 262,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <88, 83> for the third time",
+        "eef_z": 0.09974556416273117
+      },
+      {
+        "frame": 304,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <79, 179> for the third time",
+        "eef_z": 0.09973921626806259
+      },
+      {
+        "frame": 346,
+        "name": "put the blue cube on the table",
+        "grounded": "put the blue cube on the table",
+        "eef_z": 0.09974506497383118
+      },
+      {
+        "frame": 381,
+        "name": "press the button",
+        "grounded": "press the button at <61, 85>",
+        "eef_z": 0.14725977182388306
+      },
+      {
+        "frame": 462,
+        "name": "All tasks completed",
+        "grounded": "press the button at <61, 85>",
+        "eef_z": 0.03555872291326523
+      }
+    ]
+  },
+  {
+    "difficulty": "hard",
+    "episode": "示例 12",
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v1/base/B/SwingXtimes_episode_11/hdf5_files/SwingXtimes_ep11_seed4101.h5",
+    "goals": [
+      "pick up the blue cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion three times, finally press the button to stop",
+      "pick up the blue cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion three times, then put down the cube and press the button to stop"
+    ],
+    "frames": 486,
+    "right_count": 3,
+    "left_count": 3,
+    "segments": [
+      {
+        "frame": 0,
+        "name": "pick up the blue cube",
+        "grounded": "pick up the blue cube at <95, 76>",
+        "eef_z": 0.5211001038551331
+      },
+      {
+        "frame": 102,
+        "name": "move to the top of the right-side target for the first time",
+        "grounded": "move to the top of the right-side target at <80, 86> for the first time",
+        "eef_z": 0.14610058069229126
+      },
+      {
+        "frame": 128,
+        "name": "move to the top of the left-side target for the first time",
+        "grounded": "move to the top of the left-side target at <84, 188> for the first time",
+        "eef_z": 0.10082940757274628
+      },
+      {
+        "frame": 168,
+        "name": "move to the top of the right-side target for the second time",
+        "grounded": "move to the top of the right-side target at <80, 86> for the second time",
+        "eef_z": 0.09975305944681168
+      },
+      {
+        "frame": 208,
+        "name": "move to the top of the left-side target for the second time",
+        "grounded": "move to the top of the left-side target at <84, 188> for the second time",
+        "eef_z": 0.09977170079946518
+      },
+      {
+        "frame": 253,
+        "name": "move to the top of the right-side target for the third time",
+        "grounded": "move to the top of the right-side target at <80, 86> for the third time",
+        "eef_z": 0.09961868077516556
+      },
+      {
+        "frame": 297,
+        "name": "move to the top of the left-side target for the third time",
+        "grounded": "move to the top of the left-side target at <84, 188> for the third time",
+        "eef_z": 0.0996880978345871
+      },
+      {
+        "frame": 341,
+        "name": "put the blue cube on the table",
+        "grounded": "put the blue cube on the table",
+        "eef_z": 0.09964440017938614
+      },
+      {
+        "frame": 376,
+        "name": "press the button",
+        "grounded": "press the button at <64, 115>",
+        "eef_z": 0.1486203372478485
+      },
+      {
+        "frame": 449,
+        "name": "All tasks completed",
+        "grounded": "press the button at <64, 115>",
+        "eef_z": 0.031418636441230774
+      }
+    ]
+  }
+]

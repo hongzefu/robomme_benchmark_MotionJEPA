@@ -1,0 +1,9 @@
+t=0	pick up the cube                        	pick up the cube at <69, 142>                     	color=BLUE
+t=121	drop the cube onto target               	drop the cube onto target at <112, 89>            	color=unresolved[231. 231. 231.]
+t=212	pick up the cube                        	pick up the cube at <142, 177>                    	color=GREEN
+t=332	drop the cube onto target               	drop the cube onto target at <104, 160>           	color=unresolved[231. 231. 231.]
+t=424	pick up the cube                        	pick up the cube at <101, 161>                    	color=GREEN
+t=492	drop the cube onto target               	drop the cube onto target at <138, 83>            	color=unresolved[231. 231. 231.]
+t=581	press the button                        	press the button at <126, 123>                    	color=unresolved[168. 168. 168.]
+t=676	pick up the cube                        	pick up the cube at <110, 87>                     	color=BLUE
+t=763	drop the cube onto target               	drop the cube onto target at <84, 160>            	color=unresolved[231. 231. 231.]

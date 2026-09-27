@@ -8,7 +8,7 @@
     uv run --no-sync python scripts/parity/train_split_config.py extract \
         --output scripts/configs/newtask-v4/sampling_config.json
     uv run --no-sync python scripts/parity/train_split_config.py extract --verify
-    # V5（0924-newtask-release-v5-plan.md 3.3 S4）：换快照目录与说明文字，其余逻辑不变
+    # V5（docs/plans/0924-newtask-release-v5-plan.md 3.3 S4）：换快照目录与说明文字，其余逻辑不变
     uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v5
 """
 
@@ -34,7 +34,7 @@ DEFAULT_OUTPUT = REPO_ROOT / "scripts" / "configs" / DEFAULT_RELEASE / "sampling
 RELEASE_NOTES = {
     "newtask-v4": "V4 快照：原三档部分等于原值（v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），xhard 条目为 V4 新值",
     "newtask-v5": "V5 快照：原三档部分等于原值（V0 闸门逐字核验；v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），"
-                  "xhard 条目为 V5 新值（0924-newtask-release-v5-plan.md）；V4 快照 scripts/configs/newtask-v4/ 已作废、原样留档",
+                  "xhard 条目为 V5 新值（docs/plans/0924-newtask-release-v5-plan.md）；V4 快照 scripts/configs/newtask-v4/ 已作废、原样留档",
     "newtask-v6": "V6 快照：原 easy/medium/hard 三档按 V0 核验；新值族 xhard1 < xhard2 < xhard3 < xhard4 四档条目为 V6 新值（0925-newtask-release-v6-plan.md）；V5 快照 scripts/configs/newtask-v5/ 原样留档",
 }
 

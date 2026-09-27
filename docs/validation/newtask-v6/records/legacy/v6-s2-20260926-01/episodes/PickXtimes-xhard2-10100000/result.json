@@ -1,0 +1,34 @@
+{
+  "id": "PickXtimes-xhard2-10100000",
+  "task": "PickXtimes",
+  "difficulty": "xhard2",
+  "seed": 10100000,
+  "episode": 9,
+  "sampling_config": "artifacts/newtask-v6/s2-prep/sampling/PickXtimes.json",
+  "ok": true,
+  "status": "finished",
+  "exit_code": 0,
+  "timeout": false,
+  "wall_s": 81.876,
+  "counted_attempt": true,
+  "summary_valid": true,
+  "probe_summary": [
+    {
+      "task": "PickXtimes",
+      "seed": 10100000,
+      "difficulty": "xhard2",
+      "ok": true,
+      "failure_class": null,
+      "error_type": null,
+      "error": "",
+      "wall_s": 72.8,
+      "timesteps": 1390
+    }
+  ],
+  "hdf5": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickXtimes-xhard2-10100000/hdf5_files/PickXtimes_ep9_seed10100000.h5"
+  ],
+  "videos": [
+    "artifacts/newtask-v6/v6-s2-20260926-01/episodes/PickXtimes-xhard2-10100000/videos/PickXtimes_ep9_seed10100000_xhard2_pick_up_the_blue_cube_and_place_it_on_the_target_repeating_this_action_nine_times_then_press_the_button_to_stop__ALT__pick_up_the_blue_cube_and_place_it_on_the___HASH__f787292f0b27.mp4"
+  ]
+}

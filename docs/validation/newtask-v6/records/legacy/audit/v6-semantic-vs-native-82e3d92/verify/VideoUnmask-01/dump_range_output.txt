@@ -1,0 +1,135 @@
+t=0 boundary=True
+  simple_subgoal   = static
+  grounded_subgoal = static
+  grounded_subgoal_online = static
+  choice_action = {"choice": "", "point": []}
+t=5 boundary=False
+  simple_subgoal   = static
+  grounded_subgoal = static
+  grounded_subgoal_online = static
+  choice_action = {"choice": "", "point": []}
+t=10 boundary=False
+  simple_subgoal   = static
+  grounded_subgoal = static
+  grounded_subgoal_online = static
+  choice_action = {"choice": "", "point": []}
+t=15 boundary=False
+  simple_subgoal   = static
+  grounded_subgoal = static
+  grounded_subgoal_online = static
+  choice_action = {"choice": "", "point": []}
+t=20 boundary=False
+  simple_subgoal   = static
+  grounded_subgoal = static
+  grounded_subgoal_online = static
+  choice_action = {"choice": "", "point": []}
+t=380 boundary=False
+  simple_subgoal   = put down the container
+  grounded_subgoal = put down the container
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "B", "point": []}
+t=384 boundary=False
+  simple_subgoal   = put down the container
+  grounded_subgoal = put down the container
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "B", "point": []}
+t=386 boundary=False
+  simple_subgoal   = put down the container
+  grounded_subgoal = put down the container
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "B", "point": []}
+t=387 boundary=False
+  simple_subgoal   = put down the container
+  grounded_subgoal = put down the container
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "B", "point": []}
+t=388 boundary=True
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=389 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=390 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=395 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=400 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=410 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=420 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=430 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=440 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=450 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=460 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [87, 138]}
+t=470 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [86, 137]}
+t=480 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [71, 138]}
+t=482 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [65, 139]}
+t=483 boundary=False
+  simple_subgoal   = pick up the container that hides the blue cube
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [62, 139]}
+t=484 boundary=True
+  simple_subgoal   = All tasks completed
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [59, 139]}
+t=485 boundary=False
+  simple_subgoal   = All tasks completed
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [57, 139]}
+t=489 boundary=False
+  simple_subgoal   = All tasks completed
+  grounded_subgoal = pick up the container that hides the blue cube
+  grounded_subgoal_online = pick up the container that hides the blue cube
+  choice_action = {"choice": "A", "point": [51, 140]}

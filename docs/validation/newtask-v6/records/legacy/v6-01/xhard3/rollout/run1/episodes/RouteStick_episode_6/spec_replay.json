@@ -1,0 +1,29 @@
+{
+  "mismatches": [],
+  "value_points": 22,
+  "consumed": [
+    "actions.directions.0",
+    "actions.directions.1",
+    "actions.directions.10",
+    "actions.directions.11",
+    "actions.directions.12",
+    "actions.directions.13",
+    "actions.directions.14",
+    "actions.directions.2",
+    "actions.directions.3",
+    "actions.directions.4",
+    "actions.directions.5",
+    "actions.directions.6",
+    "actions.directions.7",
+    "actions.directions.8",
+    "actions.directions.9",
+    "actions.nodes",
+    "layout.obstacle_rgb.0",
+    "layout.obstacle_rgb.1",
+    "layout.obstacle_rgb.2",
+    "layout.obstacle_rgb.3",
+    "layout.rotation_deg",
+    "objects.L"
+  ],
+  "unused": []
+}

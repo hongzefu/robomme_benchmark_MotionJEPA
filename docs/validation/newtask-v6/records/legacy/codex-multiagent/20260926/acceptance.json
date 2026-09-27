@@ -1,0 +1,214 @@
+{
+  "thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+  "app_host": "remote-ssh-discovered:vail",
+  "created_via": "现有SSH App daemon的thread/start接口，并经App任务列表确认可见",
+  "configured_subagent_limit": 16,
+  "root_model": "gpt-6-astra",
+  "concurrent_16": "PASS",
+  "models_16": "PASS",
+  "limit_17": "PASS",
+  "snapshot": {
+    "timestamp": "2026-09-26T18:26:08.039Z",
+    "agents": [
+      {
+        "agent_name": "/root/probe01",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe02",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe03",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe04",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe05",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe06",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe07",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe08",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe09",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe10",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe11",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe12",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe13",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe14",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe15",
+        "agent_status": "running"
+      },
+      {
+        "agent_name": "/root/probe16",
+        "agent_status": "running"
+      }
+    ]
+  },
+  "rejected_17": {
+    "timestamp": "2026-09-26T18:26:12.249Z",
+    "output": "collab spawn failed: agent thread limit reached"
+  },
+  "models": [
+    {
+      "agent_path": "/root/probe01",
+      "thread_id": "01a0def6-8ebe-70e0-b3a8-824ae4abbf2e",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-24-55-01a0def6-8ebe-70e0-b3a8-824ae4abbf2e.jsonl"
+    },
+    {
+      "agent_path": "/root/probe02",
+      "thread_id": "01a0def6-a00d-7791-a6bf-e3607fbdc962",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-24-59-01a0def6-a00d-7791-a6bf-e3607fbdc962.jsonl"
+    },
+    {
+      "agent_path": "/root/probe03",
+      "thread_id": "01a0def6-b00e-79b1-99d4-600514eab3ca",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-04-01a0def6-b00e-79b1-99d4-600514eab3ca.jsonl"
+    },
+    {
+      "agent_path": "/root/probe04",
+      "thread_id": "01a0def6-c1de-7c82-a23a-942967ec7e05",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-08-01a0def6-c1de-7c82-a23a-942967ec7e05.jsonl"
+    },
+    {
+      "agent_path": "/root/probe05",
+      "thread_id": "01a0def6-d59f-7160-9537-bdf78b1cedf7",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-13-01a0def6-d59f-7160-9537-bdf78b1cedf7.jsonl"
+    },
+    {
+      "agent_path": "/root/probe06",
+      "thread_id": "01a0def6-e610-7740-9c01-d48e4af21853",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-17-01a0def6-e610-7740-9c01-d48e4af21853.jsonl"
+    },
+    {
+      "agent_path": "/root/probe07",
+      "thread_id": "01a0def6-f6f0-7d92-a6ff-ca4201e8ac97",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-22-01a0def6-f6f0-7d92-a6ff-ca4201e8ac97.jsonl"
+    },
+    {
+      "agent_path": "/root/probe08",
+      "thread_id": "01a0def7-078e-72e0-b3ec-a6747e854503",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-26-01a0def7-078e-72e0-b3ec-a6747e854503.jsonl"
+    },
+    {
+      "agent_path": "/root/probe09",
+      "thread_id": "01a0def7-1f44-7462-8920-63b847afc893",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-32-01a0def7-1f44-7462-8920-63b847afc893.jsonl"
+    },
+    {
+      "agent_path": "/root/probe10",
+      "thread_id": "01a0def7-3027-77f2-979e-0fd2518e4b62",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-36-01a0def7-3027-77f2-979e-0fd2518e4b62.jsonl"
+    },
+    {
+      "agent_path": "/root/probe11",
+      "thread_id": "01a0def7-40e1-73e3-a380-2acc173e2868",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-41-01a0def7-40e1-73e3-a380-2acc173e2868.jsonl"
+    },
+    {
+      "agent_path": "/root/probe12",
+      "thread_id": "01a0def7-5350-72a3-9c7b-0357d128c58a",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-45-01a0def7-5350-72a3-9c7b-0357d128c58a.jsonl"
+    },
+    {
+      "agent_path": "/root/probe13",
+      "thread_id": "01a0def7-650d-7121-8b62-1f6813c9c2b4",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-50-01a0def7-650d-7121-8b62-1f6813c9c2b4.jsonl"
+    },
+    {
+      "agent_path": "/root/probe14",
+      "thread_id": "01a0def7-76c6-7813-9a8a-2ef18136b65f",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-54-01a0def7-76c6-7813-9a8a-2ef18136b65f.jsonl"
+    },
+    {
+      "agent_path": "/root/probe15",
+      "thread_id": "01a0def7-87ea-7a11-a42f-4a174e4aacb8",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-25-59-01a0def7-87ea-7a11-a42f-4a174e4aacb8.jsonl"
+    },
+    {
+      "agent_path": "/root/probe16",
+      "thread_id": "01a0def7-9c32-7233-82dc-447ba9e9be36",
+      "parent_thread_id": "01a0def6-52e3-7fa2-b191-b984a663bf93",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-26-04-01a0def7-9c32-7233-82dc-447ba9e9be36.jsonl"
+    }
+  ],
+  "parent_rollout": "/home/hongzefu/.codex/sessions/2026/09/26/rollout-2026-09-26T14-24-40-01a0def6-52e3-7fa2-b191-b984a663bf93.jsonl"
+}

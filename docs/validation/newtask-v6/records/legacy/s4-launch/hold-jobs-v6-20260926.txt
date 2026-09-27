@@ -1,0 +1,4 @@
+62018665 v6gen-hold-3-20260926 gpu=1 cpu=16 mem=192G time=48h retain_by_user=1
+62018666 v6gen-hold-4-20260926 gpu=1 cpu=16 mem=192G time=48h retain_by_user=1
+61890467 inherited_v6gen-hold-1 retain_by_user=1
+61890468 inherited_v6gen-hold-2 retain_by_user=1

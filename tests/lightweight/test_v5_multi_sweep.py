@@ -1,6 +1,6 @@
 """V5 S2b：``bin_collision.check_multi_swap_sweep`` 与认证预筛的定向测试。
 
-对应 0924-newtask-release-v5-plan.md 2.5「关键设计点」、L23（认证预筛开启）、L54（按钮底座作静止障碍）与
+对应 docs/plans/0924-newtask-release-v5-plan.md 2.5「关键设计点」、L23（认证预筛开启）、L54（按钮底座作静止障碍）与
 第二部分「一」S2 行。覆盖：
 
 * 单对时与 ``check_swap_sweep`` 大量随机样例逐位等价（含接触拒绝）；

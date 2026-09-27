@@ -1,0 +1,19 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+DEMOP1 hw=0.2 seed=4100000 ok=True cls=None  steps=None/2355 tgt_reach=0.6805 layout_diff=0.0  109.3s
+DEMOP1 hw=0.2 seed=4100100 ok=True cls=None  steps=None/2209 tgt_reach=0.508 layout_diff=0.0  105.8s
+DEMOP1 hw=0.2 seed=4100200 ok=True cls=None  steps=None/2071 tgt_reach=0.5757 layout_diff=0.0  93.8s
+DEMOP1 hw=0.2 seed=4100300 ok=True cls=None  steps=None/2997 tgt_reach=0.6572 layout_diff=0.0  139.7s
+DEMOP1 hw=0.2 seed=4100400 ok=True cls=None  steps=None/2090 tgt_reach=0.4429 layout_diff=0.0  95.5s
+DEMOP1 hw=0.2 seed=4100500 ok=True cls=None  steps=None/2085 tgt_reach=0.507 layout_diff=0.0  249.9s
+screw plan failed
+screw plan failed
+screw plan failed
+DEMOP1 hw=0.2 seed=4100600 ok=True cls=None  steps=None/2216 tgt_reach=0.4019 layout_diff=0.0  264.5s
+DEMOP1 hw=0.2 seed=4100700 ok=True cls=None  steps=None/2193 tgt_reach=0.6468 layout_diff=0.0  264.5s
+DEMOP1 hw=0.2 seed=4100800 ok=True cls=None  steps=None/2169 tgt_reach=0.6348 layout_diff=0.0  253.0s
+DEMOP1 hw=0.2 seed=4100900 ok=True cls=None  steps=None/2241 tgt_reach=0.6545 layout_diff=0.0  259.1s
+DEMOP1_DONE
+EXIT_CODE=0

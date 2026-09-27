@@ -1,0 +1,8 @@
+P3B VideoUnmaskSwap base 局=593 全部槽对：exact=0.271 inner_clear=0.531 ok=0.123 vis=0.075 | 最近邻对：exact=0.151 inner_clear=0.081 ok=0.532 vis=0.236 | 零可行搭档槽占比 0.317
+P3B VideoUnmaskSwap novis 局=593 全部槽对：exact=0.292 inner_clear=0.552 ok=0.156 | 最近邻对：exact=0.167 inner_clear=0.124 ok=0.709 | 零可行搭档槽占比 0.150
+P3B VideoUnmaskSwap noclr 局=593 全部槽对：exact=0.343 inner_clear=0.440 ok=0.142 vis=0.075 | 最近邻对：exact=0.162 inner_clear=0.029 ok=0.572 vis=0.236 | 零可行搭档槽占比 0.247
+P3B VideoUnmaskSwap both 局=593 全部槽对：exact=0.371 inner_clear=0.446 ok=0.183 | 最近邻对：exact=0.181 inner_clear=0.039 ok=0.780 | 零可行搭档槽占比 0.093
+P3B ButtonUnmaskSwap base 局=541 全部槽对：btn=0.593 exact=0.119 inner_clear=0.134 ok=0.077 vis=0.076 | 最近邻对：btn=0.160 exact=0.140 inner_clear=0.065 ok=0.394 vis=0.242 | 零可行搭档槽占比 0.466
+P3B ButtonUnmaskSwap novis 局=541 全部槽对：btn=0.593 exact=0.138 inner_clear=0.162 ok=0.107 | 最近邻对：btn=0.160 exact=0.156 inner_clear=0.126 ok=0.558 | 零可行搭档槽占比 0.295
+P3B ButtonUnmaskSwap noclr 局=541 全部槽对：btn=0.593 exact=0.130 inner_clear=0.117 ok=0.083 vis=0.076 | 最近邻对：btn=0.160 exact=0.143 inner_clear=0.035 ok=0.421 vis=0.242 | 零可行搭档槽占比 0.426
+P3B ButtonUnmaskSwap both 局=541 全部槽对：btn=0.593 exact=0.155 inner_clear=0.133 ok=0.119 | 最近邻对：btn=0.160 exact=0.163 inner_clear=0.064 ok=0.614 | 零可行搭档槽占比 0.245

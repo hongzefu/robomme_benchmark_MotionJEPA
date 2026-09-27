@@ -1,0 +1,195 @@
+{
+  "decision": {
+    "block_color_policy": "native_per_cube_uniform",
+    "cube_region": {
+      "region_center": [
+        -0.1,
+        0
+      ],
+      "region_half_size": 0.2
+    },
+    "highlight_count": {
+      "easy": 1,
+      "hard": 3,
+      "medium": 2,
+      "xhard1": [
+        4,
+        4
+      ],
+      "xhard2": [
+        5,
+        5
+      ],
+      "xhard3": [
+        6,
+        6
+      ],
+      "xhard4": [
+        7,
+        7
+      ]
+    },
+    "layout_mode": "native_region",
+    "spawn_count": {
+      "easy": 3,
+      "hard": 6,
+      "medium": 4,
+      "xhard1": [
+        7,
+        7
+      ],
+      "xhard2": [
+        8,
+        8
+      ],
+      "xhard3": [
+        9,
+        9
+      ],
+      "xhard4": [
+        10,
+        10
+      ]
+    },
+    "xhard1": {
+      "block_color_hsv": {
+        "h_range": [
+          0.0,
+          1.0
+        ],
+        "s_range": [
+          0.5,
+          1.0
+        ],
+        "v_range": [
+          0.4,
+          1.0
+        ]
+      },
+      "block_color_policy": "hsv_floor",
+      "subgoal_color_suffix": "omit"
+    },
+    "xhard2": {
+      "block_color_hsv": {
+        "h_range": [
+          0.0,
+          1.0
+        ],
+        "s_range": [
+          0.5,
+          1.0
+        ],
+        "v_range": [
+          0.4,
+          1.0
+        ]
+      },
+      "block_color_policy": "hsv_floor",
+      "subgoal_color_suffix": "omit"
+    },
+    "xhard3": {
+      "block_color_hsv": {
+        "h_range": [
+          0.0,
+          1.0
+        ],
+        "s_range": [
+          0.5,
+          1.0
+        ],
+        "v_range": [
+          0.4,
+          1.0
+        ]
+      },
+      "block_color_policy": "hsv_floor",
+      "subgoal_color_suffix": "omit"
+    },
+    "xhard4": {
+      "block_color_hsv": {
+        "h_range": [
+          0.0,
+          1.0
+        ],
+        "s_range": [
+          0.5,
+          1.0
+        ],
+        "v_range": [
+          0.4,
+          1.0
+        ]
+      },
+      "block_color_policy": "hsv_floor",
+      "subgoal_color_suffix": "omit"
+    }
+  },
+  "native": {
+    "parameters": {
+      "color_draw": {
+        "high_exclusive": "len(color_pool)",
+        "low": 0,
+        "sampler": "torch.randint"
+      },
+      "color_pool": [
+        {
+          "name": "red",
+          "rgba": [
+            1,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "blue",
+          "rgba": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "green",
+          "rgba": [
+            0,
+            1,
+            0,
+            1
+          ]
+        }
+      ],
+      "recovery": "沿用入口给定的 fail recover 模式与原 generator",
+      "spawn_failure": "生成失败 break，保存实际数量，不补抽",
+      "target_selection": {
+        "sampler": "torch.randperm(len(all_cubes))[:pickup]"
+      }
+    },
+    "positions": {
+      "button": {
+        "center_xy": [
+          -0.2,
+          0
+        ],
+        "scale": 1.5
+      },
+      "cubes": {
+        "include_existing": false,
+        "include_goal": false,
+        "min_gap_factor": 2,
+        "random_yaw": true,
+        "region_center": [
+          -0.1,
+          0
+        ],
+        "region_half_size": 0.2
+      },
+      "highlight_window": {
+        "end_step": 100,
+        "simultaneous": true,
+        "start_step": 10
+      }
+    }
+  }
+}

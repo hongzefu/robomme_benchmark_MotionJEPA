@@ -1,0 +1,338 @@
+[
+ {
+  "tier": "xhard4",
+  "episode": 0,
+  "n": 362,
+  "tracked": 362,
+  "target_px_xy": [
+   121.0,
+   95.0
+  ],
+  "stop_frame_est": 328,
+  "crossings_before_stop": [
+   31,
+   90,
+   151,
+   210,
+   271
+  ],
+  "n_crossings": 5,
+  "final_cube_px_xy": [
+   129.31386861313868,
+   94.86861313868613
+  ],
+  "final_offset_px": 8.31,
+  "amp_px": [
+   -74.83352958172506,
+   80.56695709299822
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 3,
+  "n": 852,
+  "tracked": 852,
+  "target_px_xy": [
+   136.0,
+   100.0
+  ],
+  "stop_frame_est": 809,
+  "crossings_before_stop": [
+   30,
+   91,
+   150,
+   211,
+   270,
+   331,
+   390,
+   451,
+   510,
+   571,
+   630,
+   691,
+   750
+  ],
+  "n_crossings": 13,
+  "final_cube_px_xy": [
+   141.0,
+   97.0909090909091
+  ],
+  "final_offset_px": 5.78,
+  "amp_px": [
+   -82.14653209683713,
+   75.74265292882448
+  ]
+ },
+ {
+  "tier": "xhard4",
+  "episode": 6,
+  "n": 902,
+  "tracked": 902,
+  "target_px_xy": [
+   137.0,
+   90.0
+  ],
+  "stop_frame_est": 868,
+  "crossings_before_stop": [
+   30,
+   91,
+   150,
+   211,
+   270,
+   331,
+   390,
+   451,
+   510,
+   571,
+   630,
+   691,
+   750,
+   811
+  ],
+  "n_crossings": 14,
+  "final_cube_px_xy": [
+   129.9142857142857,
+   89.93333333333334
+  ],
+  "final_offset_px": 7.09,
+  "amp_px": [
+   -78.12991634167246,
+   71.83816744684616
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 0,
+  "n": 459,
+  "tracked": 459,
+  "target_px_xy": [
+   103.0,
+   103.0
+  ],
+  "stop_frame_est": 422,
+  "crossings_before_stop": [
+   61,
+   180,
+   301,
+   420
+  ],
+  "n_crossings": 4,
+  "final_cube_px_xy": [
+   99.54263565891473,
+   100.03100775193798
+  ],
+  "final_offset_px": 4.56,
+  "amp_px": [
+   -66.22656509683706,
+   86.07162373623156
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 1,
+  "n": 186,
+  "tracked": 186,
+  "target_px_xy": [
+   138.0,
+   122.0
+  ],
+  "stop_frame_est": 150,
+  "crossings_before_stop": [
+   30,
+   91,
+   150
+  ],
+  "n_crossings": 3,
+  "final_cube_px_xy": [
+   138.5,
+   120.5
+  ],
+  "final_offset_px": 1.58,
+  "amp_px": [
+   -91.56525084135176,
+   82.04655837806125
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 10,
+  "n": 234,
+  "tracked": 234,
+  "target_px_xy": [
+   130.0,
+   107.0
+  ],
+  "stop_frame_est": 200,
+  "crossings_before_stop": [
+   40,
+   121,
+   200
+  ],
+  "n_crossings": 3,
+  "final_cube_px_xy": [
+   130.0,
+   105.0
+  ],
+  "final_offset_px": 2.0,
+  "amp_px": [
+   -83.14761179868101,
+   80.98216327918225
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 11,
+  "n": 331,
+  "tracked": 331,
+  "target_px_xy": [
+   103.0,
+   112.0
+  ],
+  "stop_frame_est": 297,
+  "crossings_before_stop": [
+   61,
+   180
+  ],
+  "n_crossings": 2,
+  "final_cube_px_xy": [
+   97.78378378378379,
+   108.61486486486487
+  ],
+  "final_offset_px": 6.22,
+  "amp_px": [
+   -69.39645552550225,
+   90.79589499941672
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 2,
+  "n": 243,
+  "tracked": 243,
+  "target_px_xy": [
+   114.0,
+   93.0
+  ],
+  "stop_frame_est": 203,
+  "crossings_before_stop": [
+   41,
+   120,
+   201
+  ],
+  "n_crossings": 3,
+  "final_cube_px_xy": [
+   122.24444444444444,
+   93.71111111111111
+  ],
+  "final_offset_px": 8.28,
+  "amp_px": [
+   -70.08859433998704,
+   80.66485140093715
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 3,
+  "n": 453,
+  "tracked": 453,
+  "target_px_xy": [
+   130.0,
+   96.0
+  ],
+  "stop_frame_est": 418,
+  "crossings_before_stop": [
+   61,
+   180,
+   301
+  ],
+  "n_crossings": 3,
+  "final_cube_px_xy": [
+   133.765625,
+   95.703125
+  ],
+  "final_offset_px": 3.78,
+  "amp_px": [
+   -79.09347778017771,
+   77.03741478434645
+  ]
+ },
+ {
+  "tier": "easy",
+  "episode": 4,
+  "n": 211,
+  "tracked": 211,
+  "target_px_xy": [
+   122.0,
+   105.0
+  ],
+  "stop_frame_est": 178,
+  "crossings_before_stop": [
+   61
+  ],
+  "n_crossings": 1,
+  "final_cube_px_xy": [
+   126.28057553956835,
+   103.70503597122303
+  ],
+  "final_offset_px": 4.47,
+  "amp_px": [
+   -78.62726949273588,
+   83.78925348018912
+  ]
+ },
+ {
+  "tier": "medium",
+  "episode": 6,
+  "n": 247,
+  "tracked": 247,
+  "target_px_xy": [
+   155.0,
+   125.0
+  ],
+  "stop_frame_est": 212,
+  "crossings_before_stop": [
+   30,
+   91,
+   150,
+   211
+  ],
+  "n_crossings": 4,
+  "final_cube_px_xy": [
+   148.12972972972972,
+   128.4972972972973
+  ],
+  "final_offset_px": 7.71,
+  "amp_px": [
+   -96.58490481810921,
+   72.59196042347415
+  ]
+ },
+ {
+  "tier": "hard",
+  "episode": 7,
+  "n": 406,
+  "tracked": 406,
+  "target_px_xy": [
+   129.0,
+   88.0
+  ],
+  "stop_frame_est": 363,
+  "crossings_before_stop": [
+   40,
+   121,
+   200,
+   281,
+   360
+  ],
+  "n_crossings": 5,
+  "final_cube_px_xy": [
+   138.26771653543307,
+   87.37007874015748
+  ],
+  "final_offset_px": 9.29,
+  "amp_px": [
+   -75.93252649548847,
+   75.283935439226
+  ]
+ }
+]

@@ -1,6 +1,6 @@
 # V4 步 3b（g4）：VideoUnmask / ButtonUnmask 的 xhard
 
-> 红线 N1 的逐步报告。对应 [0922-newtask-release-v4-plan.md](../../../0922-newtask-release-v4-plan.md) 2.7、2.8、2.9、2.21（Unmask 简图）。
+> 红线 N1 的逐步报告。对应 [0922-newtask-release-v4-plan.md](../../plans/0922-newtask-release-v4-plan.md) 2.7、2.8、2.9、2.21（Unmask 简图）。
 > 起点 `00e2ef4`（12.66）。录像器未改（`git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py` 为真，`RECORDER_FROZEN=PASS`）。
 > 用户已定数：G2（区域不动、`min_gap_factor` 0.75、容器数 N=8）、B2（干扰色黄/青/品红）、B3（干扰做成额外容器、不参与 swap）、
 > B13（外环 `max(|x|,|y|) ∈ [0.2675, 0.45]`、3 个里 1~2 个含 cube）、H1（干扰容器进碰撞检查）、H2（只挂 xhard）。

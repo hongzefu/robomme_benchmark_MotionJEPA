@@ -1,0 +1,45 @@
+=== xhard1 ep0 seed8600000: 301 steps, 5 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <135, 135> that hides the red cube'
+  t=205 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <118, 115> that hides the green cube'
+=== xhard1 ep3 seed8600300: 328 steps, 5 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <103, 172> that hides the green cube'
+  t=218 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <107, 100> that hides the red cube'
+=== xhard1 ep6 seed8600600: 306 steps, 5 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <133, 127> that hides the blue cube'
+  t=207 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <105, 79> that hides the green cube'
+=== xhard2 ep0 seed10600000: 490 steps, 7 boundaries, n_mp4=2 ===
+  t=66 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <66, 162> that hides the red cube'
+  t=237 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <140, 131> that hides the green cube'
+  t=388 simple='pick up the container that hides the blue cube' has_coord=False grounded='pick up the container that hides the blue cube'
+=== xhard2 ep3 seed10600300: 460 steps, 7 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <83, 125> that hides the red cube'
+  t=228 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <107, 92> that hides the blue cube'
+  t=375 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <110, 126> that hides the green cube'
+=== xhard2 ep6 seed10600600: 457 steps, 7 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <84, 163> that hides the red cube'
+  t=223 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <117, 148> that hides the green cube'
+  t=370 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <134, 110> that hides the blue cube'
+=== xhard3 ep0 seed12600000: 471 steps, 7 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <89, 156> that hides the green cube'
+  t=228 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <79, 126> that hides the blue cube'
+  t=370 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <70, 108> that hides the red cube'
+=== xhard3 ep3 seed12600300: 449 steps, 7 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <100, 122> that hides the red cube'
+  t=217 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <119, 89> that hides the blue cube'
+  t=364 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <105, 166> that hides the green cube'
+=== xhard3 ep6 seed12600600: 478 steps, 7 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <89, 134> that hides the red cube'
+  t=227 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <116, 177> that hides the green cube'
+  t=378 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <131, 124> that hides the blue cube'
+=== xhard4 ep0 seed6600000: 461 steps, 7 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <74, 86> that hides the red cube'
+  t=224 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <121, 121> that hides the blue cube'
+  t=377 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <133, 154> that hides the green cube'
+=== xhard4 ep3 seed6600300: 465 steps, 7 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <140, 89> that hides the red cube'
+  t=212 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <117, 86> that hides the blue cube'
+  t=371 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <142, 134> that hides the green cube'
+=== xhard4 ep6 seed6600600: 477 steps, 7 boundaries, n_mp4=1 ===
+  t=66 simple='pick up the container that hides the blue cube' has_coord=True grounded='pick up the container at <74, 93> that hides the blue cube'
+  t=229 simple='pick up the container that hides the green cube' has_coord=True grounded='pick up the container at <141, 141> that hides the green cube'
+  t=379 simple='pick up the container that hides the red cube' has_coord=True grounded='pick up the container at <109, 103> that hides the red cube'

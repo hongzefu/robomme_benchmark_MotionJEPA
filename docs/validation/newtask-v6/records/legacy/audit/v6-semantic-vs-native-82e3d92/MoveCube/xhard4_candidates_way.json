@@ -1,0 +1,102 @@
+[
+ {
+  "episode": 0,
+  "seed": 7400000,
+  "selected": true,
+  "way_idx_by_init": {
+   "0": 0,
+   "1": 1
+  },
+  "effective_way": "gripper_push"
+ },
+ {
+  "episode": 1,
+  "seed": 7400100,
+  "selected": false,
+  "way_idx_by_init": {
+   "0": 0,
+   "1": 2
+  },
+  "effective_way": "grasp_putdown"
+ },
+ {
+  "episode": 2,
+  "seed": 7400200,
+  "selected": false,
+  "way_idx_by_init": {
+   "0": 2,
+   "1": 2
+  },
+  "effective_way": "grasp_putdown"
+ },
+ {
+  "episode": 3,
+  "seed": 7400300,
+  "selected": true,
+  "way_idx_by_init": {
+   "0": 0,
+   "1": 1
+  },
+  "effective_way": "gripper_push"
+ },
+ {
+  "episode": 4,
+  "seed": 7400400,
+  "selected": false,
+  "way_idx_by_init": {
+   "0": 2,
+   "1": 0
+  },
+  "effective_way": "peg_push"
+ },
+ {
+  "episode": 5,
+  "seed": 7400500,
+  "selected": false,
+  "way_idx_by_init": {
+   "0": 0,
+   "1": 2
+  },
+  "effective_way": "grasp_putdown"
+ },
+ {
+  "episode": 6,
+  "seed": 7400600,
+  "selected": true,
+  "way_idx_by_init": {
+   "0": 2,
+   "1": 2
+  },
+  "effective_way": "grasp_putdown"
+ },
+ {
+  "episode": 7,
+  "seed": 7400700,
+  "selected": false,
+  "way_idx_by_init": {
+   "0": 1,
+   "1": 0
+  },
+  "effective_way": "peg_push"
+ },
+ {
+  "episode": 8,
+  "seed": 7400800,
+  "selected": false,
+  "way_idx_by_init": {
+   "0": 0,
+   "1": 2
+  },
+  "effective_way": "grasp_putdown"
+ },
+ {
+  "episode": 9,
+  "seed": 7400900,
+  "selected": false,
+  "way_idx_by_init": {
+   "0": 0,
+   "1": 0
+  },
+  "effective_way": "peg_push"
+ }
+]

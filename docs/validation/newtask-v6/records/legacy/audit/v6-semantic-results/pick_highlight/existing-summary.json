@@ -1,0 +1,1574 @@
+[
+  {
+    "difficulty": "xhard1",
+    "episode": 0,
+    "seed": 9200000,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed9200000.h5",
+    "frames": 706,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      0,
+      4,
+      5,
+      1
+    ],
+    "highlight_count": 4,
+    "n_cubes": 7,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 78,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 215,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 279,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 390,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 441,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 551,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 605,
+        "label": "pick up the fourth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      -0.05142500624060631,
+      0.14140735566616058,
+      0.1454770714044571,
+      -3.143202304840088,
+      0.0004532374441623688,
+      0.011571705341339111
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.6815,
+        0.7407,
+        0.0537,
+        0.0,
+        0.7333,
+        0.8259,
+        0.0
+      ],
+      "50": [
+        0.6815,
+        0.7407,
+        0.0537,
+        0.0,
+        0.7333,
+        0.8259,
+        0.0
+      ],
+      "100": [
+        0.6815,
+        0.7407,
+        0.0537,
+        0.0,
+        0.7333,
+        0.8259,
+        0.0
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 3,
+    "seed": 9200300,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed9200300.h5",
+    "frames": 705,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      6,
+      5,
+      1,
+      4
+    ],
+    "highlight_count": 4,
+    "n_cubes": 7,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 79,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 229,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 297,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 414,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 464,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 554,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 606,
+        "label": "pick up the fourth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      -0.01974719949066639,
+      0.09249131381511688,
+      0.14648552238941193,
+      -3.142411708831787,
+      -0.0019307099282741547,
+      -0.024614036083221436
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.0074,
+        0.7852,
+        0.0,
+        0.0,
+        0.7611,
+        0.8093,
+        0.6722
+      ],
+      "50": [
+        0.0074,
+        0.7852,
+        0.0,
+        0.0,
+        0.7611,
+        0.8093,
+        0.6722
+      ],
+      "100": [
+        0.0074,
+        0.7852,
+        0.0,
+        0.0,
+        0.7611,
+        0.8093,
+        0.6722
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard1",
+    "episode": 6,
+    "seed": 9200600,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard1/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed9200600.h5",
+    "frames": 707,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      5,
+      3,
+      2,
+      0
+    ],
+    "highlight_count": 4,
+    "n_cubes": 7,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 77,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 198,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 254,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 350,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 407,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 518,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 583,
+        "label": "pick up the fourth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      0.025205262005329132,
+      -0.06286849826574326,
+      0.14692220091819763,
+      -3.1419923305511475,
+      0.0005743540823459625,
+      0.4943605065345764
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.7537,
+        0.1,
+        0.6463,
+        0.7519,
+        0.0,
+        0.7315,
+        0.0
+      ],
+      "50": [
+        0.7537,
+        0.1,
+        0.6463,
+        0.7519,
+        0.0,
+        0.7315,
+        0.0
+      ],
+      "100": [
+        0.7537,
+        0.1,
+        0.6463,
+        0.7519,
+        0.0,
+        0.7315,
+        0.0
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 0,
+    "seed": 11200000,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed11200000.h5",
+    "frames": 844,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      6,
+      2,
+      5,
+      4,
+      7
+    ],
+    "highlight_count": 5,
+    "n_cubes": 8,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 82,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 203,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 270,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 393,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 445,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 534,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 584,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 666,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 720,
+        "label": "pick up the fifth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      -0.12127256393432617,
+      0.04019813984632492,
+      0.14690257608890533,
+      -3.1386454105377197,
+      -0.0004751645028591156,
+      1.2861056327819824
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.0,
+        0.0,
+        0.813,
+        0.1519,
+        0.6833,
+        0.75,
+        0.6667,
+        0.7352
+      ],
+      "50": [
+        0.0,
+        0.0,
+        0.813,
+        0.1519,
+        0.6833,
+        0.75,
+        0.6667,
+        0.7352
+      ],
+      "100": [
+        0.0,
+        0.0,
+        0.813,
+        0.1519,
+        0.6833,
+        0.75,
+        0.6667,
+        0.7352
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 3,
+    "seed": 11200300,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed11200300.h5",
+    "frames": 887,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      1,
+      7,
+      5,
+      3,
+      6
+    ],
+    "highlight_count": 5,
+    "n_cubes": 8,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 82,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 218,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 298,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 413,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 470,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 557,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 616,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 714,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 770,
+        "label": "pick up the fifth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      0.004476831294596195,
+      -0.1425841599702835,
+      0.14524659514427185,
+      -3.139543056488037,
+      0.002194169908761978,
+      1.4748506546020508
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.0,
+        0.7259,
+        0.0,
+        0.7722,
+        0.0,
+        0.6907,
+        0.7333,
+        0.7148
+      ],
+      "50": [
+        0.0,
+        0.7259,
+        0.0,
+        0.7722,
+        0.0,
+        0.6907,
+        0.7333,
+        0.7148
+      ],
+      "100": [
+        0.0,
+        0.7259,
+        0.0,
+        0.7722,
+        0.0,
+        0.6907,
+        0.7333,
+        0.7148
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard2",
+    "episode": 6,
+    "seed": 11200600,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard2/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed11200600.h5",
+    "frames": 869,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      2,
+      7,
+      1,
+      5,
+      0
+    ],
+    "highlight_count": 5,
+    "n_cubes": 8,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 81,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 220,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 295,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 416,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 468,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 570,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 628,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 727,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 777,
+        "label": "pick up the fifth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      -0.012427572160959244,
+      -0.14967045187950134,
+      0.14444953203201294,
+      -3.143676280975342,
+      -0.0010039769113063812,
+      -2.1645500659942627
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.7426,
+        0.7333,
+        0.6426,
+        0.0,
+        0.0,
+        0.7574,
+        0.0,
+        0.8222
+      ],
+      "50": [
+        0.7426,
+        0.7333,
+        0.6426,
+        0.0,
+        0.0,
+        0.7574,
+        0.0,
+        0.8222
+      ],
+      "100": [
+        0.7426,
+        0.7333,
+        0.6426,
+        0.0,
+        0.0,
+        0.7574,
+        0.0,
+        0.8222
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 0,
+    "seed": 13200000,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed13200000.h5",
+    "frames": 997,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      7,
+      3,
+      6,
+      1,
+      8,
+      5
+    ],
+    "highlight_count": 6,
+    "n_cubes": 9,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 78,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 210,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 262,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 357,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 414,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 509,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 565,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 674,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 739,
+        "label": "pick up the fifth highlighted cube"
+      },
+      {
+        "frame": 841,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 891,
+        "label": "pick up the sixth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      0.06290904432535172,
+      0.12615016102790833,
+      0.1503310203552246,
+      -3.1399481296539307,
+      -0.00028609856963157654,
+      -0.3843801021575928
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.0,
+        0.6593,
+        0.0,
+        0.7704,
+        0.0,
+        0.8241,
+        0.7593,
+        0.7574,
+        0.7463
+      ],
+      "50": [
+        0.0,
+        0.6593,
+        0.0,
+        0.7704,
+        0.0,
+        0.8241,
+        0.7593,
+        0.7574,
+        0.7463
+      ],
+      "100": [
+        0.0,
+        0.6593,
+        0.0,
+        0.7704,
+        0.0,
+        0.8241,
+        0.7593,
+        0.7574,
+        0.7463
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 3,
+    "seed": 13200300,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed13200300.h5",
+    "frames": 984,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      5,
+      3,
+      4,
+      1,
+      8,
+      2
+    ],
+    "highlight_count": 6,
+    "n_cubes": 9,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 79,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 195,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 252,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 347,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 397,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 484,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 540,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 637,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 689,
+        "label": "pick up the fifth highlighted cube"
+      },
+      {
+        "frame": 804,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 869,
+        "label": "pick up the sixth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      -0.24279317259788513,
+      -0.05161361023783684,
+      0.14689895510673523,
+      -3.1395864486694336,
+      0.0020260848104953766,
+      -0.38750356435775757
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.0,
+        0.8111,
+        0.5074,
+        0.7981,
+        0.65,
+        0.7222,
+        0.0185,
+        0.0981,
+        0.6241
+      ],
+      "50": [
+        0.0,
+        0.8111,
+        0.5074,
+        0.7981,
+        0.65,
+        0.7222,
+        0.0185,
+        0.0981,
+        0.6241
+      ],
+      "100": [
+        0.0,
+        0.8111,
+        0.5074,
+        0.7981,
+        0.65,
+        0.7222,
+        0.0185,
+        0.0981,
+        0.6241
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard3",
+    "episode": 6,
+    "seed": 13200600,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard3/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed13200600.h5",
+    "frames": 1055,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      2,
+      1,
+      7,
+      6,
+      8,
+      5
+    ],
+    "highlight_count": 6,
+    "n_cubes": 9,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 76,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 219,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 283,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 385,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 471,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 587,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 643,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 736,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 787,
+        "label": "pick up the fifth highlighted cube"
+      },
+      {
+        "frame": 889,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 939,
+        "label": "pick up the sixth highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      -0.14040467143058777,
+      -0.13297192752361298,
+      0.14572033286094666,
+      -3.139385461807251,
+      0.0007324256002902985,
+      0.4690365791320801
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.1685,
+        0.6463,
+        0.5889,
+        0.0,
+        0.0,
+        0.7056,
+        0.7741,
+        0.6907,
+        0.8667
+      ],
+      "50": [
+        0.1685,
+        0.6463,
+        0.5889,
+        0.0,
+        0.0,
+        0.7056,
+        0.7741,
+        0.6907,
+        0.8667
+      ],
+      "100": [
+        0.1685,
+        0.6259,
+        0.5889,
+        0.0,
+        0.0,
+        0.7056,
+        0.7741,
+        0.6907,
+        0.8667
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 0,
+    "seed": 7200000,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_0/hdf5_files/PickHighlight_ep0_seed7200000.h5",
+    "frames": 1257,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      3,
+      4,
+      9,
+      2,
+      0,
+      1,
+      8
+    ],
+    "highlight_count": 7,
+    "n_cubes": 10,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 74,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 197,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 276,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 386,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 436,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 548,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 616,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 723,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 773,
+        "label": "pick up the fifth highlighted cube"
+      },
+      {
+        "frame": 888,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 966,
+        "label": "pick up the sixth highlighted cube"
+      },
+      {
+        "frame": 1084,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 1134,
+        "label": "pick up the seventh highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      0.07173286378383636,
+      -0.14533139765262604,
+      0.15114732086658478,
+      -3.140549659729004,
+      -0.0005810223519802094,
+      -0.2615944743156433
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.6481,
+        0.7481,
+        0.7815,
+        0.6278,
+        0.7222,
+        0.0,
+        0.0,
+        0.0,
+        0.7796,
+        0.7352
+      ],
+      "50": [
+        0.6481,
+        0.7481,
+        0.7815,
+        0.6278,
+        0.7222,
+        0.0,
+        0.0,
+        0.0,
+        0.7796,
+        0.7352
+      ],
+      "100": [
+        0.6481,
+        0.7481,
+        0.7815,
+        0.6278,
+        0.7222,
+        0.0,
+        0.0,
+        0.0,
+        0.7796,
+        0.7352
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 3,
+    "seed": 7200300,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_3/hdf5_files/PickHighlight_ep3_seed7200300.h5",
+    "frames": 1156,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      4,
+      6,
+      8,
+      1,
+      3,
+      0,
+      9
+    ],
+    "highlight_count": 7,
+    "n_cubes": 10,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 76,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 206,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 257,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 343,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 400,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 489,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 539,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 618,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 669,
+        "label": "pick up the fifth highlighted cube"
+      },
+      {
+        "frame": 785,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 849,
+        "label": "pick up the sixth highlighted cube"
+      },
+      {
+        "frame": 965,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 1040,
+        "label": "pick up the seventh highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      -0.03398412466049194,
+      0.02854844741523266,
+      0.14528530836105347,
+      -3.14139986038208,
+      0.0012335814535617828,
+      0.08189207315444946
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.6796,
+        0.737,
+        0.0074,
+        0.7296,
+        0.8185,
+        0.013,
+        0.7407,
+        0.0,
+        0.7704,
+        0.7852
+      ],
+      "50": [
+        0.6796,
+        0.737,
+        0.0074,
+        0.7296,
+        0.8185,
+        0.013,
+        0.7407,
+        0.0,
+        0.7704,
+        0.7852
+      ],
+      "100": [
+        0.6796,
+        0.737,
+        0.0074,
+        0.7296,
+        0.8185,
+        0.013,
+        0.7407,
+        0.0,
+        0.7704,
+        0.7852
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "difficulty": "xhard4",
+    "episode": 6,
+    "seed": 7200600,
+    "path": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v6/v6-01/xhard4/rollout/run1/episodes/PickHighlight_episode_6/hdf5_files/PickHighlight_ep6_seed7200600.h5",
+    "frames": 1139,
+    "task_goals": [
+      "first press the button, then pick up all cubes that have been highlighteted with white areas on the table",
+      "first press the button, then pick up all highlighted cubes, finally press the button again to stop"
+    ],
+    "highlight_ids": [
+      1,
+      9,
+      5,
+      4,
+      2,
+      8,
+      3
+    ],
+    "highlight_count": 7,
+    "n_cubes": 10,
+    "transitions": [
+      {
+        "frame": 0,
+        "label": "press the button"
+      },
+      {
+        "frame": 84,
+        "label": "pick up the first highlighted cube"
+      },
+      {
+        "frame": 222,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 272,
+        "label": "pick up the second highlighted cube"
+      },
+      {
+        "frame": 366,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 420,
+        "label": "pick up the third highlighted cube"
+      },
+      {
+        "frame": 533,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 592,
+        "label": "pick up the fourth highlighted cube"
+      },
+      {
+        "frame": 704,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 754,
+        "label": "pick up the fifth highlighted cube"
+      },
+      {
+        "frame": 837,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 893,
+        "label": "pick up the sixth highlighted cube"
+      },
+      {
+        "frame": 987,
+        "label": "place the cube onto the table"
+      },
+      {
+        "frame": 1038,
+        "label": "pick up the seventh highlighted cube"
+      }
+    ],
+    "last_completed": true,
+    "last_gripper_closed": true,
+    "last_eef": [
+      0.023133806884288788,
+      -0.15233935415744781,
+      0.148464173078537,
+      -3.1417384147644043,
+      -4.287809133529663e-06,
+      0.08185648918151855
+    ],
+    "projected_ring_white_fraction": {
+      "0": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "11": [
+        0.0,
+        0.7648,
+        0.7833,
+        0.7556,
+        0.7648,
+        0.6648,
+        0.0,
+        0.1056,
+        0.8519,
+        0.6759
+      ],
+      "50": [
+        0.0,
+        0.7648,
+        0.7833,
+        0.7556,
+        0.7648,
+        0.6648,
+        0.0,
+        0.1056,
+        0.8519,
+        0.6759
+      ],
+      "100": [
+        0.0,
+        0.7648,
+        0.7833,
+        0.7556,
+        0.7648,
+        0.6648,
+        0.0,
+        0.1056,
+        0.8519,
+        0.6759
+      ],
+      "101": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  }
+]

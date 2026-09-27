@@ -1,0 +1,28 @@
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 6, "n": 400, "ok_rate": 0.5225, "fails": {"target5": 43, "target6": 138, "target4": 10}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": true, "half": 0.25, "cubes": 3, "targets": 6, "n": 400, "ok_rate": 0.9675, "fails": {"target6": 12, "target5": 1}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": true, "half": 0.25, "cubes": 3, "targets": 6, "n": 400, "ok_rate": 1.0, "fails": {}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": true, "half": 0.25, "cubes": 3, "targets": 4, "n": 400, "ok_rate": 1.0, "fails": {}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": true, "half": 0.25, "cubes": 3, "targets": 5, "n": 400, "ok_rate": 0.9975, "fails": {"target5": 1}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 4, "n": 400, "ok_rate": 0.975, "fails": {"target4": 10}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 5, "n": 400, "ok_rate": 0.8675, "fails": {"target5": 43, "target4": 10}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.2, "cubes": 4, "targets": 6, "n": 400, "ok_rate": 0.27, "fails": {"target5": 108, "target6": 158, "target4": 23, "target3": 3}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 6, "n": 400, "ok_rate": 0.5225, "fails": {"target5": 43, "target6": 138, "target4": 10}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.2, "cubes": 4, "targets": 6, "n": 400, "ok_rate": 0.27, "fails": {"target5": 108, "target6": 158, "target4": 23, "target3": 3}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.25, "cubes": 3, "targets": 6, "n": 400, "ok_rate": 1.0, "fails": {}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.25, "cubes": 3, "targets": 8, "n": 400, "ok_rate": 0.9975, "fails": {"target8": 1}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": true, "half": 0.25, "cubes": 3, "targets": 4, "n": 400, "ok_rate": 1.0, "fails": {}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": true, "half": 0.25, "cubes": 3, "targets": 5, "n": 400, "ok_rate": 1.0, "fails": {}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.25, "cubes": 3, "targets": 6, "n": 400, "ok_rate": 1.0, "fails": {}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.25, "cubes": 3, "targets": 8, "n": 400, "ok_rate": 0.9975, "fails": {"target8": 1}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.2, "cubes": 4, "targets": 4, "n": 400, "ok_rate": 0.935, "fails": {"target4": 23, "target3": 3}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.2, "cubes": 4, "targets": 5, "n": 400, "ok_rate": 0.665, "fails": {"target5": 108, "target4": 23, "target3": 3}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 4, "n": 400, "ok_rate": 0.975, "fails": {"target4": 10}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 5, "n": 400, "ok_rate": 0.8675, "fails": {"target5": 43, "target4": 10}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.2, "cubes": 4, "targets": 4, "n": 400, "ok_rate": 0.935, "fails": {"target4": 23, "target3": 3}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.2, "cubes": 4, "targets": 5, "n": 400, "ok_rate": 0.665, "fails": {"target5": 108, "target4": 23, "target3": 3}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 7, "n": 400, "ok_rate": 0.1425, "fails": {"target5": 43, "target6": 138, "target7": 152, "target4": 10}}
+RESULT {"env": "VideoPlaceButton", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 8, "n": 400, "ok_rate": 0.0175, "fails": {"target5": 43, "target8": 50, "target6": 138, "target7": 152, "target4": 10}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 7, "n": 400, "ok_rate": 0.1425, "fails": {"target5": 43, "target6": 138, "target7": 152, "target4": 10}}
+RESULT {"env": "VideoPlaceOrder", "goal_avoid": false, "half": 0.2, "cubes": 3, "targets": 8, "n": 400, "ok_rate": 0.0175, "fails": {"target5": 43, "target8": 50, "target6": 138, "target7": 152, "target4": 10}}
+BATCH_DONE
+EXIT_CODE=0

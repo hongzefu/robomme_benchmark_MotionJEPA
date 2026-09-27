@@ -1,0 +1,2522 @@
+[
+ {
+  "task": "BinFill",
+  "tier": "xhard1",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 6,
+    "area_cm2": [
+     23.2,
+     22.2,
+     20.9,
+     21.2,
+     19.5,
+     19.0
+    ],
+    "est": 7
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.2
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.2,
+     21.8,
+     21.0,
+     20.8,
+     19.1
+    ],
+    "est": 5
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard1",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.9,
+     23.1,
+     21.1,
+     21.2,
+     20.3
+    ],
+    "est": 7
+   },
+   "green": {
+    "n_comp": 6,
+    "area_cm2": [
+     23.2,
+     23.0,
+     23.6,
+     20.3,
+     20.3,
+     18.4
+    ],
+    "est": 9
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.0
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard1",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.3,
+     21.5,
+     21.3,
+     21.3,
+     19.6
+    ],
+    "est": 5
+   },
+   "green": {
+    "n_comp": 3,
+    "area_cm2": [
+     23.3,
+     20.7,
+     19.3
+    ],
+    "est": 4
+   },
+   "blue": {
+    "n_comp": 4,
+    "area_cm2": [
+     22.1,
+     23.6,
+     19.7,
+     19.5
+    ],
+    "est": 5
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard2",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.2
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.3,
+     21.2,
+     20.2,
+     20.7,
+     18.9
+    ],
+    "est": 5
+   },
+   "blue": {
+    "n_comp": 6,
+    "area_cm2": [
+     22.6,
+     23.1,
+     22.0,
+     20.3,
+     20.8,
+     20.5
+    ],
+    "est": 8
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard2",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 4,
+    "area_cm2": [
+     21.3,
+     22.2,
+     20.8,
+     19.2
+    ],
+    "est": 4
+   },
+   "green": {
+    "n_comp": 3,
+    "area_cm2": [
+     22.0,
+     21.4,
+     18.7
+    ],
+    "est": 3
+   },
+   "blue": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.2,
+     20.8,
+     19.6,
+     19.1,
+     19.8
+    ],
+    "est": 5
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard2",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 8,
+    "area_cm2": [
+     23.9,
+     23.5,
+     22.5,
+     23.7,
+     22.8,
+     20.9,
+     20.2,
+     19.1
+    ],
+    "est": 13
+   },
+   "green": {
+    "n_comp": 3,
+    "area_cm2": [
+     22.1,
+     19.8,
+     19.0
+    ],
+    "est": 3
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.5
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard3",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 2,
+    "area_cm2": [
+     19.4,
+     19.3
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 2,
+    "area_cm2": [
+     22.0,
+     22.6
+    ],
+    "est": 3
+   },
+   "blue": {
+    "n_comp": 8,
+    "area_cm2": [
+     24.5,
+     22.0,
+     22.7,
+     20.2,
+     21.3,
+     21.9,
+     18.8,
+     20.1
+    ],
+    "est": 10
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard3",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 8,
+    "area_cm2": [
+     23.0,
+     23.4,
+     22.8,
+     22.3,
+     19.8,
+     19.3,
+     21.0,
+     19.5
+    ],
+    "est": 11
+   },
+   "green": {
+    "n_comp": 2,
+    "area_cm2": [
+     20.9,
+     19.6
+    ],
+    "est": 2
+   },
+   "blue": {
+    "n_comp": 2,
+    "area_cm2": [
+     21.3,
+     21.6
+    ],
+    "est": 2
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard3",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 3,
+    "area_cm2": [
+     22.2,
+     22.8,
+     19.1
+    ],
+    "est": 4
+   },
+   "green": {
+    "n_comp": 4,
+    "area_cm2": [
+     21.6,
+     20.5,
+     20.2,
+     19.8
+    ],
+    "est": 4
+   },
+   "blue": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.8,
+     22.0,
+     20.7,
+     21.0,
+     20.1
+    ],
+    "est": 6
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard4",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 3,
+    "area_cm2": [
+     23.4,
+     23.0,
+     18.9
+    ],
+    "est": 5
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.1
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 8,
+    "area_cm2": [
+     21.4,
+     21.7,
+     21.8,
+     21.5,
+     19.8,
+     21.5,
+     20.5,
+     19.9
+    ],
+    "est": 8
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard4",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 2,
+    "area_cm2": [
+     22.4,
+     20.8
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 7,
+    "area_cm2": [
+     23.1,
+     20.5,
+     21.9,
+     21.0,
+     20.4,
+     19.9,
+     19.1
+    ],
+    "est": 8
+   },
+   "blue": {
+    "n_comp": 3,
+    "area_cm2": [
+     22.9,
+     19.9,
+     19.7
+    ],
+    "est": 4
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "xhard4",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 3,
+    "area_cm2": [
+     23.2,
+     20.6,
+     19.0
+    ],
+    "est": 4
+   },
+   "green": {
+    "n_comp": 5,
+    "area_cm2": [
+     23.5,
+     24.2,
+     22.7,
+     22.4,
+     20.3
+    ],
+    "est": 8
+   },
+   "blue": {
+    "n_comp": 4,
+    "area_cm2": [
+     22.0,
+     20.6,
+     19.8,
+     20.0
+    ],
+    "est": 4
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard1",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.2
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.7
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.4
+    ],
+    "est": 2
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.3
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard1",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.5
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.6
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.9
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.6
+    ],
+    "est": 2
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard1",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.7
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.0
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.0
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.8
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard2",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     17.7
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.3
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.5
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.9
+    ],
+    "est": 2
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.7
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard2",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.4
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.6
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.3
+    ],
+    "est": 2
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     17.6
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.2
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard2",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.4
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.2
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.4
+    ],
+    "est": 2
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.2
+    ],
+    "est": 2
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.5
+    ],
+    "est": 2
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard3",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.2
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.9
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.6
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.1
+    ],
+    "est": 2
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.5
+    ],
+    "est": 1
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.9
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard3",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.8
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.6
+    ],
+    "est": 2
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.8
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.9
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.9
+    ],
+    "est": 1
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.7
+    ],
+    "est": 2
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard3",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.9
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.4
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.3
+    ],
+    "est": 2
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.4
+    ],
+    "est": 2
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.5
+    ],
+    "est": 2
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.9
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard4",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.8
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.3
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.0
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.6
+    ],
+    "est": 2
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.6
+    ],
+    "est": 1
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.9
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard4",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.0
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.3
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.3
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.5
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.8
+    ],
+    "est": 1
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.9
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "xhard4",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.0
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.0
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.6
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     25.6
+    ],
+    "est": 2
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.4
+    ],
+    "est": 2
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.7
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard1",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.8
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.0
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.4
+    ],
+    "est": 2
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.3
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard1",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.1
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.4
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.8
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.9
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard1",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.1
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.3
+    ],
+    "est": 2
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.5
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.5
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard2",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.9
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.3
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.7
+    ],
+    "est": 2
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.4
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.5
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard2",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.2
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.2
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.1
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.9
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.3
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard2",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.3
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.1
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.9
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.1
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.8
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard3",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.9
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.4
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.1
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.5
+    ],
+    "est": 2
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.5
+    ],
+    "est": 2
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.6
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard3",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.4
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.0
+    ],
+    "est": 2
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.5
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.5
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.0
+    ],
+    "est": 1
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.3
+    ],
+    "est": 2
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard3",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.0
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.5
+    ],
+    "est": 2
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.0
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.8
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.7
+    ],
+    "est": 1
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.2
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard4",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.2
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.1
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.1
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.8
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.0
+    ],
+    "est": 2
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.1
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard4",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.5
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.7
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.8
+    ],
+    "est": 1
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.1
+    ],
+    "est": 1
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.0
+    ],
+    "est": 2
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.5
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "xhard4",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.9
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.6
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.0
+    ],
+    "est": 2
+   },
+   "yellow": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.6
+    ],
+    "est": 2
+   },
+   "cyan": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.1
+    ],
+    "est": 1
+   },
+   "magenta": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.6
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard1",
+  "ep": 0,
+  "colors": {
+   "yellow": {
+    "n_comp": 4,
+    "area_cm2": [
+     22.9,
+     21.5,
+     21.0,
+     19.7
+    ],
+    "est": 5
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard1",
+  "ep": 3,
+  "colors": {}
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard1",
+  "ep": 6,
+  "colors": {}
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard2",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 5,
+    "area_cm2": [
+     24.3,
+     22.0,
+     19.3,
+     19.0,
+     18.8
+    ],
+    "est": 6
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard2",
+  "ep": 3,
+  "colors": {
+   "yellow": {
+    "n_comp": 5,
+    "area_cm2": [
+     23.1,
+     21.1,
+     20.4,
+     20.3,
+     19.7
+    ],
+    "est": 6
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard2",
+  "ep": 6,
+  "colors": {}
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard3",
+  "ep": 0,
+  "colors": {
+   "magenta": {
+    "n_comp": 6,
+    "area_cm2": [
+     21.8,
+     23.8,
+     20.7,
+     20.0,
+     21.3,
+     18.8
+    ],
+    "est": 7
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard3",
+  "ep": 3,
+  "colors": {
+   "yellow": {
+    "n_comp": 6,
+    "area_cm2": [
+     21.8,
+     22.0,
+     20.4,
+     18.3,
+     19.5,
+     20.1
+    ],
+    "est": 6
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard3",
+  "ep": 6,
+  "colors": {
+   "magenta": {
+    "n_comp": 6,
+    "area_cm2": [
+     22.4,
+     22.7,
+     21.7,
+     20.9,
+     18.5,
+     19.9
+    ],
+    "est": 7
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard4",
+  "ep": 0,
+  "colors": {
+   "blue": {
+    "n_comp": 7,
+    "area_cm2": [
+     24.0,
+     22.4,
+     21.2,
+     21.0,
+     20.1,
+     20.2,
+     18.4
+    ],
+    "est": 8
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard4",
+  "ep": 3,
+  "colors": {
+   "cyan": {
+    "n_comp": 7,
+    "area_cm2": [
+     21.6,
+     23.9,
+     21.0,
+     20.4,
+     19.8,
+     20.1,
+     20.4
+    ],
+    "est": 8
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "xhard4",
+  "ep": 6,
+  "colors": {
+   "magenta": {
+    "n_comp": 7,
+    "area_cm2": [
+     21.3,
+     23.6,
+     22.2,
+     21.5,
+     20.2,
+     19.3,
+     19.2
+    ],
+    "est": 8
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "easy",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.3
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "easy",
+  "ep": 1,
+  "colors": {
+   "red": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.2,
+     21.7,
+     21.9,
+     20.3,
+     20.3
+    ],
+    "est": 5
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "medium",
+  "ep": 10,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.6
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.6
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "hard",
+  "ep": 11,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.5
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.3
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.1
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "medium",
+  "ep": 2,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.4
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.7
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "hard",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 2,
+    "area_cm2": [
+     21.7,
+     21.4
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 4,
+    "area_cm2": [
+     22.7,
+     21.6,
+     20.0,
+     20.3
+    ],
+    "est": 5
+   },
+   "blue": {
+    "n_comp": 4,
+    "area_cm2": [
+     23.7,
+     23.4,
+     20.9,
+     18.7
+    ],
+    "est": 6
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "easy",
+  "ep": 4,
+  "colors": {
+   "blue": {
+    "n_comp": 5,
+    "area_cm2": [
+     23.9,
+     23.5,
+     21.9,
+     20.4,
+     20.7
+    ],
+    "est": 7
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "medium",
+  "ep": 6,
+  "colors": {
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.4
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.9
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "BinFill",
+  "tier": "hard",
+  "ep": 7,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.5
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.6
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.0
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "easy",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.8
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "easy",
+  "ep": 1,
+  "colors": {
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.8
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "medium",
+  "ep": 10,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.2
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.6
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.2
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "hard",
+  "ep": 11,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.9
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.1
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.0
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "medium",
+  "ep": 2,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     17.9
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.7
+    ],
+    "est": 2
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.7
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "hard",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.6
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.1
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.6
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "easy",
+  "ep": 4,
+  "colors": {
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.7
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "medium",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.9
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.1
+    ],
+    "est": 2
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.2
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "PickXtimes",
+  "tier": "hard",
+  "ep": 7,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.4
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.2
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.1
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "easy",
+  "ep": 0,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.8
+    ],
+    "est": 2
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "easy",
+  "ep": 1,
+  "colors": {
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.1
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "medium",
+  "ep": 10,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     24.3
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.4
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.3
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "hard",
+  "ep": 11,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.6
+    ],
+    "est": 2
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.8
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.3
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "medium",
+  "ep": 2,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.2
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     23.2
+    ],
+    "est": 2
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.1
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "hard",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.3
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     18.6
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.7
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "easy",
+  "ep": 4,
+  "colors": {
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.4
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "medium",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.9
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     22.0
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     21.8
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "SwingXtimes",
+  "tier": "hard",
+  "ep": 7,
+  "colors": {
+   "red": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.4
+    ],
+    "est": 1
+   },
+   "green": {
+    "n_comp": 1,
+    "area_cm2": [
+     20.6
+    ],
+    "est": 1
+   },
+   "blue": {
+    "n_comp": 1,
+    "area_cm2": [
+     19.1
+    ],
+    "est": 1
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "easy",
+  "ep": 0,
+  "colors": {
+   "blue": {
+    "n_comp": 3,
+    "area_cm2": [
+     20.2,
+     21.3,
+     20.1
+    ],
+    "est": 3
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "easy",
+  "ep": 1,
+  "colors": {
+   "red": {
+    "n_comp": 3,
+    "area_cm2": [
+     21.8,
+     19.5,
+     18.4
+    ],
+    "est": 3
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "medium",
+  "ep": 10,
+  "colors": {
+   "red": {
+    "n_comp": 3,
+    "area_cm2": [
+     20.1,
+     19.5,
+     18.5
+    ],
+    "est": 3
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "hard",
+  "ep": 11,
+  "colors": {
+   "red": {
+    "n_comp": 4,
+    "area_cm2": [
+     22.0,
+     19.8,
+     20.2,
+     37.9
+    ],
+    "est": 6
+   },
+   "green": {
+    "n_comp": 5,
+    "area_cm2": [
+     24.0,
+     22.6,
+     21.1,
+     19.9,
+     18.7
+    ],
+    "est": 7
+   },
+   "blue": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.4,
+     20.6,
+     20.7,
+     19.8,
+     19.5
+    ],
+    "est": 5
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "medium",
+  "ep": 2,
+  "colors": {
+   "blue": {
+    "n_comp": 3,
+    "area_cm2": [
+     21.4,
+     20.5,
+     17.6
+    ],
+    "est": 3
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "hard",
+  "ep": 3,
+  "colors": {
+   "red": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.8,
+     22.8,
+     21.3,
+     19.2,
+     19.1
+    ],
+    "est": 7
+   },
+   "green": {
+    "n_comp": 5,
+    "area_cm2": [
+     22.7,
+     21.9,
+     20.4,
+     21.0,
+     19.9
+    ],
+    "est": 6
+   },
+   "blue": {
+    "n_comp": 5,
+    "area_cm2": [
+     23.4,
+     22.8,
+     19.9,
+     19.6,
+     19.6
+    ],
+    "est": 7
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "easy",
+  "ep": 4,
+  "colors": {
+   "blue": {
+    "n_comp": 3,
+    "area_cm2": [
+     20.1,
+     18.9,
+     18.4
+    ],
+    "est": 3
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "medium",
+  "ep": 6,
+  "colors": {
+   "red": {
+    "n_comp": 3,
+    "area_cm2": [
+     21.1,
+     20.4,
+     18.1
+    ],
+    "est": 3
+   }
+  }
+ },
+ {
+  "task": "VideoRepick",
+  "tier": "hard",
+  "ep": 7,
+  "colors": {
+   "red": {
+    "n_comp": 5,
+    "area_cm2": [
+     23.1,
+     21.8,
+     20.5,
+     19.4,
+     18.7
+    ],
+    "est": 6
+   },
+   "green": {
+    "n_comp": 4,
+    "area_cm2": [
+     23.2,
+     39.5,
+     19.8,
+     18.5
+    ],
+    "est": 7
+   },
+   "blue": {
+    "n_comp": 5,
+    "area_cm2": [
+     24.0,
+     24.5,
+     21.9,
+     20.6,
+     19.5
+    ],
+    "est": 7
+   }
+  }
+ }
+]

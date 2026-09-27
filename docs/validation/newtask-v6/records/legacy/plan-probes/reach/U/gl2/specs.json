@@ -1,0 +1,8788 @@
+{
+ "specs": {
+  "MoveCube/600": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 600,
+    "seed": 7600000,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.005422424635836601,
+      -0.06881746739512279
+     ],
+     "peg_yaw": -1.1327832396410709,
+     "goal_xy": [
+      -0.13549530281830507,
+      -0.1819037856317184
+     ],
+     "cube_pose": [
+      -0.028685748048803306,
+      -0.11849991162001966,
+      0.01483626470385533
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.0886692161967868,
+      -0.11527890240957091
+     ],
+     "peg_yaw": -0.2917316075400098,
+     "goal_xy": [
+      0.1348471332560497,
+      0.03594880552248719
+     ],
+     "cube_pose": [
+      0.05329951736746846,
+      0.16095550872880376,
+      6.264698135286964
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/601": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 601,
+    "seed": 7600001,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2255146265640062,
+      0.18589960638552128
+     ],
+     "peg_yaw": 1.7216458535104868,
+     "goal_xy": [
+      0.016955822884318628,
+      0.1026234304692924
+     ],
+     "cube_pose": [
+      -0.08079572965644286,
+      0.19367279020685857,
+      1.6012513762055864
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.11130857618725848,
+      -0.04335634610687211
+     ],
+     "peg_yaw": 0.4068840290268705,
+     "goal_xy": [
+      -0.037692667732395824,
+      -0.16500335967936708
+     ],
+     "cube_pose": [
+      -0.13770233787399955,
+      -0.1707948338884364,
+      3.1614238596123228
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/602": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 602,
+    "seed": 7600002,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.15639756134230698,
+      -0.016960587144367878
+     ],
+     "peg_yaw": -2.7984196816092606,
+     "goal_xy": [
+      -0.213815946273954,
+      0.013398073649058206
+     ],
+     "cube_pose": [
+      -0.15151507614527854,
+      -0.1666716347666206,
+      1.7546303661548999
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.09140434435616854,
+      0.07806737775172307
+     ],
+     "peg_yaw": 1.9969899820264647,
+     "goal_xy": [
+      -0.1776919425666331,
+      -0.15278622452256432
+     ],
+     "cube_pose": [
+      -0.1117681942345862,
+      0.12125618834302321,
+      0.5093947113991459
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/603": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 603,
+    "seed": 7600003,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.22916684656357444,
+      0.00623672781577625
+     ],
+     "peg_yaw": -1.6808538564295143,
+     "goal_xy": [
+      0.07622055714636988,
+      -0.06399858287754659
+     ],
+     "cube_pose": [
+      -0.08268018347824624,
+      -0.1892609314921018,
+      1.2771211764206318
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.11695180644197811,
+      -0.00266024479097815
+     ],
+     "peg_yaw": 1.5311089045624833,
+     "goal_xy": [
+      0.09721875027555221,
+      -0.004249088393223882
+     ],
+     "cube_pose": [
+      -0.1191375617423858,
+      0.12706466434255276,
+      0.3315452002663015
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/604": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 604,
+    "seed": 7600004,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.345317036888825,
+      0.15174713369460352
+     ],
+     "peg_yaw": -2.645031038109101,
+     "goal_xy": [
+      -0.14426807620303228,
+      0.1468253738145731
+     ],
+     "cube_pose": [
+      -0.0010210888297655374,
+      0.11885020601006663,
+      2.154932449729721
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.03463169669395218,
+      -0.11222168973963503
+     ],
+     "peg_yaw": 2.3841460350530514,
+     "goal_xy": [
+      -0.1523248430927409,
+      0.09821751939311107
+     ],
+     "cube_pose": [
+      -0.11264994429842526,
+      -0.13760102525245818,
+      1.5422646550882178
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/605": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 605,
+    "seed": 7600005,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.12570737360876705,
+      -0.03831729304034179
+     ],
+     "peg_yaw": -1.0967890188169247,
+     "goal_xy": [
+      -0.09124745904790899,
+      0.19668022127750406
+     ],
+     "cube_pose": [
+      -0.13121296054637724,
+      0.10058126331926531,
+      5.207968152869235
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.1039021902952576,
+      -0.08440767896626511
+     ],
+     "peg_yaw": -0.5941678706639721,
+     "goal_xy": [
+      -0.2371729801684302,
+      -0.04874492403158076
+     ],
+     "cube_pose": [
+      -0.1847898207602462,
+      0.1459681722569749,
+      5.4583529869459655
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/606": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 606,
+    "seed": 7600006,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.014250108396163579,
+      -0.06778349844610881
+     ],
+     "peg_yaw": -1.042343602871186,
+     "goal_xy": [
+      0.03520778525699336,
+      0.15606686413806015
+     ],
+     "cube_pose": [
+      -0.08648807804411879,
+      0.1765413603718861,
+      2.2902524946959057
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.017662953746643256,
+      0.07327135552502989
+     ],
+     "peg_yaw": 0.5091633716331345,
+     "goal_xy": [
+      0.02811219510283658,
+      -0.17729891834624023
+     ],
+     "cube_pose": [
+      -0.15896933956015244,
+      -0.13976297497858547,
+      4.290546795900602
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/607": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 607,
+    "seed": 7600007,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.04821315105038354,
+      0.0018504178614422162
+     ],
+     "peg_yaw": 0.11686809443354074,
+     "goal_xy": [
+      0.08187768505297494,
+      0.10379843503778374
+     ],
+     "cube_pose": [
+      -0.13333500347952268,
+      0.1387081520929539,
+      1.742751722509518
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.047059321575381105,
+      -0.0840896174205604
+     ],
+     "peg_yaw": -0.24611407422724607,
+     "goal_xy": [
+      -0.1847870488431157,
+      -0.1467152777357586
+     ],
+     "cube_pose": [
+      -0.015901945648008453,
+      -0.12913892472440358,
+      3.452553368101214
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/608": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 608,
+    "seed": 7600008,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.05514226469184337,
+      0.15433652518160124
+     ],
+     "peg_yaw": 1.025811756679464,
+     "goal_xy": [
+      0.09185586845087002,
+      -0.08086813959787649
+     ],
+     "cube_pose": [
+      -0.10916237717339505,
+      -0.13096987461757853,
+      1.869626933319134
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.005017635549852545,
+      -0.028219696413488038
+     ],
+     "peg_yaw": 0.4945589271168953,
+     "goal_xy": [
+      0.09572791576356926,
+      -0.049966493957049274
+     ],
+     "cube_pose": [
+      -0.1207972572967757,
+      -0.16838214913396274,
+      3.45411261959742
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/609": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 609,
+    "seed": 7600009,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.17396848918971408,
+      0.11226641165763297
+     ],
+     "peg_yaw": -0.6485034018674112,
+     "goal_xy": [
+      -0.0030937960205416615,
+      -0.1704058442384976
+     ],
+     "cube_pose": [
+      -0.15455187428537032,
+      -0.16954007017520123,
+      6.177822242605317
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.08183851530299867,
+      0.04772958496719654
+     ],
+     "peg_yaw": 0.8947143333867782,
+     "goal_xy": [
+      -0.18954267702508507,
+      0.0334792385030481
+     ],
+     "cube_pose": [
+      -0.0699753162906171,
+      -0.1988115484975253,
+      3.8073261036578576
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/610": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 610,
+    "seed": 7600010,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.34460715458068175,
+      0.16933653974580604
+     ],
+     "peg_yaw": 3.0546991776243884,
+     "goal_xy": [
+      -0.11485150841386926,
+      -0.1404742480422181
+     ],
+     "cube_pose": [
+      -0.012534409220736703,
+      -0.14185967291054546,
+      0.770508549882602
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.17989171969729809,
+      0.10283950712717355
+     ],
+     "peg_yaw": 0.16107866277162763,
+     "goal_xy": [
+      -0.02488798285750929,
+      0.1380916021082783
+     ],
+     "cube_pose": [
+      -0.13751910164556708,
+      0.15467636769325205,
+      4.225567216826817
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/611": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 611,
+    "seed": 7600011,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.14656597118966397,
+      0.06014422773606096
+     ],
+     "peg_yaw": -1.1377865286306168,
+     "goal_xy": [
+      0.08612519608471247,
+      0.01382652852407737
+     ],
+     "cube_pose": [
+      -0.14571956002759312,
+      0.17803418054746206,
+      1.1112158556187888
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.08166465234696023,
+      -0.07277529507883795
+     ],
+     "peg_yaw": -0.07014540986008466,
+     "goal_xy": [
+      -0.25388952975549095,
+      -0.002536168995926985
+     ],
+     "cube_pose": [
+      -0.05548607779195505,
+      -0.18293723089043798,
+      3.4837574993049247
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/612": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 612,
+    "seed": 7600012,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.08314718220997586,
+      -0.026321250319514655
+     ],
+     "peg_yaw": -2.4425145323904953,
+     "goal_xy": [
+      -0.12588933713647424,
+      0.17469656573965814
+     ],
+     "cube_pose": [
+      -0.1721356249886846,
+      -0.07730751213564098,
+      4.828273901160339
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.0009525934771292127,
+      0.022950490721233535
+     ],
+     "peg_yaw": -0.4500557420252753,
+     "goal_xy": [
+      0.0207320053747449,
+      0.11699096199651005
+     ],
+     "cube_pose": [
+      -0.08176580179689863,
+      0.13202965589811477,
+      0.14526806041276386
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/613": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 613,
+    "seed": 7600013,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.0402688477169983,
+      0.04879854206075679
+     ],
+     "peg_yaw": 0.9784222838953172,
+     "goal_xy": [
+      0.042276843636770645,
+      -0.14280252083439576
+     ],
+     "cube_pose": [
+      -0.11685036166313059,
+      -0.16623362986871007,
+      5.119390512791843
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.16669589358091358,
+      -0.008349124772977029
+     ],
+     "peg_yaw": -3.0468647787316407,
+     "goal_xy": [
+      -0.13474222807491007,
+      -0.14813771841649348
+     ],
+     "cube_pose": [
+      -0.09452542293081384,
+      0.12366154893270415,
+      0.7852034804044985
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/614": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 614,
+    "seed": 7600014,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.09626857973304946,
+      0.07557499872877628
+     ],
+     "peg_yaw": -0.45266502266254527,
+     "goal_xy": [
+      -0.17709752123844152,
+      0.1404159941974934
+     ],
+     "cube_pose": [
+      -0.026735856533975116,
+      0.18091277406612383,
+      5.338210205600258
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.21084627707400272,
+      0.12433051187820804
+     ],
+     "peg_yaw": -0.025955361874046012,
+     "goal_xy": [
+      0.020869933087018233,
+      -0.1647476504599831
+     ],
+     "cube_pose": [
+      -0.1433380573493459,
+      -0.11971113008230345,
+      0.5716510336982619
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/615": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 615,
+    "seed": 7600015,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.18120543964667088,
+      -0.07872118349647983
+     ],
+     "peg_yaw": 1.26720804998142,
+     "goal_xy": [
+      -0.04719497067769035,
+      -0.1677660303657918
+     ],
+     "cube_pose": [
+      -0.17106823373536872,
+      -0.13239606406588206,
+      0.890451593330597
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.13865911061027664,
+      0.03151773907694966
+     ],
+     "peg_yaw": 2.458002445079665,
+     "goal_xy": [
+      -0.188303411135955,
+      0.12073772426080431
+     ],
+     "cube_pose": [
+      -0.16385106887859746,
+      -0.1304740181100609,
+      3.048472260630453
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/616": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 616,
+    "seed": 7600016,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2606466241236461,
+      0.05603986652913079
+     ],
+     "peg_yaw": -2.0385889760338873,
+     "goal_xy": [
+      -0.15121854619038366,
+      0.11328704021901803
+     ],
+     "cube_pose": [
+      -0.11484114222136135,
+      -0.14306352214147722,
+      4.459058039116098
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.0018159955564698294,
+      -0.07459995056090007
+     ],
+     "peg_yaw": -0.416413872400192,
+     "goal_xy": [
+      -0.04178260788586774,
+      -0.1713213091523699
+     ],
+     "cube_pose": [
+      -0.1724353881860044,
+      -0.12954757108114545,
+      0.8947079871868703
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/617": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 617,
+    "seed": 7600017,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.20748058620504117,
+      0.051176032997132664
+     ],
+     "peg_yaw": -1.4016949784834527,
+     "goal_xy": [
+      0.12481720476198582,
+      -0.01970052033986422
+     ],
+     "cube_pose": [
+      -0.13361524247716663,
+      0.12146646123446397,
+      3.794213005349354
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.13411940535854525,
+      -0.0030167044062464066
+     ],
+     "peg_yaw": 2.7556292211742868,
+     "goal_xy": [
+      0.0808273153929005,
+      -0.005181256528754341
+     ],
+     "cube_pose": [
+      -0.011866933721677492,
+      -0.17833825693893945,
+      1.4010741737997416
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/618": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 618,
+    "seed": 7600018,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.04407557619714901,
+      -0.11125060051010247
+     ],
+     "peg_yaw": 2.136943108740426,
+     "goal_xy": [
+      0.1231747733804236,
+      0.05510957404205835
+     ],
+     "cube_pose": [
+      -0.04022576159335281,
+      0.19588154333805619,
+      4.708187201388417
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.13805341662598222,
+      -0.1236550467088697
+     ],
+     "peg_yaw": -0.38115141770869254,
+     "goal_xy": [
+      -0.09030628549193209,
+      -0.17494187419978835
+     ],
+     "cube_pose": [
+      -0.0887734821518601,
+      0.11667490876621117,
+      5.419188177377825
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/619": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 619,
+    "seed": 7600019,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.040704860179482216,
+      -0.08937730621462833
+     ],
+     "peg_yaw": 2.1400677688767367,
+     "goal_xy": [
+      -0.18106700529260933,
+      -0.08184201490593127
+     ],
+     "cube_pose": [
+      -0.08482235885952732,
+      0.1587281472335078,
+      5.624732023087666
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.17429782935511848,
+      0.10936465437478562
+     ],
+     "peg_yaw": 0.4610202637859886,
+     "goal_xy": [
+      -0.21659131394836745,
+      0.0946833883212258
+     ],
+     "cube_pose": [
+      -0.1977238159471793,
+      -0.1170533051300422,
+      0.8943087347276248
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/620": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 620,
+    "seed": 7600020,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.1825535095226584,
+      0.12462577910058029
+     ],
+     "peg_yaw": 0.07527294073585056,
+     "goal_xy": [
+      0.0648867450786661,
+      -0.04980532330014112
+     ],
+     "cube_pose": [
+      0.00707099662386973,
+      0.14274790929891573,
+      4.691869662955342
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.19613363938577283,
+      -0.15413304863378355
+     ],
+     "peg_yaw": -0.3694107180553923,
+     "goal_xy": [
+      -0.1480778001127706,
+      0.1464811565927468
+     ],
+     "cube_pose": [
+      -0.010468426736097047,
+      0.17345300472083108,
+      2.9001836879749527
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/621": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 621,
+    "seed": 7600021,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.27865966359938243,
+      0.05954794892514248
+     ],
+     "peg_yaw": -1.9303315213374548,
+     "goal_xy": [
+      -0.09002994236498368,
+      0.15193744590580083
+     ],
+     "cube_pose": [
+      -0.12228411975384249,
+      -0.13404621911330644,
+      1.8382206809655817
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.10843257128344927,
+      -0.08589887453511805
+     ],
+     "peg_yaw": -0.5719388253443194,
+     "goal_xy": [
+      -0.10199873429101161,
+      0.13347381089371718
+     ],
+     "cube_pose": [
+      -0.029322748803175175,
+      -0.12950144417591347,
+      4.7292163065616695
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/622": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 622,
+    "seed": 7600022,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.03254752546666153,
+      0.07295848909305752
+     ],
+     "peg_yaw": 1.9497999846087186,
+     "goal_xy": [
+      -0.11025926432850697,
+      -0.1352473030600076
+     ],
+     "cube_pose": [
+      0.0027109266918426966,
+      -0.16882097099709165,
+      3.32869872450158
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.11648020292631842,
+      -0.08110359399330153
+     ],
+     "peg_yaw": -2.1526943547231903,
+     "goal_xy": [
+      0.03906758721932724,
+      -0.16322344149633794
+     ],
+     "cube_pose": [
+      -0.14583018688453336,
+      -0.1451573958444389,
+      3.7052762209460606
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/623": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 623,
+    "seed": 7600023,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.007659847574461587,
+      0.00959612854597891
+     ],
+     "peg_yaw": -0.09323130633727983,
+     "goal_xy": [
+      -0.07796861334682628,
+      -0.15250767969458914
+     ],
+     "cube_pose": [
+      -0.16276483845546752,
+      0.11149327511026441,
+      0.1563291170294815
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.3225116206138492,
+      0.19190157533433694
+     ],
+     "peg_yaw": -2.390223944866362,
+     "goal_xy": [
+      -0.1305780354078714,
+      0.1576862093829166
+     ],
+     "cube_pose": [
+      -0.17218184424880445,
+      -0.07746051923644393,
+      4.868240124277143
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/624": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 624,
+    "seed": 7600024,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.11269804673185853,
+      0.07645989692815422
+     ],
+     "peg_yaw": -0.6824272135296887,
+     "goal_xy": [
+      -0.1234649597753397,
+      0.11758295048808604
+     ],
+     "cube_pose": [
+      -0.18527870820082035,
+      -0.1450869078977878,
+      0.16534938670250499
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.015081109064319961,
+      -0.020167430572457123
+     ],
+     "peg_yaw": -2.0831199725796763,
+     "goal_xy": [
+      -0.17567590057833188,
+      -0.08180491970844082
+     ],
+     "cube_pose": [
+      -0.14120243608776717,
+      0.10970203076668866,
+      5.016129745479708
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/625": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 625,
+    "seed": 7600025,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.25765605438968525,
+      -0.011255649421549413
+     ],
+     "peg_yaw": 2.9168143026973192,
+     "goal_xy": [
+      0.06911761301974845,
+      -0.08194786458667802
+     ],
+     "cube_pose": [
+      -0.10425111778793825,
+      -0.1259653830187631,
+      3.1555761932149027
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.14487785025291894,
+      0.06405596602563843
+     ],
+     "peg_yaw": -1.0341007488278193,
+     "goal_xy": [
+      -0.23876530491880307,
+      0.04673532745528114
+     ],
+     "cube_pose": [
+      -0.15973361953186424,
+      0.1540916110407095,
+      1.3499852589580605
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/626": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 626,
+    "seed": 7600026,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.3462835353378315,
+      0.14962197740212835
+     ],
+     "peg_yaw": -2.631596373067157,
+     "goal_xy": [
+      -0.18383423071509825,
+      -0.07276006692018985
+     ],
+     "cube_pose": [
+      -0.14306184230584057,
+      0.08821386372968243,
+      5.921592603719269
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.12952146024253514,
+      0.025641876133698505
+     ],
+     "peg_yaw": -0.2195576800346486,
+     "goal_xy": [
+      -0.031614662489624995,
+      -0.12044303522658462
+     ],
+     "cube_pose": [
+      -0.03174436795641683,
+      0.17087151467873724,
+      1.203212936067193
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/627": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 627,
+    "seed": 7600027,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.19212344379318191,
+      -0.16272382262247898
+     ],
+     "peg_yaw": -2.083496375932024,
+     "goal_xy": [
+      -0.16133533454546475,
+      -0.06720681909609258
+     ],
+     "cube_pose": [
+      -0.04348429702167217,
+      -0.1950089106120343,
+      5.473679806326532
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.02862249126471817,
+      -0.042969806869707694
+     ],
+     "peg_yaw": -1.9808151165594277,
+     "goal_xy": [
+      -0.10231604484776013,
+      0.12187077170354232
+     ],
+     "cube_pose": [
+      -0.16197450618086429,
+      -0.12898689067258445,
+      2.9273225443261093
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/628": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 628,
+    "seed": 7600028,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.0844212521630417,
+      -0.19470207780872234
+     ],
+     "peg_yaw": 1.436575254098143,
+     "goal_xy": [
+      -0.03650022001198308,
+      0.16260712499848767
+     ],
+     "cube_pose": [
+      -0.012358565955574274,
+      -0.11472756850052623,
+      1.0821344956310215
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.04144566959676138,
+      -0.07498758355241492
+     ],
+     "peg_yaw": -1.1799683221912403,
+     "goal_xy": [
+      0.03189826451895489,
+      -0.17057319219887354
+     ],
+     "cube_pose": [
+      -0.1483327344572805,
+      -0.17030287622427742,
+      1.266222132210788
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/629": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 629,
+    "seed": 7600029,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.15755534395760112,
+      0.06083835367834417
+     ],
+     "peg_yaw": 1.7966795008445855,
+     "goal_xy": [
+      -0.06716892960034765,
+      0.16484316450712355
+     ],
+     "cube_pose": [
+      -0.14725451334834747,
+      -0.08983915767178284,
+      3.0762162335910794
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.054655171118506,
+      0.11989989763611408
+     ],
+     "peg_yaw": 1.1407663131380739,
+     "goal_xy": [
+      -0.1833052367496597,
+      -0.025556220679707836
+     ],
+     "cube_pose": [
+      -0.14187536620539096,
+      -0.14130602669112552,
+      5.931265595419771
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/630": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 630,
+    "seed": 7600030,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.14348458144975432,
+      0.01154339257608808
+     ],
+     "peg_yaw": 2.9763693377643126,
+     "goal_xy": [
+      0.09895380084087185,
+      -0.0010933068192885143
+     ],
+     "cube_pose": [
+      0.031474376031678464,
+      -0.11796410234586899,
+      4.304525625505093
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.2017452430886557,
+      0.06347615662341921
+     ],
+     "peg_yaw": 2.678927341479807,
+     "goal_xy": [
+      0.09964569179954269,
+      -0.011736254726531031
+     ],
+     "cube_pose": [
+      -0.13372542767883808,
+      0.15262250440499064,
+      2.1840031968526827
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/631": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 631,
+    "seed": 7600031,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.0691621390678284,
+      0.011738320666401791
+     ],
+     "peg_yaw": 1.6992054265997645,
+     "goal_xy": [
+      -0.19341034468221047,
+      0.052170573287591726
+     ],
+     "cube_pose": [
+      -0.038057648595529764,
+      0.17183392102115408,
+      0.34372230853372937
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.04501598775081059,
+      0.005227483572261132
+     ],
+     "peg_yaw": -2.6122712042790277,
+     "goal_xy": [
+      -0.06325709932830503,
+      0.152829923674494
+     ],
+     "cube_pose": [
+      -0.07764725880502366,
+      -0.14257224473099744,
+      2.01862750899515
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/632": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 632,
+    "seed": 7600032,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.18640070360574773,
+      0.14208368932476656
+     ],
+     "peg_yaw": -0.5640516793603219,
+     "goal_xy": [
+      -0.09389917474735524,
+      0.1174680570551786
+     ],
+     "cube_pose": [
+      -0.07306370315955246,
+      -0.1704820135587961,
+      3.948168346002171
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.20533991822231656,
+      -0.10394092088724102
+     ],
+     "peg_yaw": 0.35932936804054627,
+     "goal_xy": [
+      -0.09636719648179834,
+      0.13774697881727122
+     ],
+     "cube_pose": [
+      -0.046226714924136436,
+      -0.1568790781130246,
+      6.005757449456379
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/633": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 633,
+    "seed": 7600033,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.08541591711284544,
+      0.07937972899306181
+     ],
+     "peg_yaw": -1.441221039310347,
+     "goal_xy": [
+      0.0678051239794274,
+      -0.14946437553861786
+     ],
+     "cube_pose": [
+      -0.17623715966502324,
+      -0.10680886252749021,
+      2.0620949962757193
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.0842391580703633,
+      0.04691450174897391
+     ],
+     "peg_yaw": 0.34245098542994645,
+     "goal_xy": [
+      0.05303961091293896,
+      0.10492394894169566
+     ],
+     "cube_pose": [
+      -0.0894635974431034,
+      0.19260951300492607,
+      4.386097601460625
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/634": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 634,
+    "seed": 7600034,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.18571094580328767,
+      0.0517258335705833
+     ],
+     "peg_yaw": 3.0000483383515375,
+     "goal_xy": [
+      -0.21663558987075882,
+      0.0029456652194967403
+     ],
+     "cube_pose": [
+      -0.021677147594057034,
+      0.11859895041759544,
+      4.490046109670491
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.13228271785355217,
+      0.0385661309154407
+     ],
+     "peg_yaw": -0.6877454984653815,
+     "goal_xy": [
+      0.05585588005720343,
+      -0.05300277932971645
+     ],
+     "cube_pose": [
+      -0.04949604647962075,
+      -0.17008661912567252,
+      1.6504163906159617
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/635": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 635,
+    "seed": 7600035,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.31459176219945706,
+      -0.08086963741705826
+     ],
+     "peg_yaw": 2.5656060082594445,
+     "goal_xy": [
+      0.10570172941284645,
+      0.05996832490333681
+     ],
+     "cube_pose": [
+      -0.0328492982396939,
+      0.17381249542916077,
+      1.3086547280274148
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.34566087494765546,
+      0.15775014696423723
+     ],
+     "peg_yaw": 2.9851656272366904,
+     "goal_xy": [
+      -0.11317354441720476,
+      -0.14833488574329184
+     ],
+     "cube_pose": [
+      -0.010312986218996234,
+      0.11477038046533422,
+      2.455234765650728
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/636": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 636,
+    "seed": 7600036,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.32695619137386167,
+      0.1843273512867861
+     ],
+     "peg_yaw": -2.8990154491362192,
+     "goal_xy": [
+      0.0708069076607708,
+      0.11570027867247812
+     ],
+     "cube_pose": [
+      -0.1171424702707084,
+      0.1630973989940689,
+      0.5514206159225714
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.08404873109639467,
+      0.05280636989058041
+     ],
+     "peg_yaw": -1.8235140123447569,
+     "goal_xy": [
+      -0.24646686461342027,
+      -0.03899370550069717
+     ],
+     "cube_pose": [
+      -0.1000023349499789,
+      -0.18258652507563014,
+      5.736161112526136
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/637": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 637,
+    "seed": 7600037,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.14227935779973472,
+      -0.046455697252657024
+     ],
+     "peg_yaw": 0.6374653177914378,
+     "goal_xy": [
+      0.10157440211573865,
+      -0.10751655078413483
+     ],
+     "cube_pose": [
+      -0.06606665503051656,
+      0.12240403269729744,
+      3.803996053224959
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.006417838094884144,
+      -0.06590240478568538
+     ],
+     "peg_yaw": -1.1008937073318217,
+     "goal_xy": [
+      0.05028902068480007,
+      -0.08274225451211432
+     ],
+     "cube_pose": [
+      -0.11881209651657842,
+      0.1477947809447177,
+      4.787893291806604
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/638": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 638,
+    "seed": 7600038,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.2623484021500513,
+      -0.16229290268478386
+     ],
+     "peg_yaw": 1.7794371415780423,
+     "goal_xy": [
+      -0.181458659608086,
+      -0.04069897976224865
+     ],
+     "cube_pose": [
+      -0.05134156534796841,
+      -0.17146411074494772,
+      4.90115609037922
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.10454428406805873,
+      -0.017321108837434512
+     ],
+     "peg_yaw": -1.1731267116525734,
+     "goal_xy": [
+      -0.20069193281994488,
+      -0.006535284557409871
+     ],
+     "cube_pose": [
+      -0.0026245647593838295,
+      -0.12069902448367503,
+      1.4450107125146836
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/639": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 639,
+    "seed": 7600039,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.12008423072719632,
+      0.01800346408830053
+     ],
+     "peg_yaw": -1.3056427899302339,
+     "goal_xy": [
+      -0.231801484795795,
+      -0.01961511789100573
+     ],
+     "cube_pose": [
+      -0.009425944834289102,
+      0.13352824407441105,
+      4.480943999218238
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.23529056254705838,
+      0.18880429474798535
+     ],
+     "peg_yaw": -1.6512345876145316,
+     "goal_xy": [
+      -0.05860289452777154,
+      -0.1362367056261297
+     ],
+     "cube_pose": [
+      -0.029262453757234158,
+      0.12323089718124763,
+      4.5061845796488615
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/640": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 640,
+    "seed": 7600040,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.32159003890890203,
+      0.10774842772963306
+     ],
+     "peg_yaw": 2.9194197229211873,
+     "goal_xy": [
+      -0.21698552484521044,
+      0.11182731190247919
+     ],
+     "cube_pose": [
+      -0.035766195543158685,
+      0.12286826474807949,
+      3.217029869080488
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.09550953133863835,
+      -0.0036216077452733697
+     ],
+     "peg_yaw": 1.3165600675382478,
+     "goal_xy": [
+      -0.019397124931958554,
+      0.17024566429173876
+     ],
+     "cube_pose": [
+      -0.11808077321532937,
+      0.1463031164883593,
+      0.01683347767134311
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/641": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 641,
+    "seed": 7600041,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.1672164232123695,
+      -0.035914244782533966
+     ],
+     "peg_yaw": 1.452225007030239,
+     "goal_xy": [
+      -0.16840849888441595,
+      -0.0800967233376472
+     ],
+     "cube_pose": [
+      -0.05496221201835308,
+      0.13758584478334857,
+      2.366844673066689
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.05803522514763251,
+      0.06944424573376928
+     ],
+     "peg_yaw": 1.3830282777187923,
+     "goal_xy": [
+      -0.17894764808499503,
+      0.02908068364113925
+     ],
+     "cube_pose": [
+      -0.01227981765292685,
+      0.16620470864126474,
+      0.5171964108138004
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/642": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 642,
+    "seed": 7600042,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.15283639074053076,
+      -0.027278450314090152
+     ],
+     "peg_yaw": -1.209868163768417,
+     "goal_xy": [
+      0.08716248835392798,
+      -0.04771716503260856
+     ],
+     "cube_pose": [
+      -0.10738935163306798,
+      0.11826133729922755,
+      5.426823250138194
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.13320998228660896,
+      0.05054185695741939
+     ],
+     "peg_yaw": -1.1549177475162014,
+     "goal_xy": [
+      -0.21173317458557092,
+      0.04704088400911041
+     ],
+     "cube_pose": [
+      -0.18903103464793958,
+      -0.12295009203797079,
+      1.3349984736110945
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/643": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 643,
+    "seed": 7600043,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.20587981166830888,
+      -0.03202252993117305
+     ],
+     "peg_yaw": -2.380915686518321,
+     "goal_xy": [
+      -0.058770032641065645,
+      0.13124521328989225
+     ],
+     "cube_pose": [
+      -0.06932109071135284,
+      -0.15914927693461609,
+      0.6833319051579269
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.2170607775340312,
+      -0.126401334196141
+     ],
+     "peg_yaw": 0.5487565309712288,
+     "goal_xy": [
+      -0.05354367911928992,
+      -0.1640262258079336
+     ],
+     "cube_pose": [
+      -0.14765863039049038,
+      -0.1276890338484818,
+      3.8683361697455103
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/644": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 644,
+    "seed": 7600044,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.12392558320347467,
+      -0.1709155254790155
+     ],
+     "peg_yaw": -1.2827036836771446,
+     "goal_xy": [
+      -0.21205046390859494,
+      -0.005894206538336555
+     ],
+     "cube_pose": [
+      -0.18689810711307783,
+      0.11189175750213004,
+      3.5476044848357895
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.23640111651918858,
+      0.08807698261331029
+     ],
+     "peg_yaw": -1.3897703383935838,
+     "goal_xy": [
+      -0.003811958069905086,
+      0.12220656523538531
+     ],
+     "cube_pose": [
+      -0.01390413221116818,
+      -0.16667066876407244,
+      1.0732799656704968
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/645": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 645,
+    "seed": 7600045,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.21262303148885384,
+      -0.15103278079648358
+     ],
+     "peg_yaw": 1.6348081223385629,
+     "goal_xy": [
+      -0.17621404674561136,
+      -0.06196399006588377
+     ],
+     "cube_pose": [
+      -0.07110263072444445,
+      0.18202329177151833,
+      3.1640771437878037
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.0706175885884884,
+      -0.054888061956055445
+     ],
+     "peg_yaw": -1.2215047393069345,
+     "goal_xy": [
+      -0.2288954871324902,
+      0.018771268244022504
+     ],
+     "cube_pose": [
+      -0.1676851831596709,
+      -0.11976864817138862,
+      4.866711463293963
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/646": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 646,
+    "seed": 7600046,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.14331846220042044,
+      -0.17036090611819638
+     ],
+     "peg_yaw": 1.4031885614468242,
+     "goal_xy": [
+      -0.22045614363122173,
+      0.0017957620990874668
+     ],
+     "cube_pose": [
+      -0.1155403233099419,
+      -0.1707186760438451,
+      5.5083917826517075
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.048368623472643056,
+      0.035043445896056985
+     ],
+     "peg_yaw": -2.0030406077958656,
+     "goal_xy": [
+      -0.17074746215110087,
+      0.15893326100105043
+     ],
+     "cube_pose": [
+      -0.06054136718412917,
+      0.13467907559847841,
+      4.084622848870581
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/647": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 647,
+    "seed": 7600047,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.04054238877435049,
+      0.06685857087487274
+     ],
+     "peg_yaw": 1.1844836619284909,
+     "goal_xy": [
+      -0.16866168021093253,
+      0.1248855851556156
+     ],
+     "cube_pose": [
+      -0.07490144650392508,
+      -0.1345557530176556,
+      3.100226614668286
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.21256153156598107,
+      0.08885385942359522
+     ],
+     "peg_yaw": -0.1404741158334919,
+     "goal_xy": [
+      -0.20126043529815602,
+      0.13052183739824041
+     ],
+     "cube_pose": [
+      -0.129348225577144,
+      -0.12219427888419956,
+      4.6272307249648135
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/648": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 648,
+    "seed": 7600048,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.11616413265561386,
+      0.17340955708160277
+     ],
+     "peg_yaw": 0.6379333694465519,
+     "goal_xy": [
+      -0.21086363418769669,
+      -0.06750635710909844
+     ],
+     "cube_pose": [
+      -0.09526841506313163,
+      -0.1519450434770987,
+      5.562548595677952
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.3008718743946165,
+      0.0716997421810456
+     ],
+     "peg_yaw": 3.053022692416345,
+     "goal_xy": [
+      -0.03385553207576053,
+      -0.15709110493124775
+     ],
+     "cube_pose": [
+      -0.16302691988961934,
+      0.10842400583531797,
+      3.466355530815939
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/649": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 649,
+    "seed": 7600049,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.14869006515120647,
+      0.021917561629874183
+     ],
+     "peg_yaw": 2.6360888423944786,
+     "goal_xy": [
+      0.006519830941289773,
+      -0.15806484755577013
+     ],
+     "cube_pose": [
+      -0.07552001800236588,
+      0.11925116700643651,
+      1.8834936094938324
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.16448342465650867,
+      -0.08146291688053434
+     ],
+     "peg_yaw": 1.280483046464549,
+     "goal_xy": [
+      -0.13363512395988056,
+      -0.14856107641162963
+     ],
+     "cube_pose": [
+      -0.02101611259415681,
+      -0.13368781599726026,
+      5.1620735493461565
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/650": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 650,
+    "seed": 7600050,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.05344975741759794,
+      0.12813439330080167
+     ],
+     "peg_yaw": 1.3548489864428968,
+     "goal_xy": [
+      0.0407150218778527,
+      0.07919511980991656
+     ],
+     "cube_pose": [
+      -0.12047579810239165,
+      -0.1424895982230209,
+      1.8917250578819875
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.10827514816627903,
+      -0.028378852901789653
+     ],
+     "peg_yaw": -0.574172093581633,
+     "goal_xy": [
+      -0.036124099427723516,
+      -0.19611940060694444
+     ],
+     "cube_pose": [
+      -0.14986146879260306,
+      -0.1716698452897669,
+      3.6845487134501473
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/651": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 651,
+    "seed": 7600051,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.13162295726209772,
+      -0.08879836904364935
+     ],
+     "peg_yaw": -2.5414449296155346,
+     "goal_xy": [
+      -0.1616501902884105,
+      0.16832616327852906
+     ],
+     "cube_pose": [
+      -0.17606503819169028,
+      -0.06867519056324084,
+      5.508455873811345
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.19426931286881516,
+      0.07903909907553501
+     ],
+     "peg_yaw": -1.4941652865917179,
+     "goal_xy": [
+      -0.1949933280496467,
+      0.0751480849199554
+     ],
+     "cube_pose": [
+      -0.09300730049058611,
+      -0.12613579024072835,
+      6.126004248595635
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/652": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 652,
+    "seed": 7600052,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.12775724536100114,
+      -0.126099562663912
+     ],
+     "peg_yaw": 1.3822363848754655,
+     "goal_xy": [
+      -0.16335056275669255,
+      0.15238254530308754
+     ],
+     "cube_pose": [
+      -0.037384250345766756,
+      0.12171276963290978,
+      3.544840092062126
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.3087219340507872,
+      0.11391188653999969
+     ],
+     "peg_yaw": 2.962230222733111,
+     "goal_xy": [
+      0.11268598360840176,
+      -0.03236637543606441
+     ],
+     "cube_pose": [
+      -0.04337775662539234,
+      0.1693876356129777,
+      4.1185586145725726
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/653": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 653,
+    "seed": 7600053,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.11962591772713949,
+      -0.05558188092884214
+     ],
+     "peg_yaw": 0.2779971576510052,
+     "goal_xy": [
+      0.12471788994692673,
+      0.06935035957340963
+     ],
+     "cube_pose": [
+      0.0446328841669239,
+      -0.12062986871918757,
+      3.5501802402337583
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.03943358185666673,
+      0.08574844530908815
+     ],
+     "peg_yaw": 0.8615510459916438,
+     "goal_xy": [
+      -0.16548996389739812,
+      0.12021809530850053
+     ],
+     "cube_pose": [
+      -0.08373941510446103,
+      0.17986236566472613,
+      0.014979731752320508
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/654": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 654,
+    "seed": 7600054,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.3004928172754366,
+      -0.18290850058523905
+     ],
+     "peg_yaw": -2.3670862192161537,
+     "goal_xy": [
+      -0.027165650279172282,
+      0.12963885672632042
+     ],
+     "cube_pose": [
+      -0.016582442594591545,
+      -0.12451366267296421,
+      1.5761309487350255
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.06228711768384125,
+      0.0921395526801311
+     ],
+     "peg_yaw": 0.4974223388547081,
+     "goal_xy": [
+      -0.20065008151858188,
+      0.045140435701036374
+     ],
+     "cube_pose": [
+      -0.05467010712957396,
+      0.15207942216896342,
+      4.941522142918009
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/655": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 655,
+    "seed": 7600055,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2024464119461882,
+      0.04856581040810787
+     ],
+     "peg_yaw": -1.1253864605040054,
+     "goal_xy": [
+      0.07351754168347163,
+      0.026337689538566467
+     ],
+     "cube_pose": [
+      0.005517779542398904,
+      -0.15011530903769357,
+      4.827965249950678
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.22163603086369638,
+      -0.06334783154660231
+     ],
+     "peg_yaw": -3.0364388343120607,
+     "goal_xy": [
+      -0.02130835051016161,
+      0.18330139386704108
+     ],
+     "cube_pose": [
+      -0.14556551556846636,
+      -0.08954444205866836,
+      4.550946997729524
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/656": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 656,
+    "seed": 7600056,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.1535409112221455,
+      0.13260169859902765
+     ],
+     "peg_yaw": 0.7824093126069407,
+     "goal_xy": [
+      0.06329881052407188,
+      0.0029505156960928924
+     ],
+     "cube_pose": [
+      -0.06023376479017584,
+      0.1900691002915002,
+      2.7141440454369583
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.32023251082836757,
+      0.109055535700631
+     ],
+     "peg_yaw": -2.604450040137603,
+     "goal_xy": [
+      -0.04167117794803987,
+      0.1563296028192926
+     ],
+     "cube_pose": [
+      -0.030012911570348716,
+      -0.11740212351803302,
+      3.040997919797605
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/657": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 657,
+    "seed": 7600057,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.26014917392048487,
+      0.16973104070330275
+     ],
+     "peg_yaw": -2.32317858833309,
+     "goal_xy": [
+      -0.06808234804142066,
+      0.1450510732148919
+     ],
+     "cube_pose": [
+      -0.039662133108357395,
+      -0.14515544912936248,
+      2.5549615819276745
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.023888586642155915,
+      0.08037218802241311
+     ],
+     "peg_yaw": 0.8826516556360895,
+     "goal_xy": [
+      -0.21899265238587873,
+      -0.005658410672276071
+     ],
+     "cube_pose": [
+      -0.0840242753941439,
+      -0.15170340081212222,
+      1.2958441998529078
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/658": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 658,
+    "seed": 7600058,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.13915993504934154,
+      0.07352940860295337
+     ],
+     "peg_yaw": 1.9442579668387268,
+     "goal_xy": [
+      0.1218917970054999,
+      -0.06876109438509928
+     ],
+     "cube_pose": [
+      -0.09287463744424101,
+      -0.1496764875444103,
+      2.828769570437896
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.11023911920891341,
+      0.040653004876184534
+     ],
+     "peg_yaw": -0.48569585440191565,
+     "goal_xy": [
+      -0.18712423964036073,
+      0.13883071205197267
+     ],
+     "cube_pose": [
+      -0.1568946423342633,
+      -0.0718527240943117,
+      0.5462621778832522
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/659": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 659,
+    "seed": 7600059,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.039885364921924876,
+      0.06268128041550997
+     ],
+     "peg_yaw": 2.0374494040550726,
+     "goal_xy": [
+      -0.06450540500437099,
+      0.13523996602126837
+     ],
+     "cube_pose": [
+      -0.17382313267539282,
+      0.09973529576578988,
+      0.9981640022121775
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.07150172787094541,
+      -0.06868545511391289
+     ],
+     "peg_yaw": -0.10543425418025265,
+     "goal_xy": [
+      0.06385705408005515,
+      -0.06936931024290752
+     ],
+     "cube_pose": [
+      -0.12663183498129996,
+      -0.1501754304435856,
+      2.0257735773770147
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/660": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 660,
+    "seed": 7600060,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.22664328913741516,
+      -0.18232993306367992
+     ],
+     "peg_yaw": -0.016472647726252898,
+     "goal_xy": [
+      -0.09075197013912761,
+      -0.17186474100030333
+     ],
+     "cube_pose": [
+      -0.0011887101103109643,
+      0.10594460954952284,
+      3.90024739337301
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.06593397448204288,
+      -0.04845613222159306
+     ],
+     "peg_yaw": 0.4765331001106836,
+     "goal_xy": [
+      -0.24060439035000308,
+      -0.0016663220239540588
+     ],
+     "cube_pose": [
+      0.0009696236638582212,
+      -0.1179741379091389,
+      0.8984942090002404
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/661": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 661,
+    "seed": 7600061,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2675111698241242,
+      0.1484744184049021
+     ],
+     "peg_yaw": -1.7443805991124008,
+     "goal_xy": [
+      -0.1383134785752107,
+      -0.1145170298835455
+     ],
+     "cube_pose": [
+      -0.10107198835181971,
+      0.12629329322706923,
+      0.6256873557045166
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.046814647497929726,
+      -0.03519203093551132
+     ],
+     "peg_yaw": 0.2490273644632337,
+     "goal_xy": [
+      -0.05876068167136869,
+      0.17429848468199266
+     ],
+     "cube_pose": [
+      -0.17276065858841014,
+      0.16462559851089326,
+      3.407629265983715
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/662": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 662,
+    "seed": 7600062,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.11113197513447975,
+      -0.02061719924560873
+     ],
+     "peg_yaw": -1.1868699937922649,
+     "goal_xy": [
+      0.036112983172926494,
+      -0.16325064576503637
+     ],
+     "cube_pose": [
+      -0.17400655640476534,
+      -0.1250346074658234,
+      2.445724197264966
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.03065888490908754,
+      0.017122899962211113
+     ],
+     "peg_yaw": 0.2556362943721524,
+     "goal_xy": [
+      -0.08277947296594357,
+      -0.14350651532694872
+     ],
+     "cube_pose": [
+      -0.16316617798801453,
+      0.14287687518949715,
+      2.1389371568650404
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/663": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 663,
+    "seed": 7600063,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.07861787801418141,
+      0.027647239494590803
+     ],
+     "peg_yaw": 3.088627575954635,
+     "goal_xy": [
+      -0.14516119481217543,
+      0.11237282539338861
+     ],
+     "cube_pose": [
+      -0.1710580582300022,
+      -0.07575666228560891,
+      5.9983958030784805
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.03122824113743039,
+      -0.03915857324438107
+     ],
+     "peg_yaw": -0.11619710403692496,
+     "goal_xy": [
+      -0.2177832435768353,
+      -0.08014666901090509
+     ],
+     "cube_pose": [
+      -0.12362988170062872,
+      0.12897353221960378,
+      5.1503242154086655
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/664": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 664,
+    "seed": 7600064,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.24171388476206762,
+      -0.11293777131688032
+     ],
+     "peg_yaw": 1.9125769612341683,
+     "goal_xy": [
+      0.05490826040606572,
+      0.04003931727876475
+     ],
+     "cube_pose": [
+      -0.010135078855849439,
+      -0.1670971606038111,
+      5.971089294885911
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.031184800691941794,
+      -0.036019137443010996
+     ],
+     "peg_yaw": -1.919069294572134,
+     "goal_xy": [
+      0.12167639648875084,
+      0.060605205479972
+     ],
+     "cube_pose": [
+      0.022333826023375858,
+      0.1603640859864633,
+      6.0800608417695745
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/665": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 665,
+    "seed": 7600065,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.17578864033178482,
+      0.12430523051490064
+     ],
+     "peg_yaw": 2.233050384453275,
+     "goal_xy": [
+      -0.06870147140824606,
+      0.1332820847639154
+     ],
+     "cube_pose": [
+      -0.08300117346661295,
+      -0.117985552021519,
+      0.08756123280968922
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.004374365815226974,
+      -0.021865154018959193
+     ],
+     "peg_yaw": -2.1412335698484704,
+     "goal_xy": [
+      -0.24665168295368436,
+      -0.008800431743882509
+     ],
+     "cube_pose": [
+      -0.12769373224886085,
+      -0.10216760993983996,
+      0.5901624068544341
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/666": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 666,
+    "seed": 7600066,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.24853395728882138,
+      0.14284917345136977
+     ],
+     "peg_yaw": -1.7437496467262614,
+     "goal_xy": [
+      -0.13952199389286746,
+      0.13300887323341698
+     ],
+     "cube_pose": [
+      -0.19782277088201927,
+      -0.11566862197813724,
+      0.4585236037914528
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.17879447186977768,
+      0.011141144310328976
+     ],
+     "peg_yaw": -1.2463843272124582,
+     "goal_xy": [
+      0.10018015390278562,
+      -0.014624735144636247
+     ],
+     "cube_pose": [
+      0.03351610633661689,
+      -0.09472614193961451,
+      2.2882578320761024
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/667": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 667,
+    "seed": 7600067,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.15859543864889897,
+      -0.04819120243646341
+     ],
+     "peg_yaw": 0.31823392308669707,
+     "goal_xy": [
+      0.05364370644043692,
+      0.08508786108654931
+     ],
+     "cube_pose": [
+      -0.0790965002989591,
+      -0.16822532316395497,
+      0.8773956709682867
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.18805803862046483,
+      0.10590428852184582
+     ],
+     "peg_yaw": 2.5269595708811323,
+     "goal_xy": [
+      -0.038650270064989445,
+      -0.12544470241705036
+     ],
+     "cube_pose": [
+      -0.10307186144086192,
+      0.15166271250799673,
+      1.144699648492641
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/668": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 668,
+    "seed": 7600068,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.045091707356968706,
+      0.08914455947737004
+     ],
+     "peg_yaw": 1.550166448926082,
+     "goal_xy": [
+      0.05788583736123659,
+      0.07697647894046533
+     ],
+     "cube_pose": [
+      -0.014299124749855258,
+      -0.13877221513115767,
+      3.4544843233580464
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.1756701983371424,
+      0.1557902402532416
+     ],
+     "peg_yaw": 1.7176731151075009,
+     "goal_xy": [
+      0.0731620651958228,
+      -0.1400989927481734
+     ],
+     "cube_pose": [
+      -0.08245454770804467,
+      -0.17675474868620508,
+      4.541780062564113
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/669": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 669,
+    "seed": 7600069,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.20236406651406466,
+      -0.193614665561457
+     ],
+     "peg_yaw": -2.1330716069401863,
+     "goal_xy": [
+      0.01707348725284602,
+      0.13700328306793225
+     ],
+     "cube_pose": [
+      -0.05961679775957224,
+      -0.13586030946150496,
+      3.8608407444042703
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.08397497148516217,
+      -0.026977991418906222
+     ],
+     "peg_yaw": 0.6719916517606461,
+     "goal_xy": [
+      0.10733673954394202,
+      -0.03680222209178291
+     ],
+     "cube_pose": [
+      -0.06526323399210787,
+      -0.1469019877045104,
+      0.7863751720991137
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/670": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 670,
+    "seed": 7600070,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.14699024726392185,
+      -0.05669972123697692
+     ],
+     "peg_yaw": -1.3107608956482761,
+     "goal_xy": [
+      0.07190468495163677,
+      -0.0502143434161427
+     ],
+     "cube_pose": [
+      -0.025844979978162597,
+      -0.11863235453708523,
+      2.000905432727803
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.08826011531108842,
+      0.10251568698459759
+     ],
+     "peg_yaw": -1.3761238279071553,
+     "goal_xy": [
+      -0.16988955501003467,
+      -0.1499475700632741
+     ],
+     "cube_pose": [
+      -0.019830786348354307,
+      -0.17959544153417403,
+      6.179387031875305
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/671": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 671,
+    "seed": 7600071,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.09219511606287945,
+      -0.18383197654683847
+     ],
+     "peg_yaw": 1.5211656741373165,
+     "goal_xy": [
+      -0.13664207933959593,
+      -0.12140749989232269
+     ],
+     "cube_pose": [
+      -0.1751801182363487,
+      0.10208168254104266,
+      3.941230033314122
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.10114959180432558,
+      -0.01358505505222607
+     ],
+     "peg_yaw": -1.4467021323535063,
+     "goal_xy": [
+      -0.1812857315963506,
+      0.08082555046065976
+     ],
+     "cube_pose": [
+      -0.0445848661617016,
+      -0.15133085737133314,
+      5.012117095382528
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/672": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 672,
+    "seed": 7600072,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2809196783024933,
+      0.11746639923489463
+     ],
+     "peg_yaw": -1.9038014196312543,
+     "goal_xy": [
+      -0.14923374219143648,
+      0.1195275742170076
+     ],
+     "cube_pose": [
+      -0.16740193844068985,
+      -0.09933473179028751,
+      1.832101821684372
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.24142038305788507,
+      0.056485043817859015
+     ],
+     "peg_yaw": -1.877331539584138,
+     "goal_xy": [
+      0.03249393521208399,
+      0.09448221180559835
+     ],
+     "cube_pose": [
+      -0.13803541538895742,
+      -0.13186209154364376,
+      2.1638030766451557
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/673": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 673,
+    "seed": 7600073,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.10836545476886368,
+      0.07744381747852014
+     ],
+     "peg_yaw": 2.539537322867318,
+     "goal_xy": [
+      -0.17940903657744575,
+      -0.11075832764683496
+     ],
+     "cube_pose": [
+      -0.07556658412624695,
+      0.1697345212846429,
+      6.232430188513683
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.04430299146675802,
+      0.09644372773850729
+     ],
+     "peg_yaw": 1.5528379512919912,
+     "goal_xy": [
+      0.07014490840283033,
+      0.060021410885797155
+     ],
+     "cube_pose": [
+      -0.07090865057946208,
+      -0.1854372629901093,
+      1.9678541284149238
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/674": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 674,
+    "seed": 7600074,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.280309636760835,
+      0.13977661695865
+     ],
+     "peg_yaw": 2.7985368859364765,
+     "goal_xy": [
+      -0.08140299487329561,
+      -0.13028750539817208
+     ],
+     "cube_pose": [
+      -0.12857946663472702,
+      0.1575951689462532,
+      4.119016469024925
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.005113091003682846,
+      0.05398085513583373
+     ],
+     "peg_yaw": 0.6466446686485714,
+     "goal_xy": [
+      0.09516640432100731,
+      -0.060535504272573315
+     ],
+     "cube_pose": [
+      -0.031036230295040823,
+      -0.1735726218939095,
+      3.658768717272001
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/675": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 675,
+    "seed": 7600075,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.19904936263034362,
+      -0.008166450780210471
+     ],
+     "peg_yaw": -2.780081445812444,
+     "goal_xy": [
+      0.10470942026809926,
+      -0.04153230721032858
+     ],
+     "cube_pose": [
+      0.033463147243940616,
+      -0.1751471796629622,
+      5.622628549666799
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.15068567048208772,
+      0.09423728282286699
+     ],
+     "peg_yaw": -0.71989226339912,
+     "goal_xy": [
+      -0.22252328851606645,
+      0.0008622582127742751
+     ],
+     "cube_pose": [
+      -0.06744234583875655,
+      0.15291652966376756,
+      4.507685519980103
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/676": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 676,
+    "seed": 7600076,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.16538153747262346,
+      -0.0362756496616598
+     ],
+     "peg_yaw": -2.7067342396532603,
+     "goal_xy": [
+      -0.06425719436232802,
+      0.1317300909187452
+     ],
+     "cube_pose": [
+      -0.17150636494657032,
+      0.10709344441958674,
+      0.36367075095611007
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.17416015827515743,
+      -0.05594502112127964
+     ],
+     "peg_yaw": 1.0898225419081102,
+     "goal_xy": [
+      -0.1477121065292387,
+      0.10102678961002126
+     ],
+     "cube_pose": [
+      -0.024666901260070956,
+      0.12440521123591708,
+      6.033582282195025
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/677": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 677,
+    "seed": 7600077,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2147510919239154,
+      0.16081650240854736
+     ],
+     "peg_yaw": 1.813679152460507,
+     "goal_xy": [
+      0.028387816347556327,
+      -0.08614287452758469
+     ],
+     "cube_pose": [
+      0.007277222589446075,
+      0.14019062044476344,
+      5.911949114819488
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.2564954773156883,
+      -0.06961172922813064
+     ],
+     "peg_yaw": -3.020822570474396,
+     "goal_xy": [
+      -0.22424317724834783,
+      -0.08912141320915118
+     ],
+     "cube_pose": [
+      -0.18184545159898322,
+      0.07559135353526852,
+      5.450686380327587
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/678": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 678,
+    "seed": 7600078,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2506861981132938,
+      0.020384576973303148
+     ],
+     "peg_yaw": -1.9079585858471915,
+     "goal_xy": [
+      -0.11264811680737616,
+      0.12180350824567937
+     ],
+     "cube_pose": [
+      -0.08776853572363288,
+      -0.12715703570811598,
+      2.2286193705974298
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.22605670203111752,
+      0.14331304560893598
+     ],
+     "peg_yaw": -1.5131641120704085,
+     "goal_xy": [
+      0.06683323654086482,
+      0.11286578418888293
+     ],
+     "cube_pose": [
+      -0.12127991454533724,
+      -0.10470127510152981,
+      5.589075003038065
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/679": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 679,
+    "seed": 7600079,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.10287582835323668,
+      0.013343030018852398
+     ],
+     "peg_yaw": 2.5602243973073104,
+     "goal_xy": [
+      -0.1842694976132775,
+      0.00412430887101517
+     ],
+     "cube_pose": [
+      -0.071582963211933,
+      -0.1777826543062414,
+      5.363850607421564
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.09293969748951439,
+      0.02933008674971921
+     ],
+     "peg_yaw": -0.4932079560984821,
+     "goal_xy": [
+      -0.17669080540528936,
+      -0.033689972836506904
+     ],
+     "cube_pose": [
+      -0.020708769170692143,
+      -0.16209160944647644,
+      3.031824991474353
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/680": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 680,
+    "seed": 7600080,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.18615803468776465,
+      -0.10005516830066037
+     ],
+     "peg_yaw": -2.4223791460714623,
+     "goal_xy": [
+      0.10388045599181528,
+      -0.09217189869505407
+     ],
+     "cube_pose": [
+      -0.10957526757726427,
+      -0.16592293767216018,
+      5.919563818384997
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.08240858912812299,
+      0.09649990047026266
+     ],
+     "peg_yaw": -1.5290780573953469,
+     "goal_xy": [
+      -0.0535901297870236,
+      0.1517660965864216
+     ],
+     "cube_pose": [
+      -0.1698419315029866,
+      0.1320549142817677,
+      6.153860142553817
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/681": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 681,
+    "seed": 7600081,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.030154886478405682,
+      -0.10362881088918147
+     ],
+     "peg_yaw": 2.5786889052069517,
+     "goal_xy": [
+      0.06396953231261959,
+      0.045759365617969255
+     ],
+     "cube_pose": [
+      -0.1333874667626198,
+      -0.1341693228036113,
+      2.8185352336228715
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.19672693597420748,
+      0.13022552791546488
+     ],
+     "peg_yaw": -1.6466545849835348,
+     "goal_xy": [
+      -0.09941859270022346,
+      -0.13295299020098372
+     ],
+     "cube_pose": [
+      -0.08332294233179971,
+      0.13786308823900406,
+      1.2822157655404947
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/682": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 682,
+    "seed": 7600082,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.015627427567968533,
+      0.06380310988686608
+     ],
+     "peg_yaw": -0.08290542306440551,
+     "goal_xy": [
+      0.06675310372277149,
+      0.10243887228920578
+     ],
+     "cube_pose": [
+      -0.05581253757454607,
+      0.17949429792901528,
+      3.744612931212989
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.07743659305941963,
+      -0.04103608903834435
+     ],
+     "peg_yaw": 0.5184592651841124,
+     "goal_xy": [
+      0.07311755175814616,
+      0.10446487105751084
+     ],
+     "cube_pose": [
+      -0.16443246048606813,
+      0.05967102014281034,
+      0.3662359156892647
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/683": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 683,
+    "seed": 7600083,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.10496757882592699,
+      -0.013938067580026109
+     ],
+     "peg_yaw": -0.7925384388806265,
+     "goal_xy": [
+      -0.011652166603925096,
+      0.1121672659527469
+     ],
+     "cube_pose": [
+      -0.010009211265842644,
+      -0.16106052965842832,
+      3.0888060740967687
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.1960731515482873,
+      -0.04572016910103005
+     ],
+     "peg_yaw": 1.338449260233336,
+     "goal_xy": [
+      0.06314534493204971,
+      -0.03663215484644411
+     ],
+     "cube_pose": [
+      -0.13035857066391657,
+      0.18332860181929028,
+      0.6250953600830632
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/684": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 684,
+    "seed": 7600084,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.022433925361461132,
+      0.057860521417787164
+     ],
+     "peg_yaw": 0.1530651463058339,
+     "goal_xy": [
+      -0.19422154435849148,
+      0.11675319245575827
+     ],
+     "cube_pose": [
+      -0.015744724176357167,
+      0.12302902095058477,
+      5.726900004913738
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.15717572937214772,
+      -0.014190850854352066
+     ],
+     "peg_yaw": -1.2099201495559953,
+     "goal_xy": [
+      0.07560715959087949,
+      0.03595760076100771
+     ],
+     "cube_pose": [
+      -0.13583074855737073,
+      -0.12209892163710295,
+      3.0602383858420805
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/685": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 685,
+    "seed": 7600085,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.207080767654942,
+      -0.15387545665649033
+     ],
+     "peg_yaw": -2.0926218318609457,
+     "goal_xy": [
+      -0.10121744798910298,
+      -0.1597305686553946
+     ],
+     "cube_pose": [
+      -0.03454690029061025,
+      0.12969079787554927,
+      4.750916912553908
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.07629731223829098,
+      0.05226814006626432
+     ],
+     "peg_yaw": 0.013197029951056205,
+     "goal_xy": [
+      0.057929982635648525,
+      0.1260006987972193
+     ],
+     "cube_pose": [
+      -0.1607410506825223,
+      0.13985105494952305,
+      0.25818392798499573
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/686": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 686,
+    "seed": 7600086,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.07059756587397564,
+      0.05149379743982635
+     ],
+     "peg_yaw": 0.8433962107690269,
+     "goal_xy": [
+      0.04769594331491278,
+      -0.16170092089765298
+     ],
+     "cube_pose": [
+      -0.09207280774740756,
+      -0.1647605846720781,
+      0.28756244560808875
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.12121072393144806,
+      -0.09992574550727648
+     ],
+     "peg_yaw": 1.2893941219664091,
+     "goal_xy": [
+      -0.18229163604458085,
+      -0.10190778264874584
+     ],
+     "cube_pose": [
+      -0.052122688481685664,
+      -0.13358025282513541,
+      2.6327875215154406
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/687": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 687,
+    "seed": 7600087,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2777042436952798,
+      0.0911091864768804
+     ],
+     "peg_yaw": -2.2127523486490235,
+     "goal_xy": [
+      -0.15692875384858201,
+      0.09785026433646893
+     ],
+     "cube_pose": [
+      -0.16299524985174402,
+      -0.06748319133575223,
+      5.603194254153337
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.0680092947555299,
+      -0.19076917643190167
+     ],
+     "peg_yaw": 1.481892809215803,
+     "goal_xy": [
+      -0.2341607147421289,
+      0.0887227768583595
+     ],
+     "cube_pose": [
+      -0.09983598476424782,
+      0.12268686989179306,
+      4.307393413874042
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/688": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 688,
+    "seed": 7600088,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.11636182935934493,
+      0.017384539793056486
+     ],
+     "peg_yaw": -2.623652166017437,
+     "goal_xy": [
+      0.10868376060501239,
+      0.03089544886518958
+     ],
+     "cube_pose": [
+      -0.048164188375152794,
+      0.138969900081508,
+      3.026088538195013
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.10189103200373252,
+      -0.029293251045598462
+     ],
+     "peg_yaw": -0.15870941234519398,
+     "goal_xy": [
+      -0.18403735481150646,
+      -0.05158340202592285
+     ],
+     "cube_pose": [
+      -0.08345887155913267,
+      -0.1321280940893208,
+      0.9759719201772811
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/689": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 689,
+    "seed": 7600089,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.1025303416269059,
+      0.10854405344146802
+     ],
+     "peg_yaw": 0.338189514481122,
+     "goal_xy": [
+      -0.1844064556252421,
+      0.10215246183705712
+     ],
+     "cube_pose": [
+      -0.03785947531272327,
+      0.1656650059018796,
+      2.950620779993187
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.21035872558380536,
+      -0.1285334034985901
+     ],
+     "peg_yaw": 0.4945867028859783,
+     "goal_xy": [
+      -0.023157331809628923,
+      -0.18267600564630582
+     ],
+     "cube_pose": [
+      -0.15465400442963415,
+      -0.10919428622799275,
+      0.895908797482637
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/690": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 690,
+    "seed": 7600090,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.1356717467601513,
+      0.040984771370722595
+     ],
+     "peg_yaw": 2.765077024498214,
+     "goal_xy": [
+      -0.10053954591414932,
+      0.14868090386801047
+     ],
+     "cube_pose": [
+      -0.1004091048465458,
+      -0.12976092880953063,
+      1.5338836332542525
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.23071150962717388,
+      -0.012900134934307361
+     ],
+     "peg_yaw": -2.111158804147361,
+     "goal_xy": [
+      0.05183478572019856,
+      -0.06434426024709722
+     ],
+     "cube_pose": [
+      -0.14705075618683758,
+      0.14544924899135048,
+      0.02629964509268461
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/691": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 691,
+    "seed": 7600091,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.1197099343064043,
+      -0.006144034512196472
+     ],
+     "peg_yaw": -2.9733568860398045,
+     "goal_xy": [
+      0.08550260902636803,
+      -0.04355170917914203
+     ],
+     "cube_pose": [
+      0.01098987362427517,
+      0.12640801053126255,
+      4.266604585477047
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.04401400033086156,
+      0.11999661489979695
+     ],
+     "peg_yaw": -2.1710535667221165,
+     "goal_xy": [
+      -0.2188611128329152,
+      0.057685370034437744
+     ],
+     "cube_pose": [
+      -0.17029354451838338,
+      -0.05113405272895766,
+      4.25182579730995
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/692": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 692,
+    "seed": 7600092,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2586218224434097,
+      -0.005956715536361928
+     ],
+     "peg_yaw": -2.4735198949061257,
+     "goal_xy": [
+      0.05693160546387693,
+      0.15716134784036545
+     ],
+     "cube_pose": [
+      0.008828098030255582,
+      -0.1047934274931063,
+      0.797399883934576
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.1534013485327198,
+      -0.02536885618141807
+     ],
+     "peg_yaw": 0.7940315039350607,
+     "goal_xy": [
+      -0.22445511949854477,
+      0.06394462867180029
+     ],
+     "cube_pose": [
+      0.017508162776279812,
+      0.09502591248251208,
+      0.9257975951142183
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/693": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 693,
+    "seed": 7600093,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.13980500632679427,
+      0.08059303206667601
+     ],
+     "peg_yaw": 2.1774121022402424,
+     "goal_xy": [
+      0.07071868383975538,
+      -0.12937233823673794
+     ],
+     "cube_pose": [
+      -0.11409042662678393,
+      -0.15939063552328703,
+      4.4850522866525075
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.16135017723802572,
+      0.03846191487550976
+     ],
+     "peg_yaw": 2.9096040249681527,
+     "goal_xy": [
+      -0.20061899566712235,
+      0.02944470362798529
+     ],
+     "cube_pose": [
+      -0.009333555940943816,
+      0.12775407674535094,
+      0.2883856683381573
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/694": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 694,
+    "seed": 7600094,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.13149167214725677,
+      0.09297936081501251
+     ],
+     "peg_yaw": -0.9116735585660152,
+     "goal_xy": [
+      -0.09757917239309064,
+      0.1525245584277783
+     ],
+     "cube_pose": [
+      -0.044539908706998727,
+      -0.12367262180741317,
+      1.0965174944135763
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.27174785681026087,
+      0.002647203873423959
+     ],
+     "peg_yaw": -2.4095430162018356,
+     "goal_xy": [
+      -0.19166996386908206,
+      -0.050899027199210384
+     ],
+     "cube_pose": [
+      -0.11962468513802674,
+      0.11974622658026068,
+      4.538345640241153
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/695": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 695,
+    "seed": 7600095,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.043659955332986944,
+      -0.027561933385152476
+     ],
+     "peg_yaw": -1.995339579601639,
+     "goal_xy": [
+      -0.1481817361949489,
+      -0.1357609656319092
+     ],
+     "cube_pose": [
+      -0.03192420925282757,
+      -0.12617188113982786,
+      4.228197935714696
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.15589808967543062,
+      0.11607992665275399
+     ],
+     "peg_yaw": 0.19635778729609754,
+     "goal_xy": [
+      0.09905500219239266,
+      0.059538066196341555
+     ],
+     "cube_pose": [
+      -0.0991847695819282,
+      -0.13315740149637723,
+      3.5406076865468017
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/696": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 696,
+    "seed": 7600096,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.09011831280714701,
+      0.07297711757635927
+     ],
+     "peg_yaw": 3.1265729442011754,
+     "goal_xy": [
+      0.0995705855186017,
+      -0.01961903600496301
+     ],
+     "cube_pose": [
+      -0.08844587538471127,
+      0.1971956416364838,
+      0.11008358911127783
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.21313895298272517,
+      0.019053451048283154
+     ],
+     "peg_yaw": 2.6672244294361693,
+     "goal_xy": [
+      -0.24814885948995008,
+      -0.047979695612569095
+     ],
+     "cube_pose": [
+      -0.06735000876996569,
+      -0.15232572966745042,
+      3.2597807694206686
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/697": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 697,
+    "seed": 7600097,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.06516711962290062,
+      -0.19163207693473938
+     ],
+     "peg_yaw": 1.5685593377279128,
+     "goal_xy": [
+      0.09285066586696417,
+      0.05850169502798208
+     ],
+     "cube_pose": [
+      -0.09442296335127173,
+      -0.1343046370569542,
+      3.7778604773508477
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.15290509206049374,
+      -0.184115306209946
+     ],
+     "peg_yaw": 0.8248842618894203,
+     "goal_xy": [
+      0.08066940639078751,
+      -0.10403359671616452
+     ],
+     "cube_pose": [
+      -0.07725853695907964,
+      -0.15185442180527714,
+      4.867952824218702
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/698": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 698,
+    "seed": 7600098,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.06739719099060595,
+      -0.13279212080590888
+     ],
+     "peg_yaw": 1.552151365157389,
+     "goal_xy": [
+      -0.12018863399348848,
+      -0.17862794216845568
+     ],
+     "cube_pose": [
+      -0.14284345250464242,
+      0.11270317384902634,
+      5.892560272867656
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.034140807214602775,
+      -0.05112157296605774
+     ],
+     "peg_yaw": 2.7970161171513697,
+     "goal_xy": [
+      -0.186544154350458,
+      -0.007808868339430841
+     ],
+     "cube_pose": [
+      -0.1393912121332495,
+      0.1497486151280783,
+      6.121351023966851
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/699": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 699,
+    "seed": 7600099,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.11401979599175309,
+      -0.0665443764586019
+     ],
+     "peg_yaw": 0.3172269856541181,
+     "goal_xy": [
+      -0.1153584418146246,
+      -0.12020401404040451
+     ],
+     "cube_pose": [
+      -0.15369135979448684,
+      0.17066187419196943,
+      3.1913692514799252
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.03494526929347938,
+      0.08183541580037809
+     ],
+     "peg_yaw": 0.04197344602414299,
+     "goal_xy": [
+      -0.05865621343666752,
+      0.15516828743157274
+     ],
+     "cube_pose": [
+      -0.15596277905312558,
+      0.11021434494042942,
+      5.580081700858846
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/700": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 700,
+    "seed": 7600100,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.11006681780673103,
+      -0.04515315999439551
+     ],
+     "peg_yaw": -1.1592620565387366,
+     "goal_xy": [
+      -0.010059802114895905,
+      -0.11131709590431643
+     ],
+     "cube_pose": [
+      -0.0652438478250732,
+      -0.19740900861831281,
+      3.861992101597258
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.05561669018426853,
+      0.005842319990344208
+     ],
+     "peg_yaw": 0.2300987260490368,
+     "goal_xy": [
+      0.0524224219266588,
+      0.16131105692484055
+     ],
+     "cube_pose": [
+      -0.11280127852208341,
+      0.1132103791986962,
+      6.210652681075739
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/701": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 701,
+    "seed": 7600101,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.2280766633986061,
+      0.1773245364799921
+     ],
+     "peg_yaw": -0.044265223194592807,
+     "goal_xy": [
+      0.010784148688850692,
+      0.12825641295783502
+     ],
+     "cube_pose": [
+      -0.055453780773120076,
+      -0.15673088463577767,
+      5.674614880273625
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.06281717761835826,
+      -0.1301607271161067
+     ],
+     "peg_yaw": 1.91106703355422,
+     "goal_xy": [
+      -0.08177317510033094,
+      0.16514709806773653
+     ],
+     "cube_pose": [
+      -0.14770546118257982,
+      -0.12517827949861976,
+      3.8405487464827948
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/702": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 702,
+    "seed": 7600102,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.2661628632862883,
+      -0.09843983899169946
+     ],
+     "peg_yaw": -3.016459149780914,
+     "goal_xy": [
+      -0.21687654823140673,
+      -0.004155394496864417
+     ],
+     "cube_pose": [
+      -0.15686039258717943,
+      -0.08684999467413634,
+      4.233517578555415
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.3075075374723145,
+      0.13393052019246604
+     ],
+     "peg_yaw": 3.096048078449864,
+     "goal_xy": [
+      -0.10661291844705481,
+      -0.15471100180665892
+     ],
+     "cube_pose": [
+      -0.01920679471792161,
+      0.11619380089177139,
+      0.8896185265700931
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/703": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 703,
+    "seed": 7600103,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.23775998242653432,
+      -0.007163883105169688
+     ],
+     "peg_yaw": -2.588322224459545,
+     "goal_xy": [
+      -0.04416816002085938,
+      0.13078868736320537
+     ],
+     "cube_pose": [
+      -0.16839353227321402,
+      0.09251452792418391,
+      4.182591567249492
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.2156483230499851,
+      -0.16802894535134222
+     ],
+     "peg_yaw": -0.17750529467186604,
+     "goal_xy": [
+      0.014347502998455552,
+      -0.1453818669076198
+     ],
+     "cube_pose": [
+      -0.06122650753507897,
+      0.13419492870444788,
+      2.2652093525097525
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/704": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 704,
+    "seed": 7600104,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.035003081260968925,
+      0.07086568986508268
+     ],
+     "peg_yaw": 1.1088411551622723,
+     "goal_xy": [
+      -0.14683182219205604,
+      -0.11367306548051409
+     ],
+     "cube_pose": [
+      -0.0571540745799142,
+      -0.18004940186892418,
+      1.3166641958821912
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.22105388262414385,
+      -0.023636838033912866
+     ],
+     "peg_yaw": 1.8389922443355742,
+     "goal_xy": [
+      -0.1865104985986778,
+      0.1482138564466351
+     ],
+     "cube_pose": [
+      -0.024983467751197752,
+      0.16158037002012043,
+      2.3289747525069306
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/705": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 705,
+    "seed": 7600105,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.11794461426899373,
+      0.15228038136147015
+     ],
+     "peg_yaw": 0.5983909569251482,
+     "goal_xy": [
+      -0.04246458508560344,
+      -0.16824981804373906
+     ],
+     "cube_pose": [
+      -0.16114844452961957,
+      -0.13966492311173312,
+      1.358189927383884
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.04402548859497281,
+      -0.04297775218092875
+     ],
+     "peg_yaw": -0.13561189682672037,
+     "goal_xy": [
+      -0.08815845856932145,
+      0.14870556773117827
+     ],
+     "cube_pose": [
+      -0.1550360615528179,
+      -0.12105439566686318,
+      4.4132859060418745
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/706": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 706,
+    "seed": 7600106,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.16585352868588543,
+      -0.1539249830573634
+     ],
+     "peg_yaw": 0.7672919019732882,
+     "goal_xy": [
+      -0.23935210302646737,
+      0.08194473381864331
+     ],
+     "cube_pose": [
+      -0.07647510150376666,
+      -0.15378435460571271,
+      0.8260205441476463
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.006190641495918567,
+      -0.09041376679278017
+     ],
+     "peg_yaw": 2.8554981136683697,
+     "goal_xy": [
+      0.05742394412738311,
+      -0.1533333642830051
+     ],
+     "cube_pose": [
+      -0.0524989104155007,
+      -0.1581284201180886,
+      3.007700618352418
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/707": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 707,
+    "seed": 7600107,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.13058446302497573,
+      0.07288143010291459
+     ],
+     "peg_yaw": 0.1807306082223894,
+     "goal_xy": [
+      -0.20445111017617235,
+      -0.03614797090796057
+     ],
+     "cube_pose": [
+      0.023415137855632095,
+      -0.09094369935886207,
+      5.878639735899712
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.053871949001758686,
+      0.10768358423877462
+     ],
+     "peg_yaw": -2.11498377906759,
+     "goal_xy": [
+      0.09668309497771616,
+      0.07395299809342948
+     ],
+     "cube_pose": [
+      -0.037034375695652044,
+      0.13083883167296595,
+      1.0352346547938034
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/708": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 708,
+    "seed": 7600108,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.18607465685610586,
+      -0.06490722481980812
+     ],
+     "peg_yaw": 1.4766787718188885,
+     "goal_xy": [
+      -0.16422893421476864,
+      -0.06417901849024421
+     ],
+     "cube_pose": [
+      -0.0907230697209461,
+      0.1681110302300634,
+      1.8456276896532473
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.06882394156574859,
+      0.04818377904741203
+     ],
+     "peg_yaw": 0.23595608559191605,
+     "goal_xy": [
+      -0.2206799912415207,
+      -0.059041790257332
+     ],
+     "cube_pose": [
+      -0.07091663400020976,
+      -0.13271950102375346,
+      0.9758439939153799
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/709": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 709,
+    "seed": 7600109,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.06258744234339489,
+      0.0654138309811601
+     ],
+     "peg_yaw": 1.8631630852541585,
+     "goal_xy": [
+      0.06857212316198369,
+      -0.1524781601638741
+     ],
+     "cube_pose": [
+      -0.15462320052116646,
+      -0.15611854446909393,
+      2.418580897681602
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.13901409477178578,
+      0.0972421037730235
+     ],
+     "peg_yaw": 0.597200905376333,
+     "goal_xy": [
+      -0.11501801916026996,
+      -0.16603263197738266
+     ],
+     "cube_pose": [
+      -0.0222230497696998,
+      0.11725786933443366,
+      5.067114690846607
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/710": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 710,
+    "seed": 7600110,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.02230725745946896,
+      0.00029785239626012316
+     ],
+     "peg_yaw": 0.1529044923763303,
+     "goal_xy": [
+      -0.17434523274686786,
+      -0.052959062831586884
+     ],
+     "cube_pose": [
+      -0.10379988920335553,
+      -0.18436639799541427,
+      5.376904585787118
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.10619345214585935,
+      -0.13547312767517172
+     ],
+     "peg_yaw": 1.7072371562407431,
+     "goal_xy": [
+      -0.012330328023316905,
+      0.13822259928150354
+     ],
+     "cube_pose": [
+      -0.14541463500685764,
+      0.09168054056416064,
+      0.41792907847451277
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/711": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 711,
+    "seed": 7600111,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.06979769286247366,
+      -0.03551966095887518
+     ],
+     "peg_yaw": 2.937475555812984,
+     "goal_xy": [
+      -0.20188769975028187,
+      0.11116167978204117
+     ],
+     "cube_pose": [
+      -0.15969295313560758,
+      -0.13656408462436115,
+      6.245964638443923
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.32084757515699863,
+      -0.18436202173089644
+     ],
+     "peg_yaw": -2.611184200068262,
+     "goal_xy": [
+      0.049555096470421056,
+      0.10079913808183028
+     ],
+     "cube_pose": [
+      0.020652403002453024,
+      -0.10696936396235596,
+      2.376732573115498
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/712": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 712,
+    "seed": 7600112,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2517205236040791,
+      0.1007388648684423
+     ],
+     "peg_yaw": -1.937536628845452,
+     "goal_xy": [
+      -0.1846071870831801,
+      -0.08311261662552716
+     ],
+     "cube_pose": [
+      -0.04521245369787533,
+      -0.17939462265037975,
+      1.8863018172010744
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.208892564885041,
+      0.10613537853875063
+     ],
+     "peg_yaw": 2.3520367360427983,
+     "goal_xy": [
+      -0.22507499701216274,
+      -0.011230852291464366
+     ],
+     "cube_pose": [
+      -0.10149613422770964,
+      -0.12118520237662,
+      3.5061951376230054
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/713": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 713,
+    "seed": 7600113,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.034384669183437896,
+      -0.09800887383700924
+     ],
+     "peg_yaw": -1.3860530205152504,
+     "goal_xy": [
+      -0.11284226740450318,
+      -0.17286413621597752
+     ],
+     "cube_pose": [
+      -0.1664442134564264,
+      0.11504106069707332,
+      3.86103594724691
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.2435581349100225,
+      -0.1202354275843507
+     ],
+     "peg_yaw": 2.0635216391153923,
+     "goal_xy": [
+      -0.07070787632167472,
+      -0.12846848908677244
+     ],
+     "cube_pose": [
+      -0.1363429409930209,
+      0.14764465051080689,
+      1.5981011746770943
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/714": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 714,
+    "seed": 7600114,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.08045385054899648,
+      0.022724544688799336
+     ],
+     "peg_yaw": -0.6783522340971064,
+     "goal_xy": [
+      -0.16289772049239115,
+      0.07206924566939604
+     ],
+     "cube_pose": [
+      -0.12709124678423928,
+      0.17489907401702393,
+      2.2424398809414625
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.058796458606097675,
+      -0.15426394097661555
+     ],
+     "peg_yaw": 1.7031668045127386,
+     "goal_xy": [
+      -0.057325289712077815,
+      -0.19640766342848376
+     ],
+     "cube_pose": [
+      -0.1836728814075018,
+      -0.15664308983667527,
+      4.257392256214071
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/715": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 715,
+    "seed": 7600115,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.19479913229711127,
+      0.11931594075067717
+     ],
+     "peg_yaw": -0.4658282849808715,
+     "goal_xy": [
+      0.03087643584107208,
+      0.07957073149232613
+     ],
+     "cube_pose": [
+      -0.04580824930998023,
+      0.1552910213737077,
+      4.2820839435800675
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.15118126298613177,
+      -0.08187539968760903
+     ],
+     "peg_yaw": 1.3756431418527244,
+     "goal_xy": [
+      0.047342051364453686,
+      -0.16558125193381637
+     ],
+     "cube_pose": [
+      -0.1425859998843838,
+      -0.16200446186112416,
+      4.319544906458723
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/716": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 716,
+    "seed": 7600116,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.20307933884633195,
+      0.08235232229966123
+     ],
+     "peg_yaw": -1.310047054552761,
+     "goal_xy": [
+      -0.20079318316233227,
+      0.03702762423859593
+     ],
+     "cube_pose": [
+      -0.09295156594064541,
+      -0.17661920072279824,
+      1.5255343593735018
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.13864935424845495,
+      -0.052582618888528776
+     ],
+     "peg_yaw": -2.925954517034009,
+     "goal_xy": [
+      -0.10198223705860768,
+      0.12398275088870492
+     ],
+     "cube_pose": [
+      0.006252845453909639,
+      0.11915813430878752,
+      1.038231324096087
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/717": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 717,
+    "seed": 7600117,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.1781771293445052,
+      0.0517584056579459
+     ],
+     "peg_yaw": -0.864628874188063,
+     "goal_xy": [
+      0.003745893519597643,
+      -0.11655653484503783
+     ],
+     "cube_pose": [
+      -0.09802266069301785,
+      -0.18300631034798523,
+      3.0728045071256473
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.2547337220560508,
+      -0.10616152098649509
+     ],
+     "peg_yaw": -2.7034245933906718,
+     "goal_xy": [
+      -0.15091487292120803,
+      -0.12248479568627513
+     ],
+     "cube_pose": [
+      -0.003270385241416318,
+      -0.1788081442903729,
+      4.543289252027734
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/718": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 718,
+    "seed": 7600118,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.0759391336962857,
+      -0.00424153612196651
+     ],
+     "peg_yaw": 0.828362844887879,
+     "goal_xy": [
+      0.11391302017838806,
+      -0.0931069848093923
+     ],
+     "cube_pose": [
+      -0.11965141205552923,
+      -0.17215703519224965,
+      3.0275298194553466
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.13854982627101978,
+      -0.06889059715887966
+     ],
+     "peg_yaw": 1.4897438486790602,
+     "goal_xy": [
+      -0.1722272481414196,
+      -0.06637011442553381
+     ],
+     "cube_pose": [
+      -0.12255589707925421,
+      -0.18297881299710259,
+      1.6150498859725042
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/719": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 719,
+    "seed": 7600119,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.17421071396188662,
+      -0.12801076460120134
+     ],
+     "peg_yaw": -1.7657492455193453,
+     "goal_xy": [
+      -0.12677017639434066,
+      -0.10169273290824168
+     ],
+     "cube_pose": [
+      -0.021128545718885006,
+      -0.1515344163711042,
+      1.4180074884845297
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.13808079099899404,
+      -0.02415902090031588
+     ],
+     "peg_yaw": -0.863750771488184,
+     "goal_xy": [
+      0.0026673371320093953,
+      -0.12832054540145257
+     ],
+     "cube_pose": [
+      -0.05955397235744231,
+      0.16268516133387334,
+      5.7289207835043445
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/720": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 720,
+    "seed": 7600120,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.15487652901759397,
+      -0.06859471446466153
+     ],
+     "peg_yaw": -2.308800983052761,
+     "goal_xy": [
+      -0.22657238696738663,
+      -0.09956949053713214
+     ],
+     "cube_pose": [
+      -0.2016895137205787,
+      0.020330343315571264,
+      1.1706524885781093
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.03703234911468127,
+      0.05060814386986573
+     ],
+     "peg_yaw": 0.708203017511797,
+     "goal_xy": [
+      0.08549812515806304,
+      -0.05476693297323201
+     ],
+     "cube_pose": [
+      -0.09791956497572321,
+      -0.1254792601483589,
+      1.6372693493831407
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/721": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 721,
+    "seed": 7600121,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.25844720491495654,
+      0.06977964459346192
+     ],
+     "peg_yaw": -2.098012090838452,
+     "goal_xy": [
+      -0.08204525440281468,
+      -0.18563322605047966
+     ],
+     "cube_pose": [
+      -0.1464951478456628,
+      0.09693418082302163,
+      4.499509634522721
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.20209958345923199,
+      -0.15332663054456475
+     ],
+     "peg_yaw": -0.3282017867898963,
+     "goal_xy": [
+      -0.13471251186431102,
+      -0.11845942720792624
+     ],
+     "cube_pose": [
+      -0.007292430722111554,
+      -0.17338301618237023,
+      6.140714567063789
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/722": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 722,
+    "seed": 7600122,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.15396944362038065,
+      0.13627743315066843
+     ],
+     "peg_yaw": -1.3933545879671403,
+     "goal_xy": [
+      0.07662400362298749,
+      0.04420028159714101
+     ],
+     "cube_pose": [
+      0.00795173624113038,
+      -0.15146151752094356,
+      3.176611938029609
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.3254475262772224,
+      0.17191384545301797
+     ],
+     "peg_yaw": 2.6968589754424652,
+     "goal_xy": [
+      0.08645194700909004,
+      0.11718734421266314
+     ],
+     "cube_pose": [
+      -0.1361315067943828,
+      0.16059539773624348,
+      0.11461298318918142
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/723": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 723,
+    "seed": 7600123,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.05652193306677594,
+      -0.06836756868267435
+     ],
+     "peg_yaw": 0.000374253215072784,
+     "goal_xy": [
+      -0.14923165561817298,
+      0.0858554635989271
+     ],
+     "cube_pose": [
+      -0.039968533975842685,
+      0.18616017438894827,
+      5.349497181298868
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.3230231597628773,
+      -0.12921561850539795
+     ],
+     "peg_yaw": -2.8299318967316136,
+     "goal_xy": [
+      -0.03450279342987661,
+      -0.18334085228309355
+     ],
+     "cube_pose": [
+      -0.12376304009048436,
+      -0.10428653363426195,
+      5.048466448907658
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/724": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 724,
+    "seed": 7600124,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.207622572922311,
+      -0.12608864160358282
+     ],
+     "peg_yaw": -2.575134854293553,
+     "goal_xy": [
+      -0.21554729920765592,
+      -0.0027521049565935873
+     ],
+     "cube_pose": [
+      -0.19000148299590813,
+      -0.11257080033691876,
+      4.0660166559079105
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.19478546488817172,
+      0.14694917492213033
+     ],
+     "peg_yaw": -0.5554737945078845,
+     "goal_xy": [
+      0.06746107719155392,
+      0.10324562818075844
+     ],
+     "cube_pose": [
+      -0.0019892948127163135,
+      -0.12882669152745221,
+      5.616962592511298
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/725": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 725,
+    "seed": 7600125,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.17744610792717375,
+      0.0889053527887162
+     ],
+     "peg_yaw": 2.7907919337063607,
+     "goal_xy": [
+      0.09168475210796845,
+      -0.1120586933428494
+     ],
+     "cube_pose": [
+      -0.02204038999807456,
+      0.1219151543858692,
+      4.832186958654764
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.22408589791891145,
+      -0.1919877915261296
+     ],
+     "peg_yaw": -1.6510949084083124,
+     "goal_xy": [
+      0.08569629573316612,
+      -0.07332267321105626
+     ],
+     "cube_pose": [
+      0.0004190979119499394,
+      0.15883414919456512,
+      1.1738475435811313
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/726": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 726,
+    "seed": 7600126,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.2918104805463236,
+      0.06991941827956047
+     ],
+     "peg_yaw": -2.393626601922398,
+     "goal_xy": [
+      0.07173687617505381,
+      -0.1369312557063072
+     ],
+     "cube_pose": [
+      -0.16044516282146382,
+      -0.14928002279295158,
+      4.114362184874284
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.12342407816935813,
+      0.06901256258862626
+     ],
+     "peg_yaw": -0.2930025905708802,
+     "goal_xy": [
+      0.10716081563422941,
+      0.04909574074698325
+     ],
+     "cube_pose": [
+      -0.11293500178692975,
+      0.12950431470671248,
+      3.691222712434022
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/727": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 727,
+    "seed": 7600127,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.13255081798386795,
+      -0.05671296704404588
+     ],
+     "peg_yaw": 1.4648937848062005,
+     "goal_xy": [
+      -0.2378273443708213,
+      0.04803727929909507
+     ],
+     "cube_pose": [
+      -0.04150641365501326,
+      0.13064666656356122,
+      4.460042855050869
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.3001419497395728,
+      -0.10426440820540128
+     ],
+     "peg_yaw": 2.0807678736180995,
+     "goal_xy": [
+      0.10130554935020686,
+      0.051610903329996405
+     ],
+     "cube_pose": [
+      0.024630797698234896,
+      -0.1127166848193153,
+      3.0633742711385454
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/728": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 728,
+    "seed": 7600128,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.20419257708420835,
+      0.13291701578522183
+     ],
+     "peg_yaw": 0.3526485066344187,
+     "goal_xy": [
+      -0.20603350150279282,
+      -0.1148075415140204
+     ],
+     "cube_pose": [
+      -0.13582823976154632,
+      0.1475593687334143,
+      3.931269119628021
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.2093703910272391,
+      -0.14055234594897642
+     ],
+     "peg_yaw": -2.3101800874612697,
+     "goal_xy": [
+      -0.14547436039174388,
+      -0.09011846976496295
+     ],
+     "cube_pose": [
+      -0.07908857360079946,
+      0.12113206968973927,
+      3.3625444336203896
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/729": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 729,
+    "seed": 7600129,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.12843291710204785,
+      -0.0019940648028188845
+     ],
+     "peg_yaw": -2.905698025612191,
+     "goal_xy": [
+      -0.20595976063706173,
+      0.023528377659612076
+     ],
+     "cube_pose": [
+      -0.027604050270675307,
+      0.17980327795091128,
+      4.26499454867591
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.19080001641753322,
+      -0.10231061370968626
+     ],
+     "peg_yaw": 0.49360119433289684,
+     "goal_xy": [
+      -0.21837145910037714,
+      0.009861137888667326
+     ],
+     "cube_pose": [
+      -0.13922242280743247,
+      -0.1130082117091475,
+      3.6329240213806364
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/730": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 730,
+    "seed": 7600130,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.21772328632046303,
+      0.15532258980240043
+     ],
+     "peg_yaw": 1.9256260039114625,
+     "goal_xy": [
+      -0.1650252262983809,
+      0.11804120480875846
+     ],
+     "cube_pose": [
+      -0.04025236598136697,
+      0.16504973694742753,
+      5.602918242765338
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.06005664397935988,
+      -0.0773130231100315
+     ],
+     "peg_yaw": 0.15817707351062626,
+     "goal_xy": [
+      -0.18113891969590243,
+      -0.10415782388323774
+     ],
+     "cube_pose": [
+      -0.05101416793805735,
+      -0.1642248623937953,
+      6.073135548570129
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/731": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 731,
+    "seed": 7600131,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.07280235285548124,
+      0.05184902949419645
+     ],
+     "peg_yaw": 0.19037544376861826,
+     "goal_xy": [
+      -0.2597193604003739,
+      0.0016019946688054232
+     ],
+     "cube_pose": [
+      -0.16488547240212367,
+      0.10014774047833269,
+      6.201561438369417
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.24371778995855764,
+      -0.11498422789592112
+     ],
+     "peg_yaw": -2.388430372715064,
+     "goal_xy": [
+      0.0571663698864458,
+      -0.03732665571244689
+     ],
+     "cube_pose": [
+      -0.06256383827987161,
+      -0.1533127825249031,
+      4.148229450772327
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/732": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 732,
+    "seed": 7600132,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.15985276249692695,
+      -0.009450901220860841
+     ],
+     "peg_yaw": -2.7100871065587113,
+     "goal_xy": [
+      0.07330152615465213,
+      -0.0850652014986547
+     ],
+     "cube_pose": [
+      -0.010304498517219457,
+      0.17122177081972317,
+      3.2576865382568125
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.15432659712708108,
+      -0.042344218162251784
+     ],
+     "peg_yaw": -0.004868229695713655,
+     "goal_xy": [
+      -0.046244074244094324,
+      0.1951924769145445
+     ],
+     "cube_pose": [
+      -0.1372173923309233,
+      0.13891937819055478,
+      5.182890467734419
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/733": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 733,
+    "seed": 7600133,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.1530339904457544,
+      -0.13017581506948211
+     ],
+     "peg_yaw": 1.3907861148648903,
+     "goal_xy": [
+      -0.1073708483695594,
+      0.15795157695991285
+     ],
+     "cube_pose": [
+      0.0004231201751083158,
+      0.16584220886238027,
+      0.3325854640578762
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.05609605368037904,
+      0.07960155480181114
+     ],
+     "peg_yaw": 0.2884928481262796,
+     "goal_xy": [
+      -0.06403391638237843,
+      0.12928787982235135
+     ],
+     "cube_pose": [
+      -0.15643706880103875,
+      -0.14516555256266672,
+      2.9463680961412084
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/734": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 734,
+    "seed": 7600134,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.06901825709302192,
+      0.06644346841580889
+     ],
+     "peg_yaw": 2.0611085736474086,
+     "goal_xy": [
+      -0.150083085496867,
+      0.12496519904557218
+     ],
+     "cube_pose": [
+      -0.1443048916886182,
+      -0.12201763605180616,
+      5.708713038769464
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.04106018234759138,
+      0.023767103724514793
+     ],
+     "peg_yaw": 2.036457178227865,
+     "goal_xy": [
+      0.05623998769057237,
+      0.10361105635326745
+     ],
+     "cube_pose": [
+      -0.12643054316285104,
+      -0.11369182441321174,
+      5.887636170875691
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/735": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 735,
+    "seed": 7600135,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.18953948099143875,
+      -0.18094375243216404
+     ],
+     "peg_yaw": 1.1210203062098953,
+     "goal_xy": [
+      0.07175680326692663,
+      0.025667375001202364
+     ],
+     "cube_pose": [
+      -0.07670826477779705,
+      -0.18689117055848717,
+      5.620113756974109
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.1615421283402755,
+      -0.11630634306497332
+     ],
+     "peg_yaw": 1.1122079070322588,
+     "goal_xy": [
+      0.041369153291866356,
+      0.1023361795901529
+     ],
+     "cube_pose": [
+      -0.0838376503356244,
+      0.11783634402202764,
+      2.069696060105111
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/736": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 736,
+    "seed": 7600136,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.3374554089923928,
+      0.16164442753164754
+     ],
+     "peg_yaw": -3.0680535739612904,
+     "goal_xy": [
+      0.137972777715406,
+      -0.0011469018947466991
+     ],
+     "cube_pose": [
+      -0.04017968736075661,
+      0.1591330290619199,
+      5.220681638845993
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.11931194962973381,
+      -0.08029596337925311
+     ],
+     "peg_yaw": -3.026216592242169,
+     "goal_xy": [
+      -0.03902122626161009,
+      -0.15434560434458833
+     ],
+     "cube_pose": [
+      -0.1722225380038794,
+      -0.1330643435662326,
+      4.953293717264857
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/737": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 737,
+    "seed": 7600137,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      0.003539194418340462,
+      -0.02642318006235586
+     ],
+     "peg_yaw": -2.0360004883169456,
+     "goal_xy": [
+      0.010012547640924963,
+      -0.15575660822415807
+     ],
+     "cube_pose": [
+      -0.10919084708898955,
+      0.1169847655909188,
+      2.4209065698811365
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.11905191156646856,
+      0.015292271039541672
+     ],
+     "peg_yaw": -1.3927018428177944,
+     "goal_xy": [
+      -0.1348064956417475,
+      -0.17254645080122463
+     ],
+     "cube_pose": [
+      -0.17797774608968614,
+      0.1122655830382302,
+      4.989661088876667
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/738": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 738,
+    "seed": 7600138,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.23476013839421866,
+      0.18883039061541107
+     ],
+     "peg_yaw": 2.368175633813485,
+     "goal_xy": [
+      -0.13661449511601198,
+      -0.16341710247728117
+     ],
+     "cube_pose": [
+      -0.007769560595785263,
+      -0.15721582096019474,
+      1.0636328591354482
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      -0.16463841542301316,
+      -0.08386154434443334
+     ],
+     "peg_yaw": 0.8562494257565274,
+     "goal_xy": [
+      0.04478167676840045,
+      0.10877327120735458
+     ],
+     "cube_pose": [
+      -0.046488223096868564,
+      0.1976855620699648,
+      2.9913592514290346
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/739": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 739,
+    "seed": 7600139,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      -0.13812028490122283,
+      -0.010561370802295245
+     ],
+     "peg_yaw": 0.8003102927753458,
+     "goal_xy": [
+      -0.13212949366870833,
+      -0.10384573709893448
+     ],
+     "cube_pose": [
+      -0.018184121230286038,
+      -0.11369180693769075,
+      1.8312589775973358
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.03518160258425707,
+      -0.07439841370502182
+     ],
+     "peg_yaw": -0.9651238945968084,
+     "goal_xy": [
+      -0.19563480860909915,
+      -0.05107202598869273
+     ],
+     "cube_pose": [
+      -0.12923693242299583,
+      0.17542924555027745,
+      3.2261642788292737
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/740": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 740,
+    "seed": 7600140,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      -0.2,
+      -0.22451162958257576,
+      0.0021028599360498335
+     ],
+     "peg_yaw": -1.7016044519432147,
+     "goal_xy": [
+      -0.20793428060088495,
+      0.09361237534995853
+     ],
+     "cube_pose": [
+      0.0019623230187643115,
+      0.12511813723524629,
+      5.9685170473419475
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      -0.285704852041864,
+      0.02836393275457677
+     ],
+     "peg_yaw": -2.540364304934198,
+     "goal_xy": [
+      -0.04883169008044458,
+      0.1437054268721898
+     ],
+     "cube_pose": [
+      -0.002630867243795687,
+      -0.1316004728126372,
+      4.8272776511112045
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/741": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 741,
+    "seed": 7600141,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 0
+    },
+    "1": {
+     "way_idx": 0
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.023620693472533323,
+      -0.02603562332621273
+     ],
+     "peg_yaw": 2.0479171762722865,
+     "goal_xy": [
+      -0.04363603407595357,
+      -0.18024622866089343
+     ],
+     "cube_pose": [
+      -0.1585842844687329,
+      0.09431271540800334,
+      2.915761126460539
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.055493746320633086,
+      0.11420552389629894
+     ],
+     "peg_yaw": -1.969214234028351,
+     "goal_xy": [
+      -0.17206916113395399,
+      -0.10882351187292634
+     ],
+     "cube_pose": [
+      -0.1743501205823369,
+      0.11133718545162741,
+      0.17851374403323345
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/742": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 742,
+    "seed": 7600142,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 1
+    },
+    "1": {
+     "way_idx": 1
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.09641173293228301,
+      -0.1638440034494837
+     ],
+     "peg_yaw": 1.4707547944987356,
+     "goal_xy": [
+      0.0425824218524094,
+      -0.104646406690155
+     ],
+     "cube_pose": [
+      -0.07093855123104803,
+      -0.1957991791350695,
+      2.962931883591469
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      -0.2,
+      0.040950850402012545,
+      0.0913683485026682
+     ],
+     "peg_yaw": -2.572551834432396,
+     "goal_xy": [
+      -0.05758265223524053,
+      -0.13360323818150677
+     ],
+     "cube_pose": [
+      -0.10467365228398509,
+      0.1368072738963823,
+      0.49612906200976303
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  },
+  "MoveCube/743": {
+   "spec_kind": "native-newvalue/1",
+   "task": "MoveCube",
+   "identity": {
+    "task": "MoveCube",
+    "episode": 743,
+    "seed": 7600143,
+    "difficulty": "xhard",
+    "recovery_mode": null
+   },
+   "initializations": {
+    "0": {
+     "way_idx": 2
+    },
+    "1": {
+     "way_idx": 2
+    }
+   },
+   "layout": {
+    "demo": {
+     "peg_offsets": [
+      0.2,
+      0.045606648058018964,
+      -0.0013181162057494256
+     ],
+     "peg_yaw": 0.37051906665285284,
+     "goal_xy": [
+      -0.12283369237487934,
+      -0.16506680148250708
+     ],
+     "cube_pose": [
+      -0.016882112478750322,
+      -0.15905688072366575,
+      5.738213863523405
+     ]
+    },
+    "execution": {
+     "peg_offsets": [
+      0.2,
+      0.13969032123036657,
+      0.002301851123239246
+     ],
+     "peg_yaw": 0.5044990150937787,
+     "goal_xy": [
+      -0.23209046222046523,
+      -0.05552617712649144
+     ],
+     "cube_pose": [
+      -0.1495976588113297,
+      0.1754354449381172,
+      6.036903740581635
+     ]
+    }
+   },
+   "objects": {
+    "obj_sample": 1,
+    "sampling_trace": {
+     "dir_sample": 0
+    }
+   }
+  }
+ }
+}

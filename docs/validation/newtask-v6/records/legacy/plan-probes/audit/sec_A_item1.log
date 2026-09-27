@@ -1,0 +1,105 @@
+== item1 hashes
+ff0ffd847a55f77d61c3d11efe4ad11e8776534e044f0ddb2b22396d838fa5f3  uv.lock
+d03537d6c77a8d8213bc881da6ac470b2d8a80cf5f883df587d9df634374db36  pyproject.toml
+fc274bd1366f9d37daa2459dc60e74266e39968f
+11d02c570d31cf4386acec5d671dbce92b78abe1
+fc274bd1366f9d37daa2459dc60e74266e39968f
+11d02c570d31cf4386acec5d671dbce92b78abe1
+fc274bd1366f9d37daa2459dc60e74266e39968f
+11d02c570d31cf4386acec5d671dbce92b78abe1
+== files
+-rw-rw-r-- 1 hongzefu hongzefu  13678 Sep 24 12:11 docs/validation/newtask-v5/20260924-v5-final-report.md
+-rw-rw-r-- 1 hongzefu hongzefu 141575 Sep 24 07:37 NEWTASK_RELEASE_V5_PLAN.md
+-rw-r--r-- 1 hongzefu hongzefu 304918 Sep 24 05:46 scripts/configs/newtask-v5/v5-01/specs.jsonl
+episodes
+results.jsonl
+_rounds
+summary.json
+161 scripts/configs/newtask-v5/v5-01/specs.jsonl
+specs.jsonl
+specs.selected.jsonl
+{"difficulty":"xhard","drafts_sha256":"b17c27f28658902b0cb6232f7f438b3589bd34269edb6a0c46ba9548150f5415","identity_sha256":"d366749879392e7f4dcc7a2f968f296cb811d00f0d80722ee80e9470200dceb4","identity_source":"formula","per_env":{"BinFill":{"attempted":10,"candidate_shortfall":0,"candidates":10,"selected":[0,3,6]},"ButtonUnmask":{"attempted":10,"candidate_shortfall":0,"candidates":10,"selected":[0,3,6]},"ButtonUnmaskSwap":{"attempted":12,"candidate_shortfall":0,"candidates":10,"selected":[0,3,6]},"InsertPeg":{"attempted":10,"candidate_shortfall":0,"candidates":10,"selected":[0,3,6]},"MoveCube":
+161 scripts/configs/newtask-v5/v5-01/specs.selected.jsonl
+keys first ['difficulty', 'drafts_sha256', 'identity_sha256', 'identity_source', 'per_env', 'record', 'recovery_rule', 'run_id', 'runtime', 'sampling_config', 'sampling_config_sha256', 'schema', 'seed_rule', 'select_indices', 'source_fingerprint']
+keys second ['attempt', 'difficulty', 'episode', 'record', 'seed', 'selected', 'spec', 'spec_sha256', 'task']
+48
+BinFill_episode_0
+BinFill_episode_3
+BinFill_episode_6
+{
+  "specs": "scripts/configs/newtask-v5/v5-01/specs.jsonl",
+  "identity_sha256": "d366749879392e7f4dcc7a2f968f296cb811d00f0d80722ee80e9470200dceb4",
+  "label": "run1",
+  "per_env": {
+    "PickXtimes": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "StopCube": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "SwingXtimes": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "BinFill": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoUnmaskSwap": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoUnmask": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "ButtonUnmaskSwap": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "ButtonUnmask": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoRepick": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoPlaceButton": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "VideoPlaceOrder": {
+      "attempted": 3,
+      "ok": 3,
+      "backfilled": 0,
+      "selected_shortfall": 0
+    },
+    "Pi
+52 artifacts/newtask-v5/v5-01/rollout/run1/results.jsonl
+== git log since da77662 all
+ NEWTASK_RELEASE_V6_PLAN.md | 487 +++++++++++++++++++++++++++++++++++++++++++++
+ docs/greatlakes.md         |  17 +-
+ 2 files changed, 502 insertions(+), 2 deletions(-)

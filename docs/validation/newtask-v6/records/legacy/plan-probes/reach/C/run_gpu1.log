@@ -1,0 +1,55 @@
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[1/18] ep=101 ok=True   steps=318 wall=31.6 t=37s
+[2/18] ep=105 ok=True   steps=520 wall=40.7 t=46s
+[3/18] ep=107 ok=True   steps=316 wall=15.2 t=52s
+screw plan failed
+screw plan failed
+screw plan failed
+[4/18] ep=109 ok=False DatasetGenerationError MoveCube/episode_109: did not succeed after the complete task_list steps=538 wall=23.2 t=70s
+[5/18] ep=111 ok=True   steps=496 wall=21.4 t=73s
+screw plan failed
+screw plan failed
+screw plan failed
+[6/18] ep=113 ok=False DatasetGenerationError MoveCube/episode_113: did not succeed after the complete task_list steps=339 wall=18.8 t=89s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.075641 is greater than threshold 0.001000.
+IK Failed! Distance 0.082358 is greater than threshold 0.001000.
+IK Failed! Distance 0.163479 is greater than threshold 0.001000.
+[7/18] ep=115 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=500 wall=25.4 t=99s
+[8/18] ep=103 ok=True   steps=1673 wall=93.0 t=99s
+[9/18] ep=117 ok=True   steps=495 wall=21.0 t=109s
+screw plan failed
+screw plan failed
+screw plan failed
+[10/18] ep=119 ok=False DatasetGenerationError MoveCube/episode_119: did not succeed after the complete task_list steps=648 wall=26.4 t=125s
+screw plan failed
+screw plan failed
+screw plan failed
+IK Failed! Distance 0.046343 is greater than threshold 0.001000.
+IK Failed! Distance 0.046158 is greater than threshold 0.001000.
+IK Failed! Distance 0.047187 is greater than threshold 0.001000.
+[11/18] ep=121 ok=False PlannerExhausted All three screw and three RRTStar attempts failed: screw plan failed steps=740 wall=30.6 t=129s
+[12/18] ep=123 ok=True   steps=540 wall=22.6 t=132s
+screw plan failed
+screw plan failed
+screw plan failed
+[13/18] ep=125 ok=True   steps=319 wall=13.9 t=139s
+[14/18] ep=131 ok=True   steps=300 wall=12.6 t=151s
+[15/18] ep=129 ok=True   steps=524 wall=22.1 t=154s
+[16/18] ep=127 ok=True   steps=622 wall=28.0 t=157s
+[17/18] ep=133 ok=True   steps=527 wall=21.2 t=173s
+[18/18] ep=135 ok=True   steps=475 wall=18.6 t=173s
+DONE gpu=1 jobs=18 t=174s

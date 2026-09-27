@@ -1,0 +1,24 @@
+{"R": 0.0, "seed": 5400000, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 444, "wall_s": 20.4}
+{"R": 0.0, "seed": 5400100, "way": "grasp_putdown", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 261, "wall_s": 12.2}
+{"R": 0.0, "seed": 5400200, "way": "grasp_putdown", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 450, "wall_s": 20.5}
+{"R": 0.0, "seed": 5400300, "way": "gripper_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 281, "wall_s": 13.9}
+{"R": 0.0, "seed": 5400400, "way": "grasp_putdown", "model_redraw": 0, "ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "MoveCube/episode_4: 跑完整个 task_list 仍未成功", "timestep_count": null, "wall_s": 30.6}
+{"R": 0.0, "seed": 5400500, "way": "peg_push", "model_redraw": 0, "ok": false, "failure_class": "task", "error_type": "DatasetGenerationError", "error": "MoveCube/episode_5: 跑完整个 task_list 仍未成功", "timestep_count": null, "wall_s": 14.0}
+{"R": 0.0, "seed": 5400600, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 497, "wall_s": 23.8}
+{"R": 0.0, "seed": 5400700, "way": "grasp_putdown", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 421, "wall_s": 18.4}
+{"R": 0.0, "seed": 5400800, "way": "gripper_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 414, "wall_s": 18.1}
+{"R": 0.0, "seed": 5400900, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 437, "wall_s": 19.0}
+{"R": 0.0, "seed": 5400001, "way": "gripper_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 449, "wall_s": 19.4}
+{"R": 0.0, "seed": 5400005, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 420, "wall_s": 45.2}
+{"R": 0.0, "seed": 5400002, "way": "grasp_putdown", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 279, "wall_s": 32.0}
+{"R": 0.0, "seed": 5400003, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 440, "wall_s": 50.7}
+{"R": 0.0, "seed": 5400004, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 253, "wall_s": 31.2}
+{"R": 0.0, "seed": 5400006, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 449, "wall_s": 50.3}
+{"R": 0.0, "seed": 5400007, "way": "gripper_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 490, "wall_s": 54.6}
+{"R": 0.0, "seed": 5400008, "way": "gripper_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 432, "wall_s": 50.7}
+{"R": 0.0, "seed": 5400009, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 265, "wall_s": 31.9}
+{"R": 0.0, "seed": 5400010, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 942, "wall_s": 102.3}
+{"R": 0.0, "seed": 5400011, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 266, "wall_s": 31.7}
+{"R": 0.0, "seed": 5400012, "way": "gripper_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 263, "wall_s": 30.4}
+{"R": 0.0, "seed": 5400013, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 438, "wall_s": 50.5}
+{"R": 0.0, "seed": 5400014, "way": "peg_push", "model_redraw": 0, "ok": true, "failure_class": null, "error_type": null, "error": "", "timestep_count": 432, "wall_s": 50.0}

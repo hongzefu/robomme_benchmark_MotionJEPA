@@ -1,0 +1,33 @@
+=== verify1.py (3 flagged new-tier segments, independent re-derivation) ===
+('xhard3', 0): segment len=130, online has_coord=0/130 (all texts == 'pick up the fifth blue cube'), offline has_coord=130/130
+('xhard3', 3): segment len=135, online has_coord=0/135 (all texts == 'press the button'), offline has_coord=135/135
+('xhard4', 0): segment len=135, online has_coord=0/135 (all texts == 'pick up the fourth blue cube'), offline has_coord=135/135
+=> matches nocoord_scan.json steps_without_coord=130/135/135 and offline_nocoord=0/0/0 exactly.
+
+=== verify2.py (boundary detail for xhard3 ep0, t696-829) ===
+offline (grounded_subgoal) segment boundary lags online by ~52 steps (698->~750) but is coordinate-bearing
+at every single timestep in the window (stale coord from prior segment, then correct coord once relatched).
+online switches text at t=698 and NEVER acquires a coordinate for the whole 130-step segment.
+This boundary-lag nuance does not affect the finding's core numeric claim (online coord count = 0).
+
+=== verify_native.py (independent re-scan of the 9 native BinFill episodes) ===
+n files=9 (episodes 0,1,2,3,4,6,7,10,11 under artifacts/newtask-v6/v1/base/B/BinFill_episode_*/hdf5_files)
+total_segments=61, total_nocoord=0
+=> exactly reproduces the finding's "9 native episodes, 0/61 segments lacking coordinates".
+
+=== source check ===
+git show 82e3d922b78d48ec1e825b168cccc0e1b8c690c1:src/robomme/robomme_env/utils/segmentation_utils.py
+  process_segmentation(): the coord-fill block only runs `if current_subgoal_segment != previous_subgoal_segment`
+  (single evaluation on the switch frame, no retry); on missing target pixels ->
+  `current_subgoal_segment_filled = current_task_name` (bare fallback, confirmed at the code line
+  `current_task_name if missing_placeholder else "".join(new_text_parts)`).
+git show 82e3d922b78d48ec1e825b168cccc0e1b8c690c1:src/robomme/env_record_wrapper/RecordWrapper.py
+  online path calls process_segmentation() once per step with previous_subgoal_segment_online /
+  existing_subgoal_filled state -> confirms "compute once on switch, cache thereafter, no retry" for online.
+  No difficulty/xhard-specific branching found anywhere near this call (grep for "xhard"/"difficulty" only
+  hits video-filename tagging, not segmentation logic) -> mechanism is identical across all tiers, supporting
+  category=native_same.
+git show 82e3d922b78d48ec1e825b168cccc0e1b8c690c1:src/robomme/env_record_wrapper/DemonstrationWrapper.py
+  _compute_segmentation_and_fill_subgoal() is called every step inside _step_batch() and retries every step
+  until `self.latched_replacements` is set (only latches when ALL placeholders got a non-None center) ->
+  confirms "offline retries every step until latched" claim.

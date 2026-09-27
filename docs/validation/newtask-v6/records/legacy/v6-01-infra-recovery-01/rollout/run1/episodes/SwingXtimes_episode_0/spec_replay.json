@@ -1,0 +1,25 @@
+{
+  "mismatches": [],
+  "value_points": 18,
+  "consumed": [
+    "layout.button_xy",
+    "layout.cube_min_center_dist",
+    "layout.cubes.blue_0",
+    "layout.cubes.green_0",
+    "layout.cubes.red_0",
+    "layout.distractors.cyan_0",
+    "layout.distractors.magenta_0",
+    "layout.distractors.yellow_0",
+    "layout.targets.0",
+    "layout.targets.1",
+    "objects.color_order",
+    "objects.cube_count",
+    "objects.distractor_count",
+    "objects.distractors",
+    "objects.num_repeats",
+    "objects.target_candidates",
+    "objects.target_color_idx",
+    "objects.target_cube_idx"
+  ],
+  "unused": []
+}

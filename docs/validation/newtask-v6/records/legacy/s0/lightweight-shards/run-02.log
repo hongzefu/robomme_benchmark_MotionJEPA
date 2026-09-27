@@ -1,0 +1,88 @@
+.................................F.......F........F..................... [ 17%]
+......F................................................................. [ 34%]
+........................................................................ [ 51%]
+........................................................................ [ 68%]
+........................................................................ [ 85%]
+............................................................             [100%]
+=================================== FAILURES ===================================
+_______________ test_unknown_env_returns_single_goal_when_equal ________________
+
+    def test_unknown_env_returns_single_goal_when_equal():
+        """Unknown env_id goes to the default empty-string branch; when two goals are equal it returns a single-element list."""
+        s = _make_self()
+        result = _call("UnknownEnv", s)
+>       assert result == [""]
+E       AssertionError: assert [] == ['']
+E         
+E         Right contains one more item: ''
+E         Use -v to get more diff
+
+tests/lightweight/test_TaskGoal.py:65: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+__________________________ test_swingxtimes_multiple ___________________________
+
+    def test_swingxtimes_multiple():
+        """Branch behavior test case."""
+        s = _make_self(unwrapped_attrs=dict(num_repeats=5, target_color_name="red"))
+        result = _call("SwingXtimes", s)
+>       assert "repeating this back and forth motion five times" in result[0]
+E       AssertionError: assert 'repeating this back and forth motion five times' in 'pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop'
+
+tests/lightweight/test_TaskGoal.py:159: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+[SwingXtimes] goal1: pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop
+[SwingXtimes] goal2: pick up the red cube, move it to the right-side target and then to the left-side target, repeating this right-to-left swing motion five times, then put down the cube and press the button to stop
+_________________ test_unmask_xhard_prefers_actual_pick_count __________________
+
+    def test_unmask_xhard_prefers_actual_pick_count():
+        """xhard 下外部配置改了抓取次数时，文本跟环境实际建任务表的次数走（xhard_pick_count）。"""
+        s = _make_self(
+            unwrapped_attrs=dict(
+                color_names=["red", "blue", "green"],
+                configs={"xhard": {"pick": 3}},
+                xhard_pick_count=2,
+            ),
+            difficulty="xhard",
+        )
+        result = _call("VideoUnmask", s)
+        assert "another container hiding the blue cube" in result[0]
+>       assert "green" not in result[0]
+E       AssertionError: assert 'green' not in 'watch the v...e green cube'
+E         
+E         'green' is contained here:
+E           iding the green cube
+E         ?           +++++
+
+tests/lightweight/test_TaskGoal.py:315: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+[VideoUnmask] goal1: watch the video carefully, then pick up the container hiding the red cube, next pick up another container hiding the blue cube, finally pick up another container hiding the green cube
+________________ test_undeclared_or_missing_xhard_key_rejected _________________
+
+    def test_undeclared_or_missing_xhard_key_rejected() -> None:
+        # xhard 子树下多出申报外的键 → 拒绝
+        decision = copy.deepcopy(DEFAULT)
+        decision["xhard"]["colors"] = ["yellow"]
+>       with pytest.raises(SamplingConfigError):
+E       Failed: DID NOT RAISE <class 'robomme.robomme_env.utils.sampling_config.SamplingConfigError'>
+
+tests/lightweight/test_v4_decision_guard.py:66: Failed
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal
+FAILED tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple - Assert...
+FAILED tests/lightweight/test_TaskGoal.py::test_unmask_xhard_prefers_actual_pick_count
+FAILED tests/lightweight/test_v4_decision_guard.py::test_undeclared_or_missing_xhard_key_rejected
+4 failed, 416 passed, 64 deselected, 2 warnings in 17.60s
+EXIT_CODE=123

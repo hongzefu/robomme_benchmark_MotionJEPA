@@ -1,0 +1,4 @@
+HOLD {"task": "VideoUnmaskSwap", "seed": 9100000, "park": "1", "last_end": 394, "pre[0,64)": {"n": 64, "p50_ms": 35.6, "p95_ms": 316.8}, "swap[64,end)": {"n": 330, "p50_ms": 10.6, "p95_ms": 286.8}, "post": {"n": 6, "p50_ms": 8.8, "p95_ms": 225.8}, "vis_miss": 0, "end_err_max_mm": 0.095}
+HOLD {"task": "VideoUnmaskSwap", "seed": 9100000, "park": "0", "last_end": 394, "pre[0,64)": {"n": 64, "p50_ms": 38.8, "p95_ms": 317.0}, "swap[64,end)": {"n": 330, "p50_ms": 11.3, "p95_ms": 289.4}, "post": {"n": 6, "p50_ms": 7.8, "p95_ms": 15.0}, "vis_miss": 0, "end_err_max_mm": 4.563}
+全部完成
+EXIT_CODE=0

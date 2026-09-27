@@ -1,0 +1,400 @@
+{
+ "marker": "[内部产出，英文] 以下为 workflow 内部英文工作记录；消费此结果的主 agent 必须仍用简体中文与用户沟通，不要被本报告语言带偏。",
+ "topic_key": "movecube",
+ "summary": "In MoveCube, \"target\" means the goal disk (goal_site; the task text is \"move the cube to the target\"). Every sampled position comes in two independent sets, demo and execution. Each set has a peg root, a peg yaw, a goal xy and a two-stage cube: a candidate centre, then the final xy inside ±0.03 of it. V4 applies corner_bias=0.5 only to the peg jitter, the cube candidate and the cube local offset. The goal was never biased, so 29% of V4 goals still sit inside the central 30%-area square. V4 bias also still leaves 2.8% of pegs and 4.5% of cubes in the central zone, so a bias is not an exclusion. On the peg: its root is at |y|>=0.15, so it can never be in the workspace centre. \"Peg not in centre\" therefore only has an effect if \"centre\" means the centre of the peg's own jitter box. I reproduced the V4 sampling exactly in torch (10/10 v4-01 spec rows match bit for bit, way_idx included). With that model I compared the candidate definitions of \"centre\". Recommended metric: for each object, forbid a central square covering 30% of the area of its own sampling box. That is a half-width of sqrt(0.3)=0.548 of the box half-size: peg 2.74 cm around its lane centre, demo goal 6.02 cm, exec goal 3.29 cm, cube 5.48 cm. For the cube, the same zone is applied to both the candidate and the final xy. This makes \"30%\" mean exactly 30% of the area and a 30% rejection chance per draw. With it, 30% is feasible: worst-case budget exhaustion is at most 2.5e-20, and a layout needs about 10 extra random draws on average (37.1 vs 27 minimum). It is also not extreme: the chance that the peg-push start point is beyond 0.80 m from the robot base is 4.2%, versus 6.6% for V4 b=0.5 and 3.8% for uniform. A local 10-episode demo probe with an in-process monkeypatch succeeded 10/10: peg_push 5/5, gripper_push 3/3, grasp_putdown 2/2. I found a pre-existing defect and confirmed it in the real simulator. The execution cube's spawn_random_cube still avoids the demo cube's OBB, even though the two never coexist physically. Its 256 trials can all fail: SceneGenerationError in V4 xhard (about 0.33-0.60% of seeds) and RuntimeError in the original tiers (about 0.6-1.1%). With center rejection this rises to about 1.0-1.8% unless the execution cube stops avoiding the demo cube in xhard, which brings it to 0/2000. I recommend that fix together with the center rejection. The change overturns B7 and G3, needs the user to accept an N5 interpretation, and makes V4 xhard specs/combos stale. Easy/medium/hard stay byte-identical because all new logic is gated on xhard; the patched native-hard reset matched the model.",
+ "current_mechanism": [
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/MoveCube.py :: _native_decision (decision.demo_layout / decision.execution_layout / decision.peg_yaw_range)",
+   "behavior": "Two identical but independently consumed layout policies. peg_position_policy {base_y_abs 0.2, base_y_threshold 0.5, jitter_span 0.1}: base_y = -0.2 if u<0.5 else +0.2; x_jitter=(corner_push(u,b)-0.5)*0.1, y_jitter likewise. So root x in [-0.05,0.05] and y in ±[0.15,0.25]; the root's own box is centred at (0, ±0.2) with half-size 0.05. cube_position_policy {center_span 0.2, center_offset -0.1, region_half_size 0.05}: the candidate centre per axis is corner_push(u,b)*center_span + center_offset, i.e. [-0.1,0.1]. center_offset is added after the product; it only shifts [0,0.2] to [-0.1,0.1] and has nothing to do with the workspace centre [-0.1,0]. The final cube xy is then drawn uniformly (or pushed) in candidate ±(region_half_size - cube_half_size 0.02) = ±0.03, so its total support is [-0.13,0.13]^2 with a trapezoidal marginal. xhard sub-keys are demo_layout.xhard.corner_bias and execution_layout.xhard.corner_bias (both 0.5) and peg_yaw_range.xhard {span 2π, offset π} = ±180°; the original tiers are ±45°."
+  },
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/MoveCube.py :: NATIVE_SAMPLING.positions (goal_demo, goal_execution, cube_rejection)",
+   "behavior": "goal_demo region_center [0,0], region_half_size 0.15, radius_factor 2 (disk radius 0.04), so the goal xy is uniform on [-0.11,0.11]^2. goal_execution half 0.1, so [-0.06,0.06]^2. cube_rejection {max_trials 128, min_distance_factor 5}: the cube candidate must be more than 0.1 m from its segment's goal. These are native keys and the V4 guard only allows xhard sub-keys to deviate."
+  },
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/MoveCube.py :: MoveCube.config_xhard / MoveCube.configs / MoveCube._xhard_corner_bias",
+   "behavior": "Easy/medium/hard share config_native {±45°, corner_bias 0.0}. xhard = {±180°, corner_bias 0.5} (G3). _xhard_corner_bias rejects None or values outside [0,1] with SamplingConfigError. Both segments read their own copy of the bias."
+  },
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/MoveCube.py :: MoveCube._load_scene (draw order)",
+   "behavior": "Exact draw order on self._hb_generator (the replication matches 10/10 spec rows): 1) length u, radius u (both multiplied by 0, R8). 2) demo peg: base_y u, x_jitter u, y_jitter u, value point layout.demo.peg_offsets, yaw u, value point layout.demo.peg_yaw. 3) exec peg: same 4 draws, layout.execution.peg_offsets/peg_yaw. 4) obj_sample randint(2), dir_sample randint(2) (unused). 5) demo goal via spawn_random_target: 2 draws, always accepted first try because MoveCube passes no obstacles; value point layout.demo.goal_xy. 6) exec goal: 2 draws. 7) demo cube-centre loop _sample_cube_center: 2 draws per trial until |c-goal|>0.1, max 128; D3 raises SceneGenerationError in xhard only. 8) demo cube spawn_random_cube: 3 draws per trial (u1, u2, yaw); no obstacles on a fresh env, so 1 trial. 9) exec cube-centre loop. 10) exec cube spawn_random_cube: 3 draws per trial, and it must avoid the demo cube (see next entry). 11) _initialize_episode: way_idx randint(3), called twice per episode; the effective way is the second draw (checked 10/10 against spec initializations.0/1 and 10/10 against the h5 subgoal text). Minimum total = 27 draws plus 2 way draws. corner_bias touches only peg x/y jitter, cube candidate x/y and cube local u1/u2 (via the corner_bias kwarg). It does not touch the goal, base_y or yaw. Records layout.{demo,execution}.corner_bias at the end in xhard."
+  },
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/utils/object_generation.py :: spawn_random_cube (include_existing default True) + mani_skill get_actor_obb + object_generation._trimesh_box_to_obb2d",
+   "behavior": "The exec cube_2 is spawned with include_existing=True (default). Its obstacle list therefore contains the demo cube (self.cube and _spawned_cubes[0]), and it pads itself by min_gap 0.005. The goal disk has no collision shape, so get_actor_obb asserts and the goal is silently ignored. The demo cube's trimesh OBB for a perfect cube picks an arbitrary axis order. Seeds 1000177 and 1000042 show the first OBB axis vertical, so its 2D projection degenerates to a zero axis and the obstacle behaves like a thin segment; the exact shape is numerically unstable. The avoidance is physically pointless: cube_2 is teleported to (10,10,1) in _initialize_episode, and at the phase switch step() moves self.cube to cube_init_pose_2. Yet when the exec candidate lands on or near the demo cube, all 256 trials collide and spawn_random_cube raises RuntimeError. xhard converts this to SceneGenerationError; the original tiers raise a raw RuntimeError."
+  },
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/utils/object_generation.py :: spawn_random_target",
+   "behavior": "Uniform (x,y) over [c-h+r, c+h-r], random_yaw hard-coded False, recorder.value called only on the accepted trial. The `randomize` parameter is dead code. It has no corner_bias and no rejection hook, so V4 never pushed the goal."
+  },
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/utils/xhard.py :: corner_push / CORNER_GAIN",
+   "behavior": "t=2u-1, t'=sign(t)|t|^p with p=1/(1+4b), returns (t'+1)/2. With b=0.5, p=1/3. Deterministic and draw-count neutral. It is a bias only: the probability of landing in any central zone stays non-zero (e.g. 2.7% per object for the 30%-area square)."
+  },
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/utils/object_generation.py :: build_peg",
+   "behavior": "Head box centred at the root with half-length 0.05 (collision 0.045) and half-width 0.01. Tail box centred at root - 0.1·axis. The body spans root-0.15·axis to root+0.05·axis, placed at z=0. With yaw ±180° the body can reach y≈0 from a root at |y|=0.15. Neither cube nor goal avoids the peg (plan 2.17)."
+  },
+  {
+   "env": "MoveCube",
+   "anchor": "src/robomme/robomme_env/MoveCube.py :: MoveCube.evaluate / step ; utils/task_goal.py (MoveCube) ; utils/subgoal_planner_func.py :: solve_push_to_target_with_peg / solve_push_to_target",
+   "behavior": "\"Target\" is goal_site, a purple-white disk of radius 0.04 with no collision. Task text: \"move the cube to the target\"; subgoals: \"Hook the cube at <> to the target at <> with the peg\", \"Close the gripper and push the cube ... to the target\", \"place the cube onto the target\". direction1/2 = sign(cube_y - goal_y). The peg_push start TCP = cube - 0.1·d - 0.1·direction·lateral, where d = unit(goal-cube). This is the reach-critical waypoint (robot base at (-0.615,0)). The gripper_push start = cube - 0.05·d."
+  }
+ ],
+ "user_question_answers": [
+  {
+   "question": "What exactly is sampled and what does 'target' mean in MoveCube?",
+   "answer": "Per segment (demo and execution, independent draws): peg root (base_y sign plus x/y jitter), peg yaw, goal/target disk xy, cube candidate centre, and cube final xy+yaw. That is 5 position-like quantities per segment, 10 per episode. The target is the goal disk goal_site, which is what the cube must be moved onto. obj_sample/dir_sample/way_idx are discrete draws, not positions.",
+   "evidence": "MoveCube._load_scene draw order replicated in scratch mc_layout.py::simulate: REPLICATION_V4 match=10/10 on scripts/configs/newtask-v4/v4-01/specs.jsonl MoveCube rows (max error 3.6e-9, way_idx and obj_sample equal). task_goal.py text \"move the cube to the target\"."
+  },
+  {
+   "question": "What do center_span 0.2 / center_offset -0.1 / region_half_size 0.05 mean?",
+   "answer": "The cube candidate centre per axis is u*0.2 + (-0.1), uniform in [-0.1, 0.1] (pushed by corner_push in V4 xhard). The final cube xy is uniform in candidate ± (0.05 - 0.02 cube half-size) = ±0.03. So the cube support is [-0.13,0.13]^2 with a trapezoidal marginal, centred at the table origin (0,0), not at [-0.1,0].",
+   "evidence": "MoveCube._load_scene::_sample_cube_center and spawn_random_cube (x_low = cx - area_half + hs_new)."
+  },
+  {
+   "question": "Where is corner_bias=0.5 applied (G3) and to which objects?",
+   "answer": "It applies to the peg x/y jitter and to the cube candidate x/y and cube local u1/u2, in both segments. It does NOT apply to the goal/target, the peg base_y side or any yaw. The goal is uniform in V4.",
+   "evidence": "MoveCube._load_scene corner_push call sites; spawn_random_cube corner_bias param; spawn_random_target has no bias. Measured: under V4 b=0.5, 29.1% of demo goals and 29.2% of exec goals fall in their central 30%-area square (hist_joint.py, 3000 seeds)."
+  },
+  {
+   "question": "Is the peg root already never in the center?",
+   "answer": "Yes, for any workspace-centre definition. The root is at |y| >= 0.15, so a common-centre zone around (0,0) with radius or half-width below 0.15 never rejects a peg root (0.000 in every definition-c row). \"Peg not in centre\" only bites if centre means the centre of the peg's own jitter box (0, ±0.2). In that box V4 b=0.5 still places 2.8% of roots in the 30%-area central square (uniform: 30.5%). The peg BODY is a separate matter: with yaw ±180° it enters the cube's central zone |x|,|y|<0.0548 in 8.1-8.6% of segments under every scheme.",
+   "evidence": "marginals.py table 1 (definition c rows: peg rejection 0.000); hist_joint.py (peg |dxy|∞<2.74cm: V4 b=0 0.305, b=0.5 0.028, V5 0.000); joint.py 3000 seeds (peg body intrusion 0.081-0.086)."
+  },
+  {
+   "question": "How should 'center region' be defined and what does 30% mean? (candidates a/b/c/d)",
+   "answer": "(a) 30% linear per axis (central square with side 30% of the box): only 9% of the area and zones of 1.5-3.9 cm, so a 4 cm cube can still overlap the exact centre. Too weak. (b) Central square covering 30% of each object's own sampling-box AREA (side ratio sqrt(0.3)=0.548): exactly 30% of uniform draws rejected, zones peg 2.74 cm, demo goal 6.02 cm, exec goal 3.29 cm, cube 5.48 cm. RECOMMENDED. (b') 30%-area disk (radius ratio 0.618): same rejection rate, but it leaves diagonal near-centre spots uncovered (3.2% of cubes and 4.1% of goals still inside the square zone). (a') cross (reject if EITHER axis is within 30%): keeps only the 4 corner blocks, rejects 51%, and is the closest to the old corner intent. (c) Common absolute centre (0,0): inconsistent because the region sizes differ. With w=0.045 it rejects 0% of pegs, 17% of demo goals, 56% of exec goals and 20% of cubes. A disk of R=0.075 (30% of the peg y extent 0.25) rejects 97.2% of exec goals (35.5 expected draws). (d) Cube zone referenced to its final support box (half 0.13 → 0.0712): the cube candidate is then 51% rejected and exec-spawn failures double without the fix. The best reading of \"30%\" is therefore 30% of the area of each object's own sampling box, which equals a 30% per-draw rejection rate.",
+   "evidence": "marginals.py (N=400000 per object and scheme): rejection 0.090 (a), 0.300 (b), 0.300 (b'), 0.509 (a'), definition-c rows as quoted; joint.py 3000 seeds per scheme; sweep.py."
+  },
+  {
+   "question": "Is 30% OK?",
+   "answer": "Yes, as 30% of the AREA of each object's own sampling box, applied to peg root, goal, cube candidate and cube final xy, with corner_bias set to 0. Feasibility is trivially fine and demo success did not drop in the first local signal (10/10). Relative to V4 b=0.5 the scene is less corner-concentrated (4-corner mass 5.8% vs 23.9% for peg and candidate) but strictly never central. Reach difficulty sits between uniform and V4 b=0.5. Headroom: area 0.5 is still feasible (worst budget failure 3e-17) with a reach proxy of 4.8%; 0.6 reaches the V4 b=0.5 reach level (6.4%). Not OK: reading 30% linearly (9% area, cosmetic effect), or excluding only the final cube xy (6.0% of layouts fail with guaranteed 256-trial exhaustion).",
+   "evidence": "sweep.py 2000 seeds: r=0.3 layouts 2000/2000, mean draws 37.08, reach>0.80 = 0.042, peg-cube overlap 0.0315 per segment; r=0.5: draws 45.32, reach 0.048; r=0.6: reach 0.064; counterexample final-only: 1879/2000 (cube_demo 121 failures). worstcase.py: r=0.3 candidate loop worst acceptance 0.358 (demo) / 0.297 (exec), final loop 0.496; budgets 2.4e-25, 2.5e-20, 8.1e-77; peg 1.2e-67; goal 1.4e-134. demo_v5.py: 10/10."
+  },
+  {
+   "question": "Joint feasibility with center rejection (acceptance, loops, 128/256 budget failure)?",
+   "answer": "Recommended scheme (r=0.3 square on all objects, cube candidate and final both checked, exec cube no longer avoiding the demo cube): 2000/2000 layouts OK. Mean 2.46 center re-draws per episode; mean total random draws 37.08 (p99 59, max 84) versus 27 minimum. Per-object mean re-draws: peg about 0.43 per segment, goal about 0.41-0.45, cube candidate 0.34 (demo) / 0.10 (exec), cube final about 0.15. Worst-case exhaustion is at most 2.5e-20 for every loop. Without the exec-avoidance fix, the recommended scheme fails 0.97%-1.83% of layouts, all in the exec cube spawn, because the demo cube blocks the smaller allowed half of the local box. The current V4 xhard already fails 0.33%-0.60% the same way, and the original tiers 0.60%-1.07% as RuntimeError.",
+   "evidence": "sweep.py (2000 seeds 3_000_000..), exec_fail.py (3000 seeds 2_000_000.., two obstacle models: 'square' = ideal square which matched 4/6 real resets, 'trimesh' = reconstructed degenerate OBB which matched 3/6, hence the quoted range). Real simulator: seeds 1000442/1000446 xhard → SceneGenerationError 'Region crowded'; seed 1000002 hard → RuntimeError. Under the patched V5 (include_existing=False) 1000442/1000446 reset fine (probe_v5_reset.py)."
+  },
+  {
+   "question": "Impact on demo success?",
+   "answer": "First signal: 10/10 demo successes with the V5-b monkeypatch (bias 0, 30%-area exclusion, exec cube no-avoid): peg_push 5/5, gripper_push 3/3, grasp_putdown 2/2. Wall time 19-74 s per episode, single worker, local RTX 6000 Ada GPU 1. By comparison the G3 sweep gave b=0 8/8 and b=0.5 6/8 (peg_push 3/5). V4 b=0.5 also passed 5/5 in V6 and 3/3 in the rollout. The 95% Wilson interval for 10/10 is [0.72, 1.0], so this cannot rule out a rate like V4's. The reach proxy is not predictive at G3 sample sizes: the G3 failures had a median max peg-push start distance of 0.686 vs 0.780 for successes, and no peg-cube overlap. The only defensible geometric expectation is that V5-b sits between uniform and b=0.5 (reach>0.80: 4.2% vs 3.8% / 6.6%). Formal numbers must come from V6-style coverage on A40 (N7).",
+   "evidence": "demo_v5.py via generate_dataset_newseed._worker (same entry as scripts/parity/v4_demo_probe.py), seeds 910404,910505,910707,910808,911111,910000,910101,910909,910202,910606; ways confirmed from h5 subgoal text (h5_way.py). g3_calib.py/g3_feat.py on the G3 seeds."
+  },
+  {
+   "question": "RNG implications, config keys, overturned decisions, tests/docs?",
+   "answer": "See proposals P1 (recommended) and P5 (RNG-neutral alternative). In short: rejection re-draws happen in place at each object's draw point, xhard only, so xhard draw positions shift after the first rejection (the same class of xhard-only shift V4 accepted when corner_bias changed the cube-loop counts and way_idx). The spec records only the accepted final values (existing value points plus a new record of the zone widths). Easy/medium/hard are untouched. B7 and G3 are overturned; A1, B11, A6, D3 and H2 are kept. A new exec-cube no-avoid fix is added (a D-class fix, xhard only). V4 xhard specs (v4-01) and combos for MoveCube must be re-frozen.",
+   "evidence": "probe_v5_reset.py: patched process, native hard seed 1000003 layout identical to the unpatched model (27 draws, AGREE); xhard seeds agree with the model 4/4."
+  }
+ ],
+ "measurements": [
+  {
+   "name": "V4 sampling replication (bit-level)",
+   "script_or_command": "cd /data/hongzefu/robomme_benchmark_MotionJEPANewTask && uv run --no-sync python /tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/validate.py (model: mc_layout.py::simulate)",
+   "settings": "10 MoveCube rows of scripts/configs/newtask-v4/v4-01/specs.jsonl, bias 0.5, xhard yaw; compares peg_offsets, peg_yaw, goal_xy, cube_pose, obj_sample, way_idx",
+   "result": "REPLICATION_V4 match=10/10, max abs error 3.6e-9 (float32 storage); draws per episode 27-33; way2.py also matched initializations.0/1 way_idx 10/10",
+   "conclusion": "The torch replication is exact and valid for statistics and for RNG-position reasoning."
+  },
+  {
+   "name": "Exec-cube spawn blocked by demo cube (pre-existing defect)",
+   "script_or_command": "sim_verify.py (real sim, CUDA_VISIBLE_DEVICES=1, timeout 290) + obb_inspect.py + exec_fail.py 3000",
+   "settings": "Real resets: 6 seeds (1000177, 1000442, 1000446, 1000000 xhard; 1000002, 1000042 hard). Model: 3000 seeds 2_000_000..2_002_999, two obstacle models",
+   "result": "Real: 1000442 and 1000446 xhard → SceneGenerationError 'spawn_random_cube: Region crowded'; 1000002 hard → RuntimeError; 1000177 and 1000042 OK although the square model predicted failure. The demo-cube OBB projection is degenerate (A[:,0]=(0,0), h=(0.02,0.02)). Model failure rates: native hard 1.07% (square) / 0.60% (trimesh); V4 xhard b=0.5 0.60% / 0.33%; V5-b without fix 1.83% / 0.97%; with include_existing=False 0/3000 for all. The fix also cuts mean draws (V4 32.86→29.08, p99 105→37, max 725→51).",
+   "conclusion": "Real defect in all tiers. Center rejection roughly doubles it unless the exec cube stops avoiding the demo cube (xhard only)."
+  },
+  {
+   "name": "Per-object rejection fraction by center definition",
+   "script_or_command": "uv run --no-sync python .../scratchpad/v5/movecube/marginals.py",
+   "settings": "N=400000 per object and scheme, numpy seed 20260924; objects peg (half 0.05), goalD (0.11), goalE (0.06), cand (0.1), cubeF (0.13 support)",
+   "result": "Definition b (30% area square, recommended): rejection 0.299-0.300 for peg/goal/cand, E[draws] 1.43, P(128 all rejected) about 1e-67; V4 b=0.5 still inside: peg 0.027, cand 0.027, goal 0.300. Definition a (30% linear): 0.090. a' cross: 0.509-0.510. Common centre w=0.045: peg 0.000, goalD 0.168, goalE 0.564, cand 0.203. Disk R=0.075: goalE 0.972 (35.5 expected draws). 4-corner mass (|t|>0.8 on both axes): uniform 0.040, V4 b=0.5 0.239 (peg) / 0.237 (cand), V5-b 0.058.",
+   "conclusion": "Only per-object area-based definitions give a consistent 30% across objects. Absolute-centre definitions are inconsistent because the exec goal box is small."
+  },
+  {
+   "name": "Joint layout simulation across schemes",
+   "script_or_command": "uv run --no-sync python .../scratchpad/v5/movecube/joint.py 3000 (output joint_3000.out)",
+   "settings": "3000 seeds 1_000_000.. per scheme; square obstacle model; exec avoid on; metrics per segment",
+   "result": "Cube final in |xy|∞<0.0548: V4 b=0 0.156, V4 b=0.5 0.048, V4 b=1 0.022, V5-b 0.000, V5-b candidate-only 0.099 (leak), V5 disk 0.032. Goal in own 30%-area zone: V4 0.29, V5-b 0.000. Peg-push start >0.80 m from base: V4 b=0 0.035, b=0.5 0.062, b=1 0.078, V5-b 0.045, V5 cubeF 0.0712 0.063, cross 0.046. Peg-cube initial overlap per segment: V4 b=0 0.0305, b=0.5 0.0400, V5-b 0.0305. Peg body into central zone about 0.08-0.09 in all schemes. Peg covering goal disk (visual): 0.042-0.052.",
+   "conclusion": "V5-b gives a hard guarantee of never being central, at a reach cost between uniform and V4 b=0.5, with no extra peg-cube overlap."
+  },
+  {
+   "name": "Area-ratio sweep with exec-avoid fix, plus counterexamples",
+   "script_or_command": "uv run --no-sync python .../scratchpad/v5/movecube/sweep.py 2000",
+   "settings": "2000 seeds 3_000_000..; bias 0; square; cube checked on candidate and final; exec cube does not avoid demo cube",
+   "result": "r=0.1: draws 33.17, reach>0.80 0.040. r=0.2: 34.77 / 0.040. r=0.3: 37.08 (p99 59, max 84) / 0.042, re-draws 2.46 per episode, cube E|xy|∞ 0.0860. r=0.4: 40.38 / 0.047. r=0.5: 45.32 / 0.048. r=0.6: 52.48 / 0.064. All 2000/2000 OK. V4 b=0.5 current 1991/2000 (9 cube_exec), with fix only 2000/2000. Counterexample final-only r=0.3: 1879/2000 (121 cube_demo exhaustions). Candidate-only: 2000/2000 but cubes leak into the zone.",
+   "conclusion": "30% is comfortably feasible; up to 50% stays below the V4 b=0.5 reach level. The cube must be checked on both candidate and final."
+  },
+  {
+   "name": "Worst-case single-trial acceptance and budget exhaustion",
+   "script_or_command": "uv run --no-sync python .../scratchpad/v5/movecube/worstcase.py",
+   "settings": "41x41 goal grid over the allowed goal region × 200000 candidate MC; 81x81 candidate grid × 20000 local offsets",
+   "result": "r=0.3: candidate loop worst acceptance 0.358 (demo, goal at (-0.061,0)) and 0.297 (exec, goal at (-0.033,0)), so 128-trial exhaustion ≤ 2.4e-25 / 2.5e-20; final loop worst 0.496, so 256-trial ≤ 8.1e-77; peg 0.3^128 = 1.2e-67; goal 0.3^256 = 1.4e-134. r=0.5: 0.299/0.257/0.524, so ≤ 3.0e-17. V4 b=0 candidate-loop worst was 0.215: excluding central goals improves the worst case.",
+   "conclusion": "Budgets 128 and 256 are more than sufficient; no new D3-type risk."
+  },
+  {
+   "name": "V5 monkeypatch reset parity (implementation vs model; native isolation)",
+   "script_or_command": "CUDA_VISIBLE_DEVICES=1 timeout 290 uv run --no-sync python .../scratchpad/v5/movecube/probe_v5_reset.py (patch: patch_v5.py, in-process only)",
+   "settings": "5 real resets: xhard 1000442, 1000446, 910404, 910606; hard 1000003",
+   "result": "V5RESET agree=5/5 (max error ≤ 3e-9, way_idx equal). xhard layouts respect the zones (e.g. cube |xy|∞ 0.0564-0.0941 ≥ 0.0548; exec goal 0.0398-0.055 ≥ 0.0329). Native hard seed identical to the unpatched model (27 draws, corner_bias record absent).",
+   "conclusion": "The proposed code shape implements exactly the modelled distribution, and the original tiers are untouched."
+  },
+  {
+   "name": "Local demo probe with V5-b patch",
+   "script_or_command": "CUDA_VISIBLE_DEVICES=1 timeout 290 uv run --no-sync python .../scratchpad/v5/movecube/demo_v5.py .../demo_out <seeds> (3 batches), entry generate_dataset_newseed._worker",
+   "settings": "xhard, episode 9 (no recovery), seeds 910404, 910505, 910707, 910808, 911111 (peg_push), 910000, 910101, 910909 (gripper_push), 910202, 910606 (grasp_putdown); ways confirmed from h5 subgoal text; local RTX 6000 Ada, not a judgement run (N7)",
+   "result": "10/10 ok (peg_push 5/5, gripper_push 3/3, grasp_putdown 2/2); wall 19.1-74.1 s; summary in demo_out/summary.jsonl",
+   "conclusion": "No sign of a demo-success drop, but the sample is small (Wilson 95% [0.72, 1.0]). V6 on A40 is needed."
+  },
+  {
+   "name": "G3 calibration of the reach proxy",
+   "script_or_command": "uv run --no-sync python .../scratchpad/v5/movecube/g3_calib.py ; g3_feat.py",
+   "settings": "G3 seeds 910000..910808 × bias {0, 0.25, 0.5, 0.75, 1.0}, failures taken from docs/validation/newtask-v4/20260922-step3b-movecube-insertpeg.md",
+   "result": "Median max peg-push start distance 0.686 for failures (n=8) vs 0.780 for successes (n=32). No peg-cube overlap in failing layouts. b=1.0 exec failures 910505/910606 had the largest exec start distances (0.827/0.856).",
+   "conclusion": "Geometric proxies do not predict G3 failures at this sample size. The proxy is only an ordering, not a success-rate predictor."
+  },
+  {
+   "name": "Final-position histograms",
+   "script_or_command": "uv run --no-sync python .../scratchpad/v5/movecube/hist_joint.py",
+   "settings": "3000 seeds 4_000_000..; 1 cm bins of Chebyshev radius",
+   "result": "Cube |xy|∞, bins 0-13 cm, %: V4 b=0 [0.3 1.0 2.2 3.7 5.6 8.3 12.9 14.2 15.3 14.1 11.2 8.2 2.9]; V4 b=0.5 [0.0 0.1 0.2 0.8 1.8 4.7 10.3 11.4 9.1 10.4 16.5 21.3 13.5]; V5-b [0 0 0 0 0 5.7 16.1 18.3 20.1 16.5 12.8 7.9 2.5]. Demo goal (0-11 cm): V4 [0.9 1.8 3.8 5.1 7.7 9.4 11.0 11.2 14.1 16.2 18.9], V5-b [0 0 0 0 0 0 15.2 17.1 19.9 23.5 24.3]. Exec goal (0-6 cm): V4 [2.6 8.5 13.4 18.3 25.7 31.6], V5-b [0 0 0 20.5 34.4 45.1]. Peg |dxy|∞ from lane centre (0-5 cm): V4 b=0 [4.6 11.8 20.2 28.3 35.1], V4 b=0.5 [0.0 0.4 4.6 21.9 73.0], V5-b [0 0 8.8 40.0 51.2].",
+   "conclusion": "V5-b has a hard zero inside the zone and a flat-ish distribution outside, instead of V4's pile-up at the extreme edges."
+  }
+ ],
+ "proposals": [
+  {
+   "title": "P1 (recommended): per-object 30%-area central-square rejection for peg, target(goal) and cube; corner_bias→0; exec cube no longer avoids demo cube",
+   "recommended": true,
+   "envs": "MoveCube (xhard only)",
+   "anchors_to_change": "MoveCube.py::MoveCube.config_xhard, ::_native_decision, ::_load_scene, ::_xhard_corner_bias (or a new ::_xhard_center_exclusion validator); utils/xhard.py (new helper center_zone_half / in_center_zone); utils/object_generation.py::spawn_random_cube and ::spawn_random_target (additive optional reject_xy=None hook; default path byte-identical) or xhard-only wrappers per N12; scripts/configs/newtask-v5/sampling_config.json snapshot; tests/lightweight/test_v4_xhard_movecube.py (or a v5 copy)",
+   "design": "Config: config_xhard = {peg_yaw_range ±π (unchanged), corner_bias: 0.0, center_exclusion: {shape: 'square', area_ratio: 0.3, max_trials: 128}}. _native_decision exposes demo_layout.xhard = {corner_bias: 0.0, center_exclusion: {...}} and the same for execution_layout (per-segment, like V4). Per-object zone half-width w = sqrt(area_ratio) × own-box half-size: peg w=√r·jitter_span/2 = 0.0274, measured on (x_jitter, y_jitter) relative to (0, base_y); goal w=√r·(region_half_size - radius) = 0.0602 (demo) / 0.0329 (exec), relative to region_center; cube w=√r·center_span/2 = 0.0548, relative to the candidate-box centre (center_offset + center_span/2 = 0). The same absolute zone is applied to BOTH the candidate centre and the final cube xy. Test: reject iff max(|dx|,|dy|) < w. Algorithm, all inside `if xhard`, in place at the existing draw points: (1) after drawing x_jitter/y_jitter, `while in_zone: redraw both (2 draws), k<128 else SceneGenerationError`, then the existing value point layout.*.peg_offsets. (2) Goal: spawn_random_target(..., reject_xy=zone_goal); the check sits after the (x,y) draw and before the recorder.value of the accepted trial; budget = its max_trials 256. (3) _sample_cube_center: accept iff |c-g|>0.1 AND not in_zone(c) (same 2 draws per trial, 128 budget, D3 error kept). (4) spawn_random_cube(..., reject_xy=zone_cube) checked after the yaw draw (3 draws per trial, 256 budget); exec cube additionally include_existing=False (xhard only). (5) Records: layout.{demo,execution}.center_exclusion = {area_ratio, shape, w_peg, w_goal, w_cube}; optional objects.sampling_trace.center_rejections = {peg, goal, cand, cube} counts per segment for audit. Replay: in replay mode, also verify frozen values against the zone and flag violations as mismatches with decision_key '*.xhard.center_exclusion'.",
+   "rationale": "This is literally what the user asked: direct rejection, no bias. It gives one consistent meaning of 30% (30% of each object's own area = 30% rejection per draw). It uses the same per-object own-box frame in which V4 applied corner_bias. It gives a hard guarantee (V4 b=0.5 still leaves 4.5% of cubes, 2.8% of pegs and 29% of goals central) and is cheap (+10 draws on average, worst exhaustion ≤2.5e-20). Checking the cube on both candidate and final avoids a 6% layout-failure trap (final-only) and a 9.9% leak (candidate-only). The exec-cube fix removes a real, simulator-confirmed failure mode that the rejection would otherwise double.",
+   "rng_impact": "Easy/medium/hard: none. All new branches are gated on xhard; spawn_* are called with unchanged args (new param default None); exec include_existing unchanged; verified in-process (hard seed 1000003 identical, 27 draws). Must be re-verified by v4_reset_probe diff=0 and V1. xhard: values change everywhere as soon as corner_bias=0 (corner_push identity), so V4 xhard seeds no longer reproduce V4 layouts. Draw positions shift after the first rejected draw (2 extra per peg/goal/candidate rejection, 3 per final-cube rejection), which shifts every later draw including both way_idx draws. Mean draws 37.08 vs V4 32.6 (V4 tail up to 725 disappears with the fix). Under a literal reading N5 forbids inserting draws mid-stream; rejection cannot be 'appended after existing points' without restructuring. This needs explicit user acceptance as an xhard-only in-place shift (precedent: V4 corner_bias already shifted cube-loop counts and way_idx, documented as 计划外 2).",
+   "overturned_v4_decisions": "Overturns B7 (the corner_bias ∈ [0,1] design for MoveCube) and G3 (corner_bias=0.5). Partially overturns the plan 2.17 row 'native.goal_regions 不动' (region sizes unchanged, but the goal now gets an exclusion zone via xhard sub-keys). Plan 2.21 MoveCube sketch obsolete. Keeps A1 (±180°), B11 (grasp reduction), A6 (tier structure), D3 (SceneGenerationError), H2/N12 (fixes xhard-only; native exec-cube defect left as is), J8/H3/口径14 (V6 re-run needed). Adds a new D-class fix (exec cube no-avoid, xhard only).",
+   "spec_and_test_changes": "Spec: keep value points layout.*.{peg_offsets, peg_yaw, goal_xy, cube_pose}; drop or keep-as-0 layout.*.corner_bias records; add layout.*.center_exclusion record (+ optional sampling_trace.center_rejections). Spec kind stays native-newvalue/1; run id v5-xx; re-freeze MoveCube rows (v4-01 rows invalid for seed-reproduction). Tests: update test_configs_three_tiers_identical_and_xhard_values (corner_bias 0.0, center_exclusion present, native tiers have no center_exclusion or ratio 0), test_decision_visible_part_unchanged_and_guard (xhard dict; per-segment override allowed; area_ratio out of [0, 0.6] rejected), replace test_corner_bias_validation with test_center_exclusion_validation; add test_center_zone_half_widths (0.0274 / 0.0602 / 0.0329 / 0.0548); add a pure-CPU replication test (port of mc_layout.py) asserting 0 zone violations and 0 layout failures over ≥2000 seeds; add test_native_tiers_ignore_center_exclusion (draw count 27 path); GPU/slow test that seeds 1000442/1000446 reset in xhard. Docs: NEWTASK_RELEASE_V5 plan 1.3 (new decisions), 2.17 table, 2.21 sketch; scripts/README.md section 1.13 (corner_bias rows → center_exclusion; spec field count); regenerate sampling_config.json snapshot (test_sampling_config_split::test_snapshot_matches_source); combos.json MoveCube stays 'default' if area_ratio is a fixed declared value.",
+   "expected_numbers": "Per-object rejection 30%, E[draws per object] 1.43; mean re-draws 2.46 per episode; mean total draws 37.08 (p99 59, max 84); layout failures 0/2000 (model), worst-case exhaustion ≤2.5e-20; cube never within |xy|∞<5.48 cm (V4 4.5%), goal never within its zone (V4 29%), peg never within 2.74 cm of its lane centre (V4 2.8%); reach proxy P(peg-push start >0.80 m)=4.2% (V4 b=0.5 6.6%, uniform 3.8%); peg-cube overlap 3.15% per segment (V4 b=0.5 3.3-4.0%); local demo 10/10 (5 peg_push)."
+  },
+  {
+   "title": "P2: 30% linear per axis (central square side = 30% of box, 9% of area)",
+   "recommended": false,
+   "envs": "MoveCube (xhard only)",
+   "anchors_to_change": "Same as P1 with w = 0.3 × half-size",
+   "design": "Same algorithm as P1 with w = 0.3·half: peg 0.015, goal 0.033/0.018, cube 0.03.",
+   "rationale": "The literal 'side 30%' reading. Rejects only 9% of draws; zones of 1.5-3.9 cm are smaller than the 4 cm cube and the 8 cm goal disk, so objects can still visibly cover the centre (13.9% of cubes still within 5.48 cm).",
+   "rng_impact": "Same as P1 (xhard-only in-place shifts, smaller: mean draws 34.1 with avoid on); none for original tiers.",
+   "overturned_v4_decisions": "B7, G3 (same as P1).",
+   "spec_and_test_changes": "As P1 with a different area_ratio (0.09).",
+   "expected_numbers": "joint.py: layouts 2966/3000 with the avoid defect (34 cube_exec); reach>0.80 0.036; cube in the 5.48 cm zone 0.139; goal in its 30%-area zone 0.229."
+  },
+  {
+   "title": "P3: common absolute workspace-centre zone around (0,0)",
+   "recommended": false,
+   "envs": "MoveCube (xhard only)",
+   "anchors_to_change": "Same as P1 but with one absolute w for goal and cube; peg unaffected",
+   "design": "Reject goal and cube if max(|x|,|y|) < w_abs (e.g. 0.045 = 0.3 × demo goal region half 0.15). Peg roots never qualify (|y|≥0.15).",
+   "rationale": "Closest to an intuitive 'table centre', but the per-object meaning of 30% is lost: exec goal rejection 56% (disk R=0.075: 97%, infeasible in practice), demo goal 17%, cube 20%, peg 0%. So the user's 'peg' clause has no effect.",
+   "rng_impact": "Same class as P1; mean draws 42.06 with avoid on; exec goal loop up to 16 re-draws.",
+   "overturned_v4_decisions": "B7, G3.",
+   "spec_and_test_changes": "As P1 with a single w_abs key.",
+   "expected_numbers": "joint.py V5-c 0.045: 2957/3000 (43 cube_exec without fix); reach>0.80 0.041; cube in the 5.48 cm zone 0.088."
+  },
+  {
+   "title": "P4: cross exclusion (reject if either axis within 30%) = corners only",
+   "recommended": false,
+   "envs": "MoveCube (xhard only)",
+   "anchors_to_change": "Same as P1 with shape='cross'",
+   "design": "Reject iff min(|dx|,|dy|) < 0.3·half; only the four corner blocks survive (49% of area).",
+   "rationale": "Preserves the original V4 intent 'push to corners' with a hard rule, but rejects 51% of draws and is not what the user asked ('not in the centre').",
+   "rng_impact": "Larger xhard shift: mean draws 56.3 (avoid on), exec cube failure 4.0% without the fix.",
+   "overturned_v4_decisions": "B7, G3.",
+   "spec_and_test_changes": "As P1, shape='cross'.",
+   "expected_numbers": "joint.py: 2880/3000 without fix; reach>0.80 0.046; cube in the 5.48 cm zone still 0.085 (the cross leaves the diagonal near-centre)."
+  },
+  {
+   "title": "P5: RNG-count-neutral exact map onto the allowed region (no rejection loop)",
+   "recommended": false,
+   "envs": "MoveCube (xhard only)",
+   "anchors_to_change": "utils/xhard.py (new annulus map), MoveCube._load_scene peg/goal/candidate draw sites",
+   "design": "Replace the per-object rejection loop by a measure-preserving map from the same 2 uniforms to the square annulus [box minus central square]. u1 picks one of 4 rectangles by area and is rescaled as one coordinate; u2 is the other coordinate. The result has exactly the same distribution as P1 rejection, with the same draw count per object as V4.",
+   "rationale": "Complies with N5 more literally for the per-object draws. But the cube-goal distance loop and the final-cube spawn loop still change counts with positions, so way_idx still shifts. It is also not 'direct rejection' as the user phrased it. Only worth it if the user insists on a strict N5 reading.",
+   "rng_impact": "Per-object draw positions identical to V4 until the cube loops; later draws still shift (the cube loops depend on values). No impact on original tiers.",
+   "overturned_v4_decisions": "B7, G3.",
+   "spec_and_test_changes": "As P1 plus unit tests of the map (uniformity, zone-free).",
+   "expected_numbers": "Distribution identical to P1; draws per object fixed at 2."
+  },
+  {
+   "title": "P6 (optional add-on): peg-body intrusion exclusion",
+   "recommended": false,
+   "envs": "MoveCube (xhard only)",
+   "anchors_to_change": "MoveCube._load_scene peg segment (redraw jitter+yaw)",
+   "design": "Also reject the peg if its visual body (root-0.15·axis → root+0.05·axis, half-width 0.01) intersects the cube's central zone (|x|,|y|<0.0548); redraw jitter and yaw in place.",
+   "rationale": "Covers the reading 'the peg must not lie in the centre'. The root never does, but with ±180° yaw the body reaches y≈0 in about 8.5% of segments.",
+   "rng_impact": "Extra in-place peg re-draws (about 8.5% per segment → about 0.19 extra triples per episode); xhard only.",
+   "overturned_v4_decisions": "Constrains A1 in effect (yaw no longer independent of position).",
+   "spec_and_test_changes": "Add body-zone check to the replication test.",
+   "expected_numbers": "Peg body intrusion 0.081-0.086 per segment under all schemes (joint.py), hence about 8.5% peg re-draw rate."
+  }
+ ],
+ "risks": [
+  {
+   "risk": "Demo success could drop in peg_push edge cases (reach near 0.80-0.86 m); the 10/10 local probe is too small (Wilson lower bound 0.72) and not a judgement run.",
+   "mitigation": "V6 combo coverage for MoveCube default on A40 (≥5 per J8; better ≥20 per way to get a rate), plus H4 replacement in the formal selection; the area-ratio headroom data (r=0.5 still below the V4 b=0.5 reach level) allows lowering the ratio if needed."
+  },
+  {
+   "risk": "N5 red line: in-place rejection inserts variable draws mid-stream in xhard.",
+   "mitigation": "Get explicit user sign-off that N5 protects original tiers and existing artifacts (xhard shift already precedented by V4 corner_bias/way shift); re-freeze v5 specs; or choose P5 if a strict reading is required."
+  },
+  {
+   "risk": "Pre-existing exec-cube spawn failure stays in easy/medium/hard (about 0.6-1.1% RuntimeError at reset), because H2 forbids native fixes.",
+   "mitigation": "Report to the user as a known defect; fix in xhard only (include_existing=False for cube_2); the native fix is a separate decision."
+  },
+  {
+   "risk": "The failure-rate estimate for the exec-cube defect is model-dependent: trimesh's OBB of a cube is numerically degenerate and not exactly replicable (square model agreed with the real sim on 4/6 seeds, trimesh reconstruction on 3/6).",
+   "mitigation": "Quote the range (V4 xhard 0.33-0.60%); the fix makes the question moot for xhard; if needed, count real resets on aspen or A40 (≈0.1 s per reset after warm-up)."
+  },
+  {
+   "risk": "Replaying V4 v4-01 MoveCube specs under V5 code injects frozen central values and records mismatches.",
+   "mitigation": "New run id; add zone validation of frozen values in replay (flag as mismatch with decision_key); do not mix v4 specs into V5 runs."
+  },
+  {
+   "risk": "Peg-cube initial interpenetration (about 3% per segment) and peg body over the goal disk (about 5%, visual) remain, because cube/goal still do not avoid the peg (plan 2.17 known issue).",
+   "mitigation": "Out of scope for this topic; optionally add peg avoidance (xhard) in a separate decision; center rejection does not make it worse (3.15% vs V4 b=0.5 3.3-4.0%)."
+  },
+  {
+   "risk": "Shared-tool change (reject_xy hook in spawn_random_cube/spawn_random_target) could touch original tiers.",
+   "mitigation": "Additive optional parameter with default None (same pattern as V4 corner_bias), or xhard-only wrappers per N12; verify with v4_reset_probe diff=0 and V1 NATIVE_REGRESSION."
+  }
+ ],
+ "pending_decisions": [
+  {
+   "question": "What does '30%' refer to?",
+   "options": "(1) 30% of each object's own sampling-box AREA, central square (side ratio 0.548) = 30% rejection per draw; (2) 30% of the side length per axis (9% area); (3) 30%-area disk; (4) cross/corners-only; (5) a common absolute centre radius",
+   "recommendation": "(1)",
+   "reason": "The only definition that gives the same 30% for peg, goal and cube; hard guarantee; feasible (≤2.5e-20); reach cost between uniform and V4 b=0.5; 10/10 local demos."
+  },
+  {
+   "question": "What does 'peg not in the centre' mean?",
+   "options": "(A) centre of the peg's own jitter lane box (0, ±0.2), zone 2.74 cm; (B) peg body must not enter the workspace central zone (extra about 8.5% re-draws, couples yaw and position); (C) nothing extra, since the root is never in the workspace centre",
+   "recommendation": "(A), optionally plus (B) if the user means the body",
+   "reason": "The root is at |y|≥0.15 so any workspace-centre definition is a no-op for it; (A) matches V4 corner_bias semantics (own box)."
+  },
+  {
+   "question": "Which reference box for the cube zone?",
+   "options": "Candidate box (w=0.0548, applied to candidate and final) vs final support box (w=0.0712; 51% candidate rejection, reach>0.80 6.3%)",
+   "recommendation": "Candidate box 0.0548 on both",
+   "reason": "30% of the natural sampling box; the larger zone pushes reach back to the V4 b=0.5 level and doubles the exec-spawn problem without the fix."
+  },
+  {
+   "question": "What to do with corner_bias for MoveCube xhard?",
+   "options": "Keep the key with value 0.0 (minimal diff, guard/tests adapt) vs delete the key and the corner_push calls from MoveCube",
+   "recommendation": "Keep the key at 0.0 in V5 (document it as deprecated); delete later",
+   "reason": "Minimal code churn; corner_push(u,0) returns u unchanged; avoids touching the D3/validator tests beyond value changes."
+  },
+  {
+   "question": "Fix the exec cube avoiding the demo cube (include_existing=False) in xhard?",
+   "options": "Yes (xhard only, H2) / No",
+   "recommendation": "Yes",
+   "reason": "Simulator-confirmed pre-existing failure (SceneGenerationError in xhard, RuntimeError in native); center rejection raises it from about 0.3-0.6% to about 1.0-1.8%; the two cubes never coexist physically; the fix gives 0/3000."
+  },
+  {
+   "question": "Accept xhard-only in-place re-draws under N5?",
+   "options": "Accept (P1) / require P5 (RNG-count-neutral map)",
+   "recommendation": "Accept",
+   "reason": "Original tiers stay byte-identical; V4 xhard values change anyway once the bias goes to 0; there is a precedent from V4."
+  },
+  {
+   "question": "Should the 'rejection instead of bias' principle also apply to PickXtimes (J5 corner_bias 0.5) and other V4 corner_bias users?",
+   "options": "Only MoveCube / all corner_bias users",
+   "recommendation": "Ask the user; out of scope for this topic",
+   "reason": "Consistency across envs; affects other V5 topics."
+  }
+ ],
+ "verification_checks": [
+  {
+   "check": "Original tiers unchanged",
+   "how": "uv run --no-sync python -m scripts.parity.v4_reset_probe probe --tasks MoveCube --out <v5.json>; diff against artifacts/newtask-v4/probe/base-13e.json; plus V1 NATIVE_REGRESSION",
+   "judgement_line": "RESET_REGRESSION=PASS task=MoveCube compared=9 diff=0"
+  },
+  {
+   "check": "Zone never violated and layouts always generate (static, CPU)",
+   "how": "Port scratch mc_layout.py into tests or docs/validation/newtask-v5/*-scripts; run ≥5000 seeds with the implemented config; also compare 10 real resets vs model",
+   "judgement_line": "MOVECUBE_CENTER_EXCLUSION=PASS seeds=5000 zone_violations=0 layout_fail=0 model_parity=10/10"
+  },
+  {
+   "check": "Rejection budgets not stressed",
+   "how": "Record sampling_trace.center_rejections over the candidate run and the static MC; report max per loop",
+   "judgement_line": "MOVECUBE_REJECTION_BUDGET=PASS max_peg_rej<=8 max_goal_rej<=8 max_cand_trials<128 max_cube_trials<256 exhausted=0"
+  },
+  {
+   "check": "Exec-cube spawn defect fixed in xhard",
+   "how": "Reset MoveCube xhard for seeds 1000442 and 1000446 (V4: SceneGenerationError) with V5 code",
+   "judgement_line": "MOVECUBE_EXEC_SPAWN=PASS seeds=2 ok=2"
+  },
+  {
+   "check": "Spec binding and records",
+   "how": "Export spec for 10 xhard seeds; check layout.*.center_exclusion recorded, corner_bias=0.0 (if kept), consumed paths equal spec leaf paths; replay of the exported spec gives 0 unattributed mismatches",
+   "judgement_line": "SPEC_BINDING=PASS task=MoveCube rows=10 unused=0 unattributed_mismatches=0"
+  },
+  {
+   "check": "Demo-level generability (口径14/H3)",
+   "how": "V6 combo coverage (scripts/parity/v4_combos.py equivalent for v5) MoveCube default, ≥5 samples on A40, plus a local ≥20-per-way success estimate",
+   "judgement_line": "COMBO_COVERAGE=PASS task=MoveCube combos=1 zero_success_combinations=0 demo_ok>=4/5"
+  },
+  {
+   "check": "Recorder frozen",
+   "how": "git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py",
+   "judgement_line": "RECORDER_FROZEN=PASS"
+  },
+  {
+   "check": "Unit tests",
+   "how": "uv run --no-sync pytest tests/lightweight/test_v4_xhard_movecube.py tests/lightweight/test_xhard_utils.py tests/lightweight/test_sampling_config_split.py -q",
+   "judgement_line": "MOVECUBE_V5_UNIT=PASS failed=0"
+  }
+ ],
+ "blind_spots": [
+  "Demo success rates are local (sm_89 RTX 6000 Ada, GPU 1) and small-sample (10 episodes); not a judgement result per N7, and planner non-determinism was seen in G3 (seed 910202).",
+  "The real exec-cube failure rate under the current code is only bracketed (0.33-0.60% xhard, 0.60-1.07% native) because trimesh's OBB of a cube is numerically degenerate and my reconstruction does not reproduce it bit for bit (square model 4/6, trimesh model 3/6 agreement with real resets).",
+  "I did not verify which camera produces obs front_rgb; 'centre' here is the table origin (0,0), which is the centre of the cube and goal regions. The base_camera optical axis hits the table near (0.1, 0).",
+  "I did not re-run the G3 bias sweep; G3 per-seed artifacts were deleted in the V4 cleanup, so calibration used only the per-seed failures listed in the step3b report.",
+  "Peg body vs cube/goal overlap was measured geometrically only (collision boxes 0.045 half-length); I did not check whether those overlaps cause demo failures.",
+  "The effect of the center rejection on the grasp_and_lift_peg_side / B11 reduction frequency was not measured (peg root positions change only by ≤2.7 cm, so it is expected to be negligible).",
+  "I assume one reconfigure per episode (spec shows one layout, two _initialize_episode calls); verified via 10/10 way2 matches, but not for recovery modes."
+ ],
+ "scratch_files": [
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/mc_layout.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/validate.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/marginals.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/marginals.out",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/joint.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/joint_3000.out",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/sweep.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/sweep.out",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/worstcase.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/worstcase.out",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/exec_fail.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/exec_fail.out",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/sim_verify.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/obb_inspect.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/check6.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/find_fail.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/patch_v5.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/probe_v5_reset.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/way2.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/demo_v5.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/demo_out/summary.jsonl",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/demo_out/videos/",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/h5_way.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/g3_calib.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/g3_calib.out",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/g3_feat.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/hist_joint.py",
+  "/tmp/claude-114466650/-data-hongzefu-robomme-benchmark-MotionJEPANewTask/4d4f0ebe-f95a-4495-b425-f61bacbd7855/scratchpad/v5/movecube/hist_joint.out"
+ ]
+}
