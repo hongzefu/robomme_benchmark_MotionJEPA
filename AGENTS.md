@@ -535,7 +535,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| V6 语义审查修复实施（2026-09-27） | 8.2 清单 14 项 src 改动 + 脚本/配置/文档改动已落地并过 G1～G3；VPB 5 台经用户裁决放宽 xhard3/4 抽签上限；三席 165 局重生成（run-id v6-02）按 8.4 第 3 步启动 | `RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`；`LIGHTWEIGHT=PASS new_failures=0 resolved=0 failed=26 errors=12 passed=1598`（四片各 ≤280 s，与 S1 最终失败集 38 项逐项相同）；新单测 41 例通过；`VPB_5TARGETS=REPORT xhard3=9/20 xhard4=4/20`；[留档](docs/validation/newtask-v6/20260927-audit-fix.md) | 三席跑完 → `verify_s4.py` + 第二节判定行（PH/BUS/VPB/VPO/VR/PEG）→ site-v11 → 留档第二段 |
+| V6 语义审查修复实施（2026-09-27） | 全部完成：src 改动落地、G1～G3 通过、三席 165 局重生成 v6-02 回传验收通过、第二节判定行全 PASS、site-v11 上线 | `RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`；`LIGHTWEIGHT=PASS new_failures=0 resolved=0 failed=26 errors=12 passed=1598`（四片各 ≤280 s，与 S1 最终失败集 38 项逐项相同）；新单测 41 例通过；`VPB_5TARGETS=REPORT xhard3=9/20 xhard4=4/20`；[留档](docs/validation/newtask-v6/20260927-audit-fix.md) | 三席跑完 → `verify_s4.py` + 第二节判定行（PH/BUS/VPB/VPO/VR/PEG）→ site-v11 → 留档第二段 |
 | V6 语义审查修复计划（2026-09-26） | 计划已落根目录，源码零改动，待用户下令实施 | 审查 14 条逐条解释与裁决：F1/F3/F4/F6/D6 与 VPB 旧题共 7 项 `src/robomme` 改动设计；F2/F5/D3/D7 记为与原三档同源的语义问题只报告；只改 xhard1～4、原三档路径不动；165 局用三席重跑 | 用户下令后按 P2 清单实施 → G1～G3 → 三席 S4 → site-v11 |
 | VPB/VPO网站人读子目标标签（2026-09-26） | 已上线site-v10并验证 | 30样例标签由位置链反推：方块数、放台次数与源码档定值一致，正确方块颜色与题目30/30相符；题意≠程序答案恰为已披露xhard3 ep3/6；30样例问句、标签、标记及播放PASS，页面错误0；213媒体与预览不变 | 保留网站与原数据；再改文案只改`label_flow`文案层并重建新目录 |
 | VPB/VPO网站原子子目标（2026-09-26） | 已被site-v10替代 | 30样例544真实子目标与HDF5边界一致，420图像坐标、30对同名静止保留；30样例列表切换及播放PASS，页面错误0；213原视频不变 | 保留网站与原数据；仅显示演示／执行原子子目标，不再使用按档概括 |
@@ -615,6 +615,18 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 差异或阻塞：N11 根因定位为内部 static 计时与录像侧 solve 计时每段漂 4 步（见留档 §2）；PH 成功判定原在全部抓过一次即成立，计划「无需改 evaluate」不成立，已按 K2 补改；VPB 5 台 reset 成功率 45%/20%（原 85%），按用户裁决只放宽两格预算；V5 快照 `--verify` 在改动前就不一致（12.177 手改 note），本轮不动。
 - 修改文件：见 commit 12.188。
 - 下一步：三席日志 Monitor → 回传 → `verify_s4.py` 与第二节判定行 → site-v11 → 留档第二段。
+
+### 2026-09-27 01:40 EDT — V6 语义审查修复：165 局重生成回传验收、语义判定与 site-v11
+
+- 状态：完成。
+- 目标：8.4 第 3、4 步——回传 v6-02、离线完整性与第二节判定行、网站 site-v11。
+- 执行命令：`s4-relaunch-02/post-seat.sh <job>`（源端 sha256 + rsync --gres=none）；本机逐文件重算比对；`verify_s4.py verify --root artifacts/newtask-v6/v6-02`；`s4-relaunch-02/build_delivery.py`；`s4-relaunch-02/verify_semantics.py`；`scripts.parity.v6_site_catalog --out artifacts/newtask-v6/site-v11 --delivery …/final-delivery.json`；临时服务 8061 + `playwright_all.py` / `atomic_browser_check.py`。
+- 输入与来源：三席 `EXIT_CODE=0`（xhard1+2 / xhard3 / xhard4），代码 `ca32e9b`，快照 SHA `4a0329e3…`。
+- 输出路径：`artifacts/newtask-v6/v6-02/`（113 GB）、`artifacts/newtask-v6/s4-relaunch-02/verification/`、`artifacts/newtask-v6/site-v11/`、`scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl`。
+- 结果与证据：`TRANSFER_SHA=PASS`×3（351/175/233 文件零差异）；`S4_INTEGRITY=PASS errors=0`；`S4_DELIVERY=PASS cells=55 successes=165 shortfall=0`；`PH_LANGUAGE/PH_TERMINAL_BUTTON/BUS_WAIT_SUBGOAL/VPB_SEMANTIC/VPB_OCCUPANCY/VPB_HOME_NO_COORDS/VPO_SEMANTIC/VR_BOUNDARY/SWING_ORDINAL/MOVECUBE_WAYS` 全 PASS，`BUS_COORD_FRESH=REPORT refreshed_segments=33 stale_segments=0`；`SITE_V11_CHANGELOG=PASS items=15`、`FLOW_LABELS=PASS samples=30`、`SITE_CATALOG=PASS videos=213`、`POSTERS=PASS total=213`；浏览器：`SITE_V11_FULL_BROWSER=PASS videos=213 failed=0 page_errors=0`（`ALL_VIDEO_BROWSER={"PASS": 213, "FAIL": 0, "TOO_SHORT_FOR_TRAJECTORY": 0}`）；`ATOMIC_SUBGOAL_BROWSER=PASS samples=30 lists_exact=30 asked=30 playback=30 errors=0 other_tasks=14 mobile_overflow=False`；预算实耗 reset 691 / 轨迹 168（VPB xhard3 25、xhard4 39）。
+- 差异或阻塞：InsertPeg/xhard4 首选 ep0/ep3 真任务失败、ep1 递补超时，ep2/ep4 递补成功（v6-01 同格同现象）；`SEMANTIC_SUMMARY` 因枚举到 3 个失败局空 H5 记 FAIL，10 项检查 failed=0。用户两次要求停止逐条进度唤醒，Monitor 改为一次性等待。
+- 修改文件：见 commit 12.190。
+- 下一步：无（本轮范围内）。
 
 
 ### 2026-09-12 America/Detroit — 当前版本对原始训练种子生成的非布局差异对抗审计：开始

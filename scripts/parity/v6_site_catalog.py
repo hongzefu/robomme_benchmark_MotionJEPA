@@ -39,6 +39,163 @@ NOTES = {
 }
 
 
+# ---- site-v11：V6 语义审查修复（0926-v6-audit-fix-plan.md §8.5 / §8.3 / §九）----
+# 只涉及 xhard1～4；用户裁决 D1/D4/D5「不要管」，不在此列出。
+TIERS_ALL_NEW = "xhard1～xhard4"
+CHANGELOG = [
+    # 一、题面（task_goal）文字改动
+    {"group": "一、题面文字改动", "env": "PickHighlight", "refs": ["F1"], "tiers": TIERS_ALL_NEW,
+     "change": "两句题面改为与新任务链一致：先按按钮，再逐个抓起全部高亮方块，最后再按按钮结束（第二句为同义变体），并修正拼写 highlighteted。",
+     "reason": "原题面要求末尾再按按钮，任务链却没有这一步（F1）。"},
+    {"group": "一、题面文字改动", "env": "VideoPlaceButton", "refs": ["N3", "N4"], "tiers": TIERS_ALL_NEW,
+     "change": "每局只保留一句：按钮前题问「按按钮前最后一次放置的台」，按钮后题问「按按钮后第一次放置的台」；删去 right / immediately / previously placed 三种说法。",
+     "reason": "双块档里另一块会在中间放置，「紧挨按钮前/后」时序不成立（N3）；有额外放置时「previously placed」不唯一（N4）。"},
+    # 二、子目标文字与链条改动
+    {"group": "二、子目标文字与链条改动", "env": "PickHighlight", "refs": ["F1"], "tiers": TIERS_ALL_NEW,
+     "change": "末块抓起后新增子目标 place the cube onto the table（把方块放到桌面），链尾新增 press the button at <坐标>（按末按钮）；成功时点后移到末按钮。",
+     "reason": "与改后的题面保持一致（F1）。"},
+    {"group": "二、子目标文字与链条改动", "env": "ButtonUnmaskSwap", "refs": ["N1"], "tiers": TIERS_ALL_NEW,
+     "change": "第二个按钮之后新增子目标 wait for the containers to finish swapping（等待容器交换完成）；等待段不再标为「按第二个按钮」，选项不再是 B。",
+     "reason": "按下第二个按钮后机器人要静止等待交换 18～124 步，原先整段仍标为按按钮（N1）。"},
+    {"group": "二、子目标文字与链条改动", "env": "VideoPlaceButton / VideoPlaceOrder", "refs": ["N5"], "tiers": TIERS_ALL_NEW,
+     "change": "put the cube back to its original position（放回原位）去掉 at <>；该子目标无坐标是设计如此。",
+     "reason": "原位标记在画面中被隐藏，坐标永远缺失（N5）。"},
+    {"group": "二、子目标文字与链条改动", "env": "SwingXtimes", "refs": ["N10"], "tiers": "xhard4",
+     "change": "第 11 轮由 for the 11th time 改为 for the eleventh time。",
+     "reason": "其余轮次都用英文单词，只有第 11 轮用了数字序数（N10）。"},
+    {"group": "二、子目标文字与链条改动", "env": "VideoRepick", "refs": ["N11", "M1"], "tiers": "xhard4",
+     "change": "每次交换对应一个 static 边界，边界数 = 交换数 + 1（以定位到根因为前提）；同环境新四档的提前按钮失败窗口改为随轮次滚动（M1，判定逻辑，不改文字）。",
+     "reason": "xhard4 曾出现 12 次交换只有 11 个边界（N11）；失败窗口只覆盖首抓后 50～500 步（M1）。"},
+    {"group": "二、子目标文字与链条改动", "env": "InsertPeg", "refs": ["D6"], "tiers": "xhard4",
+     "change": "Pick up the peg by grasping the near/far end 的 near/far 改按真实距离判定，个别候选标签翻转。",
+     "reason": "原先按 x 轴而非实际距离判定远近（D6）。"},
+    # 三、文字不变但含义或坐标变
+    {"group": "三、文字不变但含义或坐标变化", "env": "VideoPlaceButton", "refs": ["Q-C"], "tiers": "xhard2、xhard3、xhard4（含按钮前额外放置的局）",
+     "change": "按钮前题的答案改为「按钮前最后一次放置的台」；含按钮前额外放置的局答案台会变。台可交换，答案按台实体判定。",
+     "reason": "原程序取按钮前第一次放置的台，与题意不符（Q-C）。"},
+    {"group": "三、文字不变但含义或坐标变化", "env": "VideoPlaceButton", "refs": ["N2", "F6"], "tiers": "xhard3、xhard4",
+     "change": "台数 4→5；额外放台落到第 5 台，演示中不再出现原地空转或两块同台。",
+     "reason": "4 台下额外放台的候选恒等于按钮后要用的台（N2），且缺少跨按钮时刻的占用检查（F6）。"},
+    {"group": "三、文字不变但含义或坐标变化", "env": "ButtonUnmaskSwap", "refs": ["F4"], "tiers": TIERS_ALL_NEW,
+     "change": "交换后 grounded_subgoal 的 <坐标> 随目标移动刷新；不做遮挡回填。",
+     "reason": "交换后坐标仍指向旧位置（F4）。"},
+    {"group": "三、文字不变但含义或坐标变化", "env": "ButtonUnmaskSwap", "refs": ["F3"], "tiers": TIERS_ALL_NEW,
+     "change": "button_left / button_right 改为机器人坐标系命名，press the first button 与选项 a 指向同一按钮；子目标文字不变。",
+     "reason": "原先「第一/第二按钮」的选项标签与执行对象相反（F3）。"},
+    # 四、只披露、不改动
+    {"group": "四、只披露、不改动", "env": "多个环境", "refs": ["F2", "F5", "D3", "D7", "N6～N8", "S1～S13", "M3"], "tiers": "原三档与新四档",
+     "change": "原三档同样存在的问题逐环境列在下方「已知问题」，本轮不修。",
+     "reason": "与原三档同源，按裁决只记录（§8.3）。"},
+    {"group": "四、只披露、不改动", "env": "PickHighlight", "refs": ["N9"], "tiers": TIERS_ALL_NEW,
+     "change": "新档题面无「, which is <颜色>」后缀，按钮失败判定改为每步重算。",
+     "reason": "来源为 V4 决策，本轮不改（N9）。"},
+    {"group": "四、只披露、不改动", "env": "全部环境", "refs": ["D2"], "tiers": "全部档位",
+     "change": "所有 left / right 均为机器人坐标系，与前相机画面左右相反。",
+     "reason": "如 SwingXtimes「右盘→左盘」按机器人视角描述（D2）。"},
+]
+KNOWN_ISSUES = [  # §8.5 第 13～15 条，按环境列出；原三档同样存在，本轮不修
+    {"env": "VideoRepick", "items": ["F2：题面把「执行 N 次」写成「previously picked up N times」（演示里抓过 N 次）。",
+                                     "S3：交换可能被延迟撤销、回到原槽。",
+                                     "S4：模板 1「for N times, finally put it down」存在歧义读法。"]},
+    {"env": "BinFill", "items": ["F5：在孔板上方约 0.2 米处悬空「删除」方块并计数。",
+                                 "S6：静态布局下的序数没有可见的对应物。",
+                                 "S7：抓取判据不区分颜色。"]},
+    {"env": "ButtonUnmask", "items": ["D3：揭示按绝对步数触发，按键不会触发再次揭示。",
+                                      "M3：原三档容器请求数被静默截断（hard 15→6）。"]},
+    {"env": "VideoUnmask / ButtonUnmask / VideoUnmaskSwap / ButtonUnmaskSwap", "items": ["D7：VQA 只允许选内环容器，外环容器可见但不可选。"]},
+    {"env": "ButtonUnmaskSwap", "items": ["S2：交换的净置换可能恰为恒等。"]},
+    {"env": "PickHighlight / VideoUnmask / ButtonUnmask / VideoUnmaskSwap / VideoPlaceOrder / BinFill / PickXtimes / MoveCube",
+     "items": ["N6～N8 与 S1：子目标切换帧目标被机械臂遮住，整段坐标缺失（可能留下 1 帧 NO_OBJECT 片段，网站已剔除）。"]},
+    {"env": "PickHighlight", "items": ["S8：「第 k 个」高亮顺序在画面中不可见。",
+                                       "N9：新档无「, which is <颜色>」后缀、按钮失败判定每步重算，来源为 V4 决策。"]},
+    {"env": "SwingXtimes", "items": ["S5：主模板漏写「放下」一步。"]},
+    {"env": "RouteStick", "items": ["S9：末 6 帧在线字段为 NO RECORD。"]},
+    {"env": "MoveCube", "items": ["S10：长推时前相机看不到方块。", "S11：成功判据不检查运动方式。"]},
+    {"env": "InsertPeg", "items": ["S12：演示段与执行段措辞不一致。"]},
+    {"env": "StopCube", "items": ["S13：成功容差大于靶盘。"]},
+    {"env": "全部环境", "items": ["D2：所有 left / right 均为机器人坐标系。"]},
+]
+KNOWN_ISSUES_NOTE = "原三档同样存在，本轮不修。所有 left / right 均为机器人坐标系。"
+SUBGOAL_ZH = {  # 本轮新增或改动的子目标原文 → 网页人读标签
+    "wait for the containers to finish swapping": "等待容器交换完成",
+    "press the button": "按按钮",
+    "place the cube onto the table": "把方块放到桌面",
+    "put the cube back to its original position": "放回原位（无坐标，设计如此）",
+}
+
+
+def translate_subgoal(text):
+    """把子目标原文（去掉 at <坐标> 后）翻译为人读标签；未登记返回原文。"""
+    import re
+    base = re.sub(r"\s*at\s*<[^>]*>\s*$", "", str(text).strip())
+    return SUBGOAL_ZH.get(base, base)
+
+
+def task_notices(fixed):
+    """各任务顶部说明框；fixed=False（旧 delivery，修复前数据）时只返回不依赖新数据的说明。"""
+    notices = {
+        "ButtonUnmaskSwap": {
+            "kind": "emphasis",
+            "title": f"重点：新四档在第二个按钮之后新增子目标「{translate_subgoal('wait for the containers to finish swapping')}」",
+            "steps": [
+                "原文 wait for the containers to finish swapping。按下第二个按钮后，机器人要静止等待容器交换 18～124 步；原先这一整段仍标为「按第二个按钮」（N1）。",
+                "修复后等待段单独成为一个子目标，选项不再是 B；交换后子目标坐标随容器移动刷新（F4）。",
+                "button_left / button_right 按机器人坐标系命名，「按第一个按钮」与选项 a 指向同一按钮（F3），子目标文字不变。",
+            ],
+            "note": "只涉及 xhard1～xhard4。" + ("" if fixed else "当前目录仍为修复前数据，视频中还没有等待子目标。"),
+        },
+        "PickHighlight": {
+            "kind": "emphasis",
+            "title": "本轮改动：任务链末尾补上「放下末块」和「按末按钮」",
+            "steps": [
+                "题面：先按按钮，再逐个抓起全部高亮方块，最后再按按钮结束（F1）。",
+                f"子目标：末块抓起后新增 place the cube onto the table（{translate_subgoal('place the cube onto the table')}），链尾新增 press the button at <坐标>（按末按钮）；成功时点后移到末按钮。",
+                "新档题面无「, which is <颜色>」后缀，来源为 V4 决策（N9，不改）。",
+            ],
+            "note": "只涉及 xhard1～xhard4。" + ("" if fixed else "当前目录仍为修复前数据。"),
+        },
+        "VideoPlaceOrder": {
+            "kind": "emphasis",
+            "title": "说明：「放回原位」子目标没有坐标，是设计如此",
+            "steps": ["put the cube back to its original position 在新四档去掉了 at <>（N5）：原位标记在画面中被隐藏，坐标本来就无法给出。"],
+            "note": "只涉及 xhard1～xhard4。",
+        },
+    }
+    if fixed:
+        notices["VideoPlaceButton"] = {
+            "kind": "emphasis",
+            "title": "已按 Q-C 修复：按钮前题的答案 = 按钮前最后一次放置的台",
+            "steps": [
+                "题面每局只剩一句：按钮前题问「where it was last placed before the button was pressed」，按钮后题问「where it was first placed after the button was pressed」。",
+                "删去的说法：right / immediately before/after 在双块档被另一块的放置打断，时序不成立（N3）；previously placed 在有额外放置时不唯一（N4）。",
+                "台可交换：演示结束后两张台互换位置，答案按台实体判定，需要追踪答案台交换后的位置。",
+                "xhard3 / xhard4 台数由 4 增为 5（N2），额外放台落到空闲的第 5 台，不再出现原地空转或两块同台（F6）。",
+                "「放回原位」子目标没有坐标，是设计如此（N5）。",
+            ],
+            "note": "台代号与下方演示子目标列表一致（按首次放置顺序编 A、B、C…），不是视频中的标签；带「题目所问」标记的是答案那次放置。",
+        }
+    else:
+        notices["VideoPlaceButton"] = {
+            "kind": "issue",
+            "title": "已知问题：部分视频的程序答案与题目含义不一致（修复前数据）",
+            "steps": [
+                "已确认受影响的是 xhard3 示例4和示例7（episode 3、6）。",
+                "以示例4为例：蓝色方块（正确方块）先放到台B，再被拿起放到台C，然后按按钮。",
+                "题目问蓝色方块在按钮前最后一次放到的台，因此按演示应回答台C，并追踪该台交换后的所在位置。",
+                "当前程序仍将更早的台B绑定为正确答案；视频中的执行按这个答案完成，所以内部记录显示成功。",
+                "本轮已按 Q-C 改为「按钮前最后一次放置的台」，新数据回传后此说明将替换。",
+            ],
+            "note": "台代号与下方演示子目标列表一致（按首次放置顺序编 A、B、C、D），不是视频中的标签；列表里带「题目所问」标记的是按题意应答的那次放置。视频显示的成功只代表通过当前程序判定，不能证明符合题目含义。",
+        }
+    return notices
+
+
+TIER_NOTES_FIXED = {  # 新数据才有的档位说明
+    ("VideoPlaceButton", "xhard3"): "台数 5（原 4，N2）；额外放台落在空闲台。",
+    ("VideoPlaceButton", "xhard4"): "台数 5（原 4，N2）；额外放台落在空闲台。",
+}
+
+
 def gradients(plan):
     """读取批准的第三节；只取梯度维度与各档数值，不公开运行说明。"""
     section = plan.read_text(encoding="utf-8").split("## 三、", 1)[1].split("## 四、", 1)[0]
@@ -95,8 +252,12 @@ def parse_goal(text):
         raise ValueError(f"题目颜色无法解析：{text}")
     side = re.search(r"right (before|after) the button", text)
     order = re.search(r"the (first|second|third|fourth) target", text)
+    # site-v11：新四档修复后（§九）VPB 每局只剩一句 last placed before / first placed after
+    fixed = re.search(r"where it was (last placed before|first placed after) the button", text)
     if side:
         return {"color": color.group(1), "mode": side.group(1), "n": None}
+    if fixed:
+        return {"color": color.group(1), "mode": fixed.group(1).split()[-1], "n": None}
     if order:
         return {"color": color.group(1), "mode": "order", "n": ORDINAL_EN[order.group(1)]}
     raise ValueError(f"题目提问方式无法解析：{text}")
@@ -139,7 +300,11 @@ def read_boundaries(path, episode):
     terminal = ""
     with h5py.File(path, "r") as handle:
         group = handle[f"episode_{episode}"]
-        goal = parse_goal(decode(group["setup/task_goal"][()][0]))
+        goals = [decode(value) for value in group["setup/task_goal"][()]]
+        goal = parse_goal(goals[0])
+        # 修复后数据判据：只有一句且为新句式（旧数据首句恒为 right before/after 或 the N-th target）
+        goal["fixed"] = len(goals) == 1 and any(
+            phrase in goals[0] for phrase in ("where it was last placed before", "where it was first placed after"))
         image0 = group["timestep_0/obs/front_rgb"][()]
         frames = sorted((name for name in group if name.startswith("timestep_")),
                         key=lambda name: int(name.split("_")[1]))
@@ -271,7 +436,8 @@ def label_flow(task, boundaries, n_cubes, goal, color_at, expected_placements=No
     correct_drops = [index for index in demo_drops if steps[index]["cube"] == correct]
     if goal["mode"] == "before":
         side = [index for index in correct_drops if steps[index]["side"] == "before"]
-        asked, program = (side[-1], side[0]) if side else (None, None)
+        # 旧数据程序答案取按钮前第一次放置（已披露问题）；修复后（Q-C）取最后一次
+        asked, program = (side[-1], side[-1] if goal.get("fixed") else side[0]) if side else (None, None)
     elif goal["mode"] == "after":
         side = [index for index in correct_drops if steps[index]["side"] == "after"]
         asked, program = (side[0], side[0]) if side else (None, None)
@@ -305,6 +471,8 @@ def label_flow(task, boundaries, n_cubes, goal, color_at, expected_placements=No
             text = f"{identity(cube)}放到桌面（演示结束）"
         else:
             text = f"{identity(cube)}放回原位"
+            if item["point"] is None and item["grounded"].strip() == "put the cube back to its original position":
+                text += "（该子目标无坐标，设计如此）"
         step = {"text": text, "role": role, "asked": index == asked}
         if index == asked and asked != program:
             step["note"] = KNOWN_ISSUE_NOTE
@@ -332,7 +500,7 @@ def sample_flow(task, tier, path, episode):
 
 def build_catalog(delivery, baseline, plan):
     values = gradients(plan)
-    public = {"schema": "v6-site-catalog/1", "tasks": []}
+    public = {"schema": "v6-site-catalog/2", "tasks": []}
     private = {}
     excluded = []
     flow_audit = []
@@ -340,17 +508,6 @@ def build_catalog(delivery, baseline, plan):
     cards = {}
     for task, name in NAMES.items():
         item = {"id": task, "name": name, "note": NOTES[task], "tiers": []}
-        if task == "VideoPlaceButton":
-            item["known_issue"] = {
-                "title": "已知问题：部分视频的程序答案与题目含义不一致",
-                "steps": [
-                    "已确认受影响的是 xhard3 示例4和示例7（episode 3、6）。",
-                    "以示例4为例：蓝色方块（正确方块）先放到台B，再被拿起放到台C，然后按按钮。",
-                    "题目问蓝色方块在按钮前最后一次放到的台，因此按演示应回答台C，并追踪该台交换后的所在位置。",
-                    "当前程序仍将更早的台B绑定为正确答案；视频中的执行按这个答案完成，所以内部记录显示成功。",
-                ],
-                "note": "台代号与下方演示子目标列表一致（按首次放置顺序编 A、B、C、D），不是视频中的标签；列表里带「题目所问」标记的是按题意应答的那次放置。视频显示的成功只代表通过当前程序判定，不能证明符合题目含义。此处保留原视频并说明问题，没有修复源码或重生成数据；其他所列样例不因此被判定为错误。",
-            }
         for tier in (("hard", "xhard4") if task in EXTRA else TIERS):
             card = {"id": tier, "label": tier, "gradient": values[task][tier], "videos": []}
             cards[task, tier] = card
@@ -421,11 +578,33 @@ def build_catalog(delivery, baseline, plan):
     for (task, tier), card in cards.items():
         if not card["videos"]:
             raise ValueError(f"缺少成功视频：{task}/{tier}")
+    # 判定目录数据是否为修复后（v6-02）：VPB 新四档样例题面全为新句式；混合即报错
+    vpb_fixed = {bool(a["goal"].get("fixed")) for a in flow_audit if a["task"] == "VideoPlaceButton" and a["tier"] != "hard"}
+    if len(vpb_fixed) > 1:
+        raise ValueError("VPB 新四档样例混有修复前与修复后题面")
+    fixed = vpb_fixed == {True}
+    expected_mismatch = set() if fixed else KNOWN_ISSUE_SAMPLES
+    notices = task_notices(fixed)
+    for item in public["tasks"]:
+        notice = notices.get(item["id"])
+        if notice:
+            item["known_issue"] = notice
+        for card in item["tiers"]:
+            if fixed and (item["id"], card["id"]) in TIER_NOTES_FIXED:
+                card["note"] = TIER_NOTES_FIXED[item["id"], card["id"]]
+    public["data_fixed"] = fixed
+    public["changelog"] = {
+        "title": "本轮改动（V6 语义审查修复，只涉及 xhard1～xhard4）",
+        "status": "当前视频已按本轮修复重新生成。" if fixed else "当前目录仍为修复前数据（v6-01），下列改动尚未体现在视频中。",
+        "items": CHANGELOG,
+    }
+    public["known_issues"] = {"title": "已知问题（原三档同样存在，本轮不修）", "note": KNOWN_ISSUES_NOTE, "groups": KNOWN_ISSUES}
     listed = ",".join(f"{tier}:{episode}" for _, tier, episode in sorted(mismatched))
-    if mismatched != KNOWN_ISSUE_SAMPLES:
+    if mismatched != expected_mismatch:
         print(f"KNOWN_ISSUE_MATCH=FAIL mismatched={listed}")
         raise ValueError("题意与程序答案不一致的样例集合与已披露集合不同")
-    print(f"KNOWN_ISSUE_MATCH=PASS mismatched={listed}")
+    print(f"KNOWN_ISSUE_MATCH=PASS mismatched={listed or 'none'} data_fixed={fixed}")
+    print(f"SITE_V11_CHANGELOG={'PASS' if len(CHANGELOG) == 15 else 'FAIL'} items={len(CHANGELOG)} known_issue_groups={len(KNOWN_ISSUES)}")
     print(f"FLOW_LABELS=PASS samples={len(flow_audit)} cubes={sum(len(a['cubes']) for a in flow_audit)} "
           f"asked={sum(1 for a in flow_audit if a['asked_index'] is not None)}")
     return public, private, excluded, flow_audit
