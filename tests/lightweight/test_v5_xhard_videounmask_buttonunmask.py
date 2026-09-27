@@ -281,7 +281,8 @@ def test_xhard内环与干扰容器各停各的点且落回原位(task, monkeypa
 
 
 # ── 模拟器：真 reset 验收（gpu 标记，手动跑） ───────────────────────────────────
-V4_SPECS = Path("/data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/configs/newtask-v4/v4-01/specs.jsonl")
+# v4-01 规格已于拆包阶段 0b 删除（git 历史可取回）；文件不存在时 inner_equal_v4 记 None。
+V4_SPECS = Path(__file__).resolve().parents[2] / "scripts/configs/newtask-v4/v4-01/specs.jsonl"
 SIM_SEEDS = {"VideoUnmask": (4600000, 4600300, 4600600, 5100001), "ButtonUnmask": (4800000, 4800300, 4800600, 5100001)}
 
 

@@ -359,11 +359,11 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 ## 项目专属规则
 
-- **P1. `scripts/` 顶层只允许存在五个入口文件，新增任何顶层文件必须先与用户沟通并获准。**（2026-09-22 用户原话「只保留这五个入口 以后新增要和用户沟通」。）
-    - **五个入口**：`generate_dataset_newseed.py`（主入口：生成 / `--extract-config` / `--merge-only`）、`seed_layout.py`（seed 公式与 16 任务规范序）、`dataset_replay.py`、`evaluation.py`、`run_example.py`。后三者与上游 main 逐字节相同，不得改动。
-    - **其余一律收进子目录**：新值注入链路进 `scripts/injection/`（含 `hf_release.py`）；对拍链路进 `scripts/parity/`（`train_split_*.py` 六件、`comparator_fixtures.py`、`compare_vs_original.py`、`calibrate.py` 等）；冻结配置进 `scripts/configs/`。
+- **P1. `scripts/` 顶层只允许存在清单内的入口文件，新增任何顶层文件必须先与用户沟通并获准。**（2026-09-22 用户原话「只保留这五个入口 以后新增要和用户沟通」；2026-09-27 拆包阶段 0b 按 `0926-robomme-hard-split-plan.md` D-1 裁决删去 `generate_dataset_newseed.py`，现为四入口，拆包阶段 3 落 `evaluation_hard.py` 后为五入口。）
+    - **四个入口**：`seed_layout.py`（seed 公式与 16 任务规范序）、`dataset_replay.py`、`evaluation.py`、`run_example.py`。后三者与上游 main 逐字节相同，不得改动。
+    - **其余一律收进子目录**：对拍与生成链路进 `scripts/parity/`（`train_split_*.py`、`comparator_fixtures.py`、`v4_specs.py`、`v4_rollout.py`、`v5_generation.py`、`hard_parity.py` 等）；评估进 `scripts/eval/`；冻结配置进 `scripts/configs/`。原 `scripts/injection/` 与 V3 容差对拍已于阶段 0b 删除（git 历史可取回）。
     - **本条约束的是"新增顶层文件"这个动作**，不是禁止写新脚本：新脚本默认落到已有子目录；确实不属于任何现有子目录时，先向用户说明用途与建议位置，获准后再建新子目录。临时脚本一律写到 scratchpad 或 `artifacts/`，不得落在 `scripts/` 顶层。
-    - 核查方式：`ls -1 scripts/*.py` 应恰好列出上述五个文件。
+    - 核查方式：`ls -1 scripts/*.py` 应恰好列出上述四个文件。
 - **P2. 对 `src/robomme/` 的任何改动和覆盖都必须由用户逐个批准**（正本第 21 条的本仓库实例，`<PROTECTED_DIRS>` = `src/robomme/`；2026-09-10 用户原话「在agentsmd中加入新约定 对 src/robomme 的任何改动和覆盖 都需要用户逐个批准」）。
     - **「改动」**指对该目录下任何文件的新增、修改、删除、重命名；**「覆盖」**指不改源文件但改变其运行行为的一切手段：子类覆写方法、monkeypatch、运行时替换类或函数、导入钩子打补丁、`sys.modules` 注入替身等。两者同等对待。
     - **逐个批准**：动手前先列出「文件 / 函数或类锚点 / 改什么 / 为什么」清单交用户，用户逐条明确同意后只改被同意的那一条；同一文件里未点名的其他改动、以及「顺手修」都不算获准。计划文档里写了改动清单不等于批准；某一处获准也不延伸到下一处或下一轮。
@@ -393,7 +393,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 ## 对正本的覆盖项（按正本条号；未列出的条目按正本执行）
 
 - **覆盖第 1 条（历史英文化遗留）**：无豁免清单——原豁免对象 `scripts/data-generation-v2-noPatch/` 与 `tests/lightweight/test_no_patch_report_debug_environment.py` 已于 2026-09-09 删除。
-- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = policy 仓库 [`0901-motion-memory-plan.md`](https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/blob/v2-motionmem/0901-motion-memory-plan.md) 的「第一部分（给人看）」（原链接名 `motion-memory-plan.md` 已改名）；四份 `NEWTASK_RELEASE_V3～V6_PLAN.md` 已于 2026-09-26 按用户指令改名为 `0921-newtask-release-v3-plan.md`、`0922-newtask-release-v4-plan.md`、`0924-newtask-release-v5-plan.md`、`0925-newtask-release-v6-plan.md`（日期取首次新增提交自身时区的月日）；`INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` 沿用现名，新计划按正本 `MMDD-<主题>-plan.md` 命名。
+- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = policy 仓库 [`0901-motion-memory-plan.md`](https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/blob/v2-motionmem/0901-motion-memory-plan.md) 的「第一部分（给人看）」（原链接名 `motion-memory-plan.md` 已改名）；四份 `NEWTASK_RELEASE_V3～V6_PLAN.md` 已于 2026-09-26 按用户指令改名为 `0921-newtask-release-v3-plan.md`、`0922-newtask-release-v4-plan.md`、`0924-newtask-release-v5-plan.md`、`0925-newtask-release-v6-plan.md`（日期取首次新增提交自身时区的月日）；`INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` 沿用现名；2026-09-27 拆包阶段 0b 把 V2～V5 这五份旧计划移入 `docs/plans/`（只作经验教训留档），根目录只留 0925/0926 起的现行计划；新计划按正本 `MMDD-<主题>-plan.md` 命名。
 - **覆盖第 4 条（核心短测）**：无需数据集的核心短测 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`（2026-09-26 口径；`tests/lightweight/` 全量实测超过 5 分钟，历史 710 s）；需要数据集 / MuJoCo 环境的条件测试 `uv run --no-sync python -m pytest tests/dataset/ -q`；只改某条生成链路时至少跑该链路的定向单测；涉及实跑生成一律先做「单任务、单 episode、单 worker」smoke。
 - **覆盖第 5 条**：本仓库所有可视化脚本同受最近邻放大约束。
 - **本次V6覆盖第8条的收尾释放要求（2026-09-26）**：用户明确「再提交2个同样gl 48h job 为之后加速 现在的job跑完不要scancel」。本次四个占位job `61890467`、`61890468`、`62018665`、`62018666` 均保留，V6完成后不自动取消；后续释放须有新的用户指令。新增两席各1 GPU／16 CPU／192G／48小时，仅是资源预留，不扩大reset／轨迹预算、不等于已批准基础设施恢复清单。

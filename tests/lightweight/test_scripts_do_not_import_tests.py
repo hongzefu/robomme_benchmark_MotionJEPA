@@ -34,15 +34,3 @@ def test_scripts_下没有任何模块导入_tests():
         if "tests" in names
     }
     assert offenders == {}, offenders
-
-
-def test_注入链路使用两个包且旧生产入口已经移除():
-    package = SCRIPTS / "injection"
-    for name, expected in {
-        "candidates": {"__main__.py", "io.py", "specs.py", "screen.py", "figures.py", "report.py"},
-        "rollout": {"__main__.py", "run.py", "reset_check.py", "state.py", "report.py", "windows.py", "h5_compare.py"},
-    }.items():
-        assert expected <= {p.name for p in (package / name).glob("*.py")}
-    assert not any((package / name).exists() for name in ("campaign.py", "run.py", "plots.py", "replay.py", "contract_build.py"))
-    assert not (SCRIPTS / "injection-before-2d").exists()
-    assert not list((REPO_ROOT / "tests" / "_shared").glob("injection_*.py")), "tests/_shared 下不应再有 injection_* 模块"

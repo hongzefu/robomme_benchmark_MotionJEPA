@@ -211,27 +211,5 @@ __marimo__/
 .cursor/
 .agents/
 
-# 注入运行：候选、结果、报告、日志与迁移证据进入 Git。
+# 产物根整体不进 git（注入运行的例外已随拆包阶段 0b 删除）。
 /artifacts/*
-!/artifacts/injection/
-/artifacts/injection/*
-!/artifacts/injection/*/
-/artifacts/injection/*/*
-!/artifacts/injection/*/candidates/
-!/artifacts/injection/*/rollout/
-!/artifacts/injection/*/hf_release/
-!/artifacts/injection/*/candidates/**/*.log
-!/artifacts/injection/*/rollout/**/*.log
-/artifacts/injection/**/*.lock
-# 所有嵌套层级都忽略重媒体，包括日志内的 smoke 与对拍归档。
-/artifacts/injection/**/*.h5
-/artifacts/injection/**/*.hdf5
-/artifacts/injection/**/*.mp4
-/artifacts/injection/**/*.png
-/artifacts/injection/**/*.jpg
-/artifacts/injection/**/*.jpeg
-/artifacts/injection/**/*.svg
-!/artifacts/injection/*/rollout/figures/windows_overview.png
-/artifacts/injection/20260910-new-values-01/
-/artifacts/injection/20260910-new-values-02/
-/artifacts/injection/20260910-new-values-03/
