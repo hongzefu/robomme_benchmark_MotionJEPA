@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import shutil
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -64,6 +66,7 @@ def build_catalog(delivery, baseline, plan):
     values = gradients(plan)
     public = {"schema": "v6-site-catalog/1", "tasks": []}
     private = {}
+    excluded = []
     cards = {}
     for task, name in NAMES.items():
         item = {"id": task, "name": name, "note": NOTES[task], "tiers": []}
@@ -78,6 +81,25 @@ def build_catalog(delivery, baseline, plan):
             raise ValueError(f"未知任务档位：{task}/{tier}")
         if not paths:
             raise ValueError(f"成功轨迹无视频：{task}/{tier}/{episode}")
+        playable = []
+        for path in paths:
+            if path.name.startswith("success_NO_OBJECT_"):
+                excluded.append({"task": task, "difficulty": tier, "episode": episode,
+                                 "path": str(path.resolve()), "reason": "NO_OBJECT状态尾片，不作为轨迹示例"})
+                continue
+            probe = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                                    "stream=nb_frames,duration:format=duration", "-of", "json", str(path)],
+                                   check=True, capture_output=True, text=True, timeout=30)
+            data = json.loads(probe.stdout)
+            stream = data.get("streams", [{}])[0]
+            frames = int(stream.get("nb_frames", 0))
+            duration = float(stream.get("duration", data.get("format", {}).get("duration", 0)))
+            if frames <= 4 or duration < 1:
+                raise ValueError(f"主视频帧数或时长不足：{path} frames={frames} duration={duration}")
+            playable.append(path)
+        paths = playable
+        if not paths:
+            raise ValueError(f"轨迹缺少可播放主视频：{task}/{tier}/{episode}")
         for index, path in enumerate(sorted(paths)):
             resolved = path.resolve(strict=True)
             if not resolved.is_relative_to(ARTIFACTS.resolve()) or not resolved.is_file() or resolved.suffix.lower() != ".mp4":
@@ -109,7 +131,7 @@ def build_catalog(delivery, baseline, plan):
     for (task, tier), card in cards.items():
         if not card["videos"]:
             raise ValueError(f"缺少成功视频：{task}/{tier}")
-    return public, private
+    return public, private, excluded
 
 
 def main(argv=None):
@@ -118,18 +140,31 @@ def main(argv=None):
     parser.add_argument("--baseline", type=Path, default=ARTIFACTS / "newtask-v6/v1/base/results/B.json")
     parser.add_argument("--plan", type=Path, default=ROOT / "0925-newtask-release-v6-plan.md")
     parser.add_argument("--out", type=Path, default=ARTIFACTS / "newtask-v6/site")
+    parser.add_argument("--poster-source", type=Path, help="按媒体绝对路径匹配已有预览，不依赖旧媒体编号")
     args = parser.parse_args(argv)
     if not args.out.resolve().is_relative_to(ARTIFACTS.resolve()):
         parser.error("输出必须位于本仓库artifacts")
-    public, private = build_catalog(args.delivery, args.baseline, args.plan)
+    public, private, excluded = build_catalog(args.delivery, args.baseline, args.plan)
     args.out.mkdir(parents=True, exist_ok=True)
-    for name in ("catalog.json", "media-private.json"):
+    for name in ("catalog.json", "media-private.json", "excluded-tail-clips.json"):
         if (args.out / name).exists():
             raise FileExistsError(f"拒绝覆盖已有目录文件：{name}")
-    for name, data in (("catalog.json", public), ("media-private.json", private)):
+    for name, data in (("catalog.json", public), ("media-private.json", private),
+                       ("excluded-tail-clips.json", {"count": len(excluded), "clips": excluded})):
         with (args.out / name).open("x", encoding="utf-8") as stream:
             json.dump(data, stream, ensure_ascii=False, indent=2)
             stream.write("\n")
+    if args.poster_source:
+        source_media = json.loads((args.poster_source / "media-private.json").read_text())
+        source_by_path = {str(Path(path).resolve()): media_id for media_id, path in source_media.items()}
+        posters = args.out / "posters"
+        posters.mkdir()
+        for media_id, path in private.items():
+            old_id = source_by_path[path]
+            source = args.poster_source / "posters" / f"{old_id}.jpg"
+            if not source.is_file():
+                raise FileNotFoundError(f"缺少匹配预览：{source}")
+            shutil.copyfile(source, posters / f"{media_id}.jpg")
     print(f"SITE_CATALOG=PASS tasks={len(public['tasks'])} cards={sum(len(t['tiers']) for t in public['tasks'])} videos={len(private)}")
     return 0
 

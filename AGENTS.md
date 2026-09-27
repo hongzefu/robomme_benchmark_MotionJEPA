@@ -31,7 +31,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-vail`、NFS 不存在、出现第二套 GPU 等），一律停下把原始输出交用户裁决，不得自行套用。本仓库目前只有这一个环境列；出现其他机器时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=3d47f2fc1d90d2152aa3b8406f6a7b74e3410a61 blob=48f9efb69a185f5b843047b937bfdeed9152c2e0 -->
+<!-- AGENTMETARULES:BEGIN common-agents src=38c6732b758585f8fd75b7d670c206d2fd74b68e blob=8044456d0dc760abfbcb84870ed344d637a845e5 -->
 
 ## 强制规则（最高优先级）
 
@@ -221,7 +221,11 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 16. **GPU 利用率的测量与判读必须防止「中位数假象」**：结论必须以稳态窗口内的 **util 均值、0% 采样占比、慢步/非慢步分层均值** 为准，禁止以中位数作为标题结论；采样间隔必须显著小于步时——步时数秒量级时用 `nvidia-smi -lms 500` 流式密集采样（500ms 即 NVML 有效密度上限，`utilization.gpu` 本身是其约 1/6~1 秒内部周期的均值，不把重复读数当作新增证据），需要与旧数据对照时可并行保留 15 秒 legacy 采样通道。性能优化的首要判据是「GPU 是否吃满」，不得凭单一统计量宣称无瓶颈（2026-08-24 v1-e2e-b64 中位 100% 掩盖了均值仅 69-70% 的实测教训）；但也**不能以「GPU 吃满」替代吞吐、正确性和资源成本**。性能与吞吐结论必须带稳态与环境证据：GPU、底层存储介质（本机 NVMe / NFS / 本地 RAID）、batch size、worker 数、warmup 与预热区间、稳态窗口、采样间隔与吞吐；不同介质或环境的数字不得混比，跨介质 / 跨环境对照必须在同一介质、当前环境上重测。
 
-    来源：policy/AGENTS.md 规则 16；mjepa/AGENTS.md 规则 17；原第 14 条末项「吞吐基准记介质」于 2026-09-26 并入。
+    - **监控自身的干扰必须先验证**：只读GPU查询不等于无扰动。禁止未经影响验证，用高频 `watch`／循环反复启动全量、全卡 `nvidia-smi` 查询；采样不得扰动正式训练、生成或评估主线。上述采样密度要求仍保留，但不是直接增加查询负载的许可：优先复用已有监控数据；确需新增采样时，用单个持久进程只查询必要GPU与字段，并在正式运行前以同环境的监控关闭／开启对照核对步时、吞吐、CPU执行与驱动锁等待，记录实际开销。不得宣称500ms间隔、`nvidia-smi dmon`或持久进程天然零影响；尚未通过干扰验证时，不把该监控加入正式主线。
+    - **干预已有监控须核实归属与授权**：其他用户或其他任务的监控进程，即使看似造成争用，也不能擅自暂停或停止。先核对精确PID、启动时间及任务归属，取得相应授权后只操作被授权对象；父进程链不能证明命令是谁键入的，不据此归责。监控开关实验也不能自行扩展正式任务范围或重启主worker。
+    - **实测教训（2026-09-26，benchmark V6 S3）**：两条高频全卡查询在快速S0基线结束后、本轮S3启动前开始运行。用户授权暂停30秒并自动恢复后，驱动锁等待采样占比按暂停前／暂停中／恢复后为70.0%／1.7%／75.0%，主worker进程CPU时间占窗口比例为21.1%／91.8%／24.0%；两者是不同统计量。随后经用户批准关闭两条监控，8个相邻身份的生成间隔恢复到对应基线的0.995～1.010倍，主worker与源码未更换。该可逆对照证明当时显著干扰，不证明所有监控方式都有同样影响，也不把速度恢复当作完整正确性验收。
+
+    来源：policy/AGENTS.md 规则 16；mjepa/AGENTS.md 规则 17；原第 14 条末项「吞吐基准记介质」于 2026-09-26 并入；benchmark [V6 S3报告](https://github.com/hongzefu/robomme_benchmark_MotionJEPA/blob/newtaskRelease-v5/docs/validation/newtask-v6/20260926-s3.md)「两条高频查询的来源与暂停／恢复实验」「用户授权关闭与恢复速度」。
 
 17. **预计或实际运行超过 5 分钟的调试 / 基准 / 诊断 run 一律视作完整运行，同等适用第 12 条**（clean HEAD 启动、按第 12 条 (2) 的体例留档），不得以「只是调试」为由跳过留档。与第 12 条的差异只有：Beta 锚点只对正式训练强制，单纯诊断在已有 clean HEAD 上记录提交即可、不制造空提交；短测意外超过 5 分钟时补记真实启动状态并保存结果，不得声称事后提交就是启动版本；**无法满足可复现要求的结果须标为探索性**，正式结论另从可复现锚点重测。≤5 分钟的短 smoke 不强制留档，临时 run 清理按第 6 条。
 
@@ -364,7 +368,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=3d47f2fc1d90d2152aa3b8406f6a7b74e3410a61 blob=48f9efb69a185f5b843047b937bfdeed9152c2e0 -->
+<!-- AGENTMETARULES:END common-agents src=38c6732b758585f8fd75b7d670c206d2fd74b68e blob=8044456d0dc760abfbcb84870ed344d637a845e5 -->
 
 ## 项目专属规则
 
@@ -408,6 +412,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - **本次V6覆盖第8条的收尾释放要求（2026-09-26）**：用户明确「再提交2个同样gl 48h job 为之后加速 现在的job跑完不要scancel」。本次四个占位job `61890467`、`61890468`、`62018665`、`62018666` 均保留，V6完成后不自动取消；后续释放须有新的用户指令。新增两席各1 GPU／16 CPU／192G／48小时，仅是资源预留，不扩大reset／轨迹预算、不等于已批准基础设施恢复清单。
 - **覆盖第 11 条（commit 体例与 push）**：`<COMMIT_SUBJECT_STYLE>` = `<大版本>.<小版本>[.<修订>] <中文描述>`（如 `2.9.2 变体简图出图验证与账本补记`），从 `git log` 最近一次接续；主分支 commit 后立即 push（正本口径）；V6 对拍用的副本分支（`v6-draft/*` worktree 上的分支）一律不 push（2026-09-26 用户决策）。
 - **覆盖第 14 条（存储）**：`<WORK_ROOT>` = `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`；`<STORE_ROOT>` = `artifacts/`（`.gitignore` 整体忽略，`artifacts/injection/` 例外）；跨仓库引用 MotionJEPA 侧数据时优先取 `/data/hongzefu/` 下的本机副本，NFS 原件是权威源、同步只用 rsync；集群侧克隆 `<GL_REPO>` 的产物落 NFS、比较在本机跑。
+- **第 16 条的项目适用范围**：本仓库的GPU生成、渲染与性能诊断同样适用采样证据及监控自身干扰验证；不再以“无训练链路”排除本条。高频全卡查询的本轮因果证据见`docs/validation/newtask-v6/20260926-s3.md`，已知用户监控须先核实归属并获得授权才能暂停或关闭。
 - **覆盖第 21 条**：见 P2。
 - **覆盖第 22 条（账本）**：本仓库以本文件末尾的「当前进度」与「追加式执行日志」为持续状态账本，`<DOC_ROOT>` = 本文件账本 + `docs/`（验证与实测记录）。
 
@@ -431,8 +436,8 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 ## 规则来源与未采用清单
 
-- 通用规则 = 上方标记块，正本 commit 见标记行 `src=`（2026-09-26 首次接入；此前本文件的强制规则 1–13 是 2026-08-18 自 MotionJEPA 移植、2026-09-09 拆分后的旧版）。
-- 未采用的正本条目及原因：第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 16 条（GPU 利用率判读）、第 18 条（训练链路一致性）——本仓库无训练链路；第 13 条（数据集构建 Beta 体例）——本仓库生成留档走账本与 `docs/validation/`，不打 Beta commit；第 24 条（submodule / vendoring）——本仓库以 `scripts/parity/` 的隔离官方源码树（`--official-root`）与 AST 钉死 `scripts/` 不依赖 `tests/` 为准。
+- 通用规则 = 上方标记块，当前正本 commit `38c6732b758585f8fd75b7d670c206d2fd74b68e`，与标记行 `src=` 一致（2026-09-26 同步高频GPU查询教训；此前本文件的强制规则 1–13 是 2026-08-18 自 MotionJEPA 移植、2026-09-09 拆分后的旧版）。
+- 未采用的正本条目及原因：第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 18 条（训练链路一致性）——本仓库无训练链路；第 13 条（数据集构建 Beta 体例）——本仓库生成留档走账本与 `docs/validation/`，不打 Beta commit；第 24 条（submodule / vendoring）——本仓库以 `scripts/parity/` 的隔离官方源码树（`--official-root`）与 AST 钉死 `scripts/` 不依赖 `tests/` 为准。
 - 旧条号对照（2026-09-26 之前的历史账本沿用旧号）：旧 1 → 正本第 1 条；旧 2 → 第 3 条；旧 3 → 第 4 条（覆盖）；旧 4 → 第 7 条；旧 5 → 第 9 条；旧 6 → 第 5 条；旧 7 → 第 11 条（覆盖）；旧 8 → 第 14 条（覆盖）；旧 9 → 第 20 条；旧 10 → 第 2 条；旧 11 → P2 / 第 21 条；旧 12 → P1；旧 13 → 第 26 条；旧 14（2026-09-26 Codex 会话新增的 reset 对拍 / rollout 生成限制）→ P3。
 - Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；集群规约见 `greatlakes.md`（标记块 `common-greatlakes`）与 `docs/greatlakes.md`（本仓库实测记录）。两份文件冲突时以本文件为准。
 
@@ -530,7 +535,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| V6 S2～S5正式续行（2026-09-26） | S4完成并验证165成功；S3运行中 | 650抽签得550候选；520梯度值PASS；恢复23次22成功1真实失败，累计236派发、165成功、3真实失败、60旧基础设施失败、8旧未决；55格各3成功，媒体及回传验证通过；[S4报告](docs/validation/newtask-v6/20260926-s4.md) | 按用户要求立即提交推送S4，再部署逐任务难度与视频站；S3结束后单独回写提交，当前accepted=false；四席保留 |
+| V6 S2～S5正式续行（2026-09-26） | S4已完成并推送；网站213视频全测通过；S3恢复正常速度继续运行 | 550候选、520梯度值PASS、55格165成功；[S4报告](docs/validation/newtask-v6/20260926-s4.md)；两条高频nvidia-smi监控经暂停／恢复实验定位，用户批准关闭后相邻轨迹恢复至基线约1倍；网站修订排除38个状态尾片，213主视频逐个播放／拖动／继续通过 | S3结束后单独回写最终判据并提交推送，当前accepted=false；四席与网站保留 |
 | V6第5.3节完整范围与仅文档边界（2026-09-26） | 计划已写回，生成未启动 | S2恢复144次固定探针，S3保留16×3×3＝144局；S4为13×4×10＋3×1×10＝550候选、13×4×3＋3×1×3＝165成功轨迹目标，复用520候选查取值；额外200 reset仍取消 | 用户最新要求「不要直接做 写回md」；后续收到开始指令再按完整清单执行，已同意范围不分阶段重问 |
 | reset／轨迹生成数量阈值与一次性授权（2026-09-26） | 文档修订完成 | 项目规则 P3 明确单 worker 超过10、多 worker 合计超过50须事先授权，失败重试和递补计入预算；全部已知阶段一次汇总审批，已有授权不重复询问；正本标记块保持不变 | 后续运行沿用完整授权清单；本轮未启动生成 |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
@@ -2384,6 +2389,17 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 文字校准：BinFill原hard总块10～12、新档固定12；MoveCube圆环0.20为外半径，计划总览误称外径已修正；三个例外明确真实档位差异。静态报告ButtonUnmask的xhard1／2干扰值从旧7／9修正为实际8／10，未改变生成配置。定向25测试通过，0.77秒。
 - 用户新要求：「单独用另外一个进程来同步做s3 调查为什么这么慢」。不重启主S3，独立GPU1单worker固定BinFill/0/4000诊断，会话`v6-s3-gpu1-diagnostic-01`，产物`artifacts/newtask-v6/s3-slow-investigation/gpu1-smoke-20260926-01/`，单次上限280秒、最多1身份、不重试；实际源码和runner/worker/依赖对c8c06ab无差异，网站在途状态如实记录。NVML确认新worker2137044在GPU1、主1843953仍GPU0。
 - 初步观察：两进程20点中各16点驱动锁等待、4点运行，仍有CPU及文件进展；跨GPU同节律尚未定位具体锁持有者。20:26按剩余身份基线耗时与当前8.06倍计算，预计再约4.5小时，非完成承诺。S3阶段报告明确PENDING，最终仍须真实144身份硬闸；四席和网站均保留。
+
+### 2026-09-26 America/Detroit — S3慢速原因定位与视频尾片修订
+
+- 用户要求：「单独用另外一个进程来同步做s3 调查为什么这么慢」。GPU1固定BinFill/0/4000仅一次诊断190.164秒、成功550帧、退出0，HDF5 SHA与主GPU0同身份完全相同；备用profile方案未启动。主S3始终同一worker1843953，没有重跑或换seed。
+- 已定位两条高频全卡查询：PID1275035于15:53:54、PID1488784于16:30:45启动，父链为VS Code ptyHost964190→bash972715（pts/93，策略学习仓库）／bash965042（pts/90，本仓库）→watch。能定位来源终端，不能据此断言具体键入者；它们不是本任务tmux。
+- 用户批准「允许暂停30秒并自动恢复」后，精确绑定两PID/starttime暂停30秒：主S3驱动锁样本占比70%→1.7%→75%，CPU时间／墙钟21.1%→91.8%→24.0%，主进程身份不变，两watch按约恢复。随后用户明确「两条高频 nvidia-smi直接关闭」；先SIGTERM，两进程停在T未退出，再核实身份后SIGKILL仅这两PID，确认无watch nvidia-smi残留。未停止S3、其他终端或GPU。证据`artifacts/newtask-v6/s3-slow-investigation/system-contention/`。
+- 关闭后8个相邻身份耗时为对应基线0.995～1.010倍，之前4.5小时估计失效。20:38按剩余身份基线估计约28.5分钟、21:07左右生成结束；这是条件估计，不代替最终验收。经验：高频全量状态查询并非零成本；本机SAPIEN运行期不得未经影响验证反复启动全卡nvidia-smi查询，既有用户监控仍须先获授权才能处理。
+- 用户指出SwingXtimes/xhard4/示例7片段2不能播放并要求「做详细的playwright测试」。复现为1帧0.033333秒，播放后约15毫秒就结束，无编码错误。全部251文件中38个为1～4帧NO_OBJECT状态尾片；先前首帧核验与逐任务部分样例测试不足以发现用户体验问题。原始尾片保留，网站目录排除它们，213主视频分别对应165新值与48原hard成功轨迹，每卡3条。
+- 原251文件真实浏览器逐项播放／拖动／继续播放：213通过、38明确过短、0其他失败、JS错误0；当前站点已切`artifacts/newtask-v6/site-v4/`，正在复测全部213。原用户位置复测第三样例36.87秒，桌面与390宽移动端播放、跳转、继续均正常。完整记录见网站报告与`playwright-all-results.json`，不把短片算通过，不把局部播放当全帧验收。
+- 后续完成：v4全213逐项复测退出0，`ALL_VIDEO_BROWSER={"PASS":213,"FAIL":0,"TOO_SHORT_FOR_TRAJECTORY":0} page_errors=0`；IP地址实际API为16任务／71卡／213视频，每卡3条。桌面与移动截图目视正常。此处保留前条“正在复测”为当时记录，现已完成。
+- 规则固化：用户要求「把高频 nvidia-smi 的教训写入写入项目md和https://github.com/hongzefu/AgentMetaRules-hongzefu」。正本第16条追加监控自身干扰闸门、归属授权与实测，提交`38c6732`并推送；用`sync_rules.py apply --repo benchmark --file AGENTS.md`回流，块外与账本字节保持、`SYNC_SUMMARY=PASS pass=3 fail=0 missing=0`。项目明确将第16条适用于生成与渲染，避免旧“未采用”声明架空新规则；未同步或改写其他项目仓库。
 
 ### 2026-09-26 America/Detroit — robomme_hard 拆包接口方案落根目录（只规划）
 

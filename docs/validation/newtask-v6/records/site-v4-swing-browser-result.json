@@ -1,0 +1,76 @@
+{
+  "buttons": 3,
+  "caption": "示例 7",
+  "before": {
+    "duration": 36.866667,
+    "currentTime": 0,
+    "ended": false,
+    "paused": true,
+    "error": null,
+    "videoWidth": 1280,
+    "videoHeight": 816,
+    "controls": true,
+    "src": "http://127.0.0.1:8060/media/ffa1475858a312490197afc1"
+  },
+  "after_play": {
+    "duration": 36.866667,
+    "currentTime": 1.380694,
+    "ended": false,
+    "paused": false,
+    "error": null,
+    "videoWidth": 1280,
+    "videoHeight": 816,
+    "controls": true,
+    "src": "http://127.0.0.1:8060/media/ffa1475858a312490197afc1"
+  },
+  "after_seek": {
+    "duration": 36.866667,
+    "currentTime": 18.608416,
+    "ended": false,
+    "paused": false,
+    "error": null,
+    "videoWidth": 1280,
+    "videoHeight": 816,
+    "controls": true,
+    "src": "http://127.0.0.1:8060/media/ffa1475858a312490197afc1"
+  },
+  "after_seek_continue": {
+    "duration": 36.866667,
+    "currentTime": 19.81832,
+    "ended": false,
+    "paused": false,
+    "error": null,
+    "videoWidth": 1280,
+    "videoHeight": 816,
+    "controls": true,
+    "src": "http://127.0.0.1:8060/media/ffa1475858a312490197afc1"
+  },
+  "mobile_before": {
+    "duration": 36.866667,
+    "currentTime": 20.517254,
+    "ended": false,
+    "paused": false,
+    "error": null,
+    "videoWidth": 1280,
+    "videoHeight": 816,
+    "controls": true,
+    "src": "http://127.0.0.1:8060/media/ffa1475858a312490197afc1"
+  },
+  "mobile_after": {
+    "duration": 36.866667,
+    "currentTime": 21.728418,
+    "ended": false,
+    "paused": false,
+    "error": null,
+    "videoWidth": 1280,
+    "videoHeight": 816,
+    "controls": true,
+    "src": "http://127.0.0.1:8060/media/ffa1475858a312490197afc1"
+  },
+  "mobile_widths": {
+    "inner": 390,
+    "body": 390,
+    "document": 390
+  },
+  "status": "PASS"
+}
