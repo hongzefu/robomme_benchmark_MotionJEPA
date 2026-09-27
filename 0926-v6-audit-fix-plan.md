@@ -373,7 +373,7 @@ MoveCube peg_push 各 ≤10 局、VideoRepick xhard1～4 各 5～10 局、PickHi
 | VPO | 「vpo没问题」 | 只做 N5 |
 | M1 | 「m1 a」 | VideoRepick 新四档失败窗口随轮次滚动 |
 | M2 | 「m2 a」 | 改计划文字 |
-| M3 | 未点名 | 只记录 |
+| M3 | 「m3 a」 | 只记录，原三档不动 |
 | S1～S5、S7～S13 | 「不管」 | 只记录 |
 | S6 | 「s6 a」 | 只记录 |
 
@@ -408,3 +408,200 @@ F2、F5、D3、D7、N6～N8、S1～S13、M3。网站「已知问题」页按环�
 2. 按 8.2 逐项改 → 定向单测 + G1～G3（原三档 48 次 reset 零漂移）→ commit/push → 集群侧同步。
 3. 三席起 S4 管道 `v6-02`（xhard1+2 / xhard3 / xhard4）→ `verify_s4.py` → 第二节各判定行 + `VPB_SEMANTIC` / `VPO_SEMANTIC` / `BUS_WAIT_SUBGOAL` / `VR_BOUNDARY` 判定行。
 4. 网站 site-v11 → Playwright 全量 → 留档 → commit/push。
+
+## 九、VideoPlaceButton / VideoPlaceOrder 修复后的题面与子目标定稿（含正确性论证）
+
+本节用交付 HDF5 的英文原文（`setup/task_goal` 与逐段 `info/simple_subgoal` / `info/grounded_subgoal`）说明现状，再给出修复后同一局的序列。`<行, 列>` 为前相机像素坐标；`demo=1` 演示段、`demo=0` 执行段。原三档一字不动。
+
+### 9.1 VideoPlaceButton 任务定义
+
+演示：机器人把方块在若干张外观相同的紫色台之间搬动，中间按一次按钮；演示结束后两张台互换位置（hard 与新四档 `swap=True`）。提问：把某色方块放到它「按钮前最后一次」或「按钮后第一次」被放下的那张台上。执行段只抓答案方块放到答案台，成功判定 `is_obj_dropped_onto(target_cube, target_target)` 按台的实体判断。
+
+**新四档题面定稿（每局只生成一句，按 `task_flag` 二选一）**：
+
+```
+watch the video carefully, then place the {color} cube on the target where it was last placed before the button was pressed
+watch the video carefully, then place the {color} cube on the target where it was first placed after the button was pressed
+```
+
+删去的三种说法及原因：`right before/after`、`immediately before/after` 在双块档被另一块的放置打断（N3：xhard4 ep0 green 在 t=111 放下后 blue 又放了两次，t=590 才按按钮）；`previously placed before/after` 在有额外放置时不唯一（N4：xhard1 ep0 按钮后 red 在 `<78, 90>` 与 `<132, 165>` 都放过）。原三档四句保留。
+
+**子目标文本定稿**（新四档）：`pick up the cube at <>`、`drop the cube onto target at <>`、`press the button at <>`、`put the cube back to its original position`（删 `at <>`，N5）、`static`、`NO RECORD`、执行段 `pick up the cube at <>`、`place the cube onto the correct target at <>`。
+
+### 9.2 原三档现状（不动）——easy ep0 seed10000 原文
+
+```
+task_goal[0]: watch the video carefully, then place the red cube on the target right after the button was pressed
+task_goal[1]: watch the video carefully, and place the red cube on the target where it was placed immediately after the button was pressed
+task_goal[2]: watch the video carefully, then place the red cube on the target where it was previously placed after the button was pressed
+task_goal[3]: watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed
+t=0    demo=1  pick up the cube at <75, 140>
+t=120  demo=1  drop the cube onto target at <102, 162>      ← 按钮前
+t=201  demo=1  press the button at <131, 84>
+t=290  demo=1  pick up the cube at <99, 163>
+t=393  demo=1  drop the cube onto target at <133, 174>      ← 按钮后 = 答案
+t=481  demo=1  pick up the cube at <133, 177>
+t=550  demo=1  drop the cube onto table
+t=650  demo=1  static
+t=765  demo=0  pick up the cube at <84, 117>
+t=951  demo=0  place the cube onto the correct target at <133, 174>
+```
+
+### 9.3 xhard1（1 块、4 台、按钮后额外放 1 次）——ep0 seed9000000
+
+现状原文：
+```
+t=0    demo=1  pick up the cube at <116, 138>
+t=104  demo=1  drop the cube onto target                     ← 按钮前（切换帧被遮，无坐标；N6～N8 不修）
+t=210  demo=1  press the button at <122, 86>
+t=308  demo=1  pick up the cube at <76, 153>
+t=418  demo=1  drop the cube onto target at <78, 90>         ← 按钮后第一次 = 答案
+t=517  demo=1  pick up the cube at <74, 88>
+t=591  demo=1  drop the cube onto target at <132, 165>       ← 额外放台
+t=687  demo=1  pick up the cube at <131, 167>
+t=756  demo=1  put the cube back to its original position
+t=841  demo=1  static
+t=953  demo=0  pick up the cube at <116, 137>
+t=1057 demo=0  place the cube onto the correct target at <78, 90>
+```
+修复后：动作序列不变；题面只剩 `…first placed after the button was pressed`（本局）或 `…last placed before…`；答案 before = t=104 的台，after = `<78, 90>`。
+
+### 9.4 xhard2（1 块、4 台、按钮前后各额外 1 次）——ep0 seed11000000
+
+现状原文：
+```
+t=0    demo=1  pick up the cube at <85, 162>
+t=113  demo=1  drop the cube onto target at <111, 167>       ← 按钮前第一次
+t=192  demo=1  pick up the cube at <109, 170>
+t=267  demo=1  drop the cube onto target at <75, 147>        ← 按钮前额外 = 按钮前最后一次
+t=363  demo=1  press the button at <120, 135>
+t=456  demo=1  pick up the cube
+t=566  demo=1  drop the cube onto target at <102, 101>       ← 按钮后第一次 = after 题答案
+t=654  demo=1  pick up the cube at <100, 100>
+t=724  demo=1  drop the cube onto target at <75, 149>        ← 按钮后额外
+t=818  demo=1  pick up the cube at <72, 150>
+t=902  demo=1  put the cube back to its original position
+t=983  demo=1  static
+t=1096 demo=0  pick up the cube at <85, 162>
+t=1209 demo=0  place the cube onto the correct target at <102, 101>
+```
+修复后：动作序列不变；**before 题答案改为 `<75, 147>`**（现代码错取 `<111, 167>`，Q-C）；after 题答案 `<102, 101>` 不变。
+
+### 9.5 xhard3（2 块、台数 4→5、按钮前额外 1 次）——ep0 seed13000001
+
+现状原文（4 台）：
+```
+t=0    demo=1  pick up the cube at <145, 74>                ← 甲
+t=122  demo=1  drop the cube onto target at <90, 98>        ← 甲：按钮前
+t=232  demo=1  pick up the cube at <102, 158>               ← 乙
+t=334  demo=1  drop the cube onto target at <130, 166>      ← 乙：按钮前
+t=418  demo=1  pick up the cube at <129, 169>
+t=492  demo=1  drop the cube onto target at <115, 91>       ← 乙额外放台，落在乙自己按钮后要用的台（4 台下必然）
+t=573  demo=1  press the button at <120, 126>
+t=652  demo=1  pick up the cube at <90, 96>
+t=755  demo=1  drop the cube onto target at <78, 164>       ← 甲：按钮后
+t=845  demo=1  pick up the cube at <113, 89>
+t=948  demo=1  drop the cube onto target at <115, 91>       ← 乙：按钮后 = 原地空转（N2）
+t=1003 demo=1  pick up the cube at <74, 167>
+t=1108 demo=1  put the cube back to its original position
+t=1222 demo=1  pick up the cube at <113, 90>
+t=1329 demo=1  put the cube back to its original position
+t=1412 demo=1  static
+t=1526 demo=0  pick up the cube at <144, 75>
+t=1649 demo=0  place the cube onto the correct target at <130, 166>
+```
+修复后（5 台，占用表）：
+```
+甲 pick up the cube → drop the cube onto target（台 A）
+乙 pick up the cube → drop the cube onto target（台 C）
+乙 pick up the cube → drop the cube onto target（台 E：此刻空闲且不在 after 集合 {B, D} 内的唯一台）
+press the button
+甲 pick up the cube → drop the cube onto target（台 B）
+乙 pick up the cube → drop the cube onto target（台 D）        ← 真换台，不再空转
+甲 put the cube back to its original position
+乙 put the cube back to its original position
+static → NO RECORD → 执行段
+```
+答案：before 题问乙 = 台 E，问甲 = 台 A；after 题问甲 = 台 B，问乙 = 台 D。额外放台的主人若是甲则对称。
+
+### 9.6 xhard4（2 块、5 台、按钮前后各额外 1 次）——ep0 seed7000000
+
+现状原文（before 题，green）：
+```
+task_goal[0]: watch the video carefully, then place the green cube on the target right before the button was pressed
+task_goal[3]: watch the video carefully, then place the green cube on the target where it was last placed before the button was pressed
+t=0    demo=1  pick up the cube at <125, 181>               ← green
+t=111  demo=1  drop the cube onto target at <100, 89>       ← green：按钮前 = 答案
+t=206  demo=1  pick up the cube at <72, 142>                ← blue
+t=328  demo=1  drop the cube onto target at <75, 92>        ← blue：按钮前
+t=418  demo=1  pick up the cube at <72, 91>
+t=492  demo=1  drop the cube onto target at <82, 161>       ← blue 额外放台（落在自己 after 台）
+t=590  demo=1  press the button at <128, 134>               ← 距 green 放下已隔两次放置：right/immediately 不成立（N3）
+t=691  demo=1  pick up the cube at <99, 86>
+t=784  demo=1  drop the cube onto target at <104, 168>      ← green：按钮后
+t=877  demo=1  pick up the cube at <80, 162>
+t=973  demo=1  drop the cube onto target at <82, 161>       ← blue：按钮后 = 原地空转（N2）
+t=1031 demo=1  pick up the cube at <102, 170>
+t=1126 demo=1  drop the cube onto target at <75, 92>        ← green 按钮后额外
+t=1230 demo=1  pick up the cube at <72, 91>
+t=1305 demo=1  put the cube back to its original position
+t=1408 demo=1  pick up the cube at <79, 160>
+t=1516 demo=1  put the cube back to its original position
+t=1603 demo=1  static
+t=1724 demo=0  pick up the cube at <126, 180>
+t=1835 demo=0  place the cube onto the correct target at <100, 89>
+```
+修复后（5 台）：
+```
+green pick → drop onto target（台 A）
+blue  pick → drop onto target（台 C）
+blue  pick → drop onto target（台 E）                         ← 额外 before 落第 5 台
+press the button
+green pick → drop onto target（台 B）
+blue  pick → drop onto target（台 D）                         ← 不再空转
+green pick → drop onto target（{A, C, E} 中空闲且非答案台的一张） ← 额外 after
+green put the cube back to its original position
+blue  put the cube back to its original position
+static → NO RECORD → 执行段
+```
+题面只剩 `…last placed before the button was pressed`；答案 green = 台 A，若问 blue = 台 E。
+
+### 9.7 为什么这两句在修复后必然正确
+
+1. **存在且唯一**：被问方块在按钮前至少被放下一次（正式 before），至多两次（加额外 before）；「最后一次」是时间轴上的最大值，必存在、唯一。按钮后它第一次放下必是正式 after 放置，因为额外 after 与放回起点都排在其后；放回起点不是台。
+2. **答案与画面同源**：答案从实际放置序列取（正式 + 额外，按时间排序），不再用固定下标；F6/N2 的占用表保证每次放置都落在空台，不存在叠放或原地空转造成的语义退化。
+3. **「the target」指台实体**：所有台外观相同（`spawn_random_target(target_style="purple")`），演示后两张台互换位置；题面要求 watch the video carefully，答案按台实体判定（`is_obj_dropped_onto` 用 actor），与原三档 hard 的设计一致。这是任务难度的一部分，不是缺陷。
+4. **交付前离线核验**：只读脚本逐条读 HDF5，用 `drop the cube onto target at <坐标>` 序列与 spec 的方块/台编号重建答案台，比对执行段 `place the cube onto the correct target at <坐标>` 与题面 before/after 关键词，判定行 `VPB_SEMANTIC=PASS episodes=12 answer_mismatch=0 template_mismatch=0 task_goal_count=1`。
+
+### 9.8 VideoPlaceOrder
+
+题面两句不变：
+```
+watch the video carefully, then place the {color} cube on the {k-th} target it was previously placed on
+watch the video carefully and place the {color} cube on the {k-th} target where it was placed
+```
+原三档：1 块依次访问 2～4 张台 → `press the button` → `drop the cube onto table` → static → 执行（计划误写为放回原位，M2 只改文字）。新四档：2 块，访问次数 xhard1 (2,3)、xhard2 (3,3)、xhard3 (3,4)、xhard4 (4,4)，按钮插在某次访问后，最后各 `put the cube back to its original position`。
+
+正确性：每块访问序列为 `randperm(len(targets))[:count]`，同一块不会两次到同一台，「第 k 次放的台」唯一；答案 `target_target = which_targets_to_pick[k-1]` 直接取自访问序列；交换后按台实体跟踪；题面无时序副词，不受 N3/N4 影响；审查 40/40 候选答案索引一致。修复只有 N5 删 `at <>`；判定行 `VPO_SEMANTIC=PASS episodes=12 answer_mismatch=0`。
+
+xhard1 ep0 seed9100001 原文（`…on the first target it was previously placed on`）：
+```
+t=0    demo=1  pick up the cube at <115, 106>               ← 甲
+t=104  demo=1  drop the cube onto target at <140, 115>      ← 甲第 1 次
+t=186  demo=1  pick up the cube at <139, 114>
+t=259  demo=1  drop the cube onto target at <135, 81>       ← 甲第 2 次
+t=332  demo=1  press the button at <121, 153>
+t=410  demo=1  pick up the cube at <135, 77>
+t=499  demo=1  drop the cube onto target at <116, 83>       ← 甲第 3 次
+t=584  demo=1  pick up the cube at <106, 84>
+t=658  demo=1  put the cube back to its original position
+t=730  demo=1  pick up the cube at <84, 131>                ← 乙（blue，被问）
+t=834  demo=1  drop the cube onto target at <78, 90>        ← 乙第 1 次 = 答案
+t=921  demo=1  pick up the cube at <75, 87>
+t=994  demo=1  drop the cube onto target at <108, 86>       ← 乙第 2 次
+t=1075 demo=1  pick up the cube at <106, 84>
+t=1148 demo=1  put the cube back to its original position
+t=1235 demo=1  static
+t=1353 demo=0  pick up the cube at <116, 106>
+t=1457 demo=0  place the cube onto the correct target at <108, 86>   ← 台已交换，答案按实体跟踪
+```
