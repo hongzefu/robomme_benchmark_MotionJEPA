@@ -2505,3 +2505,12 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 差异或阻塞：用户误读反驳标签为同条双反驳，核对 journal 每条 1 个；教训（标签带标题 + `VERIFY_FANOUT` 判定行）记入本机记忆，待批准写入正本。
 - 修改文件：`0926-v6-audit-fix-plan.md`（第七节）、本账本。
 - 下一步：用户对第七节待裁决项拍板后再实施。
+
+### 2026-09-27 America/Detroit — 拆包方案第一部分改写为「接口 / 文件清单 / 三阶段传参」
+
+- 状态：完成（纯文档）。
+- 用户原话：「修改这个计划我只关心3件事第一部分 … ENVMake的时候的接口有哪些 … 哪些类是可以完全继承的哪些类需要去增加一些东西 … 从文件层面讲清楚 … 生成这个生成json的阶段 生成EP的阶段和最后ev阶段 这三个阶段这个ENVMake怎么传入」。
+- 执行命令：`git fetch https://github.com/RoboMME/robomme_benchmark.git main`（FETCH_HEAD=`1fadc0e`）；`git diff --name-status FETCH_HEAD HEAD -- src/robomme`；grep `gym.make` 调用点与 `from robomme.` 绝对 import；`git diff --check`。
+- 结果与证据：`src/robomme` 对上游实测 28 py + 44 json 相同、26 py + 4 json 不同、9 py 新增（与 09-26 初稿的 31/26/9 口径差异来自当时未计 `segmentation_utils.py` 与 metadata）；绝对 import 文件 7 个。第一部分重写为三节，原第一部分整体降级为第二部分附录 A；规格来源改指现行 `v6-02`。`DIFF_CHECK=PASS`。
+- 修改文件：`0926-robomme-hard-split-plan.md`、本账本。
+- 下一步：等用户对 D-1～D-4 裁决；未实施、未改源码。
