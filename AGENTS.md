@@ -405,6 +405,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = policy 仓库 [`0901-motion-memory-plan.md`](https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/blob/v2-motionmem/0901-motion-memory-plan.md) 的「第一部分（给人看）」（原链接名 `motion-memory-plan.md` 已改名）；本仓库既有计划文件沿用现名（`NEWTASK_RELEASE_V*_PLAN.md`、`INJECTION_REFACTOR_PLAN.md`），新计划按正本 `MMDD-<主题>-plan.md` 命名。
 - **覆盖第 4 条（核心短测）**：无需数据集的核心短测 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`（2026-09-26 账本口径；`tests/lightweight/` 全量实测超过 5 分钟，历史 710 s）；需要数据集 / MuJoCo 环境的条件测试 `uv run --no-sync python -m pytest tests/dataset/ -q`；只改某条生成链路时至少跑该链路的定向单测；涉及实跑生成一律先做「单任务、单 episode、单 worker」smoke。
 - **覆盖第 5 条**：本仓库所有可视化脚本同受最近邻放大约束。
+- **本次V6覆盖第8条的收尾释放要求（2026-09-26）**：用户明确「再提交2个同样gl 48h job 为之后加速 现在的job跑完不要scancel」。本次四个占位job `61890467`、`61890468`、`62018665`、`62018666` 均保留，V6完成后不自动取消；后续释放须有新的用户指令。新增两席各1 GPU／16 CPU／192G／48小时，仅是资源预留，不扩大reset／轨迹预算、不等于已批准基础设施恢复清单。
 - **覆盖第 11 条（commit 体例与 push）**：`<COMMIT_SUBJECT_STYLE>` = `<大版本>.<小版本>[.<修订>] <中文描述>`（如 `2.9.2 变体简图出图验证与账本补记`），从 `git log` 最近一次接续；主分支 commit 后立即 push（正本口径）；V6 对拍用的副本分支（`v6-draft/*` worktree 上的分支）一律不 push（2026-09-26 用户决策）。
 - **覆盖第 14 条（存储）**：`<WORK_ROOT>` = `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`；`<STORE_ROOT>` = `artifacts/`（`.gitignore` 整体忽略，`artifacts/injection/` 例外）；跨仓库引用 MotionJEPA 侧数据时优先取 `/data/hongzefu/` 下的本机副本，NFS 原件是权威源、同步只用 rsync；集群侧克隆 `<GL_REPO>` 的产物落 NFS、比较在本机跑。
 - **覆盖第 21 条**：见 P2。
@@ -529,7 +530,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| V6 S2～S5正式续行（2026-09-26） | S2完成；已获指令一路完成V6，修复接续中 | S2固定144次，119成功／25失败／进程超时0，成功119条HDF5结构／终态及视频首帧通过（未验全视频）；接续故障及唤醒教训已提交86a0e6b | 复用S2修复并实测接续，S3／S4并行后完成S5；主代理持续等待结果，不再用未建立的唤醒承诺提前结束 |
+| V6 S2～S5正式续行（2026-09-26） | S4完成并验证165成功；S3运行中 | 650抽签得550候选；520梯度值PASS；恢复23次22成功1真实失败，累计236派发、165成功、3真实失败、60旧基础设施失败、8旧未决；55格各3成功，媒体及回传验证通过；[S4报告](docs/validation/newtask-v6/20260926-s4.md) | 按用户要求立即提交推送S4，再部署逐任务难度与视频站；S3结束后单独回写提交，当前accepted=false；四席保留 |
 | V6第5.3节完整范围与仅文档边界（2026-09-26） | 计划已写回，生成未启动 | S2恢复144次固定探针，S3保留16×3×3＝144局；S4为13×4×10＋3×1×10＝550候选、13×4×3＋3×1×3＝165成功轨迹目标，复用520候选查取值；额外200 reset仍取消 | 用户最新要求「不要直接做 写回md」；后续收到开始指令再按完整清单执行，已同意范围不分阶段重问 |
 | reset／轨迹生成数量阈值与一次性授权（2026-09-26） | 文档修订完成 | 项目规则 P3 明确单 worker 超过10、多 worker 合计超过50须事先授权，失败重试和递补计入预算；全部已知阶段一次汇总审批，已有授权不重复询问；正本标记块保持不变 | 后续运行沿用完整授权清单；本轮未启动生成 |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
@@ -2323,3 +2324,55 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 修复范围：只在忽略目录的运行器修复报告消费与已存在报告恢复；从逐身份记录重算缺省零值并核对，不直接把缺字段当成功。通过无仿真的成功／失败／恢复接续测试后，提交本次启动文档、固定新HEAD，再启动原S3与两席S4；生产代码仍为38488db的字节，GL此前400文件核验一致。
 - 监督方式：本轮不依赖未创建的唤醒机制；主代理保持任务执行，消费日志与退出事件直到验收、报告、提交和资源收尾。tmux会话沿用计划的`v6-s3-20260926-01`、`v6-s4-61890467`、`v6-s4-61890468`，实际启动另记；异常不新增预算或自动整批重跑。
 - 下一步：S3唯一硬闸为144条成功语义有效且SHA全等／字段差异零；S4回传并验预算、产物完整性与520候选实际取值；S5报告诚实保留失败与缺口，完成提交后仅释放本任务两席，不删除历史证据。
+
+### 2026-09-26 America/Detroit — 接续实测通过，S3与S4实际启动
+
+- 状态：进行中；启动锚点`c8c06ab755ef448baa24abe245d2f9ec2ffc0add`，启动时工作区干净，生产源码与38488db逐字相同。
+- 接续修复：`artifacts/newtask-v6/s4-launch/s2_gate.py`逐身份交叉核对manifest、started、result、summary与既有report，重算全部8项计数；只允许重算为零的旧缺项，非零缺项拒绝。已有报告不覆盖，不等待旧PID；分支活动／完成时不重复派发。`test_continue.py`为5 tests／2.319秒／OK，覆盖完整三分支派发、恢复零重复、报告不变、缺结果和计数不符拒绝。独立审查另验证实际shell分支READY派发3、RUNNING派发0。
+- 启动命令：`bash artifacts/newtask-v6/s4-launch/continue_after_s2.sh`，退出0，日志`artifacts/newtask-v6/s4-launch/continue-recovery-20260926.log`；输出`S2_CONTINUE_GATE=PASS expected=144 attempted=144 success=119 failed=25 timeout=0 missing=0 invalid_summary=0 successful_media_fail=0`及三条`CONTINUE_BRANCH=STARTED`。
+- 本轮实际tmux清单：`v6-s3-20260926-01`、`v6-s4-61890467`、`v6-s4-61890468`。三个精确`tmux has-session`均退出0。S3日志`artifacts/newtask-v6/v6-s3-20260926-01/run.log`已开始首条身份；两席日志`artifacts/newtask-v6/s4-launch/logs/61890467.log`和`61890468.log`配置散列、导入路径与dry-run通过，分别进入xhard1和xhard3抽签。四档预定全部只执行一次。
+- 存储及约束：再次核对两节点/tmp可用288941809664／321543139328字节、目标不存在，本机可用约2.3TB。S4每席6小时超时守卫，S3无进展30分钟及4小时硬上限，不自动重试。源码冻结到阶段产物完成；本条仅记录状态，不中途提交改变运行代码锚点。
+
+### 2026-09-26 America/Detroit — S4候选通过与GPU模式干扰事故
+
+- 状态：S3继续运行；S4前三档完成，xhard4故障步骤已停止，恢复预算待用户决定。
+- 候选：xhard1／2／3／4分别153／152／152／193次抽签得到130／130／130／160成功候选，合计650尝试、550成功；直接读取冻结draft的`v6_candidate_values`退出0，`CANDIDATE_VALUES=PASS cells=52 candidates=520 mismatches=0 shortfall=0 input_errors=0`，报告`artifacts/newtask-v6/s4-launch/verification/candidate-values.json`。没有另加reset。
+- 轨迹：前三档各39/39成功且无递补，第一席退出0后开始源端散列与回传；xhard4首批48次26成功、2条InsertPeg真实任务失败、20条Vulkan初始化失败，随后五轮各8条均初始化失败。检测后只取消本任务步骤`61890468.10`，保留占位job；日志退出137。原有结果88条共26成功／2任务失败／60设备失败；round_06已派8条无结果，保守计为8次已消耗、状态未决。因此xhard4计96次已调度，8个未足额格各9次，不重置预算。
+- 已证根因：主代理在生成期间经同一job的GPU步骤回传小候选文件，CPU读取却仍请求GPU并带`--gpu_cmode=shared`。短步骤结束会把该卡切回`Exclusive_Process`，主生成步骤还在运行，后续Vulkan第二上下文创建失败。round_01～05有明确EXCLUSIVE告警；直接SSH（不经过srun）确认模式，先前srun内Default观测被shared启动选项改变，不能当自然状态。物理卡`/dev/nvidia1`、UUID `GPU-dd2731bb-7405-64c2-6124-4487ab37cb31`，过滤后可见index0；这是代理编排干扰，不是13变16 worker或ICD警告本身的已证故障。
+- 因果验证：`incident/mode-observer.log`中长shared步骤持续时，18:34:10短shared步骤结束，18:34:11直接SSH与18:34:14长步骤均读到Exclusive_Process。对照`mode-cpu-only-observer.log`中18:36:10的`--gres=none`短步骤结束后，18:36:12／15仍Default。两次实验均无环境构造、0 reset、0轨迹。`receive-seat.sh`及`hash-seat.sh`的CPU步骤已改`--gres=none`，GPU生成步骤仍shared。事故明细与日志在`artifacts/newtask-v6/s4-launch/incident/`。
+- 恢复授权清单：8格80个既有候选，排除2既有成功和2真实任务失败，剩76＝60设备失败＋8中断未决＋8未尝试；拟恢复运行名`v6-01-infra-recovery-01`，只在这些候选内每身份最多再尝试一次、每格3成功即停，不新抽候选，不重试真实任务失败。连同原S4已调度213次，最多289次仍小于550总上限，但单格将超过旧10次限制，按P3一次汇总询问；InsertPeg上限16、StopCube18、其余6格19。提问已发，尚未收到批准，故只准备代码、未运行恢复。
+- 会话与保留：第一席回传`v6-s4-return-61890467`；已停止第二席的原始成功与失败证据通过`v6-s4-return-61890468`回传。源端先散列、目标不覆盖；不删除失败或旧产物，不释放仍为后续工作保留的两席。S3首条SHA与基线相同，剩余批次继续，最终144硬闸尚未完成。
+
+### 2026-09-26 America/Detroit — S3慢运行监督接管与S4回传复核
+
+- S3同一相邻身份的完成间隔从基线23.612秒变为193.365秒，约8.19倍；仅小前缀，不作精确全程预测。实际worker多次在GPU驱动锁等待，GPU未显示温度／功率降频、CPU与IO压力无拥塞证据，原因未证实。为避免自设4小时监督上限终止仍在推进的任务，只接管监督，不改仿真进程、种子、代码、worker数或尝试数。
+- 接管准备曾用强制竞态反例否定「暂停旧监督后直接杀掉它」：旧用户态chunk会丢失。最终保留旧监督，待真实子进程Z态、管道EOF及整进程组无活成员后才恢复；真实退出码取绑定的`/proc/stat`，再等待旧监督退出并只核查或离线比较既有结果。正常／超时／子进程失败／写日志失败恢复、强制chunk竞态与144个极小HDF5夹具均无仿真通过，独立复核通过；已有比较残片不覆盖，任何新身份不生成。
+- 实际接管：`handoff-prep/handoff.py capture --old-pid 1837611 --child-pid 1843931`只读绑定PID、starttime、PPID、PGID、管道与运行器散列；随后在`v6-s3-supervisor-20260926-01`中执行`launch-production.sh`。事件`production-session-20260926/events.jsonl`记录`old_paused`；实查旧监督1837611为T，实际uv1843931和worker1843953均保持原PID、原起始时间且继续运行。新监督12小时硬上限／30分钟无进展上限，可捕获异常先恢复旧监督再记录日志；日志为`artifacts/newtask-v6/v6-s3-20260926-01/handoff-prep/production.log`。原监督后来超时退出不能冒充真实仿真失败，最终必须看实际子退出码、143＋1身份与HDF5硬闸。
+- 第一席回传：两档rsync均完成，但在跑的`receive-seat.sh`被本轮原地改为CPU步骤，Bash后续读偏移受影响，末尾报`f: command not found`、退出127。完整日志保留，不改成0；运行中的shell脚本不能原地改，新修订应使用独立版本路径。xhard1的174文件／21519100126字节、xhard2的177文件／26973932658字节，分别与源端SHA清单逐项通过，`TRANSFER_SHA=PASS`；两档各39成功的HDF5身份／终态、规格回放绑定与视频首帧均通过，`S4_MEDIA=PASS`。这证明复制数据完整，不抹掉编排退出错误。
+- 第二席在脚本修订后启动，使用CPU-only读取源数据；正在回传，未验证的部分不标通过。恢复预算问题仍待用户答复，未创建恢复批准文件、未执行新轨迹。
+
+### 2026-09-26 America/Detroit — 新增两个48小时GL占位job并保留全部席位
+
+- 用户原话：「再提交2个同样gl 48h job」「为之后加速」「现在的job跑完不要scancel」。该最新指令覆盖本次原先的S5自动释放安排，原两席与新增两席均保留，不把新增资源视为生成预算放行。
+- 提交前通过登录节点查询队列、spgpu节点CPU／内存／GPU分配及账户作业。复用ControlMaster，没有重新认证。参数为`sbatch --parsable --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --gpu_cmode=shared --cpus-per-task=16 --mem=192G --time=48:00:00 --wrap='sleep infinity'`，两个独立名称`v6gen-hold-3-20260926`与`v6gen-hold-4-20260926`；两次提交均退出0。
+- 实际JobID：`62018665`、`62018666`，提交后立即逐项追加至`artifacts/newtask-v6/s4-launch/hold-jobs-v6-20260926.txt`。首次回查62018665为RUNNING／gl1510，62018666为PENDING／Resources；原61890467／gl1526、61890468／gl1517仍RUNNING。四席规格一致，总共4 GPU／64 CPU／768G，未另启动工作负载。
+- 新席日志路径：`/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/hold-logs/v6-20260926/%x-%j.log`，只保存占位job日志，没有在NFS新增大数据。S3与回传继续；恢复追加76次预算仍等待答复，未启动恢复。
+
+### 2026-09-26 America/Detroit — xhard4恢复获批并实际启动
+
+- 用户原话：「批准恢复」。承接已一次列齐的76上限与运行名`v6-01-infra-recovery-01`：60设备失败、8中断身份各最多恢复一次，加8个未尝试候选；不重跑26既有成功与2真正任务失败，不再抽候选；每格累计3成功即停。原8格各9次已调度计入上限，InsertPeg累计最多16、StopCube18、其余6格19，S4总计最多289次。无需分阶段重复申请。
+- 授权记录：`artifacts/newtask-v6/s4-launch/recovery/approval.json`，清单SHA `393a3d108f0b1c9544ecdfe304f844e72c539b7cbe9ccb224a3c011c80a67008`，用户原话及上限明确落盘。准备阶段已用原round_06八目录核验无HDF5／视频／回放记录，避免重复已有成功；生产运行未改这些原目录。
+- 启动前验证：本机执行代码对38488db保持冻结、HEAD仍c8c06ab；仅允许本轮AGENTS.md、V6计划、scripts/README.md三份在途文档，记录各自SHA，不冒称全工作树干净。远端397运行文件（含依赖声明和锁）来自38488db的清单SHA `a781578c35820f386631887a56fc51dc310c171d439877b2bc29a342710717bd`，在同一shared步骤内逐项核验及核对robomme实际导入路径，然后才创建环境。17项准备mock与独立16项检查通过，额外源码／清单篡改／错误导入路径均拒绝。
+- 实际启动：`tmux new-session -d -s v6-s4-infra-recovery-01 "bash .../recovery/launch.sh"`，同一`61890468`占位job内单个shared步骤、最多16 worker（后续每轮每格一条，实际最多8并行）。输出新目录`/tmp/v6-s4-v6-01-infra-recovery-01`，原产物只读；CPU检查与传输步骤统一`--gres=none`。日志`artifacts/newtask-v6/s4-launch/recovery/run.log`。
+- 当前实测：`RUNTIME_TREE=PASS ... files=397 extra=0`、`ROBOMME_IMPORT=PASS`，以及`RECOVERY_RESULT task=StopCube episode=3 category=success attempted=1`。首条已计入76预算，未另加冒烟；其余按清单继续。检测到基础设施／代码错误后不派下一轮，在途本轮全部计数；普通任务失败保留且同身份不再重试。
+- 已有S4数据验证：四档原始文件全部回传，671文件／100462444765字节的源SHA逐项一致；原143成功的HDF5身份／终态、规格绑定及视频首帧检查全部通过（不外推全帧完整性）。原中断账本单列96已调度、26成功／2任务失败／60基础设施失败／8未决，恢复不会覆盖或抹掉它。
+- 本轮会话清单新增`v6-s4-infra-recovery-01`。S3原进程继续，23个已关闭样本的提前SHA核对一致不代替144最终硬闸；S4正式接纳仍等待V1。四个占位job保持保留，不自动取消。
+
+### 2026-09-26 America/Detroit — S4足额收尾与立即推送
+
+- 状态：S4完成，S3继续运行，整体接纳仍待V1。
+- 用户原话：「不用等s3 先收尾 然后等s3收尾后再落文档commit一次」「s4结束后就要推送！」；新增网站要求「只介绍难度梯度」「每个单独说」「不要放在一张表内」，并可播放视频。
+- 恢复结果：23次派发、22成功、1真正任务失败，退出0；与原批次累计236次、165成功、3真正任务失败、60旧基础设施失败、8旧中断未决。55格各3成功，未删除或改写失败记录。
+- 验证：原671文件100462444765字节及恢复126文件18600629906字节回传SHA一致；165成功HDF5身份、终态和视频首帧验证通过，不宣称全视频逐帧验证。`verification/merged-provisional-delivery.json`记录`success_count=165 target_complete=true accepted=false native_regression=PENDING`；520候选值核验通过。完整证据与复现入口见`docs/validation/newtask-v6/20260926-s4.md`。
+- 修改：四档冻结规格逐字复制至`scripts/configs/newtask-v6/v6-01/`；本次只提交规格、说明与账本，正在运行的S3生产源码保持原样。按用户指令立即推送，不等待S3或网站。
+- 下一步：网站复用S4实际成功视频和既有hard基准，16任务分别呈现独立难度卡片，不新增生成。S3完成后核验真实144身份硬闸，另行回写最终文档并提交推送。四个GL占位job保留。

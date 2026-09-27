@@ -1,4 +1,6 @@
-# scripts/ 说明：V4/V5 xhard 档
+# scripts/ 说明：V6 四档新值与 V4/V5 历史说明
+
+**当前 V6 使用说明见第六节。** 第一至第五节保留 V4/V5 当时的配置、命令与实测口径，其中旧档名 `xhard`、V5 路径及“现行代码”均指该历史版本；不能直接当作 V6 命令或本轮验收结论。V6 使用 `xhard1`、`xhard2`、`xhard3`、`xhard4`，原 `easy`、`medium`、`hard` 的本轮一致性由 S3 独立验收。
 
 **V4 与 V5 的关系**：V5 是在 V4 xhard 档之上的第二轮修订（xhard 去扎堆、四个 Unmask 环境的干扰容器加密且 Swap 两环境的外环随内环同步交换、
 PatternLock/RouteStick 演示时长校准、放下的方块作障碍时 2D 包围框退化的缺陷修复），**只改 xhard 档**。V4 已作废：
@@ -987,3 +989,53 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare \
 判定：`compared=144 sha_equal=144 field_mismatch=0` 且没有「仅一侧存在」提示行，即计划的 `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`。
 一侧演示失败没有 h5 的身份会计入 `field_mismatch`（记「hdf5 缺失或不唯一」），不会被静默跳过。
 ⚠ 计划 runbook 里的 `run --subset 16x9` 与 `compare <dir> <dir>` 两种写法在代码里不存在，以本节为准。
+
+## 第六节　V6 四档新值发布
+
+范围与授权以 [V6 计划](../NEWTASK_RELEASE_V6_PLAN.md) 第 5.3 节为准；配置为 [V6 快照](configs/newtask-v6/sampling_config.json)。本节说明本轮用法，不把尚未完成的检查写成通过。
+
+### 6.1 档位、规模与失败预算
+
+13 个原版有难度梯度的任务使用 `xhard1`～`xhard4`：BinFill、PickXtimes、SwingXtimes、PickHighlight、VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、PatternLock、RouteStick、VideoPlaceButton、VideoPlaceOrder。MoveCube、InsertPeg、StopCube 只有 `xhard4`，不接受另外三个新档。合计 `13×4＋3×1＝55` 格，每格 10 个成功候选、3 个成功正式轨迹目标，即 **550 候选、165 条正式轨迹目标**。
+
+| 批次 | 固定范围或上限 | 失败处理 |
+|---|---|---|
+| S2 新档演示探针 | 144 次固定身份尝试 | 每身份一次，失败留在分母，不补抽、不补跑 |
+| S3 原三档对拍 | 16 任务×3 档×3 局＝144 次 | 复用 S0 基线，同 seed，不换 seed 补成功，不比较任何新档 |
+| S4 候选 | 每格 10 成功或最多 60 次总抽签尝试，合计最多 3300 次 | 失败计入上限；不是每个候选各重试 60 次 |
+| S4 正式轨迹 | 每格首选候选 index `0,3,6`；最多尝试该格已有 10 候选，合计最多 550 次 | 按 `v4_rollout.BACKFILL_ORDER` 的 `1,2,4,5,7,8,9` 递补，成功 3 条或已有候选用尽即停 |
+| 额外抽样与重跑 | 0 | 不恢复额外 200 reset、分布补样、run2 或整批重跑 |
+
+候选不足、正式轨迹不足及各失败类别分别报告；**165 是成功目标，不是当前成功数**。S2＋S3＋S4 的轨迹尝试总上限为 `144＋144＋550＝838`，不追加独立冒烟。逻辑候选／轨迹尝试与环境构造、显式 reset 调用不是同一计数；实际调用数没有记录时写“未观测”，不把 3300 当作所有阶段的 reset 调用总数。
+
+### 6.2 本轮产物与接纳条件
+
+本机汇集根为 `artifacts/newtask-v6/v6-01/`，四个档位分别落在 `xhard1/`、`xhard2/`、`xhard3/`、`xhard4/` 下。每档包含 `draft/drafts.jsonl`、`specs.jsonl`、`rollout/run1/` 与 `report/`；逐局 HDF5、视频及回放记录在 `rollout/run1/episodes/`。以实际清单核对存在性与完整性，不以目录存在认定完成。
+
+本轮生成沿用 [v5_generation.py](parity/v5_generation.py) 的 `pipeline --release newtask-v6 --tiers`，明确指定 `--seed-profile v6`、`--candidates-per-env 10`、`--max-reset-attempts 60`、`--select 0,3,6`，每个集群席位最多 16 worker。集群运行参数、席位和中转路径由本轮执行记录固定；不要直接运行第五节的 V5 示例，也不要把旧预备资料当作当前资源状态或额外生成授权。
+
+用户最新资源决定：原占位作业 `61890467`、`61890468` 跑完后继续保留，不自动取消；另提交相同规格的 48 小时占位作业 `62018665`、`62018666`，当前四席均保留。新增席位不等于新增生成、重跑或故障恢复预算授权，具体状态以实时调度查询为准。
+
+当前执行快照：550 个候选已足额；[候选取值报告](../artifacts/newtask-v6/s4-launch/verification/candidate-values.json) 已核对 520 个梯度候选，`CANDIDATE_VALUES=PASS`。S4 原运行143成功，获批恢复实际23次、22成功、1次真正任务失败，现共 **165成功、55格各3条、短缺0**；恢复最多76次的授权未用满，原成功及真正任务失败没有重跑。原60次基础设施失败与8次中断未知完整保留，不被恢复结果抹掉。实际交付身份以[合并清单](../artifacts/newtask-v6/s4-launch/verification/merged-provisional-delivery.json)为准，不能遍历失败目录中的HDF5推断交付。S3仍在运行，清单保持`accepted=false`、`native_regression=PENDING`，不代表完整验收通过。
+
+四份550条冻结规格已从原产物逐字复制至`configs/newtask-v6/v6-01/xhard1/specs.jsonl`、`xhard2/specs.jsonl`、`xhard3/specs.jsonl`、`xhard4/specs.jsonl`，四次`cmp`均退出0。规格中的`selected`是原首选；实际成功包含递补，例如InsertPeg/xhard4最终为episode 6、2、4。完整执行、失败与恢复边界见[S4报告](../docs/validation/newtask-v6/20260926-s4.md)。
+
+**S3 原三档严格对拍是本轮正式接纳的唯一阻塞硬闸，目前仍待结果。** 目标判据为 `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`，要求完整 144 身份且没有单侧缺失；通过前 S4 产物为待接纳产物。S2 的固定探针失败及 S4 的候选拒绝、递补、短缺照实报告，不通过重试挑成功，也不把媒体存在或进程退出 0 当作任务成功。原三档历史对拍结论不能代替本轮 S3。
+
+### 6.3 纯离线核对候选实际取值
+
+入口 [v6_candidate_values.py](parity/v6_candidate_values.py) 只读取四档原始 drafts、V6 配置及来源指纹，不创建环境、不执行 reset。它逐条核对 **13×4×10＝520** 个梯度候选的实际取值与配置区间、身份覆盖及失败尝试信息；三个只有 `xhard4` 的任务不计入这 520 条。
+
+四档原始 drafts 汇集完整后，在仓库根执行一次，输出文件必须尚不存在：
+
+```bash
+UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_candidate_values \
+  --drafts artifacts/newtask-v6/v6-01/xhard1/draft/drafts.jsonl \
+  --drafts artifacts/newtask-v6/v6-01/xhard2/draft/drafts.jsonl \
+  --drafts artifacts/newtask-v6/v6-01/xhard3/draft/drafts.jsonl \
+  --drafts artifacts/newtask-v6/v6-01/xhard4/draft/drafts.jsonl \
+  --sampling-config scripts/configs/newtask-v6/sampling_config.json \
+  --out artifacts/newtask-v6/v6-01/report/candidate-values.json
+```
+
+输出 `CANDIDATE_VALUES=PASS|FAIL`，并列 `cells`、`candidates`、`mismatches`、`shortfall`、`input_errors`。缺失候选、取值越界、来源不匹配或缺少失败尝试信息都会失败；不能用只含成功候选的冻结 specs 冒充完整 drafts。该检查证明本批候选的取值符合配置，不证明分布均匀、不证明全部可能取值，也不触发额外采样。
