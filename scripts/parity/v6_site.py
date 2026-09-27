@@ -137,6 +137,14 @@ class MediaHandler(BaseHTTPRequestHandler):
                 if not head:
                     self.wfile.write(payload)
                 return
+            if path == '/api/gtlen':
+                # 真值步数统计（scripts/parity/v6_gt_lengths.py 生成）；缺文件时返回空表，页面照常显示
+                gt = files.html_path.with_name('v6_gt_lengths.json')
+                payload = gt.read_bytes() if gt.exists() else b'{"cells":{},"media":{}}'
+                self._headers(200, 'application/json; charset=utf-8', len(payload), Cache_Control='no-cache')
+                if not head:
+                    self.wfile.write(payload)
+                return
             if path == '/api/catalog':
                 payload = files.catalog_path.read_bytes()
                 self._headers(200, 'application/json; charset=utf-8', len(payload), Cache_Control='no-cache')
