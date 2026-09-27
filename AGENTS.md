@@ -2384,3 +2384,13 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 文字校准：BinFill原hard总块10～12、新档固定12；MoveCube圆环0.20为外半径，计划总览误称外径已修正；三个例外明确真实档位差异。静态报告ButtonUnmask的xhard1／2干扰值从旧7／9修正为实际8／10，未改变生成配置。定向25测试通过，0.77秒。
 - 用户新要求：「单独用另外一个进程来同步做s3 调查为什么这么慢」。不重启主S3，独立GPU1单worker固定BinFill/0/4000诊断，会话`v6-s3-gpu1-diagnostic-01`，产物`artifacts/newtask-v6/s3-slow-investigation/gpu1-smoke-20260926-01/`，单次上限280秒、最多1身份、不重试；实际源码和runner/worker/依赖对c8c06ab无差异，网站在途状态如实记录。NVML确认新worker2137044在GPU1、主1843953仍GPU0。
 - 初步观察：两进程20点中各16点驱动锁等待、4点运行，仍有CPU及文件进展；跨GPU同节律尚未定位具体锁持有者。20:26按剩余身份基线耗时与当前8.06倍计算，预计再约4.5小时，非完成承诺。S3阶段报告明确PENDING，最终仍须真实144身份硬闸；四席和网站均保留。
+
+### 2026-09-26 America/Detroit — robomme_hard 拆包接口方案落根目录（只规划）
+
+- 状态：完成（方案文件），未实施。
+- 用户原话：「现在已经基本完成了 除了对拍 / 现在的整个逻辑链条是什么 / 能否实现以下对话的内容 / 给出重构接口的方案 / 落到根目录md」「注意你的工作目录是robomme_benchmark_MotionJEPANewTask」；合作者对话原话逐字保留在方案 §一。
+- 产出：`0926-robomme-hard-split-plan.md`。结论：可实现——`src/robomme/` 回上游 `main` @ `1fadc0e` 字节，现 `src/robomme/` 整包复制为 `src/robomme_hard/`（零跨包 import、同进程互斥），`BenchmarkEnvBuilder` 签名不变、`dataset` 多认 `xhard1～4`，四档 `specs.jsonl` 随包分发，`scripts/evaluation_hard.py` 与 `evaluation.py` diff ≤ 12 行。
+- 只读实测：上游浅克隆逐文件 `cmp`：`src/robomme` 相同 31、不同 26、fork 新增 9；train 元数据 4 份 100→400 条；三脚本逐字节同上游；`pyproject.toml` 多 `pebble` 一行。ManiSkill `register_env` 重复 id 默认 `raise`。
+- 待用户裁决四项（D-1 第六入口触碰 P1；D-2 copy 还是引用；D-3 400 条 train 元数据归属；D-4 S3 结论前不动 `src/robomme/`）；`src/robomme/` 整体回退属 P2 新范围，须另批。
+- 验证：`git diff --check` 通过；未运行任何生成或测试。
+- 下一步：用户裁决后按方案 §七 阶段 0 起步；V1′ 144 局对拍预算随阶段 1 一次申请。
