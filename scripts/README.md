@@ -1039,3 +1039,17 @@ UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_cand
 ```
 
 输出 `CANDIDATE_VALUES=PASS|FAIL`，并列 `cells`、`candidates`、`mismatches`、`shortfall`、`input_errors`。缺失候选、取值越界、来源不匹配或缺少失败尝试信息都会失败；不能用只含成功候选的冻结 specs 冒充完整 drafts。该检查证明本批候选的取值符合配置，不证明分布均匀、不证明全部可能取值，也不触发额外采样。
+
+### 6.4 难度梯度与视频网站
+
+网站地址：[V6难度梯度与视频](http://141.212.115.116:8060/)。按用户要求逐任务、逐难度单独介绍梯度并提供视频，不合并成一张表。当前16任务、71张卡片、251个视频文件；来源为165条新值成功轨迹与48条原hard轨迹，部分轨迹含多个视频文件。展示网站不代表S3通过，原三档严格对拍继续进行。
+
+目录生成入口为 `uv run --no-sync python -m scripts.parity.v6_site_catalog`，默认输出初版`artifacts/newtask-v6/site/`；当前服务明确使用`artifacts/newtask-v6/site-v3/`，不能误用默认目录替代。生成器拒绝覆盖已有目录文件，不为重建网站重跑任何轨迹。服务运行在唯一tmux会话`v6-gradient-site-8060`，实际入口为：
+
+```bash
+UV_CACHE_DIR="$PWD/artifacts/cache/uv" PYTHONUNBUFFERED=1 uv run --no-sync python \
+  -m scripts.parity.v6_site --host 0.0.0.0 --port 8060 \
+  --site-dir artifacts/newtask-v6/site-v3
+```
+
+当前服务已启动，不重复占用8060端口；保留网站会话和产物，不自动清理。浏览器已验证16任务播放、拖动进度与样例切换，搜索、移动导航和无表格布局通过，JavaScript错误0。截图、首帧预览与验证边界见[网站报告](../docs/validation/newtask-v6/20260926-site.md)。

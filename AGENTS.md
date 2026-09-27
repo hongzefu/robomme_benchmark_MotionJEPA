@@ -2376,3 +2376,11 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 验证：原671文件100462444765字节及恢复126文件18600629906字节回传SHA一致；165成功HDF5身份、终态和视频首帧验证通过，不宣称全视频逐帧验证。`verification/merged-provisional-delivery.json`记录`success_count=165 target_complete=true accepted=false native_regression=PENDING`；520候选值核验通过。完整证据与复现入口见`docs/validation/newtask-v6/20260926-s4.md`。
 - 修改：四档冻结规格逐字复制至`scripts/configs/newtask-v6/v6-01/`；本次只提交规格、说明与账本，正在运行的S3生产源码保持原样。按用户指令立即推送，不等待S3或网站。
 - 下一步：网站复用S4实际成功视频和既有hard基准，16任务分别呈现独立难度卡片，不新增生成。S3完成后核验真实144身份硬闸，另行回写最终文档并提交推送。四个GL占位job保留。
+
+### 2026-09-26 America/Detroit — 难度视频网站上线与独立S3诊断
+
+- S4已提交推送`716f992`。网站地址`http://141.212.115.116:8060/`，唯一服务会话`v6-gradient-site-8060`，实际目录`artifacts/newtask-v6/site-v3/`；16任务、71张独立难度卡片、251视频来自165新值与48原hard成功轨迹。各任务单独介绍，仅难度梯度与视频，没有大总表。
+- 浏览器实测：`uv run --no-project --with playwright python artifacts/newtask-v6/site-v3/browser_check.py`退出0，16任务逐一播放、拖动、切样例通过，71卡片、搜索、移动导航及无表格通过，JS错误0；截图已目视。Chrome禁用GPU，预览251张由CPU单线程生成；未为网站新增任何仿真。Range/HEAD及路径穿越拒绝独立实测通过，网站仅服务白名单媒体与预览。报告`docs/validation/newtask-v6/20260926-site.md`。
+- 文字校准：BinFill原hard总块10～12、新档固定12；MoveCube圆环0.20为外半径，计划总览误称外径已修正；三个例外明确真实档位差异。静态报告ButtonUnmask的xhard1／2干扰值从旧7／9修正为实际8／10，未改变生成配置。定向25测试通过，0.77秒。
+- 用户新要求：「单独用另外一个进程来同步做s3 调查为什么这么慢」。不重启主S3，独立GPU1单worker固定BinFill/0/4000诊断，会话`v6-s3-gpu1-diagnostic-01`，产物`artifacts/newtask-v6/s3-slow-investigation/gpu1-smoke-20260926-01/`，单次上限280秒、最多1身份、不重试；实际源码和runner/worker/依赖对c8c06ab无差异，网站在途状态如实记录。NVML确认新worker2137044在GPU1、主1843953仍GPU0。
+- 初步观察：两进程20点中各16点驱动锁等待、4点运行，仍有CPU及文件进展；跨GPU同节律尚未定位具体锁持有者。20:26按剩余身份基线耗时与当前8.06倍计算，预计再约4.5小时，非完成承诺。S3阶段报告明确PENDING，最终仍须真实144身份硬闸；四席和网站均保留。

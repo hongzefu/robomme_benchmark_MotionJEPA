@@ -224,8 +224,8 @@ PLAN_TIERS: dict[str, dict[str, dict[str, Any]]] = {
     },
     "ButtonUnmask": {
         "easy": {"distractors": 0, "pick": 1}, "medium": {"distractors": 0, "pick": 1},
-        "hard": {"distractors": 0, "pick": 2}, "xhard1": {"distractors": 7, "pick": 2},
-        "xhard2": {"distractors": 9, "pick": 3}, "xhard3": {"distractors": 12, "pick": 3},
+        "hard": {"distractors": 0, "pick": 2}, "xhard1": {"distractors": 8, "pick": 2},
+        "xhard2": {"distractors": 10, "pick": 3}, "xhard3": {"distractors": 12, "pick": 3},
         "xhard4": {"distractors": 14, "pick": 3},
     },
     "VideoUnmaskSwap": {

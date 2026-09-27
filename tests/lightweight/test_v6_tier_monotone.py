@@ -166,6 +166,14 @@ def test_final_plan_table_passes() -> None:
     assert M.format_report(result, label="TIER_PLAN_TABLE")[-1] == "TIER_PLAN_TABLE=PASS envs=13 violations=0"
 
 
+@pytest.mark.parametrize("tier,count", [("xhard1", 8), ("xhard2", 10)])
+def test_button_unmask_plan_matches_approved_snapshot(tier, count) -> None:
+    """递增检查挡不住错抄值，须逐档核对批准定值与冻结配置。"""
+    document = json.loads((REPO_ROOT / "scripts/configs/newtask-v6/sampling_config.json").read_text())
+    assert document["tasks"]["ButtonUnmask"]["decision"][tier]["distractor"]["count"] == count
+    assert M.PLAN_TIERS["ButtonUnmask"][tier]["distractors"] == count
+
+
 def test_dims_from_xhard_decision_vp() -> None:
     vpb = {"xhard3": {"demo_object_count": 2, "demo_return_policy": "return_to_origin",
                        "extra_place_before": 1, "extra_place_after": 0}}
