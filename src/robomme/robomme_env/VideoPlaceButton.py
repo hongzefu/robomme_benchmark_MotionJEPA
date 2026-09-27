@@ -42,6 +42,7 @@ from .utils.xhard_home_site import (
     home_pose_record,
     returned_mask,
     validate_demo_plan,
+    validate_place_sequence,
 )
 from .utils.xhard import cube_obb2d_exact
 
@@ -134,7 +135,9 @@ def _tier_config_values(cls, field, release):
             if name in _NATIVE_TIERS:
                 values[name] = cfg[field]
             elif name in {"xhard", "xhard4"}:
-                values["xhard"] = cfg[field]
+                # V4/V5 的 xhard 取 V5 基准 config_xhard（targets 4）；V6 N2 把 config_xhard4 的 targets 改成 5，
+                # 不能回流到 V5 快照的 xhard 值
+                values["xhard"] = getattr(cls, "config_xhard", cfg)[field]
         return values
     values = {}
     for tier in (*_NATIVE_TIERS, "xhard1", "xhard2", "xhard3", "xhard4"):
@@ -249,10 +252,14 @@ class VideoPlaceButton(BaseEnv):
         "swap":True,
         "targets":4
     }
+    config_xhard1 = copy.deepcopy(config_xhard)
+    config_xhard2 = copy.deepcopy(config_xhard)
+    # V6 审查修复 N2（用户「n2 同意改为5台」）：xhard3/4 演示 2 块、各有 before/after 台共 4 张，
+    # 额外放台在 4 台下候选恒等于 after 台集合（按钮后放台变成原地空转），故台数 4→5；xhard1/2 仍 4 台。
+    config_xhard3 = copy.deepcopy(config_xhard)
+    config_xhard3["targets"] = 5
     config_xhard4 = copy.deepcopy(config_xhard)
-    config_xhard1 = copy.deepcopy(config_xhard4)
-    config_xhard2 = copy.deepcopy(config_xhard4)
-    config_xhard3 = copy.deepcopy(config_xhard4)
+    config_xhard4["targets"] = 5
 
     # Combine into a dictionary
     configs = {
@@ -471,7 +478,11 @@ class VideoPlaceButton(BaseEnv):
             )
 
             self.targets = []
-            for i in range(self._sampling["parameters"]["target_slots"]):
+            target_slots = int(self._sampling["parameters"]["target_slots"])
+            if _is_newvalue_difficulty(self.difficulty):
+                # V6 N2：新值档台数（xhard3/4 为 5）可超过原生槽位数 4，按 decision.targets 放宽循环上限；原三档仍读原值
+                target_slots = max(target_slots, int(decision_cfg["targets"][self.difficulty]))
+            for i in range(target_slots):
                 if i < decision_cfg["targets"][self.difficulty]:
                     try:
                         target = spawn_random_target(
@@ -937,18 +948,44 @@ class VideoPlaceButton(BaseEnv):
         for color_name, group in (("red", self.red_cubes), ("blue", self.blue_cubes), ("green", self.green_cubes)):
             if self.target_cube in group:
                 self.target_color_name = color_name
-        if self.task_flag == 1:
-            self.target_target = self.demo_before_targets[answer_index]
-            self.target_target_language = "before"
-        else:
-            self.target_target = self.demo_after_targets[answer_index]
-            self.target_target_language = "after"
+        self.target_target_language = "before" if self.task_flag == 1 else "after"
         self.non_target_cubes = [cube for cube in self.all_cubes if cube != self.target_cube]
-        self.targets_not_true = [t for t in self.targets if t != self.target_target]
-        self._spec.record("actions.target_target_id", self.targets.index(self.target_target))
 
+        # V6 审查修复 F6 / N2 / Q-C（用户 K10「f6修」、K14「vpb问题也要修复」）：
+        # 额外放台按**完整任务序列**维护每台占用（正式 before → 额外 before → 按钮 → 正式 after → 额外 after），
+        # before 侧候选另排除全部 after 台（否则额外方块留在别块的 after 台上、按钮后两块同台）；
+        # before 题答案 = 答案方块在按钮前**最后一次**放下的台（额外 before 的主人恰是答案方块时取额外台），
+        # after 题答案 = 正式 after 台（额外 after 与放回原位都排在其后）。候选为空即判本局生成失败，不静默降级。
+        # 随机数消费与改前相同（owner 一次 + 每个额外段一次 randint），只有候选集合与答案绑定变了。
+        n_targets = len(self.targets)
+        before_ids = [2 * k for k in range(demo_count)]
+        after_ids = [2 * k + 1 for k in range(demo_count)]
+        occupancy = {i: None for i in range(n_targets)}   # 台 → 当前停在其上的演示方块序号
+        location = {}                                       # 演示方块序号 → 当前所在台
+        for k in range(demo_count):
+            occupancy[before_ids[k]] = k
+            location[k] = before_ids[k]
+        last_before_target = dict(enumerate(before_ids))    # 每个演示方块按钮前最后一次放置的台
         self.demo_extra_place_before = []
         self.demo_extra_place_after = []
+
+        def _apply_formal_after():
+            for k in range(demo_count):
+                holder = occupancy[after_ids[k]]
+                if holder is not None and holder != k:
+                    raise SceneGenerationError(
+                        f"VideoPlaceButton {self.difficulty} 按钮后台 {after_ids[k]} 仍被方块 {holder} 占着（两块同台）"
+                    )
+                occupancy[location[k]] = None
+                occupancy[after_ids[k]] = k
+                location[k] = after_ids[k]
+
+        def _answer_target_idx():
+            if self.task_flag == 1:
+                return int(last_before_target[answer_index])
+            return int(after_ids[answer_index])
+
+        answer_target_idx = None
         if is_v6_tier:
             sides, owner_ids_drawn = _extra_place_owners(
                 demo_count, extra_before, extra_after, generator
@@ -958,19 +995,23 @@ class VideoPlaceButton(BaseEnv):
                 decision_key=f"{tier_key}.extra_place_before/after",
             )
             before_ids_drawn, after_ids_drawn = [], []
+            after_phase_applied = False
             for side, owner in zip(sides, owner_ids):
-                if not 0 <= int(owner) < demo_count:
+                owner = int(owner)
+                if not 0 <= owner < demo_count:
                     raise SceneGenerationError(f"VPB 额外放台 owner 越界：{owner}")
-                occupied = ({self.targets.index(t) for t in self.demo_before_targets}
-                            if side == "before"
-                            else {self.targets.index(t) for t in self.demo_after_targets})
-                candidates = [
-                    idx for idx, target in enumerate(self.targets)
-                    if idx not in occupied and target is not self.target_target
-                ]
+                if side == "after" and not after_phase_applied:
+                    answer_target_idx = _answer_target_idx()
+                    _apply_formal_after()
+                    after_phase_applied = True
+                if side == "before":
+                    excluded = set(after_ids) | {before_ids[answer_index]}
+                else:
+                    excluded = {answer_target_idx}
+                candidates = [idx for idx in range(n_targets) if occupancy[idx] is None and idx not in excluded]
                 if not candidates:
                     raise SceneGenerationError(
-                        f"VideoPlaceButton {self.difficulty} {side} 额外放台没有空闲的非答案 target"
+                        f"VideoPlaceButton {self.difficulty} {side} 额外放台没有空闲且非答案、非 after 的 target"
                     )
                 target_idx_drawn = candidates[
                     int(torch.randint(0, len(candidates), (1,), generator=generator).item())
@@ -982,16 +1023,35 @@ class VideoPlaceButton(BaseEnv):
                 ))
                 if target_idx not in candidates:
                     raise SceneGenerationError(
-                        f"VPB 回注的 {side} 额外 target={target_idx} 当前被占用或是答案 target"
+                        f"VPB 回注的 {side} 额外 target={target_idx} 当前被占用、是 after 台或是答案 target"
                     )
-                item = (self.demo_cubes[int(owner)], self.targets[target_idx])
+                occupancy[location[owner]] = None
+                occupancy[target_idx] = owner
+                location[owner] = target_idx
+                item = (self.demo_cubes[owner], self.targets[target_idx])
                 if side == "before":
                     self.demo_extra_place_before.append(item)
                     before_ids_drawn.append(target_idx)
+                    last_before_target[owner] = target_idx
                 else:
                     self.demo_extra_place_after.append(item)
                     after_ids_drawn.append(target_idx)
+            if not after_phase_applied:
+                answer_target_idx = _answer_target_idx()
+                _apply_formal_after()
             self._spec.record("actions.target_placement_count", target_placements)
+            # F6 守卫：整条放置序列回放一次占用表，两块同台或原地空转即判生成失败
+            place_sequence = [(k, before_ids[k]) for k in range(demo_count)]
+            place_sequence += [(self.demo_cubes.index(c), self.targets.index(t)) for c, t in self.demo_extra_place_before]
+            place_sequence += [(k, after_ids[k]) for k in range(demo_count)]
+            place_sequence += [(self.demo_cubes.index(c), self.targets.index(t)) for c, t in self.demo_extra_place_after]
+            validate_place_sequence(place_sequence, n_targets)
+            self._spec.record("actions.place_sequence", [[int(c), int(t)] for c, t in place_sequence])
+        else:
+            answer_target_idx = _answer_target_idx()
+        self.target_target = self.targets[answer_target_idx]
+        self.targets_not_true = [t for t in self.targets if t != self.target_target]
+        self._spec.record("actions.target_target_id", int(answer_target_idx))
 
         # 放回原位的落点：所有 spawn 之后、按方块初始位姿直接调 target builder（不用 spawn_random_target）
         self._build_xhard_final_sites(return_policy, generator)
@@ -1074,7 +1134,10 @@ class VideoPlaceButton(BaseEnv):
             segment_text = "drop the cube onto table"
         elif home is True or home == "home":
             name = "put the cube back to its original position"
-            segment_text = "put the cube back to its original position at <>"
+            # V6 审查修复 N5（用户「n5 不要坐标了」）：放回原位的落点被 _hidden_objects 隐藏、永远填不出坐标，
+            # 新四档模板去掉 ``at <>``；V5 xhard 规格沿用旧文本。
+            segment_text = (name if _is_newvalue_difficulty(self.difficulty)
+                            else "put the cube back to its original position at <>")
         else:
             name = "drop the cube onto target"
             segment_text = "drop the cube onto target at <>"

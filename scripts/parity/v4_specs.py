@@ -361,19 +361,45 @@ def _parse_gpus(text: str | None) -> list[str] | None:
     return [item.strip() for item in str(text).split(",") if item.strip()]
 
 
+def parse_task_max_reset_attempts(text: str | None, difficulty: str) -> dict[str, int]:
+    """解析 ``--task-max-reset-attempts``：``TASK[@TIER]=N,...``；带 ``@TIER`` 的条目只对该档生效。
+
+    V6 审查修复 N2 落地（用户 2026-09-27 裁决「5 台 + xhard3/4 抽签上限 60→120」）：VPB xhard3/4 台数 5 后 reset
+    成功率降到约 45% / 20%，只给这两格放宽尝试上限，其余格保持全局值。
+    """
+    result: dict[str, int] = {}
+    if not text:
+        return result
+    for item in text.split(","):
+        item = item.strip()
+        if not item:
+            continue
+        key, _, value = item.partition("=")
+        task, _, tier = key.partition("@")
+        if not task or not value.isdigit():
+            raise SpecsError(f"--task-max-reset-attempts 条目格式应为 TASK[@TIER]=N：{item!r}")
+        if tier and tier != difficulty:
+            continue
+        result[task] = int(value)
+    return result
+
+
 def draw_rows(tasks: list[str], samplings: dict[str, dict[str, Any]], candidates_per_env: int,
               max_reset_attempts: int, workers: int = 1, gpus: list[str] | None = None, *,
               draw_one=None, executor_factory=None, difficulty: str = DIFFICULTY,
-              seed_rule: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+              seed_rule: dict[str, Any] | None = None,
+              max_reset_attempts_by_task: dict[str, int] | None = None) -> list[dict[str, Any]]:
     """全部环境的抽签行（header 之外）。``workers == 1`` 时在本进程逐环境顺序跑，与改动前逐字相同。
 
     ``workers > 1`` 时每个环境作为一个任务提交给进程池（spawn，每进程独立 gym 环境），
     结果按任务序合并。``executor_factory``/``draw_one`` 只供单测注入（线程池 + 假 reset）。
     """
+    by_task = dict(max_reset_attempts_by_task or {})
+    attempts_for = lambda task: int(by_task.get(task, max_reset_attempts))  # noqa: E731
     if workers <= 1:
         rows: list[dict[str, Any]] = []
         for task in tasks:
-            rows.extend(draw_task(task, samplings[task], candidates_per_env, max_reset_attempts, draw_one,
+            rows.extend(draw_task(task, samplings[task], candidates_per_env, attempts_for(task), draw_one,
                                   difficulty, seed_rule))
         return rows
     workers = min(workers, len(tasks))
@@ -396,7 +422,7 @@ def draw_rows(tasks: list[str], samplings: dict[str, dict[str, Any]], candidates
     rows_by_task: dict[str, list[dict[str, Any]]] = {}
     failures: list[str] = []
     with executor:
-        futures = {executor.submit(target, task, samplings[task], candidates_per_env, max_reset_attempts, draw_one,
+        futures = {executor.submit(target, task, samplings[task], candidates_per_env, attempts_for(task), draw_one,
                                    difficulty, seed_rule): task
                    for task in tasks}
         from concurrent.futures import as_completed
@@ -429,14 +455,58 @@ def cmd_draw(args: argparse.Namespace) -> int:
     out = Path(args.out)
     if out.exists():
         raise SpecsError(f"{out} 已存在，禁止覆盖")
+    by_task = parse_task_max_reset_attempts(getattr(args, "task_max_reset_attempts", None), difficulty)
+    if by_task:
+        print(f"DRAW_TASK_MAX_RESET_ATTEMPTS difficulty={difficulty} " +
+              " ".join(f"{k}={v}" for k, v in sorted(by_task.items())), flush=True)
     rows = draw_rows(tasks, header["sampling_config"], args.candidates_per_env, args.max_reset_attempts,
-                     workers, gpus, difficulty=difficulty, seed_rule=seed_rule)
+                     workers, gpus, difficulty=difficulty, seed_rule=seed_rule, max_reset_attempts_by_task=by_task)
     _write_jsonl(out, [header, *rows])
     print(f"DRAW_DONE rows={len(rows)} ok={sum(r['reset_ok'] for r in rows)} out={out}")
     return 0
 
 
 # ── 冻结 ───────────────────────────────────────────────────────────────
+
+
+# V6 审查 N14（用户「n14 b」）：MoveCube 的 way_idx 0/1/2 = peg_push / gripper_push / grasp_putdown（MoveCube.py::self.ways）；
+# 固定取 index 0/3/6 时 xhard4 三局恰好都不是 peg_push，改为按运动方式分层选局。
+MOVECUBE_WAYS = (0, 1, 2)
+
+
+def _movecube_way(spec: dict[str, Any]) -> int | None:
+    """录像局用的是最后一次 _initialize_episode 的 way_idx（构造期 reset 是 initializations.0，正式 reset 是最大序号）。"""
+    inits = spec.get("initializations") if isinstance(spec, dict) else None
+    if not isinstance(inits, dict) or not inits:
+        return None
+    last = max(inits, key=lambda k: int(k))
+    way = inits[last].get("way_idx") if isinstance(inits[last], dict) else None
+    return int(way) if way is not None else None
+
+
+def stratified_select(task: str, difficulty: str, ok_rows: list[dict[str, Any]], select) -> list[int]:
+    """正式局编号：默认 = ``select`` 中存在的候选；MoveCube 新值档 = 每种运动方式取编号最小的一个候选，
+    不足 ``len(select)`` 个时按 ``select`` 顺序补齐（缺某种方式如实少一种，不另抽候选）。"""
+    episodes = [r["episode"] for r in ok_rows]
+    default = [e for e in episodes if e in select]
+    if task != "MoveCube" or difficulty not in NEWVALUE_TIERS:
+        return default
+    by_way: dict[int, list[int]] = {}
+    for row in ok_rows:
+        way = _movecube_way(row["spec"])
+        if way is not None:
+            by_way.setdefault(way, []).append(row["episode"])
+    chosen: list[int] = []
+    for way in MOVECUBE_WAYS:
+        candidates = sorted(by_way.get(way, []))
+        if candidates:
+            chosen.append(candidates[0])
+    for episode in list(select) + episodes:
+        if len(chosen) >= len(select):
+            break
+        if episode in episodes and episode not in chosen:
+            chosen.append(episode)
+    return sorted(chosen[: len(select)])
 
 
 def freeze(drafts_path: Path, sampling_path: Path, out: Path, select=DEFAULT_SELECT,
@@ -467,7 +537,7 @@ def freeze(drafts_path: Path, sampling_path: Path, out: Path, select=DEFAULT_SEL
         if [r["episode"] for r in ok_rows] != list(range(len(ok_rows))):
             raise SpecsError(f"{task} 的成功候选编号不连续")
         attempted = sum(1 for r in drafts if r["task"] == task)
-        selected = [r["episode"] for r in ok_rows if r["episode"] in select]
+        selected = stratified_select(task, difficulty, ok_rows, select)
         per_env[task] = {"candidates": len(ok_rows), "attempted": attempted,
                          "candidate_shortfall": max(0, candidates_per_env - len(ok_rows)),
                          "selected": selected}
@@ -475,7 +545,7 @@ def freeze(drafts_path: Path, sampling_path: Path, out: Path, select=DEFAULT_SEL
             rows.append({
                 "record": "spec", "task": task, "difficulty": difficulty, "episode": row["episode"],
                 "attempt": row["attempt"], "seed": row["seed"], "spec": row["spec"],
-                "spec_sha256": row["spec_sha256"], "selected": row["episode"] in select,
+                "spec_sha256": row["spec_sha256"], "selected": row["episode"] in selected,
             })
     specs_header = {key: copy.deepcopy(header[key]) for key in HEADER_KEYS}
     specs_header.update({
@@ -582,6 +652,8 @@ def main() -> int:
     draw.add_argument("--sampling-config", default=str(DEFAULT_SAMPLING))
     draw.add_argument("--candidates-per-env", type=int, default=10)
     draw.add_argument("--max-reset-attempts", type=int, default=30)
+    draw.add_argument("--task-max-reset-attempts", default=None,
+                      help="按环境（可带档位）覆盖尝试上限：TASK[@TIER]=N,...（如 VideoPlaceButton@xhard3=120）")
     draw.add_argument("--workers", type=int, default=1,
                       help="并行进程数；默认 1 与改动前逐字相同，>1 时按环境分给 spawn 子进程，合并后行序不变")
     draw.add_argument("--gpus", default=None,

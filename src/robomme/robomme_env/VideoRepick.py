@@ -32,7 +32,7 @@ from .utils import *
 # `utils.SceneGenerationError` 盖到名字 `SceneGenerationError` 上（import 自省核实），原三档的
 # raise / except 因此是 TypeError（按 H2 原三档保持现状）。xhard 用下面这个别名拿到真正的异常类。
 from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenerationError
-from .utils.subgoal_evaluate_func import static_check
+from .utils.subgoal_evaluate_func import static_check, is_static
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import NEWVALUE_DIFFICULTIES, is_newvalue_difficulty, normalize_robomme_difficulty
@@ -200,6 +200,25 @@ def _solve_hold_obj_xhard(env, planner, static_steps):
     """
     start_step = int(getattr(env, "elapsed_steps", 0))
     target_step = start_step + static_steps
+    while int(getattr(env, "elapsed_steps", 0)) < target_step:
+        try:
+            planner.open_gripper()
+        except AttributeError:
+            pass
+    return None
+
+
+def _solve_hold_until_step_xhard(env, planner, target_step):
+    """V6 审查修复 N11：xhard 交换段的原地等待改为等到**绝对步** ``target_step``（与 ``_solve_hold_obj_xhard`` 同语义，
+    只把「相对当前步数 static_steps」换成绝对步）。
+
+    根因（审查 xhard4 ep3 seed 6900300，12 次交换只有 11 个 static 边界）：交换段 static 任务的内部完成判定
+    ``static_check(static_steps=50)`` 从**内部**任务切换那一步起计数，而演示 wrapper 执行的等待解法从**录像侧**任务切换
+    （上一段解法结束）起再等 50 步并多消耗约 4 步开销；录像侧只在每段解法结束时采纳内部任务索引，两条时钟每段漂 4 步，
+    累计超过一段长度后某个内部 static 任务在两次采纳之间整段完成，边界被吞掉。
+    修法：新四档交换段的完成判定与等待解法都钉到同一条绝对时钟——第 k 段结束步 ``swap_schedule[k][3]``，漂移不再累计。
+    """
+    target_step = int(target_step)
     while int(getattr(env, "elapsed_steps", 0)) < target_step:
         try:
             planner.open_gripper()
@@ -1185,6 +1204,19 @@ class VideoRepick(BaseEnv):
                                 },)
             if self.swap_times>=1:
                 for count in range(self.swap_times):
+                    if is_newvalue_difficulty(self.difficulty):
+                        # V6 审查修复 N11（用户「n11 a」）：第 k 段的完成判定与等待解法都钉到该段的绝对结束步
+                        # swap_schedule[k][3]（首段任务成为当前任务时 step() 会按 start_step 刷新时间表），见 _solve_hold_until_step_xhard
+                        tasks.append(   {
+                                "func": lambda k=count: bool(is_static(self)) and int(self.elapsed_steps) >= int(self.swap_schedule[k][3]),
+                                "name": "static",
+                                "subgoal_segment":"static",
+                                "demonstration": True,
+                                "failure_func": None,
+                                "specialflag":"swap",
+                                "solve": lambda env, planner, k=count: [_solve_hold_until_step_xhard(env, planner, self.swap_schedule[k][3])],
+                                },)
+                        continue
                     tasks.append(   {
                                 "func": lambda: static_check(self, timestep=int(self.elapsed_steps), static_steps=self.swap_schedule[-1][3]-self.swap_schedule[-1][2]),
                                 "name": "static",
@@ -1215,17 +1247,24 @@ class VideoRepick(BaseEnv):
                 "ninth",
                 "tenth",
             ]
+            # V6 审查修复 M1（用户「m1 a」）：新四档「提前按按钮即失败」的时间窗随轮次滚动——每轮抓取／放下各用自己的计时器
+            # （从该任务成为当前任务起算），首轮保留原 [50,500] 步、后续轮次从 0 步起，窗口覆盖到最后一次放下；
+            # 原三档仍用单一计时器 2/3（从首次抓取起 [50,500] 步，不重置）。
+            rolling_window = is_newvalue_difficulty(self.difficulty)
             for i in range(self.num_repeats):
                 ordinal = ordinal_words[i] if i < len(ordinal_words) else f"{i+1}th"
+                pick_timer = f"xhard_pick_{i}" if rolling_window else 2
+                put_timer = f"xhard_put_{i}" if rolling_window else 3
+                window_min = 50 if (not rolling_window or i == 0) else 0
                 tasks.append(  {
                         "func": (lambda: is_obj_pickup(self, obj=self.target_cube_1)),
                         "name": f"pick up the correct cube for the {ordinal} time" ,
                         "subgoal_segment":f"pick up the correct cube at <> for the {ordinal} time" ,
                         "choice_label": "pick up the cube",
                         "demonstration": False,
-                        "failure_func": lambda: [
+                        "failure_func": lambda pick_timer=pick_timer, window_min=window_min: [
                             is_any_obj_pickup(self,[cube for cube in self.spawned_cubes if cube != self.target_cube_1]),
-                            timewindow(self, lambda: is_button_pressed(self, obj=self.button_left),min_steps=50,max_steps=500,timewindow_timer=2,),],
+                            timewindow(self, lambda: is_button_pressed(self, obj=self.button_left),min_steps=window_min,max_steps=500,timewindow_timer=pick_timer,),],
                         "solve": lambda env, planner: [solve_pickup(env, planner, obj=self.target_cube_1)],
                         'segment':self.target_cube_1,
                     },)
@@ -1236,9 +1275,9 @@ class VideoRepick(BaseEnv):
                     "subgoal_segment":f"put it down",
                     "choice_label": "put it down",
                         "demonstration": False,
-                        "failure_func": lambda:[
+                        "failure_func": lambda put_timer=put_timer, window_min=window_min:[
                             is_any_obj_pickup(self,[cube for cube in self.spawned_cubes if cube != self.target_cube_1]),
-                            timewindow(self, lambda: is_button_pressed(self, obj=self.button_left),min_steps=50,max_steps=500,timewindow_timer=3,),], 
+                            timewindow(self, lambda: is_button_pressed(self, obj=self.button_left),min_steps=window_min,max_steps=500,timewindow_timer=put_timer,),],
                         "solve": lambda env, planner: solve_putdown_whenhold(env, planner,release_z=0.01)
                     })
 

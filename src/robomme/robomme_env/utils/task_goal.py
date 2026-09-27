@@ -58,6 +58,12 @@ def _unmask_pick_count(self):
     return pick
 
 
+def _is_newvalue_tier(self):
+    """V6 新值族判断（xhard1～xhard4）；本模块被单测按文件路径单独加载，故不走相对导入。"""
+    difficulty = getattr(self, "difficulty", None)
+    return isinstance(difficulty, str) and difficulty.strip().lower() in ("xhard1", "xhard2", "xhard3", "xhard4")
+
+
 def _unmask_multi_pick_clause(color_names, pick):
     """V4 xhard（pick ≥ 3）专用：逐个列出要抓的容器；原三档（pick ≤ 2）不经过这里，文本逐字不变。"""
     parts = [f"pick up the container hiding the {color_names[0]} cube"]
@@ -171,7 +177,16 @@ def get_language_goal(self, env):
     elif env == "VideoPlaceButton":
         target_color_name = self.target_color_name
         target_target_language = self.target_target_language
-        
+        if _is_newvalue_tier(self):
+            # V6 审查修复 N3/N4（用户「vpb只保留这一句」）：新四档每局只生成一句——
+            # before 题用「last placed before」，after 题用「first placed after」；
+            # right/immediately（双块档时序不成立）与 previously placed（额外放台时不唯一）三种说法删去。原三档四句不变。
+            if target_target_language == "before":
+                language_goals.append(f"watch the video carefully, then place the {target_color_name} cube on the target where it was last placed before the button was pressed")
+            else:
+                language_goals.append(f"watch the video carefully, then place the {target_color_name} cube on the target where it was first placed after the button was pressed")
+            return language_goals
+
         language_goals.append(f"watch the video carefully, then place the {target_color_name} cube on the target right {target_target_language} the button was pressed")
         language_goals.append(f"watch the video carefully, and place the {target_color_name} cube on the target where it was placed immediately {target_target_language} the button was pressed")
         
@@ -190,8 +205,13 @@ def get_language_goal(self, env):
         language_goals.append(f"watch the video carefully and place the {target_color_name} cube on the {num} target where it was placed")
 
     elif env == 'PickHighlight':
-        language_goals.append(f"first press the button, then pick up all cubes that have been highlighteted with white areas on the table")
-        language_goals.append(f"first press the button, then pick up all highlighted cubes, finally press the button again to stop")
+        if _is_newvalue_tier(self):
+            # V6 审查修复 F1（K2）：新四档两句与新任务链（逐块抓放 + 末尾按钮）一致，并修正 highlighteted 拼写；原三档两句原样保留
+            language_goals.append("first press the button, then pick up all highlighted cubes one by one, finally press the button to stop")
+            language_goals.append("first press the button, then pick up every cube highlighted with a white area on the table one at a time, finally press the button again to stop")
+        else:
+            language_goals.append(f"first press the button, then pick up all cubes that have been highlighteted with white areas on the table")
+            language_goals.append(f"first press the button, then pick up all highlighted cubes, finally press the button again to stop")
 
     elif env == "VideoRepick":
         num_repeats = self.num_repeats

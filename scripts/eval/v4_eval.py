@@ -64,12 +64,25 @@ def _binding(env) -> dict:
             "unattributed_mismatch": len(recorder.unattributed_mismatches()), "unused": len(unused)}
 
 
+# V6 审查 N12（用户「n12 a」）：新值档执行段实测最大步（xhard1 1169 / xhard2 1350 / xhard3 1614 / xhard4 2180，
+# 审查报告 crosscut-values/measured.json 的 exec_steps_to_completion）超过 MME-VLA 的 1300，评估上限按档放宽；
+# 原三档仍 1300。显式传 --max-steps 时以命令行为准。
+NATIVE_MAX_STEPS = 1300
+NEWVALUE_MAX_STEPS = {"xhard1": 1500, "xhard2": 1700, "xhard3": 2000, "xhard4": 2600}
+
+
+def default_max_steps(difficulty) -> int:
+    """按快照 header 的档位取评估步数上限；不在新值族内（原三档、V5 xhard）用 1300。"""
+    return NEWVALUE_MAX_STEPS.get(str(difficulty).strip().lower() if difficulty else "", NATIVE_MAX_STEPS)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--specs", required=True)
     parser.add_argument("--tasks", default="all")
     parser.add_argument("--action-space", default="joint_angle")
-    parser.add_argument("--max-steps", type=int, default=1300, help="MME-VLA 实验口径 1300；演示帧不计入")
+    parser.add_argument("--max-steps", type=int, default=None,
+                        help="演示帧不计入；缺省按档取值：原三档 1300（MME-VLA 口径），新值档按 NEWVALUE_MAX_STEPS")
     parser.add_argument("--model-seed", type=int, default=7)
     parser.add_argument("--limit-per-task", type=int, default=0)
     parser.add_argument("--run-id", default=None)
@@ -81,6 +94,9 @@ def main() -> int:
     from robomme.env_record_wrapper import BenchmarkEnvBuilder
 
     header, _, specs_by_identity = load_specs(args.specs)
+    if args.max_steps is None:
+        args.max_steps = default_max_steps(header.get("difficulty"))
+        print(f"EVAL_MAX_STEPS difficulty={header.get('difficulty')} max_steps={args.max_steps}", flush=True)
     tasks = header["tasks"] if args.tasks == "all" else args.tasks.split(",")
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

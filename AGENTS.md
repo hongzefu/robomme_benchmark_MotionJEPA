@@ -535,6 +535,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
+| V6 语义审查修复实施（2026-09-27） | 8.2 清单 14 项 src 改动 + 脚本/配置/文档改动已落地并过 G1～G3；VPB 5 台经用户裁决放宽 xhard3/4 抽签上限；三席 165 局重生成（run-id v6-02）按 8.4 第 3 步启动 | `RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`；`LIGHTWEIGHT=PASS new_failures=0 resolved=0 failed=26 errors=12 passed=1598`（四片各 ≤280 s，与 S1 最终失败集 38 项逐项相同）；新单测 41 例通过；`VPB_5TARGETS=REPORT xhard3=9/20 xhard4=4/20`；[留档](docs/validation/newtask-v6/20260927-audit-fix.md) | 三席跑完 → `verify_s4.py` + 第二节判定行（PH/BUS/VPB/VPO/VR/PEG）→ site-v11 → 留档第二段 |
 | V6 语义审查修复计划（2026-09-26） | 计划已落根目录，源码零改动，待用户下令实施 | 审查 14 条逐条解释与裁决：F1/F3/F4/F6/D6 与 VPB 旧题共 7 项 `src/robomme` 改动设计；F2/F5/D3/D7 记为与原三档同源的语义问题只报告；只改 xhard1～4、原三档路径不动；165 局用三席重跑 | 用户下令后按 P2 清单实施 → G1～G3 → 三席 S4 → site-v11 |
 | VPB/VPO网站人读子目标标签（2026-09-26） | 已上线site-v10并验证 | 30样例标签由位置链反推：方块数、放台次数与源码档定值一致，正确方块颜色与题目30/30相符；题意≠程序答案恰为已披露xhard3 ep3/6；30样例问句、标签、标记及播放PASS，页面错误0；213媒体与预览不变 | 保留网站与原数据；再改文案只改`label_flow`文案层并重建新目录 |
 | VPB/VPO网站原子子目标（2026-09-26） | 已被site-v10替代 | 30样例544真实子目标与HDF5边界一致，420图像坐标、30对同名静止保留；30样例列表切换及播放PASS，页面错误0；213原视频不变 | 保留网站与原数据；仅显示演示／执行原子子目标，不再使用按档概括 |
@@ -602,6 +603,19 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | newtask-v2 计划对抗审查与修订（2.24） | 完成（文档、快照补录、账本） | 11 路只读对抗审查；补齐随机流清单与疑似旧错误清单，改写 seed 入口、两次 reset、导入顺序因果链、防漂移检查对象；按用户决策改写确定性退出路径、预算口径、PNG 留档、①依赖③、旧测试工厂保留、12 任务保留、A 路 worktree、清理后抽样复验；JSON 只增不改 | 等用户授权后按修订计划实施；本轮未创建分支或 worktree、未生成、未对拍 |
 
 ## 追加式执行日志
+
+### 2026-09-27 00:35 EDT — V6 语义审查修复：src/脚本改动落地、G1～G3 闸门与三席重生成启动
+
+- 状态：进行中（阶段 A 三席已起跑，等待回传）。
+- 目标：按 `0926-v6-audit-fix-plan.md` §8.2/§8.4 实施；用户原话「开始实现」，中途裁决「5 台 + xhard3/4 抽签上限 60→120（推荐）」。
+- 执行命令：`scripts/parity/v4_reset_probe probe/diff`（G1，48 身份，改动前用 `4866089` 只读 worktree）；`scripts/parity/v6_v0_native_definitions.py`（G2）；`tests/lightweight` 四片各 `timeout 280s`（G3）；`scripts/parity/v4_specs draw --difficulty xhard3|xhard4 --candidates-per-env 20 --max-reset-attempts 20`（VPB 5 台验证，各 20 次 reset）；`train_split_config.py extract --release newtask-v6`（快照重抽）；三席 `artifacts/newtask-v6/s4-relaunch-02/run-seat.sh <job>`。
+- 输入与来源：HEAD `4866089`；集群侧克隆核对恰等于 `38488db`；审查报告 `artifacts/audit/v6-semantic-vs-native-82e3d92/`。
+- 输出路径：`artifacts/newtask-v6/audit-fix-02/{g1,g3,vpb-5targets}/`；`artifacts/newtask-v6/s4-relaunch-02/`；`docs/validation/newtask-v6/20260927-audit-fix.md`。
+- 结果与证据：`RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`（6 键 = BUS 按钮改名 + StopCube 说明字段，有意）；`LIGHTWEIGHT=PASS new_failures=0 resolved=0 failed=26 errors=12 passed=1598`（四片各 ≤280 s，与 S1 最终失败集 38 项逐项相同）；`VPB_5TARGETS=REPORT xhard3=9/20 xhard4=4/20`（占用表序列正确）；sampling_config SHA `6ab3b0c2…`→`4a0329e3…`。
+- 差异或阻塞：N11 根因定位为内部 static 计时与录像侧 solve 计时每段漂 4 步（见留档 §2）；PH 成功判定原在全部抓过一次即成立，计划「无需改 evaluate」不成立，已按 K2 补改；VPB 5 台 reset 成功率 45%/20%（原 85%），按用户裁决只放宽两格预算；V5 快照 `--verify` 在改动前就不一致（12.177 手改 note），本轮不动。
+- 修改文件：见 commit 12.188。
+- 下一步：三席日志 Monitor → 回传 → `verify_s4.py` 与第二节判定行 → site-v11 → 留档第二段。
+
 
 ### 2026-09-12 America/Detroit — 当前版本对原始训练种子生成的非布局差异对抗审计：开始
 

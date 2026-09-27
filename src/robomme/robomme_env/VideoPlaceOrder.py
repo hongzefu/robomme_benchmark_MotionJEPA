@@ -861,7 +861,9 @@ class VideoPlaceOrder(BaseEnv):
             segment_text = "drop the cube onto table"
         elif home is True or home == "home":
             name = "put the cube back to its original position"
-            segment_text = "put the cube back to its original position at <>"
+            # V6 审查修复 N5（用户「n5 不要坐标了」）：放回原位落点被隐藏、坐标永远填不出，新四档模板去掉 ``at <>``；V5 xhard 沿用旧文本
+            segment_text = (name if _is_newvalue_difficulty(self.difficulty)
+                            else "put the cube back to its original position at <>")
         else:
             name = "drop the cube onto target"
             segment_text = "drop the cube onto target at <>"

@@ -1,6 +1,6 @@
 {
   "schema": "train-parity-sampling-config/1",
-  "note": "V6 快照：原 easy/medium/hard 三档按 V0 核验；新值族 xhard1 < xhard2 < xhard3 < xhard4 四档条目为 V6 新值（NEWTASK_RELEASE_V6_PLAN）；V5 快照 scripts/configs/newtask-v5/ 原样留档",
+  "note": "V6 快照：原 easy/medium/hard 三档按 V0 核验；新值族 xhard1 < xhard2 < xhard3 < xhard4 四档条目为 V6 新值（0925-newtask-release-v6-plan.md）；V5 快照 scripts/configs/newtask-v5/ 原样留档",
   "tasks_total": 16,
   "tasks_ready": [
     "BinFill",
@@ -298,6 +298,7 @@
             "high": 30
           },
           "motion_segments": 5,
+          "motion_segments_note": "描述值，代码不读；实际段数：原三档 5，xhard4 max(5, stop_time)",
           "steps_press_expression": "move_interval * stop_time - move_interval / 2",
           "stop_window_expression": "[move_interval * (stop_time - 1), move_interval * stop_time]",
           "press_lead_steps": "self.interval",
@@ -1701,7 +1702,7 @@
             "sampler": "torch.randperm(3)"
           },
           "hidden_rule": "前三容器藏三色，第四个为空",
-          "pick_rule": "右按钮→左按钮后，抓 selected_bins[0]，count=2 时再抓 [1]",
+          "pick_rule": "左按钮→右按钮后（机器人坐标系，左 = +y），抓 selected_bins[0]，count=2 时再抓 [1]",
           "partner_rule": "交换开始时按实际 XY 取最近邻，不另抽签",
           "swap_window": {
             "start_step": 64,
@@ -1713,8 +1714,8 @@
             "keep_upright": true
           },
           "button_order": [
-            "right",
-            "left"
+            "left",
+            "right"
           ],
           "recovery": "构造器的 self.generator 用于恢复；场景另建同 seed 局部流，两条流分开",
           "configs": {
@@ -1772,7 +1773,7 @@
         "positions": {
           "buttons": [
             {
-              "name": "button_left",
+              "name": "button_right",
               "center_xy": [
                 -0.2,
                 -0.1
@@ -1785,7 +1786,7 @@
               ]
             },
             {
-              "name": "button_right",
+              "name": "button_left",
               "center_xy": [
                 -0.2,
                 0.1
@@ -2551,8 +2552,8 @@
           "hard": 4,
           "xhard1": 4,
           "xhard2": 4,
-          "xhard3": 4,
-          "xhard4": 4
+          "xhard3": 5,
+          "xhard4": 5
         },
         "swap": {
           "easy": false,

@@ -77,6 +77,38 @@ def validate_demo_plan(count, policy, difficulty: str, n_cubes: int) -> tuple[in
         return count, policy
 
 
+def validate_place_sequence(steps, n_targets: int) -> dict:
+    """V6 审查修复 F6 守卫：回放完整放置序列的台占用，冲突即抛 ``SceneGenerationError``。
+
+    ``steps``：``[(cube_id, target_id), ...]``，按演示时间顺序，含正式放置与额外放置（放回原位不是台，不在其中）。
+    规则：每一步把 ``cube_id`` 从它当前所在台移走、放到 ``target_id``；若 ``target_id`` 此刻被**其他**方块占着即
+    「两块同台」（审查 F6/D8 的 xhard4 seed 7000500 反例），若被**自己**占着即「原地空转」（审查 N2 的 4 台反例），
+    两者都判本局生成失败而不是生成冲突轨迹。返回终态占用表 ``{target_id: cube_id | None}`` 供调用方记录。
+    """
+    if int(n_targets) <= 0:
+        raise SceneGenerationError(f"validate_place_sequence: 台数必须为正，收到 {n_targets}")
+    occupancy: dict[int, int | None] = {i: None for i in range(int(n_targets))}
+    location: dict[int, int] = {}
+    for step_index, (cube_id, target_id) in enumerate(steps):
+        cube_id, target_id = int(cube_id), int(target_id)
+        if target_id not in occupancy:
+            raise SceneGenerationError(f"放置序列第 {step_index} 步：台 {target_id} 越界（台数 {n_targets}）")
+        holder = occupancy[target_id]
+        if holder is not None and holder != cube_id:
+            raise SceneGenerationError(
+                f"放置序列第 {step_index} 步：方块 {cube_id} 要放到台 {target_id}，但该台仍被方块 {holder} 占着（两块同台）"
+            )
+        if holder == cube_id:
+            raise SceneGenerationError(
+                f"放置序列第 {step_index} 步：方块 {cube_id} 已在台 {target_id} 上，再次放到同一台是原地空转"
+            )
+        if cube_id in location:
+            occupancy[location[cube_id]] = None
+        occupancy[target_id] = cube_id
+        location[cube_id] = target_id
+    return occupancy
+
+
 def build_home_sites(env, cubes, generator, name_prefix: str = "home_site"):
     """在每个方块的初始位姿上建一个隐藏的落点 actor，返回 ``(homes, checks)``。
 

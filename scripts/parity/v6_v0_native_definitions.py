@@ -20,6 +20,17 @@ EXPECTED_V6_NATIVE_CONFIGS_TASKS = frozenset(
 )
 EXPECTED_V6_NATIVE_CONFIG_KEYS = frozenset({"easy", "medium", "hard"}) | V6_TIER_KEYS
 EXPECTED_TASK_COUNT = 16
+# V6 语义审查修复（0926-v6-audit-fix-plan.md §8.2 第 4 项与 N15，2026-09-27 实施）后**有意**偏离 V5 快照的原值键：
+# ButtonUnmaskSwap 按钮命名对齐机器人坐标系（用户 K4「所有的左右都是机器人坐标系」；建构顺序、位置、随机数消费不变）
+# 与 StopCube 的 motion_segments 说明字段（用户「n15 a」，描述值、代码不读）。除此 6 键外原三档定义仍须逐字相同。
+DECLARED_V6_NATIVE_DELTAS = frozenset({
+    "/tasks/ButtonUnmaskSwap/native/parameters/button_order/0",
+    "/tasks/ButtonUnmaskSwap/native/parameters/button_order/1",
+    "/tasks/ButtonUnmaskSwap/native/parameters/pick_rule",
+    "/tasks/ButtonUnmaskSwap/native/positions/buttons/0/name",
+    "/tasks/ButtonUnmaskSwap/native/positions/buttons/1/name",
+    "/tasks/StopCube/native/parameters/motion_segments_note",
+})
 
 
 def _strip_tier_keys(value: Any, keys: frozenset[str]) -> Any:
@@ -169,7 +180,7 @@ def compare_snapshots(v5: Any, v6: Any) -> list[str]:
                 parameters.pop("configs", None)
         differences.update(_diff_paths(v5_native, v6_native, f"/tasks/{task}/native"))
 
-    return sorted(differences)
+    return sorted(differences - DECLARED_V6_NATIVE_DELTAS)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -197,7 +208,8 @@ def main(argv: list[str] | None = None) -> int:
             print(path)
         return 1
 
-    print(f"NATIVE_DEFS_UNCHANGED=PASS envs={EXPECTED_TASK_COUNT} changed_keys=0")
+    print(f"NATIVE_DEFS_UNCHANGED=PASS envs={EXPECTED_TASK_COUNT} changed_keys=0 "
+          f"declared_deltas={len(DECLARED_V6_NATIVE_DELTAS)}")
     return 0
 
 

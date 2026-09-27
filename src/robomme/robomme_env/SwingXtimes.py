@@ -32,6 +32,7 @@ from .utils import *
 # raise / except 因此是 TypeError（按 H2 原三档保持现状）。xhard 用下面这个别名拿到真正的异常类。
 from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenerationError
 from .utils.subgoal_evaluate_func import static_check, too_many_swings
+from .utils import subgoal_language
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty, is_newvalue_difficulty
@@ -581,9 +582,10 @@ class SwingXtimes(BaseEnv):
 
         # 摆动成功阈值与抬升高度取自快照（原值 distance 0.03 / z 0.12 / height 0.1）
         _swing_cfg = self._sampling["parameters"]["swing_thresholds"]
-        ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"]
         for i in range(self.num_repeats):
-            ordinal = ordinals[i] if i < len(ordinals) else f"{i+1}th"
+            # V6 审查修复 N10（用户「n10 修复 a」）：序数改用共享序数表 subgoal_language._ordinal_word——
+            # 前十项与原本地列表逐字相同（原三档与 xhard1～3 文本不变），第 11 轮起给 eleventh…twentieth 而不是 11th
+            ordinal = subgoal_language._ordinal_word(i)
             tasks.append({
                 "func": (lambda: is_obj_swing_onto(self,obj=self.target_cube,target=self.target_right,distance_threshold=_swing_cfg["distance"],z_threshold=_swing_cfg["z"])),
                 "name": f"move to the top of the right-side target for the {ordinal} time",

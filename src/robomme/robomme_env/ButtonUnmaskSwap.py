@@ -101,20 +101,23 @@ NATIVE_SAMPLING = {
         ],
         "color_order": {"sampler": "torch.randperm(3)"},
         "hidden_rule": "前三容器藏三色，第四个为空",
-        "pick_rule": "右按钮→左按钮后，抓 selected_bins[0]，count=2 时再抓 [1]",
+        "pick_rule": "左按钮→右按钮后（机器人坐标系，左 = +y），抓 selected_bins[0]，count=2 时再抓 [1]",
         "partner_rule": "交换开始时按实际 XY 取最近邻，不另抽签",
         # 交换窗口：首段起点与原三档每段步数（具名常量，六处原字面量都改读这里）；
         # V4 起真正被消费，xhard 的每段步数 = round(duration_steps / 1.5) = 33（2.11）
         "swap_window": {"start_step": SWAP_WINDOW_START, "duration_steps": SWAP_WINDOW_STEPS},
         "swap_path": {"lane_offset": 0.07, "smooth": True, "keep_upright": True},
-        "button_order": ["right", "left"],
+        # V6 审查修复 F3（用户 K4「所有的左右都是机器人坐标系」）：按钮命名对齐机器人坐标系（机器人朝 +x，左 = +y）；
+        # 建构顺序、位置与随机数消费全部不变，只改 name 与 button_order 的字面：buttons[0]（y=-0.1）是右按钮，buttons[1]（y=+0.1）是左按钮，
+        # 任务链仍先按 buttons[1]（左）再按 buttons[0]（右），与改名前按的物理按钮相同。
+        "button_order": ["left", "right"],
         "recovery": "构造器的 self.generator 用于恢复；场景另建同 seed 局部流，两条流分开",
     },
     "positions": {
         "buttons": [
-            {"name": "button_left", "center_xy": [-0.2, -0.1], "scale": 1.5,
+            {"name": "button_right", "center_xy": [-0.2, -0.1], "scale": 1.5,
              "randomize": True, "randomize_range": [0.05, 0.05]},
-            {"name": "button_right", "center_xy": [-0.2, 0.1], "scale": 1.5,
+            {"name": "button_left", "center_xy": [-0.2, 0.1], "scale": 1.5,
              "randomize": True, "randomize_range": [0.05, 0.05]},
         ],
         "anchors": {
@@ -136,6 +139,12 @@ def native_blocks(cls, *, release="newtask-v6"):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
     native = copy.deepcopy(NATIVE_SAMPLING)
     if release in ("newtask-v4", "newtask-v5"):
+        # V4/V5 快照冻结的是改名前的按钮命名（F3 之前：buttons[0] 名 button_left、顺序 ["right","left"]）；
+        # 导出旧 release 时按冻结值回填，保证 V5 快照可逐字节复现。物理对象与任务链顺序两版相同。
+        native["parameters"]["button_order"] = ["right", "left"]
+        native["parameters"]["pick_rule"] = "右按钮→左按钮后，抓 selected_bins[0]，count=2 时再抓 [1]"
+        native["positions"]["buttons"][0]["name"] = "button_left"
+        native["positions"]["buttons"][1]["name"] = "button_right"
         legacy_configs = {
             "easy": cls.configs["easy"], "medium": cls.configs["medium"], "hard": cls.configs["hard"],
             "xhard": {"bin": 4, "swap_min": 6, "swap_max": 8, "pick_min": 3, "pick_max": 3},
@@ -437,8 +446,10 @@ class ButtonUnmaskSwap(BaseEnv):
             randomize_range=tuple(buttons_cfg[0]["randomize_range"])
         )
         # Store first button before building second one
-        self.button_left = self.button
+        # F3：buttons[0]（y=-0.1）在机器人坐标系里是右按钮；cap link 按对象保存，不再按配置里的名字查
+        self.button_right = self.button
         self.button_joint_1 = self.button_joint
+        self.button_right_cap_link = self.cap_link
 
         avoid = [button_obb_1]
 
@@ -451,9 +462,10 @@ class ButtonUnmaskSwap(BaseEnv):
             randomize=buttons_cfg[1]["randomize"],
             randomize_range=tuple(buttons_cfg[1]["randomize_range"])
         )
-        # Store first button before building second one
-        self.button_right = self.button
+        # Store second button（buttons[1]，y=+0.1，机器人坐标系左按钮）
+        self.button_left = self.button
         self.button_joint_2 = self.button_joint
+        self.button_left_cap_link = self.cap_link
 
          # Generate 3 bins
         self.spawned_bins = []
@@ -680,7 +692,7 @@ class ButtonUnmaskSwap(BaseEnv):
 
         self._refresh_swap_schedule()
 
-        self.button_list= [self.button_left, self.button_right]
+        self.button_list= [self.button_right, self.button_left]  # F3：顺序保持 [buttons[0] 对象, buttons[1] 对象]
         self.generator=generator
 
         if self._is_newvalue:
@@ -757,8 +769,8 @@ class ButtonUnmaskSwap(BaseEnv):
                 "choice_label": "press the first button",
                 "demonstration": False,
                 "failure_func":None,
-                "solve": lambda env, planner: solve_button(env, planner, obj=self.button_right),
-                "segment":self.cap_links["button_right"]
+                "solve": lambda env, planner: solve_button(env, planner, obj=self.button_left),
+                "segment":self.button_left_cap_link
             },
                   {
                 "func": lambda: is_any_button_pressed_removelist(self, button_list=self.button_list),
@@ -767,8 +779,8 @@ class ButtonUnmaskSwap(BaseEnv):
                 "choice_label": "press the second button",
                 "demonstration": False,
                 "failure_func":None,
-                "solve": lambda env, planner: solve_button(env, planner, obj=self.button_left),
-                "segment":self.cap_links["button_left"]
+                "solve": lambda env, planner: solve_button(env, planner, obj=self.button_right),
+                "segment":self.button_right_cap_link
             },
 
             {
@@ -806,9 +818,19 @@ class ButtonUnmaskSwap(BaseEnv):
         if self._is_newvalue:
             # V4 xhard：本环境全部任务 demonstration=False，按完两个按钮通常只到第 200 步上下，
             # 而 6~8 次交换要到 64+33n（262~328）才结束；原解法会在容器还在交换时就去抓（实测 2/2 失败）。
-            # 在「按第二个按钮」的解法末尾等到最后一段交换结束再交出控制权。放在按钮任务而不放在第一抓，
-            # 是因为 inject_fail_grasp 会整个替换被选中抓取任务的 solve，等待会被一并丢掉。
-            tasks[1]["solve"] = lambda env, planner: self._solve_press_then_wait_swaps(env, planner, self.button_left)
+            # V6 审查修复 N1（用户「n1 subgoal定为wait」）：等待不再藏在第二按钮的解法里（那样等待期间子目标仍标
+            # 「press the second button」），而是作为独立子目标「wait for the containers to finish swapping」插在
+            # 第二按钮之后：完成判定 = 已到交换时间表的最后一段结束步；解法 = 原地等到该绝对步。
+            # 仍不放在第一抓上，因为 inject_fail_grasp 会整个替换被选中抓取任务的 solve。
+            tasks.insert(2, {
+                "func": lambda: int(self.elapsed_steps) >= int(self.swap_schedule[-1][3]),
+                "name": "wait for the containers to finish swapping",
+                "subgoal_segment": "wait for the containers to finish swapping",
+                "choice_label": "wait",
+                "demonstration": False,
+                "failure_func": None,
+                "solve": lambda env, planner: self._solve_wait_swaps(env, planner),
+            })
         if self._is_newvalue and self.pick_times > 2:
             # V4 xhard：原分支是 `== 2` 严格相等，pick=3 会落到只抓一次；这里按 pick_times 循环抓
             # selected_bins[0..pick_times-1]，每一抓前先放下上一个。lambda 用默认参数绑定本轮对象。
@@ -856,6 +878,10 @@ class ButtonUnmaskSwap(BaseEnv):
             # V4 xhard（用户 2026-09-22「误抓即失败」）：每个已有 failure_func 的抓取／放下任务追加
             # 「任一干扰容器被抬起（z>0.15，与区域内容器同一判据）即失败」
             add_distractor_misgrasp_failure(self, self.task_list)
+            # V6 审查修复 F4（K5）：给内环容器打标——子目标未切换但目标分割中心位移超过 8 像素时，
+            # process_segmentation 重算 grounded 坐标（交换后不再沿用旧位置）。未打标的 actor（原三档、其他环境）走原分支。
+            for bin_actor in self.spawned_bins:
+                bin_actor._robomme_refresh_on_move_px = 8
             
     def _get_obs_extra(self, info: Dict):
         return dict()
@@ -941,6 +967,11 @@ class ButtonUnmaskSwap(BaseEnv):
             for i, bin_actor in enumerate(self.spawned_bins)
             if i not in (idx_a, idx_b)
         ]
+
+    def _solve_wait_swaps(self, env, planner):
+        """V6 N1：等待子目标的解法——原地等到最后一段交换结束（绝对步 swap_schedule[-1][3]）；已过则立即返回。"""
+        solve_hold_obj_absTimestep(env, planner, absTimestep=self.swap_schedule[-1][3])
+        return None
 
     def _solve_press_then_wait_swaps(self, env, planner, button):
         """V4 xhard 专用解法：按下按钮后原地等到最后一段交换结束（绝对步 swap_schedule[-1][3]）。

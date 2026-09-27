@@ -526,7 +526,8 @@ class PickHighlight(BaseEnv):
                     "solve": lambda env, planner, c=cube: solve_pickup(env, planner, obj=c),
                     "segment":cube,
                 })
-                if cube_idx!=num_targets-1:
+                if xhard or cube_idx!=num_targets-1:
+                    # V6 审查修复 F1（用户 K2「f1同意修」）：新四档末块抓起后也放下，再以末尾按钮收尾；原三档末块抓起即止
                     tasks.append({
                         "func": (lambda :is_obj_dropped_currentpickup(self,self.target_cubes)),
                         "name": f"place the cube onto the table",
@@ -542,9 +543,19 @@ class PickHighlight(BaseEnv):
                                                         ],
                         "segment":None,
                     })
-            
-        
-
+        if xhard:
+            # V6 审查修复 F1（K2）：新四档链尾追加「press the button」，与题面「finally press the button to stop」一致；
+            # 成功时点随之后移到末按钮（见 evaluate 的 xhard 分支）。原三档任务链不变。
+            tasks.append({
+                "func": lambda: is_button_pressed(self, obj=self.button),
+                "name": "press the button",
+                "subgoal_segment": "press the button at <>",
+                "choice_label": "press button",
+                "demonstration": False,
+                "failure_func": None,
+                "solve": lambda env, planner: solve_button(env, planner, obj=self.button),
+                "segment": self.cap_link,
+            })
 
         # Store task list for RecordWrapper use
         self.task_list = tasks            
@@ -650,7 +661,8 @@ class PickHighlight(BaseEnv):
 
 
         # Success if all picked at least once (counting discrete pick events)
-        if counts_satisfied:
+        # V6 审查修复 F1（K2）：新四档还须整条任务链（含末尾按钮）走完才算成功；原三档仍在全部抓过一次时即成功
+        if counts_satisfied and (all_tasks_completed or not is_newvalue_difficulty(self.difficulty)):
             self.successflag = torch.tensor([True])
        
        # Fail if planner finished but not successful

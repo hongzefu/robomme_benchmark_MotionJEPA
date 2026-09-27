@@ -91,7 +91,9 @@ NATIVE_SAMPLING = {
 
 # ── V5 xhard 专属 decision（计划 2.10，L35/L36）──────────────────────────────
 # 路径搜索预算：原三档仍读 native 的 ``path_selection.max_attempts``（1000）；xhard 读这里，
-# 随 decision 一起冻进规格 header。20000 次下 25 节点命中率实测 1.000（规划期探针 P3，1000 次试验）。
+# 随 decision 一起冻进规格 header。（V6 审查 N13 注：xhard4 节点数区间为 [21,25]，不是 V5 的固定 25；
+# 「20000 次下 25 节点命中率 1.000」是 V5 规划期探针 P3 的历史数据。DFS 命中第一条落在区间内的路径即停，
+# 节点数分布贴下界——xhard4 10 候选实测 {21:6, 22:2, 23:2}，用户裁决只改注释、不改分布。）
 XHARD_DECISION = {
     "path_search_max_attempts": 20000,
 }
@@ -172,9 +174,11 @@ class PatternLock(BaseEnv):
     }
 
     # V4 xhard（派生自 hard，B8）：布局与搜法都不动，只把节点数提到 [20,24]。
-    # V5（计划 2.10，L35/L36）：节点数固定 25（5×5 不重访路径的上限）。规划期探针 P3 发现按 [24,25]
-    # 搜到第一条在区间内的路径就停时 86% 的局只有 24 节点，故实施方收成 [25,25]；配合 xhard 搜索预算
-    # 20000（decision.xhard.path_search_max_attempts）与耗尽抛真 SceneGenerationError，杜绝静默用错长路径。
+    # V5（计划 2.10，L35/L36）曾把节点数固定为 25（5×5 不重访路径的上限）。
+    # V6（0925 计划第三节）：xhard4 节点数改为闭区间 [21,25]（xhard1/2/3 为 [9,12]/[13,16]/[17,20]），
+    # 搜索预算 20000（decision.<tier>.path_search_max_attempts）与耗尽抛真 SceneGenerationError 沿用。
+    # ⚠ DFS 命中第一条在区间内的路径即 break，实际节点数贴下界（V6 审查 N13：xhard4 10 候选 {21:6, 22:2, 23:2}）；
+    # 用户裁决只更新注释，不改采样分布。
     config_xhard4 = {
         "grid": 5,
         "length": [21, 25]

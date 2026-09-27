@@ -91,6 +91,12 @@ def test_original_three_configs_unchanged(task: str) -> None:
 @pytest.mark.parametrize("task", sorted(MODULES))
 def test_xhard4_native_config_derived_from_hard(task: str) -> None:
     _, cls = MODULES[task]
+    if task == "VideoPlaceButton":
+        # V6 审查修复 N2：VPB xhard3/4 台数 4→5（用户「n2 同意改为5台」），其余键仍与 hard 相同；xhard1/2 仍 4 台
+        assert cls.configs["xhard4"] == {**cls.configs["hard"], "targets": 5}
+        assert cls.configs["xhard3"] == {**cls.configs["hard"], "targets": 5}
+        assert cls.configs["xhard1"] == cls.configs["hard"] and cls.configs["xhard2"] == cls.configs["hard"]
+        return
     assert cls.configs["xhard4"] == cls.configs["hard"]  # color 3、targets 4、swap True 全部不变
 
 

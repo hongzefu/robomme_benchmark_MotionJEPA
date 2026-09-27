@@ -20,7 +20,7 @@
 | D5 | 09-25 | 「你现在有GL两个job的submit权限 …这个的意思是连接现有两个job 不允许开新job！」「参考这个对话 都在gl上跑 产物搬回data 不要在nfs上留大文件」 | GL 只 `srun --overlap` 连现有占位 job；产物搬回 `/data`；NFS 不留大文件 |
 | D6 | 09-25 | 「V6plan内部所有的其他内容 也要全部详细检查 尽可能拿到实际测试」「可以先开始做代码的改动但是不要修改原文件以副本的形式保留下来」「反正你要用满这个时间尽可能的做 直到用户回来为止」 | 计划全文审计并实测；代码只在副本改 |
 | D7 | 09-26 | 「M1：这个表格已经涵盖所有的梯度吗 现在这个数值可以」「m2不动」「m3不要做任何对拍xhard xhard是为了迭代的 只需要对拍之前的easy medium hard」「m4 a」「m5 b」「m6 s5」「m7 a」「m8同意」「m9 忽略原版的hard 和medium对比 原版的hard其实是另外一种单独的task」「m10 a」「m12 有干扰不用管内环数量了」「m13 免逐项批准、改完出报告」「m14 a」「四个副本分支不要 push」 | 见口径 3～13 |
-| D8 | 09-26 | 「vpb vpo都是放回原位 xhard123 只在cube放target的步骤上有区分 给出难度梯度」 | VP 五档都放回原位，梯度 = 放到台上的次数 |
+| D8 | 09-26 | 「vpb vpo都是放回原位 xhard123 只在cube放target的步骤上有区分 给出难度梯度」 | VP 五档都放回原位，梯度 = 放到台上的次数（注：实际口径为原三档仍 `native_random_goal_site` 放隐藏 goal_site 不动，只有新四档 `return_to_origin`，见四.9，2026-09-26 审计 M2） |
 | D9 | 09-26 | 「改为xhard123 xhard现在xhard改为xhard4！原来的纯xhard废弃 不要再使用 容易混淆 每个难度要有区分 不能有重叠交集合 给出新的难度梯度表」 | 档名 xhard1～xhard4，`xhard` 废弃；四档区间互不重叠 |
 | D10 | 09-26 | 「可以超过1300 新的四档表（hard 冻结不动）同意」「在第一部分不要留我md演进的过程 只保留用户决策列表 和最后定下来的计划」「把你已经定下来的分支和结论写入第二部分 新的agent可能无记忆要重新开始」 | 评估 1301 步不限制新档取值；四档表定稿；本文件结构；第二部分含接手指南 |
 | D11 | 09-26 | 「按无新增失败放行（建议）：将判据改为失败/错误集合是 S0 的子集，记明 20 项已修复。」 | LIGHTWEIGHT 改为失败与错误身份均无新增；已修复的 S0 失败如实记录，不要求旧失败继续存在 |
@@ -52,7 +52,7 @@
 | 7 | **xhard4 不做任何对拍**（xhard 是为了迭代的）：16 个环境的 xhard4 在 V6 全部重新抽签，v5-01 的 xhard 规格作废。 |
 | 8 | **交换对象均匀（VUS/BUS/VR）**：碰撞检测是硬约束，均匀在可行集合内实现；内环用 S5（可行槽对图 G 的边 − 上一对，参与次数最少者优先、平局均匀抽、禁止立即撤销，整条极差 >1 重排 ≤20 趟，G 不连通则 reset 重抽）；外环用 O4 均衡贪心 + 放置后序号随机重排，只做跨局均匀；藏 cube 的容器规则不动（bin_3 恒空，目视无区别）。 |
 | 9 | **MoveCube xhard4 = 圆环 U**：圆心 (−0.06, 0)（实测可达环带中点）、内半径 0.12、外半径 0.20；方块中心、goal 中心、杆抓取点共用；杆/方块 yaw 全 2π。 |
-| 10 | **VPB/VPO 五档都 `return_to_origin`**，梯度 = 演示里「拿起→放到台上」的次数。 |
+| 10 | **VPB/VPO 新四档 `return_to_origin`**（原三档仍 `native_random_goal_site` 不动，见四.9），梯度 = 演示里「拿起→放到台上」的次数。 |
 | 11 | **VR 的 hard（15 块静态）视为另一种任务**，新档只向 xhard4 内插，不与 hard/medium 比较。 |
 | 12 | **规模**：13 × 3 新档 + 16 个 xhard4 = **55 格**，每格 10 候选、取 index 0/3/6 三局正式 = 550 候选、165 正式局；一次多 worker 生成。seed 偏移：xhard4 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6（公式 `offset + env_code×1e5 + episode×100 + attempt`，四段互不重叠，也不碰 V5 的 4e6 段）。 |
 | 13 | **算力与流程**：GL 只 `srun --overlap` 连现有占位 job，不开新 job；逐局产物写节点 `/tmp` 即删，结果搬回 `/data`，NFS 不留大文件；长任务 tmux + Monitor；出图必须目视检查；代码改动先在副本 worktree，分支不 push；细节（取整、预算次数、平局规则）由实施方自决并在报告注明。 |
@@ -72,7 +72,7 @@
 | VideoRepick | 块数 / swap / repick | 另一种任务 | 4 / [3,4] / 2 | 5 / [5,6] / 3 | 6 / [7,8] / 4 | 7 / [9,12] / [5,6] | 4～6 块 reset 约 60%；7 块待实测 |
 | PatternLock | 节点数（5×5，不重访，预算 20000） | [4,8] | [9,12] | [13,16] | [17,20] | [21,25] | 执行段 ≤ 约 850 步 |
 | RouteStick | 段数 L | [4,7] | [8,10] | [11,13] | [14,16] | [17,21] | 执行段 = 50·L |
-| VideoPlaceButton | 放台次数（都放回原位） | 2（放桌面） | 1 块 3 次 | 1 块 4 次 | 2 块 5 次 | 2 块 6 次 | 额外放台 = 放到无关台（原版 `additional_place` 语义），见四.9 |
+| VideoPlaceButton | 放台次数（都放回原位） | 2（放桌面） | 1 块 3 次 | 1 块 4 次 | 2 块 5 次 | 2 块 6 次 | 额外放台 = 放到无关台（原版 `additional_place` 语义），见四.9；xhard3/4 台数 4→5（`config_xhard3/4["targets"]=5`，xhard1/2 仍 4），额外放台按完整序列占用表抽取，before 题答案 = 按钮前最后一次放置的台 |
 | VideoPlaceOrder | 总放台次数（都放回原位） | 1 块 v∈[2,4] | 2 块 (2,3)=5 | 2 块 (3,3)=6 | 2 块 (3,4)=7 | 2 块 (4,4)=8 | 每档总数定值，哪块多访问随机 |
 | MoveCube | 不加档 | 原三档同值 | — | — | — | 圆环 U | 只有 xhard4 |
 | InsertPeg / StopCube | 不加档 | 原三档同值 | — | — | — | 原 xhard 改名 | 数值不动 |
@@ -117,7 +117,9 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 ### 7. BinFill / PickXtimes / SwingXtimes / PickHighlight
 
-数值按表，机制沿 xhard4（BinFill 杂乱布局 + 精确 OBB + 同色团 ≤3；PickX/Swing 框 0.25、中心距 0.08、精确 OBB、均匀无偏置、干扰色取前 k 色；PH HSV 任意色、精确 OBB，保持 `spawn_lo ≥ pick_hi`）。实测（GL 273 局）：四环境新档演示级全成功（BinFill 5/6、6/6、4/6 为原有 DatasetGenerationError 类型），reset：BinFill/PickX 100%、Swing 96%、PH 新档 99.9%/98.7%/96.2%；PickX xhard3/4、BinFill xhard3/4、PH xhard4 会超 1301 步（允许）。
+数值按表，机制沿 xhard4（BinFill 杂乱布局 + 精确 OBB + 同色团 ≤3；PickX/Swing 框 0.25、中心距 0.08、精确 OBB、均匀无偏置、干扰色取前 k 色；PH HSV 任意色、精确 OBB，保持 `spawn_lo ≥ pick_hi`）。实测（GL 273 局）：四环境新档演示级全成功（BinFill 5/6、6/6、4/6 为原有 DatasetGenerationError 类型），reset：BinFill/PickX 100%、Swing 96%、PH 新档 99.9%/98.7%/96.2%；PickX xhard2/3/4、BinFill xhard3/4 会超 1300 步（允许；PH xhard4 实测未超：PickXtimes xhard2 ep0（seed 10100000，N=9）在第 1350 步完成，PH xhard4 三局完成步 1241/1143/1125）。新档评估步数上限按档放宽：`scripts/eval/v4_eval.py` 对新值档默认 `max_steps` 取各档实测执行段最大步（xhard1 1169、xhard2 1350、xhard3 1614、xhard4 2180）向上取整到 xhard1 1500 / xhard2 1700 / xhard3 2000 / xhard4 2600，原三档仍 1300（2026-09-26 审计 N12）。
+
+PickHighlight 新四档与原三档另有两项差异，来源都是 V4 决策（2026-09-22），此前只靠「V5 决策延续」一句覆盖，此处补写（2026-09-26 审计 N9，用户「n9 去掉后缀「, which is <color>」」）：①新四档子目标去掉 ", which is <color>" 后缀（`PickHighlight.py::XHARD_DECISION["subgoal_color_suffix"]="omit"`），原因是 HSV 任意色没有颜色名；②按钮任务的 `failure_func` 在新四档是每步重算的 lambda（先抓方块再按按钮即判失败），原三档是一次性求值的常量、永不触发。
 
 ### 8. PatternLock / RouteStick
 
@@ -126,7 +128,7 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 ### 9. VideoPlaceButton / VideoPlaceOrder
 
 现行结构：VPB hard = 1 块：放 before 台 → 按按钮 → 放 after 台 → 放桌面；xhard4 = 2 块各 before/after → 各放回原位。VPO hard = 1 块依次访问 v∈[2,4] 张台（按钮插在某次后）→ 放桌面；xhard4 = 2 块各 v∈[2,4] → 各放回原位。
-定稿：五档 `demo_return_policy = return_to_origin`；VPB 放台次数 3/4/5/6（1 块时在按钮前/后多放到无关台，沿用原版 `additional_place` 的 pre/post 语义；2 块时 5 = 一块 3 次一块 2 次，6 = 各 3 次），需在 xhard4 任务表构造里实现按档额外放台段；VPO 总放台 5/6/7/8，两块的访问数按档定值分配（哪块多随机），用副本已加的 `visit_count_range`/`demo_object_count` 按档取值。副本 `v6-draft-vp` 另实现的 `return_last_only`/不放回落点保留不启用。实测：(k1,放回)、(k2,各种 v) 各组合本机与 GL 演示全成功，reset 失败只来自 VPO 既有的 Target 4 放不下（约 50%）；VPB/VPO xhard 同 seed h5 与基线逐字节相同。验收 `VP_TIERS=REPORT`（每档实抽放台次数均值单调）。
+定稿：原三档 `demo_return_policy` 保持 `native_random_goal_site` 不动（演示结束 "drop the cube onto table"，放到隐藏 goal_site），只有新四档 `return_to_origin`（2026-09-26 审计 M2 如实改写；D8 用户原话不改）；VPB xhard3/4 台数 4→5（`VideoPlaceButton.config_xhard3/4["targets"]=5`，xhard1/2 仍 4；原因：4 台下额外放台候选恒等于 after 台集合，按钮后放台变成原地空转；审计 N2，用户「n2 同意改为5台」），额外放台按完整序列占用表抽取，before 题答案 = 按钮前最后一次放置的台；VPB 放台次数 3/4/5/6（1 块时在按钮前/后多放到无关台，沿用原版 `additional_place` 的 pre/post 语义；2 块时 5 = 一块 3 次一块 2 次，6 = 各 3 次），需在 xhard4 任务表构造里实现按档额外放台段；VPO 总放台 5/6/7/8，两块的访问数按档定值分配（哪块多随机），用副本已加的 `visit_count_range`/`demo_object_count` 按档取值。副本 `v6-draft-vp` 另实现的 `return_last_only`/不放回落点保留不启用。实测：(k1,放回)、(k2,各种 v) 各组合本机与 GL 演示全成功，reset 失败只来自 VPO 既有的 Target 4 放不下（约 50%）；VPB/VPO xhard 同 seed h5 与基线逐字节相同。验收 `VP_TIERS=REPORT`（每档实抽放台次数均值单调）。
 
 ### 10. InsertPeg / StopCube
 

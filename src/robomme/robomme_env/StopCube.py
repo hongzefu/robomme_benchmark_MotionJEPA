@@ -84,6 +84,9 @@ NATIVE_SAMPLING = {
             "high": 30,
         },
         "motion_segments": 5,
+        # V6 审查 N15（用户「n15 a」）：motion_segments=5 只是描述值，代码不读它；实际段数在 _initialize_episode 里
+        # 原三档恒 5、xhard4 取 max(5, stop_time)（交付 spec 为 6/14/15），随 actions.motion_segments 记入规格
+        "motion_segments_note": "描述值，代码不读；实际段数：原三档 5，xhard4 max(5, stop_time)",
         "steps_press_expression": "move_interval * stop_time - move_interval / 2",
         "stop_window_expression": "[move_interval * (stop_time - 1), move_interval * stop_time]",
         "press_lead_steps": "self.interval",

@@ -641,6 +641,8 @@ def plan_pipeline(args: argparse.Namespace, root: Path = REPO_ROOT) -> list[dict
                  "--out", str(paths["drafts"])]
     if args.draw_gpus:
         draw += ["--gpus", args.draw_gpus]
+    if getattr(args, "task_max_reset_attempts", None):
+        draw += ["--task-max-reset-attempts", args.task_max_reset_attempts]
     if tier is not None:
         # V6：档位与 seed 规则族显式传给抽签；freeze/run/report 一律从 header 取，不再另传
         draw += ["--difficulty", args.difficulty, "--seed-profile", pipeline_seed_profile(args)]
@@ -754,6 +756,8 @@ def build_parser() -> argparse.ArgumentParser:
                       help="seed 规则族：V5 默认走原 4e6；V6 新档默认使用 xhard4 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6")
     pipe.add_argument("--candidates-per-env", type=int, default=10)
     pipe.add_argument("--max-reset-attempts", type=int, default=30)
+    pipe.add_argument("--task-max-reset-attempts", default=None,
+                      help="透传给 draw：按环境（可带档位）覆盖尝试上限，TASK[@TIER]=N,...")
     pipe.add_argument("--select", default=",".join(map(str, DEFAULT_SELECT)))
     pipe.add_argument("--draw-workers", type=int, default=1, help="抽签并行进程数（v4_specs draw --workers）")
     pipe.add_argument("--draw-gpus", default=None, help="抽签子进程轮转使用的物理 GPU，如 0,1")

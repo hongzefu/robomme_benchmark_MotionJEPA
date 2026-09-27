@@ -593,7 +593,18 @@ class InsertPeg(BaseEnv):
             head_x = float(self.peg_head.pose.p.tolist()[0][0])
             tail_x = float(self.peg_tail.pose.p.tolist()[0][0])
             logger.debug(f"agent_x: {agent_x}, head_x: {head_x}, tail_x: {tail_x}")
-            near_link = self.peg_head if abs(head_x - agent_x) <= abs(tail_x - agent_x) else self.peg_tail
+            if xhard:
+                # V6 审查修复 D6（用户 K10「d6修」）：near/far 按机器人基座到杆两端的 XY 欧氏距离判定，
+                # 不再只比 x 轴（审查 xhard4 ep5 第二布局：x 轴判头近、欧氏距离头 0.61363 m > 尾 0.63401 m 反向）；原三档不动
+                base_xy = np.asarray(self.agent.robot.pose.p.tolist()[0][:2], dtype=np.float64)
+                head_xy = np.asarray(self.peg_head.pose.p.tolist()[0][:2], dtype=np.float64)
+                tail_xy = np.asarray(self.peg_tail.pose.p.tolist()[0][:2], dtype=np.float64)
+                head_dist = float(np.linalg.norm(head_xy - base_xy))
+                tail_dist = float(np.linalg.norm(tail_xy - base_xy))
+                logger.debug(f"xhard near/far by euclidean XY: head_dist={head_dist:.5f}, tail_dist={tail_dist:.5f}")
+                near_link = self.peg_head if head_dist <= tail_dist else self.peg_tail
+            else:
+                near_link = self.peg_head if abs(head_x - agent_x) <= abs(tail_x - agent_x) else self.peg_tail
 
             self.grasp_target_distance = "near" if self.grasp_target is near_link else "far"
             logger.debug(f"grasp_target_distance: {self.grasp_target_distance}")
