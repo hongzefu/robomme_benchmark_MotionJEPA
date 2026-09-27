@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 S3f PickXtimes / SwingXtimes 的 xhard 去扎堆（NEWTASK_RELEASE_V5_PLAN 2.13 / 2.14，L43～L46）。
+"""轻量测试：V5 S3f PickXtimes / SwingXtimes 的 xhard 去扎堆（0924-newtask-release-v5-plan.md 2.13 / 2.14，L43～L46）。
 
 纯 CPU、不起 sapien 场景：用假 actor 顶替 ``actors.build_cube`` 与圆盘 builder、用 trimesh 盒子顶替
 ``get_actor_obb``（与 P1 探针离线副本同一写法，该副本对 v4-01 冻结规格逐位一致 20/20），直接调用

@@ -1,7 +1,7 @@
 # V4 步 3b（g1 组）：SwingXtimes 与 PickXtimes 的 xhard
 
 > 红线 N1 的逐步报告。起点 `12.66`（`00e2ef4`）。录像器 `RecordWrapper.py` 未改。
-> 对应计划 `NEWTASK_RELEASE_V4_PLAN.md` 2.4（PickXtimes）、2.5（SwingXtimes）、2.21 PickXtimes 简图。
+> 对应计划 `0922-newtask-release-v4-plan.md` 2.4（PickXtimes）、2.5（SwingXtimes）、2.21 PickXtimes 简图。
 > 本机（sm_89）结果只用于调试，不进判据（口径 10）。
 
 ## 一、改动清单

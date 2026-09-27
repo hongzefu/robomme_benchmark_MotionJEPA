@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""原始 train 五路对拍编排入口（方案见 NEWTASK_RELEASE_V3_PLAN.md）。
+"""原始 train 五路对拍编排入口（方案见 0921-newtask-release-v3-plan.md）。
 
 子命令与方案步骤的对应关系：
 

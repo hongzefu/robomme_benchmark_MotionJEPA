@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V6 S1 轻量测试：难度档管道改造（NEWTASK_RELEASE_V6_PLAN 2.0，口径 3/11）。
+"""V6 S1 轻量测试：难度档管道改造（0925-newtask-release-v6-plan.md 2.0，口径 3/11）。
 
 覆盖：族判断与档位号、decision 守卫的新值键集合与按档结构核对、旧快照补齐、v4_specs 的档位与按档 seed 规则
 （默认参数与 V5 逐字节相同）、runner 的身份硬校验。纯 CPU，不起模拟器。

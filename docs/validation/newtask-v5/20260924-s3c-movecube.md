@@ -1,6 +1,6 @@
 # V5 S3c：MoveCube xhard 桌面中心禁区、删 corner_bias、执行段方块不避让演示段方块（2026-09-24）
 
-> 对应计划：`NEWTASK_RELEASE_V5_PLAN.md` 1.1 口径 8、1.4 L30～L34、2.9（伪码与实施要点）、3.5 P2、第二部分「一」S3c 行；红线 N13/N17/N18。
+> 对应计划：`0924-newtask-release-v5-plan.md` 1.1 口径 8、1.4 L30～L34、2.9（伪码与实施要点）、3.5 P2、第二部分「一」S3c 行；红线 N13/N17/N18。
 > 工作树：`/data/hongzefu/robomme_v5_wt/movecube`（分支 `v5wt-movecube`，基线 12.120 `328e607`），未 commit。
 > 只改 xhard；原三档（easy/medium/hard）规格、位姿与随机流逐位不变（见第四节金标准哈希）。
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V4 步 3b 的 VideoUnmask / ButtonUnmask xhard（NEWTASK_RELEASE_V4_PLAN 2.7 / 2.8 / 2.9）。
+"""轻量测试：V4 步 3b 的 VideoUnmask / ButtonUnmask xhard（0922-newtask-release-v4-plan.md 2.7 / 2.8 / 2.9）。
 
 只导入环境模块、不起 sapien 场景：
 
@@ -76,7 +76,7 @@ def test_xhard_values_match_user_decisions(task) -> None:
     decision = mod._native_decision(cls)
     assert decision["bin_layout_policy"]["xhard4"] == {"min_gap_factor": 0.75}   # G2
     dist = decision["xhard4"]["distractor"]
-    # V5（S3b，NEWTASK_RELEASE_V5_PLAN 2.3 / 2.4）：V4 的 3 个外环 [0.2675, 0.45]、cube [1,2] 作废，
+    # V5（S3b，0924-newtask-release-v5-plan.md 2.3 / 2.4）：V4 的 3 个外环 [0.2675, 0.45]、cube [1,2] 作废，
     # 改为贴身环带 + 按密度定数 + 半数含 cube + 三色平衡轮转，统一 7 键 schema
     expect_count, expect_cubes = {"VideoUnmask": (15, [7, 8]), "ButtonUnmask": (14, [7, 7])}[task]
     assert sorted(dist) == sorted(["count", "ring_max_abs_xy", "cube_count_range", "color_pool",

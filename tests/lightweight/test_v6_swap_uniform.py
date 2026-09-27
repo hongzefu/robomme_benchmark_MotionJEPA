@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V6 交换对象均匀化（NEWTASK_RELEASE_V6_PLAN 2.2 / 2.4 / 2.5，M6(a) S5、外环 O4）。
+"""轻量测试：V6 交换对象均匀化（0925-newtask-release-v6-plan.md 2.2 / 2.4 / 2.5，M6(a) S5、外环 O4）。
 
 纯函数与假环境，不起 SAPIEN 场景：
 

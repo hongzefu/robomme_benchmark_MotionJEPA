@@ -1,6 +1,6 @@
 # V5 S2a：共用采样基础设施与 SceneGenerationError 遮蔽修复（2026-09-24）
 
-> 对应计划：`NEWTASK_RELEASE_V5_PLAN.md` 2.0（①③）、2.9、2.13、2.14、2.15、2.16，第二部分「一」S2 行；决策 L2 (b)、L3、L4 (b)。
+> 对应计划：`0924-newtask-release-v5-plan.md` 2.0（①③）、2.9、2.13、2.14、2.15、2.16，第二部分「一」S2 行；决策 L2 (b)、L3、L4 (b)。
 > 工作树：`/data/hongzefu/robomme_v5_wt/s2a`（分支 `v5wt-s2a`，基线 `f5b6a17`），未 commit。
 > 本步只提供共用能力，**不接入任何环境的 xhard 分支**（接入由 S3c/S3f/S3g/S3i 等后续步骤做）。
 

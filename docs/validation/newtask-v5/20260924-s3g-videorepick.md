@@ -1,6 +1,6 @@
 # V5 S3g：VideoRepick 的 xhard 改动（2026-09-24）
 
-> 对应计划：`NEWTASK_RELEASE_V5_PLAN.md` 1.1 口径 10、1.4 L47～L51 与 L54、2.15（全部）、3.5 的 P4、第二部分「一」S3g 行；红线 N13/N14/N17。
+> 对应计划：`0924-newtask-release-v5-plan.md` 1.1 口径 10、1.4 L47～L51 与 L54、2.15（全部）、3.5 的 P4、第二部分「一」S3g 行；红线 N13/N14/N17。
 > 工作树：`/data/hongzefu/robomme_v5_wt/vrepick`（分支 `v5wt-vrepick`，基线 12.120 `328e607`），未 commit。
 > 依赖的已有 API：S2a `spawn_random_cube(min_center_dist=...)`、`cube_obb2d_exact`、`_RealSceneGenerationError`；S2b `check_swap_sweep_prefiltered`、`button_base_state`。
 

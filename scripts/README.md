@@ -6,9 +6,9 @@
 PatternLock/RouteStick 演示时长校准、放下的方块作障碍时 2D 包围框退化的缺陷修复），**只改 xhard 档**。V4 已作废：
 V4 的配置 `scripts/configs/newtask-v4/` 与产物 `artifacts/newtask-v4/` 原样留档、不再引用，v4-01 的规格在 V5 代码上被拒是预期。
 
-- V5 计划：[NEWTASK_RELEASE_V5_PLAN.md](../NEWTASK_RELEASE_V5_PLAN.md)（1.4 决策 L1～L54、第二节逐环境改动、第三节对拍与 runbook）；
+- V5 计划：[0924-newtask-release-v5-plan.md](../0924-newtask-release-v5-plan.md)（1.4 决策 L1～L54、第二节逐环境改动、第三节对拍与 runbook）；
 - V5 逐步实施报告：[docs/validation/newtask-v5/](../docs/validation/newtask-v5/)（S2a/S2b/S2c 共用设施，S3a～S3i 各环境，工具链）；
-- V4 计划与总报告：[NEWTASK_RELEASE_V4_PLAN.md](../NEWTASK_RELEASE_V4_PLAN.md)、[V4 总报告](../docs/validation/newtask-v4/20260923-v4-final-report.md)（验证数字、决策来由和风险）。
+- V4 计划与总报告：[0922-newtask-release-v4-plan.md](../0922-newtask-release-v4-plan.md)、[V4 总报告](../docs/validation/newtask-v4/20260923-v4-final-report.md)（验证数字、决策来由和风险）。
 
 本文讲五件事：
 
@@ -873,7 +873,7 @@ V5 的 RouteStick 执行段最长 1050 步（L=21），仍在 1300 步预算内�
 
 ## 第五节　V5：生成工具链与 V1 对拍
 
-计划见 [NEWTASK_RELEASE_V5_PLAN.md](../NEWTASK_RELEASE_V5_PLAN.md) 第三节（3.1 链路、3.2 判据、3.3 S4～S6）与第二部分「三、runbook」。
+计划见 [0924-newtask-release-v5-plan.md](../0924-newtask-release-v5-plan.md) 第三节（3.1 链路、3.2 判据、3.3 S4～S6）与第二部分「三、runbook」。
 V5 **沿用 V4 的脚本与封套**（`v4_specs` / `v4_rollout` 的 schema、`SEED_RULE`、不开 recover 的规则都不变），只换快照目录与 run id：
 快照 `scripts/configs/newtask-v5/`，run id `v5-01`，产物一律落 `artifacts/newtask-v5/`。V4 的配置与产物原样留档、不再引用（N15）。
 所有命令在仓库根目录执行；超过 5 分钟的一律用 detached tmux，等待用 Monitor 挂日志（AGENTS.md 规则 4）。
@@ -992,7 +992,7 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare \
 
 ## 第六节　V6 四档新值发布
 
-范围与授权以 [V6 计划](../NEWTASK_RELEASE_V6_PLAN.md) 第 5.3 节为准；配置为 [V6 快照](configs/newtask-v6/sampling_config.json)。本节说明本轮用法，不把尚未完成的检查写成通过。
+范围与授权以 [V6 计划](../0925-newtask-release-v6-plan.md) 第 5.3 节为准；配置为 [V6 快照](configs/newtask-v6/sampling_config.json)。本节说明本轮用法，不把尚未完成的检查写成通过。
 
 ### 6.1 档位、规模与失败预算
 

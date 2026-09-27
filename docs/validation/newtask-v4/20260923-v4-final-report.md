@@ -1,6 +1,6 @@
 # 新值模式 V4 实施总报告：十六环境 xhard 档与可重放生成
 
-> 对应计划 [NEWTASK_RELEASE_V4_PLAN.md](../../../NEWTASK_RELEASE_V4_PLAN.md)（以下简称「计划」）。工作副本
+> 对应计划 [0922-newtask-release-v4-plan.md](../../../0922-newtask-release-v4-plan.md)（以下简称「计划」）。工作副本
 > `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v4`，起点 `13e5151`（12.63），
 > 本报告对应提交见第八节。commit 体例 `12.<n> <中文描述>`。
 > 录像器 `RecordWrapper.py` 只按用户授权改了一处（`fail_safe_limit` 2000→5000，I1），其余冻结。

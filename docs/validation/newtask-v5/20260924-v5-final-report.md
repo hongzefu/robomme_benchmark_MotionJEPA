@@ -1,6 +1,6 @@
 # V5 总报告：xhard 档去扎堆、Unmask 外环加密并随内环交换、演示时长校准（2026-09-24 一夜实施）
 
-> 计划：[NEWTASK_RELEASE_V5_PLAN.md](../../../NEWTASK_RELEASE_V5_PLAN.md)（L1～L54 全部已由用户答复）。分支 `newtaskRelease-v5`，提交 12.117～12.13x。
+> 计划：[0924-newtask-release-v5-plan.md](../../../0924-newtask-release-v5-plan.md)（L1～L54 全部已由用户答复）。分支 `newtaskRelease-v5`，提交 12.117～12.13x。
 > 实施方式：主会话编排，opus subagent 在独立 git worktree 并行实现（未启动 workflow），主会话逐组审核、合并、复测、提交。
 > 全部在本机（2× RTX 6000 Ada）跑；两个 GL 占位 job 未使用，收尾已释放。
 

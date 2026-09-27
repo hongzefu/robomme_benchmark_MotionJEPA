@@ -1,6 +1,6 @@
 # V5 S3i：PickHighlight / VideoPlaceButton / VideoPlaceOrder 的 xhard 障碍框修复与 StopCube 异常类核对（2026-09-24）
 
-> 对应计划：`NEWTASK_RELEASE_V5_PLAN.md` 1.4 L2 (b)、L3，2.0①③，2.16，第二部分「一」S3i 行。
+> 对应计划：`0924-newtask-release-v5-plan.md` 1.4 L2 (b)、L3，2.0①③，2.16，第二部分「一」S3i 行。
 > 工作树：`/data/hongzefu/robomme_v5_wt/phvp`（分支 `v5wt-phvp`，基线 12.120 `328e607`），未 commit。
 
 ## 一、改动清单

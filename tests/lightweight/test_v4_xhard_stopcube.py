@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：StopCube 的 V4 xhard 档（NEWTASK_RELEASE_V4_PLAN 2.6，用户决策 A6 / C4）。
+"""轻量测试：StopCube 的 V4 xhard 档（0922-newtask-release-v4-plan.md 2.6，用户决策 A6 / C4）。
 
 不起 sapien 场景，只查结构与公式：
 

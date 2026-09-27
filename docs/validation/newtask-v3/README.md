@@ -1,6 +1,6 @@
 # newtaskRelease-v3 原值对拍：怎么跑
 
-本目录是 [NEWTASK_RELEASE_V3_PLAN.md](../../../NEWTASK_RELEASE_V3_PLAN.md) 的执行记录。
+本目录是 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 的执行记录。
 本文只讲**怎么复现**，结论看各步报告。
 
 > **路径迁移（2026-09-22）**：六个 `train_split_*.py` 与 `comparator_fixtures.py` 已从 `scripts/` 顶层

@@ -1,7 +1,7 @@
 # 新值模式 V6（定稿）：四档 xhard1～xhard4、交换对象均匀化、MoveCube 圆环区域
 
 > 分支 `newtaskRelease-v5`。V5原始代码锚点为 `da77662`；V6 S1 集成后的环境源码锚点为 `949b6eb`，现行S1结论见 [汇总报告](docs/validation/newtask-v6/20260926-s1-final.md)。依赖锚点（文件 sha256）`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
-> **前置文档**：V5 计划 [NEWTASK_RELEASE_V5_PLAN.md](NEWTASK_RELEASE_V5_PLAN.md)、V5 总报告 [docs/validation/newtask-v5/20260924-v5-final-report.md](docs/validation/newtask-v5/20260924-v5-final-report.md)、V5 规格 `scripts/configs/newtask-v5/v5-01/specs.jsonl`。
+> **前置文档**：V5 计划 [0924-newtask-release-v5-plan.md](0924-newtask-release-v5-plan.md)、V5 总报告 [docs/validation/newtask-v5/20260924-v5-final-report.md](docs/validation/newtask-v5/20260924-v5-final-report.md)、V5 规格 `scripts/configs/newtask-v5/v5-01/specs.jsonl`。
 > **V5 决策除本文明确改动的以外全部延续**：原三档逐位冻结（V1 唯一硬闸门）、录像器冻结、`evaluation.py`/`run_example.py`/`dataset_replay.py` 与上游逐字节相同、L1(a)（新值流允许原地移位）、L4(b)（共用采样函数新参数默认等价关闭）、五入口冻结。
 > **授权边界**：`src/robomme/` 改动免逐项事前批准，每步收尾在 `docs/validation/newtask-v6/` 出 md 报告（用户 2026-09-21 口头、2026-09-26 重申「免逐项批准、改完出报告」）。S1 四个worktree副本已集成到主仓；副本分支不 push。D18的「不要直接做 写回md」只约束当时文档轮；本轮D19、D21已明确开始并连续完成V6计划，沿用第5.3节完整规模与失败预算，不再逐阶段重复询问。**S2已执行144次，119成功、25失败；S3从 `c8c06ab` 启动、仍运行；S4候选550/550及520条取值检查完成，xhard4基础设施恢复已结束，S4的55格165成功齐全但仍待S3接纳，S5待最终收尾。尚未宣布V1或正式生成整体通过。** 清单外新增或超预算才汇总申请补充授权；本次最多76次恢复已获D23批准，按第5.3节补充上限执行。
 > **证据**：S1汇总和分项报告在 `docs/validation/newtask-v6/`；实测原产物在仓库内忽略目录 `artifacts/newtask-v6/`，不进Git。

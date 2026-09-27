@@ -1,6 +1,6 @@
 # V4 步 3b：PickHighlight 的 xhard（clutter 8~10 块 + 高亮 5~7 块 + 颜色任意）
 
-> 红线 N1 的逐步报告。起点 `12.66`（`00e2ef4`），计划依据 `NEWTASK_RELEASE_V4_PLAN.md` 2.12、2.21「PickHighlight 简图」、
+> 红线 N1 的逐步报告。起点 `12.66`（`00e2ef4`），计划依据 `0922-newtask-release-v4-plan.md` 2.12、2.21「PickHighlight 简图」、
 > 1.3 的 B1 / B5 / C3 / D4 / H2 / H3。录像器未改（`git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py` 通过）。
 
 ## 一、改动清单

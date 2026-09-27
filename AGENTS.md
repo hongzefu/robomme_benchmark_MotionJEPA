@@ -402,7 +402,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 ## 对正本的覆盖项（按正本条号；未列出的条目按正本执行）
 
 - **覆盖第 1 条（历史英文化遗留）**：无豁免清单——原豁免对象 `scripts/data-generation-v2-noPatch/` 与 `tests/lightweight/test_no_patch_report_debug_environment.py` 已于 2026-09-09 删除。
-- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = policy 仓库 [`0901-motion-memory-plan.md`](https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/blob/v2-motionmem/0901-motion-memory-plan.md) 的「第一部分（给人看）」（原链接名 `motion-memory-plan.md` 已改名）；本仓库既有计划文件沿用现名（`NEWTASK_RELEASE_V*_PLAN.md`、`INJECTION_REFACTOR_PLAN.md`），新计划按正本 `MMDD-<主题>-plan.md` 命名。
+- **覆盖第 2 条（计划密度标杆与命名）**：`<PLAN_EXEMPLAR>` = policy 仓库 [`0901-motion-memory-plan.md`](https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/blob/v2-motionmem/0901-motion-memory-plan.md) 的「第一部分（给人看）」（原链接名 `motion-memory-plan.md` 已改名）；四份 `NEWTASK_RELEASE_V3～V6_PLAN.md` 已于 2026-09-26 按用户指令改名为 `0921-newtask-release-v3-plan.md`、`0922-newtask-release-v4-plan.md`、`0924-newtask-release-v5-plan.md`、`0925-newtask-release-v6-plan.md`（日期取首次新增提交自身时区的月日）；`INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` 沿用现名，新计划按正本 `MMDD-<主题>-plan.md` 命名。
 - **覆盖第 4 条（核心短测）**：无需数据集的核心短测 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`（2026-09-26 账本口径；`tests/lightweight/` 全量实测超过 5 分钟，历史 710 s）；需要数据集 / MuJoCo 环境的条件测试 `uv run --no-sync python -m pytest tests/dataset/ -q`；只改某条生成链路时至少跑该链路的定向单测；涉及实跑生成一律先做「单任务、单 episode、单 worker」smoke。
 - **覆盖第 5 条**：本仓库所有可视化脚本同受最近邻放大约束。
 - **本次V6覆盖第8条的收尾释放要求（2026-09-26）**：用户明确「再提交2个同样gl 48h job 为之后加速 现在的job跑完不要scancel」。本次四个占位job `61890467`、`61890468`、`62018665`、`62018666` 均保留，V6完成后不自动取消；后续释放须有新的用户指令。新增两席各1 GPU／16 CPU／192G／48小时，仅是资源预留，不扩大reset／轨迹预算、不等于已批准基础设施恢复清单。
@@ -536,12 +536,12 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
 | 新值模式 V6 实施（2026-09-26） | S0基线完成；按用户D11～D13修订范围的S1已验收并留汇总报告；额外200 reset按用户要求停跑 | V6 snapshot `ready=16 pending=0`；`NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0`；LIGHTWEIGHT新增失败/错误0、已修复20；`RECORDER_FROZEN=PASS EVAL_PY_UPSTREAM=PASS ENTRIES=5`；静态 `TIER_PLAN_TABLE=PASS envs=13 violations=0`；GL单格pipeline 1/1；额外200批次 `TIER_MONOTONE=CANCELLED_BY_USER`，非PASS/FAIL；[S1汇总](docs/validation/newtask-v6/20260926-s1-final.md) | 后续范围已按D14～D18写回计划5.3；S2／S3恢复、S4已同意但均未启动，本轮仅文档，不增加清单外reset／rollout |
 | 原值方案按对抗审查修订（2026-09-21） | 文档修订与静态核验完成（11.30） | 用户选择144条严格对拍通过即可完成，历史动作缺证记未验证不阻塞；恢复80条、G5稀疏适配、xy消费及R1a/b/c同步；16环境101原表行保持，22本地链接有效 | 仅本轮方案条款与账本提交；保留并行任务的集群安排，不运行仿真或实现接口 |
-| `NEWTASK_RELEASE_V3_PLAN.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
+| `0921-newtask-release-v3-plan.md` 对抗验证（2026-09-21） | 审查完成；方案未通过（11.29） | 3项P1与1项P2：144条中恢复实际80而非96；原两比较器拒绝稀疏身份；历史数值全集摘要不能投影；xy恢复方向缺消费清单；隔离反例退出0，短测62 passed／3.05秒；[审查报告](docs/validation/newtask-v3/20260921-release-plan-audit.md) | 先修订方案再按原授权边界实施；原方案、生产代码和配置保持不变，未仿真、未推送 |
 | 全环境方案合并为四列单表（2026-09-21） | 文档调整完成（11.24） | 十六环境各一张四列表，共101行，当前值逐行保持；分类编号移除、字段简写展开，旧键映射归技术章节，核验通过 | 仅方案和必要账本，未切分支、未改配置或代码 |
 | 全环境方案按用户决策与原规则外部供值拆分（2026-09-21） | 文档修订完成（11.23） | 十六环境32表、101字段组：用户决策46、原规则抽样35、派生／观测20；新旧键映射、decision/native及回注关系明确，静态核验与只读复核通过 | 仅方案与账本，未切分支、未改配置代码；原值实施仍按既定授权边界执行 |
 | 全环境方案恢复表格排布（2026-09-21） | 文档排版完成（11.22） | 十六环境各两张表，共32表128行，先固定内容后现行值；逐条文字及其他正文零差异，23个本地链接有效 | 仅排版调整，文档核验通过；代码、配置、分支保持原状 |
 | 全环境方案拆分“固定哪些”与“现在的值”（2026-09-21） | 文档重排完成（11.21） | 十六环境各64条固定内容与64条现行值按编号一一对应，旧三列表全部拆除；16段未来需求、23本地链接及第二节以外正文保留，静态核验退出0 | 仅文档表达修订；仍未开始实施，不切分支、不改配置或代码 |
-| `newtaskRelease-v3` 全环境配置与原值注入方案（2026-09-21） | 文档完成，静态核验通过（11.20） | [根目录方案](NEWTASK_RELEASE_V3_PLAN.md) 覆盖十六环境、64 组固定项、23 本地链接；最终基线为官方 `dataset-gen@d53f21a` 的 train 16×100，保留 z48／xy48／关闭1504 的 fail recover；原报告1600生成成功但动作对发布集比较未通过的边界已写清 | 本轮仅方案与必要账本，代码及配置零改动；后续实施先切 `newtaskRelease-v3`，`src` 各项仍须批准 |
+| `newtaskRelease-v3` 全环境配置与原值注入方案（2026-09-21） | 文档完成，静态核验通过（11.20） | [根目录方案](0921-newtask-release-v3-plan.md) 覆盖十六环境、64 组固定项、23 本地链接；最终基线为官方 `dataset-gen@d53f21a` 的 train 16×100，保留 z48／xy48／关闭1504 的 fail recover；原报告1600生成成功但动作对发布集比较未通过的边界已写清 | 本轮仅方案与必要账本，代码及配置零改动；后续实施先切 `newtaskRelease-v3`，`src` 各项仍须批准 |
 | 注入重构计划阶段 0～9（2026-09-18） | 已全部实施与验收留档 | L1 3400 条规格相同；L2 113 PNG/表/完整数轴相同；L3 210 条 HDF5 尝试、L4 720 reset 对拍通过；838 unused 补查完成；3820 旧文件迁移字节守恒；最终冒烟 60 秒通过（200 候选、1 HDF5、1 reset、9 图、3 报告、重复 reset 零重跑）；候选输入与代码进 Git；[现行说明](scripts/INJECTION.md)、[完整证据](docs/validation/newtask-v2/20260917-injection-refactor/README.md) | 本轮无剩余实施步骤；保留 4 项既有测试失败、22 项历史规格缺失跳过及视频诊断 NOT_RUN 边界；未推送 |
 | 注入重构阶段 8（2026-09-18） | 完成 | 两包生产导入 25 模块无旧依赖；623 项测试收集无错误；核心回归 490 passed、4 项既有失败、22 项既有跳过、74 项按预算未选，146.83 秒；Git/媒体边界与 114 个现行链接通过 | 最终独立 200 候选、1 HDF5、1 reset 单 worker 冒烟及幂等复核 |
 | 注入重构阶段 7（2026-09-18） | 完成 | `H5_INTACT=PASS count=1796 sha_mismatch=0 missing=0`；`ARTIFACTS_INTACT=PASS count=3820 missing=0 extra=0 sha_mismatch=0`；活动路径零失效、旧前缀零残留、元数据仅允许字段变化；迁移退出 0，恢复反例 5 passed | 清理已替换旧入口、迁移测试与现行说明，再运行最终冒烟 |
@@ -2394,3 +2394,13 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 待用户裁决四项（D-1 第六入口触碰 P1；D-2 copy 还是引用；D-3 400 条 train 元数据归属；D-4 S3 结论前不动 `src/robomme/`）；`src/robomme/` 整体回退属 P2 新范围，须另批。
 - 验证：`git diff --check` 通过；未运行任何生成或测试。
 - 下一步：用户裁决后按方案 §七 阶段 0 起步；V1′ 144 局对拍预算随阶段 1 一次申请。
+
+### 2026-09-26 America/Detroit — 四份 NEWTASK_RELEASE 计划改为日期前缀命名
+
+- 状态：完成。
+- 用户原话：「更新命名逻辑 写入时间前缀」（指四个文件 NEWTASK_RELEASE_V3～V6_PLAN.md）。
+- 改名（日期 = 首次新增提交自身时区 -0400 的月日）：`NEWTASK_RELEASE_V3_PLAN.md`（90e7f49，09-21）→ `0921-newtask-release-v3-plan.md`；V4（4c13b69，09-22）→ `0922-newtask-release-v4-plan.md`；V5（1849943，09-24）→ `0924-newtask-release-v5-plan.md`；V6（11904f9，09-25）→ `0925-newtask-release-v6-plan.md`。`INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` 未在指令内，沿用现名。
+- 引用维护：66 个文件（docs/validation 链接、scripts/parity 与 scripts/eval docstring、tests 注释、V5/V6 计划互链、0926 方案）+ `AGENTS.md` 进度表两行与第 2 条覆盖句 + 在途文件 `scripts/README.md`、`scripts/parity/v6_site_catalog.py`（后两者只暂存改名 hunk，他人在途改动留在工作树）。
+- 有意不改：`src/robomme/**` 12 处注释（P2 逐个批准 + `source_fingerprint` 覆盖 `src/robomme/robomme_env` 全部 .py，改注释即改 v6-01 specs 封存指纹，且 S3 正在读活树）；`scripts/configs/newtask-v{5,6}/sampling_config.json` note 字段（全文与 sha 封存在 specs header）；`scripts/parity/results/_logs/*.txt` 与 `docs/validation/newtask-v6/20260926-s0.md` 的用户原话「NEWTASK_RELEASE_V6_PLAN.md 开始实施」；本账本历史日志条目（原始记录）。
+- 验证：`git diff --check` 与 `--cached --check` 通过；四个新链接目标全部存在；`pytest tests/lightweight/test_v6_tier_monotone.py tests/lightweight/test_v4_specs.py` 24 passed。
+- 下一步：`src/robomme/**` 注释里的旧名待拆包（0926 方案阶段 2 复制到 `robomme_hard` 时）一并改，不单独动。

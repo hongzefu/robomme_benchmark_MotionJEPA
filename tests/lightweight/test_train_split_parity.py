@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """轻量测试：原始 train 身份冻结的口径与反例（不加载仿真、不占 GPU）。
 
-对应 NEWTASK_RELEASE_V3_PLAN.md 步 0 的 G1：身份逐条取官方 metadata、不用公式替换
+对应 0921-newtask-release-v3-plan.md 步 0 的 G1：身份逐条取官方 metadata、不用公式替换
 实际 seed、子集按每 task 每难度前 3 条固定、恢复模式按官方 ``EpisodeJob.recovery_mode``。
 另覆盖 ``run``／``compare`` 的参数校验反例（步 1b 之前只有校验）。
 

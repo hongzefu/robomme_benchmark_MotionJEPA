@@ -1,6 +1,6 @@
 # 步 5c 报告：多 worker 等价性（2026-09-21）
 
-对应 [NEWTASK_RELEASE_V3_PLAN.md](../../../NEWTASK_RELEASE_V3_PLAN.md) 第五节步 5c，闸门 P4／P6（`WORKER_ISOLATION`）。运行目录 `artifacts/train-parity/gl-5c`。
+对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 5c，闸门 P4／P6（`WORKER_ISOLATION`）。运行目录 `artifacts/train-parity/gl-5c`。
 
 ## 一、为什么先做 5c 再做 5d
 

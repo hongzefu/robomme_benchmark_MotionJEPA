@@ -1,7 +1,7 @@
 # V5 S3b：VideoUnmask / ButtonUnmask 的 xhard 干扰容器接入统一采样器（L13）与独立停放点（L14）
 
 > 日期 2026-09-24；worktree `/data/hongzefu/robomme_v5_wt/vubu`（分支 `v5wt-vubu`，基于 12.120 `328e607`），改动未 commit。
-> 依据：`NEWTASK_RELEASE_V5_PLAN.md` 1.4 L6～L15、2.2、2.3、2.4、第二部分「一」S3b 行；S2c 报告第三节 3.1 的接入示例。
+> 依据：`0924-newtask-release-v5-plan.md` 1.4 L6～L15、2.2、2.3、2.4、第二部分「一」S3b 行；S2c 报告第三节 3.1 的接入示例。
 > 主会话决定（本任务下达时）：xhard 下内环容器与被藏 cube 也用独立停放点。
 
 ## 一、改动清单

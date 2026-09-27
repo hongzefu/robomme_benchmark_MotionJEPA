@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V4 原三档的 reset 级回归探针（NEWTASK_RELEASE_V4_PLAN 步 3b「每组先过 V0+V1」的本机前置）。
+"""V4 原三档的 reset 级回归探针（0922-newtask-release-v4-plan.md 步 3b「每组先过 V0+V1」的本机前置）。
 
 V1（``NATIVE_REGRESSION``）的正式判据要在 A40 上重跑 144 条并与 V3 留档逐位比；那一步重、要排集群。
 本探针是它的**本机快速前置**：对同一批原三档身份只做 ``make → reset → 抓取 → close``，把

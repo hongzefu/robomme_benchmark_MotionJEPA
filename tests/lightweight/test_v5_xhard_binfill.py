@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 BinFill xhard（NEWTASK_RELEASE_V5_PLAN 2.12、L40～L42、N17、N18），纯 CPU、不起 sapien 场景。
+"""轻量测试：V5 BinFill xhard（0924-newtask-release-v5-plan.md 2.12、L40～L42、N17、N18），纯 CPU、不起 sapien 场景。
 
 做法：按 ``BinFill._load_scene`` 的 xhard 随机调用顺序离线复刻「按钮 → 孔板 → 配额 → spawn_order」这一段
 （与规划期离线副本同式），然后把**真实的** ``BinFill._spawn_cubes_xhard`` 挂到一个假 ``self`` 上运行

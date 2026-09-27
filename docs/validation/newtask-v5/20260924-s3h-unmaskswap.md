@@ -1,7 +1,7 @@
 # V5 S3h：VideoUnmaskSwap / ButtonUnmaskSwap xhard——10 个干扰容器、外环随内环同步交换、两对联合碰撞证明
 
 日期：2026-09-24；worktree：`/data/hongzefu/robomme_v5_wt/swap`（分支 `v5wt-swap`，基于 12.120，未 commit）。
-依据：`NEWTASK_RELEASE_V5_PLAN.md` 1.1 口径 4～6、1.4 L13～L23、2.2、2.5（伪码与陷阱）、2.6、2.7、3.5 P5、红线 N13/N14/N17/N18、第二部分「一」S3h 行；
+依据：`0924-newtask-release-v5-plan.md` 1.1 口径 4～6、1.4 L13～L23、2.2、2.5（伪码与陷阱）、2.6、2.7、3.5 P5、红线 N13/N14/N17/N18、第二部分「一」S3h 行；
 S2b（`check_multi_swap_sweep` / `check_swap_sweep_prefiltered`）、S2c（统一采样器、停放 helper）两份报告的 API。
 
 ## 一、改动清单

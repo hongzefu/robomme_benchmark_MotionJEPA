@@ -1,6 +1,6 @@
 # 步 2 报告：恢复原值默认路径（A↔B）（2026-09-21）
 
-对应 [NEWTASK_RELEASE_V3_PLAN.md](../../../NEWTASK_RELEASE_V3_PLAN.md) 第五节步 2、闸门 P2、口径 8。
+对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 2、闸门 P2、口径 8。
 本报告即用户 2026-09-21 要求的「`src/robomme` 改完出 md 报告」。
 
 ## 一、src/robomme 改动清单

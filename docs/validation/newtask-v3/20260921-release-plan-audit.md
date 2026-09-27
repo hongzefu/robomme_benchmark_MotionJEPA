@@ -4,7 +4,7 @@
 
 用户原话：「/data/hongzefu/robomme\_benchmark\_MotionJEPANewTask/NEWTASK\_RELEASE\_V3\_PLAN.md」「对抗验证」。本轮只审查，不实施方案，不修改原方案、生产代码或配置，不启动仿真、不生成新轨迹。
 
-审查对象为 `newtask-v2.1refractor@74dc5ce7224fe5b95319897332747d538395ec29`（11.28）的 [NEWTASK_RELEASE_V3_PLAN.md](../../../NEWTASK_RELEASE_V3_PLAN.md)。原文件 SHA-256 为 `78faf72d69be6fda79f7cd84df3c08288666d9a96d1a1c4e68cc729196690bf8`。官方依据为本地可读的固定 Git 对象 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`，不以移动分支代替；全部反例读取该对象中的源码或metadata。工作区初始干净。
+审查对象为 `newtask-v2.1refractor@74dc5ce7224fe5b95319897332747d538395ec29`（11.28）的 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md)。原文件 SHA-256 为 `78faf72d69be6fda79f7cd84df3c08288666d9a96d1a1c4e68cc729196690bf8`。官方依据为本地可读的固定 Git 对象 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`，不以移动分支代替；全部反例读取该对象中的源码或metadata。工作区初始干净。
 
 ## 一、P7仍验96条恢复，但144条子集实际只有80条（P1）
 

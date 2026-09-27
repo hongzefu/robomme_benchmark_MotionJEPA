@@ -1,6 +1,6 @@
 # 步 1a 留档：冻结历史证据（2026-09-21）
 
-对应 [NEWTASK_RELEASE_V3_PLAN.md](../../../NEWTASK_RELEASE_V3_PLAN.md) 第五节步 1a。只读官方 Git 对象与本地目录，未启动仿真、未改动 `src/robomme/`。
+对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 1a。只读官方 Git 对象与本地目录，未启动仿真、未改动 `src/robomme/`。
 
 ## 一、做了什么
 

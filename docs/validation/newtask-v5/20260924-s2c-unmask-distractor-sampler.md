@@ -1,7 +1,7 @@
 # V5 S2c：四个 Unmask 环境的干扰容器统一采样器（L13）与独立停放点（L14）
 
 > 日期 2026-09-24；worktree `/data/hongzefu/robomme_v5_wt/s2c`（分支 `v5wt-s2c`，基于 `f5b6a17`），改动未 commit。
-> 依据：`NEWTASK_RELEASE_V5_PLAN.md` 1.4 L6～L23、2.2～2.7、3.5 P5、第二部分「一」S2 行（`utils/unmask_distractors.py` 停放 helper）。
+> 依据：`0924-newtask-release-v5-plan.md` 1.4 L6～L23、2.2～2.7、3.5 P5、第二部分「一」S2 行（`utils/unmask_distractors.py` 停放 helper）。
 > 本步是**共用基础设施**，不接入任何环境：VU / BU / VUS / BUS 四个环境文件零改动，由 S3 的两个 agent 接入。
 
 ## 一、改动清单

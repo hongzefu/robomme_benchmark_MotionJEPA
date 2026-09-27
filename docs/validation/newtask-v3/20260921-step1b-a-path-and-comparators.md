@@ -1,6 +1,6 @@
 # 步 1b（上半）留档：A 路编排、HDF5 对拍器与比较器范围适配（2026-09-21）
 
-对应 [NEWTASK_RELEASE_V3_PLAN.md](../../../NEWTASK_RELEASE_V3_PLAN.md) 第五节步 1b 的离线与本机部分，闸门 G5 已过；**P0／P1 属于 A40 上的判据，本文的本机结果只是调试参考，不进判据**（方案第四节：sm_89 与 A40 的 sm_86 不逐位一致）。未改动 `src/robomme/`。
+对应 [0921-newtask-release-v3-plan.md](../../../0921-newtask-release-v3-plan.md) 第五节步 1b 的离线与本机部分，闸门 G5 已过；**P0／P1 属于 A40 上的判据，本文的本机结果只是调试参考，不进判据**（方案第四节：sm_89 与 A40 的 sm_86 不逐位一致）。未改动 `src/robomme/`。
 
 ## 一、新增的三个文件
 

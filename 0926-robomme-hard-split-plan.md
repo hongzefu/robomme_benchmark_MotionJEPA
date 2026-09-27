@@ -33,7 +33,7 @@
 4. **四档规格随包分发**：`scripts/configs/newtask-v6/v6-01/<tier>/specs.jsonl`（实测 256 K / 276 K / 296 K / 360 K）复制为包数据 `src/robomme_hard/env_metadata/<tier>/specs.jsonl`，`load_specs` 的封套校验从 `scripts/parity/v4_specs.py` 下沉到 `src/robomme_hard/env_record_wrapper/hard_specs.py`（src 不反向依赖 scripts 的红线不变）（§五）。
 5. **原三档在 `robomme_hard` 下必须与 `robomme` 逐位相同（H1）**：验收不是新跑对拍，而是把 S3 正在跑的 V1 对拍换成「`robomme_hard` 侧 vs S0 基线」重跑 144 局（§六 V1′）；**在 S3 出结果前不动 `src/robomme/`**（S3 启动锚点 `c8c06ab` 读的是主仓活树）。
 6. **V6 计划里的「冻结」项全部自然落位**：录像器在 `robomme` 回 2000 步（上游原样），在 `robomme_hard` 保持 5000；`scripts/evaluation.py` / `run_example.py` / `dataset_replay.py` 继续与上游逐字节相同；`scripts/` 顶层从五入口变六入口需用户按 P1 放行（§四 D-1）。
-7. **不在本方案内**：hard 演示数据（165 局）的 HF 发布、`dataset_replay.py` 的 hard 版本、网站；V6 计划 S3/S5 照旧按 `NEWTASK_RELEASE_V6_PLAN.md` 收尾。
+7. **不在本方案内**：hard 演示数据（165 局）的 HF 发布、`dataset_replay.py` 的 hard 版本、网站；V6 计划 S3/S5 照旧按 `0925-newtask-release-v6-plan.md` 收尾。
 
 ## 三、现在的整个逻辑链条（回答「逻辑链条是什么」）
 
@@ -163,7 +163,7 @@ class BenchmarkEnvBuilder:
 
 ### 5.5 `src/robomme_hard/README.md` 必含内容（H3）
 
-①一句话：hard = 四档 `xhard1<xhard2<xhard3<xhard4`，原三档在本包下与 `robomme` 逐位相同（附 V1′ 判定行原文）；②四档定稿表（从 `NEWTASK_RELEASE_V6_PLAN.md` 第一部分 §三逐字搬，含备注列）；③「改动在哪」表：由脚本 `scripts/parity/hard_pkg_manifest.py` 生成，逐文件列「与 `src/robomme` 相同 / 不同（+x/−y 行）/ 本包新增」，README 里内联生成结果并写生成命令；④机制说明：`sampling_config` 两块结构、`SpecRecorder` 导出/回注、`specs.jsonl` 封套、seed 偏移公式；⑤使用：`evaluation_hard.py` 三行示例 + `override_metadata_path` 用法；⑥红线：两包不可同进程导入、xhard 不受 1301 步限制、`fail_safe_limit=5000`。
+①一句话：hard = 四档 `xhard1<xhard2<xhard3<xhard4`，原三档在本包下与 `robomme` 逐位相同（附 V1′ 判定行原文）；②四档定稿表（从 `0925-newtask-release-v6-plan.md` 第一部分 §三逐字搬，含备注列）；③「改动在哪」表：由脚本 `scripts/parity/hard_pkg_manifest.py` 生成，逐文件列「与 `src/robomme` 相同 / 不同（+x/−y 行）/ 本包新增」，README 里内联生成结果并写生成命令；④机制说明：`sampling_config` 两块结构、`SpecRecorder` 导出/回注、`specs.jsonl` 封套、seed 偏移公式；⑤使用：`evaluation_hard.py` 三行示例 + `override_metadata_path` 用法；⑥红线：两包不可同进程导入、xhard 不受 1301 步限制、`fail_safe_limit=5000`。
 
 ## 六、验收（查什么 / 怎么查 / 过了说明什么 / 判定行）
 
@@ -204,7 +204,7 @@ V1′ 为什么能逐位：`robomme_hard` 的原三档路径与现 `src/robomme`
 - R4 `specs.jsonl` 行内容与 `identity_sha256` 不动；builder 侧 episode 重编号只在内存。
 - R5 三脚本 `evaluation.py` / `run_example.py` / `dataset_replay.py` 继续逐字节同上游；`evaluation_hard.py` 只允许 §5.4 的 diff。
 - R6 V1′ 144 次轨迹尝试是本方案唯一的生成预算（P3：单 worker >10 须授权，阶段 1 一次列齐）；不加 reset 对拍、不加 rollout。
-- R7 commit 只 add 本阶段文件；工作区里 S3 相关在途改动（`NEWTASK_RELEASE_V6_PLAN.md`、`scripts/parity/v6_tier_monotone.py`、`tests/lightweight/test_v6_tier_monotone.py`、`v6_site*`、`20260926-s3.md`）一律不碰。
+- R7 commit 只 add 本阶段文件；工作区里 S3 相关在途改动（`0925-newtask-release-v6-plan.md`、`scripts/parity/v6_tier_monotone.py`、`tests/lightweight/test_v6_tier_monotone.py`、`v6_site*`、`20260926-s3.md`）一律不碰。
 - R8 长期文档禁行号引用；本文件锚点全部用 `文件::符号`。
 
 ## 一、逐文件改动清单

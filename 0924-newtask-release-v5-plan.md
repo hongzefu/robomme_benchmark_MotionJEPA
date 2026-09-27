@@ -4,7 +4,7 @@
 > 分支 `newtaskRelease-v4`，代码锚点为本文件落盘时的 HEAD `0baff09`（12.96）。commit 编号沿用仓库现行
 > `<大版本>.<小版本> <中文描述>` 体例。依赖锚点：`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
 >
-> **前置文档**：V4 计划 [NEWTASK_RELEASE_V4_PLAN.md](NEWTASK_RELEASE_V4_PLAN.md)（决策 A1～K5 在其 1.3，
+> **前置文档**：V4 计划 [0922-newtask-release-v4-plan.md](0922-newtask-release-v4-plan.md)（决策 A1～K5 在其 1.3，
 > 红线 N1～N12 在其第二部分〇）；V4 总报告 [docs/validation/newtask-v4/20260923-v4-final-report.md](docs/validation/newtask-v4/20260923-v4-final-report.md)；
 > V4 正式快照 `scripts/configs/newtask-v4/v4-01/specs.jsonl`（160 候选、48 正式局）与实跑产物
 > `artifacts/newtask-v4/v4-01/rollout/run1/`。**V4 决策除本文 1.5 明确推翻或修改的以外全部延续。**

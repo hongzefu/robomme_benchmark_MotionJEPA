@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V4 E2 的序数表扩容（NEWTASK_RELEASE_V4_PLAN 2.0①）。
+"""轻量测试：V4 E2 的序数表扩容（0922-newtask-release-v4-plan.md 2.0①）。
 
 四条配套测试：①idx 0…9 与改动前逐字相同；②idx 10…19 给 eleventh … twentieth；
 ③idx 20/21/22/112 给 21st / 22nd / 23rd / 113th；④负数仍 ValueError。

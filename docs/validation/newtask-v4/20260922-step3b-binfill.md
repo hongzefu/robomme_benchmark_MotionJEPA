@@ -19,7 +19,7 @@
 | `scripts/generate_dataset_newseed.py::SAMPLING_SOURCES` / `SAMPLING_OPERAND_PATHS` / `extract_native_sampling` 注释 | BinFill 锚点加 `config_xhard`；操作元 `parameters.BinFill.configs` 整块比对改为 easy/medium/hard 三条（与 RouteStick 等同一写法） | 否则新增的 xhard 档会被 `--source-ref` 的原版操作元比对误判为「原版不一致」；计划 2.3 末条提到 `SAMPLING_OPERAND_PATHS` 冻结了整块 | 轻量测试见 3.4 |
 | `tests/lightweight/test_v4_xhard_binfill.py`（新增） | 11 项纯 CPU 结构测试（不起 sapien 场景） | 必做验证 4 | 11 passed（3.2 s） |
 
-**未改**：录像器、链路甲、`NEWTASK_RELEASE_V4_PLAN.md`、`scripts/configs/**`（v4 快照由主 agent 统一重导）。
+**未改**：录像器、链路甲、`0922-newtask-release-v4-plan.md`、`scripts/configs/**`（v4 快照由主 agent 统一重导）。
 
 ## 二、「全部 clutter」的解读（结合源码）
 

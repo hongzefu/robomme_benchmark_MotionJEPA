@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V4 步 3b SwingXtimes 的 xhard 档（NEWTASK_RELEASE_V4_PLAN 2.5）。
+"""轻量测试：V4 步 3b SwingXtimes 的 xhard 档（0922-newtask-release-v4-plan.md 2.5）。
 
 纯 CPU、不起 sapien 场景，只验结构：
 * 原三档 ``configs`` 与 decision 可见部分（去掉 xhard 键后）逐字不变；

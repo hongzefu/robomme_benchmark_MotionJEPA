@@ -1,6 +1,6 @@
 # V5 S3f：PickXtimes 与 SwingXtimes 的 xhard 去扎堆（2026-09-24）
 
-> 对应计划：`NEWTASK_RELEASE_V5_PLAN.md` 1.4 L43～L46、2.0①、2.13、2.14、3.5 P1、第二部分「一」S3f 行。
+> 对应计划：`0924-newtask-release-v5-plan.md` 1.4 L43～L46、2.0①、2.13、2.14、3.5 P1、第二部分「一」S3f 行。
 > 工作树：`/data/hongzefu/robomme_v5_wt/pickswing`（分支 `v5wt-pickswing`，基线 12.120 `328e607`），未 commit。
 
 ## 一、改动清单

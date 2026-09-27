@@ -1,7 +1,7 @@
 # V5 S2b：多对同时交换的联合连续判据与认证预筛（`utils/bin_collision.py` 只加不改）
 
 日期：2026-09-24；worktree：`/data/hongzefu/robomme_v5_wt/s2b`（分支 `v5wt-s2b`，未 commit）。
-依据：`NEWTASK_RELEASE_V5_PLAN.md` 2.5「关键设计点」「认证预筛（L23）」、2.15（L54 按钮底座作静止障碍）、3.5 P5 结果、第二部分「一」S2 行（`utils/bin_collision.py`）；红线 N13（共用代码只加不改）。
+依据：`0924-newtask-release-v5-plan.md` 2.5「关键设计点」「认证预筛（L23）」、2.15（L54 按钮底座作静止障碍）、3.5 P5 结果、第二部分「一」S2 行（`utils/bin_collision.py`）；红线 N13（共用代码只加不改）。
 
 ## 一、改动清单
 

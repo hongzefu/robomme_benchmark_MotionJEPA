@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 InsertPeg 的 xhard 档（NEWTASK_RELEASE_V5_PLAN 2.8，L24～L29、L52），纯 CPU、不起 sapien 场景。
+"""轻量测试：V5 InsertPeg 的 xhard 档（0924-newtask-release-v5-plan.md 2.8，L24～L29、L52），纯 CPU、不起 sapien 场景。
 
 * ``footprint_gap``：有向矩形精确距离的解析样例、相交/接触恒为 0（严格不等号的必要性）、与密采样边界点的暴力距离一致；
 * 轮廓几何常数从真实 ``build_peg`` / ``build_box_with_hole`` 的建模调用里量出来，与 ``peg_footprint`` / ``box_footprint`` 一致；

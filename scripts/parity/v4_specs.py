@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V4 新值规格的抽签／冻结／读取（NEWTASK_RELEASE_V4_PLAN 第三节 3.2～3.4，步 4）。
+"""V4 新值规格的抽签／冻结／读取（0922-newtask-release-v4-plan.md 第三节 3.2～3.4，步 4）。
 
 三件事、两个文件：
 
@@ -20,7 +20,7 @@
     uv run --no-sync python -m scripts.parity.v4_specs draw --run-id <id> --out artifacts/newtask-v4/<id>/draft/drafts.jsonl
     uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts <drafts.jsonl> --out scripts/configs/newtask-v4/<id>/specs.jsonl
 
-V5（NEWTASK_RELEASE_V5_PLAN 3.1②③）沿用同一套封套与 seed 规则，只换配置与落点，并可多 worker 抽签：
+V5（0924-newtask-release-v5-plan.md 3.1②③）沿用同一套封套与 seed 规则，只换配置与落点，并可多 worker 抽签：
 
     uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v5-01 \
         --sampling-config scripts/configs/newtask-v5/sampling_config.json --workers 8 \

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V5 四个 Unmask 环境的干扰容器统一采样器与独立停放点（NEWTASK_RELEASE_V5_PLAN 2.2 / L13 / L14）。
+"""轻量测试：V5 四个 Unmask 环境的干扰容器统一采样器与独立停放点（0924-newtask-release-v5-plan.md 2.2 / L13 / L14）。
 
 不起 sapien 场景，只测纯几何层与记录纪律：
 

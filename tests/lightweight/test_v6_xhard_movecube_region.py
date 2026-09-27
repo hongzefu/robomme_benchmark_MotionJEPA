@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V6 MoveCube xhard4 的统一区域 U（NEWTASK_RELEASE_V6_PLAN 2.6，圆环版）。
+"""轻量测试：V6 MoveCube xhard4 的统一区域 U（0925-newtask-release-v6-plan.md 2.6，圆环版）。
 
 离线部分纯 CPU、不起 sapien 场景：借用 ``test_v5_xhard_movecube`` 的假场景（假 builder、假 TableSceneBuilder），
 直接跑真实的 ``MoveCube._load_scene``（随机调用、拒绝循环、规格记录全是真代码）。

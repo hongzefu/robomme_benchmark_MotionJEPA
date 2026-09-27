@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V5 一次多 worker 生成：一条命令串起抽签 → 冻结 → 实跑 → 报告（NEWTASK_RELEASE_V5_PLAN 3.1、3.2「生成报告」、3.3 S6）。
+"""V5 一次多 worker 生成：一条命令串起抽签 → 冻结 → 实跑 → 报告（0924-newtask-release-v5-plan.md 3.1、3.2「生成报告」、3.3 S6）。
 
 两个子命令：
 

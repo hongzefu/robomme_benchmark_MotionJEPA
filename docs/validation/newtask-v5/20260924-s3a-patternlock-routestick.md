@@ -1,6 +1,6 @@
 # V5 S3a：PatternLock 与 RouteStick 的 xhard 改动（2026-09-24）
 
-依据：`NEWTASK_RELEASE_V5_PLAN.md` 1.1 口径 9、1.4 L35～L39、2.10、2.11、3.5 的 P3、第二部分「一」S3a 行。
+依据：`0924-newtask-release-v5-plan.md` 1.1 口径 9、1.4 L35～L39、2.10、2.11、3.5 的 P3、第二部分「一」S3a 行。
 工作树：`/data/hongzefu/robomme_v5_wt/plrs`（分支 `v5wt-plrs`，基于 12.120），未 commit。
 
 ## 一、改动清单
