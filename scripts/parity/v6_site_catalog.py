@@ -57,9 +57,52 @@ def gradients(plan):
         "StopCube": {"hard": "单程60、80或120步；停止序号2–5", "xhard4": "单程固定60步；停止序号6–15"},
     })
     result["BinFill"]["hard"] = "总块数10–12；投入块数3–5"
+    result["VideoPlaceButton"]["hard"] = "1块，放台2次；演示后放到桌面"
+    result["VideoPlaceOrder"]["hard"] = "1块，访问2–4台；演示后放到桌面"
     for tier in TIERS[1:]:
         result["BinFill"][tier] = f"总块数12；{result['BinFill'][tier].replace('（总块 12）', '')}"
     return result
+
+
+def subgoal_flow(task, tier):
+    """只描述已由源码及已有轨迹核对的放置任务子目标。"""
+    if task == "VideoPlaceOrder":
+        if tier == "hard":
+            demo = ["拿起一个方块，依次放到2–4个不同的平台上。",
+                    "在其中一次放台后按按钮；继续完成这块的访问序列。",
+                    "将方块放到桌面位置，结束演示；末尾两个平台交换位置。"]
+        else:
+            counts = {"xhard1": "2次与3次（合计5次）", "xhard2": "各3次（合计6次）",
+                      "xhard3": "3次与4次（合计7次）", "xhard4": "各4次（合计8次）"}[tier]
+            demo = [f"两个方块分别访问平台{counts}；次数不同的两种分配会随机对应到方块。",
+                    "先完成第一个方块的全部访问并放回原位，再完成第二个方块并归位。",
+                    "按按钮插在某一次目标台放置之后；演示末尾两个平台交换位置。"]
+        return {"demo_steps": demo,
+                "remember": "分别记住每个颜色方块按先后顺序访问的平台，并追踪平台交换后的新位置。",
+                "execution_steps": ["读取题目指定的方块颜色和第几次访问。", "只拾取该方块，放到那一次访问的平台当前所在位置。"],
+                "note": "每次访问均包含抓起方块再放下，不是持物滑过平台。执行阶段不重演完整访问序列。每块内部不重复访问同一台，两块可以共享台；归位不计入放台次数。按按钮是演示中的插入动作，不是平台交换的触发动作。"}
+    if task == "VideoPlaceButton":
+        demo = {
+            "hard": ["将一个方块放到按钮前的目标台。", "按按钮，再将方块放到按钮后的目标台。", "将方块放到桌面位置。"],
+            "xhard1": ["将一个方块放到按钮前的目标台。", "按按钮，再依次放到按钮后的目标台和一个额外台。", "将方块放回原位。"],
+            "xhard2": ["将一个方块依次放到按钮前的目标台和一个额外台。", "按按钮，再依次放到按钮后的目标台和一个额外台。", "将方块放回原位。"],
+            "xhard3": ["将两个方块依次放到各自按钮前的目标台，再将其中一个放到额外台。", "按按钮，再将两个方块依次放到各自按钮后的目标台。", "将两个方块分别放回原位。"],
+            "xhard4": ["将两个方块依次放到各自按钮前的目标台，再将其中一个放到额外台。", "按按钮，将两个方块依次放到各自按钮后的目标台，再将另一个放到额外台。", "将两个方块分别放回原位。"],
+        }[tier]
+        extra_before = tier in {"xhard2", "xhard3", "xhard4"}
+        execution = "只拾取指定方块并放到答案平台，不重演演示动作。"
+        note = "每次放台都包含重新抓起再放下；归位不计入放台次数。"
+        if extra_before:
+            execution = "只拾取指定方块并放到程序绑定的答案台；答案与题目措辞的已知差异见说明。"
+            if tier == "xhard3":
+                note += "当前所列示例4和示例7（episode 3、6）存在演示与答案不一致：按钮前最后放到额外台，程序却将更早的基础台判为正确；本档其余所列样例未触发。这里保留实际旧视频及其执行结果，不将这两个样例视为记忆问题已正确实现。"
+            else:
+                note += "按钮前额外放台的候选存在答案仍绑定更早基础台的机制风险，但本档当前所列三个样例未触发该问题；已确认的交付冲突出现在xhard3示例4和示例7。"
+        return {"demo_steps": [*demo, "演示结束后两个平台交换位置，再进入执行阶段。"],
+                "remember": "题目问按钮前时，记住该颜色方块在按按钮前最后一次放到的平台；问按钮后时，记住按钮后第一次放到的平台，并追踪平台交换后的所在位置。",
+                "execution_steps": ["读取题目指定的方块颜色与按钮前／后的关系。", execution],
+                "note": note}
+    return None
 
 
 def build_catalog(delivery, baseline, plan):
@@ -70,8 +113,22 @@ def build_catalog(delivery, baseline, plan):
     cards = {}
     for task, name in NAMES.items():
         item = {"id": task, "name": name, "note": NOTES[task], "tiers": []}
+        if task == "VideoPlaceButton":
+            item["known_issue"] = {
+                "title": "已知问题：部分视频的程序答案与题目含义不一致",
+                "steps": [
+                    "已确认受影响的是 xhard3 示例4和示例7（episode 3、6）。",
+                    "以示例4为例：蓝色方块先放到平台A，再被拿起放到平台B，然后按按钮。",
+                    "题目问蓝色方块在按钮前最后一次放到的平台，因此按演示应回答平台B，并追踪该平台交换后的所在位置。",
+                    "当前程序仍将更早的平台A绑定为正确答案；视频中的执行按这个答案完成，所以内部记录显示成功。",
+                ],
+                "note": "A、B仅为这里解释先后访问的平台所用的代号，不是视频中的标签。视频显示的成功只代表通过当前程序判定，不能证明符合题目含义。此处保留原视频并说明问题，没有修复源码或重生成数据；其他所列样例不因此被判定为错误。",
+            }
         for tier in (("hard", "xhard4") if task in EXTRA else TIERS):
             card = {"id": tier, "label": tier, "gradient": values[task][tier], "videos": []}
+            flow = subgoal_flow(task, tier)
+            if flow is not None:
+                card["subgoal_flow"] = flow
             cards[task, tier] = card
             item["tiers"].append(card)
         public["tasks"].append(item)

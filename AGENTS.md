@@ -2401,6 +2401,13 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 后续完成：v4全213逐项复测退出0，`ALL_VIDEO_BROWSER={"PASS":213,"FAIL":0,"TOO_SHORT_FOR_TRAJECTORY":0} page_errors=0`；IP地址实际API为16任务／71卡／213视频，每卡3条。桌面与移动截图目视正常。此处保留前条“正在复测”为当时记录，现已完成。
 - 规则固化：用户要求「把高频 nvidia-smi 的教训写入写入项目md和https://github.com/hongzefu/AgentMetaRules-hongzefu」。正本第16条追加监控自身干扰闸门、归属授权与实测，提交`38c6732`并推送；用`sync_rules.py apply --repo benchmark --file AGENTS.md`回流，块外与账本字节保持、`SYNC_SUMMARY=PASS pass=3 fail=0 missing=0`。项目明确将第16条适用于生成与渲染，避免旧“未采用”声明架空新规则；未同步或改写其他项目仓库。
 
+### 2026-09-26 America/Detroit — 放置任务子目标说明与已知题意问题披露
+
+- 用户原话：「videoplacebutton videoplaceorder的网站把subgoal演进说清楚」「仅网站注明问题，暂不修数据」「先在网站解释 是什么问题」。网站新增两任务各五档的演示／记忆／执行分步说明；VPB按题目区分按钮前最后一次与按钮后第一次的平台，VPO按方块各自第几次访问的平台回答。执行均只取指定方块放答案台，不重演全部演示；原hard放桌面，新档归位，按钮与尾部平台交换分开。
+- 真实反例：VPB/xhard3/episode3、6内部成功，但同一被问方块在基础before台后又被放到额外before台，再按按钮，答案仍绑定更早基础台。40候选中6冲突，12条VPB交付中2冲突；逐项证据`docs/validation/newtask-v6/records/vpb-semantic-scope.json`。内部success计数不改写，不把题意正确性与程序成功混同。
+- 用户拒绝本轮源码修复及9条补跑，故`VPB_ORDER_FIX=DEFERRED_BY_USER attempts=0`；仅保留未应用补丁与准备记录，生产源码和既有数据未修改。网站VPB页顶部醒目说明xhard3示例4／7的“演示A→B→按钮，题意应B，程序仍A”，不声称样例已修复。
+- 当前网站目录`artifacts/newtask-v6/site-v7/`，仍是同一213媒体与预览；此前全213播放／拖动／继续测试保留。新增说明实测`SUBGOAL_BROWSER=PASS tasks=2 tiers=10 playback=10 issue=1 mobile=1 errors=0`，含深链切换与其他任务不出现警示，截图已目视；小结果归档`records/site-v7-flow-browser-result.json`。当前V6不能作无缺陷声明；S3即使通过也只证明原三档硬闸，最终清单须保留已知题意问题及接纳范围。
+
 ### 2026-09-26 America/Detroit — robomme_hard 拆包接口方案落根目录（只规划）
 
 - 状态：完成（方案文件），未实施。

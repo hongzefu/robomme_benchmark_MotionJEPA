@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "tasks": 2,
+  "tier_flows": 10,
+  "stages": 30,
+  "video_playback": 10,
+  "known_issue_only_vpb": true,
+  "mobile_no_overflow": true,
+  "other_task_unchanged": true,
+  "page_errors": []
+}

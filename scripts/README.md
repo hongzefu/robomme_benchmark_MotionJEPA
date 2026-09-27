@@ -1042,18 +1042,20 @@ UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_cand
 
 ### 6.4 难度梯度与视频网站
 
-**当前修订：`artifacts/newtask-v6/site-v4/`已部署到原8060地址，包含16任务、71卡片、213个主视频，API确认每卡3个样例；213条真实界面逐视频测试全部通过，失败0、过短0、页面错误0。** 用户报告SwingXtimes/xhard4示例7的片段2／2无法观看，Playwright复现该尾片只有1帧、0.033333秒，播放约50毫秒即结束。原251文件中38个`NO_OBJECT`尾片只有1～4帧，现仅从展示目录排除，原数据保留。
+**现行版本为`artifacts/newtask-v6/site-v7/`。** VPB／VPO两任务10卡已补演示、记忆与执行子目标，VPB顶部解释xhard3示例4／7的答案语义问题。用户选择“仅网站注明问题，暂不修数据”，因此不改环境源码、不补跑，新增尝试0。v7两任务10卡播放、流程、问题框、移动检查及深链切换通过，页面错误0；213媒体及预览保持与v4相同，下面213条全量播放结论属于v4，不声称v7重跑全量。v7亦纠正两张hard卡：VPB演示后放桌面、VPO演示后放桌面，不误写归位。
+
+**v4历史验证：`artifacts/newtask-v6/site-v4/`包含16任务、71卡片、213个主视频，API确认每卡3个样例；213条真实界面逐视频测试全部通过，失败0、过短0、页面错误0。** 用户报告SwingXtimes/xhard4示例7的片段2／2无法观看，Playwright复现该尾片只有1帧、0.033333秒，播放约50毫秒即结束。原251文件中38个`NO_OBJECT`尾片只有1～4帧，现仅从展示目录排除，原数据保留。
 
 旧验证仅按任务抽查部分样例，没有覆盖全部251片段；首帧解码或JPEG预览不能证明可观看。补做v3全部251片段的真实界面播放／seek／恢复检查，结果213条PASS、38条`TOO_SHORT_FOR_TRAJECTORY`、FAIL 0、页面错误0；不能把38条过短片段算作通过。v4另做213条全测，每条核验解码尺寸／时长、播放推进至少0.25秒、seek后继续推进至少0.2秒及样例按钮匹配URL，均通过；这是逐视频交互验证，不是全帧播放。原用户位置的桌面与390像素宽移动测试也通过，主视频时长36.8667秒。下面保留v3历史，v4真实证据为`site-v4/playwright-all-results.json`及`playwright-detail/`。
 
 网站地址：[V6难度梯度与视频](http://141.212.115.116:8060/)。按用户要求逐任务、逐难度单独介绍梯度并提供视频，不合并成一张表。历史v3为16任务、71张卡片、251个视频文件；来源为165条新值成功轨迹与48条原hard轨迹，部分轨迹含多个视频文件。展示网站不代表S3通过，原三档严格对拍继续进行。
 
-目录生成入口为 `uv run --no-sync python -m scripts.parity.v6_site_catalog`，默认输出初版`artifacts/newtask-v6/site/`；当前服务明确使用`artifacts/newtask-v6/site-v3/`，不能误用默认目录替代。生成器拒绝覆盖已有目录文件，不为重建网站重跑任何轨迹。服务运行在唯一tmux会话`v6-gradient-site-8060`，实际入口为：
+目录生成入口为 `uv run --no-sync python -m scripts.parity.v6_site_catalog`，默认输出初版`artifacts/newtask-v6/site/`；当前服务明确使用`artifacts/newtask-v6/site-v7/`，不能误用默认目录替代。生成器拒绝覆盖已有目录文件，不为重建网站重跑任何轨迹。服务运行在唯一tmux会话`v6-gradient-site-8060`，实际入口为：
 
 ```bash
 UV_CACHE_DIR="$PWD/artifacts/cache/uv" PYTHONUNBUFFERED=1 uv run --no-sync python \
   -m scripts.parity.v6_site --host 0.0.0.0 --port 8060 \
-  --site-dir artifacts/newtask-v6/site-v3
+  --site-dir artifacts/newtask-v6/site-v7
 ```
 
 当前服务已启动，不重复占用8060端口；保留网站会话和产物，不自动清理。浏览器已验证16任务播放、拖动进度与样例切换，搜索、移动导航和无表格布局通过，JavaScript错误0。截图、首帧预览与验证边界见[网站报告](../docs/validation/newtask-v6/20260926-site.md)。
