@@ -1006,7 +1006,7 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare \
 | S4 正式轨迹 | 每格首选候选 index `0,3,6`；最多尝试该格已有 10 候选，合计最多 550 次 | 按 `v4_rollout.BACKFILL_ORDER` 的 `1,2,4,5,7,8,9` 递补，成功 3 条或已有候选用尽即停 |
 | 额外抽样与重跑 | 0 | 不恢复额外 200 reset、分布补样、run2 或整批重跑 |
 
-候选不足、正式轨迹不足及各失败类别分别报告；**165 是成功目标，不是当前成功数**。S2＋S3＋S4 的轨迹尝试总上限为 `144＋144＋550＝838`，不追加独立冒烟。逻辑候选／轨迹尝试与环境构造、显式 reset 调用不是同一计数；实际调用数没有记录时写“未观测”，不把 3300 当作所有阶段的 reset 调用总数。
+候选不足、正式轨迹不足及各失败类别分别报告；**预算中的165是成功目标，最终实测亦为165程序成功，但另有2条已披露题意问题**。S2＋S3＋S4 的轨迹尝试总上限为 `144＋144＋550＝838`，不追加独立冒烟。逻辑候选／轨迹尝试与环境构造、显式 reset 调用不是同一计数；实际调用数没有记录时写“未观测”，不把 3300 当作所有阶段的 reset 调用总数。
 
 ### 6.2 本轮产物与接纳条件
 
@@ -1016,11 +1016,11 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare \
 
 用户最新资源决定：原占位作业 `61890467`、`61890468` 跑完后继续保留，不自动取消；另提交相同规格的 48 小时占位作业 `62018665`、`62018666`，当前四席均保留。新增席位不等于新增生成、重跑或故障恢复预算授权，具体状态以实时调度查询为准。
 
-当前执行快照：550 个候选已足额；[候选取值报告](../artifacts/newtask-v6/s4-launch/verification/candidate-values.json) 已核对 520 个梯度候选，`CANDIDATE_VALUES=PASS`。S4 原运行143成功，获批恢复实际23次、22成功、1次真正任务失败，现共 **165成功、55格各3条、短缺0**；恢复最多76次的授权未用满，原成功及真正任务失败没有重跑。原60次基础设施失败与8次中断未知完整保留，不被恢复结果抹掉。实际交付身份以[合并清单](../artifacts/newtask-v6/s4-launch/verification/merged-provisional-delivery.json)为准，不能遍历失败目录中的HDF5推断交付。S3仍在运行，清单保持`accepted=false`、`native_regression=PENDING`，不代表完整验收通过。
+最终执行快照：550 个候选已足额；[候选取值报告](../artifacts/newtask-v6/s4-launch/verification/candidate-values.json) 已核对 520 个梯度候选，`CANDIDATE_VALUES=PASS`。S4 原运行143成功，获批恢复实际23次、22成功、1次真正任务失败，现共 **165程序成功、55格各3条、短缺0**；恢复最多76次的授权未用满，原成功及真正任务失败没有重跑。原60次基础设施失败与8次中断未知完整保留，不被恢复结果抹掉。实际交付身份以[最终清单](../docs/validation/newtask-v6/records/final-delivery.json)为准，不能遍历失败目录中的HDF5推断交付。S3已通过144条严格对拍；`accepted=true`仅指原V1及来源／文件闸门，清单另以`semantic_status=KNOWN_ISSUES`披露VPB/xhard3/episode3、6的题意问题。用户决定仅网站注明、不修数据，不把程序成功写成题意无缺陷。
 
 四份550条冻结规格已从原产物逐字复制至`configs/newtask-v6/v6-01/xhard1/specs.jsonl`、`xhard2/specs.jsonl`、`xhard3/specs.jsonl`、`xhard4/specs.jsonl`，四次`cmp`均退出0。规格中的`selected`是原首选；实际成功包含递补，例如InsertPeg/xhard4最终为episode 6、2、4。完整执行、失败与恢复边界见[S4报告](../docs/validation/newtask-v6/20260926-s4.md)。
 
-**S3 原三档严格对拍是本轮正式接纳的唯一阻塞硬闸，目前仍待结果。** 目标判据为 `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`，要求完整 144 身份且没有单侧缺失；通过前 S4 产物为待接纳产物。S2 的固定探针失败及 S4 的候选拒绝、递补、短缺照实报告，不通过重试挑成功，也不把媒体存在或进程退出 0 当作任务成功。原三档历史对拍结论不能代替本轮 S3。
+**S3 原三档严格对拍已真实通过：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`。** 两侧各144个成功终态、75404时间步，身份完整，无单侧缺失；本轮证明不外推到新档题意。S2 的固定探针失败及 S4 的候选拒绝、递补、短缺照实报告，不通过重试挑成功，也不把媒体存在或进程退出 0 当作任务成功。完整结论见[S5总报告](../docs/validation/newtask-v6/20260926-final.md)。
 
 ### 6.3 纯离线核对候选实际取值
 
@@ -1048,7 +1048,7 @@ UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_cand
 
 旧验证仅按任务抽查部分样例，没有覆盖全部251片段；首帧解码或JPEG预览不能证明可观看。补做v3全部251片段的真实界面播放／seek／恢复检查，结果213条PASS、38条`TOO_SHORT_FOR_TRAJECTORY`、FAIL 0、页面错误0；不能把38条过短片段算作通过。v4另做213条全测，每条核验解码尺寸／时长、播放推进至少0.25秒、seek后继续推进至少0.2秒及样例按钮匹配URL，均通过；这是逐视频交互验证，不是全帧播放。原用户位置的桌面与390像素宽移动测试也通过，主视频时长36.8667秒。下面保留v3历史，v4真实证据为`site-v4/playwright-all-results.json`及`playwright-detail/`。
 
-网站地址：[V6难度梯度与视频](http://141.212.115.116:8060/)。按用户要求逐任务、逐难度单独介绍梯度并提供视频，不合并成一张表。历史v3为16任务、71张卡片、251个视频文件；来源为165条新值成功轨迹与48条原hard轨迹，部分轨迹含多个视频文件。展示网站不代表S3通过，原三档严格对拍继续进行。
+网站地址：[V6难度梯度与视频](http://141.212.115.116:8060/)。按用户要求逐任务、逐难度单独介绍梯度并提供视频，不合并成一张表。历史v3为16任务、71张卡片、251个视频文件；来源为165条新值程序成功轨迹与48条原hard轨迹，部分轨迹含多个视频文件。现行213主视频剔除了展示中的38个状态尾片。S3已由独立真实对拍证明通过，网站只展示视频与难度，不替代该证明；VPB题意问题按用户决定明确保留。
 
 目录生成入口为 `uv run --no-sync python -m scripts.parity.v6_site_catalog`，默认输出初版`artifacts/newtask-v6/site/`；当前服务明确使用`artifacts/newtask-v6/site-v7/`，不能误用默认目录替代。生成器拒绝覆盖已有目录文件，不为重建网站重跑任何轨迹。服务运行在唯一tmux会话`v6-gradient-site-8060`，实际入口为：
 

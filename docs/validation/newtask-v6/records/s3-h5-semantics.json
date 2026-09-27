@@ -1,0 +1,19 @@
+{
+  "schema": "v6-s3-h5-semantics/1",
+  "sides": [
+    {
+      "label": "base",
+      "identities": 144,
+      "valid_h5": 144,
+      "terminal_success": 144,
+      "timestep_count": 75404
+    },
+    {
+      "label": "v6",
+      "identities": 144,
+      "valid_h5": 144,
+      "terminal_success": 144,
+      "timestep_count": 75404
+    }
+  ]
+}

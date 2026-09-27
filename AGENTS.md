@@ -535,7 +535,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 | 阶段 | 状态 | 已有证据 | 下一步 |
 | --- | --- | --- | --- |
-| V6 S2～S5正式续行（2026-09-26） | S4已完成并推送；网站213视频全测通过；S3恢复正常速度继续运行 | 550候选、520梯度值PASS、55格165成功；[S4报告](docs/validation/newtask-v6/20260926-s4.md)；两条高频nvidia-smi监控经暂停／恢复实验定位，用户批准关闭后相邻轨迹恢复至基线约1倍；网站修订排除38个状态尾片，213主视频逐个播放／拖动／继续通过 | S3结束后单独回写最终判据并提交推送，当前accepted=false；四席与网站保留 |
+| V6 S2～S5正式续行（2026-09-26） | 当前授权执行收尾；原验收通过，已知新档问题保留 | S3真实144身份SHA相同144、字段差异0、双方75404步且终态成功，退出0；S4为550候选、55格165程序成功，520梯度值PASS；网站213媒体全测及两任务10卡流程检查通过；[最终报告](docs/validation/newtask-v6/20260926-final.md) | 最终清单accepted仅原V1及来源文件门，KNOWN_ISSUES披露VPB/xhard3/ep3、6；用户仅网站注明、不修数据，补跑0。四GL席与网站保留，无剩余已授权生成 |
 | V6第5.3节完整范围与仅文档边界（2026-09-26） | 计划已写回，生成未启动 | S2恢复144次固定探针，S3保留16×3×3＝144局；S4为13×4×10＋3×1×10＝550候选、13×4×3＋3×1×3＝165成功轨迹目标，复用520候选查取值；额外200 reset仍取消 | 用户最新要求「不要直接做 写回md」；后续收到开始指令再按完整清单执行，已同意范围不分阶段重问 |
 | reset／轨迹生成数量阈值与一次性授权（2026-09-26） | 文档修订完成 | 项目规则 P3 明确单 worker 超过10、多 worker 合计超过50须事先授权，失败重试和递补计入预算；全部已知阶段一次汇总审批，已有授权不重复询问；正本标记块保持不变 | 后续运行沿用完整授权清单；本轮未启动生成 |
 | Codex 专属多代理规则与 SSH 并发配置（2026-09-26） | 实施与实际16并发验收完成 | 规则正本 `1e79ce3`、[实验报告 `0827819`](https://github.com/hongzefu/AgentMetaRules-hongzefu/blob/082781982e143c4326b32df8c1c31439a4bf1450/docs/codex-app-ssh-multiagent.md) 均已推送；新App任务16个Luna同刻running、模型16/16、17号拒绝、清理16/16全部PASS | 新任务采用16上限；已有任务树保持创建时容量；探针全部停止，不重启其他活动任务 |
@@ -2407,6 +2407,16 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 真实反例：VPB/xhard3/episode3、6内部成功，但同一被问方块在基础before台后又被放到额外before台，再按按钮，答案仍绑定更早基础台。40候选中6冲突，12条VPB交付中2冲突；逐项证据`docs/validation/newtask-v6/records/vpb-semantic-scope.json`。内部success计数不改写，不把题意正确性与程序成功混同。
 - 用户拒绝本轮源码修复及9条补跑，故`VPB_ORDER_FIX=DEFERRED_BY_USER attempts=0`；仅保留未应用补丁与准备记录，生产源码和既有数据未修改。网站VPB页顶部醒目说明xhard3示例4／7的“演示A→B→按钮，题意应B，程序仍A”，不声称样例已修复。
 - 当前网站目录`artifacts/newtask-v6/site-v7/`，仍是同一213媒体与预览；此前全213播放／拖动／继续测试保留。新增说明实测`SUBGOAL_BROWSER=PASS tasks=2 tiers=10 playback=10 issue=1 mobile=1 errors=0`，含深链切换与其他任务不出现警示，截图已目视；小结果归档`records/site-v7-flow-browser-result.json`。当前V6不能作无缺陷声明；S3即使通过也只证明原三档硬闸，最终清单须保留已知题意问题及接纳范围。
+
+### 2026-09-26 21:07 EDT — S3真实对拍通过与S5最终收尾
+
+- 状态：本轮授权范围已执行完毕，原计划V1与来源／文件闸门通过，已知新档题意问题按用户决定保留。
+- 真实S3：首条1成功、剩余143成功；两批耗时179.130＋10343.707＝10522.837秒。实际子进程退出0、全部组成员结束、原监督恢复后正常收尾，`final_verification.json::mode=original_finalized`，完成时间21:07:46 EDT。真实比较144唯一身份与冻结清单完全同集，`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`；双方144成功终态、75404步。不是模拟夹具，也不是仅前缀检查。监督生产日志`EXIT_CODE=0`，S3自有两个tmux已自然退出，未停止其他会话。
+- 最终清单：`uv run --no-sync python artifacts/newtask-v6/s4-launch/build_delivery.py --mode final --recovery-dir artifacts/newtask-v6/v6-01-infra-recovery-01`退出0；独立`final-delivery.json`为550候选、55格165程序成功、短缺0，与临时清单165条successes及所有原派发／恢复记录逐项一致。accepted只表示原V1及来源文件门；`semantic_status=KNOWN_ISSUES`、`known_issues`两条VPB身份、用户不修决定及`acceptance_scope`显式保留，不宣称新档题意全部正确。
+- 独立复核：真实binding的simulation=false、退出状态与starttime、144覆盖与SHA、每格计数、236＝165＋3＋60＋8、两条已知问题与真实交付绑定、文件存在及字节数、小来源SHA全部通过；未额外重散列大HDF5、未仿真。小记录归档`docs/validation/newtask-v6/records/`，汇总`20260926-final.md`。
+- 保留边界：S2的25失败、额外200 reset取消、分布未指定、底层reset未观测、MoveCube实际方法覆盖未证均保留。VPB拟议修复与9补跑因用户决定未执行，实际追加诊断仅先前获准GPU1单身份1次。当前无剩余已批准生成。
+- 资源：收尾时只读squeue核实61890467、61890468、62018665运行，62018666仍因Resources排队，均48h占位；按用户要求全部保留，没有scancel。网站`http://141.212.115.116:8060/`及唯一会话`v6-gradient-site-8060`保留。按用户“等S3收尾后再落文档commit一次”提交并立即推送本次最终记录。
+- 同步边界复核：本轮监控教训正本锚点`38c6732`的三文件同步检查仍为PASS。收尾时另一个并行任务已在正本新增`8077db0`（HF归档规则），故对最新HEAD检查会提示第15条漂移；该并行新规则不属于本轮监控教训改动，未捎带回流。项目`src=`保持实际同步的38c6732，不冒称同步到8077db0。
 
 ### 2026-09-26 America/Detroit — robomme_hard 拆包接口方案落根目录（只规划）
 

@@ -3,7 +3,7 @@
 > 分支 `newtaskRelease-v5`。V5原始代码锚点为 `da77662`；V6 S1 集成后的环境源码锚点为 `949b6eb`，现行S1结论见 [汇总报告](docs/validation/newtask-v6/20260926-s1-final.md)。依赖锚点（文件 sha256）`uv.lock` `ff0ffd847a55…` / `pyproject.toml` `d03537d6c77a…`。
 > **前置文档**：V5 计划 [0924-newtask-release-v5-plan.md](0924-newtask-release-v5-plan.md)、V5 总报告 [docs/validation/newtask-v5/20260924-v5-final-report.md](docs/validation/newtask-v5/20260924-v5-final-report.md)、V5 规格 `scripts/configs/newtask-v5/v5-01/specs.jsonl`。
 > **V5 决策除本文明确改动的以外全部延续**：原三档逐位冻结（V1 唯一硬闸门）、录像器冻结、`evaluation.py`/`run_example.py`/`dataset_replay.py` 与上游逐字节相同、L1(a)（新值流允许原地移位）、L4(b)（共用采样函数新参数默认等价关闭）、五入口冻结。
-> **授权边界**：`src/robomme/` 改动免逐项事前批准，每步收尾在 `docs/validation/newtask-v6/` 出 md 报告（用户 2026-09-21 口头、2026-09-26 重申「免逐项批准、改完出报告」）。S1 四个worktree副本已集成到主仓；副本分支不 push。D18的「不要直接做 写回md」只约束当时文档轮；本轮D19、D21已明确开始并连续完成V6计划，沿用第5.3节完整规模与失败预算，不再逐阶段重复询问。**S2已执行144次，119成功、25失败；S3从 `c8c06ab` 启动、仍运行；S4候选550/550及520条取值检查完成，xhard4基础设施恢复已结束，S4的55格165成功齐全但仍待S3接纳，S5待最终收尾。尚未宣布V1或正式生成整体通过。** 清单外新增或超预算才汇总申请补充授权；本次最多76次恢复已获D23批准，按第5.3节补充上限执行。
+> **授权边界**：`src/robomme/` 改动免逐项事前批准，每步收尾在 `docs/validation/newtask-v6/` 出 md 报告（用户 2026-09-21 口头、2026-09-26 重申「免逐项批准、改完出报告」）。S1 四个worktree副本已集成到主仓；副本分支不 push。D18的「不要直接做 写回md」只约束当时文档轮；本轮D19、D21已明确开始并连续完成V6计划，沿用第5.3节完整规模与失败预算，不再逐阶段重复询问。**S2已执行144次，119成功、25失败；S3从 `c8c06ab` 启动的真实144局对拍已通过；S4候选550/550及520条取值检查完成，xhard4基础设施恢复已结束，S4的55格165成功齐全，S5按本轮授权收尾；已知VPB两条交付题意冲突保留并在网站披露，不将原三档硬闸通过等同于V6无缺陷。** 清单外新增或超预算才汇总申请补充授权；本次最多76次恢复已获D23批准，按第5.3节补充上限执行。
 > **证据**：S1汇总和分项报告在 `docs/validation/newtask-v6/`；实测原产物在仓库内忽略目录 `artifacts/newtask-v6/`，不进Git。
 > **简称**：VU/BU/VUS/BUS = Video/ButtonUnmask(Swap)，VPB/VPO = VideoPlaceButton/Order，VR = VideoRepick，PH = PickHighlight，PL = PatternLock，RS = RouteStick；「内环」= `spawned_bins`，「外环」= `distractor_bins`；源码路径省略前缀 `src/robomme/robomme_env/`。
 
@@ -37,6 +37,7 @@
 | D22 | 09-26 | 「再提交2个同样gl 48h job 为之后加速 现在的job跑完不要scancel」 | 追加两席同规格48h占位资源，现有与新增共四席保留；覆盖D5当时只连接原两席的资源限制及原S5自动释放安排。仅预留资源，该条本身不批准当时待授权的76次恢复预算（后续见D23），不表示新席已启动生成 |
 | D23 | 09-26 | 「批准恢复」 | 批准 `v6-01-infra-recovery-01` 最多76次新增尝试；8格累计上限InsertPeg 16、StopCube 18、其余6格各19，S4累计不超过289。已有成功与真正任务失败不重跑，每格3成功即停，不新增候选；四席仍按D22保留 |
 | D24 | 09-26 | 本轮用户追加要求（此处为摘要）：S4结束立即推送，不等S3，网站另行做 | S4结果核对后立即提交推送；S3继续并保留启动锚点，正式接纳仍等待V1，不将代码推送等同于验收通过；网站单独处理 |
+| D25 | 09-26 | 「仅网站注明问题，暂不修数据」「先在网站解释 是什么问题」 | VPB已知两条交付题意冲突保留，先在网站解释；本轮不修源码、不修数据、不补9次轨迹。原三档V1通过与已知问题披露分别报告，不宣称V6无缺陷 |
 
 ## 二、定稿口径
 
@@ -78,7 +79,7 @@
 
 ## 四、逐环境定稿（机制、实现落点、实测）
 
-> 下文机制与历史实测保留；当前执行范围统一以D14～D24和第5.3节为准。取值符合配置的检查只复用正式520个梯度候选；其他分布／均匀性图表不得自行增加样本。S2的144次固定演示尝试已执行，200 reset闸门仍取消；本轮正式续行。
+> 下文机制与历史实测保留；当前执行范围统一以D14～D25和第5.3节为准。取值符合配置的检查只复用正式520个梯度候选；其他分布／均匀性图表不得自行增加样本。S2的144次固定演示尝试已执行，200 reset闸门仍取消；本轮正式续行。
 
 ### 1. 难度档管道（全环境共用）
 
@@ -176,18 +177,18 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 ### 5.3 实施步骤
 
-**S0／S1已完成；S2已执行144次、119成功／25失败；S3从 `c8c06ab` 运行中；S4候选550/550、520条取值检查通过，S4恢复已结束，55格165成功齐全、短缺0，但仍待S3接纳；S5待收尾。D19、D21授权本轮原定范围，D18仅限制历史文档轮；下述恢复新增预算已由D23批准。** 原三档＝easy／medium／hard；四个新档＝xhard1／xhard2／xhard3／xhard4。只有xhard4的三个任务＝MoveCube、InsertPeg、StopCube。
+**S0／S1已完成；S2已执行144次、119成功／25失败；S3原三档真实144局对拍已通过（144 SHA相同、字段差异0）；S4候选550/550、520条取值检查通过，S4恢复已结束，55格165成功齐全、短缺0，原门已通过；S5按本轮授权收尾，VPB已知题意问题按D25仅在网站披露。D19、D21授权本轮原定范围，D18仅限制历史文档轮；下述恢复新增预算已由D23批准。** 原三档＝easy／medium／hard；四个新档＝xhard1／xhard2／xhard3／xhard4。只有xhard4的三个任务＝MoveCube、InsertPeg、StopCube。
 
 | 步 | 内容 | 任务 × 难度 × 数量 | 在哪 | 当前状态与判据 |
 |---|---|---|---|---|
 | S0 | 保存轻量测试基线和V1基线侧轨迹（`13e5151`） | **16任务 × 原3档 × 3局＝144局** | 本机 | 已完成144/144，后续复用，不重新生成 |
 | S1 | 集成四个副本、四档配置、S5/O4、MoveCube区域、VP放台段；恢复V5快照、导出V6快照；完成V0、轻量回归、冻结文件和静态梯度表检查 | 单格冒烟已完成；**不新增独立reset批次** | 本机＋既有GL冒烟 | 已完成，见S1汇总；200 reset闸门保持取消 |
 | S2 | 新档完整演示探针，提前暴露生成故障；不是新旧逐位对拍 | **10任务 × 新4档 × 2次＋3任务 × 新4档 × 4次＋2任务 × 1档 × 2次＋1任务 × 1档 × 12次＝144次** | 本机 | 已执行144次：119成功、25失败、超时0，退出0；逐身份证据保留，不补跑；见[续行报告](docs/validation/newtask-v6/20260926-resume.md) |
-| S3 | V6侧原三档轨迹与S0相同seed的基线逐局比较；**不比较任何xhard档** | **16任务 × 原3档 × 3局＝144局** | 本机，同机同GPU架构 | 从 `c8c06ab` 运行中；目标判据 `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`，尚未验收 |
+| S3 | V6侧原三档轨迹与S0相同seed的基线逐局比较；**不比较任何xhard档** | **16任务 × 原3档 × 3局＝144局** | 本机，同机同GPU架构 | 真实生产原会话退出0， `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`；证据见[S3报告](docs/validation/newtask-v6/20260926-s3.md) |
 | S4抽签 | 每格取得10个成功候选 | **13任务 × 新4档 × 10候选＋3任务 × 1档 × 10候选＝550候选** | GL既有两席 | 已完成550/550；四档抽签尝试153／152／152／193，共650次，失败100次 |
-| S4正式 | 每格首选index 0/3/6；失败可在已有候选内递补 | **13任务 × 新4档 × 3局＋3任务 × 1档 × 3局＝165成功局目标** | GL既有两席，各最多16 worker | 已完成55格165成功、短缺0；合计236次派发＝165成功＋3真实任务失败＋60旧基础设施错误＋8旧未决。恢复已核验，V1仍PENDING，产物暂不正式接纳 |
+| S4正式 | 每格首选index 0/3/6；失败可在已有候选内递补 | **13任务 × 新4档 × 3局＋3任务 × 1档 × 3局＝165成功局目标** | GL既有两席，各最多16 worker | 已完成55格165成功、短缺0；合计236次派发＝165成功＋3真实任务失败＋60旧基础设施错误＋8旧未决。恢复已核验，V1原三档硬闸已通过；VPB已知两条题意冲突单列披露，不改写成功判定 |
 | S4取值检查 | 检查新档实际取值符合配置，复用S4抽签所得的梯度候选 | **13任务 × 新4档 × 10候选＝520候选；额外生成0** | 本机离线 | 真实检查通过：52格520条、字段不符0、缺口0；未恢复200次采样 |
-| S5 | 总报告、使用说明和产物清单；按D22保留本任务四席，不自动scancel | **额外reset／轨迹生成0** | 本机＋GL | 待S3／S4结果后收尾；不自动重跑、覆盖或删除失败证据，清理须另列明确对象；任务跑完也不取消占位job |
+| S5 | 总报告、使用说明和产物清单；按D22保留本任务四席，不自动scancel | **额外reset／轨迹生成0** | 本机＋GL | 本轮授权范围收尾，见[最终报告](docs/validation/newtask-v6/20260926-final.md)；不自动重跑、覆盖或删除失败证据，清理须另列明确对象；任务跑完也不取消占位job |
 
 **S2的144次具体分组**：10个常规任务为BinFill、PickXtimes、SwingXtimes、PickHighlight、VideoUnmask、ButtonUnmask、PatternLock、RouteStick、VideoPlaceButton、VideoPlaceOrder（10×4×2＝80）；交换三任务为VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick（3×4×4＝48）；StopCube／InsertPeg只跑xhard4（2×1×2＝4）；MoveCube只跑xhard4（1×1×12＝12）。总数80＋48＋4＋12＝144，指尝试数，失败也在分母内，不保证144次全部成功。MoveCube三方法以4／4／4为覆盖目标，优先从已有可核实记录选择seed；不得为补齐方法配额另加reset，12次内覆盖不足如实报告。
 
@@ -203,11 +204,11 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 候选足额时，计划首批轨迹尝试最多144＋144＋165＝**453次**；计入S4递补的总尝试上限为144＋144＋550＝**838次**。候选短缺则实际可执行数相应减少，不能把目标数写成实际完成数；已完成S0与S1冒烟不再加跑。需要最小冒烟时取本批首条、计入该批预算，不再追加独立批次。**抽签尝试数不等于底层reset调用数**：当前入口先构造环境、再显式reset，正常每次候选或轨迹尝试通常包含两次环境reset；失败可能提前结束。执行记录须另记实际初始化／reset调用，不把3300写成所有阶段的reset调用总数。
 
-执行顺序为：核对S1证据与现有产物后执行S2，再并行S3与S4，S4产物在V1通过前仅作待接纳产物。本轮已按D19、D21进入执行，S2已结束，S3继续；S4的xhard4原受影响步骤已停止，D23批准后的恢复已结束，S4成功目标165/165已达成但仍待V1接纳。既定范围与上限已有一次性授权，仅清单外新任务、超预算或实质范围变化再合并提出补充授权。
+执行顺序为：核对S1证据与现有产物后执行S2，再并行S3与S4，S4产物在V1通过前仅作待接纳产物。本轮已按D19、D21进入执行，S2已结束，S3真实144局对拍已通过；S4的xhard4原受影响步骤已停止，D23批准后的恢复已结束，S4成功目标165/165已达成，原V1硬闸已通过。既定范围与上限已有一次性授权，仅清单外新任务、超预算或实质范围变化再合并提出补充授权。
 
 **S4基础设施事故与已批准恢复（原预算保留，补充上限单列）**：主代理已复现：生成运行期间另起申请GPU的只读 `srun`，该步骤结束时将计算模式改回Exclusive，引发Vulkan设备错误；证据保留在 `artifacts/newtask-v6/s4-launch/incident/`。已精确停止 `61890468.10`，后续只读CPU步骤显式使用 `--gres=none`，不再干扰GPU模式。原xhard4的88条结果与8条取消未决均保留，不把取消当作未尝试或成功。
 
-用户已按D23明确「批准恢复」。批准文件为 `artifacts/newtask-v6/s4-launch/recovery/approval.json`，运行名 `v6-01-infra-recovery-01`，最多76次新增轨迹尝试（60条基础设施失败＋8条取消未决＋8条原候选尚未使用），涉及8格；累计尝试上限为InsertPeg 16、StopCube 18、其他6格各19，S4累计最多289次。**已有成功与真正任务失败不重跑，每格3成功即停，不增加候选抽签。** 恢复使用tmux `v6-s4-infra-recovery-01`；远端397项来源指纹核验通过，首条StopCube候选3成功，后续每轮每格1条、最多8条并行。恢复已结束；合并清单 `artifacts/newtask-v6/s4-launch/verification/merged-provisional-delivery.json` 实测55格165成功、短缺0，合计236次派发（165成功、3真实任务失败、60旧基础设施错误、8旧未决），其中恢复新增23次。清单 `recovery=VERIFIED`、`delivery_status=COMPLETE`，但 `accepted=false`、`native_regression=PENDING`；S3独立继续，S5待最终接纳结果收尾，D22四席保留要求不变。
+用户已按D23明确「批准恢复」。批准文件为 `artifacts/newtask-v6/s4-launch/recovery/approval.json`，运行名 `v6-01-infra-recovery-01`，最多76次新增轨迹尝试（60条基础设施失败＋8条取消未决＋8条原候选尚未使用），涉及8格；累计尝试上限为InsertPeg 16、StopCube 18、其他6格各19，S4累计最多289次。**已有成功与真正任务失败不重跑，每格3成功即停，不增加候选抽签。** 恢复使用tmux `v6-s4-infra-recovery-01`；远端397项来源指纹核验通过，首条StopCube候选3成功，后续每轮每格1条、最多8条并行。恢复已结束；合并清单 `artifacts/newtask-v6/s4-launch/verification/merged-provisional-delivery.json` 实测55格165成功、短缺0，合计236次派发（165成功、3真实任务失败、60旧基础设施错误、8旧未决），其中恢复新增23次。该历史临时清单为 `recovery=VERIFIED`、`delivery_status=COMPLETE`、`accepted=false`、`native_regression=PENDING`，保留原样；当前S3真实144局对拍已通过，最终接纳状态以[最终报告](docs/validation/newtask-v6/20260926-final.md)所链独立最终清单为准，已知VPB问题仍单列，D22四席保留要求不变。
 
 时间与存储：S0基线日志实测 `elapsed_s=2994.404`（约50分钟）、退出0；原计划V6侧约3小时、GL正式约2小时与230～270 GB只是历史估计，未覆盖所有失败递补，S2尚无本轮实测耗时。执行前核对拟使用席位的状态、空间与依赖；不得把历史资源快照当作当前可用资源。
 
@@ -219,7 +220,7 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 | 项 | 值 |
 |---|---|
-| 主仓库 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，upstream `origin/newtaskRelease-v5`（GitHub `hongzefu/robomme_benchmark_MotionJEPA`）。S1已在主仓实施；环境源码锚点 `949b6eb`。S1结果见汇总报告；当前S2～S5范围以第5.3节及D14～D24为准，S2已执行，S3从 `c8c06ab` 继续；S4候选及取值检查已完成，xhard4故障恢复已结束，S4的55格165成功齐全但仍待S3接纳；D22新增两席仅预留，四席收尾后保留 |
+| 主仓库 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，upstream `origin/newtaskRelease-v5`（GitHub `hongzefu/robomme_benchmark_MotionJEPA`）。S1已在主仓实施；环境源码锚点 `949b6eb`。S1结果见汇总报告；当前S2～S5范围以第5.3节及D14～D25为准，S2已执行，S3从 `c8c06ab` 启动的真实144局对拍已通过；S4候选及取值检查已完成，xhard4故障恢复已结束，S4的55格165成功齐全，已知VPB问题按D25披露；D22新增两席仅预留，四席收尾后保留 |
 | V1 基线 commit | `13e5151`（12.63） |
 | GL 侧仓库 | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl`（本机已挂载可直接读写；已切到 `newtaskRelease-v5`、`uv sync` 完成；官方隔离源码树在其 `artifacts/train-parity/local-smoke-01/official-src/`，7.5 MB，`.official_tree` 标记 `1d4c1369…`）。历史 `artifacts/` 有 654 GB 旧产物，不是 V6 的，不要动 |
 | 官方源码树（本机） | `artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py`，规格回放 worker 用 `scripts/parity/train_split_worker.run_one` |
@@ -252,7 +253,7 @@ swap/pick/外环干扰按表；xhard1 交换步数 50（与 hard 同），xhard2
 
 **踩过的坑（不要再踩）**：driver 用 `ProcessPoolExecutor(max_tasks_per_child=N)` 在 spawn 上下文换代点必挂死（GL 两次）；`RobommeRecordWrapper` 的 h5 逐帧记录挂在 `save_video` 上，关视频会让全部局判失败；`generate_dataset_newseed._worker` 只认 `episode_spec`，MoveCube 等只认 `native_episode_spec`，规格回放走 `train_split_worker.run_one`；VUS 的 swap/pick 次数读 `native.parameters.configs[档]` 不读 decision；VUS/BUS 交换对、VR 发起者方向不是规格取值点（S5 需新增取值点）；出图用 `Noto Sans CJK JP`，出完必须 Read 目视检查；GL 上 NFS `rm -rf` 偶尔报 Directory not empty，重试即可。
 
-**下一步**：S0、S1已完成，S2已执行144次（119成功／25失败）；S4的550候选、520条取值检查与55格165成功轨迹均已完成。按用户最新要求，S4结束立即提交推送，不等待S3；网站另行处理。继续观察S3原三档144局对拍，当前合并清单为待接纳状态，不把165足额写成V1通过；所有失败和8条旧未决保留，四席不取消。
+**收尾状态**：S3真实144局SHA全部相同、字段差异0，原三档硬闸已通过；S4的550候选、520条取值检查及55格165成功目标完成。按D25保留VPB已知两条交付题意冲突，仅在网站说明，不修源码或数据、不补9次轨迹；最终结论及清单见[最终报告](docs/validation/newtask-v6/20260926-final.md)。失败与8条旧未决保留，四席不取消。
 
 **预备资料的失效项**：`artifacts/newtask-v6/s2-prep/README.md` 中依赖S1 xhard4的200成功draft、MoveCube不足4／4／4就自动扩抽，以及 `videorepick_xhard4_reset_manifest.json` 的备用200次reset均不恢复。`s2-prep/manifest.json` 只可复用其中144次演示分组，执行前只读核验seed和配置来源；不得照搬整份旧说明启动额外批次。VR七块接受情况仅从S2四次相应探针和S4该格已有抽签尝试报告，失败入分母，小样本不代表总体成功率。`s4-prep/RUNBOOK.md` 的旧资源、提交和路径快照须重查，授权范围以第5.3节为准。
 
@@ -279,7 +280,7 @@ N1 原三档路径不新增、不挪动任何随机抽样。N2 录像器、`eval
 
 ## 三、runbook（参数名以 S1 实现为准）
 
-本节为执行入口参考，当前运行以[续行报告](docs/validation/newtask-v6/20260926-resume.md)与各运行启动记录为准，不能重复执行命令。S0／S1已完成的检查沿用现有证据，S2已执行完毕，均不为更新文档重跑。S3继续；S4候选及取值检查完成，xhard4故障恢复已结束，55格165成功齐全但仍待S3接纳，具体恢复命令与批准绑定于 `s4-launch/recovery/`，不得重复启动。原数量、失败上限及D23补充上限以第5.3节为准；长期任务按仓库规则落执行脚本、用tmux保存日志和退出码。
+本节为执行入口参考，当前运行以[续行报告](docs/validation/newtask-v6/20260926-resume.md)与各运行启动记录为准，不能重复执行命令。S0／S1已完成的检查沿用现有证据，S2已执行完毕，均不为更新文档重跑。S3真实144局对拍已通过；S4候选及取值检查完成，xhard4故障恢复已结束，55格165成功齐全；VPB已知问题仅披露，具体恢复命令与批准绑定于 `s4-launch/recovery/`，不得重复启动。原数量、失败上限及D23补充上限以第5.3节为准；长期任务按仓库规则落执行脚本、用tmux保存日志和退出码。
 
 ```bash
 # 只读核验
@@ -305,7 +306,7 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare --run base=
 # 从上述正式候选离线核对13×4×10=520条梯度取值，不再另起reset批次。
 # 原S4使用两席；D22追加两席仅预留，四席均不自动scancel。逐局写节点/tmp，流式搬回/data。
 # 起跑前核对最终主仓代码、两节点/tmp容量和 artifacts/newtask-v6/s4-prep/RUNBOOK.md；
-# 此预备runbook在忽略目录，历史资源须复核；以D14～D24及5.3为准，不重复启动当前运行。
+# 此预备runbook在忽略目录，历史资源须复核；以D14～D25及5.3为准，不重复启动当前运行。
 ```
 
 ## 四、风险登记
@@ -323,7 +324,7 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare --run base=
 
 ## 五、留档与 commit 纪律
 
-沿V5：每步一份 `docs/validation/newtask-v6/<日期>-<步>.md`；commit只add本步文件，message沿 `<大版本>.<小版本> 中文描述`；历史探针留 `artifacts/newtask-v6/plan-probes/`（不进git），本轮S2留 `artifacts/newtask-v6/v6-s2-20260926-01/`。正式h5／视频与规格、失败证据及必要日志保留；产物清理另列明确对象，不因进入S5自动删除。按用户最新要求，S4结束立即提交推送，不等待仍运行的S3；S3的运行锚点仍为启动时 `c8c06ab`，不能将后续文档提交称作启动版本；网站另行处理；按D22保留 `61890467`、`61890468`、`62018665`、`62018666` 四席，GL生成完成及S5收尾后均不自动scancel。
+沿V5：每步一份 `docs/validation/newtask-v6/<日期>-<步>.md`；commit只add本步文件，message沿 `<大版本>.<小版本> 中文描述`；历史探针留 `artifacts/newtask-v6/plan-probes/`（不进git），本轮S2留 `artifacts/newtask-v6/v6-s2-20260926-01/`。正式h5／视频与规格、失败证据及必要日志保留；产物清理另列明确对象，不因进入S5自动删除。按D24，S4已先行提交推送；当前S3真实144局对拍已通过，按D25完成本轮收尾；S3的运行锚点仍为启动时 `c8c06ab`，不能将后续文档提交称作启动版本；网站已披露VPB已知题意问题，暂不修源码或数据；按D22保留 `61890467`、`61890468`、`62018665`、`62018666` 四席，GL生成完成及S5收尾后均不自动scancel。
 
 ## 六、证据索引（`artifacts/newtask-v6/plan-probes/`）
 
@@ -338,3 +339,13 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare --run base=
 | 新档真演示 | `tiers/` | 13 × 3 × 6 + 对照 273 局（tables.md、tiers_summary.png） |
 | 计划审计 | `audit/` | 四段逐条核对表 |
 | 副本实现报告 | `impl-pipeline/`、`impl-movecube/`、`impl-swap/`、`impl-vp/` | 各副本的改动、测试、实测 |
+
+## 七、本轮授权范围收尾（2026-09-26）
+
+真实S3生产证明位于 `artifacts/newtask-v6/v6-s3-20260926-01/handoff-prep/production-session-20260926/`：`outcome.json` 记录原子进程退出0、原进程及全部子进程组结束、标准输出已到末尾；`final_verification.json` 为 `mode=original_finalized`、`compared=144`、`sha_equal=144`、`field_mismatch=0`。独立读取 `compare/summary.json` 的 `base.B|v6.B` 比较项，144条SHA相同、字段及sidecar差异均0、单侧缺失均为空。具名结论为 `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`，仅证明本轮原三档固定144身份，不扩展为新档题意无缺陷。
+
+S4原交付目标已完成：550候选、650次抽签、520条梯度候选取值核对通过、55格165成功轨迹。原运行与恢复共236次派发，165成功、3真实任务失败、60旧基础设施错误、8旧未决均完整保留。S5汇总、实际身份与本机产物索引见[最终报告](docs/validation/newtask-v6/20260926-final.md)；[S3报告](docs/validation/newtask-v6/20260926-s3.md)、[S4报告](docs/validation/newtask-v6/20260926-s4.md)和[网站报告](docs/validation/newtask-v6/20260926-site.md)分别承载实测细节，网站213条主视频全量Playwright验证通过不等同于全部视频语义无误。
+
+`KNOWN_ISSUES=DISCLOSED`：VideoPlaceButton/xhard3的episode 3与6存在题目“按按钮前最后放置”与程序答案台不一致。完整40候选盘点为6条语义冲突，其中实际交付2条；环境成功字段不抹去该问题。按D25已在网站说明，本轮不应用准备补丁、不修改源码／数据、不补9条轨迹，不将该已知问题另造为原计划之外的新硬闸，也不宣称V6无缺陷。
+
+`DISTRIBUTION_REPORT=NOT_SPECIFIED`、`TIER_MONOTONE=CANCELLED_BY_USER` 继续保留，不为收尾恢复分布补样或额外200次reset。四个GL占位job按D22保留；失败产物、原临时清单与历史报告不覆盖、不删除。
