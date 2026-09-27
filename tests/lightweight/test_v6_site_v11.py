@@ -49,8 +49,8 @@ def test_known_issues_cover_disclosed_ids():
 
 
 def test_parse_goal_new_single_sentence():
-    assert cat.parse_goal(NEW_BEFORE) == {"color": "blue", "mode": "before", "n": None}
-    assert cat.parse_goal(NEW_AFTER) == {"color": "red", "mode": "after", "n": None}
+    assert cat.parse_goal(NEW_BEFORE) == {"color": "blue", "mode": "before", "n": None, "text": NEW_BEFORE.strip()}
+    assert cat.parse_goal(NEW_AFTER) == {"color": "red", "mode": "after", "n": None, "text": NEW_AFTER.strip()}
 
 
 def test_translate_subgoal():

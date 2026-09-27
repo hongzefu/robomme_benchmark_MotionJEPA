@@ -52,11 +52,12 @@ T = {"A": (40, 40), "B": (40, 120), "C": (160, 40), "D": (160, 120)}
 
 
 def test_parse_goal():
-    assert cat.parse_goal("watch the video carefully, then place the blue cube on the target right before the button was pressed") == {
-        "color": "blue", "mode": "before", "n": None}
+    goal = cat.parse_goal("watch the video carefully, then place the blue cube on the target right before the button was pressed")
+    assert goal["text"].startswith("watch the video carefully")  # 2026-09-27：保留英文原句供网页展示
+    assert {k: v for k, v in goal.items() if k != "text"} == {"color": "blue", "mode": "before", "n": None}
     assert cat.parse_goal("then place the red cube on the target right after the button was pressed")["mode"] == "after"
-    assert cat.parse_goal("then place the green cube on the third target it was previously placed on") == {
-        "color": "green", "mode": "order", "n": 3}
+    assert {k: v for k, v in cat.parse_goal("then place the green cube on the third target it was previously placed on").items()
+            if k != "text"} == {"color": "green", "mode": "order", "n": 3}
     with pytest.raises(ValueError):
         cat.parse_goal("place the purple cube on the target right before the button was pressed")
 
@@ -73,7 +74,9 @@ def test_hard_single_cube_table_then_exec():
     assert [s["asked"] for s in flow["demo_steps"]].index(True) == 1
     assert audit["asked_index"] == audit["program_answer_index"] == 1
     assert [s["text"] for s in flow["execution_steps"]] == ["抓起正确方块（红）", "放到答案台"]
-    assert flow["question"] == "题目：把红色方块放到它在按按钮前最后一次放置的台"
+    assert flow["question_zh"] == "题目：把红色方块放到它在按按钮前最后一次放置的台"
+    assert flow["question"].startswith("题目：") and "cube" in flow["question"]  # 英文原句
+    assert all("en" in step for step in flow["demo_steps"] + flow["execution_steps"])
 
 
 def test_vpb_two_cubes_before_with_extra_segment_flags_known_issue():

@@ -254,12 +254,13 @@ def parse_goal(text):
     order = re.search(r"the (first|second|third|fourth) target", text)
     # site-v11：新四档修复后（§九）VPB 每局只剩一句 last placed before / first placed after
     fixed = re.search(r"where it was (last placed before|first placed after) the button", text)
+    # 2026-09-27 用户要求题目用英文原文展示：保留原句，中文含义作注释
     if side:
-        return {"color": color.group(1), "mode": side.group(1), "n": None}
+        return {"color": color.group(1), "mode": side.group(1), "n": None, "text": text.strip()}
     if fixed:
-        return {"color": color.group(1), "mode": fixed.group(1).split()[-1], "n": None}
+        return {"color": color.group(1), "mode": fixed.group(1).split()[-1], "n": None, "text": text.strip()}
     if order:
-        return {"color": color.group(1), "mode": "order", "n": ORDINAL_EN[order.group(1)]}
+        return {"color": color.group(1), "mode": "order", "n": ORDINAL_EN[order.group(1)], "text": text.strip()}
     raise ValueError(f"题目提问方式无法解析：{text}")
 
 
@@ -450,7 +451,9 @@ def label_flow(task, boundaries, n_cubes, goal, color_at, expected_placements=No
     # ---- 文案 ----
     def identity(cube):
         return "正确方块" if cube == correct else "干扰方块"
-    flow = {"question": question_zh(goal), "cubes": [
+    # question = 英文原句（用户 2026-09-27「题目用英文」），question_zh = 中文含义注释（保持不变）
+    flow = {"question": f"题目：{goal.get('text', '')}".strip("：") if goal.get("text") else question_zh(goal),
+            "question_zh": question_zh(goal), "cubes": [
         {"color": COLOR_ZH[color], "role": "correct" if index == correct else "distractor"} for index, color in enumerate(colors)],
         "demo_steps": [], "execution_steps": []}
     for index, (item, record) in enumerate(zip(boundaries, steps)):
@@ -473,7 +476,8 @@ def label_flow(task, boundaries, n_cubes, goal, color_at, expected_placements=No
             text = f"{identity(cube)}放回原位"
             if item["point"] is None and item["grounded"].strip() == "put the cube back to its original position":
                 text += "（该子目标无坐标，设计如此）"
-        step = {"text": text, "role": role, "asked": index == asked}
+        # en = 子目标英文原文（grounded_subgoal 原句），text = 中文含义注释（保持不变）
+        step = {"en": item["grounded"].strip(), "text": text, "role": role, "asked": index == asked}
         if index == asked and asked != program:
             step["note"] = KNOWN_ISSUE_NOTE
         flow[item["phase"]].append(step)
