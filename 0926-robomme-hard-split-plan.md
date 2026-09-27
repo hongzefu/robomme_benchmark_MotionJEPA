@@ -12,31 +12,42 @@
 
 > 2026-09-27 修订：按用户要求，第一部分只讲三件事——①env make 的接口；②`src/robomme` → `src/robomme_hard` 的文件级清单（哪些原样继承、哪些要加东西）；③三个脚本阶段（生成 json、生成规格与轨迹、评估）各自怎么把参数传进 env make。原第一部分的对话原话、逻辑链条、裁决项、验收表全部移到第二部分附录 A，内容不变。文件级事实以 2026-09-27 `git fetch` 上游 `main` 后 `git diff --name-status FETCH_HEAD HEAD -- src/robomme` 实测为准（FETCH_HEAD = `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`，本地 HEAD = `57fe972`）。
 
-## 〇、前提状态更新（2026-09-27）：两份前置计划已完成，本方案可以开工
+## 〇、前提实施与交付已完成；拆包仍待裁决，legacy 归档须先补齐依赖与证据保留清单（2026-09-27，两轮修订）
 
-### 0.1 完成证据（判定行原文）
+> 修订记录：第一轮（12.195/12.197）写入前置完成状态与 legacy 清单；第二轮按 Codex 审计（锚点 `e9ff7a2`，五条全部核实成立）与用户裁决改写。用户裁决原话：「我要的是归档V6 之前的 不再做对拍也不再生成 只作为经验教训」「robomme_hard 重跑 144 局与 S0 基线比 sha 这个是要保留的！并且需要wrap up成新的 …/scripts/parity负责对拍」「其他同意 修改计划」。
+
+### 0.1 完成证据（判定行原文，不改述）
 
 | 前置计划 | 状态 | 判定行 / 证据 |
 |---|---|---|
-| `0925-newtask-release-v6-plan.md` §5.3 S0～S5 | 全部完成 | S3 原三档 144 局：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`（跑在 `c8c06ab`，**审查修复之前**）；S4 55 格 165 成功局；[最终报告](docs/validation/newtask-v6/20260926-final.md) |
-| `0926-v6-audit-fix-plan.md` 8.4 四步 | 全部完成 | 14 项 `src/robomme` 改动落地于 `ca32e9b`（12.188）；G1 `RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；G2 `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`；165 局按新代码重生成为 `v6-02`，`S4_DELIVERY=PASS cells=55 successes=165 shortfall=0`，第二节语义判定行全 PASS；网站 site-v12；[留档](docs/validation/newtask-v6/20260927-audit-fix.md) |
+| `0925-newtask-release-v6-plan.md` §5.3 S0～S5 | 完成 | S3 原三档 144 局：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`（跑在 `c8c06ab`，**审查修复之前**）；S4 55 格 165 成功局；[最终报告](docs/validation/newtask-v6/20260926-final.md) |
+| `0926-v6-audit-fix-plan.md` 8.4 四步 | 实施与 165 局交付完成；**语义验收仍有证据缺口** | 14 项 `src/robomme` 改动落地于 `ca32e9b`（12.188）；G1 `RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；G2 `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`；165 局重生成为 `v6-02`，`S4_DELIVERY=PASS cells=55 successes=165 shortfall=0`；第二节 10 项检查 `failed=0`，但汇总行原文是 `SEMANTIC_SUMMARY=FAIL checks=10 failed=0 episodes_read=165 read_errors=3`（三个失败局的空 H5 被枚举），且 `PEG_NEARFAR=REPORT episodes=3` 对不上计划要求的 `PASS candidates=10`。两个缺口不阻塞拆包，V1′ 留档须原样带出；[留档](docs/validation/newtask-v6/20260927-audit-fix.md) |
 
 ### 0.2 对本方案的影响
 
-1. **D-4 已满足**：S3 结论已出，「不改 `src/robomme/`」的时间锁解除；阶段 5 仍排在 V1′ 之后（红线 R1 改写）。
-2. **V1′ 不能省，且分量加重**：S3 的 144 局跑在 `c8c06ab`，审查修复 `ca32e9b` 之后原三档只做过 48 次 reset 零漂移（G1），**没有做过 144 局轨迹对拍**。V1′（`robomme_hard` 原三档 vs S0 基线 `artifacts/newtask-v6/v1/base/`）因此兼任「审查修复后原三档首次全量轨迹对拍」；若 FAIL 要先分清是拆包引入还是 `ca32e9b` 引入（对照办法：同样 144 局用当前 `src/robomme` 再跑一侧，预算须另批）。
-3. **现行规格是 `v6-02`**，不是初稿写的 `v6-01`：包内 `env_metadata/xhard{1..4}/specs.jsonl` 从 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl` 复制（四档 260 K / 280 K / 301 K / 367 K）；`SPECS_IDENTITY` 与 `v6-02` 比。第二部分 §1.1 表已同步改；附录 A 口径 4 与 §六 SPECS_IDENTITY 行仍是初稿原文（`v6-01`），以本节为准，附录不改。
-4. **数字勘误**：`scripts`+`tests` 引用 `robomme` 的文件实测 60 个（初稿 14+45=59）；`src/robomme` 内绝对 import 7 个文件（与第二部分 §1.1 的 7 行一致）；`src/robomme` 对上游 `1fadc0e` 为 26 个 .py 改、9 个 .py 新增、4 份 train 元数据改（与 §2.2/2.3 口径一致，审查修复没有新增文件）。
-5. **D-1、D-2、D-3 仍待裁决**（附录 A §四）；D-4 记「已满足」。
-6. **新增阶段 0b「legacy 清理」**（下节），插在实施步骤表阶段 0 与 1 之间，等用户逐组勾选后执行。
+1. **D-4 已满足**：S3 结论已出，「不改 `src/robomme/`」的时间锁解除；阶段 5 仍排在 V1′ 之后（红线 R1）。
+2. **V1′ 保留（用户明令），且分量加重**：S3 跑在 `c8c06ab`，审查修复 `ca32e9b` 之后原三档只做过 48 次 reset 零漂移，**没有做过 144 局轨迹对拍**；V1′ 兼任修复后首次全量轨迹对拍。**V1′ 由新入口 `scripts/parity/hard_parity.py` 承担**（第二部分 §2.2），不再依赖 `artifacts/…/run_s3.py`。V1′ 是本方案唯一的生成预算（144 次轨迹尝试，阶段 1 一次申请）。
+3. **legacy 口径改为「V6 之前的全部归档为经验教训」**：不再做 V2～V5 任何对拍与生成；相关代码、测试、配置、产物只有两种去处——经验教训文本进 `docs/`，其余删除（跟踪文件留 git 历史；`artifacts/` 未跟踪文件的唯一副本就是搬进 `docs/` 的那份）。V6 自己的中间产物同样只留现行交付。细则见 §0.3 与附录 B。
+4. **现行规格是 `v6-02`**：包内 `env_metadata/xhard{1..4}/specs.jsonl` 从 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl` 复制（260 K / 280 K / 301 K / 367 K）；`SPECS_IDENTITY` 与 `v6-02` 比。附录 A 里的 `v6-01` 以本节为准。
+5. **数字勘误**：`scripts`+`tests` 引用 `robomme` 的文件 60 个；`src/robomme` 绝对 import 7 文件；对上游 `1fadc0e` 为 26 个 .py 改、9 个 .py 新增、4 份 train 元数据改。
+6. **D-1、D-2、D-3 仍待裁决**（附录 A §四）。
 
-### 0.3 阶段 0b：legacy 清理（用户逐组勾选后执行；清单见第二部分附录 B）
+### 0.3 阶段 0b：legacy 归档与删除（拆包前做；执行顺序即下列编号）
 
-- **为什么放在拆包前**：`scripts/injection/**`、V2 对拍测试与夹具、V4 探针、V3 容差对拍都不在 V6 四阶段 + V1′ 的 import 闭包内（闭包实测见附录 B 表 0）。先删掉它们，阶段 3 的 import 机械替换从 60 个文件缩到约 30 个，`LIGHTWEIGHT` 的 S0 基线失败集（46 failed / 12 errors）也随之缩小，减少拆包时的噪声。
-- **唯一的代码依赖**：`scripts/parity/v4_specs.py` 从 `scripts/injection/candidates/io.py` 只 import `canonical_json`、`digest` 两个纯函数（标准库实现）。删 injection 包前先把这两个函数内联进 `v4_specs.py`；阶段 2 下沉 `hard_specs.py` 时再归位。
-- **判据**：`git rm` 只按勾选清单逐路径执行、不用 glob；删后 `uv run --no-sync python -m pytest --collect-only -q tests/lightweight tests/dataset` 收集错误 0；`grep -rn "scripts.injection\|tests._shared.parity\|tests._shared.frozen_injection" scripts tests --include=*.py` 零命中；`ls -1 scripts/*.py` 仍为 P1 清单（若用户裁决删 `generate_dataset_newseed.py` 则 P1 改为四入口并同步 `AGENTS.md`）。判定行 `LEGACY_CLEANUP=PASS removed_tracked=<n> collect_errors=0 injection_refs=0`。
-- **红线**：`artifacts/` 下的删除逐目录显式列名（正本第 14 条，2026-09-12 跨运行 glob 事故）；附录 B 的 D 组（他人在途）一律不动。
-- **用户裁决（2026-09-27 原话）**：「B 历史留档，git 可追溯，由用户定（删了不影响拆包）／历史教训小文件留档 进入 …/docs／其他的全部进入删除 只保留git历史／写入计划」。落地口径见附录 B「B 组裁决」：B 组不再是待定项，**A 组 + B 组一并删除**，删前只把「历史教训小文件」按附录 B 的搬迁规则复制进 `docs/`；`generate_dataset_newseed.py` 随之删除，P1 改为四入口（`AGENTS.md` P1、`CLAUDE.md` 核实清单同步改）。判定行追加 `LEGACY_ARCHIVE=PASS copied=<n> bytes=<b> max_file_bytes<=1048576`。
+目标：`scripts/` 与 `tests/` 里只剩 V6 四阶段 + V1′ 的闭包（附录 B 表 0），其余按「教训进 docs、其余删」处置。放在拆包前的理由：阶段 3 的 import 机械替换从 60 个文件缩到约 30 个。
+
+| # | 步骤 | 判据 |
+|---|---|---|
+| 1 | **解依赖**：`scripts/parity/v4_specs.py` 内联 `canonical_json`/`digest`（原在 `scripts/injection/candidates/io.py`）；`tests/lightweight/test_v4_specs.py` 的 import 改为 `from scripts.parity.v4_specs import canonical_json`（审计第 2 条） | `grep -rn "scripts\.injection" scripts tests --include=*.py` 零命中 |
+| 2 | **改默认路径**（审计第 5 条）：`scripts/parity/v6_site_catalog.py::--delivery` 默认改为 `artifacts/newtask-v6/s4-relaunch-02/verification/final-delivery.json`；`grep -rn "s4-launch\|newtask-v6/v6-01\|v6-s3-20260926-01" scripts tests` 逐处改写；重跑 `test_v6_site_labels.py`、`test_v6_site_v11.py` | 零残留、两测试通过 |
+| 3 | **下沉 V1′ 运行器**：新建 `scripts/parity/hard_parity.py`（§2.2），从 `artifacts/newtask-v6/v6-s3-20260926-01/run_s3.py` 搬「1 条冒烟 + 143 条、逐局 H5 身份/终态校验、30 分钟无进展/4 小时硬上限、`compare`」逻辑，去掉绝对路径，加 `--env-package {robomme,robomme_hard}` 与 `--base`/`--manifest`/`--official-root`/`--output` 参数（审计第 3 条）；`--dry-run` 只打印命令 | `--dry-run` 输出与 S3 实际命令逐字相同；单测覆盖参数解析与 H5 校验反例 |
+| 4 | **生成保留清单**（审计第 4 条）：新建只读脚本 `scripts/parity/legacy_keep_list.py`，输入 ①`docs/validation/**`、`docs/ledger/**`、三份 0925/0926 计划里出现的全部 `artifacts/…` 路径串（实测唯一路径 949 个）②显式验收依赖：`s0/lightweight-baseline.log`、`s0/lightweight-shards/**`（含 `v6-final-identities.txt`）、`s4-launch/verification/*.json`、`s4-launch/recovery/approval.json`、`s4-launch/incident/**`、`v6-s3-20260926-01/{run_s3.py,compare/summary.json,handoff-prep/production-session-*/{outcome,final_verification}.json}`、`audit/*/{审查汇总.md,verify/**,records/**}`、`v6-01/**/final-delivery.json` ③类型白名单 `.md/.json/.jsonl/.txt/.log/.sh/.py`。被引用但 >1 MiB 的非媒体文件也保留并单列；`.h5/.mp4/.png/.jpg/.npy` 一律不搬 | `LEGACY_KEEP=PASS referenced=<n> resolved=<n> missing=0`；`missing` 非零即停交用户 |
+| 5 | **归档**：按清单复制到 `docs/validation/<版本>/records/legacy/<原二级目录>/…`（`newtask-v4`→v4、`newtask-v5`→v5、`newtask-v6/*` 与 `audit/*`→v6），写 `MANIFEST.md`（原路径、新路径、字节、sha256）；三份旧计划 `0921/0922/0924-newtask-release-v{3,4,5}-plan.md` `git mv` 到 `docs/plans/` 并改 docstring/测试注释里的链接；`docs/validation/newtask-v2～v5/` 原地保留 | `LEGACY_ARCHIVE=PASS copied=<n> bytes=<b> sha_mismatch=0` |
+| 6 | **删跟踪文件**（附录 B 表 A 全部 + 表 B 的跟踪项）：`git rm` 逐路径；`generate_dataset_newseed.py` 一并删，P1 改四入口（`AGENTS.md` P1、`CLAUDE.md` 核实清单计数同步） | `uv run --no-sync python -m pytest --collect-only -q tests/lightweight tests/dataset` 收集错误 0；`ls -1 scripts/*.py` = 4 |
+| 7 | **重采 LIGHTWEIGHT 基线**：删后按 V6 §5.3 四片口径跑一次，失败/错误身份写 `artifacts/newtask-v6/hard-split/lightweight-baseline-0b.txt`；阶段 3 的 `LIGHTWEIGHT=PASS new_failures=0` 以它为分母（S0 的 46/12 含已删测试，不再适用） | 四片各 ≤280 s |
+| 8 | **删 `artifacts/` 大目录**（单独 commit，body 记 `du`/`df`）：附录 B 表 B 所列目录逐个显式列名，不用 glob；删前 `du -sh` 逐目录、删后 `df -h /data` | 附录 B 表 C 的保留目录一个不少 |
+
+红线：`artifacts/` 删除逐目录显式列名（正本第 14 条）；D 组（他人在途）不读不删；步骤 4、5 未 PASS 不得进入 6、8。
 
 ## 一、env make 的接口：外层多传什么、内部多传什么
 
@@ -269,9 +280,16 @@ git diff --stat FETCH_HEAD HEAD -- src/robomme scripts/evaluation.py scripts/run
 
 2026-09-26 现状（scratchpad 浅克隆 `cmp` 实测）：`same=31 diff=26 new=9`，`env_metadata` 4 份 train 不同，`pyproject.toml` 差 `pebble` 一行，三脚本相同。
 
-### 2.2 V1′（阶段 4）
+### 2.2 V1′（阶段 4）——由新入口 `scripts/parity/hard_parity.py` 承担
 
-复用 `artifacts/newtask-v6/v6-s3-20260926-01/run_s3.py` 的调用形态（路径 B、`train_split_runner::main`、`max_workers=1`、GPU 0），新建运行目录 `artifacts/newtask-v6/v1-hard/`，`run_config` 里 `env_source` 记 `src/robomme_hard @ <commit>`；比较侧 `train_split_parity.py compare --run base=artifacts/newtask-v6/v1/base --run hard=artifacts/newtask-v6/v1-hard --pair base/B:hard/B`。tmux 会话名 `hard-v1-<日期>`，日志 `artifacts/newtask-v6/v1-hard/run.log`，Monitor 过滤 `NATIVE_REGRESSION|EXIT_CODE=|Traceback|CUDA|Vulkan`。
+用户 2026-09-27 原话：「robomme_hard 重跑 144 局与 S0 基线比 sha 这个是要保留的！并且需要wrap up成新的 …/scripts/parity负责对拍」。
+
+- **来源**：`artifacts/newtask-v6/v6-s3-20260926-01/run_s3.py`（225 行）的逻辑下沉——①先 1 条冒烟（`BinFill/0`）再剩余 143 条，失败不补跑；②逐局 H5 校验：身份目录集合、文件名 `<task>_ep<ep>_seed<seed>.h5`、`setup/seed`、`setup/difficulty`、timestep 连续、末帧 `info/is_completed` 严格 `True`；③子进程独立进程组，30 分钟无日志/文件进展或 4 小时硬上限即停；④调 `train_split_parity.py compare` 出 `h5_pairs.jsonl` 与 `summary.json`。**不新增任何抽样或 reset**。
+- **CLI**：`uv run --no-sync python -m scripts.parity.hard_parity run --env-package robomme_hard --manifest scripts/configs/newtask-v3/subset_manifest.json --base artifacts/newtask-v6/v1/base --official-root artifacts/train-parity/local-smoke-01/official-src --output artifacts/newtask-v6/v1-hard --workers 1 --gpus 0`；`--env-package` 决定子进程里 `train_split_worker` import 的包名（通过环境变量 `ROBOMME_ENV_PACKAGE` 传入 worker，worker 侧按该变量选择 import；这是阶段 3 切换调用方时对 `train_split_worker.py` 的唯一非机械改动）；`--dry-run` 只打印将执行的命令。
+- **判定行**：`NATIVE_REGRESSION_HARD=PASS compared=144 sha_equal=144 field_mismatch=0 env_package=robomme_hard base=<sha256 of run_config>`；H5 校验行 `HARD_H5_SEMANTICS=PASS side=hard identities=144 terminal_success=144 timesteps=<n>`。
+- **运行方式**：tmux 会话 `hard-v1-<日期>`，日志 `artifacts/newtask-v6/v1-hard/run.log`（`PYTHONUNBUFFERED=1`、`pipefail`、`tee`、`EXIT_CODE=` 尾行），Monitor 一次性 `until` 等待 `EXIT_CODE=`（用户 2026-09-27 口径：不设逐条进度过滤器）。预算 144 次轨迹尝试，阶段 1 与 D-1～D-3 一并申请。
+- **FAIL 时的归因**：S3 跑在 `ca32e9b` 之前，V1′ 若 FAIL 要先分清是拆包引入还是审查修复引入——办法是同一入口 `--env-package robomme` 再跑一侧，预算须另批，不自动执行。
+- **单测**（`tests/lightweight/test_hard_parity.py`）：参数解析、`--dry-run` 命令逐字、H5 校验对「身份缺失／难度错／末帧未完成／空文件」四类反例必拒。
 
 ### 2.3 `specs.jsonl` 指纹重算（阶段 2 末）
 
@@ -312,7 +330,7 @@ uv run --no-sync python -c "from robomme_hard.env_record_wrapper import Benchmar
 
 ## 附录 A、原第一部分（2026-09-26 初稿，内容未改，仅标题降一级）
 
-> 勘误注（2026-09-27）：本附录 §二口径 4、§六 SPECS_IDENTITY 行、§七阶段表所写 `v6-01` 均应读作 `v6-02`；§四 D-4 已满足；阶段表在阶段 0 与 1 之间新增阶段 0b（第一部分 §0.3）。附录正文按「内容未改」原则不动。
+> 勘误注（2026-09-27）：本附录 §二口径 4、§六 SPECS_IDENTITY 行、§七阶段表所写 `v6-01` 均应读作 `v6-02`；§四 D-4 已满足；§六 V1′ 行「复用 S3 运行器 `run_s3.py`」改为新入口 `scripts/parity/hard_parity.py`（第二部分 §2.2）；阶段表在阶段 0 与 1 之间新增阶段 0b（第一部分 §0.3），阶段 4 的判定行改为 `NATIVE_REGRESSION_HARD=…`。附录正文按「内容未改」原则不动。
 
 
 ### 一、用户与合作者的原话（逐字）
@@ -514,7 +532,7 @@ V1′ 为什么能逐位：`robomme_hard` 的原三档路径与现 `src/robomme`
 | 被入口 import | `scripts/seed_layout.py`（`train_split_config`、`v4_specs`、`train_split_parity`、`train_split_audit`、`v6_tier_monotone` 裸 import）；`train_split_runner.py`（`v4_rollout` subprocess）→ `train_split_worker.py`；`train_split_parity.py`（`v4_rollout::compare_h5_pair`、V1′ 比较器）→ `train_split_comparison.py` ↔ `comparator_fixtures.py`；`train_split_audit.py`（`test_v4_xhard_unmaskswap`/`videoplace` 用）；`scripts/injection/candidates/io.py` 的 `canonical_json`/`digest`（`v4_specs.py` 唯一的 injection 依赖，阶段 0b 内联） | 依赖闭包盘点 |
 | V6 收尾 | `scripts/parity/{v6_candidate_values,v6_tier_monotone,v6_v0_native_definitions,v6_site_catalog,v6_site}.py`、`v6_site.html` | 各自 `test_v6_*` |
 | 配置 | `scripts/configs/newtask-v3/{subset_manifest,train_manifest}.json` + `official_train/`（`train_split_parity.DEFAULT_FROZEN_DIR`、`train_split_audit`）；`newtask-v4/sampling_config.json`（`v4_specs.DEFAULT_SAMPLING`）；`newtask-v5/sampling_config.json`（`v6_v0_native_definitions`、CLAUDE.md 核实清单）；`newtask-v6/{sampling_config.json,v6-01/,v6-02/}`（`v6-01` 仍被 `v5_generation` 路径模板与 `test_v5_generation_tools` 引用） | grep |
-| 产物 | `artifacts/train-parity/local-smoke-01/official-src/`（`--official-root` 官方源码树，`.official_tree=1d4c1369…`）；`artifacts/newtask-v6/v1/base/`（S0 基线 144 局 49 GB，V1′ 对照侧）；`artifacts/newtask-v6/v6-02/`（现行 165 局 112 GB）；`artifacts/newtask-v6/{s4-relaunch-02,audit-fix-02}`（v6-02 验收链）；`artifacts/newtask-v6/{site-v11,site-v12}` | 第二部分 §2.2、审查修复留档 |
+| 产物 | `artifacts/train-parity/local-smoke-01/official-src/`（`--official-root` 官方源码树，`.official_tree=1d4c1369…`）；`artifacts/newtask-v6/v1/base/`（S0 基线 144 局 49 GB，V1′ 对照侧，用户明令保留）；`artifacts/newtask-v6/v6-02/`（现行 165 局 112 GB）；`artifacts/newtask-v6/{s4-relaunch-02,audit-fix-02}`（v6-02 验收链）；`artifacts/newtask-v6/{site-v11,site-v12}` | 第二部分 §2.2、审查修复留档 |
 
 ### A　可删（git 跟踪的代码、测试、配置、留档）
 
@@ -530,17 +548,15 @@ V1′ 为什么能逐位：`robomme_hard` 的原三档路径与现 `src/robomme`
 | `INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` | 2 文件 | 只被 `AGENTS.md` 历史账本与 v2 留档引用（账本条目不改，死链可接受） |
 | `artifacts/injection/**`（320 跟踪文件、121 MB）、`artifacts/test-tmp/`（940 MB，514 个测试临时目录）、`artifacts/cache/`（144 MB uv 缓存）、`artifacts/codex-multiagent/`（5.6 MB）、`artifacts/logs/`（236 KB） | — | 与 A 组同源／临时／缓存；`artifacts/injection` 是唯一有 git 跟踪的 `artifacts` 子树，删时 `git rm -r --cached` 一并处理 |
 
-### B　历史留档，git 可追溯（**已裁决：全部删除，只留 git 历史；小文件先搬进 `docs/`**）
+### B　V6 之前的全部 + V6 中间产物（**已裁决：归档经验教训进 `docs/`，其余删除；不再做 V2～V5 任何对拍与生成**）
 
-**B 组裁决（用户 2026-09-27 原话「历史教训小文件留档 进入 …/docs 其他的全部进入删除 只保留git历史」）落地规则：**
+用户 2026-09-27 原话：「历史教训小文件留档 进入 …/docs 其他的全部进入删除 只保留git历史」「我要的是归档V6 之前的 不再做对拍也不再生成 只作为经验教训」。落地规则（执行顺序见第一部分 §0.3 表）：
 
-1. **什么算「历史教训小文件」**：B 组各目录下满足全部三条的文件——①扩展名为 `.md` / `.json` / `.jsonl` / `.txt` / `.log` / `.sh` / `.py`（不含 `.h5` / `.mp4` / `.png` / `.jpg` / `.npy`）；②单文件 ≤ 1 MiB；③属于下列之一：判定行来源（`summary.json`、`report.json`、`*delivery*.json`、`verify*.json`、`outcome.json`、`final_verification.json`）、用户授权记录（`approval.json`）、事故记录（`incident/`）、运行脚本与清洗后日志（`run*.sh`、`*.summary.log`、`run.log` ≤ 1 MiB）、审查汇总（`审查汇总.md`、`verify/*.json`）。不满足即删。
-2. **搬到哪**：`docs/validation/<对应版本>/records/legacy/<原二级目录名>/…`（保留原相对路径；版本对应：`artifacts/newtask-v4` → `newtask-v4`，`newtask-v5` → `newtask-v5`，`newtask-v6/*` 与 `artifacts/audit/*` → `newtask-v6`）。搬完写一份 `docs/validation/<版本>/records/legacy/MANIFEST.md`：原路径、新路径、字节数、sha256，判定行 `LEGACY_ARCHIVE=PASS copied=<n> bytes=<b> max_file_bytes<=1048576`。
-3. **根目录三份旧计划** `0921/0922/0924-newtask-release-v{3,4,5}-plan.md`：属「历史教训」，`git mv` 到 `docs/plans/`（不删），代码 docstring 与测试注释里的链接改成新路径（`grep -rl "092[124]-newtask-release" scripts tests docs`，只改路径串）。
-4. **`docs/validation/newtask-v{3,4,5}/`**：已在 `docs/`，原样保留。
-5. **`scripts/generate_dataset_newseed.py`** 与只依赖它的 `tests/lightweight/{test_swap_schedule_generic,test_binfill_demo_duplicate}.py`：删除；`test_h5_parity_compare`、`test_native_restore_step2` 实施时看测试对象是否仍存在，不存在即删。P1 改为四入口 `dataset_replay.py`、`evaluation.py`、`run_example.py`、`seed_layout.py`（`AGENTS.md` P1 与 `CLAUDE.md`「plan mode 只读核实清单」的 `ls -1 scripts/*.py` 计数同步改 4；D-1 放行后再加 `evaluation_hard.py` 为第五入口）。
-6. **`artifacts/` 的 B 组目录**：按规则 1 抽出小文件后整目录删除（`artifacts/newtask-v4`、`artifacts/newtask-v5`、`artifacts/audit`、`artifacts/newtask-v6/{v6-01,v6-01-infra-recovery-01,v6-s2-20260926-01,v6-s3-20260926-01,gl-smoke-61890467-binf-xhard1-20260926T195419Z,s3-slow-investigation,s0,s1-reset,s2-prep,s4-prep,s4-launch,plan-probes,vpb-order-fix-prep,site,site-v2,site-review,site-v3,site-v4,site-v5,site-v6,site-v7,site-v8,site-v9,site-v10}`），逐目录显式列名，不用 glob；删前 `du -sh` 留数，删后 `df` 留数。C 组的 `artifacts/newtask-v6/{v1,v6-02,s4-relaunch-02,audit-fix-02,site-v11,site-v12}` 与 `artifacts/train-parity/local-smoke-01` 不在此列。
-7. **顺序**：先 A 组代码/测试（含 `canonical_json`/`digest` 内联）→ 搬小文件并写 MANIFEST → 三份旧计划 `git mv` 与链接改写 → 删 `generate_dataset_newseed.py` 并改 P1 → 一个 commit；`artifacts/` 大目录删除放同一阶段最后一步、单独一个 commit body 记录 `du`/`df`。
+1. **去处只有两种**：①经验教训文本 → `docs/`；②其余删除。跟踪文件靠 git 历史恢复；`artifacts/` 全部未跟踪，**搬进 `docs/` 的那份就是唯一副本**，所以保留清单由脚本从 docs 引用生成（§0.3 步骤 4），不靠人手。
+2. **进 `docs/` 的**：`docs/validation/newtask-v2～v5/` 原地不动；三份旧计划 `git mv` 到 `docs/plans/`；`artifacts` 里被 docs/账本引用或属显式验收依赖的小文件（判定行来源、授权记录、事故记录、运行脚本与清洗后日志、审查汇总）复制到 `docs/validation/<版本>/records/legacy/<原二级目录>/`，附 `MANIFEST.md`。
+3. **删除（跟踪）**：表 A 全部；`scripts/generate_dataset_newseed.py`（P1 改四入口，D-1 放行后 `evaluation_hard.py` 为第五入口）；`tests/lightweight/{test_swap_schedule_generic,test_binfill_demo_duplicate}.py`（只依赖它）；`test_h5_parity_compare`、`test_native_restore_step2` 若测试对象已不存在则删。
+4. **删除（未跟踪 `artifacts/`）**，逐目录显式列名：`artifacts/newtask-v4`（31 GB）、`artifacts/newtask-v5`（32 GB）、`artifacts/audit`（1.1 GB）、`artifacts/newtask-v6/{v6-01,v6-01-infra-recovery-01,v6-s2-20260926-01,v6-s3-20260926-01,gl-smoke-61890467-binf-xhard1-20260926T195419Z,s3-slow-investigation,s0,s1-reset,s2-prep,s4-prep,s4-launch,plan-probes,vpb-order-fix-prep,site,site-v2,site-review,site-v3,site-v4,site-v5,site-v6,site-v7,site-v8,site-v9,site-v10}`。删前必须已 `LEGACY_KEEP=PASS`、`LEGACY_ARCHIVE=PASS`。
+5. **明确保留（表 C）**：`artifacts/newtask-v6/v1/base`（S0 基线 144 局 49 GB，**V1′ 对照侧，用户明令保留对拍**）、`v6-02`、`s4-relaunch-02`、`audit-fix-02`、`site-v11`、`site-v12`、`artifacts/train-parity/local-smoke-01/official-src`。
 
 下表保留为盘点原文（「说明」列的「建议留」「由用户定」已被上述裁决覆盖）：
 
