@@ -306,3 +306,48 @@
 ## 六、留档与 commit 纪律
 
 沿 V6：每步 `docs/validation/newtask-v6/<日期>-<步>.md`；commit 只 add 本步文件；账本 `AGENTS.md` 「当前进度」与执行日志追加；网站报告追加 v11 节；本计划第四节裁决表随用户答复回填、不改写第二节原文。
+
+## 七、补充审查结论（2026-09-26 第二轮 workflow，锚点 `82e3d92`，报告 `artifacts/audit/v6-semantic-vs-native-82e3d92/审查汇总.md`）
+
+**口径**：18 个 opus 审查代理 + 每条 1 个 sonnet 反驳 + 1 个 opus 综合，共 62 个代理、37 分钟、零仿真、零源码改动；收官复核 HEAD 未变、porcelain 为空。判定行：`AUDIT_SUMMARY=DONE confirmed=42 new_tier_only=19 native_vs_new_mismatch=3 native_same=19 not_an_issue=1 unverifiable=0 refuted=0 dup_of_excluded=1`，去重后 28 个独立根因。按 K1：只对 xhard1～4 独有的问题给修法；与原三档同源的只记录。
+
+### 7.1 表 A：新四档独有（`new_tier_only`）——推荐处置
+
+| 编号 | 环境 | 问题一句话 | 推荐处置 | 与现有条目关系 | 待裁决 |
+|---|---|---|---|---|---|
+| N1 | ButtonUnmaskSwap | 按第二个按钮后机器人静止等交换 18～124 步，子目标仍标「press the second button」 | **修**：新四档在按钮任务后插入「wait until the containers stop moving」子目标（`static` 类），choice 同步；任务链变、需重跑 | 与 F4 同批 | |
+| N2 | VideoPlaceButton | xhard3/4 只有 4 台、demo 2 块，额外 before 的候选恒等于 after 台集合，按钮后放台变成原地空转 | **修**：F6 的占用表方案在 4 台下会把 before 侧候选清空，须把 xhard3/4 `targets` 4→5（计划 §三 同步）或改为额外放台落到「非台的桌面点」；推荐前者 | **修正第二部分「一」第 5 项的前提** | 台数 4→5 需你拍板 |
+| N3 | VideoPlaceButton | 双块档题面「right/immediately before the button」时序不成立（另一块在中间放了两次） | **修**：新四档 before 模板去掉 right/immediately，只保留「last placed before the button was pressed」 | 与 Q-C 同批 | |
+| N4 | VideoPlaceButton | 单块档 ALT 第 3 模板「previously placed after the button」不唯一（额外 after 落在答案块上） | **修**：新四档该模板改为「first placed after the button was pressed」 | 同上 | |
+| N5 | VideoPlaceButton/Order | 「put the cube back to its original position at <>」永远没坐标（home 标记被 `_hidden_objects` 隐藏） | **修**：新四档该子目标去掉 `at <>`，或用方块 t0 像素坐标回填；推荐去掉 | 与 F4 同文件 | |
+| N6～N8（G1） | PickHighlight / VideoUnmask / ButtonUnmask | 子目标切换帧目标被机械臂遮住，整段 grounded 坐标缺失，并留下 1 帧 `success_NO_OBJECT` mp4 | **修**：并入 F4 的 `process_segmentation` 改造——目标不可见时用同帧 `choice_action.point` 回填并在后续帧重算；新四档打标生效；交付索引剔除 1 帧附属 mp4 | 扩展第二部分「一」第 4 项 | G1 归类冲突（3 条判新档独有、6 条判同源）是否统一按同源只记录 |
+| N9 | PickHighlight | 新档去掉「, which is <color>」且按钮 `failure_func` 改为每步重算，V6 计划正文未写 | **只记录**：有 V4 计划依据，补写进本计划 §三 说明 | — | |
+| N10 | SwingXtimes | xhard4 第 11 轮写成「11th」，其余为英文单词 | **修**：`SwingXtimes._load_scene` 改用 `subgoal_language._ordinal_word` | 新增第 8 项 | |
+| N11 | VideoRepick | xhard4 ep3 实际 12 次交换只有 11 个 static 边界（间歇） | **实施时先定位**：若在 `sequential_task_check` 同步逻辑，修；定位不到则记为已知并在验收判定行加「边界数 = 交换数 + 1」 | 新增第 9 项 | |
+| N12 | PickXtimes 等 | 超 1300 步的格子清单与计划不符（xhard2 ep0 1350 步） | **改计划文案**；`scripts/evaluation.py max_steps=1300` 对新档是否放宽 | — | 评估步数上限要不要按档放宽 |
+| N13 | PatternLock | `config_xhard4` 注释仍写 25 节点；实际 [21,25] 且分布贴下界 | **修注释**（`src/robomme` 内，P2）；分布不改 | 新增第 10 项 | |
+| N14 | MoveCube | xhard4 交付 3 局无 peg_push（0/3/6 选局恰好避开） | **待裁决**：保持 0/3/6 规则，或改为按运动方式分层选局 | — | 选局规则 |
+| N15 | StopCube | `motion_segments=5` 配置项是描述值、代码不读 | **改配置注释**（`sampling_config.json` note 字段） | — | |
+
+### 7.2 表 B：新四档与原三档不一致（`native_vs_new_mismatch`）
+
+| 编号 | 环境 | 问题 | 推荐处置 | 待裁决 |
+|---|---|---|---|---|
+| M1 | VideoRepick | 提前按按钮的失败判定只在首抓后 50～500 步窗口内生效；xhard4 第 5、6 轮在窗口外 | **修（新四档）**：窗口改为随当前轮次滚动，或覆盖到最后一次放下；原三档不动 | |
+| M2 | VideoPlaceOrder | 计划写「五档都放回原位」，原三档实际仍放到隐藏 goal_site | **改计划文案**：原三档 `native_random_goal_site` 如实写明，不动原三档 | |
+| M3 | ButtonUnmask | 原三档容器请求数静默截断（hard 15→6），新档报错 | **只记录**（原三档自身问题，K1） | |
+
+### 7.3 表 C：与原三档同源（`native_same`，13 组 19 条）——只记录
+
+S1 G1 组坐标缺失（VUS/VPO/BinFill/PickXtimes/MoveCube）；S2 BUS 交换净置换可为恒等；S3 VideoRepick 延迟撤销回原槽；S4 VideoRepick 模板 1「for N times, finally put it down」读法；S5 SwingXtimes 主模板漏「放下」步；S6 BinFill 静态布局序数无对应物；S7 BinFill 抓取判据不分颜色；S8 PickHighlight 「第 k 个」顺序不可见；S9 RouteStick 末 6 帧 online 字段「NO RECORD」；S10 MoveCube 长推前相机看不到方块；S11 MoveCube 成功判据不查方式；S12 InsertPeg 演示/执行段措辞不一致；S13 StopCube 成功容差大于靶盘。全部只写进留档，不修。
+
+### 7.4 可选实跑（全部非必需，报告第五节）
+
+MoveCube peg_push 各 ≤10 局、VideoRepick xhard1～4 各 5～10 局、PickHighlight 原生 ≤3 局脚本策略、ButtonUnmask hard 约 5 局。均只为把单例变成发生率；不做不影响结论。用户已允许三席 `61890467/61890468/62018665`、每格 ≤10 局、不在本机。
+
+### 7.5 对第二部分「一」的修正
+
+- 第 4 项（F4）扩展为：位移刷新 + 遮挡回填（N6～N8），同一处改动。
+- 第 5 项（F6/Q-C）前提修正：xhard3/4 台数 4→5 或改额外落点，否则占用表方案无候选（N2）。
+- 新增第 8 项 N1（BUS 等待子目标）、第 9 项 N10（序数词）、第 10 项 N11（VideoRepick 边界，先定位）、第 11 项 N13（PatternLock 注释）、第 12 项 M1（VideoRepick 失败窗口）、第 13 项 N3/N4/N5（VPB/VPO 话术与回原位子目标）。
+- 纯文档项：N9、N12、N15、M2 改计划或配置注释。

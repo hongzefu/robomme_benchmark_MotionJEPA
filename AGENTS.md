@@ -2467,3 +2467,15 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 - 差异或阻塞：用户在确认清单后要求「不要实施！落到计划内」，源码零改动。
 - 修改文件：`0926-v6-audit-fix-plan.md`（新增）、本账本。
 - 下一步：等用户下令实施；实施顺序见计划第二部分 runbook。
+
+### 2026-09-26 America/Detroit — V6 新四档 vs 原三档语义对照审查（workflow，只读）
+
+- 状态：完成，结论已回写计划第七节，待用户决策。
+- 目标：用户「启动workflow 检查是否还有semantic和实际实现的visual不一致的问题 重点检查和早期的easy medium hard是否有不一致」「提出问题本身 用opus 对抗验证用sonnet」。
+- 执行命令：Workflow `wf_54ff6341-f36`（18 opus 审查 + 每条 1 sonnet 反驳 + 1 opus 综合，62 代理，2223 s）；`ssh -O check greatlakes` 仅查席位，零仿真。
+- 输入与来源：AUDIT_BASE `82e3d922b78d48ec1e825b168cccc0e1b8c690c1`；165 新档 + 144 原三档 HDF5/mp4；`git show` 读源码。
+- 输出路径：`artifacts/audit/v6-semantic-vs-native-82e3d92/`（审查汇总.md、各环境 records/frames、verify/）。
+- 结果与证据：`AUDIT_SUMMARY=DONE confirmed=42 new_tier_only=19 native_vs_new_mismatch=3 native_same=19 not_an_issue=1 unverifiable=0 refuted=0 dup_of_excluded=1`；收官复核 HEAD 未变、porcelain 空。
+- 差异或阻塞：用户误读反驳标签为同条双反驳，核对 journal 每条 1 个；教训（标签带标题 + `VERIFY_FANOUT` 判定行）记入本机记忆，待批准写入正本。
+- 修改文件：`0926-v6-audit-fix-plan.md`（第七节）、本账本。
+- 下一步：用户对第七节待裁决项拍板后再实施。
