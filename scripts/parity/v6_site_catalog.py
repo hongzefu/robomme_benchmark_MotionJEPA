@@ -64,45 +64,52 @@ def gradients(plan):
     return result
 
 
-def subgoal_flow(task, tier):
-    """只描述已由源码及已有轨迹核对的放置任务子目标。"""
-    if task == "VideoPlaceOrder":
-        if tier == "hard":
-            demo = ["拿起一个方块，依次放到2–4个不同的平台上。",
-                    "在其中一次放台后按按钮；继续完成这块的访问序列。",
-                    "将方块放到桌面位置，结束演示；末尾两个平台交换位置。"]
-        else:
-            counts = {"xhard1": "2次与3次（合计5次）", "xhard2": "各3次（合计6次）",
-                      "xhard3": "3次与4次（合计7次）", "xhard4": "各4次（合计8次）"}[tier]
-            demo = [f"两个方块分别访问平台{counts}；次数不同的两种分配会随机对应到方块。",
-                    "先完成第一个方块的全部访问并放回原位，再完成第二个方块并归位。",
-                    "按按钮插在某一次目标台放置之后；演示末尾两个平台交换位置。"]
-        return {"demo_steps": demo,
-                "remember": "分别记住每个颜色方块按先后顺序访问的平台，并追踪平台交换后的新位置。",
-                "execution_steps": ["读取题目指定的方块颜色和第几次访问。", "只拾取该方块，放到那一次访问的平台当前所在位置。"],
-                "note": "每次访问均包含抓起方块再放下，不是持物滑过平台。执行阶段不重演完整访问序列。每块内部不重复访问同一台，两块可以共享台；归位不计入放台次数。按按钮是演示中的插入动作，不是平台交换的触发动作。"}
-    if task == "VideoPlaceButton":
-        demo = {
-            "hard": ["将一个方块放到按钮前的目标台。", "按按钮，再将方块放到按钮后的目标台。", "将方块放到桌面位置。"],
-            "xhard1": ["将一个方块放到按钮前的目标台。", "按按钮，再依次放到按钮后的目标台和一个额外台。", "将方块放回原位。"],
-            "xhard2": ["将一个方块依次放到按钮前的目标台和一个额外台。", "按按钮，再依次放到按钮后的目标台和一个额外台。", "将方块放回原位。"],
-            "xhard3": ["将两个方块依次放到各自按钮前的目标台，再将其中一个放到额外台。", "按按钮，再将两个方块依次放到各自按钮后的目标台。", "将两个方块分别放回原位。"],
-            "xhard4": ["将两个方块依次放到各自按钮前的目标台，再将其中一个放到额外台。", "按按钮，将两个方块依次放到各自按钮后的目标台，再将另一个放到额外台。", "将两个方块分别放回原位。"],
-        }[tier]
-        extra_before = tier in {"xhard2", "xhard3", "xhard4"}
-        execution = "只拾取指定方块并放到答案平台，不重演演示动作。"
-        note = "每次放台都包含重新抓起再放下；归位不计入放台次数。"
-        if extra_before:
-            execution = "只拾取指定方块并放到程序绑定的答案台；答案与题目措辞的已知差异见说明。"
-            if tier == "xhard3":
-                note += "当前所列示例4和示例7（episode 3、6）存在演示与答案不一致：按钮前最后放到额外台，程序却将更早的基础台判为正确；本档其余所列样例未触发。这里保留实际旧视频及其执行结果，不将这两个样例视为记忆问题已正确实现。"
-            else:
-                note += "按钮前额外放台的候选存在答案仍绑定更早基础台的机制风险，但本档当前所列三个样例未触发该问题；已确认的交付冲突出现在xhard3示例4和示例7。"
-        return {"demo_steps": [*demo, "演示结束后两个平台交换位置，再进入执行阶段。"],
-                "remember": "题目问按钮前时，记住该颜色方块在按按钮前最后一次放到的平台；问按钮后时，记住按钮后第一次放到的平台，并追踪平台交换后的所在位置。",
-                "execution_steps": ["读取题目指定的方块颜色与按钮前／后的关系。", execution],
-                "note": note}
-    return None
+def sample_flow(path, episode):
+    """严格按记录边界提取原子子目标，保留相邻同名静止项。"""
+    import h5py
+    import re
+    translations = {
+        "pick up the cube": "抓起方块",
+        "drop the cube onto target": "放下方块到目标台",
+        "drop the cube onto table": "放下方块到桌面",
+        "press the button": "按按钮",
+        "put the cube back to its original position": "将方块放回原位",
+        "static": "静止",
+        "place the cube onto the correct target": "将方块放到答案台",
+    }
+    flow = {"demo_steps": [], "execution_steps": []}
+    audit = []
+    terminal = ""
+    def decode(value):
+        return value.decode() if isinstance(value, bytes) else str(value)
+    with h5py.File(path, "r") as handle:
+        group = handle[f"episode_{episode}"]
+        frames = sorted((name for name in group if name.startswith("timestep_")),
+                        key=lambda name: int(name.split("_")[1]))
+        for index, name in enumerate(frames):
+            frame = group[name]
+            simple = decode(frame["info/simple_subgoal"][()])
+            if simple == "All tasks completed":
+                terminal = "全部任务完成"
+                continue
+            if index != 0 and not bool(frame["info/is_subgoal_boundary"][()]):
+                continue
+            grounded = decode(frame["info/grounded_subgoal"][()])
+            if simple not in translations:
+                raise ValueError(f"未登记的真实子目标：{simple}")
+            text = translations[simple]
+            location = re.search(r"<\s*(-?[0-9.]+)\s*,\s*(-?[0-9.]+)\s*>", grounded)
+            if location:
+                text += f"（图像坐标 {location.group(1)}, {location.group(2)}）"
+            phase = "demo_steps" if bool(frame["info/is_video_demo"][()]) else "execution_steps"
+            flow[phase].append(text)
+            audit.append({"timestep": int(name.split("_")[1]), "phase": phase,
+                          "simple": simple, "grounded": grounded, "translated": text})
+    if not flow["demo_steps"] or not flow["execution_steps"] or not terminal:
+        raise ValueError(f"演示、执行或完成状态缺失：{path}")
+    digest = hashlib.sha256(json.dumps(audit, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+    return flow, terminal, {"h5": str(path), "episode": episode, "boundaries": audit,
+                            "flow_sha256": digest}
 
 
 def build_catalog(delivery, baseline, plan):
@@ -110,6 +117,7 @@ def build_catalog(delivery, baseline, plan):
     public = {"schema": "v6-site-catalog/1", "tasks": []}
     private = {}
     excluded = []
+    flow_audit = []
     cards = {}
     for task, name in NAMES.items():
         item = {"id": task, "name": name, "note": NOTES[task], "tiers": []}
@@ -126,14 +134,11 @@ def build_catalog(delivery, baseline, plan):
             }
         for tier in (("hard", "xhard4") if task in EXTRA else TIERS):
             card = {"id": tier, "label": tier, "gradient": values[task][tier], "videos": []}
-            flow = subgoal_flow(task, tier)
-            if flow is not None:
-                card["subgoal_flow"] = flow
             cards[task, tier] = card
             item["tiers"].append(card)
         public["tasks"].append(item)
 
-    def add(task, tier, episode, paths):
+    def add(task, tier, episode, paths, h5):
         if (task, tier) not in cards:
             raise ValueError(f"未知任务档位：{task}/{tier}")
         if not paths:
@@ -169,8 +174,12 @@ def build_catalog(delivery, baseline, plan):
             label = f"示例 {episode + 1}"
             if len(paths) > 1:
                 label += f" · 片段 {index + 1}/{len(paths)}"
-            cards[task, tier]["videos"].append({"id": media_id, "label": label,
-                                                 "url": f"/media/{media_id}"})
+            video = {"id": media_id, "label": label, "url": f"/media/{media_id}"}
+            if task in {"VideoPlaceButton", "VideoPlaceOrder"}:
+                flow, terminal, audit = sample_flow(h5, episode)
+                video.update(subgoal_flow=flow, flow_terminal=terminal, flow_sha256=audit["flow_sha256"])
+                flow_audit.append({"task": task, "tier": tier, "media_id": media_id, **audit})
+            cards[task, tier]["videos"].append(video)
 
     rows = json.loads(delivery.read_text(encoding="utf-8"))["successes"]
     if len(rows) != 165:
@@ -179,16 +188,19 @@ def build_catalog(delivery, baseline, plan):
         if row.get("state") != "success":
             raise ValueError("交付successes中包含非成功轨迹")
         media = [Path(entry["path"]) for entry in row["files"] if Path(entry["path"]).suffix.lower() == ".mp4"]
-        add(row["task"], row["difficulty"], row["episode"], media)
+        h5 = [Path(entry["path"]) for entry in row["files"] if Path(entry["path"]).suffix.lower() == ".h5"]
+        if len(h5) != 1:
+            raise ValueError("成功轨迹H5必须唯一")
+        add(row["task"], row["difficulty"], row["episode"], media, h5[0])
     hard_rows = [row for row in json.loads(baseline.read_text(encoding="utf-8"))["results"]
                  if row.get("difficulty") == "hard" and row.get("ok") is True]
     for row in hard_rows:
         folder = Path(row["raw_h5_path"]).parent.parent / "videos"
-        add(row["task"], "hard", row["episode"], list(folder.glob("*.mp4")))
+        add(row["task"], "hard", row["episode"], list(folder.glob("*.mp4")), Path(row["raw_h5_path"]))
     for (task, tier), card in cards.items():
         if not card["videos"]:
             raise ValueError(f"缺少成功视频：{task}/{tier}")
-    return public, private, excluded
+    return public, private, excluded, flow_audit
 
 
 def main(argv=None):
@@ -201,13 +213,14 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if not args.out.resolve().is_relative_to(ARTIFACTS.resolve()):
         parser.error("输出必须位于本仓库artifacts")
-    public, private, excluded = build_catalog(args.delivery, args.baseline, args.plan)
+    public, private, excluded, flow_audit = build_catalog(args.delivery, args.baseline, args.plan)
     args.out.mkdir(parents=True, exist_ok=True)
-    for name in ("catalog.json", "media-private.json", "excluded-tail-clips.json"):
+    for name in ("catalog.json", "media-private.json", "excluded-tail-clips.json", "subgoal-audit.json"):
         if (args.out / name).exists():
             raise FileExistsError(f"拒绝覆盖已有目录文件：{name}")
     for name, data in (("catalog.json", public), ("media-private.json", private),
-                       ("excluded-tail-clips.json", {"count": len(excluded), "clips": excluded})):
+                       ("excluded-tail-clips.json", {"count": len(excluded), "clips": excluded}),
+                       ("subgoal-audit.json", {"samples": flow_audit, "sha_scope": "真实边界、阶段及原始动作文字的散列，非H5全文件散列"})):
         with (args.out / name).open("x", encoding="utf-8") as stream:
             json.dump(data, stream, ensure_ascii=False, indent=2)
             stream.write("\n")
