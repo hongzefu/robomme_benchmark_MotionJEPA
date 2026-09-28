@@ -60,29 +60,7 @@ def process_segmentation(
     current_subgoal_segment_filled = existing_subgoal_filled
     no_object_flag = False
 
-    # V6 审查修复 F4（K5，只对打了 ``_robomme_refresh_on_move_px`` 标的目标 actor 生效）：
-    # 子目标未切换、缓存中心已存在、且任一目标当前分割中心相对缓存的切比雪夫距离超过阈值时，
-    # 按「切换」路径整体重算中心并重新填充文本（交换后的容器不再沿用旧坐标）。
-    # 未打标的 actor 一律不进这段，原三档与其他环境逐字不变；目标不可见（缺分割）时不刷新（遮挡回填不在本轮范围）。
-    refresh_on_move = False
-    if current_subgoal_segment == previous_subgoal_segment and existing_points and active_segments:
-        thresholds = [getattr(target, "_robomme_refresh_on_move_px", 0) or 0 for target in active_segments]
-        threshold = max(thresholds) if thresholds else 0
-        if threshold > 0 and len(existing_points) == len(active_segments):
-            for idx, cached in enumerate(existing_points):
-                ids = segment_ids_by_index.get(idx, [])
-                if not ids:
-                    continue
-                mask_now = np.isin(segmentation_2d, ids)
-                if not np.any(mask_now):
-                    continue
-                coords_now = np.argwhere(mask_now)
-                center_now = (int(coords_now[:, 0].mean()), int(coords_now[:, 1].mean()))
-                if max(abs(center_now[0] - int(cached[0])), abs(center_now[1] - int(cached[1]))) > threshold:
-                    refresh_on_move = True
-                    break
-
-    if current_subgoal_segment != previous_subgoal_segment or refresh_on_move:
+    if current_subgoal_segment != previous_subgoal_segment:
 
         def compute_center_from_ids(segmentation_mask: np.ndarray, ids: Iterable[int]):
             nonlocal no_object_flag

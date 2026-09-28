@@ -1,4 +1,3 @@
-import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -26,28 +25,11 @@ from mani_skill.utils.geometry.rotation_conversions import (
 )
 
 from .utils import *
-# V5 L3（仿 VideoPlaceOrder 的 K2 修法）：上一行的 `from .utils import *` 会把同名子模块
-# `utils.SceneGenerationError` 盖到名字 `SceneGenerationError` 上（import 自省核实），原三档的
-# raise / except 因此是 TypeError（按 H2 原三档保持现状）。xhard 用下面这个别名拿到真正的异常类。
-from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenerationError
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import *
 from .utils import reset_panda
-from .utils.difficulty import NEWVALUE_DIFFICULTIES, is_newvalue_difficulty, normalize_robomme_difficulty, require_xhard4_only
-from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
+from .utils.difficulty import normalize_robomme_difficulty
 from ..logging_utils import logger
-
-
-def _scene_gen_error(difficulty):
-    """V5 L3：按档选场景生成异常类。
-
-    xhard 返回真正的 ``SceneGenerationError``（可重试的任务性失败）；原三档原样返回本模块里
-    被遮蔽的名字 ``SceneGenerationError``（子模块，raise / except 时仍是 TypeError，行为逐字不变）。
-    用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
-    只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
-    """
-    return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
 A simple task where the objective is to grasp a red cube with the {robot_id} robot and move it to a target goal position. This is also the *baseline* task to test whether a robot with manipulation
@@ -62,103 +44,6 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
-
-
-# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.4）────────
-# decision：方块运动速度的候选档位、第几次经过目标时停止。
-# native：目标与按钮位置、方块颜色、路线整体旋转、往返段数与时间公式，以及那次
-#        「抽了又被覆盖」的 interval 采样（方案要求保留原随机消费，不得删）。
-NATIVE_SAMPLING = {
-    "parameters": {
-        "interval_sample": {
-            "sampler": "torch.randint",
-            "low": 27,
-            "high_exclusive": 33,
-            "shape": [1],
-            "overridden_to": 30,
-            "note": "原代码抽完立刻被常量 30 覆盖；保留这次抽样以免随机流平移（红线 R8）",
-        },
-        "route_rotation_deg": {
-            "sampler": "torch.FloatTensor(1).uniform_",
-            "low": -30,
-            "high": 30,
-        },
-        "motion_segments": 5,
-        # V6 审查 N15（用户「n15 a」）：motion_segments=5 只是描述值，代码不读它；实际段数在 _initialize_episode 里
-        # 原三档恒 5、xhard4 取 max(5, stop_time)（交付 spec 为 6/14/15），随 actions.motion_segments 记入规格
-        "motion_segments_note": "描述值，代码不读；实际段数：原三档 5，xhard4 max(5, stop_time)",
-        "steps_press_expression": "move_interval * stop_time - move_interval / 2",
-        "stop_window_expression": "[move_interval * (stop_time - 1), move_interval * stop_time]",
-        "press_lead_steps": "self.interval",
-        "route_endpoints": {"start": [0, -0.3], "end": [0, 0.3]},
-        "recovery": "StopCube 原本就没有失败抓取注入，只接收入口给定的恢复模式",
-    },
-    "positions": {
-        "button": {"center_xy": [-0.2, 0], "scale": 1.5, "randomize": True},
-        "target": {
-            "xy_sampler": "torch.FloatTensor(1).uniform_",
-            "low": -0.1,
-            "high": 0.1,
-            "z": 0.01,
-            "euler_deg": [0.0, 90.0, 0.0],
-            "radius_factor": 1.8,
-            "thickness": 0.01,
-        },
-        "cube_color": {"sampler": "torch.rand", "shape": [3], "alpha": 1.0},
-        "cube_initial_position": [-0.3, -0.3],
-    },
-}
-
-
-def native_blocks(cls):
-    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
-    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
-
-
-# ── 难度分档（V4 计划 2.6，用户决策 A6）──────────────────────────────────────
-# 本环境原本没有难度分档：easy/medium/hard 三档**同值**，都等于原有的全局常量，
-# 所以不管传哪档，行为都与改动前逐字一致；只有 xhard 取 V4 新值。
-# move_interval_choices：方块单程步数候选（越小越快）；stop_time_range：第几次经过目标时停（半开区间）。
-_CONFIG_CURRENT = {
-    # 原值三档；randint 等概率抽下标
-    "move_interval_choices": [60, 80, 120],
-    # 原 randint(2, 6) 即闭区间 [2, 5]
-    "stop_time_range": {"low": 2, "high_exclusive": 6},
-}
-# xhard（C4 只锁这两项）：速度最快档 [60]、停止序号闭区间 [6, 15]（半开写 low=6, high_exclusive=16）。
-_CONFIG_XHARD = {
-    "move_interval_choices": [60],
-    "stop_time_range": {"low": 6, "high_exclusive": 16},
-}
-
-
-def _native_decision(cls):
-    """按方案第二节 2.4 切出 decision 块。
-
-    顶层两键是原三档共用的原值（三档同值，取 ``configs["hard"]``），与 V3 快照逐字相同；
-    V4 新值只放在 ``xhard`` 子键下，``assert_native_decision`` 按键名放行。
-    """
-    hard = cls.configs["hard"]
-    return {
-        "move_interval_choices": list(hard["move_interval_choices"]),
-        "stop_time_range": dict(hard["stop_time_range"]),
-        "xhard4": copy.deepcopy(cls.configs["xhard4"]),
-    }
-
-
-def _resolve_sampling_config(cls, override):
-    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
-    decision_default, native_default = native_blocks(cls)
-    decision, native = split_sampling_config(override, native_default, decision_default)
-    assert_native_decision(decision, decision_default, cls.__name__)
-    # 旧快照（v2/v3 导出时还没有 xhard 条目）守卫照旧放行；这里补上源码申报的新值档默认值，
-    # 只影响新值档局，原三档不读这些键。V6：fill_missing_newvalue 只补 xhard1/2/3（本环境不加档，补了也不会被读），
-    # xhard 的旧快照兜底保持本环境 V4/V5 原有写法（按族键名 NEWVALUE_DIFFICULTIES[-1] 取，即最难档 xhard）。
-    fill_missing_newvalue(decision, decision_default)
-    if NEWVALUE_DIFFICULTIES[-1] not in decision:
-        decision[NEWVALUE_DIFFICULTIES[-1]] = copy.deepcopy(decision_default[NEWVALUE_DIFFICULTIES[-1]])
-    native["decision"] = decision
-    return native
 
 
 @register_env("StopCube")
@@ -177,26 +62,10 @@ class StopCube(BaseEnv):
     cube_spawn_half_size = 0.05
     cube_spawn_center = (0, 0)
 
-    # A6：三档同值（深拷贝各一份，防止互相串改），xhard 取新值
-    configs = {
-        "easy": copy.deepcopy(_CONFIG_CURRENT),
-        "medium": copy.deepcopy(_CONFIG_CURRENT),
-        "hard": copy.deepcopy(_CONFIG_CURRENT),
-        "xhard4": copy.deepcopy(_CONFIG_XHARD),
-    }
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
-                     sampling_config=None,
-                     native_episode_spec=None,
                      **kwargs):
-        # 必须落在任何随机数调用与 super().__init__() 之前
-        self._sampling = _resolve_sampling_config(type(self), sampling_config)
-        self._spec = SpecRecorder(native_episode_spec, "StopCube", {"seed": seed},
-                                  difficulty=kwargs.get("difficulty"))
-        # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
-        # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
-        self._native_init_index = -1
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -241,8 +110,6 @@ class StopCube(BaseEnv):
                 self.difficulty = "medium"
             else:  # seed_mod == 2
                 self.difficulty = "hard"
-        # V6（计划 2.13 / M2）：本环境原版无梯度、不加档，传入 xhard1/2/3 明确报错
-        require_xhard4_only(self.difficulty, "StopCube")
 
         self.highlight_starts = {}  # Use dictionary to store highlight start time for each button
         super().__init__(*args, robot_uids=robot_uids, **kwargs)
@@ -280,41 +147,33 @@ class StopCube(BaseEnv):
 
 
 
-        button_cfg = self._sampling["positions"]["button"]
         button_obb = build_button(
             self,
-            center_xy=tuple(button_cfg["center_xy"]),
-            scale=button_cfg["scale"],
+            center_xy=(-0.2, 0),
+            scale=1.5,
             generator=generator,
-            randomize=button_cfg["randomize"],
-            recorder=self._spec,
-            spec_path="layout.button_xy",
+            randomize=True,
         )
         #avoid = [button_obb]
 
-        target_cfg = self._sampling["positions"]["target"]
-        angles = torch.deg2rad(torch.tensor(target_cfg["euler_deg"], dtype=torch.float32))
+        angles = torch.deg2rad(torch.tensor([0.0, 90.0, 0.0], dtype=torch.float32))
         rotate = matrix_to_quaternion(
                     euler_angles_to_matrix(angles, convention="XYZ")
                 )
         
-        target_x = torch.FloatTensor(1).uniform_(target_cfg["low"], target_cfg["high"], generator=generator).item()
-        target_y = torch.FloatTensor(1).uniform_(target_cfg["low"], target_cfg["high"], generator=generator).item()
-        target_x, target_y = self._spec.value("layout.target_xy", [target_x, target_y])
+        target_x = torch.FloatTensor(1).uniform_(-0.1, 0.1, generator=generator).item()
+        target_y = torch.FloatTensor(1).uniform_(-0.1, 0.1, generator=generator).item()
         self.target = build_purple_white_target(
                 scene=self.scene,
-                radius=self.cube_half_size*target_cfg["radius_factor"],
-                thickness=target_cfg["thickness"],
+                radius=self.cube_half_size*1.8,
+                thickness=0.01,
                 name="target",
                 body_type="kinematic",
                 add_collision=False,
-                initial_pose=sapien.Pose(p=[target_x, target_y, target_cfg["z"]], q=rotate),
+                initial_pose=sapien.Pose(p=[target_x, target_y, 0.01], q=rotate),
             )
-        color_cfg = self._sampling["positions"]["cube_color"]
-        cube_color_rgb = self._spec.value(
-            "objects.cube_rgb", torch.rand(*color_cfg["shape"], generator=generator).tolist()
-        )
-        cube_color = (cube_color_rgb[0], cube_color_rgb[1], cube_color_rgb[2], color_cfg["alpha"])
+        cube_color_rgb = torch.rand(3, generator=generator).tolist()
+        cube_color = (cube_color_rgb[0], cube_color_rgb[1], cube_color_rgb[2], 1.0)
         self.cube= spawn_fixed_cube(
                 self,
                 position=[-0.3, -0.3,self.cube_half_size/2],
@@ -341,37 +200,17 @@ class StopCube(BaseEnv):
             # Use generator to generate interval value, floating 5 around 20 (range 15-25)
             generator = torch.Generator()
             generator.manual_seed(self.seed)
-            interval_cfg = self._sampling["parameters"]["interval_sample"]
-            # 这次抽样的结果原本就立刻被覆盖，保留它只为不平移随机流（红线 R8）
-            # 这次抽样的结果原本就被覆盖；记进 sampling_trace 以证明它照常发生（红线 R8）
-            self._spec.value(
-                "actions.sampling_trace.interval_draw",
-                torch.randint(interval_cfg["low"], interval_cfg["high_exclusive"], tuple(interval_cfg["shape"]), generator=generator).item(),
-            )
-            interval = interval_cfg["overridden_to"]
+            interval = torch.randint(27, 33, (1,), generator=generator).item()
+            interval = 30
             self.interval = interval
 
 
-            # 难度真正被消费的唯一位置：xhard 读 decision.xhard 子键，原三档读顶层原值（三档同值）。
-            # 两个分支的随机调用次数、顺序、区间形式完全相同，只是区间端点不同（红线 N5）。
-            xhard = is_newvalue_difficulty(self.difficulty)
-            decision_cfg = self._sampling["decision"][self.difficulty] if xhard else self._sampling["decision"]
-            key_prefix = f"{self.difficulty}." if xhard else ""
-
-            move_interval_list = list(decision_cfg["move_interval_choices"])
-            idx = self._spec.value(
-                "actions.move_interval_idx",
-                torch.randint(0, len(move_interval_list), (1,), generator=generator).item(),
-                decision_key=f"{key_prefix}move_interval_choices",
-            )
+            move_interval_list = [60,80,120]   
+            #move_interval_list=[120]  
+            idx = torch.randint(0, len(move_interval_list), (1,), generator=generator).item()
             self.move_interval = move_interval_list[idx]
 
-            stop_cfg = decision_cfg["stop_time_range"]
-            stop_time=self._spec.value(
-                "actions.stop_time",
-                torch.randint(stop_cfg["low"], stop_cfg["high_exclusive"], (1,), generator=generator).item(),
-                decision_key=f"{key_prefix}stop_time_range",
-            )
+            stop_time=torch.randint(2, 6, (1,), generator=generator).item()
 
             self.steps_press=self.move_interval*(stop_time)-self.move_interval/2
             self.stop_time_range = (
@@ -379,16 +218,6 @@ class StopCube(BaseEnv):
                 self.move_interval * (stop_time ),
             )
             self.stop_time=stop_time
-            # 方块往返段数：原三档在 step 里写死 5 趟（stop_time ≤ 5 恰好够用），这里只作记录不改原路径；
-            # xhard 的 stop_time 可达 15，必须按实际停止序号展开，否则第 6 次起的「经过目标」根本不存在。
-            # 第 n 次经过目标发生在第 n 段的中点 move_interval*(n-0.5)，所以段数 = max(5, stop_time) 恰好覆盖。
-            self.motion_segments = max(5, int(stop_time)) if xhard else 5
-            if xhard:
-                # 派生量只在 xhard 记进规格（原三档规格文档逐字不变）
-                self._spec.record("actions.move_interval", int(self.move_interval))
-                self._spec.record("actions.motion_segments", int(self.motion_segments))
-                self._spec.record("actions.steps_press", float(self.steps_press))
-                self._spec.record("actions.stop_window", [float(v) for v in self.stop_time_range])
             # Get target xy coordinates (already randomized in _load_scene)
             target_pose = self.target.pose
             if isinstance(target_pose.p, torch.Tensor):
@@ -400,11 +229,7 @@ class StopCube(BaseEnv):
             target_center = np.array([target_x, target_y])
 
             # Generate random rotation angle (-30 to +30 degrees)
-            rotation_cfg = self._sampling["parameters"]["route_rotation_deg"]
-            rotation_angle = self._spec.value(
-                "actions.rotation_deg",
-                torch.FloatTensor(1).uniform_(rotation_cfg["low"], rotation_cfg["high"], generator=generator).item(),
-            )
+            rotation_angle = torch.FloatTensor(1).uniform_(-30, 30, generator=generator).item()
             rotation_rad = np.deg2rad(rotation_angle)
 
             # Define original start and end coordinates (around origin (0,0))
@@ -573,13 +398,7 @@ class StopCube(BaseEnv):
         end_pos = [self.end_pos_xy[0], self.end_pos_xy[1], self.cube_half_size / 2]
 
         # Alternate between the two waypoints so the cube makes five passes
-        # （原三档逐字保持 range(5)；xhard 按 _initialize_episode 算出的实际段数展开，
-        #   segment % 2 的起终点交替规则不变）
-        if is_newvalue_difficulty(getattr(self, "difficulty", None)):
-            segments = range(self.motion_segments)
-        else:
-            segments = range(5)
-        for segment in segments:
+        for segment in range(5):
             move_straight_line(
                 self,
                 cube=self.cube,

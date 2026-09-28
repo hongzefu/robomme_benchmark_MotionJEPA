@@ -1,4 +1,3 @@
-import copy
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -9,8 +8,6 @@ import mani_skill.envs.utils.randomization as randomization
 from mani_skill.agents.robots import SO100, Fetch, Panda
 from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.envs.tasks.tabletop.pick_cube_cfgs import PICK_CUBE_CONFIGS
-from .utils.episode_spec import SpecRecorder
-from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from mani_skill.sensors.camera import CameraConfig
 from mani_skill.utils import sapien_utils
 from mani_skill.utils.building import actors
@@ -31,16 +28,7 @@ from .utils import *
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import spawn_fixed_cube, build_board_with_hole
 from .utils import reset_panda
-from .utils.difficulty import normalize_robomme_difficulty, is_newvalue_difficulty
-from .utils.SceneGenerationError import SceneGenerationError
-from .utils.unmask_distractors import add_distractor_misgrasp_failure
-# V5 xhard（L13 / L14）：统一干扰采样器与独立停放点；只在 xhard 分支调用，原三档不进该模块
-from .utils.unmask_distractor_sampler import (
-    V5_DISTRACTOR_PRESETS,
-    reveal_actors_parked,
-    reveal_distractor_bins_parked,
-    spawn_distractor_layout,
-)
+from .utils.difficulty import normalize_robomme_difficulty
 from ..logging_utils import logger
 
 
@@ -57,107 +45,6 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 - the cube position is within `goal_thresh` (default 0.025m) euclidean distance of the goal position
 - the robot is static (q velocity < 0.2)
 """
-
-
-# ── decision／native 两块的原值（newtaskRelease-v3 步 3，映射见方案第二节 2.6）────────
-NATIVE_SAMPLING = {
-    "parameters": {
-        "color_pool": [
-            {"rgba": [1, 0, 0, 1], "name": "red"},
-            {"rgba": [0, 1, 0, 1], "name": "green"},
-            {"rgba": [0, 0, 1, 1], "name": "blue"},
-        ],
-        "color_order": {"sampler": "torch.randperm(3)"},
-        "constructor_rng": {
-            "sampler": "torch.randint",
-            "low": 1,
-            "high_exclusive": 6,
-            "note": "构造器这次抽样不决定抓取数量，但决定后续随机流位置，必须保留（红线 R8）",
-        },
-        "hidden_rule": "前 3 个容器各藏一块，其余为空",
-        "pick_rule": "按按钮后先抓 bin_0，pick>1 再抓 bin_1",
-        "recovery": "构造器的 self.generator 用于恢复；场景另有同 seed 局部 generator，两条流分开",
-        "step_bin_scan": 15,
-    },
-    "positions": {
-        "button": {
-            "center_xy": [-0.2, 0],
-            "scale": 1.5,
-            "randomize": True,
-            "randomize_range": [0.1, 0.1],
-        },
-        "bins": {"min_gap_factor": 2, "max_trials": 256, "yaw_expression": "u * 90 度"},
-        "hidden_cube": {"half_size_divisor": 1.2, "yaw": 0.0, "dynamic": True},
-        "reveal_window": {"start_step": 0, "end_step": 64},
-    },
-}
-
-
-# ── V4 xhard 专属的 decision 条目（NEWTASK_RELEASE_V4_PLAN 2.7 / 2.9；G2、B3、B13 均为用户已定数）──
-# 原三档不读这些键；守卫对名为 xhard 的子键只校验结构、放行取值（sampling_config.assert_native_decision）。
-XHARD_BIN_LAYOUT = {
-    # G2（2026-09-22）：区域不动，间距系数 2 → 0.75，容器数 8；放不满直接判该局失败
-    "min_gap_factor": 0.75,
-}
-# V5（NEWTASK_RELEASE_V5_PLAN 2.4；L6～L13）：贴身环带 [0.2425, 0.3289]，按内部密度定数，半数含 cube，
-# 三色平衡轮转，1024 次；统一 7 键 schema（count / ring_max_abs_xy / cube_count_range / color_pool /
-# color_rule / min_gap_factor / max_trials），取值见 unmask_distractor_sampler.V5_DISTRACTOR_PRESETS。
-XHARD_DISTRACTOR = copy.deepcopy(V5_DISTRACTOR_PRESETS["ButtonUnmask"])
-
-
-# ── V6（NEWTASK_RELEASE_V6_PLAN 2.3）新值族档位表：xhard1/2/3 沿用 xhard 的全部机制（8 内环容器 + 贴身环带 +
-# 三色轮转 + 独立停放），只按档改干扰总数 count 与含 cube 个数 cube_count_range；环带宽度、间距、
-# 尝试次数等一律沿用 xhard（干扰数少时即在同一环带内更稀疏地随机放置，不重新推导带宽）。
-# 「xhard」键即原 XHARD_* 常量本身，取值逐位不变。
-def _newvalue_distractor(count, cube_count_range):
-    """以 xhard 的干扰配置为底，只替换 count 与 cube_count_range。"""
-    cfg = copy.deepcopy(XHARD_DISTRACTOR)
-    cfg["count"] = count
-    cfg["cube_count_range"] = list(cube_count_range)
-    return cfg
-
-
-NEWVALUE_DISTRACTOR = {
-    "xhard4": XHARD_DISTRACTOR,
-    "xhard1": _newvalue_distractor(8, [4, 4]),
-    "xhard2": _newvalue_distractor(10, [5, 5]),
-    "xhard3": _newvalue_distractor(12, [6, 6]),
-}
-# 内环容器摆放（间距系数 0.75）四档相同
-NEWVALUE_BIN_LAYOUT = {tier: XHARD_BIN_LAYOUT for tier in NEWVALUE_DISTRACTOR}
-
-
-def native_blocks(cls):
-    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
-    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
-
-
-def _native_decision(cls):
-    """按方案第二节 2.6 切出 decision 块（原值阶段等于原值）。"""
-    return {
-        "pick_count": {difficulty: cfg["pick"] for difficulty, cfg in cls.configs.items()},
-        "bin_layout_policy": {
-            "count": {difficulty: cfg["bin"] for difficulty, cfg in cls.configs.items()},
-            "region_center": [0, 0],
-            "region_half_size": 0.2,
-            # xhard 在前（键序与 V5 相同），V6 的 xhard1/2/3 追加其后
-            **{tier: copy.deepcopy(layout) for tier, layout in NEWVALUE_BIN_LAYOUT.items()},
-        },
-        # 原三档可见部分保持 None；V4 的干扰容器放在 xhard 子键下
-        "distractor": None,
-        **{tier: {"distractor": copy.deepcopy(dist)} for tier, dist in NEWVALUE_DISTRACTOR.items()},
-    }
-
-
-def _resolve_sampling_config(cls, override):
-    """拆出本实例专属的 decision／native 副本；不抽随机数，必须在 Generator 之前调用。"""
-    decision_default, native_default = native_blocks(cls)
-    decision, native = split_sampling_config(override, native_default, decision_default)
-    assert_native_decision(decision, decision_default, cls.__name__)
-    # V6：旧快照（V5 没有 xhard1/2/3 子树）从源码申报补齐
-    fill_missing_newvalue(decision, decision_default)
-    native["decision"] = decision
-    return native
 
 
 @register_env("ButtonUnmask")
@@ -190,53 +77,17 @@ class ButtonUnmask(BaseEnv):
     "pick":1,
     }
 
-    # V4 xhard（派生自 hard，计划 2.9）：pick 2 → 3；容器数 15 → 8（G2：配 min_gap_factor 0.75，
-    # 见 XHARD_BIN_LAYOUT）。另有贴身环带干扰容器（V5：XHARD_DISTRACTOR，VU 15 个 / BU 14 个），不计入 bin。
-    config_xhard4 = {
-    'bin':8,
-    "pick":3,
-    }
-
-    # V6 新值族：内环容器数固定为 8，pick 按档为 2/3/3/3。
-    config_xhard1 = {
-    'bin':8,
-    "pick":2,
-    }
-
-    config_xhard2 = {
-    'bin':8,
-    "pick":3,
-    }
-
-    config_xhard3 = {
-    'bin':8,
-    "pick":3,
-    }
-
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium,
-        'xhard4': config_xhard4,
-        'xhard1': config_xhard1,
-        'xhard2': config_xhard2,
-        'xhard3': config_xhard3,
+        'medium': config_medium
     }
 
 
 
     def __init__(self, *args, robot_uids="panda_wristcam", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
-                     sampling_config=None,
-                     native_episode_spec=None,
                      **kwargs):
-        # 必须落在任何随机数调用与 super().__init__() 之前
-        self._sampling = _resolve_sampling_config(type(self), sampling_config)
-        self._spec = SpecRecorder(native_episode_spec, "ButtonUnmask", {"seed": seed},
-                                  difficulty=kwargs.get("difficulty"))
-        # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
-        # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
-        self._native_init_index = -1
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
         self.robot_init_qpos_noise = robot_init_qpos_noise
@@ -283,12 +134,7 @@ class ButtonUnmask(BaseEnv):
         # Use seed to randomly determine number of repetitions (1-5) arbitrarily
         generator = torch.Generator()
         generator.manual_seed(seed)
-        ctor_cfg = self._sampling["parameters"]["constructor_rng"]
-        # 这次抽样不决定抓取数量，但决定随机流位置；记进 sampling_trace 以证明它照常发生
-        self.num_repeats = self._spec.value(
-            "actions.sampling_trace.constructor_draw",
-            torch.randint(ctor_cfg["low"], ctor_cfg["high_exclusive"], (1,), generator=generator).item(),
-        )
+        self.num_repeats = torch.randint(1, 6, (1,), generator=generator).item()
         logger.debug(f"Task will repeat {self.num_repeats} times (pickup-drop cycles)")
         self.generator = generator  
 
@@ -325,17 +171,14 @@ class ButtonUnmask(BaseEnv):
         )
         self.table_scene.build()
 
-        button_cfg = self._sampling["positions"]["button"]
         button_obb_1 = build_button(
             self,
-            center_xy=tuple(button_cfg["center_xy"]),
-            scale=button_cfg["scale"],
+            center_xy=(-0.2, 0),
+            scale=1.5,
             generator=generator,
             name="button",
-            randomize=button_cfg["randomize"],
-            randomize_range=tuple(button_cfg["randomize_range"]),
-            recorder=self._spec,
-            spec_path="layout.button_xy",
+            randomize=True,
+            randomize_range=(0.1, 0.1)
         )
         # Store first button before building second one
         self.button_left = self.button
@@ -346,44 +189,19 @@ class ButtonUnmask(BaseEnv):
 
              # Generate 3 bins
         self.spawned_bins = []
-        decision_cfg = self._sampling["decision"]
-        bin_layout = decision_cfg["bin_layout_policy"]
-        bins_cfg = self._sampling["positions"]["bins"]
-        hidden_cfg = self._sampling["positions"]["hidden_cube"]
-        # V6：新值族（xhard1/2/3/xhard）同走 xhard 机制，数值按本局档位查表
-        xhard = is_newvalue_difficulty(self.difficulty)
-        # V4 xhard：间距系数取 decision 的 xhard 条目（G2 0.75）；原三档仍读 native 的原值，表达式不变
-        gap_factor = (bin_layout[self.difficulty]["min_gap_factor"] if xhard
-                      else bins_cfg["min_gap_factor"])
-        if xhard:
-            requested_bins = bin_layout["count"][self.difficulty]
-            # 揭示动画只扫 bin_0..bin_{scan-1}：容器数超过它的部分不会被揭示（计划 2.8/2.9）
-            if self._sampling["parameters"]["step_bin_scan"] < requested_bins:
-                raise ValueError(
-                    f"step_bin_scan={self._sampling['parameters']['step_bin_scan']} 小于容器数 {requested_bins}"
-                )
-            self._spec.record("layout.bin_count.requested", requested_bins)
-        for i in range(bin_layout["count"][self.difficulty]):
+        for i in range(self.configs[self.difficulty]['bin']):
             try:
                 bin_actor = spawn_random_bin(
                     self,
                     avoid=avoid,  # Use current avoidance list, containing all spawned objects
-                    region_center=list(bin_layout["region_center"]),
-                    region_half_size=bin_layout["region_half_size"],
-                    min_gap=self.cube_half_size*gap_factor,  # bins need larger gap, increased to 6x to avoid collision
+                    region_center=[0, 0],
+                    region_half_size=0.2,
+                    min_gap=self.cube_half_size*2,  # bins need larger gap, increased to 6x to avoid collision
                     name_prefix=f"bin_{i}",
-                    max_trials=bins_cfg["max_trials"],
-                    generator=generator,
-                    recorder=self._spec,
-                    spec_path=f"layout.bins.{i}",
+                    max_trials=256,
+                    generator=generator
                 )
             except RuntimeError as e:
-                if xhard:
-                    # 2.2④：xhard 下放不满即该局失败，不许静默截断
-                    self._spec.record("layout.bin_count.placed", len(self.spawned_bins))
-                    raise SceneGenerationError(
-                        f"ButtonUnmask xhard 容器放不满：请求 {requested_bins} 个，只放下 {len(self.spawned_bins)} 个"
-                    ) from e
                 break
 
             self.spawned_bins.append(bin_actor)
@@ -391,8 +209,6 @@ class ButtonUnmask(BaseEnv):
             setattr(self, f"bin_{i}", bin_actor)
             # Add newly generated bin to avoidance list
             avoid.append(bin_actor)
-        if xhard:
-            self._spec.record("layout.bin_count.placed", len(self.spawned_bins))
 
 
         # Generate 3 dynamic cubes under each bin (using fixed position, colors red, green, blue)
@@ -402,10 +218,7 @@ class ButtonUnmask(BaseEnv):
 
         # Use seed to randomly shuffle color order
 
-        self._spec.identity.setdefault("difficulty", getattr(self, "difficulty", None))
-        shuffle_indices = self._spec.value(
-            "objects.color_order", torch.randperm(len(cube_colors), generator=generator).tolist()
-        )
+        shuffle_indices = torch.randperm(len(cube_colors), generator=generator).tolist()
         cube_colors = [cube_colors[i] for i in shuffle_indices]
         color_names = [color_names[i] for i in shuffle_indices]
 
@@ -424,10 +237,10 @@ class ButtonUnmask(BaseEnv):
             cube_actor = spawn_fixed_cube(
                 self,
                 position=cube_position,
-                half_size=self.cube_half_size/hidden_cfg["half_size_divisor"],
+                half_size=self.cube_half_size/1.2,
                 color=cube_colors[i],  # Use red, green, blue in order
                 name_prefix=f"target_cube_{color_names[i]}",
-                yaw=hidden_cfg["yaw"],  # No rotation
+                yaw=0.0,  # No rotation
                 dynamic=True
             )
 
@@ -464,11 +277,7 @@ class ButtonUnmask(BaseEnv):
                         "solve": lambda env, planner: [solve_pickup_bin(env, planner, obj=self.bin_0)],
                          "segment":self.bin_0,
                     })
-        if xhard:
-            # V4 xhard：按 pick_count 循环追加「放下上一个 → 抓第 k 个」（原分支写死 bin_0/bin_1，只能 2 抓）；
-            # 上面第一个 pickup 的单元素列表形态原样保留
-            self._append_xhard_pick_tasks(tasks, decision_cfg["pick_count"][self.difficulty])
-        elif decision_cfg["pick_count"][self.difficulty]>1:
+        if self.configs[self.difficulty]['pick']>1:
             tasks.append({
                     "func": (lambda: is_bin_putdown(self, obj=self.bin_0)),
                     "name": "put down the container",
@@ -495,77 +304,15 @@ class ButtonUnmask(BaseEnv):
         self.recovery_pickup_indices, self.recovery_pickup_tasks = task4recovery(self.task_list)
         if self.robomme_failure_recovery:
             # Only inject an intentional failed grasp when recovery mode is enabled
-            # 恢复动作的选择是一次真实抽样：原位置照常抽，回注模式下用冻结的索引
-            self.fail_grasp_task_index = self._spec.value(
-                "actions.recovery.selected_action_index",
-                inject_fail_grasp(
+            self.fail_grasp_task_index = inject_fail_grasp(
                 self.task_list,
                 generator=self.generator,
                 mode=self.robomme_failure_recovery_mode,
-            ),
             )
         else:
             self.fail_grasp_task_index = None
 
-        if xhard:
-            # V4 xhard 干扰容器：必须在全部既有取值点之后（红线 N5）。场景局部 generator 的最后一次既有抽样
-            # 是 color_order；恢复抽样走构造器的 self.generator，两条流互不影响。按钮 OBB 在 avoid 里一并避让。
-            # V5（L13）：统一干扰采样器；仍用主场景 generator、仍在全部既有取值点之后，内环取值与 V4 同 seed 逐位相同
-            self.distractor_bins, self.distractor_cubes, self.distractor_layout = spawn_distractor_layout(
-                self,
-                cfg=decision_cfg[self.difficulty]["distractor"],
-                decision_prefix=f"{self.difficulty}.distractor",
-                avoid=avoid,
-                generator=generator,
-                recorder=self._spec,
-                hidden_half_size=self.cube_half_size/hidden_cfg["half_size_divisor"],
-            )
-            # V4 xhard（用户 2026-09-22「误抓即失败」）：每个已有 failure_func 的抓取／放下任务追加
-            # 「任一干扰容器被抬起（z>0.15，与区域内容器同一判据）即失败」；原三档不进此分支
-            add_distractor_misgrasp_failure(self, self.task_list)
-
-    def _append_xhard_pick_tasks(self, tasks, pick_total):
-        """xhard 专用：把第 2..pick_total 次抓取按「放下上一个容器 → 抓下一个」追加进任务表。
-
-        各条目与原 hard 分支的第 2 抓逐项同构，只把写死的 bin_0/bin_1、color_names[0]/[1] 换成按 k 取；
-        lambda 用默认参数绑定当次的容器，避免循环变量晚绑定。
-        """
-        if pick_total > min(len(self.spawned_bins), len(self.color_names)):
-            raise SceneGenerationError(
-                f"pick_count={pick_total} 超过可抓的藏物容器数 {min(len(self.spawned_bins), len(self.color_names))}"
-            )
-        # 任务目标文本（utils/task_goal.py）在 xhard 下读这个实际次数
-        self.xhard_pick_count = pick_total
-        self._spec.record("objects.n_picks", pick_total)
-        self._spec.record("objects.pick_order", list(range(pick_total)))
-        for k in range(1, pick_total):
-            prev_bin = getattr(self, f"bin_{k-1}")
-            cur_bin = getattr(self, f"bin_{k}")
-            color = self.color_names[k]
-            tasks.append({
-                    "func": (lambda b=prev_bin: is_bin_putdown(self, obj=b)),
-                    "name": "put down the container",
-                    "subgoal_segment":"put down the container",
-                    "choice_label": "put down the container",
-                    "demonstration": False,
-                    "failure_func": lambda b=prev_bin: is_any_bin_pickup(self,[bin for bin in self.spawned_bins if bin != b]),
-                    "solve": lambda env, planner: solve_putdown_whenhold(env, planner),
-                })
-            tasks.append(
-                {
-                    "func": (lambda b=cur_bin: is_bin_pickup(self, obj=b)),
-                    "name": f"pick up the container that hides the {color} cube",
-                    "subgoal_segment":f"pick up the container at <> that hides the {color} cube",
-                    "choice_label": "pick up the container",
-                    "demonstration": False,
-                    "failure_func": lambda b=cur_bin: is_any_bin_pickup(self,[bin for bin in self.spawned_bins if bin != b]),
-                    "solve": lambda env, planner, b=cur_bin: solve_pickup_bin(env, planner, obj=b),
-                    "segment":cur_bin,
-                })
-
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
-        # 每次初始化各自记一份规格，不复用上一次的结果
-        self._native_init_index = getattr(self, "_native_init_index", -1) + 1
         with torch.device(self.device):
             b = len(env_idx)
             self.table_scene.initialize(env_idx)
@@ -657,39 +404,16 @@ class ButtonUnmask(BaseEnv):
         timestep = self.elapsed_steps
         
                 #Lift and drop bins (bin_0 to bin_4 if they exist)
-        if is_newvalue_difficulty(self.difficulty):
-            # V5 xhard（L14，主会话 2026-09-24 定：内环容器也停独立点）：窗口与半窗落回步与原机制逐步相同，
-            # 只把「远处」从共用的 (10,10,10) 换成每个物体各自的画面外停放点，免得 20 多个容器叠放拖慢物理。
-            # 内环容器与原循环扫同一组 bin_<i>（i < step_bin_scan），第 i 个停在 xhard_park_point("bin", i)；
-            # 被藏 cube 在本环境的揭示里本来就不动，无需停放。
-            reveal_window = self._sampling["positions"]["reveal_window"]
-            reveal_actors_parked(
-                self,
-                [getattr(self, f"bin_{i}") for i in range(self._sampling["parameters"]["step_bin_scan"])
-                 if hasattr(self, f"bin_{i}")],
-                group="bin",
-                start_step=reveal_window["start_step"],
-                end_step=reveal_window["end_step"],
-                cur_step=timestep,
-            )
-            # 干扰容器（用户 2026-09-22「参与揭示」）：同一窗口，每个一个停放点
-            reveal_distractor_bins_parked(
-                self,
-                start_step=reveal_window["start_step"],
-                end_step=reveal_window["end_step"],
-                cur_step=timestep,
-            )
-        else:
-            for i in range(self._sampling["parameters"]["step_bin_scan"]):
-                bin_attr = f"bin_{i}"
-                if hasattr(self, bin_attr):
-                    lift_and_drop_objects_back_to_original(
-                        self,
-                        obj=getattr(self, bin_attr),
-                        start_step=self._sampling["positions"]["reveal_window"]["start_step"],
-                        end_step=self._sampling["positions"]["reveal_window"]["end_step"],
-                        cur_step=timestep,
-                    ) 
+        for i in range(15):
+            bin_attr = f"bin_{i}"
+            if hasattr(self, bin_attr):
+                lift_and_drop_objects_back_to_original(
+                    self,
+                    obj=getattr(self, bin_attr),
+                    start_step=0,
+                    end_step=32*2,
+                    cur_step=timestep,
+                ) 
 
         obs, reward, terminated, truncated, info = super().step(action)
         return obs, reward, terminated, truncated, info

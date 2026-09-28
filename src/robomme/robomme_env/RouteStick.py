@@ -1,8 +1,6 @@
 
 
 
-import copy
-import json
 from typing import Any, Dict, Union
 
 import numpy as np
@@ -29,33 +27,14 @@ from mani_skill.utils.geometry.rotation_conversions import (
 )
 
 from .utils import *
-# V5 L3（仿 VideoPlaceOrder 的 K2 修法）：上一行的 `from .utils import *` 会把同名子模块
-# `utils.SceneGenerationError` 盖到名字 `SceneGenerationError` 上（import 自省核实），原三档的
-# raise / except 因此是 TypeError（按 H2 原三档保持现状）。xhard 用下面这个别名拿到真正的异常类。
-from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenerationError
 from .utils.subgoal_evaluate_func import *
 from .utils.object_generation import *
 from .utils import reset_panda
 from .utils.route import *
 from .utils.subgoal_planner_func import *
-from .utils.difficulty import NEWVALUE_DIFFICULTIES, is_newvalue_difficulty, normalize_robomme_difficulty
-from .utils.episode_spec import SpecRecorder
-from .utils.episode_spec import EpisodeSpecError as _EpisodeSpecError
-from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
+from .utils.difficulty import normalize_robomme_difficulty
 
 from ..logging_utils import logger
-
-
-def _scene_gen_error(difficulty):
-    """V5 L3：按档选场景生成异常类。
-
-    xhard 返回真正的 ``SceneGenerationError``（可重试的任务性失败）；原三档原样返回本模块里
-    被遮蔽的名字 ``SceneGenerationError``（子模块，raise / except 时仍是 TypeError，行为逐字不变）。
-    用法：``raise _scene_gen_error(self.difficulty)("说明")``、``except _scene_gen_error(self.difficulty):``；
-    只在 xhard 路径上执行的代码直接用 ``_RealSceneGenerationError``。
-    """
-    # V6 口径 11：新值族（xhard1/2/3/xhard）都走真异常类，原三档不变
-    return _RealSceneGenerationError if is_newvalue_difficulty(difficulty) else SceneGenerationError
 
 PICK_CUBE_DOC_STRING = """**Task Description:**
 A simple task where the objective is to grasp a red cube with the {robot_id} robot and move it to a target goal position. This is also the *baseline* task to test whether a robot with manipulation
@@ -73,131 +52,6 @@ capabilities can be simulated and trained properly. Hence there is extra code fo
 
 
 # If direction is reversed, modify evaluate and solve
-
-# ── 原版采样输入的原值快照（newtask-v2 10.0）────────────────────────────────────
-# 说明同 BinFill：本字典即不传 sampling_config 时的默认值，也是 --extract-config 的提取目标；
-# 难度字典仍以类属性 config_easy / config_medium / config_hard 为准，不在这里重复。
-NATIVE_SAMPLING = {
-    "parameters": {
-        "configs_fallback_difficulty": "easy",
-        "walk": {
-            "node_indices": [0, 2, 4, 6, 8],
-            "start_selection": "randint",
-            "neighbor_order": [-1, 1],
-            "force_reverse_at_endpoint": True,
-            "direction": {
-                "sampler": "torch.rand",
-                "shape": [1],
-                "threshold": 0.5,
-                "less_than": "clockwise",
-                "otherwise": "counterclockwise",
-            },
-        },
-    },
-    "positions": {
-        "grid_center": [-0.1, 0],
-        "grid_spacing_x": 0.07,
-        "grid_spacing_y": 0.07,
-        "rotation_center": [0, 0],
-        "yaw_deg": {"scale": 60, "subtract": 30},
-        "yaw_expression": "math.radians(u * 60 - 30)",
-        "grid_spacing_x_effect": "num_rows=1 使 row 偏移恒为 0，该参数对结果无影响（死参数）",
-        "target_builder": "build_gray_white_target",
-        "obstacle_builder": "_load_scene 内联 create_actor_builder",
-        "cylinder_radius": 0.015,
-        "cylinder_height": 0.1,
-        "obstacle_color": {
-            "sampler": "torch.rand",
-            "shape": [3],
-            "count": 4,
-            "position_in_stream": "theta 之后、steps 之前，每根障碍柱一次",
-        },
-        "walk_start": {
-            "sampler": "torch.randint",
-            "low": 0,
-            "high_exclusive": 5,
-            "note": "generate_dynamic_walk 未传 start_idx 时抽取，是路线随机流的第一次抽取",
-        },
-        # ── 高亮渲染的原值（newtaskRelease-v3 步 2）──────────────────────────────
-        # 白球尾迹会被渲进 front/wrist 的 rgb 与 depth，所以它是会影响对拍的观测输入，
-        # 不是纯视觉装饰。官方 dataset-gen 的存活期为 40 步；2026-09-12 曾两次减半到
-        # 10 步，A↔B 实测正是因此在 200 帧里有 184 帧的四路相机观测不同（动作与状态全同）。
-        # 这里恢复官方原值 40，减半方案改为通过 sampling_config 显式覆盖。
-        "tcp_trail": {
-            "end_offset_steps": 40,
-            "disk_radius": 0.005,
-            "native_note": "官方 dataset-gen d53f21a 的 highlight_position 尾迹存活 40 步",
-        },
-        "button_highlight": {
-            "end_offset_steps": 40,
-            "disk_radius_scale": 1.002,
-            "native_note": "官方与现行一致，未改动",
-        },
-    },
-}
-
-
-def _resolve_episode_spec(spec, task):
-    """准备本实例专属的固定规格副本（新值注入）；详见 BinFill 同名函数。
-
-    传 ``None``（没传 ``--episode-specs``）时返回 ``None``，此后每个消费点都走原随机路径，
-    链路与改动前逐字相同。
-    """
-    if spec is None:
-        return None
-    if not isinstance(spec, dict):
-        raise ValueError("episode_spec 必须是字典")
-    if spec.get("task") != task:
-        raise ValueError(f"episode_spec 是 {spec.get('task')} 的规格，不能用于 {task}")
-    return copy.deepcopy(spec)
-
-
-def native_blocks(cls):
-    """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份，杜绝两套真值。"""
-    return _native_decision(cls), copy.deepcopy(NATIVE_SAMPLING)
-
-
-def _native_decision(cls):
-    """按方案第二节字段表切出 decision 块（原值阶段等于原值）。"""
-    # 第二节 2.16：RouteStick 的 decision 只有「演示视频目标时长及调节时长的方式」，
-    # 本轮不启用（值为 None 即保持原路径与求解运动决定时长）；段数 length 与 backtrack
-    # 按字段表属 native，随 configs 一起留在 native 块里。
-    return {
-        "demo_duration_seconds_range": None,
-        "demonstration_duration_policy": "native",
-        # V5 xhard 专属（计划 2.11，L37/L38）：段数 L 的范围冻进 decision 与规格 header，回放时从 header 读，
-        # 不再从类属性读。键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
-        "xhard4": {"segment_count_range": list(cls.config_xhard4["length"])},
-        # V6（计划 2.12）：追加 xhard1/2/3 三棵同结构子树，值取各档 config 的 length（xhard 保持首位不变）
-        **{d: {"segment_count_range": list(cls.configs[d]["length"])}
-           for d in NEWVALUE_DIFFICULTIES if d != NEWVALUE_DIFFICULTIES[-1]},
-    }
-
-
-def _resolve_sampling_config(cls, override):
-    """准备本实例专属的采样配置副本；不采样、不改随机流，详见 BinFill 同名函数。"""
-    decision_default, native_default = native_blocks(cls)
-    decision, native = split_sampling_config(override, native_default, decision_default)
-    # 第一轮只做原值导出／消费：decision 必须逐键等于原值（红线 R7）。
-    assert_native_decision(decision, decision_default, cls.__name__)
-    # V6：V5 快照（已有顶层 xhard 子树）缺 xhard1/2/3 时从源码补齐；V4 及更早的快照不补，
-    # 保持 V5「V4 header 在新值档上直接报错、不静默取源码新值」的口径 13。
-    if NEWVALUE_DIFFICULTIES[-1] in decision:
-        fill_missing_newvalue(decision, decision_default)
-    resolved = native
-    resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
-    resolved["decision"] = decision
-    walk = copy.deepcopy(resolved["parameters"].get("walk"))
-    if not isinstance(walk, dict) or not isinstance(walk.get("direction"), dict):
-        raise ValueError("RouteStick.parameters.walk 缺少完整游走规则")
-    threshold = walk["direction"].get("threshold")
-    if isinstance(threshold, bool) or not isinstance(threshold, (int, float)) or not math.isfinite(threshold) or not 0 <= threshold <= 1:
-        raise ValueError("RouteStick.walk.direction.threshold 必须为 [0,1] 内有限数值")
-    walk["direction"]["threshold"] = NATIVE_SAMPLING["parameters"]["walk"]["direction"]["threshold"]
-    if json.dumps(walk, sort_keys=True) != json.dumps(NATIVE_SAMPLING["parameters"]["walk"], sort_keys=True):
-        raise ValueError("RouteStick.parameters.walk 除方向阈值外必须完整保留原版规则与类型")
-    return resolved
-
 
 @register_env("RouteStick")
 class RouteStick(BaseEnv):
@@ -229,55 +83,16 @@ class RouteStick(BaseEnv):
     'length':[4,7],
     'backtrack':True,
     }
-    # V4 xhard（派生自 hard，B9；A7 作废 2026-09-11 的旧值 [8,10]）：布局不动，段数 12～15。
-    # V5（计划 2.11，L37）：段数 L 改为 [15,21]。演示每段恰好 50 帧 ⇒ 750～1050 帧 ⇒ 25～35 s @30fps，
-    # 均匀抽样均值 30 s；执行段 50·L（+1 初始帧），L=21 时 1050 步，在评估 1301 步预算内（截断点 L≥27）。
-    # 抽样点与顺序不变，只改值域；xhard 实际消费的是 decision.xhard.segment_count_range（冻进 header），
-    # 这里的 length 是它的默认来源。
-    config_xhard4 = {
-    'length':[17,21],
-    'backtrack':True,
-    }
-
-    # V6（计划 2.12）：hard 与 xhard 之间插入三档，布局与游走规则沿用 xhard，只改段数 L；backtrack 恒 True
-    config_xhard1 = {
-    'length':[8,10],
-    'backtrack':True,
-    }
-    config_xhard2 = {
-    'length':[11,13],
-    'backtrack':True,
-    }
-    config_xhard3 = {
-    'length':[14,16],
-    'backtrack':True,
-    }
 
     # Combine into a dictionary
     configs = {
         'hard': config_hard,
         'easy': config_easy,
-        'medium': config_medium,
-        'xhard4': config_xhard4,
-        'xhard1': config_xhard1,
-        'xhard2': config_xhard2,
-        'xhard3': config_xhard3,
+        'medium': config_medium
     }
 
     def __init__(self, *args, robot_uids="panda_stick", robot_init_qpos_noise=0,seed=0,Robomme_video_episode=None,Robomme_video_path=None,
-                     sampling_config=None,
-                     episode_spec=None,
-                     native_episode_spec=None,
                      **kwargs):
-        # 必须落在任何随机数调用与 super().__init__() 之前
-        self._sampling = _resolve_sampling_config(type(self), sampling_config)
-        self._episode_spec = _resolve_episode_spec(episode_spec, "RouteStick")
-        self._spec = SpecRecorder(native_episode_spec, "RouteStick", {"seed": seed},
-                                  difficulty=kwargs.get("difficulty"))
-        # 初始化序号从 -1 起，_initialize_episode 每次进来先加一；
-        # _load_scene 里的取值点用不带序号的路径，所以这里只作兜底。
-        self._native_init_index = -1
-        self._injection_evidence = {}
         self.achieved_list=[]
         self.use_demonstrationwrapper=False
         self.demonstration_record_traj=False
@@ -376,11 +191,10 @@ class RouteStick(BaseEnv):
         )
         self.table_scene.build()
 
-        # Generate 3x3 grid of buttons（注释与实际不符：原布局是 1 x 9，按实际记录）
-        layout_cfg = self._sampling["positions"]
-        grid_center = list(layout_cfg["grid_center"])  # Grid center position
-        grid_spacing_x = layout_cfg["grid_spacing_x"] # Spacing between buttons
-        grid_spacing_y=layout_cfg["grid_spacing_y"]
+        # Generate 3x3 grid of buttons
+        grid_center = [-0.1, 0]  # Grid center position
+        grid_spacing_x = 0.07 # Spacing between buttons
+        grid_spacing_y=0.07
 
         self.buttons_grid = []
         self.button_joints_grid = []
@@ -392,17 +206,9 @@ class RouteStick(BaseEnv):
         col_center = (num_cols - 1) / 2
 
 
-        spec = self._episode_spec
-        yaw_cfg = layout_cfg["yaw_deg"]
-        if spec is None:
-            theta = math.radians(self._spec.value(
-                "layout.rotation_deg",
-                (torch.rand(1, generator=generator).item() * yaw_cfg["scale"]) - yaw_cfg["subtract"],
-            ))
-        else:
-            # 整排绕世界原点的旋转角由规格定死；节点位置仍由下面同一段公式推出，
-            # 不是创建后再整体挪物体
-            theta = math.radians(float(spec["layout"]["rotation_deg"]))
+        theta = math.radians(
+        (torch.rand(1, generator=generator).item() * 60) - 30
+            )
         #theta=0
         for row in range(num_rows):
             for col in range(num_cols):  # Columns (y direction)
@@ -448,7 +254,7 @@ class RouteStick(BaseEnv):
         self.target_cubes = {}
         self.cubes_on_targets = []
 
-        for obstacle_order, target_idx in enumerate(target_cube_indices):
+        for target_idx in target_cube_indices:
             if target_idx >= len(self.targets_grid):
                 logger.debug(f"[SwingAvoid] Skip cube spawn for target {target_idx}: index out of range.")
                 continue
@@ -467,8 +273,8 @@ class RouteStick(BaseEnv):
 
             cube_position = [float(target_pos[0]), float(target_pos[1])]
 
-            cylinder_radius = layout_cfg["cylinder_radius"]
-            cylinder_height = layout_cfg["cylinder_height"]
+            cylinder_radius = 0.015
+            cylinder_height = 0.1
             cylinder_half_length = cylinder_height / 2.0
 
             # Keep the cylinder centered so that it stands upright on the table surface.
@@ -476,13 +282,7 @@ class RouteStick(BaseEnv):
             builder = self.scene.create_actor_builder()
 
             cylinder_material = sapien.render.RenderMaterial()
-            if spec is None:
-                random_rgb = self._spec.value(
-                    f"layout.obstacle_rgb.{obstacle_order}",
-                    torch.rand(3, generator=generator).tolist(),
-                )
-            else:
-                random_rgb = [float(v) for v in spec["layout"]["obstacle_rgb"][obstacle_order]]
+            random_rgb = torch.rand(3, generator=generator).tolist()
             cylinder_material.set_base_color((*random_rgb, 1))
 
             # Rotate upright then around its own z-axis to align with the target line.
@@ -530,71 +330,15 @@ class RouteStick(BaseEnv):
         tasks=[]
 
         # Use the actual button actors corresponding to indices 0,2,4,6,8
-        walk_cfg = self._sampling["parameters"]["walk"]
-        button_indices = list(walk_cfg["node_indices"])
+        button_indices = [0, 2, 4, 6, 8]
         self.route_button_indices = button_indices
 
-        sampling_configs = self._sampling["parameters"]["configs"]
-        fallback_difficulty = self._sampling["parameters"]["configs_fallback_difficulty"]
-        if is_newvalue_difficulty(getattr(self, "difficulty", "easy")):
-            # V6（计划 2.12）：新值族缺键直接抛错，不静默回退到 easy
-            if self.difficulty not in sampling_configs:
-                raise ValueError(
-                    f"RouteStick {self.difficulty}: sampling_config.parameters.configs 缺少 {self.difficulty} 档"
-                )
-            cfg = sampling_configs[self.difficulty]
-        else:
-            # 原三档：保持原有的静默回退行为逐字不变
-            cfg = sampling_configs.get(getattr(self, "difficulty", "easy"), sampling_configs[fallback_difficulty])
+        cfg = self.configs.get(getattr(self, "difficulty", "easy"), self.config_easy)
         length_min, length_max = cfg.get("length")
-        length_decision_key = f"configs.{getattr(self, 'difficulty', 'easy')}.length"
-        if is_newvalue_difficulty(self.difficulty):
-            # V5（计划 2.11 / L38）：xhard 的段数范围从 decision（规格 header 冻结的那份）读；V6 新值族按本局档位读
-            length_min, length_max = self._xhard_segment_count_range()
-            length_decision_key = f"{self.difficulty}.segment_count_range"
+        steps = int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item())
         allow_backtracking = bool(cfg.get("backtrack", True))
-        if spec is None:
-            steps = self._spec.value(
-                "objects.L",
-                int(torch.randint(length_min, length_max + 1, (1,), generator=generator).item()),
-                decision_key=length_decision_key,
-            )
-            # 游走函数内部的抽样照常发生；这里只冻结最终节点序列
-            traj = self._spec.value(
-                "actions.nodes",
-                list(generate_dynamic_walk(button_indices, steps=steps, allow_backtracking=allow_backtracking, generator=generator, walk_config=walk_cfg)),
-            )
-            if is_newvalue_difficulty(self.difficulty):
-                # V5（N17 精神）：回放冻结规格时 value() 直接返回冻结值、不复核，这里复核段数与节点数
-                if not length_min <= int(steps) <= length_max or len(traj) != int(steps) + 1:
-                    raise _EpisodeSpecError(
-                        f"RouteStick {self.difficulty}: 段数 {steps} / 节点数 {len(traj)} 与 "
-                        f"segment_count_range [{length_min}, {length_max}] 不符（应为 L 在范围内、节点数 L+1）"
-                    )
-        else:
-            # 规格定死路线：先按 generate_dynamic_walk 的线性邻接语义校验拓扑，
-            # 再直接使用给定路线，不再抽随机数。
-            steps = int(spec["objects"]["L"])
-            traj = [int(v) for v in spec["actions"]["nodes"]]
-            slots = [int(v) for v in spec["actions"]["node_slots"]]
-            if not length_min <= steps <= length_max:
-                raise ValueError(f"规格的段数 {steps} 超出难度 {self.difficulty} 的 [{length_min}, {length_max}]")
-            if len(traj) != steps + 1 or len(slots) != steps + 1:
-                raise ValueError(f"规格的节点数 {len(traj)} 与段数 {steps} 不符（应为 steps+1）")
-            if [button_indices[i] for i in slots] != traj:
-                raise ValueError("规格的 node_slots 与 nodes 不一致")
-            for i in range(steps):
-                if abs(slots[i + 1] - slots[i]) != 1:
-                    raise ValueError(f"规格第 {i} 段不是相邻按钮：{slots[i]} → {slots[i+1]}")
-                if not allow_backtracking and i > 0 and slots[i + 1] == slots[i - 1] and 0 < slots[i] < len(button_indices) - 1:
-                    raise ValueError(f"难度 {self.difficulty} 不允许在非端点主动回退：第 {i} 段")
-            self._injection_evidence = {
-                "spec_sha256": spec.get("spec_sha256"),
-                "episode": spec.get("episode"),
-                "rotation_deg": float(spec["layout"]["rotation_deg"]),
-                "nodes": list(traj),
-                "node_slots": list(slots),
-            }
+
+        traj=generate_dynamic_walk(button_indices,steps=steps,allow_backtracking=allow_backtracking,generator=generator)# Generate trajectory
         self.selected_buttons = [self.buttons_grid[i] for i in traj]
 
         def _stick_side(actor, ref_actor=None):
@@ -617,25 +361,9 @@ class RouteStick(BaseEnv):
 
         # Randomly decide and record clockwise/counterclockwise direction for each solve_swingonto_withDirection
         self.swing_directions = []
-        direction_cfg = walk_cfg["direction"]
-        legal_directions = (direction_cfg["less_than"], direction_cfg["otherwise"])
-        if spec is None:
-            for order, _ in enumerate(self.selected_buttons[1:]):
-                dir_flag = self._spec.value(
-                    f"actions.directions.{order}",
-                    direction_cfg["less_than"] if torch.rand(*direction_cfg["shape"], generator=generator).item() < direction_cfg["threshold"] else direction_cfg["otherwise"],
-                )
-                self.swing_directions.append(dir_flag)
-        else:
-            # 逐段绕行方向由规格定死；演示与执行两轮任务都读同一份列表，绑定天然一致
-            spec_directions = list(spec["actions"]["directions"])
-            if len(spec_directions) != len(self.selected_buttons) - 1:
-                raise ValueError(f"规格的方向数 {len(spec_directions)} 与段数 {len(self.selected_buttons) - 1} 不符")
-            for dir_flag in spec_directions:
-                if dir_flag not in legal_directions:
-                    raise ValueError(f"规格出现非法绕行方向 {dir_flag!r}")
-                self.swing_directions.append(dir_flag)
-            self._injection_evidence["directions"] = list(self.swing_directions)
+        for _ in self.selected_buttons[1:]:
+            dir_flag = "clockwise" if torch.rand(1, generator=generator).item() < 0.5 else "counterclockwise"
+            self.swing_directions.append(dir_flag)
         logger.debug(f"[RouteStick] swing direction list: {self.swing_directions}")
 
         current_target=self.selected_buttons[0]
@@ -705,25 +433,6 @@ class RouteStick(BaseEnv):
         self.task_list = tasks
 
 
-
-    def _xhard_segment_count_range(self):
-        """V5（计划 2.11 / L38）：xhard 的段数 L 范围，取自 ``decision.xhard.segment_count_range``。
-
-        抽签时它等于 ``config_xhard4.length`` 的默认值；回放时 sampling_config 来自规格 header，
-        因此读到的是冻结值。缺键说明传入的是 V4 或更早的快照（V4 header 没冻结 L 范围），
-        V4 已作废（口径 13），直接报错而不是回退到类属性。
-        """
-        # V6：按本局档位取子树（新值族四档同结构）
-        xhard_cfg = self._sampling["decision"].get(self.difficulty)
-        value = xhard_cfg.get("segment_count_range") if isinstance(xhard_cfg, dict) else None
-        if (not isinstance(value, (list, tuple)) or len(value) != 2
-                or any(isinstance(v, bool) or not isinstance(v, int) for v in value)
-                or not 1 <= value[0] <= value[1]):
-            raise ValueError(
-                f"RouteStick {self.difficulty}: sampling_config.decision.{self.difficulty}.segment_count_range 缺失或不是 "
-                f"[下界, 上界] 正整数对（收到 {value!r}；V4 及更早的快照在 V5 代码上不可用）"
-            )
-        return int(value[0]), int(value[1])
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         with torch.device(self.device):
@@ -916,18 +625,13 @@ class RouteStick(BaseEnv):
         obs, reward, terminated, truncated, info = super().step(action)
 
         cur_step = int(self.elapsed_steps[0].item())
-        trail_cfg = self._sampling["positions"].get(
-            "tcp_trail", {"end_offset_steps": 40, "disk_radius": 0.005}
-        )
         highlight_position(
             self,
             self.agent.tcp.pose.p,
             start_step=cur_step,
-            # 原值 40（官方 dataset-gen）；2026-09-12 的 10 步方案改为传 sampling_config 覆盖，
-            # 不再写死在源码里——尾迹进相机观测，写死会让 A↔B 永远不可能逐位相同。
-            end_step=cur_step + int(trail_cfg["end_offset_steps"]),
+            end_step=cur_step + 40,
             cur_step=cur_step,
-            disk_radius=float(trail_cfg["disk_radius"]),
+            disk_radius=0.005,
         )
 
 
