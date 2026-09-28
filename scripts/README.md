@@ -6,7 +6,7 @@
 
 ## 1. 入口：`evaluation_hard.py`
 
-`scripts/` 顶层四个入口里，`dataset_replay.py`、`evaluation.py`、`run_example.py` 与官方逐字节相同，用法见仓库根 `readme.md`。新增的只有 `evaluation_hard.py`：新值档（xhard1～xhard4）的评估入口，跑 `dataset="test-hard"`，与 `evaluation.py` 只差 4 处。
+`scripts/` 顶层四个入口里，`dataset_replay.py`、`evaluation.py`、`run_example.py` 与官方逐字节相同，用法见仓库根 `readme.md`。新增的只有 `evaluation_hard.py`：跑新值档（xhard1～xhard4）的评估入口，与 `evaluation.py` 只差 4 处，其余逐字相同（核查：`diff scripts/evaluation.py scripts/evaluation_hard.py`）。
 
 ```diff
 - from robomme.env_record_wrapper import BenchmarkEnvBuilder
@@ -18,28 +18,20 @@
 +         env = env_builder.make_env_for_episode(episode, max_steps=TIER_MAX_STEPS[tier])
 ```
 
-第一处是 import：`robomme_hard` 是与官方 `robomme` 并列的包，它的 `BenchmarkEnvBuilder` 是官方同名类的子类，构造参数与方法名完全同形，只多认一个 `dataset="test-hard"`；另外多取一个 `TIER_MAX_STEPS`，值是 `{xhard1: 1500, xhard2: 1700, xhard3: 2000, xhard4: 2600}`。
+四处差别用人话说：
 
-第二处是 `dataset`。官方 `test` 每任务 50 局、三档混排。`test-hard` 每任务 80 局，按 xhard1 → xhard4 排列、每档 20 局、档内按候选号升序；StopCube、InsertPeg、MoveCube 只有 xhard4，各 20 局。16 任务合计 13 × 80 + 3 × 20 = 1100 局。构造 builder 时它把包内四份规格文件 `src/robomme_hard/env_metadata/test-hard/xhard{1..4}/specs.jsonl` 各读一次并做封套校验，挑出本任务已交付的正式局，按上面的顺序编成 episode 号。
+1. **换包**。新值档的环境代码放在 `robomme_hard` 包里，与官方 `robomme` 并列、互不干扰。它的 builder 是官方 builder 的子类，用法一样，只是多认一个数据集名 `test-hard`。
+2. **换数据集**。官方 `test` 每任务 50 局。`test-hard` 每任务 80 局：xhard1 到 xhard4 各 20 局、按档依次排列；StopCube、InsertPeg、MoveCube 只有 xhard4 这 20 局。16 任务合计 1100 局。
+3. **多拿一个档位**。`resolve_episode` 和官方一样返回两个值，第二个值在 `test-hard` 下就是档位名（`xhard1`～`xhard4`）。
+4. **步数上限按档给**。四档的上限分别是 1500、1700、2000、2600，用上一步拿到的档位查表后传给 `make_env_for_episode`。不传就用构造 builder 时的 `max_steps`。
 
-第三处是 `resolve_episode`。官方返回 `(seed, difficulty)`；这里同样返回二元组，只是 `test-hard` 下第二项就是档位名 `xhard1`～`xhard4`，所以循环里多写一行拿到 `tier`，再用它查按档步数上限传给第四处的 `max_steps`。不逐局传就沿用构造时的 `max_steps`。
+### 每一局的场景从哪里来
 
-### 规格 jsonl 是怎么被读进环境的
+每局的场景不是评估时随机抽的，而是生成数据时就冻结好、随包发布的。四份文件 `src/robomme_hard/env_metadata/test-hard/xhard1～4/specs.jsonl` 每行记一局：seed、档位、以及场景里每个随机取值点当时抽到的值（放了哪些块、什么颜色、放在哪、演示序列是什么）。
 
-**构造 builder 时读文件。** `BenchmarkEnvBuilder(env_id, dataset="test-hard")` 先以 `dataset="test"` 走一遍官方父类构造（父类只认 `train/test/val`，官方代码不能改），再把 `self.dataset` 改回 `"test-hard"`、清空父类顺手读的 test 元数据，然后调 `_test_hard_entries(env_id)`。这个函数对 xhard1～xhard4 四个档各调一次 `hard_specs.load_specs(packaged_specs_path(tier))`：路径是包内 `src/robomme_hard/env_metadata/test-hard/<tier>/specs.jsonl`，按行读 JSON，第一行是 header、其余每行一局，`validate_specs` 核封套（键集合、状态值），源码指纹不符只警告。每档结果 `lru_cache` 只读一次。然后按本任务筛出 `delivered` 的行（`selected` 为真且 `rollout.status=="ok"`），按 `candidate` 升序，行数必须恰好等于 header 的 `delivery_per_cell`（不在 55 格表里的档为 0），把每行连同 header 里的 `sampling_config[env_id]`、`runtime`、`recovery_rule` 打成一个 entry；四档依次拼接后 `enumerate` 成 `self._episode_map`，episode 号就是这个顺序。
+构造 builder 时，它读这四份文件，挑出本任务的正式局，按「xhard1 → xhard4、档内按候选号」排好，这就是 episode 号的顺序。`make_env_for_episode(i)` 做的事与官方相同（`gym.make` 再套 wrapper），只是在 `gym.make` 里多传两个参数：这局所属档位的取值配置（`sampling_config`），和这局冻结的场景规格（`native_episode_spec`）。
 
-**`resolve_episode(i)`** 只是查 `_episode_map[i]`，返回 `(row["seed"], tier)`。
-
-**`make_env_for_episode(i, max_steps)`** 与官方同名方法逐项同构，多出一步 `_hard_env_kwargs(i)`：取 entry，核对 header `runtime` 里的 `obs_mode`、`control_mode`、`reward_mode` 与构建器一致，然后在官方原有的 `gym.make(env_id, obs_mode=..., control_mode=..., render_mode=..., reward_mode=..., seed=, difficulty=)` 参数上再加两项：
-
-- `sampling_config=entry["sampling_config"]`：该任务在这档的取值配置，含 `decision`（按档新值）与 `native`（原三档参数）两块；
-- `native_episode_spec=entry["row"]["spec"]`：该局冻结的场景规格，一棵按路径组织的值树（如 `layout.board.offsets`、`objects.color_pool`）。
-
-之后套的 `DemonstrationWrapper` 换成 `robomme_hard` 下的同名类，参数原样透传。
-
-**`gym.make` 之后环境怎么用这两项。** 每个环境类的 `__init__` 多收这两个关键字参数，在任何随机数调用之前先做两件事：`_resolve_sampling_config` 把传入的配置与源码默认值合并成 `self._sampling`；`SpecRecorder(native_episode_spec, task, {"seed": seed}, difficulty=...)` 建成 `self._spec`。场景生成代码里每个取值点都写成 `self._spec.value("<路径>", <原抽样结果>)`：原抽样照常执行（随机流不漂移），但传了 `native_episode_spec` 时 `value()` 一律返回冻结规格里该路径的值、把抽样值记进 `trace`，两者不等时记一条 `mismatches`；不传时 `value()` 原样返回抽样值并把它记进导出文档（这就是生成链路第一阶段导出规格的方式）。`record()` 点只留痕不回注。因此评估侧每局建出的场景与生成侧是同一局。`reset()` 之后可用 `robomme_hard.env_record_wrapper.spec_binding(env)` 读 `env.unwrapped._spec` 取摘要：回注点（`source="spec"`）应零差，记录点浮点差 ≤ 1e-5 计 `recorded_drift`。
-
-其余部分（`VideoRecorder`、`DummyModel`、循环、成功统计）逐字相同，核查命令 `diff scripts/evaluation.py scripts/evaluation_hard.py`。
+环境拿到这两个参数后，建场景时每个随机取值点照常抽一次随机数，但真正用的值是规格里冻结的那个。所以评估时建出的场景与生成数据时是同一局；抽到的值只用来核对随机流有没有漂移，不影响场景。`reset()` 之后可以调 `robomme_hard.env_record_wrapper.spec_binding(env)` 看核对结果，正常应该零差。
 
 ## 2. 相对官方的文件差异
 
