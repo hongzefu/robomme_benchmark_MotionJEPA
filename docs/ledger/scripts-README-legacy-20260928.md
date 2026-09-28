@@ -1,17 +1,17 @@
-> **本文件为历史留档（12.214 之前的 `scripts/README.md`，2026-09-28 改名为 `README-legacy.md`，不再维护）。现行说明见同目录 [`README.md`](README.md)。**
+> **本文件为历史留档（12.214 之前的 `scripts/README.md`，2026-09-28 先改名 `scripts/README-legacy.md`、同日归档到 `docs/ledger/`，不再维护）。现行说明见 [`scripts/README.md`](../../scripts/README.md)。**
 
 # scripts/ 说明：robomme_hard 拆包后的目录、V6 四档新值与历史说明
 
-**拆包后（12.205～12.210，[0927 计划](../docs/plans/0927-robomme-hard-layered-plan.md)）的布局**：
+**拆包后（12.205～12.210，[0927 计划](../plans/0927-robomme-hard-layered-plan.md)）的布局**：
 
 | 位置 | 内容 |
 |---|---|
 | `dataset_replay.py`、`evaluation.py`、`run_example.py`、`evaluation_hard.py` | 四个顶层入口（P1）；前三者与官方逐字节相同；`evaluation_hard.py` 与 `evaluation.py` 只差 4 处（import、`dataset="test-hard"`、取 tier、按档 `max_steps`） |
 | `injection-dev/` | 新值档生产链路（不随包分发，路径直跑）：`freeze_specs.py`（第一阶段：定规则 → 抽签 → 封存，只落一份 jsonl）、`generate_h5.py`（第二阶段：continue 状态机回写／replay 只读重放）、`_extract/_draw/_freeze/_rollout/_report.py`、一次性迁移 `migrate_smvla_specs.py`、seed 公式与 16 任务规范序 `seed_layout.py`（12.214 自 `scripts/` 顶层移入，调用方把本目录插入 `sys.path` 后按模块名导入）；`site/` 为只读出图与候选核对工具 |
-| `parity/` | 只做「与官方比」：S0 基线设施 `train_split_*.py`、vendor 的官方编排 `official/`（`d53f21a7` 四文件）、G1 守卫 `upstream_guard.py`、三侧对拍入口 `hard_parity.py`、拉取 `hard_pull.py`、回归 `hard_regression.py`；详见 [parity/README.md](parity/README.md) |
+| `parity/` | 只做「与官方比」：S0 基线设施 `train_split_*.py`、vendor 的官方编排 `official/`（`d53f21a7` 四文件）、G1 守卫 `upstream_guard.py`、三侧对拍入口 `hard_parity.py`、拉取 `hard_pull.py`、回归 `hard_regression.py`；详见 [parity/README.md](../../scripts/parity/README.md) |
 | `configs/` | 12.214 起只留两样：`newtask-v6/v6-02/`（S4 生成所用规格 xhard1～xhard4 四份 `specs.jsonl`，只读留档）、`hard-parity-tolerances.json`（对拍容差层阈值）。原 `newtask-v3/`（原三档 144 身份清单与官方 train 元数据）与 `newtask-v6/smvla-smoke-0927/` 已从工作树删除，用 `git show 6e70c0bf:<原路径>` 取回 |
 
-新值档环境源码在 `src/robomme_hard/`（`src/robomme/` 与官方 `1fadc0ec` 逐字节相同）；四档规格随包分发在 `src/robomme_hard/env_metadata/test-hard/xhardN/specs.jsonl`，评估用 `BenchmarkEnvBuilder(env_id, dataset="test-hard")`，说明见 [src/robomme_hard/README.md](../src/robomme_hard/README.md)。
+新值档环境源码在 `src/robomme_hard/`（`src/robomme/` 与官方 `1fadc0ec` 逐字节相同）；四档规格随包分发在 `src/robomme_hard/env_metadata/test-hard/xhardN/specs.jsonl`，评估用 `BenchmarkEnvBuilder(env_id, dataset="test-hard")`，说明见 [src/robomme_hard/README.md](../../src/robomme_hard/README.md)。
 
 **第一节**记录十六个环境新值档的配置字段、规格字段与行为（源码现在 `src/robomme_hard/robomme_env/` 下，文中「V5 现行代码」均指该历史版本的写法）。**第二～五节**是 V4/V5 的全局改动、快照字段、推理兼容与三步命令，所引模块 `scripts/parity/{v4_specs,v4_rollout,v5_generation}.py`、`scripts/eval/` 与 `configs/newtask-v4`、`newtask-v5` 已于拆包阶段 2 删除，正文整段移出，原文见 `git show 7a6cee35:scripts/README.md`。**第六节**为 V6 发布说明（命令已改到 `injection-dev/site/`）。
 
@@ -41,7 +41,7 @@
 
 ### 1.1 BinFill（基准 hard）
 
-> V5：修方块障碍框退化 + 同色成团上限（报告 [S3e](../docs/validation/newtask-v5/20260924-s3e-binfill.md)，计划 2.12）。
+> V5：修方块障碍框退化 + 同色成团上限（报告 [S3e](../validation/newtask-v5/20260924-s3e-binfill.md)，计划 2.12）。
 
 | 配置字段 | hard 值 | xhard 值 |
 |---|---|---|
@@ -82,7 +82,7 @@ pick/put 对的总数 hard `[3,5]` → xhard `[5,7]`（单色最多 7 个，序�
 
 ### 1.2 PickXtimes（基准 hard）
 
-> V5：取消边角偏置、6 块两两 ≥ 0.08 m、精确 OBB、每块 1024 次（报告 [S3f](../docs/validation/newtask-v5/20260924-s3f-pickxtimes-swingxtimes.md)，计划 2.13）。
+> V5：取消边角偏置、6 块两两 ≥ 0.08 m、精确 OBB、每块 1024 次（报告 [S3f](../validation/newtask-v5/20260924-s3f-pickxtimes-swingxtimes.md)，计划 2.13）。
 
 | 配置字段 | hard 值 | xhard 值 |
 |---|---|---|
@@ -119,7 +119,7 @@ pick/put 对的总数 hard `[3,5]` → xhard `[5,7]`（单色最多 7 个，序�
 
 ### 1.3 SwingXtimes（基准 hard）
 
-> V5：共用循环加显式 xhard 分支、6 块两两 ≥ 0.08 m、精确 OBB（报告 [S3f](../docs/validation/newtask-v5/20260924-s3f-pickxtimes-swingxtimes.md)，计划 2.14）。
+> V5：共用循环加显式 xhard 分支、6 块两两 ≥ 0.08 m、精确 OBB（报告 [S3f](../validation/newtask-v5/20260924-s3f-pickxtimes-swingxtimes.md)，计划 2.14）。
 
 | 配置字段 | hard 值 | xhard 值 |
 |---|---|---|
@@ -147,7 +147,7 @@ N：hard 3 → xhard `[4,10]`（总 subgoal 9 → 11～23）。failure_func 不�
 
 > V5：配置字段、规格字段、行为与 subgoal 流程都不变，**只修异常类**：S2a 在模块头加了 `_RealSceneGenerationError` 别名与 `_scene_gen_error(difficulty)`
 > （计划 2.0③、L3）。核对结果是 StopCube 全文没有 `raise` 与 `except`（方块用 `spawn_fixed_cube`，不走会抛错的 `spawn_random_cube`），xhard 路径没有新增抛错点，
-> 所以别名只是为今后在 xhard 路径上抛错备用（报告 [S3i](../docs/validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md) 第三节）。
+> 所以别名只是为今后在 xhard 路径上抛错备用（报告 [S3i](../validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md) 第三节）。
 
 | 配置字段 | hard 值（原全局常量） | xhard 值 |
 |---|---|---|
@@ -170,8 +170,8 @@ K 是每 100 步一个检查点再加最终时刻，hard 1～6 个 → xhard 3�
 
 ### 1.5 VideoUnmask（基准 hard）
 
-> V5：干扰容器 3 → 15、贴身环带、接入四个 Unmask 共用的统一采样器，揭示时各容器停独立点（报告 [S3b](../docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md)、
-> 共用设施 [S2c](../docs/validation/newtask-v5/20260924-s2c-unmask-distractor-sampler.md)，计划 2.2、2.3）。
+> V5：干扰容器 3 → 15、贴身环带、接入四个 Unmask 共用的统一采样器，揭示时各容器停独立点（报告 [S3b](../validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md)、
+> 共用设施 [S2c](../validation/newtask-v5/20260924-s2c-unmask-distractor-sampler.md)，计划 2.2、2.3）。
 
 | 配置字段 | hard 值 | xhard 值 |
 |---|---|---|
@@ -213,7 +213,7 @@ K 是每 100 步一个检查点再加最终时刻，hard 1～6 个 → xhard 3�
 
 ### 1.6 ButtonUnmask（基准 hard）
 
-> V5：同 VideoUnmask，干扰容器 14 个（报告 [S3b](../docs/validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md)，计划 2.4）。
+> V5：同 VideoUnmask，干扰容器 14 个（报告 [S3b](../validation/newtask-v5/20260924-s3b-videounmask-buttonunmask.md)，计划 2.4）。
 
 配置字段与 VideoUnmask 相同（`pick_count.xhard`、`bin_layout_policy.count.xhard`、`bin_layout_policy.xhard.min_gap_factor`、`decision.xhard.distractor`），
 只是 `distractor.count: 14`、`cube_count_range: [7,7]`（按钮挡住环带约 5.7%），其余 5 键同 VideoUnmask（V4 原值同 VideoUnmask）。
@@ -230,8 +230,8 @@ hard `press → pick c0 → put down → pick c1`（4 个）→ xhard `press →
 
 ### 1.7 VideoUnmaskSwap（基准 hard，覆盖旧 xhard）
 
-> V5：干扰容器 3 → 10（环带沿用 V4）、外环随内环同窗交换、两对联合碰撞证明、内环对内环 reset 预判（报告 [S3h](../docs/validation/newtask-v5/20260924-s3h-unmaskswap.md)、
-> 共用设施 [S2b](../docs/validation/newtask-v5/20260924-s2b-multi-swap-sweep.md) / [S2c](../docs/validation/newtask-v5/20260924-s2c-unmask-distractor-sampler.md)，计划 2.5、2.6）。
+> V5：干扰容器 3 → 10（环带沿用 V4）、外环随内环同窗交换、两对联合碰撞证明、内环对内环 reset 预判（报告 [S3h](../validation/newtask-v5/20260924-s3h-unmaskswap.md)、
+> 共用设施 [S2b](../validation/newtask-v5/20260924-s2b-multi-swap-sweep.md) / [S2c](../validation/newtask-v5/20260924-s2c-unmask-distractor-sampler.md)，计划 2.5、2.6）。
 
 | 配置字段 | hard 值 | xhard 值 |
 |---|---|---|
@@ -285,7 +285,7 @@ hard `press → pick c0 → put down → pick c1`（4 个）→ xhard `press →
 
 ### 1.8 ButtonUnmaskSwap（基准 hard）
 
-> V5：同 VideoUnmaskSwap，另加外环路径离按钮中心的约束、内环静默截断改报错（报告 [S3h](../docs/validation/newtask-v5/20260924-s3h-unmaskswap.md)，计划 2.7）。
+> V5：同 VideoUnmaskSwap，另加外环路径离按钮中心的约束、内环静默截断改报错（报告 [S3h](../validation/newtask-v5/20260924-s3h-unmaskswap.md)，计划 2.7）。
 
 | 配置字段 | hard 值 | xhard 值 |
 |---|---|---|
@@ -315,7 +315,7 @@ hard `press → pick c0 → put down → pick c1`（4 个）→ xhard `press →
 
 ### 1.9 VideoRepick（基准 medium，覆盖旧 xhard）
 
-> V5：最小中心距 0.12 m、6 块 `k%6` 轮流发起、reset 时从 3 个最近可行者里规划搭档、按钮底座纳入扫掠障碍（报告 [S3g](../docs/validation/newtask-v5/20260924-s3g-videorepick.md)，计划 2.15）。
+> V5：最小中心距 0.12 m、6 块 `k%6` 轮流发起、reset 时从 3 个最近可行者里规划搭档、按钮底座纳入扫掠障碍（报告 [S3g](../validation/newtask-v5/20260924-s3g-videorepick.md)，计划 2.15）。
 
 | 配置字段 | medium 值 | xhard 值 |
 |---|---|---|
@@ -361,7 +361,7 @@ hard 档没有交换（swap 0），所以没有那组 `static`；failure_func �
 
 ### 1.10 VideoPlaceButton（基准 hard）
 
-> V5：配置字段、规格字段与 subgoal 流程都不变，**只修方块障碍框**（计划 2.16、L2 b；报告 [S3i](../docs/validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md)）：
+> V5：配置字段、规格字段与 subgoal 流程都不变，**只修方块障碍框**（计划 2.16、L2 b；报告 [S3i](../validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md)）：
 > xhard 下每块方块建成后改以 `cube_obb2d_exact(cube.initial_pose, cube_half_size)` 的精确三元组进 `avoid`（原三档仍放 actor），
 > 此后第 2、3 块方块与 4 个目标台的放置都读这张表，spawn 调用本身一字未改。修复后名义间距真正生效，xhard reset 成功率（300 次真 reset）87.7% → 81.7%，
 > 失败都是目标台放不下（可重试的 `SceneGenerationError`）。
@@ -427,7 +427,7 @@ xhard 新流程（`_load_scene_xhard_tail`，演示方块 A、B，targets 仍是
 
 ### 1.11 VideoPlaceOrder（基准 hard）
 
-> V5：同 VideoPlaceButton，只修方块障碍框（报告 [S3i](../docs/validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md)）。
+> V5：同 VideoPlaceButton，只修方块障碍框（报告 [S3i](../validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md)）。
 > 修复后 xhard reset 成功率 59.3% → 48.3%，根因是目标台与 goal_site、按钮、3 块方块挤在 0.4×0.4 的区域里；是否放宽布局列在待用户决策项里。
 
 配置字段与 VideoPlaceButton 相同（`demo_object_count: 2`、`demo_return_policy: return_to_origin`，其余不变）。
@@ -479,7 +479,7 @@ pick 与 drop 之间；插点恰好是 A 的最后一次访问时，按钮排在
 ### 1.12 PickHighlight（基准 hard）
 
 > V5：配置字段、规格字段与 subgoal 流程都不变，**只修方块障碍框**：xhard 下已放方块改以精确三元组进 `avoid`（同 VideoPlaceButton；报告
-> [S3i](../docs/validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md)）。修复前 83% 的局里至少有一对方块间距不到名义 0.04；
+> [S3i](../validation/newtask-v5/20260924-s3i-obb-fix-pickhighlight-videoplace.md)）。修复前 83% 的局里至少有一对方块间距不到名义 0.04；
 > 修复后全部满足，但 xhard reset 成功率 97.0% → 87.0%，集中在 10 块的局（69.6%）；`spawn_count` 上界 10 是否下调列在待用户决策项里。
 
 | 配置字段 | hard 值 | xhard 值 |
@@ -512,7 +512,7 @@ pick 与 drop 之间；插点恰好是 A 的最后一次访问时，按钮排在
 
 ### 1.13 MoveCube（基准 A6）
 
-> V5：删掉 `corner_bias`，杆/goal/方块都不得落进桌面中心 R = 0.05 m 的圆；执行段方块不避让演示段方块（报告 [S3c](../docs/validation/newtask-v5/20260924-s3c-movecube.md)，计划 2.9）。
+> V5：删掉 `corner_bias`，杆/goal/方块都不得落进桌面中心 R = 0.05 m 的圆；执行段方块不避让演示段方块（报告 [S3c](../validation/newtask-v5/20260924-s3c-movecube.md)，计划 2.9）。
 
 | 配置字段 | hard 值（原全局常量） | xhard 值 |
 |---|---|---|
@@ -545,7 +545,7 @@ pick 与 drop 之间；插点恰好是 A 的最后一次访问时，按钮排在
 
 ### 1.14 InsertPeg（基准 A6）
 
-> V5：删第 4 根杆的专用采样器与贴近带，4 根一个循环；杆与杆轮廓间隔 > 0.03 m、离孔板 > 0.01 m（报告 [S3d](../docs/validation/newtask-v5/20260924-s3d-insertpeg.md)，计划 2.8）。
+> V5：删第 4 根杆的专用采样器与贴近带，4 根一个循环；杆与杆轮廓间隔 > 0.03 m、离孔板 > 0.01 m（报告 [S3d](../validation/newtask-v5/20260924-s3d-insertpeg.md)，计划 2.8）。
 
 | 配置字段 | hard 值（原全局常量） | xhard 值 |
 |---|---|---|
@@ -586,7 +586,7 @@ pick 与 drop 之间；插点恰好是 A 的最后一次访问时，按钮排在
 
 ### 1.15 PatternLock（基准 hard）
 
-> V5：布局不动；节点数固定 25、搜索预算 20000、搜索耗尽抛错（报告 [S3a](../docs/validation/newtask-v5/20260924-s3a-patternlock-routestick.md)，计划 2.10）。
+> V5：布局不动；节点数固定 25、搜索预算 20000、搜索耗尽抛错（报告 [S3a](../validation/newtask-v5/20260924-s3a-patternlock-routestick.md)，计划 2.10）。
 
 | 配置字段 | hard 值 | xhard 值 |
 |---|---|---|
@@ -610,7 +610,7 @@ n：hard 4～8 → xhard 25（V4 为 20～24），总 subgoal 9～17 → 51（V4
 
 ### 1.16 RouteStick（基准 hard，覆盖旧 xhard）
 
-> V5：L `[12,15]` → `[15,21]`，L 范围冻进 decision（报告 [S3a](../docs/validation/newtask-v5/20260924-s3a-patternlock-routestick.md)，计划 2.11）。
+> V5：L `[12,15]` → `[15,21]`，L 范围冻进 decision（报告 [S3a](../validation/newtask-v5/20260924-s3a-patternlock-routestick.md)，计划 2.11）。
 
 | 配置字段 | hard 值 | xhard 值 |
 |---|---|---|
@@ -646,7 +646,7 @@ git show 7a6cee35:scripts/README.md | sed -n '/^## 第二节/,/^## 第六节/p'
 
 ## 第六节　V6 四档新值发布
 
-范围与授权以 [V6 计划](../docs/plans/0925-newtask-release-v6-plan.md) 第 5.3 节为准；配置为包内 xhard4 规格 header 的 `sampling_config`（原 V6 快照 `configs/newtask-v6/sampling_config.json` 已删，与之逐任务相同）。本节说明本轮用法，不把尚未完成的检查写成通过。
+范围与授权以 [V6 计划](../plans/0925-newtask-release-v6-plan.md) 第 5.3 节为准；配置为包内 xhard4 规格 header 的 `sampling_config`（原 V6 快照 `configs/newtask-v6/sampling_config.json` 已删，与之逐任务相同）。本节说明本轮用法，不把尚未完成的检查写成通过。
 
 ### 6.1 档位、规模与失败预算
 
@@ -670,15 +670,15 @@ git show 7a6cee35:scripts/README.md | sed -n '/^## 第二节/,/^## 第六节/p'
 
 用户最新资源决定：原占位作业 `61890467`、`61890468` 跑完后继续保留，不自动取消；另提交相同规格的 48 小时占位作业 `62018665`、`62018666`，当前四席均保留。新增席位不等于新增生成、重跑或故障恢复预算授权，具体状态以实时调度查询为准。
 
-最终执行快照：550 个候选已足额；[候选取值报告](../artifacts/newtask-v6/s4-launch/verification/candidate-values.json) 已核对 520 个梯度候选，`CANDIDATE_VALUES=PASS`。S4 原运行143成功，获批恢复实际23次、22成功、1次真正任务失败，现共 **165程序成功、55格各3条、短缺0**；恢复最多76次的授权未用满，原成功及真正任务失败没有重跑。原60次基础设施失败与8次中断未知完整保留，不被恢复结果抹掉。实际交付身份以[最终清单](../docs/validation/newtask-v6/records/final-delivery.json)为准，不能遍历失败目录中的HDF5推断交付。S3已通过144条严格对拍；`accepted=true`仅指原V1及来源／文件闸门，清单另以`semantic_status=KNOWN_ISSUES`披露VPB/xhard3/episode3、6的题意问题。用户决定仅网站注明、不修数据，不把程序成功写成题意无缺陷。
+最终执行快照：550 个候选已足额；[候选取值报告](../../artifacts/newtask-v6/s4-launch/verification/candidate-values.json) 已核对 520 个梯度候选，`CANDIDATE_VALUES=PASS`。S4 原运行143成功，获批恢复实际23次、22成功、1次真正任务失败，现共 **165程序成功、55格各3条、短缺0**；恢复最多76次的授权未用满，原成功及真正任务失败没有重跑。原60次基础设施失败与8次中断未知完整保留，不被恢复结果抹掉。实际交付身份以[最终清单](../validation/newtask-v6/records/final-delivery.json)为准，不能遍历失败目录中的HDF5推断交付。S3已通过144条严格对拍；`accepted=true`仅指原V1及来源／文件闸门，清单另以`semantic_status=KNOWN_ISSUES`披露VPB/xhard3/episode3、6的题意问题。用户决定仅网站注明、不修数据，不把程序成功写成题意无缺陷。
 
-四份550条冻结规格当时逐字复制至`configs/newtask-v6/v6-01/`（拆包阶段 2 删除，git 历史可取回；S4 实际生成所用规格见 `configs/newtask-v6/v6-02/`）。规格中的`selected`是原首选；实际成功包含递补，例如InsertPeg/xhard4最终为episode 6、2、4。完整执行、失败与恢复边界见[S4报告](../docs/validation/newtask-v6/20260926-s4.md)。
+四份550条冻结规格当时逐字复制至`configs/newtask-v6/v6-01/`（拆包阶段 2 删除，git 历史可取回；S4 实际生成所用规格见 `configs/newtask-v6/v6-02/`）。规格中的`selected`是原首选；实际成功包含递补，例如InsertPeg/xhard4最终为episode 6、2、4。完整执行、失败与恢复边界见[S4报告](../validation/newtask-v6/20260926-s4.md)。
 
-**S3 原三档严格对拍已真实通过：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`。** 两侧各144个成功终态、75404时间步，身份完整，无单侧缺失；本轮证明不外推到新档题意。S2 的固定探针失败及 S4 的候选拒绝、递补、短缺照实报告，不通过重试挑成功，也不把媒体存在或进程退出 0 当作任务成功。完整结论见[S5总报告](../docs/validation/newtask-v6/20260926-final.md)。
+**S3 原三档严格对拍已真实通过：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`。** 两侧各144个成功终态、75404时间步，身份完整，无单侧缺失；本轮证明不外推到新档题意。S2 的固定探针失败及 S4 的候选拒绝、递补、短缺照实报告，不通过重试挑成功，也不把媒体存在或进程退出 0 当作任务成功。完整结论见[S5总报告](../validation/newtask-v6/20260926-final.md)。
 
 ### 6.3 纯离线核对候选实际取值
 
-入口 [v6_candidate_values.py](injection-dev/site/v6_candidate_values.py) 只读取四档原始 drafts、V6 配置及各档来源指纹的一致性，不创建环境、不执行 reset。它逐条核对 **13×4×10＝520** 个梯度候选的实际取值与配置区间、身份覆盖及失败尝试信息；三个只有 `xhard4` 的任务不计入这 520 条。
+入口 [v6_candidate_values.py](../../scripts/injection-dev/site/v6_candidate_values.py) 只读取四档原始 drafts、V6 配置及各档来源指纹的一致性，不创建环境、不执行 reset。它逐条核对 **13×4×10＝520** 个梯度候选的实际取值与配置区间、身份覆盖及失败尝试信息；三个只有 `xhard4` 的任务不计入这 520 条。
 
 四档原始 drafts 汇集完整后，在仓库根执行一次，输出文件必须尚不存在：
 
@@ -711,4 +711,4 @@ UV_CACHE_DIR="$PWD/artifacts/cache/uv" PYTHONUNBUFFERED=1 uv run --no-sync pytho
   --site-dir artifacts/newtask-v6/site-v10
 ```
 
-当前服务已启动，不重复占用8060端口；保留网站会话和产物，不自动清理。浏览器已验证16任务播放、拖动进度与样例切换，搜索、移动导航和无表格布局通过，JavaScript错误0。截图、首帧预览与验证边界见[网站报告](../docs/validation/newtask-v6/20260926-site.md)。
+当前服务已启动，不重复占用8060端口；保留网站会话和产物，不自动清理。浏览器已验证16任务播放、拖动进度与样例切换，搜索、移动导航和无表格布局通过，JavaScript错误0。截图、首帧预览与验证边界见[网站报告](../validation/newtask-v6/20260926-site.md)。
