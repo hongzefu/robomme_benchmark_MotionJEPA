@@ -3,6 +3,9 @@
 > **权威性**：本文件是 [`0926-robomme-hard-split-plan.md`](0926-robomme-hard-split-plan.md) §〇′ 的精简定稿版，只写最新口径，不保留历史决策与备选；两份冲突时以本文件为准。只规划，不实施；每一阶段须单独获批后才动手，阶段 3 触碰 P2 须逐文件批准，阶段 4 的生成预算按第二部分 §三 一次性申请。
 > **代码锚点**：本仓库 `newtaskRelease-v5` @ `66d9a424`（12.204.1）；官方 `RoboMME/robomme_benchmark` `main` @ `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`；官方隔离源码树 `artifacts/train-parity/local-smoke-01/official-src/`（`.official_tree` = `1d4c1369…`，tree sha）；现行规格 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl`（selected 行合计 165）；S4 交付清单 `artifacts/newtask-v6/s4-relaunch-02/verification/final-delivery.json`。
 > **工作副本**：`/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（环境 A，sled-vail）。
+> **验收硬件**：A40 @ greatlakes `spgpu`（驱动 595.71.05）是**唯一**字节级验收硬件；本机 RTX 6000 Ada 与 aspen RTX A6000 只做开发冒烟与跨硬件参考。依据：[`docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md`](docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md)（同型号同驱动逐位稳定；Ada↔A6000 仅 16 处 1e-18 级 `joint_action` 差；A40 与两者全面分叉）。占位 job：`62126060/61/62`（`hs-hold-20260927-1/2/3`）、`62018665`，用户 2026-09-27 原话「这四个你可以自由跑」。
+> **三侧对拍锚点**：O 侧官方 `main @ 1fadc0ec`；P 侧本仓库 tag `pre-hard-split` → `7c7118fa`（生产代码基线 `ca32e9b`，两者 `src/` 零 diff）；H 侧拆包后 HEAD。持久化 bucket：`HongzeFu/robomme-hard-parity`。
+> **计数体例（P5）**：局数一律写「任务数 × 难度档 × 每格局数」乘式；原三档 = 16 任务 × 3 档（easy/medium/hard）× 3 局 = 144；xhard = xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 = 165（xhard1～3 缺 `require_xhard4_only` 的三个任务）。
 > **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，实施从 12.205 起。
 > **外部依赖锚点**：`uv.lock` / `pyproject.toml` 不变，唯一依赖侧改动是 wheel `packages` 增加 `src/robomme_hard`；ManiSkill 注册语义以 `.venv` 内 `mani_skill/utils/registration.py` 现版本为准。
 > **已完成、不再赘述**：V6 四档生成与 S0～S5 验收、审查修复、拆包阶段 0b 瘦身（12.200～12.203：`scripts/` 顶层四入口、删 injection／V3 容差对拍／V4 探针、V1′ 入口 `scripts/parity/hard_parity.py` 落地）。
@@ -26,22 +29,29 @@
 | E-5 | 第二阶段只读 jsonl，跑完回写 `rollout` 块；`identity_sha256` 只盖 `spec`，递补追加行不改原行 | §5.2、§5.3 |
 | E-6 | jsonl 落 `src/robomme_hard/env_metadata/xhardN/specs.jsonl`，一档一目录 | §四 |
 | E-7 | `scripts/evaluation.py` 官方原样不动，`evaluation_hard.py` 为第五入口，只差 import 与循环 | §四 |
-| E-8 | `scripts/parity/` 只做「与官方比」：S0 基线对拍、V1′、G1 守卫、xhard 侧回归 | §5.4 |
+| E-8 | `scripts/parity/` 只做「与官方比」：三侧对拍（O／P／H）、G1 守卫、回注 reset 复现、跨硬件参考 | §5.4 |
 | E-9 | 官方 `generate_dataset.py` 及三个兄弟文件 vendor 进 `scripts/parity/official/` | §3.5 |
 | E-10 | `tests/` 只保证可收集，语义修复另立任务 | 第二部分 §〇 |
 | E-11 | xhard 侧回归三道闸门加入，预算一次申请 | §六 |
 | E-12 | 四个 Unmask 系 train 元数据 400 条只留 `robomme_hard`，`robomme` 回 100 条 | §3.1 |
+| E-13 | **A40@greatlakes 是唯一字节级验收硬件**；原三档 S0 基线在 A40 重生成，本机 Ada 产的 `artifacts/newtask-v6/v1/base` 不再作判据（用户 2026-09-27「123全部同意」） | §5.4 |
+| E-14 | **三侧对拍 O／P／H**：O 官方 `1fadc0ec`、P tag `pre-hard-split`（`7c7118fa`）、H `robomme_hard`；矩阵 `O↔P`、`P↔H`、`O↔H`（原三档）与 `P↔H`（xhard，P 侧复用 S4 交付） | §5.4、§六 |
+| E-15 | **产物持久化到 HF bucket** `HongzeFu/robomme-hard-parity`，三侧各一目录，附 `SHA256SUMS` 与 `manifest.json`（硬件型号、驱动、软件栈、commit、job id）；同源判定用 sha256 不用 xetHash | §5.4 |
+| E-16 | **预算取全量**：O 16×3×3 + P 16×3×3 + H 16×3×3 + H-xhard（13×3×3 + 16×3）= 144×3 + 165 = 597 局 rollout，回注 reset 13×3 + 16 = 55 次（用户「先定全量」） | 第二部分 §三 |
+| E-17 | **单 GPU 多 worker**：每占位 job 16 worker 共用一张 A40（`--gpu_cmode=shared`），进程池不加 `max_tasks_per_child`；S4 与 V3 步 5d 已证 sha 与 worker 数无关，xhard 档在阶段 0 补 1 任务 × 1 档 × 1 局 × 2 的单／多 worker 复核 | 第二部分 §三 |
+| E-18 | 跨硬件不做 sha，只做「结构一致 + 终态一致 + 容差」的参考判定 `XHW_REFERENCE=INFO`，不进 PASS/FAIL 总判定 | §六 |
 
 ## 二、要保证什么
 
 | 保证 | 靠什么 | 判定行 |
 |---|---|---|
 | G1 `src/robomme/**` 与官方逐字节相同 | §3.4 | `UPSTREAM_BYTES=PASS commit=1fadc0ec files=<n> diff=0 borrowed=<m>` |
-| G2 `robomme_hard` 跑原三档，h5 与 S0 基线 sha 逐位相同 | V1′ 144 局 | `NATIVE_REGRESSION_HARD=PASS compared=144 sha_equal=144` |
-| G3 `robomme_hard` 跑 xhard，与 S4 交付一致 | §六 | `HARD_RESET_REPLAY=PASS resets=55 mismatch=0`、`HARD_ROLLOUT_SHA=PASS compared=16 sha_equal=16` |
+| G2 `robomme_hard` 跑原三档，h5 与官方、与修改前在 A40 上 sha 逐位相同 | 三侧对拍 §5.4 | `PARITY_O_P` / `PARITY_P_H` / `PARITY_O_H` `=PASS tier=native compared=144 sha_equal=144`（16 × 3 × 3） |
+| G3 `robomme_hard` 跑 xhard，与 S4 交付（修改前、A40 产）sha 逐位相同 | §5.4 | `PARITY_P_H=PASS tier=xhard compared=165 sha_equal=165`（13×3×3 + 16×3）、`HARD_RESET_REPLAY=PASS resets=55 mismatch=0`（13×3 + 16） |
 | G4 评估接口与 `dataset="test"` 同形 | §四 | `EVAL_PY_UPSTREAM=PASS ENTRIES=5`、`EVAL_HARD_DIFF=PASS lines≤12` |
 | G5 同进程 16 个环境 id 归属唯一可查 | §3.3 | `REGISTRY_OWNER=PASS envs=16 owner=robomme_hard` |
 | G6 两阶段只依赖 jsonl，中间量不落盘，回写不破坏封存 | §五 | `FREEZE_ONLY_JSONL=PASS files_written=1`、`ROLLBACK_WRITE=PASS spec_hash_unchanged=1` |
+| G7 三侧产物在 bucket 里可按 sha 复核、可拉回重比 | §5.4 | `BUCKET_SYNC=PASS sides=3 files=<n> sha_verified=<n> mismatch=0` |
 
 ## 三、文件结构与分层继承
 
@@ -139,9 +149,11 @@ scripts/
   parity/                       只做「与官方比」
     train_split_parity.py  train_split_runner.py  train_split_worker.py  train_split_config.py
     train_split_comparison.py  train_split_audit.py  comparator_fixtures.py     S0 基线对拍设施，不动
-    hard_parity.py              V1′：robomme_hard 跑原三档 144 局 vs S0 基线
+    hard_parity.py              三侧对拍统一入口：generate --side {O,P,H} --tier {native,xhard} --shard k/n（占位 job 内跑）
+                                publish --side …（上传 bucket + SHA256SUMS + manifest.json）
+                                compare --pair {O:P,P:H,O:H} --tier …（先比 SHA256SUMS，不等再拉 h5 逐字段）
     upstream_guard.py           G1 守卫
-    hard_regression.py          xhard 侧回归（G3）
+    hard_regression.py          reset-replay（回注 reset 复现，A40）、eval-smoke、xhw-reference（跨硬件参考）
     official/                   vendor 官方 scripts/data-generation 四文件 + SOURCE.json
       scripts/data-generation/{generate_dataset,validate_generated_dataset_contract,
                                write_generation_report,compare_joint_actions}.py
@@ -240,40 +252,84 @@ uv run --no-sync python scripts/injection-dev/generate_h5.py \
 
 header 键：`schema`、`difficulty`、`tasks`、`per_env`、`runtime`、`seed_rule`、`select_indices`、`sampling_config`（全文）、`sampling_config_sha256`、`recovery_rule`、`identity_source`、`run_id`、`record`、**新增** `draw_stats`、`base_fingerprint`、`hard_fingerprint`、`env_package`、`identity_sha256`；删 `drafts_sha256`。`identity_sha256` 只盖 header 里除 `identity_sha256 / draw_stats / record` 外的键 + 每行 `{task, tier, candidate, seed, attempt, spec, spec_sha256}`。`rollout` 第一阶段不存在（不是 `null`）；failed／timeout 行同样写全部键、计数显式零值。
 
-### 5.4 原三档对拍归 `scripts/parity/`
+### 5.4 三侧对拍：全部在 A40@greatlakes 上做，产物持久化到 HF bucket
 
-`train_split_parity.py run --paths B` 用主仓代码（切到 `robomme_hard`）按官方 seed 生成 easy/medium/hard 16×3×3=144 局，`compare` 与 S0 基线逐局 h5 sha；V1′ 由 `hard_parity.py run --env-package robomme_hard` 执行（1 条冒烟 + 143 条，30 分钟无进展／4 小时硬上限）。原三档不走抽签→回注。
+**为什么必须同硬件**：2026-09-27 探针（引言块「验收硬件」）证明 h5 字节级一致只在「同 GPU 型号 + 同驱动」内成立；S0 基线是本机 Ada 产的，S4 交付是 A40 产的，两者不能互比。定 A40@GL 为唯一验收硬件后，原三档基线要在 A40 上重生成一次，此后一切对拍都能在四个占位 job 上分片并行、可复跑。
 
-## 六、验收（查什么 / 怎么查 / 过了说明什么 / 判定行）
+**三侧定义**：
+
+| 侧 | 代码 | 原三档 16 × 3 × 3 = 144 | xhard 13×3×3 + 16×3 = 165 |
+|---|---|---|---|
+| O 官方 | `RoboMME/robomme_benchmark main @ 1fadc0ec`，官方 A 路（`scripts/parity/official/` 编排 + 官方 `src`） | A40 现跑 → bucket `O-1fadc0e-a40/` | 无（官方没有 xhard） |
+| P 修改前 | tag `pre-hard-split` → `7c7118fa`，B 路（官方编排 + 该 tag 的 `src/robomme`） | A40 现跑 → bucket `P-7c7118f-a40/` | **复用 S4 交付**（`ca32e9b` 在 A40 产，`final-delivery.json` 记 sha）→ 上传 bucket `P-7c7118f-a40/xhard/` |
+| H 修改后 | 拆包后 HEAD，`robomme_hard` | A40 现跑 → bucket `H-<sha7>-a40/` | A40 现跑（`generate_h5.py` 直接读包内四份 jsonl）→ bucket |
+
+**对拍矩阵**（每条边都是同硬件直接 sha 证据）：
+
+```text
+原三档（tier=native，16 任务 × 3 档 × 3 局 = 144）
+   O ──PARITY_O_P──▶ P      修改前 ≡ 官方（S3 结论在 A40 上的复刻）
+   P ──PARITY_P_H──▶ H      拆包不改原三档
+   O ──PARITY_O_H──▶ H      端到端
+xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 = 165）
+   P(S4) ──PARITY_P_H──▶ H  拆包不改 xhard
+```
+
+**bucket 持久化**（`HongzeFu/robomme-hard-parity`）：每侧目录放全部 h5 + `SHA256SUMS`（`sha256sum` 原始输出）+ `manifest.json`（`side, commit, tag, tier, gpu_model=A40, driver=595.71.05, python/mani_skill/sapien/torch/cuda 版本, job_ids, nodes, workers, generated_at`）。`compare` 先拉两侧 `SHA256SUMS` 比对，全等即 PASS 不下 h5；不等才按身份拉具体文件跑 `compare_h5_pair` 定位字段。同源判定用 bucket 内 `SHA256SUMS` 与本地 sha256（正本第 15 条，不用 xetHash）；上传后 `hf buckets list HongzeFu/robomme-hard-parity -R` 原始输出留档。tag 保证三侧可再生，bucket 保证不必再生。
+
+**单 GPU 多 worker**：每占位 job `--workers 16 --gpu 0`，`srun --gpu_cmode=shared --cpus-per-task=16`；逐局产物先落节点 `/tmp`，完成即算 sha、搬 NFS 暂存目录，再回 `/data` 与上传 bucket（每局 h5 约 270～370 MB，597 局约 200 GB，不压在 `/tmp`）。四个 job 分片：O 原三档、P 原三档、H 原三档各一 job，H xhard 一 job；每片 144～165 局 ÷ 16 worker × 约 50 s ≈ 10 分钟纯计算，含导出与搬运估 30 分钟一轮。
+
+**跨硬件参考**（不进总判定）：`hard_regression.py xhw-reference` 对 Ada／A6000 侧产物与 A40 侧做「dataset 集合与形状相等、`task_success`／身份／帧数相等、`joint_action` 容差」检查，输出 `XHW_REFERENCE=INFO …`。
+
+## 六、验收（查什么 / 怎么查 / 过了说明什么 / 判定行）——以对拍结果为主
+
+### 6.1 对拍结果（正式判定，全部 A40@greatlakes）
 
 | 查什么 | 怎么查 | 过了说明什么 | 判定行 |
 |---|---|---|---|
-| `src/robomme` 逐字节同官方 | §3.4 守卫脚本 | G1；上游合并零 diff | `UPSTREAM_BYTES=PASS commit=1fadc0ec files=<n> diff=0 borrowed=<m> net=<ok\|skipped>` |
-| vendor 四文件同源 | `sha256sum` 与隔离树同名文件比 | 执行代码来源未变 | `VENDOR_SAME=PASS files=4` |
-| 绝对 import 无漏改 | AST 扫描 | 无静默回头用官方旧逻辑 | `ABS_IMPORT=PASS … stray=0` |
-| 注册表归属 | 三种导入顺序（只 hard；官方→hard；hard→官方）各起一进程 | G5 | `REGISTRY_OWNER=PASS envs=16 owner=robomme_hard` |
-| 包内 jsonl 就是 S4 那份 | 新收窄口径重算 `identity_sha256` 与由 `v6-02` 同口径重算值相等；`spec_sha256` 逐行相等 | 分发规格未变 | `SPECS_IDENTITY=PASS tiers=4 rows=550 selected=165` |
-| 冻结脚本未破 | `cmp` 三脚本；`ls -1 scripts/*.py \| wc -l` = 5 | G4 | `EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
-| 评估入口只差 import 与循环 | `diff … \| grep -c '^[<>]'` ≤ 12 | G4 | `EVAL_HARD_DIFF=PASS lines=<n>` |
-| 两阶段入口没改抽签口径 | `freeze_specs.py --dry-run` 与 `v5_generation.plan_pipeline` 命令逐项对照 | 抽签语义不变 | `FREEZE_DRYRUN_EQUIV=PASS` |
-| 第一阶段只落一份文件 | 单任务单档 1 候选 smoke，运行后工作区与 `artifacts/` 无新文件 | G6 上半 | `FREEZE_ONLY_JSONL=PASS files_written=1` |
-| 回写不破坏封存 | 对 smoke jsonl 跑第二阶段，`identity_sha256` 不变、`rollout` 齐全 | G6 下半 | `ROLLBACK_WRITE=PASS spec_hash_unchanged=1` |
-| 原三档逐位 | V1′ | G2 | `NATIVE_REGRESSION_HARD=PASS compared=144 sha_equal=144` |
-| xhard 回注复现 | 每档每任务取 `candidate` 最小的 ok 行 1 条（13+13+13+16），回注 reset，导出 spec 与冻结值逐字段比 | 回注通道在新包下逐值一致 | `HARD_RESET_REPLAY=PASS resets=55 mismatch=0` |
-| xhard 产物逐位 | 16 任务各 1 局、档位轮换（xhard4-only 三任务固定 xhard4），h5 sha 与 `final-delivery.json` 比 | 新包在 xhard 下产物同 S4 | `HARD_ROLLOUT_SHA=PASS compared=16 sha_equal=16` |
-| 合作者入口可用 | `evaluation_hard.py` 限 1 任务 1 档 1 局 | G4 | `HARD_EVAL_SMOKE=PASS` |
+| 修改前 ≡ 官方（原三档） | O 侧与 P 侧各 16 任务 × 3 档 × 3 局，`hard_parity.py compare --pair O:P --tier native`，先 `SHA256SUMS` 后逐字段 | 拆包前的代码在 A40 上原三档与官方逐位相同（S3 结论跨硬件复刻） | `PARITY_O_P=PASS tier=native compared=144 sha_equal=144 shape=16x3x3` |
+| 拆包不改原三档 | P 侧 vs H 侧同上 | `robomme_hard` 原三档 ≡ 修改前 | `PARITY_P_H=PASS tier=native compared=144 sha_equal=144 shape=16x3x3` |
+| 端到端 | O 侧 vs H 侧同上 | `robomme_hard` 原三档 ≡ 官方 | `PARITY_O_H=PASS tier=native compared=144 sha_equal=144 shape=16x3x3` |
+| 拆包不改 xhard | S4 交付（P）vs H 侧 xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 | `robomme_hard` xhard 产物 ≡ 修改前交付 | `PARITY_P_H=PASS tier=xhard compared=165 sha_equal=165 shape=13x3x3+16x3` |
+| 回注通道逐值一致 | 每档每任务取 `candidate` 最小的 ok 行 1 条（13×3 + 16 = 55），回注 reset，导出 spec 与冻结值逐字段比 | 新包下回注不漂 | `HARD_RESET_REPLAY=PASS resets=55 mismatch=0 shape=13x3+16` |
+| 三侧产物可复核 | 上传后逐文件 sha256 与 bucket `SHA256SUMS` 比；`hf buckets list -R` 原文留档 | G7 | `BUCKET_SYNC=PASS sides=3 files=<n> sha_verified=<n> mismatch=0` |
+| 多 worker 不改 sha（xhard 补证） | 阶段 0：1 任务 × 1 档（xhard4）× 1 局，单 worker 与 16 worker 各跑一次 | 分片并行成立 | `WORKER_INVARIANT=PASS compared=1 sha_equal=1` |
 
-为什么 sha 能逐位：生成用的执行代码（vendor 的官方 `generate_dataset.py`）、worker、seed、回注规格与 S4 完全相同，唯一变量是包名；S3 已证明同机同代码下 h5 逐位可复现。
+**为什么 sha 能逐位**：同硬件（A40，驱动 595.71.05）+ 同软件栈 + 同官方编排代码 + 同 seed／同回注规格；探针已证同型号同驱动跨节点、跨 job 逐位稳定（`A40-1|A40-2 sha_equal=1`），V3 步 5d 证 sha 与 worker 数无关。
+
+**FAIL 的读法**：`sha_equal < compared` 时 `compare` 自动落 `compare/h5_pairs.jsonl`（逐身份 `field_mismatch`、首个差异字段与索引）；只记证据链与候选修法，不放宽、不重试挑成功；`O↔P` FAIL 说明修改前代码在 A40 上就与官方不同（与 S3 的 Ada 结论冲突，先查驱动／编排差异，不是拆包的问题）；`P↔H` FAIL 才是拆包引入的差异。
+
+### 6.2 跨硬件参考（不进总判定）
+
+| 查什么 | 怎么查 | 判定行 |
+|---|---|---|
+| Ada／A6000 与 A40 产物结构、终态一致，数值差异幅度 | `hard_regression.py xhw-reference`：dataset 集合与形状、`task_success`／身份／帧数相等；`joint_action` 等逐字段 `max_abs_diff` 分布 | `XHW_REFERENCE=INFO pairs=<n> struct_equal=<n> outcome_equal=<n> max_abs_diff{…}` |
+
+### 6.3 静态与结构判定（前置）
+
+| 查什么 | 怎么查 | 判定行 |
+|---|---|---|
+| `src/robomme` 逐字节同官方 | §3.4 守卫脚本 | `UPSTREAM_BYTES=PASS commit=1fadc0ec files=<n> diff=0 borrowed=<m> net=<ok\|skipped>` |
+| vendor 四文件同源 | `sha256sum` 与隔离树同名文件比 | `VENDOR_SAME=PASS files=4` |
+| 绝对 import 无漏改 | AST 扫描 | `ABS_IMPORT=PASS … stray=0` |
+| 注册表归属 | 三种导入顺序各起一进程 | `REGISTRY_OWNER=PASS envs=16 owner=robomme_hard` |
+| 包内 jsonl 就是 S4 那份 | 新口径重算 `identity_sha256` 与 `v6-02` 同口径重算值相等 | `SPECS_IDENTITY=PASS tiers=4 rows=550 selected=165` |
+| 冻结脚本未破 | `cmp` 三脚本；`ls -1 scripts/*.py \| wc -l` = 5 | `EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
+| 评估入口只差 import 与循环 | `diff … \| grep -c '^[<>]'` ≤ 12 | `EVAL_HARD_DIFF=PASS lines=<n>` |
+| 两阶段入口没改抽签口径 | `freeze_specs.py --dry-run` 与 `v5_generation.plan_pipeline` 逐项对照 | `FREEZE_DRYRUN_EQUIV=PASS` |
+| 第一阶段只落一份文件 | 1 任务 × 1 档 × 1 候选 smoke（本机） | `FREEZE_ONLY_JSONL=PASS files_written=1` |
+| 回写不破坏封存 | 对 smoke jsonl 跑第二阶段（本机，1 任务 × 1 档 × 1 局） | `ROLLBACK_WRITE=PASS spec_hash_unchanged=1` |
+| 合作者入口可用 | `evaluation_hard.py` 限 1 任务 × 1 档 × 1 局（本机） | `HARD_EVAL_SMOKE=PASS` |
 
 ## 七、实施步骤表
 
 | 阶段 | 内容 | 判据 | 改 `src/robomme` | commit |
 |---|---|---|---|---|
-| 0 只读准备 | fetch 官方 `1fadc0ec` 并核 tree；生成 `UPSTREAM.json`；vendor 四文件 + `SOURCE.json`；绝对 import 全量扫描 | `VENDOR_SAME`；清单落 `docs/validation/newtask-v6/hard-split/stage0.md` | 否 | 12.205 |
+| 0 只读准备 | fetch 官方 `1fadc0ec` 并核 tree；生成 `UPSTREAM.json`；vendor 四文件 + `SOURCE.json`；绝对 import 全量扫描；打 tag `pre-hard-split` → `7c7118fa` 并 push；建 bucket；GL 上 xhard4 1 任务 × 1 档 × 1 局 单／16 worker 复核 | `VENDOR_SAME`、`WORKER_INVARIANT`；清单落 `docs/validation/newtask-v6/hard-split/stage0.md` | 否 | 12.205 |
 | 1 建 `robomme_hard` | 按 §3.1 复制／shim／子类；迁四份 jsonl 到新 schema；`pyproject.toml` | `REGISTRY_OWNER`、`ABS_IMPORT`、`SPECS_IDENTITY`、单局 `make_env_for_episode` 冒烟 | 否 | 12.206 |
 | 2 `scripts/` 重组 | 按 §3.5；`train_split_worker.py` 加 `ROBOMME_ENV_PACKAGE`；`tests/` 机械替换只保证可收集 | `FREEZE_DRYRUN_EQUIV`、`FREEZE_ONLY_JSONL`、`ROLLBACK_WRITE`、`EVAL_PY_UPSTREAM`、`EVAL_HARD_DIFF`、`--collect-only` 错误 0 | 否 | 12.207 |
 | 3 回退 `robomme` | 官方树覆盖 `src/robomme/**`（含 `env_metadata`），删 9 个新增 utils，train 元数据换回 100 条 | `UPSTREAM_BYTES`；阶段 1、2 判定行重跑仍 PASS | **是（P2 逐文件批准）** | 12.208 |
-| 4 回归 | 第二部分 §三预算 | `NATIVE_REGRESSION_HARD`、`HARD_RESET_REPLAY`、`HARD_ROLLOUT_SHA`、`HARD_EVAL_SMOKE` | 否 | 12.209 |
+| 4 三侧对拍 | 四个占位 job 分片：O／P／H 原三档各 16 × 3 × 3，H xhard 13×3×3 + 16×3；上传 bucket；`compare` 三条边 + xhard 一条边；回注 reset 13×3 + 16 | `PARITY_O_P`、`PARITY_P_H`（native／xhard）、`PARITY_O_H`、`HARD_RESET_REPLAY`、`BUCKET_SYNC` | 否 | 12.209 |
 | 5 留档 | `robomme_hard/README.md`、`scripts/README.md`、`parity/README.md`、`docs/validation/newtask-v6/hard-split/`、`AGENTS.md` P1 五入口、`CLAUDE.md` 核实清单 | `git diff --check` | 否 | 12.210 |
 
 阶段 3 放在 2 之后、4 之前：先让 `robomme_hard` 在 `robomme` 还带改动时独立跑通，再回退 `robomme`，阶段 3 失败时只回滚一个 commit。实施完成后实测结果以子节追加在本表之后，不改写原计划。
@@ -294,6 +350,10 @@ header 键：`schema`、`difficulty`、`tasks`、`per_env`、`runtime`、`seed_r
 - R8 `tests/` 本轮只做 `from robomme.` → `robomme_hard.` 机械替换，判据仅 `--collect-only` 错误 0；留档列出被替换文件并标「未验证语义」（E-10）。
 - R9 commit 只 add 本阶段文件；阶段 4 起跑前 HEAD 冻结，结果以子节追加；工作区他人在途改动一律不碰，实施时以当时 `git status --short` 为准。
 - R10 `src/robomme/` 的任何改动（阶段 3）先列「文件 / 改什么 / 为什么」清单交用户逐文件批准（P2）。
+- R11 字节级对拍只在 A40@greatlakes（驱动 595.71.05）上做；任何一侧产物的 `manifest.json` 硬件字段不符即拒比，不得把 Ada／A6000 产物混入 `PARITY_*`。
+- R12 三侧 generate 的 `src` 来源必须可追溯到 commit／tag：O = vendor `SOURCE.json`，P = `git worktree` 的 tag 检出（不改动、不 commit），H = 拆包后 HEAD；不得用工作区带在途改动的代码起跑。
+- R13 bucket 只增不改：同一侧目录已存在时 `publish` 拒绝覆盖，需要重传先请示并另起目录名（如 `-r2`）。
+- R14 局数一律写乘式（P5）。
 
 ## 一、逐阶段、逐文件改动清单
 
@@ -340,9 +400,9 @@ header 键：`schema`、`difficulty`、`tasks`、`per_env`、`runtime`、`seed_r
 | `injection-dev/site/` | `git mv parity/{v6_site.py,v6_site.html,v6_site_catalog.py,v6_candidate_values.py,v6_tier_monotone.py,v6_v0_native_definitions.py,v6_gt_lengths.py,v6_gt_lengths.json}` | 内部 import 路径随之改 |
 | `parity/train_split_worker.py` | 现有 | `pkg = os.environ.get("ROBOMME_ENV_PACKAGE", "robomme")`，四处 `import robomme…` 改 `importlib.import_module(f"{pkg}…")`；唯一非机械改动 |
 | `parity/train_split_runner.py` | 现有 | `--official-root` 默认 `scripts/parity/official`；把 `ROBOMME_ENV_PACKAGE` 透传给子进程 |
-| `parity/hard_parity.py` | 现有 | `--official-root` 默认改 vendor；`.official_tree` 校验改读 `official/SOURCE.json["tree"]` |
+| `parity/hard_parity.py` | 现有，重构为三侧入口 | 子命令 `generate --side {O,P,H} --tier {native,xhard} --shard k/n --workers 16 --gpu 0 --out <节点 /tmp>`：O 侧 `--official-root scripts/parity/official --src-root <官方 src>`（A 路），P 侧 `--src-root <tag 检出的 worktree>`（B 路），H 侧 `ROBOMME_ENV_PACKAGE=robomme_hard`；xhard 走 `injection-dev/generate_h5.py` 到临时 `--output`（不回写包内 jsonl，加 `--no-writeback`）。子命令 `publish --side … --bucket HongzeFu/robomme-hard-parity`：写 `SHA256SUMS`、`manifest.json`，`hf upload` 后逐文件核 sha。子命令 `compare --pair {O:P,P:H,O:H} --tier …`：拉两侧 `SHA256SUMS`，全等 PASS；不等按身份拉 h5 跑 `train_split_parity.compare_h5_pair`，落 `compare/h5_pairs.jsonl`。`--official-root` 默认 vendor，`.official_tree` 校验改读 `official/SOURCE.json["tree"]`。运行前断言 `nvidia-smi` 型号 = A40、驱动 = `manifest` 所记，否则拒跑 |
 | `parity/upstream_guard.py` | 新写 | 第一部分 §3.4；`--manifest-md` 输出 README ③表 |
-| `parity/hard_regression.py` | 新写 | 子命令 `reset-replay`（55 次，复用 `_draw._draw_one` 的 make+reset 与 `v4_eval._binding` 的比对）、`rollout-sha`（16 局，调 `generate_h5.py` 到临时 `--output`，与 `final-delivery.json` 比）、`eval-smoke` |
+| `parity/hard_regression.py` | 新写 | 子命令 `reset-replay`（13×3 + 16 = 55 次，A40 上跑，复用 `_draw._draw_one` 的 make+reset 与 `v4_eval._binding` 的比对）、`eval-smoke`（本机 1 任务 × 1 档 × 1 局）、`xhw-reference`（跨硬件参考，§6.2） |
 | `evaluation_hard.py` | `cp scripts/evaluation.py` | 三处改动（第一部分 §4.1） |
 | 删除 | `git rm` `parity/{v4_specs,v4_rollout,v5_generation,legacy_keep_list}.py`、`scripts/eval/`、`configs/newtask-v4/`、`configs/newtask-v5/`、`configs/newtask-v6/{sampling_config.json,v6-01/}`；`rm -r` 未跟踪 `scripts/injection/`、`parity/results/` | `ls -1 scripts/*.py` = 5 |
 | `tests/**` | 现有 | `sed` `from robomme.` → `from robomme_hard.`、`import robomme.` → `import robomme_hard.`（R8） |
@@ -353,35 +413,52 @@ header 键：`schema`、`difficulty`、`tasks`、`per_env`、`runtime`、`seed_r
 
 ## 二、闸门总表
 
-见第一部分 §六（判定行已内联，此处不重复）。补充判定实现位置：`UPSTREAM_BYTES` / `VENDOR_SAME` / `ABS_IMPORT` → `upstream_guard.py`；`REGISTRY_OWNER` → `tests/lightweight/test_registry_owner.py`（三种顺序各 `subprocess` 一进程）；`SPECS_IDENTITY` → `hard_specs` 加载 + `v6-02` 同口径重算脚本（阶段 1 一次性，命令与输出进 `stage1.md`）；`FREEZE_*` / `ROLLBACK_WRITE` → `injection-dev` 入口的 `--self-check`；`HARD_*` → `hard_regression.py`。
+见第一部分 §六（判定行已内联，此处不重复）。补充判定实现位置：`UPSTREAM_BYTES` / `VENDOR_SAME` / `ABS_IMPORT` → `upstream_guard.py`；`REGISTRY_OWNER` → `tests/lightweight/test_registry_owner.py`（三种顺序各 `subprocess` 一进程）；`SPECS_IDENTITY` → `hard_specs` 加载 + `v6-02` 同口径重算脚本（阶段 1 一次性，命令与输出进 `stage1.md`）；`FREEZE_*` / `ROLLBACK_WRITE` → `injection-dev` 入口的 `--self-check`；`PARITY_*` / `BUCKET_SYNC` / `WORKER_INVARIANT` → `hard_parity.py`；`HARD_RESET_REPLAY` / `XHW_REFERENCE` → `hard_regression.py`。
 
 ## 三、预算与 runbook
 
-| 项 | reset | rollout | 授权状态 |
-|---|---|---|---|
-| `FREEZE_ONLY_JSONL` smoke | 1 | 0 | 本轮申请 |
-| `ROLLBACK_WRITE` smoke | 0 | 1 | 本轮申请 |
-| 阶段 1 单局 `make_env_for_episode` 冒烟 | 0 | 1（计入 `HARD_EVAL_SMOKE`） | 本轮申请 |
-| `NATIVE_REGRESSION_HARD` | 0 | 144 | 已授权（0926 计划 D 项） |
-| `HARD_RESET_REPLAY` | 55 | 0 | 本轮申请 |
-| `HARD_ROLLOUT_SHA` | 0 | 16 | 本轮申请 |
-| **合计** | **56** | **162（新增 18）** | 阶段 4 起跑回复复述「reset 56 / rollout 18」即为执行授权 |
+### 3.1 预算（P3 一次申请；全部按乘式）
 
-runbook（阶段 4，全部进 tmux，会话名前缀 `hs-`，日志 `artifacts/newtask-v6/hard-split/logs/<名>.log`，每份日志一个 Monitor，过滤词含 `NO RECORD|reset 拒绝|svulkan2|EXCLUSIVE|RRT|EXIT_CODE=|Traceback|=PASS|=FAIL`）：
+| 项 | 乘式 | rollout | reset | 硬件 | 授权 |
+|---|---|---|---|---|---|
+| 阶段 0 `WORKER_INVARIANT` | 1 任务 × 1 档（xhard4）× 1 局 × 2（单／16 worker） | 2 | 0 | A40 | 本轮申请 |
+| 阶段 1 单局 `make_env_for_episode` 冒烟 | 1 × 1 × 1 | 1 | 0 | 本机 Ada | 本轮申请 |
+| `FREEZE_ONLY_JSONL` smoke | 1 任务 × 1 档 × 1 候选 | 0 | 1 | 本机 Ada | 本轮申请 |
+| `ROLLBACK_WRITE` smoke | 1 × 1 × 1 | 1 | 0 | 本机 Ada | 本轮申请 |
+| `HARD_EVAL_SMOKE` | 1 × 1 × 1 | 1 | 0 | 本机 Ada | 本轮申请 |
+| O 侧原三档 | 16 任务 × 3 档 × 3 局 | 144 | 0 | A40 | 本轮申请 |
+| P 侧原三档 | 16 × 3 × 3 | 144 | 0 | A40 | 本轮申请 |
+| H 侧原三档 | 16 × 3 × 3 | 144 | 0 | A40 | 本轮申请 |
+| H 侧 xhard | xhard1/2/3 各 13 × 3 + xhard4 16 × 3 | 165 | 0 | A40 | 本轮申请 |
+| `HARD_RESET_REPLAY` | 13 × 3 + 16 | 0 | 55 | A40 | 本轮申请 |
+| **合计** | | **602**（A40 599 + 本机 3） | **56**（A40 55 + 本机 1） | | 用户 2026-09-27「先定全量」；阶段 4 起跑回复复述「rollout 602 / reset 56」即为执行授权 |
+
+原 0926 计划 D 项授权的 V1′ 144 局（Ada 侧 vs S0 基线）**作废不跑**：基线换到 A40 后由 O／P／H 三侧取代。
+
+### 3.2 GL 分片 runbook（阶段 4）
+
+前置：四个占位 job 存活（`squeue -u hongzefu`）；GL 克隆 `robomme_benchmark-newtask-gl` 切到拆包后 HEAD 且 `git status --porcelain` 为空（他人在途改动先交用户处置，不 stash）；P 侧另 `git worktree add <NFS>/hs-p-side pre-hard-split`；每个 job 起跑前 `srun … nvidia-smi --query-gpu=name,driver_version` 断言 `A40 / 595.71.05`。
+
+| job | 节点 | 片 | 命令（在本机 tmux `hs-<side>` 内经 `ssh greatlakes srun --jobid=<id> --overlap --exact --ntasks=1 --cpus-per-task=16 --gpu_cmode=shared bash <脚本>` 起） |
+|---|---|---|---|
+| 62126060 | gl1517 | O 原三档 16×3×3 | `hard_parity.py generate --side O --tier native --workers 16 --gpu 0 --out /tmp/hs-O` |
+| 62126061 | gl1504 | P 原三档 16×3×3 | `hard_parity.py generate --side P --tier native --src-root <NFS>/hs-p-side --workers 16 --gpu 0 --out /tmp/hs-P` |
+| 62126062 | gl1506 | H 原三档 16×3×3 | `ROBOMME_ENV_PACKAGE=robomme_hard hard_parity.py generate --side H --tier native --workers 16 --gpu 0 --out /tmp/hs-H` |
+| 62018665 | gl1510 | H xhard 13×3×3 + 16×3 | `hard_parity.py generate --side H --tier xhard --workers 16 --gpu 0 --out /tmp/hs-Hx`（内部调 `generate_h5.py --no-writeback`） |
+
+每片脚本固定动作：逐局完成 → `sha256sum` 追加 `SHA256SUMS` → `rsync` 到 `<NFS>/hs-parity-<side>-<tier>/` → 删节点 `/tmp` 副本；片结束 → `publish` 上传 bucket 并核 sha → `EXIT_CODE=`。日志 `artifacts/newtask-v6/hard-split/logs/<side>-<tier>.log`，每份一个 Monitor，过滤词 `NO RECORD|reset 拒绝|svulkan2|EXCLUSIVE|RRT|EXIT_CODE=|Traceback|=PASS|=FAIL|RUNNER_DONE`。四片跑完后在本机：
 
 ```bash
-# V1′
-uv run --no-sync python -m scripts.parity.hard_parity run --env-package robomme_hard \
-  --manifest scripts/configs/newtask-v3/subset_manifest.json --base artifacts/newtask-v6/v1/base \
-  --official-root scripts/parity/official --output artifacts/newtask-v6/hard-split/v1-hard --workers 1 --gpus 0
-uv run --no-sync python -m scripts.parity.hard_parity compare --output artifacts/newtask-v6/hard-split/v1-hard
-# xhard 侧
-uv run --no-sync python -m scripts.parity.hard_regression reset-replay --out artifacts/newtask-v6/hard-split/reset-replay
-uv run --no-sync python -m scripts.parity.hard_regression rollout-sha --delivery artifacts/newtask-v6/s4-relaunch-02/verification/final-delivery.json --out artifacts/newtask-v6/hard-split/rollout-sha --gpu 1
-uv run --no-sync python -m scripts.parity.hard_regression eval-smoke --task BinFill --tier xhard4
+uv run --no-sync python -m scripts.parity.hard_parity compare --pair O:P --tier native
+uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier native
+uv run --no-sync python -m scripts.parity.hard_parity compare --pair O:H --tier native
+uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier xhard   # P 侧 = S4 交付，先 publish 到 P-7c7118f-a40/xhard/
+ssh greatlakes srun --jobid=62126060 … python -m scripts.parity.hard_regression reset-replay --out /tmp/hs-rr   # 13×3 + 16 = 55 次
 ```
 
-FAIL 处置：只记证据链与候选修法，不放宽、不重试挑成功；`--env-package robomme` 对照侧须另批。
+产物去向：bucket 为权威归档；NFS 暂存目录在 `BUCKET_SYNC=PASS` 后删除；`/data` 只回收 `SHA256SUMS`、`manifest.json`、`compare/` 与日志（第 14 条「NFS 不留大文件」、用户 2026-09-24「收尾只保留最终产物」）。
+
+FAIL 处置：只记证据链与候选修法，不放宽、不重试挑成功；重跑某片须先停对应 tmux 会话、核对无残留 worker，按 `_rounds/*/results.json` 复用已完成局。
 
 ## 四、风险登记
 
@@ -394,14 +471,18 @@ FAIL 处置：只记证据链与候选修法，不放宽、不重试挑成功；
 | 5 | 两个 `generate_h5.py` 同时回写同一 jsonl | `.lock`（`O_EXCL`）+ 读前／写前哈希核对 |
 | 6 | `tests/` 机械替换后假 PASS／假 FAIL | R8，留档标注 |
 | 7 | 连字符目录名与 `-m` 不兼容 | R7 |
+| 8 | GL 驱动升级（595 → 其他）后 A40 产物不再与 bucket 里的逐位相同 | `manifest.json` 记驱动；驱动变即视为新硬件类，须在新驱动下重生成 O 侧基线并另起 bucket 目录，旧目录保留 |
+| 9 | `O↔P` 在 A40 上 FAIL（Ada 上的 S3 结论不成立） | 不是拆包问题；先用 `compare/h5_pairs.jsonl` 定位字段，查官方编排／worker 镜像差异，交用户裁决后再进 `P↔H` |
+| 10 | 597 局约 200 GB，节点 `/tmp` 与 NFS 暂存爆盘 | 逐局搬运即删；起跑前 `df` 断言 `/tmp` 余量 ≥ 160 GB（S4 口径）、NFS 余量 ≥ 250 GB |
+| 11 | 16 worker 共卡时 `svulkan2`／`EXCLUSIVE` 建 device 失败 | `--gpu_cmode=shared` 写死在 srun；Monitor 过滤词覆盖 |
 
 ## 五、盲区诚实清单
 
-①官方 `episode_config_resolver.py` 是否还有 `evaluation.py` 依赖的其他类方法——阶段 0 读官方树核实；②借用的 `MultiStepDemonstrationWrapper` 内部 `from ..robomme_env.utils import planner_denseStep` 解析到官方 utils，与 `robomme_hard` 环境同进程是否有状态耦合——阶段 1 冒烟观察；③`final-delivery.json` 可比的 h5 sha 是否覆盖全部 16 任务——不足则 `HARD_ROLLOUT_SHA` 的 `compared` 按实际减少并写明；④`v6-02` 的 drafts 已删，`draw_stats` 迁移时只能置空并在 header `record` 注明「历史批次无抽签统计」。
+①官方 `episode_config_resolver.py` 是否还有 `evaluation.py` 依赖的其他类方法——阶段 0 读官方树核实；②借用的 `MultiStepDemonstrationWrapper` 内部 `from ..robomme_env.utils import planner_denseStep` 解析到官方 utils，与 `robomme_hard` 环境同进程是否有状态耦合——阶段 1 冒烟观察；③（并入 ⑦）；④`v6-02` 的 drafts 已删，`draw_stats` 迁移时只能置空并在 header `record` 注明「历史批次无抽签统计」；⑤A40 与 Ada／A6000 分叉的根因（驱动 595 vs 570、PhysX GPU 内核、渲染器）未拆分，本方案只依赖「同型号同驱动稳定」这一已证事实；⑥xhard 档多 worker 与单 worker 的 sha 一致性尚未在 A40 直接证过，阶段 0 `WORKER_INVARIANT` 补；⑦`final-delivery.json` 是否记录全部 165 局 h5 sha，阶段 0 核，不足则 P 侧 xhard 以现存 h5 文件重算。
 
 ## 六、留档与 commit 纪律
 
 - 每阶段一个 commit（12.205～12.210），subject 接体例，body 按 `AGENTS.md` 第 11 条六项；只 `git add` 本阶段文件。
 - 判定行原文与命令进 `docs/validation/newtask-v6/hard-split/stage<n>.md`；阶段 4 的 reset／rollout 逐项计数表进 `stage4.md`。
 - 实施完成后实测结果以子节追加在第一部分 §七步骤表之后，不改写原计划。
-- `robomme_hard/README.md` 必含：①一句话与 V1′ 判定行原文；②四档定稿表（从 `0925-newtask-release-v6-plan.md` 第一部分 §三逐字搬）；③复制／借用／子类／新增逐文件表（`upstream_guard.py --manifest-md` 生成，内联结果与命令）；④机制：`sampling_config` 两块、`SpecRecorder` 导出／回注、jsonl 封套、seed 偏移、注册表归属；⑤使用：`evaluation_hard.py` 三行示例、`override_metadata_path`、两阶段生产命令（注明不随包分发）；⑥红线 R1～R5；⑦`dataset_for_parent="test"` 绕行说明。
+- `robomme_hard/README.md` 必含：①一句话与三条 `PARITY_*`（native）+ 一条 `PARITY_P_H`（xhard）判定行原文；②四档定稿表（从 `0925-newtask-release-v6-plan.md` 第一部分 §三逐字搬）；③复制／借用／子类／新增逐文件表（`upstream_guard.py --manifest-md` 生成，内联结果与命令）；④机制：`sampling_config` 两块、`SpecRecorder` 导出／回注、jsonl 封套、seed 偏移、注册表归属；⑤使用：`evaluation_hard.py` 三行示例、`override_metadata_path`、两阶段生产命令（注明不随包分发）；⑥红线 R1～R5、R11；⑦`dataset_for_parent="test"` 绕行说明。
