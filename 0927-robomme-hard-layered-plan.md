@@ -3,7 +3,7 @@
 > **权威性**：本文件是 [`0926-robomme-hard-split-plan.md`](0926-robomme-hard-split-plan.md) §〇′ 的精简定稿版，只写最新口径，不保留历史决策与备选；两份冲突时以本文件为准。只规划，不实施；每一阶段须单独获批后才动手，阶段 3 触碰 P2 须逐文件批准，阶段 4 的生成预算按第二部分 §三 一次性申请。
 > **代码锚点**：本仓库 `newtaskRelease-v5` @ `66d9a424`（12.204.1）；官方 `RoboMME/robomme_benchmark` `main` @ `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`；官方隔离源码树 `artifacts/train-parity/local-smoke-01/official-src/`（`.official_tree` = `1d4c1369…`，tree sha）；现行规格 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl`（selected 行合计 165）；S4 交付清单 `artifacts/newtask-v6/s4-relaunch-02/verification/final-delivery.json`。
 > **工作副本**：`/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（环境 A，sled-vail）。
-> **验收硬件**：A40 @ greatlakes `spgpu`（驱动 595.71.05）是**唯一**字节级验收硬件；本机 RTX 6000 Ada 与 aspen RTX A6000 只做开发冒烟与跨硬件参考。依据：[`docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md`](docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md)（同型号同驱动逐位稳定；Ada↔A6000 仅 16 处 1e-18 级 `joint_action` 差；A40 与两者全面分叉）。占位 job：`62126060/61/62`（`hs-hold-20260927-1/2/3`）、`62018665`，用户 2026-09-27 原话「这四个你可以自由跑」。
+> **验收硬件**：A40 @ greatlakes `spgpu`（驱动 595.71.05）是**唯一**字节级验收硬件；本机 RTX 6000 Ada 与 aspen RTX A6000 只做开发冒烟与跨硬件参考。依据：[`docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md`](docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md)（同型号同驱动逐位稳定；Ada↔A6000 仅 16 处 1e-18 级 `joint_action` 差；A40 与两者全面分叉）。占位 job（用户 2026-09-27 原话「这四个你可以自由跑」「就用现有的占位job」，不新交）：`62126060` gl1517、`62126061` gl1504、`62126062` gl1506（`hs-hold-20260927-1/2/3`，剩余约 1 天 20～22 小时）、`62018665` gl1510（剩余约 21 小时，只承担阶段 0 复核）；2026-09-27 21:50 实测四节点均为 A40 / 驱动 595.71.05、显存 0 MiB、`/tmp` 余量 263～300 GB、16 CPU / 192 GB。
 > **三侧对拍锚点**：O 侧官方 `main @ 1fadc0ec`；P 侧本仓库 tag `pre-hard-split` → `7c7118fa`（生产代码基线 `ca32e9b`，两者 `src/` 零 diff）；H 侧拆包后 HEAD。持久化 bucket：`HongzeFu/robomme-hard-parity`。
 > **计数体例（P5）**：局数一律写「任务数 × 难度档 × 每格局数」乘式；原三档 = 16 任务 × 3 档（easy/medium/hard）× 3 局 = 144；xhard = xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 = 165（xhard1～3 缺 `require_xhard4_only` 的三个任务）。
 > **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，实施从 12.205 起。
@@ -437,14 +437,14 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 
 ### 3.2 GL 分片 runbook（阶段 4）
 
-前置：四个占位 job 存活（`squeue -u hongzefu`）；GL 克隆 `robomme_benchmark-newtask-gl` 切到拆包后 HEAD 且 `git status --porcelain` 为空（他人在途改动先交用户处置，不 stash）；P 侧另 `git worktree add <NFS>/hs-p-side pre-hard-split`；每个 job 起跑前 `srun … nvidia-smi --query-gpu=name,driver_version` 断言 `A40 / 595.71.05`。
+前置：三个 `hs-hold` job 存活且剩余 ≥ 6 小时（`squeue -u hongzefu -o '%i %L'`；任一到期即停下交用户决定是否新交，不自行 sbatch）；GL 克隆 `robomme_benchmark-newtask-gl` 切到拆包后 HEAD 且 `git status --porcelain` 为空（他人在途改动先交用户处置，不 stash）；P 侧另 `git worktree add <NFS>/hs-p-side pre-hard-split`；每个 job 起跑前 `srun … nvidia-smi --query-gpu=name,driver_version` 断言 `A40 / 595.71.05`。
 
 | job | 节点 | 片 | 命令（在本机 tmux `hs-<side>` 内经 `ssh greatlakes srun --jobid=<id> --overlap --exact --ntasks=1 --cpus-per-task=16 --gpu_cmode=shared bash <脚本>` 起） |
 |---|---|---|---|
-| 62126060 | gl1517 | O 原三档 16×3×3 | `hard_parity.py generate --side O --tier native --workers 16 --gpu 0 --out /tmp/hs-O` |
+| 62126060 | gl1517 | O 原三档 16×3×3，随后 H xhard 13×3×3 + 16×3（O 片约 30 分钟结束后接跑，同 job 串行） | `hard_parity.py generate --side O --tier native --workers 16 --gpu 0 --out /tmp/hs-O`；完成后 `hard_parity.py generate --side H --tier xhard --workers 16 --gpu 0 --out /tmp/hs-Hx`（内部调 `generate_h5.py --no-writeback`） |
 | 62126061 | gl1504 | P 原三档 16×3×3 | `hard_parity.py generate --side P --tier native --src-root <NFS>/hs-p-side --workers 16 --gpu 0 --out /tmp/hs-P` |
-| 62126062 | gl1506 | H 原三档 16×3×3 | `ROBOMME_ENV_PACKAGE=robomme_hard hard_parity.py generate --side H --tier native --workers 16 --gpu 0 --out /tmp/hs-H` |
-| 62018665 | gl1510 | H xhard 13×3×3 + 16×3 | `hard_parity.py generate --side H --tier xhard --workers 16 --gpu 0 --out /tmp/hs-Hx`（内部调 `generate_h5.py --no-writeback`） |
+| 62126062 | gl1506 | H 原三档 16×3×3，随后回注 reset 13×3 + 16 = 55 | `ROBOMME_ENV_PACKAGE=robomme_hard hard_parity.py generate --side H --tier native --workers 16 --gpu 0 --out /tmp/hs-H`；完成后 `hard_regression.py reset-replay --out /tmp/hs-rr` |
+| 62018665 | gl1510 | **只跑阶段 0** `WORKER_INVARIANT`（xhard4 1 任务 × 1 档 × 1 局 × 2）；剩余约 21 小时，阶段 4 不依赖它 | `hard_parity.py generate --side P --tier xhard --tasks BinFill --tier-only xhard4 --episodes 0 --workers 1` 与 `--workers 16` 各一次后比 sha |
 
 每片脚本固定动作：逐局完成 → `sha256sum` 追加 `SHA256SUMS` → `rsync` 到 `<NFS>/hs-parity-<side>-<tier>/` → 删节点 `/tmp` 副本；片结束 → `publish` 上传 bucket 并核 sha → `EXIT_CODE=`。日志 `artifacts/newtask-v6/hard-split/logs/<side>-<tier>.log`，每份一个 Monitor，过滤词 `NO RECORD|reset 拒绝|svulkan2|EXCLUSIVE|RRT|EXIT_CODE=|Traceback|=PASS|=FAIL|RUNNER_DONE`。四片跑完后在本机：
 
@@ -453,7 +453,7 @@ uv run --no-sync python -m scripts.parity.hard_parity compare --pair O:P --tier 
 uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier native
 uv run --no-sync python -m scripts.parity.hard_parity compare --pair O:H --tier native
 uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier xhard   # P 侧 = S4 交付，先 publish 到 P-7c7118f-a40/xhard/
-ssh greatlakes srun --jobid=62126060 … python -m scripts.parity.hard_regression reset-replay --out /tmp/hs-rr   # 13×3 + 16 = 55 次
+# 回注 reset 13×3 + 16 = 55 次已在 62126062 片尾串行跑完，结果随该片日志
 ```
 
 产物去向：bucket 为权威归档；NFS 暂存目录在 `BUCKET_SYNC=PASS` 后删除；`/data` 只回收 `SHA256SUMS`、`manifest.json`、`compare/` 与日志（第 14 条「NFS 不留大文件」、用户 2026-09-24「收尾只保留最终产物」）。
