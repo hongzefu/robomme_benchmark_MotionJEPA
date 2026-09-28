@@ -32,7 +32,7 @@ server = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/robomme"]
+packages = ["src/robomme", "src/robomme_hard"]
 
 [tool.pytest.ini_options]
 markers = [

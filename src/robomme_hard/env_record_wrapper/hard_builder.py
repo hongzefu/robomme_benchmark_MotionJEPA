@@ -1,0 +1,267 @@
+"""``robomme_hard`` 的评估构建器：官方 ``BenchmarkEnvBuilder`` 的子类（0927 计划第一部分 §4.2）。
+
+对外只新增 ``dataset="test-hard"`` 一个取值；``xhard1``～``xhard4`` 不是合法的 ``dataset``。
+
+* ``train`` / ``test`` / ``val``：沿用官方父类的元数据逻辑；只把四个 Unmask 任务的 ``train`` 元数据改读
+  ``robomme_hard/env_metadata/train``（400 条，E-12）。
+* ``test-hard``：依次读包内 ``env_metadata/test-hard/<tier>/specs.jsonl``（xhard1→xhard4），取本任务
+  ``selected`` 且 ``rollout.status=="ok"`` 的行，档内按 ``candidate`` 升序，拼接编为 episode 0..N-1。
+  每格行数对照 55 格表 ``EXPECTED_CELLS`` 断言：表内格恰好 ``header.delivery_per_cell`` 行，表外格恰好 0 行。
+* ``make_env_for_episode`` 整段覆写：runtime 四项、seed、difficulty 照抄官方拼法；test-hard 时在 ``gym.make`` 前加
+  ``sampling_config`` 与 ``native_episode_spec``（回注）；包装链与官方逐项相同，但 wrapper 一律绝对导入
+  ``robomme_hard`` 的类（``DemonstrationWrapper``、``OraclePlannerDemonstrationWrapper`` 是复制件，其余是借用）。
+
+⚠ 官方父类 ``__init__`` 的 ``_ALLOWED_DATASETS`` 只认 train/test/val 且官方代码不能改：test-hard 先以
+``dataset="test"`` 过父类校验，再把 ``self.dataset`` 改回 ``"test-hard"``；父类顺手读的 test 元数据随即清空、不被使用。
+
+P2：本子类覆写 ``__init__``、``_resolve_metadata_path``、``resolve_episode``、``get_episode_num``、
+``make_env_for_episode``，已由用户 2026-09-27「现在一次批准这两项」（U-3）批准。
+"""
+
+from __future__ import annotations
+
+import functools
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
+
+import gymnasium as gym
+
+from robomme.env_record_wrapper.episode_config_resolver import BenchmarkEnvBuilder as _OfficialBuilder
+
+from . import hard_specs
+
+TEST_HARD = "test-hard"
+_ALLOWED_DATASETS = {"train", "test", "val", TEST_HARD}
+_ALLOWED_ACTION_SPACES = {"joint_angle", "ee_pose", "waypoint", "multi_choice"}
+HARD_METADATA_ROOT = Path(__file__).resolve().parents[1] / "env_metadata"
+#: 这四个任务的 train 元数据在 robomme_hard 里是 400 条，其余任务读官方
+HARD_TRAIN_TASKS = frozenset({"ButtonUnmask", "ButtonUnmaskSwap", "VideoUnmask", "VideoUnmaskSwap"})
+_RUNTIME_KEYS = ("obs_mode", "control_mode", "render_mode", "reward_mode")
+
+
+@functools.lru_cache(maxsize=None)
+def _tier_specs(tier: str):
+    """每档包内 jsonl 只读一次并做完整封套校验；返回值只读使用，不得修改。"""
+    return hard_specs.load_specs(hard_specs.packaged_specs_path(tier))
+
+
+def _test_hard_entries(env_id: str) -> List[Dict[str, Any]]:
+    if env_id not in hard_specs.ALL_TASKS:
+        raise ValueError(f"test-hard 不含环境 {env_id!r}")
+    entries: List[Dict[str, Any]] = []
+    for tier in hard_specs.TIERS:
+        header, rows = _tier_specs(tier)
+        chosen = sorted((row for row in rows if row["task"] == env_id and hard_specs.delivered(row)),
+                        key=lambda row: int(row["candidate"]))
+        expected = int(header["delivery_per_cell"]) if (env_id, tier) in hard_specs.EXPECTED_CELLS else 0
+        if len(chosen) != expected:
+            raise ValueError(f"test-hard {env_id}@{tier} 正式局 {len(chosen)} 行，55 格表要求恰好 {expected} 行")
+        for row in chosen:
+            entries.append({
+                "tier": tier,
+                "row": row,
+                "sampling_config": header["sampling_config"][env_id],
+                "runtime": header["runtime"],
+                "recovery_rule": header["recovery_rule"],
+            })
+    return entries
+
+
+class BenchmarkEnvBuilder(_OfficialBuilder):
+    """官方构建器 + ``dataset="test-hard"``；其余取值行为与官方相同（四个 Unmask 任务的 train 元数据除外）。"""
+
+    def __init__(
+        self,
+        env_id: str,
+        dataset: str = "test",
+        action_space: str = "joint_angle",
+        gui_render: bool = False,
+        override_metadata_path: Optional[Union[str, Path]] = None,
+        max_steps: int = 10000,
+    ):
+        if dataset not in _ALLOWED_DATASETS:
+            raise ValueError(f"Unsupported dataset '{dataset}'. Allowed datasets: {sorted(_ALLOWED_DATASETS)}")
+        self._episode_map: Optional[Dict[int, Dict[str, Any]]] = None
+        super().__init__(
+            env_id,
+            dataset="test" if dataset == TEST_HARD else dataset,
+            action_space=action_space,
+            gui_render=gui_render,
+            override_metadata_path=override_metadata_path,
+            max_steps=max_steps,
+        )
+        self.dataset = dataset
+        if dataset == TEST_HARD:
+            self.metadata_index = {}
+            self._episode_map = dict(enumerate(_test_hard_entries(env_id)))
+
+    # ── 旧 V4 快照的薄包装（episode 号＝候选序号）；新代码一律用 dataset="test-hard" ──
+    @classmethod
+    def from_v4_specs(
+        cls,
+        env_id: str,
+        header: Dict[str, object],
+        specs_by_identity: Dict[str, Dict[str, object]],
+        action_space: str = "joint_angle",
+        gui_render: bool = False,
+        max_steps: int = 10000,
+    ) -> "BenchmarkEnvBuilder":
+        if action_space not in _ALLOWED_ACTION_SPACES:
+            raise ValueError(f"Unsupported action_space '{action_space}'.")
+        builder = cls(env_id, dataset="test", action_space=action_space, gui_render=gui_render, max_steps=max_steps)
+        builder.dataset = "v4-specs"
+        builder.metadata_index = {}
+        runtime = dict(header.get("runtime") or {})
+        expected = dict(hard_specs.RUNTIME, render_mode=builder.render_mode)
+        if runtime != expected:
+            raise ValueError(f"V4 快照 runtime 与本构建器参数不符：快照 {runtime}，构建器 {expected}")
+        if env_id not in header.get("sampling_config", {}):
+            raise ValueError(f"V4 快照不含环境 {env_id}")
+        builder._episode_map = {}
+        for key, row in specs_by_identity.items():
+            if key.split("/")[0] != env_id:
+                continue
+            builder._episode_map[int(row["episode"])] = {
+                "tier": row["difficulty"],
+                "row": {**row, "candidate": int(row["episode"]), "tier": row["difficulty"]},
+                "sampling_config": header["sampling_config"][env_id],
+                "runtime": runtime,
+                "recovery_rule": header.get("recovery_rule"),
+            }
+        return builder
+
+    def v4_episodes(self) -> List[int]:
+        return sorted(self._episode_map) if self._episode_map is not None else []
+
+    # ── 官方成员的覆写 ─────────────────────────────────────────────────────
+    def _resolve_metadata_path(self) -> str:
+        if self.override_metadata_path is None and self.dataset == "train" and self.env_id in HARD_TRAIN_TASKS:
+            return str(HARD_METADATA_ROOT / "train" / f"record_dataset_{self.env_id}_metadata.json")
+        return super()._resolve_metadata_path()
+
+    def _entry(self, episode: int) -> Dict[str, Any]:
+        entry = self._episode_map.get(int(episode))
+        if entry is None:
+            raise KeyError(f"{self.env_id} 在 {self.dataset} 里没有 episode {episode}（共 {len(self._episode_map)} 局）")
+        return entry
+
+    def resolve_episode(self, episode: int):
+        """返回 ``(seed, difficulty)``，与官方二元组同形；test-hard 下 difficulty 就是档位（xhard1..4）。"""
+        if self._episode_map is None:
+            return super().resolve_episode(episode)
+        entry = self._entry(episode)
+        return int(entry["row"]["seed"]), entry["tier"]
+
+    def resolve_identity(self, episode: int) -> Dict[str, Any]:
+        """只读：本局身份 ``{episode, tier, candidate, seed, spec_sha256, source_run}``（官方二元 resolve_episode 不动）。"""
+        if self._episode_map is None:
+            seed, difficulty = super().resolve_episode(episode)
+            return {"episode": int(episode), "tier": difficulty, "candidate": None, "seed": seed,
+                    "spec_sha256": None, "source_run": None}
+        entry = self._entry(episode)
+        row = entry["row"]
+        return {
+            "episode": int(episode),
+            "tier": entry["tier"],
+            "candidate": int(row["candidate"]),
+            "seed": int(row["seed"]),
+            "spec_sha256": row["spec_sha256"],
+            "source_run": (row.get("rollout") or {}).get("source_run"),
+        }
+
+    def get_episode_num(self) -> int:
+        if self._episode_map is None:
+            return super().get_episode_num()
+        return len(self._episode_map)
+
+    def _hard_env_kwargs(self, episode_idx: int) -> Dict[str, Any]:
+        entry = self._entry(episode_idx)
+        runtime = dict(entry["runtime"])
+        mine = {"obs_mode": "rgb+depth+segmentation", "control_mode": "pd_joint_pos",
+                "render_mode": self.render_mode, "reward_mode": "dense"}
+        for key in _RUNTIME_KEYS:
+            if key != "render_mode" and runtime.get(key) != mine[key]:
+                raise ValueError(f"规格 runtime 与本构建器参数不符：{key} 规格 {runtime.get(key)!r}，构建器 {mine[key]!r}")
+        return {
+            "seed": int(entry["row"]["seed"]),
+            "difficulty": entry["tier"],
+            "sampling_config": entry["sampling_config"],
+            "native_episode_spec": entry["row"]["spec"],
+        }
+
+    def make_env_for_episode(
+        self,
+        episode_idx: int,
+        max_steps: Optional[int] = None,
+        include_maniskill_obs: bool = False,
+        include_front_depth: bool = False,
+        include_wrist_depth: bool = False,
+        include_front_camera_extrinsic: bool = False,
+        include_wrist_camera_extrinsic: bool = False,
+        include_available_multi_choices: bool = False,
+        include_front_camera_intrinsic: bool = False,
+        include_wrist_camera_intrinsic: bool = False,
+    ):
+        """与官方同名方法逐项同构；wrapper 取 robomme_hard 的类，test-hard 加回注参数。"""
+        from robomme_hard.env_record_wrapper.DemonstrationWrapper import DemonstrationWrapper
+
+        max_steps_without_demo = (
+            max_steps + 2 if max_steps is not None else self.max_steps_without_demonstration
+        )
+
+        seed, difficulty_hint = self.resolve_episode(episode_idx)
+        env_kwargs = dict(
+            obs_mode="rgb+depth+segmentation",
+            control_mode="pd_joint_pos",
+            render_mode=self.render_mode,
+            reward_mode="dense",
+        )
+        if seed is not None:
+            env_kwargs["seed"] = seed
+        if difficulty_hint:
+            env_kwargs["difficulty"] = difficulty_hint
+        if self._episode_map is not None:
+            env_kwargs.update(self._hard_env_kwargs(episode_idx))
+
+        env = gym.make(self.env_id, **env_kwargs)
+        force_front_camera_params = self.action_space == "multi_choice"
+        include_front_camera_extrinsic_effective = (
+            include_front_camera_extrinsic or force_front_camera_params
+        )
+        include_front_camera_intrinsic_effective = (
+            include_front_camera_intrinsic or force_front_camera_params
+        )
+        env = DemonstrationWrapper(
+            env,
+            max_steps_without_demonstration=max_steps_without_demo,
+            gui_render=self.gui_render,
+            include_maniskill_obs=include_maniskill_obs,
+            include_front_depth=include_front_depth,
+            include_wrist_depth=include_wrist_depth,
+            include_front_camera_extrinsic=include_front_camera_extrinsic_effective,
+            include_wrist_camera_extrinsic=include_wrist_camera_extrinsic,
+            include_available_multi_choices=include_available_multi_choices,
+            include_front_camera_intrinsic=include_front_camera_intrinsic_effective,
+            include_wrist_camera_intrinsic=include_wrist_camera_intrinsic,
+        )
+        if self.action_space == "joint_angle":
+            pass
+        elif self.action_space == "ee_pose":
+            from robomme_hard.env_record_wrapper.EndeffectorDemonstrationWrapper import EndeffectorDemonstrationWrapper
+
+            env = EndeffectorDemonstrationWrapper(env, action_repr="rpy")
+        elif self.action_space == "waypoint":
+            from robomme_hard.env_record_wrapper.MultiStepDemonstrationWrapper import MultiStepDemonstrationWrapper
+
+            env = MultiStepDemonstrationWrapper(env, gui_render=self.gui_render, vis=self.gui_render)
+        elif self.action_space == "multi_choice":
+            from robomme_hard.env_record_wrapper.OraclePlannerDemonstrationWrapper import (
+                OraclePlannerDemonstrationWrapper,
+            )
+
+            env = OraclePlannerDemonstrationWrapper(env, env_id=self.env_id, gui_render=self.gui_render)
+
+        from robomme_hard.env_record_wrapper.FailAwareWrapper import FailAwareWrapper
+
+        env = FailAwareWrapper(env)
+        return env

@@ -74,6 +74,11 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def cheap_hash(data: bytes) -> str:
+    """cheap 档：首尾各 1 MiB 的 blake2b（与 robomme_hard/__init__.py 的导入时校验同算法；挡不住等长改中间字节）。"""
+    return hashlib.blake2b(data[: 1 << 20] + data[-(1 << 20):]).hexdigest()
+
+
 def canonical(obj) -> str:
     return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
@@ -107,8 +112,9 @@ def build() -> None:
     shims = []
     for mod in SHIM_MODULES:
         target = module_to_path(mod, files)
+        blob = _git_bytes("show", f"{SRC_COMMIT}:{target}")
         shims.append({"shim": shim_path(mod), "target_module": mod, "target_file": target,
-                      "target_sha256": files[target]})
+                      "target_sha256": files[target], "target_bytes": len(blob), "target_cheap": cheap_hash(blob)})
     vendor = {}
     for name in VENDOR_FILES:
         data = _git_bytes("show", f"{ORCH_COMMIT}:scripts/data-generation/{name}")
