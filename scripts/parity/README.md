@@ -1,6 +1,6 @@
 # scripts/parity/：与官方比
 
-拆包后（[0927 计划](../../0927-robomme-hard-layered-plan.md)）本目录只做「与官方比」。新值档的生产链路在 [`../injection-dev/`](../injection-dev/)，新值环境源码在 [`src/robomme_hard/`](../../src/robomme_hard/README.md)。
+拆包后（[0927 计划](../../docs/plans/0927-robomme-hard-layered-plan.md)）本目录只做「与官方比」。新值档的生产链路在 [`../injection-dev/`](../injection-dev/)，新值环境源码在 [`src/robomme_hard/`](../../src/robomme_hard/README.md)。
 
 | 文件 | 干什么 |
 |---|---|

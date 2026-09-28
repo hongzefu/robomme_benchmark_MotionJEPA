@@ -1,6 +1,6 @@
 # robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
-"""轻量测试：V6 审查修复（0926-v6-audit-fix-plan.md 第八节 8.2）。
+"""轻量测试：V6 审查修复（docs/plans/0926-v6-audit-fix-plan.md 第八节 8.2）。
 
 全部纯 CPU、不起 sapien 场景。
 

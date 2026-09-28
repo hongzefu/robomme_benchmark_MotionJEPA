@@ -99,7 +99,7 @@ def test_task_notices_degrade_for_legacy_data():
 
 
 def test_gradients_parse_after_plan_table_edit():
-    values = cat.gradients(REPO_ROOT / "0925-newtask-release-v6-plan.md")
+    values = cat.gradients(REPO_ROOT / "docs/plans/0925-newtask-release-v6-plan.md")
     assert values["VideoPlaceButton"]["xhard3"] == "放台次数（都放回原位）：2 块 5 次"
     assert set(values) == set(cat.NAMES)
 

@@ -1,6 +1,6 @@
 # 拆包阶段 1：建 `src/robomme_hard`、迁移 test-hard 20 局规格（2026-09-28）
 
-计划：`0927-robomme-hard-layered-plan.md` 第一部分 §三～§五、第二部分 §1.2。代码锚点：开工时 HEAD `7a6cee35`（12.205）。本阶段不改 `src/robomme`。
+计划：`docs/plans/0927-robomme-hard-layered-plan.md` 第一部分 §三～§五、第二部分 §1.2。代码锚点：开工时 HEAD `7a6cee35`（12.205）。本阶段不改 `src/robomme`。
 
 ## 一、包结构（复制／借用／子类）
 

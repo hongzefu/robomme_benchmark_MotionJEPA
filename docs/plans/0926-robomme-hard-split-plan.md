@@ -22,8 +22,8 @@
 
 | 前置计划 | 状态 | 判定行 / 证据 |
 |---|---|---|
-| `0925-newtask-release-v6-plan.md` §5.3 S0～S5 | 完成 | S3 原三档 144 局：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`（跑在 `c8c06ab`，**审查修复之前**）；S4 55 格 165 成功局；[最终报告](docs/validation/newtask-v6/20260926-final.md) |
-| `0926-v6-audit-fix-plan.md` 8.4 四步 | 实施与 165 局交付完成；**语义验收仍有证据缺口** | 14 项 `src/robomme` 改动落地于 `ca32e9b`（12.188）；G1 `RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；G2 `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`；165 局重生成为 `v6-02`，`S4_DELIVERY=PASS cells=55 successes=165 shortfall=0`；第二节 10 项检查 `failed=0`，但汇总行原文是 `SEMANTIC_SUMMARY=FAIL checks=10 failed=0 episodes_read=165 read_errors=3`（三个失败局的空 H5 被枚举），且 `PEG_NEARFAR=REPORT episodes=3` 对不上计划要求的 `PASS candidates=10`。两个缺口不阻塞拆包，V1′ 留档须原样带出；[留档](docs/validation/newtask-v6/20260927-audit-fix.md) |
+| `0925-newtask-release-v6-plan.md` §5.3 S0～S5 | 完成 | S3 原三档 144 局：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`（跑在 `c8c06ab`，**审查修复之前**）；S4 55 格 165 成功局；[最终报告](../validation/newtask-v6/20260926-final.md) |
+| `0926-v6-audit-fix-plan.md` 8.4 四步 | 实施与 165 局交付完成；**语义验收仍有证据缺口** | 14 项 `src/robomme` 改动落地于 `ca32e9b`（12.188）；G1 `RESET_PARITY_NATIVE=PASS resets=48 sha_mismatch=0`；G2 `NATIVE_DEFS_UNCHANGED=PASS envs=16 changed_keys=0 declared_deltas=6`；165 局重生成为 `v6-02`，`S4_DELIVERY=PASS cells=55 successes=165 shortfall=0`；第二节 10 项检查 `failed=0`，但汇总行原文是 `SEMANTIC_SUMMARY=FAIL checks=10 failed=0 episodes_read=165 read_errors=3`（三个失败局的空 H5 被枚举），且 `PEG_NEARFAR=REPORT episodes=3` 对不上计划要求的 `PASS candidates=10`。两个缺口不阻塞拆包，V1′ 留档须原样带出；[留档](../validation/newtask-v6/20260927-audit-fix.md) |
 
 ### 0.2 对本方案的影响
 

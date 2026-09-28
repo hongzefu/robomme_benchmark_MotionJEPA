@@ -1,6 +1,6 @@
 # 拆包阶段 4：三侧对拍（A40@greatlakes，2026-09-28）
 
-计划：`0927-robomme-hard-layered-plan.md` 第一部分 §5.4、§6.1，第二部分 §3.1、§3.2、§3.4。
+计划：`docs/plans/0927-robomme-hard-layered-plan.md` 第一部分 §5.4、§6.1，第二部分 §3.1、§3.2、§3.4。
 
 ## 一、判定行（全部原文）
 

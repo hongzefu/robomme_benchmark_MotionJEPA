@@ -2,7 +2,7 @@
 
 # scripts/ 说明：robomme_hard 拆包后的目录、V6 四档新值与历史说明
 
-**拆包后（12.205～12.210，[0927 计划](../0927-robomme-hard-layered-plan.md)）的布局**：
+**拆包后（12.205～12.210，[0927 计划](../docs/plans/0927-robomme-hard-layered-plan.md)）的布局**：
 
 | 位置 | 内容 |
 |---|---|
@@ -646,7 +646,7 @@ git show 7a6cee35:scripts/README.md | sed -n '/^## 第二节/,/^## 第六节/p'
 
 ## 第六节　V6 四档新值发布
 
-范围与授权以 [V6 计划](../0925-newtask-release-v6-plan.md) 第 5.3 节为准；配置为包内 xhard4 规格 header 的 `sampling_config`（原 V6 快照 `configs/newtask-v6/sampling_config.json` 已删，与之逐任务相同）。本节说明本轮用法，不把尚未完成的检查写成通过。
+范围与授权以 [V6 计划](../docs/plans/0925-newtask-release-v6-plan.md) 第 5.3 节为准；配置为包内 xhard4 规格 header 的 `sampling_config`（原 V6 快照 `configs/newtask-v6/sampling_config.json` 已删，与之逐任务相同）。本节说明本轮用法，不把尚未完成的检查写成通过。
 
 ### 6.1 档位、规模与失败预算
 

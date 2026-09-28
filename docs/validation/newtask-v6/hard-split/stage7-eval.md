@@ -1,6 +1,6 @@
 # 拆包阶段 7～8：test-hard 两策略评估与收尾（2026-09-28）
 
-计划：`0927-robomme-hard-layered-plan.md` 第一部分 §6.4、§八，第二部分 §3.3。评估身份：`records/eval-identities-1100.jsonl`（xhard1/2/3 各 13 任务 × 20 局 + xhard4 16 任务 × 20 局 = 1100）；每策略两轮 55 格 × 10 局 = 550。顺序（U-9「先各做55*10 然后在做10」）：SimpleMemVLA 第一轮 → MME-VLA 第一轮 → SimpleMemVLA 第二轮 → MME-VLA 第二轮，同一批 10 张卡串接。
+计划：`docs/plans/0927-robomme-hard-layered-plan.md` 第一部分 §6.4、§八，第二部分 §3.3。评估身份：`records/eval-identities-1100.jsonl`（xhard1/2/3 各 13 任务 × 20 局 + xhard4 16 任务 × 20 局 = 1100）；每策略两轮 55 格 × 10 局 = 550。顺序（U-9「先各做55*10 然后在做10」）：SimpleMemVLA 第一轮 → MME-VLA 第一轮 → SimpleMemVLA 第二轮 → MME-VLA 第二轮，同一批 10 张卡串接。
 
 ## 一、判定行
 

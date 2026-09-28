@@ -186,7 +186,7 @@ def format_report(result: Mapping, label: str = "TIER_MONOTONE") -> list[str]:
     return lines
 
 
-# ── 定稿计划表（0925-newtask-release-v6-plan.md 第三节；hard 及原三档只作冻结基线）───────────────
+# ── 定稿计划表（docs/plans/0925-newtask-release-v6-plan.md 第三节；hard 及原三档只作冻结基线）───────────────
 # VP 梯度只数放到 target 的次数；所有新值档统一回家，回家段不计入梯度。
 def _vpo_place(visit_counts):
     return sum(int(value) for value in visit_counts)

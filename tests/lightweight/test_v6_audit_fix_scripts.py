@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""轻量测试：V6 语义审查修复在 scripts/ 侧的两处改动（0926-v6-audit-fix-plan.md §8.2 非 src 项）。
+"""轻量测试：V6 语义审查修复在 scripts/ 侧的两处改动（docs/plans/0926-v6-audit-fix-plan.md §8.2 非 src 项）。
 
 * N14：MoveCube 新值档按运动方式分层选局（``v4_specs.stratified_select``）；其他环境与原三档沿用 ``select``。
 * N2 落地：``--task-max-reset-attempts`` 的 ``TASK[@TIER]=N`` 解析与 ``draw_rows`` 的按环境尝试上限。

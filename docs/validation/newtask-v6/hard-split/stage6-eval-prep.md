@@ -1,6 +1,6 @@
 # 拆包阶段 6：评估准备（2026-09-28）
 
-计划：`0927-robomme-hard-layered-plan.md` 第一部分 §八、第二部分 §1.5、§3.3。用户裁决 U-8「MME-VLA 官方基底选干净 main 检出」「MME-VLA 从官方policy learning库切出 再push到https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/这里的一个branch」「branch命名和我之前约定一致」「simplemem也是这样官方切出 push到我要的地方！」、U-9「先各做55*10 然后在做10」、U-12（SimpleMemVLA 切出点 `OpenBMB/SimpleMemVLA@c564c17`）。
+计划：`docs/plans/0927-robomme-hard-layered-plan.md` 第一部分 §八、第二部分 §1.5、§3.3。用户裁决 U-8「MME-VLA 官方基底选干净 main 检出」「MME-VLA 从官方policy learning库切出 再push到https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/这里的一个branch」「branch命名和我之前约定一致」「simplemem也是这样官方切出 push到我要的地方！」、U-9「先各做55*10 然后在做10」、U-12（SimpleMemVLA 切出点 `OpenBMB/SimpleMemVLA@c564c17`）。
 
 ## 一、分支与提交
 

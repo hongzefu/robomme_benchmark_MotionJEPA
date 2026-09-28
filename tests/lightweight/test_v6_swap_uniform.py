@@ -1,6 +1,6 @@
 # robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
-"""轻量测试：V6 交换对象均匀化（0925-newtask-release-v6-plan.md 2.2 / 2.4 / 2.5，M6(a) S5、外环 O4）。
+"""轻量测试：V6 交换对象均匀化（docs/plans/0925-newtask-release-v6-plan.md 2.2 / 2.4 / 2.5，M6(a) S5、外环 O4）。
 
 纯函数与假环境，不起 SAPIEN 场景：
 

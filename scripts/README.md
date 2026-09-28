@@ -57,7 +57,7 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 
 ## 3. 四档配置对比与 episode 长度
 
-**配置对比**（一句话版；完整定稿表与备注见 [`src/robomme_hard/README.md`](../src/robomme_hard/README.md) ②，源自 `0925-newtask-release-v6-plan.md` 第一部分 §三）。列格式 hard → xhard1 → xhard2 → xhard3 → xhard4；`[a,b]` 为整数均匀区间。
+**配置对比**（一句话版；完整定稿表与备注见 [`src/robomme_hard/README.md`](../src/robomme_hard/README.md) ②，源自 `docs/plans/0925-newtask-release-v6-plan.md` 第一部分 §三）。列格式 hard → xhard1 → xhard2 → xhard3 → xhard4；`[a,b]` 为整数均匀区间。
 
 | 环境 | 梯度维度 | hard | xhard1 | xhard2 | xhard3 | xhard4 |
 |---|---|---|---|---|---|---|

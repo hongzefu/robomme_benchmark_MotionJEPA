@@ -39,7 +39,7 @@ NOTES = {
 }
 
 
-# ---- site-v11：V6 语义审查修复（0926-v6-audit-fix-plan.md §8.5 / §8.3 / §九）----
+# ---- site-v11：V6 语义审查修复（docs/plans/0926-v6-audit-fix-plan.md §8.5 / §8.3 / §九）----
 # 只涉及 xhard1～4；用户裁决 D1/D4/D5「不要管」，不在此列出。
 TIERS_ALL_NEW = "xhard1～xhard4"
 CHANGELOG = [
@@ -618,7 +618,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--delivery", type=Path, default=ARTIFACTS / "newtask-v6/s4-relaunch-02/verification/final-delivery.json")
     parser.add_argument("--baseline", type=Path, default=ARTIFACTS / "newtask-v6/v1/base/results/B.json")
-    parser.add_argument("--plan", type=Path, default=ROOT / "0925-newtask-release-v6-plan.md")
+    parser.add_argument("--plan", type=Path, default=ROOT / "docs/plans/0925-newtask-release-v6-plan.md")
     parser.add_argument("--out", type=Path, default=ARTIFACTS / "newtask-v6/site")
     parser.add_argument("--poster-source", type=Path, help="按媒体绝对路径匹配已有预览，不依赖旧媒体编号")
     args = parser.parse_args(argv)

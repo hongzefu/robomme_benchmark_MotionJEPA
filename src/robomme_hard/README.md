@@ -15,7 +15,7 @@ PARITY_P_H=PASS tier=xhard compared=165 identity_equal=165 setup_equal=165 schem
 
 O 官方（编排 `d53f21a7` + 环境源码 `1fadc0ec`）、P 修改前（tag `pre-hard-split`）、H 本包（拆包后 HEAD）。原三档 16 任务 × 3 档 × 3 局 = 144，O↔H 全部逐字节相同；xhard 为 xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 = 165，与 S4 交付全部逐字节相同。详见 `docs/validation/newtask-v6/hard-split/stage4.md`。
 
-## ② 四档定稿表（逐字搬自 `0925-newtask-release-v6-plan.md` 第一部分 §三）
+## ② 四档定稿表（逐字搬自 `docs/plans/0925-newtask-release-v6-plan.md` 第一部分 §三）
 
 | 环境 | 梯度维度 | hard | xhard1 | xhard2 | xhard3 | xhard4 | 备注 |
 |---|---|---|---|---|---|---|---|

@@ -1,6 +1,6 @@
 # 拆包阶段 2：`scripts/` 重组、injection-dev 两阶段链路、三侧对拍入口、tests 三类处理（2026-09-28）
 
-计划：`0927-robomme-hard-layered-plan.md` 第一部分 §3.5、§五、§六，第二部分 §1.3。起点 HEAD `12.206`。本阶段不改 `src/robomme`。
+计划：`docs/plans/0927-robomme-hard-layered-plan.md` 第一部分 §3.5、§五、§六，第二部分 §1.3。起点 HEAD `12.206`。本阶段不改 `src/robomme`。
 
 ## 一、改动
 

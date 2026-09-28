@@ -1,6 +1,6 @@
 # 拆包阶段 3：`src/robomme` 回退到官方 `1fadc0ec`（P2，2026-09-28）
 
-计划：`0927-robomme-hard-layered-plan.md` 第二部分 §1.4；授权：用户 2026-09-28「阶段 3 回退 src/robomme 时的逐文件批准 全部同意」（U-21）。
+计划：`docs/plans/0927-robomme-hard-layered-plan.md` 第二部分 §1.4；授权：用户 2026-09-28「阶段 3 回退 src/robomme 时的逐文件批准 全部同意」（U-21）。
 
 ## 一、清单核对（与 U-21 的 39 项逐项比对）
 

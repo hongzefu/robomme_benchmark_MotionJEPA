@@ -1,6 +1,6 @@
 # 拆包阶段 0：锚点、vendor、导入扫描、tag 与 bucket（2026-09-28）
 
-计划：[`0927-robomme-hard-layered-plan.md`](../../../../0927-robomme-hard-layered-plan.md) 第二部分 §1.1。开工时 HEAD `4e3e979076ecc1fe61c2d1a58fd4b977e9abafff`（12.204.15），工作区干净。
+计划：[`0927-robomme-hard-layered-plan.md`](../../../../docs/plans/0927-robomme-hard-layered-plan.md) 第二部分 §1.1。开工时 HEAD `4e3e979076ecc1fe61c2d1a58fd4b977e9abafff`（12.204.15），工作区干净。
 
 ## 用户原话
 
