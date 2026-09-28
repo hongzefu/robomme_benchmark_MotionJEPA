@@ -551,6 +551,23 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | 7 评估第二轮 | 同 10 张卡，余下 10 局，顺序同上 | — |
 | 8 收尾 | `scancel` 10 个评估 job；`62126062` 继续保留 | 释放清单以阶段 6 记的 JobID 为唯一依据 |
 
+### 7.2 实施结果（2026-09-28，追加，不改写上文）
+
+开工：用户 2026-09-28 00:28 EDT「开工」；「记住现在的时间 1小时后就不要中断了跑完为止」；预算追认「批 638/715（推荐）」；上午「HF bucket 改为上传公开的」。
+
+| 阶段 | 提交 | 结果 |
+|---|---|---|
+| 0 | 12.205 | 双锚点 tree 核对、`VENDOR_SAME=PASS`、`UPSTREAM.json`、tag `pre-hard-split`、bucket 建立 |
+| 1 | 12.206 | `SOURCE_POOL raw=1717 dedup=89 merged=1628 delivery=1100`、`SPECS_IDENTITY legacy_equal=6`、`DELIVERY_SET equal=1100`、`H5_BINDING mismatch=0`、`S4_SUBSET spec_exact=154 within_tol=11 max_abs=1.2e-7`、`TIER_MAX_STEPS_SOURCE max_exec=1209/1390/1663/2215`、★ 注册／命名空间／包装链全 PASS |
+| 2 | 12.207 | `FREEZE_EQUIV`、`STATE_MACHINE`、`FREEZE_ONLY_JSONL`、`ROLLBACK_WRITE`、`NATIVE_SMOKE`、`HARD_EVAL_SMOKE`、`TESTS_COLLECT` PASS；`EVAL_HARD_DIFF` 实测 lines=7（计划 8 为算错）；零命中闸门原命令非零（见 stage2.md 附），严格版 0 |
+| 3 | 12.208 | 39 项与 U-21 逐项相同，`UPSTREAM_BYTES=PASS diff=0`，官方态下全部重跑 PASS |
+| 4 | 12.208.1～12.209 | `PARITY_O_P`／`PARITY_P_H`（native）／`PARITY_O_H`／`PARITY_P_H`（xhard）全 PASS；O:H 144 与 P:H xhard 165 逐字节相同；`HARD_RESET_REPLAY` PASS；容差标定 0.0413/0.0411/1.0/5；`HOLD_RELEASE` PASS；bucket 先被 HF 403 计费拒，改公开后 `BUCKET_SYNC` 五段 762 对象全部读回一致 |
+| 5 | 12.210 | README 三份、AGENTS P1、CLAUDE 核实清单 |
+| 6 | 12.211 | 两策略分支推送、`POLICY_DIFF`×2、`SUBMODULE_PIN`、`EVAL_SMOKE`×2 PASS |
+| 7～8 | 12.212 | 两策略各 1100 局全部 PASS；SimpleMemVLA 与上次同身份逐局终态 1100/1100 相同；`EVAL_HOLD_RELEASE` PASS |
+
+预算实耗：生成侧 rollout 608／638、reset 669／715；评估侧约 2230 局（上限 2422）。计划外事件逐项见各 `stage*.md`（最重要的两条：MME-VLA server 显存 0.4 不够 VideoPlace 长演示、本方案对 `eval.py` 的改动引入的记录缺陷，均已修复并更正重评）。
+
 ## 八、两个策略仓库的最小改动（U-8，用户「同意 写回计划」）
 
 **共同前提**：两个仓库都不改模型、推理、server 代码；改动只落在「环境构建入口」「步数上限」「分片与断点续评」「子模块指向」四类文件；分支从官方 main 切出、推到用户指定的 fork；命名沿用既有模式（策略侧 `<对象>-eval-<MMDD>-<HHMM>`，benchmark 侧 `PolicyEvalThirdParty-<对象>-<MMDD>-<HHMM>`，时间取 `TZ=America/New_York`）。两个分支都没有 upstream，首次 `git push -u` 已由 U-8 授权。

@@ -179,3 +179,17 @@ code=$?; echo "SEGMENT reset-replay EXIT_CODE=$code $(date -Is)"
 [ $code = 0 ] || { echo "EXIT_CODE=4"; exit 4; }
 echo "SHARD_C 全部完成"; echo "EXIT_CODE=0"
 ```
+
+## 八、补记：bucket 改为公开后完成上传（2026-09-28 上午）
+
+用户原话「HF bucket 改为上传公开的」。`huggingface_hub` 1.8.0 没有改可见性的接口，用 2.0.0 的 `HfApi().update_bucket_settings('HongzeFu/robomme-hard-parity', private=False)` 把现有 bucket 改为公开（此前已传的 O 侧部分对象随之公开）；改后试传 39 字节探针对象 `_probe/bucket-probe.txt` 成功（只增不改，保留）。随后在本机 tmux `hs-publish3` 依次上传并逐对象下载读回核 sha：
+
+```text
+BUCKET_SYNC=PASS side=O tier=native objects=144 readback_sha_equal=144 mismatch=0 remote=hf://buckets/HongzeFu/robomme-hard-parity/O-1fadc0e-a40/native   （--resume-upload 补齐此前被 403 截断的部分）
+BUCKET_SYNC=PASS side=P tier=native objects=144 readback_sha_equal=144 mismatch=0 remote=hf://buckets/HongzeFu/robomme-hard-parity/P-7c7118f-a40/native
+BUCKET_SYNC=PASS side=H tier=native objects=144 readback_sha_equal=144 mismatch=0 remote=hf://buckets/HongzeFu/robomme-hard-parity/H-34a1cea-a40/native
+BUCKET_SYNC=PASS side=H tier=xhard objects=165 readback_sha_equal=165 mismatch=0 remote=hf://buckets/HongzeFu/robomme-hard-parity/H-b1afc80-a40/xhard
+BUCKET_SYNC=PASS side=P tier=xhard objects=165 readback_sha_equal=165 mismatch=0 remote=hf://buckets/HongzeFu/robomme-hard-parity/P-ca32e9b-s4/xhard   （S4 交付存档，manifest 记 code_baseline=ca32e9b、gl1526 批驱动 unknown）
+```
+
+汇总：`BUCKET_SYNC=PASS sides=3 objects=762 readback_sha_equal=762 mismatch=0`；bucket 公开、782 个对象（762 个 h5 + 各侧 identities.jsonl／SHA256SUMS／manifest.json／launch 与探针）、383 GB。上文三④的 `BUCKET_SYNC=FAIL reason=HF_403_billing` 由此解除（原判定行保留）。本机 `/data` 上的 h5 保留，删不删交用户。
