@@ -213,6 +213,11 @@ def rollout_block(record: dict[str, Any], pkg: str, code_baseline: str, output: 
     return block
 
 
+def _has_run_traces(output: Path) -> bool:
+    """输出目录已跑过（有局目录或轮次目录）才拒绝；调用方预先写入的 launch／清单等小文件不算。"""
+    return (output / "episodes").exists() or (output / "_rounds").exists()
+
+
 def unknown_identities(out_dir: Path) -> list[str]:
     """局目录有完整 h5、但各轮 partial 与 results.json 都没有记录的身份（恢复的歧义窗口）。"""
     recorded = set()
@@ -304,8 +309,8 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
             unknown = unknown_identities(output)
             if unknown:
                 raise RolloutError(f"恢复歧义：以下身份有 h5 但无 partial 记录，标 UNKNOWN 交用户：{unknown}")
-        elif output.exists() and any(output.iterdir()):
-            raise RolloutError(f"{output} 已存在且非空；续跑用 --resume")
+        elif _has_run_traces(output):
+            raise RolloutError(f"{output} 已有运行痕迹（episodes/ 或 _rounds/）；续跑用 --resume")
         output.mkdir(parents=True, exist_ok=True)
         pending = plan_pending(rows, int(header["delivery_per_cell"]), redo, tasks)
         infra_retries: dict[tuple[str, int], int] = {}
@@ -355,8 +360,8 @@ def run_replay(identities: list[dict[str, Any]], output: Path, *, src_root: Path
     wanted = {(i["task"], i["tier"], i["seed"]) for i in identities}
     if len(wanted) != len(identities):
         raise RolloutError("身份清单有重复")
-    if output.exists() and any(output.iterdir()) and not resume:
-        raise RolloutError(f"{output} 已存在且非空；续跑用 --resume")
+    if _has_run_traces(output) and not resume:
+        raise RolloutError(f"{output} 已有运行痕迹（episodes/ 或 _rounds/）；续跑用 --resume")
     output.mkdir(parents=True, exist_ok=True)
     scheduled: set[tuple[str, str, int]] = set()
     results: list[dict[str, Any]] = []
