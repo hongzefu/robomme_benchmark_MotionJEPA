@@ -391,6 +391,10 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
   - **允许用户离开的说明必须有证据边界**：分别报告工作进程是否独立存活、接续是否实际验过、失败是否能通知、代理能否自动唤醒。只在这些承诺均有证据时说「可以放心离开」；未建立的部分明确说明，不能用预计行为作保证。监控默认只通知有意义的进展、完成、失败或需要用户处理的事项，不反复推送无变化状态。
   - **本次事实**：S2完成144次（119成功、25失败、进程超时0），成功119条的HDF5结构／终态与视频首帧解码核验通过，未验全视频完整性；`continue_after_s2.sh`在2026-09-26 17:59 America/Detroit读取省略的`totals['missing']`时触发`KeyError`，输出`CONTINUE_STATUS=STOP exit=1`，S3／S4均未启动。异常只写日志；本任务未注册唤醒，主代理此前已发最终答复。不能将原因归为tmux掉线、日志缓冲或已配置唤醒服务失灵。证据见`artifacts/newtask-v6/s4-launch/continue.log`及`artifacts/newtask-v6/v6-s2-20260926-01/report.json`。
 
+- **P5. 生成／对拍的局数一律写成「任务数 × 难度档 × 每格局数」的乘式，禁止只报总数。**（2026-09-27 用户原话「不要说144 说清楚 16*难度*数量！！！以后都这么说 写入agentsmd」。）
+  - 计划、回复、判定行、留档、commit body 里凡出现 rollout／reset 计数，先写乘式再写总数，例如 `16 任务 × 3 档（easy/medium/hard）× 3 局 = 144`、`xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 = 165`、`回注 reset：xhard1/2/3 各 13 任务 × 1 + xhard4 16 任务 × 1 = 55`；任务数不足 16 时写明是哪几档少了哪些任务（xhard1～3 缺 `require_xhard4_only` 的三个任务）。
+  - 判定行的 `compared=` 后可以是总数，但同一行或紧邻说明必须给出乘式；预算申请（P3）按乘式逐项列，不用总数一笔带过。
+
 ## 对正本的覆盖项（按正本条号；未列出的条目按正本执行）
 
 - **覆盖第 1 条（历史英文化遗留）**：无豁免清单——原豁免对象 `scripts/data-generation-v2-noPatch/` 与 `tests/lightweight/test_no_patch_report_debug_environment.py` 已于 2026-09-09 删除。
