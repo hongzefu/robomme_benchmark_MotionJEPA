@@ -4,7 +4,7 @@
 > **代码锚点**：本仓库 `newtaskRelease-v5` @ `66d9a424`（12.204.1）；官方 `RoboMME/robomme_benchmark` `main` @ `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`；官方隔离源码树 `artifacts/train-parity/local-smoke-01/official-src/`（`.official_tree` = `1d4c1369…`，tree sha）；现行规格 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl`（selected 行合计 165）；S4 交付清单 `artifacts/newtask-v6/s4-relaunch-02/verification/final-delivery.json`。
 > **工作副本**：`/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（环境 A，sled-vail）。
 > **验收硬件**：A40 @ greatlakes `spgpu`（驱动 595.71.05）是**唯一**字节级验收硬件；本机 RTX 6000 Ada 与 aspen RTX A6000 只做开发冒烟与跨硬件参考。依据：[`docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md`](docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md)（同型号同驱动逐位稳定；Ada↔A6000 仅 16 处 1e-18 级 `joint_action` 差；A40 与两者全面分叉）。占位 job（用户 2026-09-27 原话「这四个你可以自由跑」「就用现有的占位job」，不新交）：`62126060` gl1517、`62126061` gl1504、`62126062` gl1506（`hs-hold-20260927-1/2/3`，剩余约 1 天 20～22 小时）、`62018665` gl1510（剩余约 21 小时，只承担阶段 0 复核）；2026-09-27 21:50 实测四节点均为 A40 / 驱动 595.71.05、显存 0 MiB、`/tmp` 余量 263～300 GB、16 CPU / 192 GB。
-> **评估接口（用户 2026-09-27「dataset传入test-hard内部再分xhard1234」）**：对外只有一个新档名 `dataset="test-hard"`，与官方 `dataset="test"` 同形；builder 内部把 xhard1～xhard4 四档串成一个任务的 episode 序列（xhard1→xhard4，档内按候选序），每任务 12 局（xhard4-only 的三个任务 3 局）。`xhard1`～`xhard4` 作为细分档名保留给 `scripts/parity/` 内部按档对拍使用，不作为对外接口宣传。
+> **评估接口（用户 2026-09-27「dataset传入test-hard内部再分xhard1234」）**：对外只有一个新档名 `dataset="test-hard"`，与官方 `dataset="test"` 同形；builder 内部把 xhard1～xhard4 四档串成一个任务的 episode 序列（xhard1→xhard4，档内按候选序），每任务 12 局（xhard4-only 的三个任务 3 局）。**`dataset` 只新增这一个取值**（用户「只保留着一个接口哦」）：`xhard1`～`xhard4` 不是合法的 `dataset` 值，传入即与其他非法值一样 `raise ValueError`；`scripts/parity/` 按档对拍不经 builder 的 `dataset`，直接用 `hard_specs.load_specs` 读对应档的 jsonl。
 > **三侧对拍锚点**：O 侧官方 `main @ 1fadc0ec`；P 侧本仓库 tag `pre-hard-split` → `7c7118fa`（生产代码基线 `ca32e9b`，两者 `src/` 零 diff）；H 侧拆包后 HEAD。持久化 bucket：`HongzeFu/robomme-hard-parity`。
 > **计数体例（P5）**：局数一律写「任务数 × 难度档 × 每格局数」乘式；原三档 = 16 任务 × 3 档（easy/medium/hard）× 3 局 = 144；xhard = xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 = 165（xhard1～3 缺 `require_xhard4_only` 的三个任务）。
 > **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，实施从 12.205 起。
@@ -29,7 +29,7 @@
 | E-4 | 生成链路两阶段，全部依赖放 `scripts/injection-dev/`；第一阶段中间量只在内存，只落一份 jsonl | §五 |
 | E-5 | 第二阶段只读 jsonl，跑完回写 `rollout` 块；`identity_sha256` 只盖 `spec`，递补追加行不改原行 | §5.2、§5.3 |
 | E-6 | jsonl 落 `src/robomme_hard/env_metadata/test-hard/xhard{1,2,3,4}/specs.jsonl`：对外一个数据集目录 `test-hard`，内部一档一份 | §四 |
-| E-7 | 对外接口 `dataset="test-hard"`，内部再分 xhard1～4；`scripts/evaluation.py` 官方原样不动，`evaluation_hard.py` 为第五入口，与它只差 import 行与 `dataset` 取值（用户「dataset传入test-hard内部再分xhard1234」） | §四 |
+| E-7 | 对外接口只新增 `dataset="test-hard"` 一个取值（`xhard1..4` 不接受），内部再分 xhard1～4；`scripts/evaluation.py` 官方原样不动，`evaluation_hard.py` 为第五入口，与它只差 import 行与 `dataset` 取值（用户「dataset传入test-hard内部再分xhard1234」） | §四 |
 | E-8 | `scripts/parity/` 只做「与官方比」：三侧对拍（O／P／H）、G1 守卫、回注 reset 复现、跨硬件参考 | §5.4 |
 | E-9 | 官方 `generate_dataset.py` 及三个兄弟文件 vendor 进 `scripts/parity/official/` | §3.5 |
 | E-10 | `tests/` 只保证可收集，语义修复另立任务 | 第二部分 §〇 |
@@ -192,7 +192,7 @@ dataset ∈ {train,test,val}   → 官方父类逻辑：env_metadata/<dataset>/r
 dataset == "test-hard"       → 对 tier in (xhard1, xhard2, xhard3, xhard4) 依次 hard_specs.load_specs(env_metadata/test-hard/<tier>/specs.jsonl)
                                 → 每档取 task==env_id 且 selected 且 rollout.status=="ok" 的行，按 candidate 升序；四档按序拼接编为 episode 0..11
                                   （xhard4-only 任务只有 xhard4 三行 → episode 0..2；某档缺该任务即跳过，不占编号）
-dataset ∈ {xhard1..4}        → 同上但只装一档（细分档名，供 scripts/parity 按档对拍；对外不宣传）
+其他取值                      → ValueError（与官方一致；xhard1..4 也不接受，parity 按档对拍直接读 jsonl）
                                 → gym.make(env_id, 同上四项 runtime, seed=row.seed, difficulty=tier,
                                            sampling_config=header.sampling_config[env_id],
                                            native_episode_spec=row.spec)
@@ -201,7 +201,7 @@ dataset ∈ {xhard1..4}        → 同上但只装一档（细分档名，供 sc
 
 `native_episode_spec` 是回注：reset 时抽样流程照常发生，但每个取值点用冻结值替换，原抽样只作核验（`SpecRecorder` 记 `mismatch/unused`）。`resolve_episode(episode)` 返回 `(seed, tier)`，`info["hard_candidate_index"]` 带原候选序号、`info["hard_tier"]` 带档名；`runtime` 四项与 header 逐字比对，不等 `raise`。
 
-⚠ 唯一别扭处：官方父类 `__init__` 的 `_ALLOWED_DATASETS` 白名单只认 `train/test/val` 且官方代码不能改，子类对 `test-hard` 与细分档先喂 `dataset_for_parent="test"` 过校验、再把 `self.dataset` 改回原值；父类顺手读的 `test` 元数据不被使用（`resolve_episode` 等全被覆写）。写进 README 实现说明。
+⚠ 唯一别扭处：官方父类 `__init__` 的 `_ALLOWED_DATASETS` 白名单只认 `train/test/val` 且官方代码不能改，子类对 `test-hard` 先喂 `dataset_for_parent="test"` 过校验、再把 `self.dataset` 改回原值；父类顺手读的 `test` 元数据不被使用（`resolve_episode` 等全被覆写）。写进 README 实现说明。
 
 ## 五、数据生成链条：两阶段
 
@@ -384,7 +384,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | `env_record_wrapper/RecordWrapper.py` | cp | `step()` 内延迟 `from robomme.robomme_env.utils.vqa_options import …` → `robomme_hard.`；h5 attrs 加 `env_package`、`package_fingerprint` |
 | `env_record_wrapper/OraclePlannerDemonstrationWrapper.py` | cp | 顶部 `from robomme.robomme_env.utils.vqa_options` → `robomme_hard.` |
 | `env_record_wrapper/hard_specs.py` | 从 `scripts/parity/v4_specs.py` 下沉 | 搬 `HEADER_KEYS`、`canonical_json`、`digest`、`identity_sha256`（改为收窄口径）、`seed_rule_for`、`_known_seed_rule`、`load_specs`、`RUNTIME`；新增 `base_fingerprint()` / `hard_fingerprint()`；`source_fingerprint` 不符 `warnings.warn`；`draw`/`freeze` 不搬 |
-| `env_record_wrapper/hard_builder.py` | 新写 | 第一部分 §4.2；`_ALLOWED = {train,test,val,test-hard,xhard1..4}`；`_bind(env_id, tiers)` 对每档 `load_specs` 后只取 `task==env_id and selected and rollout.status=="ok"`，按 `candidate` 升序，再按 tier 顺序拼接；`resolve_episode` 返回 `(seed, tier)`；`get_difficulty_list()` 返回四档名（供 parity 用）；`from_v4_specs` 保留为薄包装 |
+| `env_record_wrapper/hard_builder.py` | 新写 | 第一部分 §4.2；`_ALLOWED = {train,test,val,test-hard}`；`_bind(env_id, tiers)` 对每档 `load_specs` 后只取 `task==env_id and selected and rollout.status=="ok"`，按 `candidate` 升序，再按 tier 顺序拼接；`resolve_episode` 返回 `(seed, tier)`；`get_difficulty_list()` 返回四档名（只作信息，不是 `dataset` 取值）；`from_v4_specs` 保留为薄包装 |
 | `env_record_wrapper/__init__.py` | 新写 | 自家三项 + 借用 re-export（第一部分 §3.1） |
 | `__init__.py` | 新写 | 顺序：读 `UPSTREAM.json` → `sys.modules` 检查官方是否已导入（warn）→ 临时把 `mani_skill` logger 提到 ERROR → `from . import robomme_env` → 恢复 logger → 遍历 `ENV_IDS` 断言归属 → 对 `borrowed` 做 cheap 校验（warn） |
 | `env_metadata/test-hard/xhard{1..4}/specs.jsonl` | `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl` 迁移 | 行 `difficulty`→`tier`；header 加 `draw_stats`（从 v6-02 对应 drafts 的 `record` 或置空并注明）、`base_fingerprint`、`hard_fingerprint`、`env_package`；`schema` → `hard-specs/2`；旧 `identity_sha256` 存 `record.legacy_identity_sha256`，按新口径重算 |
