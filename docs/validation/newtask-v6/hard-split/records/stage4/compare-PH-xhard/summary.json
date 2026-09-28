@@ -1,0 +1,29 @@
+{
+  "verdict": "PASS",
+  "counts": {
+    "identity_equal": 165,
+    "setup_equal": 165,
+    "schema_equal": 165,
+    "success_equal": 165,
+    "both_success": 165,
+    "sha_equal": 165,
+    "frames_equal": 165,
+    "binding_ok": 165
+  },
+  "worst": {
+    "action_max": 0.0,
+    "state_max": 0.0,
+    "image_mad": 0.0,
+    "frames_max": 0
+  },
+  "tolerances": {
+    "action_max": 0.041265913943240015,
+    "state_max": 0.04113650321960449,
+    "image_mad": 1.0,
+    "frames_max": 5.0
+  },
+  "tol_hits": [],
+  "severity": "none",
+  "left_problems": [],
+  "right_problems": []
+}

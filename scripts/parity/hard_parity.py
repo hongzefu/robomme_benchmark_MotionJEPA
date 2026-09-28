@@ -335,21 +335,26 @@ def cmd_publish(args) -> int:
     remote = f"hf://buckets/{BUCKET}/{args.prefix}/{args.tier}"
     listing = subprocess.run([*HF, "buckets", "list", f"{BUCKET}/{args.prefix}/{args.tier}", "-R"],
                              capture_output=True, text=True)
-    existing = [l for l in listing.stdout.splitlines() if l.strip() and not l.startswith(("ID", "---"))]
+    existing = [l for l in listing.stdout.splitlines()
+                if l.strip() and l.strip() != "(empty)" and not l.startswith(("ID", "---", "Installed ", "Resolved "))]
     if existing and not args.resume_upload:
         raise ParityError(f"bucket 目录已存在（只增不改，R13）：{remote}；重传须请示并另起目录名")
     include = ["--include", "identities.jsonl", "--include", "SHA256SUMS", "--include", "manifest.json",
-               "--include", "launch-*.json"] + sum((["--include", s.split("  ", 1)[1]] for s in sums), [])
+               "--include", "launch-*.json", "--include", "*.h5"]
     if args.dry_run:
         print(f"PUBLISH_DRY_RUN remote={remote} objects={len(sums)}")
         return 0
-    subprocess.run([*HF, "buckets", "sync", str(local), remote, "--exclude", "*", *include], check=True)
+    # 只给 --include 即白名单；再加 --exclude "*" 会把全部排除（1.8.0 实测 uploads=0）
+    subprocess.run([*HF, "buckets", "sync", str(local), remote, *include], check=True)
     mismatch = 0
     with tempfile.TemporaryDirectory(dir=args.readback_tmp) as tmp:
         for entry in sums:
             sha, rel = entry.split("  ", 1)
             target = Path(tmp) / "obj"
             subprocess.run([*HF, "buckets", "cp", f"{remote}/{rel}", str(target)], check=True, capture_output=True)
+            if not target.is_file():  # 远端没有该对象时 cp 只警告不报错
+                mismatch += 1
+                continue
             mismatch += int(sha256_file(target) != sha)
             target.unlink()
     listing = subprocess.run([*HF, "buckets", "list", f"{BUCKET}/{args.prefix}/{args.tier}", "-R"],
@@ -395,8 +400,23 @@ def schema_of(episode) -> list[str]:
     return sorted(items)
 
 
-def self_check(side_dir: Path, rows: list[dict[str, Any]]) -> tuple[dict[tuple, dict], list[str]]:
+def side_lines(side_dir: Path) -> list[dict[str, Any]]:
+    """读一侧 identities.jsonl；运行中逐局写的行拿不到 runner 结束后才有的 robomme_module／worker，
+    从该侧 _runner/results.json（runner 探针原值）补齐空缺，不覆盖已有值。"""
     lines = [json.loads(t) for t in (side_dir / "identities.jsonl").read_text().splitlines() if t.strip()]
+    runner = side_dir / "_runner" / "results.json"
+    if runner.is_file():
+        payload = json.loads(runner.read_text())
+        for line in lines:
+            if line.get("robomme_module") is None:
+                line["robomme_module"] = payload.get("robomme_module")
+            if line.get("worker") is None and payload.get("worker"):
+                line["worker"] = payload.get("worker")
+    return lines
+
+
+def self_check(side_dir: Path, rows: list[dict[str, Any]]) -> tuple[dict[tuple, dict], list[str]]:
+    lines = side_lines(side_dir)
     problems = []
     by_id: dict[tuple, dict] = {}
     for line in lines:
@@ -605,7 +625,7 @@ def cmd_binding(args) -> int:
     mismatch = 0
     for side in SIDES:
         path = LOCAL_H5_ROOT / f"{side}-native" / "identities.jsonl"
-        lines = [json.loads(t) for t in path.read_text().splitlines() if t.strip()]
+        lines = side_lines(path.parent)
         bad = sum(not _binding_ok(side, line) for line in lines)
         mismatch += bad
         counts[side] = "robomme_hard" if side == "H" else "robomme"
