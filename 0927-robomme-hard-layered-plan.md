@@ -49,7 +49,8 @@
 | U-8 | 两个策略仓库怎么切 | 「MME-VLA 官方基底选干净 main 检出」「MME-VLA 从官方policy learning库切出 再push到https://github.com/hongzefu/robomme_policy_learning_MotionJEPA/这里的一个branch」「branch命名和我之前约定一致」「simplemem也是这样官方切出 push到我要的地方！」；改动清单「同意 写回计划」 | §八 |
 | U-9 | 评估顺序 | 「先各做55*10 然后在做10」 | §7.1、第二部分 §3.3 |
 | U-10 | 20 局 h5 是否进 bucket | 「1.2 TB 的 20 局 h5 先不进bucket」 | §5.4 |
-| U-11 | xhard 对拍与 20 局集的关系 | 主代理选定（用户未反对）：`PARITY_P_H`（xhard）仍重放 S4 的 165 个身份；20 局集靠 `S4_SUBSET`（165 ⊂ 1100，纯 CPU）与评估侧逐局 `spec_binding`（`EVAL_BINDING`）覆盖，不为 1100 局另生成 h5 | §5.4、§6.4 |
+| U-11 | xhard 对拍与 20 局集的关系 | 主代理提出 B 方案，用户「维持b」：`PARITY_P_H`（xhard）仍重放 S4 的 165 个身份（P 侧同为 A40 产物，是唯一合法的同硬件 xhard 样本）；20 局集靠 `S4_SUBSET`（165 ⊂ 1100，纯 CPU）与评估侧逐局 `spec_binding`（`EVAL_BINDING`）覆盖，另加零算力的参考层 `EVAL_DEMO_FRAMES`（评估记录的演示帧数与旧 h5 逐局比）；不为 1100 局另生成 h5。A 方案（两侧各在 A40 重生成 1100 局、约 1.5 TB、5 小时以上）作废 | §5.4、§6.4 |
+| U-12 | SimpleMemVLA 官方切出点 | 2026-09-27 核实：`wadeKeith/SimpleMemVLA` main 已改为迁移提示（`ef72213`，只剩 README），项目迁到 `OpenBMB/SimpleMemVLA`，其 main `c564c17` 以 `9fce41c` 为祖先，之后两个提交（`404215d` 真机实验、`c564c17` robodojo 评测）只改 `assets/` 与 `README.md`，代码零改动。切出点定为 `OpenBMB/SimpleMemVLA@c564c17`（用户「核实simplememvla」后主代理选定，代码与 `9fce41c` 逐字节相同） | §八 |
 
 **已定死口径**：
 
@@ -87,7 +88,7 @@
 | G2 `robomme_hard` 跑原三档，与官方、与修改前行为一致 | 三侧对拍 §5.4 | `PARITY_O_P` / `PARITY_P_H` / `PARITY_O_H` `=PASS tier=native compared=144 identity_equal=144 setup_equal=144 schema_equal=144 success_equal=144 sha_equal=<k>`（16 × 3 × 3） |
 | G3 `robomme_hard` 跑 xhard，与 S4 交付行为一致；回注通道逐值一致 | §5.4 | `PARITY_P_H=PASS tier=xhard compared=165 …`（13×3×3 + 16×3）、`HARD_RESET_REPLAY=PASS resets=55 spec_mismatch=0 goal_mismatch=0`（13×3 + 16，从 20 局集每格取 candidate 最小的一局） |
 | G4 评估接口与 `dataset="test"` 同形，包装链相同，语言目标用的是 hard 版 | §四 | `EVAL_PY_UPSTREAM=PASS ENTRIES=5`、`EVAL_HARD_DIFF=PASS lines=8`、`WRAPPER_CHAIN=PASS action_spaces=4` |
-| G8 `test-hard` 20 局集就是上次评估那 1100 局，且包含 S4 165 局；评估时每局回注零漂移 | §5.3、§6.3、§6.4 | `DELIVERY_SET=PASS compared=1100 equal=1100 cells=55 shape=13x3x20+16x20`、`S4_SUBSET=PASS s4=165 in_delivery=165`、`EVAL_BINDING=PASS policy=<名> episodes=1100 mismatch=0 unused=0` |
+| G8 `test-hard` 20 局集就是上次评估那 1100 局，且包含 S4 165 局；评估时每局回注零漂移 | §5.3、§6.3、§6.4 | `DELIVERY_SET=PASS compared=1100 equal=1100 cells=55 shape=13x3x20+16x20`、`S4_SUBSET=PASS s4=165 in_delivery=165`、`EVAL_BINDING=PASS policy=<名> episodes=1100 mismatch=0 unused=0`；参考层 `EVAL_DEMO_FRAMES=INFO …` |
 | G5 同进程 16 个环境 id 与命名空间归属唯一可查；各侧实际加载的包可证 | §3.3 | `REGISTRY_OWNER=PASS envs=16 owner=robomme_hard`、`NAMESPACE_OWNER=PASS envs=16 stray=0`、`ENV_PACKAGE_BINDING=PASS` |
 | G6 两阶段只依赖 jsonl；首次落盘排他；回写不破坏封存、不丢并发更新 | §五 | `FREEZE_ONLY_JSONL=PASS`、`ROLLBACK_WRITE=PASS`、`STATE_MACHINE=PASS` |
 | G7 三侧 h5 在 bucket 里可按 sha 读回、可拉回重比 | §5.4 | `BUCKET_SYNC=PASS sides=3 objects=<n> readback_sha_equal=<n> mismatch=0` |
@@ -486,6 +487,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | 第一轮 55 格 × 10 局 | 每策略 10 片各 55 局，合并后每格恰好 10 局有正常终态（success/fail/timeout），error 每身份最多 3 次尝试 | 第一轮完整 | `EVAL_ROUND1=PASS policy=<名> episodes=550 normal=550 error_left=0 shape=55x10` |
 | 第二轮余下 10 局 | 同上，合并两轮后每格恰好 20 局 | 两轮完整 | `EVAL_ROUND2=PASS policy=<名> episodes=550 normal=550 error_left=0 total=1100` |
 | 回注零漂移（G8） | 每局评估结果记 `spec_binding{mismatch, unattributed_mismatch, unused}`（读 `env.unwrapped._spec`），1100 局全零 | 20 局集在评估链上逐局与冻结规格一致 | `EVAL_BINDING=PASS policy=<名> episodes=1100 mismatch=0 unused=0` |
+| 演示回放未变（参考层，U-11「维持b」补的一层） | 每局评估结果记 reset 后的 `demo_frames`（`len(obs["front_rgb_list"]) - 1`）与 `demo_tasks`，与迁移时从旧 h5 读出的演示帧数逐局比；帧数受 RRT 墙钟噪声影响，只作参考不作判定 | reset 之后的演示回放在新包下没有系统性变化，补 165 局抽样看不到的 935 局 | `EVAL_DEMO_FRAMES=INFO policy=<名> episodes=1100 exact=<n> within_5=<n> max_diff=<k> demo_tasks_equal=<n>` |
 | 步数上限按档生效 | 每局结果记 `max_steps`，与 tier 对应值逐局相等 | U-6 落地 | `EVAL_TIER_CAP=PASS episodes=1100 mismatch=0` |
 | 占位 job 释放 | 阶段 4 后 `squeue -u hongzefu` 只剩 `62126062`；评估结束后只剩 `62126062` | U-7、E-22 | `HOLD_RELEASE=PASS kept=62126062 released=62126060,62126061,62018665`；`EVAL_HOLD_RELEASE=PASS released=10 kept=62126062` |
 
@@ -526,11 +528,11 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 
 | 仓库 | 官方切出点 | 分支名 | 推到 | 权重 |
 |---|---|---|---|---|
-| SimpleMemVLA | `wadeKeith/SimpleMemVLA@9fce41c`（唯一提交 `init`；NFS 检出 `/nfs/…/SimpleMemVLA` 的 `origin` 就是 fork，直接在里面切） | `testhard-eval-<MMDD>-<HHMM>` | `hongzefu/SimpleMemVLA` | 未跟踪的 `checkpoints/simplememvla_robomme`、`.venv-robomme`、`third_party/ManiSkill` 留在磁盘上继续用 |
+| SimpleMemVLA | `OpenBMB/SimpleMemVLA@c564c17`（U-12；官方已从 `wadeKeith/SimpleMemVLA` 迁走，旧仓库 main 只剩迁移提示；`c564c17` 的代码与 `9fce41c` 逐字节相同，只多 `assets/` 与 README。NFS 检出 `/nfs/…/SimpleMemVLA` 的 `origin` 是 fork，加 `upstream` 指 OpenBMB 后在里面切） | `testhard-eval-<MMDD>-<HHMM>` | `hongzefu/SimpleMemVLA` | 未跟踪的 `checkpoints/simplememvla_robomme`、`.venv-robomme`、`third_party/ManiSkill` 留在磁盘上继续用 |
 | MME-VLA | `RoboMME/robomme_policy_learning@ecf086c`（NFS 上新 clone；本机 `robomme_policy_learning-vqa-test` 有用户在途改动，不碰） | `official-testhard-eval-<MMDD>-<HHMM>` | `hongzefu/robomme_policy_learning_MotionJEPA` | `/nfs/…/robomme_policy_learning-frameSamp-continue/runs/ckpts/perceptual-framesamp-modul/79999`（14 G）按绝对路径引用，不拷贝 |
 | benchmark | 拆包后 HEAD（阶段 5） | `PolicyEvalThirdParty-simplememvla-<MMDD>-<HHMM>`、`PolicyEvalThirdParty-mmevla-<MMDD>-<HHMM>` | `hongzefu/robomme_benchmark_MotionJEPA` | — |
 
-**事实**：SimpleMemVLA 官方 `9fce41c` 自带 `robomme_sim/`，其内嵌 `robomme_sim/robomme/` 与官方 benchmark `1fadc0ec` 逐文件比对，只差官方 benchmark 多一个杂散文件 `robomme_env/utils/vqa_options copy.py`，其余逐字节相同。所以它官方跑的环境就是本方案 G1 的锚点。
+**事实**：SimpleMemVLA 官方 `9fce41c`（`c564c17` 同）自带 `robomme_sim/`，其内嵌 `robomme_sim/robomme/` 与官方 benchmark `1fadc0ec` 逐文件比对，只差官方 benchmark 多一个杂散文件 `robomme_env/utils/vqa_options copy.py`，其余逐字节相同。所以它官方跑的环境就是本方案 G1 的锚点。`git diff --stat 9fce41c c564c17 -- robomme_sim pyproject.toml requirements.txt scripts` 为空（2026-09-27 核实）。
 
 ### 8.1 SimpleMemVLA（官方文件改 3 个，约 36 行；其余新增）
 
@@ -676,7 +678,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | 仓库 / 文件 | 动作 |
 |---|---|
 | benchmark：`PolicyEvalThirdParty-simplememvla-<MMDD>-<HHMM>`、`PolicyEvalThirdParty-mmevla-<MMDD>-<HHMM>` | 从阶段 5 HEAD `git branch` 两个分支并 `git push -u origin <分支>`；不加任何提交（两个策略的子模块指同一个 commit） |
-| SimpleMemVLA（NFS 检出，`origin` = `hongzefu/SimpleMemVLA`） | `git fetch origin`；确认 `9fce41c` 是 `wadeKeith/SimpleMemVLA` main 的 tip（`git ls-remote https://github.com/wadeKeith/SimpleMemVLA.git main`，不一致即停交用户）；`git checkout -b testhard-eval-<MMDD>-<HHMM> 9fce41c`；按第一部分 §8.1 的 9 项改；`git submodule add -b PolicyEvalThirdParty-simplememvla-<MMDD>-<HHMM> https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git third_party/robomme_benchmark`（目录已存在时先 `git submodule deinit`／移走旧目录，不删 `.venv-robomme`）；`git push -u origin <分支>` |
+| SimpleMemVLA（NFS 检出，`origin` = `hongzefu/SimpleMemVLA`） | `git remote add upstream https://github.com/OpenBMB/SimpleMemVLA.git && git fetch upstream main`；确认 `upstream/main == c564c17`（`git ls-remote` 复核，不一致即停交用户）；`git checkout -b testhard-eval-<MMDD>-<HHMM> c564c17`；按第一部分 §8.1 的 9 项改；`git submodule add -b PolicyEvalThirdParty-simplememvla-<MMDD>-<HHMM> https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git third_party/robomme_benchmark`（目录已存在时先 `git submodule deinit`／移走旧目录，不删 `.venv-robomme`）；`git push -u origin <分支>` |
 | MME-VLA（NFS 新 clone `<NFS>/robomme_policy_learning-official-testhard/`） | `git clone https://github.com/RoboMME/robomme_policy_learning.git` 并核 `origin/main == ecf086c`；`git remote add fork https://github.com/hongzefu/robomme_policy_learning_MotionJEPA.git`；`git checkout -b official-testhard-eval-<MMDD>-<HHMM> ecf086c`；按 §8.2 的 6 项改；`.gitmodules` url／branch 改后 `git submodule sync && git submodule update --init`；`git push -u fork <分支>` |
 | MME-VLA 环境 | `UV_LINK_MODE=copy uv sync`（JAX 侧，参照续训检出 `.venv` 的 208 包）；`robomme` 环境：`uv venv --python 3.11 robomme_env && uv pip install -r examples/robomme/requirements.txt -e third_party/robomme_benchmark -e packages/openpi-client`（临时评估环境，按第 3 条例外不改 `pyproject.toml`）；`robomme_env/bin/python -c "import robomme_hard"` 必须通过 |
 | 评估占位 job × 10 | `sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --gpu_cmode=shared --cpus-per-task=1 --mem=32G --time=48:00:00 --job-name=hs-eval-<k> --wrap='sleep infinity'`，k=1..10；JobID 逐个记入 `stage6-eval-prep.md`；只在 `HOLD_RELEASE=PASS` 之后提交（配额），超过 4 个属第 8 条「数量超默认」，本方案已由用户「eval使用10卡并行 greatlake hold 48h」授权 |
@@ -828,6 +830,7 @@ uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier 
 | 19 | S4 165 局不是 1100 局的子集（seed 公式或源码差异） | `S4_SUBSET` FAIL 即停交用户，不改判据 |
 | 20 | 官方 `pip install -e third_party/robomme_benchmark` 装不出 `robomme_hard` | 阶段 1 wheel packages 加 `src/robomme_hard`；阶段 6 `robomme_env/bin/python -c "import robomme_hard"` 不过即停 |
 | 21 | 两个策略分支 push 到 fork 的远端已有同名分支 | 名字带 `<MMDD>-<HHMM>`，push 前 `git ls-remote` 核对不存在；被拒即停，不 force |
+| 22 | `OpenBMB/SimpleMemVLA` main 在阶段 6 前再前进 | 切出点钉死 `c564c17`（40 位 sha 写进留档），不追 tip；tip 前进只记录，不改切出点 |
 
 ## 五、盲区诚实清单
 
@@ -840,7 +843,7 @@ uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier 
 - **⑦（已查清，关闭）**：`final-delivery.json` 记录了全部 165 局 h5 的 sha256 与字节数，文件都在 `/data`，`code_baseline=ca32e9b`，含 2 局递补（InsertPeg@xhard4 ep2、ep4）。
 - **⑧**：`HARD_RESET_REPLAY` 经评估链时会回放演示，单次耗时未实测。
 - **⑨**：MME-VLA 在 xhard 上的单局耗时、主机内存、显存峰值都没有实测；上次只有 SimpleMemVLA 的数字（A40 单局 1.5～3 分钟、`MaxRSS` 26.4 GB）。第一轮耗时估算只对 SimpleMemVLA 成立。
-- **⑩**：`wadeKeith/SimpleMemVLA` main 是否仍是 `9fce41c` 未在写作时核实（网络查询被用户暂停）；阶段 6 第一步核。
+- **⑩（已查清，关闭）**：官方仓库已迁到 `OpenBMB/SimpleMemVLA`，main `c564c17` 相对 `9fce41c` 代码零改动（U-12）；阶段 6 起步时只需 `git ls-remote` 复核 tip 未再前进。
 - **⑪**：上次评估的 1100 个身份里，xhard1 三格与 xhard4 InsertPeg 取自补抽快照，其余取本体快照前 20；迁移脚本以评估结果文件为真源而不是重算取法，取法差异不影响集合定义。
 - **⑫**：上次评估报告的 `demo_frames_out_of_band=40`（xhard1 演示帧数落在 750～1050 带外）未处置，20 局集原样带入；不影响回注一致性，影响的是这些局的演示长度是否符合当初设计，待用户判读。
 - **⑬**：`GLIBC_TUNABLES` 16384 字节能支撑的 `make_env` 次数按 8192 → 约 147 轮线性外推，未实测。
