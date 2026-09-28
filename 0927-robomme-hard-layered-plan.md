@@ -9,6 +9,7 @@
 > 现行规格 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl`（四档 550 行、selected 165 行，其中 2 行不是实际交付局，见 §5.3）；S4 交付清单 `artifacts/newtask-v6/s4-relaunch-02/verification/final-delivery.json`（`successes` 165 条，逐局记 h5 sha256／字节数／路径，`code_baseline=ca32e9b`）。
 > **工作副本**：`/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（环境 A，sled-vail）。
 > **对拍硬件**：四个 A40 @ greatlakes `spgpu` 占位 job，三侧统一在 A40 上生成；本机 RTX 6000 Ada 只做开发冒烟。按用户裁决 U-1，对拍判定是「行为一致」而不是「字节一致」（理由见 §5.4）。占位 job（用户 2026-09-27「这四个你可以自由跑」「就用现有的占位job」，不新交）：`62126060` gl1517、`62126061` gl1504、`62126062` gl1506（`hs-hold-20260927-1/2/3`）、`62018665` gl1510（本方案不使用）。阶段 4 结束后按 U-7 释放 `62126060`、`62126061`、`62018665`，保留 `62126062`。JobID、驱动、剩余时长都是写作时的快照，阶段 4 起跑前重新核实。
+> **第三次修订（2026-09-28，用户裁决 U-13～U-20，§一）**：记录点跨硬件浮点漂移按方案甲处理（回注点零差、记录点 ≤ 1e-5）；预算表一次性批准；阶段不再逐个放行、等用户「开工」后连续执行；xhard1 40 局带外告警照收；阶段 4 用 NFS 新 clone；网站与交付清单维持 165 局；对拍参考层升级为可配置容差层（动作／状态／图像／帧数四阈值，O:P 标定后经用户确认）；Codex 审计（锚点 `6608e38b`）12 条全部吸收，落点见第二部分 §七。
 > **第二次修订（2026-09-27 深夜，用户六项追加裁决 U-5～U-10，§一）**：`test-hard` 每格从 3 局改为 **20 局**，规格从上次 SimpleMemVLA 评估用的 `smvla-0927`／`smvla-0927-fill` 快照迁移（不重新抽签，55 格全部有 h5）；评估步数上限沿用按档 1500/1700/2000/2600；新增阶段 6～8：两个策略仓库（官方 MME-VLA、官方 SimpleMemVLA）从官方切分支做最小改动，在 GL 10 × A40 上先各评 55 格 × 10 局、再评余下 10 局；阶段 4 结束后释放占位 job 只保留 `62126062`；20 局 h5（1.2 TB）先不进 bucket。用卡表见 §7.1。
 > **评估接口**（用户 2026-09-27「dataset传入test-hard内部再分xhard1234」「只保留着一个接口哦」）：对外只新增 `dataset="test-hard"` 一个取值；builder 内部把 xhard1～xhard4 串成每任务 **80 局**（xhard4-only 的 `StopCube`、`InsertPeg`、`MoveCube` 为 20 局），每档局数由 jsonl header 的 `delivery_per_cell=20` 决定。`xhard1`～`xhard4` 不是合法 `dataset` 值。步数上限按档：`TIER_MAX_STEPS = {xhard1: 1500, xhard2: 1700, xhard3: 2000, xhard4: 2600}`（U-6），由调用方逐局传 `make_env_for_episode(ep, max_steps=…)`。
 > **三侧**：O 侧官方（编排 `d53f21a7` + 环境源码 `1fadc0ec`）；P 侧本仓库 tag `pre-hard-split` → `7c7118fa`（生产代码基线 `ca32e9b`，两者 `src/` 零 diff）；H 侧拆包后 HEAD。持久化 bucket：`HongzeFu/robomme-hard-parity`。
@@ -50,6 +51,14 @@
 | U-9 | 评估顺序 | 「先各做55*10 然后在做10」 | §7.1、第二部分 §3.3 |
 | U-10 | 20 局 h5 是否进 bucket | 「1.2 TB 的 20 局 h5 先不进bucket」 | §5.4 |
 | U-11 | xhard 对拍与 20 局集的关系 | 主代理提出 B 方案，用户「维持b」：`PARITY_P_H`（xhard）仍重放 S4 的 165 个身份（P 侧同为 A40 产物，是唯一合法的同硬件 xhard 样本）；20 局集靠 `S4_SUBSET`（165 ⊂ 1100，纯 CPU）与评估侧逐局 `spec_binding`（`EVAL_BINDING`）覆盖，另加零算力的参考层 `EVAL_DEMO_FRAMES`（评估记录的演示帧数与旧 h5 逐局比）；不为 1100 局另生成 h5。A 方案（两侧各在 A40 重生成 1100 局、约 1.5 TB、5 小时以上）作废 | §5.4、§6.4 |
+| U-13 | 记录点跨硬件浮点漂移 | 「1同意甲 但是计划全解释后报告」→ 方案甲：回注点零差，只记录不回注的观测值允许 1e-5 以内浮点差并单独计数（背景：S4 165 局与上次 1100 局同 seed 的 550 对里 34 对 spec 哈希不同，全在 VideoPlace 两任务的 `actions.return_pose_by_object_id`，最大差 1.19e-7，A40 抽签对 Ada 抽签；同一 Ada 上重复抽 59 对全同） | §5.3、§6.3、§6.4、第二部分 R22 |
+| U-14 | 预算一次性授权（P3） | 「2同意」→ 第二部分 §3.1 的表即已批准口径：生成侧 rollout ≤ 635、reset ≤ 712；评估侧名义 2202 局，基础设施重跑硬上限每策略每轮 55 次、合计 220 | 第二部分 §3.1 |
+| U-15 | 阶段 0 开工 | 「3现在不开工 统一开工」→ 各阶段不逐个放行，等用户一次说「开工」后按步骤表连续执行；P2 阶段 3 的逐文件批准与对拍 FAIL 裁决仍按规则单独请示 | §七 |
+| U-16 | xhard1 40 局演示帧数带外告警 | 「4不管」→ 照收，留档写明数量与清单，不换局 | §5.3、盲区 ⑫ |
+| U-17 | 阶段 4 的 GL 克隆脏改动 | 「5新clone」→ 在 NFS 上新 clone `robomme_benchmark-hs-gl` 专供对拍，旧克隆 `robomme_benchmark-newtask-gl` 一律不动 | 第二部分 §3.2 |
+| U-18 | 网站与 `final-delivery.json` 是否改 1100 局 | 「6先不纳入」→ 本方案不改网站与交付清单，维持 165 局口径，另立任务 | §3.5 |
+| U-19 | 对拍 PASS 的措辞与参考层 | 「7动作、状态、图像数值、帧数要容差可控」→ 判定层措辞改为「输入绑定、结构与任务成功一致」；原参考层升级为**容差层**：动作、状态、图像、帧数四项各有阈值，阈值写在 `scripts/configs/hard-parity-tolerances.json`，默认值由 O↔P 边实测标定后写入并经用户确认，超阈值即 FAIL | §5.4、§6.1、第二部分 R21 |
+| U-20 | Codex 审计（锚点 `6608e38b`，12 条） | 用户「参考codex结果」→ 12 条全部吸收，逐条落点见第二部分 §七 | 第二部分 §七 |
 | U-12 | SimpleMemVLA 官方切出点 | 2026-09-27 核实：`wadeKeith/SimpleMemVLA` main 已改为迁移提示（`ef72213`，只剩 README），项目迁到 `OpenBMB/SimpleMemVLA`，其 main `c564c17` 以 `9fce41c` 为祖先，之后两个提交（`404215d` 真机实验、`c564c17` robodojo 评测）只改 `assets/` 与 `README.md`，代码零改动。切出点定为 `OpenBMB/SimpleMemVLA@c564c17`（用户「核实simplememvla」后主代理选定，代码与 `9fce41c` 逐字节相同） | §八 |
 
 **已定死口径**：
@@ -85,10 +94,10 @@
 | 保证 | 靠什么 | 判定行 |
 |---|---|---|
 | G1 `src/robomme/**` 与官方 `1fadc0ec` 逐字节相同 | §3.4 | `UPSTREAM_BYTES=PASS src_commit=1fadc0ec files=<n> diff=0 shims=18` |
-| G2 `robomme_hard` 跑原三档，与官方、与修改前行为一致 | 三侧对拍 §5.4 | `PARITY_O_P` / `PARITY_P_H` / `PARITY_O_H` `=PASS tier=native compared=144 identity_equal=144 setup_equal=144 schema_equal=144 success_equal=144 sha_equal=<k>`（16 × 3 × 3） |
-| G3 `robomme_hard` 跑 xhard，与 S4 交付行为一致；回注通道逐值一致 | §5.4 | `PARITY_P_H=PASS tier=xhard compared=165 …`（13×3×3 + 16×3）、`HARD_RESET_REPLAY=PASS resets=55 spec_mismatch=0 goal_mismatch=0`（13×3 + 16，从 20 局集每格取 candidate 最小的一局） |
+| G2 `robomme_hard` 跑原三档，与官方、与修改前**输入绑定、结构与任务成功一致，且动作／状态／图像／帧数差异在标定容差内**（U-19） | 三侧对拍 §5.4 | `PARITY_O_P` / `PARITY_P_H` / `PARITY_O_H` `=PASS tier=native compared=144 identity_equal=144 setup_equal=144 schema_equal=144 success_equal=144 both_success=144 tol=PASS action_max=<a>/<tol_a> state_max=<s>/<tol_s> image_mad=<i>/<tol_i> frames_max=<f>/<tol_f> sha_equal=<k>`（16 × 3 × 3） |
+| G3 `robomme_hard` 跑 xhard，与 S4 交付输入绑定、结构与任务成功一致、差异在容差内；回注通道逐值一致 | §5.4 | `PARITY_P_H=PASS tier=xhard compared=165 … tol=PASS …`（13×3×3 + 16×3）、`HARD_RESET_REPLAY=PASS resets=55 injected_mismatch=0 recorded_drift=<n> max_abs=<d> goal_mismatch=0`（13×3 + 16，从 S4 每格取 candidate 最小的一局，经 `S4_SUBSET` 映射到 20 局集里的同一局） |
 | G4 评估接口与 `dataset="test"` 同形，包装链相同，语言目标用的是 hard 版 | §四 | `EVAL_PY_UPSTREAM=PASS ENTRIES=5`、`EVAL_HARD_DIFF=PASS lines=8`、`WRAPPER_CHAIN=PASS action_spaces=4` |
-| G8 `test-hard` 20 局集就是上次评估那 1100 局，且包含 S4 165 局；评估时每局回注零漂移 | §5.3、§6.3、§6.4 | `DELIVERY_SET=PASS compared=1100 equal=1100 cells=55 shape=13x3x20+16x20`、`S4_SUBSET=PASS s4=165 in_delivery=165`、`EVAL_BINDING=PASS policy=<名> episodes=1100 mismatch=0 unused=0`；参考层 `EVAL_DEMO_FRAMES=INFO …` |
+| G8 `test-hard` 20 局集就是上次评估那 1100 局，规格与 h5 逐身份绑定，且包含 S4 165 局；评估评到的正是这 1100 个身份，每局回注点零差 | §5.3、§6.3、§6.4 | `SOURCE_POOL=PASS raw=1717 dedup=89 merged=1628 delivery=1100`、`DELIVERY_SET=PASS compared=1100 equal=1100 cells=55 shape=13x3x20+16x20`、`H5_BINDING=PASS compared=1100 mismatch=0 ambiguous=0`、`S4_SUBSET=PASS s4=165 seed_match=165 spec_exact=154 spec_within_tol=11 max_abs=1.2e-7`、`EVAL_IDENTITY_SET=PASS policy=<名> rounds=2 episodes=1100 missing=0 dup=0`、`EVAL_BINDING=PASS policy=<名> episodes=1100 replay=1100 injected_mismatch=0 recorded_drift=<n> max_abs=<d> unused=0`；参考层 `EVAL_DEMO_FRAMES=INFO …` |
 | G5 同进程 16 个环境 id 与命名空间归属唯一可查；各侧实际加载的包可证 | §3.3 | `REGISTRY_OWNER=PASS envs=16 owner=robomme_hard`、`NAMESPACE_OWNER=PASS envs=16 stray=0`、`ENV_PACKAGE_BINDING=PASS` |
 | G6 两阶段只依赖 jsonl；首次落盘排他；回写不破坏封存、不丢并发更新 | §五 | `FREEZE_ONLY_JSONL=PASS`、`ROLLBACK_WRITE=PASS`、`STATE_MACHINE=PASS` |
 | G7 三侧 h5 在 bucket 里可按 sha 读回、可拉回重比 | §5.4 | `BUCKET_SYNC=PASS sides=3 objects=<n> readback_sha_equal=<n> mismatch=0` |
@@ -233,7 +242,8 @@ scripts/
     README.md
   configs/
     newtask-v3/                 parity 用，不动（subset_manifest.json 是原三档 144 局身份清单；official_train/ 是官方 16 份 train 元数据）
-    newtask-v6/v6-02/           只读留档（S4 生成用的那份）；jsonl 真源改为包内
+    newtask-v6/v6-02/           只读留档（S4 生成用的那份）；jsonl 真源改为包内。网站 site-v12 与 final-delivery.json 维持 165 局口径不动（U-18）
+    hard-parity-tolerances.json 对拍容差层阈值（U-19），由 O:P 标定后写入并进 git
     newtask-v6/smvla-smoke-0927/  不动（不在本方案范围）
     其余（newtask-v4/ v5/ v6 的 sampling_config.json、v6-01/）  删（删前把 site/ 依赖改读包内 header）
 ```
@@ -265,8 +275,10 @@ dataset ∈ {train,test,val}   → 官方父类逻辑；子类覆写 _resolve_me
                                 train × 四个 Unmask 任务读 robomme_hard/env_metadata/train（400 条），其余读官方
 dataset == "test-hard"       → 对 tier in (xhard1..xhard4) 依次 hard_specs.load_specs(包内 test-hard/<tier>/specs.jsonl)
                                 → 取 task==env_id and selected and rollout.status=="ok" 的行，按 candidate 升序
-                                → 每档该任务必须恰好 header.delivery_per_cell（=20）行或恰好 0 行（xhard1～3 × 三个 xhard4-only 任务），否则 raise
+                                → 对照写死的 55 格表核行数：格在表内必须恰好 header.delivery_per_cell（=20）行，
+                                  表外（xhard1～3 × StopCube/InsertPeg/MoveCube 共 9 格）必须恰好 0 行；其余任何组合 raise（Codex #1：不接受「20 或 0」的静默放行）
                                 → 四档按序拼接编为 episode 0..79（或 0..19）
+resolve_identity(episode)     → 新增只读方法，返回 {tier, candidate, seed, spec_sha256, source_run}；官方二元 resolve_episode 不动（Codex #6）
 其他取值                      → ValueError（与官方一致）
 make_env_for_episode 整段覆写 → runtime 四项、seed、difficulty 照抄官方拼法；test-hard 时在 gym.make 前加
                                 sampling_config=header.sampling_config[env_id]、native_episode_spec=row.spec；
@@ -276,7 +288,8 @@ make_env_for_episode 整段覆写 → runtime 四项、seed、difficulty 照抄�
 ```
 
 - **回注**：`native_episode_spec` 是回注。reset 时抽样流程照常发生，但每个取值点用冻结值替换，原抽样只作核验，由 `SpecRecorder` 记 `mismatch/unused`。
-- **`resolve_episode(episode)`**：返回 `(seed, tier)`，与官方二元组同形。档名与候选序号只通过它暴露，不另写 `info` 键。
+- **绑定摘要放包内（Codex #5）**：`robomme_hard.env_record_wrapper.spec_binding(env)` 读 `env.unwrapped._spec`，返回 `{available, mode, spec_kind, spec_sha256, value_points, injected_mismatch, recorded_drift, recorded_max_abs, unused}`；`injected_mismatch` 只数 trace 里 `source="spec"` 路径上的不等，`recorded_drift` 数 `source="record"` 路径上浮点差 ≤ 1e-5 的条目，记录点差 > 1e-5 计入 `injected_mismatch`（U-13 方案甲）。策略仓库只调这一个函数，不自己拼。
+- **`resolve_episode(episode)`**：返回 `(seed, tier)`，与官方二元组同形。候选序号、来源 run、`spec_sha256` 由只读的 `resolve_identity(episode)` 暴露，不另写 `info` 键。
 - **runtime 比对**：四项与 header 逐字比对，`render_mode` 放行，所以 `gui_render=True` 可以用；其余不等即 raise。
 - ⚠ **白名单绕行**：官方父类 `__init__` 的 `_ALLOWED_DATASETS` 只认 `train/test/val`，而官方代码不能改。子类对 `test-hard` 先喂 `dataset_for_parent="test"` 过校验，再把 `self.dataset` 改回原值；父类顺手读的 `test` 元数据不会被使用。
 - **P2**：这组覆写（`__init__`、`_resolve_metadata_path`、`resolve_episode`、`get_episode_num`、`make_env_for_episode`）属于 P2「子类覆写方法」，已由 U-3 批准；README 写实现说明。
@@ -317,9 +330,10 @@ uv run --no-sync python scripts/injection-dev/freeze_specs.py \
 两种模式分开：
 
 - **`--mode continue`（正常生产）**：
+  - **锁先于一切（Codex #9）**：进入 continue 模式的第一步就在 `<specs>.lock` 上 `O_EXCL` 取锁并持有到回写结束；取锁失败的进程启动 worker 数为零、直接退出。锁不再放在回写阶段。
   - **待跑集**：每个 `(task,tier)` 格里 `selected=true` 且 `rollout` 缺失的行；已 ok 的行不重跑（`--redo <身份>` 显式重跑）。
   - **失败处理**：某行失败时，它的 `selected` 置 `false`，`rollout.status="failed"` 保留作历史，`tried=true`；从同格 `tried=false` 且 `selected=false` 的候选里按 `candidate` 升序递补一个，置 `selected=true`。
-  - **每格不变式**：`selected=true` 的行数 ≤ 3，恢复时一样。
+  - **每格不变式**：`selected=true` 的行数 ≤ `header.delivery_per_cell`（本轮 20），恢复时一样（Codex #1：不再写死 3）。
   - **基础设施失败**（进程超时、Vulkan 建不了设备、节点被抢）每身份最多重跑 1 次，计入预算，并记原因与次数；**任务失败不重试挑成功**。
 - **`--mode replay --identities <清单>`（对拍专用）**：
   - 只按给定身份清单逐局重放，不递补、不回写包内 jsonl，结果只写 `--output`；
@@ -332,12 +346,13 @@ uv run --no-sync python scripts/injection-dev/freeze_specs.py \
    - 传 `--sampling-config`，所以走镜像 worker；环境变量 `ROBOMME_ENV_PACKAGE=robomme_hard`。
    - worker 内：`gym.make(task, sampling_config=…, native_episode_spec=row.spec, …)` → 套 `robomme_hard` 的 `RobommeRecordWrapper` → 官方 `_planner_classes` / `_execute_tasks`（vendor 的 `generate_dataset.py`）→ h5 / mp4。
 3. **逐局落盘**：runner 每完成一局就追加一行 `results.partial.jsonl` 并 `fsync`；`--resume` 跳过其中已完成的身份。中断恢复只跑没完成的局，不重复消耗预算。
-4. **回写**（continue 模式，全部批次结束后一次）：
-   - 在 `<specs>.lock` 上 `O_EXCL` 取锁，锁文件记 pid、host、启动时间；锁已存在一律拒绝并交用户，不自动判陈旧。
+   - **恢复的歧义窗口（Codex #9）**：worker 已写完 h5、runner 尚未追加 partial 行时中断，单看 partial 会重跑该局。恢复时联合核对 `jobs.json`、`results.partial.jsonl`、局目录与 h5 三者：局目录有完整 h5（sha 可算、`setup` 可读）但 partial 无记录的，标 `UNKNOWN` 并列清单交用户，不直接重跑、不直接采纳。
+4. **回写**（continue 模式，全部批次结束后一次，仍持有第一步的锁）：
+   - 锁文件记 pid、host、启动时间；锁已存在一律拒绝并交用户，不自动判陈旧。
    - 重读 `--specs`，**整份文件 sha256 必须等于第 1 步**，否则中止，防止两个不同 `--output` 的进程互相覆盖。
    - 只改 `selected`、`tried`、`rollout`；临时文件 + `os.replace`；写后再 `load_specs` 核对 `identity_sha256` 未变，并重算 `delivery_sha256`。
 
-**递补闭合点**：评估侧只取 `selected && rollout.status=="ok"` 的行，而每格恰好 3 行由 builder 断言保证。
+**递补闭合点**：评估侧只取 `selected && rollout.status=="ok"` 的行，而每格恰好 `delivery_per_cell` 行由 builder 对照 55 格表断言保证。S4 165 局的重播（`--mode replay --identities`）是独立只读模式，不参与递补，也不受 `delivery_per_cell` 约束。
 
 ### 5.3 jsonl 结构（`schema="hard-specs/2"`）
 
@@ -361,11 +376,12 @@ uv run --no-sync python scripts/injection-dev/freeze_specs.py \
 - **`delivery_sha256`**：盖排序后的 `[(task, tier, candidate, seed, spec_sha256, rollout.h5_sha256)]`，只取 `selected && rollout.status=="ok"` 的行，锁住「哪几局是正式交付」。只交换两行的 `selected`，它就会变。
 - **迁移（阶段 1，U-5／E-20）**：来源是上次 SimpleMemVLA 评估用的快照，不是 S4。
   - **规格来源**：benchmark 分支 `PolicyEvalThirdParty-simplememvla-0927-0146`（`1fe2d185`）的 `scripts/configs/newtask-v6/smvla-0927/xhard{1..4}/specs.reselected.jsonl` 与 `smvla-0927-fill/xhard{1,4}/specs.reselected.jsonl` 六份文件（本机 `/data` 产物目录同名）。它们的 `src/robomme` 与当前 HEAD 零 diff（`git diff --stat 1fe2d185 HEAD -- src/robomme` 为空），seed 规则同为 v6。
-  - **身份真源**：上次评估的 1100 条结果（SimpleMemVLA `aab093f` 的 `docs/eval-doc/v6xhard-0927/records/{xhard1-main-0927,xhard1-fill-0927,xhard2-0927,xhard3-0927,xhard4-0927,xhard4-fill-0927}/results-shard*.jsonl`，行数 200+60+260+260+314+6），每行有 `task/difficulty/episode/seed/spec_sha256`。抽出 `(task, tier, seed, spec_sha256)` 存为本仓库 `docs/validation/newtask-v6/hard-split/records/eval-identities-1100.jsonl` 并记 sha256，作为 `DELIVERY_SET` 的比对对象。
-  - **h5 结果来源**：`artifacts/newtask-v6/smvla-0927{,-fill}/<tier>/rollout/run1/results.jsonl` 的 `ok=true` 行给出 h5 路径；迁移脚本逐局核对文件存在并重算 `h5_sha256`、`bytes`、`frames`，缺一即 FAIL。
-  - **行的取舍**：两份来源文件里同格的行全部保留；1100 个身份 `selected=true`、`rollout.status="ok"`；其余 ok 行 `selected=false`、`tried=true`、`rollout` 如实写；失败行 `status="failed"`。同 seed 重复行（InsertPeg@xhard4 补抽里 5 条）只保留一行，重复计数写进 header `dedup_dropped`。`candidate ← episode`；`difficulty → tier`；来源如实写 `env_package="robomme"`、`code_baseline=57fe972`（12.191）。
-  - **header 新键**：`delivery_per_cell=20`、`identity_source="smvla-0927+fill"`、`source_files`（六份文件的 sha256）、`eval_identities_sha256`。
-  - **S4 子集**：v6-02 与 smvla-0927 用同一 seed 公式（`offset(tier) + env_code×1e5 + episode×100 + attempt`）且源码相同，所以 S4 的 165 个 `(task, tier, seed, spec_sha256)` 预期全部落在 1100 里；纯 CPU 核对，判定行 `S4_SUBSET`。不成立即停，交用户。
+  - **身份真源**：上次评估的 1100 条结果（SimpleMemVLA `aab093f` 的 `docs/eval-doc/v6xhard-0927/records/<run>/` 六个目录，按目录实际文件名取：`xhard1-main-0927`、`xhard1-fill-0927`、`xhard2-0927`、`xhard3-0927`、`xhard4-0927` 各 `results-shard00of12`～`11of12`，`xhard4-fill-0927` 是 `results-shard00of06`～`05of06`；行数 200+60+260+260+314+6 = 1100，Codex #2 指出原文按 12 片写会漏 6 条）。每行有 `task/difficulty/episode/seed/spec_sha256`。抽出 `(source_run, task, tier, episode, seed, spec_sha256)` 存为本仓库 `docs/validation/newtask-v6/hard-split/records/eval-identities-1100.jsonl` 并记 sha256，作为 `DELIVERY_SET` 与 `EVAL_IDENTITY_SET` 的比对对象。
+  - **来源池合并算法（Codex #2）**：六份规格文件原始 1717 行；主集与补抽集之间完整身份（`task, tier, seed, spec_sha256`）重复 89 条（InsertPeg@xhard4 是 30 对同 seed 同哈希，其中 5 对两侧同时选中；xhard1 三任务的其余重复类似），合并后 1628 行；其中正式交付 1100 行，非交付候选 528 行也入库，供将来递补。header 的 `tasks` 取并集按官方任务序，`per_env` 逐任务合并 `attempted/candidates/selected`，`select_rule` 写明「以上次评估身份为准」，`sampling_config` 取主集 header 全文（补抽集只是任务子集，`sampling_config_sha256` 因子集而异，逐任务块必须逐字相等，否则 FAIL）。判定行 `SOURCE_POOL=PASS raw=1717 dedup=89 merged=1628 delivery=1100 nondelivery=528`。
+  - **h5 结果来源与逐身份绑定（Codex #3）**：`artifacts/newtask-v6/smvla-0927{,-fill}/<tier>/rollout/run1/results.jsonl` 的 `ok=true` 行给出 h5 路径。迁移按 `(source_run, task, tier, 旧 episode, seed, spec_sha256)` 唯一连接「评估结果行 ↔ 规格行 ↔ 生成结果行」三份记录，连接不唯一即 `ambiguous`；再打开 h5 只读 `setup` 组核 seed、difficulty、`task_goal` 与规格一致；重算 `h5_sha256`、`bytes`、`frames`。判定行 `H5_BINDING=PASS compared=1100 mismatch=0 ambiguous=0 missing=0`。
+  - **行的取舍**：1100 个身份 `selected=true`、`rollout.status="ok"`；其余 ok 行 `selected=false`、`tried=true`、`rollout` 如实写；失败行 `status="failed"`。`candidate ← 旧 episode`；`difficulty → tier`；来源如实写 `env_package="robomme"`、`code_baseline=57fe972`（12.191）、`source_run`。
+  - **header 新键**：`delivery_per_cell=20`、`identity_source="smvla-0927+fill"`、`source_files`（六份文件的 sha256）、`eval_identities_sha256`、`dedup_dropped=89`、`demo_frames_out_of_band`（U-16：xhard1 那 40 局照收，清单写进 header 与 `stage1.md`）。
+  - **S4 子集（U-13 方案甲）**：v6-02 与 smvla-0927 用同一 seed 公式且源码相同，S4 的 165 个 `(task, tier, seed)` 全部落在 1100 里；spec 逐叶比对时回注点必须逐位相等，记录点允许浮点差 ≤ 1e-5。已静态核实：seed 全匹配，spec 精确相等 154，容差内 11（全部是 VideoPlace 的 `actions.return_pose_by_object_id`，最大差 1.19e-7）。判定行 `S4_SUBSET=PASS s4=165 seed_match=165 spec_exact=154 spec_within_tol=11 max_abs=1.2e-7 injected_diff=0`。回注点出现任何不等即停，交用户。
 
 ### 5.4 三侧对拍：A40@greatlakes、16 worker、行为一致判定，h5 持久化到 bucket
 
@@ -398,20 +414,23 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
    P(S4) ──PARITY_P_H──▶ H  拆包不改 xhard（行为）
 ```
 
-**compare 怎么比**：每侧旁写 `identities.jsonl`，每身份一行 `{task, tier, episode, seed, path, bytes, sha256, success, frames, env_module, wrapper_modules, worker}`。按身份键对齐后分两层：
+**compare 怎么比**：每侧旁写 `identities.jsonl`，每身份一行 `{task, tier, episode, seed, path, bytes, sha256, success, frames, env_module, wrapper_modules, worker}`。按身份键对齐后分三层（U-19、Codex #11）：
 
-1. **判定层（全等才 PASS）**：
+0. **每侧自检（前置）**：episode 在该侧唯一；h5 内 `setup` 的 seed／difficulty 与 `identities.jsonl` 一致；至少一个 `timestep_*` 组且编号连续；每个数据集的对象类型与 shape 可读；该侧全部局各自成功。任一不过，该侧不进入比对。
+1. **判定层（全等才 PASS）**，结论措辞是「输入绑定、结构与任务成功一致」，不写「轨迹等价」：
    - 身份集合与清单全等；
    - 两侧 h5 都非空、可打开；
    - `setup` 相等：`seed`、`difficulty`、`task_goal`、`available_multi_choices`、相机内参；
-   - 结构相等：`setup` 与每个 `timestep_*` 组的数据集名与 dtype 集合相同，不比帧数；
-   - 任务成功相等：h5 只在 `episode_success` 为真时落盘，所以用 `results` 的状态加 h5 是否存在来判，不用末帧 `is_completed`，它只是子目标进度；
+   - 结构相等：`setup` 与每个 `timestep_*` 组的数据集名、dtype 与 shape 集合相同，不比帧数；
+   - 任务成功相等且**双侧各自成功**（`both_success`）：h5 只在 `episode_success` 为真时落盘，用 `results` 的状态加 h5 是否存在来判；同失败不算相等；
    - 各侧 `env_module` 归属正确，即 `ENV_PACKAGE_BINDING`。
-2. **参考层（INFO）**：
-   - `sha_equal` 计数；
-   - 帧数相等计数与最大帧差；
-   - 首个分叉时间步的分布；
-   - 共同前缀上 `joint_action` 的最大绝对差。
+2. **容差层（超阈值即 FAIL，阈值可配置）**：四项指标逐身份计算、取整边最大值，与 `scripts/configs/hard-parity-tolerances.json` 里的阈值比：
+   - `action_max`：共同前缀上 `joint_action` 的最大绝对差（rad）；
+   - `state_max`：共同前缀上 `joint_state`／`gripper_state` 的最大绝对差；
+   - `image_mad`：共同前缀上前视与腕视 RGB 的逐像素平均绝对差（0～255），取每身份均值的最大值；
+   - `frames_max`：两侧帧数差的最大值。
+   共同前缀 = 首个分叉时间步之前的部分；分叉步的分布另记参考层。**阈值怎么定**：O↔P 两侧源码相同（`src/robomme` 零 diff）、同硬件、同编排，其差异就是 16 worker 下 RRT 墙钟噪声的实测底线；先跑 `compare --pair O:P --calibrate`，输出四项的 p95 与最大值，默认阈值取最大值 × 1.5 写进配置文件并连同原始分布交用户确认，再跑 `P:H`、`O:H` 与 xhard 的 `P:H`。配置文件进 git，改阈值必须改文件、写进留档；命令行不允许临时覆盖（第二部分 R21）。
+3. **参考层（INFO）**：`sha_equal` 计数；帧数相等计数；首个分叉时间步分布；`MEDIA_CHECK=INFO`（每侧每局 mp4 解码首帧与末帧成功计数；视频写入失败不阻止 h5 落盘，所以阶段 4 判定不涵盖 mp4，只记录）。
 
 **bucket 持久化**（`HongzeFu/robomme-hard-parity`，U-4 取 A）：
 - **流转**：
@@ -430,12 +449,13 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 
 | 查什么 | 怎么查 | 过了说明什么 | 判定行 |
 |---|---|---|---|
-| 修改前 ≡ 官方（原三档，行为） | O 侧与 P 侧各 16 任务 × 3 档 × 3 局，`hard_parity.py compare --pair O:P --tier native --manifest scripts/configs/newtask-v3/subset_manifest.json` | 拆包前的代码在 A40 上原三档与官方行为一致 | `PARITY_O_P=PASS tier=native compared=144 identity_equal=144 setup_equal=144 schema_equal=144 success_equal=144 sha_equal=<k> shape=16x3x3` |
-| 拆包不改原三档 | P 侧 vs H 侧同上 | `robomme_hard` 原三档 ≡ 修改前（行为） | `PARITY_P_H=PASS tier=native compared=144 … shape=16x3x3` |
-| 端到端 | O 侧 vs H 侧同上 | `robomme_hard` 原三档 ≡ 官方（行为） | `PARITY_O_H=PASS tier=native compared=144 … shape=16x3x3` |
-| 拆包不改 xhard | S4 交付（P）vs H 侧 replay，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 | `robomme_hard` xhard 产物 ≡ 修改前交付（行为，含 `task_goal` 文本） | `PARITY_P_H=PASS tier=xhard compared=165 … shape=13x3x3+16x3` |
+| 容差标定 | `compare --pair O:P --tier native --calibrate`：输出四项指标 p95 与最大值，默认阈值 = 最大值 × 1.5 写入 `scripts/configs/hard-parity-tolerances.json`，原始分布交用户确认后才跑其余边 | 阈值有实测依据 | `PARITY_TOL_CALIB=PASS pair=O:P n=144 action_p95=<…> action_max=<…> state_max=<…> image_mad_max=<…> frames_max=<…> tol_file_sha=<…>` |
+| 修改前 ≡ 官方（原三档） | O 侧与 P 侧各 16 任务 × 3 档 × 3 局，`hard_parity.py compare --pair O:P --tier native --manifest scripts/configs/newtask-v3/subset_manifest.json` | 拆包前的代码在 A40 上原三档与官方输入绑定、结构、任务成功一致，差异在容差内 | `PARITY_O_P=PASS tier=native compared=144 identity_equal=144 setup_equal=144 schema_equal=144 success_equal=144 both_success=144 tol=PASS action_max=<a>/<tol> state_max=<s>/<tol> image_mad=<i>/<tol> frames_max=<f>/<tol> sha_equal=<k> shape=16x3x3` |
+| 拆包不改原三档 | P 侧 vs H 侧同上 | `robomme_hard` 原三档与修改前一致（同上四项 + 容差） | `PARITY_P_H=PASS tier=native compared=144 … tol=PASS … shape=16x3x3` |
+| 端到端 | O 侧 vs H 侧同上 | `robomme_hard` 原三档与官方一致（同上四项 + 容差） | `PARITY_O_H=PASS tier=native compared=144 … tol=PASS … shape=16x3x3` |
+| 拆包不改 xhard | S4 交付（P）vs H 侧 replay，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 | `robomme_hard` xhard 产物与修改前交付一致（含 `task_goal` 文本；容差沿用 native 标定值） | `PARITY_P_H=PASS tier=xhard compared=165 … tol=PASS … shape=13x3x3+16x3` |
 | 各侧实际加载的包 | 每局 `identities.jsonl` 的 `env_module`／`wrapper_modules` | H 侧真的跑了 `robomme_hard`，O／P 侧真的是 `robomme` | `ENV_PACKAGE_BINDING=PASS sides=3 O=robomme P=robomme H=robomme_hard mismatch=0` |
-| 回注通道与评估文本 | 每档每任务取 candidate 最小的 ok 行 1 条（13×3 + 16 = 55），**经 builder 评估链** `make_env_for_episode` + reset；导出 spec 与冻结值逐字段比，`info["task_goal"]`、多选项与 S4 h5 `setup` 逐字比 | 新包下回注不漂，评估链拿到的是 hard 版语言目标 | `HARD_RESET_REPLAY=PASS resets=55 spec_mismatch=0 goal_mismatch=0 shape=13x3+16` |
+| 回注通道与评估文本 | 从 S4 每格取 candidate 最小的成功局（13×3 + 16 = 55），经 `S4_SUBSET` 映射到 20 局集里的同一身份，**经 builder 评估链** `make_env_for_episode` + reset；`spec_binding()` 摘要，`info["task_goal"]`、多选项与该局 S4 h5 `setup` 逐字比（GL 节点读不到 `/data`，比对用阶段 1 导出的带 sha 的 `s4-setup-manifest.json`，只含 `setup` 字段，Codex #12） | 新包下回注点不漂，评估链拿到的是 hard 版语言目标 | `HARD_RESET_REPLAY=PASS resets=55 replay=55 injected_mismatch=0 recorded_drift=<n> max_abs=<d> goal_mismatch=0 shape=13x3+16` |
 | 三侧产物可复核 | 逐对象远端读回核对 sha | G7 | `BUCKET_SYNC=PASS sides=3 objects=<n> readback_sha_equal=<n> mismatch=0` |
 
 - **FAIL 的读法**：
@@ -464,8 +484,10 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | ★ 命名空间归属 | 16 个环境模块的全局可调用对象 | `NAMESPACE_OWNER=PASS envs=16 stray=0` |
 | ★ 包装链同形 | 1 任务 × 4 个 action_space × `test`／`test-hard` 各 make 一个环境（不 reset），比较 wrapper 类名序列与所属包 | `WRAPPER_CHAIN=PASS action_spaces=4 chain_equal=4 hard_modules_ok=4` |
 | 签不变 | 用 `git show 55f1b027:scripts/parity/v4_specs.py` 的原算法重算 legacy identity，逐位等于六份来源文件 header 已提交值；新口径对迁移投影重算自洽 | `SPECS_IDENTITY=PASS files=6 tiers=4 legacy_equal=6` |
-| 正式交付集合就是上次评估那 1100 局 | 包内 `selected && ok` 行与 `eval-identities-1100.jsonl` 逐身份比 `task/tier/seed/spec_sha256`，h5 路径存在且 `h5_sha256` 重算一致；每格恰好 20 行 | `DELIVERY_SET=PASS compared=1100 equal=1100 cells=55 h5_present=1100 shape=13x3x20+16x20` |
-| S4 对拍集是交付集子集 | `final-delivery.json::successes` 165 个 `(task, tier, seed, spec_sha256)` 全部在包内 `selected && ok` 行中 | `S4_SUBSET=PASS s4=165 in_delivery=165 missing=0` |
+| 来源池合并无遗漏 | 六份文件逐行计数、按完整身份去重、合并行数与交付／非交付拆分（§5.3） | `SOURCE_POOL=PASS raw=1717 dedup=89 merged=1628 delivery=1100 nondelivery=528` |
+| 正式交付集合就是上次评估那 1100 局 | 包内 `selected && ok` 行与 `eval-identities-1100.jsonl` 逐身份比 `task/tier/seed/spec_sha256`；每格恰好 20 行 | `DELIVERY_SET=PASS compared=1100 equal=1100 cells=55 shape=13x3x20+16x20` |
+| 规格与 h5 逐身份绑定 | 三份记录唯一连接 + h5 `setup` 内 seed／difficulty／`task_goal` 与规格一致 + sha／bytes／frames 重算（§5.3） | `H5_BINDING=PASS compared=1100 mismatch=0 ambiguous=0 missing=0` |
+| S4 对拍集是交付集子集（U-13 甲） | 165 个 `(task, tier, seed)` 全在交付集；spec 回注点逐位相等，记录点浮点差 ≤ 1e-5 | `S4_SUBSET=PASS s4=165 seed_match=165 spec_exact=154 spec_within_tol=11 max_abs=1.2e-7 injected_diff=0` |
 | 冻结逻辑等价 | 纯 CPU：新 `_freeze` 吃 v6-02 四份 `drafts.jsonl`，输出的候选、seed、spec、`initial_selected` 与 v6-02 逐行相同（不起环境） | `FREEZE_EQUIV=PASS tiers=4 rows=550 selected_equal=165` |
 | 步数上限来源 | 字典与 `v4_eval.NEWVALUE_MAX_STEPS` 逐档相等；S4 165 局非演示执行步数各档最大值均小于对应上限 | `TIER_MAX_STEPS_SOURCE=PASS tiers=4 values=1500/1700/2000/2600 max_exec=1209/1390/1663/2215` |
 | 冻结脚本未破 | `cmp` 三脚本；`ls -1 scripts/*.py \| wc -l` = 5 | `EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
@@ -473,7 +495,8 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | 第一阶段只落一份文件 | 2 任务 × 1 档 × 1 候选、`--workers 2` smoke（本机）；前后用 `find -newer` 快照做差集 | `FREEZE_ONLY_JSONL=PASS files_written=1` |
 | 回写不破坏封存 | 对 smoke jsonl 跑第二阶段 1 任务 × 1 档 × 1 局（本机） | `ROLLBACK_WRITE=PASS identity_unchanged=1` |
 | 状态机 | 纯 CPU 夹具（不起仿真）：「失败 → 递补 → 中断 → 恢复」「两个不同 `--output` 争同一 specs」「锁已存在」「文件被他人改过」四个场景 | `STATE_MACHINE=PASS cases=4` |
-| 原三档 A 路／镜像 worker 能起跑 | O 侧 A 路与 H 侧镜像各 1 任务 × 1 档 × 1 局（本机） | `NATIVE_SMOKE=PASS sides=2` |
+| 原三档 A 路／镜像 worker 能起跑（开发冒烟，本机 Ada） | O 侧 A 路与 H 侧镜像各 1 任务 × 1 档 × 1 局；`hard_parity.py generate --dev-smoke` 时放行 Ada，正式 `generate` 仍写死 A40 断言（Codex #12） | `NATIVE_SMOKE=PASS sides=2 gpu=Ada mode=dev` |
+| 片前冒烟（A40，阶段 4 每片起跑前） | 每片 1 局，计入预算（§3.1 已列 3 局） | `SHARD_SMOKE=PASS side=<O/P/H> gpu=A40` |
 | 合作者入口可用 | `hard_regression.py eval-smoke` 限 1 任务 × 1 档 × 1 局（本机） | `HARD_EVAL_SMOKE=PASS` |
 | tests 可收集且不测错包 | `--collect-only` + 残留 `robomme.robomme_env` 引用清单 | `TESTS_COLLECT=PASS errors=0 stray_official=0` |
 
@@ -481,15 +504,16 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 
 | 查什么 | 怎么查 | 过了说明什么 | 判定行 |
 |---|---|---|---|
-| 两个策略分支只改清单内文件 | `git diff --stat <官方基点>..<分支> -- <官方原有文件>` 只命中 §八 列出的文件，改动行数不超过表中上限 | 官方代码没有被顺手改 | `POLICY_DIFF=PASS repo=smvla official_files=3 lines<=40`、`POLICY_DIFF=PASS repo=mmevla official_files=2 lines<=30` |
-| 子模块指向 | 两个策略分支的 gitlink 都指向 benchmark `PolicyEvalThirdParty-*` 分支上的同一个 commit（拆包后 HEAD） | 两个策略评的是同一份 benchmark | `SUBMODULE_PIN=PASS commit=<sha7> repos=2` |
-| 单局 smoke（每策略一局，GL） | 各在一个评估占位 job 里评 BinFill@xhard1 第 0 局，记单局耗时、主机 `MaxRSS`、GPU 峰值显存、`spec_binding` | 环境、权重、按档上限、回注都通 | `EVAL_SMOKE=PASS policy=<名> status=<…> steps=<n> wall_s=<…> rss_gb=<…> binding_mismatch=0` |
-| 第一轮 55 格 × 10 局 | 每策略 10 片各 55 局，合并后每格恰好 10 局有正常终态（success/fail/timeout），error 每身份最多 3 次尝试 | 第一轮完整 | `EVAL_ROUND1=PASS policy=<名> episodes=550 normal=550 error_left=0 shape=55x10` |
-| 第二轮余下 10 局 | 同上，合并两轮后每格恰好 20 局 | 两轮完整 | `EVAL_ROUND2=PASS policy=<名> episodes=550 normal=550 error_left=0 total=1100` |
-| 回注零漂移（G8） | 每局评估结果记 `spec_binding{mismatch, unattributed_mismatch, unused}`（读 `env.unwrapped._spec`），1100 局全零 | 20 局集在评估链上逐局与冻结规格一致 | `EVAL_BINDING=PASS policy=<名> episodes=1100 mismatch=0 unused=0` |
+| 两个策略分支只改清单内文件 | `git diff --stat <官方基点>..<分支>` 分两组统计：源码（`.py`）与依赖／仓库元数据（`pyproject.toml`、`.gitignore`、`.gitmodules`、脚本）；源码组只命中 §八 表内文件且行数不超上限（Codex #12） | 官方代码没有被顺手改 | `POLICY_DIFF=PASS repo=smvla src_files=3 src_lines<=60 meta_files=3`、`POLICY_DIFF=PASS repo=mmevla src_files=2 src_lines<=45 meta_files=1` |
+| 子模块指向 | 两个策略分支的 gitlink（`git ls-tree <分支> third_party/robomme_benchmark`）都等于 benchmark `PolicyEvalThirdParty-*` 分支上的同一个 commit（拆包后 HEAD） | 两个策略评的是同一份 benchmark | `SUBMODULE_PIN=PASS commit=<sha7> repos=2` |
+| 单局 smoke（每策略一局，GL） | 各在一个评估占位 job 里评 BinFill@xhard1 第 0 局，记单局耗时、主机 `MaxRSS`、GPU 峰值显存、`spec_binding`；**权重身份断言（Codex #4）**：MME-VLA 从 server 启动日志取实际 `Restoring checkpoint from <路径>` 并与 `perceptual-framesamp-modul/79999/params` 绝对路径逐字比，SimpleMemVLA 记 `--pretrained_checkpoint` 解析后的绝对路径与 `config.json` sha256；不符即 FAIL | 环境、权重、按档上限、回注都通 | `EVAL_SMOKE=PASS policy=<名> ckpt=<绝对路径> ckpt_ok=1 status=<…> steps=<n> max_steps=1500 wall_s=<…> rss_gb=<…> binding_available=1 injected_mismatch=0` |
+| 第一轮 55 格 × 10 局 | 每策略 10 片各 55 局，合并后每格恰好 10 局有正常终态（success/fail/timeout）；基础设施 error 重跑每策略每轮 ≤ 55 次（U-14） | 第一轮完整 | `EVAL_ROUND1=PASS policy=<名> episodes=550 normal=550 error_left=0 retries=<n>/55 shape=55x10` |
+| 第二轮余下 10 局 | 同上，合并两轮后每格恰好 20 局 | 两轮完整 | `EVAL_ROUND2=PASS policy=<名> episodes=550 normal=550 error_left=0 retries=<n>/55 total=1100` |
+| 评到的正是指定身份（Codex #6） | 每局结果记 `resolve_identity` 的 `{tier, candidate, seed, spec_sha256}` 与 builder episode 号；两轮合并后与 `eval-identities-1100.jsonl` 双向全等、无重复；逐片核每片 55 局、每轮 550 局、两轮互斥 | 没有评错局、漏局、重复局 | `EVAL_IDENTITY_SET=PASS policy=<名> rounds=2 shards=10 per_shard=55 episodes=1100 missing=0 extra=0 dup=0` |
+| 回注零漂移（G8，U-13 甲，Codex #5） | 每局结果记 `spec_binding()` 摘要：`available=true`、`mode=replay`、`spec_kind` 与 `spec_sha256` 等于该身份、`value_points>0`，再看 `injected_mismatch=0`、`recorded_drift` 与 `unused=0`；任一局 `mode!=replay` 直接 FAIL（export 模式三项也是零，不能当通过） | 20 局集在评估链上逐局真正回注且回注点一致 | `EVAL_BINDING=PASS policy=<名> episodes=1100 replay=1100 injected_mismatch=0 recorded_drift=<n> max_abs=<d> unused=0` |
 | 演示回放未变（参考层，U-11「维持b」补的一层） | 每局评估结果记 reset 后的 `demo_frames`（`len(obs["front_rgb_list"]) - 1`）与 `demo_tasks`，与迁移时从旧 h5 读出的演示帧数逐局比；帧数受 RRT 墙钟噪声影响，只作参考不作判定 | reset 之后的演示回放在新包下没有系统性变化，补 165 局抽样看不到的 935 局 | `EVAL_DEMO_FRAMES=INFO policy=<名> episodes=1100 exact=<n> within_5=<n> max_diff=<k> demo_tasks_equal=<n>` |
 | 步数上限按档生效 | 每局结果记 `max_steps`，与 tier 对应值逐局相等 | U-6 落地 | `EVAL_TIER_CAP=PASS episodes=1100 mismatch=0` |
-| 占位 job 释放 | 阶段 4 后 `squeue -u hongzefu` 只剩 `62126062`；评估结束后只剩 `62126062` | U-7、E-22 | `HOLD_RELEASE=PASS kept=62126062 released=62126060,62126061,62018665`；`EVAL_HOLD_RELEASE=PASS released=10 kept=62126062` |
+| 占位 job 释放 | 只核本方案 JobID：删前删后 `squeue -u hongzefu` 的差集恰好等于本次要释放的清单，其他 job 一个不少（Codex #12：不要求整个队列只剩 `62126062`） | U-7、E-22 | `HOLD_RELEASE=PASS released=62126060,62126061,62018665 kept=62126062 others_unchanged=1`；`EVAL_HOLD_RELEASE=PASS released=<10 个 JobID> kept=62126062 others_unchanged=1` |
 
 ## 七、实施步骤表
 
@@ -499,12 +523,13 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | 1 建 `robomme_hard` | 按 §3.1 复制／shim／子类；20 局 jsonl 从 `smvla-0927{,-fill}` 迁移与回填（§5.3）；train 元数据 `cp`（不 `mv`）；`pyproject.toml` wheel packages 加 `src/robomme_hard`；`TIER_MAX_STEPS` | ★ `ABS_IMPORT`、★ `BORROWED_DEPS`、★ `REGISTRY_OWNER`、★ `NAMESPACE_OWNER`、★ `WRAPPER_CHAIN`、`SPECS_IDENTITY`、`DELIVERY_SET`、`S4_SUBSET`、`TIER_MAX_STEPS_SOURCE`、单局 `make_env_for_episode` 冒烟（官方态） | 否（U-3 已批覆盖项） | 12.206 |
 | 2 `scripts/` 重组 | 按 §3.5 与第二部分 1.3；先迁移符号与调用方，再删旧文件；`tests/` 三类处理 | `FREEZE_EQUIV`、`FREEZE_ONLY_JSONL`、`ROLLBACK_WRITE`、`STATE_MACHINE`、`NATIVE_SMOKE`、`HARD_EVAL_SMOKE`、`EVAL_PY_UPSTREAM`、`EVAL_HARD_DIFF`、`TESTS_COLLECT`、`git grep -n 'v4_specs\|v4_rollout\|v5_generation\|scripts.eval' -- scripts src tests` 零命中 | 否 | 12.207 |
 | 3 回退 `robomme` | 按固定 sha `1fadc0ec` 逐文件回退（清单逐文件批准，单独点名 `RecordWrapper.py` 5000→2000），删 9 个新增 utils，train 元数据回到 100 条 | `UPSTREAM_BYTES=PASS`；阶段 1、2 全部判定行在真实官方态下重跑仍 PASS（含本机冒烟，计入预算） | **是（P2 逐文件批准）** | 12.208 |
-| 4 三侧对拍 | GL 克隆准备（脏改动交用户处置）→ 三个占位 job 分片 → NFS 中转回 `/data` → bucket 上传并读回 → compare 四条边 → 回注 reset 13×3 + 16（从 20 局集每格取 candidate 最小的一局）→ **释放 `62126060`、`62126061`、`62018665`，保留 `62126062`（U-7）** | `PARITY_O_P`、`PARITY_P_H`（native／xhard）、`PARITY_O_H`、`ENV_PACKAGE_BINDING`、`HARD_RESET_REPLAY`、`BUCKET_SYNC`、`HOLD_RELEASE` | 否 | 12.209 |
+| 4 三侧对拍 | NFS 新 clone `robomme_benchmark-hs-gl`（U-17，旧克隆不动）→ 三个占位 job 分片（每片先 1 局 `SHARD_SMOKE`）→ NFS 中转回 `/data` → bucket 上传并读回 → `O:P --calibrate` 标定容差并交用户确认 → compare 四条边 → 回注 reset 13×3 + 16（S4 每格 candidate 最小局经 `S4_SUBSET` 映射）→ **释放 `62126060`、`62126061`、`62018665`，保留 `62126062`（U-7）** | `SHARD_SMOKE`、`PARITY_TOL_CALIB`、`PARITY_O_P`、`PARITY_P_H`（native／xhard）、`PARITY_O_H`、`ENV_PACKAGE_BINDING`、`HARD_RESET_REPLAY`、`BUCKET_SYNC`、`HOLD_RELEASE` | 否 | 12.209 |
 | 5 拆包留档 | `robomme_hard/README.md`、`scripts/README.md`、`parity/README.md`、`docs/validation/newtask-v6/hard-split/`、`AGENTS.md` P1 五入口（阶段 2 起即为五入口）、`CLAUDE.md` 核实清单 | `git diff --check` | 否 | 12.210 |
 | 6 评估准备 | benchmark 切两个 `PolicyEvalThirdParty-*` 分支并 push；两个策略仓库按 §八 从官方 main 切分支、改文件、push；NFS 上新 clone MME-VLA 并建两套环境；提交 10 个评估占位 job；每策略 1 局 GL smoke | `POLICY_DIFF` × 2、`SUBMODULE_PIN`、`EVAL_SMOKE` × 2 | 否 | 12.211（benchmark 侧只有分支与留档） |
 | 7 评估执行 | 第一轮：两个策略各 55 格 × 10 局，10 片并行；第二轮：余下 10 局；合并、分档统计 | `EVAL_ROUND1` × 2、`EVAL_ROUND2` × 2、`EVAL_BINDING` × 2、`EVAL_TIER_CAP` | 否 | 12.212 |
 | 8 评估留档与释放 | 两个策略仓库各自 `docs/eval-doc/`；本仓库 `docs/validation/newtask-v6/hard-split/stage7-eval.md`；`scancel` 10 个评估 job | `EVAL_HOLD_RELEASE`、`git diff --check` | 否 | 12.213 |
 
+- **开工方式（U-15）**：用户「现在不开工 统一开工」。各阶段不再逐个请示放行；用户说「开工」后按本表 0→8 连续执行。仍须单独请示的只有三处：阶段 3 的 `src/robomme` 逐文件 P2 批准、阶段 4 容差标定值确认（`PARITY_TOL_CALIB`）、任一判定 FAIL 的裁决。
 - 阶段 3 放在阶段 2 之后、阶段 4 之前：先让 `robomme_hard` 在官方态模拟下跑通，再回退 `robomme`；阶段 3 失败时只需回滚一个 commit。
 - 阶段 6 的分支切出依赖阶段 5 的 HEAD（子模块要指最终版）；策略仓库的代码改动可以在阶段 4 对拍跑着的时候先写，push 与 gitlink 等 HEAD 定了再做。
 - 实施完成后，实测结果以子节追加在本表之后，不改写原计划。
@@ -534,29 +559,29 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 
 **事实**：SimpleMemVLA 官方 `9fce41c`（`c564c17` 同）自带 `robomme_sim/`，其内嵌 `robomme_sim/robomme/` 与官方 benchmark `1fadc0ec` 逐文件比对，只差官方 benchmark 多一个杂散文件 `robomme_env/utils/vqa_options copy.py`，其余逐字节相同。所以它官方跑的环境就是本方案 G1 的锚点。`git diff --stat 9fce41c c564c17 -- robomme_sim pyproject.toml requirements.txt scripts` 为空（2026-09-27 核实）。
 
-### 8.1 SimpleMemVLA（官方文件改 3 个，约 36 行；其余新增）
+### 8.1 SimpleMemVLA（官方源码文件改 3 个，合计不超过 60 行；`pyproject.toml`、`.gitignore`、`.gitmodules` 为依赖／元数据改动另计；其余新增）
 
 | # | 文件 | 改什么 | 量 | 为什么 |
 |---|---|---|---|---|
-| 1 | `robomme_sim/robomme_env.py` | `_setup_robomme_path(benchmark_root)`：把 benchmark 的 `src/` 放到 `sys.path` 最前并断言已加载的 `robomme` 来源一致；`RoboMMESimEnv.__init__` 在 `dataset_split == "test-hard"` 时从 `robomme_hard.env_record_wrapper` 导入 builder；`reset` 先 `resolve_episode` 取 tier，再 `make_env_for_episode(ep, max_steps=TIER_MAX_STEPS[tier])`，把 `tier`、`max_steps`、`spec_binding`（读 `env.unwrapped._spec`）写进返回 info | ≤ 30 行 | 官方把 `sys.path` 指向内嵌副本，导不到 `robomme_hard`；按档步数只能逐局传 |
-| 2 | `robomme_sim/inproc_pool.py` | `InProcSimPool`、`SimEnvService` 透传 `benchmark_root` | 5 行 | 与 fork main 上的同 5 行 |
+| 1 | `robomme_sim/robomme_env.py` | `_setup_robomme_path(benchmark_root)`：把 benchmark 的 `src/` 放到 `sys.path` 最前并断言已加载的 `robomme` 来源一致；`RoboMMESimEnv.__init__` 在 `dataset_split == "test-hard"` 时从 `robomme_hard.env_record_wrapper` 导入 builder；`reset` 先 `resolve_episode` 取 tier，再 `make_env_for_episode(ep, max_steps=TIER_MAX_STEPS[tier])`，reset 之后调 `spec_binding(env)` 与 `resolve_identity(ep)`，把 `tier`、`max_steps`、`identity`、`spec_binding` 写进返回 info；**`SimEnvService.reset` 的返回字典同步透传这四个键，`max_steps` 用本局值而不是全局 `self.max_steps`（Codex #7）**；`SimEnvService.reset_retries` 置 0，重试只在外层计数 | ≤ 40 行 | 官方把 `sys.path` 指向内嵌副本，导不到 `robomme_hard`；按档步数只能逐局传；服务层原本重建返回字典会丢字段 |
+| 2 | `robomme_sim/inproc_pool.py` | `InProcSimPool`、`SimEnvService` 透传 `benchmark_root`，`reset_retries=0` | 6 行 | 与 fork main 上的同 5 行加一处 |
 | 3 | `robomme_sim/eval_success.py` | `--dataset_split` choices 加 `test-hard`；加 `--benchmark_root` | ≤ 6 行 | 只动参数解析，官方评估循环不碰 |
-| 4 | 新增 `robomme_sim/testhard_eval.py` | 按 `(task, episode)` 排序后轮转分片、逐条追加 `results-shardXXofNN.jsonl`、`--resume`、基础设施 error 每身份最多 3 次、`--round {1,2}` 取每格前 10 或后 10 局；步数上限直接读 `SimEnvService.reset` 返回的 `max_steps` | 约 130 行 | 官方 `eval_success` 无跨卡分片与断点续评；就是上次 `v6spec_eval.py` 去掉 `load_specs`／`from_v4_specs` |
-| 5 | 新增 `scripts/run_testhard.sh`、`scripts/gl_run_testhard.sh` | 两端共用启动包装、GL 占位 job 内 `srun` 包装（1 CPU、1 GPU、`--gpu_cmode=shared`、`--overlap --exact`） | 约 60 行 | 上次 `run_v6spec.sh`／`gl_run_v6spec.sh` 去掉 `SPECS` |
+| 4 | 新增 `robomme_sim/testhard_eval.py` | 身份序按 `(task, tier序, candidate)`，`--round {1,2}` 取每格 candidate 最小的前 10 或后 10 局，`--shard i/10` 取排序后下标 ≡ i (mod 10)；逐条追加 `results-shardXXof10.jsonl`，每行记 `episode`（builder 号）、`identity{tier,candidate,seed,spec_sha256}`、`max_steps`、`status`、`task_success`、`error_class`、`attempt`、`spec_binding`、`demo_frames`、`demo_tasks`；`--resume` 按身份判；基础设施 error 重跑计入每轮 55 次上限，满即退出并打 `RETRY_CAP_HIT`；步数上限、绑定四项逐局核「环境阈值 = 服务返回 = 策略循环上限 = 落盘值」，不等即 FAIL 该局记 error（Codex #7） | 约 160 行 | 官方 `eval_success` 无跨卡分片与断点续评；就是上次 `v6spec_eval.py` 去掉 `load_specs`／`from_v4_specs` |
+| 5 | 新增 `scripts/run_testhard.sh`、`scripts/gl_run_testhard.sh` | 两端共用启动包装（显式传 `--pretrained_checkpoint <绝对路径>`，Codex #4）、GL 占位 job 内 `srun` 包装（1 CPU、1 GPU、`--gpu_cmode=shared`、`--overlap --exact`） | 约 60 行 | 上次 `run_v6spec.sh`／`gl_run_v6spec.sh` 去掉 `SPECS` |
 | 6 | 新增 `.gitmodules` + gitlink `third_party/robomme_benchmark` | 指向 `hongzefu/robomme_benchmark_MotionJEPA` 的 `PolicyEvalThirdParty-simplememvla-<MMDD>-<HHMM>` | 2 项 | 官方无子模块；钉死 benchmark 版本 |
 | 7 | `pyproject.toml` | `robomme-sim` extra、ManiSkill fork 的 editable 源、`transformers==5.13.1` 约束 | 19 行 | 与 fork main 相同；不加则 `uv sync --exact` 会卸掉 ManiSkill，且 checkpoint 要求的 transformers 版本没钉死 |
 | 8 | `.gitignore` | `logs/`、`checkpoints/`、`.venv-robomme/` | 7 行 | 工作区干净 |
 | 9 | 新增 `docs/eval-doc/testhard-<MMDD>/` | 留档三件套 | 文档 | 规则 |
 
-### 8.2 MME-VLA（官方文件改 2 个，约 23 行；其余新增）
+### 8.2 MME-VLA（官方源码文件改 2 个，合计不超过 45 行；`.gitmodules` 为元数据改动另计；其余新增）
 
 | # | 文件 | 改什么 | 量 | 为什么 |
 |---|---|---|---|---|
-| 1 | `examples/robomme/env_runner.py` | 注册行 `from robomme.robomme_env import *` → `import robomme_hard.robomme_env`；builder 与 `TIER_MAX_STEPS` 从 `robomme_hard.env_record_wrapper` 导入；`dataset="test-hard"`；`make_env` 先 `resolve_episode` 取 tier，再 `make_env_for_episode(ep, max_steps=TIER_MAX_STEPS[tier])`，记 `self.tier`、`self.max_steps_for_episode`、`self.spec_binding` | ≤ 10 行 | 官方 `make_env_for_episode` 本来就有 `max_steps` 覆盖参数，只是 `env_runner` 没用 |
-| 2 | `examples/robomme/eval.py` | 超时判断 `epstate.count > self.args.max_steps` → 读 `env_runner.max_steps_for_episode`；加 `episode_start`、`max_episodes`、`episode_stride` 三个参数与集号列表（MotionJEPA 仓库 `scripts/training/legacy-eval/robomme-remote/eval.py` 已有同样改法）；`progress.json` 旁另写 `episodes.jsonl`（episode → tier、max_steps、steps、spec_binding） | ≤ 20 行 | 官方无分片，且步数上限是全局一个数 |
-| 3 | `.gitmodules` + gitlink `third_party/robomme_benchmark` | url `RoboMME/robomme_benchmark` → `hongzefu/robomme_benchmark_MotionJEPA`，分支 `PolicyEvalThirdParty-mmevla-<MMDD>-<HHMM>` | 2 项 | 官方 gitlink 指 `856bc3a`，没有 `robomme_hard` |
-| 4 | 新增 `scripts/gl_eval_shard.sh` | 同一张卡起 policy server 加仿真：端口占用守卫、`XLA_PYTHON_CLIENT_MEM_FRACTION=0.4`、`GLIBC_TUNABLES=glibc.rtld.optional_static_tls=16384`、`trap` 收 server、`EXIT_CODE=`；server 用 `--seed=7`（README 口径） | 约 100 行 | 照搬 MotionJEPA `eval_shard.remote.sh`，去掉 motion sidecar |
-| 5 | 新增 `scripts/merge_eval_shards.py` | 合并 10 片 `progress.json`／`episodes.jsonl`，按 tier 分档统计 | 约 50 行 | 每片独立输出目录 |
+| 1 | `examples/robomme/env_runner.py` | 注册行 `from robomme.robomme_env import *` → `import robomme_hard.robomme_env`；builder、`TIER_MAX_STEPS`、`spec_binding` 从 `robomme_hard.env_record_wrapper` 导入；`dataset="test-hard"`；`make_env` 先 `resolve_episode` 取 tier，再 `make_env_for_episode(ep, max_steps=TIER_MAX_STEPS[tier])`，记 `self.tier`、`self.max_steps_for_episode`、`self.identity = resolve_identity(ep)`；**`get_init_obs` 在 `env.reset()` 之后才调 `spec_binding(self.env)`**（取值点发生在 reset，Codex #5） | ≤ 12 行 | 官方 `make_env_for_episode` 本来就有 `max_steps` 覆盖参数，只是 `env_runner` 没用 |
+| 2 | `examples/robomme/eval.py` | 超时判断 `epstate.count > self.args.max_steps` → 读 `env_runner.max_steps_for_episode`；加 `episode_start`、`max_episodes`、`episode_stride` 三个参数与集号列表（MotionJEPA 仓库 `scripts/training/legacy-eval/robomme-remote/eval.py` 已有同样改法）；`progress.json` 旁另写 `episodes.jsonl`，每局一行 `{episode, identity, tier, max_steps, steps, status, task_success, error_class, attempt, spec_binding, demo_frames}`（Codex #8：终态与错误类别不压成布尔）；已有 `log.json` 时不跳过，续评按 `episodes.jsonl` 里的身份判；只有 `error_class` 属基础设施类才重试 | ≤ 30 行 | 官方无分片，步数上限是全局一个数，error 会被压成失败布尔且已有 `log.json` 会直接跳过 |
+| 3 | `.gitmodules` + gitlink `third_party/robomme_benchmark` | url `RoboMME/robomme_benchmark` → `hongzefu/robomme_benchmark_MotionJEPA`，分支 `PolicyEvalThirdParty-mmevla-<MMDD>-<HHMM>`；**gitlink 必须显式移动**：`git submodule sync && git submodule update --init`，进子模块 `git checkout <拆包后 HEAD 40 位 sha>`，回到根 `git add third_party/robomme_benchmark` 提交（Codex #8：只改 `.gitmodules` 不会动官方旧 gitlink `856bc3a`） | 2 项 | 官方 gitlink 指 `856bc3a`，没有 `robomme_hard` |
+| 4 | 新增 `scripts/gl_eval_shard.sh` | 同一张卡起 policy server 加仿真：端口占用守卫、`XLA_PYTHON_CLIENT_MEM_FRACTION=0.4`、`GLIBC_TUNABLES=glibc.rtld.optional_static_tls=16384`、`trap` 收 server、`EXIT_CODE=`；server 命令写全 `uv run scripts/serve_policy.py --seed=7 --port=$PORT policy:checkpoint --policy.dir=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_policy_learning-frameSamp-continue/runs/ckpts/perceptual-framesamp-modul/79999 --policy.config=mme_vla_suite`（Codex #4：不写 `policy:checkpoint` 会加载默认基础权重）；等端口时同时 `kill -0 $SERVER_PID`，server 就绪上限 20 分钟，首次推理单独放宽 10 分钟，单局无进展（`episodes.jsonl` mtime）30 分钟即杀掉重起并记基础设施 error（Codex #8） | 约 120 行 | 照搬 MotionJEPA `eval_shard.remote.sh`，去掉 motion sidecar |
+| 5 | 新增 `scripts/merge_eval_shards.py` | 合并 10 片 `episodes.jsonl`，按 tier 分档统计；与 `eval-identities-1100.jsonl` 双向比对出 `EVAL_IDENTITY_SET`，逐片核 55 局、两轮互斥 | 约 80 行 | 每片独立输出目录 |
 | 6 | 新增 `docs/eval-doc/…` | 留档 | 文档 | 规则 |
 
 `scripts/serve_policy.py`、`src/` 下模型代码、`examples/robomme/utils.py` 一行不动。环境：新 clone 要在 NFS 上重建 uv 的 JAX 环境（续训检出实测 208 个包、约 3 分钟安装）与装了 benchmark editable 的 `robomme` Python 环境；benchmark 的 wheel packages 必须含 `src/robomme_hard`（阶段 1），否则 `pip install -e` 装出来导不到它。
@@ -590,7 +615,10 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 - R17 **策略仓库改动边界（E-21）**：两个策略分支只改第一部分 §八 列出的文件；不改模型、推理、server、训练代码；官方原有文件的改动行数不超过表中上限（`POLICY_DIFF`）；分支只推到 U-8 指定的两个 fork，不推官方远端；本机 `robomme_policy_learning-vqa-test` 的在途改动一律不碰。
 - R18 **占位 job 释放清单（U-7、E-22）**：阶段 4 末只 `scancel 62126060 62126061 62018665`，逐个、名字写全、删前删后各 `squeue -u hongzefu` 一次；`62126062` 全程保留；评估 job 只按阶段 6 记入 `stage6-eval-prep.md` 的 10 个 JobID 逐个取消；禁止 `scancel -u`。
 - R19 **步数上限按档（U-6）**：`TIER_MAX_STEPS` 四个值 1500/1700/2000/2600 不得在评估脚本里被覆盖或放宽；每局结果必须记录实际生效的 `max_steps`（`EVAL_TIER_CAP`）；上次的加长步数重测不在本方案范围。
-- R20 **评估不重试挑成功**：fail／timeout 一律如实记录；只有基础设施 error（reset 抛错、Vulkan 建设备失败、server 断连、进程超时）允许重跑，每身份最多 3 次尝试并记原因与次数；两轮各 550 局跑完就算完，不补局（用户「这次20局跑完不补了」）。
+- R20 **评估不重试挑成功**：fail／timeout 一律如实记录；只有基础设施 error（reset 抛错、Vulkan 建设备失败、server 断连、进程超时）允许重跑，每身份最多 3 次尝试、每策略每轮合计最多 55 次（U-14），并记原因与次数；两轮各 550 局跑完就算完，不补局（用户「这次20局跑完不补了」）。
+- R21 **容差层阈值只认配置文件（U-19）**：对拍容差层的四个阈值只从 `scripts/configs/hard-parity-tolerances.json` 读，文件进 git；`compare` 不提供命令行覆盖；标定值由 `--calibrate` 写入后须经用户确认（原始分布一并交），确认后才跑 `P:H`、`O:H`；改阈值就是改文件并写进留档与 commit body。
+- R22 **记录点容差（U-13 方案甲）**：`spec_binding()` 只对 trace 里 `source="record"` 的路径允许浮点差 ≤ 1e-5，`source="spec"` 的回注点必须逐位相等；容差常量定义在 `robomme_hard.env_record_wrapper.hard_specs.RECORDED_FLOAT_TOL = 1e-5`，不做参数。任何 `injected_mismatch > 0` 即 FAIL。
+- R23 **统一开工（U-15）**：用户说「开工」前不执行任何写入仓库或集群的动作；开工后按步骤表连续执行，只在 R10 的 P2 批准、R21 的容差确认、任一 FAIL 三处停下请示。
 
 ## 一、逐阶段、逐文件改动清单
 
@@ -619,7 +647,9 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | `env_record_wrapper/OraclePlannerDemonstrationWrapper.py` | cp | 顶部 `from robomme.robomme_env.utils.vqa_options` → `robomme_hard.` |
 | `env_record_wrapper/{EndeffectorDemonstrationWrapper,FailAwareWrapper,MultiStepDemonstrationWrapper,episode_dataset_resolver}.py` | 新写 | shim × 4 |
 | `env_record_wrapper/hard_specs.py` | 从 `scripts/parity/v4_specs.py` 下沉 | 搬 `HEADER_KEYS`、`canonical_json`、`digest`、`identity_sha256`（按 §5.3 口径）、`delivery_sha256`（新增）、`seed_rule_for`、`_known_seed_rule`、`seed_for`、`DIFFICULTY`、`load_specs`、`RUNTIME`；新增 `base_fingerprint()`／`hard_fingerprint()`、`TIER_MAX_STEPS = {"xhard1": 1500, "xhard2": 1700, "xhard3": 2000, "xhard4": 2600}`（值抄自 `scripts/eval/v4_eval.py::NEWVALUE_MAX_STEPS`，删除前 `cmp`）；指纹不符只 `warnings.warn`；`draw`/`freeze` 不搬 |
-| `env_record_wrapper/hard_builder.py` | 新写 | 第一部分 §4.2：`_ALLOWED = {train,test,val,test-hard}`；覆写 `__init__`、`_resolve_metadata_path`、`resolve_episode`、`get_episode_num`、`make_env_for_episode`（整段，包装链照官方、全部绝对导入 `robomme_hard` 的 wrapper；`max_steps` 覆盖参数语义与官方相同：传了就用 `max_steps+2`，不传用构造值）；每档每任务行数断言 `== header.delivery_per_cell or == 0`；`from_v4_specs` 保留为薄包装 |
+| `env_record_wrapper/hard_builder.py` | 新写 | 第一部分 §4.2：`_ALLOWED = {train,test,val,test-hard}`；覆写 `__init__`、`_resolve_metadata_path`、`resolve_episode`、`get_episode_num`、`make_env_for_episode`（整段，包装链照官方、全部绝对导入 `robomme_hard` 的 wrapper；`max_steps` 覆盖参数语义与官方相同：传了就用 `max_steps+2`，不传用构造值）；行数断言对照模块常量 `EXPECTED_CELLS`（55 格表）：表内格 `== header.delivery_per_cell`，表外格 `== 0`；新增只读 `resolve_identity(episode) -> dict`；`from_v4_specs` 保留为薄包装 |
+| `env_record_wrapper/hard_specs.py`（续） | 同上 | 新增 `RECORDED_FLOAT_TOL = 1e-5` 与 `spec_binding(env) -> dict`（R22；按 `SpecRecorder.trace` 的 `source` 分类 mismatch，输出 `available/mode/spec_kind/spec_sha256/value_points/injected_mismatch/recorded_drift/recorded_max_abs/unused`），从 `env_record_wrapper` 导出供策略仓库调用（Codex #5） |
+| `env_metadata/test-hard/s4-setup-manifest.json` | 阶段 1 由 `migrate_smvla_specs.py --export-s4-setup` 生成 | S4 165 局 h5 的 `setup` 字段（seed、difficulty、`task_goal`、多选项、相机内参）与 h5 sha256，供 GL 节点上的 `HARD_RESET_REPLAY` 比对（GL 读不到 `/data`，Codex #12） |
 | `env_record_wrapper/__init__.py` | 新写 | `from .RecordWrapper import *`、`from .DemonstrationWrapper import *`、`BenchmarkEnvBuilder`、`hard_specs`、`TIER_MAX_STEPS` + 借用 re-export |
 | `__init__.py` | 新写 | 顺序：读 `UPSTREAM.json` → 检查官方是否已导入（warn）→ `from mani_skill import logger` 临时提到 ERROR → `from . import robomme_env` → `finally` 恢复 → 遍历 `ENV_IDS` 断言注册归属 → 命名空间归属断言 → shim cheap 校验（warn） |
 | `env_metadata/test-hard/xhard{1..4}/specs.jsonl` | `git show 1fe2d185:scripts/configs/newtask-v6/smvla-0927{,-fill}/<tier>/specs.reselected.jsonl`（六份）迁移 | 第一部分 §5.3「迁移」：同档两份来源合并、同 seed 去重；`candidate ← episode`、`difficulty → tier`；从 `artifacts/newtask-v6/smvla-0927{,-fill}/<tier>/rollout/run1/results.jsonl` 回填 `rollout`（逐局核对 h5 存在并重算 sha256／bytes／frames）；`selected` 只对 `eval-identities-1100.jsonl` 里的身份为真，每格恰好 20；写 `tried`／`initial_selected`；header：`delivery_per_cell=20`、`identity_source`、`source_files`、`eval_identities_sha256`、`dedup_dropped`，`draw_stats` 从六份 `draft/drafts.jsonl` 重建，`legacy_identity_sha256` 放顶层（六个值列表），`provenance` 块；`schema` → `hard-specs/2`；新口径重算 `identity_sha256`／`delivery_sha256`。迁移脚本放 `scripts/injection-dev/migrate_smvla_specs.py`（一次性入口，路径直跑） |
@@ -648,7 +678,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | `parity/train_split_runner.py` | 现有 | `--official-root` 默认 `scripts/parity/official`；`.official_tree` 校验改读 `official/SOURCE.json["tree"]`；新增 `--metadata-root`（默认 `scripts/configs/newtask-v3/official_train`，核 sha），显式传给 `read_train_metadata(metadata_root)`；`--src-root` 在 vendor 默认下必填；formula 分支的 `from scripts.parity.v4_specs import …` 改为在分支内延迟 `from robomme_hard.env_record_wrapper.hard_specs import DIFFICULTY, _known_seed_rule, seed_for`；透传 `ROBOMME_ENV_PACKAGE`；逐局追加 `results.partial.jsonl` 并 fsync，`--resume` |
 | `parity/hard_parity.py` | 现有，重构为三侧入口 | 见下方三个子命令；运行前断言 `nvidia-smi` 型号 = A40、驱动与 manifest 所记一致，否则拒跑；子进程环境沿用现有 `child_env()` 的 `OMP_NUM_THREADS=1 MKL_NUM_THREADS=1` |
 | `parity/upstream_guard.py` | 新写 | 第一部分 §3.4；`--manifest-md` 输出 README ③表；阶段 3 前输出 `PENDING` |
-| `parity/hard_regression.py` | 新写 | `reset-replay`（13×3 + 16 = 55 次，每格取 20 局集里 candidate 最小的一局，经 `hard_builder.make_env_for_episode` + reset，比对 `SpecRecorder` 导出、`task_goal`、多选项与该局 h5 `setup`；`SpecRecorder` 本体在 `robomme_hard.robomme_env.utils.episode_spec`，不再依赖 `v4_eval._binding`；`spec_binding()` 辅助函数从这里导出给策略仓库用）；`eval-smoke`（本机 1 任务 × 1 档 × 1 局）；`xhw-reference`（§6.2）；`s4-subset`（纯 CPU，`S4_SUBSET`） |
+| `parity/hard_regression.py` | 新写 | `reset-replay`（13×3 + 16 = 55 次，从 S4 每格取 candidate 最小的成功局，经 `S4_SUBSET` 映射到 20 局集的 builder episode 号，经 `hard_builder.make_env_for_episode` + reset，用包内 `spec_binding()` 摘要，`task_goal`、多选项与 `s4-setup-manifest.json` 逐字比）；`eval-smoke`（本机 1 任务 × 1 档 × 1 局）；`xhw-reference`（§6.2）；`s4-subset`（纯 CPU：seed 匹配 + 回注点逐位 + 记录点 ≤ `RECORDED_FLOAT_TOL`，输出 `S4_SUBSET` 与映射表 `s4-to-delivery.json`） |
 | `evaluation_hard.py` | `cp scripts/evaluation.py` | import 行、`dataset="test-hard"`、循环里加 `resolve_episode` 取 tier、`make_env_for_episode(episode, max_steps=TIER_MAX_STEPS[tier])` 共 4 行（第一部分 §4.3） |
 | 删除（最后执行） | `git rm` `parity/{v4_specs,v4_rollout,v5_generation,legacy_keep_list}.py`、`parity/{identities_16x3.txt,manifest_16x3.json}`、`scripts/eval/`、`configs/newtask-v4/`、`configs/newtask-v5/`、`configs/newtask-v6/{sampling_config.json,v6-01/}`；`rm -r` 未跟踪 `scripts/injection/`（先列清单）；`parity/results/`（被 ignore，内有 aspen 16x3 的 `run.log`、`B.log`）**本方案不删**，列清单交用户 | `ls -1 scripts/*.py` = 5；`git grep` 零命中 |
 | `tests/**` | 现有 | 分三类逐文件列清单：① 模块级导入已删／已搬脚本（8 个文件、共 30 处）→ 改路径或删除该测试；② 子模块路径导入 wrapper → 改包级导入，或靠 4 个 wrapper shim 解析；③ `importlib.import_module("robomme.robomme_env.<Task>")` 字符串导入（34 处）与按路径读文件 → 逐条决定测 `robomme_hard` 还是有意测官方，有意测官方的加注释；不做整目录 sed |
@@ -662,7 +692,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
   - xhard 走 `injection-dev/generate_h5.py --mode replay --identities <S4 交付>`；
   - 每局写 `identities.jsonl` 行，完成即 sha + rsync 到 NFS 暂存。
 - **`publish --side … --bucket HongzeFu/robomme-hard-parity`**：在 sled-vail 上跑，从 `/data` 上传，写 `SHA256SUMS`、`manifest.json`，逐对象读回核对。
-- **`compare --pair {O:P,P:H,O:H} --tier … --manifest <清单>`**：按身份键对齐后做判定层与参考层（第一部分 §5.4），落 `compare/h5_pairs.jsonl`。
+- **`compare --pair {O:P,P:H,O:H} --tier … --manifest <清单> [--calibrate]`**：先做每侧自检，再按身份键对齐做判定层、容差层、参考层（第一部分 §5.4），落 `compare/h5_pairs.jsonl`（逐身份四项指标与首个分叉步）。`--calibrate` 只允许 `O:P`：不判容差层，输出四项指标的 p95／最大值，把「最大值 × 1.5」写入 `scripts/configs/hard-parity-tolerances.json`（键 `action_max_rad`、`state_max`、`image_mad`、`frames_max`、`calibrated_from`、`n`、`raw_p95`、`raw_max`），打印 `PARITY_TOL_CALIB`；非 calibrate 模式读该文件，缺文件即拒跑（R21）。
 
 ### 1.4 阶段 3：`src/robomme/`（P2）
 
@@ -679,8 +709,8 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 |---|---|
 | benchmark：`PolicyEvalThirdParty-simplememvla-<MMDD>-<HHMM>`、`PolicyEvalThirdParty-mmevla-<MMDD>-<HHMM>` | 从阶段 5 HEAD `git branch` 两个分支并 `git push -u origin <分支>`；不加任何提交（两个策略的子模块指同一个 commit） |
 | SimpleMemVLA（NFS 检出，`origin` = `hongzefu/SimpleMemVLA`） | `git remote add upstream https://github.com/OpenBMB/SimpleMemVLA.git && git fetch upstream main`；确认 `upstream/main == c564c17`（`git ls-remote` 复核，不一致即停交用户）；`git checkout -b testhard-eval-<MMDD>-<HHMM> c564c17`；按第一部分 §8.1 的 9 项改；`git submodule add -b PolicyEvalThirdParty-simplememvla-<MMDD>-<HHMM> https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git third_party/robomme_benchmark`（目录已存在时先 `git submodule deinit`／移走旧目录，不删 `.venv-robomme`）；`git push -u origin <分支>` |
-| MME-VLA（NFS 新 clone `<NFS>/robomme_policy_learning-official-testhard/`） | `git clone https://github.com/RoboMME/robomme_policy_learning.git` 并核 `origin/main == ecf086c`；`git remote add fork https://github.com/hongzefu/robomme_policy_learning_MotionJEPA.git`；`git checkout -b official-testhard-eval-<MMDD>-<HHMM> ecf086c`；按 §8.2 的 6 项改；`.gitmodules` url／branch 改后 `git submodule sync && git submodule update --init`；`git push -u fork <分支>` |
-| MME-VLA 环境 | `UV_LINK_MODE=copy uv sync`（JAX 侧，参照续训检出 `.venv` 的 208 包）；`robomme` 环境：`uv venv --python 3.11 robomme_env && uv pip install -r examples/robomme/requirements.txt -e third_party/robomme_benchmark -e packages/openpi-client`（临时评估环境，按第 3 条例外不改 `pyproject.toml`）；`robomme_env/bin/python -c "import robomme_hard"` 必须通过 |
+| MME-VLA（NFS 新 clone `<NFS>/robomme_policy_learning-official-testhard/`） | `git clone https://github.com/RoboMME/robomme_policy_learning.git` 并核 `origin/main == ecf086c`；`git remote add fork https://github.com/hongzefu/robomme_policy_learning_MotionJEPA.git`；`git checkout -b official-testhard-eval-<MMDD>-<HHMM> ecf086c`；按 §8.2 的 6 项改；`.gitmodules` url／branch 改后 `git submodule sync && git submodule update --init`，进 `third_party/robomme_benchmark` 执行 `git checkout <拆包后 HEAD 40 位 sha>`，回根目录 `git add .gitmodules third_party/robomme_benchmark` 提交，`git ls-tree HEAD third_party/robomme_benchmark` 必须等于该 sha（Codex #8）；`git push -u fork <分支>` |
+| MME-VLA 环境 | `UV_LINK_MODE=copy uv sync`（JAX 侧，参照续训检出 `.venv` 的 208 包）；`robomme` 环境：`uv venv --python 3.11 robomme_env && uv pip install -r examples/robomme/requirements.txt -e third_party/robomme_benchmark -e packages/openpi-client`，随后 `uv pip freeze > robomme_env.lock.txt` 提交到分支作为可复现依赖声明（临时评估环境，按第 3 条例外不改根 `pyproject.toml`）；预检一律用 **`robomme_env/bin/python -c "import robomme_hard, robomme; print(robomme_hard.__file__)"`**，不用根项目 `uv run`（Codex #8：那是另一个解释器） |
 | 评估占位 job × 10 | `sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --gpu_cmode=shared --cpus-per-task=1 --mem=32G --time=48:00:00 --job-name=hs-eval-<k> --wrap='sleep infinity'`，k=1..10；JobID 逐个记入 `stage6-eval-prep.md`；只在 `HOLD_RELEASE=PASS` 之后提交（配额），超过 4 个属第 8 条「数量超默认」，本方案已由用户「eval使用10卡并行 greatlake hold 48h」授权 |
 | smoke | 每策略 1 局（BinFill@xhard1 第 0 局）在第一个到 RUNNING 的评估 job 里跑，记 `EVAL_SMOKE` |
 
@@ -693,9 +723,10 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | `UPSTREAM_BYTES`、`VENDOR_SAME`、`ABS_IMPORT`、`BORROWED_DEPS` | `upstream_guard.py` |
 | `REGISTRY_OWNER`、`NAMESPACE_OWNER` | `tests/lightweight/test_registry_owner.py`（三种导入顺序各用 `subprocess` 起一个进程） |
 | `WRAPPER_CHAIN` | `tests/lightweight/test_wrapper_chain.py`（需要 GPU，标 `gpu`） |
-| `SPECS_IDENTITY`、`DELIVERY_SET`、`S4_SUBSET`、`FREEZE_EQUIV`、`TIER_MAX_STEPS_SOURCE` | 阶段 1、2 一次性核对脚本（`migrate_smvla_specs.py --check`、`hard_regression.py s4-subset`），命令与输出进 `stage1.md`／`stage2.md` |
+| `SPECS_IDENTITY`、`SOURCE_POOL`、`DELIVERY_SET`、`H5_BINDING`、`S4_SUBSET`、`FREEZE_EQUIV`、`TIER_MAX_STEPS_SOURCE` | 阶段 1、2 一次性核对脚本（`migrate_smvla_specs.py --check`、`hard_regression.py s4-subset`），命令与输出进 `stage1.md`／`stage2.md` |
+| `SHARD_SMOKE`、`PARITY_TOL_CALIB` | `hard_parity.py generate --smoke 1`、`compare --pair O:P --calibrate`，原文进 `stage4.md`，标定分布交用户确认 |
 | `POLICY_DIFF`、`SUBMODULE_PIN` | 阶段 6 在两个策略检出里跑 `git diff --stat` 与 `git ls-tree`，原文进 `stage6-eval-prep.md` |
-| `EVAL_SMOKE`、`EVAL_ROUND1`、`EVAL_ROUND2`、`EVAL_BINDING`、`EVAL_TIER_CAP` | SimpleMemVLA `testhard_eval.py` 与 MME-VLA `merge_eval_shards.py` 各自输出；汇总进 `stage7-eval.md` |
+| `EVAL_SMOKE`、`EVAL_ROUND1`、`EVAL_ROUND2`、`EVAL_IDENTITY_SET`、`EVAL_BINDING`、`EVAL_TIER_CAP`、`EVAL_DEMO_FRAMES` | SimpleMemVLA `testhard_eval.py` 与 MME-VLA `merge_eval_shards.py` 各自输出；汇总进 `stage7-eval.md` |
 | `HOLD_RELEASE`、`EVAL_HOLD_RELEASE` | 删前删后 `squeue -u hongzefu` 原文进 `stage4.md`／`stage7-eval.md` |
 | `FREEZE_ONLY_JSONL`、`ROLLBACK_WRITE` | `injection-dev` 入口的 `--self-check` |
 | `STATE_MACHINE` | `tests/lightweight/test_hard_state_machine.py`（纯 CPU 夹具） |
@@ -707,7 +738,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 
 ## 三、预算与 runbook
 
-### 3.1 预算（P3：实施前一次性向用户申请；全部按乘式；reset 与 rollout 分别计上限，轨迹内 reset 不另计）
+### 3.1 预算（P3；**用户 2026-09-28「2同意」已一次性批准（U-14）**；全部按乘式；reset 与 rollout 分别列上限、分别与阈值比较，每次 rollout 尝试计一次 reset，Codex #10）
 
 | 项 | 乘式 | rollout 上限 | reset 上限 | worker | 硬件 |
 |---|---|---|---|---|---|
@@ -722,19 +753,22 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | P 侧原三档 | 16 × 3 × 3 | 144 | 0 | 16 | A40 |
 | H 侧原三档 | 16 × 3 × 3 | 144 | 0 | 16 | A40 |
 | H 侧 xhard（按 S4 交付身份重放，不递补） | 13 × 3 × 3 + 16 × 3 | 165 | 0 | 16 | A40 |
+| 片前冒烟 `SHARD_SMOKE` | 3 片 × 1 局 | 3 | 0 | 16 | A40 |
 | 基础设施重跑上限 | 每身份最多 1 次，合计上限 | 30 | 0 | 16 | A40 |
 | `HARD_RESET_REPLAY` | 13 × 3 + 16（经评估链，含演示回放） | 0 | 55 | 1 | A40 |
-| **生成侧合计** | | **本机 8 + A40 597 + 基础设施重跑 30 = 最多 635** | **本机 22 + A40 55 = 最多 77** | | |
+| **生成侧合计** | | **本机 8 + A40 600 + 基础设施重跑 30 = 最多 638** | **纯 reset 77 + 每次 rollout 尝试各一次 638 = 最多 715** | | |
 
-**评估侧（策略 rollout，用户已按「eval使用10卡并行」「先各做55*10 然后在做10」授权；不是数据生成，单列不并入上表）**：
+**评估侧（策略 rollout；U-14 已批准；不是数据生成，单列不并入上表；服务内部 reset 重试关闭，一局一次 reset）**：
 
-| 项 | 乘式 | 评估局数 | 卡 |
-|---|---|---|---|
-| smoke | 2 策略 × 1 任务 × 1 档 × 1 局 | 2 | 评估 job 各 1 张 |
-| 第一轮 | 2 策略 × 55 格 × 10 局 | 1100 | 10 × A40 |
-| 第二轮 | 2 策略 × 55 格 × 10 局 | 1100 | 10 × A40 |
-| 基础设施 error 重跑上限 | 每身份 ≤ 3 次尝试，合计上限 | 2 × 1100 × 2 = 4400 次额外尝试的理论上限；实际以结果文件计 | 同上 |
-| **评估合计** | | **2202 局 + 重跑** | |
+| 项 | 乘式 | 评估局数 | reset | 卡 |
+|---|---|---|---|---|
+| smoke | 2 策略 × 1 任务 × 1 档 × 1 局 | 2 | 2 | 评估 job 各 1 张 |
+| 第一轮 | 2 策略 × 55 格 × 10 局 | 1100 | 1100 | 10 × A40 |
+| 第二轮 | 2 策略 × 55 格 × 10 局 | 1100 | 1100 | 10 × A40 |
+| 基础设施 error 重跑硬上限 | 每策略每轮 ≤ 55 次（10%），2 策略 × 2 轮 | 220 | 220 | 同上 |
+| **评估合计** | | **最多 2422** | **最多 2422** | |
+
+- 重跑硬上限用满即 `RETRY_CAP_HIT`，该片停下交用户，不自动扩到「每身份 3 次」推出的 4400。
 
 - **不另计的**：`STATE_MACHINE`、`FREEZE_EQUIV`、`SPECS_IDENTITY`、`DELIVERY_SET`、`S4_SUBSET`、`TIER_MAX_STEPS_SOURCE`、`XHW_REFERENCE` 都不起仿真；P 侧 xhard 复用 S4 存档；20 局 jsonl 迁移不起仿真（U-5）。
 - **原 0926 计划 D 项授权的 V1′ 144 局**（Ada 侧 vs S0 基线）作废不跑。
@@ -751,7 +785,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 **前置**：
 
 1. 三个 `hs-hold` job 存活，且剩余 ≥ 6 小时（`squeue -u hongzefu -o '%i %L'`）；任一到期即停下交用户，不自行 sbatch。
-2. **GL 克隆准备**：克隆当前在 `1bb4190`，有 93 处脏改动（76 M，blob 等于 `ca32e9b`，是早先同步留下的；17 ??）。先把 `git status --short` 原文与 blob 比对结果交用户处置，不 stash、不 checkout 覆盖；获准后经 NFS 从本机 fetch 拆包后 HEAD 与 tag，再切到 HEAD，并 `git worktree add <NFS>/hs-p-side pre-hard-split`、`git worktree add <NFS>/hs-o-side 1fadc0ec…`。
+2. **GL 克隆准备（U-17「新clone」）**：旧克隆 `robomme_benchmark-newtask-gl`（`1bb4190`，93 处脏改动）一律不动。新 clone `<NFS>/robomme_benchmark-hs-gl`：`git clone https://github.com/hongzefu/robomme_benchmark_MotionJEPA.git -b newtaskRelease-v5`，`git checkout <拆包后 HEAD 40 位 sha>`，`UV_LINK_MODE=copy UV_CACHE_DIR=$HOME/.cache/uv uv sync`（解释器用 NFS 上已有的 uv managed Python），`git worktree add <NFS>/robomme_benchmark-hs-gl-p pre-hard-split`、`git worktree add <NFS>/robomme_benchmark-hs-gl-o 1fadc0ec…`；`git status --short` 必须为空才起跑（R12）。
 3. `.venv` 的 editable `.pth` 是纯路径条目，`src/robomme_hard` 自动可导入；在计算节点上用 `uv run --frozen --no-sync python -c "import robomme_hard"` 核对，不在计算节点装依赖。
 4. `df` 断言：节点 `/tmp` ≥ 160 GB；NFS 暂存余量 ≥ 100 GB（在途最多 16 worker × 约 1.5 GB × 3 片）；`/data` ≥ 400 GB。
 
@@ -796,9 +830,10 @@ uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier 
 **前置**：`HOLD_RELEASE=PASS`；10 个评估 job 至少 1 个 RUNNING 才能 smoke，全部 RUNNING 才起第一轮；两个策略分支已 push，`SUBMODULE_PIN=PASS`；GL 计算节点上 `uv run --frozen --no-sync python -c "import robomme_hard"`（SimpleMemVLA 用 `.venv-robomme`，MME-VLA 用 `robomme_env`）通过。
 
 **分片与轮次**：
-- 身份序：每策略把 1100 局按 `(task, tier序, candidate)` 排序；第一轮取每格 candidate 最小的 10 局，第二轮取余下 10 局；片 `i/10` 取排序后下标 `≡ i (mod 10)` 的局。
-- SimpleMemVLA：GL 登录节点 tmux `hs-eval-smvla-r<轮>-s<i>`，会话内 `bash scripts/gl_run_testhard.sh <JobID_i> <i>/10 <RUN_TAG> --round <轮>`；每片写 `logs/testhard/<RUN_TAG>/results-shard<i>of10.jsonl`；片内 error 身份靠 `--resume` 下一轮重跑，`gl_run_testhard.sh` 最多 3 轮。
-- MME-VLA：同一批 10 个 job，SimpleMemVLA 某轮 10 片全部 `EXIT_CODE=0` 后再起（同卡串接，不并发）；tmux `hs-eval-mmevla-r<轮>-s<i>`，会话内 `srun --jobid=<JobID_i> --overlap --exact --ntasks=1 --cpus-per-task=1 --gpu_cmode=shared bash scripts/gl_eval_shard.sh`，环境变量 `SHARD=<i> NSHARD=10 ROUND=<轮> PORT=$((8100+i))`；server `--seed=7`，eval `--args.model_seed=7 --args.model_ckpt_id=79999 --args.save_dir=<NFS>/eval-out/mmevla-r<轮>-s<i>`。
+- 身份序：builder 给每任务的 episode 号是 tier 主序（xhard1 的 20 局是 0..19，xhard2 是 20..39，依此类推；xhard4-only 任务只有 0..19），档内按 candidate 升序。第一轮取每档前 10（每任务 episode `{0..9, 20..29, 40..49, 60..69}`），第二轮取每档后 10。
+- SimpleMemVLA：`testhard_eval.py --round <轮> --shard <i>/10`，片 `i` 取该轮身份按 `(task, episode)` 排序后下标 ≡ i (mod 10) 的局；GL 登录节点 tmux `hs-eval-smvla-r<轮>-s<i>`，会话内 `bash scripts/gl_run_testhard.sh <JobID_i> <i>/10 <RUN_TAG> --round <轮>`；每片写 `logs/testhard/<RUN_TAG>/results-shard<i>of10.jsonl`；片内 error 身份靠 `--resume` 下一轮重跑，`gl_run_testhard.sh` 最多 3 轮，受每轮 55 次重跑上限约束。
+- MME-VLA：同一批 10 个 job，SimpleMemVLA 某轮 10 片全部 `EXIT_CODE=0` 后再起（同卡串接，不并发）；片 `i`（0..9）、轮 `r`（1..2）用官方 `eval.py` 新增的三个参数表达：`episode_start = 10 × (r − 1) + i`、`episode_stride = 20`、`max_episodes = 0`；于是每片每任务在 80 局的任务里取 `{i, i+20, i+40, i+60}`（第一轮）或 `{10+i, 30+i, 50+i, 70+i}`（第二轮），在 20 局的任务里取 `{i}` 或 `{10+i}`，每片 13 × 4 + 3 × 1 = 55 局（Codex #6）；tmux `hs-eval-mmevla-r<轮>-s<i>`，会话内 `srun --jobid=<JobID_i> --overlap --exact --ntasks=1 --cpus-per-task=1 --gpu_cmode=shared bash scripts/gl_eval_shard.sh`，环境变量 `SHARD=<i> ROUND=<r> PORT=$((8100+i))`；server 命令按 §8.2 第 4 项写全，eval `--args.model_seed=7 --args.model_ckpt_id=79999 --args.episode_start=$((10*(ROUND-1)+SHARD)) --args.episode_stride=20 --args.max_episodes=0 --args.save_dir=<NFS>/eval-out/mmevla-r<轮>-s<i>`。
+- 逐片验收：每片结束核 `episodes.jsonl` 行数 = 55 且身份互不重复；每轮 10 片并集 = 550；两轮并集 = 1100 且与 `eval-identities-1100.jsonl` 双向全等（`EVAL_IDENTITY_SET`）。
 - 顺序：SimpleMemVLA 第一轮 → MME-VLA 第一轮 → SimpleMemVLA 第二轮 → MME-VLA 第二轮（U-9）。第一轮两策略都出 `EVAL_ROUND1=PASS` 后才起第二轮。
 - **Monitor**：一份日志一个 Monitor，过滤词 `EPISODE_START|status=|EXIT_CODE=|Traceback|out of memory|svulkan2|EXCLUSIVE|ErrorIncompatibleDriver|API calling error|did not receive a valid HTTP response|=PASS|=FAIL`。
 - **产物回收**：结果 jsonl／`progress.json`／`episodes.jsonl` 从 NFS `cp` 回本机两个策略仓库留档目录后删 NFS 副本；评估视频只留每格 1 条（SimpleMemVLA `--video_max_per_task 1`；MME-VLA 官方每局都存视频，片结束后只保留每格第一条、其余删除并记数）。
@@ -831,6 +866,9 @@ uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier 
 | 20 | 官方 `pip install -e third_party/robomme_benchmark` 装不出 `robomme_hard` | 阶段 1 wheel packages 加 `src/robomme_hard`；阶段 6 `robomme_env/bin/python -c "import robomme_hard"` 不过即停 |
 | 21 | 两个策略分支 push 到 fork 的远端已有同名分支 | 名字带 `<MMDD>-<HHMM>`，push 前 `git ls-remote` 核对不存在；被拒即停，不 force |
 | 22 | `OpenBMB/SimpleMemVLA` main 在阶段 6 前再前进 | 切出点钉死 `c564c17`（40 位 sha 写进留档），不追 tip；tip 前进只记录，不改切出点 |
+| 23 | 记录点浮点漂移超过 1e-5（新的硬件或驱动） | 会被 `spec_binding()` 计入 `injected_mismatch` 判 FAIL，交用户；不放宽 `RECORDED_FLOAT_TOL` |
+| 24 | 容差层阈值标定自单次 O:P 实现，过宽会漏真差异、过窄会误杀 RRT 噪声 | 标定输出 p95 与最大值两组数交用户确认；PASS 判定行同时打印实测值与阈值，留档保留 `compare/h5_pairs.jsonl` 全部逐身份指标供事后复核 |
+| 25 | 评估重跑硬上限 55／轮用满 | `RETRY_CAP_HIT` 停该片交用户，不自动加码 |
 
 ## 五、盲区诚实清单
 
@@ -845,8 +883,10 @@ uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier 
 - **⑨**：MME-VLA 在 xhard 上的单局耗时、主机内存、显存峰值都没有实测；上次只有 SimpleMemVLA 的数字（A40 单局 1.5～3 分钟、`MaxRSS` 26.4 GB）。第一轮耗时估算只对 SimpleMemVLA 成立。
 - **⑩（已查清，关闭）**：官方仓库已迁到 `OpenBMB/SimpleMemVLA`，main `c564c17` 相对 `9fce41c` 代码零改动（U-12）；阶段 6 起步时只需 `git ls-remote` 复核 tip 未再前进。
 - **⑪**：上次评估的 1100 个身份里，xhard1 三格与 xhard4 InsertPeg 取自补抽快照，其余取本体快照前 20；迁移脚本以评估结果文件为真源而不是重算取法，取法差异不影响集合定义。
-- **⑫**：上次评估报告的 `demo_frames_out_of_band=40`（xhard1 演示帧数落在 750～1050 带外）未处置，20 局集原样带入；不影响回注一致性，影响的是这些局的演示长度是否符合当初设计，待用户判读。
+- **⑫（已裁决，U-16「不管」）**：上次评估报告的 `demo_frames_out_of_band=40`（xhard1 演示帧数落在 750～1050 带外）照收进 20 局集，清单写进 jsonl header 与 `stage1.md`；不影响回注一致性。
 - **⑬**：`GLIBC_TUNABLES` 16384 字节能支撑的 `make_env` 次数按 8192 → 约 147 轮线性外推，未实测。
+- **⑭**：容差层阈值来自单次 O:P 实现（144 对），RRT 噪声的真实分布只有这一份样本；`P:H`、`O:H` 若在个别身份上略超阈值，无法区分是拆包差异还是噪声尾部，只能交用户裁决（风险 24）。
+- **⑮**：S4 165 局与 1100 局的 spec 差异只查到记录点 `return_pose_by_object_id`；评估在 A40 上是否还有别的记录点漂移（如其他任务的落稳位姿）要到 `EVAL_BINDING` 的 `recorded_drift` 明细才知道，方案甲已把 ≤ 1e-5 的都纳入。
 
 ## 六、留档与 commit 纪律
 
@@ -854,6 +894,27 @@ uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier 
 - 判定行原文与命令进 `docs/validation/newtask-v6/hard-split/stage<n>.md`；阶段 1 另出 P2 覆盖项 md 报告（U-3「改完出报告」）；阶段 4 的 reset／rollout 逐项计数表与 `HOLD_RELEASE` 前后 `squeue` 原文进 `stage4.md`；阶段 6 的 10 个评估 JobID、`POLICY_DIFF`／`SUBMODULE_PIN` 原文进 `stage6-eval-prep.md`；阶段 7 的两轮四组判定行、分档成功率表（每策略 4 档 × 每格 20 局）、`EVAL_HOLD_RELEASE` 进 `stage7-eval.md`。
 - 两个策略仓库各自留档：SimpleMemVLA `docs/eval-doc/testhard-<MMDD>/`、MME-VLA `docs/eval-doc/testhard-<MMDD>/`，按第 12 条三件套（`launch.md`／`result.md`／`records/`），records 只放结果 jsonl 与汇总表，不放视频与权重；每个策略分支的 commit 按该仓库自身体例。
 - 评估成功率与上次 SimpleMemVLA 20 局结果（`aab093f` 留档）可直接对比：同身份、同按档步数上限；差异来源只剩 benchmark 从 `robomme`（12.191）换成 `robomme_hard`（拆包后）与演示回放的 RRT 墙钟噪声，留档里要把这两点写明。
+- 容差层：`scripts/configs/hard-parity-tolerances.json` 进 git；`stage4.md` 记 `PARITY_TOL_CALIB` 原文、四项指标的 p95／最大值分布、用户确认原话；`compare/h5_pairs.jsonl` 全部逐身份指标进 `records/`。
+- 用户本轮裁决原话（2026-09-28）：「1同意甲 但是计划全解释后报告 2同意 4不管 5新clone 6先不纳入 7动作、状态、图像数值、帧数要容差可控 3现在不开工 统一开工」，逐条落点见 §一 U-13～U-19。
+
+## 七、Codex 审计（`AUDIT_BASE=6608e38b`）十二条的落点（U-20）
+
+| # | Codex 发现 | 落点 |
+|---|---|---|
+| 1 | 20 局交付仍接着 3 局状态机；「20 或 0」静默放行 | 第一部分 §4.2（55 格表 `EXPECTED_CELLS`）、§5.2（`delivery_per_cell`、S4 重播独立只读） |
+| 2 | 迁移命令漏 6 条（xhard4-fill 是 6 片）；合并口径未定义；InsertPeg 计数不准 | §5.3 身份真源与来源池合并算法；`SOURCE_POOL` |
+| 3 | 规格与 h5 未逐身份绑定 | §5.3 三份记录唯一连接 + h5 `setup` 核；`H5_BINDING` |
+| 4 | MME-VLA 可能加载默认权重；SimpleMemVLA 依赖默认权重路径 | §8.2 第 4 项 server 命令写全；§8.1 第 5 项显式传权重；`EVAL_SMOKE` 权重身份断言 |
+| 5 | `EVAL_BINDING` 在 export 模式也全零；绑定读取时点在 reset 之后；摘要函数须在包内 | §4.2 `spec_binding()` 进包；§6.4 `mode=replay`、`value_points>0`、`available=true`；§8.2 第 1 项 `get_init_obs` 之后取 |
+| 6 | 未证明评到指定身份；`resolve_episode` 不暴露候选号；MME-VLA 分片公式缺 | §4.2 `resolve_identity`；§6.4 `EVAL_IDENTITY_SET`；第二部分 §3.3 分片公式与逐片验收 |
+| 7 | SimpleMemVLA 服务层丢按档上限与绑定字段；内部重试叠加 | §8.1 第 1、2、4 项：服务返回契约、`reset_retries=0`、四者一致核 |
+| 8 | MME-VLA gitlink 未移动；预检解释器不对；错误续评未闭合；server 等待无期限 | §8.2 第 2、3、4 项；第二部分 §1.5 两行 |
+| 9 | 生成锁取得太晚；恢复漏记窗口 | §5.2 锁先于一切、`UNKNOWN` 标记 |
+| 10 | 预算漏计 reset；评估额外尝试未授权 | 第二部分 §3.1 重算（生成 reset ≤ 715；评估重跑硬上限 220）；U-14 批准 |
+| 11 | 对拍 PASS 含义比「行为一致」窄；缺每侧自检；同失败算相等；MP4 不在闸门内 | §5.4 三层重写、每侧自检、`both_success`、`MEDIA_CHECK=INFO`；U-19 措辞与容差层 |
+| 12 | 回注抽检取错局且 GL 读不到 `/data`；`NATIVE_SMOKE` 与 A40 断言冲突；`HOLD_RELEASE` 口径；`POLICY_DIFF` 混计 | §6.1 `HARD_RESET_REPLAY` 经 `S4_SUBSET` 映射 + `s4-setup-manifest.json`；§6.3 `--dev-smoke` 与 `SHARD_SMOKE`；§6.4 两行改写 |
+
+Codex 的核验限制（`c564c17` 不在其对象库）已由主代理在 scratchpad 取官方 main 比对关闭（U-12）。
 - 实施完成后，实测结果以子节追加在第一部分 §七步骤表之后，不改写原计划。
 - `robomme_hard/README.md` 必含：
   - ① 一句话说明，以及三条 `PARITY_*`（native）+ 一条 `PARITY_P_H`（xhard）判定行原文，注明是行为一致判定；
