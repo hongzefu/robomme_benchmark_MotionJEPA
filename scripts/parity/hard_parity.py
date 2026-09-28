@@ -192,6 +192,10 @@ class Mover(threading.Thread):
             if path.suffix == ".h5" and sha256_file(target) != sha256_file(path):
                 self.errors.append(f"暂存副本 sha 不符：{target}")
                 return
+        # 完成标记：拉取端只拉带 SHIPPED 的局，避免拉到复制了一半的文件
+        shipped = {str(p.relative_to(wdir)): sha256_file(p) for p in sorted(wdir.rglob("*"))
+                   if p.is_file() and p.suffix in (".h5", ".mp4")}
+        (dest / "SHIPPED").write_text(json.dumps(shipped, ensure_ascii=False, sort_keys=True) + "\n")
         for path in sorted((p for p in wdir.rglob("*") if p.is_file() and p.suffix in (".h5", ".mp4")), reverse=True):
             path.unlink()  # 节点 /tmp 只留小文件（sidecar），大文件搬走即删
 
