@@ -4,7 +4,7 @@
 > **第三轮修订（2026-09-27，现行）**：拆包形态由「整包复制」改为「分层继承」，生成链路由四步改为两阶段 `scripts/injection-dev/`，jsonl 增加回写块。**现行方案全文在第一部分 §〇′（含技术细节）**；第一部分 §一～§三、第二部分 §一～§二、附录 A §五～§七是前两轮内容，保留原文供追溯，与 §〇′ 冲突处一律以 §〇′ 为准。阶段 0b（§0.3）已实施完毕，不受本轮影响。
 > **代码锚点**：本仓库 `newtaskRelease-v5` @ `bcd7d08`（12.194；2026-09-27 更新，原初稿锚点 `716f992`／12.174；工作区在途改动见红线 R7）；生产源码含审查修复 `ca32e9b`（12.188）；V5 原始锚点 `da77662`；V1 基线 `13e5151`；上游 `RoboMME/robomme_benchmark` `main` @ `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`（2026-09-26 `git ls-remote` 实测）。
 > **工作副本**：`/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（环境 A，sled-vail）。上游只读快照在会话 scratchpad `upstream/`（浅克隆，用后即弃，实施时按第二部分 §2.1 重新取）。
-> **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，第三轮修订起接 12.204（12.203 为阶段 0b 收尾）。
+> **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，第三轮修订的计划文件本身为 12.204，实施从 12.205 起编号。
 > **前置状态（2026-09-27）**：`0925-newtask-release-v6-plan.md`（S0～S5）与 `0926-v6-audit-fix-plan.md`（8.4 四步）均已完成，本方案进入可实施状态；细节见第一部分 §〇。
 > **依赖锚点**：`uv.lock` / `pyproject.toml` 现状不变；本方案唯一的依赖侧改动是 `[tool.hatch.build.targets.wheel].packages` 增加 `src/robomme_hard`。
 > **对话来源**：用户 2026-09-26 转贴的与合作者的对话（逐字保留在第一部分 §一），本方案是对该对话「能否实现、怎么实现」的回答。
@@ -458,12 +458,12 @@ Q2 的「用同样的方式生成 easy medium hard 的 16×3×3」取 A 解读�
 
 | 阶段 | 内容 | 判据 | 改 `src/robomme` | commit |
 |---|---|---|---|---|
-| 0 只读准备 | ①`git fetch` 官方 `1fadc0ec`，`git rev-parse ^{tree}` 与 `1d4c1369` 对照并记录；②生成 `UPSTREAM.json`（`robomme_files` 以官方树为准、`borrowed` 按 §〇′.2.1 清单）；③vendor 四文件 + `SOURCE.json`；④`register_env` 重复语义用一行脚本复核（本节已按源码写死，实测只为留证）；⑤绝对 import 全量扫描出清单 | `VENDOR_SAME`、扫描清单落 `docs/validation/newtask-v6/hard-split/stage0.md` | 否 | 12.204 |
-| 1 建 `robomme_hard` | 复制 16 环境（改 `override=True`）、17 个 utils、`RecordWrapper.py`、`OraclePlanner…`；写 15 个 shim、`__init__.py` 守卫、`hard_builder.py`、`hard_specs.py`、`env_record_wrapper/__init__.py`；迁四份 jsonl（`v6-02` → 新 schema，重算收窄口径的 `identity_sha256`，两段指纹）；`pyproject.toml` 加包 | `REGISTRY_OWNER`、`ABS_IMPORT`、`SPECS_IDENTITY`；`python -c` 单局 `make_env_for_episode` 冒烟（1 rollout，计入 `HARD_EVAL_SMOKE`） | 否 | 12.205 |
-| 2 `scripts/` 重组 | 建 `injection-dev/` 五个内部模块 + 两个入口 + `site/`；`parity/` 按 §〇′.4 去留；`upstream_guard.py`、`hard_regression.py`、`evaluation_hard.py`；`train_split_worker.py` 加 `ROBOMME_ENV_PACKAGE` 分支；`tests/` 的 `from robomme.` 机械改 `robomme_hard.`（只保证可收集） | `FREEZE_DRYRUN_EQUIV`、`FREEZE_ONLY_JSONL`、`ROLLBACK_WRITE`、`EVAL_PY_UPSTREAM`、`EVAL_HARD_DIFF`、`--collect-only` 错误 0 | 否 | 12.206 |
-| 3 回退 `robomme` | 用官方树覆盖 `src/robomme/**`（含 `env_metadata/`），`git rm` 9 个新增 utils 与 4 份 400 条 train 元数据（换回 100 条） | `UPSTREAM_BYTES=PASS`；阶段 1、2 的判定行全部重跑仍 PASS | **是（P2：逐文件清单交用户批准）** | 12.207 |
-| 4 回归 | V1′ 144 + xhard 侧 55 reset / 17 rollout（§〇′.8 预算） | `NATIVE_REGRESSION_HARD`、`HARD_RESET_REPLAY`、`HARD_ROLLOUT_SHA`、`HARD_EVAL_SMOKE` | 否 | 12.208（起跑前 HEAD 冻结，结果以子节追加） |
-| 5 留档 | `robomme_hard/README.md`（§〇′.11）、`scripts/README.md` 与 `parity/README.md` 重写、`docs/validation/newtask-v6/hard-split/` 汇总全部判定行、`AGENTS.md` P1 改五入口与本节路径、`CLAUDE.md` 核实清单 | `git diff --check`；链接可达 | 否 | 12.209 |
+| 0 只读准备 | ①`git fetch` 官方 `1fadc0ec`，`git rev-parse ^{tree}` 与 `1d4c1369` 对照并记录；②生成 `UPSTREAM.json`（`robomme_files` 以官方树为准、`borrowed` 按 §〇′.2.1 清单）；③vendor 四文件 + `SOURCE.json`；④`register_env` 重复语义用一行脚本复核（本节已按源码写死，实测只为留证）；⑤绝对 import 全量扫描出清单 | `VENDOR_SAME`、扫描清单落 `docs/validation/newtask-v6/hard-split/stage0.md` | 否 | 12.205 |
+| 1 建 `robomme_hard` | 复制 16 环境（改 `override=True`）、17 个 utils、`RecordWrapper.py`、`OraclePlanner…`；写 15 个 shim、`__init__.py` 守卫、`hard_builder.py`、`hard_specs.py`、`env_record_wrapper/__init__.py`；迁四份 jsonl（`v6-02` → 新 schema，重算收窄口径的 `identity_sha256`，两段指纹）；`pyproject.toml` 加包 | `REGISTRY_OWNER`、`ABS_IMPORT`、`SPECS_IDENTITY`；`python -c` 单局 `make_env_for_episode` 冒烟（1 rollout，计入 `HARD_EVAL_SMOKE`） | 否 | 12.206 |
+| 2 `scripts/` 重组 | 建 `injection-dev/` 五个内部模块 + 两个入口 + `site/`；`parity/` 按 §〇′.4 去留；`upstream_guard.py`、`hard_regression.py`、`evaluation_hard.py`；`train_split_worker.py` 加 `ROBOMME_ENV_PACKAGE` 分支；`tests/` 的 `from robomme.` 机械改 `robomme_hard.`（只保证可收集） | `FREEZE_DRYRUN_EQUIV`、`FREEZE_ONLY_JSONL`、`ROLLBACK_WRITE`、`EVAL_PY_UPSTREAM`、`EVAL_HARD_DIFF`、`--collect-only` 错误 0 | 否 | 12.207 |
+| 3 回退 `robomme` | 用官方树覆盖 `src/robomme/**`（含 `env_metadata/`），`git rm` 9 个新增 utils 与 4 份 400 条 train 元数据（换回 100 条） | `UPSTREAM_BYTES=PASS`；阶段 1、2 的判定行全部重跑仍 PASS | **是（P2：逐文件清单交用户批准）** | 12.208 |
+| 4 回归 | V1′ 144 + xhard 侧 55 reset / 17 rollout（§〇′.8 预算） | `NATIVE_REGRESSION_HARD`、`HARD_RESET_REPLAY`、`HARD_ROLLOUT_SHA`、`HARD_EVAL_SMOKE` | 否 | 12.209（起跑前 HEAD 冻结，结果以子节追加） |
+| 5 留档 | `robomme_hard/README.md`（§〇′.11）、`scripts/README.md` 与 `parity/README.md` 重写、`docs/validation/newtask-v6/hard-split/` 汇总全部判定行、`AGENTS.md` P1 改五入口与本节路径、`CLAUDE.md` 核实清单 | `git diff --check`；链接可达 | 否 | 12.210 |
 
 阶段 3 放在 2 之后、4 之前：先让 `robomme_hard` 在 `robomme` 还带改动时独立跑通（此时借用的文件与官方相同，`UPSTREAM.json` 的 `borrowed` sha 已能命中），再回退 `robomme`，最后对拍——这样阶段 3 失败时可以只回滚一个 commit。
 
