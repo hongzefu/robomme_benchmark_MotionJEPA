@@ -1,43 +1,24 @@
-# scripts/ 说明：V6 四档新值与 V4/V5 历史说明
+# scripts/ 说明：robomme_hard 拆包后的目录、V6 四档新值与历史说明
 
-**当前 V6 使用说明见第六节。** 第一至第五节保留 V4/V5 当时的配置、命令与实测口径，其中旧档名 `xhard`、V5 路径及“现行代码”均指该历史版本；不能直接当作 V6 命令或本轮验收结论。V6 使用 `xhard1`、`xhard2`、`xhard3`、`xhard4`，原 `easy`、`medium`、`hard` 的本轮一致性由 S3 独立验收。
+**拆包后（12.205～12.210，[0927 计划](../0927-robomme-hard-layered-plan.md)）的布局**：
 
-**V4 与 V5 的关系**：V5 是在 V4 xhard 档之上的第二轮修订（xhard 去扎堆、四个 Unmask 环境的干扰容器加密且 Swap 两环境的外环随内环同步交换、
-PatternLock/RouteStick 演示时长校准、放下的方块作障碍时 2D 包围框退化的缺陷修复），**只改 xhard 档**。V4 已作废：
-V4 的配置 `scripts/configs/newtask-v4/` 与产物 `artifacts/newtask-v4/` 原样留档、不再引用，v4-01 的规格在 V5 代码上被拒是预期。
-
-- V5 计划：[0924-newtask-release-v5-plan.md](../docs/plans/0924-newtask-release-v5-plan.md)（1.4 决策 L1～L54、第二节逐环境改动、第三节对拍与 runbook）；
-- V5 逐步实施报告：[docs/validation/newtask-v5/](../docs/validation/newtask-v5/)（S2a/S2b/S2c 共用设施，S3a～S3i 各环境，工具链）；
-- V4 计划与总报告：[0922-newtask-release-v4-plan.md](../docs/plans/0922-newtask-release-v4-plan.md)、[V4 总报告](../docs/validation/newtask-v4/20260923-v4-final-report.md)（验证数字、决策来由和风险）。
-
-本文讲五件事：
-
-1. **逐环境改动**：十六个环境 xhard 档各自的配置字段、规格字段、行为与 subgoal 执行流程（第一节）。**一律以 V5 现行代码为准**，
-   V4 的取值只在对照时保留，写作「V4 原值 …」；
-2. **全局改动**：共用代码、快照文件、结果文件里新增了哪些字段（第二节，V4 表 + V5 追加表）；
-3. **推理侧怎么兼容**（第三节，V5 沿用同一路径）；
-4. **三步各自怎么调用**：抽签与冻结、实跑、推理（第四节；V4 命令原样保留，每步另注 V5 对应路径）；
-5. **V5 怎么调用**：快照重导、一条命令串起抽签/冻结/实跑/报告、V1 原三档逐位对拍（第五节）。
-
-V5 改动范围（计划 2.1 总表）：
-
-| 类别 | 环境 |
+| 位置 | 内容 |
 |---|---|
-| 改规则与字段（12 个） | BinFill、PickXtimes、SwingXtimes、VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap、VideoRepick、MoveCube、InsertPeg、PatternLock、RouteStick |
-| 只修方块障碍框（配置与规格字段不变） | PickHighlight、VideoPlaceButton、VideoPlaceOrder |
-| 只修异常类 | StopCube |
+| `seed_layout.py`、`dataset_replay.py`、`evaluation.py`、`run_example.py`、`evaluation_hard.py` | 五个顶层入口（P1）；后三者与官方逐字节相同；`evaluation_hard.py` 与 `evaluation.py` 只差 4 处（import、`dataset="test-hard"`、取 tier、按档 `max_steps`） |
+| `injection-dev/` | 新值档生产链路（不随包分发，路径直跑）：`freeze_specs.py`（第一阶段：定规则 → 抽签 → 封存，只落一份 jsonl）、`generate_h5.py`（第二阶段：continue 状态机回写／replay 只读重放）、`_extract/_draw/_freeze/_rollout/_report.py`、一次性迁移 `migrate_smvla_specs.py`；`site/` 为只读出图与候选核对工具 |
+| `parity/` | 只做「与官方比」：S0 基线设施 `train_split_*.py`、vendor 的官方编排 `official/`（`d53f21a7` 四文件）、G1 守卫 `upstream_guard.py`、三侧对拍入口 `hard_parity.py`、拉取 `hard_pull.py`、回归 `hard_regression.py`；详见 [parity/README.md](parity/README.md) |
+| `configs/` | `newtask-v3/`（原三档 144 身份清单与官方 train 元数据）、`newtask-v6/v6-02/`（S4 生成所用规格，只读留档）、`newtask-v6/smvla-smoke-0927/`、`hard-parity-tolerances.json`（对拍容差层阈值） |
 
-新值**只挂在 `self.difficulty == "xhard"` 分支上**（或默认关闭的新参数上），原三档（easy/medium/hard）的定义、reset 取值、完整演示产物都与改动前逐位相同；
-V5 由 V0 静态检查（`config_easy/medium/hard` 与原三档消费的 `NATIVE_SAMPLING` 零改动）与 V1 的 144 条 h5 逐位对拍（5.4）守住。
+新值档环境源码在 `src/robomme_hard/`（`src/robomme/` 与官方 `1fadc0ec` 逐字节相同）；四档规格随包分发在 `src/robomme_hard/env_metadata/test-hard/xhardN/specs.jsonl`，评估用 `BenchmarkEnvBuilder(env_id, dataset="test-hard")`，说明见 [src/robomme_hard/README.md](../src/robomme_hard/README.md)。
 
----
+**第一节**记录十六个环境新值档的配置字段、规格字段与行为（源码现在 `src/robomme_hard/robomme_env/` 下，文中「V5 现行代码」均指该历史版本的写法）。**第二～五节**是 V4/V5 的全局改动、快照字段、推理兼容与三步命令，所引模块 `scripts/parity/{v4_specs,v4_rollout,v5_generation}.py`、`scripts/eval/` 与 `configs/newtask-v4`、`newtask-v5` 已于拆包阶段 2 删除，正文整段移出，原文见 `git show 7a6cee35:scripts/README.md`。**第六节**为 V6 发布说明（命令已改到 `injection-dev/site/`）。
 
 ## 第一节　逐环境改动
 
 **怎么读：**
 
-- **配置字段**：写在 [configs/newtask-v5/sampling_config.json](configs/newtask-v5/sampling_config.json) 里（V4 为
-  [configs/newtask-v4/sampling_config.json](configs/newtask-v4/sampling_config.json)），路径相对于 `tasks.<环境>`。
+- **配置字段**：当时写在 `configs/newtask-v5/sampling_config.json` 里（V4 为 `configs/newtask-v4/sampling_config.json`，
+  两份均已随拆包阶段 2 删除，git 历史可取回；现行新值配置在包内规格 header 的 `sampling_config`），路径相对于 `tasks.<环境>`。
   「hard 值」一列是原值，用来对照；「xhard 值」一列是 V5 现值，V5 改过的在括号里注明 V4 原值；键名本来就有、只是新加了 `xhard` 档的，也列在这里。
   这份快照由源码（各环境的 `config_xhard` / `XHARD_*` 常量 / `_native_decision`）一次性导出（5.1），两者不一致时以源码为准。
 - **规格字段**：该环境 xhard 局在 `specs.jsonl` 每行的 `spec` 里记录的字段，即 `SpecRecorder` 在 reset 时导出、回注时再读回的值。
@@ -651,348 +632,19 @@ V4 没有配置字段，xhard 值只写在源码 `config_xhard` 里（`length` `
 
 ---
 
-## 第二节　全局改动
+## 第二～五节（历史，已移出）
 
-### 2.1 代码
-
-| 位置 | 改了什么 |
-|---|---|
-| `utils/episode_spec.py::SpecRecorder`、`spec_kind_for` | 新增规格类别：xhard 局标 `native-newvalue/1`，原三档标 `native-parity/1`，两类规格不许互喂；`value(..., decision_key=)` 把取值点归因到配置键 |
-| `utils/sampling_config.py::assert_native_decision` | 守卫：去掉所有 `xhard` 键之后，其余部分必须与原值全等；xhard 子树只能改值，键结构必须与源码里申报的一致 |
-| `utils/xhard.py`（新增） | `DISTRACTOR_COLORS`（黄/青/品红干扰色池）、`corner_push`（推边角）、`HSV_FLOOR_COLOR` 与 `hsv_floor_rgb`（HSV 限定色） |
-| `utils/object_generation.py` | 新增参数 `corner_bias`，默认 0，此时行为与原来逐字相同 |
-| `utils/subgoal_language.py` | 序数表扩到 20 |
-| `utils/unmask_distractors.py`、`unmask_swap_xhard.py`、`xhard_home_site.py`（新增） | Unmask 的外环干扰容器与误抓判定、Swap 的 xhard 等待与碰撞检查、VideoPlace 的原位落点 |
-| `subgoal_planner_func.py` | MoveCube 的朝向归约，由 `_xhard_peg_yaw_reduction` 开关守着 |
-| `RecordWrapper.py` | `fail_safe_limit` 2000→5000。录像器只有这一处改动，其余仍冻结 |
-| `scripts/parity/train_split_runner.py` | 新增 `--identity-source formula`（按 V4 seed 公式硬校验）、`--no-recovery` |
-| `scripts/parity/train_split_worker.py` | 任务元组第 4 项 `disable_recovery` |
-| `env_record_wrapper/episode_config_resolver.py` | 新增 `from_v4_specs`，见第三节 |
-
-两条全局规则：**新增的随机抽样一律排在既有抽样之后**，原三档的随机流因此不受影响；**V4 的抽签、实跑、推理全部不开 fail recover。**
-
-**V5 追加的代码改动**（只加不改：`_trimesh_box_to_obb2d`、`_safe_unit`、`check_swap_sweep`、`statechange.py`、`spawn_random_bin` 的语义都没动）：
-
-| 位置 | 改了什么 |
-|---|---|
-| `utils/xhard.py::cube_obb2d_exact`（新增） | 按方块真实 yaw 给出预制 2D 障碍 `(c, A, h)`，不抽随机数；xhard 分支用它替代「把方块 actor 放进 `avoid`」（报告 S2a） |
-| `utils/object_generation.py` 的 `spawn_random_cube` / `spawn_random_target` | 新增可选参数 `min_center_dist=None`、`center_exclusion=None`，在既有 OBB/圆判据之后、`recorder.value` 之前判，回放时对冻结值复核；默认 `None` 时整段跳过（S2a） |
-| VideoRepick、SwingXtimes、PatternLock、RouteStick、StopCube、VUS、BUS 模块头 | `_RealSceneGenerationError` 别名与 `_scene_gen_error(difficulty)`：xhard 抛真 `SceneGenerationError`，原三档仍是 TypeError（S2a） |
-| `utils/bin_collision.py` | 新增 `check_multi_swap_sweep`（多对同时交换的联合连续证明）、`check_swap_sweep_prefiltered`（同判定加认证预筛）、静止障碍 helper（`static_box_state`、`static_rect_state`、`button_base_state` 等）；单对时与 `check_swap_sweep` 逐位相同（S2b） |
-| `utils/unmask_distractor_sampler.py`（新增） | 四个 Unmask 环境共用的干扰容器采样器、统一配置 7 键与 `objects.distractors.*` schema、整段重抽驱动、独立停放点 `xhard_park_point` 与停放版揭示 helper（S2c） |
-| `utils/unmask_swap_xhard.py` 末尾「V5」一节 | 内环预演与预判、H1 守卫、外环规划与复核、`plan_swap_distractors` / `spawn_swap_distractors_v5`、运行时 `run_outer_swaps`；V4 的采样函数保留为死代码（S3h） |
-| `scripts/parity/v4_specs.py` | `draw --workers N --gpus …` 多进程抽签，结果与单 worker 逐行相同（工具链报告） |
-| `scripts/parity/train_split_config.py` | `extract --release newtask-v5`；不带 `--release` 时仍是 `newtask-v4`（5.1） |
-| `scripts/parity/v5_generation.py`（新增） | `pipeline` 串起抽签 → 冻结 → 实跑 → 报告，`report` 写生成报告（5.2、5.3） |
-
-V5 没有再动录像器（`RecordWrapper.py` 仍只有 V4 的 `fail_safe_limit` 5000 一处改动）；**V5 的抽签、实跑、推理同样全部不开 fail recover。**
-
-### 2.2 快照 `specs.jsonl` 的字段（新增文件）
-
-第一行是 header，其余每行一条候选。
-
-**header 字段：**
-
-| 字段 | 含义 |
-|---|---|
-| `schema` | `v4-specs/1` |
-| `record` | 固定为 `header` |
-| `run_id` | 快照编号，如 `v4-01` |
-| `difficulty` | 固定为 `xhard` |
-| `tasks` | 十六个环境的规范顺序 |
-| `sampling_config`、`sampling_config_sha256` | 抽签时用的配置全文及其散列 |
-| `source_fingerprint` | 源码指纹：`files`（文件数）、`sha256` |
-| `runtime` | `obs_mode` / `control_mode` / `render_mode` / `reward_mode` 四项，推理时逐字比对 |
-| `seed_rule` | `offset: 4000000`、`env_block: 100000`、`episode_stride: 100`，公式 `offset + env_code*env_block + episode*100 + attempt` |
-| `identity_source` | 固定为 `formula` |
-| `recovery_rule` | V4 全部不开 fail recover |
-| `select_indices` | 冻结时每个环境选中的候选序号，默认 `[0,3,6]` |
-| `per_env` | 每个环境的 `attempted`（尝试数）、`candidates`（成功候选数）、`candidate_shortfall`、`selected` |
-| `drafts_sha256` | 来源 `drafts.jsonl` 的散列 |
-| `identity_sha256` | 整个快照的身份散列；计算时剔除 `selected` 等管理字段，所以重标 `selected` 不会改变它 |
-
-**候选行字段：**
-
-| 字段 | 含义 |
-|---|---|
-| `record` | 固定为 `spec` |
-| `task`、`difficulty`、`episode`、`attempt`、`seed` | 身份；`episode` 就是候选序号 |
-| `selected` | 是否为正式局 |
-| `spec` | 规格本体：`spec_kind`（`native-newvalue/1`）、`task`、`identity`（task/difficulty/episode/seed/recovery_mode）、`provenance`（导出时的 `mode`、`value_points`、`mismatches`）、以及第一节列出的 `layout` / `objects` / `actions` / `initializations` 字段 |
-| `spec_sha256` | 该条规格的散列，结果文件按它 join |
-
-**V5**：快照沿用同一封套（`schema` 仍为 `v4-specs/1`、`spec_kind` 仍为 `native-newvalue/1`、`seed_rule` 与 `recovery_rule` 不变），只换
-`run_id`（`v5-01`）、落点（`scripts/configs/newtask-v5/v5-01/specs.jsonl`）与封存的配置（`scripts/configs/newtask-v5/sampling_config.json`）。
-候选行 `spec` 里各环境的字段按第一节的 V5 列表；V4 快照在 V5 代码上会被 decision 形状检查、xhard reset 或回放复核拒绝（预期）。
-
-### 2.3 实跑结果的字段（新增文件）
-
-**`results.jsonl`（每局一行）：**
-
-| 字段 | 含义 |
-|---|---|
-| `task`、`difficulty`、`episode`、`attempt`、`seed`、`spec_sha256` | 身份 |
-| `run_label` | 本轮标签，如 `run1` |
-| `role` | `selected`（正式局）或 `backfill`（递补局） |
-| `round` | 第几轮（0 为正式局，之后是递补轮） |
-| `ok` | 演示是否成功 |
-| `error_type`、`error` | 失败类别与信息 |
-| `h5` | h5 文件路径 |
-| `spec_binding` | `value_points`、`mismatch`、`unattributed_mismatch`、`unused`：规格是否被原样消费 |
-
-**`summary.json`：** `specs`、`identity_sha256`、`label`，以及 `per_env` 下每个环境的 `attempted`、`ok`、`backfilled`（递补数）、`selected_shortfall`（没凑满的正式局数）。
-
-**每局目录 `episodes/<task>_episode_<n>/`：** `hdf5_files/`、`videos/`、`rng_trace.json`（每个取值点的 `path` / `drawn` / `source`）、`spec_replay.json`（`value_points` / `consumed` / `unused` / `mismatches`）。
-
-**V5**：字段不变，落点为 `artifacts/newtask-v5/v5-01/rollout/run1/`；另有生成报告 `artifacts/newtask-v5/v5-01/report/generation_report.{md,json}`（字段见 5.3）。
-
-### 2.4 推理结果的字段（新增文件）
-
-**`eval_results.jsonl`（每局一行）：**
-
-| 字段 | 含义 |
-|---|---|
-| `task`、`difficulty`、`episode`、`seed`、`spec_sha256` | 身份，可与 `results.jsonl` 直接 join |
-| `run_id` | 本次推理编号 |
-| `status`、`steps`、`wall_s` | 终态（取自 `info["status"]`）、步数、墙钟秒数 |
-| `policy_id`、`policy_sha256`、`model_seed` | 策略标识、策略指纹、模型种子 |
-| `action_space`、`max_steps` | 动作空间、步数上限 |
-| `runtime_ok` | runtime 四项是否与快照一致 |
-| `spec_binding` | `available`、`mode`、`mismatch`、`unattributed_mismatch`、`unused` |
-| `error_type`、`error` | 异常信息 |
-
-**`eval_summary.json`：** `specs_identity_sha256`、`per_task`（每个环境的 `avg_success` / `success_count` / `num_episodes`）、`overall`（同样三项）。字段名与 `challenge_interface` 的 `metrics.json` 对齐。
-
----
-
-## 第三节　推理侧怎么兼容
-
-1. **构建器加了一条并列路径。** [episode_config_resolver.py](../src/robomme/env_record_wrapper/episode_config_resolver.py) 里的
-   `BenchmarkEnvBuilder.from_v4_specs(env_id, header, specs_by_identity, ...)`：episode 号就是候选序号，
-   seed、difficulty、`sampling_config`、`native_episode_spec` 全部取自快照，统一经 `gym.make` 传进环境。
-   `resolve_episode`、`get_episode_num`、建环境三处在 `self._v4` 不为 None 时走快照；`self._v4 is None` 时（原来的 metadata 路径）行为逐字不变。
-   `scripts/evaluation.py` 一行没改。
-2. **runtime 必须一致。** 快照 header 里的 `runtime` 四项与构建器参数有一项不相等，就直接拒绝起环境。
-3. **构建器本身不读文件。** 调用方先用 `scripts/parity/v4_specs.py::load_specs` 校验封套（header 来源、每行 `spec_sha256`、
-   整文件 `identity_sha256`），拿到 `(header, sampling_by_task, specs_by_identity)`（只含 `selected=true` 的行）再交给构建器。
-4. **每局结束都核验规格绑定。** 读 `env.unwrapped._spec`，统计 `missing` / `unused` / `mismatch` 写进 `eval_results.jsonl`；
-   每行都能按 `(task, difficulty, episode, seed, spec_sha256)` 与生成侧的 `results.jsonl` 直接 join。
-5. **推理要用重标后的快照 `specs.selected.jsonl`，不要用 `specs.jsonl`。** 冻结时初选的局可能在实跑中演示失败、被递补替换
-   （如 InsertPeg 初选的 0/3/6 全部失败，递补上来的是 4/5）；用原快照评这类局时，reset 期重放示范会卡死。
-   `reselect` 只改 `selected` 标记，header 与规格值一字不动，`identity_sha256` 也不变。
-6. **V5 走同一条路径。** `from_v4_specs` 与 `load_specs` 不区分 V4/V5，只看快照本身；V5 推理用
-   `scripts/configs/newtask-v5/v5-01/specs.selected.jsonl`（由 4.2 的 `reselect` 生成，见下）。
-
----
-
-## 第四节　三步各自怎么调用
-
-正式快照 `v4-01` 在 [configs/newtask-v4/v4-01/](configs/newtask-v4/v4-01/)，已进 Git。以下命令都在仓库根目录执行。
-V5 的正式快照是 `v5-01`，落在 `configs/newtask-v5/v5-01/`（冻结后进 Git），产物一律落 `artifacts/newtask-v5/v5-01/`；每一步下面另列 V5 的写法。
-V5 推荐用 5.2 的 `v5_generation pipeline` 一条命令串起 4.1～4.2，分步写法与下面的 V5 命令等价。
-
-### 4.1 第一步：抽签与冻结（[parity/v4_specs.py](parity/v4_specs.py)）
+V4/V5 的全局改动表、`v4-specs/1` 快照与结果字段、`from_v4_specs` 推理兼容、抽签／冻结／实跑／推理三步命令、V5 流水线与 V1 对拍命令，所依赖的脚本与配置已于拆包阶段 2（12.207）删除。完整原文：
 
 ```bash
-uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v4-01 --candidates-per-env 10 --max-reset-attempts 30 --out artifacts/newtask-v4/v4-01/draft/drafts.jsonl
+git show 7a6cee35:scripts/README.md | sed -n '/^## 第二节/,/^## 第六节/p'
 ```
 
-```bash
-uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v4/v4-01/draft/drafts.jsonl --out scripts/configs/newtask-v4/v4-01/specs.jsonl
-```
-
-- `draw` 占 GPU，只做 reset、不 step、不录像。每个环境攒够 `--candidates-per-env` 条成功，或者试满 `--max-reset-attempts` 次为止；
-  每次尝试（包括失败的）都写进 `drafts.jsonl`。header 在抽签时就封存配置全文、源码指纹、runtime、seed 规则和 recover 规则。
-  可以用 `--tasks` 限定环境，`--sampling-config` 换配置文件。
-- `freeze` 只用 CPU：先核验 header 封存的来源与当前磁盘逐项一致，不一致就拒绝；然后只保留 reset 成功的行，
-  每个环境按 `--select`（默认 `0,3,6`）标 `selected=true`，写出 `specs.jsonl`。目标文件已存在时拒绝覆盖。
-
-**V5 对应**（`v4_specs` 的 `--sampling-config` 默认仍指 V4 快照，V5 必须显式传 `scripts/configs/newtask-v5/sampling_config.json`，否则 header 会封存 V4 配置）：
-
-```bash
-uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v5-01 --tasks all --sampling-config scripts/configs/newtask-v5/sampling_config.json --candidates-per-env 10 --max-reset-attempts 30 --workers <抽签并行数> --gpus 0,1 --out artifacts/newtask-v5/v5-01/draft/drafts.jsonl
-```
-
-```bash
-uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl --sampling-config scripts/configs/newtask-v5/sampling_config.json --select 0,3,6 --candidates-per-env 10 --out scripts/configs/newtask-v5/v5-01/specs.jsonl
-```
-
-`--workers N` 按环境分给 N 个子进程抽签，结果与单 worker 逐行相同（5.2）。
-
-### 4.2 第二步：实跑（[parity/v4_rollout.py](parity/v4_rollout.py)）
-
-```bash
-uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v4/v4-01/specs.jsonl --label run1 --workers 12 --official-root artifacts/train-parity/local-smoke-01/official-src --output artifacts/newtask-v4/v4-01/rollout
-```
-
-```bash
-uv run --no-sync python -m scripts.parity.v4_specs reselect --specs scripts/configs/newtask-v4/v4-01/specs.jsonl --results artifacts/newtask-v4/v4-01/rollout/run1/results.jsonl --out scripts/configs/newtask-v4/v4-01/specs.selected.jsonl
-```
-
-- `run` 先跑每个环境 `selected=true` 的正式局。某局演示失败时，在本环境剩下的候选里按 `1,2,4,5,7,8,9` 的顺序递补，
-  直到凑满或者候选用完；不追加抽签，失败局照样留在分母里。每局的 h5 和视频落在 `<output>/<label>/episodes/`，
-  汇总在 `results.jsonl` 和 `summary.json`。调用链是 `train_split_runner.py --identity-source formula --no-recovery`
-  → `train_split_worker.run_one`。
-- 实跑完成后用 `reselect` 按成功局重标 `selected`，推理用它输出的这份快照。
-- 可选的重放检查：`run --label run2 --identities-from <run1/results.jsonl>` 严格重放第一遍跑过的全部身份，
-  再用 `compare <run1目录> <run2目录> --report-only` 对比。多 worker 下 RRT 的墙钟预算随负载变化，两遍之间允许少量不同，所以结果只作报告。
-
-**V5 对应**：
-
-```bash
-uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v5/v5-01/specs.jsonl --label run1 --tasks all --workers <实跑并行数> --gpu 0 --official-root artifacts/train-parity/local-smoke-01/official-src --output artifacts/newtask-v5/v5-01/rollout
-```
-
-```bash
-uv run --no-sync python -m scripts.parity.v4_specs reselect --specs scripts/configs/newtask-v5/v5-01/specs.jsonl --results artifacts/newtask-v5/v5-01/rollout/run1/results.jsonl --out scripts/configs/newtask-v5/v5-01/specs.selected.jsonl
-```
-
-- V5 实跑只跑一遍（口径 12），不跑 run2 / compare；递补规则同上。
-- `v5_generation pipeline` 只做抽签 → 冻结 → 实跑 → 报告，**不含 `reselect`**；要做推理时在实跑完成后手工补上面这条。
-
-### 4.3 第三步：推理（[eval/v4_eval.py](eval/v4_eval.py)）
-
-```bash
-uv run --no-sync python -m scripts.eval.v4_eval --specs scripts/configs/newtask-v4/v4-01/specs.selected.jsonl --max-steps 1300 --join-results artifacts/newtask-v4/v4-01/rollout/run1/results.jsonl --out artifacts/newtask-v4/v4-01/eval-all
-```
-
-- 逐局边跑边写 `eval_results.jsonl`，全部跑完写 `eval_summary.json`。给了 `--join-results` 时，收尾按身份与生成侧 join，
-  并打印 `EVAL_PIPELINE=...` 判定行。
-- 可选参数：`--tasks` 限定环境，`--limit-per-task` 限定每个环境评几局，`--action-space` 默认 `joint_angle`，`--model-seed` 默认 7。
-- 默认策略是 `DummyModel`，与 `scripts/evaluation.py` 里的同构，只用来验证链路；换成真实策略时替换 `v4_eval.py` 里的模型类即可。
-
-**V5 对应**：
-
-```bash
-uv run --no-sync python -m scripts.eval.v4_eval --specs scripts/configs/newtask-v5/v5-01/specs.selected.jsonl --max-steps 1300 --join-results artifacts/newtask-v5/v5-01/rollout/run1/results.jsonl --out artifacts/newtask-v5/v5-01/eval-all
-```
-
-V5 的 RouteStick 执行段最长 1050 步（L=21），仍在 1300 步预算内。
-
----
-
-## 第五节　V5：生成工具链与 V1 对拍
-
-计划见 [0924-newtask-release-v5-plan.md](../docs/plans/0924-newtask-release-v5-plan.md) 第三节（3.1 链路、3.2 判据、3.3 S4～S6）与第二部分「三、runbook」。
-V5 **沿用 V4 的脚本与封套**（`v4_specs` / `v4_rollout` 的 schema、`SEED_RULE`、不开 recover 的规则都不变），只换快照目录与 run id：
-快照 `scripts/configs/newtask-v5/`，run id `v5-01`，产物一律落 `artifacts/newtask-v5/`。V4 的配置与产物原样留档、不再引用（N15）。
-所有命令在仓库根目录执行；超过 5 分钟的一律用 detached tmux，等待用 Monitor 挂日志（AGENTS.md 规则 4）。
-环境侧的 V5 改动（配置字段、规格字段、行为）见第一节各环境开头的「V5：」标注与报告链接；快照、结果文件与推理侧的 V5 说明见第二～四节的「V5」段。
-
-### 5.1 S4：一次性重导快照
-
-```bash
-uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v5
-uv run --no-sync python scripts/parity/train_split_config.py extract --release newtask-v5 --verify   # 之后随时核对快照与源码一致
-uv run --no-sync python scripts/parity/train_split_audit.py config-map                               # SAMPLING_ORIGINAL=PASS tasks=16 value_mismatch=0 unmapped=0
-```
-
-`--release` 决定默认落点 `scripts/configs/<release>/sampling_config.json` 与快照里的说明文字；不带时仍是 `newtask-v4`，V4 命令与字节不变。
-
-### 5.2 S6：一条命令串起抽签 → 冻结 → 实跑 → 报告
-
-入口是 [parity/v5_generation.py](parity/v5_generation.py) 的 `pipeline`，它只按 `--release`／`--run-id` 推导落点，然后依次以子进程调用
-`v4_specs draw --workers <抽签并行数>` → `v4_specs freeze` → `v4_rollout run --workers <实跑并行数>` → `v5_generation report`，
-任一步失败即停（`PIPELINE_FAIL step=… exit=…`），全部完成打印 `PIPELINE_DONE`。
-
-```bash
-tmux new-session -d -s v5-gen "set -o pipefail; PYTHONUNBUFFERED=1 uv run --no-sync python -m scripts.parity.v5_generation pipeline \
-  --run-id v5-01 --draw-workers <抽签并行数> --draw-gpus 0,1 --workers <实跑并行数> --rollout-gpu 0 \
-  --official-root artifacts/train-parity/local-smoke-01/official-src \
-  2>&1 | tee artifacts/logs/v5-gen-v5-01.log; echo \"EXIT_CODE=\$?\" >> artifacts/logs/v5-gen-v5-01.log"
-# 等待：tail -n +1 -F artifacts/logs/v5-gen-v5-01.log | stdbuf -oL tr '\r' '\n' \
-#   | grep --line-buffered -E "PIPELINE_|DRAW_DONE|FREEZE_DONE|ROLLOUT_DONE|V5_GENERATION=|EXIT_CODE=|Error|Traceback"
-```
-
-| 参数 | 默认 | 含义 |
-|---|---|---|
-| `--run-id` | 必填 | run id，正式为 `v5-01` |
-| `--release` | `newtask-v5` | 快照与产物的目录名 |
-| `--draw-workers` / `--draw-gpus` | 1 / 沿用环境 | 抽签并行进程数；子进程按轮转领取物理 GPU 号写进 `CUDA_VISIBLE_DEVICES` |
-| `--workers` / `--rollout-gpu` | 1 / `0` | 实跑 runner 的并行 worker 数与 GPU 号（worker 把它写进 `CUDA_VISIBLE_DEVICES`，即物理编号） |
-| `--candidates-per-env` / `--max-reset-attempts` / `--select` | 10 / 30 / `0,3,6` | 口径 12：每环境攒 10 条 reset 成功、最多 30 次；按 index 0/3/6 选 3 条正式局 |
-| `--label` | `run1` | 实跑轮次标签；V5 只跑这一轮 |
-| `--resume` | 关 | 已有产物的步骤跳过（drafts／specs 本来就禁止覆盖；下游 freeze／run 仍会重新核验来源，陈旧产物会被拒） |
-| `--dry-run` | 关 | 只打印四步完整命令，不执行 |
-
-落点：抽签 `artifacts/newtask-v5/v5-01/draft/drafts.jsonl`；冻结 `scripts/configs/newtask-v5/v5-01/specs.jsonl`（进 Git）；
-实跑 `artifacts/newtask-v5/v5-01/rollout/run1/`（`results.jsonl`、`summary.json`、`episodes/<Task>_episode_<n>/` 下的 h5 与视频）；
-报告 `artifacts/newtask-v5/v5-01/report/generation_report.{md,json}`。
-
-等价的分步写法（与 `pipeline --dry-run` 打印的完全一致，可以手工 `&&` 串起来）：
-
-```bash
-uv run --no-sync python -m scripts.parity.v4_specs draw --run-id v5-01 --tasks all \
-  --sampling-config scripts/configs/newtask-v5/sampling_config.json --candidates-per-env 10 --max-reset-attempts 30 \
-  --workers <抽签并行数> --gpus 0,1 --out artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
-&& uv run --no-sync python -m scripts.parity.v4_specs freeze --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
-  --sampling-config scripts/configs/newtask-v5/sampling_config.json --select 0,3,6 --candidates-per-env 10 \
-  --out scripts/configs/newtask-v5/v5-01/specs.jsonl \
-&& uv run --no-sync python -m scripts.parity.v4_rollout run --specs scripts/configs/newtask-v5/v5-01/specs.jsonl \
-  --label run1 --tasks all --official-root artifacts/train-parity/local-smoke-01/official-src --workers <实跑并行数> --gpu 0 \
-  --output artifacts/newtask-v5/v5-01/rollout \
-&& uv run --no-sync python -m scripts.parity.v5_generation report --drafts artifacts/newtask-v5/v5-01/draft/drafts.jsonl \
-  --specs scripts/configs/newtask-v5/v5-01/specs.jsonl --rollout artifacts/newtask-v5/v5-01/rollout/run1 \
-  --candidates-per-env 10 --out artifacts/newtask-v5/v5-01/report
-```
-
-- **抽签多 worker**：`v4_specs draw --workers N` 按环境把任务分给 N 个 spawn 子进程（每进程独立 gym 环境）。每个环境的
-  (episode, attempt, seed) 序列只由 `SEED_RULE` 决定，与 worker 数无关；合并时 header 只有一份，行按 header 的任务序、
-  每环境内按抽签先后排列，**与单 worker 的 drafts.jsonl 逐行相同**（只有墙钟 `wall_s` 不同），freeze 直接读。`--workers 1`（默认）
-  与改动前逐字相同。任一环境的子进程崩溃（如段错误）时整体失败、不写 drafts。
-- **实跑**只跑一遍（口径 12），不跑 run2 / compare，H4 递补在本环境剩余候选里按 `1,2,4,5,7,8,9` 进行，不追加抽签。
-
-### 5.3 生成报告（`v5_generation report`）
-
-只读 drafts、specs、`results.jsonl`、各局 h5 与 `rng_trace.json`，打印计划 3.2 的判定行并写 markdown 与 JSON：
-
-```text
-V5_GENERATION=REPORT tasks=16 draft_ok=… rollout_ok=… backfilled=… selected_shortfall=… demo_frames_out_of_band=… outer_swap_mismatch=… bin_collision=… vr_min_participants=…
-```
-
-| 字段 | 怎么算 |
-|---|---|
-| `draft_ok` | 全部环境 reset 成功的候选数；逐环境表另列 `draft_attempted` / `candidate_shortfall`（= max(0, 10 − 成功数)）与抽签失败类别 |
-| `rollout_ok` / `backfilled` / `selected_shortfall` | 与 `v4_rollout run` 的 `summary.json` 同口径；逐环境表另列 `rollout_attempted` 与 `by_class`（失败局的 `error_type` 计数） |
-| `demo_frames_out_of_band` | PatternLock / RouteStick 每个成功局 h5 中 `episode_*/timestep_*/info/is_video_demo` 为真的帧数，落在 750～1050 之外的局数（口径 9；两环境取值见 1.15、1.16） |
-| `outer_swap_mismatch` | VideoUnmaskSwap / ButtonUnmaskSwap 每局：规格 `actions.distractor_swap_pairs` 的窗口数（及 rng_trace 里若有的运行时逐窗记录）≠ `objects.n_swaps` 的局数（口径 4；字段形状见 1.7） |
-| `bin_collision` | 实跑失败类别为 `BinCollisionError` 的局数；抽签期的同类失败另记在 JSON 的 `draft_bin_collision` |
-| `vr_min_participants` | VideoRepick 每局参与交换的不同方块数的最小值（口径 10，应为 6）：优先规格 `actions.swap_pairs.<k>`，缺失时用 rng_trace 的运行时记录（字段形状见 1.9） |
-
-字段名集中在 `v5_generation.py` 顶部的常量里；规格缺字段或形状认不出时对应项记 `N/A` 并在「提示」里写明，不会崩溃。
-
-### 5.4 S5：V1 原三档 16×9（144 条）逐位对拍
-
-比较器是 [parity/train_split_parity.py](parity/train_split_parity.py) 的既有 `run` / `compare`，不需要新代码。身份取默认的
-`scripts/configs/newtask-v3/subset_manifest.json`（144 行 = 16 任务 × easy/medium/hard × 3 局）。基线侧在基线提交的工作树里、
-V5 侧在 V5 工作树里各跑一遍**同一条命令**（本机、单 worker、相近负载，只跑 B 路）：
-
-```bash
-# <tree> 为该侧的工作树根目录，<side> 为 base 或 v5；两侧的 --output 都写到 V5 工作树下便于比较
-tmux new-session -d -s v5-v1-<side> "set -o pipefail; cd <tree>; CUDA_VISIBLE_DEVICES=0 PYTHONUNBUFFERED=1 \
-  uv run --no-sync python scripts/parity/train_split_parity.py run --paths B --workers 1 --gpus 0 \
-  --official-root /data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/train-parity/local-smoke-01/official-src \
-  --output <V5 工作树>/artifacts/newtask-v5/v1/<side> 2>&1 | tee <V5 工作树>/artifacts/logs/v5-v1-<side>.log; \
-  echo \"EXIT_CODE=\$?\" >> <V5 工作树>/artifacts/logs/v5-v1-<side>.log"
-```
-
-两侧都跑完后逐位比较（`compare_h5_pair`：先整文件 SHA-256，不同再逐路径比 dtype/shape/attribute/`tobytes()`，不设容差）：
-
-```bash
-uv run --no-sync python scripts/parity/train_split_parity.py compare \
-  --run base=artifacts/newtask-v5/v1/base --run v5=artifacts/newtask-v5/v1/v5 --pair base/B:v5/B \
-  --output artifacts/newtask-v5/v1/compare
-# 输出：H5_PARITY pair=base.B|v5.B compared=144 sha_equal=… field_mismatch=…
-#       （另有「仅一侧存在的身份」「伴生文件散列不同」两类提示行；逐局明细在 <output>/h5_pairs.jsonl）
-```
-
-判定：`compared=144 sha_equal=144 field_mismatch=0` 且没有「仅一侧存在」提示行，即计划的 `NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`。
-一侧演示失败没有 h5 的身份会计入 `field_mismatch`（记「hdf5 缺失或不唯一」），不会被静默跳过。
-⚠ 计划 runbook 里的 `run --subset 16x9` 与 `compare <dir> <dir>` 两种写法在代码里不存在，以本节为准。
+现行对应物：快照字段见 `src/robomme_hard/env_record_wrapper/hard_specs.py`（`hard-specs/2`：签 + 结果两段、`identity_sha256`／`delivery_sha256`）；抽签／冻结见 `injection-dev/freeze_specs.py`；实跑见 `injection-dev/generate_h5.py`；推理见 `dataset="test-hard"` 与 `scripts/evaluation_hard.py`；原三档对拍见 `parity/hard_parity.py`。
 
 ## 第六节　V6 四档新值发布
 
-范围与授权以 [V6 计划](../0925-newtask-release-v6-plan.md) 第 5.3 节为准；配置为 [V6 快照](configs/newtask-v6/sampling_config.json)。本节说明本轮用法，不把尚未完成的检查写成通过。
+范围与授权以 [V6 计划](../0925-newtask-release-v6-plan.md) 第 5.3 节为准；配置为包内 xhard4 规格 header 的 `sampling_config`（原 V6 快照 `configs/newtask-v6/sampling_config.json` 已删，与之逐任务相同）。本节说明本轮用法，不把尚未完成的检查写成通过。
 
 ### 6.1 档位、规模与失败预算
 
@@ -1003,7 +655,7 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare \
 | S2 新档演示探针 | 144 次固定身份尝试 | 每身份一次，失败留在分母，不补抽、不补跑 |
 | S3 原三档对拍 | 16 任务×3 档×3 局＝144 次 | 复用 S0 基线，同 seed，不换 seed 补成功，不比较任何新档 |
 | S4 候选 | 每格 10 成功或最多 60 次总抽签尝试，合计最多 3300 次 | 失败计入上限；不是每个候选各重试 60 次 |
-| S4 正式轨迹 | 每格首选候选 index `0,3,6`；最多尝试该格已有 10 候选，合计最多 550 次 | 按 `v4_rollout.BACKFILL_ORDER` 的 `1,2,4,5,7,8,9` 递补，成功 3 条或已有候选用尽即停 |
+| S4 正式轨迹 | 每格首选候选 index `0,3,6`；最多尝试该格已有 10 候选，合计最多 550 次 | 按当时 `BACKFILL_ORDER` 的 `1,2,4,5,7,8,9` 递补，成功 3 条或已有候选用尽即停 |
 | 额外抽样与重跑 | 0 | 不恢复额外 200 reset、分布补样、run2 或整批重跑 |
 
 候选不足、正式轨迹不足及各失败类别分别报告；**预算中的165是成功目标，最终实测亦为165程序成功，但另有2条已披露题意问题**。S2＋S3＋S4 的轨迹尝试总上限为 `144＋144＋550＝838`，不追加独立冒烟。逻辑候选／轨迹尝试与环境构造、显式 reset 调用不是同一计数；实际调用数没有记录时写“未观测”，不把 3300 当作所有阶段的 reset 调用总数。
@@ -1012,29 +664,28 @@ uv run --no-sync python scripts/parity/train_split_parity.py compare \
 
 本机汇集根为 `artifacts/newtask-v6/v6-01/`，四个档位分别落在 `xhard1/`、`xhard2/`、`xhard3/`、`xhard4/` 下。每档包含 `draft/drafts.jsonl`、`specs.jsonl`、`rollout/run1/` 与 `report/`；逐局 HDF5、视频及回放记录在 `rollout/run1/episodes/`。以实际清单核对存在性与完整性，不以目录存在认定完成。
 
-本轮生成沿用 [v5_generation.py](parity/v5_generation.py) 的 `pipeline --release newtask-v6 --tiers`，明确指定 `--seed-profile v6`、`--candidates-per-env 10`、`--max-reset-attempts 60`、`--select 0,3,6`，每个集群席位最多 16 worker。集群运行参数、席位和中转路径由本轮执行记录固定；不要直接运行第五节的 V5 示例，也不要把旧预备资料当作当前资源状态或额外生成授权。
+本轮生成当时沿用已删的 `parity/v5_generation.py`（见 git 历史）的 `pipeline --release newtask-v6 --tiers`，明确指定 `--seed-profile v6`、`--candidates-per-env 10`、`--max-reset-attempts 60`、`--select 0,3,6`，每个集群席位最多 16 worker。集群运行参数、席位和中转路径由本轮执行记录固定；不要直接运行第五节的 V5 示例，也不要把旧预备资料当作当前资源状态或额外生成授权。
 
 用户最新资源决定：原占位作业 `61890467`、`61890468` 跑完后继续保留，不自动取消；另提交相同规格的 48 小时占位作业 `62018665`、`62018666`，当前四席均保留。新增席位不等于新增生成、重跑或故障恢复预算授权，具体状态以实时调度查询为准。
 
 最终执行快照：550 个候选已足额；[候选取值报告](../artifacts/newtask-v6/s4-launch/verification/candidate-values.json) 已核对 520 个梯度候选，`CANDIDATE_VALUES=PASS`。S4 原运行143成功，获批恢复实际23次、22成功、1次真正任务失败，现共 **165程序成功、55格各3条、短缺0**；恢复最多76次的授权未用满，原成功及真正任务失败没有重跑。原60次基础设施失败与8次中断未知完整保留，不被恢复结果抹掉。实际交付身份以[最终清单](../docs/validation/newtask-v6/records/final-delivery.json)为准，不能遍历失败目录中的HDF5推断交付。S3已通过144条严格对拍；`accepted=true`仅指原V1及来源／文件闸门，清单另以`semantic_status=KNOWN_ISSUES`披露VPB/xhard3/episode3、6的题意问题。用户决定仅网站注明、不修数据，不把程序成功写成题意无缺陷。
 
-四份550条冻结规格已从原产物逐字复制至`configs/newtask-v6/v6-01/xhard1/specs.jsonl`、`xhard2/specs.jsonl`、`xhard3/specs.jsonl`、`xhard4/specs.jsonl`，四次`cmp`均退出0。规格中的`selected`是原首选；实际成功包含递补，例如InsertPeg/xhard4最终为episode 6、2、4。完整执行、失败与恢复边界见[S4报告](../docs/validation/newtask-v6/20260926-s4.md)。
+四份550条冻结规格当时逐字复制至`configs/newtask-v6/v6-01/`（拆包阶段 2 删除，git 历史可取回；S4 实际生成所用规格见 `configs/newtask-v6/v6-02/`）。规格中的`selected`是原首选；实际成功包含递补，例如InsertPeg/xhard4最终为episode 6、2、4。完整执行、失败与恢复边界见[S4报告](../docs/validation/newtask-v6/20260926-s4.md)。
 
 **S3 原三档严格对拍已真实通过：`NATIVE_REGRESSION=PASS compared=144 sha_equal=144 field_mismatch=0`。** 两侧各144个成功终态、75404时间步，身份完整，无单侧缺失；本轮证明不外推到新档题意。S2 的固定探针失败及 S4 的候选拒绝、递补、短缺照实报告，不通过重试挑成功，也不把媒体存在或进程退出 0 当作任务成功。完整结论见[S5总报告](../docs/validation/newtask-v6/20260926-final.md)。
 
 ### 6.3 纯离线核对候选实际取值
 
-入口 [v6_candidate_values.py](parity/v6_candidate_values.py) 只读取四档原始 drafts、V6 配置及来源指纹，不创建环境、不执行 reset。它逐条核对 **13×4×10＝520** 个梯度候选的实际取值与配置区间、身份覆盖及失败尝试信息；三个只有 `xhard4` 的任务不计入这 520 条。
+入口 [v6_candidate_values.py](injection-dev/site/v6_candidate_values.py) 只读取四档原始 drafts、V6 配置及各档来源指纹的一致性，不创建环境、不执行 reset。它逐条核对 **13×4×10＝520** 个梯度候选的实际取值与配置区间、身份覆盖及失败尝试信息；三个只有 `xhard4` 的任务不计入这 520 条。
 
 四档原始 drafts 汇集完整后，在仓库根执行一次，输出文件必须尚不存在：
 
 ```bash
-UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_candidate_values \
+UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python scripts/injection-dev/site/v6_candidate_values.py \
   --drafts artifacts/newtask-v6/v6-01/xhard1/draft/drafts.jsonl \
   --drafts artifacts/newtask-v6/v6-01/xhard2/draft/drafts.jsonl \
   --drafts artifacts/newtask-v6/v6-01/xhard3/draft/drafts.jsonl \
   --drafts artifacts/newtask-v6/v6-01/xhard4/draft/drafts.jsonl \
-  --sampling-config scripts/configs/newtask-v6/sampling_config.json \
   --out artifacts/newtask-v6/v6-01/report/candidate-values.json
 ```
 
@@ -1042,7 +693,7 @@ UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_cand
 
 ### 6.4 难度梯度与视频网站
 
-**现行版本为`artifacts/newtask-v6/site-v10/`。** VPB／VPO的30个样例按各自真实HDF5边界展示原子子目标，标签为人读表述（正确／干扰方块及颜色、台代号、按钮前／后第几次放置），列表上方给出中文题目问句并标出「题目所问」的那一步；方块身份由`v6_site_catalog.py::label_flow`按位置链从坐标反推并以源码档定值与题目颜色校验。只列“演示子目标／执行子目标”，切换样例同步切换列表；网页不再显示图像坐标（保留在审计JSON），连续同名静止保留。30样例逐项列表及播放的Playwright检查通过，页面错误0，移动截图核验通过。VPB顶部已知问题框保留；用户只要求网站注明，不改环境源码或数据、不补跑。213媒体与预览保持不变，下面全213播放结论属于v4的相同媒体。
+**现行版本为`artifacts/newtask-v6/site-v10/`。** VPB／VPO的30个样例按各自真实HDF5边界展示原子子目标，标签为人读表述（正确／干扰方块及颜色、台代号、按钮前／后第几次放置），列表上方给出中文题目问句并标出「题目所问」的那一步；方块身份由`injection-dev/site/v6_site_catalog.py::label_flow`按位置链从坐标反推并以源码档定值与题目颜色校验。只列“演示子目标／执行子目标”，切换样例同步切换列表；网页不再显示图像坐标（保留在审计JSON），连续同名静止保留。30样例逐项列表及播放的Playwright检查通过，页面错误0，移动截图核验通过。VPB顶部已知问题框保留；用户只要求网站注明，不改环境源码或数据、不补跑。213媒体与预览保持不变，下面全213播放结论属于v4的相同媒体。
 
 **v4历史验证：`artifacts/newtask-v6/site-v4/`包含16任务、71卡片、213个主视频，API确认每卡3个样例；213条真实界面逐视频测试全部通过，失败0、过短0、页面错误0。** 用户报告SwingXtimes/xhard4示例7的片段2／2无法观看，Playwright复现该尾片只有1帧、0.033333秒，播放约50毫秒即结束。原251文件中38个`NO_OBJECT`尾片只有1～4帧，现仅从展示目录排除，原数据保留。
 
@@ -1050,11 +701,11 @@ UV_CACHE_DIR="$HOME/.cache/uv" uv run --no-sync python -m scripts.parity.v6_cand
 
 网站地址：[V6难度梯度与视频](http://141.212.115.116:8060/)。按用户要求逐任务、逐难度单独介绍梯度并提供视频，不合并成一张表。历史v3为16任务、71张卡片、251个视频文件；来源为165条新值程序成功轨迹与48条原hard轨迹，部分轨迹含多个视频文件。现行213主视频剔除了展示中的38个状态尾片。S3已由独立真实对拍证明通过，网站只展示视频与难度，不替代该证明；VPB题意问题按用户决定明确保留。
 
-目录生成入口为 `uv run --no-sync python -m scripts.parity.v6_site_catalog`，默认输出初版`artifacts/newtask-v6/site/`；当前服务明确使用`artifacts/newtask-v6/site-v10/`，不能误用默认目录替代。生成器拒绝覆盖已有目录文件，不为重建网站重跑任何轨迹。服务运行在唯一tmux会话`v6-gradient-site-8060`，实际入口为：
+目录生成入口为 `uv run --no-sync python scripts/injection-dev/site/v6_site_catalog.py`，默认输出初版`artifacts/newtask-v6/site/`；当前服务明确使用`artifacts/newtask-v6/site-v10/`，不能误用默认目录替代。生成器拒绝覆盖已有目录文件，不为重建网站重跑任何轨迹。服务运行在唯一tmux会话`v6-gradient-site-8060`，实际入口为：
 
 ```bash
 UV_CACHE_DIR="$PWD/artifacts/cache/uv" PYTHONUNBUFFERED=1 uv run --no-sync python \
-  -m scripts.parity.v6_site --host 0.0.0.0 --port 8060 \
+  scripts/injection-dev/site/v6_site.py --host 0.0.0.0 --port 8060 \
   --site-dir artifacts/newtask-v6/site-v10
 ```
 

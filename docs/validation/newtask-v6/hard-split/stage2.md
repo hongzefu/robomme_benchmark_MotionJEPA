@@ -47,3 +47,7 @@ TESTS_COLLECT=PASS errors=0 stray_official=0  （pytest tests/ --collect-only：
 ## 四、预算计数
 
 本阶段 reset 2（FREEZE_ONLY_JSONL），rollout 4（ROLLBACK_WRITE 1 + NATIVE_SMOKE 2 + HARD_EVAL_SMOKE 1）。累计：rollout 4／638；纯 reset 3 + rollout 各 1 = 7／715。
+
+## 附：阶段 5 重写两份 README 后复跑零命中闸门（2026-09-28）
+
+原命令 `git grep -n 'v4_specs\|v4_rollout\|v5_generation\|scripts.eval' -- scripts src tests` 由 73 处降到 41 处，逐文件：injection-dev 各模块 docstring 的来历说明（`_draw`、`_freeze`、`_report`、`_rollout`、`site_io` 各 1）、`migrate_smvla_specs.py` 7（按固定提交 `git show` 历史原文 + 说明）、`site/v6_tier_monotone.py` 8（CLI 文案与被测试断言的 `sample_source` 字符串）、`hard_regression.py` 1（正则误中 `scripts/evaluation_hard.py`）、两份 README 共 5（历史说明）、`hard_builder.py` 1（保留的方法名 `from_v4_specs`）、`hard_specs.py` 2（来历说明）、tests 12（测试名、注释、正则误中 `scripts/evaluation.py`）。按原判据仍记 FAIL；严格版（导入已删模块）= 0。
