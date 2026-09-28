@@ -9,6 +9,9 @@
 > 4. 「保证接口和现在一致 /data/hongzefu/robomme_benchmark_MotionJEPANewTask/scripts/README.md」
 > 5. 「修改完定为v7的task」
 > 6. 「拍链路（parity/）只需要原三档 144 局清单（16 任务 × 3 档 × 3 局）和新的v7 两次生成一致」
+> 7. 「需要修改parity机制 我要的是每次都和保存完的o对比 p读取之前的commit 来对比 给这个commit锚定要打上tag 每次都是oph o上传 p回到之前commit 以及h现在 不要以修改前后 每次都锚定固定的commit 以后都这么干」
+> 8. 「对于v7 现在这个commit已经做完之前的v6 oph parity 修改后再做一次v6的oph parity 然后存档 之后都只以新的v7 打tag做parity」「验证过的commit就不用再次验证了」「另外这些都是基于a40 的容差标准？」
+> 9. 细化方案经用户回复「同意」（2026-09-28）；三个待定项用户未另选，按推荐落定：v6 xhard 165 局纳入 v6 回归、O 以本机 `/data` + 逐局 sha 清单为准（bucket 被 HF 计费拒绝）、tag 名 `parity-anchor-v6`／`parity-anchor-v7`。
 >
 > 上一轮（12.222）关于 xhard0 数量的最后决定：「和test的hard数量一致」→ 每任务 12 局。本文对原话 1 里「每个task episode数量和以前一致」的解读：**xhard0 每任务 12 局（沿用 12.222 决定），xhard1～4 每格仍 20 局（与现在一致）**。若用户本意是 xhard0 也取 20 局，只需改第一部分 §2 的数量表与 xhard0 身份来源（那样就不能再是官方 test 的 hard 子集，见 §2 末的说明），其余机制不变。
 
@@ -29,8 +32,11 @@
 | D-5 | 梯度维度与数值逐字沿用现行四档表（`scripts/README.md` 第 3 节），本轮不改任何梯度取值 | 原话 2 附表 |
 | D-6 | 接口与 `scripts/README.md` 第 1 节四处差别完全一致：`dataset="test-hard"`、`resolve_episode → (seed, tier)`、`TIER_MAX_STEPS[tier]`、`make_env_for_episode(ep, max_steps=…)`；只多一个档名 `xhard0` 与一个步数项 `1300` | 原话 4；§4 |
 | D-7 | 发布名 v7：包内规格换成 `hard-specs/3`（含 v7 seed 规则与母布局字段），产物落 `artifacts/newtask-v7/`，留档落 `docs/validation/newtask-v7/`；V6 规格文件由 git 历史保留 | 原话 5；§5 |
-| D-8 | 对拍只做两条：`PARITY_O_H`（原三档 144 局清单，官方 vs `robomme_hard` 原生路径）与 `PARITY_V7_TWICE`（v7 全部正式局两次生成，同型号 A40、不同作业）；容差沿用现行 `hard-parity-tolerances.json`，不重标 | 原话 6；§6 |
+| D-8 | 对拍分两类：v6 回归 OPH（D-11/D-12，取代原「只做 `PARITY_O_H`」）与 `PARITY_V7_TWICE`（v7 全部正式局两次生成，同型号 A40、不同作业）；容差沿用现行 `hard-parity-tolerances.json`，不重标 | 原话 6；§6 |
 | D-9 | 集群侧生成一律 A40@greatlakes 占位 job；两次生成必须同型号同驱动，否则只能做容差内一致、不能报 sha 相等数 | §7「多卡容差」 |
+| D-11 | **parity 锚点机制（以后都这么做）**：O = 官方 `1fadc0ec` 的存档产物，只生成一次、永久复用；P = 打 tag 的**固定锚点 commit** 的产物（不再是「修改前」）；H = 当前 HEAD。每次对拍都比 O:P、P:H、O:H。产物按 commit sha 缓存，**已验证过的 commit 不再重新生成**，P 侧直接复用它当年作为 H 的产物 | 原话 7、8；§6.1 |
+| D-12 | v7 顺序：`ce3843b4` 打 tag `parity-anchor-v6`（v6 OPH 已在其等价代码上完成）→ 实施 v7 → 以 `parity-anchor-v6` 为 P 再跑一次 v6 OPH（原三档 144 + v6 xhard 165）并存档 → v7 验收全过后打 tag `parity-anchor-v7`，此后 P 一律取 `parity-anchor-v7` | 原话 8、9；§6.1 |
+| D-13 | 容差只在 A40 上成立：O/P/H 三侧与缓存复用都要求 A40 + 同驱动（595.71.05）；驱动或型号不同的缓存不得作 P，只能重新生成 | 原话 8；§7 |
 | D-10 | 母布局候选数、递补规则、xhard0 是否另生成 h5 等取整类细节由 agent 自定并写进本文，不再逐项询问（用户 2026-09-24「以后四舍五入这种问题都不要来找我」） | 记忆规则 |
 
 ## 2. 数量：v7 每任务多少局、编号怎么排
@@ -138,12 +144,34 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 | 母布局共用 | 静态：xhard1～3 每行 `layout_parent.sha256 == xhard4 同候选 spec_sha256`，且该行 spec 里每个白名单路径的值等于母值（列表取前缀、逐项路径取子集）；四档 `seed` 相同 | 四档确实是同一批 20 个布局 | `V7_LAYOUT_SHARED=PASS tasks=13 layouts=20 tiers=4 rows=780 parent_mismatch=0 seed_mismatch=0` |
 | 梯度单调 | 对每任务每布局，四档在用户指定维度的实际值按档非降且落在各档区间（沿用 `site/v6_tier_monotone.py` 口径） | 只有梯度不同，且梯度确实分档 | `V7_TIER_MONOTONE=PASS cells=55 violations=0` |
 | 回注零差 | 每格取 1 局经评估链 `make_env_for_episode` + `reset` 后 `spec_binding`：`injected_mismatch==0`，派生局 `layout_injected==|L 白名单命中数|`，`unused` 只含母布局多出的逐项路径 | 评估时建出的场景与生成时同一局 | `V7_RESET_REPLAY=PASS shape=13x3+16 injected_mismatch=0 layout_drift=0` |
-| 原三档一致 | `hard_parity generate --tier native` O 侧（官方 `1fadc0ec` worktree + 官方 `_worker`）与 H 侧（`robomme_hard` 镜像 worker），A40，`compare --pair O:H --tier native` | `robomme_hard` 的原生路径（xhard0 所走的路径）与官方行为一致 | `PARITY_O_H=PASS tier=native shape=16x3x3 compared=144 tol_over=0`（`sha_equal` 作参考） |
+| v6 回归 OPH | O 存档、P = `parity-anchor-v6` 缓存、H = v7 HEAD 新生成（A40），§6.1 | v7 没改变官方原生路径与 v6 回注行为 | `PARITY_ANCHOR=PASS`；`PARITY_O_P`/`P_H`/`O_H=PASS tier=native shape=16x3x3 compared=144 tol_over=0`；`PARITY_P_H=PASS tier=xhard shape=13x3x3+16x3 compared=165 tol_over=0` |
 | v7 两次生成一致 | gen1 用 `generate_h5 --mode continue` 出正式 1100 局；gen2 用 `--mode replay --identities <gen1 交付清单>` 在另一占位 job（同型号 A40、同驱动）重放；`compare --pair H:H2 --tier v7` | 规格 → h5 的映射确定，只剩 RRT 墙钟噪声 | `PARITY_V7_TWICE=PASS shape=13x3x20+16x1x20 compared=1100 tol_over=0`（`sha_equal` 作参考） |
 | 官方冻结 | `upstream_guard.py check --require-upstream`；三入口与录像器零 diff | 基线没被改写 | `UPSTREAM_GUARD=PASS` |
 | 入口冒烟 | `hard_regression.py eval-smoke --task BinFill --episode 0`（xhard0 局）与 `--episode 12`（xhard1 局） | 评估入口两类局都能起 | `HARD_EVAL_SMOKE=PASS episodes=2` |
 
 为什么这些判据能成立：身份类判据是纯静态集合比对；`V7_LAYOUT_SHARED` 比的是规格文件里的值树，不依赖运行；回注零差靠 `SpecRecorder` 的「抽一次核随机流、用冻结值」机制（第 3.2 节）；两条对拍在同型号同驱动 A40 上做，这是 §7 说明的逐位边界，所以才允许把 `sha_equal` 当参考数、把容差当判定。
+
+### 6.1 parity 锚点机制（D-11～D-13）
+
+**三侧定义**（`hard_parity.py` 的 `SIDES` 不变，含义改）：
+
+| 侧 | 来源 | 生成频率 | 存放 |
+|---|---|---|---|
+| O | 官方 `1fadc0ec` worktree + vendor `_worker` | 只生成一次（阶段 4 已有 O-native 144 局，A40/595.71.05） | 本机 `artifacts/newtask-v6/hard-split/h5/O-native`，逐局 sha 清单；bucket 续传待 HF 计费恢复，不阻塞 |
+| P | `git tag parity-anchor-*` 指向的 commit | **不重跑**：复用该 commit 作为 H 时的已验证产物 | 缓存登记表 `docs/validation/parity-anchors.json`（新文件） |
+| H | 当前 HEAD | 每次修改后生成 | `artifacts/<版本>/parity/H-<短sha>-<tier>` |
+
+**缓存登记表** 每条：`tag`、`commit`、`tier`、`h5_root`、`identities_sha256`（逐局 sha 清单的哈希）、`gpu_model`、`driver`、`generated_at_commit`（产物实际生成时的 src_commit）、`equivalence`（若 tag commit ≠ 生成 commit，记 `git diff --stat <生成> <tag> -- src/robomme_hard scripts/parity scripts/injection-dev` 为空或仅文档的核验结论）、判定行原文。`hard_parity.py compare` 取 P 侧前先核：tag 解析出的 sha == 登记 `commit`、逐局 sha 重算相等、GPU/驱动与 H 侧相同；任一不符 → `PARITY_ANCHOR=FAIL`，不比。
+
+**「验证过就不再验证」的边界**：只省去重新生成 O 与 P；每次改动后的 H 必须新生成并比三对。锚点 tag 一经打上不移动、不删除（tag push 到远端）。
+
+**v7 这一轮**：
+1. 阶段 0 核等价：阶段 4 的 H 产物生成于 12.208.x 的代码，读各段 `launch-*.json::src_commit`，确认它到 `ce3843b4` 的 diff 在 `src/robomme_hard`、`scripts/parity`、`scripts/injection-dev` 下只有文档／搬路径、无行为改动 → `ANCHOR_EQUIV=PASS`；然后 `git tag parity-anchor-v6 ce3843b4 && git push origin parity-anchor-v6`，登记 H-native 144 与 H-xhard-r2 165 为该 tag 的 P 缓存。
+2. v7 实施完（阶段 1～5）后，H = v7 HEAD 在 A40 上生成原三档 144 与 v6 xhard 165（v6 xhard 用 `git show ce3843b4:` 取回的 v6 四份规格经 `--specs-root` 回放，验证 v7 回注链路对无 `layout_parent` 的旧规格行为不变）。
+3. 比 O:P、P:H、O:H（native）与 P:H（xhard，O 侧无 xhard）→ 存档 `docs/validation/newtask-v7/v6-regression.md`。
+4. v7 全部判定行 PASS 后 `git tag parity-anchor-v7 <v7 定稿 commit>`，登记 v7 H 产物（native 144 与 gen1 1100 局）；此后所有改动的 parity 以它为 P。
+
+**判定行**：`PARITY_ANCHOR=PASS tag=parity-anchor-v6 commit=<sha> cached=144+165 sha_bad=0 gpu=A40 driver=595.71.05`；`PARITY_O_P`／`PARITY_P_H`／`PARITY_O_H tier=native shape=16x3x3 compared=144 tol_over=0`；`PARITY_P_H tier=xhard shape=13x3x3+16x3 compared=165 tol_over=0`。
 
 ## 7. 现在的「多卡容差」是多少、为什么
 
@@ -174,7 +202,9 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 | 3 单格冒烟（本机） | 1 任务 × 1 母布局 × 4 档：抽签 1 次 reset、派生 3 次 reset、生成 4 局 | `V7_LAYOUT_SHARED`（单格）、`V7_RESET_REPLAY`（单格） |
 | 4 正式抽签＋派生（GL，经 P3 一次性授权） | 16 任务 × 24 候选母布局 reset；13 任务 × 3 档 × 24 派生 reset | `V7_LAYOUT_SHARED`、`V7_TIER_MONOTONE` |
 | 5 gen1 生成 + gen2 重放（GL，两个占位 job） | 55 格 × 20 局 × 2 | `PARITY_V7_TWICE` |
-| 6 原三档对拍 | O 侧与 H 侧各 144 局（A40） | `PARITY_O_H` |
+| 0′ 锚点 | 核等价、打 `parity-anchor-v6`、写缓存登记表（§6.1 第 1 步） | `ANCHOR_EQUIV`、`PARITY_ANCHOR` |
+| 6 v6 回归 OPH | 只生成 H 侧：16 任务 × 3 档 × 3 局 = 144 + v6 xhard 165（A40），O/P 复用 | §6.1 判定行 |
+| 8′ 定锚 | 全部 PASS 后打 `parity-anchor-v7` 并登记 | `PARITY_ANCHOR tag=parity-anchor-v7` |
 | 7 回注回放与入口冒烟 | 每格 1 局经评估链 | `V7_RESET_REPLAY`、`HARD_EVAL_SMOKE` |
 | 8 发布与留档 | 替换包内四份 specs、删 V6 快照与迁移脚本、改 README 三份、`docs/validation/newtask-v7/`、bucket 上传、按清单 `scancel` | `BUCKET_SYNC`；`git diff --check` |
 
@@ -188,7 +218,7 @@ R1. `src/robomme/` 零改动（P2）；三个官方入口与录像器零 diff。
 R2. 不把 `"xhard0"` 加进 `difficulty.py::NEWVALUE_DIFFICULTIES`／`VALID_DIFFICULTIES`；xhard0 传给 `gym.make` 的 `difficulty` 是 `"hard"`（`normalize_robomme_difficulty` 不认 `"xhard0"`，`spec_kind_for` 据此选原值类别）。
 R3. 不改任何梯度取值（D-5）；`sampling_config` 由 `_extract.build_sampling(..., release="newtask-v6")` 提取的结果必须与 v7 xhard4 header 内嵌值相同（`tests/lightweight/test_sampling_config_split.py::test_v6_snapshot_matches_source` 继续钉死）。
 R4. 派生失败四档同步作废，不许单档换布局；失败不换 seed、不重试到成功；基础设施失败每身份最多重跑 1 次。
-R5. 对拍只做 D-8 两条；`--calibrate` 仍只允许 `O:P`，v7 不重标、不改容差文件；两次生成必须同型号同驱动（A40），`generate` 的 A40 断言保留。
+R5. 对拍按 D-8／D-11～D-13；O 与已登记的 P 缓存不重新生成，tag 不移动不删除；`--calibrate` 仍只允许 `O:P`，v7 不重标、不改容差文件；两次生成必须同型号同驱动（A40），`generate` 的 A40 断言保留。
 R6. reset／轨迹预算按 P3 一次性授权（§3 预算表），乘式写法（P5）；本方案不是启动许可。
 R7. 主会话唯一整合与提交者；子代理只读或按互斥文件集合改动；子代理不 commit、不 push。
 R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-dev/` 与 `scripts/parity/`。
@@ -261,6 +291,7 @@ R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-d
 |---|---|
 | `train_split_worker.py::run_one` | payload 增加可选 `layout_parent`；有则以 `derive` 模式构造 recorder；`spec_replay.json` 多写 `layout_injected`／`layout_drift` |
 | `train_split_runner.py` | 透传 `--layout-parents <jsonl>`；`--identity-source formula` 接受 v7 规则 |
+| `hard_parity.py`（锚点机制） | 新增 `anchor` 子命令（`register --tag --h5-root` 写 `docs/validation/parity-anchors.json`、`check --tag` 输出 `PARITY_ANCHOR`）；`compare` 的 P 侧改为 `--p-anchor <tag>` 从登记表取目录并先跑 `check`；`--calibrate` 仍只许 O:P |
 | `hard_parity.py` | `SIDES` 加 `H2`，`PAIRS` 加 `H:H2`，`TIERS` 加 `"v7"`（清单从 v7 四档 `delivered` 行导出，键 `task/tier/candidate/seed`，`xhard_rows` 同时接受 `tier` 与 `difficulty`）；`cmd_generate --tier native` 透传 `--metadata-root scripts/configs/newtask-v3/official_train`（取回后）；`cmd_compare` 的 `shape` 文案按 tier 取：native `16x3x3`、v7 `13x3x20+16x1x20`；`_binding_ok` 对 `H2` 与 `H` 同规则；`cmd_import_s4` 删除 |
 | `hard_regression.py` | `s4-subset` 删除；`reset-replay` 改为从 v7 四档每格取 candidate 最小的正式局（55 局）经评估链回放，判定 `V7_RESET_REPLAY`；新增 `layout-shared`（静态，`V7_LAYOUT_SHARED`）；`eval-smoke` 的局数断言改 `32 if XHARD4_ONLY else 92`，并接受 episode 0 为 xhard0（`available=False`）、episode 12 为回注局 |
 | `scripts/configs/newtask-v3/` | 从 `6e70c0bf` 取回 `subset_manifest.json` 与 `official_train/`（只读清单，不再删除；P1 允许 `configs/` 子目录） |
@@ -279,7 +310,7 @@ R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-d
 | 派生 reset（阶段 4） | 13 任务 × 3 档 × 24 候选 = 936 次，每候选只 1 次、失败不重抽 | ≤ 936 次 reset |
 | gen1 轨迹（阶段 5） | (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100 局；同步递补上限每格 4 → 55 格 × 4 = 220 | ≤ 1320 次轨迹 |
 | gen2 轨迹（阶段 5） | 1100 正式局重放；基础设施失败每身份最多 1 次 | ≤ 1100 + 1100 |
-| O:H 原三档（阶段 6） | 2 侧 × 16 任务 × 3 档 × 3 局 = 288 | ≤ 288（+ 基础设施重跑 ≤ 288） |
+| v6 回归 H 侧（阶段 6，O/P 复用不重跑） | 16 任务 × 3 档 × 3 局 = 144 + (13 任务 × 3 档 + 16 任务 × 1 档) × 3 局 = 165 | ≤ 309（+ 基础设施重跑 ≤ 309） |
 | 回注回放（阶段 7） | 13 × 3 + 16 = 55 次 reset | 55 |
 | 本机冒烟（阶段 3） | 1 任务 × (1 + 3) reset + 4 局 | 4 reset、4 轨迹 |
 
@@ -305,7 +336,6 @@ uv run --frozen --no-sync python scripts/injection-dev/freeze_specs.py --tier xh
 uv run --frozen --no-sync python scripts/injection-dev/derive_specs.py --parent <NFS>/v7/xhard4/specs.jsonl --tiers xhard1,xhard2,xhard3 --out-root <NFS>/v7 --workers 16 --gpus 0
 uv run --frozen --no-sync python scripts/injection-dev/generate_h5.py --mode continue --specs-root <NFS>/v7 --output <NFS>/v7/gen1 --workers 16 --gpu 0
 uv run --frozen --no-sync python scripts/injection-dev/generate_h5.py --mode replay --identities <NFS>/v7/gen1/final-delivery.json --specs-root <NFS>/v7 --output <NFS>/v7/gen2 --workers 16 --gpu 0
-uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side O --tier native --manifest scripts/configs/newtask-v3/subset_manifest.json --src-root <1fadc0ec worktree> --workers 16 --gpu 0 --out /tmp/hs/O-native --stage <NFS>/hs-stage/O-native
 uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side H --tier native --manifest scripts/configs/newtask-v3/subset_manifest.json --workers 16 --gpu 0 --out /tmp/hs/H-native --stage <NFS>/hs-stage/H-native
 
 # 本机比对
