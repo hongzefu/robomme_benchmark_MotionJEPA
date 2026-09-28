@@ -29,14 +29,14 @@ def _find_repo_root() -> Path:
     """脚本可能被放到仓库外执行（例如集群上的临时目录），所以按标志文件定位仓库。"""
     here = Path(__file__).resolve().parents[2]
     for candidate in (here, Path.cwd(), *Path.cwd().parents):
-        if (candidate / "scripts" / "seed_layout.py").exists():
+        if (candidate / "scripts" / "injection-dev" / "seed_layout.py").exists():
             return candidate
     return here
 
 
 REPO_ROOT = _find_repo_root()
 sys.path.insert(0, str(REPO_ROOT / "src"))
-sys.path.insert(0, str(REPO_ROOT / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
 
 from seed_layout import ALL_TASKS  # noqa: E402
 

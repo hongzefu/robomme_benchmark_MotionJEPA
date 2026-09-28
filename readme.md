@@ -109,7 +109,7 @@ The environment input/output format is described in [doc/env_format.md](doc/env_
 The repository includes a complete 16-task × 100-episode HDF5 generation workflow in a single
 entry point, [scripts/generate_dataset_newseed.py](scripts/generate_dataset_newseed.py). Seeds are
 computed by the formula `offset + env_code*env_block + episode*100 + attempt` (see
-[scripts/seed_layout.py](scripts/seed_layout.py)) rather than read from a table, and a failed
+[scripts/injection-dev/seed_layout.py](scripts/injection-dev/seed_layout.py)) rather than read from a table, and a failed
 episode is automatically retried with `attempt+1`. One process pool per GPU; each worker is bound
 to its card for life.
 

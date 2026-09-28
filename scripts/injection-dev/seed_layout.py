@@ -13,6 +13,8 @@
 迁到根 ``scripts/``。原先靠 ``sys.path`` 跨目录从 ``data-generation/validate_generated_dataset_contract.py``
 导入的 ``ALL_TASKS``、``MAX_EPISODES``、``DatasetContractError``、``parse_tasks`` 一并迁入本文件，
 四项的取值与判定逐字保持原样。迁入后本文件只依赖标准库（原路径会传递依赖 h5py/numpy）。
+
+12.214 起本文件由 ``scripts/`` 顶层移到 ``scripts/injection-dev/``（用户 2026-09-28 指令：从 git 工作树删除旧位置、只在历史里保留），公式与函数体逐字不变；调用方把 ``scripts/injection-dev`` 插入 ``sys.path`` 后按模块名导入。
 """
 
 from __future__ import annotations

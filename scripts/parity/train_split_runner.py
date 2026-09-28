@@ -48,7 +48,7 @@ def _check_vendor(official_root: Path) -> str:
 
 def _metadata_records_sha256(metadata_root: Path) -> str:
     """十六份 train 元数据 records 按任务规范序串接的 sha256（与 subset_manifest.json::records_sha256 同口径）。"""
-    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
     from seed_layout import ALL_TASKS  # noqa: PLC0415
 
     joined: list = []

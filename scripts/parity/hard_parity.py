@@ -6,17 +6,19 @@ worktree，官方 ``_worker``）；H 修改后（拆包后 HEAD，``--force-mirr
 判定是「行为一致」（用户 U-1）：身份、setup、结构、任务成功全等才 PASS；动作／状态／图像／帧数四项差异按
 ``scripts/configs/hard-parity-tolerances.json`` 的阈值判（U-19）；sha 相等数等只作参考。
 
+原三档（``--tier native``）的 144 局清单 ``subset_manifest.json`` 原在 ``scripts/configs/newtask-v3/``，12.214 起已从工作树删除（用户 2026-09-28 指令：只保留对拍容差与 v6 采样设计）；需要重跑原三档对拍时用 ``git show 6e70c0bf:scripts/configs/newtask-v3/subset_manifest.json`` 取回（6e70c0bf 是删除前最后一个含该文件的提交，即 12.213）。
+
 子命令::
 
     # 生成（GL 节点；--stage 给 NFS 暂存目录时每局 sha256 后搬到暂存并删本地副本）
     uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side O --tier native \
-        --manifest scripts/configs/newtask-v3/subset_manifest.json --src-root <1fadc0ec worktree> \
+        --manifest <原三档 144 局清单 subset_manifest.json> --src-root <1fadc0ec worktree> \
         --workers 16 --gpu 0 --out /tmp/hs/O-native --stage <NFS>/hs-stage/O-native
     # 上传 bucket 并逐对象读回核对（sled-vail）
     uv run --no-sync python scripts/parity/hard_parity.py publish --side O --tier native
     # 比对（sled-vail，读 /data 上的拉回目录）
     uv run --no-sync python scripts/parity/hard_parity.py compare --pair O:P --tier native \
-        --manifest scripts/configs/newtask-v3/subset_manifest.json --calibrate
+        --manifest <原三档 144 局清单 subset_manifest.json> --calibrate
 
 ``generate`` 默认断言 GPU 型号为 A40；``--dev-smoke`` 放行本机 Ada（开发冒烟，``NATIVE_SMOKE``）。
 """

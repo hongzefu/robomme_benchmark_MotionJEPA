@@ -30,9 +30,9 @@ import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-# 本文件在 scripts/parity/ 下，而 seed_layout 留在 scripts/ 顶层，须先接上再导入。
-if str(REPO_ROOT / "scripts") not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+# 本文件在 scripts/parity/ 下，而 seed_layout 位于 scripts/injection-dev/，须先接上再导入。
+if str(REPO_ROOT / "scripts" / "injection-dev") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
 
 from seed_layout import (  # noqa: E402
     ALL_TASKS,

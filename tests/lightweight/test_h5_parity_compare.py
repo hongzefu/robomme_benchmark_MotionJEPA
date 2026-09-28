@@ -21,9 +21,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tests._shared.repo_paths import find_repo_root  # noqa: E402
 
 REPO_ROOT = find_repo_root(__file__)
-# 对拍链路已迁入 scripts/parity/；seed_layout 仍在 scripts/ 顶层，两处都要进 sys.path。
+# 对拍链路已迁入 scripts/parity/；seed_layout 位于 scripts/injection-dev/，两处都要进 sys.path。
 SCRIPTS_DIR = REPO_ROOT / "scripts"
-for _entry in (SCRIPTS_DIR, SCRIPTS_DIR / "parity"):
+for _entry in (SCRIPTS_DIR / "injection-dev", SCRIPTS_DIR / "parity"):
     if str(_entry) not in sys.path:
         sys.path.insert(0, str(_entry))
 

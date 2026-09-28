@@ -45,7 +45,7 @@ SEED_RULE = {"offset": 4_000_000, "env_block": 100_000, "episode_stride": 100,
 V6_SEED_OFFSETS = {"xhard4": 6_000_000, "xhard1": 8_000_000, "xhard2": 10_000_000, "xhard3": 12_000_000}
 SEED_PROFILES = ("v5", "v6")
 MAX_ATTEMPTS = 100
-#: 16 任务规范序（与 scripts/seed_layout.py::ALL_TASKS 逐字相同；src 不反向依赖 scripts）
+#: 16 任务规范序（与 scripts/injection-dev/seed_layout.py::ALL_TASKS 逐字相同；src 不反向依赖 scripts）
 ALL_TASKS = (
     "PickXtimes", "StopCube", "SwingXtimes", "BinFill", "VideoUnmaskSwap", "VideoUnmask",
     "ButtonUnmaskSwap", "ButtonUnmask", "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder",

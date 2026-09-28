@@ -19,9 +19,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tests._shared.repo_paths import find_repo_root  # noqa: E402
 
 REPO_ROOT = find_repo_root(__file__)
-# 对拍链路已迁入 scripts/parity/；seed_layout 仍在 scripts/ 顶层，两处都要进 sys.path。
+# 对拍链路已迁入 scripts/parity/；seed_layout 位于 scripts/injection-dev/，两处都要进 sys.path。
 SCRIPTS_DIR = REPO_ROOT / "scripts"
-for _entry in (SCRIPTS_DIR, SCRIPTS_DIR / "parity"):
+for _entry in (SCRIPTS_DIR / "injection-dev", SCRIPTS_DIR / "parity"):
     if str(_entry) not in sys.path:
         sys.path.insert(0, str(_entry))
 
@@ -58,23 +58,6 @@ def test_g5_fixtures_pass(official_modules, tmp_path) -> None:
     assert result["contiguous_mismatch"] == 0, result["notes"]
     assert result["sparse_mismatch"] == 0, result["notes"]
     assert result["invalid_accepts"] == 0, result["notes"]
-
-
-def test_manifest_scope_accepts_real_subset(official_modules) -> None:
-    """用冻结的 144 条子集与官方 metadata 实跑一次范围校验。"""
-    import json
-
-    contract, _ = official_modules
-    subset_path = REPO_ROOT / "scripts" / "configs" / "newtask-v3" / "subset_manifest.json"
-    if not subset_path.exists():
-        pytest.skip("子集 manifest 缺失；先运行 freeze-identities")
-    rows = json.loads(subset_path.read_text(encoding="utf-8"))["rows"]
-    records = contract.read_train_metadata(
-        REPO_ROOT / "scripts" / "configs" / "newtask-v3" / "official_train"
-    )
-    grouped = adapter.validate_manifest_scope(rows, records, contract.ALL_TASKS)
-    assert len(grouped) == 16
-    assert all(episodes == [0, 1, 2, 3, 4, 6, 7, 10, 11] for episodes in grouped.values())
 
 
 def test_scope_diff_is_limited_to_range_handling(official_modules) -> None:

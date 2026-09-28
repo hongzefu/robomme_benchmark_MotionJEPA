@@ -525,7 +525,7 @@ def _validate_v4_header(header: Mapping[str, Any], path: Path) -> tuple[str, str
 
 
 def _seed_env_code(task: str) -> int:
-    scripts_dir = str(REPO_ROOT / "scripts")
+    scripts_dir = str(REPO_ROOT / "scripts" / "injection-dev")
     if scripts_dir not in sys.path:
         sys.path.insert(0, scripts_dir)
     from seed_layout import env_code

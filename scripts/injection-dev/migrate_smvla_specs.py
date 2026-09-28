@@ -197,8 +197,8 @@ def drafts_stats(snapshot: str, tier: str) -> tuple[str, dict[str, Any]]:
 def legacy_validate(header: dict[str, Any], rows: list[dict[str, Any]]) -> bool:
     """用 55f1b027 的 v4_specs 原算法重算旧 identity_sha256（SPECS_IDENTITY 的 legacy 部分）。"""
     source = git(REPO, "show", f"{LEGACY_V4_COMMIT}:scripts/parity/v4_specs.py")
-    if str(REPO / "scripts") not in sys.path:  # 旧 v4_specs 从 scripts/seed_layout.py 取 SeedLayout
-        sys.path.insert(0, str(REPO / "scripts"))
+    if str(REPO / "scripts" / "injection-dev") not in sys.path:  # 旧 v4_specs 取 SeedLayout，现位于 scripts/injection-dev/seed_layout.py
+        sys.path.insert(0, str(REPO / "scripts" / "injection-dev"))
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "legacy_v4_specs.py"
         path.write_text(source)

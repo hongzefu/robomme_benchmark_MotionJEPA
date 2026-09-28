@@ -4,10 +4,10 @@
 
 | 位置 | 内容 |
 |---|---|
-| `seed_layout.py`、`dataset_replay.py`、`evaluation.py`、`run_example.py`、`evaluation_hard.py` | 五个顶层入口（P1）；后三者与官方逐字节相同；`evaluation_hard.py` 与 `evaluation.py` 只差 4 处（import、`dataset="test-hard"`、取 tier、按档 `max_steps`） |
-| `injection-dev/` | 新值档生产链路（不随包分发，路径直跑）：`freeze_specs.py`（第一阶段：定规则 → 抽签 → 封存，只落一份 jsonl）、`generate_h5.py`（第二阶段：continue 状态机回写／replay 只读重放）、`_extract/_draw/_freeze/_rollout/_report.py`、一次性迁移 `migrate_smvla_specs.py`；`site/` 为只读出图与候选核对工具 |
+| `dataset_replay.py`、`evaluation.py`、`run_example.py`、`evaluation_hard.py` | 四个顶层入口（P1）；前三者与官方逐字节相同；`evaluation_hard.py` 与 `evaluation.py` 只差 4 处（import、`dataset="test-hard"`、取 tier、按档 `max_steps`） |
+| `injection-dev/` | 新值档生产链路（不随包分发，路径直跑）：`freeze_specs.py`（第一阶段：定规则 → 抽签 → 封存，只落一份 jsonl）、`generate_h5.py`（第二阶段：continue 状态机回写／replay 只读重放）、`_extract/_draw/_freeze/_rollout/_report.py`、一次性迁移 `migrate_smvla_specs.py`、seed 公式与 16 任务规范序 `seed_layout.py`（12.214 自 `scripts/` 顶层移入，调用方把本目录插入 `sys.path` 后按模块名导入）；`site/` 为只读出图与候选核对工具 |
 | `parity/` | 只做「与官方比」：S0 基线设施 `train_split_*.py`、vendor 的官方编排 `official/`（`d53f21a7` 四文件）、G1 守卫 `upstream_guard.py`、三侧对拍入口 `hard_parity.py`、拉取 `hard_pull.py`、回归 `hard_regression.py`；详见 [parity/README.md](parity/README.md) |
-| `configs/` | `newtask-v3/`（原三档 144 身份清单与官方 train 元数据）、`newtask-v6/v6-02/`（S4 生成所用规格，只读留档）、`newtask-v6/smvla-smoke-0927/`、`hard-parity-tolerances.json`（对拍容差层阈值） |
+| `configs/` | 12.214 起只留两样：`newtask-v6/v6-02/`（S4 生成所用规格 xhard1～xhard4 四份 `specs.jsonl`，只读留档）、`hard-parity-tolerances.json`（对拍容差层阈值）。原 `newtask-v3/`（原三档 144 身份清单与官方 train 元数据）与 `newtask-v6/smvla-smoke-0927/` 已从工作树删除，用 `git show 6e70c0bf:<原路径>` 取回 |
 
 新值档环境源码在 `src/robomme_hard/`（`src/robomme/` 与官方 `1fadc0ec` 逐字节相同）；四档规格随包分发在 `src/robomme_hard/env_metadata/test-hard/xhardN/specs.jsonl`，评估用 `BenchmarkEnvBuilder(env_id, dataset="test-hard")`，说明见 [src/robomme_hard/README.md](../src/robomme_hard/README.md)。
 

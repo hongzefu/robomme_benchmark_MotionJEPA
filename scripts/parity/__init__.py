@@ -4,5 +4,5 @@
 ``uv run --no-sync python scripts/parity/train_split_parity.py <子命令>``，
 也可作包导入（``from scripts.parity import train_split_parity``）。
 模块之间沿用同目录裸 import，各入口自行把本目录插进 ``sys.path``；
-``seed_layout`` 仍在 ``scripts/`` 顶层。现行说明见 scripts/README.md 与本目录 README.md。
+``seed_layout`` 位于 ``scripts/injection-dev/``（12.214 自 ``scripts/`` 顶层移入）。现行说明见 scripts/README.md 与本目录 README.md。
 """

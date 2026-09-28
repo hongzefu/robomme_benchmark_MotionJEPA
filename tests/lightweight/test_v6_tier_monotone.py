@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tests._shared.repo_paths import find_repo_root  # noqa: E402
 
 REPO_ROOT = find_repo_root(__file__)
-sys.path.insert(0, str(REPO_ROOT / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
 sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev" / "site"))
 import v6_tier_monotone as M  # noqa: E402
 
