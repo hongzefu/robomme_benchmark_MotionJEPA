@@ -1,9 +1,10 @@
 # 0926 方案：`src/robomme_hard/` 独立包 + `scripts/evaluation_hard.py` 接口重构（只规划不实施）
 
-> **权威性**：本文件是「把 V6 新难度链路拆成独立包 `robomme_hard`、原包 `robomme` 回到上游原样」的实施方案；只规划，不实施，每一阶段须用户单独批准后才动手。**本方案与 P1（`scripts/` 顶层五入口冻结）、P2（`src/robomme/` 逐个批准）直接相关，第一部分「待用户裁决」一节列出的四项没有裁决前不得开工。**
+> **权威性**：本文件是「把 V6 新难度链路拆成独立包 `robomme_hard`、原包 `robomme` 回到上游原样」的实施方案；只规划，不实施，每一阶段须用户单独批准后才动手。**本方案与 P1（`scripts/` 顶层五入口冻结）、P2（`src/robomme/` 逐个批准）直接相关。**
+> **第三轮修订（2026-09-27，现行）**：拆包形态由「整包复制」改为「分层继承」，生成链路由四步改为两阶段 `scripts/injection-dev/`，jsonl 增加回写块。**现行方案全文在第一部分 §〇′（含技术细节）**；第一部分 §一～§三、第二部分 §一～§二、附录 A §五～§七是前两轮内容，保留原文供追溯，与 §〇′ 冲突处一律以 §〇′ 为准。阶段 0b（§0.3）已实施完毕，不受本轮影响。
 > **代码锚点**：本仓库 `newtaskRelease-v5` @ `bcd7d08`（12.194；2026-09-27 更新，原初稿锚点 `716f992`／12.174；工作区在途改动见红线 R7）；生产源码含审查修复 `ca32e9b`（12.188）；V5 原始锚点 `da77662`；V1 基线 `13e5151`；上游 `RoboMME/robomme_benchmark` `main` @ `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`（2026-09-26 `git ls-remote` 实测）。
 > **工作副本**：`/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（环境 A，sled-vail）。上游只读快照在会话 scratchpad `upstream/`（浅克隆，用后即弃，实施时按第二部分 §2.1 重新取）。
-> **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，接 12.195。
+> **commit 体例**：`<大>.<小>[.<修订>] <中文描述>`，第三轮修订起接 12.204（12.203 为阶段 0b 收尾）。
 > **前置状态（2026-09-27）**：`0925-newtask-release-v6-plan.md`（S0～S5）与 `0926-v6-audit-fix-plan.md`（8.4 四步）均已完成，本方案进入可实施状态；细节见第一部分 §〇。
 > **依赖锚点**：`uv.lock` / `pyproject.toml` 现状不变；本方案唯一的依赖侧改动是 `[tool.hatch.build.targets.wheel].packages` 增加 `src/robomme_hard`。
 > **对话来源**：用户 2026-09-26 转贴的与合作者的对话（逐字保留在第一部分 §一），本方案是对该对话「能否实现、怎么实现」的回答。
@@ -60,7 +61,439 @@
 
 与上表不同之处：`docs/validation/newtask-v2/` 保留（依步骤 5「原地保留」）；`INJECTION_REFACTOR_PLAN.md`、`NEWTASK_V2_PLAN.md` 移入 `docs/plans/` 而非删除；另删两份孤儿测试 `test_parallel_calibration.py`、`test_episode_action_sampling.py`。
 
-## 一、env make 的接口：外层多传什么、内部多传什么
+## 〇′、第三轮修订（2026-09-27）：分层继承的双包 + 两阶段 `scripts/injection-dev/` + 可回写的单一 jsonl（现行方案，含技术细节）
+
+> **授权边界**：本节只规划不实施。实施按 §〇′.9 阶段表逐阶段进行；阶段 3（`src/robomme` 回退）触碰 P2，须用户逐个批准；阶段 4 的生成预算按 §〇′.8 一次性申请。
+> **代码锚点**：本仓库 `newtaskRelease-v5` @ `7c7118fa`（12.203，阶段 0b 收尾）；上游 `RoboMME/robomme_benchmark` `main` @ `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`；官方隔离源码树 `artifacts/train-parity/local-smoke-01/official-src/`（`.official_tree` = `1d4c13697f0c5fbd7a8b05e01c196c984a07406c`，是 tree sha 不是 commit sha，两者对应关系阶段 0 用 `git rev-parse 1fadc0ec^{tree}` 核实）；现行规格 `scripts/configs/newtask-v6/v6-02/<tier>/specs.jsonl`（xhard1/2/3 各 130 行 + header，xhard4 160 行 + header，selected 行合计 165）；S4 交付清单 `artifacts/newtask-v6/s4-relaunch-02/verification/final-delivery.json`。
+> **本节体例**：本轮改动含代码，按正本第 2 条应分两部分；为避免与前两轮的第二部分交错，本节把「给人看」(§〇′.0～§〇′.8) 与「技术细节」(§〇′.9～§〇′.12) 合在同一节内顺序排列，前者内联全部关键锚点与判定行，后者只补前者没有展开的实现细节。
+
+### 〇′.0 用户原话与已定口径
+
+本轮对话（2026-09-27）中用户的关键指令，按时间顺序逐字保留：
+
+| 编号 | 原话 | 落到哪一条口径 |
+|---|---|---|
+| Q1 | 「能否改为两阶段 第一阶段 定规则 抽签 封存 只留一个jsonl 第二阶段 生成h5 这两阶段所有依赖全部放入 …/scripts/injection-dev」 | E-1、E-2 |
+| Q2 | 「…/scripts/parity这里负责用同样的方式 生成easy medium hard的16*3*3 并且进行对拍」 | E-9（取 A 解读，用户后续「其他都同意」） |
+| Q3 | 「是否能实现 …/episode_config_resolver.py …/evaluation.py benchmarkenvbuilder也会读取这一个jsonl 第一阶段 定规则 抽签 封存 只留一个jsonl这里走另外的方式 全部在 …/scripts/injection-dev这里实现 让用户只能看到一个定死的jsonl？」 | E-6、E-7 |
+| Q4 | 「第二阶段 生成h5 应该也只看jsonl 但是还要回写」 | E-3 |
+| Q5 | 「同意 …（第一阶段合成一个入口）这里只留内存 不要写入文件」 | E-2 |
+| Q6 | 「jsonl本身 放入 …/src/robomme/env_metadata这里 这样和之前的接口一致？」 | E-6（落点最终为 `src/robomme_hard/env_metadata/`，见 E-4 双包） |
+| Q7 | 「是否可以用双包 但是尽可能继承的模式？详细讲清楚」 | E-4 |
+| Q8 | 「robomme_hard 可单向 import robomme 的非注册模块同意 test可以先不管 xhard 侧的回归需要加入 另外是否可以加入更强的sha256或者commit校验没改动src robomme 环境类能否不要同名？… 我更倾向做法c 继续细化方案 从头开始讲」 | E-4、E-5、E-8、E-11、E-12 |
+| Q9 | 「同 id可以」 | E-5 |
+| Q10 | 「generate_dataset.py进git 其他都同意 写完整计划」 | E-10 及 §〇′.0 全部待定项 |
+
+**已定死口径**（每条注明依据小节）：
+
+- **E-1 两阶段生成链路**：第一阶段「定规则 + 抽签 + 封存」一个入口只产出一份 `specs.jsonl`；第二阶段「生成 h5」只读这份 jsonl。全部依赖放 `scripts/injection-dev/`（§〇′.5）。
+- **E-2 第一阶段中间量只在内存**：`sampling_config` 与 drafts 不再落盘；规则全文与抽签统计（`draw_stats`）写进 jsonl header（§〇′.5.1）。
+- **E-3 第二阶段回写**：每行增加 `rollout` 块（结果、递补、产物指纹、包指纹）；`identity_sha256` 只覆盖 header 规则部分与各行 `spec` 块；递补用「追加行 + 标记」，不改不删原行（§〇′.5.3）。
+- **E-4 双包 + 分层继承（做法 C）**：`src/robomme/` 回官方原样；`src/robomme_hard/` 只放差异——16 个环境类与被改过／新增的 utils **复制**，未改过的 utils 与 wrapper **借用**（单向 import `robomme`），`BenchmarkEnvBuilder` **子类化**；`robomme_hard` 借用的每个文件必须与官方 sha 相同（§〇′.2）。
+- **E-5 环境类同 id**：16 个环境仍注册为 `"BinFill"` 等官方 id；`robomme_hard` 的副本一律 `@register_env(<id>, override=True)`，并在包导入末尾断言注册表归属（§〇′.2.3）。
+- **E-6 jsonl 落点**：`src/robomme_hard/env_metadata/xhard{1,2,3,4}/specs.jsonl`，一档一目录一份，与官方 `env_metadata/<dataset>/` 形状一致（§〇′.6）。
+- **E-7 评估只看 jsonl**：`HardBenchmarkEnvBuilder(env_id, dataset="xhard3")` 自己读包内 jsonl；`scripts/evaluation.py` 与官方逐字节相同不动，`scripts/evaluation_hard.py` 为第五入口（D-1 已放行）（§〇′.6）。
+- **E-8 G1 强校验**：钉官方 40 位 commit + 逐文件 sha256 清单 `src/robomme_hard/UPSTREAM.json` + 守卫脚本 `scripts/parity/upstream_guard.py` + 导入时 cheap 档校验（§〇′.3）。
+- **E-9 `scripts/parity/` 职责取 A**：只做「与官方比」——S0 基线原三档 sha 对拍（`train_split_parity.py`）、V1′（`hard_parity.py`）、G1 守卫、xhard 侧回归；**不**让原三档再过一遍抽签→回注（§〇′.7）。
+- **E-10 官方执行代码进 git**：`generate_dataset.py` 及其三个兄弟依赖 vendor 到 `scripts/parity/official/`，记来源 commit 与逐文件 sha（§〇′.7.2）；`--official-root` 参数保留但默认指向 vendor 目录。
+- **E-11 `tests/` 先不管**：只保证 `--collect-only` 零 import 错误；测试语义修复另立任务。
+- **E-12 xhard 侧回归加入**：`HARD_RESET_REPLAY`（55 次回注 reset）+ `HARD_ROLLOUT_SHA`（16 局）+ `HARD_EVAL_SMOKE`（1 局），预算一次申请（§〇′.8）。
+- **E-13 D-3 维持**：四个 Unmask 系 train 元数据 400 条只留 `robomme_hard/env_metadata/train/`，`robomme` 回官方 100 条。
+- **E-14 `RecordWrapper.py` 不子类化而复制**：`fail_safe_limit` 是 `step()` 方法内部的字面量（`RecordWrapper.py::RobommeRecordWrapper.step`，约 310 行），子类覆写等于整段复制，直接复制文件更诚实（§〇′.2.1）。
+
+### 〇′.1 要保证什么
+
+| 编号 | 保证 | 靠什么 | 判定行 |
+|---|---|---|---|
+| G1 | `src/robomme/**` 与官方 `main` 逐字节相同 | 钉 commit + sha256 清单 + 守卫脚本（§〇′.3） | `UPSTREAM_BYTES=PASS commit=<sha> files=<n> diff=0 borrowed=<m>` |
+| G2 | `robomme_hard` 跑原三档，h5 与官方 S0 基线 sha 逐位相同 | V1′ 144 局（§〇′.7.1） | `NATIVE_REGRESSION_HARD=PASS compared=144 sha_equal=144` |
+| G3 | `robomme_hard` 跑 xhard 四档，与 S4 交付一致 | xhard 侧三道闸门（§〇′.8） | `HARD_RESET_REPLAY=PASS resets=55 mismatch=0`、`HARD_ROLLOUT_SHA=PASS compared=16 sha_equal=16`、`HARD_EVAL_SMOKE=PASS` |
+| G4 | 合作者只看到一份定死的 jsonl，接口与 `dataset="test"` 一致 | `HardBenchmarkEnvBuilder`（§〇′.6） | `SPECS_IDENTITY=PASS tiers=4 rows=550 selected=165`、`EVAL_PY_UPSTREAM=PASS ENTRIES=5` |
+| G5 | 同进程内 16 个环境 id 的归属唯一且可查 | `override=True` + 导入守卫 + 注册表归属断言（§〇′.2.3） | `REGISTRY_OWNER=PASS envs=16 owner=robomme_hard` |
+| G6 | 两阶段链路只依赖 jsonl，中间量不落盘，回写不破坏封存 | §〇′.5 | `FREEZE_ONLY_JSONL=PASS files_written=1`、`ROLLBACK_WRITE=PASS spec_hash_unchanged=1` |
+
+### 〇′.2 包结构与分层继承
+
+#### 〇′.2.1 目录与每个文件的来路
+
+```text
+src/robomme/                          官方 main 原样（G1）；本仓库不再放任何自有文件
+src/robomme_hard/
+  __init__.py                         导入守卫 + 先注册自家环境 + 注册表归属断言（§〇′.2.3）
+  UPSTREAM.json                       官方 commit、tree、src/robomme 逐文件 sha256、借用清单（§〇′.3）
+  README.md                           §〇′.11
+  robomme_env/
+    __init__.py                       复制自现 src/robomme（16 行 from .X import *）
+    <Task>.py × 16                    复制；装饰器改 @register_env("<id>", override=True)；绝对 import 按 §〇′.2.2 规则改
+    utils/
+      __init__.py                     复制
+      改过的 8 个：difficulty.py object_generation.py route.py segmentation_utils.py
+                  subgoal_language.py task_goal.py subgoal_planner_func.py vqa_options.py     复制
+      新增的 9 个：bin_collision.py episode_spec.py sampling_config.py swap_uniform.py
+                  unmask_distractor_sampler.py unmask_distractors.py unmask_swap_xhard.py
+                  xhard.py xhard_home_site.py                                                复制
+      未改的约 15 个（adjacent.py choice_action_mapping.py constant.py obschange.py
+                  oracle_action_matcher.py planner_denseStep.py planner_fail_safe.py reset_panda.py
+                  rpy_util.py save_reset_video.py SceneGenerationError.py statechange.py
+                  task4recovery.py generate_sample_action.py subgoal_evaluate_func.py）       借用：三行别名 shim（§〇′.2.2）
+      planner-ref.py、"vqa_options copy.py"                                                  不搬（文件名不可 import，官方遗留）
+  env_record_wrapper/
+    __init__.py                       自家：RobommeRecordWrapper（复制版）、BenchmarkEnvBuilder（子类）、hard_specs；
+                                      借用：from robomme.env_record_wrapper import DemonstrationWrapper,
+                                            EndeffectorDemonstrationWrapper, FailAwareWrapper,
+                                            MultiStepDemonstrationWrapper, RRTPlanFailure, <episode_dataset_resolver 导出项>
+    RecordWrapper.py                  复制（+7 行 fail_safe_limit 5000；E-14）
+    OraclePlannerDemonstrationWrapper.py   复制（内容同官方，但它 import 的 vqa_options 是改过的，须指向 robomme_hard）
+    hard_builder.py                   class BenchmarkEnvBuilder(robomme.env_record_wrapper.BenchmarkEnvBuilder)（§〇′.6）
+    hard_specs.py                     load_specs 与封套校验（从 scripts/parity/v4_specs.py 下沉）
+  env_metadata/
+    xhard1/specs.jsonl … xhard4/specs.jsonl
+    train/record_dataset_{ButtonUnmask,ButtonUnmaskSwap,VideoUnmask,VideoUnmaskSwap}_metadata.json   400 条（E-13）
+pyproject.toml                        [tool.hatch.build.targets.wheel].packages 加 "src/robomme_hard"
+```
+
+按层归纳：
+
+| 层 | 做法 | 文件数（约） | 为什么这样选 |
+|---|---|---|---|
+| 环境类 | 复制 | 16 | xhard 改动交错在 `_load_scene` / `_initialize_episode` 等几百行方法内（`BinFill.py` 1120 行里 98 处），继承只能整段覆写，无收益 |
+| 改过／新增的 utils | 复制 | 8 + 9 | 与官方不同，必须自有 |
+| 未改的 utils | 借用（shim） | 15 | 单一真源；改动零，官方更新自动跟随 |
+| 未改的 wrapper | 借用（re-export） | 6 | 同上 |
+| `RecordWrapper.py` | 复制 | 1 | E-14 |
+| `BenchmarkEnvBuilder` | 子类 | 1 新文件 | 改动就是「多认四个档名 + 读 jsonl + 拼三个 kwargs」，官方各方法都很短，适合覆写 |
+| `hard_specs.py` | 新增 | 1 | 本来就是新的 |
+
+对比第二轮「整包复制」：`robomme_hard` 自有 `.py` 从 72 个降到约 38 个（16 + 17 + 1 + 1 + 1 + 1 + `__init__` 若干），其余全部指向 `robomme`。
+
+#### 〇′.2.2 借用的实现与 import 改写规则
+
+**为什么不能直接 `from robomme.robomme_env.utils.rpy_util import …`**：Python 导入子模块前先执行父包 `__init__`，而 `robomme/robomme_env/__init__.py` 就是 16 行 `from .BinFill import *`——任何一次借用 utils 都会顺带把官方 16 个环境注册进 ManiSkill 注册表。这不是障碍（见 §〇′.2.3 的 `override=True`），但决定了「借用」必须与「注册表归属」一起设计，不能只看 import 语句。
+
+**shim 写法**（每个借用的 utils 模块一个同名文件，三行，不含逻辑）：
+
+```python
+# 借用：本模块是 robomme 同名模块的别名，逻辑以官方为准；借用清单见 ../../UPSTREAM.json
+import importlib, sys
+sys.modules[__name__] = importlib.import_module("robomme.robomme_env.utils.rpy_util")
+```
+
+复制进来的环境文件写的是相对 import（`from .utils.rpy_util import …`），解析到 `robomme_hard.robomme_env.utils.rpy_util` 即命中 shim，拿到的就是官方模块对象。这不是对 `robomme` 的覆盖（不改 `robomme` 任何模块的行为），只是 `robomme_hard` 自己命名空间里的别名。
+
+**绝对 import 改写规则**（对 §〇′.2.1 里每个「复制」文件逐行 AST 检查，阶段 1 出清单）：
+
+| 复制文件里出现的 | 处理 |
+|---|---|
+| 相对 import（`from .utils.x`、`from ..robomme_env.utils.y`） | 不动；由 shim 或自有副本承接 |
+| `from robomme.<path> import …`，且 `<path>` 在借用清单内 | 不动（就是要借用） |
+| `from robomme.<path> import …`，且 `<path>` 是改过／新增的 | 改成 `from robomme_hard.<path> import …`——漏一处就静默回头用官方旧逻辑，这是本方案唯一容易漏的洞 |
+
+现状扫描（第二轮 §2.1／2.2）：绝对 import 共 7 个文件，其中 `OraclePlannerDemonstrationWrapper.py`、`RecordWrapper.py`（`step` 内延迟 import `vqa_options`）、`subgoal_planner_func.py`、`vqa_options.py`、`generate_sample_action.py`、`subgoal_evaluate_func.py`、`vqa_options copy.py`；按上表，指向 `vqa_options` 的全部要改，其余按清单判定。判定行 `ABS_IMPORT=PASS files=<n> retargeted=<k> borrowed=<m> stray=0`（`stray` = 指向改过模块却仍写 `robomme.` 的条数）。
+
+#### 〇′.2.3 注册表归属：同 id 怎么做到不静默出错
+
+**实测语义**（`.venv/.../mani_skill/utils/registration.py::register_env`）：同一 uid 第二次注册时，`override=False` → `logger.warn("Env … is already registered. Skip registration.")` 然后 **静默保留第一个**；`override=True` → 弹出旧登记并重新注册。也就是说，若什么都不做，谁先 import 谁赢，输的一方连异常都没有——这正是「同 id」最危险的地方。
+
+**三道机制**：
+
+1. **`override=True`**：16 个复制进 `robomme_hard` 的环境文件，装饰器改为 `@register_env("BinFill", override=True)`（16 处、每处一个参数）。效果：只要进程里 import 过 `robomme_hard.robomme_env`，16 个 id 一律归 `robomme_hard`，与 import 顺序无关——先 import 官方再 import hard：hard 覆盖；先 hard 再官方：官方走 `Skip registration`。
+2. **导入守卫**（`robomme_hard/__init__.py`）：
+   ```python
+   import sys, warnings
+   if "robomme.robomme_env" in sys.modules:
+       warnings.warn("robomme.robomme_env 已先于 robomme_hard 导入；16 个环境 id 将被 robomme_hard 覆盖", RuntimeWarning)
+   from . import robomme_env as _envs          # 先注册自家 16 个（触发借用 shim 时官方也会被 import，但被 override）
+   from mani_skill.utils.registration import REGISTERED_ENVS
+   _foreign = [uid for uid in _envs.ENV_IDS if not REGISTERED_ENVS[uid].cls.__module__.startswith("robomme_hard.")]
+   if _foreign:
+       raise ImportError(f"注册表归属异常，以下 id 不属于 robomme_hard：{_foreign}")
+   ```
+   不再像第二轮那样一遇到官方已导入就 `raise`——因为借用本身就会导入官方包，`raise` 会把自己拦死；改为「警告 + 事后断言归属」。`ENV_IDS` 是 `robomme_env/__init__.py` 新增的 16 元组，与官方 `__init__` 的 import 顺序一一对应。
+3. **包指纹进产物**：`robomme_hard` 版 `RobommeRecordWrapper` 在 h5 attrs、`hard_specs` 在 jsonl header／`rollout` 块、`HardBenchmarkEnvBuilder` 在 `info` 里都写 `env_package="robomme_hard"` 与 `package_fingerprint=<hard_fingerprint>`；对拍与评估加载时核对。装错包、混装包，在产物层面一眼可查，不会静默。
+
+**红线改写**：第二轮「两包不可同进程导入」改为「**同进程一旦导入 `robomme_hard`，16 个环境 id 全部归它；需要官方原三档行为时另开进程只导 `robomme`**」。V1′ 本来就是用 `robomme_hard` 跑原三档，与此一致。
+
+**不对称性写明**：守卫只在 `robomme_hard` 侧；一个只导入 `robomme` 的进程不会知道 `robomme_hard` 的存在，这是正确行为，不是漏洞。
+
+### 〇′.3 G1 的强校验：commit、sha256、守卫
+
+三层，从静态到运行时：
+
+1. **`src/robomme_hard/UPSTREAM.json`**（进 git；放 `robomme_hard` 而不是 `robomme` 是为了不破坏 `robomme` 的零 diff）：
+   ```json
+   {"upstream": {"url": "https://github.com/RoboMME/robomme_benchmark", "commit": "1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9", "tree": "<git rev-parse commit^{tree}>"},
+    "robomme_files": {"src/robomme/__init__.py": "<sha256>", "...": "..."},
+    "borrowed": {"robomme/robomme_env/utils/rpy_util.py": "<sha256>", "...": "..."},
+    "manifest_sha256": "<剔掉本键后 canonical JSON 的 sha256>"}
+   ```
+   `commit` 必须是 40 位，禁 `main`（正本第 15 条）；`manifest_sha256` 让清单自身防篡改。
+2. **`scripts/parity/upstream_guard.py`**（纯 CPU、秒级，纳入核心短测）：
+   - `git fetch <url> <commit>` → `git diff --stat <commit> HEAD -- src/robomme` 必须为空；网络不可达时退化为只做下面两步并把判定行标 `net=skipped`；
+   - `src/robomme/**` 逐文件 sha256 与 `robomme_files` 比；文件集合必须**相等**（多一个少一个都 FAIL，含 `env_metadata/`）；
+   - `borrowed` 清单每个文件 sha 必须命中，且清单里的每个模块在 `robomme_hard` 侧必须是 shim（文件 ≤ 3 行非注释行，含 `sys.modules[__name__] =`），防止有人把借用悄悄改成本地副本；
+   - 判定行 `UPSTREAM_BYTES=PASS commit=1fadc0ec files=<n> diff=0 borrowed=<m> net=<ok|skipped>`。
+3. **导入时 cheap 校验**（`robomme_hard/__init__.py`，`UPSTREAM.json` 加载后）：对 `borrowed` 每个文件做「字节数 + 首尾各 1 MiB blake2b」（正本第 15 条 cheap 档），不符 `warnings.warn`，不 raise——用户机器上不应被 `.pyc`、CRLF 之类无关差异拦死；显式声明 cheap 档挡不住「等长改中间字节」，full 档由守卫脚本负责。
+
+**两段源码指纹**：现 `scripts/parity/v4_specs.py::source_fingerprint` 只盖 `src/robomme/robomme_env/**.py`。下沉到 `hard_specs.py` 后拆成 `base_fingerprint`（`borrowed` 清单文件的总 sha）与 `hard_fingerprint`（`src/robomme_hard/**.py` 去 `__pycache__` 的总 sha），两者都写 jsonl header；`load_specs` 对不符只警告（第二轮 §5.3 口径不变），因为发布后指纹本就该在打包时重算。
+
+### 〇′.4 `scripts/` 重组后的样子
+
+```text
+scripts/
+  seed_layout.py  dataset_replay.py  evaluation.py  run_example.py     四入口不动（后三者官方原样）
+  evaluation_hard.py                                                    第五入口（D-1）；与 evaluation.py diff ≤ 12 行
+  injection-dev/                V6 四档生产链路（§〇′.5）；不随包分发
+    __init__.py
+    freeze_specs.py             第一阶段入口
+    generate_h5.py              第二阶段入口
+    _extract.py                 原 parity/train_split_config.py::extract_task（读 native_blocks）
+    _draw.py                    原 parity/v4_specs.py 的 draw 侧（_draw_one / draw_task / worker 池）
+    _freeze.py                  原 parity/v4_specs.py 的 freeze 侧（选 0/3/6、哈希、header）
+    _rollout.py                 原 parity/v4_rollout.py（批次编排、H4 递补、回写）
+    _report.py                  原 parity/v5_generation.py 的 report 侧（只读汇总）
+    site/                       v6_site.py v6_site.html v6_site_catalog.py v6_candidate_values.py
+                                v6_tier_monotone.py v6_v0_native_definitions.py v6_gt_lengths.{py,json}   收尾出图，只读产物
+  parity/                       只做「与官方比」（§〇′.7）
+    train_split_parity.py  train_split_runner.py  train_split_worker.py  train_split_config.py
+    train_split_comparison.py  train_split_audit.py  comparator_fixtures.py                   S0 基线对拍设施，不动
+    hard_parity.py              V1′
+    upstream_guard.py           G1（§〇′.3）
+    hard_regression.py          xhard 侧回归（§〇′.8）
+    official/                   vendor 的官方执行代码（§〇′.7.2）
+      SOURCE.json  generate_dataset.py  validate_generated_dataset_contract.py
+      write_generation_report.py  compare_joint_actions.py
+    identities_16x3.txt  manifest_16x3.json  README.md
+  configs/
+    newtask-v3/{subset_manifest,train_manifest}.json + official_train/     parity 用，不动
+    newtask-v6/v6-02/                                                       保留为「S4 生成用的那份」只读留档；jsonl 真源改为包内
+    newtask-v4/  newtask-v5/  newtask-v6/{sampling_config.json,v6-01/}      删（V6 闭包外或已被包内 jsonl 取代）
+```
+
+去留判据：
+
+| 现文件 | 去向 | 理由 |
+|---|---|---|
+| `parity/v4_specs.py` | 拆成 `injection-dev/_draw.py` + `_freeze.py`；`load_specs` 下沉 `hard_specs.py` | 抽签／冻结是 V6 生产链路，不是对拍 |
+| `parity/v4_rollout.py` | → `injection-dev/_rollout.py` | 同上 |
+| `parity/v5_generation.py` | `pipeline` 子命令废弃（两阶段入口取代）；`report` → `injection-dev/_report.py` | 同上 |
+| `parity/train_split_config.py` | **留在 parity**，`injection-dev/_extract.py` 从它 import `extract_task` | S0 基线的 C／D 路也要它提取原值快照 |
+| `parity/train_split_runner.py` / `train_split_worker.py` | **留在 parity**，`injection-dev/_rollout.py` 以子进程调用 | 它们是官方执行代码的镜像 worker，本质是对拍设施；两边共用一份才能保证「生产用的执行逻辑 = 对拍用的执行逻辑」 |
+| `parity/v6_*.py`、`v6_site.html`、`v6_gt_lengths.*` | → `injection-dev/site/` | V6 收尾出图，只读产物 |
+| `parity/legacy_keep_list.py` | 删 | 阶段 0b 一次性工具，任务已完成 |
+| `scripts/eval/v4_eval.py`、`scripts/eval/__init__.py` | 删 | 被 `evaluation_hard.py` + 子类 builder 取代；`from_v4_specs` 保留为薄包装以防外部脚本引用，但仓库内不再有调用方 |
+| `scripts/injection/`（空壳 + `__pycache__`）、`scripts/parity/results/`（空目录） | 删 | 阶段 0b 残留 |
+
+`scripts/parity/__init__.py` 现在把本目录插进 `sys.path` 供裸 import；`injection-dev/` 用包 import（`from scripts.parity import train_split_config`），不再插 `sys.path`。
+
+### 〇′.5 `scripts/injection-dev/` 两阶段
+
+#### 〇′.5.1 第一阶段 `freeze_specs.py`
+
+```bash
+uv run --no-sync python -m scripts.injection-dev.freeze_specs \
+  --tier xhard3 --tasks all --candidates-per-env 10 --select 0,3,6 \
+  --max-reset-attempts 30 --workers 4 --gpus 0,1 \
+  --out src/robomme_hard/env_metadata/xhard3/specs.jsonl
+```
+
+（目录名带连字符不能作为 Python 包名直接 `-m`；实施时二选一：目录名改 `injection_dev`，或保留 `injection-dev` 并以路径直跑 `uv run --no-sync python scripts/injection-dev/freeze_specs.py`。用户已确认目录名，**默认取后者**，`__init__.py` 不做包导入、各入口自行 `sys.path.insert`；若阶段 2 实测路径直跑带来 import 混乱，改名 `injection_dev` 须回来请示。）
+
+内存内三步，对应现有函数：
+
+| 步 | 现有实现（搬过去不改语义） | 起不起环境 | 产物去向 |
+|---|---|---|---|
+| ① extract | `train_split_config.extract_task(task, release="newtask-v6")` → `{decision, native}` 合成 `sampling_config` dict | 否 | 内存；写进 header `sampling_config` |
+| ② draw | `v4_specs._draw_one`（`gym.make(task, sampling_config=…, **env_kwargs(seed, episode, tier))` → `reset()` → `env.unwrapped._spec.to_dict()`）× 10 候选／格，worker 池与 GPU 轮转沿用 `_draw_worker_init` | 是（只 reset） | 内存；每格成功候选进行列表，失败次数与异常类型进 header `draw_stats[task]` |
+| ③ freeze | `v4_specs.cmd_freeze` 的选行、`spec_sha256`、`identity_sha256`、封套校验 | 否 | **唯一落盘**：`--out` |
+
+写盘用「同目录临时文件 + `os.replace`」原子替换；`--out` 已存在时默认拒绝（要 `--force`，起跑前 `ls -ld`，正本第 14 条），因为覆盖 jsonl 等于换掉四档身份。判定行 `FREEZE_ONLY_JSONL=PASS tier=xhard3 tasks=<n> candidates=<n×10> selected=<n×3> files_written=1`（`files_written` 由入口在 `tempfile` 与 `--out` 之外监控 `os.open` 计数是过度设计；实现上以「入口内除 `--out` 外不出现任何 `open(..., "w")`」的 AST 检查 + 运行后 `git status --short` 与 `find artifacts -newer` 为空作判定）。
+
+**`--dry-run`**：只打印三步将用的参数（seed 区段、任务列表、候选数、worker／GPU 分配），与现 `v5_generation.plan_pipeline` 的 draw／freeze 命令逐项对照，是阶段 2 的等价性判据。
+
+#### 〇′.5.2 jsonl 结构（`schema = "hard-specs/2"`）
+
+header（第一行）在现 `v4-specs/1` 的 16 个键上做增删：
+
+| 键 | 现状 | 本轮 |
+|---|---|---|
+| `schema` | `v4-specs/1` | `hard-specs/2` |
+| `difficulty`、`tasks`、`per_env`、`runtime`、`seed_rule`、`select_indices`、`sampling_config`、`sampling_config_sha256`、`recovery_rule`、`identity_source`、`run_id` | 有 | 保留，语义不变 |
+| `drafts_sha256` | 有 | **删**（drafts 不再存在） |
+| `source_fingerprint` | 有（只盖 `robomme_env`） | 拆为 `base_fingerprint` + `hard_fingerprint`（§〇′.3） |
+| `record` | 有 | 保留 |
+| `draw_stats` | 无 | **新增**：`{task: {attempts, ok, failed, error_types: {ExcName: n}}}` |
+| `env_package` | 无 | **新增**：`"robomme_hard"` |
+| `identity_sha256` | 盖 header 全部 + 行的 `spec` | **收窄**：只盖 header 里除 `identity_sha256`、`draw_stats`、`record` 之外的键 + 每行 `{task, tier, candidate, seed, attempt, spec, spec_sha256}`；**不盖** `selected` 与 `rollout` |
+
+行（第二行起）：
+
+```json
+{"task": "BinFill", "tier": "xhard3", "candidate": 3, "episode": 3, "seed": 12300003, "attempt": 0,
+ "selected": true, "spec": {…}, "spec_sha256": "…",
+ "rollout": {"status": "ok", "final_candidate": 3, "h5_sha256": "…", "frames": 412, "mp4": true,
+             "duration_s": 83.1, "env_package": "robomme_hard", "package_fingerprint": "…",
+             "written_at": "2026-09-27T21:04:11-04:00"}}
+```
+
+- `difficulty` 行字段改名 `tier`，`episode` 保留（= candidate，兼容 `env_kwargs`）；
+- `rollout` 第一阶段产出时**不存在**（不是 `null`），`load_specs` 对缺失与存在都接受；
+- `rollout.status ∈ {ok, failed, timeout}`；`failed`／`timeout` 行同样写 `h5_sha256=null` 等全部键（计数字段显式零值，P4 教训）。
+
+#### 〇′.5.3 第二阶段 `generate_h5.py` 与回写协议
+
+```bash
+uv run --no-sync python scripts/injection-dev/generate_h5.py \
+  --specs src/robomme_hard/env_metadata/xhard3/specs.jsonl \
+  --output artifacts/newtask-v6/<run>/xhard3 --workers 4 --gpu 0 \
+  --official-root scripts/parity/official
+```
+
+流程（沿用 `v4_rollout.cmd_run` / `_run_batch` 的批次编排，只换输入输出）：
+
+1. `hard_specs.load_specs` 读入并做全部封套校验，记 `identity_sha256` 与每行 `spec_sha256`；
+2. 取 `selected=true` 且 `rollout` 缺失或 `status != ok` 的行为待跑集（重跑已 `ok` 的行须 `--redo`）；
+3. 每批写 `jobs.json` / `sampling.json` / `specs.json` 到 `--output/_rounds/round_NN/`（现有做法），子进程调用 `scripts/parity/train_split_runner.py --official-root … --env-package robomme_hard`（环境变量 `ROBOMME_ENV_PACKAGE`，worker 侧按它选 `import robomme_hard.robomme_env` 与 `from robomme_hard.env_record_wrapper import RobommeRecordWrapper`——这是 `train_split_worker.py` 唯一的非机械改动，第二轮 §2.2 已写明）；
+4. **递补（H4，不变）**：某行 `failed`，从同格 `selected=false` 的候选按 `candidate` 升序取下一个，把该行 `selected` 置 `true` 并加入下一轮；原失败行 `selected` 保持 `true`、`rollout.status="failed"` 留档；每格递补上限沿用现值；
+5. **回写**：全部批次结束后一次性写回——重新读 `--specs` 文件、重算 `identity_sha256`，与第 1 步记下的相等才继续（不等说明第一阶段内容被动过，拒绝回写并 `RollbackRefused` 退出）；只改 `selected` 与 `rollout`，其余字节不动；写同目录临时文件 → `os.replace`；写后再 `load_specs` 一遍，`identity_sha256` 必须仍等于写前；
+6. `results.jsonl` 仍照现状写到 `--output`（供 `_report.py` 与 `hard_regression.py`），但它不再是身份来源，jsonl 才是。
+
+判定行：`ROLLBACK_WRITE=PASS specs=<path> rows=<n> ok=<k> failed=<f> substituted=<s> spec_hash_unchanged=1`。
+
+**中断恢复**：第 5 步是一次性写回，中途被杀不会留下半写 jsonl（临时文件 + 原子替换）；重跑时第 2 步按 `--output/_rounds/*/results.json` 复用已完成局（现 `_run_batch` 的 `round_index` 机制），不重复消耗预算（P4「恢复只处理未完成步骤」）。
+
+#### 〇′.5.4 报告
+
+`_report.py`（原 `v5_generation.report`）改为只读 jsonl（`rollout` 块）+ `--output` 下的 `results.jsonl`，输出 `HARD_GENERATION=REPORT tier=… ok=… failed=… substituted=…` 与 Markdown；不再需要 drafts。
+
+### 〇′.6 `HardBenchmarkEnvBuilder` 与 `evaluation_hard.py`
+
+`src/robomme_hard/env_record_wrapper/hard_builder.py`，类名仍叫 `BenchmarkEnvBuilder`（对外只差 import 行）：
+
+```python
+from robomme.env_record_wrapper.episode_config_resolver import BenchmarkEnvBuilder as _Upstream
+from .hard_specs import load_specs
+_HARD_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
+_HARD_TRAIN_OVERRIDE = {"ButtonUnmask", "ButtonUnmaskSwap", "VideoUnmask", "VideoUnmaskSwap"}   # E-13
+
+class BenchmarkEnvBuilder(_Upstream):
+    def __init__(self, env_id, dataset="test", action_space="joint_angle", max_steps=1300, override_metadata_path=None):
+        self._hard = None
+        if dataset in _HARD_TIERS:
+            header, rows = load_specs(_PKG_METADATA / dataset / "specs.jsonl")
+            self._hard = _bind(env_id, header, rows)          # 只取 task==env_id 且 selected 且 rollout.status=="ok" 的行，按 candidate 升序
+            dataset_for_parent = "test"                         # 让父类 __init__ 的白名单校验通过；父类读到的 test 元数据随后不被使用
+        super().__init__(env_id, dataset_for_parent, action_space, max_steps, override_metadata_path)
+        self.dataset = dataset
+    def _resolve_metadata_path(self):                           # train 的 Unmask 四个走 robomme_hard 包内 400 条
+        if self.dataset == "train" and self.env_id in _HARD_TRAIN_OVERRIDE and self.override_metadata_path is None:
+            return str(_PKG_METADATA / "train" / f"record_dataset_{self.env_id}_metadata.json")
+        return super()._resolve_metadata_path()
+    def get_episode_num(self):  return len(self._hard.rows) if self._hard else super().get_episode_num()
+    def resolve_episode(self, episode): ...                     # hard：返回 (seed, tier, candidate)；info 里带 hard_candidate_index
+    def make_env_for_episode(self, episode, **kw):              # hard：kwargs = 父类四项 runtime + seed + difficulty=tier
+        ...                                                     #        + sampling_config=header["sampling_config"][env_id] + native_episode_spec=row["spec"]
+    @classmethod
+    def get_difficulty_list(cls): return list(_HARD_TIERS)
+    @classmethod
+    def from_v4_specs(cls, env_id, header, rows): ...           # 薄包装：允许任意路径的 jsonl（保留，仓库内无调用方）
+```
+
+- **`dataset_for_parent="test"` 的取舍**：父类 `__init__` 在 `_ALLOWED_DATASETS` 白名单外直接 `raise`，且它是官方原样不能改；子类先把白名单能过的值喂给父类，再把 `self.dataset` 改回档名。父类顺手读的 `test` 元数据不影响 hard 路径（`resolve_episode` 等全被覆写）。这是继承官方 builder 唯一的别扭之处，写进 README「实现说明」。
+- **episode 编号**：`for episode in range(env_builder.get_episode_num())` 循环体不改，`episode` 是 `ok` 行按 `candidate` 升序的序号 0..2，原候选序号放 `info["hard_candidate_index"]`；这样递补后合作者跑到的就是真正生成成功的那一局（E-3 闭合点）。
+- **`make_env_for_episode` 的 runtime 四项**：从 header `runtime` 取，并与父类拼出的四项逐字比对，不等 `raise`（`hard_specs` 的封套校验之一，现 `v4_specs.RUNTIME` 口径）。
+- 录像器：hard 路径套 `robomme_hard` 的 `RobommeRecordWrapper`（`fail_safe_limit=5000`）。
+
+`scripts/evaluation_hard.py`：复制 `evaluation.py`，只改 ①`from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder`；②`for tier in BenchmarkEnvBuilder.get_difficulty_list():` 套在 `for task in TASKS` 外，`dataset=tier`；③视频文件名加 `tier`。判定 `diff scripts/evaluation.py scripts/evaluation_hard.py | grep -c '^[<>]'` ≤ 12（第二轮 §5.4 上限不变）。
+
+合作者视角（G4）：`pip install` 本仓库 → `python scripts/evaluation_hard.py`，或三行 `BenchmarkEnvBuilder("BinFill", dataset="xhard3")` → `make_env_for_episode(0)`。看得到的只有 `src/robomme_hard/env_metadata/xhard*/specs.jsonl`。
+
+### 〇′.7 `scripts/parity/`：只做「与官方比」
+
+#### 〇′.7.1 三条对拍
+
+| 入口 | 比什么 | 现状 | 本轮 |
+|---|---|---|---|
+| `train_split_parity.py` | 官方源码树跑 S0 基线 144 局 vs 主仓代码同 seed 144 局，逐局 h5 sha | 已有，S0 基线 `artifacts/newtask-v6/v1/base` | 不动；`--official-root` 默认改 `scripts/parity/official` |
+| `hard_parity.py`（V1′） | `robomme_hard` 跑原三档 144 局 vs S0 基线 | 阶段 0b 已落，`--env-package` 已有 | `--official-root` 默认改 vendor；`.official_tree` 校验改为读 `official/SOURCE.json` 的 `tree` |
+| `hard_regression.py`（新） | xhard 四档：回注 reset 复现 + 正式局 h5 sha 复现 | 无 | §〇′.8 |
+
+Q2 的「用同样的方式生成 easy medium hard 的 16×3×3」取 A 解读：`train_split_parity.py run --paths B` 本来就是用主仓代码（切到 `robomme_hard` 后即 hard 包）按官方 seed 生成原三档 16×3×3=144 局，再 `compare` 比 sha；不再另起「原三档也走抽签→封存→回注」的 B 路（多 144 reset + 144 rollout，用户未指定）。
+
+#### 〇′.7.2 vendor 官方执行代码（E-10）
+
+`scripts/parity/official/` 放官方 `scripts/data-generation/` 下四个文件（`generate_dataset.py` 563 行；它 `from validate_generated_dataset_contract import …`、`from write_generation_report import …`，后者又 `from compare_joint_actions import …`，四者缺一不可 import），加 `SOURCE.json`：
+
+```json
+{"url": "https://github.com/RoboMME/robomme_benchmark", "commit": "1fadc0ec…", "tree": "1d4c1369…",
+ "path": "scripts/data-generation", "files": {"generate_dataset.py": "<sha256>", "...": "..."},
+ "vendored_at": "2026-09-27", "note": "只作 train_split_worker 的 planner/_execute_tasks 来源；本仓库不改这四个文件"}
+```
+
+- 正本第 24 条：普通源码目录、无独立 `.git`、来源清单记 commit 与文件清单、升级时显式记新 commit；**本仓库不修改这四个文件**（要改就得按第 24 条另开分支，目前无此需求）。
+- `train_split_runner.py` 的 `--official-root` 语义不变（把 `<root>/scripts/data-generation` 插 `sys.path`），vendor 目录按 `scripts/parity/official/scripts/data-generation/` 布局放置以免改 runner；`SOURCE.json` 放 `scripts/parity/official/` 顶层。
+- `artifacts/train-parity/local-smoke-01/official-src/` 整棵树保留（S0 基线的 `.official_tree` 证据链仍指向它），但生产与对拍默认不再依赖它；阶段 0 用 `sha256sum` 逐文件证明 vendor 四文件与该树同名文件相同，判定行 `VENDOR_SAME=PASS files=4`。
+
+### 〇′.8 回归闸门总表与预算
+
+| 判定行 | 查什么 / 怎么查 | 过了说明什么 | reset | rollout |
+|---|---|---|---|---|
+| `UPSTREAM_BYTES=PASS commit=… files=… diff=0 borrowed=…` | §〇′.3 守卫脚本 | G1 | 0 | 0 |
+| `VENDOR_SAME=PASS files=4` | vendor 四文件 sha == 隔离树同名文件 | 执行代码来源未变 | 0 | 0 |
+| `ABS_IMPORT=PASS … stray=0` | §〇′.2.2 AST 扫描 | 无静默回头用官方旧逻辑 | 0 | 0 |
+| `REGISTRY_OWNER=PASS envs=16 owner=robomme_hard` | 三种导入顺序（只 hard；官方→hard；hard→官方）各起一进程，`REGISTERED_ENVS[uid].cls.__module__` 全部 `robomme_hard.` 开头 | G5 | 0 | 0 |
+| `SPECS_IDENTITY=PASS tiers=4 rows=550 selected=165` | 包内四份 jsonl 迁移后 `identity_sha256`（按新收窄口径重算）与由 `v6-02` 同口径重算值相等；`spec_sha256` 逐行相等 | 分发的规格就是 S4 生成用的那份 | 0 | 0 |
+| `EVAL_PY_UPSTREAM=PASS ENTRIES=5` | `cmp` 三脚本与官方；`ls -1 scripts/*.py \| wc -l` = 5 | 冻结项未破 | 0 | 0 |
+| `EVAL_HARD_DIFF=PASS lines=<n≤12>` | §〇′.6 | 接口只差 import 与循环 | 0 | 0 |
+| `FREEZE_DRYRUN_EQUIV=PASS` | `freeze_specs.py --dry-run` 打印的 draw／freeze 参数与 `v5_generation.plan_pipeline` 输出逐项相等 | 两阶段入口没有改抽签口径 | 0 | 0 |
+| `FREEZE_ONLY_JSONL=PASS files_written=1` | 单任务单档 1 候选 smoke（`--tasks BinFill --candidates-per-env 1`），运行后工作区与 `artifacts/` 无新文件 | G6 上半 | 1 | 0 |
+| `ROLLBACK_WRITE=PASS spec_hash_unchanged=1` | 对上一行的 smoke jsonl 跑 `generate_h5.py`，回写后 `identity_sha256` 不变、`rollout` 块齐全 | G6 下半 | 0 | 1 |
+| `NATIVE_REGRESSION_HARD=PASS compared=144 sha_equal=144` | V1′（`hard_parity.py run --env-package robomme_hard`，1 条冒烟 + 143 条，30 分钟无进展／4 小时硬上限） | G2 | 0 | 144（**已授权**，第二轮 D 项） |
+| `HARD_RESET_REPLAY=PASS resets=55 mismatch=0` | **xhard 侧①**：每档每任务取 `candidate` 最小的 `ok` 行 1 条（xhard1/2/3 各 13 任务、xhard4 16 任务 = 55），`gym.make(native_episode_spec=…)` + `reset()`，导出 `_spec.to_dict()` 与冻结 `spec` 逐字段比（现 `v4_eval._binding` 的 `mismatch/unused` 口径） | 回注通道在新包下逐值一致 | **55** | 0 |
+| `HARD_ROLLOUT_SHA=PASS compared=16 sha_equal=16` | **xhard 侧②**：16 任务各 1 局，档位轮换（任务序号 i 取 `xhard{(i mod 4)+1}`，xhard4-only 的三个任务固定 xhard4），h5 sha 与 `final-delivery.json` 所记 S4 交付 sha 比 | 新包在 xhard 下产物逐位同 S4 | 0 | **16** |
+| `HARD_EVAL_SMOKE=PASS` | `evaluation_hard.py` 限 1 任务 1 档 1 局跑通并落视频 | 合作者入口可用 | 0 | 1 |
+
+**预算合计（P3 一次性申请）**：reset 56 次（55 + 1 smoke）、rollout 162 次（144 已授权 + 16 + 1 + 1）。本轮新增待授权：**reset 56、rollout 18**。用户 Q8/Q10 已表示「其他都同意」，实施前在阶段 4 起跑那一条回复里把这两个数字再复述一次即视为执行授权；数字若因 `final-delivery.json` 实际可比局数而缩小，只减不增。FAIL 时不自行放宽、不重试挑成功，记证据链交用户。
+
+### 〇′.9 阶段表（取代第二轮附录 A §七的阶段 2～5）
+
+| 阶段 | 内容 | 判据 | 改 `src/robomme` | commit |
+|---|---|---|---|---|
+| 0 只读准备 | ①`git fetch` 官方 `1fadc0ec`，`git rev-parse ^{tree}` 与 `1d4c1369` 对照并记录；②生成 `UPSTREAM.json`（`robomme_files` 以官方树为准、`borrowed` 按 §〇′.2.1 清单）；③vendor 四文件 + `SOURCE.json`；④`register_env` 重复语义用一行脚本复核（本节已按源码写死，实测只为留证）；⑤绝对 import 全量扫描出清单 | `VENDOR_SAME`、扫描清单落 `docs/validation/newtask-v6/hard-split/stage0.md` | 否 | 12.204 |
+| 1 建 `robomme_hard` | 复制 16 环境（改 `override=True`）、17 个 utils、`RecordWrapper.py`、`OraclePlanner…`；写 15 个 shim、`__init__.py` 守卫、`hard_builder.py`、`hard_specs.py`、`env_record_wrapper/__init__.py`；迁四份 jsonl（`v6-02` → 新 schema，重算收窄口径的 `identity_sha256`，两段指纹）；`pyproject.toml` 加包 | `REGISTRY_OWNER`、`ABS_IMPORT`、`SPECS_IDENTITY`；`python -c` 单局 `make_env_for_episode` 冒烟（1 rollout，计入 `HARD_EVAL_SMOKE`） | 否 | 12.205 |
+| 2 `scripts/` 重组 | 建 `injection-dev/` 五个内部模块 + 两个入口 + `site/`；`parity/` 按 §〇′.4 去留；`upstream_guard.py`、`hard_regression.py`、`evaluation_hard.py`；`train_split_worker.py` 加 `ROBOMME_ENV_PACKAGE` 分支；`tests/` 的 `from robomme.` 机械改 `robomme_hard.`（只保证可收集） | `FREEZE_DRYRUN_EQUIV`、`FREEZE_ONLY_JSONL`、`ROLLBACK_WRITE`、`EVAL_PY_UPSTREAM`、`EVAL_HARD_DIFF`、`--collect-only` 错误 0 | 否 | 12.206 |
+| 3 回退 `robomme` | 用官方树覆盖 `src/robomme/**`（含 `env_metadata/`），`git rm` 9 个新增 utils 与 4 份 400 条 train 元数据（换回 100 条） | `UPSTREAM_BYTES=PASS`；阶段 1、2 的判定行全部重跑仍 PASS | **是（P2：逐文件清单交用户批准）** | 12.207 |
+| 4 回归 | V1′ 144 + xhard 侧 55 reset / 17 rollout（§〇′.8 预算） | `NATIVE_REGRESSION_HARD`、`HARD_RESET_REPLAY`、`HARD_ROLLOUT_SHA`、`HARD_EVAL_SMOKE` | 否 | 12.208（起跑前 HEAD 冻结，结果以子节追加） |
+| 5 留档 | `robomme_hard/README.md`（§〇′.11）、`scripts/README.md` 与 `parity/README.md` 重写、`docs/validation/newtask-v6/hard-split/` 汇总全部判定行、`AGENTS.md` P1 改五入口与本节路径、`CLAUDE.md` 核实清单 | `git diff --check`；链接可达 | 否 | 12.209 |
+
+阶段 3 放在 2 之后、4 之前：先让 `robomme_hard` 在 `robomme` 还带改动时独立跑通（此时借用的文件与官方相同，`UPSTREAM.json` 的 `borrowed` sha 已能命中），再回退 `robomme`，最后对拍——这样阶段 3 失败时可以只回滚一个 commit。
+
+### 〇′.10 风险登记与盲区
+
+| # | 风险 | 处置 |
+|---|---|---|
+| 1 | shim 借用触发官方 16 环境注册 → 日志里 16 条 `Override registered env` 警告噪声 | 接受；`robomme_hard/__init__.py` 在自家注册阶段临时把 `mani_skill` logger 提到 ERROR 再恢复，只压这一段；不压 `REGISTRY_OWNER` 断言 |
+| 2 | 官方 `main` 前进后，借用文件变化悄悄改了 xhard 行为 | `UPSTREAM.json` 钉 commit，守卫脚本 FAIL 即停；升级官方 commit 是显式动作，须重跑 §〇′.8 全部闸门 |
+| 3 | 父类 `__init__` 白名单绕行（`dataset_for_parent="test"`）在官方 builder 未来改签名时断裂 | 子类只调用父类公开签名；官方变更属风险 2 的升级流程 |
+| 4 | `identity_sha256` 收窄后旧 `v6-02` 文件的值不再直接可比 | `SPECS_IDENTITY` 以「同口径重算」为判据，并把旧值一并写进 header `record.legacy_identity_sha256` 留痕 |
+| 5 | `injection-dev` 连字符目录名与 `-m` 不兼容 | §〇′.5.1 已定：路径直跑；若出现 import 混乱再请示改名 |
+| 6 | 回写与并发：两个 `generate_h5.py` 同时对同一 jsonl 回写 | 第 5 步的「读前哈希 == 写前哈希」只能挡住串行改动；同一 jsonl 同时只允许一个第二阶段进程，写进 README 红线，并在 `--output` 下放 `.lock` 文件（`O_EXCL`） |
+| 7 | `tests/` 只保证可收集，语义失效的测试会给出假 PASS／假 FAIL | E-11 用户裁决；留档里列出被机械替换的 45 个文件，标「未验证语义」 |
+
+盲区（诚实清单）：①官方 `episode_config_resolver.py` 是否已有 `get_difficulty_list`／`get_task_list` 之外的类方法被 `evaluation.py` 依赖，阶段 0 读官方树核实；②`MultiStepDemonstrationWrapper` 借用后其内部 `from ..robomme_env.utils import planner_denseStep` 解析到**官方**的 utils（父包是 `robomme`），与 `robomme_hard` 环境同进程使用时是否有状态耦合，阶段 1 冒烟观察；③`final-delivery.json` 里可比的 h5 sha 是否覆盖全部 16 任务，阶段 4 起跑前核，不足则 `HARD_ROLLOUT_SHA` 的 `compared` 按实际减少并写明。
+
+### 〇′.11 `src/robomme_hard/README.md` 必含内容
+
+①一句话：hard = 四档 `xhard1<xhard2<xhard3<xhard4`，原三档在本包下与官方逐位相同（附 V1′ 判定行原文）；②四档定稿表（从 `0925-newtask-release-v6-plan.md` 第一部分 §三逐字搬）；③「哪些是自己的、哪些借官方的」表：由 `upstream_guard.py --manifest-md` 生成（复制／借用／子类／新增四类，逐文件），内联结果与生成命令；④机制：`sampling_config` 两块结构、`SpecRecorder` 导出／回注、jsonl 封套（`spec` 块定死、`rollout` 块可回写）、seed 偏移公式、注册表归属（`override=True` + 守卫）；⑤使用：`evaluation_hard.py` 三行示例、`override_metadata_path` 用法、两阶段生产命令（注明不随包分发）；⑥红线：同进程导入 `robomme_hard` 后 16 个 id 归它；同一 jsonl 同时只许一个回写进程；xhard 不受 1301 步限制；`fail_safe_limit=5000`；⑦实现说明：`dataset_for_parent="test"` 绕行的原因。
+
+### 〇′.12 红线（本轮追加，编号接第二部分 §〇 的 R1～R7）
+
+- R8 `src/robomme/**` 从阶段 3 起是官方原样，**本仓库不再往里放任何自有文件**（含 `UPSTREAM.json`、README 补充、`__pycache__` 之外的一切）；需要的说明一律放 `robomme_hard/` 或 `docs/`。
+- R9 `scripts/parity/official/` 四文件不改；`robomme_hard` 的 shim 不含逻辑（守卫脚本按 ≤ 3 行非注释行检查）。
+- R10 `identity_sha256` 覆盖范围（§〇′.5.2）一经阶段 1 落地不再变更；变更即换 `schema` 版本号并重跑 `SPECS_IDENTITY`。
+- R11 第二阶段回写只改 `selected` 与 `rollout` 两个键；`--force` 覆盖 jsonl 起跑前 `ls -ld` 并在回复里复述目标路径（正本第 14 条）。
+- R12 阶段 4 的 reset／rollout 计数按 §〇′.8 表逐项记入留档，冒烟与重跑都计入；超出表内数字先停再补充授权（P3）。
+
+## 一、env make 的接口：外层多传什么、内部多传什么（第二轮内容，已被 §〇′ 取代，保留原文）
 
 分两层看：外层是 `scripts/evaluation.py` 里用户写的那个 `BenchmarkEnvBuilder(...)` 调用；内部是 builder 在 `make_env_for_episode` 里拼给 `gym.make` 的 kwargs。
 
@@ -150,7 +583,7 @@ from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # ① import �
 
 `resolve_episode` / `get_episode_num` / `make_env_for_episode` 现在已经有 `self._v4` 分支（`from_v4_specs` 路径在用），只需把 `_v4` 改名 `_hard` 并让 `__init__` 也能填它；`from_v4_specs` 保留为薄包装以免打断现有 `scripts/eval/v4_eval.py`。episode 编号：xhard 行的候选序号是 0/3/6，builder 内存里重编为 0..2 让 `for episode in range(episode_count)` 循环体不改，原候选序号放 `info["hard_candidate_index"]`；规格行与 `identity_sha256` 不动。
 
-## 二、文件级清单：`src/robomme_hard` 从哪来、哪些不动、哪些要加
+## 二、文件级清单：`src/robomme_hard` 从哪来、哪些不动、哪些要加 （第二轮内容，已被 §〇′.2 取代，保留原文）
 
 `src/robomme_hard/` = 当前 `src/robomme/` 整包复制（D-2 已推荐 copy）。下面按「相对上游 `main` 是否相同」分四组；「继承」指从当前 `src/robomme` 原样复制进 `robomme_hard` 后一个字不改。
 
@@ -193,7 +626,7 @@ from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # ① import �
 
 绝对 import 共 7 个文件要改（2.1 的 4 个 + 2.2 的 3 个）：`from robomme.` → `from robomme_hard.`，或改相对 import。这是拆包时唯一容易漏的洞，漏一处就静默回头用旧包。
 
-## 三、三个脚本阶段：env make 怎么传
+## 三、三个脚本阶段：env make 怎么传 （第二轮内容，已被 §〇′.5 取代，保留原文）
 
 三阶段的入口都在 `scripts/`，每阶段一句话说它调不调 `gym.make`、传什么。
 
@@ -240,7 +673,7 @@ from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # ① import �
 - R7 commit 只 add 本阶段文件。**当前在途改动（2026-09-27，属其他会话）一律不碰、不读、不删**：`M scripts/parity/v6_site.html`、`M scripts/parity/v6_site.py`、`?? logs/`、`?? scripts/configs/newtask-v6/smvla-smoke-0927/`、`?? scripts/parity/v6_gt_lengths.{py,json}`；以及 `artifacts/newtask-v6/smvla-0927{,-more,-fill,-smoke}`（约 2 TB，`logs/gen-*.sh` 的产物，账本无记录）与 tmux 会话 `smvla-site-8060`、`corlvis-site`。实施时以当时 `git status --short` 为准重列。
 - R8 长期文档禁行号引用；本文件锚点全部用 `文件::符号`。
 
-## 一、逐文件改动清单
+## 一、逐文件改动清单 （第二轮内容，已被 §〇′.2／§〇′.4 取代，保留原文）
 
 ### 1.1 `src/robomme_hard/`（阶段 2）
 
@@ -279,7 +712,7 @@ git diff --stat FETCH_HEAD HEAD -- src/robomme | tail -1                  # 期�
 
 `pyproject.toml` 的 `pebble` 行保留（生成链路要用），只改 `packages`。
 
-## 二、对拍闸门总表与 runbook
+## 二、对拍闸门总表与 runbook （第二轮内容，闸门以 §〇′.8 为准，V1′ 命令仍有效）
 
 ### 2.1 上游快照
 
@@ -429,7 +862,7 @@ src/robomme/robomme_env/<Task>.py::__init__
 
 用户已在 V6 计划 D7 m13 给过「`src/robomme/` 改动免逐项批准、改完出报告」，但那是对 V6 新值改动的授权；**本方案把 `src/robomme/` 整体回退到上游**属于新范围，按 P2 须另行批准。
 
-### 五、重构后的接口与包结构
+### 五、重构后的接口与包结构 （初稿内容，已被 §〇′.2／§〇′.6 取代）
 
 #### 5.1 目录（改动一览：文件 / 来源 / 改什么）
 
@@ -502,7 +935,7 @@ class BenchmarkEnvBuilder:
 
 ①一句话：hard = 四档 `xhard1<xhard2<xhard3<xhard4`，原三档在本包下与 `robomme` 逐位相同（附 V1′ 判定行原文）；②四档定稿表（从 `0925-newtask-release-v6-plan.md` 第一部分 §三逐字搬，含备注列）；③「改动在哪」表：由脚本 `scripts/parity/hard_pkg_manifest.py` 生成，逐文件列「与 `src/robomme` 相同 / 不同（+x/−y 行）/ 本包新增」，README 里内联生成结果并写生成命令；④机制说明：`sampling_config` 两块结构、`SpecRecorder` 导出/回注、`specs.jsonl` 封套、seed 偏移公式；⑤使用：`evaluation_hard.py` 三行示例 + `override_metadata_path` 用法；⑥红线：两包不可同进程导入、xhard 不受 1301 步限制、`fail_safe_limit=5000`。
 
-### 六、验收（查什么 / 怎么查 / 过了说明什么 / 判定行）
+### 六、验收（查什么 / 怎么查 / 过了说明什么 / 判定行） （初稿内容，已被 §〇′.8 取代）
 
 | 项 | 查什么 | 怎么查 | 过了说明什么 | 判定行 |
 |---|---|---|---|---|
@@ -517,7 +950,7 @@ class BenchmarkEnvBuilder:
 
 V1′ 为什么能逐位：`robomme_hard` 的原三档路径与现 `src/robomme` 是同一份字节（copy），只改包名与 import；随机流由 `torch.Generator(seed)` 决定、与包名无关；S3 已在证明现 `src/robomme` 的原三档与 S0 基线逐位相同，V1′ 只是把「被测包」换名再证一次，所以两者要么同过、要么同挂。
 
-### 七、实施步骤表（阶段 / 内容 / 判据）
+### 七、实施步骤表（阶段 / 内容 / 判据） （初稿内容，阶段 2～5 已被 §〇′.9 取代）
 
 | 阶段 | 内容 | 判据 | 是否碰 `src/` |
 |---|---|---|---|
