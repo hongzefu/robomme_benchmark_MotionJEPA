@@ -59,6 +59,10 @@
 | U-18 | 网站与 `final-delivery.json` 是否改 1100 局 | 「6先不纳入」→ 本方案不改网站与交付清单，维持 165 局口径，另立任务 | §3.5 |
 | U-19 | 对拍 PASS 的措辞与参考层 | 「7动作、状态、图像数值、帧数要容差可控」→ 判定层措辞改为「输入绑定、结构与任务成功一致」；原参考层升级为**容差层**：动作、状态、图像、帧数四项各有阈值，阈值写在 `scripts/configs/hard-parity-tolerances.json`，默认值由 O↔P 边实测标定后写入并经用户确认，超阈值即 FAIL | §5.4、§6.1、第二部分 R21 |
 | U-20 | Codex 审计（锚点 `6608e38b`，12 条） | 用户「参考codex结果」→ 12 条全部吸收，逐条落点见第二部分 §七 | 第二部分 §七 |
+| U-21 | 阶段 3 回退 `src/robomme` 的逐文件 P2 批准 | 「阶段 3 回退 src/robomme 时的逐文件批准 全部同意」→ 预期 30 个修改文件（16 环境类、8 utils、`RecordWrapper.py`、`episode_config_resolver.py`、4 份 train 元数据）回退到 `1fadc0ec` 原样、9 个新增 utils 删除，含冻结文件 `RecordWrapper.py` 的 `fail_safe_limit` 5000 → 2000，一次性全部批准；执行时若 `git diff --name-status` 清单与这 39 项不一致，多出或少掉的文件不在授权内，停下 | 第二部分 §1.4、R10 |
+| U-22 | 阶段 4 容差层阈值 | 「你先定 全部结束后再来找我」→ 主代理按第二部分 §3.4 的规则自行定值并继续，标定分布与所定阈值在最终报告里交用户 | §5.4、第二部分 §3.4、R21 |
+| U-23 | 判定 FAIL 的裁决 | 「也是一样 你先定 如果问题不是很严重就全部做完再说」→ 按第二部分 §3.4 的严重度分级：「继续类」FAIL 记证据后继续到全部结束再汇报；「停止类」FAIL 停下受影响部分、其余继续，用户起床后裁决。判定行本身不改写、不放宽（第 22 条），改变的只是是否等用户 | 第二部分 §3.4 |
+| U-24 | 开工时点 | 「用户要先睡觉去了美国东部时间早8点起 尽可能一口气在开跑前定下来 正式开跑我还会再问」→ 本轮只把一切定死进计划，不开工；用户醒后说「开工」才从阶段 0 起连续执行 | R23 |
 | U-12 | SimpleMemVLA 官方切出点 | 2026-09-27 核实：`wadeKeith/SimpleMemVLA` main 已改为迁移提示（`ef72213`，只剩 README），项目迁到 `OpenBMB/SimpleMemVLA`，其 main `c564c17` 以 `9fce41c` 为祖先，之后两个提交（`404215d` 真机实验、`c564c17` robodojo 评测）只改 `assets/` 与 `README.md`，代码零改动。切出点定为 `OpenBMB/SimpleMemVLA@c564c17`（用户「核实simplememvla」后主代理选定，代码与 `9fce41c` 逐字节相同） | §八 |
 
 **已定死口径**：
@@ -449,7 +453,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 
 | 查什么 | 怎么查 | 过了说明什么 | 判定行 |
 |---|---|---|---|
-| 容差标定 | `compare --pair O:P --tier native --calibrate`：输出四项指标 p95 与最大值，默认阈值 = 最大值 × 1.5 写入 `scripts/configs/hard-parity-tolerances.json`，原始分布交用户确认后才跑其余边 | 阈值有实测依据 | `PARITY_TOL_CALIB=PASS pair=O:P n=144 action_p95=<…> action_max=<…> state_max=<…> image_mad_max=<…> frames_max=<…> tol_file_sha=<…>` |
+| 容差标定 | `compare --pair O:P --tier native --calibrate`：输出四项指标 p95 与最大值，默认阈值 = 最大值 × 1.5（带下界、上界，第二部分 §3.4）写入 `scripts/configs/hard-parity-tolerances.json`；按 U-22 由主代理自定后直接跑其余边，分布与阈值在最终报告交用户 | 阈值有实测依据 | `PARITY_TOL_CALIB=PASS pair=O:P n=144 action_p95=<…> action_max=<…> state_max=<…> image_mad_max=<…> frames_max=<…> tol_file_sha=<…>` |
 | 修改前 ≡ 官方（原三档） | O 侧与 P 侧各 16 任务 × 3 档 × 3 局，`hard_parity.py compare --pair O:P --tier native --manifest scripts/configs/newtask-v3/subset_manifest.json` | 拆包前的代码在 A40 上原三档与官方输入绑定、结构、任务成功一致，差异在容差内 | `PARITY_O_P=PASS tier=native compared=144 identity_equal=144 setup_equal=144 schema_equal=144 success_equal=144 both_success=144 tol=PASS action_max=<a>/<tol> state_max=<s>/<tol> image_mad=<i>/<tol> frames_max=<f>/<tol> sha_equal=<k> shape=16x3x3` |
 | 拆包不改原三档 | P 侧 vs H 侧同上 | `robomme_hard` 原三档与修改前一致（同上四项 + 容差） | `PARITY_P_H=PASS tier=native compared=144 … tol=PASS … shape=16x3x3` |
 | 端到端 | O 侧 vs H 侧同上 | `robomme_hard` 原三档与官方一致（同上四项 + 容差） | `PARITY_O_H=PASS tier=native compared=144 … tol=PASS … shape=16x3x3` |
@@ -529,7 +533,7 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 | 7 评估执行 | 第一轮：两个策略各 55 格 × 10 局，10 片并行；第二轮：余下 10 局；合并、分档统计 | `EVAL_ROUND1` × 2、`EVAL_ROUND2` × 2、`EVAL_BINDING` × 2、`EVAL_TIER_CAP` | 否 | 12.212 |
 | 8 评估留档与释放 | 两个策略仓库各自 `docs/eval-doc/`；本仓库 `docs/validation/newtask-v6/hard-split/stage7-eval.md`；`scancel` 10 个评估 job | `EVAL_HOLD_RELEASE`、`git diff --check` | 否 | 12.213 |
 
-- **开工方式（U-15）**：用户「现在不开工 统一开工」。各阶段不再逐个请示放行；用户说「开工」后按本表 0→8 连续执行。仍须单独请示的只有三处：阶段 3 的 `src/robomme` 逐文件 P2 批准、阶段 4 容差标定值确认（`PARITY_TOL_CALIB`）、任一判定 FAIL 的裁决。
+- **开工方式（U-15、U-21～U-24）**：用户「现在不开工 统一开工」。用户说「开工」后按本表 0→8 连续执行，中途不再请示：阶段 3 的逐文件 P2 批准已由 U-21 预先给出；容差阈值由主代理按第二部分 §3.4 自定（U-22）；判定 FAIL 按第二部分 §3.4 分级，「继续类」记证据后继续，「停止类」才停下等用户（U-23）。全部结束后一次性汇报，含标定分布、所定阈值、全部 FAIL 与处置。
 - 阶段 3 放在阶段 2 之后、阶段 4 之前：先让 `robomme_hard` 在官方态模拟下跑通，再回退 `robomme`；阶段 3 失败时只需回滚一个 commit。
 - 阶段 6 的分支切出依赖阶段 5 的 HEAD（子模块要指最终版）；策略仓库的代码改动可以在阶段 4 对拍跑着的时候先写，push 与 gitlink 等 HEAD 定了再做。
 - 实施完成后，实测结果以子节追加在本表之后，不改写原计划。
@@ -618,7 +622,8 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 - R20 **评估不重试挑成功**：fail／timeout 一律如实记录；只有基础设施 error（reset 抛错、Vulkan 建设备失败、server 断连、进程超时）允许重跑，每身份最多 3 次尝试、每策略每轮合计最多 55 次（U-14），并记原因与次数；两轮各 550 局跑完就算完，不补局（用户「这次20局跑完不补了」）。
 - R21 **容差层阈值只认配置文件（U-19）**：对拍容差层的四个阈值只从 `scripts/configs/hard-parity-tolerances.json` 读，文件进 git；`compare` 不提供命令行覆盖；标定值由 `--calibrate` 写入后须经用户确认（原始分布一并交），确认后才跑 `P:H`、`O:H`；改阈值就是改文件并写进留档与 commit body。
 - R22 **记录点容差（U-13 方案甲）**：`spec_binding()` 只对 trace 里 `source="record"` 的路径允许浮点差 ≤ 1e-5，`source="spec"` 的回注点必须逐位相等；容差常量定义在 `robomme_hard.env_record_wrapper.hard_specs.RECORDED_FLOAT_TOL = 1e-5`，不做参数。任何 `injected_mismatch > 0` 即 FAIL。
-- R23 **统一开工（U-15）**：用户说「开工」前不执行任何写入仓库或集群的动作；开工后按步骤表连续执行，只在 R10 的 P2 批准、R21 的容差确认、任一 FAIL 三处停下请示。
+- R23 **统一开工（U-15、U-24）**：用户说「开工」前不执行任何写入仓库或集群的动作；开工后按步骤表连续执行，P2 批准已预先给出（U-21），容差与 FAIL 按 §3.4 自处（U-22、U-23），只有 §3.4「停止类」事件才停下等用户。
+- R24 **自处不等于放宽**：主代理自定容差、自判 FAIL 继续，都不改判定行的判据与措辞：FAIL 就写 FAIL，PASS 的阈值写明来源；最终报告列出全部 FAIL、证据与所采取的处置，用户可事后推翻。
 
 ## 一、逐阶段、逐文件改动清单
 
@@ -696,11 +701,11 @@ xhard（tier=xhard，xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 �
 
 ### 1.4 阶段 3：`src/robomme/`（P2）
 
-1. **出清单交批**：`git diff --name-status 1fadc0ec HEAD -- src/robomme`，预期 30 M + 9 A：
+1. **出清单并与 U-21 核对**：`git diff --name-status 1fadc0ec HEAD -- src/robomme`，预期 30 M + 9 A：
    - 30 M = 16 个环境 + 8 个 utils + `RecordWrapper.py` + `episode_config_resolver.py` + 4 个 train json；
    - 9 A = 新增 utils。
-   - 清单中单列 `RecordWrapper.py` 的改动内容与理由。
-2. **批准后执行**：对批准的文件逐个 `git checkout 1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9 -- <文件>`（固定 sha，不用会变的 `FETCH_HEAD`，不整树 checkout），再 `git rm` 9 个新增 utils。
+   - 用户 2026-09-28 已预先「全部同意」这 39 项（U-21），含 `RecordWrapper.py` 的 `fail_safe_limit` 5000 → 2000。清单写进 `stage3.md`；与 39 项不一致即停（多出的文件不在授权内）。
+2. **执行**：对这 39 项逐个 `git checkout 1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9 -- <文件>`（固定 sha，不用会变的 `FETCH_HEAD`，不整树 checkout），再 `git rm` 9 个新增 utils。
 3. **提交前核对**：`git status --short -- src/robomme` 与清单逐项对上才 commit。
 
 ### 1.5 阶段 6：benchmark 分支与两个策略仓库
@@ -839,6 +844,43 @@ uv run --no-sync python -m scripts.parity.hard_parity compare --pair P:H --tier 
 - **产物回收**：结果 jsonl／`progress.json`／`episodes.jsonl` 从 NFS `cp` 回本机两个策略仓库留档目录后删 NFS 副本；评估视频只留每格 1 条（SimpleMemVLA `--video_max_per_task 1`；MME-VLA 官方每局都存视频，片结束后只保留每格第一条、其余删除并记数）。
 - **收尾**：两轮四组判定行齐全 → 逐个 `scancel` 10 个评估 job（删前删后 `squeue -u hongzefu`，差集恰为 10 个）→ `EVAL_HOLD_RELEASE`；`62126062` 保留。
 - **停止条件**：任一评估 job 剩余不足 6 小时而该片未完成 → 停下交用户；MME-VLA smoke 主机 `MaxRSS` > 28 G → 停下交用户决定是否重交 48 G 的评估 job；spgpu 全局排队使 10 个 job 超过 12 小时未全部 RUNNING → 汇报用户，不自行改规格。
+
+### 3.4 无人值守规则：容差自定与 FAIL 分级（U-22、U-23）
+
+**容差阈值怎么自定**（`compare --pair O:P --calibrate` 之后，不等用户）：
+
+| 指标 | 默认阈值 | 合理性上界（超过即属「停止类」，说明 O↔P 本身就不对，见风险 10） |
+|---|---|---|
+| `action_max`（rad） | O:P 最大值 × 1.5，且不低于 0.005 | 0.05 |
+| `state_max` | 同上，且不低于 0.005 | 0.05 |
+| `image_mad`（0～255） | 同上，且不低于 1.0 | 10 |
+| `frames_max` | O:P 最大值 × 1.5 向上取整，且不低于 5 | 200 |
+
+- 「不低于」下界防止 O:P 恰好全同时把阈值定成 0，把正常噪声误杀；上界防止 O:P 自己分叉严重时把阈值定得没有意义。落在上界之内就写入 `hard-parity-tolerances.json` 继续跑；任一项超上界，停下等用户。
+- 标定用的 p95、最大值、所定阈值三组数进 `stage4.md`，最终报告原文给出。
+
+**FAIL 分级**（判定行不改写，只决定要不要等用户）：
+
+| 类 | 事件 | 处置 |
+|---|---|---|
+| 继续类 | 容差层超阈值但不超阈值的 2 倍，且超标身份 ≤ 5%（native 144 局中 ≤ 7 局；xhard 165 局中 ≤ 8 局），判定层全等 | 该边判定行写 FAIL 并列出超标身份与指标，继续后续边与阶段 |
+| 继续类 | `EVAL_BINDING`／`HARD_RESET_REPLAY` 出现 1e-5 < 记录点漂移 ≤ 1e-3，且回注点零差 | 写 FAIL 并列路径与差值，评估继续 |
+| 继续类 | 单片基础设施重跑用满 55 次（`RETRY_CAP_HIT`） | 该片剩余局记 error 不补，其余片继续；`EVAL_ROUND*` 写 FAIL 并给缺口清单 |
+| 继续类 | `BUCKET_SYNC` 读回不一致 | 只补传不一致对象一次并重读回，仍不一致写 FAIL 继续 |
+| 继续类 | `SHARD_SMOKE`／`EVAL_SMOKE` 因基础设施原因失败 | 同一 job 重试一次；再失败换另一个 RUNNING 的 job 再试一次；仍失败列停止类 |
+| 继续类 | MME-VLA smoke 主机 `MaxRSS` > 28 G | 在配额内把 10 个评估 job 重交为 48 G（释放后余量 736 G，10 × 48 = 480 G），记录并继续（第 8 条：超默认规格先提交再提醒） |
+| 继续类 | `MEDIA_CHECK`、`XHW_REFERENCE`、`EVAL_DEMO_FRAMES` 任何结果 | 只记录 |
+| 停止类 | 判定层任一项不等（身份、setup、结构、成功、`both_success`）且非基础设施原因 | 停该边，其余边与阶段继续 |
+| 停止类 | 回注点 `injected_mismatch > 0`，或记录点漂移 > 1e-3 | 停受影响判定，评估其他格继续 |
+| 停止类 | 容差层超标身份 > 5% 或任一超阈值 2 倍以上；标定值超合理性上界 | 停该边 |
+| 停止类 | `UPSTREAM_BYTES`、`REGISTRY_OWNER`、`NAMESPACE_OWNER`、`ABS_IMPORT`、`BORROWED_DEPS`、`WRAPPER_CHAIN` 任一 FAIL | 停后续阶段（拆包本身有误） |
+| 停止类 | `SOURCE_POOL`、`DELIVERY_SET`、`H5_BINDING`、`S4_SUBSET`、`SPECS_IDENTITY` 任一 FAIL | 停阶段 1 之后（数据身份链有误） |
+| 停止类 | `EVAL_SMOKE` 权重身份不符、`SUBMODULE_PIN` 不符、`POLICY_DIFF` 越界 | 停评估 |
+| 停止类 | 预算触顶（生成 rollout 638／reset 715／评估 2422）、占位 job 剩余不足 6 小时、`(AssocGrp*)` 配额拒绝、10 个评估 job 超 12 小时未全部 RUNNING | 停受影响部分 |
+| 停止类 | 阶段 3 清单与 U-21 的 39 项不一致；push 被拒 | 停 |
+
+- 停止类事件发生时：停下受影响部分，不相关分片与阶段继续；把判定行原文、证据、候选修法写进对应 `stage<n>.md`，并在最终报告置顶。
+- 全部阶段结束（或全部可继续部分结束）后一次性汇报，按第一部分 §七步骤表逐阶段给判定行原文。
 
 ## 四、风险登记
 
