@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 """V5 S2b：``bin_collision.check_multi_swap_sweep`` 与认证预筛的定向测试。
 
 对应 docs/plans/0924-newtask-release-v5-plan.md 2.5「关键设计点」、L23（认证预筛开启）、L54（按钮底座作静止障碍）与
@@ -23,7 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils import bin_collision as bc  # noqa: E402
+from robomme_hard.robomme_env.utils import bin_collision as bc  # noqa: E402
 
 CUBE_HALF = 0.02
 

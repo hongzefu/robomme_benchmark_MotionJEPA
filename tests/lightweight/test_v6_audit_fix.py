@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V6 审查修复（0926-v6-audit-fix-plan.md 第八节 8.2）。
 
@@ -25,13 +26,13 @@ if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
 # 包的 __init__ 用 `from .X import *` 覆盖了同名属性，只能按模块路径取
-xhard_home_site = importlib.import_module("robomme.robomme_env.utils.xhard_home_site")
-task_goal = importlib.import_module("robomme.robomme_env.utils.task_goal")
-seg_utils = importlib.import_module("robomme.robomme_env.utils.segmentation_utils")
-subgoal_language = importlib.import_module("robomme.robomme_env.utils.subgoal_language")
-vpb_mod = importlib.import_module("robomme.robomme_env.VideoPlaceButton")
-vrp_mod = importlib.import_module("robomme.robomme_env.VideoRepick")
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+xhard_home_site = importlib.import_module("robomme_hard.robomme_env.utils.xhard_home_site")
+task_goal = importlib.import_module("robomme_hard.robomme_env.utils.task_goal")
+seg_utils = importlib.import_module("robomme_hard.robomme_env.utils.segmentation_utils")
+subgoal_language = importlib.import_module("robomme_hard.robomme_env.utils.subgoal_language")
+vpb_mod = importlib.import_module("robomme_hard.robomme_env.VideoPlaceButton")
+vrp_mod = importlib.import_module("robomme_hard.robomme_env.VideoRepick")
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
 
 XHARD = ("xhard1", "xhard2", "xhard3", "xhard4")
 ORIGINAL = ("easy", "medium", "hard", None)

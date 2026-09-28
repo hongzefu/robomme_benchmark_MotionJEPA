@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V5 S2a 共用采样基础设施（docs/plans/0924-newtask-release-v5-plan.md 2.0①②③、L3、L4 b）。
 
@@ -37,11 +38,11 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 from mani_skill.utils.structs.pose import Pose  # noqa: E402
 
-from robomme.robomme_env.utils import object_generation as og  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.xhard import cube_obb2d_exact  # noqa: E402
+from robomme_hard.robomme_env.utils import object_generation as og  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.xhard import cube_obb2d_exact  # noqa: E402
 
-ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
+ENV_DIR = REPO_ROOT / "src" / "robomme_hard" / "robomme_env"
 
 
 # ---------------------------------------------------------------------------
@@ -478,7 +479,7 @@ class _ReplayRecorder:
 
 
 def test_replay_violating_frozen_value_is_rejected(fake_scene) -> None:
-    from robomme.robomme_env.utils.episode_spec import EpisodeSpecError
+    from robomme_hard.robomme_env.utils.episode_spec import EpisodeSpecError
 
     zone = ((0.0, 0.0), 0.05)
     bad_cube = _ReplayRecorder([0.01, 0.0, 0.0])
@@ -511,7 +512,7 @@ SHADOWED = ["VideoRepick", "SwingXtimes", "PatternLock", "RouteStick", "StopCube
 
 @pytest.mark.parametrize("name", SHADOWED)
 def test_shadowed_module_selects_real_class_only_for_newvalue(name) -> None:
-    mod = importlib.import_module(f"robomme.robomme_env.{name}")
+    mod = importlib.import_module(f"robomme_hard.robomme_env.{name}")
     # 遮蔽现状仍在（原三档依赖它保持 TypeError，H2）
     assert isinstance(mod.SceneGenerationError, types.ModuleType)
     assert mod._RealSceneGenerationError is SceneGenerationError
@@ -538,7 +539,7 @@ def test_no_other_env_module_is_shadowed() -> None:
     for path in sorted(ENV_DIR.glob("*.py")):
         if path.name.startswith("_"):
             continue
-        mod = importlib.import_module(f"robomme.robomme_env.{path.stem}")
+        mod = importlib.import_module(f"robomme_hard.robomme_env.{path.stem}")
         if isinstance(getattr(mod, "SceneGenerationError", None), types.ModuleType):
             shadowed.append(path.stem)
     assert sorted(shadowed) == sorted(SHADOWED + ["VideoPlaceOrder"])
@@ -582,7 +583,7 @@ class _PassSpec:
 
 
 def test_videorepick_newvalue_raise_is_real_class(monkeypatch) -> None:
-    mod = importlib.import_module("robomme.robomme_env.VideoRepick")
+    mod = importlib.import_module("robomme_hard.robomme_env.VideoRepick")
 
     def _fail(*args, **kwargs):
         raise RuntimeError("Region crowded")
@@ -605,7 +606,7 @@ def test_videorepick_newvalue_raise_is_real_class(monkeypatch) -> None:
 
 
 def test_swingxtimes_xhard_raise_is_real_class() -> None:
-    mod = importlib.import_module("robomme.robomme_env.SwingXtimes")
+    mod = importlib.import_module("robomme_hard.robomme_env.SwingXtimes")
     fake = SimpleNamespace(_cube_color_of=[])
     with pytest.raises(SceneGenerationError, match="颜色登记表"):
         mod.SwingXtimes._color_name_of(fake, object())

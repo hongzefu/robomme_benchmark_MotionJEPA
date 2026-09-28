@@ -9,9 +9,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_V5 = REPO_ROOT / "scripts" / "configs" / "newtask-v5" / "sampling_config.json"
-DEFAULT_V6 = REPO_ROOT / "scripts" / "configs" / "newtask-v6" / "sampling_config.json"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+# 两份快照已随拆包阶段 2 删除，只能从 git 历史取回（如 git show 7a6cee35:scripts/configs/newtask-v5/sampling_config.json），
+# 调用时须显式传路径。
+DEFAULT_V5 = None
+DEFAULT_V6 = None
 
 V5_TIER_KEYS = frozenset({"xhard"})
 V6_TIER_KEYS = frozenset({"xhard1", "xhard2", "xhard3", "xhard4"})
@@ -186,8 +188,8 @@ def compare_snapshots(v5: Any, v6: Any) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     """打印可复核的 V0 判定行与差异路径。"""
     parser = argparse.ArgumentParser(description="只读核对 V5/V6 原三档冻结值")
-    parser.add_argument("--v5", type=Path, default=DEFAULT_V5, help="V5 sampling_config 快照")
-    parser.add_argument("--v6", type=Path, default=DEFAULT_V6, help="V6 sampling_config 快照")
+    parser.add_argument("--v5", type=Path, required=True, help="V5 sampling_config 快照（已删，须从 git 历史取回）")
+    parser.add_argument("--v6", type=Path, required=True, help="V6 sampling_config 快照（已删，须从 git 历史取回）")
     args = parser.parse_args(argv)
 
     try:

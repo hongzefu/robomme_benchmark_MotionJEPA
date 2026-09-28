@@ -497,7 +497,7 @@ def cmd_export_s4_setup(args) -> int:
         S4_SETUP_OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
     values = "/".join(str(hard_specs.TIER_MAX_STEPS[t]) for t in hard_specs.TIERS)
     execs = "/".join(str(max_exec[t]) for t in hard_specs.TIERS)
-    legacy = subprocess.run(["git", "-C", str(REPO), "show", "HEAD:scripts/eval/v4_eval.py"],
+    legacy = subprocess.run(["git", "-C", str(REPO), "show", f"{LEGACY_V4_COMMIT}:scripts/eval/v4_eval.py"],
                             capture_output=True, text=True).stdout
     same = 'NEWVALUE_MAX_STEPS = {"xhard1": 1500, "xhard2": 1700, "xhard3": 2000, "xhard4": 2600}' in legacy
     below = all(max_exec[t] < hard_specs.TIER_MAX_STEPS[t] for t in hard_specs.TIERS)

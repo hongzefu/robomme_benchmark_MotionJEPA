@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tests._shared.repo_paths import find_repo_root  # noqa: E402
 
 REPO_ROOT = find_repo_root(__file__)
-for _entry in (REPO_ROOT / "scripts", REPO_ROOT / "scripts" / "parity"):
+for _entry in (REPO_ROOT / "scripts", REPO_ROOT / "scripts" / "injection-dev" / "site"):
     if str(_entry) not in sys.path:
         sys.path.insert(0, str(_entry))
 

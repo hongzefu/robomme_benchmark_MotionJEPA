@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：四个 Unmask 环境 xhard 干扰容器「参与揭示 + 误抓即失败」（用户 2026-09-22 决策）。
 
@@ -30,7 +31,7 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 pytestmark = pytest.mark.lightweight
 
-ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
+ENV_DIR = REPO_ROOT / "src" / "robomme_hard" / "robomme_env"
 FOUR_ENVS = ("VideoUnmask.py", "ButtonUnmask.py", "VideoUnmaskSwap.py", "ButtonUnmaskSwap.py")
 
 
@@ -64,8 +65,8 @@ def _z(actor):
 
 
 def test_揭示时序与区域容器同一机制():
-    from robomme.robomme_env.utils.statechange import lift_and_drop_objects_back_to_original
-    from robomme.robomme_env.utils.unmask_distractors import reveal_distractor_bins
+    from robomme_hard.robomme_env.utils.statechange import lift_and_drop_objects_back_to_original
+    from robomme_hard.robomme_env.utils.unmask_distractors import reveal_distractor_bins
 
     distractors = [_Actor([0.35, 0.1, 0.052]), _Actor([-0.3, -0.3, 0.052])]
     regular = _Actor([0.0, 0.0, 0.052])
@@ -85,15 +86,15 @@ def test_揭示时序与区域容器同一机制():
 
 
 def test_没有干扰容器时揭示是空操作():
-    from robomme.robomme_env.utils.unmask_distractors import reveal_distractor_bins
+    from robomme_hard.robomme_env.utils.unmask_distractors import reveal_distractor_bins
 
     reveal_distractor_bins(_Env([]), start_step=0, end_step=64, cur_step=3)
     reveal_distractor_bins(object(), start_step=0, end_step=64, cur_step=3)
 
 
 def test_误抓判失败只包装已有failure_func且保留原形态():
-    from robomme.robomme_env.utils.subgoal_evaluate_func import _coerce_failure_result
-    from robomme.robomme_env.utils.unmask_distractors import add_distractor_misgrasp_failure
+    from robomme_hard.robomme_env.utils.subgoal_evaluate_func import _coerce_failure_result
+    from robomme_hard.robomme_env.utils.unmask_distractors import add_distractor_misgrasp_failure
 
     distractors = [_Actor([0.35, 0.1, 0.052]), _Actor([-0.3, -0.3, 0.052])]
     env = _Env(distractors)
@@ -117,8 +118,8 @@ def test_误抓判失败只包装已有failure_func且保留原形态():
 
 
 def test_原判据为真时仍判失败():
-    from robomme.robomme_env.utils.subgoal_evaluate_func import _coerce_failure_result
-    from robomme.robomme_env.utils.unmask_distractors import add_distractor_misgrasp_failure
+    from robomme_hard.robomme_env.utils.subgoal_evaluate_func import _coerce_failure_result
+    from robomme_hard.robomme_env.utils.unmask_distractors import add_distractor_misgrasp_failure
 
     tasks = [{"failure_func": lambda: torch.tensor([True])}]
     add_distractor_misgrasp_failure(_Env([_Actor([0.35, 0.1, 0.052])]), tasks)

@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：VideoRepick 原三档冻结、V6 四档新值与 D5 扫掠开关。
 
@@ -34,12 +35,12 @@ if str(REPO_ROOT / "src") not in sys.path:
 pytestmark = pytest.mark.lightweight
 
 # 包的 __init__ 做了 ``from .VideoRepick import *``，同名类会遮住子模块属性，必须按模块路径取
-MODULE = importlib.import_module("robomme.robomme_env.VideoRepick")
-from robomme.robomme_env.utils import swap_uniform  # noqa: E402  V6 S5 申报值
+MODULE = importlib.import_module("robomme_hard.robomme_env.VideoRepick")
+from robomme_hard.robomme_env.utils import swap_uniform  # noqa: E402  V6 S5 申报值
 CLS = MODULE.VideoRepick
-SOURCE = (REPO_ROOT / "src" / "robomme" / "robomme_env" / "VideoRepick.py").read_text(encoding="utf-8")
+SOURCE = (REPO_ROOT / "src" / "robomme_hard" / "robomme_env" / "VideoRepick.py").read_text(encoding="utf-8")
 
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     _strip_xhard,
     assert_native_decision,
@@ -196,7 +197,7 @@ class _Planner:
 
 def test_xhard_等待函数不吞碰撞拒绝():
     """solve_hold_obj 的裸 except 会吞掉 D5 的 BinCollisionError 并死循环；xhard 专用版只吞 AttributeError。"""
-    from robomme.robomme_env.utils.bin_collision import BinCollisionError
+    from robomme_hard.robomme_env.utils.bin_collision import BinCollisionError
 
     env = _FakeEnv()
     MODULE._solve_hold_obj_xhard(env, _Planner(env), static_steps=5)

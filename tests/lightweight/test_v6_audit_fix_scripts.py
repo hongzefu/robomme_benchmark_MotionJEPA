@@ -20,7 +20,10 @@ from tests._shared.repo_paths import find_repo_root  # noqa: E402
 REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
-from scripts.parity import v4_specs as V  # noqa: E402
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
+import _draw  # noqa: E402
+import _freeze  # noqa: E402
+from robomme_hard.env_record_wrapper.hard_specs import SpecsError, seed_rule_for  # noqa: E402
 
 
 def _row(episode, way_last, way_first=0):
@@ -29,36 +32,36 @@ def _row(episode, way_last, way_first=0):
 
 def test_movecube_way_reads_last_initialization() -> None:
     """录像局用的是最后一次 reset 的 way_idx（审查 N14：候选 4/7/9 的 initializations.1 才是 peg_push）。"""
-    assert V._movecube_way(_row(0, 2, 0)["spec"]) == 2
-    assert V._movecube_way({"initializations": {}}) is None
-    assert V._movecube_way({}) is None
+    assert _freeze._movecube_way(_row(0, 2, 0)["spec"]) == 2
+    assert _freeze._movecube_way({"initializations": {}}) is None
+    assert _freeze._movecube_way({}) is None
 
 
 def test_stratified_select_one_per_way_for_movecube_newvalue() -> None:
     """N14：xhard4 MoveCube 每种运动方式取编号最小候选（0=peg_push,1=gripper_push,2=grasp_putdown）。"""
     rows = [_row(0, 1), _row(1, 2), _row(2, 2), _row(3, 1), _row(4, 0), _row(5, 2), _row(6, 2), _row(7, 0), _row(9, 0)]
-    assert V.stratified_select("MoveCube", "xhard4", rows, (0, 3, 6)) == [0, 1, 4]
+    assert _freeze.stratified_select("MoveCube", "xhard4", rows, (0, 3, 6)) == [0, 1, 4]
 
 
 def test_stratified_select_fills_missing_way_from_default_indices() -> None:
     """缺某种方式时按 select 顺序补齐，不另抽候选。"""
     rows = [_row(e, 1) for e in range(10)]
-    assert V.stratified_select("MoveCube", "xhard4", rows, (0, 3, 6)) == [0, 3, 6]
+    assert _freeze.stratified_select("MoveCube", "xhard4", rows, (0, 3, 6)) == [0, 3, 6]
 
 
 def test_stratified_select_default_for_other_tasks_and_native() -> None:
     rows = [_row(e, 0) for e in range(8)]
-    assert V.stratified_select("BinFill", "xhard4", rows, (0, 3, 6)) == [0, 3, 6]
-    assert V.stratified_select("MoveCube", "hard", rows, (0, 3, 6)) == [0, 3, 6]
+    assert _freeze.stratified_select("BinFill", "xhard4", rows, (0, 3, 6)) == [0, 3, 6]
+    assert _freeze.stratified_select("MoveCube", "hard", rows, (0, 3, 6)) == [0, 3, 6]
 
 
 def test_parse_task_max_reset_attempts_tier_filter() -> None:
     text = "VideoPlaceButton@xhard3=120,VideoPlaceButton@xhard4=120,BinFill=70"
-    assert V.parse_task_max_reset_attempts(text, "xhard3") == {"VideoPlaceButton": 120, "BinFill": 70}
-    assert V.parse_task_max_reset_attempts(text, "xhard1") == {"BinFill": 70}
-    assert V.parse_task_max_reset_attempts(None, "xhard1") == {}
-    with pytest.raises(V.SpecsError):
-        V.parse_task_max_reset_attempts("VideoPlaceButton@xhard3", "xhard3")
+    assert _draw.parse_task_max_reset_attempts(text, "xhard3") == {"VideoPlaceButton": 120, "BinFill": 70}
+    assert _draw.parse_task_max_reset_attempts(text, "xhard1") == {"BinFill": 70}
+    assert _draw.parse_task_max_reset_attempts(None, "xhard1") == {}
+    with pytest.raises(SpecsError):
+        _draw.parse_task_max_reset_attempts("VideoPlaceButton@xhard3", "xhard3")
 
 
 def test_draw_rows_applies_per_task_attempts() -> None:
@@ -67,8 +70,10 @@ def test_draw_rows_applies_per_task_attempts() -> None:
         return False, None, "SceneGenerationError", "fake"
 
     samplings = {"VideoPlaceButton": {}, "BinFill": {}}
-    rows = V.draw_rows(["VideoPlaceButton", "BinFill"], samplings, 3, 5, workers=1, draw_one=fake_draw_one,
-                       difficulty="xhard3", max_reset_attempts_by_task={"VideoPlaceButton": 9})
+    rows, stats = _draw.draw_rows(["VideoPlaceButton", "BinFill"], samplings, 3, 5, workers=1, draw_one=fake_draw_one,
+                                  difficulty="xhard3", seed_rule=seed_rule_for("xhard3", "v6"),
+                                  max_reset_attempts_by_task={"VideoPlaceButton": 9})
+    assert stats["attempted"] == 14 and stats["ok"] == 0
     counts = {}
     for row in rows:
         counts[row["task"]] = counts.get(row["task"], 0) + 1

@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import multiprocessing as mp
 import os
@@ -24,6 +25,45 @@ import sys
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_OFFICIAL_ROOT = REPO_ROOT / "scripts" / "parity" / "official"
+DEFAULT_METADATA_ROOT = REPO_ROOT / "scripts" / "configs" / "newtask-v3" / "official_train"
+SUBSET_MANIFEST = REPO_ROOT / "scripts" / "configs" / "newtask-v3" / "subset_manifest.json"
+
+
+def _check_vendor(official_root: Path) -> str:
+    """vendor 的官方编排四文件逐个核 sha（SOURCE.json）；返回其 tree（代替旧隔离树的 .official_tree）。"""
+    source = official_root / "SOURCE.json"
+    if not source.is_file():
+        marker = official_root / ".official_tree"
+        return marker.read_text().strip() if marker.is_file() else "unknown"
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    for name, sha in payload["files"].items():
+        path = official_root / "scripts" / "data-generation" / name
+        if hashlib.sha256(path.read_bytes()).hexdigest() != sha:
+            raise SystemExit(f"vendor 官方编排文件被改动：{path}")
+    return str(payload["tree"])
+
+
+def _metadata_records_sha256(metadata_root: Path) -> str:
+    """十六份 train 元数据 records 按任务规范序串接的 sha256（与 subset_manifest.json::records_sha256 同口径）。"""
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from seed_layout import ALL_TASKS  # noqa: PLC0415
+
+    joined: list = []
+    for task in ALL_TASKS:
+        payload = json.loads((metadata_root / f"record_dataset_{task}_metadata.json").read_text(encoding="utf-8"))
+        joined.extend(payload["records"])
+    return hashlib.sha256(json.dumps(joined, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def _append_partial(path: Path, record: dict) -> None:
+    """逐局追加并 fsync：中断恢复只跑没完成的局，不重复消耗预算。"""
+    with path.open("a", encoding="utf-8") as stream:
+        stream.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+        stream.flush()
+        os.fsync(stream.fileno())
 
 
 def _strip_working_copy_src(src_root: Path) -> list[str]:
@@ -68,7 +108,8 @@ def _probe_robomme(src_root: Path) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="A 路隔离运行器（官方 _worker）")
-    parser.add_argument("--official-root", required=True, help="官方固定源码根目录（提供 _worker 等编排代码）")
+    parser.add_argument("--official-root", default=str(DEFAULT_OFFICIAL_ROOT),
+                        help="官方编排代码根目录（提供 _worker）；默认 vendor 的 scripts/parity/official（d53f21a7）")
     parser.add_argument(
         "--src-root", default=None,
         help="环境源码树根目录，默认与 --official-root 相同（A 路）；"
@@ -93,19 +134,32 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--identity-source", choices=("train_metadata", "formula"), default="train_metadata",
         help="身份复核来源：train_metadata＝官方 metadata 逐字比（原值五路，默认）；"
-             "formula＝V4 xhard 身份按 scripts/parity/v4_specs.py 的 seed 公式硬校验（3.5）",
+             "formula＝新值档身份按 robomme_hard.env_record_wrapper.hard_specs 的 seed 公式硬校验",
     )
     parser.add_argument(
         "--no-recovery", action="store_true",
         help="V4：一律不开 fail recover（官方按 episode 号分档的规则不生效）；只对镜像 worker 有效",
     )
+    parser.add_argument(
+        "--metadata-root", default=str(DEFAULT_METADATA_ROOT),
+        help="identity_source=train_metadata 时官方 train 元数据目录（显式传给官方 read_train_metadata，"
+             "不用它按 __file__ 推出的默认根）；默认目录会核对 subset_manifest.json::records_sha256",
+    )
+    parser.add_argument("--resume", action="store_true",
+                        help="跳过 results.partial.jsonl 里已完成的身份（按 task/episode）")
     args = parser.parse_args(argv)
 
     official_root = Path(args.official_root).resolve()
+    if args.src_root is None and not (official_root / "src").is_dir():
+        raise SystemExit("--official-root 不含 src（vendor 默认），必须显式传 --src-root")
     src_root = Path(args.src_root).resolve() if args.src_root else official_root
     script_dir = official_root / "scripts" / "data-generation"
     if not (script_dir / "generate_dataset.py").exists():
         raise SystemExit(f"官方生成脚本不存在：{script_dir / 'generate_dataset.py'}")
+    official_tree = _check_vendor(official_root)
+    env_package = os.environ.get("ROBOMME_ENV_PACKAGE", "robomme")
+    if env_package not in ("robomme", "robomme_hard"):
+        raise SystemExit(f"ROBOMME_ENV_PACKAGE 非法：{env_package}")
 
     removed = _strip_working_copy_src(src_root)
     probe = _probe_robomme(src_root)
@@ -135,19 +189,36 @@ def main(argv: list[str] | None = None) -> int:
     jobs = []
     if args.identity_source == "train_metadata":
         # 用官方自己的 metadata 读取器复核每条身份，seed 与难度必须逐字相同。
-        records_by_task = official.read_train_metadata()
+        metadata_root = Path(args.metadata_root).resolve()
+        if metadata_root == DEFAULT_METADATA_ROOT.resolve():
+            expected = json.loads(SUBSET_MANIFEST.read_text(encoding="utf-8"))["records_sha256"]
+            actual = _metadata_records_sha256(metadata_root)
+            if actual != expected:
+                raise SystemExit(f"官方 train 元数据 records_sha256 不符：{actual} != {expected}")
+        records_by_task = official.read_train_metadata(metadata_root)
     else:
         # V4：xhard 身份不在官方 metadata 里；改按 V4 seed 公式复核，仍是硬校验。
         repo_root = Path(__file__).resolve().parents[2]
         if str(repo_root) not in sys.path:
             sys.path.insert(0, str(repo_root))
-        from scripts.parity.v4_specs import (  # noqa: PLC0415
+        # xhard 分支才延迟导入 robomme_hard 的 seed 规则；O／P 侧（train_metadata）进程不触发（红线 R5）
+        sys.path.insert(0, str(src_root / "src"))
+        from robomme_hard.env_record_wrapper.hard_specs import (  # noqa: PLC0415
             DIFFICULTY as V4_DIFFICULTY,
             _known_seed_rule as v4_known_seed_rule,
             seed_for as v4_seed_for,
         )
+    partial_path = Path(args.results_json).with_name("results.partial.jsonl")
+    done: dict[tuple[str, int], dict] = {}
+    if args.resume and partial_path.exists():
+        for line in partial_path.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                record = json.loads(line)
+                done[(str(record["task"]), int(record["episode"]))] = record
     for item in jobs_payload:
         task, episode = str(item["task"]), int(item["episode"])
+        if (task, episode) in done:
+            continue
         if args.identity_source == "train_metadata":
             record = records_by_task[task][episode]
             if int(record["seed"]) != int(item["seed"]) or str(record["difficulty"]) != str(item["difficulty"]):
@@ -206,8 +277,11 @@ def main(argv: list[str] | None = None) -> int:
             return executor.submit(train_split_worker.run_one, (job, config, spec, True))
         return executor.submit(train_split_worker.run_one, (job, config, spec))
 
+    results.extend(done.values())
+    if done:
+        print(f"RUNNER_RESUME skipped={len(done)} remaining={len(jobs)}", flush=True)
     with ProcessPoolExecutor(
-        max_workers=min(max(args.workers, 1), len(jobs)),
+        max_workers=max(1, min(max(args.workers, 1), len(jobs))),
         mp_context=mp.get_context("spawn"),
     ) as executor:
         futures = {_submit(executor, job): job for job in jobs}
@@ -230,10 +304,14 @@ def main(argv: list[str] | None = None) -> int:
                         "error": str(exc),
                     }
                 )
+            _append_partial(partial_path, results[-1])
     results.sort(key=lambda item: (str(item["task"]), int(item["episode"])))
     payload = {
         "schema": "train-parity-runner-results/1",
         "official_root": str(official_root),
+        "official_tree": official_tree,
+        "env_package": env_package,
+        "metadata_root": str(Path(args.metadata_root).resolve()) if args.identity_source == "train_metadata" else None,
         "src_root": str(src_root),
         "official_module": str(Path(official.__file__).resolve()),
         "robomme_module": probe,

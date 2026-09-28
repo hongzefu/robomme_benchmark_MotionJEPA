@@ -6,16 +6,20 @@ import hashlib
 import json
 from pathlib import Path
 
-from scripts.parity import v6_tier_monotone as tier_check
-from scripts.parity.v4_specs import _read_jsonl, _check_sources
+import sys
 
-ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CONFIG = ROOT / "scripts/configs/newtask-v6/sampling_config.json"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import v6_tier_monotone as tier_check  # noqa: E402
+from site_io import _check_sources, _read_jsonl, load_sampling_document  # noqa: E402
+import site_io  # noqa: E402
+
+ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_CONFIG = None  # 缺省读包内 xhard4 header 的 sampling_config（site/site_io.py）
 
 
 def check_candidates(paths, sampling_config=DEFAULT_CONFIG):
     """固定检查 52 格各 10 条，来源与当前快照、源码逐项绑定。"""
-    document = json.loads(Path(sampling_config).read_text(encoding="utf-8"))
+    document = load_sampling_document(sampling_config)
     errors, mismatches, sources = [], [], []
     cells = {f"{env}/{tier}": {"episodes": [], "reset_failures": 0}
              for env in tier_check.GRADIENT_ENVS for tier in tier_check.NEWVALUE_TIERS}
@@ -74,6 +78,15 @@ def check_candidates(paths, sampling_config=DEFAULT_CONFIG):
         errors.append({"error": "必须提供四个不同档位的完整候选文件"})
     for cell in cells.values():
         cell["missing_episodes"] = sorted(set(range(10)) - set(cell["episodes"]))
+    # 拆包后不再与当前 src 算源码指纹；改为要求各档草稿封存的来源指纹彼此一致（任一份被篡改即不一致）
+    fingerprints = set()
+    for raw in paths:
+        try:
+            fingerprints.add(json.dumps(_read_jsonl(Path(raw))[0].get("source_fingerprint"), sort_keys=True))
+        except Exception:  # noqa: BLE001 读不了的文件已在上面记入 errors
+            pass
+    if len(fingerprints) > 1:
+        errors.append({"error": f"各档草稿的来源指纹不一致（{len(fingerprints)} 种）"})
     shortfall = sum(len(cell["missing_episodes"]) for cell in cells.values())
     # 冻结 spec 不保留失败尝试，不能将未知计为零或给完整验收 PASS。
     if any(not source["failure_counts_available"] for source in sources):
@@ -81,13 +94,14 @@ def check_candidates(paths, sampling_config=DEFAULT_CONFIG):
     return {"schema": "v6-candidate-values/1", "verdict": "FAIL" if errors or mismatches or shortfall else "PASS",
             "cells": cells, "candidates": sum(len(c["episodes"]) for c in cells.values()),
             "shortfall": shortfall, "mismatches": mismatches, "input_errors": errors, "sources": sources,
-            "sampling_config_sha256": hashlib.sha256(Path(sampling_config).read_bytes()).hexdigest()}
+            "sampling_config_sha256": (hashlib.sha256(Path(sampling_config).read_bytes()).hexdigest()
+                                       if sampling_config else "packaged:" + str(site_io.PACKAGED_XHARD4.name))}
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--drafts", action="append", required=True)
-    parser.add_argument("--sampling-config", default=str(DEFAULT_CONFIG))
+    parser.add_argument("--sampling-config", default=None, help="缺省读包内 xhard4 header 的 sampling_config")
     parser.add_argument("--out", required=True)
     args = parser.parse_args(argv)
     output = Path(args.out).resolve()

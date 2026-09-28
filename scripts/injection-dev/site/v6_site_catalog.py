@@ -8,7 +8,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 ARTIFACTS = ROOT / "artifacts"
 NAMES = {
     "BinFill": "分类投放", "PickXtimes": "重复抓取", "SwingXtimes": "重复摆动",

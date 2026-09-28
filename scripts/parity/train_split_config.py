@@ -28,8 +28,10 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from seed_layout import ALL_TASKS  # noqa: E402
 
-DEFAULT_RELEASE = "newtask-v4"
-DEFAULT_OUTPUT = REPO_ROOT / "scripts" / "configs" / DEFAULT_RELEASE / "sampling_config.json"
+DEFAULT_RELEASE = "newtask-v6"
+# 拆包阶段 2 起 scripts/configs/newtask-v4～v6 的快照已删（新值配置真源是包内 test-hard jsonl header）；
+# 缺省落点改到不进 git 的 artifacts/，不再在 scripts/configs/ 下重建快照
+DEFAULT_OUTPUT = REPO_ROOT / "artifacts" / "hard-split" / f"sampling_config.{DEFAULT_RELEASE}.json"
 # 每个发布版本快照里的说明文字；V4 那一句逐字保留，保证 V4 的 --verify 照旧字节一致
 RELEASE_NOTES = {
     "newtask-v4": "V4 快照：原三档部分等于原值（v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），xhard 条目为 V4 新值",
@@ -39,9 +41,9 @@ RELEASE_NOTES = {
 }
 
 
-def extract_task(task: str, release: str = DEFAULT_RELEASE):
-    """返回该环境的 (decision, native)；未接口化的环境返回 None。"""
-    module = importlib.import_module(f"robomme.robomme_env.{task}")
+def extract_task(task: str, release: str = DEFAULT_RELEASE, pkg: str = "robomme"):
+    """返回该环境的 (decision, native)；未接口化的环境返回 None。``pkg`` 为环境包名（默认 robomme，S0 语义不变）。"""
+    module = importlib.import_module(f"{pkg}.robomme_env.{task}")
     blocks = getattr(module, "native_blocks", None)
     if blocks is None:
         return None
@@ -59,8 +61,10 @@ def main(argv: list[str] | None = None) -> int:
     extract = sub.add_parser("extract", help="提取并写出快照")
     extract.add_argument("--env", default="all", help="all 或逗号分隔的环境名")
     extract.add_argument("--release", default=DEFAULT_RELEASE, choices=sorted(RELEASE_NOTES),
-                         help="发布版本：决定默认落点 scripts/configs/<release>/sampling_config.json 与快照说明文字")
+                         help="发布版本：决定快照说明文字与缺省落点 artifacts/hard-split/sampling_config.<release>.json")
     extract.add_argument("--output", default=None, help="显式落点，缺省按 --release 推导")
+    extract.add_argument("--pkg", default="robomme", choices=("robomme", "robomme_hard"),
+                         help="环境包名；拆包后新值档的 native_blocks 只在 robomme_hard 里")
     extract.add_argument("--verify", action="store_true", help="只比对既有文件字节，不写盘")
     args = parser.parse_args(argv)
 
@@ -73,7 +77,7 @@ def main(argv: list[str] | None = None) -> int:
     payload: dict[str, object] = {}
     pending: list[str] = []
     for task in tasks:
-        block = extract_task(task, args.release)
+        block = extract_task(task, args.release, pkg=args.pkg)
         if block is None:
             pending.append(task)
             continue
@@ -88,7 +92,7 @@ def main(argv: list[str] | None = None) -> int:
         "tasks": {task: payload[task] for task in ALL_TASKS if task in payload},
     }
     data = (json.dumps(document, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
-    out = Path(args.output) if args.output else REPO_ROOT / "scripts" / "configs" / args.release / "sampling_config.json"
+    out = Path(args.output) if args.output else REPO_ROOT / "artifacts" / "hard-split" / f"sampling_config.{args.release}.json"
     if args.verify:
         if not out.exists():
             print(f"ERROR: {out} 不存在", file=sys.stderr)

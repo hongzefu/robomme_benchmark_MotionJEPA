@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 """``bin_collision`` 的定向测试：几何同源、SAT 判据、连续区间证明与具名拒绝。
 
 覆盖 NEW_VALUE_INJECTION_TEST_PLAN 第 5.7 节 ``COLLISION_GEOMETRY``／``COLLISION_SWEEP``
@@ -18,7 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils import bin_collision as bc  # noqa: E402
+from robomme_hard.robomme_env.utils import bin_collision as bc  # noqa: E402
 
 CUBE_HALF = 0.02
 

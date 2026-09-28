@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V5 S3i 精确 OBB 修复在 V6 新值档族中的延续。
 
@@ -39,14 +40,14 @@ if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
 
-from robomme.robomme_env.utils import object_generation as og  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.difficulty import (  # noqa: E402
+from robomme_hard.robomme_env.utils import object_generation as og  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.difficulty import (  # noqa: E402
     is_newvalue_difficulty,
 )
 
-ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
+ENV_DIR = REPO_ROOT / "src" / "robomme_hard" / "robomme_env"
 ENV_NAMES = ("PickHighlight", "VideoPlaceButton", "VideoPlaceOrder")
 CUBE_HALF = 0.02  # PICK_CUBE_CONFIGS["panda"]["cube_half_size"]
 # 真实布局用 float32 位姿建物体，拒绝循环里判的是 float64 候选值；容差吸收这一层舍入
@@ -130,7 +131,7 @@ def fake_scene(monkeypatch):
 
 
 def _env_module(env_name):
-    return importlib.import_module(f"robomme.robomme_env.{env_name}")
+    return importlib.import_module(f"robomme_hard.robomme_env.{env_name}")
 
 
 def _fake_self(env_name, difficulty, seed):

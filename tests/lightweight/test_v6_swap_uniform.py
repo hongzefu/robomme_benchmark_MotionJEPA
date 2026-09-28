@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V6 交换对象均匀化（0925-newtask-release-v6-plan.md 2.2 / 2.4 / 2.5，M6(a) S5、外环 O4）。
 
@@ -38,12 +39,12 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 pytestmark = pytest.mark.lightweight
 
-from robomme.robomme_env.utils import swap_uniform as su  # noqa: E402
-from robomme.robomme_env.utils import unmask_swap_xhard as ux  # noqa: E402
-from robomme.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.unmask_distractor_sampler import DistractorLayout  # noqa: E402
+from robomme_hard.robomme_env.utils import swap_uniform as su  # noqa: E402
+from robomme_hard.robomme_env.utils import unmask_swap_xhard as ux  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.unmask_distractor_sampler import DistractorLayout  # noqa: E402
 
-ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
+ENV_DIR = REPO_ROOT / "src" / "robomme_hard" / "robomme_env"
 EPISODES = 10000
 
 
@@ -211,7 +212,7 @@ def test_V6外环配置可解析且规则名分派():
 
 @pytest.mark.parametrize("task", ["VideoUnmaskSwap", "ButtonUnmaskSwap"])
 def test_Unmask两环境四档申报S5O4_M5b且原三档配置不动(task):
-    module = importlib.import_module(f"robomme.robomme_env.{task}")
+    module = importlib.import_module(f"robomme_hard.robomme_env.{task}")
     cls = getattr(module, task)
     decision = module._native_decision(cls)
     native = module.native_blocks(cls)[1]
@@ -244,7 +245,7 @@ def test_Unmask两环境四档申报S5O4_M5b且原三档配置不动(task):
 
 
 def test_VR四档S5及难度配置():
-    module = importlib.import_module("robomme.robomme_env.VideoRepick")
+    module = importlib.import_module("robomme_hard.robomme_env.VideoRepick")
     decision = module._native_decision(module.VideoRepick)
     expected = {"xhard1": (4, 3, 4, 2, 3), "xhard2": (5, 5, 6, 3, 4),
                 "xhard3": (6, 7, 8, 4, 5), "xhard4": (7, 9, 12, 5, 7)}
@@ -260,7 +261,7 @@ def test_VR四档S5及难度配置():
 
 
 def test_M5b容器选择保持前三个且拒绝空槽bin3():
-    from robomme.robomme_env.utils.episode_spec import EpisodeSpecError
+    from robomme_hard.robomme_env.utils.episode_spec import EpisodeSpecError
 
     assert ux.validate_hidden_bin_selection([2, 0, 1], permutation_size=3) == [2, 0, 1]
     for invalid in ([0, 1, 3], [0, 0, 1], [0, 1]):
@@ -272,7 +273,7 @@ def test_M5b容器选择保持前三个且拒绝空槽bin3():
     ("xhard1", 4, 3), ("xhard2", 5, 5), ("xhard3", 6, 7), ("xhard4", 7, 9),
 ])
 def test_VR_S5四档固定可行图规划与回放(tier, cube_count, n_swaps, monkeypatch):
-    module = importlib.import_module("robomme.robomme_env.VideoRepick")
+    module = importlib.import_module("robomme_hard.robomme_env.VideoRepick")
     cls = module.VideoRepick
     decision = module._native_decision(cls)
     class _CompleteGraph:
@@ -318,22 +319,7 @@ def test_VR_S5四档固定可行图规划与回放(tier, cube_count, n_swaps, mo
     assert replay._newvalue_swap_partners == env._newvalue_swap_partners
 
 
-def test_V5快照SHA与三个环境旧版导出逐任务相同():
-    snapshots = {
-        "newtask-v4": REPO_ROOT / "scripts" / "configs" / "newtask-v4" / "sampling_config.json",
-        "newtask-v5": REPO_ROOT / "scripts" / "configs" / "newtask-v5" / "sampling_config.json",
-    }
-    v5_snapshot = snapshots["newtask-v5"]
-    assert hashlib.sha256(v5_snapshot.read_bytes()).hexdigest() == (
-        "c45d4408a5b87d71a8be72d1724322f06d6801118bb53e4afdffd07b1eaf8315"
-    )
-    for release, snapshot in snapshots.items():
-        payload = json.loads(snapshot.read_text(encoding="utf-8"))
-        for task in ("VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoRepick"):
-            module = importlib.import_module(f"robomme.robomme_env.{task}")
-            cls = getattr(module, task)
-            decision, native = module.native_blocks(cls, release=release)
-            assert {"decision": decision, "native": native} == payload["tasks"][task]
+# test_V5快照SHA与三个环境旧版导出逐任务相同：newtask-v4/v5 快照随拆包阶段 2 删除，该用例删除（git 历史可取回）
 
 
 @pytest.mark.parametrize("task", ["VideoUnmaskSwap", "ButtonUnmaskSwap"])

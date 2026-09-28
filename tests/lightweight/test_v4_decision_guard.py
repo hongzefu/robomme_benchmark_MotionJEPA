@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：decision 守卫的原三档冻结与 V6 新值族结构校验。
 
@@ -23,7 +24,7 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     assert_native_decision,
 )

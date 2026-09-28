@@ -5,7 +5,7 @@
 - 原版难度 hard：取站点原版示例的来源目录 ``artifacts/newtask-v6/v1/base/B`` 下每个 task 的全部 h5。
 - 站点每条示例视频（``media-private.json``）另记它自己那条 h5 的三个数，供卡片显示「当前」。
 
-用法：uv run --no-sync python -m scripts.parity.v6_gt_lengths --records <SimpleMemVLA records 目录> --site-dir artifacts/newtask-v6/site-v12
+用法：uv run --no-sync python scripts/injection-dev/site/v6_gt_lengths.py --records <SimpleMemVLA records 目录> --site-dir artifacts/newtask-v6/site-v12
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import h5py
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[3]
 ART = REPO / "artifacts/newtask-v6"
 TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
 BASE = {"xhard1": ["xhard1-main-0927", "xhard1-fill-0927"], "xhard2": ["xhard2-0927"],

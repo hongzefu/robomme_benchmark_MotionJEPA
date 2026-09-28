@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """V5 S3b：VideoUnmask / ButtonUnmask 的 xhard 干扰容器接入统一采样器（L13）与独立停放点（L14）。
 
@@ -39,12 +40,12 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils import unmask_distractor_sampler as uds  # noqa: E402
+from robomme_hard.robomme_env.utils import unmask_distractor_sampler as uds  # noqa: E402
 
 pytestmark = pytest.mark.lightweight
 
 TASKS = ("VideoUnmask", "ButtonUnmask")
-ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
+ENV_DIR = REPO_ROOT / "src" / "robomme_hard" / "robomme_env"
 EXPECT = {"VideoUnmask": (15, [7, 8]), "ButtonUnmask": (14, [7, 7])}
 NEW_MODULE_NAMES = {
     "spawn_distractor_layout", "reveal_actors_parked", "reveal_distractor_bins_parked",
@@ -65,7 +66,7 @@ V4_REVEAL_LOOP = (
 
 
 def _module(task):
-    return importlib.import_module(f"robomme.robomme_env.{task}")
+    return importlib.import_module(f"robomme_hard.robomme_env.{task}")
 
 
 def _funcs(task):
@@ -299,8 +300,8 @@ def _v4_spec(task, seed):
 def reset_check(task, seed):
     """真 reset 一次，返回 V5_UNMASK_* 各项检查的原始数据。"""
     import gymnasium as gym
-    import robomme.robomme_env  # noqa: F401 注册环境
-    from robomme.robomme_env.utils.xhard import DISTRACTOR_COLORS
+    import robomme_hard.robomme_env  # noqa: F401 注册环境
+    from robomme_hard.robomme_env.utils.xhard import DISTRACTOR_COLORS
 
     env = gym.make(task, obs_mode="rgb+depth+segmentation", control_mode="pd_joint_pos",
                    render_mode="rgb_array", reward_mode="dense", seed=seed, difficulty="xhard4")
@@ -366,7 +367,7 @@ def test_真reset验收(task):
 def test_真reset原三档不进新模块(task, monkeypatch):
     """hard 真 reset + 揭示窗口内走 40 步：新模块的函数一旦被调用即报错；hard 的干扰相关属性与规格都不存在。"""
     import gymnasium as gym
-    import robomme.robomme_env  # noqa: F401 注册环境
+    import robomme_hard.robomme_env  # noqa: F401 注册环境
 
     mod = _module(task)
 

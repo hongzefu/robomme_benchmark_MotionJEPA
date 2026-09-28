@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：VideoRepick 新值档中心距、S5 规划与 N17 回放复核。
 
@@ -37,17 +38,17 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils import object_generation as og  # noqa: E402
-from robomme.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.xhard import cube_obb2d_exact  # noqa: E402
-from robomme.robomme_env.utils.difficulty import is_newvalue_difficulty  # noqa: E402
+from robomme_hard.robomme_env.utils import object_generation as og  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.xhard import cube_obb2d_exact  # noqa: E402
+from robomme_hard.robomme_env.utils.difficulty import is_newvalue_difficulty  # noqa: E402
 
 pytestmark = pytest.mark.lightweight
 
-MOD = importlib.import_module("robomme.robomme_env.VideoRepick")
+MOD = importlib.import_module("robomme_hard.robomme_env.VideoRepick")
 CLS = MOD.VideoRepick
-SOURCE = (REPO_ROOT / "src" / "robomme" / "robomme_env" / "VideoRepick.py").read_text(encoding="utf-8")
+SOURCE = (REPO_ROOT / "src" / "robomme_hard" / "robomme_env" / "VideoRepick.py").read_text(encoding="utf-8")
 HALF = 0.02
 # v4-01 ep3 的 seed（口径 10 的原始案例）与 P4 演示 seed；4900500 在按钮作障碍后规划失败（第 2 次交换）
 # （v4-01 的 4900000 / 4900500 / 4900600 在按钮作障碍后都规划失败，只用来测失败路径）
@@ -411,7 +412,7 @@ def test_step_原三档分支仍取最近邻():
 
 
 def test_step_newvalue缺规划即报错():
-    from robomme.robomme_env.utils.bin_collision import SpecBindingError
+    from robomme_hard.robomme_env.utils.bin_collision import SpecBindingError
 
     env, _actors, _calls = _loop_env("xhard1", None)
     with pytest.raises(SpecBindingError):

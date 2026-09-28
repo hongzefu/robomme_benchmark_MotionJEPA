@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V5 S3f PickXtimes / SwingXtimes 的 xhard 去扎堆（docs/plans/0924-newtask-release-v5-plan.md 2.13 / 2.14，L43～L46）。
 
@@ -48,14 +49,14 @@ if str(REPO_ROOT / "src") not in sys.path:
 from mani_skill.envs.tasks.tabletop.pick_cube_cfgs import PICK_CUBE_CONFIGS  # noqa: E402
 from mani_skill.utils.structs.pose import Pose  # noqa: E402
 
-from robomme.robomme_env.utils import object_generation as og  # noqa: E402
-from robomme.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.xhard import cube_obb2d_exact  # noqa: E402
+from robomme_hard.robomme_env.utils import object_generation as og  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.xhard import cube_obb2d_exact  # noqa: E402
 
-PICK = importlib.import_module("robomme.robomme_env.PickXtimes")
-SWING = importlib.import_module("robomme.robomme_env.SwingXtimes")
-ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
+PICK = importlib.import_module("robomme_hard.robomme_env.PickXtimes")
+SWING = importlib.import_module("robomme_hard.robomme_env.SwingXtimes")
+ENV_DIR = REPO_ROOT / "src" / "robomme_hard" / "robomme_env"
 MODULES = {"PickXtimes": PICK, "SwingXtimes": SWING}
 
 MIN_CENTER_DIST = 0.08

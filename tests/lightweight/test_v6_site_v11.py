@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """轻量测试：site-v11（V6 语义审查修复后网站）的目录新增字段（不读 HDF5、不占 GPU）。
 
-覆盖 scripts/parity/v6_site_catalog.py：本轮改动 15 条、已知问题分组、修复后 VPB 新句式解析、
+覆盖 scripts/injection-dev/site/v6_site_catalog.py：本轮改动 15 条、已知问题分组、修复后 VPB 新句式解析、
 Q-C 修复后程序答案 = 按钮前最后一次放置（不再标已知问题）、放回原位无坐标的说明、
 子目标人读标签（等待容器交换完成等）、新旧数据两种说明框，以及计划第三节表格解析。
 
@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tests._shared.repo_paths import find_repo_root  # noqa: E402
 
 REPO_ROOT = find_repo_root(__file__)
-for _entry in (REPO_ROOT / "scripts", REPO_ROOT / "scripts" / "parity"):
+for _entry in (REPO_ROOT / "scripts", REPO_ROOT / "scripts" / "injection-dev" / "site"):
     if str(_entry) not in sys.path:
         sys.path.insert(0, str(_entry))
 
@@ -105,6 +105,6 @@ def test_gradients_parse_after_plan_table_edit():
 
 
 def test_html_renders_changelog_items_and_degrades():
-    html = (REPO_ROOT / "scripts/parity/v6_site.html").read_text(encoding="utf-8")
+    html = (REPO_ROOT / "scripts/injection-dev/site/v6_site.html").read_text(encoding="utf-8")
     assert "data-changelog-item" in html and "renderRoundNotes(catalog)" in html
     assert "catalog.changelog" in html and "box.hidden = !box.childElementCount" in html

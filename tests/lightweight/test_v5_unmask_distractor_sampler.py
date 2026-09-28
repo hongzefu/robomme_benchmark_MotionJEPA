@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V5 四个 Unmask 环境的干扰容器统一采样器与独立停放点（docs/plans/0924-newtask-release-v5-plan.md 2.2 / L13 / L14）。
 
@@ -33,18 +34,18 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils import unmask_distractor_sampler as S  # noqa: E402
-from robomme.robomme_env.utils.bin_collision import ObjectState, bin_actor_pose, bin_shape_specs  # noqa: E402
-from robomme.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.unmask_distractors import (  # noqa: E402
+from robomme_hard.robomme_env.utils import unmask_distractor_sampler as S  # noqa: E402
+from robomme_hard.robomme_env.utils.bin_collision import ObjectState, bin_actor_pose, bin_shape_specs  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.unmask_distractors import (  # noqa: E402
     BASE_CAMERA_EYE,
     BASE_CAMERA_FOV,
     BASE_CAMERA_TARGET,
     _camera_axes,
     bin_geometry,
 )
-from robomme.robomme_env.utils.xhard import DISTRACTOR_COLORS  # noqa: E402
+from robomme_hard.robomme_env.utils.xhard import DISTRACTOR_COLORS  # noqa: E402
 
 pytestmark = pytest.mark.lightweight
 
@@ -146,7 +147,7 @@ def _gen(seed):
 
 # ── 配置 ────────────────────────────────────────────────────────────────────────
 def test_预设与计划数值一致():
-    from robomme.robomme_env.utils.unmask_swap_xhard import LEGACY_V4_DISTRACTOR as V4_SWAP
+    from robomme_hard.robomme_env.utils.unmask_swap_xhard import LEGACY_V4_DISTRACTOR as V4_SWAP
 
     expect = {
         "VideoUnmask": (15, (0.2425, 0.3289), (7, 8)),
@@ -406,7 +407,7 @@ def test_停放点两两远离且不在旧停放点与场景附近():
 
 
 def test_揭示停放与statechange时间线逐步相同():
-    from robomme.robomme_env.utils.statechange import lift_and_drop_objects_back_to_original
+    from robomme_hard.robomme_env.utils.statechange import lift_and_drop_objects_back_to_original
 
     class _Env:
         pass
@@ -427,7 +428,7 @@ def test_揭示停放与statechange时间线逐步相同():
 
 
 def test_交换窗口cube停放与statechange时间线逐步相同():
-    from robomme.robomme_env.utils.statechange import lift_and_drop_objectA_onto_objectB
+    from robomme_hard.robomme_env.utils.statechange import lift_and_drop_objectA_onto_objectB
 
     class _Env:
         cube_half_size = 0.02

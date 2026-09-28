@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V4 步 3b SwingXtimes 的 xhard 档（docs/plans/0922-newtask-release-v4-plan.md 2.5）。
 
@@ -28,14 +29,14 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     _strip_xhard,
     assert_native_decision,
 )
-from robomme.robomme_env.utils.xhard import DISTRACTOR_COLORS  # noqa: E402
+from robomme_hard.robomme_env.utils.xhard import DISTRACTOR_COLORS  # noqa: E402
 
-MOD = importlib.import_module("robomme.robomme_env.SwingXtimes")
+MOD = importlib.import_module("robomme_hard.robomme_env.SwingXtimes")
 CLS = MOD.SwingXtimes
 
 ORIGINAL_CONFIGS = {

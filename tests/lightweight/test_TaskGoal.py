@@ -6,10 +6,7 @@ Run with: uv run python -m pytest tests/lightweight/test_TaskGoal.py -s
 """
 from pathlib import Path
 import importlib.util
-import sys
 import types
-
-import pytest
 
 from tests._shared.repo_paths import find_repo_root
 
@@ -25,13 +22,6 @@ def _load_task_goal_module():
 
 mod = _load_task_goal_module()
 get_language_goal = mod.get_language_goal
-REPO_ROOT = find_repo_root(__file__)
-if str(REPO_ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT / "src"))
-from robomme.robomme_env.utils.difficulty import (  # noqa: E402
-    NEWVALUE_DIFFICULTIES,
-    is_newvalue_difficulty,
-)
 
 
 class _Unwrapped:
@@ -272,84 +262,6 @@ def test_buttonunmask_pick_two():
     g = result[1] if len(result) > 1 else result[0]
     assert "press the button" in g
     assert "another container hiding the red cube" in g
-
-
-# ── V6 新值族：VideoUnmask / ButtonUnmask 按活动档位生成抓取文本 ──
-
-NEWVALUE_PICK_COUNTS = {"xhard1": 2, "xhard2": 3, "xhard3": 3, "xhard4": 3}
-
-
-@pytest.mark.parametrize("difficulty", NEWVALUE_DIFFICULTIES)
-def test_videounmask_newvalue_pick_count(difficulty):
-    """四个新值档均用本档实际抓取次数生成 VideoUnmask 文本。"""
-    assert is_newvalue_difficulty(difficulty)
-    pick_count = NEWVALUE_PICK_COUNTS[difficulty]
-    s = _make_self(
-        unwrapped_attrs=dict(
-            color_names=["red", "blue", "green"],
-            configs={difficulty: {"pick": pick_count}},
-        ),
-        difficulty=difficulty,
-    )
-    result = _call("VideoUnmask", s)
-    if pick_count == 3:
-        expected = (
-            "watch the video carefully, then pick up the container hiding the red cube, "
-            "next pick up another container hiding the blue cube, "
-            "finally pick up another container hiding the green cube"
-        )
-    else:
-        expected = (
-            "watch the video carefully, then pick up the container hiding the red cube, "
-            "finally pick up another container hiding the blue cube"
-        )
-    assert result[0] == expected
-
-
-@pytest.mark.parametrize("difficulty", NEWVALUE_DIFFICULTIES)
-def test_buttonunmask_newvalue_pick_count(difficulty):
-    """四个新值档均用本档实际抓取次数生成 ButtonUnmask 文本。"""
-    assert is_newvalue_difficulty(difficulty)
-    pick_count = NEWVALUE_PICK_COUNTS[difficulty]
-    s = _make_self(
-        unwrapped_attrs=dict(
-            color_names=["green", "red", "blue"],
-            configs={difficulty: {"pick": pick_count}},
-        ),
-        difficulty=difficulty,
-    )
-    result = _call("ButtonUnmask", s)
-    if pick_count == 3:
-        expected = (
-            "first press the button, then pick up the container hiding the green cube, "
-            "next pick up another container hiding the red cube, "
-            "finally pick up another container hiding the blue cube"
-        )
-    else:
-        expected = (
-            "first press the button, then pick up the container hiding the green cube, "
-            "finally pick up another container hiding the red cube"
-        )
-    assert result[0] == expected
-
-
-@pytest.mark.parametrize("difficulty", NEWVALUE_DIFFICULTIES)
-def test_unmask_newvalue_prefers_actual_pick_count(difficulty):
-    """新值族外部配置与实际任务表次数不同时，文本跟随实际次数。"""
-    assert is_newvalue_difficulty(difficulty)
-    s = _make_self(
-        unwrapped_attrs=dict(
-            color_names=["red", "blue", "green"],
-            configs={difficulty: {"pick": 3}},
-            xhard_pick_count=2,
-        ),
-        difficulty=difficulty,
-    )
-    result = _call("VideoUnmask", s)
-    assert result[0] == (
-        "watch the video carefully, then pick up the container hiding the red cube, "
-        "finally pick up another container hiding the blue cube"
-    )
 
 
 # ── ButtonUnmaskSwap: 2 branches ──

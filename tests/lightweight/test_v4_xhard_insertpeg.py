@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V4 InsertPeg 的 xhard 档（计划 2.16 / 2.18），纯 CPU、不起 sapien 场景。
 
@@ -35,9 +36,9 @@ sapien = pytest.importorskip("sapien")
 import importlib  # noqa: E402
 
 # 包 __init__ 把同名类导出成属性，必须按模块路径取模块本体
-insertpeg_mod = importlib.import_module("robomme.robomme_env.InsertPeg")
-from robomme.robomme_env.utils import subgoal_planner_func as spf  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+insertpeg_mod = importlib.import_module("robomme_hard.robomme_env.InsertPeg")
+from robomme_hard.robomme_env.utils import subgoal_planner_func as spf  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     assert_native_decision,
 )
@@ -230,7 +231,7 @@ def test_grasp_and_lift_sets_flag_only_when_switch_on() -> None:
 
 # ── VQA 候选 6→8 ──────────────────────────────────────────────────────────────
 def test_vqa_insertpeg_available_scales_with_peg_count() -> None:
-    from robomme.robomme_env.utils import vqa_options
+    from robomme_hard.robomme_env.utils import vqa_options
 
     for n in (3, 4):
         env = SimpleNamespace(peg_heads=[object() for _ in range(n)], peg_tails=[object() for _ in range(n)],

@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V5 MoveCube 机制在 V6 xhard4 区域实现下的回归（L30～L34）。
 
@@ -43,11 +44,11 @@ pytest.importorskip("sapien")
 
 from mani_skill.utils.structs.pose import Pose  # noqa: E402
 
-mc = importlib.import_module("robomme.robomme_env.MoveCube")
-og = importlib.import_module("robomme.robomme_env.utils.object_generation")
-from robomme.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import SamplingConfigError  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+mc = importlib.import_module("robomme_hard.robomme_env.MoveCube")
+og = importlib.import_module("robomme_hard.robomme_env.utils.object_generation")
+from robomme_hard.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import SamplingConfigError  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
 
 CLS = mc.MoveCube
 R = 0.05
@@ -275,7 +276,7 @@ def test_replay_rejects_goal_and_cube_in_zone(fake_scene, path, value) -> None:
 @pytest.mark.slow
 def test_real_reset_exec_spawn_and_peg_geometry() -> None:
     gym = pytest.importorskip("gymnasium")
-    import robomme.robomme_env  # noqa: F401 注册环境
+    import robomme_hard.robomme_env  # noqa: F401 注册环境
 
     ok = 0
     for seed in (1000442, 1000446):

@@ -1,4 +1,8 @@
-"""`scripts/parity/hard_parity.py` 的参数解析、dry-run 命令与 H5 校验反例。"""
+"""``scripts/parity/hard_parity.py``（三侧对拍入口）的纯 CPU 测试：合成 h5，不起仿真。
+
+覆盖：参数解析、每侧自检、逐对指标（setup／结构／四项容差／首个分叉步）、容差标定的下界与上界、
+包归属判定、端到端 compare 的判定层与容差层（含超阈值即 FAIL、同失败不算相等）。
+"""
 from __future__ import annotations
 
 import json
@@ -10,95 +14,111 @@ import pytest
 
 from scripts.parity import hard_parity as H
 
-S3_DIR = H.ROOT / "artifacts/newtask-v6/v6-s3-20260926-01"
+
+def _h5(path: Path, seed: int, frames: int = 4, action_shift: float = 0.0, goal: str = "pick up the cube") -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with h5py.File(path, "w") as f:
+        ep = f.create_group("episode_0")
+        s = ep.create_group("setup")
+        s["seed"] = seed
+        s["difficulty"] = b"easy"
+        s["task_goal"] = np.array([goal.encode()])
+        s["front_camera_intrinsic"] = np.eye(3)
+        for i in range(frames):
+            t = ep.create_group(f"timestep_{i}")
+            t["action/joint_action"] = np.full(8, i + action_shift)
+            t["obs/joint_state"] = np.zeros(7, dtype=np.float32)
+            t["obs/gripper_state"] = np.zeros(2, dtype=np.float32)
+            t["obs/front_rgb"] = np.zeros((4, 4, 3), dtype=np.uint8)
+            t["obs/wrist_rgb"] = np.zeros((4, 4, 3), dtype=np.uint8)
+            t["info/is_completed"] = i == frames - 1
 
 
-def _rows():
-    rows = [{"task": "BinFill", "episode": 0, "seed": 7, "difficulty": "easy", "recovery_mode": None}]
-    rows += [{"task": "PickXtimes", "episode": i, "seed": 100 + i, "difficulty": "hard", "recovery_mode": None}
-             for i in range(143)]
-    return rows
+def _side(root: Path, side: str, rows, success=True, **h5kw) -> Path:
+    d = root / f"{side}-native"
+    d.mkdir(parents=True, exist_ok=True)
+    lines = []
+    for r in rows:
+        rel = f"episodes/{r['task']}_episode_{r['episode']}/hdf5_files/x.h5"
+        if success:
+            _h5(d / rel, r["seed"], **h5kw)
+        lines.append({"side": side, "tier": r["difficulty"], "task": r["task"], "episode": r["episode"],
+                      "seed": r["seed"], "success": success, "path": rel if success else None,
+                      "sha256": H.sha256_file(d / rel) if success else None,
+                      "env_module": f"robomme_hard.robomme_env.{r['task']}" if side == "H" else None,
+                      "worker": "train_split_worker.run_one" if side == "H" else "official._worker",
+                      "robomme_module": "/x/src/robomme/__init__.py"})
+    (d / "identities.jsonl").write_text("".join(json.dumps(l) + "\n" for l in lines))
+    return d
 
 
-def _args(tmp_path: Path, *extra: str):
+@pytest.fixture
+def setup_dirs(tmp_path, monkeypatch):
+    rows = [{"task": "BinFill", "episode": i, "seed": 100 + i, "difficulty": "easy"} for i in range(3)]
     manifest = tmp_path / "manifest.json"
-    manifest.write_text(json.dumps({"source_ref": "x", "rows": _rows()}))
-    return ["run", "--env-package", "robomme_hard", "--manifest", str(manifest), "--base", str(tmp_path / "base"),
-            "--official-root", str(tmp_path / "official"), "--output", str(tmp_path / "out"), *extra]
+    manifest.write_text(json.dumps({"rows_total": 3, "rows": rows}))
+    monkeypatch.setattr(H, "LOCAL_H5_ROOT", tmp_path)
+    monkeypatch.setattr(H, "COMPARE_ROOT", tmp_path / "compare")
+    monkeypatch.setattr(H, "TOLERANCES", tmp_path / "tol.json")
+    return tmp_path, rows, manifest
 
 
-def test_parser_requires_env_package_choice(tmp_path):
+def test_parser_choices():
     parser = H.build_parser()
     with pytest.raises(SystemExit):
-        parser.parse_args(["run", "--manifest", "m", "--base", "b", "--official-root", "o", "--output", "x"])
-    with pytest.raises(SystemExit):
-        parser.parse_args(_args(tmp_path)[:2] + ["robomme_v2"] + _args(tmp_path)[3:])
-    args = parser.parse_args(_args(tmp_path))
-    assert args.env_package == "robomme_hard" and args.workers == 1 and args.gpus == "0" and not args.dry_run
+        parser.parse_args(["generate", "--side", "X", "--tier", "native", "--manifest", "m", "--src-root", "s", "--out", "o"])
+    args = parser.parse_args(["compare", "--pair", "O:P", "--tier", "native", "--manifest", "m", "--calibrate"])
+    assert args.calibrate and args.workers == 16
 
 
-def test_dry_run_prints_commands_and_writes_nothing(tmp_path, capsys):
-    assert H.main(_args(tmp_path, "--dry-run")) == 0
-    lines = capsys.readouterr().out.splitlines()
-    assert lines[0] == "# env CUDA_VISIBLE_DEVICES=0 ROBOMME_ENV_PACKAGE=robomme_hard"
-    assert lines[1].endswith(f"--output {tmp_path / 'out' / 'smoke'}")
-    assert " compare --run base=" in lines[3]
-    assert not (tmp_path / "out").exists()
+def test_calibrate_floor_and_ceiling():
+    ok, result = H.calibrate([{"action_max": 0.0, "state_max": 0.0, "image_mad": 0.0, "frames_diff": 0}])
+    assert ok and result["payload"]["action_max_rad"] == 0.005 and result["payload"]["frames_max"] == 5
+    ok, result = H.calibrate([{"action_max": 0.2, "state_max": 0.0, "image_mad": 0.0, "frames_diff": 3}])
+    assert not ok and result["ceiling_hit"] == ["action_max"]
 
 
-@pytest.mark.skipif(not (S3_DIR / "launch.json").is_file(), reason="S3 产物不在本机")
-def test_dry_run_matches_s3_run_commands(capsys):
-    """指向 S3 原目录时，两条 run 命令与 S3 运行器实际拼出的 argv 逐字相同。"""
-    manifest = H.ROOT / "scripts/configs/newtask-v3/subset_manifest.json"
-    base = H.ROOT / "artifacts/newtask-v6/v1/base"
-    official = H.ROOT / "artifacts/train-parity/local-smoke-01/official-src"
-    H.main(["run", "--env-package", "robomme", "--manifest", str(manifest), "--base", str(base),
-            "--official-root", str(official), "--output", str(S3_DIR), "--dry-run"])
-    lines = capsys.readouterr().out.splitlines()
-    for part, line in zip(("smoke", "remaining"), lines[1:3]):
-        expected = ["uv", "run", "--no-sync", "python", str(H.ENTRY), "run",
-                    "--manifest", str(S3_DIR / f"{part}_manifest.json"), "--paths", "B",
-                    "--workers", "1", "--gpus", "0", "--official-root", str(official),
-                    "--output", str(S3_DIR / part)]
-        assert line == " ".join(expected)
+def test_binding_rules():
+    assert H._binding_ok("H", {"env_module": "robomme_hard.robomme_env.BinFill"})
+    assert not H._binding_ok("H", {"env_module": "robomme.robomme_env.BinFill"})
+    assert H._binding_ok("O", {"worker": "official._worker", "robomme_module": "/w/src/robomme/__init__.py"})
+    assert not H._binding_ok("O", {"worker": "train_split_worker.run_one", "robomme_module": "/w/src/robomme/__init__.py"})
 
 
-def test_split_rows_rejects_wrong_count():
-    with pytest.raises(H.ParityError):
-        H.split_rows(_rows()[:10])
-    first, rest = H.split_rows(_rows())
-    assert len(first) == 1 and len(rest) == 143
+def test_compare_calibrate_then_pass_and_tol_fail(setup_dirs, capsys):
+    root, rows, manifest = setup_dirs
+    _side(root, "O", rows)
+    _side(root, "P", rows, action_shift=0.001)
+    assert H.main(["compare", "--pair", "O:P", "--tier", "native", "--manifest", str(manifest), "--calibrate",
+                   "--workers", "2"]) == 0
+    out = capsys.readouterr().out
+    assert "PARITY_TOL_CALIB=PASS" in out and "PARITY_O_P=PASS" in out and "both_success=3" in out
+    _side(root, "H", rows, action_shift=0.1)  # 0.1 rad 远超标定阈值 → 容差层 FAIL，判定层仍全等
+    assert H.main(["compare", "--pair", "P:H", "--tier", "native", "--manifest", str(manifest), "--workers", "2"]) == 1
+    out = capsys.readouterr().out
+    assert "PARITY_P_H=FAIL" in out and "tol=FAIL" in out and "setup_equal=3" in out
 
 
-def _write_h5(root: Path, row: dict, *, difficulty=None, completed=True, empty=False):
-    folder = root / "B" / H.identity(row) / "hdf5_files"
-    folder.mkdir(parents=True)
-    path = folder / f"{row['task']}_ep{row['episode']}_seed{row['seed']}.h5"
-    if empty:
-        path.write_bytes(b"")
-        return
-    with h5py.File(path, "w") as handle:
-        ep = handle.create_group(f"episode_{row['episode']}")
-        ep["setup/seed"] = row["seed"]
-        ep["setup/difficulty"] = (difficulty or row["difficulty"]).encode()
-        ep["timestep_0/info/is_completed"] = np.bool_(False)
-        ep["timestep_1/info/is_completed"] = np.bool_(completed)
+def test_compare_same_failure_is_not_equal(setup_dirs, capsys):
+    root, rows, manifest = setup_dirs
+    _side(root, "O", rows, success=False)
+    _side(root, "P", rows, success=False)
+    (root / "tol.json").write_text(json.dumps({"action_max_rad": 0.01, "state_max": 0.01, "image_mad": 1, "frames_max": 5}))
+    assert H.main(["compare", "--pair", "O:P", "--tier", "native", "--manifest", str(manifest), "--workers", "2"]) == 1
+    assert "both_success=0" in capsys.readouterr().out
 
 
-ROW = {"task": "BinFill", "episode": 0, "seed": 7, "difficulty": "easy"}
+def test_compare_refuses_without_tolerance_file(setup_dirs):
+    root, rows, manifest = setup_dirs
+    _side(root, "P", rows)
+    _side(root, "H", rows)
+    with pytest.raises(H.ParityError, match="容差文件不存在"):
+        H.main(["compare", "--pair", "P:H", "--tier", "native", "--manifest", str(manifest), "--workers", "2"])
 
 
-def test_validate_h5_accepts_good(tmp_path):
-    _write_h5(tmp_path, ROW)
-    assert H.validate_h5(tmp_path, [ROW], "t")["timestep_count"] == 2
-
-
-@pytest.mark.parametrize("case", ["missing", "difficulty", "incomplete", "empty"])
-def test_validate_h5_rejects(tmp_path, case):
-    if case == "missing":
-        (tmp_path / "B").mkdir()
-    else:
-        _write_h5(tmp_path, ROW, difficulty="hard" if case == "difficulty" else None,
-                  completed=case != "incomplete", empty=case == "empty")
-    with pytest.raises(H.ParityError):
-        H.validate_h5(tmp_path, [ROW], "t")
+def test_pair_metrics_setup_and_divergence(tmp_path):
+    a, b = tmp_path / "a.h5", tmp_path / "b.h5"
+    _h5(a, 1, frames=5)
+    _h5(b, 1, frames=3, goal="other goal")
+    m = H.pair_metrics(str(a), str(b))
+    assert m["setup_equal"] is False and m["frames_diff"] == 2 and m["first_divergence"] is None and m["common"] == 3

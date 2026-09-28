@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V5 BinFill xhard（docs/plans/0924-newtask-release-v5-plan.md 2.12、L40～L42、N17、N18），纯 CPU、不起 sapien 场景。
 
@@ -34,11 +35,11 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-binfill = importlib.import_module("robomme.robomme_env.BinFill")
-from robomme.robomme_env.utils import object_generation as og  # noqa: E402
-from robomme.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import SamplingConfigError  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+binfill = importlib.import_module("robomme_hard.robomme_env.BinFill")
+from robomme_hard.robomme_env.utils import object_generation as og  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import SamplingConfigError  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
 
 CLS = binfill.BinFill
 HALF = 0.02
@@ -325,7 +326,7 @@ def test_BINFILL_NOT_OVERMIXED(batch) -> None:
 # ---------------------------------------------------------------------------
 def test_slot_sampler_matches_spawn_random_cube_loop() -> None:
     """槽位几何与「spawn_random_cube + 精确 OBB 预制障碍」逐次相同（同一随机流、同一位姿）。"""
-    from robomme.robomme_env.utils.xhard import cube_obb2d_exact
+    from robomme_hard.robomme_env.utils.xhard import cube_obb2d_exact
     for i in range(30):
         seed = 5600000 + 7 * i
         env, tasks, _, _ = _run(seed, color_mix={**COLOR_MIX, "max_redraws": 0})

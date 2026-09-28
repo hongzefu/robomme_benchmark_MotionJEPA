@@ -17,7 +17,8 @@ from tests._shared.repo_paths import find_repo_root  # noqa: E402
 
 REPO_ROOT = find_repo_root(__file__)
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
-from parity import v6_tier_monotone as M  # noqa: E402
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev" / "site"))
+import v6_tier_monotone as M  # noqa: E402
 
 
 def _midpoint(value):
@@ -169,7 +170,9 @@ def test_final_plan_table_passes() -> None:
 @pytest.mark.parametrize("tier,count", [("xhard1", 8), ("xhard2", 10)])
 def test_button_unmask_plan_matches_approved_snapshot(tier, count) -> None:
     """递增检查挡不住错抄值，须逐档核对批准定值与冻结配置。"""
-    document = json.loads((REPO_ROOT / "scripts/configs/newtask-v6/sampling_config.json").read_text())
+    # 原 V6 快照已删；冻结配置真源改为包内 test-hard jsonl header（与原快照逐任务相同）
+    header_path = REPO_ROOT / "src/robomme_hard/env_metadata/test-hard/xhard4/specs.jsonl"
+    document = {"tasks": json.loads(header_path.open(encoding="utf-8").readline())["sampling_config"]}
     assert document["tasks"]["ButtonUnmask"]["decision"][tier]["distractor"]["count"] == count
     assert M.PLAN_TIERS["ButtonUnmask"][tier]["distractors"] == count
 

@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：PatternLock 与 RouteStick 的 xhard4 定稿范围及回放规则。
 
@@ -34,12 +35,12 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import SamplingConfigError, _strip_xhard  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import SamplingConfigError, _strip_xhard  # noqa: E402
 
-PL_MOD = importlib.import_module("robomme.robomme_env.PatternLock")
-RS_MOD = importlib.import_module("robomme.robomme_env.RouteStick")
+PL_MOD = importlib.import_module("robomme_hard.robomme_env.PatternLock")
+RS_MOD = importlib.import_module("robomme_hard.robomme_env.RouteStick")
 PL = PL_MOD.PatternLock
 RS = RS_MOD.RouteStick
 

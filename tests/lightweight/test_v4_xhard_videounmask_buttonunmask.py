@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V4 步 3b 的 VideoUnmask / ButtonUnmask xhard（docs/plans/0922-newtask-release-v4-plan.md 2.7 / 2.8 / 2.9）。
 
@@ -30,14 +31,14 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     _strip_xhard,
     assert_native_decision,
 )
-from robomme.robomme_env.utils.task4recovery import task4recovery  # noqa: E402
-from robomme.robomme_env.utils import unmask_distractors as ud  # noqa: E402
+from robomme_hard.robomme_env.utils.task4recovery import task4recovery  # noqa: E402
+from robomme_hard.robomme_env.utils import unmask_distractors as ud  # noqa: E402
 
 TASKS = ("VideoUnmask", "ButtonUnmask")
 
@@ -54,7 +55,7 @@ ORIGINAL_DECISION = {
 
 
 def _module(task):
-    return importlib.import_module(f"robomme.robomme_env.{task}")
+    return importlib.import_module(f"robomme_hard.robomme_env.{task}")
 
 
 def _cls(task):
@@ -175,7 +176,7 @@ def test_xhard_pick_loop_structure(task, monkeypatch) -> None:
 
 @pytest.mark.parametrize("task", TASKS)
 def test_xhard_pick_loop_rejects_too_many(task) -> None:
-    from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError
+    from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError
 
     with pytest.raises(SceneGenerationError):
         _cls(task)._append_xhard_pick_tasks(_fake_env(task), [], 4)   # 只有 3 个藏物容器

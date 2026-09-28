@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：VideoUnmaskSwap / ButtonUnmaskSwap 的三档冻结与 V6 四档配置。
 
@@ -36,23 +37,23 @@ if str(REPO_ROOT / "src") not in sys.path:
 import importlib  # noqa: E402
 
 # 包的 __init__ 用 `from .X import *` 把同名类盖在了包属性上，模块本体要从 sys.modules 取
-vus_module = importlib.import_module("robomme.robomme_env.VideoUnmaskSwap")
-bus_module = importlib.import_module("robomme.robomme_env.ButtonUnmaskSwap")
-from robomme.robomme_env.utils import unmask_swap_xhard as ux  # noqa: E402
-from robomme.robomme_env.utils.bin_collision import (  # noqa: E402
+vus_module = importlib.import_module("robomme_hard.robomme_env.VideoUnmaskSwap")
+bus_module = importlib.import_module("robomme_hard.robomme_env.ButtonUnmaskSwap")
+from robomme_hard.robomme_env.utils import unmask_swap_xhard as ux  # noqa: E402
+from robomme_hard.robomme_env.utils.bin_collision import (  # noqa: E402
     ObjectState,
     bin_actor_pose,
     bin_shape_specs,
     check_swap_sweep,
 )
-from robomme.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     _strip_xhard,
     assert_native_decision,
 )
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.task_goal import get_language_goal  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.task_goal import get_language_goal  # noqa: E402
 
 VUS = vus_module.VideoUnmaskSwap
 BUS = bus_module.ButtonUnmaskSwap
@@ -270,7 +271,7 @@ def _func(path, cls_name, name):
 
 @pytest.mark.parametrize("task", sorted(MODULES))
 def test_干扰容器在load_scene末尾且不用主流(task):
-    path = REPO_ROOT / "src" / "robomme" / "robomme_env" / f"{task}.py"
+    path = REPO_ROOT / "src" / "robomme_hard" / "robomme_env" / f"{task}.py"
     scene = _func(path, task, "_load_scene")
     last = scene.body[-1]
     assert isinstance(last, ast.If) and "_spawn_newvalue_distractors" in ast.unparse(last)

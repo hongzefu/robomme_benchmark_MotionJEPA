@@ -10,7 +10,7 @@ import stat
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_SITE_DIR = REPO_ROOT / 'artifacts/newtask-v6/site'
 MEDIA_ID = re.compile(r'[A-Za-z0-9_-]{1,128}\Z')
 
@@ -138,7 +138,7 @@ class MediaHandler(BaseHTTPRequestHandler):
                     self.wfile.write(payload)
                 return
             if path == '/api/gtlen':
-                # 真值步数统计（scripts/parity/v6_gt_lengths.py 生成）；缺文件时返回空表，页面照常显示
+                # 真值步数统计（scripts/injection-dev/site/v6_gt_lengths.py 生成）；缺文件时返回空表，页面照常显示
                 gt = files.html_path.with_name('v6_gt_lengths.json')
                 payload = gt.read_bytes() if gt.exists() else b'{"cells":{},"media":{}}'
                 self._headers(200, 'application/json; charset=utf-8', len(payload), Cache_Control='no-cache')

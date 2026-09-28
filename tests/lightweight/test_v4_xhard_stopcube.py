@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：StopCube 的 V4 xhard 档（docs/plans/0922-newtask-release-v4-plan.md 2.6，用户决策 A6 / C4）。
 
@@ -30,13 +31,13 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     assert_native_decision,
 )
 
 # 包的 __init__ 做了 ``from .StopCube import *``，属性名会被同名类遮住，必须按模块路径取
-MODULE = importlib.import_module("robomme.robomme_env.StopCube")
+MODULE = importlib.import_module("robomme_hard.robomme_env.StopCube")
 CLS = MODULE.StopCube
 
 # 改动前（00e2ef4）_native_decision 的逐字返回值
@@ -98,7 +99,7 @@ def test_old_snapshot_without_xhard_gets_default() -> None:
 
 def test_step_keeps_literal_range5_for_original_three() -> None:
     """原三档分支必须逐字保留 ``range(5)``；xhard 分支按 ``self.motion_segments`` 展开。"""
-    source = (REPO_ROOT / "src/robomme/robomme_env/StopCube.py").read_text(encoding="utf-8")
+    source = (REPO_ROOT / "src/robomme_hard/robomme_env/StopCube.py").read_text(encoding="utf-8")
     tree = ast.parse(source)
     step = next(
         node for node in ast.walk(tree)

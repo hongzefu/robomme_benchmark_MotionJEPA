@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：两个 UnmaskSwap 环境 xhard 交换期等待函数遇碰撞拒绝必须上抛（V4 步 3b，H1）。
 
@@ -32,11 +33,11 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 pytestmark = pytest.mark.lightweight
 
-ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
+ENV_DIR = REPO_ROOT / "src" / "robomme_hard" / "robomme_env"
 
 
 def _collision_error():
-    from robomme.robomme_env.utils.bin_collision import BinCollisionError, CollisionRejection
+    from robomme_hard.robomme_env.utils.bin_collision import BinCollisionError, CollisionRejection
 
     return BinCollisionError(
         CollisionRejection(reason="contact", stage="sweep", object_a="bin_0", object_b="bin_1",
@@ -70,8 +71,8 @@ class _Planner:
 
 
 def test_专用等待遇碰撞拒绝立即上抛():
-    from robomme.robomme_env.utils.bin_collision import BinCollisionError
-    from robomme.robomme_env.utils.unmask_swap_xhard import solve_hold_obj_xhard
+    from robomme_hard.robomme_env.utils.bin_collision import BinCollisionError
+    from robomme_hard.robomme_env.utils.unmask_swap_xhard import solve_hold_obj_xhard
 
     env = _FakeEnv()
     # fail_times 很大：若函数吞异常，会重试到 fail_times 用完才返回，calls 远大于 1
@@ -83,7 +84,7 @@ def test_专用等待遇碰撞拒绝立即上抛():
 
 
 def test_专用等待正常等满且只吞AttributeError():
-    from robomme.robomme_env.utils.unmask_swap_xhard import solve_hold_obj_xhard
+    from robomme_hard.robomme_env.utils.unmask_swap_xhard import solve_hold_obj_xhard
 
     env = _FakeEnv()
     solve_hold_obj_xhard(env, _Planner(env), static_steps=7)
@@ -97,7 +98,7 @@ def test_专用等待正常等满且只吞AttributeError():
 
 def test_共享solve_hold_obj仍吞碰撞拒绝_记录现状():
     """N12：共享函数不就地修。这里锁住现状，证明 xhard 必须绕开它（若日后有人修了共享函数，本断言提醒同步报告）。"""
-    from robomme.robomme_env.utils.subgoal_planner_func import solve_hold_obj
+    from robomme_hard.robomme_env.utils.subgoal_planner_func import solve_hold_obj
 
     env = _FakeEnv()
     planner = _Planner(env, _collision_error(), fail_times=3)
@@ -106,8 +107,8 @@ def test_共享solve_hold_obj仍吞碰撞拒绝_记录现状():
 
 
 def test_absTimestep等待不含try_异常天然上抛():
-    from robomme.robomme_env.utils.bin_collision import BinCollisionError
-    from robomme.robomme_env.utils.subgoal_planner_func import solve_hold_obj_absTimestep
+    from robomme_hard.robomme_env.utils.bin_collision import BinCollisionError
+    from robomme_hard.robomme_env.utils.subgoal_planner_func import solve_hold_obj_absTimestep
 
     source = (ENV_DIR / "utils" / "subgoal_planner_func.py").read_text(encoding="utf-8")
     func = next(n for n in ast.walk(ast.parse(source))

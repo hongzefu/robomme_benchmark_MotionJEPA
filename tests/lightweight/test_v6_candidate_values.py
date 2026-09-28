@@ -3,15 +3,31 @@ import json
 
 import pytest
 
-from scripts.parity import v6_candidate_values as check
-from scripts.parity import v6_tier_monotone as tiers
-from scripts.parity.v4_specs import build_draw_header
-from tests.lightweight.test_v6_tier_monotone import _write_reset_drafts
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "injection-dev" / "site"))
+import site_io  # noqa: E402
+import v6_candidate_values as check  # noqa: E402
+import v6_tier_monotone as tiers  # noqa: E402
+from tests.lightweight.test_v6_tier_monotone import _write_reset_drafts  # noqa: E402
+
+
+def build_draw_header(run_id, document, tasks, difficulty, seed_rule):
+    """旧 v4_specs.build_draw_header 的最小替身（drafts header 形态；源码指纹用固定占位）。"""
+    header = {"record": "header", "schema": "v4-drafts/1", "run_id": run_id, "difficulty": difficulty,
+              "sampling_config": {t: {"decision": document["tasks"][t]["decision"], "native": document["tasks"][t]["native"]}
+                                  for t in tasks},
+              "source_fingerprint": {"files": 0, "sha256": "fixture"}, "runtime": dict(site_io.RUNTIME),
+              "seed_rule": dict(seed_rule), "recovery_rule": {"rule": "V4 全部不开 fail recover（用户 2026-09-22）"},
+              "identity_source": "formula", "tasks": tasks}
+    header["sampling_config_sha256"] = site_io._digest(header["sampling_config"])
+    return header
 
 
 def candidates(tmp_path):
     paths = _write_reset_drafts(tmp_path, samples=10)
-    document = json.loads(check.DEFAULT_CONFIG.read_text())
+    document = site_io.packaged_sampling_document()
     for path in paths:
         records = [json.loads(line) for line in path.read_text().splitlines()]
         old = records[0]

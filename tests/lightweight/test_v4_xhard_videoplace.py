@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V4 步 3b VideoPlaceButton / VideoPlaceOrder 的 xhard（计划 2.14 / 2.15）。
 
@@ -35,12 +36,12 @@ if str(REPO_ROOT / "src") not in sys.path:
 import importlib  # noqa: E402
 
 # 包的 __init__ 用 `from .VideoPlaceButton import *` 把同名类盖在了子模块属性上，只能按模块路径取
-vpb_mod = importlib.import_module("robomme.robomme_env.VideoPlaceButton")
-vpo_mod = importlib.import_module("robomme.robomme_env.VideoPlaceOrder")
-xhard_home_site = importlib.import_module("robomme.robomme_env.utils.xhard_home_site")
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import SamplingConfigError, assert_native_decision  # noqa: E402
-from robomme.robomme_env.utils.vqa_options import _videoplace_drop_available  # noqa: E402
+vpb_mod = importlib.import_module("robomme_hard.robomme_env.VideoPlaceButton")
+vpo_mod = importlib.import_module("robomme_hard.robomme_env.VideoPlaceOrder")
+xhard_home_site = importlib.import_module("robomme_hard.robomme_env.utils.xhard_home_site")
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import SamplingConfigError, assert_native_decision  # noqa: E402
+from robomme_hard.robomme_env.utils.vqa_options import _videoplace_drop_available  # noqa: E402
 
 MODULES = {
     "VideoPlaceButton": (vpb_mod, vpb_mod.VideoPlaceButton),

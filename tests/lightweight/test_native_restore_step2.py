@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：步 2 恢复的原值不得再被改回（源码级断言，不导入仿真栈）。
 
@@ -19,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tests._shared.repo_paths import find_repo_root  # noqa: E402
 
 REPO_ROOT = find_repo_root(__file__)
-ROUTESTICK = REPO_ROOT / "src" / "robomme" / "robomme_env" / "RouteStick.py"
+ROUTESTICK = REPO_ROOT / "src" / "robomme_hard" / "robomme_env" / "RouteStick.py"
 
 
 def _native_sampling() -> dict:

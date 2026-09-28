@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """V6 S1 轻量测试：难度档管道改造（0925-newtask-release-v6-plan.md 2.0，口径 3/11）。
 
@@ -23,7 +24,7 @@ for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts", REPO_ROOT):
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-from robomme.robomme_env.utils.difficulty import (  # noqa: E402
+from robomme_hard.robomme_env.utils.difficulty import (  # noqa: E402
     NEWVALUE_DIFFICULTIES,
     VALID_DIFFICULTIES,
     is_newvalue_difficulty,
@@ -31,13 +32,15 @@ from robomme.robomme_env.utils.difficulty import (  # noqa: E402
     normalize_robomme_difficulty,
     require_xhard4_only,
 )
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     _strip_xhard,
     assert_native_decision,
     fill_missing_newvalue,
 )
-from scripts.parity import v4_specs as V  # noqa: E402
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
+import _draw  # noqa: E402
+from robomme_hard.env_record_wrapper import hard_specs as V  # noqa: E402  seed 规则由 v4_specs 下沉到包内
 
 TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
 
@@ -124,9 +127,8 @@ def test_v4_specs_defaults_are_v5_bytes() -> None:
     assert V.SEED_RULE["offset"] == 4_000_000
     assert V.seed_rule_for() == V.SEED_RULE
     assert V.seed_for("BinFill", 3, 2) == V.seed_for("BinFill", 3, 2, V.SEED_RULE)
-    header = V.build_draw_header("r", {"tasks": {"BinFill": {"decision": {}, "native": {}}}}, ["BinFill"])
-    assert header["difficulty"] == "xhard" and header["seed_rule"] == V.SEED_RULE
-    assert V.env_kwargs(123, 0)["difficulty"] == "xhard"
+    # build_draw_header 与 V5 默认档 env_kwargs 随 v4_specs 删除（新值档 env_kwargs 必须显式传档位）
+    assert _draw.env_kwargs(123, 0, "xhard3")["difficulty"] == "xhard3"
 
 
 def test_v6_seed_rule_offsets_disjoint() -> None:
@@ -157,9 +159,9 @@ def test_draw_rows_carry_tier_and_rule() -> None:
         calls.append(seed)
         return True, {"spec_kind": "native-newvalue/2", "task": task}, None, None
 
-    rows = V.draw_task("PatternLock", {}, 2, 5, fake, "xhard3", rule)
+    rows = _draw.draw_task("PatternLock", {}, 2, 5, fake, "xhard3", rule)
     assert [r["difficulty"] for r in rows] == ["xhard3", "xhard3"]
     assert calls == [V.seed_for("PatternLock", 0, 0, rule), V.seed_for("PatternLock", 1, 0, rule)]
-    assert V.merge_task_rows(["PatternLock"], {"PatternLock": rows}, rule) == rows
+    assert _draw.merge_task_rows(["PatternLock"], {"PatternLock": rows}, rule) == rows
     with pytest.raises(V.SpecsError):
-        V.merge_task_rows(["PatternLock"], {"PatternLock": rows})  # 用错规则必须拒绝
+        _draw.merge_task_rows(["PatternLock"], {"PatternLock": rows})  # 用错规则必须拒绝

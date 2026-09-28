@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：VideoUnmaskSwap / ButtonUnmaskSwap 新值档外环 O4 随内环同步交换。
 
@@ -37,18 +38,18 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 pytestmark = pytest.mark.lightweight
 
-vus_module = importlib.import_module("robomme.robomme_env.VideoUnmaskSwap")
-bus_module = importlib.import_module("robomme.robomme_env.ButtonUnmaskSwap")
-from robomme.robomme_env.utils import unmask_swap_xhard as ux  # noqa: E402
-from robomme.robomme_env.utils.bin_collision import (  # noqa: E402
+vus_module = importlib.import_module("robomme_hard.robomme_env.VideoUnmaskSwap")
+bus_module = importlib.import_module("robomme_hard.robomme_env.ButtonUnmaskSwap")
+from robomme_hard.robomme_env.utils import unmask_swap_xhard as ux  # noqa: E402
+from robomme_hard.robomme_env.utils.bin_collision import (  # noqa: E402
     ObjectState,
     bin_actor_pose,
     bin_shape_specs,
     check_multi_swap_sweep,
 )
-from robomme.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
-from robomme.robomme_env.utils.unmask_distractor_sampler import (  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+from robomme_hard.robomme_env.utils.unmask_distractor_sampler import (  # noqa: E402
     V5_DISTRACTOR_PRESETS,
     DistractorLayout,
     bin_obb2d,
@@ -57,7 +58,7 @@ from robomme.robomme_env.utils.unmask_distractor_sampler import (  # noqa: E402
 )
 
 CH = 0.02
-ENV_DIR = REPO_ROOT / "src" / "robomme" / "robomme_env"
+ENV_DIR = REPO_ROOT / "src" / "robomme_hard" / "robomme_env"
 MODULES = {"VideoUnmaskSwap": (vus_module, vus_module.VideoUnmaskSwap),
            "ButtonUnmaskSwap": (bus_module, bus_module.ButtonUnmaskSwap)}
 BTN_HALF = 0.025 * 1.5 * 1.5  # build_button 返回的 create_button_obb 半边（scale 1.5 × 安全区 1.5）
@@ -327,7 +328,7 @@ def test_回放篡改发起者排列按冻结值重规划并复核():
 # ── 运行时 ────────────────────────────────────────────────────────────────────
 def test_运行时外环与内环同窗口且每窗恰好一次(monkeypatch):
     calls = []
-    from robomme.robomme_env.utils import statechange
+    from robomme_hard.robomme_env.utils import statechange
 
     monkeypatch.setattr(statechange, "swap_flat_two_lane",
                         lambda env, **kw: calls.append((kw["cube_a"], kw["cube_b"], kw["start_step"], kw["end_step"],

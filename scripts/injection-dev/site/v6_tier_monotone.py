@@ -21,10 +21,10 @@
 S1 默认验收只运行静态计划表检查，输出 ``TIER_PLAN_TABLE``。真实 reset 的 ``--reset-all`` 是额外诊断，
 只有用户明确要求时才运行，不属于 S1 默认验收；诊断结果不得替代静态 ``TIER_PLAN_TABLE``。
 
-uv run --no-sync python -m scripts.parity.v6_tier_monotone       # 检查最终计划表
-uv run --no-sync python -m scripts.parity.v6_tier_monotone --json
+uv run --no-sync python scripts/injection-dev/site/v6_tier_monotone.py       # 检查最终计划表
+uv run --no-sync python scripts/injection-dev/site/v6_tier_monotone.py --json
 # 仅用户明确要求真实 reset 诊断时运行：
-uv run --no-sync python -m scripts.parity.v6_tier_monotone --reset-all --drafts <xhard1.jsonl> --drafts <xhard2.jsonl> --drafts <xhard3.jsonl> --drafts <xhard4.jsonl> --samples 200 --out artifacts/newtask-v6/vp-tier-monotone.json
+uv run --no-sync python scripts/injection-dev/site/v6_tier_monotone.py --reset-all --drafts <xhard1.jsonl> --drafts <xhard2.jsonl> --drafts <xhard3.jsonl> --drafts <xhard4.jsonl> --samples 200 --out artifacts/newtask-v6/vp-tier-monotone.json
 
 ``--reset-all`` 消费四份 ``v4_specs draw`` 的真实 reset 规格，不启动仿真；xhard1～3 各须含13个梯度环境，
 xhard4 须含全部16环境。13个梯度环境的每档均需200条连续成功 episode，额外3环境只核验规格与尝试行。
@@ -46,7 +46,7 @@ GATE_CHAIN = ("hard", "xhard1", "xhard2", "xhard3", "xhard4")
 NEWVALUE_TIERS = GATE_CHAIN[1:]
 TIER_ORDER = ("easy", "medium", "hard", "xhard1", "xhard2", "xhard3", "xhard4")
 EPS = 1e-9
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def value_mean(value: Any) -> float | None:

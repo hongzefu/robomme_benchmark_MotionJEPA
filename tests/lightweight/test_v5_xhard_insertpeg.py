@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V5 InsertPeg 的 xhard 档（docs/plans/0924-newtask-release-v5-plan.md 2.8，L24～L29、L52），纯 CPU、不起 sapien 场景。
 
@@ -36,11 +37,11 @@ if str(REPO_ROOT / "src") not in sys.path:
 sapien = pytest.importorskip("sapien")
 torch = pytest.importorskip("torch")
 
-insertpeg_mod = importlib.import_module("robomme.robomme_env.InsertPeg")
-from robomme.robomme_env.utils import object_generation as og  # noqa: E402
-from robomme.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import SamplingConfigError  # noqa: E402
-from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
+insertpeg_mod = importlib.import_module("robomme_hard.robomme_env.InsertPeg")
+from robomme_hard.robomme_env.utils import object_generation as og  # noqa: E402
+from robomme_hard.robomme_env.utils.episode_spec import EpisodeSpecError, SpecRecorder  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import SamplingConfigError  # noqa: E402
+from robomme_hard.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: E402
 
 CLS = insertpeg_mod.InsertPeg
 footprint_gap = insertpeg_mod.footprint_gap

@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：V4 MoveCube 的 xhard4 档兼容机制（计划 2.16 / 2.17），纯 CPU、不起 sapien 场景。
 
@@ -35,9 +36,9 @@ if str(REPO_ROOT / "src") not in sys.path:
 sapien = pytest.importorskip("sapien")
 
 # 包 __init__ 把同名类导出成属性，必须按模块路径取模块本体
-movecube_mod = importlib.import_module("robomme.robomme_env.MoveCube")
-from robomme.robomme_env.utils import subgoal_planner_func as spf  # noqa: E402
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+movecube_mod = importlib.import_module("robomme_hard.robomme_env.MoveCube")
+from robomme_hard.robomme_env.utils import subgoal_planner_func as spf  # noqa: E402
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     assert_native_decision,
 )

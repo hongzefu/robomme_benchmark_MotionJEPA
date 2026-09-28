@@ -1,3 +1,4 @@
+# robomme_hard：本测试测新值档／改动行为，阶段 3 起 src/robomme 回到官方 1fadc0ec，故改测 robomme_hard（0927 计划 R8 第③类）
 #!/usr/bin/env python3
 """轻量测试：PickHighlight 的 V4 xhard 档（docs/plans/0922-newtask-release-v4-plan.md 2.12）。
 
@@ -30,8 +31,8 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 import importlib  # noqa: E402
 
-module = importlib.import_module("robomme.robomme_env.PickHighlight")
-from robomme.robomme_env.utils.sampling_config import (  # noqa: E402
+module = importlib.import_module("robomme_hard.robomme_env.PickHighlight")
+from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     SamplingConfigError,
     _strip_xhard,
     assert_native_decision,

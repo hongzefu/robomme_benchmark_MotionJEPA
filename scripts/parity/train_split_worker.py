@@ -12,11 +12,15 @@
 1. ``kwargs`` 里按需加入 ``sampling_config`` 与 ``episode_spec``；两者都为 ``None`` 时
    参数表与官方完全相同，因此 B 路仍可继续用官方 ``_worker``。
 2. 返回体多一个 ``inputs`` 字段，记录本局实际传入了哪两个显式输入的散列，供 G4 核验。
+3. 环境包由环境变量 ``ROBOMME_ENV_PACKAGE``（``robomme`` 缺省／``robomme_hard``）决定，所有 ``robomme…``
+   导入都经 ``importlib`` 按包名取；返回体多 ``env_package``、``env_module``（``REGISTERED_ENVS[task].cls.__module__``）
+   与 ``wrapper_modules``，供 ``ENV_PACKAGE_BINDING`` 核验各侧实际加载的包（0927 计划 §3.3）。
 """
 
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import os
 import sys
@@ -44,6 +48,8 @@ def run_one(payload: tuple) -> dict[str, Any]:
     worker_dir = Path(job.worker_dir)
     raw_path = worker_dir / "hdf5_files" / f"{job.task}_ep{job.episode}_seed{job.seed}.h5"
     record_env: Any | None = None
+    env_package = os.environ.get("ROBOMME_ENV_PACKAGE", "robomme")
+    binding: dict[str, Any] = {"env_package": env_package, "env_module": None, "wrapper_modules": None}
     caught: BaseException | None = None
     error_traceback: str | None = None
     try:
@@ -53,14 +59,21 @@ def run_one(payload: tuple) -> dict[str, Any]:
         sys.path.insert(0, str(source_root))
         import gymnasium as gym
         import torch
-        import robomme.robomme_env  # noqa: F401 注册环境
-        from robomme.env_record_wrapper import FailsafeTimeout, RobommeRecordWrapper  # noqa: F401
-        from robomme.robomme_env.utils.SceneGenerationError import SceneGenerationError  # noqa: F401
-        from robomme.robomme_env.utils.planner_fail_safe import (
-            FailAwarePandaArmMotionPlanningSolver,
-            FailAwarePandaStickMotionPlanningSolver,
-            ScrewPlanFailure,
-        )
+        if env_package not in ("robomme", "robomme_hard"):
+            raise ValueError(f"ROBOMME_ENV_PACKAGE 非法：{env_package}")
+        importlib.import_module(f"{env_package}.robomme_env")  # 注册环境
+        wrappers = importlib.import_module(f"{env_package}.env_record_wrapper")
+        FailsafeTimeout, RobommeRecordWrapper = wrappers.FailsafeTimeout, wrappers.RobommeRecordWrapper  # noqa: F841
+        importlib.import_module(f"{env_package}.robomme_env.utils.SceneGenerationError")
+        fail_safe = importlib.import_module(f"{env_package}.robomme_env.utils.planner_fail_safe")
+        FailAwarePandaArmMotionPlanningSolver = fail_safe.FailAwarePandaArmMotionPlanningSolver
+        FailAwarePandaStickMotionPlanningSolver = fail_safe.FailAwarePandaStickMotionPlanningSolver
+        ScrewPlanFailure = fail_safe.ScrewPlanFailure
+        from mani_skill.utils.registration import REGISTERED_ENVS
+
+        binding["env_module"] = REGISTERED_ENVS[job.task].cls.__module__
+        binding["wrapper_modules"] = {"RobommeRecordWrapper": RobommeRecordWrapper.__module__,
+                                      "planner_fail_safe": fail_safe.__name__}
 
         arm_cls, stick_cls = official._planner_classes(
             FailAwarePandaArmMotionPlanningSolver,
@@ -189,6 +202,7 @@ def run_one(payload: tuple) -> dict[str, Any]:
         "gpu": job.gpu,
         "recovery_mode": job.recovery_mode,
         "attempt_count": 1,
+        **binding,
         "inputs": {
             "sampling_config_sha256": _digest(sampling_config),
             "episode_spec_sha256": _digest(episode_spec),
