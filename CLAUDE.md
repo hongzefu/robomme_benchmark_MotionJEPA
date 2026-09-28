@@ -4,7 +4,7 @@
 
 @AGENTS.md
 
-<!-- AGENTMETARULES:BEGIN common-claude src=76c89caea121e167a7d55f69a85e9d3ffcb7893d blob=a75133db9f7995ad7e8068368ab31749bdcb7b7f -->
+<!-- AGENTMETARULES:BEGIN common-claude src=959dd2800d57dff7881adda8595d1464c9d5ab95 blob=a75133db9f7995ad7e8068368ab31749bdcb7b7f -->
 
 ## 规则来源与优先级
 
@@ -70,7 +70,7 @@
 - 宿主明确指定的计划文件属于工具管理文件，不作为仓库数据或实验产物，不能借此把缓存、权重或日志写到 `<STORE_ROOT>` 之外；仅在宿主明确允许时写入。
 - plan mode 期间除该计划文件外一律只读：不改代码、不改配置、不 commit、不跑任何有副作用的命令。**在只读阶段把事实核实清楚**——仓库的坑（如 editable 指向、安装顺序、源码来源、已知缺陷）都是只读就能查清的，带着未经核实的假设进入实施阶段代价远高于多花几分钟查证。
 
-<!-- AGENTMETARULES:END common-claude src=76c89caea121e167a7d55f69a85e9d3ffcb7893d blob=a75133db9f7995ad7e8068368ab31749bdcb7b7f -->
+<!-- AGENTMETARULES:END common-claude src=959dd2800d57dff7881adda8595d1464c9d5ab95 blob=a75133db9f7995ad7e8068368ab31749bdcb7b7f -->
 
 ## 项目专属补充
 
