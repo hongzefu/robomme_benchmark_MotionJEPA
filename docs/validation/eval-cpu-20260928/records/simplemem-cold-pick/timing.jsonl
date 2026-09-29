@@ -1,5 +1,0 @@
-{"kind": "process_start", "affinity": [5, 9, 19, 21], "pid": 3294167, "argv": ["/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/eval-cpu-20260928/simplemem_probe.py", "--benchmark_root", "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/eval-cpu-20260928/benchmark-ce3843", "--out", "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/eval-cpu-20260928/simplemem-cold-pick", "--round", "1", "--shard", "0/1", "--only", "PickXtimes/0", "--max_attempts", "1", "--retry_cap", "0", "--pretrained_checkpoint", "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/checkpoints/simplememvla_robomme", "--attn_implementation", "sdpa", "--group_size", "1"], "python": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/.venv-robomme/bin/python"}
-{"kind": "imports_ready", "wall_s": 2.6306969048455358}
-{"kind": "model_load", "wall_s": 248.08150190860033, "cpu_s": 215.567040107}
-{"kind": "environment_reset", "wall_s": 0.540871687233448, "cpu_s": 0.40024732800000606}
-{"kind": "process_end", "wall_s": 258.60514937061816}
