@@ -158,3 +158,33 @@ srun --jobid=<hold> --overlap --exact --ntasks=1 --cpus-per-task=4 --mem=32G --g
 - 留档 `docs/validation/eval-reload-20260929/{launch.md,result.md,records/}`，records 只放 `timing.jsonl`、清洗后日志与判定行；不放 sh／yaml、不放视频。
 - 策略仓库改动各自 commit 到 `testhard-eval-v7-0929` 之上的新分支 `eval-reload-0929`，不推送到 GitHub（沿用 v7 口径，留用户决定）。
 - benchmark 仓库：本方案 12.245；实测结果以子节追加到本文件 §4 之后，不改写原计划。
+
+## 实测子节（2026-09-29，方案写成后追加；阶段 0 的补充，不改写原计划）
+
+### 纯推理微基准（不建环境、不 reset、零局数）
+
+脚本 `artifacts/eval-reload-20260929/`（NFS 副本 `v7-eval-stage/eval-reload/bench_infer.py`）：与正式链路同样走 `build_policy` → `buffer._prepare_inputs` → `BatchedEvalPolicy.generate_batch`，`sdpa`、`group_size 1`、合成 256² 帧、每次决策后喂 16 帧、连续 20 次；同一份 `checkpoints/simplememvla_robomme`（15 GB，NFS）。稳态 = 第 4 次起的均值。
+
+| 配置 | 模型加载 s | 首次决策 s | 稳态每次决策 s | 其中纯推理 s | 其中 CPU 预处理 s | 折合每步 s（÷16） | 显存 GB | RSS GB |
+|---|---|---|---|---|---|---|---|---|
+| GL A40 4 CPU（gl1525，`OMP_NUM_THREADS=1`） | 253.5 | 3.57 | 1.686 | 1.671 | 0.015 | 0.105 | 11.9 | 25.2 |
+| GL A40 16 CPU（gl1513，`OMP_NUM_THREADS=1`） | 266.2 | 3.95 | 1.812 | 1.792 | 0.020 | 0.113 | 11.9 | 25.2 |
+| 本机 RTX 6000 Ada 限 4 核（`taskset 0-3`，`OMP_NUM_THREADS=1`） | 304.0 | 5.21 | 0.937 | 0.930 | 0.008 | 0.059 | 11.9 | 25.2 |
+| 本机 RTX 6000 Ada 不限核（32 核，`OMP_NUM_THREADS` 未设） | 168.5 | 1.56 | 1.218 | 0.930 | 0.288 | 0.076 | 11.9 | 25.2 |
+
+判定行原文：
+
+```text
+BENCH_INFER tag=gl-a40-4cpu gpu=NVIDIA A40, 595.71.05 cpus=4 omp=1 torch=2.4.1+cu121 import_s=2.7 model_load_s=253.5 n=20 first_s=3.5728 second_s=1.6406 third_s=1.6452 steady_mean_s=1.686 steady_p50_s=1.685 steady_max_s=1.727 steady_infer_mean_s=1.671 steady_prep_mean_s=0.015 per_step_s_at_16=0.1054 rss_gb=25.2 gpu_mem_gb=11.9
+BENCH_INFER tag=gl-a40-16cpu gpu=NVIDIA A40, 595.71.05 cpus=16 omp=1 torch=2.4.1+cu121 import_s=3.2 model_load_s=266.2 n=20 first_s=3.9517 second_s=1.7611 third_s=1.7641 steady_mean_s=1.812 steady_p50_s=1.81 steady_max_s=1.856 steady_infer_mean_s=1.792 steady_prep_mean_s=0.02 per_step_s_at_16=0.1133 rss_gb=25.2 gpu_mem_gb=11.9
+BENCH_INFER tag=local-rtx6000ada-4core gpu=NVIDIA RTX 6000 Ada Generation, 570.211.01 cpus=4 omp=1 torch=2.4.1+cu121 import_s=5.0 model_load_s=304.0 n=20 first_s=5.2136 second_s=0.9138 third_s=0.9275 steady_mean_s=0.937 steady_p50_s=0.936 steady_max_s=0.957 steady_infer_mean_s=0.93 steady_prep_mean_s=0.008 per_step_s_at_16=0.0586 rss_gb=25.2 gpu_mem_gb=11.9
+BENCH_INFER tag=local-rtx6000ada-allcore gpu=NVIDIA RTX 6000 Ada Generation, 570.211.01 cpus=32 omp=None torch=2.4.1+cu121 import_s=6.1 model_load_s=168.5 n=20 first_s=1.5637 second_s=0.9842 third_s=0.9482 steady_mean_s=1.218 steady_p50_s=1.078 steady_max_s=1.831 steady_infer_mean_s=0.93 steady_prep_mean_s=0.288 per_step_s_at_16=0.0761 rss_gb=25.2 gpu_mem_gb=11.9
+```
+
+结论：
+
+1. **重载模型 = 每进程 250～300 s（NFS 冷读 15 GB），页缓存热时 168 s。** 与 §1.3 从日志反推的每段 248～308 s 吻合，所以每段固定开销几乎全是模型加载。正式评估 20 段 × 约 260 s ≈ 1.4 h GPU 时间；同片两轮合一进程可省每片约 4.5 min（1.2%）。
+2. **推理与 CPU 数无关**：A40 上 4 CPU 与 16 CPU 都是 1.7～1.8 s／次（两次落在不同节点，差 7% 属节点差异）。
+3. **A40 推理是 RTX 6000 Ada 的 1.8 倍慢**（1.69 s 对 0.93 s），这是 GPU 差异；本机不限核且不设 `OMP_NUM_THREADS` 时 CPU 预处理从 8 ms 涨到 288 ms（线程过订阅），正式脚本的 `OMP_NUM_THREADS=1` 是对的。
+4. **正式链路每步 0.155 s 的拆分（A40）**：推理 0.105 s/步（68%），仿真步＋双相机渲染＋录像帧＋每局环境重建合计约 0.05 s/步（32%）；环境重建在这 32% 里的份额仍要 T1 的逐局插桩才能分出来。
+5. 与 daiyp 表里的 0.436 s／次相比：同为 RTX 6000 Ada 我们仍慢 2.1 倍，剩余差距不是硬件，是配置／代码（对方默认 `flash_attention_2` 与 `group_size 2`、更新的评估代码、checkpoint 步数不同）。vail 与 aspen 上均未找到对方可读的 SimpleMemVLA 配置（vail `/home/daiyp` 不可读、`/data/daiyp` 无相关目录；aspen 深度 6 内无 `*simplemem*`、无 `inference/chunk` 字段），确切命令行需向本人索取。
