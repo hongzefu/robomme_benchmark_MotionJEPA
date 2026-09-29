@@ -1,6 +1,6 @@
 # 0928 方案：test-hard v7 —— 接入 xhard0（原生 hard）+ xhard1～4 改为共用 20 个母布局（只规划不实施）
 
-> **权威性与锚点**：本方案是 v7 的唯一现行计划，取代 12.222 的 `0928-xhard0-native-hard-plan.md`（已于 34c4164d 从工作树删除，取回用 `git show 8dfd09cb:0928-xhard0-native-hard-plan.md`）里「xhard0 追加在旧四档之后」的编号建议与「xhard0 只是评估身份、不生成 h5」的口径（后者已被用户原话 13 推翻，见 §2）；其余 xhard0 结论（身份来源、原生分支）原样沿用、本文只引用不重抄。工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，代码锚点 `8dfd09cb`（12.222；本次修订时 HEAD 为 `a90efc0f`，12.231，其间 `src/`／`scripts/`／`tests/` 零改动，`git diff --stat 8dfd09cb a90efc0f -- src scripts tests` 为空）。官方源码锚点 `1fadc0ec`（`src/robomme/` 逐字节相同），官方编排锚点 `d53f21a7`（`scripts/parity/official/` vendor）。commit 编号沿用 `12.<小版本> 中文描述`。**本轮只写方案，不改代码、不起环境、不提交占位 job；用户已对第二部分 §2 预算全表一次性批准（原话 12），阶段 0～11 按表连续执行，超出预算或判定 FAIL 才停下找用户。**
+> **权威性与锚点**：本方案是 v7 的唯一现行计划，取代 12.222 的 `0928-xhard0-native-hard-plan.md`（已于 34c4164d 从工作树删除，取回用 `git show 8dfd09cb:0928-xhard0-native-hard-plan.md`）里「xhard0 追加在旧四档之后」的编号建议与「xhard0 只是评估身份、不生成 h5」的口径（后者已被用户原话 13 推翻，见 §2）；其余 xhard0 结论（身份来源、原生分支）原样沿用、本文只引用不重抄。工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，代码锚点 `8dfd09cb`（12.222；本次修订时 HEAD 为 `a90efc0f`，12.231，其间 `src/`／`scripts/`／`tests/` 零改动，`git diff --stat 8dfd09cb a90efc0f -- src scripts tests` 为空）。官方源码锚点 `1fadc0ec`（`src/robomme/` 逐字节相同），官方编排锚点 `d53f21a7`（`scripts/parity/official/` vendor）。commit 编号沿用 `12.<小版本> 中文描述`。**12.232 及之前各版只写方案；2026-09-29 用户逐条拍板起跑前全部未决项（原话 24、第四次修订）后，12.233 起进入实施：用户已对第二部分 §2 预算全表一次性批准（原话 12、24），阶段 0～11 按表连续执行、不逐阶段等确认，只有判定 FAIL、超出预算或触发 §1 第 9 条明写的硬线才停下找用户。**
 >
 > **用户原话（2026-09-28，按时间顺序逐字保留）**：
 > 1. 「给出方案 xhard现在有1-4 再加入xhard0 需要和原本的hard保持完全一致 每个task episode数量和以前一致 根目录写方案」
@@ -26,6 +26,7 @@
 > 21. 「把这个详细展开的要写进计划」（附 §3.2.2 定值表原文）
 > 22. 「参考…codex的审计 根据最新的计划 给出新的审计意见 如果不够再启动subagent 全sonnet 在调查一波」；随后「有哪些问题需要用户注意 先详细解释 再让用户决策 其他的你自行修改」。
 > 23. 四个决策项经 AskUserQuestion 定（2026-09-28）：BinFill「A 嵌套派生」；xhard0 评估判据「A 环境层判、策略层只报告」；VideoPlaceButton／VideoRepick 母布局抽签上限「A 两任务提到 100 次」；修补所需追加预算（阶段 1 的 55 次 reset、阶段 3 净增 16 次 reset 与 16 条轨迹、阶段 7 的 2 局冒烟）「全部批准」。
+> 24. 起跑前未决项逐条拍板（2026-09-29，按 agent 列出的条号逐字保留）：「a1 t同意」「a2 保留」「a3 一路跑完」「a4 全部跑完」「b1 第一种」「b2 增加候选」「b3 预定规则。同时保留一条硬线：任何一个 pair 里超容差的局数超过 5% 时，不管分类结果都停下找你，因为那已经不是零星噪声。」「b4 上调上限」「b5 现在data释放了 只删除重复的缓存对拍和已经放在bucket的内容 尽可能不要停」「C. 干扰色 你自己目视决定」。条号含义见 §1 第 9 条。
 >
 > 上一轮（12.222）关于 xhard0 数量的最后决定：「和test的hard数量一致」→ 每任务 12 局。本文对原话 1 里「每个task episode数量和以前一致」的解读：**xhard0 每任务 12 局（沿用 12.222 决定），xhard1～4 每格仍 20 局（与现在一致）**。用户 2026-09-28 已确认 xhard0 取 12 局（原话 12）。
 
@@ -34,6 +35,8 @@
 **2026-09-28 第二次修订（原话 16～21）**：此前本文（决策 3、D-5、R3）写的是「梯度数值沿用现行四档表，一个不改」。用户改为：**全部梯度定死为单个数字、不再取区间；物体数量按桌面目视总量（内环 + 外环／干扰）算梯度，基线是 xhard0 实际生成的数量而不是配置数；xhard1 只比 xhard0 难一点点、四档等差。** 为此先用官方环境实测了 xhard0 的实际放置数（§3.2.1），再据此定表（§3.2.2）。受影响段落：决策 3、§3.1、§3.2、§3.3、§6 阶段 1′、第二部分 R3、§1.7、§2、D-5、§7.3.2、§7.6、§5。
 
 **2026-09-28 第三次修订（原话 22、23；审计锚点 `a90efc0f`）**：本版吸收三份审计——Codex 两轮（锚点 `43c4f83f`、`eb929364`）、Claude 两轮（`43c4f83f` 的 48 条、`a90efc0f` 的新增 19 条），合并去重后逐条落进正文。用户拍板的四项（原话 23）写成 D-15～D-18；其余按「不改变设计意图、只把机制写对」的原则由 agent 自定（D-10）。主要改动：①派生接线改为 `native_episode_spec` 的 derive 信封，13 个环境文件不改（§1.2）；②白名单改为 L／G／N 三表闭世界，漏写即报错，并加动态门禁 `LAYOUT_WHITELIST_COMPLETE`（R10、§1.3）；③BinFill 投入按嵌套派生（D-15）；④UnmaskSwap 在注入后的实际布局上重新规划，分层模式下不再做 `same_geometry` 比对（§1.8）；⑤第 4 干扰色另设 `BLOCK_DISTRACTOR_COLORS`，不动 Unmask 共用的三色池（§1.7）；⑥删去 PickXtimes「漏改」行（前提不存在）；⑦xhard0 评估一致由 reset 层确定性部分判定，策略层只报告（D-16）；⑧gen1／gen2 统一经 `hard_parity.py` 登记身份与 A40 断言（§1.4、§1.5）；⑨`spec_binding` 对 xhard0 的期望改为 `mode=export`；⑩预算补合计行与追加项（D-18）。逐条对照见第二部分 §8。
+
+**2026-09-29 第四次修订（原话 24；起跑前决策）**：用户要求「起跑前全部决策完」，agent 列出 10 条未决项（范围与节奏 A1～A4、运行时闸门预定处置 B1～B5、干扰色 C1）并逐条给推荐，用户逐条拍板，全部写入 §1 第 9 条；B2 的追加候选预算写入第二部分 §2；B3 的分类规则与 5% 硬线、B4 的上限公式、B5 的腾空间顺序改写进第二部分 §4 风险登记对应行。本版起进入实施，不再逐阶段等确认。
 
 # 第一部分（给人看）
 
@@ -47,6 +50,17 @@
 6. parity 改为**固定 tag 锚点**，以后都这么做（§4）。
 7. 容差只在 A40 + 同一驱动上成立；正式生成与对拍一律在 GL 的 A40 上跑（§4.3）。
 8. 共用布局的实现细节已按三份审计改正（引言「第三次修订」、第二部分 §8）：BinFill 低档投入按母档嵌套派生（D-15）；白名单闭世界；UnmaskSwap 在注入后的布局上重新规划；第 4 干扰色只给 PickXtimes／SwingXtimes 用。
+9. **起跑前决策（2026-09-29，原话 24）**——以下每条中途不再问用户：
+   - **A1 官方路线对照轮保留**：阶段 10′ 每策略 16 任务 × 1 档 × 12 局 = 192 照跑，只报告不判定（D-16）。
+   - **A2 阶段 5 的 v6 回归保留**：H 侧 144 + 165 = 309 局照跑，阶段 0′ 照原样拉回 O／P 缓存。
+   - **A3 阶段 9～11 在本轮范围内**：阶段 8 发布后发简报、不等回复，直接切策略分支、提评估 job。
+   - **A4 连续跑到阶段 11**：每阶段结束发进度与判定行，不等确认；只有 FAIL、超预算或本条硬线才停。
+   - **B1 阶段 0′ 等价核验失败时**：不重新生成，tag 打回实际生成的两个 commit（`parity-anchor-v6-native` → `34a1ceab`、`parity-anchor-v6-xhard` → `b1afc804`），登记表按段记 tag。
+   - **B2 阶段 4 某任务 30 候选凑不齐 20 局时**：该任务追加一轮 30 候选（抽签上限同原表：该任务 50 或 100 次）并派生三档，预算已批（§2「追加候选」行）；追加后仍不足则接受该任务少于 20 局并留档，不做第二次追加，不放宽定值表。
+   - **B3 阶段 5／5′／6 对拍超容差时**：按预定规则分类——`first_divergence` 在该局首次 RRT 规划之后且两侧 RRT 重规划次数不同 → 记 `noise`、只报告不判 FAIL；`first_divergence` 在 reset 或首次规划之前 → 判 FAIL 停。**硬线**：任一 pair 内超容差局数超过该 pair 局数的 5%，不论分类一律停下找用户。容差本身不放宽、不重标。
+   - **B4 `V7_STEP_HEADROOM` 超上限 90% 时**：不回调抓取次数，把该档 `TIER_MAX_STEPS` 上调为该档实测演示最大步数 × 1.25 向上取整到百，改动记入留档与 README。
+   - **B5 本机磁盘**：`/data` 已释放（2026-09-29 `df -h /data` 剩 5.2T），原「预计超 2T 停下问」的停线撤销；只删重复的对拍缓存与已在 bucket 的内容（顺序：拉回的 O／P 缓存 → `PARITY_V7_TWICE=PASS` 后的 gen2 → 已 `BUCKET_SYNC=PASS` 的 xhard0 O 侧），评估视频与 gen1 不删；尽可能不停，三项删完仍不够才停。
+   - **C1 第 4 干扰色**：阶段 3 出图后由 agent 目视自定，橙色不过关就换与三色池及目标色色相距离最远的备选色，不问用户。
 
 ## 2. xhard0
 
@@ -238,7 +252,7 @@ P 侧产物是锚点 commit 当年**作为 H 生成**的（worker 为 `train_spl
   - 本机 sled-vail 另起一个搬运进程（tmux 会话 `v7-vmove-<策略>`），它和评估是两个独立进程：**评估不等搬运，搬运慢了或断了也不影响评估。**
   - 搬运只处理「已完成」的视频。两个策略的终态记录不同名，按策略分别认：SimpleMemVLA 认 `results-shard*.jsonl` 的终态行，MME-VLA 认 `episodes.jsonl` 的终态行（`status` 字段）；视频与记录按 `(task, episode)` 关联，seed 从 `eval-identities-1292.jsonl` 反查后写进目标文件名（MME-VLA 原生文件名不带 seed）；同一局有多行（重评）时取最后一个终态行。再加文件大小 10 秒不变。搬运时 `rsync` 到 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v7/eval-videos/<策略>/<tier>/<task>/`，核对 sha256 一致后删掉 NFS 上的副本。
   - 搬运进程挂了就重启；它只看暂存目录的现状，天然可续。评估结束后再跑一遍全量对账。
-  - 本机 `/data` 目前剩余 2.8T（2026-09-28 `df -h /data`，v6 大产物已清）。同时驻留的大头：gen1 与 gen2 各约 0.75T（按 v6 xhard 单局均值外推，gen2 在 `PARITY_V7_TWICE` 留档后删）、xhard0 H 侧 192 局、比对时拉回的 O／P 缓存、评估视频。视频大小以冒烟那一局实测外推；四项合计预计超过 2T，或评估视频单项预计超过 400G 时，先停下问你。
+  - 本机 `/data` 剩余 5.2T（2026-09-29 `df -h /data`；09-28 为 2.8T，用户已另行释放）。同时驻留的大头：gen1 与 gen2 各约 0.75T（按 v6 xhard 单局均值外推，gen2 在 `PARITY_V7_TWICE` 留档后删）、xhard0 H 侧 192 局、比对时拉回的 O／P 缓存、评估视频。视频大小以冒烟那一局实测外推写进留档；腾空间按 §1 第 9 条 B5 的顺序只删重复缓存与已上 bucket 的内容，不停、不删视频。
   - 搬运慢了或断了不影响评估，但**不能无限积压**：NFS 暂存超过 200G 或搬运停更超过 10 分钟，暂停派发新片，等搬运追上再继续。
 - **判定行**（口径同上次）：`EVAL_SMOKE`（每策略 1 局 xhard0 + 1 局 xhard1）、`EVAL_ROUND1`／`EVAL_ROUND2`、`EVAL_IDENTITY_SET episodes=1292`、`EVAL_BINDING=PASS replay=1100 export=192 injected_mismatch=0`（xhard0 局 `mode=export`，其余局 `mode=replay`）、`EVAL_TIER_CAP`，新增 `EVAL_VIDEO=PASS policy=<名> episodes=1292 on_data=1292 sha_bad=0 nfs_left=0`；官方路线对照轮 `EVAL_OFFICIAL_XHARD0=PASS policy=<名> episodes=192 normal=192` 与 `XHARD0_EVAL_PARITY=INFO policy=<名> compared=192 status_diff=<n> steps_diff=<n>`（只报告）。结果按 5 档分表，SimpleMemVLA 与 v6 同档的结果只作参考对照：v7 的布局都换了，不是同一批身份。
 
@@ -247,15 +261,15 @@ P 侧产物是锚点 commit 当年**作为 H 生成**的（worker 为 `train_spl
 | 阶段 | 做什么 | 在哪 | 通过的判据 |
 |---|---|---|---|
 | 0 准备 | 取回原三档 144 局清单与官方 train 元数据；从官方 test 元数据导出 xhard0 的 192 局清单 `scripts/configs/newtask-v7/xhard0_manifest.json`；写 L／G／N 三表白名单 | 本机 | `XHARD0_IDENTITY=PASS shape=16x1x12 identities=192` |
-| 0′ 定 v6 锚点 | 从公开 bucket 拉回 `O-1fadc0e-a40/native`（144）、`H-34a1cea-a40/native`（144）、`H-b1afc80-a40/xhard`（165），按 bucket 内 `SHA256SUMS` 逐局核 sha；逐文件核 `34a1ceab`／`b1afc804` → `ce3843b4` 的差异不触及生成内容（判据见第二部分 §7.7）；打 tag `parity-anchor-v6` 并推送；登记 P 缓存 | 本机 | `ANCHOR_EQUIV=PASS files=15+14 content_affecting=0`；`PARITY_ANCHOR=PASS tag=parity-anchor-v6 cached=144+165 sha_bad=0` |
+| 0′ 定 v6 锚点 | 从公开 bucket 拉回 `O-1fadc0e-a40/native`（144）、`H-34a1cea-a40/native`（144）、`H-b1afc80-a40/xhard`（165），按 bucket 内 `SHA256SUMS` 逐局核 sha；逐文件核 `34a1ceab`／`b1afc804` → `ce3843b4` 的差异不触及生成内容（判据见第二部分 §7.7）；打 tag `parity-anchor-v6` 并推送（等价核验不过则按 §1 第 9 条 B1 打回两个生成 commit）；登记 P 缓存 | 本机 | `ANCHOR_EQUIV=PASS files=15+14 content_affecting=0`；`PARITY_ANCHOR=PASS tag=parity-anchor-v6 cached=144+165 sha_bad=0` |
 | 1 改代码：xhard0 与规格模块 | builder 加 xhard0（条目补 `row`／`runtime`）；新 seed 规则；`TIER_MAX_STEPS["xhard0"]=1300`；身份键按 schema 分表；`spec_binding` 新计数；规格根覆盖；runner 加 `test_metadata` 身份来源；`hard_parity.py` 加 `--tier xhard0`／`v7`、目录参数化；`hard_regression.py` 加 `xhard0-reset-parity`／`xhard0-eval-parity`；定向单测；**白名单完整性动态核对**：16 任务 × 1 档 × 1 局 xhard4 导出 + 13 任务 × 3 档 × 1 局派生 = 55 次 reset（本机单 worker，原话 23 批准） | 本机 | `XHARD0_NATIVE=PASS`；`LAYOUT_WHITELIST_COMPLETE=PASS envs=13 unclassified=0 unmatched_patterns=0`；`UPSTREAM_GUARD=PASS`；短测通过 |
 | 1′ 改代码：梯度定值 | 按 §3.2.2 改 13 个环境的 `config_xhard1～4`、Unmask 的 `NEWVALUE_DISTRACTOR`（`count=0` 放行）、Swap 的外环数、新增 `BLOCK_DISTRACTOR_COLORS`、五个 `native_blocks` 的 release 分支与 `train_split_config.py::RELEASE_NOTES`；同步改 §1.7 列出的现有单测；单测钉每环境每档配置等于定值表 | 本机 | `V7_TIER_VALUES=PASS envs=13 tiers=4 mismatch=0`；短测通过 |
 | 2 改代码：母布局与派生 | derive 信封、L／G／N 分层回注、BinFill 嵌套派生、UnmaskSwap 注入后重规划、四档同步作废与递补、交付集合校验、gen1 交付清单与身份登记；parity 锚点子命令 | 本机 | 无仿真单测通过 |
 | 3 冒烟 | 5 任务（BinFill、VideoUnmask、ButtonUnmask、VideoUnmaskSwap、ButtonUnmaskSwap）× 1 布局 × 4 档：reset 5 任务 × (1 母 + 3 派生) = 20、轨迹 5 任务 × 4 档 × 1 局 = 20（原话 23 批准）；xhard0 1 任务 × 1 局 O／H 各生成 1 次（`--dev-smoke`，本机 Ada 只验链路）；第 4 干扰色出图目视 | 本机 | 各任务 `V7_LAYOUT_SHARED`、`V7_RESET_REPLAY` 通过；`NATIVE_SMOKE=PASS tier=xhard0` × 2；`V7_STEP_HEADROOM=INFO` |
-| 4 正式抽签与派生 | 16 任务 × 30 候选母布局（VideoPlaceButton、VideoRepick 每任务抽签上限 100，其余 50）；13 任务 × 3 档 × 30 派生 | GL A40 | `V7_LAYOUT_SHARED=PASS layouts=20 tiers=4`；`V7_PREFIX_GEOMETRY=PASS`；`V7_TIER_FIXED=PASS`；`V7_VISUAL_COUNT=PASS` |
+| 4 正式抽签与派生 | 16 任务 × 30 候选母布局（VideoPlaceButton、VideoRepick 每任务抽签上限 100，其余 50）；13 任务 × 3 档 × 30 派生；凑不齐 20 局的任务按 §1 第 9 条 B2 追加一轮 30 候选 | GL A40 | `V7_LAYOUT_SHARED=PASS layouts=20 tiers=4`；`V7_PREFIX_GEOMETRY=PASS`；`V7_TIER_FIXED=PASS`；`V7_VISUAL_COUNT=PASS` |
 | 5 v6 回归 OPH | 只生成 H：原三档 16 任务 × 3 档 × 3 局 = 144 + v6 xhard (13 任务 × 3 档 + 16 任务 × 1 档) × 3 局 = 165；O、P 用阶段 0′ 拉回的缓存 | GL A40 | `PARITY_O_P`／`P_H`／`O_H=PASS tier=native compared=144`；`PARITY_P_H=PASS tier=xhard compared=165` |
 | 5′ xhard0 生成对拍 | O 侧官方 `_worker` + `robomme`（`1fadc0ec` worktree）生成 192；H 侧 `robomme_hard` builder 路线生成 192；O 上传 bucket | GL A40（O、H 两个占位 job） | `GENERATE=PASS side=O tier=xhard0 rows=192`、`GENERATE=PASS side=H tier=xhard0 rows=192`；`PARITY_O_H=PASS tier=xhard0 shape=16x1x12 compared=192 tol_over=0`；`BUCKET_SYNC=PASS side=O tier=xhard0` |
-| 6 v7 生成两次 | gen1 (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100，产出交付清单并登记身份；gen2 在另一个占位 job 上按清单重放 | GL A40 | `V7_DELIVERY_SET=PASS cells=55 per_cell=20 tier_set_equal=13`；`PARITY_V7_TWICE=PASS compared=1100 tol_over=0`；`V7_STEP_HEADROOM=PASS` |
+| 6 v7 生成两次 | gen1 (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100，产出交付清单并登记身份；gen2 在另一个占位 job 上按清单重放 | GL A40 | `V7_DELIVERY_SET=PASS cells=55 per_cell=20 tier_set_equal=13`；`PARITY_V7_TWICE=PASS compared=1100 tol_over=0`（超容差按 B3 分类，`noise` 不计入 `tol_over`，任一 pair 超 5% 停）；`V7_STEP_HEADROOM=PASS`（超 90% 按 B4 上调上限后复判） |
 | 7 回放与入口冒烟 | 每格 1 局经评估链回放（(13 任务 × 3 档 + 16 任务 × 1 档) × 1 局 = 55 次 reset）；xhard0 与 xhard1 各起 1 局（2 局，原话 23 批准）；xhard0 reset 层对拍：官方 `robomme` 进程与 `robomme_hard` 进程各 reset 192 局 | 本机 GPU 0 | `V7_RESET_REPLAY=PASS injected_mismatch=0`；`HARD_EVAL_SMOKE=PASS episodes=2`；`XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 det_diff=0` |
 | 8 发布与定 v7 锚点 | 替换包内规格、导出 `eval-identities-1292.jsonl`、改 README、留档 `docs/validation/newtask-v7/`；打 tag `parity-anchor-v7` 并登记 | 本机 | `PARITY_ANCHOR=PASS tag=parity-anchor-v7`；`git diff --check` |
 | 9 评估准备 | benchmark 切两个 `PolicyEvalThirdParty-*` 分支；两个策略仓库从上次分支切 v7 分支（清单分片、绑定分类、`srun` 4 CPU、视频），另切官方路线分支；自行提交 10 个评估占位 job（每个 4 CPU、32G）；本机起搬运进程；每策略冒烟：v7 路线 2 局（xhard0、xhard1 各 1）+ 官方路线 1 局 | GL A40 + 本机 | `POLICY_DIFF` × 2、`SUBMODULE_PIN`、`EVAL_SMOKE` × 2、`EVAL_OFFICIAL_SMOKE` × 2、冒烟视频已到 `/data` |
@@ -263,7 +277,7 @@ P 侧产物是锚点 commit 当年**作为 H 生成**的（worker 为 `train_spl
 | 10′ xhard0 官方路线对照 | 每策略官方 `robomme` + `dataset="test"` 只评 hard 192 局；与阶段 10 的 xhard0 结果按 seed 对齐，只报告差异 | GL 10 × A40 | `EVAL_OFFICIAL_XHARD0=PASS` × 2；`XHARD0_EVAL_PARITY=INFO` × 2 |
 | 11 收尾 | 5 档成功率表写入留档；NFS 暂存清空；按清单逐个 `scancel` 评估 job | 本机 | `EVAL_HOLD_RELEASE=PASS` |
 
-第二部分 §2 预算全表（含原话 15 为 xhard0 新增的四行、原话 23 追加的四行）已一次性批准，阶段按表连续执行。超出预算或判定 FAIL 即停该阶段及其后续并找用户。实施完成后，实测结果以子节追加在本表之后。
+第二部分 §2 预算全表（含原话 15 为 xhard0 新增的四行、原话 23 追加的四行、原话 24 的「追加候选」行）已一次性批准，阶段 0～11 按表连续执行、不逐阶段等确认（原话 24 A3、A4）。超出预算、判定 FAIL 或触发 §1 第 9 条 B3 的 5% 硬线即停该阶段及其后续并找用户。实施完成后，实测结果以子节追加在本表之后。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -274,7 +288,7 @@ R2. 不把 `"xhard0"` 加进 `difficulty.py::NEWVALUE_DIFFICULTIES`／`VALID_DIF
 R3. 梯度取值只能等于 §3.2.2 定值表（D-5），每档单点、不留区间；环境侧改动只落 `src/robomme_hard/`（`robomme_hard` 不在 P2 保护范围内，逐文件清单见 §1.7），提取侧改 `scripts/parity/train_split_config.py`。**v6 数值的唯一存放处是包内 v6 规格 header 的 `sampling_config`**：环境类常量就地改成 v7 值后，源码不再能提取 v6 值；v6 规格回注读的是 header（`hard_builder` 取 `header["sampling_config"][env_id]`），不读类常量，所以阶段 5 的 v6 回归不受影响。为留住可复现的 v6 快照，阶段 1′ 先把包内四档 v6 header 的 `sampling_config` 原样冻结到 `scripts/configs/newtask-v6/v6-sampling-frozen.json`（记 sha256）；`test_v6_snapshot_matches_source` 改为「冻结文件 == 包内 v6 header」（阶段 8 换包后改比 `git show ce3843b4:<包内路径>`），不再比源码；新增 `test_v7_snapshot_matches_source`（源码 `release="newtask-v7"` 提取值 == 定值表 == v7 header）。
 R4. 派生失败四档同步作废，不许单档换布局；失败不换 seed、不重试到成功；基础设施失败每身份最多重跑 1 次。
 R5. 对拍按 D-8／D-11～D-13；O 与已登记的 P 缓存不重新生成，tag 不移动不删除；`--calibrate` 仍只允许 `O:P`，v7 不重标、不改容差文件；两次生成必须同型号同驱动（A40），`generate` 的 A40 断言保留。
-R6. reset／轨迹预算按 P3 一次性授权（§2 预算表，用户 2026-09-28 已全表批准），乘式写法（P5）；超出任一行上限先停下找用户。
+R6. reset／轨迹预算按 P3 一次性授权（§2 预算表，用户 2026-09-28 已全表批准，2026-09-29 追加「追加候选」行），乘式写法（P5）；超出任一行上限先停下找用户。
 R7. 主会话唯一整合与提交者；子代理只读或按互斥文件集合改动；子代理不 commit、不 push。
 R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-dev/` 与 `scripts/parity/`。
 R9. xhard0 对拍的 O 侧只能是 vendor 的官方 `_worker`（`d53f21a7`）+ `robomme`（`1fadc0ec` worktree），进程不得导入 `robomme_hard`（同 R5 口径）；H 侧 `gym.make` 的实参必须取自 `robomme_hard.env_record_wrapper.BenchmarkEnvBuilder(dataset="test-hard")` 的 xhard0 条目，并断言恰为 `{seed, difficulty:"hard"}` 加官方固定四项；两侧 job 的 `episode` 都是原 test episode 号，恢复模式按官方规则、不加 `--no-recovery`。评估层对照同理：官方侧只导入 `robomme`、`dataset="test"`。
@@ -414,6 +428,7 @@ R12. 不改原三档（easy／medium／hard）任何分支；xhard0 走的正是
 |---|---|---|
 | 母布局 reset（阶段 4，xhard4 配置） | 16 任务 × 30 候选 = 480 次成功目标；抽签上限 14 任务 × 50 + VideoPlaceButton、VideoRepick 2 任务 × 100（原话 23） | ≤ 14 × 50 + 2 × 100 = 900 次 reset |
 | 派生 reset（阶段 4） | 13 任务 × 3 档 × 30 候选 = 1170 次，每候选只 1 次、失败不重抽 | ≤ 1170 次 reset |
+| **追加候选（阶段 4，原话 24 B2 批准；只对凑不齐 20 局的任务触发，最多一轮）** | 母布局：每任务再 30 候选，抽签上限同原表，最坏 14 任务 × 50 + 2 任务 × 100 = 900；派生：最坏 13 任务 × 3 档 × 30 = 1170 | ≤ 900 + 1170 = 2070 次 reset |
 | gen1 轨迹（阶段 6） | (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100 局；同步递补上限每格 10 → 55 格 × 10 = 550 | ≤ 1650 次轨迹 |
 | gen2 轨迹（阶段 6） | 1100 正式局重放；基础设施失败每身份最多 1 次 | ≤ 1100 + 1100 |
 | v6 回归 H 侧（阶段 5，O/P 复用不重跑） | 16 任务 × 3 档 × 3 局 = 144 + (13 任务 × 3 档 + 16 任务 × 1 档) × 3 局 = 165 | ≤ 309（+ 基础设施重跑 ≤ 309） |
@@ -429,7 +444,7 @@ R12. 不改原三档（easy／medium／hard）任何分支；xhard0 走的正是
 | xhard0 官方路线评估对照（阶段 10′）（原话 15 批准） | 2 策略 × 16 任务 × 1 档 × 12 局 = 384 | 384 + 基础设施重评每策略 ≤ 20 → ≤ 424 |
 | xhard0 本机冒烟（阶段 3，计入 P3 单 worker 阈值内） | 1 任务 × 1 局 × O／H 两侧 | 2 轨迹 |
 | **xhard0 实际放置数探针（已完成 2026-09-28，原话 20 授权）** | 7 任务 × 1 档 × 12 局 = 84 次 reset + smoke 2 次 = 86，本机 GPU 1，无轨迹 | 86（实耗 86，`PROBE_DONE rows=84 errors=0`） |
-| **合计：只 reset（不含已完成的探针）** | 母布局 900 + 派生 1170 + 白名单核对 55 + 冒烟 20 + 回注回放 55 + xhard0 reset 层 384 | **≤ 2584 次 reset** |
+| **合计：只 reset（不含已完成的探针）** | 母布局 900 + 派生 1170 + 追加候选 2070 + 白名单核对 55 + 冒烟 20 + 回注回放 55 + xhard0 reset 层 384 | **≤ 4654 次 reset** |
 | **合计：生成轨迹** | gen1 1650 + gen2 2200 + v6 回归 618 + xhard0 O 侧 384 + xhard0 H 侧 384 + 冒烟 20 + xhard0 冒烟 2 | **≤ 5258 条轨迹** |
 | **合计：评估局** | 入口冒烟 2 + 评估冒烟 6 + 评估正式 2844 + 官方路线对照 424 | **≤ 3276 局** |
 
@@ -515,10 +530,10 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 | UnmaskSwap 分层回注的 `same_geometry` 冲突、交换规划落在错误布局上 | §1.8：分层模式改核 `layout_drawn`，注入后在实际布局上重新规划；阶段 3 冒烟四个 Unmask 类任务四档全跑 |
 | Swap 两任务 xhard1 外环只有 2 个容器、交换靠 fallback | 单独统计 `derive_fail`；余量耗尽即停 |
 | 第 4 干扰色与目标色难以区分 | 阶段 3 出图目视（Read 看图），橙色不过关就换备选色；不影响 Unmask 的三色池（R11） |
-| v7 抓取次数上调后超过 `TIER_MAX_STEPS` | `V7_STEP_HEADROOM`（§1.8）：超上限 90% 即停，交用户决定是否调上限 |
-| 容差只标定了原三档，用在 v6 xhard 与 v7 上属于外推 | 超容差时不放宽、不重标：先按 `first_divergence` 与 RRT 日志区分「墙钟噪声」与「代码差异」，列出超限局与指标交用户裁决 |
+| v7 抓取次数上调后超过 `TIER_MAX_STEPS` | `V7_STEP_HEADROOM`（§1.8）：超上限 90% 时按 §1 第 9 条 B4 把该档上限上调为实测最大步数 × 1.25 向上取整到百，不回调抓取次数，改动记留档与 README（用户 2026-09-29 预定） |
+| 容差只标定了原三档，用在 v6 xhard 与 v7 上属于外推 | 超容差时不放宽、不重标；按 §1 第 9 条 B3 预定规则自动分类：`first_divergence` 在首次 RRT 规划之后且两侧重规划次数不同 → `noise` 只报告；在 reset 或首次规划之前 → FAIL 停；任一 pair 超容差局数 > 5% 不论分类一律停下找用户（用户 2026-09-29 预定）。`compare` 报告逐局列 `first_divergence`、两侧 RRT 重规划次数与分类 |
 | test 的 hard seed 从未生成过，个别局可能两侧同样规划失败 | `compare` 单列 `both_fail`，不当作不一致；`both_fail>0` 附原因表交用户 |
-| 派生时外环交换／额外放台不可行（VUS/BUS/VPB） | 计入 `derive_fail`，四档同步作废该候选；候选留 10 个余量（用户定 30 候选）；余量耗尽即停并报用户，不追加抽签 |
+| 派生时外环交换／额外放台不可行（VUS/BUS/VPB） | 计入 `derive_fail`，四档同步作废该候选；候选留 10 个余量（用户定 30 候选）；余量耗尽按 §1 第 9 条 B2 对该任务追加一轮 30 候选（预算已批），仍不足则接受少于 20 局并留档，不做第二次追加、不放宽定值 |
 | 前缀在低档下不合法（理论上不会） | 环境里的复核不覆盖所有任务，不依赖它；阶段 4 派生后跑离线 `V7_PREFIX_GEOMETRY` 逐行重算区域与最小中心距；出现即视为白名单分类错误，回到阶段 1 |
 | 派生规格的 `layout_drawn` 与回放不等（随机流漂移） | `layout_drift>0` 计入 `injected_mismatch`，`V7_RESET_REPLAY` FAIL；不放宽 |
 | `record()` 点在派生局与母局不同（如 `objects.distractor_count`） | 派生规格只含本局实际值，回放比对的是派生规格，不比母局 |
@@ -530,6 +545,7 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 | 官方路线策略评估的 `episodes.jsonl` 没有 seed 字段 | 官方侧脚本按 `(task, 原 episode 号)` 记录，`xhard0-eval-parity` 用 `xhard0_manifest.json` 把原 episode 号映射到 seed 再对齐；映射缺失即 FAIL |
 | reset 层对拍在本机 Ada 上做、正式生成在 A40 | reset 层两侧在同一张卡同一进程序列里比，比的是同卡下两条代码路线是否逐位相同，不跨卡；跨卡差异由阶段 5′ 的 A40 容差对拍覆盖。演示回放受 RRT 墙钟噪声影响，只作报告层（D-16） |
 | NFS 暂存被视频塞满或搬运进程挂掉 | 搬运与评估解耦；Monitor 盯 `VMOVE`，停更超过 10 分钟就重启搬运；暂存目录超过 200G 时通知用户 |
+| 本机 `/data` 不够放 gen1／gen2／xhard0／缓存／视频 | 按 §1 第 9 条 B5 顺序只删重复缓存与已上 bucket 的内容（O／P 缓存 → gen2 → xhard0 O 侧），视频与 gen1 不删，尽可能不停；三项删完仍不够才停（用户 2026-09-29 预定；`/data` 当前剩 5.2T） |
 | 两个策略仓库读 `spec_binding` 字段 | 新增键只增不改；xhard0 返回导出模式（`available=True, mode="export"`），策略仓库与合并脚本里「全部局都是 replay」的断言改为按档分类计数（§5 第 4 条）；阶段 9 冒烟覆盖 xhard0 与 xhard1 各 1 局 |
 
 ## 5. 盲区诚实清单
