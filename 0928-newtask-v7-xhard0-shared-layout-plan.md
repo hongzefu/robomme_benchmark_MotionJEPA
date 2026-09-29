@@ -27,6 +27,7 @@
 > 22. 「参考…codex的审计 根据最新的计划 给出新的审计意见 如果不够再启动subagent 全sonnet 在调查一波」；随后「有哪些问题需要用户注意 先详细解释 再让用户决策 其他的你自行修改」。
 > 23. 四个决策项经 AskUserQuestion 定（2026-09-28）：BinFill「A 嵌套派生」；xhard0 评估判据「A 环境层判、策略层只报告」；VideoPlaceButton／VideoRepick 母布局抽签上限「A 两任务提到 100 次」；修补所需追加预算（阶段 1 的 55 次 reset、阶段 3 净增 16 次 reset 与 16 条轨迹、阶段 7 的 2 局冒烟）「全部批准」。
 > 24. 起跑前未决项逐条拍板（2026-09-29，按 agent 列出的条号逐字保留）：「a1 t同意」「a2 保留」「a3 一路跑完」「a4 全部跑完」「b1 第一种」「b2 增加候选」「b3 预定规则。同时保留一条硬线：任何一个 pair 里超容差的局数超过 5% 时，不管分类结果都停下找你，因为那已经不是零星噪声。」「b4 上调上限」「b5 现在data释放了 只删除重复的缓存对拍和已经放在bucket的内容 尽可能不要停」「C. 干扰色 你自己目视决定」。条号含义见 §1 第 9 条。
+> 25. 「还有什么没定 能一口气跑完吗」「生成job用那些a40 占位？」「生成完毕后还是释放 只保留1个展位job」（2026-09-29；答复与落定见 §1 第 9 条 A5、A6）。
 >
 > 上一轮（12.222）关于 xhard0 数量的最后决定：「和test的hard数量一致」→ 每任务 12 局。本文对原话 1 里「每个task episode数量和以前一致」的解读：**xhard0 每任务 12 局（沿用 12.222 决定），xhard1～4 每格仍 20 局（与现在一致）**。用户 2026-09-28 已确认 xhard0 取 12 局（原话 12）。
 
@@ -61,6 +62,8 @@
    - **B4 `V7_STEP_HEADROOM` 超上限 90% 时**：不回调抓取次数，把该档 `TIER_MAX_STEPS` 上调为该档实测演示最大步数 × 1.25 向上取整到百，改动记入留档与 README。
    - **B5 本机磁盘**：`/data` 已释放（2026-09-29 `df -h /data` 剩 5.2T），原「预计超 2T 停下问」的停线撤销；只删重复的对拍缓存与已在 bucket 的内容（顺序：拉回的 O／P 缓存 → `PARITY_V7_TWICE=PASS` 后的 gen2 → 已 `BUCKET_SYNC=PASS` 的 xhard0 O 侧），评估视频与 gen1 不删；尽可能不停，三项删完仍不够才停。
    - **C1 第 4 干扰色**：阶段 3 出图后由 agent 目视自定，橙色不过关就换与三色池及目标色色相距离最远的备选色，不问用户。
+   - **A5 生成占位 job 清单（原话 25，2026-09-29 查询 `squeue`）**：生成阶段（4、5、5′、6）只用用户已提交的四个 16 CPU／192G／1 GPU 占位 job——`62126062`（hs-hold-20260927-3，RUNNING gl1506，查询时剩约 19.5 h）、`62268733`（v7-hold-20260928-1，RUNNING gl1525，剩约 42 h）、`62268734`（v7-hold-20260928-2，PENDING Resources）、`62268735`（v7-hold-20260928-3，PENDING Priority）；不另提生成 job。分配：阶段 4 与阶段 5 先用在跑的两个；阶段 5′ 的 O／H 两侧、阶段 6 的 gen1／gen2 各需两个不同 job，等 PENDING 的两个上线后再起。`62126062` 若在阶段 4 起跑前到期就顺其自然，不续提。同名下的 `eval-*` job 属另一条评估线，不在本清单，不碰。
+   - **A6 生成完毕即释放、只留一个（原话 25）**：阶段 6 的 gen2 经 `hard_pull` 拉回本机、`PARITY_V7_TWICE` 判定行出现后，按 A5 清单逐个 `scancel` 生成占位 job，只保留**当时剩余 walltime 最长**的那一个，JobID 写进留档并打印 `GEN_HOLD_RELEASE=PASS kept=<JobID> cancelled=<n>`；阶段 9 提的 10 个评估 job 在阶段 11 按清单逐个取消，最终名下只剩这 1 个占位 job。绝不 `scancel -u`。
 
 ## 2. xhard0
 
@@ -246,7 +249,7 @@ P 侧产物是锚点 commit 当年**作为 H 生成**的（worker 为 `train_spl
   - 第二轮：55 格 × 后 10 局 + xhard0 16 任务 × 后 6 局 = 646。
   - 官方路线对照轮：16 任务 × 1 档 × 12 局 = 192。
   - 两策略合计 2 × (1292 + 192) = 2968 局；GL 10 × A40 占位 job，每轮切 10 片。
-- **评估占位 job（用户 2026-09-28 定）**：由 agent 自己提交 10 个，规格与上次（`stage6-eval-prep.md`）相同，只把 CPU 从 1 改为 4：`sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --gpu_cmode=shared --cpus-per-task=4 --mem=32G --time=48:00:00 --wrap='sleep infinity'`。依据是 12.226 实测（`ae1cba1e`）：首个请求 1 CPU 约 183 秒、4 CPU 约 61 秒，编译结束后每取一组动作都约 0.22 秒。**模型常驻先不动**，分片与启动方式与上次保持一致（常驻两任务连跑约 3 分 39 秒、分别启动约 6 分钟，只是单次观察，不是三轮完整比较）。生成阶段不另提 job，直接用用户已提交排队的占位 job。数量 10 沿用 12.212 的授权（「eval使用10卡并行」）与原话 11「评估的job你自己提交」；加上保留的生成席位 62126062，评估期间同时在线 11 个，JobID 逐个记入留档，阶段 11 按清单逐个 `scancel`。
+- **评估占位 job（用户 2026-09-28 定）**：由 agent 自己提交 10 个，规格与上次（`stage6-eval-prep.md`）相同，只把 CPU 从 1 改为 4：`sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --gpu_cmode=shared --cpus-per-task=4 --mem=32G --time=48:00:00 --wrap='sleep infinity'`。依据是 12.226 实测（`ae1cba1e`）：首个请求 1 CPU 约 183 秒、4 CPU 约 61 秒，编译结束后每取一组动作都约 0.22 秒。**模型常驻先不动**，分片与启动方式与上次保持一致（常驻两任务连跑约 3 分 39 秒、分别启动约 6 分钟，只是单次观察，不是三轮完整比较）。生成阶段不另提 job，直接用用户已提交排队的占位 job。数量 10 沿用 12.212 的授权（「eval使用10卡并行」）与原话 11「评估的job你自己提交」；加上 A6 保留的那一个生成席位（阶段 6 结束时按剩余时间选定，不预先钉死为 62126062），评估期间同时在线 11 个，JobID 逐个记入留档，阶段 11 按清单逐个 `scancel`。
 - **视频回放：每局都存，落在本机盘 `/data/hongzefu`**：
   - 评估进程把每局 mp4 写到 NFS 暂存目录 `<NFS>/v7-eval-stage/<策略>/<轮>/<片>/`，文件名带 `task_tier_episode_seed`。
   - 本机 sled-vail 另起一个搬运进程（tmux 会话 `v7-vmove-<策略>`），它和评估是两个独立进程：**评估不等搬运，搬运慢了或断了也不影响评估。**
@@ -269,13 +272,13 @@ P 侧产物是锚点 commit 当年**作为 H 生成**的（worker 为 `train_spl
 | 4 正式抽签与派生 | 16 任务 × 30 候选母布局（VideoPlaceButton、VideoRepick 每任务抽签上限 100，其余 50）；13 任务 × 3 档 × 30 派生；凑不齐 20 局的任务按 §1 第 9 条 B2 追加一轮 30 候选 | GL A40 | `V7_LAYOUT_SHARED=PASS layouts=20 tiers=4`；`V7_PREFIX_GEOMETRY=PASS`；`V7_TIER_FIXED=PASS`；`V7_VISUAL_COUNT=PASS` |
 | 5 v6 回归 OPH | 只生成 H：原三档 16 任务 × 3 档 × 3 局 = 144 + v6 xhard (13 任务 × 3 档 + 16 任务 × 1 档) × 3 局 = 165；O、P 用阶段 0′ 拉回的缓存 | GL A40 | `PARITY_O_P`／`P_H`／`O_H=PASS tier=native compared=144`；`PARITY_P_H=PASS tier=xhard compared=165` |
 | 5′ xhard0 生成对拍 | O 侧官方 `_worker` + `robomme`（`1fadc0ec` worktree）生成 192；H 侧 `robomme_hard` builder 路线生成 192；O 上传 bucket | GL A40（O、H 两个占位 job） | `GENERATE=PASS side=O tier=xhard0 rows=192`、`GENERATE=PASS side=H tier=xhard0 rows=192`；`PARITY_O_H=PASS tier=xhard0 shape=16x1x12 compared=192 tol_over=0`；`BUCKET_SYNC=PASS side=O tier=xhard0` |
-| 6 v7 生成两次 | gen1 (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100，产出交付清单并登记身份；gen2 在另一个占位 job 上按清单重放 | GL A40 | `V7_DELIVERY_SET=PASS cells=55 per_cell=20 tier_set_equal=13`；`PARITY_V7_TWICE=PASS compared=1100 tol_over=0`（超容差按 B3 分类，`noise` 不计入 `tol_over`，任一 pair 超 5% 停）；`V7_STEP_HEADROOM=PASS`（超 90% 按 B4 上调上限后复判） |
+| 6 v7 生成两次 | gen1 (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100，产出交付清单并登记身份；gen2 在另一个占位 job 上按清单重放；对拍判定行出来后按 A5 清单逐个 `scancel`，只留剩余时间最长的 1 个（A6） | GL A40（A5 四个占位 job） | `GEN_HOLD_RELEASE=PASS kept=<JobID>`；`V7_DELIVERY_SET=PASS cells=55 per_cell=20 tier_set_equal=13`；`PARITY_V7_TWICE=PASS compared=1100 tol_over=0`（超容差按 B3 分类，`noise` 不计入 `tol_over`，任一 pair 超 5% 停）；`V7_STEP_HEADROOM=PASS`（超 90% 按 B4 上调上限后复判） |
 | 7 回放与入口冒烟 | 每格 1 局经评估链回放（(13 任务 × 3 档 + 16 任务 × 1 档) × 1 局 = 55 次 reset）；xhard0 与 xhard1 各起 1 局（2 局，原话 23 批准）；xhard0 reset 层对拍：官方 `robomme` 进程与 `robomme_hard` 进程各 reset 192 局 | 本机 GPU 0 | `V7_RESET_REPLAY=PASS injected_mismatch=0`；`HARD_EVAL_SMOKE=PASS episodes=2`；`XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 det_diff=0` |
 | 8 发布与定 v7 锚点 | 替换包内规格、导出 `eval-identities-1292.jsonl`、改 README、留档 `docs/validation/newtask-v7/`；打 tag `parity-anchor-v7` 并登记 | 本机 | `PARITY_ANCHOR=PASS tag=parity-anchor-v7`；`git diff --check` |
 | 9 评估准备 | benchmark 切两个 `PolicyEvalThirdParty-*` 分支；两个策略仓库从上次分支切 v7 分支（清单分片、绑定分类、`srun` 4 CPU、视频），另切官方路线分支；自行提交 10 个评估占位 job（每个 4 CPU、32G）；本机起搬运进程；每策略冒烟：v7 路线 2 局（xhard0、xhard1 各 1）+ 官方路线 1 局 | GL A40 + 本机 | `POLICY_DIFF` × 2、`SUBMODULE_PIN`、`EVAL_SMOKE` × 2、`EVAL_OFFICIAL_SMOKE` × 2、冒烟视频已到 `/data` |
 | 10 评估两轮 | 每策略 646 + 646（按清单）；边评边搬视频 | GL 10 × A40 | `EVAL_ROUND1/2`、`EVAL_IDENTITY_SET episodes=1292`、`EVAL_BINDING replay=1100 export=192`、`EVAL_TIER_CAP`、`EVAL_VIDEO` × 2 |
 | 10′ xhard0 官方路线对照 | 每策略官方 `robomme` + `dataset="test"` 只评 hard 192 局；与阶段 10 的 xhard0 结果按 seed 对齐，只报告差异 | GL 10 × A40 | `EVAL_OFFICIAL_XHARD0=PASS` × 2；`XHARD0_EVAL_PARITY=INFO` × 2 |
-| 11 收尾 | 5 档成功率表写入留档；NFS 暂存清空；按清单逐个 `scancel` 评估 job | 本机 | `EVAL_HOLD_RELEASE=PASS` |
+| 11 收尾 | 5 档成功率表写入留档；NFS 暂存清空；按清单逐个 `scancel` 10 个评估 job，名下只剩 A6 保留的 1 个占位 job | 本机 | `EVAL_HOLD_RELEASE=PASS remaining_hold=1` |
 
 第二部分 §2 预算全表（含原话 15 为 xhard0 新增的四行、原话 23 追加的四行、原话 24 的「追加候选」行）已一次性批准，阶段 0～11 按表连续执行、不逐阶段等确认（原话 24 A3、A4）。超出预算、判定 FAIL 或触发 §1 第 9 条 B3 的 5% 硬线即停该阶段及其后续并找用户。实施完成后，实测结果以子节追加在本表之后。
 
