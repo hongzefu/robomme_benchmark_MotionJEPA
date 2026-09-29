@@ -161,6 +161,7 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v7 first_divergence_n=13 first_divergence_m
 - NFS：gen1（828 GB）在本机副本两侧文件数／字节数相同且 1100 局逐局 sha 核对后删除；gen2 由 `hard_pull` 逐局 sha 核对后删除；评估视频暂存清空。`v7/specs*`、`v7-stage/` 各段清单与日志、`v7-eval/` 结果文件体积小，保留。
 - 本机与 NFS 清理（用户 2026-09-29 原话「这些都删除 eval结果视频本地要保留」）：删除 `artifacts/newtask-v7/parity/h5/` 下全部对拍 h5——H2-v7（768 GB）、H-native、H-xhard、H-xhard0、O-native、O-xhard0、P-native、P-xhard、H-v7（仅 1100 个指向 gen1 的符号链接，删链接不穿透）；删除 GL 侧克隆 `robomme_benchmark-v7-gl` 及其 worktree `-v7-gl-o`（均无未提交改动，HEAD 77fbe70 已在推送的主分支）。保留：gen1 正式 1100 局 h5（删后复核文件数与字节数不变）、两策略评估视频、包内规格与候选池。
   - 影响：`parity-anchor-v6` 登记的 P 缓存本地副本已删，公开 bucket `HongzeFu/robomme-hard-parity` 仍有 `H-34a1cea-a40/native`（144）与 `H-b1afc80-a40/xhard`（165）；以后以该锚点做对拍前须先 `hard_pull`／`hf buckets sync` 拉回到 `docs/validation/parity-anchors.json` 登记的目录名，否则 `PARITY_ANCHOR` 报缺目录。第 1 项若日后选「换候选重生成」，GL 克隆需重新检出。
+  - 对 `parity-anchor-v7` 的影响：它须登记 native（144）、xhard0（192）、v7（1100）三段 P 缓存；native 与 xhard0 两段本应取本次的 `H-native`、`H-xhard0`，这两份未上传 bucket、本地已删，日后打该锚点须在 GL 重新生成 native 144 + xhard0 192 的 H 侧（v7 段仍可登记本机 gen1）。删除前未就此提醒用户，此处补记。
 - **未做（按方案须等条件满足）**：`parity-anchor-v7`。方案第一部分第 6 步要求「全部通过后」才打 tag，现 `PARITY_H_H2=FAIL`；且等价核验须逐文件判定 `77fbe70..HEAD` 的改动（含 `TIER_MAX_STEPS` 上调）是否触及产物字节，不自行越过。
 - **待用户裁决**：
   1. `PARITY_H_H2=FAIL`：InsertPeg/8 取 (a) 认定偶发、交付集不动，或 (b) 换备用候选重生成并重评该局。
