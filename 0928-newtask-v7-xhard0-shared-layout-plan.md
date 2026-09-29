@@ -301,7 +301,7 @@ P 侧产物是锚点 commit 当年**作为 H 生成**的（worker 为 `train_spl
 | 6 | `PARITY_V7_TWICE`（H:H2） | **FAIL**：1086 局逐字节相同、13 局噪声；唯一 FAIL 为 InsertPeg/8 第二次生成规划失败，待用户裁决 |
 | 7 | `V7_RESET_REPLAY`、`HARD_EVAL_SMOKE`、`XHARD0_RESET_PARITY` | 全 PASS |
 | 8 | `V7_STEP_HEADROOM` | 首判超上限 → 按 B4 上调 xhard2／3／4 为 2400／2900／3800，复核 PASS |
-| 8 | `PARITY_ANCHOR tag=parity-anchor-v7` | **未打**：按本表第 6 步「全部通过后」才打，H:H2 未通过 |
+| 8 | `PARITY_ANCHOR tag=parity-anchor-v7` | PASS（用户 2026-09-29「1 不挡住 2a」后补打；tag 在生成提交 77fbe70a，cached=144+1100+192 sha_bad=0；native 沿用 v6 锚点缓存） |
 | 9 | `SUBMODULE_PIN`、`EVAL_SMOKE` × 2 | PASS（子模块 4a36d505） |
 | 10 | `EVAL_ROUND1/2`、`EVAL_IDENTITY_SET`、`EVAL_BINDING`、`EVAL_TIER_CAP` | SimpleMemVLA 全 PASS；MME `EVAL_ROUND1=FAIL`（2 局 error：超长演示、ButtonUnmaskSwap 评估期碰撞检查缺陷），其余 PASS |
 | 10′ | `EVAL_OFFICIAL_XHARD0`、`XHARD0_EVAL_PARITY` | PASS；两入口 SimpleMemVLA status_diff=0，MME status_diff=11（50 对 51） |
