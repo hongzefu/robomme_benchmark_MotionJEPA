@@ -46,7 +46,11 @@ v7 生成链路（母布局抽签 → 派生 → 四档同步生成）在 GL 上
    GENERATE_CONTINUE_DONE attempted=2 rounds=1 infra_retries=0 delivered=1100 sync_dropped=27 backfills=25
    ```
 4. **换包**：`v7/specs-final` 四档 `specs.jsonl` 换入 `src/robomme_hard/env_metadata/test-hard/`，`load_specs_v7` 通过，选中数 xhard1/2/3 各 260、xhard4 320。
-5. **步数余量（B4）**：执行步 = 总帧 − 演示帧。gen1 交付各档最长执行步都是无演示段的 PickXtimes：xhard1 1304／1500（0.869）、xhard2 1857／1700、xhard3 2293／2000、xhard4 2998／2600。按用户预定的 B4（超 90% 不回调抓取次数，上限上调为实测最大执行步数 × 1.25 向上取整到百）：`TIER_MAX_STEPS` xhard2 2400、xhard3 2900、xhard4 3800，xhard0 1300、xhard1 1500 不动。逐局正式判定 `V7_STEP_HEADROOM` 在 NFS 上逐步读 h5 超时（25 分钟），改在 gen1 回传本机后补跑（⑦）。
+5. **步数余量（B4）**：执行步 = 总帧 − 演示帧。gen1 交付各档最长执行步都是无演示段的 PickXtimes：xhard1 1304／1500（0.869）、xhard2 1857／1700、xhard3 2293／2000、xhard4 2998／2600。按用户预定的 B4（超 90% 不回调抓取次数，上限上调为实测最大执行步数 × 1.25 向上取整到百）：`TIER_MAX_STEPS` xhard2 2400、xhard3 2900、xhard4 3800，xhard0 1300、xhard1 1500 不动。逐局正式判定在 NFS 上逐步读 h5 超时（25 分钟），gen1 回传本机（4802 文件、828,434,639,410 字节两侧相同）后补跑，按上调后的上限复核：
+   ```text
+   V7_STEP_HEADROOM=PASS cells=55 over_90pct=0 worst={'xhard1': '1304/1500', 'xhard2': '1857/2400', 'xhard3': '2293/2900', 'xhard4': '2998/3800'}
+   ```
+   逐局最长执行步与上面的上界速判一致（有演示段的任务执行段都更短）。每格长度均值写进 `scripts/README.md` 第 3 节（`artifacts/newtask-v7/v7-lengths.json`）。
 
 ## ④ 对拍（阶段 5／5′／7）
 
@@ -86,7 +90,13 @@ HARD_EVAL_SMOKE=PASS task=BinFill episode=12 tier=xhard1 seed=14400000 episodes=
 
 ## ⑤ 两次生成对拍（H:H2，阶段 6）
 
-gen2 在占位 job 62268735 上按 gen1 `delivery.json` 重放 1100 局（进行中，结论补记）。
+gen2 在占位 job 62268735 上按 gen1 `delivery.json` 重放 1100 局（05:57～08:42）：
+
+```text
+GENERATE=PASS side=H2 tier=v7 rows=1100 recorded=1100 success=1099 runner_exit=0 gpu=NVIDIA A40 mover_errors=0
+```
+
+唯一失败局 `xhard4/InsertPeg/8`（gen1 同身份成功）。InsertPeg 对规划器随机性敏感（gen1 首跑 30 候选中 12 个生成失败），比对结论见下（进行中时补记）。
 
 ## ⑥ 评估（阶段 9～10）
 
@@ -102,7 +112,6 @@ gen2 在占位 job 62268735 上按 gen1 `delivery.json` 重放 1100 局（进行
 
 ## ⑦ 待补
 
-- `V7_STEP_HEADROOM` 逐局正式判定与每格长度均值（gen1 回传本机后跑；长度表写进 `scripts/README.md` 第 3 节）。
-- ⑤ H:H2 结论、gen2 删除、`GEN_HOLD_RELEASE`（取消 62268734，只留 62268735）。
+- ⑤ H:H2 结论、NFS 上 gen1／gen2 副本删除。`GEN_HOLD_RELEASE=PASS`：2026-09-29 08:45 gen2 结束后 `scancel 62268734`，生成占位只剩 62268735。
 - `parity-anchor-v7` 打 tag 并登记 native／xhard0／v7 三段。
 - ⑥ 两轮评估结果、`xhard0-eval-parity`、视频全量对账、10 个评估 job 逐个取消。
