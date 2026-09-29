@@ -498,31 +498,58 @@ def _xhard0_reset_verdict(rows: list[dict[str, Any]], per_task: int) -> int:
     return 0 if ok else 1
 
 
-def _final_records(path: Path, policy: str) -> dict[tuple[str, int], dict[str, Any]]:
-    """终态记录：SimpleMemVLA 读 results-shard*.jsonl，MME-VLA 读 episodes.jsonl；同一局多行取最后一个终态行。"""
-    files = sorted(path.rglob("results-shard*.jsonl")) if policy == "simplememvla" else sorted(path.rglob("episodes.jsonl"))
-    out: dict[tuple[str, int], dict[str, Any]] = {}
+#: 两策略的逐局结果文件名：SimpleMemVLA 官方路线 episodes-shard*of10.jsonl、v7 路线 results-r<轮>-shard*of10.jsonl；
+#: MME-VLA 两路线都是 episodes.jsonl
+_RESULT_GLOBS = {"simplememvla": ("episodes-shard*.jsonl", "results-r*-shard*.jsonl", "results-shard*.jsonl"),
+                 "mmevla": ("episodes.jsonl",)}
+_FINAL_STATUS = ("success", "fail", "timeout")
+
+
+def _final_records(paths: list[Path], policy: str) -> list[dict[str, Any]]:
+    """逐局终态记录：``paths`` 可以是文件或目录（目录按策略的文件名递归找）。同一局多行时取最后一个终态行，
+    没有终态行的取最后一行（如 error）。局以 (task, seed 或 episode 号) 区分。"""
+    files: list[Path] = []
+    for path in paths:
+        if path.is_dir():
+            for pattern in _RESULT_GLOBS[policy]:
+                files.extend(sorted(path.rglob(pattern)))
+        else:
+            files.append(path)
+    out: dict[tuple, dict[str, Any]] = {}
     for file in files:
         for text in file.read_text().splitlines():
-            if text.strip():
-                r = json.loads(text)
-                if r.get("status") is not None:
-                    out[(r.get("task") or r.get("env_id"), int(r["episode"]))] = r
-    return out
+            if not text.strip():
+                continue
+            r = json.loads(text)
+            if r.get("status") is None:
+                continue
+            ident = r.get("identity") or {}
+            key = (r.get("task") or r.get("env_id"), ident.get("seed", r.get("seed")),
+                   r.get("episode", r.get("source_episode")))
+            if key in out and out[key]["status"] in _FINAL_STATUS and r["status"] not in _FINAL_STATUS:
+                continue
+            out[key] = r
+    return list(out.values())
 
 
 def cmd_xhard0_eval_parity(args) -> int:
-    """XHARD0_EVAL_PARITY（只报告，D-16）：官方路线（原 episode 号）经清单映射到 seed，与 v7 评估的 xhard0 局按
-    (task, seed) 对齐，列终态与步数差异；缺失或多余是数据完整性问题，报错。"""
+    """XHARD0_EVAL_PARITY（只报告，D-16）：官方路线与 v7 评估的 xhard0 局按 (task, seed) 对齐，列终态与步数差异；
+    官方记录不带 seed 时经清单由原 episode 号映射。缺失或多余是数据完整性问题，报错。"""
     manifest = json.loads(Path(args.manifest).read_text())
     seed_of = {(r["task"], r["episode"]): r["seed"] for r in manifest["rows"]}
-    official = {(t, seed_of[(t, e)]): r for (t, e), r in _final_records(Path(args.official), args.policy).items()
-                if (t, e) in seed_of}
+    official = {}
+    for r in _final_records([Path(p) for p in args.official], args.policy):
+        task = r.get("task") or r.get("env_id")
+        seed = r.get("seed")
+        if seed is None:
+            seed = seed_of.get((task, int(r.get("source_episode", r.get("episode", -1)))))
+        if seed is not None and (task, int(seed)) in {(t, s) for (t, _e), s in seed_of.items()}:
+            official[(task, int(seed))] = r
     hard = {}
-    for (t, _e), r in _final_records(Path(args.hard), args.policy).items():
+    for r in _final_records([Path(p) for p in args.hard], args.policy):
         ident = r.get("identity") or {}
         if (ident.get("tier") or r.get("tier")) == "xhard0":
-            hard[(t, int(ident.get("seed", r.get("seed"))))] = r
+            hard[(r["task"], int(ident.get("seed", r.get("seed"))))] = r
     if set(official) != set(hard) or len(official) != 192:
         raise SystemExit(f"xhard0 对齐失败：官方 {len(official)}、v7 {len(hard)}，差集 {len(set(official) ^ set(hard))}")
     diffs = [{"task": k[0], "seed": k[1], "official": [official[k]["status"], official[k].get("steps")],
@@ -608,8 +635,8 @@ def main() -> int:
     x0.add_argument("--report-name", default="xhard0-reset-parity.jsonl")
     x0.set_defaults(func=cmd_xhard0_reset_parity)
     xe = sub.add_parser("xhard0-eval-parity")
-    xe.add_argument("--official", required=True)
-    xe.add_argument("--hard", required=True)
+    xe.add_argument("--official", nargs="+", required=True, help="官方路线结果文件或目录（可多个）")
+    xe.add_argument("--hard", nargs="+", required=True, help="v7 路线结果文件或目录（可多个；只取 tier=xhard0 的局）")
     xe.add_argument("--policy", required=True, choices=("simplememvla", "mmevla"))
     xe.add_argument("--manifest", default=str(REPO / "scripts" / "configs" / "newtask-v7" / "xhard0_manifest.json"))
     xe.add_argument("--out", required=True)

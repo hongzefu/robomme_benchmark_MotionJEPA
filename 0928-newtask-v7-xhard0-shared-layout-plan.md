@@ -289,6 +289,26 @@ P 侧产物是锚点 commit 当年**作为 H 生成**的（worker 为 `train_spl
 
 第二部分 §2 预算全表（含原话 15 为 xhard0 新增的四行、原话 23 追加的四行、原话 24 的「追加候选」行）已一次性批准，阶段 0～11 按表连续执行、不逐阶段等确认（原话 24 A3、A4）。超出预算、判定 FAIL 或触发 §1 第 9 条 B3 的 5% 硬线即停该阶段及其后续并找用户。实施完成后，实测结果以子节追加在本表之后。
 
+### 实施后实测结果（2026-09-29 追加；详细判定行见 `docs/validation/newtask-v7/README.md`）
+
+| 阶段 | 判据 | 实测 |
+|---|---|---|
+| 0／0′ | `XHARD0_IDENTITY`、`PARITY_ANCHOR tag=parity-anchor-v6` | PASS（16x1x12；cached=144） |
+| 1 | `LAYOUT_WHITELIST_COMPLETE` | PASS（unclassified=0，derive_fail=2 只报告） |
+| 4 | `V7_LAYOUT_SHARED`／`V7_PREFIX_GEOMETRY`／`V7_TIER_FIXED`／`V7_VISUAL_COUNT` | 全 PASS；母布局 reset 615、派生 1170（ok 1150）；VideoRepick 追加轮（B2） |
+| 5／5′ | native 三对、xhard P:H、xhard0 O:H | 全 PASS；xhard0 192 局 sha 全等（2 局两侧都生成失败） |
+| 6 | `V7_DELIVERY_SET` | PASS（InsertPeg 追加轮 + 手动补位 2 局，超每格递补上限 10，待用户追认） |
+| 6 | `PARITY_V7_TWICE`（H:H2） | **FAIL**：1086 局逐字节相同、13 局噪声；唯一 FAIL 为 InsertPeg/8 第二次生成规划失败，待用户裁决 |
+| 7 | `V7_RESET_REPLAY`、`HARD_EVAL_SMOKE`、`XHARD0_RESET_PARITY` | 全 PASS |
+| 8 | `V7_STEP_HEADROOM` | 首判超上限 → 按 B4 上调 xhard2／3／4 为 2400／2900／3800，复核 PASS |
+| 8 | `PARITY_ANCHOR tag=parity-anchor-v7` | **未打**：按本表第 6 步「全部通过后」才打，H:H2 未通过 |
+| 9 | `SUBMODULE_PIN`、`EVAL_SMOKE` × 2 | PASS（子模块 4a36d505） |
+| 10 | `EVAL_ROUND1/2`、`EVAL_IDENTITY_SET`、`EVAL_BINDING`、`EVAL_TIER_CAP` | SimpleMemVLA 全 PASS；MME `EVAL_ROUND1=FAIL`（2 局 error：超长演示、ButtonUnmaskSwap 评估期碰撞检查缺陷），其余 PASS |
+| 10′ | `EVAL_OFFICIAL_XHARD0`、`XHARD0_EVAL_PARITY` | PASS；两入口 SimpleMemVLA status_diff=0，MME status_diff=11（50 对 51） |
+| 11 | `EVAL_HOLD_RELEASE` | PASS（remaining_hold=1，62268735） |
+
+五档成功率：SimpleMemVLA 141/192、85/260、47/260、33/260、45/320；MME-VLA 51/192、11/260、18/260、12/260、23/320（xhard0～xhard4）。
+
 # 第二部分（技术细节，供 agent 追踪）
 
 ## 〇 前置声明与红线
