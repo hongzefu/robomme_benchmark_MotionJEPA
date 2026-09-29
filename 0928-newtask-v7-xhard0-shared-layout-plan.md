@@ -1,6 +1,6 @@
 # 0928 方案：test-hard v7 —— 接入 xhard0（原生 hard）+ xhard1～4 改为共用 20 个母布局（只规划不实施）
 
-> **权威性与锚点**：本方案是 v7 的唯一现行计划，取代同日 [`0928-xhard0-native-hard-plan.md`](0928-xhard0-native-hard-plan.md) 里「xhard0 追加在旧四档之后」的编号建议，其余 xhard0 结论（身份来源、原生分支、零差验收）原样沿用、本文只引用不重抄。工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，代码锚点 `8dfd09cb`（12.222）。官方源码锚点 `1fadc0ec`（`src/robomme/` 逐字节相同），官方编排锚点 `d53f21a7`（`scripts/parity/official/` vendor）。commit 编号沿用 `12.<小版本> 中文描述`。**本轮只写方案，不改代码、不起环境、不提交占位 job；实施的每一阶段须单独获批，reset／轨迹预算按 `AGENTS.md` P3 一次性授权。**
+> **权威性与锚点**：本方案是 v7 的唯一现行计划，取代同日 [`0928-xhard0-native-hard-plan.md`](0928-xhard0-native-hard-plan.md) 里「xhard0 追加在旧四档之后」的编号建议，其余 xhard0 结论（身份来源、原生分支、零差验收）原样沿用、本文只引用不重抄。工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-v5`，代码锚点 `8dfd09cb`（12.222）。官方源码锚点 `1fadc0ec`（`src/robomme/` 逐字节相同），官方编排锚点 `d53f21a7`（`scripts/parity/official/` vendor）。commit 编号沿用 `12.<小版本> 中文描述`。**本轮只写方案，不改代码、不起环境、不提交占位 job；用户已对第二部分 §2 预算全表一次性批准（原话 12），阶段 0～11 按表连续执行，超出预算或判定 FAIL 才停下找用户。**
 >
 > **用户原话（2026-09-28，按时间顺序逐字保留）**：
 > 1. 「给出方案 xhard现在有1-4 再加入xhard0 需要和原本的hard保持完全一致 每个task episode数量和以前一致 根目录写方案」
@@ -14,8 +14,9 @@
 > 9. 细化方案经用户回复「同意」（2026-09-28）；三个待定项用户未另选，按推荐落定：v6 xhard 165 局纳入 v6 回归、O 以本机 `/data` + 逐局 sha 清单为准（bucket 被 HF 计费拒绝）、tag 名 `parity-anchor-v6`／`parity-anchor-v7`。
 > 10. 「生成的job我已经query过了在排队」「也是直接用」（生成阶段直接用用户已提交排队的占位 job，不另提）。
 > 11. 「评估的job你自己提交 但是参考framesample 的实测说明了两件事：1 CPU主要让启动阶段变慢。 第一次处理请求，1 CPU约183秒，4 CPU约61秒；等前期编译结束，每次取一组动作都约0.22秒，差别很小。保持模型常驻确实有收益。 两个任务分别启动，合计约6分钟；只启动一次、连续跑两个任务，约3分39秒。这次省了约2分19秒，但还不是完整三轮比较。」「模型常驻先不动 保持一致 cpu改为4个」
+> 12. 待决项经 AskUserQuestion 定（2026-09-28）：P3 预算「全表一次批准」；xhard0「12 局」；四档同废「接受，30 个候选」；产物「gen2 比完即删」。
 >
-> 上一轮（12.222）关于 xhard0 数量的最后决定：「和test的hard数量一致」→ 每任务 12 局。本文对原话 1 里「每个task episode数量和以前一致」的解读：**xhard0 每任务 12 局（沿用 12.222 决定），xhard1～4 每格仍 20 局（与现在一致）**。若用户本意是 xhard0 也取 20 局，只需改第一部分 §2 的数量表与 xhard0 身份来源（那样就不能再是官方 test 的 hard 子集，见 §2 末的说明），其余机制不变。
+> 上一轮（12.222）关于 xhard0 数量的最后决定：「和test的hard数量一致」→ 每任务 12 局。本文对原话 1 里「每个task episode数量和以前一致」的解读：**xhard0 每任务 12 局（沿用 12.222 决定），xhard1～4 每格仍 20 局（与现在一致）**。用户 2026-09-28 已确认 xhard0 取 12 局（原话 12）。
 
 # 第一部分（给人看）
 
@@ -147,7 +148,7 @@
 | 1 改代码：xhard0 与规格模块 | builder 加 xhard0；新 seed 规则；`TIER_MAX_STEPS["xhard0"]=1300`；定向单测 | 本机 | `XHARD0_NATIVE=PASS`；`UPSTREAM_GUARD=PASS`；短测通过 |
 | 2 改代码：母布局与派生 | 母布局抽签、派生到 xhard1～3、四档同步作废与递补；parity 锚点子命令 | 本机 | 无仿真单测通过 |
 | 3 单格冒烟 | 1 任务 × 1 布局 × 4 档 | 本机 | 单格 `V7_LAYOUT_SHARED`、`V7_RESET_REPLAY` 通过 |
-| 4 正式抽签与派生 | 16 任务 × 24 候选母布局；13 任务 × 3 档 × 24 派生 | GL A40 | `V7_LAYOUT_SHARED=PASS layouts=20 tiers=4`；`V7_TIER_MONOTONE=PASS` |
+| 4 正式抽签与派生 | 16 任务 × 30 候选母布局；13 任务 × 3 档 × 30 派生 | GL A40 | `V7_LAYOUT_SHARED=PASS layouts=20 tiers=4`；`V7_TIER_MONOTONE=PASS` |
 | 5 v6 回归 OPH | 只生成 H：144 + 165；O、P 复用 | GL A40 | `PARITY_O_P`／`P_H`／`O_H=PASS tier=native compared=144`；`PARITY_P_H=PASS tier=xhard compared=165` |
 | 6 v7 生成两次 | gen1 1100 局；gen2 在另一个占位 job 上重放 | GL A40 | `PARITY_V7_TWICE=PASS compared=1100 tol_over=0` |
 | 7 回放与入口冒烟 | 每格 1 局经评估链回放；xhard0 与 xhard1 各起 1 局 | 本机 | `V7_RESET_REPLAY=PASS injected_mismatch=0`；`HARD_EVAL_SMOKE=PASS episodes=2` |
@@ -156,7 +157,7 @@
 | 10 评估两轮 | 每策略 646 + 646；边评边搬视频 | GL 10 × A40 | `EVAL_ROUND1/2`、`EVAL_IDENTITY_SET`、`EVAL_BINDING`、`EVAL_TIER_CAP`、`EVAL_VIDEO` × 2 |
 | 11 收尾 | 5 档成功率表写入留档；NFS 暂存清空；按清单逐个 `scancel` 评估 job | 本机 | `EVAL_HOLD_RELEASE=PASS` |
 
-每个阶段都要单独获批；reset 与生成的预算按 P3 一次性授权（第二部分 §2）。实施完成后，实测结果以子节追加在本表之后。
+第二部分 §2 预算已一次性批准，阶段按表连续执行；超出预算或判定 FAIL 即停该阶段及其后续并找用户。实施完成后，实测结果以子节追加在本表之后。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -167,7 +168,7 @@ R2. 不把 `"xhard0"` 加进 `difficulty.py::NEWVALUE_DIFFICULTIES`／`VALID_DIF
 R3. 不改任何梯度取值（D-5）；`sampling_config` 由 `_extract.build_sampling(..., release="newtask-v6")` 提取的结果必须与 v7 xhard4 header 内嵌值相同（`tests/lightweight/test_sampling_config_split.py::test_v6_snapshot_matches_source` 继续钉死）。
 R4. 派生失败四档同步作废，不许单档换布局；失败不换 seed、不重试到成功；基础设施失败每身份最多重跑 1 次。
 R5. 对拍按 D-8／D-11～D-13；O 与已登记的 P 缓存不重新生成，tag 不移动不删除；`--calibrate` 仍只允许 `O:P`，v7 不重标、不改容差文件；两次生成必须同型号同驱动（A40），`generate` 的 A40 断言保留。
-R6. reset／轨迹预算按 P3 一次性授权（§3 预算表），乘式写法（P5）；本方案不是启动许可。
+R6. reset／轨迹预算按 P3 一次性授权（§2 预算表，用户 2026-09-28 已全表批准），乘式写法（P5）；超出任一行上限先停下找用户。
 R7. 主会话唯一整合与提交者；子代理只读或按互斥文件集合改动；子代理不 commit、不 push。
 R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-dev/` 与 `scripts/parity/`。
 
@@ -223,7 +224,7 @@ R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-d
 
 | 文件::锚点 | 改什么 |
 |---|---|
-| `freeze_specs.py::main` | 加 `--seed-profile {v6,v7}`（默认 v7）、`--select` 支持 `0..19` 区间写法；`--tier xhard4 --candidates-per-env 24 --select 0..19`；header 写 `layout_rule` |
+| `freeze_specs.py::main` | 加 `--seed-profile {v6,v7}`（默认 v7）、`--select` 支持 `0..19` 区间写法；`--tier xhard4 --candidates-per-env 30 --select 0..19`；header 写 `layout_rule` |
 | `_draw.py::draw_task`／`merge_task_rows` | 传 v7 规则；其余不变 |
 | `_freeze.py::freeze` | `/3` 封签；`delivery_per_cell=len(select)=20`；MoveCube 的 `stratified_select` 只对 xhard4 生效（不变） |
 | 新增 `derive_specs.py` | 输入 xhard4 v7 文件 + 白名单 + 目标档；对每个候选起环境 `gym.make(task, sampling_config=cfg[tier], native_episode_spec=None, seed=母 seed, difficulty=tier)` 并把 recorder 置为 `derive` 模式（通过新的 `native_layout_parent=` kwarg 传入母规格与白名单）→ `reset` → 导出派生规格 → 按目标档 header 封签写 `xhard{1..3}/specs.jsonl`；失败记 `derive_fail`，并在四档同步把该候选标 `selected=False`；多 worker、`--workers`、`--gpus`、`--dry-run` 打印 reset 预算 |
@@ -250,13 +251,13 @@ R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-d
 - README 三份（`scripts/README.md`、`src/robomme_hard/README.md`、`scripts/parity/README.md`）按第一部分 §4 改数字与链路说明；`readme.md` 不动。
 - 测试：新增 `tests/lightweight/test_xhard0_native.py`（身份 16×1×12、分派实参、`TIER_MAX_STEPS` 五项）、`test_v7_layout_shared.py`（白名单形态、`derive`／layered 回注在无仿真夹具下的 `layout_injected`／`layout_drift` 行为、四档同步递补状态机）、`test_v7_seed_rule.py`（v7 四档同 seed、与 v5/v6 段互不重叠）；改 `test_v6_difficulty_tiers.py::test_v6_seed_rule_offsets_disjoint` 限定 v6 族；`test_hard_state_machine.py` 参数化 v6/v7；`test_hard_parity.py` 补 `H:H2`／`v7` 用例；`test_wrapper_chain.py`（gpu）对 test-hard episode 0（xhard0）与 episode 12（xhard1）各做一次。
 
-## 2. 预算（P3 一次性授权用，乘式写法；本方案不是启动许可）
+## 2. 预算（P3 一次性授权，乘式写法；用户 2026-09-28 全表批准）
 
 | 项 | 乘式 | 上限 |
 |---|---|---|
-| 母布局 reset（阶段 4，xhard4 配置） | 16 任务 × 24 候选 = 384 次成功目标；`--max-reset-attempts` 每任务 40 | ≤ 16 × 40 = 640 次 reset |
-| 派生 reset（阶段 4） | 13 任务 × 3 档 × 24 候选 = 936 次，每候选只 1 次、失败不重抽 | ≤ 936 次 reset |
-| gen1 轨迹（阶段 6） | (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100 局；同步递补上限每格 4 → 55 格 × 4 = 220 | ≤ 1320 次轨迹 |
+| 母布局 reset（阶段 4，xhard4 配置） | 16 任务 × 30 候选 = 480 次成功目标；`--max-reset-attempts` 每任务 50 | ≤ 16 × 50 = 800 次 reset |
+| 派生 reset（阶段 4） | 13 任务 × 3 档 × 30 候选 = 1170 次，每候选只 1 次、失败不重抽 | ≤ 1170 次 reset |
+| gen1 轨迹（阶段 6） | (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100 局；同步递补上限每格 10 → 55 格 × 10 = 550 | ≤ 1650 次轨迹 |
 | gen2 轨迹（阶段 6） | 1100 正式局重放；基础设施失败每身份最多 1 次 | ≤ 1100 + 1100 |
 | v6 回归 H 侧（阶段 5，O/P 复用不重跑） | 16 任务 × 3 档 × 3 局 = 144 + (13 任务 × 3 档 + 16 任务 × 1 档) × 3 局 = 165 | ≤ 309（+ 基础设施重跑 ≤ 309） |
 | 回注回放（阶段 7） | 13 × 3 + 16 = 55 次 reset | 55 |
@@ -282,7 +283,7 @@ uv run --no-sync python scripts/parity/hard_regression.py layout-shared --specs-
 uv run --no-sync python scripts/injection-dev/generate_h5.py --mode continue --specs-root artifacts/newtask-v7/smoke --output artifacts/newtask-v7/smoke/rollout --workers 1 --gpu 0
 
 # 阶段 4～6（GL 占位 job 内 srun --overlap --gpu_cmode=shared；先 --dry-run 打印预算再起 tmux）
-uv run --frozen --no-sync python scripts/injection-dev/freeze_specs.py --tier xhard4 --tasks all --seed-profile v7 --candidates-per-env 24 --select 0..19 --max-reset-attempts 40 --workers 16 --gpus 0 --out <NFS>/v7/xhard4/specs.jsonl
+uv run --frozen --no-sync python scripts/injection-dev/freeze_specs.py --tier xhard4 --tasks all --seed-profile v7 --candidates-per-env 30 --select 0..19 --max-reset-attempts 50 --workers 16 --gpus 0 --out <NFS>/v7/xhard4/specs.jsonl
 uv run --frozen --no-sync python scripts/injection-dev/derive_specs.py --parent <NFS>/v7/xhard4/specs.jsonl --tiers xhard1,xhard2,xhard3 --out-root <NFS>/v7 --workers 16 --gpus 0
 uv run --frozen --no-sync python scripts/injection-dev/generate_h5.py --mode continue --specs-root <NFS>/v7 --output <NFS>/v7/gen1 --workers 16 --gpu 0
 uv run --frozen --no-sync python scripts/injection-dev/generate_h5.py --mode replay --identities <NFS>/v7/gen1/final-delivery.json --specs-root <NFS>/v7 --output <NFS>/v7/gen2 --workers 16 --gpu 0
@@ -311,7 +312,7 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 | 风险 | 处置 |
 |---|---|
 | 白名单漏路径或拼错 | 阶段 1 用导出 trace 逐环境核对；`derive` 模式对母规格缺路径直接抛错，不静默回退 |
-| 派生时外环交换／额外放台不可行（VUS/BUS/VPB） | 计入 `derive_fail`，四档同步作废该候选；候选留 4 个余量；余量耗尽即停并报用户，不追加抽签 |
+| 派生时外环交换／额外放台不可行（VUS/BUS/VPB） | 计入 `derive_fail`，四档同步作废该候选；候选留 10 个余量（用户定 30 候选）；余量耗尽即停并报用户，不追加抽签 |
 | 前缀在低档下不合法（理论上不会） | 环境二次复核会抛错；出现即视为白名单分类错误，回到阶段 1 |
 | 派生规格的 `layout_drawn` 与回放不等（随机流漂移） | `layout_drift>0` 计入 `injected_mismatch`，`V7_RESET_REPLAY` FAIL；不放宽 |
 | `record()` 点在派生局与母局不同（如 `objects.distractor_count`） | 派生规格只含本局实际值，回放比对的是派生规格，不比母局 |
@@ -325,7 +326,7 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 ## 5. 盲区诚实清单
 
 - 白名单与「前缀合法」结论来自静态审计，未运行任何环境；阶段 3 单格冒烟是第一次动态证据。
-- 派生失败率未知；24 候选是否够 20 局要看阶段 4 实测，不够即停。
+- 派生失败率未知；30 候选是否够 20 局要看阶段 4 实测，不够即停。
 - 两次生成的 `sha_equal` 期望值不承诺（V6 时 P:H xhard 165 对逐字节相同，但 RRT 噪声存在）；判定只看容差与判定层。
 - 跨型号容差从未标定；本机 Ada 与 aspen A6000 的任何 v7 产物都不进正式对拍。
 - 本文未估算耗时；以阶段 3 单格实测外推后补。
@@ -333,7 +334,7 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 ## 6. 留档与 commit 纪律
 
 - 本轮只提交本方案：`git diff --check`、`grep -c '^# 第一部分\|^# 第二部分'` 等于 2、链接目标存在；逐路径 `git add`，中文 commit（`12.223 …`）后立即 push。
-- 实施各阶段：阶段 1～2 各一个 commit；阶段 4～6 起跑前 HEAD 精确等于所跑代码（起跑到 gen2 完成之间不 commit）；留档 `docs/validation/newtask-v7/`（判定行内联原文、GPU／驱动／依赖指纹、真实尝试计数、首个差异、退出码、输出路径、tmux 会话与 JobID 清单）；bucket 上传后 NFS 与 `/tmp` 不留大文件。
+- 实施各阶段：阶段 1～2 各一个 commit；阶段 4～6 起跑前 HEAD 精确等于所跑代码（起跑到 gen2 完成之间不 commit）；留档 `docs/validation/newtask-v7/`（判定行内联原文、GPU／驱动／依赖指纹、真实尝试计数、首个差异、退出码、输出路径、tmux 会话与 JobID 清单）；gen1 正式局 h5 搬回本机 `/data` 保留；gen2 在 `PARITY_V7_TWICE=PASS` 并留档后删除（用户定「gen2 比完即删」）；NFS 与 `/tmp` 不留大文件。
 - 不把本文写入规则文件、不追加历史账本；用户原话与判定行按第 22 条进 commit body 与留档。
 
 ## 7. 机制、接口、验收与 parity 细节
@@ -387,7 +388,7 @@ xhard0 身份的静态核实（12.222 已用 `jq` 做过，本轮重跑一次原
 定义：每个环境的取值点分两类（白名单在第二部分 §1.3）。**布局类** `L`：位置、颜色、朝向、槽位、初始化、type_choice 之类，与档位无关或只随数量变长；**梯度类** `G`：`num_repeats`、`n_swaps`、`n_picks`、`target_numbers`、`cube_count`、`cube_bins`、`label_perm`、`swap_plan_seed`、`swap_pairs.k`、`highlight_*`、`demo_ids`、`visit_*`、`L` 等。记录点（`record()`）全部视为派生量，由派生运行重新导出。
 
 ```text
-阶段 A  母布局抽签（每任务 24 个候选，xhard4 配置，v7 seed 规则，只 reset）
+阶段 A  母布局抽签（每任务 30 个候选，xhard4 配置，v7 seed 规则，只 reset）
         ├─ 13 个有梯度任务：母布局规格 = xhard4 规格本体（spec_kind native-newvalue/2，mismatch=0）
         └─ StopCube / InsertPeg / MoveCube：同上，只此一档
 阶段 B  派生（13 任务 × 3 档 × 每候选 1 次 reset，「layered」模式）
@@ -452,7 +453,7 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 - 包内 `src/robomme_hard/env_metadata/test-hard/xhard{1..4}/specs.jsonl` 整体替换为 v7（schema `hard-specs/3`）；xhard0 不打包规格，builder 直接读官方 test 元数据（12.222 §3.1，读取时校验源文件摘要与 12 条／任务）。
 - V6 的 `s4-setup-manifest.json`、`s4-to-delivery.json` 与 `scripts/configs/newtask-v6/v6-02/` 快照：v7 后失效，从工作树删除、git 历史保留（P1 允许删子目录内容；`configs/` 保留 `hard-parity-tolerances.json`）。`hard_regression.py` 的 `s4-subset`／`reset-replay` 子命令换成 v7 版（第二部分 §1.5）。
 - `migrate_smvla_specs.py` 的 `check` 在 v7 后必然 FAIL（钉死 1100 与 `13x3x20+16x20`），删除该文件（历史迁移已完成、git 可取回）。
-- h5 产物：v7 两次生成各 1100 局，落 `artifacts/newtask-v7/gen1/`、`gen2/`，上传 bucket 前缀 `H-v7-gen1-a40`、`H-v7-gen2-a40`；xhard0 不生成 h5（它是评估身份，不是生成产物；12.222 §5 的轨迹比较是可选项，本文不列入预算）。
+- h5 产物：v7 两次生成各 1100 局，落 `artifacts/newtask-v7/gen1/`、`gen2/`（bucket 被 HF 计费拒绝，不上传）；gen1 正式局保留在本机 `/data`，gen2 在 `PARITY_V7_TWICE=PASS` 留档后删除，只留逐局 sha 清单；v6 旧产物不动；xhard0 不生成 h5（它是评估身份，不是生成产物；12.222 §5 的轨迹比较是可选项，本文不列入预算）。
 
 ### 7.6 验收（查什么 / 怎么查 / 过了说明什么 / 判定行）
 
