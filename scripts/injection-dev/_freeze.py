@@ -58,11 +58,23 @@ def stratified_select(task: str, difficulty: str, ok_rows: list[dict[str, Any]],
     return sorted(chosen[: len(select)])
 
 
+def parse_select(text: str) -> tuple[int, ...]:
+    """``default``（0,3,6）、逗号分隔的候选 index，或 ``a..b`` 闭区间（v7：``0..19``）。"""
+    if text == "default":
+        return DEFAULT_SELECT
+    if ".." in text:
+        lo, _, hi = text.partition("..")
+        return tuple(range(int(lo), int(hi) + 1))
+    return tuple(int(x) for x in text.split(","))
+
+
 def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DEFAULT_SELECT,
            candidates_per_env: int = 10) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """纯函数：抽签行 → ``(header, rows)``。``header_parts`` 必含
-    ``difficulty tasks seed_rule sampling_config recovery_rule identity_source run_id draw_stats provenance``。"""
+    ``difficulty tasks seed_rule sampling_config recovery_rule identity_source run_id draw_stats provenance``；
+    另带 ``layout_rule`` 时封成 v7 的 ``hard-specs/3``（母布局行 ``layout_parent`` 为 null）。"""
     difficulty, seed_rule = header_parts["difficulty"], header_parts["seed_rule"]
+    v7 = "layout_rule" in header_parts
     if difficulty not in hard_specs.TIERS:
         raise SpecsError(f"未知档位 {difficulty}")
     rows, per_env = [], {}
@@ -91,10 +103,12 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DE
                 "episode": row["episode"], "seed": row["seed"], "attempt": row["attempt"],
                 "spec": row["spec"], "spec_sha256": row["spec_sha256"],
                 "selected": flag, "tried": False, "initial_selected": flag, "rollout": None,
+                **({"layout_parent": None} if v7 else {}),
             })
     header = {
         "record": "header",
-        "schema": hard_specs.SCHEMA,
+        "schema": hard_specs.SCHEMA_V7 if v7 else hard_specs.SCHEMA,
+        **({"layout_rule": copy.deepcopy(header_parts["layout_rule"])} if v7 else {}),
         "difficulty": difficulty,
         "tasks": list(header_parts["tasks"]),
         "per_env": per_env,
@@ -132,38 +146,3 @@ def write_jsonl_exclusive(path: Path, records: list[dict[str, Any]]) -> None:
         os.link(name, path)
     finally:
         os.unlink(name)
-
-
-def freeze_equiv(repo_root: Path) -> bool:
-    """FREEZE_EQUIV（纯 CPU）：新 ``freeze`` 吃 v6-02 四份 drafts，候选／seed／spec／initial_selected 与 v6-02 逐行相同。"""
-    rows_total = selected_equal = 0
-    ok = True
-    for tier in hard_specs.TIERS:
-        draft_path = repo_root / "artifacts" / "newtask-v6" / "v6-02" / tier / "draft" / "drafts.jsonl"
-        lines = draft_path.read_text().splitlines()
-        draft_header = json.loads(lines[0])
-        drafts = [json.loads(line) for line in lines[1:] if line.strip()]
-        parts = {key: draft_header[key] for key in ("difficulty", "tasks", "seed_rule", "sampling_config",
-                                                     "recovery_rule", "identity_source", "run_id")}
-        parts.update(draw_stats={}, provenance={"note": "FREEZE_EQUIV"})
-        _, rows = freeze(drafts, parts)
-        old_lines = (repo_root / "scripts" / "configs" / "newtask-v6" / "v6-02" / tier / "specs.jsonl").read_text().splitlines()
-        old_header = json.loads(old_lines[0])
-        old = {(r["task"], r["episode"]): r for r in map(json.loads, old_lines[1:]) if r}
-        if old_header.get("drafts_sha256") != hashlib.sha256(draft_path.read_bytes()).hexdigest():
-            print(f"# {tier} drafts_sha256 与 v6-02 header 不符")
-            ok = False
-        if len(rows) != len(old):
-            ok = False
-        initial = {task: set(v["selected"]) for task, v in old_header["per_env"].items()}
-        for row in rows:
-            ref = old.get((row["task"], row["candidate"]))
-            rows_total += 1
-            same = ref is not None and (ref["seed"], ref["spec_sha256"], ref["attempt"]) == (
-                row["seed"], row["spec_sha256"], row["attempt"])
-            same_sel = row["initial_selected"] == (row["candidate"] in initial.get(row["task"], set()))
-            ok &= same and same_sel
-            selected_equal += int(row["initial_selected"] and same_sel)
-    print(f"FREEZE_EQUIV={'PASS' if ok and rows_total == 550 and selected_equal == 165 else 'FAIL'} tiers=4 "
-          f"rows={rows_total} selected_equal={selected_equal}")
-    return ok and rows_total == 550 and selected_equal == 165

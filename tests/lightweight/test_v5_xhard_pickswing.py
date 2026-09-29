@@ -63,6 +63,8 @@ MIN_CENTER_DIST = 0.08
 # 方块位姿以 float32 存进 actor（Pose.create_from_pq），参考点取自 actor 位姿，候选中心是 float64；
 # 两两距离按 actor 位姿复算时允许 float32 舍入量级的误差。
 FLOAT32_TOL = 1e-6
+# V7 定值（0928 方案 §3.2.2）：xhard4 干扰块由 3 个增为 4 个（BLOCK_DISTRACTOR_COLORS），3 有色 + 4 干扰 = 7 块
+XHARD4_CUBES = 3 + 4
 
 
 # ---------------------------------------------------------------------------
@@ -397,9 +399,9 @@ def _exact_obb_audit(rows, half):
 def _pairwise_gap_violations(env):
     """按放置顺序：后放方块（外扩 min_gap）的精确 OBB 与先放方块的精确 OBB 不得相交。"""
     obbs = env._xhard_cube_obbs
-    assert len(obbs) == 6
+    assert len(obbs) == XHARD4_CUBES
     bad = 0
-    for i, j in itertools.combinations(range(6), 2):
+    for i, j in itertools.combinations(range(XHARD4_CUBES), 2):
         c, A, h = obbs[j]
         padded = (c, A, h + env.cube_half_size)
         bad += og._obb2d_intersect(*obbs[i], *padded)
@@ -437,7 +439,7 @@ def test_v5_min_center_distance(task, pick_rows, swing_rows) -> None:
     assert len(ok_rows) >= 0.9 * len(rows)
     assert below == 0
     for row in ok_rows:
-        assert len(row["xys"]) == 6
+        assert len(row["xys"]) == XHARD4_CUBES
         assert row["env"]._spec.to_dict()["layout"]["cube_min_center_dist"] == MIN_CENTER_DIST
 
 

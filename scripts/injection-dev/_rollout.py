@@ -180,7 +180,9 @@ def run_batch(batch: list[dict[str, Any]], header: dict[str, Any], out_dir: Path
             mismatches = payload.get("mismatches", [])
             binding = {"mismatch": len(mismatches),
                        "unattributed_mismatch": sum(1 for m in mismatches if not m.get("decision_key")),
-                       "unused": len(payload.get("unused", [])), "value_points": payload.get("value_points")}
+                       "unused": len(payload.get("unused", [])), "value_points": payload.get("value_points"),
+                       "layout_hit": payload.get("layout_hit", 0), "layout_drift": payload.get("layout_drift", 0),
+                       "layout_overridden": payload.get("layout_overridden", 0)}
         h5 = sorted((wdir / "hdf5_files").glob("*.h5"))
         record = {
             "task": row["task"], "tier": row["tier"], "candidate": row["candidate"], "episode": row["episode"],
@@ -335,6 +337,188 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
         delivered = sum(hard_specs.delivered(r) for r in rows)
         summary = {"attempted": attempted, "rounds": round_index, "infra_retries": sum(infra_retries.values()),
                    "delivered": delivered, "delivery_sha256": header["delivery_sha256"]}
+        (output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+        return summary
+    finally:
+        lock.release()
+
+
+# ── continue 模式（v7）：四档共用母布局的候选池 ─────────────────────────────────
+
+
+V7_TIERS = hard_specs.TIERS
+POOL_NAME = "v7-candidate-pool.json"
+V7_BACKFILL_CAP = 10  # 每格同步递补上限（0928 方案第二部分 §2）
+
+
+def _task_tiers(task: str) -> tuple[str, ...]:
+    return ("xhard4",) if task in hard_specs.XHARD4_ONLY else V7_TIERS
+
+
+def initial_pool(loaded: dict[str, tuple], per_cell: int) -> dict[str, Any]:
+    """候选池（每个 ``(task, candidate)`` 的唯一真源）：``derive_ok``＝本任务各档规格齐全；
+    初选＝xhard4 的 ``initial_selected`` ∩ ``derive_ok``，不足按候选号升序补齐到 ``per_cell``。"""
+    header4, rows4 = loaded["xhard4"]
+    pool: dict[str, Any] = {"schema": "v7-candidate-pool/1", "per_cell": per_cell, "tasks": {}}
+    for task in header4["tasks"]:
+        tiers = _task_tiers(task)
+        present = {tier: {int(r["candidate"]) for r in loaded[tier][1] if r["task"] == task} for tier in tiers}
+        candidates = sorted(set.intersection(*present.values()))
+        initial = sorted(int(r["candidate"]) for r in rows4 if r["task"] == task and r["initial_selected"])
+        chosen = [c for c in initial if c in candidates][:per_cell]
+        for c in candidates:
+            if len(chosen) >= per_cell:
+                break
+            if c not in chosen:
+                chosen.append(c)
+        pool["tasks"][task] = {
+            "tiers": list(tiers), "derive_ok": candidates,
+            "state": {str(c): {"status": "selected" if c in chosen else "spare", "tiers": {}} for c in candidates},
+            "backfills": 0, "sync_dropped": [],
+        }
+    return pool
+
+
+def _selected(pool_task: dict[str, Any]) -> list[int]:
+    return sorted(int(c) for c, s in pool_task["state"].items() if s["status"] == "selected")
+
+
+def sync_drop_and_backfill(pool: dict[str, Any], task: str, candidate: int, reason: str) -> int | None:
+    """某档某候选失败 → 该候选在本任务所有档一起退选；按候选号递补下一个 derive_ok 且各档都未试过的候选。"""
+    entry = pool["tasks"][task]
+    state = entry["state"][str(candidate)]
+    if state["status"] != "selected":
+        return None
+    state["status"] = "dropped"
+    entry["sync_dropped"].append({"candidate": candidate, "reason": reason})
+    if entry["backfills"] >= V7_BACKFILL_CAP:
+        return None
+    for c in entry["derive_ok"]:
+        s = entry["state"][str(c)]
+        if s["status"] == "spare" and not s["tiers"]:
+            s["status"] = "selected"
+            entry["backfills"] += 1
+            return c
+    return None
+
+
+def write_pool(path: Path, pool: dict[str, Any]) -> None:
+    fd, name = tempfile.mkstemp(prefix=".pool-", dir=path.parent)
+    with os.fdopen(fd, "w", encoding="utf-8") as stream:
+        json.dump(pool, stream, ensure_ascii=False, indent=1, sort_keys=True)
+    os.replace(name, path)
+
+
+def delivery_rows(pool: dict[str, Any], loaded: dict[str, tuple], output: Path) -> tuple[list[dict[str, Any]], str]:
+    """交付清单 + V7_DELIVERY_SET 判定行：每任务各档交付的候选集合相同、每格恰好 per_cell 局。"""
+    per_cell = int(pool["per_cell"])
+    rows_out, problems, equal = [], [], 0
+    for task, entry in pool["tasks"].items():
+        delivered = [c for c in _selected(entry)
+                     if all(entry["state"][str(c)]["tiers"].get(t, {}).get("status") == "ok" for t in entry["tiers"])]
+        sets = {t: sorted(delivered) for t in entry["tiers"]}
+        equal += int(len(entry["tiers"]) == 4 and len({tuple(v) for v in sets.values()}) == 1)
+        if len(delivered) != per_cell:
+            problems.append(f"{task} 交付 {len(delivered)}/{per_cell}")
+        for tier in entry["tiers"]:
+            by_c = {int(r["candidate"]): r for r in loaded[tier][1] if r["task"] == task}
+            for c in delivered:
+                row, st = by_c[c], entry["state"][str(c)]["tiers"][tier]
+                rows_out.append({"task": task, "tier": tier, "candidate": c, "seed": int(row["seed"]),
+                                 "episode": int(row["episode"]), "spec_sha256": row["spec_sha256"],
+                                 "h5_sha256": st["h5_sha256"], "frames": st.get("frames"),
+                                 "path": os.path.relpath(st["h5_path"], output), "env_module": st.get("env_module"),
+                                 "recovery_mode": None, "binding": st.get("binding")})
+    cells = sum(len(e["tiers"]) for e in pool["tasks"].values())
+    ok = not problems and equal == sum(len(e["tiers"]) == 4 for e in pool["tasks"].values())
+    line = (f"V7_DELIVERY_SET={'PASS' if ok else 'FAIL'} cells={cells} per_cell={per_cell} tier_set_equal={equal}"
+            + ("" if ok else f" problems={problems[:5]}"))
+    return rows_out, line
+
+
+def run_continue_v7(specs_root: Path, output: Path, *, src_root: Path, workers: int, gpu: str, pkg: str,
+                    code_baseline: str, resume: bool = False, max_infra_retries: int = 1,
+                    batch_runner=None) -> dict[str, Any]:
+    """v7 gen1：候选池单写者（目录锁），四档同步作废与递补；收尾回写四档规格的结果段并写 ``delivery.json``。"""
+    specs_root = Path(specs_root)
+    lock = SpecsLock(specs_root / POOL_NAME)
+    lock.acquire()
+    try:
+        files = {tier: specs_root / tier / "specs.jsonl" for tier in V7_TIERS}
+        file_sha = {tier: file_sha256(path) for tier, path in files.items()}
+        loaded = hard_specs.load_specs_v7(specs_root, check_fingerprint=False)
+        per_cell = int(loaded["xhard4"][0]["delivery_per_cell"])
+        pool_path = specs_root / POOL_NAME
+        if resume and pool_path.exists():
+            pool = json.loads(pool_path.read_text())
+            unknown = unknown_identities(output)
+            if unknown:
+                raise RolloutError(f"恢复歧义：以下身份有 h5 但无 partial 记录，标 UNKNOWN 交用户：{unknown}")
+        else:
+            if pool_path.exists():
+                raise RolloutError(f"{pool_path} 已存在；续跑用 --resume")
+            if _has_run_traces(output):
+                raise RolloutError(f"{output} 已有运行痕迹（episodes/ 或 _rounds/）；续跑用 --resume")
+            pool = initial_pool(loaded, per_cell)
+            write_pool(pool_path, pool)
+        output.mkdir(parents=True, exist_ok=True)
+        rows_by = {tier: {(r["task"], int(r["candidate"])): r for r in loaded[tier][1]} for tier in V7_TIERS}
+        runner = batch_runner or (lambda batch, header, idx: run_batch(
+            batch, header, output, idx, src_root=src_root, workers=workers, gpu=gpu, pkg=pkg, resume=resume))
+        infra: dict[tuple[str, str, int], int] = {}
+        attempted = round_index = 0
+        while True:
+            pending = {tier: [] for tier in V7_TIERS}
+            for task, entry in pool["tasks"].items():
+                for c in _selected(entry):
+                    for tier in entry["tiers"]:
+                        if tier not in entry["state"][str(c)]["tiers"]:
+                            pending[tier].append(dict(rows_by[tier][(task, c)], _role="selected"))
+            if not any(pending.values()):
+                break
+            for tier in V7_TIERS:
+                # 同一轮里前面档位失败已同步退选的候选，后面档位不再跑（不浪费轨迹预算）
+                batch = [r for r in pending[tier]
+                         if pool["tasks"][r["task"]]["state"][str(int(r["candidate"]))]["status"] == "selected"]
+                if not batch:
+                    continue
+                results = runner(batch, loaded[tier][0], round_index)
+                attempted += len(results)
+                for record in results:
+                    task, c = record["task"], int(record["candidate"])
+                    key = (task, tier, c)
+                    entry = pool["tasks"][task]
+                    if is_infra(record) and infra.get(key, 0) < max_infra_retries:
+                        infra[key] = infra.get(key, 0) + 1
+                        continue  # 基础设施失败每身份最多重跑 1 次：不记档状态，下一轮再跑
+                    block = rollout_block(record, pkg, code_baseline, output)
+                    block["binding"] = record.get("spec_binding")
+                    entry["state"][str(c)]["tiers"][tier] = block
+                    if not record["ok"] and entry["state"][str(c)]["status"] == "selected":
+                        sync_drop_and_backfill(pool, task, c, f"{tier}:{record.get('error_type')}")
+            write_pool(pool_path, pool)
+            round_index += 1
+        # 回写四档规格的结果段（selected／tried／rollout）；身份段不变
+        for tier in V7_TIERS:
+            header, rows = loaded[tier]
+            for row in rows:
+                entry = pool["tasks"].get(row["task"])
+                st = None if entry is None else entry["state"].get(str(int(row["candidate"])))
+                tier_state = None if st is None else st["tiers"].get(tier)
+                row["tried"] = tier_state is not None
+                row["rollout"] = None if tier_state is None else {k: v for k, v in tier_state.items() if k != "binding"}
+                row["selected"] = bool(st and st["status"] == "selected" and tier_state and tier_state["status"] == "ok"
+                                       and all(st["tiers"].get(t, {}).get("status") == "ok" for t in entry["tiers"]))
+            write_back(files[tier], header, rows, file_sha[tier])
+        rows_out, line = delivery_rows(pool, loaded, output)
+        (output / "delivery.json").write_text(json.dumps(
+            {"schema": "v7-delivery/1", "specs_root": str(specs_root), "code_baseline": code_baseline, "rows": rows_out},
+            ensure_ascii=False, indent=1) + "\n")
+        print(line, flush=True)
+        summary = {"attempted": attempted, "rounds": round_index, "infra_retries": sum(infra.values()),
+                   "delivered": len(rows_out),
+                   "sync_dropped": sum(len(e["sync_dropped"]) for e in pool["tasks"].values()),
+                   "backfills": sum(e["backfills"] for e in pool["tasks"].values()), "delivery_set": line}
         (output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
         return summary
     finally:

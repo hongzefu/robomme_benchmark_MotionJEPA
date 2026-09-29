@@ -73,12 +73,49 @@ def test_changed_decision_is_rejected_in_native_mode(task: str) -> None:
         module._resolve_sampling_config(cls, {"decision": tampered, "native": native})
 
 
-def test_v6_snapshot_matches_source(tmp_path) -> None:
-    """robomme_hard 源码提取出的 sampling_config 与包内 xhard4 header 逐任务相同（原 V6 快照已删，真源改为包内 jsonl）。"""
+TEST_HARD_ROOT = REPO_ROOT / "src" / "robomme_hard" / "env_metadata" / "test-hard"
+V6_FROZEN = REPO_ROOT / "scripts" / "configs" / "newtask-v6" / "v6-sampling-frozen.json"
+NEWVALUE_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
+
+
+def _packaged_header(tier: str) -> dict:
+    with (TEST_HARD_ROOT / tier / "specs.jsonl").open(encoding="utf-8") as stream:
+        return json.loads(stream.readline())
+
+
+def test_v6_snapshot_matches_source() -> None:
+    """V7 起 v6 值只存在于包内 v6 规格 header 与冻结快照 v6-sampling-frozen.json：
+    冻结快照按档逐任务等于包内 xhard1..4 header 的 sampling_config（四个 header 互不相同，故按档存）。"""
+    from robomme_hard.env_record_wrapper import hard_specs  # noqa: PLC0415
+
+    frozen = json.loads(V6_FROZEN.read_text(encoding="utf-8"))
+    assert frozen["schema"] == "v6-sampling-frozen/1"
+    assert frozen["four_headers_identical"] is False
+    assert set(frozen["sampling_config"]) == set(NEWVALUE_TIERS)
+    headers = {tier: _packaged_header(tier) for tier in NEWVALUE_TIERS}
+    for tier in NEWVALUE_TIERS:
+        header = headers[tier]
+        assert header["difficulty"] == tier
+        assert frozen["sampling_config"][tier] == header["sampling_config"], tier
+        assert frozen["sampling_config_sha256_by_tier"][tier] == header["sampling_config_sha256"], tier
+        assert hard_specs.digest(frozen["sampling_config"][tier]) == header["sampling_config_sha256"], tier
+        # 任务集合按 header 自身的 tasks（包内 v6 的 xhard1 header 含 16 任务、xhard2／3 含 13 任务）
+        assert set(frozen["sampling_config"][tier]) == set(header["tasks"]), tier
+    assert set(frozen["sampling_config"]["xhard4"]) == set(READY_TASKS)
+    # 四个 header 确实不全相同（快照里 four_headers_identical=false 与事实一致）
+    digests = {headers[tier]["sampling_config_sha256"] for tier in NEWVALUE_TIERS}
+    assert len(digests) > 1
+
+
+def test_v7_snapshot_matches_source(tmp_path) -> None:
+    """``train_split_config.py extract --release newtask-v7`` 导出的快照：逐任务等于进程内 ``native_blocks``，
+    且 13 个梯度任务读出的四档定值等于 V7 定值表（0928 方案 §3.2.2）；与冻结的 v6 快照在梯度任务上不同。"""
+    from tests._shared.v7_tier_values import V7_TIER_VALUES, summarize  # noqa: PLC0415
+
     out = tmp_path / "sampling_config.json"
     result = subprocess.run(
         [sys.executable, str(REPO_ROOT / "scripts" / "parity" / "train_split_config.py"), "extract",
-         "--release", "newtask-v6", "--pkg", "robomme_hard", "--output", str(out)],
+         "--release", "newtask-v7", "--pkg", "robomme_hard", "--output", str(out)],
         capture_output=True,
         text=True,
         cwd=REPO_ROOT,
@@ -86,11 +123,19 @@ def test_v6_snapshot_matches_source(tmp_path) -> None:
     assert result.returncode == 0, result.stdout + result.stderr
     fresh = json.loads(out.read_text(encoding="utf-8"))
     assert len(fresh["tasks_ready"]) == 16 and fresh["tasks_pending"] == []
-    packaged = json.loads(PACKAGED_XHARD4.open(encoding="utf-8").readline())["sampling_config"]
-    assert fresh["tasks"] == packaged
     assert fresh["tasks_ready"] == sorted(READY_TASKS)
     for task in READY_TASKS:
         block = fresh["tasks"][task]
         assert set(block) == {"decision", "native"}
         assert set(block["native"]) >= {"parameters", "positions"}
         assert block["decision"], f"{task} 的 decision 块不能为空"
+        module = _module(task)
+        decision, native = module.native_blocks(getattr(module, task))
+        dump = lambda payload: json.dumps(payload, sort_keys=True, ensure_ascii=False)  # noqa: E731
+        assert dump(block) == dump({"decision": decision, "native": native}), task
+    got = {task: summarize(task, fresh["tasks"][task]["decision"]) for task in V7_TIER_VALUES}
+    assert got == V7_TIER_VALUES
+    frozen = json.loads(V6_FROZEN.read_text(encoding="utf-8"))["sampling_config"]["xhard4"]
+    for task in ("PickXtimes", "SwingXtimes", "VideoUnmask", "ButtonUnmask", "VideoUnmaskSwap",
+                 "ButtonUnmaskSwap", "VideoRepick", "PatternLock", "RouteStick"):
+        assert fresh["tasks"][task] != frozen[task], f"{task}：v7 定值应与 v6 xhard4 header 不同"

@@ -17,14 +17,30 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import _common  # noqa: F401  路径设置
 import _rollout  # noqa: E402
 
 from robomme_hard.env_record_wrapper import hard_specs  # noqa: E402
+
+
+def _launch_facts(src_root: Path) -> dict[str, str]:
+    """GPU 型号、驱动、src_commit、节点与作业号（写进 launch 记录，gen1／gen2 比对前核对同型号同驱动）。"""
+    out = subprocess.run(["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"],
+                         capture_output=True, text=True).stdout.strip().splitlines()
+    visible = os.environ.get("CUDA_VISIBLE_DEVICES")
+    if out and visible and visible.isdigit() and int(visible) < len(out):
+        out = [out[int(visible)]]
+    name, driver = (out[0].split(",")[0].strip(), out[0].split(",")[1].strip()) if out else ("unknown", "unknown")
+    commit = subprocess.run(["git", "-C", str(src_root), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    return {"gpu_model": name, "driver": driver, "src_commit": commit or "unknown", "host": os.uname().nodename,
+            "slurm_job": os.environ.get("SLURM_JOB_ID")}
 
 
 def main() -> int:
@@ -41,15 +57,29 @@ def main() -> int:
     parser.add_argument("--tasks", default="all", help="continue 模式只跑这些任务（逗号分隔）；其余任务的待跑行留到下次")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--self-check", action="store_true")
+    parser.add_argument("--dev-smoke", action="store_true", help="放行非 A40（本机开发冒烟）；正式生成一律 A40（v7 D-9）")
     args = parser.parse_args()
 
     output = Path(args.output)
     src_root = Path(args.src_root).resolve()
+    facts = _launch_facts(src_root)
+    if not args.dev_smoke and "A40" not in facts["gpu_model"]:
+        raise SystemExit(f"正式生成只许在 A40 上跑：当前 {facts}")
+    output.mkdir(parents=True, exist_ok=True)
+    (output / f"launch-{int(time.time())}.json").write_text(json.dumps(
+        {"schema": "generate-h5-launch/1", "mode": args.mode, "specs": args.specs, "identities": args.identities,
+         "workers": args.workers, "gpu": args.gpu, "pkg": args.pkg, "dev_smoke": args.dev_smoke, **facts},
+        ensure_ascii=False, indent=2) + "\n")
+    specs_dir = Path(args.specs) if args.specs and Path(args.specs).is_dir() else None
     if args.mode == "replay":
         if not args.identities:
             raise SystemExit("replay 模式必须给 --identities")
         specs_paths = None
-        if args.specs:
+        if specs_dir is not None:
+            # v7：规格根目录（xhard{1..4}/specs.jsonl，gen2 按 gen1 交付清单重放）
+            hard_specs.load_specs_v7(specs_dir, check_fingerprint=False)
+            specs_paths = {tier: specs_dir / tier / "specs.jsonl" for tier in hard_specs.TIERS}
+        elif args.specs:
             header, _ = hard_specs.load_specs(args.specs, check_fingerprint=False)
             specs_paths = {header["difficulty"]: Path(args.specs)}
         summary = _rollout.run_replay(_rollout.load_identities(Path(args.identities)), output, src_root=src_root,
@@ -60,6 +90,14 @@ def main() -> int:
         return 0
     if not args.specs:
         raise SystemExit("continue 模式必须给 --specs")
+    if specs_dir is not None:
+        # v7 gen1：候选池四档同步作废与递补，收尾写 delivery.json（V7_DELIVERY_SET）
+        summary = _rollout.run_continue_v7(specs_dir, output, src_root=src_root, workers=args.workers, gpu=args.gpu,
+                                           pkg=args.pkg, code_baseline=facts["src_commit"], resume=args.resume)
+        print(f"GENERATE_CONTINUE_DONE attempted={summary['attempted']} rounds={summary['rounds']} "
+              f"infra_retries={summary['infra_retries']} delivered={summary['delivered']} "
+              f"sync_dropped={summary['sync_dropped']} backfills={summary['backfills']} out={output}")
+        return 0 if summary["delivery_set"].startswith("V7_DELIVERY_SET=PASS") else 1
     specs = Path(args.specs)
     before, _ = hard_specs.load_specs(specs, check_fingerprint=False)
     redo = set()

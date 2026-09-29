@@ -99,7 +99,7 @@ def _calls_with_cond(func):
 
 # ── 配置 ────────────────────────────────────────────────────────────────────────
 @pytest.mark.parametrize("task", TASKS)
-def test_xhard干扰配置等于V5预设且是深拷贝(task):
+def test_V5预设常量不动且是深拷贝_xhard4改用V7定值(task):
     mod = _module(task)
     count, cubes = EXPECT[task]
     assert mod.XHARD_DISTRACTOR == uds.V5_DISTRACTOR_PRESETS[task]
@@ -110,19 +110,21 @@ def test_xhard干扰配置等于V5预设且是深拷贝(task):
     assert list(cfg.ring) == [0.2425, 0.3289]
     assert cfg.color_rule == "balanced_cycle" and cfg.min_gap_factor == 0.75 and cfg.max_trials == 1024
     decision = mod._native_decision(getattr(mod, task))
-    assert decision["xhard4"]["distractor"] == uds.V5_DISTRACTOR_PRESETS[task]
+    # V7 定值（0928 方案 §3.2.2）：xhard4 不再用 V5 预设，改为 12 个、含 cube [6,6]；其余键仍同 V5 预设
+    assert decision["xhard4"]["distractor"] != uds.V5_DISTRACTOR_PRESETS[task]
+    assert decision["xhard4"]["distractor"] == {**uds.V5_DISTRACTOR_PRESETS[task], "count": 12,
+                                                "cube_count_range": [6, 6]}
     # decision 里的子树也是独立副本
     decision["xhard4"]["distractor"]["count"] = -1
     assert mod.XHARD_DISTRACTOR["count"] == count
+    assert mod._native_decision(getattr(mod, task))["xhard4"]["distractor"]["count"] == 12
 
 
-# V6（计划 2.3）新值族档位表：xhard1/2/3 只改干扰数与含 cube 个数，其余沿用 xhard；xhard 逐位不变
-V6_EXPECT = {
-    "VideoUnmask": {"xhard1": (2, 8, [4, 4]), "xhard2": (3, 10, [5, 5]), "xhard3": (3, 13, [6, 7]),
-                    "xhard4": (3, 15, [7, 8])},
-    "ButtonUnmask": {"xhard1": (2, 8, [4, 4]), "xhard2": (3, 10, [5, 5]), "xhard3": (3, 12, [6, 6]),
-                     "xhard4": (3, 14, [7, 7])},
-}
+# V7 定值（0928 方案 §3.2.2）新值族档位表：贴身环带干扰 0/4/8/12、含 cube 恒为一半，两环境相同；
+# 其余键沿用 V5 预设；pick 2/3/3/3 不变。v6 值只存在于包内 v6 规格 header
+_V7_ROWS = {"xhard1": (2, 0, [0, 0]), "xhard2": (3, 4, [2, 2]), "xhard3": (3, 8, [4, 4]),
+            "xhard4": (3, 12, [6, 6])}
+V6_EXPECT = {"VideoUnmask": _V7_ROWS, "ButtonUnmask": _V7_ROWS}
 
 
 @pytest.mark.parametrize("task", TASKS)
@@ -140,8 +142,10 @@ def test_v6新值族档位表按计划且其余键沿用xhard(task):
         rest = {k: v for k, v in dist.items() if k not in ("count", "cube_count_range")}
         base = {k: v for k, v in uds.V5_DISTRACTOR_PRESETS[task].items() if k not in ("count", "cube_count_range")}
         assert rest == base
-        uds.parse_distractor_cfg(dist)
-    assert decision["xhard4"]["distractor"] == uds.V5_DISTRACTOR_PRESETS[task]
+        # V7：count 0（xhard1）也须被采样器接受
+        parsed = uds.parse_distractor_cfg(dist)
+        assert parsed.count == count
+    assert decision["xhard4"]["distractor"]["count"] == 12
 
 
 # ── AST：挂接点 ──────────────────────────────────────────────────────────────────

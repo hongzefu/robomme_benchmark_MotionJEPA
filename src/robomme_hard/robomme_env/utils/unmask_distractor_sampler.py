@@ -166,8 +166,9 @@ def parse_distractor_cfg(cfg: dict | DistractorConfig) -> DistractorConfig:
     if missing or extra:
         raise ValueError(f"干扰配置键不符：缺 {missing}，多 {extra}（统一键为 {list(DISTRACTOR_CFG_KEYS)}）")
     count = int(cfg["count"])
-    if count < 1:
-        raise ValueError(f"count 必须 ≥ 1，收到 {cfg['count']}")
+    # V7 定值表：VideoUnmask／ButtonUnmask 的 xhard1 贴身环带干扰为 0（0928 方案 §3.2.2、第二部分 §1.7）
+    if count < 0:
+        raise ValueError(f"count 必须 ≥ 0，收到 {cfg['count']}")
     ring = tuple(float(v) for v in cfg["ring_max_abs_xy"])
     if len(ring) != 2 or not (0.0 < ring[0] < ring[1]):
         raise ValueError(f"ring_max_abs_xy 非法：{cfg['ring_max_abs_xy']}")
@@ -490,7 +491,8 @@ def commit_distractor_layout(
                                                   decision_key=f"{decision_prefix}.color_rule")]
     final = DistractorLayout(bins=bins, cube_count=cube_count, cube_bins=cube_bins, color_order=color_order,
                              trials=list(layout.trials))
-    if getattr(recorder, "replaying", False):
+    # V7 分层：母布局注入后要按本档的障碍与额外规则（如本档内环扫掠）复核，derive 模式也做（§1.8、§7.3.2）
+    if getattr(recorder, "replaying", False) or getattr(recorder, "layered", False):
         problems = verify_distractor_layout(final, c, obstacles=obstacles, cube_half_size=cube_half_size,
                                             extra_reject=extra_reject)
         if problems:
@@ -550,7 +552,11 @@ def resample_distractor_layout(
         final = commit_distractor_layout(layout, cfg=cfg, recorder=recorder, obstacles=obstacles,
                                          cube_half_size=cube_half_size, spec_prefix=spec_prefix,
                                          decision_prefix=decision_prefix, extra_reject=extra_reject)
-        if require_replay_match and getattr(recorder, "replaying", False) and not final.same_geometry(layout):
+        # V7 分层（derive／layered 回注）：外环位置与 color_order 取母值，与本档重抽结果必然不同；
+        # 改由 SpecRecorder 逐点核「本档抽到值 == layout_drawn」（layout_drift），调用方须在 final 上重新规划（§1.8）
+        layered = bool(getattr(recorder, "layered", False))
+        if require_replay_match and not layered and getattr(recorder, "replaying", False) \
+                and not final.same_geometry(layout):
             raise SceneGenerationError("回放的冻结干扰布局与本次重抽被接受的布局不一致，规划结果无法对应冻结布局")
         return final, payload
     recorder.record(attempts_path, attempts)

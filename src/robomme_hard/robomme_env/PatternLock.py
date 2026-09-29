@@ -179,23 +179,24 @@ class PatternLock(BaseEnv):
     # 搜索预算 20000（decision.<tier>.path_search_max_attempts）与耗尽抛真 SceneGenerationError 沿用。
     # ⚠ DFS 命中第一条在区间内的路径即 break，实际节点数贴下界（V6 审查 N13：xhard4 10 候选 {21:6, 22:2, 23:2}）；
     # 用户裁决只更新注释，不改采样分布。
+    # V7 定值：节点数 12/15/18/21（用户 2026-09-29 定「直接改 12/15/18/21」，定长 24 在 v6 实测里几乎搜不出）
     config_xhard4 = {
         "grid": 5,
-        "length": [21, 25]
+        "length": [21, 21]
     }
 
     # V6（计划 2.11）：hard 与 xhard 之间插入三档，布局、搜法、预算与耗尽抛错全部沿用 xhard，只改节点数
     config_xhard1 = {
         "grid": 5,
-        "length": [9, 12]
+        "length": [12, 12]
     }
     config_xhard2 = {
         "grid": 5,
-        "length": [13, 16]
+        "length": [15, 15]
     }
     config_xhard3 = {
         "grid": 5,
-        "length": [17, 20]
+        "length": [18, 18]
     }
 
     # Combine into a dictionary

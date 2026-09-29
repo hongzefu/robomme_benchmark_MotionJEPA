@@ -110,11 +110,13 @@ def _newvalue_distractor(count, cube_count_range):
     return cfg
 
 
+# V7 定值（0928 方案 §3.2.2）：贴身环带干扰 0/4/8/12、含 cube 数恒为一半；内环 8 固定 ⇒ 桌面容器总数 8/12/16/20。
+# XHARD_DISTRACTOR（V5 预设 15 个）本身不动，xhard4 改用 12 个（顶档下调）。
 NEWVALUE_DISTRACTOR = {
-    "xhard4": XHARD_DISTRACTOR,
-    "xhard1": _newvalue_distractor(8, [4, 4]),
-    "xhard2": _newvalue_distractor(10, [5, 5]),
-    "xhard3": _newvalue_distractor(13, [6, 7]),
+    "xhard4": _newvalue_distractor(12, [6, 6]),
+    "xhard1": _newvalue_distractor(0, [0, 0]),
+    "xhard2": _newvalue_distractor(4, [2, 2]),
+    "xhard3": _newvalue_distractor(8, [4, 4]),
 }
 # 内环容器摆放（间距系数 0.75）四档相同
 NEWVALUE_BIN_LAYOUT = {tier: XHARD_BIN_LAYOUT for tier in NEWVALUE_DISTRACTOR}

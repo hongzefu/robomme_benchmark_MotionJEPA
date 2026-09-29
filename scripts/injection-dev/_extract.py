@@ -7,7 +7,7 @@ import _common  # noqa: F401  路径设置
 from train_split_config import extract_task  # noqa: E402
 
 DEFAULT_PKG = "robomme_hard"
-DEFAULT_RELEASE = "newtask-v6"
+DEFAULT_RELEASE = "newtask-v7"
 
 
 def build_sampling(tasks: list[str], pkg: str = DEFAULT_PKG, release: str = DEFAULT_RELEASE) -> dict:

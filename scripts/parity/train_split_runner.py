@@ -132,9 +132,15 @@ def main(argv: list[str] | None = None) -> int:
         help="D 路：每局规格 JSON（形如 {\"specs\": {<task>/<episode>: {...}}}）",
     )
     parser.add_argument(
-        "--identity-source", choices=("train_metadata", "formula"), default="train_metadata",
+        "--identity-source", choices=("train_metadata", "formula", "test_metadata"), default="train_metadata",
         help="身份复核来源：train_metadata＝官方 metadata 逐字比（原值五路，默认）；"
-             "formula＝新值档身份按 robomme_hard.env_record_wrapper.hard_specs 的 seed 公式硬校验",
+             "formula＝新值档身份按 robomme_hard.env_record_wrapper.hard_specs 的 seed 公式硬校验；"
+             "test_metadata＝xhard0：按 <src-root>/src/robomme/env_metadata/test 的 hard 子集逐条比，并与 --xhard0-manifest 双向核对",
+    )
+    parser.add_argument("--xhard0-manifest", default=None, help="identity_source=test_metadata 时的 xhard0 清单（16×1×12）")
+    parser.add_argument(
+        "--builder-route", choices=("test-hard",), default=None,
+        help="xhard0 H 侧：镜像 worker 的 gym.make 实参取自 robomme_hard 的 test-hard builder 的 xhard0 条目（v7 §1.5）",
     )
     parser.add_argument(
         "--no-recovery", action="store_true",
@@ -160,6 +166,11 @@ def main(argv: list[str] | None = None) -> int:
     env_package = os.environ.get("ROBOMME_ENV_PACKAGE", "robomme")
     if env_package not in ("robomme", "robomme_hard"):
         raise SystemExit(f"ROBOMME_ENV_PACKAGE 非法：{env_package}")
+    if args.builder_route is not None and env_package != "robomme_hard":
+        # R9：官方侧（ROBOMME_ENV_PACKAGE=robomme）进程不得导入 robomme_hard
+        raise SystemExit("--builder-route 只用于 H 侧（ROBOMME_ENV_PACKAGE=robomme_hard）；官方侧不得导入 robomme_hard（R9）")
+    if args.builder_route is not None:
+        args.force_mirror = True
 
     removed = _strip_working_copy_src(src_root)
     probe = _probe_robomme(src_root)
@@ -196,6 +207,21 @@ def main(argv: list[str] | None = None) -> int:
             if actual != expected:
                 raise SystemExit(f"官方 train 元数据 records_sha256 不符：{actual} != {expected}")
         records_by_task = official.read_train_metadata(metadata_root)
+    elif args.identity_source == "test_metadata":
+        # xhard0：官方 test 元数据只读 JSON（不导入任何 robomme 包）；hard 子集按 (task, 原 episode) 建索引
+        if not args.xhard0_manifest:
+            raise SystemExit("identity_source=test_metadata 须给 --xhard0-manifest")
+        test_root = src_root / "src" / "robomme" / "env_metadata" / "test"
+        manifest_rows = json.loads(Path(args.xhard0_manifest).read_text(encoding="utf-8"))["rows"]
+        manifest_ids = {(r["task"], int(r["episode"]), int(r["seed"])) for r in manifest_rows}
+        test_records: dict[tuple[str, int], dict] = {}
+        for path in sorted(test_root.glob("record_dataset_*_metadata.json")):
+            for record in json.loads(path.read_text(encoding="utf-8"))["records"]:
+                if record.get("difficulty") == "hard":
+                    test_records[(str(record["task"]), int(record["episode"]))] = record
+        metadata_ids = {(t, e, int(r["seed"])) for (t, e), r in test_records.items()}
+        if metadata_ids != manifest_ids:
+            raise SystemExit(f"官方 test hard 子集与 xhard0 清单不符：缺 {len(manifest_ids - metadata_ids)} 多 {len(metadata_ids - manifest_ids)}")
     else:
         # V4：xhard 身份不在官方 metadata 里；改按 V4 seed 公式复核，仍是硬校验。
         repo_root = Path(__file__).resolve().parents[2]
@@ -227,6 +253,11 @@ def main(argv: list[str] | None = None) -> int:
                     f"manifest=({item['seed']}, {item['difficulty']}) "
                     f"official=({record['seed']}, {record['difficulty']})"
                 )
+        elif args.identity_source == "test_metadata":
+            record = test_records.get((task, episode))
+            if record is None or int(record["seed"]) != int(item["seed"]) or str(item["difficulty"]) != "hard":
+                raise SystemExit(f"{task}/episode_{episode} 身份与官方 test hard 子集不符：jobs=({item['seed']}, {item['difficulty']}) "
+                                 f"official={None if record is None else (record['seed'], record['difficulty'])}")
         else:
             # V6：jobs 可带 header 封存的 seed_rule（新值族任一档 + v6 按档偏移）；不带时与 V4/V5 逐字相同
             rule = item.get("seed_rule")
@@ -273,6 +304,9 @@ def main(argv: list[str] | None = None) -> int:
             raise SystemExit(f"采样配置缺少环境 {job.task}")
         if specs_by_identity and spec is None:
             raise SystemExit(f"每局规格缺少身份 {job.task}/{job.episode}")
+        if args.builder_route is not None:
+            # 第 4 项 disable_recovery 占位 False（恢复模式照官方按 episode 号定），第 5 项为 builder 路线
+            return executor.submit(train_split_worker.run_one, (job, None, None, False, args.builder_route))
         if args.no_recovery:
             return executor.submit(train_split_worker.run_one, (job, config, spec, True))
         return executor.submit(train_split_worker.run_one, (job, config, spec))

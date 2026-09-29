@@ -479,6 +479,95 @@ def dimensions_from_reset_spec(task: str, spec: Mapping[str, Any]) -> dict[str, 
     raise KeyError(f"未登记的梯度环境：{task}")
 
 
+# ── V7 定值表（0928-newtask-v7-xhard0-shared-layout-plan.md §3.2.2；PatternLock 按用户 2026-09-29 定 12/15/18/21）──
+# 每档单点、无区间；VideoUnmask／ButtonUnmask 另加「桌面容器总数」（内环 8 + 贴身干扰；hard 列取 xhard0 实测 5），
+# 否则 hard→xhard1 干扰 0→0、pick 2→2 两维都持平必报 flat_step（方案 N6）。原三档沿用 PLAN_TIERS。
+_V7_NEW = {
+    "BinFill": [{"put_in": n} for n in (6, 7, 8, 9)],
+    "PickXtimes": [{"times": t, "distractors": d} for t, d in ((7, 1), (10, 2), (12, 3), (15, 4))],
+    "SwingXtimes": [{"rounds": r, "distractors": d} for r, d in ((5, 1), (7, 2), (9, 3), (11, 4))],
+    "PickHighlight": [{"pick": p, "total": t} for p, t in ((4, 7), (5, 8), (6, 9), (7, 10))],
+    "VideoUnmask": [{"distractors": d, "pick": p, "containers": 8 + d} for d, p in ((0, 2), (4, 3), (8, 3), (12, 3))],
+    "ButtonUnmask": [{"distractors": d, "pick": p, "containers": 8 + d} for d, p in ((0, 2), (4, 3), (8, 3), (12, 3))],
+    "VideoUnmaskSwap": [{"swap": s, "pick": p, "outer_distractors": o} for s, p, o in ((5, 2, 2), (7, 3, 4), (9, 3, 6), (11, 3, 8))],
+    "ButtonUnmaskSwap": [{"swap": s, "pick": p, "outer_distractors": o} for s, p, o in ((3, 2, 2), (5, 3, 4), (7, 3, 6), (9, 3, 8))],
+    "VideoRepick": [{"cubes": c, "swap": s, "repick": r} for c, s, r in ((4, 4, 2), (5, 6, 3), (6, 8, 4), (7, 10, 5))],
+    "PatternLock": [{"nodes": n} for n in (12, 15, 18, 21)],
+    "RouteStick": [{"segments": n} for n in (10, 13, 16, 19)],
+    "VideoPlaceButton": [{"placements": n} for n in (3, 4, 5, 6)],
+    "VideoPlaceOrder": [{"placements": n} for n in (5, 6, 7, 8)],
+}
+PLAN_TIERS_V7: dict[str, dict[str, dict[str, Any]]] = {}
+for _env, _values in _V7_NEW.items():
+    _native = {t: dict(PLAN_TIERS[_env][t]) for t in NATIVE_CHAIN}
+    if _env in ("VideoUnmask", "ButtonUnmask"):
+        for _t in NATIVE_CHAIN:
+            _native[_t]["containers"] = None
+        _native["hard"]["containers"] = 5  # xhard0 实测放置数（§3.2.1），不是配置数 15
+    PLAN_TIERS_V7[_env] = {**_native, **dict(zip(NEWVALUE_TIERS, _values))}
+
+
+def v7_dimensions(task: str, spec: Mapping[str, Any]) -> dict[str, int]:
+    """V7 实际值：与 :func:`dimensions_from_reset_spec` 相同，VU／BU 另算桌面容器总数（内环 8 + 实际放下的干扰数）。"""
+    dims = dimensions_from_reset_spec(task, spec)
+    if task in ("VideoUnmask", "ButtonUnmask"):
+        dims["containers"] = 8 + dims["distractors"]
+    return dims
+
+
+def check_fixed(specs_root: str | Path | None = None) -> tuple[bool, str, dict]:
+    """V7_TIER_FIXED：无规格根时只核定值表自身（hard→xhard4 无维度下降、每步至少一维上升）；
+    给规格根时逐任务逐布局取四档实际值，要求等于定值表，并沿 hard→xhard1..4 满足同一单调条件。"""
+    table_check = check_all(PLAN_TIERS_V7)
+    violations = [v for env in table_check["envs"].values() for v in env["gate"]["violations"]
+                  if v["kind"] != "overlap"]
+    cells = layouts = 0
+    if specs_root is not None:
+        from robomme_hard.env_record_wrapper import hard_specs
+
+        loaded = {tier: hard_specs.load_specs(Path(specs_root) / tier / "specs.jsonl", check_fingerprint=False)[1]
+                  for tier in NEWVALUE_TIERS}
+        by = {tier: {(r["task"], int(r["candidate"])): r for r in rows} for tier, rows in loaded.items()}
+        for task in GRADIENT_ENVS:
+            candidates = sorted(set.intersection(*[{c for (t, c) in by[tier] if t == task} for tier in NEWVALUE_TIERS]))
+            cells += 4
+            for cand in candidates:
+                layouts += 1
+                actual = {"hard": PLAN_TIERS_V7[task]["hard"]}
+                for tier in NEWVALUE_TIERS:
+                    dims = v7_dimensions(task, by[tier][(task, cand)]["spec"])
+                    actual[tier] = dims
+                    want = PLAN_TIERS_V7[task][tier]
+                    wrong = {k: (dims.get(k), v) for k, v in want.items() if dims.get(k) != v}
+                    if wrong:
+                        violations.append({"env": task, "candidate": cand, "tier": tier, "kind": "value", "diff": wrong})
+                chain = check_chain(task, actual)
+                violations += [dict(v, candidate=cand) for v in chain["violations"] if v["kind"] != "overlap"]
+    ok = not violations
+    line = (f"V7_TIER_FIXED={'PASS' if ok else 'FAIL'} cells={cells or 13 * 4} layouts={layouts} violations={len(violations)}"
+            + ("" if ok else f" detail={violations[:4]}"))
+    if specs_root is not None:
+        # V7_VISUAL_COUNT：桌面目视总量（内环 + 干扰／外环，或目标块 + 干扰块），每格取候选号最小的 1 局
+        want = {"VideoUnmask": (8, 12, 16, 20), "ButtonUnmask": (8, 12, 16, 20), "VideoUnmaskSwap": (6, 8, 10, 12),
+                "ButtonUnmaskSwap": (6, 8, 10, 12), "PickXtimes": (4, 5, 6, 7), "SwingXtimes": (4, 5, 6, 7)}
+        visual_bad, visual_cells = [], 0
+        for task, totals in want.items():
+            for tier, total in zip(NEWVALUE_TIERS, totals):
+                rows = sorted((c for (t, c) in by[tier] if t == task))
+                if not rows:
+                    continue
+                visual_cells += 1
+                dims = v7_dimensions(task, by[tier][(task, rows[0])]["spec"])
+                got = (dims["containers"] if "containers" in dims else
+                       4 + dims["outer_distractors"] if "outer_distractors" in dims else 3 + dims["distractors"])
+                if got != total:
+                    visual_bad.append((task, tier, got, total))
+        line += (f"\nV7_VISUAL_COUNT={'PASS' if not visual_bad else 'FAIL'} cells={visual_cells} mismatch={len(visual_bad)}"
+                 + ("" if not visual_bad else f" detail={visual_bad[:4]}"))
+        ok = ok and not visual_bad
+    return ok, line, {"violations": violations}
+
+
 def _validate_v4_header(header: Mapping[str, Any], path: Path) -> tuple[str, str, str, set[str]]:
     missing = DRAFT_HEADER_REQUIRED - header.keys()
     if missing:
@@ -717,7 +806,14 @@ def main(argv=None) -> int:
     parser.add_argument("--samples", type=int, default=200,
                         help="可选reset诊断每个环境/档位所需成功reset数，默认200")
     parser.add_argument("--out", help="reset闸门 JSON 报告路径，必须位于仓库内")
+    parser.add_argument("--fixed", action="store_true",
+                        help="V7：按定值表核（无 --specs-root 时只核表本身；给了则逐布局核四档实际值）→ V7_TIER_FIXED")
+    parser.add_argument("--specs-root", default=None, help="--fixed：v7 规格根（xhard{1..4}/specs.jsonl）")
     args = parser.parse_args(argv)
+    if args.fixed:
+        ok, line, _ = check_fixed(args.specs_root)
+        print(line)
+        return 0 if ok else 1
     if args.reset_all:
         if len(args.drafts) != len(NEWVALUE_TIERS):
             parser.error("--reset-all 必须提供四份 --drafts 文件，每档一份")

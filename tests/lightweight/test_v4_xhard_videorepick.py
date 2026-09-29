@@ -82,8 +82,9 @@ def test_去掉新值后decision与改动前相同():
 
 def test_四档新值decision含逐档配置与S5():
     decision = _decision()
-    expected = {"xhard1": (4, 3, 4, 2, 3), "xhard2": (5, 5, 6, 3, 4),
-                "xhard3": (6, 7, 8, 4, 5), "xhard4": (7, 9, 12, 5, 7)}
+    # V7 定值（0928 方案 §3.2.2）：块数 4/5/6/7 不变，swap 4/6/8/10 定值，repick 2/3/4/5 定值
+    expected = {"xhard1": (4, 4, 4, 2, 3), "xhard2": (5, 6, 6, 3, 4),
+                "xhard3": (6, 8, 8, 4, 5), "xhard4": (7, 10, 10, 5, 6)}
     for tier, (cubes, swap_min, swap_max, repeat_low, repeat_high) in expected.items():
         layout = decision[tier]["layout"]
         assert layout == {"mode": "clutter", "cube_count": cubes, "region_center": [-0.1, 0.0],
@@ -166,8 +167,9 @@ def test_新值档拒绝链路甲的episode_spec():
         CLS(seed=0, difficulty="xhard4", episode_spec={"task": "VideoRepick"})
 
 
-@pytest.mark.parametrize("n", [8, 10, 12])
-def test_xhard_交换调度八到十二次首尾相接(n):
+# V7 定值 swap 4/6/8/10；「6 块都当过发起者」要求 n ≥ 6，故取 6/8/10（调度函数本身与档位无关）
+@pytest.mark.parametrize("n", [6, 8, 10])
+def test_xhard_交换调度六到十次首尾相接(n):
     env = SimpleNamespace(swap_times=n)
     for k in range(n):
         setattr(env, f"swap_pair{k+1}_idx1", f"init{k % 6}")
@@ -176,7 +178,7 @@ def test_xhard_交换调度八到十二次首尾相接(n):
     assert len(env.swap_schedule) == n
     assert [s[2] for s in env.swap_schedule] == [400 + 50 * k for k in range(n)]
     assert all(env.swap_schedule[k][3] == env.swap_schedule[k + 1][2] for k in range(n - 1))
-    # V5 L47 a'（原 V4 B12「发起者 3 个」作废）：6 块按 k%6 轮流发起，n≥8 时 6 块都当过发起者
+    # V5 L47 a'（原 V4 B12「发起者 3 个」作废）：6 块按 k%6 轮流发起，n≥6 时 6 块都当过发起者
     assert {s[0] for s in env.swap_schedule} == {f"init{j}" for j in range(6)}
 
 

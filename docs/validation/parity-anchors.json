@@ -1,0 +1,46 @@
+{
+  "anchors": {
+    "parity-anchor-v6": {
+      "commit": "ce3843b4fbe981307655570425ec39a3cdaad4a7",
+      "driver": "595.71.05",
+      "equivalence": "ANCHOR_EQUIV=PASS files=15+14 content_affecting=0（34a1ceab/b1afc804→ce3843b4：导入路径、输出目录判定放宽、bucket 上传白名单与比对补读 robomme_module、注释与 README）",
+      "gpu_model": "NVIDIA A40",
+      "registered_at": "2026-09-29T06:19:40+00:00",
+      "segments": {
+        "native": {
+          "bucket_prefix": "H-34a1cea-a40/native",
+          "dir": "P-native",
+          "driver": "595.71.05",
+          "env_module_prefix": [
+            "robomme_hard"
+          ],
+          "generated_at_commit": "34a1ceabf5a2bbf6f88aadf39303ceaccc54319b",
+          "gpu_model": "NVIDIA A40",
+          "identities_sha256": "8ce50fb82fd2f7779cf05e7449f09a66426e1a1056fe1fe0342499807e70346e",
+          "rows": 144,
+          "source_side": "H",
+          "worker": [
+            "train_split_worker.run_one"
+          ]
+        },
+        "xhard": {
+          "bucket_prefix": "H-b1afc80-a40/xhard",
+          "dir": "P-xhard",
+          "driver": "595.71.05",
+          "env_module_prefix": [
+            "robomme_hard"
+          ],
+          "generated_at_commit": "b1afc8047da813e3c64f0ae32624f5ff7748d7b3",
+          "gpu_model": "NVIDIA A40",
+          "identities_sha256": "26241df10f6afd4d95dc040582bdb252e3733ee874b4e7a6a74419ecef71d9c1",
+          "rows": 165,
+          "source_side": "H",
+          "worker": [
+            "train_split_worker.run_one"
+          ]
+        }
+      }
+    }
+  },
+  "schema": "parity-anchors/1"
+}

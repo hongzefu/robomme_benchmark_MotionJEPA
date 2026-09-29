@@ -216,14 +216,15 @@ def test_Unmask两环境四档申报S5O4_M5b且原三档配置不动(task):
     cls = getattr(module, task)
     decision = module._native_decision(cls)
     native = module.native_blocks(cls)[1]
-    ranges = ({"xhard1": (4, 5), "xhard2": (6, 7), "xhard3": (8, 9), "xhard4": (10, 12)}
+    # V7 定值（0928 方案 §3.2.2）：VUS swap 5/7/9/11、BUS 3/5/7/9，外环 2/4/6/8
+    ranges = ({"xhard1": (5, 5), "xhard2": (7, 7), "xhard3": (9, 9), "xhard4": (11, 11)}
               if task == "VideoUnmaskSwap" else
-              {"xhard1": (4, 4), "xhard2": (5, 5), "xhard3": (6, 7), "xhard4": (8, 9)})
+              {"xhard1": (3, 3), "xhard2": (5, 5), "xhard3": (7, 7), "xhard4": (9, 9)})
     for index, tier in enumerate(("xhard1", "xhard2", "xhard3", "xhard4"), start=1):
         swap_min, swap_max = ranges[tier]
         pick = 2 if index == 1 else 3
         counts = {"swap_min": swap_min, "swap_max": swap_max, "pick_min": pick, "pick_max": pick}
-        outer_count = 2 + 2 * index
+        outer_count = 2 * index
         speed = 1.0 if index == 1 else 1.5
         config = {"bin": 4, **counts}
         assert cls.configs[tier] == config
@@ -247,8 +248,9 @@ def test_Unmask两环境四档申报S5O4_M5b且原三档配置不动(task):
 def test_VR四档S5及难度配置():
     module = importlib.import_module("robomme_hard.robomme_env.VideoRepick")
     decision = module._native_decision(module.VideoRepick)
-    expected = {"xhard1": (4, 3, 4, 2, 3), "xhard2": (5, 5, 6, 3, 4),
-                "xhard3": (6, 7, 8, 4, 5), "xhard4": (7, 9, 12, 5, 7)}
+    # V7 定值（0928 方案 §3.2.2）：块数 4/5/6/7 不变，swap 4/6/8/10 定值，repick 2/3/4/5 定值
+    expected = {"xhard1": (4, 4, 4, 2, 3), "xhard2": (5, 6, 6, 3, 4),
+                "xhard3": (6, 8, 8, 4, 5), "xhard4": (7, 10, 10, 5, 6)}
     for tier, (cubes, swap_min, swap_max, repeat_low, repeat_high) in expected.items():
         cfg = decision[tier]
         assert cfg["layout"]["cube_count"] == cubes
@@ -270,7 +272,8 @@ def test_M5b容器选择保持前三个且拒绝空槽bin3():
 
 
 @pytest.mark.parametrize("tier,cube_count,n_swaps", [
-    ("xhard1", 4, 3), ("xhard2", 5, 5), ("xhard3", 6, 7), ("xhard4", 7, 9),
+    # V7 定值：每档 swap 次数 4/6/8/10
+    ("xhard1", 4, 4), ("xhard2", 5, 6), ("xhard3", 6, 8), ("xhard4", 7, 10),
 ])
 def test_VR_S5四档固定可行图规划与回放(tier, cube_count, n_swaps, monkeypatch):
     module = importlib.import_module("robomme_hard.robomme_env.VideoRepick")

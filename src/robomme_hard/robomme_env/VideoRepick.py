@@ -350,7 +350,8 @@ def native_blocks(cls, *, release="newtask-v6"):
             },
         }
         return _legacy_decision(legacy_configs, release), native
-    if release != "newtask-v6":
+    # newtask-v7：与 v6 同一解析路径，取当前类常量（即 V7 定值；v6 值只存于包内 v6 规格 header，0928 方案 R3）
+    if release not in ("newtask-v6", "newtask-v7"):
         raise ValueError(f"VideoRepick 不支持 sampling_config release {release!r}")
     native["parameters"]["configs"] = copy.deepcopy(cls.configs)
     return _native_decision(cls), native
@@ -489,7 +490,7 @@ class VideoRepick(BaseEnv):
     }
     # V6 新值档：块数、交换次数与 repick 次数按最终表分档；布局、颜色、中心距和 S5 机制共用。
     config_xhard1 = {
-        "cube": 4, "swap_min": 3, "swap_max": 4,
+        "cube": 4, "swap_min": 4, "swap_max": 4,  # V7 定值：swap 4/6/8/10、repick 2/3/4/5（0928 方案 §3.2.2）
         "num_repeats_low": 2, "num_repeats_high_exclusive": 3,
         "layout_mode": "clutter",
         "region_center": [-0.1, 0.0],
@@ -499,20 +500,20 @@ class VideoRepick(BaseEnv):
         "partner_button_obstacle": True,
     }
     config_xhard2 = {
-        "cube": 5, "swap_min": 5, "swap_max": 6,
+        "cube": 5, "swap_min": 6, "swap_max": 6,
         "num_repeats_low": 3, "num_repeats_high_exclusive": 4,
         "layout_mode": "clutter", "region_center": [-0.1, 0.0], "region_half_size": [0.2, 0.25],
         "min_center_dist_m": 0.12, "partner_sweep_margin_m": 0.005, "partner_button_obstacle": True,
     }
     config_xhard3 = {
-        "cube": 6, "swap_min": 7, "swap_max": 8,
+        "cube": 6, "swap_min": 8, "swap_max": 8,
         "num_repeats_low": 4, "num_repeats_high_exclusive": 5,
         "layout_mode": "clutter", "region_center": [-0.1, 0.0], "region_half_size": [0.2, 0.25],
         "min_center_dist_m": 0.12, "partner_sweep_margin_m": 0.005, "partner_button_obstacle": True,
     }
     config_xhard4 = {
-        "cube": 7, "swap_min": 9, "swap_max": 12,
-        "num_repeats_low": 5, "num_repeats_high_exclusive": 7,
+        "cube": 7, "swap_min": 10, "swap_max": 10,
+        "num_repeats_low": 5, "num_repeats_high_exclusive": 6,
         "layout_mode": "clutter", "region_center": [-0.1, 0.0], "region_half_size": [0.2, 0.25],
         "min_center_dist_m": 0.12, "partner_sweep_margin_m": 0.005, "partner_button_obstacle": True,
     }

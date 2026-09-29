@@ -23,12 +23,24 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA = "hard-specs/2"
+#: V7（0928 方案第二部分 §1.1）：/3 在 /2 的基础上多 header ``layout_rule`` 与行 ``layout_parent``；
+#: 身份键按 schema 分表，/2 的 identity_sha256 逐字不变（旧 v6 快照照旧可读）。
+SCHEMA_V7 = "hard-specs/3"
+SCHEMAS = (SCHEMA, SCHEMA_V7)
 TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
+#: builder 档序：xhard0（官方 test 的 hard 子集，原生分支、不回注）在最前；TIERS 只含新值四档不变
+#: （EXPECTED_CELLS、freeze_specs --tier 等依赖它）。
+XHARD0 = "xhard0"
+BUILDER_TIERS = (XHARD0, *TIERS)
+#: xhard0 每任务 12 局＝官方 test 元数据 difficulty=="hard" 的原 episode 3,7,…,47（只作核对值，筛选按 difficulty）
+XHARD0_PER_TASK = 12
+XHARD0_EPISODES = tuple(range(3, 48, 4))
 #: 历史 V4/V5 单档名（seed 规则 v5 只对它合法），保留以便核对旧快照。
 DIFFICULTY = "xhard"
 #: 评估步数上限按档（用户 U-6：沿用上次评估 1500/1700/2000/2600 以便对比）；
 #: 值抄自 scripts/eval/v4_eval.py::NEWVALUE_MAX_STEPS（阶段 1 cmp 留证后该文件随 scripts/eval/ 删除）。
-TIER_MAX_STEPS = {"xhard1": 1500, "xhard2": 1700, "xhard3": 2000, "xhard4": 2600}
+#: xhard0 取 1300，与官方 scripts/evaluation.py 的默认步数相同（v7 方案 §7.4）。
+TIER_MAX_STEPS = {"xhard0": 1300, "xhard1": 1500, "xhard2": 1700, "xhard3": 2000, "xhard4": 2600}
 #: 回注绑定：只记录不回注的观测值（SpecRecorder.record）允许的浮点差（用户 U-13 方案甲，红线 R22，不做参数）。
 RECORDED_FLOAT_TOL = 1e-5
 
@@ -43,7 +55,9 @@ RUNTIME = {
 SEED_RULE = {"offset": 4_000_000, "env_block": 100_000, "episode_stride": 100,
              "formula": "offset + env_code*env_block + episode*100 + attempt"}
 V6_SEED_OFFSETS = {"xhard4": 6_000_000, "xhard1": 8_000_000, "xhard2": 10_000_000, "xhard3": 12_000_000}
-SEED_PROFILES = ("v5", "v6")
+#: V7：四档同一 offset，同一候选号在四档里 seed 相同（母布局共用）；与 V5（4e6）、V6（6e6～12e6）段互不重叠
+V7_SEED_OFFSET = 14_000_000
+SEED_PROFILES = ("v5", "v6", "v7")
 MAX_ATTEMPTS = 100
 #: 16 任务规范序（与 scripts/injection-dev/seed_layout.py::ALL_TASKS 逐字相同；src 不反向依赖 scripts）
 ALL_TASKS = (
@@ -69,6 +83,20 @@ HEADER_OPTIONAL = {"drafts_sha256", "legacy_identity_sha256", "source_files", "e
                    "dedup_dropped", "demo_frames_out_of_band", "notes"}
 ROW_KEYS = {"record", *IDENTITY_ROW_KEYS, "spec", "selected", "tried", "initial_selected", "rollout"}
 ROLLOUT_STATUSES = ("ok", "failed")
+#: 身份键按 schema 分表（/2 原样，保证 v6 规格摘要逐字不变）
+IDENTITY_KEYS_BY_SCHEMA = {
+    SCHEMA: (IDENTITY_HEADER_KEYS, IDENTITY_ROW_KEYS),
+    SCHEMA_V7: (IDENTITY_HEADER_KEYS + ("layout_rule",), IDENTITY_ROW_KEYS + ("layout_parent",)),
+}
+
+
+def _schema_keys(schema: str) -> tuple[tuple[str, ...], tuple[str, ...], set[str], set[str]]:
+    if schema not in IDENTITY_KEYS_BY_SCHEMA:
+        raise SpecsError(f"specs 版本不符：{schema}")
+    header_keys, row_keys = IDENTITY_KEYS_BY_SCHEMA[schema]
+    header_required = (HEADER_REQUIRED - set(IDENTITY_HEADER_KEYS)) | set(header_keys)
+    row_required = (ROW_KEYS - set(IDENTITY_ROW_KEYS)) | set(row_keys)
+    return header_keys, row_keys, header_required, row_required
 
 
 class SpecsError(ValueError):
@@ -104,7 +132,9 @@ def seed_rule_for(difficulty: str = DIFFICULTY, profile: str = "v5") -> dict[str
         raise SpecsError(f"未知档位 {difficulty!r}，只支持 {TIERS}")
     if profile == "v6":
         return {**SEED_RULE, "offset": V6_SEED_OFFSETS[difficulty]}
-    raise SpecsError(f"{difficulty} 只支持 seed 规则 v6（收到 {profile!r}）")
+    if profile == "v7":
+        return {**SEED_RULE, "offset": V7_SEED_OFFSET}
+    raise SpecsError(f"{difficulty} 只支持 seed 规则 v6／v7（收到 {profile!r}）")
 
 
 def _known_seed_rule(difficulty: str, rule: dict[str, Any]) -> bool:
@@ -125,11 +155,12 @@ def seed_for(task: str, episode: int, attempt: int, rule: dict[str, Any] | None 
 
 
 def identity_sha256(header: dict[str, Any], rows: list[dict[str, Any]]) -> str:
-    """只盖签：header 规格键 + 每行签键；provenance、draw_stats、run_id 与结果段都不进。"""
+    """只盖签：header 规格键 + 每行签键；provenance、draw_stats、run_id 与结果段都不进。键集合按 header 的 schema 取。"""
+    header_keys, row_keys, _, _ = _schema_keys(header.get("schema", SCHEMA))
     ordered = sorted(rows, key=lambda r: (r["task"], int(r["candidate"])))
     return digest({
-        "header": {key: header[key] for key in IDENTITY_HEADER_KEYS},
-        "rows": [{key: row[key] for key in IDENTITY_ROW_KEYS} for row in ordered],
+        "header": {key: header[key] for key in header_keys},
+        "rows": [{key: row[key] for key in row_keys} for row in ordered],
     })
 
 
@@ -205,23 +236,68 @@ def _exact_keys(value: dict[str, Any], required: set[str], label: str, optional:
         raise SpecsError(f"{label} 字段集合不符：缺少 {sorted(missing)}，多出 {sorted(extra)}")
 
 
+def _check_layout_parent(row: dict[str, Any], tier: str, key) -> None:
+    """/3 单文件形态：xhard4 行 layout_parent 为 null、规格为 native-newvalue/2；低档行指向同候选的 xhard4 行、规格为 native-layered/3。"""
+    parent = row["layout_parent"]
+    kind = (row.get("spec") or {}).get("spec_kind")
+    if tier == "xhard4":
+        if parent is not None or kind != "native-newvalue/2":
+            raise SpecsError(f"xhard4 母布局行 layout_parent 必须为 null、规格为 native-newvalue/2：{key}")
+        return
+    if not isinstance(parent, dict) or set(parent) != {"tier", "candidate", "spec_sha256"} \
+            or parent["tier"] != "xhard4" or int(parent["candidate"]) != int(row["candidate"]) \
+            or not isinstance(parent["spec_sha256"], str):
+        raise SpecsError(f"派生行 layout_parent 形态不符：{key} {parent}")
+    if kind != "native-layered/3":
+        raise SpecsError(f"派生行规格必须为 native-layered/3：{key}")
+
+
+def load_specs_v7(root: str | Path, *, check_fingerprint: bool = True) -> dict[str, tuple]:
+    """读 v7 规格根（xhard{1..4}/specs.jsonl），另做跨文件校验：四档 seed 规则相同；派生行的
+    ``layout_parent.spec_sha256`` 等于 xhard4 同候选行的 ``spec_sha256``、seed 相同。返回 ``{tier: (header, rows)}``。"""
+    out = {tier: load_specs(Path(root) / tier / "specs.jsonl", check_fingerprint=check_fingerprint) for tier in TIERS}
+    rules = {tier: out[tier][0]["seed_rule"] for tier in TIERS}
+    if len({canonical_json(r) for r in rules.values()}) != 1 or any(out[t][0]["schema"] != SCHEMA_V7 for t in TIERS):
+        raise SpecsError("v7 规格根：四档 schema 须为 hard-specs/3 且 seed 规则相同")
+    parents = {(row["task"], int(row["candidate"])): row for row in out["xhard4"][1]}
+    for tier in ("xhard1", "xhard2", "xhard3"):
+        for row in out[tier][1]:
+            key = (row["task"], int(row["candidate"]))
+            mother = parents.get(key)
+            if mother is None or mother["spec_sha256"] != row["layout_parent"]["spec_sha256"] \
+                    or int(mother["seed"]) != int(row["seed"]):
+                raise SpecsError(f"{tier} 派生行找不到对应的 xhard4 母布局或摘要／seed 不符：{key}")
+    return out
+
+
 def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]]) -> None:
     """封套校验：字段集合、runtime、seed 规则、配置散列、逐行 seed 与规格散列、两个身份散列、每格正式局数上限。"""
-    _exact_keys(header, HEADER_REQUIRED, "specs header", HEADER_OPTIONAL)
-    if header["record"] != "header" or header["schema"] != SCHEMA:
-        raise SpecsError(f"specs 版本不符：{header.get('schema')}")
+    schema = header.get("schema")
+    _, _, header_required, row_required = _schema_keys(schema)
+    _exact_keys(header, header_required, "specs header", HEADER_OPTIONAL)
+    if header["record"] != "header":
+        raise SpecsError(f"specs 版本不符：{schema}")
     tier = header["difficulty"]
     if tier not in TIERS or header["runtime"] != RUNTIME:
         raise SpecsError("specs 档位或 runtime 不符")
     if not _known_seed_rule(tier, header["seed_rule"]):
         raise SpecsError("specs 的 seed 规则与档位不符")
+    if schema == SCHEMA_V7:
+        if header["seed_rule"] != seed_rule_for(tier, "v7"):
+            raise SpecsError("hard-specs/3 只接受 v7 seed 规则（四档同 offset）")
+        rule = header["layout_rule"]
+        if not isinstance(rule, dict) or rule.get("mode") != "shared" or rule.get("parent_tier") != "xhard4" \
+                or not isinstance(rule.get("whitelist_sha256"), str):
+            raise SpecsError(f"layout_rule 形态不符：{rule}")
     if header["sampling_config_sha256"] != digest(header["sampling_config"]):
         raise SpecsError("内嵌 sampling_config 散列不自洽")
     per_cell = int(header["delivery_per_cell"])
     seen, selected_count = set(), {}
     for row in rows:
-        _exact_keys(row, ROW_KEYS, "specs 行")
+        _exact_keys(row, row_required, "specs 行")
         key = (row["task"], int(row["candidate"]))
+        if schema == SCHEMA_V7:
+            _check_layout_parent(row, tier, key)
         if row["record"] != "spec" or key in seen or row["task"] not in header["tasks"]:
             raise SpecsError(f"重复或额外的规格行：{key}")
         seen.add(key)
@@ -269,10 +345,28 @@ def load_specs(path: str | Path, *, check_fingerprint: bool = True):
     return copy.deepcopy(header), copy.deepcopy(rows)
 
 
-def packaged_specs_path(tier: str) -> Path:
+#: 规格根覆盖（0928 方案第二部分 §1.1）：设了即从该目录读 xhard{1..4}/specs.jsonl，缺省读包内
+SPECS_ROOT_ENV = "ROBOMME_HARD_SPECS_ROOT"
+PACKAGED_SPECS_ROOT = Path(__file__).resolve().parents[1] / "env_metadata" / "test-hard"
+_ANNOUNCED_ROOTS: set[str] = set()
+
+
+def specs_root(override: str | Path | None = None) -> Path:
+    """规格根：显式参数 > 环境变量 ``ROBOMME_HARD_SPECS_ROOT`` > 包内。非包内时打印一次 ``SPECS_ROOT=``。"""
+    import os
+
+    chosen = override if override is not None else os.environ.get(SPECS_ROOT_ENV)
+    root = Path(chosen).resolve() if chosen else PACKAGED_SPECS_ROOT
+    if root != PACKAGED_SPECS_ROOT and str(root) not in _ANNOUNCED_ROOTS:
+        _ANNOUNCED_ROOTS.add(str(root))
+        print(f"SPECS_ROOT={root}", flush=True)
+    return root
+
+
+def packaged_specs_path(tier: str, root: str | Path | None = None) -> Path:
     if tier not in TIERS:
         raise SpecsError(f"未知档位 {tier!r}")
-    return Path(__file__).resolve().parents[1] / "env_metadata" / "test-hard" / tier / "specs.jsonl"
+    return specs_root(root) / tier / "specs.jsonl"
 
 
 # ── 回注绑定摘要（策略仓库唯一调用的函数；0927 计划 §4.2、R22）───────────────
@@ -320,6 +414,13 @@ def spec_binding(env) -> dict[str, Any]:
     consumed = set(recorder.consumed_paths())
     unused = [p for p in recorder.leaf_paths() if not any(p == c or p.startswith(c + ".") for c in consumed)]
     frozen = getattr(recorder, "_frozen", None)
+    # V7 分层（§1.1）：layout_hit＝本局命中 L／N 的取值点数（回注时应等于规格 layout_paths_hit 的条数）；
+    # layout_overridden＝其中注入值 ≠ 本档抽到值的条数（只报告）；layout_drift＝本档抽到值 ≠ layout_drawn 的条数（已计入 injected_mismatch）
+    layered_hit = getattr(recorder, "_layered_hit", None)
+    if layered_hit is not None:
+        layout_hit = len({item["path"] for item in recorder.trace if item.get("path") in layered_hit})
+    else:
+        layout_hit = len(getattr(recorder, "layout_paths_hit", ()) or ())
     return {
         "available": True,
         "mode": recorder.mode,
@@ -330,4 +431,9 @@ def spec_binding(env) -> dict[str, Any]:
         "recorded_drift": drift,
         "recorded_max_abs": drift_max,
         "unused": len(unused),
+        "layered": bool(getattr(recorder, "layered", False)),
+        "layout_hit": layout_hit,
+        "layout_paths_expected": len(layered_hit) if layered_hit is not None else None,
+        "layout_overridden": int(getattr(recorder, "layout_overridden", 0)),
+        "layout_drift": int(getattr(recorder, "layout_drift", 0)),
     }

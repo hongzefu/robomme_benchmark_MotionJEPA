@@ -28,7 +28,7 @@ sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
 
 from seed_layout import ALL_TASKS  # noqa: E402
 
-DEFAULT_RELEASE = "newtask-v6"
+DEFAULT_RELEASE = "newtask-v7"
 # 拆包阶段 2 起 scripts/configs/newtask-v4～v6 的快照已删（新值配置真源是包内 test-hard jsonl header）；
 # 缺省落点改到不进 git 的 artifacts/，不再在 scripts/configs/ 下重建快照
 DEFAULT_OUTPUT = REPO_ROOT / "artifacts" / "hard-split" / f"sampling_config.{DEFAULT_RELEASE}.json"
@@ -38,6 +38,8 @@ RELEASE_NOTES = {
     "newtask-v5": "V5 快照：原三档部分等于原值（V0 闸门逐字核验；v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），"
                   "xhard 条目为 V5 新值（docs/plans/0924-newtask-release-v5-plan.md）；V4 快照 scripts/configs/newtask-v4/ 已作废、原样留档",
     "newtask-v6": "V6 快照：原 easy/medium/hard 三档按 V0 核验；新值族 xhard1 < xhard2 < xhard3 < xhard4 四档条目为 V6 新值（docs/plans/0925-newtask-release-v6-plan.md）；V5 快照 scripts/configs/newtask-v5/ 原样留档",
+    "newtask-v7": "V7：原 easy/medium/hard 三档按 V0 核验；新值族 xhard1～xhard4 为 V7 定值（每档单点，0928-newtask-v7-xhard0-shared-layout-plan.md §3.2.2）；"
+                  "V6 值只存于包内 v6 规格 header 与冻结快照 scripts/configs/newtask-v6/v6-sampling-frozen.json，不再从源码提取",
 }
 
 

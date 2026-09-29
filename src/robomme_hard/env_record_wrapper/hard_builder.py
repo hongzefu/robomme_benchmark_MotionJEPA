@@ -40,19 +40,46 @@ _RUNTIME_KEYS = ("obs_mode", "control_mode", "render_mode", "reward_mode")
 
 
 @functools.lru_cache(maxsize=None)
-def _tier_specs(tier: str):
-    """每档包内 jsonl 只读一次并做完整封套校验；返回值只读使用，不得修改。"""
-    return hard_specs.load_specs(hard_specs.packaged_specs_path(tier))
+def _tier_specs(tier: str, root: str):
+    """每档 jsonl（包内或规格根覆盖）只读一次并做完整封套校验；返回值只读使用，不得修改。"""
+    return hard_specs.load_specs(hard_specs.packaged_specs_path(tier, root))
 
 
-def _test_hard_entries(env_id: str) -> List[Dict[str, Any]]:
+def _xhard0_entries(env_id: str, metadata_index: Dict) -> List[Dict[str, Any]]:
+    """xhard0＝官方 test 元数据里本任务 ``difficulty=="hard"`` 的全部记录，按原 episode 升序（v7 方案第二部分 §1.1）。
+
+    seed 逐条照抄元数据、运行难度传 ``"hard"``，无 ``sampling_config``、无规格（走官方原生 hard 分支）。
+    与 ``scripts/configs/newtask-v7/xhard0_manifest.json`` 的逐条核对在 XHARD0_IDENTITY 闸门里做（本包不反向依赖 scripts/）。
+    """
+    hard = sorted(
+        (record for (task, _ep), record in metadata_index.items() if task == env_id and record.get("difficulty") == "hard"),
+        key=lambda record: int(record["episode"]),
+    )
+    episodes = tuple(int(record["episode"]) for record in hard)
+    seeds = [int(record["seed"]) for record in hard]
+    if episodes != hard_specs.XHARD0_EPISODES or len(set(seeds)) != len(seeds):
+        raise ValueError(f"test-hard {env_id}@xhard0：官方 test hard 子集应为原 episode {hard_specs.XHARD0_EPISODES}、seed 唯一，"
+                         f"实际 episode {episodes}")
+    return [{
+        "tier": hard_specs.XHARD0,
+        "row": {"seed": seed, "candidate": None, "source_episode": episode, "spec_sha256": None, "spec": None},
+        "sampling_config": None,
+        "runtime": dict(hard_specs.RUNTIME),
+        "recovery_rule": None,
+    } for episode, seed in zip(episodes, seeds)]
+
+
+def _test_hard_entries(env_id: str, xhard0: List[Dict[str, Any]], root: str) -> List[Dict[str, Any]]:
     if env_id not in hard_specs.ALL_TASKS:
         raise ValueError(f"test-hard 不含环境 {env_id!r}")
-    entries: List[Dict[str, Any]] = []
+    entries: List[Dict[str, Any]] = list(xhard0)
     for tier in hard_specs.TIERS:
-        header, rows = _tier_specs(tier)
+        header, rows = _tier_specs(tier, root)
         chosen = sorted((row for row in rows if row["task"] == env_id and hard_specs.delivered(row)),
                         key=lambda row: int(row["candidate"]))
+        # 包内正式规格每格 20 局；规格根覆盖（冒烟／换包前核对）只要求各档自洽
+        if Path(root) == hard_specs.PACKAGED_SPECS_ROOT and int(header["delivery_per_cell"]) != 20:
+            raise ValueError(f"test-hard {tier} 的 delivery_per_cell={header['delivery_per_cell']}，应为 20")
         expected = int(header["delivery_per_cell"]) if (env_id, tier) in hard_specs.EXPECTED_CELLS else 0
         if len(chosen) != expected:
             raise ValueError(f"test-hard {env_id}@{tier} 正式局 {len(chosen)} 行，55 格表要求恰好 {expected} 行")
@@ -78,10 +105,14 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
         gui_render: bool = False,
         override_metadata_path: Optional[Union[str, Path]] = None,
         max_steps: int = 10000,
+        specs_root: Optional[Union[str, Path]] = None,
     ):
         if dataset not in _ALLOWED_DATASETS:
             raise ValueError(f"Unsupported dataset '{dataset}'. Allowed datasets: {sorted(_ALLOWED_DATASETS)}")
+        if dataset == TEST_HARD and override_metadata_path is not None:
+            raise ValueError("test-hard 的 xhard0 只读官方 test 元数据，不接受 override_metadata_path")
         self._episode_map: Optional[Dict[int, Dict[str, Any]]] = None
+        self._specs_root: Optional[Path] = None
         super().__init__(
             env_id,
             dataset="test" if dataset == TEST_HARD else dataset,
@@ -92,8 +123,12 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
         )
         self.dataset = dataset
         if dataset == TEST_HARD:
+            # 父类按 dataset="test" 读了官方 test 元数据：先取出 xhard0（hard 子集）再清空（v7 §1.1）
+            xhard0 = _xhard0_entries(env_id, self.metadata_index)
             self.metadata_index = {}
-            self._episode_map = dict(enumerate(_test_hard_entries(env_id)))
+            root = hard_specs.specs_root(specs_root)
+            self._specs_root = None if root == hard_specs.PACKAGED_SPECS_ROOT else root
+            self._episode_map = dict(enumerate(_test_hard_entries(env_id, xhard0, str(root))))
 
     # ── 旧 V4 快照的薄包装（episode 号＝候选序号）；新代码一律用 dataset="test-hard" ──
     @classmethod
@@ -160,14 +195,24 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
                     "spec_sha256": None, "source_run": None}
         entry = self._entry(episode)
         row = entry["row"]
-        return {
-            "episode": int(episode),
-            "tier": entry["tier"],
-            "candidate": int(row["candidate"]),
-            "seed": int(row["seed"]),
-            "spec_sha256": row["spec_sha256"],
-            "source_run": (row.get("rollout") or {}).get("source_run"),
-        }
+        if entry["tier"] == hard_specs.XHARD0:
+            identity = {"episode": int(episode), "tier": hard_specs.XHARD0, "candidate": None, "seed": int(row["seed"]),
+                        "source_dataset": "test", "source_episode": int(row["source_episode"]),
+                        "spec_sha256": None, "source_run": None}
+        else:
+            identity = {
+                "episode": int(episode),
+                "tier": entry["tier"],
+                "candidate": int(row["candidate"]),
+                "seed": int(row["seed"]),
+                "spec_sha256": row["spec_sha256"],
+                "source_run": (row.get("rollout") or {}).get("source_run"),
+            }
+            if "layout_parent" in row:
+                identity["layout_parent"] = row["layout_parent"]
+        if self._specs_root is not None:
+            identity["specs_root"] = str(self._specs_root)
+        return identity
 
     def get_episode_num(self) -> int:
         if self._episode_map is None:
@@ -176,6 +221,9 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
 
     def _hard_env_kwargs(self, episode_idx: int) -> Dict[str, Any]:
         entry = self._entry(episode_idx)
+        if entry["tier"] == hard_specs.XHARD0:
+            # xhard0 走官方原生 hard 分支：只有 seed 与 difficulty="hard"，无 sampling_config、无规格（R2、R9）
+            return {"seed": int(entry["row"]["seed"]), "difficulty": "hard"}
         runtime = dict(entry["runtime"])
         mine = {"obs_mode": "rgb+depth+segmentation", "control_mode": "pd_joint_pos",
                 "render_mode": self.render_mode, "reward_mode": "dense"}

@@ -165,3 +165,21 @@ def test_draw_rows_carry_tier_and_rule() -> None:
     assert _draw.merge_task_rows(["PatternLock"], {"PatternLock": rows}, rule) == rows
     with pytest.raises(V.SpecsError):
         _draw.merge_task_rows(["PatternLock"], {"PatternLock": rows})  # 用错规则必须拒绝
+
+
+def test_v7_seed_rule_disjoint_from_v5_v6() -> None:
+    """V7（0928 方案第二部分 §1.1）：四档同一 offset 14e6，与 V5（4e6）和 V6 四档（6e6～12e6）的 seed 集合互不相交。"""
+    from seed_layout import ALL_TASKS  # noqa: PLC0415
+
+    grid = [(t, e, a) for t in ALL_TASKS for e in range(10) for a in range(60)]
+    old = {V.seed_for(t, e, a) for t, e, a in grid}
+    for tier in TIERS:
+        rule = V.seed_rule_for(tier, "v6")
+        old |= {V.seed_for(t, e, a, rule) for t, e, a in grid}
+    rules = {tier: V.seed_rule_for(tier, "v7") for tier in TIERS}
+    assert all(rule == rules["xhard4"] for rule in rules.values())
+    assert rules["xhard4"]["offset"] == V.V7_SEED_OFFSET == 14_000_000
+    v7 = {V.seed_for(t, e, a, rules["xhard4"]) for t, e, a in grid}
+    assert not v7 & old
+    for tier in TIERS:
+        assert V._known_seed_rule(tier, rules[tier])

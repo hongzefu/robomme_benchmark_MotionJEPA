@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+"""轻量测试：V7 seed 规则（0928 方案第二部分 §1.1）。
+
+* v7 四档同一 offset（14e6）：同一 (task, episode, attempt) 在四档里 seed 相同（母布局共用）；
+* v7 的 seed 区间与 V5（4e6）、V6 四档（6e6／8e6／10e6／12e6）在全部合法 episode／attempt 上互不重叠；
+* ``SEED_PROFILES`` 含 v7；xhard0 与历史 ``xhard`` 不接受 v7 规则。
+
+    uv run --no-sync python -m pytest tests/lightweight/test_v7_seed_rule.py -q
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from tests._shared.repo_paths import find_repo_root  # noqa: E402
+
+REPO_ROOT = find_repo_root(__file__)
+if str(REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from robomme_hard.env_record_wrapper import hard_specs as V  # noqa: E402
+
+#: seed = offset + env_code*env_block + episode*100 + attempt；episode*100 必须小于 env_block，故 episode ∈ [0, 1000)
+MAX_EPISODE = V.SEED_RULE["env_block"] // V.SEED_RULE["episode_stride"]
+
+
+def _interval(rule):
+    """该规则在 16 任务 × 全部合法 episode／attempt 上的 seed 闭区间。"""
+    lo = V.seed_for(V.ALL_TASKS[0], 0, 0, rule)
+    hi = V.seed_for(V.ALL_TASKS[-1], MAX_EPISODE - 1, V.MAX_ATTEMPTS - 1, rule)
+    return lo, hi
+
+
+def test_v7四档同一规则且同候选同seed():
+    assert "v7" in V.SEED_PROFILES
+    rules = [V.seed_rule_for(tier, "v7") for tier in V.TIERS]
+    assert all(rule == rules[0] for rule in rules)
+    assert rules[0] == {**V.SEED_RULE, "offset": V.V7_SEED_OFFSET}
+    assert V.V7_SEED_OFFSET == 14_000_000
+    for task in ("BinFill", "PatternLock", "StopCube"):
+        for episode, attempt in ((0, 0), (19, 3), (57, 99)):
+            seeds = {V.seed_for(task, episode, attempt, V.seed_rule_for(tier, "v7")) for tier in V.TIERS}
+            assert len(seeds) == 1
+
+
+def test_v7区间与v5和v6互不重叠():
+    v7 = _interval(V.seed_rule_for("xhard4", "v7"))
+    others = {"v5": _interval(V.SEED_RULE)}
+    others.update({f"v6/{tier}": _interval(V.seed_rule_for(tier, "v6")) for tier in V.TIERS})
+    for name, (lo, hi) in others.items():
+        assert hi < v7[0] or v7[1] < lo, (name, (lo, hi), v7)
+    # 单任务内 episode*100+attempt 不越过 env_block：同规则下不同任务互不重叠
+    rule = V.seed_rule_for("xhard1", "v7")
+    per_task = [(V.seed_for(t, 0, 0, rule), V.seed_for(t, MAX_EPISODE - 1, V.MAX_ATTEMPTS - 1, rule)) for t in V.ALL_TASKS]
+    for (_, hi), (lo, _) in zip(per_task, per_task[1:]):
+        assert hi < lo
+
+
+def test_v7规则被档位识别_旧档名不接受v7():
+    rule = V.seed_rule_for("xhard2", "v7")
+    for tier in V.TIERS:
+        assert V._known_seed_rule(tier, rule)
+    with pytest.raises(V.SpecsError):
+        V.seed_rule_for(V.DIFFICULTY, "v7")  # 历史单档 xhard 只认 v5
+    with pytest.raises(V.SpecsError):
+        V.seed_rule_for(V.XHARD0, "v7")  # xhard0 照抄官方元数据 seed，没有 seed 规则
+    with pytest.raises(V.SpecsError):
+        V.seed_rule_for("xhard3", "v8")
+    # v6 各档 offset 互不相同，v7 与任何 v6 档都不相等
+    assert all(V.seed_rule_for(tier, "v6") != rule for tier in V.TIERS)

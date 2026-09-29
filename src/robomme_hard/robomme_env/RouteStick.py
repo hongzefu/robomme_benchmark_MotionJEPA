@@ -234,22 +234,23 @@ class RouteStick(BaseEnv):
     # 均匀抽样均值 30 s；执行段 50·L（+1 初始帧），L=21 时 1050 步，在评估 1301 步预算内（截断点 L≥27）。
     # 抽样点与顺序不变，只改值域；xhard 实际消费的是 decision.xhard.segment_count_range（冻进 header），
     # 这里的 length 是它的默认来源。
+    # V7 定值：段数 10/13/16/19（0928 方案 §3.2.2）
     config_xhard4 = {
-    'length':[17,21],
+    'length':[19,19],
     'backtrack':True,
     }
 
     # V6（计划 2.12）：hard 与 xhard 之间插入三档，布局与游走规则沿用 xhard，只改段数 L；backtrack 恒 True
     config_xhard1 = {
-    'length':[8,10],
+    'length':[10,10],
     'backtrack':True,
     }
     config_xhard2 = {
-    'length':[11,13],
+    'length':[13,13],
     'backtrack':True,
     }
     config_xhard3 = {
-    'length':[14,16],
+    'length':[16,16],
     'backtrack':True,
     }
 

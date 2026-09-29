@@ -93,7 +93,8 @@ NATIVE_SAMPLING = {
 
 def native_blocks(cls, *, release="newtask-v6"):
     """本环境的 ``(decision, native)`` 原值块；外部导出与内部解析共用同一份。"""
-    if release not in {"newtask-v4", "newtask-v5", "newtask-v6"}:
+    # newtask-v7：与 v6 同一解析路径，取当前类常量（即 V7 定值；0928 方案 R3）
+    if release not in {"newtask-v4", "newtask-v5", "newtask-v6", "newtask-v7"}:
         raise ValueError(f"未知 sampling_config 发布版本：{release}")
     native = copy.deepcopy(NATIVE_SAMPLING)
     # 方案第二节把 color 列在 native（「规则不改，只外部生成本局值」），不是 decision：

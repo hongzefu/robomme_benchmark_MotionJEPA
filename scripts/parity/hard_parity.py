@@ -46,14 +46,22 @@ RUNNER = ROOT / "scripts" / "parity" / "train_split_runner.py"
 GENERATE_H5 = ROOT / "scripts" / "injection-dev" / "generate_h5.py"
 VENDOR = ROOT / "scripts" / "parity" / "official"
 TOLERANCES = ROOT / "scripts" / "configs" / "hard-parity-tolerances.json"
-LOCAL_H5_ROOT = ROOT / "artifacts" / "newtask-v6" / "hard-split" / "h5"
-COMPARE_ROOT = ROOT / "artifacts" / "newtask-v6" / "hard-split" / "compare"
+# v7 起默认目录（v7 方案第二部分 §1.5）；compare／publish／binding 另可用 --h5-root／--compare-root 显式指定
+LOCAL_H5_ROOT = ROOT / "artifacts" / "newtask-v7" / "parity" / "h5"
+COMPARE_ROOT = ROOT / "artifacts" / "newtask-v7" / "parity" / "compare"
+ANCHORS = ROOT / "docs" / "validation" / "parity-anchors.json"
+XHARD0_MANIFEST = ROOT / "scripts" / "configs" / "newtask-v7" / "xhard0_manifest.json"
 BUCKET = "HongzeFu/robomme-hard-parity"
 HF = ["uvx", "--from", "huggingface_hub==1.8.0", "--with", "click", "hf"]
-SIDES = ("O", "P", "H")
-PAIRS = ("O:P", "P:H", "O:H")
-TIERS = ("native", "xhard")
+#: H2＝v7 正式局的第二次生成（gen2），与 H（gen1）比对 PARITY_V7_TWICE
+SIDES = ("O", "P", "H", "H2")
+PAIRS = ("O:P", "P:H", "O:H", "H:H2")
+#: native＝原三档 144；xhard＝v6 四档回归 165；xhard0＝官方 test 的 hard 192；v7＝v7 正式局 1100
+TIERS = ("native", "xhard", "xhard0", "v7")
 TIER_NAMES = ("xhard1", "xhard2", "xhard3", "xhard4")
+XHARD0_PER_TASK = 12
+XHARD0_EPISODES = tuple(range(3, 48, 4))
+SHAPES = {"native": "16x3x3", "xhard": "13x3x3+16x3", "xhard0": "16x1x12", "v7": "13x3x20+16x1x20"}
 # 容差自定规则（用户 U-22，第二部分 §3.4）：最大值 × 1.5，带下界与合理性上界
 TOL_RULES = {
     "action_max": {"floor": 0.005, "ceiling": 0.05},
@@ -116,13 +124,30 @@ def native_rows(manifest: Path) -> list[dict[str, Any]]:
 
 
 def xhard_rows(manifest: Path) -> list[dict[str, Any]]:
-    payload = json.loads(manifest.read_text())
-    items = payload.get("successes", payload)
-    return [{"task": s["task"], "tier": s["difficulty"], "episode": int(s["episode"]), "seed": int(s["seed"])} for s in items]
+    """v6 xhard 身份：S4 交付 JSON（``successes``）、身份列表，或某侧的 ``identities.jsonl``；档名键接受 difficulty 或 tier。"""
+    if manifest.suffix == ".jsonl":
+        items = [json.loads(t) for t in manifest.read_text().splitlines() if t.strip()]
+    else:
+        payload = json.loads(manifest.read_text())
+        items = payload.get("successes", payload.get("rows", payload)) if isinstance(payload, dict) else payload
+    return [{"task": s["task"], "tier": s.get("difficulty", s.get("tier")), "episode": int(s["episode"]),
+             "seed": int(s["seed"])} for s in items]
+
+
+def v7_rows(delivery: Path) -> list[dict[str, Any]]:
+    """v7 正式局：gen1 的 ``delivery.json``（行键 task/tier/candidate/seed/episode）。"""
+    payload = json.loads(delivery.read_text())
+    rows = payload["rows"] if isinstance(payload, dict) else payload
+    return [{"task": r["task"], "tier": r.get("tier", r.get("difficulty")), "episode": int(r["episode"]),
+             "seed": int(r["seed"]), "candidate": r.get("candidate")} for r in rows]
 
 
 def rows_for(tier: str, manifest: Path) -> list[dict[str, Any]]:
-    return native_rows(manifest) if tier == "native" else xhard_rows(manifest)
+    if tier in ("native", "xhard0"):
+        return native_rows(manifest)
+    if tier == "v7":
+        return v7_rows(manifest)
+    return xhard_rows(manifest)
 
 
 def ident(row: dict[str, Any]) -> tuple[str, str, int]:
@@ -160,6 +185,8 @@ class Mover(threading.Thread):
                 "error_type": record.get("error_type"), "env_package": record.get("env_package"),
                 "env_module": record.get("env_module"), "wrapper_modules": record.get("wrapper_modules"),
                 "worker": self.meta.get("worker"), "robomme_module": self.meta.get("robomme_module"),
+                "recovery_mode": record.get("recovery_mode"), "builder_route": record.get("builder_route"),
+                "builder_episode": record.get("builder_episode"), "builder_tier": record.get("builder_tier"),
                 "path": None, "bytes": None, "sha256": None, "frames": None, "media": []}
         if h5s:
             h5 = h5s[0]
@@ -223,7 +250,11 @@ def cmd_generate(args) -> int:
         raise ParityError(f"正式 generate 只许在 A40 上跑：当前 {facts}")
     rows = rows_for(args.tier, args.manifest)
     if args.tier == "xhard" and args.side != "H":
-        raise ParityError("xhard 只生成 H 侧（P 侧复用 S4 交付存档）")
+        raise ParityError("xhard 只生成 H 侧（P 侧复用 parity-anchor-v6 登记的缓存）")
+    if args.tier == "v7" and args.side not in ("H2",):
+        raise ParityError("v7 经 hard_parity 只生成 H2（gen2）；gen1 由 generate_h5 --mode continue 出，再 import-delivery 登记为 H")
+    if args.tier == "xhard0" and args.side not in ("O", "H"):
+        raise ParityError("xhard0 只生成 O、H 两侧（首次，无 P）")
     if args.smoke:
         rows = rows[: args.smoke]
     out = args.out
@@ -234,7 +265,7 @@ def cmd_generate(args) -> int:
     env.update(PYTHONUNBUFFERED="1", OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
     env.pop("PYTHONPATH", None)
     meta: dict[str, Any] = {}
-    if args.tier == "native":
+    if args.tier in ("native", "xhard0"):
         jobs = [{"task": r["task"], "episode": r["episode"], "seed": r["seed"], "difficulty": r["tier"],
                  "worker_dir": str(out / "episodes" / f"{r['task']}_episode_{r['episode']}")} for r in rows]
         runner_dir = out / "_runner"
@@ -243,10 +274,17 @@ def cmd_generate(args) -> int:
         command = [sys.executable, str(RUNNER), "--official-root", str(VENDOR), "--src-root", str(args.src_root),
                    "--jobs-json", str(runner_dir / "jobs.json"), "--results-json", str(runner_dir / "results.json"),
                    "--workers", str(args.workers), "--gpu", str(args.gpu)]
+        if args.tier == "xhard0":
+            # xhard0 身份来自官方 test 元数据 hard 子集（train_metadata 会判不符），两侧同一复核（v7 §1.5）
+            command += ["--identity-source", "test_metadata", "--xhard0-manifest", str(args.manifest)]
         if args.side == "H":
             command.append("--force-mirror")
             env["ROBOMME_ENV_PACKAGE"] = "robomme_hard"
             meta["worker"] = "train_split_worker.run_one"
+            if args.tier == "xhard0":
+                # H 侧 gym.make 实参取自 robomme_hard 的 test-hard builder 的 xhard0 条目（R9）
+                command += ["--builder-route", "test-hard"]
+                meta["builder_route"] = "test-hard"
         else:
             env["ROBOMME_ENV_PACKAGE"] = "robomme"
             meta["worker"] = "official._worker"
@@ -259,6 +297,12 @@ def cmd_generate(args) -> int:
         command = [sys.executable, str(GENERATE_H5), "--mode", "replay", "--identities", str(identities),
                    "--output", str(out), "--workers", str(args.workers), "--gpu", str(args.gpu),
                    "--pkg", "robomme_hard", "--src-root", str(args.src_root)]
+        if args.tier == "v7":
+            if args.specs_root is None:
+                raise ParityError("--tier v7 须给 --specs-root（v7 四档规格根，gen2 按 gen1 交付清单重放）")
+            command += ["--specs", str(args.specs_root)]
+        if args.dev_smoke:
+            command.append("--dev-smoke")
         if args.resume:
             command.append("--resume")
         meta["worker"] = "train_split_worker.run_one"
@@ -306,7 +350,7 @@ def side_prefix(side: str, tier: str, manifest: dict[str, Any]) -> str:
 
 
 def cmd_publish(args) -> int:
-    local = args.local or (LOCAL_H5_ROOT / f"{args.side}-{args.tier}")
+    local = args.local or (args.h5_root / f"{args.side}-{args.tier}")
     ident_path = local / "identities.jsonl"
     if not ident_path.exists():
         raise ParityError(f"{ident_path} 不存在")
@@ -504,16 +548,157 @@ def calibrate(pairs: list[dict[str, Any]]) -> tuple[bool, dict[str, Any]]:
     return not ceiling_hit, {"payload": payload, "ceiling_hit": ceiling_hit}
 
 
+def _anchor_registry() -> dict[str, Any]:
+    return json.loads(ANCHORS.read_text()) if ANCHORS.is_file() else {"schema": "parity-anchors/1", "anchors": {}}
+
+
+def _git_tag_commit(tag: str) -> str | None:
+    proc = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--verify", "--quiet", f"{tag}^{{commit}}"],
+                          capture_output=True, text=True)
+    return proc.stdout.strip() or None
+
+
+def _identities_digest(side_dir: Path) -> tuple[str, int, list[dict[str, Any]]]:
+    lines = side_lines(side_dir)
+    body = "\n".join(sorted(f"{l.get('sha256')}  {l.get('path')}" for l in lines))
+    return hashlib.sha256(body.encode()).hexdigest(), len(lines), lines
+
+
+def anchor_check(tag: str, h5_root: Path, tiers: list[str] | None = None, *, rehash: bool = True) -> tuple[bool, str, dict]:
+    """PARITY_ANCHOR：tag 解析出的 commit == 登记 commit；每段逐局 sha 重算 == identities 与登记摘要。"""
+    entry = _anchor_registry()["anchors"].get(tag)
+    if entry is None:
+        return False, f"PARITY_ANCHOR=FAIL tag={tag} reason=未登记", {}
+    problems, cached, sha_bad = [], [], 0
+    resolved = _git_tag_commit(tag)
+    if resolved is None or not resolved.startswith(entry["commit"]):
+        problems.append(f"tag 指向 {resolved}，登记 {entry['commit']}")
+    for tier, seg in entry["segments"].items():
+        if tiers and tier not in tiers:
+            continue
+        side_dir = h5_root / seg["dir"]
+        if not (side_dir / "identities.jsonl").is_file():
+            problems.append(f"{tier} 段缺本机拉回目录 {side_dir}")
+            continue
+        digest_now, n, lines = _identities_digest(side_dir)
+        if digest_now != seg["identities_sha256"] or n != seg["rows"]:
+            problems.append(f"{tier} 段 identities 摘要／行数与登记不符")
+        if rehash:
+            for line in lines:
+                if line.get("path"):
+                    sha_bad += int(sha256_file(side_dir / line["path"]) != line["sha256"])
+        cached.append(str(n))
+    ok = not problems and sha_bad == 0
+    line = (f"PARITY_ANCHOR={'PASS' if ok else 'FAIL'} tag={tag} commit={entry['commit'][:12]} "
+            f"cached={'+'.join(cached)} sha_bad={sha_bad} gpu={entry.get('gpu_model')} driver={entry.get('driver')}"
+            + ("" if ok else f" problems={problems[:3]}"))
+    return ok, line, entry
+
+
+def cmd_anchor(args) -> int:
+    if args.action == "check":
+        ok, line, _ = anchor_check(args.tag, args.h5_root)
+        print(line, flush=True)
+        return 0 if ok else 1
+    registry = _anchor_registry()
+    if args.tag in registry["anchors"] and not args.replace:
+        raise ParityError(f"锚点 {args.tag} 已登记；锚点不移动（R5），要换锚点就另打新 tag")
+    segments, gpus = {}, set()
+    for item in args.segments.split(","):
+        tier, name = item.split(":", 1)
+        side_dir = args.h5_root / name
+        digest_now, n, lines = _identities_digest(side_dir)
+        launches = sorted(side_dir.glob("launch-*.json"))
+        first = json.loads(launches[0].read_text()) if launches else {}
+        manifest = json.loads((side_dir / "manifest.json").read_text()) if (side_dir / "manifest.json").is_file() else {}
+        gpu = (first.get("gpu_model") or manifest.get("gpu_model"), first.get("driver") or manifest.get("driver"))
+        gpus.add(gpu)
+        segments[tier] = {
+            "dir": name, "bucket_prefix": args.bucket_prefix.get(tier) if isinstance(args.bucket_prefix, dict) else None,
+            "rows": n, "identities_sha256": digest_now, "gpu_model": gpu[0], "driver": gpu[1],
+            "generated_at_commit": first.get("src_commit") or manifest.get("src_commit"),
+            "source_side": args.source_side,
+            "worker": sorted({l.get("worker") for l in lines} - {None}),
+            "env_module_prefix": sorted({str(l.get("env_module") or "").split(".")[0] for l in lines} - {""}),
+        }
+    if len(gpus) != 1:
+        raise ParityError(f"锚点各段 GPU／驱动不一致：{gpus}（D-13）")
+    gpu_model, driver = gpus.pop()
+    registry["anchors"][args.tag] = {"commit": args.commit, "gpu_model": gpu_model, "driver": driver,
+                                     "segments": segments, "equivalence": args.equivalence, "registered_at": now()}
+    ANCHORS.parent.mkdir(parents=True, exist_ok=True)
+    ANCHORS.write_text(json.dumps(registry, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+    ok, line, _ = anchor_check(args.tag, args.h5_root)
+    print(line, flush=True)
+    return 0 if ok else 1
+
+
+def cmd_import_delivery(args) -> int:
+    """gen1 → H 侧：把 delivery.json 与逐局 h5 登记成 ``<h5-root>/H-v7/identities.jsonl``（只读 symlink，sha 重算核对）。"""
+    payload = json.loads(args.delivery.read_text())
+    out = args.h5_root / f"H-{args.tier}"
+    if out.exists():
+        raise ParityError(f"{out} 已存在")
+    out.mkdir(parents=True)
+    base = args.delivery.parent
+    lines, bad = [], 0
+    for r in payload["rows"]:
+        src = (base / r["path"]).resolve()
+        rel = Path("episodes") / r["tier"] / f"{r['task']}_episode_{r['episode']}" / "hdf5_files" / src.name
+        (out / rel).parent.mkdir(parents=True, exist_ok=True)
+        (out / rel).symlink_to(src)
+        actual = sha256_file(src)
+        bad += int(actual != r["h5_sha256"])
+        lines.append({"side": "H", "tier": r["tier"], "task": r["task"], "episode": int(r["episode"]),
+                      "seed": int(r["seed"]), "candidate": r.get("candidate"), "success": True, "error_type": None,
+                      "env_package": "robomme_hard", "env_module": r.get("env_module"), "wrapper_modules": None,
+                      "worker": "train_split_worker.run_one", "robomme_module": None, "recovery_mode": r.get("recovery_mode"),
+                      "path": str(rel), "bytes": src.stat().st_size, "sha256": actual, "frames": r.get("frames"),
+                      "media": [], "source": str(args.delivery)})
+    (out / "identities.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False, sort_keys=True) + "\n" for l in lines))
+    for launch in sorted(base.glob("launch-*.json")):
+        shutil.copy2(launch, out / launch.name)
+    status = "PASS" if bad == 0 and lines else "FAIL"
+    print(f"IMPORT_DELIVERY={status} tier={args.tier} rows={len(lines)} sha_mismatch={bad} out={out}", flush=True)
+    return 0 if status == "PASS" else 1
+
+
+def _classify_over(record: dict[str, Any]) -> str:
+    """B3（用户 2026-09-29 定「按首个分叉步判」）：setup／结构／成功与否都相等且 first_divergence>0 → noise；否则 fail。"""
+    fd = record.get("first_divergence")
+    ok_layers = bool(record.get("setup_equal")) and bool(record.get("schema_equal")) and record.get("success_same", False)
+    return "noise" if ok_layers and fd is not None and int(fd) > 0 else "fail"
+
+
 def cmd_compare(args) -> int:
     left_side, right_side = args.pair.split(":")
     if args.calibrate and args.pair != "O:P":
         raise ParityError("--calibrate 只允许 O:P（R21）")
     rows = rows_for(args.tier, args.manifest)
-    left_dir = args.left or LOCAL_H5_ROOT / f"{left_side}-{args.tier}"
-    right_dir = args.right or LOCAL_H5_ROOT / f"{right_side}-{args.tier}"
-    out = COMPARE_ROOT / f"{left_side}{right_side}-{args.tier}"
+    anchor_entry = None
+    dirs = {}
+    for side in (left_side, right_side):
+        explicit = args.left if side == left_side else args.right
+        if explicit is not None:
+            dirs[side] = explicit
+        elif side == "P":
+            if not args.p_anchor:
+                raise ParityError("P 侧须给 --p-anchor <tag>（固定锚点，D-11）")
+            ok, line, anchor_entry = anchor_check(args.p_anchor, args.h5_root, [args.tier])
+            print(line, flush=True)
+            if not ok:
+                return 1
+            if args.tier not in anchor_entry["segments"]:
+                raise ParityError(f"锚点 {args.p_anchor} 没有 {args.tier} 段")
+            dirs[side] = args.h5_root / anchor_entry["segments"][args.tier]["dir"]
+        else:
+            dirs[side] = args.h5_root / f"{side}-{args.tier}"
+    left_dir, right_dir = dirs[left_side], dirs[right_side]
+    out = args.compare_root / f"{left_side}{right_side}-{args.tier}"
+    if args.run_name:
+        out = out / args.run_name
     if out.exists() and not args.overwrite_compare:
-        raise ParityError(f"{out} 已存在")
+        raise ParityError(f"{out} 已存在；另起子目录用 --run-name")
     out.mkdir(parents=True, exist_ok=True)
     left, left_problems = self_check(left_dir, rows)
     right, right_problems = self_check(right_dir, rows)
@@ -530,8 +715,8 @@ def cmd_compare(args) -> int:
         metrics = {key: future.result() for key, future in jobs.items()}
     tol = None if args.calibrate else load_tolerances()
     counts = {k: 0 for k in ("identity_equal", "setup_equal", "schema_equal", "success_equal", "both_success",
-                             "sha_equal", "frames_equal", "binding_ok")}
-    tol_hits, pair_rows = [], []
+                             "both_fail", "sha_equal", "frames_equal", "binding_ok", "recovery_mismatch")}
+    tol_hits, pair_rows, both_fail_rows = [], [], []
     for key in keys:
         a, b, m = left.get(key), right.get(key), metrics.get(key, {})
         record = {"task": key[0], "tier": key[1], "seed": key[2], "left": a, "right": b,
@@ -540,36 +725,49 @@ def cmd_compare(args) -> int:
         counts["identity_equal"] += int(present)
         success_a = bool(a and a["success"] and a.get("path"))
         success_b = bool(b and b["success"] and b.get("path"))
-        counts["success_equal"] += int(present and success_a == success_b)
+        record["success_same"] = present and success_a == success_b
+        counts["success_equal"] += int(record["success_same"])
         counts["both_success"] += int(success_a and success_b)
+        if present and not success_a and not success_b:
+            # 两侧同样没产出（如官方 test 的 hard seed 两侧同因规划失败）：单列，不当作不一致（v7 §1.5）
+            counts["both_fail"] += 1
+            both_fail_rows.append({"key": key, "left": a.get("error_type"), "right": b.get("error_type")})
+        rec_a, rec_b = (a or {}).get("recovery_mode"), (b or {}).get("recovery_mode")
+        if present and rec_a is not None and rec_b is not None and rec_a != rec_b:
+            counts["recovery_mismatch"] += 1
         counts["setup_equal"] += int(bool(m.get("setup_equal")) and m.get("error") is None)
         counts["schema_equal"] += int(bool(m.get("schema_equal")) and bool(m.get("contiguous")))
         counts["sha_equal"] += int(present and a.get("sha256") is not None and a.get("sha256") == b.get("sha256"))
         counts["frames_equal"] += int(m.get("frames_diff") == 0)
-        binding_ok = present and all(_binding_ok(side, line) for side, line in ((left_side, a), (right_side, b)))
+        binding_ok = present and all(_binding_ok(side, line, anchor_entry, args.tier)
+                                     for side, line in ((left_side, a), (right_side, b)))
         counts["binding_ok"] += int(binding_ok)
         record["binding_ok"] = binding_ok
         if tol and m.get("error") is None and m:
             over = {k: m[f] for k, f in (("action_max", "action_max"), ("state_max", "state_max"),
                                           ("image_mad", "image_mad"), ("frames_max", "frames_diff")) if m[f] > tol[k]}
             if over:
-                tol_hits.append({"key": key, "over": over})
                 record["tol_over"] = over
+                record["tol_class"] = _classify_over(record)
+                tol_hits.append({"key": key, "over": over, "class": record["tol_class"],
+                                 "first_divergence": m.get("first_divergence")})
         pair_rows.append(record)
     with (out / "h5_pairs.jsonl").open("w", encoding="utf-8") as stream:
         for record in pair_rows:
             stream.write(json.dumps(record, ensure_ascii=False, sort_keys=True, default=str) + "\n")
     n = len(keys)
-    judged = all(counts[k] == n for k in ("identity_equal", "setup_equal", "schema_equal", "success_equal",
-                                            "both_success", "binding_ok")) and not left_problems and not right_problems
+    produced = counts["both_success"] + counts["both_fail"]
+    judged = all(counts[k] == n for k in ("identity_equal", "success_equal", "binding_ok")) \
+        and counts["setup_equal"] == counts["both_success"] and counts["schema_equal"] == counts["both_success"] \
+        and produced == n and counts["recovery_mismatch"] == 0 and not left_problems and not right_problems
     ok_metrics = [m for m in metrics.values() if m.get("error") is None]
     worst = {k: max((m[f] for m in ok_metrics), default=0.0) for k, f in (
         ("action_max", "action_max"), ("state_max", "state_max"), ("image_mad", "image_mad"), ("frames_max", "frames_diff"))}
     divergence = [m["first_divergence"] for m in ok_metrics if m.get("first_divergence") is not None]
-    shape = "16x3x3" if args.tier == "native" else "13x3x3+16x3"
-    base = (f"tier={args.tier} compared={n} identity_equal={counts['identity_equal']} setup_equal={counts['setup_equal']} "
-            f"schema_equal={counts['schema_equal']} success_equal={counts['success_equal']} "
-            f"both_success={counts['both_success']}")
+    shape = SHAPES[args.tier]
+    base = (f"tier={args.tier} shape={shape} compared={n} identity_equal={counts['identity_equal']} "
+            f"setup_equal={counts['setup_equal']} schema_equal={counts['schema_equal']} "
+            f"success_equal={counts['success_equal']} both_success={counts['both_success']} both_fail={counts['both_fail']}")
     name = f"PARITY_{left_side}_{right_side}"
     if args.calibrate:
         within, result = calibrate(ok_metrics)
@@ -585,39 +783,43 @@ def cmd_compare(args) -> int:
               f"frames_max={payload['raw_max']['frames_max']:.3g} tol_file_sha={tol_sha[:12]}"
               + ("" if within else f" ceiling_hit={result['ceiling_hit']}（停止类）"), flush=True)
         tol = load_tolerances()
-        for record in pair_rows:
-            if record.get("error") is None and "action_max" in record:
-                over = {k: record[f] for k, f in (("action_max", "action_max"), ("state_max", "state_max"),
-                                                  ("image_mad", "image_mad"), ("frames_max", "frames_diff")) if record[f] > tol[k]}
-                if over:
-                    tol_hits.append({"key": (record["task"], record["tier"], record["seed"]), "over": over})
-    tol_ok = not tol_hits
-    severity = "none"
-    if not tol_ok:
-        worst_ratio = max(v / tol[k] for hit in tol_hits for k, v in hit["over"].items())
-        severity = "continue" if worst_ratio <= 2 and len(tol_hits) <= math.floor(0.05 * n) and judged else "stop"
-    verdict = "PASS" if judged and tol_ok else "FAIL"
+    noise = sum(hit["class"] == "noise" for hit in tol_hits)
+    fail_over = len(tol_hits) - noise
+    # B3 硬线（用户 2026-09-29）：任一 pair 超容差局数 > 该 pair 局数 5%，不论分类一律停
+    hard_line = len(tol_hits) > 0.05 * n
+    verdict = "PASS" if judged and fail_over == 0 and not hard_line else "FAIL"
     tol_text = " ".join(f"{k}={worst[k]:.3g}/{tol[k]:.3g}" for k in ("action_max", "state_max", "image_mad", "frames_max"))
-    print(f"{name}={verdict} {base} tol={'PASS' if tol_ok else 'FAIL'} {tol_text} sha_equal={counts['sha_equal']} "
-          f"frames_equal={counts['frames_equal']} binding_ok={counts['binding_ok']} shape={shape}"
-          + ("" if verdict == "PASS" else f" severity={severity} tol_over={len(tol_hits)}"), flush=True)
+    print(f"{name}={verdict} {base} tol_over={fail_over} noise={noise} over_total={len(tol_hits)} "
+          f"hard_line_5pct={'HIT' if hard_line else 'ok'} {tol_text} sha_equal={counts['sha_equal']} "
+          f"frames_equal={counts['frames_equal']} binding_ok={counts['binding_ok']} "
+          f"recovery_mismatch={counts['recovery_mismatch']}", flush=True)
+    if both_fail_rows:
+        print(f"PARITY_BOTH_FAIL=REVIEW pair={args.pair} tier={args.tier} n={len(both_fail_rows)} "
+              f"detail={both_fail_rows[:5]}", flush=True)
     print(f"PARITY_REFERENCE=INFO pair={args.pair} tier={args.tier} first_divergence_n={len(divergence)} "
           f"first_divergence_median={sorted(divergence)[len(divergence) // 2] if divergence else None} "
           f"first_divergence_min={min(divergence) if divergence else None}", flush=True)
     summary = {"verdict": verdict, "counts": counts, "worst": worst, "tolerances": tol, "tol_hits": tol_hits,
-               "severity": severity, "left_problems": left_problems, "right_problems": right_problems}
+               "noise": noise, "tol_over": fail_over, "hard_line_5pct": hard_line, "both_fail": both_fail_rows,
+               "left_dir": str(left_dir), "right_dir": str(right_dir), "p_anchor": args.p_anchor,
+               "left_problems": left_problems, "right_problems": right_problems}
     (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str) + "\n")
     return 0 if verdict == "PASS" else 1
 
 
-def _binding_ok(side: str, line: dict[str, Any]) -> bool:
-    """ENV_PACKAGE_BINDING：H 侧环境类模块必须属于 robomme_hard；O／P 侧走官方 _worker、robomme 来自其 src_root。"""
+def _binding_ok(side: str, line: dict[str, Any], anchor: dict[str, Any] | None = None, tier: str | None = None) -> bool:
+    """ENV_PACKAGE_BINDING：H／H2 侧环境类模块必须属于 robomme_hard；O 侧走官方 _worker、robomme 来自其 src_root；
+    P 侧按锚点登记表记下的生成来源判（锚点产物当年是作为 H 生成的，v7 §7.7）。"""
     if line is None:
         return False
-    if side == "H":
+    if side in ("H", "H2"):
         return str(line.get("env_module") or "").startswith("robomme_hard.")
-    if side == "P" and line.get("worker") is None and line.get("env_module") is None:
-        return True  # S4 交付存档（ca32e9b，未记 env_module）按 manifest 如实写 code_baseline
+    if side == "P" and anchor is not None and tier in anchor.get("segments", {}):
+        seg = anchor["segments"][tier]
+        worker_ok = not seg.get("worker") or line.get("worker") in seg["worker"]
+        module = str(line.get("env_module") or "")
+        module_ok = not seg.get("env_module_prefix") or (module.split(".")[0] in seg["env_module_prefix"])
+        return worker_ok and module_ok
     module = str(line.get("robomme_module") or "")
     return line.get("worker") == "official._worker" and "/robomme/" in module and "robomme_hard" not in module
 
@@ -625,47 +827,117 @@ def _binding_ok(side: str, line: dict[str, Any]) -> bool:
 def cmd_binding(args) -> int:
     counts = {}
     mismatch = 0
-    for side in SIDES:
-        path = LOCAL_H5_ROOT / f"{side}-native" / "identities.jsonl"
-        lines = side_lines(path.parent)
-        bad = sum(not _binding_ok(side, line) for line in lines)
+    anchor = _anchor_registry()["anchors"].get(args.p_anchor) if args.p_anchor else None
+    for side in ("O", "P", "H"):
+        side_dir = args.h5_root / (anchor["segments"]["native"]["dir"] if side == "P" and anchor else f"{side}-native")
+        lines = side_lines(side_dir)
+        bad = sum(not _binding_ok(side, line, anchor, "native") for line in lines)
         mismatch += bad
-        counts[side] = "robomme_hard" if side == "H" else "robomme"
+        counts[side] = "robomme_hard" if side == "H" or (side == "P" and anchor) else "robomme"
     status = "PASS" if mismatch == 0 else "FAIL"
     print(f"ENV_PACKAGE_BINDING={status} sides=3 O={counts['O']} P={counts['P']} H={counts['H']} mismatch={mismatch}")
     return 0 if status == "PASS" else 1
 
 
-def cmd_import_s4(args) -> int:
-    """P 侧 xhard = S4 交付存档（ca32e9b，16 worker）：逐局只读 symlink 引入 + identities.jsonl（sha 重算核对）。"""
-    delivery = json.loads(args.manifest.read_text())
-    out = LOCAL_H5_ROOT / "P-xhard"
-    if out.exists():
-        raise ParityError(f"{out} 已存在")
-    out.mkdir(parents=True)
-    lines, bad = [], 0
-    for s in delivery["successes"]:
-        h5 = next(f for f in s["files"] if f["path"].endswith(".h5"))
-        rel = Path("episodes") / s["difficulty"] / f"{s['task']}_episode_{s['episode']}" / "hdf5_files" / Path(h5["path"]).name
-        (out / rel).parent.mkdir(parents=True, exist_ok=True)
-        (out / rel).symlink_to(h5["path"])
-        actual = sha256_file(Path(h5["path"]))
-        bad += int(actual != h5["sha256"])
-        media = []
-        for f in s["files"]:
-            if f["path"].endswith(".mp4"):
-                target = (out / rel).parent.parent / Path(f["path"]).name
-                target.symlink_to(f["path"])
-                media.append(str(target.relative_to(out)))
-        lines.append({"side": "P", "tier": s["difficulty"], "task": s["task"], "episode": int(s["episode"]),
-                      "seed": int(s["seed"]), "success": True, "error_type": None, "env_package": "robomme",
-                      "env_module": None, "wrapper_modules": None, "worker": None, "robomme_module": None,
-                      "path": str(rel), "bytes": int(h5["bytes"]), "sha256": actual, "frames": None, "media": media,
-                      "source": "s4-relaunch-02/final-delivery.json", "code_baseline": delivery["code_baseline"]})
-    (out / "identities.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False, sort_keys=True) + "\n" for l in lines))
-    status = "PASS" if bad == 0 and len(lines) == 165 else "FAIL"
-    print(f"S4_IMPORT={status} rows={len(lines)} sha_mismatch={bad} out={out}")
-    return 0 if status == "PASS" else 1
+def official_recovery_mode(episode: int) -> str:
+    """官方 ``_worker`` 的失败恢复模式按 episode 号定（≤2 z、≤5 xy、其余关；v7 方案第一部分 §2）。"""
+    return "z" if episode <= 2 else ("xy" if episode <= 5 else "off")
+
+
+def _all_tasks() -> tuple[str, ...]:
+    """16 任务规范序（与 train_split_runner 同法取 scripts/injection-dev/seed_layout.py）。"""
+    path = str(ROOT / "scripts" / "injection-dev")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    from seed_layout import ALL_TASKS  # noqa: PLC0415
+
+    return tuple(ALL_TASKS)
+
+
+def xhard0_records(src_root: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    """从官方 test 元数据取每任务 ``difficulty=="hard"`` 的记录（只读 ``src/robomme/``），按任务规范序、原 episode 升序。"""
+    meta_root = src_root / "src" / "robomme" / "env_metadata" / "test"
+    rows, sources = [], {}
+    for task in _all_tasks():
+        path = meta_root / f"record_dataset_{task}_metadata.json"
+        sources[str(path.relative_to(src_root))] = sha256_file(path)
+        payload = json.loads(path.read_text())
+        hard = sorted((r for r in payload["records"] if r.get("difficulty") == "hard"), key=lambda r: int(r["episode"]))
+        for r in hard:
+            if r.get("task", task) != task:
+                raise ParityError(f"{path} 记录任务名不符：{r}")
+            rows.append({"task": task, "episode": int(r["episode"]), "seed": int(r["seed"]), "difficulty": "hard",
+                         "recovery_mode": official_recovery_mode(int(r["episode"]))})
+    return rows, sources
+
+
+def check_xhard0(rows: list[dict[str, Any]], manifest: dict[str, Any] | None = None,
+                 builder_rows: list[dict[str, Any]] | None = None) -> tuple[bool, str]:
+    """XHARD0_IDENTITY：16 任务 × 1 档 × 12 局；原 episode 恰为 3,7,…,47；seed 任务内唯一；
+    与清单、（给了时）与 robomme_hard builder 的 xhard0 条目逐条相等。"""
+    problems = []
+    by_task: dict[str, list[dict[str, Any]]] = {}
+    for r in rows:
+        by_task.setdefault(r["task"], []).append(r)
+    if len(by_task) != 16:
+        problems.append(f"任务数 {len(by_task)} ≠ 16")
+    for task, items in by_task.items():
+        if tuple(r["episode"] for r in items) != XHARD0_EPISODES:
+            problems.append(f"{task} 原 episode 号 {[r['episode'] for r in items]}")
+        if len({r["seed"] for r in items}) != len(items):
+            problems.append(f"{task} seed 重复")
+    want = {(r["task"], r["episode"], r["seed"]) for r in rows}
+    missing = extra = 0
+    for label, other in (("清单", manifest["rows"] if manifest else None), ("builder", builder_rows)):
+        if other is None:
+            continue
+        got = {(r["task"], int(r["episode"]), int(r["seed"])) for r in other}
+        missing, extra = missing + len(want - got), extra + len(got - want)
+        if want != got:
+            problems.append(f"{label}与元数据不符：缺 {len(want - got)} 多 {len(got - want)}")
+    ok = not problems and len(rows) == 16 * XHARD0_PER_TASK
+    line = (f"XHARD0_IDENTITY={'PASS' if ok else 'FAIL'} shape=16x1x12 identities={len(rows)} "
+            f"missing={missing} extra={extra}" + ("" if ok else f" problems={problems[:3]}"))
+    return ok, line
+
+
+def _builder_xhard0_rows() -> list[dict[str, Any]]:
+    """在子进程里读 robomme_hard builder 的 xhard0 条目（本进程不导入 robomme_hard，R9 精神）。"""
+    code = ("import json;from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder as B;"
+            f"tasks={list(_all_tasks())!r};out=[]\n"
+            "for t in tasks:\n"
+            " b=B(t,dataset='test-hard')\n"
+            " for ep in range(12):\n"
+            "  i=b.resolve_identity(ep);assert i['tier']=='xhard0',i;assert b._hard_env_kwargs(ep)=={'seed':i['seed'],'difficulty':'hard'}\n"
+            "  out.append({'task':t,'episode':i['source_episode'],'seed':i['seed']})\n"
+            "print(json.dumps(out))")
+    proc = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=ROOT)
+    if proc.returncode != 0:
+        raise ParityError("读 builder xhard0 条目失败：\n" + proc.stderr[-2000:])
+    return json.loads(proc.stdout.strip().splitlines()[-1])
+
+
+def cmd_export_xhard0_manifest(args) -> int:
+    rows, sources = xhard0_records(args.src_root)
+    manifest = {
+        "schema": "train-parity-manifest/1", "kind": "xhard0",
+        "source_repo": "https://github.com/RoboMME/robomme_benchmark.git",
+        "source_ref": "1fadc0ec", "source_dataset": "test",
+        "selection_rule": "每任务官方 test 元数据 difficulty==\"hard\" 的全部记录，原 episode 升序（seed 照抄元数据，不套公式）",
+        "per_cell": XHARD0_PER_TASK, "source_files": sources,
+        "records_sha256": hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest(),
+        "tasks": list(dict.fromkeys(r["task"] for r in rows)),
+        "rows_total": len(rows),
+        "recovery_config_counts": {m: sum(r["recovery_mode"] == m for r in rows) for m in ("z", "xy", "off")},
+        "rows": rows,
+    }
+    ok, line = check_xhard0(rows)
+    if ok:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n")
+        ok, line = check_xhard0(rows, json.loads(args.out.read_text()), _builder_xhard0_rows())
+    print(line, flush=True)
+    return 0 if ok else 1
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -682,13 +954,15 @@ def build_parser() -> argparse.ArgumentParser:
     gen.add_argument("--stage", type=Path, default=None, help="NFS 暂存目录；每局 sha 后复制过去并删本地大文件")
     gen.add_argument("--smoke", type=int, default=0, help="只跑前 N 局（SHARD_SMOKE）")
     gen.add_argument("--dev-smoke", action="store_true", help="放行非 A40（本机开发冒烟 NATIVE_SMOKE）")
+    gen.add_argument("--specs-root", type=Path, default=None, help="--tier v7：v7 四档规格根（含 xhard{1..4}/specs.jsonl）")
     gen.add_argument("--resume", action="store_true")
     gen.set_defaults(func=cmd_generate)
     pub = sub.add_parser("publish")
     pub.add_argument("--side", choices=SIDES, required=True)
     pub.add_argument("--tier", choices=TIERS, required=True)
-    pub.add_argument("--prefix", required=True, help="bucket 侧目录，如 O-1fadc0e-a40、P-ca32e9b-s4、H-<sha7>-a40")
+    pub.add_argument("--prefix", required=True, help="bucket 侧目录，如 O-1fadc0e-a40、H-<sha7>-a40")
     pub.add_argument("--local", type=Path, default=None)
+    pub.add_argument("--h5-root", type=Path, default=LOCAL_H5_ROOT)
     pub.add_argument("--code-baseline", default=None)
     pub.add_argument("--gpu-model", default=None)
     pub.add_argument("--driver", default=None)
@@ -704,21 +978,45 @@ def build_parser() -> argparse.ArgumentParser:
     cmp_.add_argument("--manifest", type=Path, required=True)
     cmp_.add_argument("--left", type=Path, default=None)
     cmp_.add_argument("--right", type=Path, default=None)
+    cmp_.add_argument("--p-anchor", default=None, help="P 侧锚点 tag（从 docs/validation/parity-anchors.json 取目录并先核验）")
+    cmp_.add_argument("--h5-root", type=Path, default=LOCAL_H5_ROOT)
+    cmp_.add_argument("--compare-root", type=Path, default=COMPARE_ROOT)
+    cmp_.add_argument("--run-name", default=None, help="比对目录已存在时另起子目录")
     cmp_.add_argument("--workers", type=int, default=16)
     cmp_.add_argument("--calibrate", action="store_true")
     cmp_.add_argument("--overwrite-compare", action="store_true")
     cmp_.set_defaults(func=cmd_compare)
-    imp = sub.add_parser("import-s4", help="P 侧 xhard 复用 S4 交付存档（只读 symlink）")
-    imp.add_argument("--manifest", type=Path, required=True)
-    imp.set_defaults(func=cmd_import_s4)
+    anc = sub.add_parser("anchor", help="parity 固定锚点：register 登记 P 缓存、check 输出 PARITY_ANCHOR（D-11～D-13）")
+    anc.add_argument("action", choices=("register", "check"))
+    anc.add_argument("--tag", required=True)
+    anc.add_argument("--commit", default=None, help="register：tag 指向的完整 commit sha")
+    anc.add_argument("--segments", default=None, help="register：档:目录名,…（目录相对 --h5-root），如 native:P-native,xhard:P-xhard")
+    anc.add_argument("--source-side", default="H", help="register：产物当年作为哪一侧生成（parity-anchor-v6 两段都是 H）")
+    anc.add_argument("--equivalence", default=None, help="register：等价核验判定行原文（tag commit ≠ 生成 commit 时）")
+    anc.add_argument("--bucket-prefix", type=json.loads, default=None, help="register：{档: bucket 段名} JSON")
+    anc.add_argument("--replace", action="store_true", help="仅用于修正登记错误；不得用来移动锚点")
+    anc.add_argument("--h5-root", type=Path, default=LOCAL_H5_ROOT)
+    anc.set_defaults(func=cmd_anchor)
+    dlv = sub.add_parser("import-delivery", help="gen1 的 delivery.json 与逐局 h5 登记成 H 侧 identities.jsonl")
+    dlv.add_argument("--delivery", type=Path, required=True)
+    dlv.add_argument("--tier", default="v7", choices=("v7",))
+    dlv.add_argument("--h5-root", type=Path, default=LOCAL_H5_ROOT)
+    dlv.set_defaults(func=cmd_import_delivery)
     bind = sub.add_parser("binding", help="ENV_PACKAGE_BINDING：三侧 native identities 的包归属")
+    bind.add_argument("--h5-root", type=Path, default=LOCAL_H5_ROOT)
+    bind.add_argument("--p-anchor", default=None)
     bind.set_defaults(func=cmd_binding)
+    x0 = sub.add_parser("export-xhard0-manifest", help="从官方 test 元数据导出 xhard0 的 16×1×12 清单（XHARD0_IDENTITY）")
+    x0.add_argument("--src-root", type=Path, default=ROOT, help="只读其 src/robomme/env_metadata/test/")
+    x0.add_argument("--out", type=Path, default=XHARD0_MANIFEST)
+    x0.set_defaults(func=cmd_export_xhard0_manifest)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    for name in ("manifest", "src_root", "out", "stage", "local", "left", "right"):
+    for name in ("manifest", "src_root", "out", "stage", "local", "left", "right", "h5_root", "compare_root",
+                 "specs_root", "delivery"):
         value = getattr(args, name, None)
         if isinstance(value, Path) and not value.is_absolute():
             setattr(args, name, (Path.cwd() / value).resolve())
