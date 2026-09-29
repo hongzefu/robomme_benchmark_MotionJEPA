@@ -11,7 +11,7 @@
 > 6. 「拍链路（parity/）只需要原三档 144 局清单（16 任务 × 3 档 × 3 局）和新的v7 两次生成一致」
 > 7. 「需要修改parity机制 我要的是每次都和保存完的o对比 p读取之前的commit 来对比 给这个commit锚定要打上tag 每次都是oph o上传 p回到之前commit 以及h现在 不要以修改前后 每次都锚定固定的commit 以后都这么干」
 > 8. 「对于v7 现在这个commit已经做完之前的v6 oph parity 修改后再做一次v6的oph parity 然后存档 之后都只以新的v7 打tag做parity」「验证过的commit就不用再次验证了」「另外这些都是基于a40 的容差标准？」
-> 9. 细化方案经用户回复「同意」（2026-09-28）；三个待定项用户未另选，按推荐落定：v6 xhard 165 局纳入 v6 回归、O 以本机 `/data` + 逐局 sha 清单为准（bucket 被 HF 计费拒绝）、tag 名 `parity-anchor-v6`／`parity-anchor-v7`。
+> 9. 细化方案经用户回复「同意」（2026-09-28）；三个待定项用户未另选，按推荐落定：v6 xhard 165 局纳入 v6 回归、O 以本机 `/data` + 逐局 sha 清单为准（bucket 被 HF 计费拒绝；**后经 12.213 核实已全部上传公开 bucket `HongzeFu/robomme-hard-parity`，本机 `hard-split/h5/` 已清空，O／P 缓存一律以 bucket 为准**）、tag 名 `parity-anchor-v6`／`parity-anchor-v7`。
 > 10. 「生成的job我已经query过了在排队」「也是直接用」（生成阶段直接用用户已提交排队的占位 job，不另提）。
 > 11. 「评估的job你自己提交 但是参考framesample 的实测说明了两件事：1 CPU主要让启动阶段变慢。 第一次处理请求，1 CPU约183秒，4 CPU约61秒；等前期编译结束，每次取一组动作都约0.22秒，差别很小。保持模型常驻确实有收益。 两个任务分别启动，合计约6分钟；只启动一次、连续跑两个任务，约3分39秒。这次省了约2分19秒，但还不是完整三轮比较。」「模型常驻先不动 保持一致 cpu改为4个」
 > 12. 待决项经 AskUserQuestion 定（2026-09-28）：P3 预算「全表一次批准」；xhard0「12 局」；四档同废「接受，30 个候选」；产物「gen2 比完即删」。
@@ -477,8 +477,8 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 
 | 侧 | 来源 | 生成频率 | 存放 |
 |---|---|---|---|
-| O | 官方 `1fadc0ec` worktree + vendor `_worker` | 只生成一次（阶段 4 已有 O-native 144 局，A40/595.71.05） | 本机 `artifacts/newtask-v6/hard-split/h5/O-native`，逐局 sha 清单；bucket 续传待 HF 计费恢复，不阻塞 |
-| P | `git tag parity-anchor-*` 指向的 commit | **不重跑**：复用该 commit 作为 H 时的已验证产物 | 缓存登记表 `docs/validation/parity-anchors.json`（新文件） |
+| O | 官方 `1fadc0ec` worktree + vendor `_worker` | 只生成一次（阶段 4 已有 O-native 144 局，A40/595.71.05） | 公开 bucket `HongzeFu/robomme-hard-parity` 段 `O-1fadc0e-a40/native`（148 对象，12.213 读回 sha 全等）；本机副本已清空，比对前按需拉回 |
+| P | `git tag parity-anchor-*` 指向的 commit | **不重跑**：复用该 commit 作为 H 时的已验证产物 | 缓存登记表 `docs/validation/parity-anchors.json`（新文件）；`parity-anchor-v6` 的 P 缓存即 bucket 段 `H-34a1cea-a40/native`（144）与 `H-b1afc80-a40/xhard`（165） |
 | H | 当前 HEAD | 每次修改后生成 | `artifacts/<版本>/parity/H-<短sha>-<tier>` |
 
 **缓存登记表** 每条：`tag`、`commit`、`tier`、`h5_root`、`identities_sha256`（逐局 sha 清单的哈希）、`gpu_model`、`driver`、`generated_at_commit`（产物实际生成时的 src_commit）、`equivalence`（若 tag commit ≠ 生成 commit，记 `git diff --stat <生成> <tag> -- src/robomme_hard scripts/parity scripts/injection-dev` 为空或仅文档的核验结论）、判定行原文。`hard_parity.py compare` 取 P 侧前先核：tag 解析出的 sha == 登记 `commit`、逐局 sha 重算相等、GPU/驱动与 H 侧相同；任一不符 → `PARITY_ANCHOR=FAIL`，不比。
