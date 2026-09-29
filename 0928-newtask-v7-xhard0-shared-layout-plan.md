@@ -81,7 +81,26 @@
 - P 侧的缓存如果是在不同型号或驱动上生成的，不能复用，必须重新生成；
 - 本机 Ada 与 aspen A6000 只做冒烟和静态检查，不产正式对拍数据。
 
-## 5. 实施步骤表
+## 5. 两策略评估（SimpleMemVLA 与 FrameSamp+Modulation）
+
+- **评哪两个**：与上一个计划（`docs/plans/0927-robomme-hard-layered-plan.md` §八，留档 `docs/validation/newtask-v6/hard-split/stage6-eval-prep.md`、`stage7-eval.md`）相同：官方 SimpleMemVLA（`checkpoints/simplememvla_robomme`），以及官方 MME-VLA 的 `perceptual-framesamp-modul` 79999（即 FrameSamp + Modulation）。
+- **调用方法与上次一致**：沿用上次的两个策略分支、入口与分片脚本（SimpleMemVLA `testhard_eval.py` + `scripts/gl_run_testhard.sh`；MME-VLA `scripts/gl_eval_shard.sh` + `merge_eval_shards.py`），以及上次的去代理、显存 0.75、`--resume` 修复。只做两处改动：
+  1. 子模块 gitlink 从 `31e61259` 改为 v7 的 benchmark commit（新切 `PolicyEvalThirdParty-{simplememvla,mmevla}-<MMDD>-<HHMM>`），两个策略仓库也从上次分支再切出新分支 `*-v7-<MMDD>-<HHMM>`，不在旧分支上改。
+  2. 打开每局视频回放（见下）。
+  评估代码本身不因 xhard0 而改：`resolve_episode` 返回档名，`TIER_MAX_STEPS["xhard0"]=1300`。
+- **评多少**：每个策略评完 v7 全部 1292 局，分两轮，顺序同上次（先 SimpleMemVLA 第一轮 → MME-VLA 第一轮 → 两者第二轮）：
+  - 第一轮：55 格 × 前 10 局 + xhard0 16 任务 × 前 6 局 = 646；
+  - 第二轮：剩下的 646。
+  - 两策略合计 2 × 1292 = 2584 局；GL 10 × A40 占位 job，每轮切 10 片。
+- **视频回放：每局都存，落在本机盘 `/data/hongzefu`**：
+  - 评估进程把每局 mp4 写到 NFS 暂存目录 `<NFS>/v7-eval-stage/<策略>/<轮>/<片>/`，文件名带 `task_tier_episode_seed`。
+  - 本机 sled-vail 另起一个搬运进程（tmux 会话 `v7-vmove-<策略>`），它和评估是两个独立进程：**评估不等搬运，搬运慢了或断了也不影响评估。**
+  - 搬运只处理「已完成」的视频：以该局在 `episodes.jsonl` 里已有终态行、且文件大小 10 秒不变为准。搬运时 `rsync` 到 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v7/eval-videos/<策略>/<tier>/<task>/`，核对 sha256 一致后删掉 NFS 上的副本。
+  - 搬运进程挂了就重启；它只看暂存目录的现状，天然可续。评估结束后再跑一遍全量对账。
+  - 本机 `/data` 目前剩余 815G。视频大小以冒烟那一局实测外推；预计超过 400G 时先停下问你。
+- **判定行**（口径同上次）：`EVAL_SMOKE`（每策略 1 局 xhard0 + 1 局 xhard1）、`EVAL_ROUND1`／`EVAL_ROUND2`、`EVAL_IDENTITY_SET episodes=1292`、`EVAL_BINDING`（xhard0 局 `available=False`，其余局 `injected_mismatch=0`）、`EVAL_TIER_CAP`，新增 `EVAL_VIDEO=PASS policy=<名> episodes=1292 on_data=1292 sha_bad=0 nfs_left=0`。结果按 5 档分表，SimpleMemVLA 与 v6 同档的结果只作参考对照：v7 的布局都换了，不是同一批身份。
+
+## 6. 实施步骤表
 
 | 阶段 | 做什么 | 在哪 | 通过的判据 |
 |---|---|---|---|
@@ -94,7 +113,10 @@
 | 5 v6 回归 OPH | 只生成 H：144 + 165；O、P 复用 | GL A40 | `PARITY_O_P`／`P_H`／`O_H=PASS tier=native compared=144`；`PARITY_P_H=PASS tier=xhard compared=165` |
 | 6 v7 生成两次 | gen1 1100 局；gen2 在另一个占位 job 上重放 | GL A40 | `PARITY_V7_TWICE=PASS compared=1100 tol_over=0` |
 | 7 回放与入口冒烟 | 每格 1 局经评估链回放；xhard0 与 xhard1 各起 1 局 | 本机 | `V7_RESET_REPLAY=PASS injected_mismatch=0`；`HARD_EVAL_SMOKE=PASS episodes=2` |
-| 8 发布与定 v7 锚点 | 替换包内规格、改 README、留档 `docs/validation/newtask-v7/`；打 tag `parity-anchor-v7` 并登记；按清单逐个 `scancel` | 本机 | `PARITY_ANCHOR=PASS tag=parity-anchor-v7`；`git diff --check` |
+| 8 发布与定 v7 锚点 | 替换包内规格、改 README、留档 `docs/validation/newtask-v7/`；打 tag `parity-anchor-v7` 并登记 | 本机 | `PARITY_ANCHOR=PASS tag=parity-anchor-v7`；`git diff --check` |
+| 9 评估准备 | benchmark 切两个 `PolicyEvalThirdParty-*` 分支；两个策略仓库从上次分支切 v7 分支，改 gitlink 并打开视频；提交 10 个评估占位 job；本机起搬运进程；每策略冒烟 2 局 | GL A40 + 本机 | `POLICY_DIFF` × 2、`SUBMODULE_PIN`、`EVAL_SMOKE` × 2、冒烟视频已到 `/data` |
+| 10 评估两轮 | 每策略 646 + 646；边评边搬视频 | GL 10 × A40 | `EVAL_ROUND1/2`、`EVAL_IDENTITY_SET`、`EVAL_BINDING`、`EVAL_TIER_CAP`、`EVAL_VIDEO` × 2 |
+| 11 收尾 | 5 档成功率表写入留档；NFS 暂存清空；按清单逐个 `scancel` 评估 job | 本机 | `EVAL_HOLD_RELEASE=PASS` |
 
 每个阶段都要单独获批；reset 与生成的预算按 P3 一次性授权（第二部分 §2）。实施完成后，实测结果以子节追加在本表之后。
 
@@ -201,6 +223,8 @@ R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-d
 | v6 回归 H 侧（阶段 6，O/P 复用不重跑） | 16 任务 × 3 档 × 3 局 = 144 + (13 任务 × 3 档 + 16 任务 × 1 档) × 3 局 = 165 | ≤ 309（+ 基础设施重跑 ≤ 309） |
 | 回注回放（阶段 7） | 13 × 3 + 16 = 55 次 reset | 55 |
 | 本机冒烟（阶段 3） | 1 任务 × (1 + 3) reset + 4 局 | 4 reset、4 轨迹 |
+| 评估冒烟（阶段 9） | 2 策略 × 2 局（xhard0、xhard1 各 1） | 4 |
+| 评估正式（阶段 10） | 2 策略 × (55 格 × 20 局 + 16 任务 × 12 局) = 2 × 1292 = 2584 | 2584 + 基础设施重评每策略每轮 ≤ 65 → ≤ 2844 |
 
 worker：GL 每占位 job 16 worker（1 CPU + 12 G／worker）；预计耗时以阶段 3 单格实测外推后填入，不预先编数。停止条件：任一阶段判定行 FAIL 即停该阶段及其后续，保留产物与日志。
 
@@ -238,6 +262,12 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 
 长任务一律 detached tmux（会话名前缀 `v7-`，清单记入留档）+ Monitor 行缓冲过滤管道，过滤词含 `NO RECORD|reset 拒绝|svulkan2|EXCLUSIVE|RRT|Traceback|EXIT_CODE=|全部完成`。集群操作按 `greatlakes.md`（48 h 占位 job、`--gpu_cmode=shared`、跑完按清单逐个 `scancel`）。
 
+### 3.1 评估与视频搬运（阶段 9～10）
+
+- 策略侧改动清单（新增在上次分支之上）：SimpleMemVLA 在 `testhard_eval.py` 里打开逐局 mp4 写出（若官方 `eval_success` 已有视频开关就只传参数；没有就在 `testhard_eval.py` 里用 `imageio` 写前视帧，不改官方文件）；MME-VLA 官方本来就逐局存视频，只把输出目录指到 NFS 暂存目录，并取消上次「每格只留 1 条」的删除步骤。
+- 搬运脚本放在 `scripts/injection-dev/eval_video_mover.py`（P1：不进 `scripts/` 顶层）：`--stage <NFS 暂存> --dest artifacts/newtask-v7/eval-videos/<策略> --episodes-glob '<暂存>/**/episodes.jsonl' --stable-sec 10`，循环扫描 → rsync → 核对 sha256 → 删 NFS 副本 → 往 `moved.jsonl` 追加一行；每 60 秒打印 `VMOVE moved=<n> pending=<n> bytes=<n>`，结束时打印 `EXIT_CODE=`。在 tmux `v7-vmove-<策略>` 里运行，用 Monitor 盯 `VMOVE|Traceback|EXIT_CODE=`。
+- 视频不进 git，也不进 bucket；留档只记清单与 sha256 的汇总。
+
 ## 4. 风险登记
 
 | 风险 | 处置 |
@@ -251,6 +281,7 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 | gen1/gen2 落在不同型号卡 | `generate` 保留 A40 断言；launch 记 GPU 名与驱动，`compare` 前核对相同，否则只报容差、不报 `sha_equal` |
 | 144 清单来自官方 train 元数据，不含 test 的 hard seed | 它验证的是 `robomme_hard` 原生路径与官方路径一致，这正是 xhard0 所走的路径；xhard0 逐身份零差是 12.222 §5 的可选项，不在本文预算 |
 | xhard0 走官方 `_worker` 时 `EpisodeJob.recovery_mode` 按 episode 号定（≤2 z、≤5 xy） | xhard0 不生成 h5，评估链 `make_env_for_episode` 不经 runner，此陷阱不触发；若日后生成须显式 `--no-recovery` 与官方 test 口径核对 |
+| NFS 暂存被视频塞满或搬运进程挂掉 | 搬运与评估解耦；Monitor 盯 `VMOVE`，停更超过 10 分钟就重启搬运；暂存目录超过 200G 时通知用户 |
 | 两个策略仓库读 `spec_binding` 字段 | 新增键只增不改；xhard0 返回 `available=False` 与现有 `None` 分支兼容，实施后各跑 1 局 smoke |
 
 ## 5. 盲区诚实清单
