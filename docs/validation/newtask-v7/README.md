@@ -166,5 +166,5 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v7 first_divergence_n=13 first_divergence_m
   2. ButtonUnmaskSwap 评估期碰撞检查缺陷（⑥）：是否修（改 `robomme_hard`，重钉两策略子模块，重评受影响局）。
   3. InsertPeg 追加轮后手动补位 2 局、超出每格递补上限 10（③ 第 3 条）是否追认。
   4. MME xhard0 两入口 11 局翻转是否要做同入口重跑对照（11 局 × 1 策略）坐实为策略随机性。
-- **用户裁决（2026-09-29，原话「1暂时不管 2暂时不管 3同意递补 4 没看懂详细讲」）**：第 1、2 项暂时不处理（交付集与 benchmark 代码保持现状，H2 本地副本继续保留）；第 3 项追认 InsertPeg 追加轮与手动补位 2 局；第 4 项待解释后再定。
+- **用户裁决（2026-09-29，原话「1暂时不管 2暂时不管 3同意递补 4 没看懂详细讲」）**：第 1、2 项暂时不处理（交付集与 benchmark 代码保持现状，H2 本地副本继续保留）；第 3 项追认 InsertPeg 追加轮与手动补位 2 局；第 4 项经解释后用户原话「先把项目4设置为待定 收尾这次任务 推送」——**待定**（22 局两入口重跑对照未做，⑥ 的 A／B 两种原因均未排除）。
 - **推送**（自动模式拒绝，留用户手动）：benchmark `newtaskRelease-v5`、`PolicyEvalThirdParty-{simplememvla,mmevla}-0929-0608`、tag `parity-anchor-v6`；两策略仓库 `testhard-eval-v7-0929`（子模块指向 `4a36d505`，benchmark 推送后 GitHub 上才取得到）。
