@@ -8,6 +8,14 @@
     "stored_sha256": "addbe14dae4476b40268ab4659b64092895c82f34f5f9bfe90aff789ffe99bda"
   },
   {
+    "path": "cleanup.json",
+    "stored_path": "cleanup.json",
+    "bytes": 6118,
+    "sha256": "8fb5c4d956e8d1cf4bb47747e80782cc35e7c983ca46b5beca845f1ab8f9d4d1",
+    "stored_bytes": 6118,
+    "stored_sha256": "8fb5c4d956e8d1cf4bb47747e80782cc35e7c983ca46b5beca845f1ab8f9d4d1"
+  },
+  {
     "path": "eval-cpu-0928-hold-62268872.log",
     "stored_path": "eval-cpu-0928-hold-62268872.log.gz",
     "bytes": 122,
@@ -18,10 +26,10 @@
   {
     "path": "eval-cpu-0928-hold32-62268960.log",
     "stored_path": "eval-cpu-0928-hold32-62268960.log.gz",
-    "bytes": 0,
-    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "stored_bytes": 20,
-    "stored_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    "bytes": 122,
+    "sha256": "2103b8a1aefa744250b5cf0512ece2d745455f20f88865aa754fdf0715253006",
+    "stored_bytes": 123,
+    "stored_sha256": "9039fa7c51637f0493d681e2dcd4ab1e5cfb86cdf3e438b1ba408b501374a3e4"
   },
   {
     "path": "framesample-batch.log",
@@ -366,6 +374,14 @@
     "sha256": "abd5fbd46bc61f77695deed3faac0091f0200b1b293e5256ab258c4cc9ce7a10",
     "stored_bytes": 18,
     "stored_sha256": "abd5fbd46bc61f77695deed3faac0091f0200b1b293e5256ab258c4cc9ce7a10"
+  },
+  {
+    "path": "resource-release.log",
+    "stored_path": "resource-release.log.gz",
+    "bytes": 934,
+    "sha256": "750bc47dda8363eee36996bb2e0a17f710258354d8c9ddc150c354531eb344df",
+    "stored_bytes": 306,
+    "stored_sha256": "d982a29acbd0bdfa576477483927ae9f3639c1936ca382ad2ec2bfa698587805"
   },
   {
     "path": "simplemem-cold-pick/results-r1-shard00of01.jsonl",

@@ -73,4 +73,10 @@ CPU进程时间是所有线程之和，不能用墙钟减CPU时间计算GPU等�
 
 `BENCHMARK_ANCHOR=PASS files=3990 mismatches=0`；`FRAMESAMPLE_ANCHOR=PASS files=210 mismatches=0`，逐Git blob核验快照字节，记录在`records/anchor-checks.json`。不将此读成数值逐位一致。`FRAME_COMPLETION=PASS`覆盖2任务×1档×（3个CPU档+1次独立启动）=8次，正常结果文件及每组退出码0在`records/`；`SIMPLEMEM_SMOKE=FAIL attempts=1 exit_code=3`，未隐藏失败。
 
-`SMALL_RECORDS=PASS copied=50 bytes=258130 sha_mismatches=0`为首次归档校验；逐文件SHA256在`records/retained-manifest.json`。原始日志中的告警含行尾空格，归档为无损`.log.gz`以保留原始字节；清单同时记录解压后与存储文件的SHA256。可用`gzip -cd <文件.log.gz>`读取。历史分片原始首行另存`records/historical-job-ids.log.gz`；一次性观察器与未实跑多轮方案源码见`reproduce.md`。大文件清理与席位释放的最终回执在收尾时补入。
+`SMALL_RECORDS=PASS copied=50 bytes=258130 sha_mismatches=0`为首次归档校验；逐文件SHA256在`records/retained-manifest.json`。原始日志中的告警含行尾空格，归档为无损`.log.gz`以保留原始字节；清单同时记录解压后与存储文件的SHA256。可用`gzip -cd <文件.log.gz>`读取。历史分片原始首行另存`records/historical-job-ids.log.gz`；一次性观察器与未实跑多轮方案源码见`reproduce.md`。
+
+主报告提交`ae1cba1e`并推送后完成收尾：`RESOURCE_RELEASE=PASS jobs=62268872,62268960`，两作业均已取消、队列中不再存在，本轮三个tmux会话均已自行结束；没有取消其他作业。原始回执为`records/resource-release.log.gz`。
+
+`CLEANUP=PASS files=4745 bytes=152487750 videos=8 remaining_root=0`：核对本轮目录的固定30项清单并确认小文件已经归档后，删除源码快照、一次性依赖层、缓存、临时脚本和2任务×1档×（3个CPU档+1次独立启动）的8个视频，整个临时根已移除。逐顶层目录数量与视频清单见`records/cleanup.json`。现有权重、原共享venv及其他运行目录不在删除范围内，已核对仍存在。
+
+`FINAL_RECORDS=PASS files=53 stored_bytes=121264`，不含清单自身和三份说明文档。NFS拷入的小数据文件权限统一为普通非可执行文件，内容散列未改变。当前没有后台任务或额外测试自动接续；SimpleMemVLA与真实多轮对照仍是明确的未完成项。

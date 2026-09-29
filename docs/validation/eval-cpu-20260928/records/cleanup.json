@@ -1,0 +1,228 @@
+{
+  "status": "PASS",
+  "removed_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/eval-cpu-20260928",
+  "entries": [
+    {
+      "path": "anchor-checks.json",
+      "files": 1,
+      "bytes": 371,
+      "symlinks": 0
+    },
+    {
+      "path": "benchmark-ce3843",
+      "files": 4099,
+      "bytes": 94471951,
+      "symlinks": 0
+    },
+    {
+      "path": "cache",
+      "files": 3,
+      "bytes": 51751,
+      "symlinks": 0
+    },
+    {
+      "path": "commit-body.md",
+      "files": 1,
+      "bytes": 3455,
+      "symlinks": 0
+    },
+    {
+      "path": "eval-cpu-0928-hold-62268872.log",
+      "files": 1,
+      "bytes": 122,
+      "symlinks": 0
+    },
+    {
+      "path": "eval-cpu-0928-hold32-62268960.log",
+      "files": 1,
+      "bytes": 122,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-batch.log",
+      "files": 1,
+      "bytes": 54890,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cold-demo",
+      "files": 7,
+      "bytes": 2837062,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cold-demo.log",
+      "files": 1,
+      "bytes": 12792,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cold-pick",
+      "files": 7,
+      "bytes": 1999086,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cold-pick.log",
+      "files": 1,
+      "bytes": 12693,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cpu1",
+      "files": 8,
+      "bytes": 5265923,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cpu1.log",
+      "files": 1,
+      "bytes": 14366,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cpu2",
+      "files": 8,
+      "bytes": 4801106,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cpu2.log",
+      "files": 1,
+      "bytes": 13738,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cpu4",
+      "files": 8,
+      "bytes": 4799819,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-cpu4.log",
+      "files": 1,
+      "bytes": 13751,
+      "symlinks": 0
+    },
+    {
+      "path": "framesample-prep",
+      "files": 582,
+      "bytes": 38102126,
+      "symlinks": 8
+    },
+    {
+      "path": "framesample_remaining.sh",
+      "files": 1,
+      "bytes": 1096,
+      "symlinks": 0
+    },
+    {
+      "path": "hardware.log",
+      "files": 1,
+      "bytes": 1859,
+      "symlinks": 0
+    },
+    {
+      "path": "historical-simplemem-shards.json",
+      "files": 1,
+      "bytes": 3897,
+      "symlinks": 0
+    },
+    {
+      "path": "hold-jobs-eval-cpu.txt",
+      "files": 1,
+      "bytes": 18,
+      "symlinks": 0
+    },
+    {
+      "path": "run_simplemem.sh",
+      "files": 1,
+      "bytes": 1417,
+      "symlinks": 0
+    },
+    {
+      "path": "simplemem-cold-pick",
+      "files": 2,
+      "bytes": 2239,
+      "symlinks": 0
+    },
+    {
+      "path": "simplemem-cold-pick.log",
+      "files": 1,
+      "bytes": 4158,
+      "symlinks": 0
+    },
+    {
+      "path": "simplemem_probe.py",
+      "files": 1,
+      "bytes": 2714,
+      "symlinks": 0
+    },
+    {
+      "path": "simplemem_remaining.sh",
+      "files": 1,
+      "bytes": 999,
+      "symlinks": 0
+    },
+    {
+      "path": "slurm-before-release.log",
+      "files": 1,
+      "bytes": 2038,
+      "symlinks": 0
+    },
+    {
+      "path": "summarize.py",
+      "files": 1,
+      "bytes": 2476,
+      "symlinks": 0
+    },
+    {
+      "path": "summary.json",
+      "files": 1,
+      "bytes": 9715,
+      "symlinks": 0
+    }
+  ],
+  "videos": [
+    {
+      "path": "framesample-cold-demo/round-1/framesample-cpu/ckpt79999/seed7/videos/VideoPlaceButton_ep0_fail_watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed_xhard1.mp4",
+      "bytes": 2821816
+    },
+    {
+      "path": "framesample-cold-pick/round-1/framesample-cpu/ckpt79999/seed7/videos/PickXtimes_ep0_fail_pick up the blue cube and place it on the target, repeating this action six times, then press the button to stop_xhard1.mp4",
+      "bytes": 1979555
+    },
+    {
+      "path": "framesample-cpu1/round-1/framesample-cpu/ckpt79999/seed7/videos/VideoPlaceButton_ep0_fail_watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed_xhard1.mp4",
+      "bytes": 2785559
+    },
+    {
+      "path": "framesample-cpu1/round-1/framesample-cpu/ckpt79999/seed7/videos/PickXtimes_ep0_fail_pick up the blue cube and place it on the target, repeating this action six times, then press the button to stop_xhard1.mp4",
+      "bytes": 2454550
+    },
+    {
+      "path": "framesample-cpu2/round-1/framesample-cpu/ckpt79999/seed7/videos/VideoPlaceButton_ep0_fail_watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed_xhard1.mp4",
+      "bytes": 2787221
+    },
+    {
+      "path": "framesample-cpu2/round-1/framesample-cpu/ckpt79999/seed7/videos/PickXtimes_ep0_fail_pick up the blue cube and place it on the target, repeating this action six times, then press the button to stop_xhard1.mp4",
+      "bytes": 1990334
+    },
+    {
+      "path": "framesample-cpu4/round-1/framesample-cpu/ckpt79999/seed7/videos/VideoPlaceButton_ep0_fail_watch the video carefully, then place the red cube on the target where it was first placed after the button was pressed_xhard1.mp4",
+      "bytes": 2786254
+    },
+    {
+      "path": "framesample-cpu4/round-1/framesample-cpu/ckpt79999/seed7/videos/PickXtimes_ep0_fail_pick up the blue cube and place it on the target, repeating this action six times, then press the button to stop_xhard1.mp4",
+      "bytes": 1989989
+    }
+  ],
+  "total_files": 4745,
+  "total_bytes": 152487750,
+  "preserved_external": [
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/checkpoints/simplememvla_robomme",
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/eval-out/mmevla-ckpt/perceptual-framesamp-modul/79999",
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/.venv-robomme",
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_policy_learning-frameSamp-continue/robomme_env"
+  ]
+}

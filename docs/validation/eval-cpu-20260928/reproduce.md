@@ -2,7 +2,7 @@
 
 本文件保留本轮临时观察器的源码，供复现，不作为长期入口。`run_rounds.sh`、`client_rounds_probe.py` 和 SimpleMemVLA 后续批次没有实跑；对应多轮记录只有不触发仿真的夹具检查。不得把这里的代码视为执行新批次的授权。
 
-benchmark 用 `git archive ce3843b4fbe981307655570425ec39a3cdaad4a7` 恢复；framesample 用其仓库的 `git archive b22fc9c1ec73584870342c6335676a63dc417f9e` 恢复。原运行绝对路径、环境、权重、CPU配额和预算见 launch.md；新运行须使用新的输出目录与实际占位JobID，不复用本次旧席位。
+benchmark 用 `git archive ce3843b4fbe981307655570425ec39a3cdaad4a7` 恢复；framesample 用其仓库的 `git archive b22fc9c1ec73584870342c6335676a63dc417f9e` 恢复。原运行绝对路径、环境、权重、CPU配额和预算见 launch.md；新运行须使用新的输出目录与实际占位JobID，不复用本次已释放席位。所有临时源码、环境覆盖层和视频已经删除，下面的代码块是复现材料，不是仍在运行的程序。
 
 首次失败 SimpleMemVLA 观察器与下列收尾版本不同：首次每次事件同步追加JSONL，且没有跨轮缓存包装；失败后改为退出时统一落盘并增加未实跑的多轮循环。首次失败的载模数据只作启动与故障证据，不进入有效吞吐比较。
 
@@ -676,4 +676,136 @@ echo "SERVER_READY epoch=$(date +%s.%N) wall_s=$(( $(date +%s) - started ))"
     --args.policy_name=framesample-cpu --args.only_tasks="$TASKS" --args.episode_start="$EPISODE" \
     --args.episode_stride=1 --args.max_episodes=1 --args.save_dir="$OUTPUT" 2>&1 | tee "$OUTPUT/client.log"
 echo "RUN_END wall_s=$(( $(date +%s) - started ))"
+```
+
+## framesample-prep/check_guard_fixtures.py
+
+SHA256：`fe5f79561e27b6f45087ae0448c19c99530e6cdd0756ceed64be169651263e76`。
+
+```python
+"""JSON 写入后重读，验证完成守卫的失败路径。"""
+import copy
+import json
+from pathlib import Path
+from completion_guard import validate
+
+base = Path(__file__).parent / "guard-fixtures"
+base.mkdir(exist_ok=True)
+row = dict(task="PickXtimes", episode=0, status="fail", task_success=False,
+           identity=dict(spec_sha256="a"*64), tier="xhard1", max_steps=1500,
+           spec_binding=dict(available=True, mode="replay", injected_mismatch=0,
+                             unused=0, spec_sha256="a"*64, value_points=10))
+for name, records, expected in (
+    ("empty", [], False),
+    ("error", [{**row, "status": "error"}], False),
+    ("legal_fail", [row], True),
+    ("missing_binding_counter", [{**row, "spec_binding": {"available": True, "mode": "replay"}}], False),
+    ("duplicate", [row, row], False),
+    ("sha_mismatch", [{**row, "identity": {"spec_sha256": "b"*64}}], False),
+    ("zero_value_points", [{**row, "spec_binding": {**row["spec_binding"], "value_points": 0}}], False),
+    ("wrong_tier", [{**row, "tier": "xhard2"}], False),
+    ("wrong_max_steps", [{**row, "max_steps": 1300}], False),
+):
+    path = base / f"{name}.jsonl"
+    path.write_text("".join(json.dumps(item)+"\n" for item in records))
+    try:
+        validate(path, ["PickXtimes"], 0)
+        passed = True
+    except (ValueError, KeyError, TypeError):
+        passed = False
+    assert passed == expected, name
+    print(f"GUARD_FIXTURE=PASS case={name} accepted={int(passed)}")
+```
+
+## framesample-prep/check_rounds_fixtures.py
+
+SHA256：`169513f56827f7c2134f3784aa86cc75804e909891c81259b342579f6ff14b13`。
+
+```python
+"""以纯 JSON 消费端替身验证多轮接续；不导入策略或仿真。"""
+import dataclasses
+import importlib.util
+import json
+import os
+from pathlib import Path
+import sys
+import tempfile
+import types
+
+
+@dataclasses.dataclass
+class Args:
+    save_dir: str
+    model_seed: int = 7
+    episode_start: int = 0
+    max_episodes: int = 1
+    only_tasks: str = "PickXtimes"
+    overwrite: bool = False
+    policy_name: str = "fixture"
+    model_ckpt_id: int = 79999
+
+
+calls = []
+state = {"error": False}
+
+
+def evaluate(args):
+    calls.append(os.getpid())
+    destination = Path(args.save_dir) / "fixture/ckpt79999/seed7"
+    destination.mkdir(parents=True)
+    row = dict(task="PickXtimes", episode=0, status="error" if state["error"] else "fail",
+               task_success=False, identity=dict(spec_sha256="a"*64), tier="xhard1", max_steps=1500,
+               spec_binding=dict(available=True, mode="replay", value_points=1,
+                                 injected_mismatch=0, unused=0, spec_sha256="a"*64))
+    (destination / "episodes.jsonl").write_text(json.dumps(row)+"\n")
+
+
+def flush():
+    Path(os.environ["TIMING_PATH"]).write_text("{}\n")
+
+
+observer = types.ModuleType("client_probe")
+observer.target = types.SimpleNamespace(Args=Args, evaluate=evaluate)
+observer.flush_records = flush
+observer.records, observer.rpc_events, observer.timings, observer.counts = [], [], {}, {}
+observer.entry_epoch, observer.import_done_epoch = 1.0, 2.0
+sys.modules["client_probe"] = observer
+root = Path(__file__).parent
+spec = importlib.util.spec_from_file_location("rounds_under_test", root / "client_rounds_probe.py")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+with tempfile.TemporaryDirectory(prefix="rounds-fixtures-", dir=root) as temporary:
+    target = Path(temporary)
+    module.run_rounds(Args(str(target / "success")), rounds=3)
+    assert len(calls) == 3 and len(set(calls)) == 1
+    data = json.loads((target / "success/round-boundaries.json").read_text())
+    assert len(data["rounds"]) == 3 and all(row["guard"] == "PASS" for row in data["rounds"])
+    print("ROUNDS_FIXTURE=PASS case=resident_three_rounds evaluate_calls=3 distinct_pids=1")
+    calls.clear()
+    state["error"] = True
+    try:
+        module.run_rounds(Args(str(target / "failure")), rounds=3)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("第一轮错误未中止")
+    assert len(calls) == 1 and not (target / "failure/round-2").exists()
+    print("ROUNDS_FIXTURE=PASS case=stop_after_first_error evaluate_calls=1 later_rounds=0")
+```
+
+## framesample-prep/import_compatible.sh
+
+SHA256：`f1f573589f884d64d05896478fe48e6f4aecc162cdd1122f767de4abb2d58206`。
+
+```bash
+#!/usr/bin/env bash
+# 一次性 uv 覆盖层仅固定 cryptography；不得写既有环境。
+set -euo pipefail
+PREP=$(cd "$(dirname "$0")" && pwd)
+N=/nfs/turbo/coe-chaijy-unreplicated/hongzefu
+export PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR="$PREP/uv-cache" UV_LINK_MODE=copy
+export PYTHONPATH="$PREP/source/src:$PREP/source/packages/openpi-client/src:$PREP/../benchmark-ce3843/src:$PREP/source/examples/robomme"
+cd "$PREP"
+command -v uv
+uv run --no-project --python "$N/robomme_policy_learning-frameSamp-continue/robomme_env/bin/python" --with cryptography==44.0.3 python -c 'import sys,cryptography,websockets,robomme_hard,eval; import cryptography.hazmat.bindings._rust; print("CLIENT_COMPAT_IMPORT=PASS",sys.executable,cryptography.__version__,cryptography.__file__,websockets.__version__,robomme_hard.__file__,eval.__file__)'
 ```
