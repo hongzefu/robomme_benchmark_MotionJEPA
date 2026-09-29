@@ -12,6 +12,8 @@
 > 7. 「需要修改parity机制 我要的是每次都和保存完的o对比 p读取之前的commit 来对比 给这个commit锚定要打上tag 每次都是oph o上传 p回到之前commit 以及h现在 不要以修改前后 每次都锚定固定的commit 以后都这么干」
 > 8. 「对于v7 现在这个commit已经做完之前的v6 oph parity 修改后再做一次v6的oph parity 然后存档 之后都只以新的v7 打tag做parity」「验证过的commit就不用再次验证了」「另外这些都是基于a40 的容差标准？」
 > 9. 细化方案经用户回复「同意」（2026-09-28）；三个待定项用户未另选，按推荐落定：v6 xhard 165 局纳入 v6 回归、O 以本机 `/data` + 逐局 sha 清单为准（bucket 被 HF 计费拒绝）、tag 名 `parity-anchor-v6`／`parity-anchor-v7`。
+> 10. 「生成的job我已经query过了在排队」「也是直接用」（生成阶段直接用用户已提交排队的占位 job，不另提）。
+> 11. 「评估的job你自己提交 但是参考framesample 的实测说明了两件事：1 CPU主要让启动阶段变慢。 第一次处理请求，1 CPU约183秒，4 CPU约61秒；等前期编译结束，每次取一组动作都约0.22秒，差别很小。保持模型常驻确实有收益。 两个任务分别启动，合计约6分钟；只启动一次、连续跑两个任务，约3分39秒。这次省了约2分19秒，但还不是完整三轮比较。」「模型常驻先不动 保持一致 cpu改为4个」
 >
 > 上一轮（12.222）关于 xhard0 数量的最后决定：「和test的hard数量一致」→ 每任务 12 局。本文对原话 1 里「每个task episode数量和以前一致」的解读：**xhard0 每任务 12 局（沿用 12.222 决定），xhard1～4 每格仍 20 局（与现在一致）**。若用户本意是 xhard0 也取 20 局，只需改第一部分 §2 的数量表与 xhard0 身份来源（那样就不能再是官方 test 的 hard 子集，见 §2 末的说明），其余机制不变。
 
@@ -127,6 +129,7 @@
   - 第一轮：55 格 × 前 10 局 + xhard0 16 任务 × 前 6 局 = 646；
   - 第二轮：剩下的 646。
   - 两策略合计 2 × 1292 = 2584 局；GL 10 × A40 占位 job，每轮切 10 片。
+- **评估占位 job（用户 2026-09-28 定）**：由 agent 自己提交 10 个，规格与上次（`stage6-eval-prep.md`）相同，只把 CPU 从 1 改为 4：`sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --gpu_cmode=shared --cpus-per-task=4 --mem=32G --time=48:00:00 --wrap='sleep infinity'`。依据是 12.226 实测（`ae1cba1e`）：首个请求 1 CPU 约 183 秒、4 CPU 约 61 秒，编译结束后每取一组动作都约 0.22 秒。**模型常驻先不动**，分片与启动方式与上次保持一致（常驻两任务连跑约 3 分 39 秒、分别启动约 6 分钟，只是单次观察，不是三轮完整比较）。生成阶段不另提 job，直接用用户已提交排队的占位 job。
 - **视频回放：每局都存，落在本机盘 `/data/hongzefu`**：
   - 评估进程把每局 mp4 写到 NFS 暂存目录 `<NFS>/v7-eval-stage/<策略>/<轮>/<片>/`，文件名带 `task_tier_episode_seed`。
   - 本机 sled-vail 另起一个搬运进程（tmux 会话 `v7-vmove-<策略>`），它和评估是两个独立进程：**评估不等搬运，搬运慢了或断了也不影响评估。**
@@ -149,7 +152,7 @@
 | 6 v7 生成两次 | gen1 1100 局；gen2 在另一个占位 job 上重放 | GL A40 | `PARITY_V7_TWICE=PASS compared=1100 tol_over=0` |
 | 7 回放与入口冒烟 | 每格 1 局经评估链回放；xhard0 与 xhard1 各起 1 局 | 本机 | `V7_RESET_REPLAY=PASS injected_mismatch=0`；`HARD_EVAL_SMOKE=PASS episodes=2` |
 | 8 发布与定 v7 锚点 | 替换包内规格、改 README、留档 `docs/validation/newtask-v7/`；打 tag `parity-anchor-v7` 并登记 | 本机 | `PARITY_ANCHOR=PASS tag=parity-anchor-v7`；`git diff --check` |
-| 9 评估准备 | benchmark 切两个 `PolicyEvalThirdParty-*` 分支；两个策略仓库从上次分支切 v7 分支，改 gitlink 并打开视频；提交 10 个评估占位 job；本机起搬运进程；每策略冒烟 2 局 | GL A40 + 本机 | `POLICY_DIFF` × 2、`SUBMODULE_PIN`、`EVAL_SMOKE` × 2、冒烟视频已到 `/data` |
+| 9 评估准备 | benchmark 切两个 `PolicyEvalThirdParty-*` 分支；两个策略仓库从上次分支切 v7 分支，改 gitlink 并打开视频；自行提交 10 个评估占位 job（每个 4 CPU、32G，模型常驻方式不变）；本机起搬运进程；每策略冒烟 2 局 | GL A40 + 本机 | `POLICY_DIFF` × 2、`SUBMODULE_PIN`、`EVAL_SMOKE` × 2、冒烟视频已到 `/data` |
 | 10 评估两轮 | 每策略 646 + 646；边评边搬视频 | GL 10 × A40 | `EVAL_ROUND1/2`、`EVAL_IDENTITY_SET`、`EVAL_BINDING`、`EVAL_TIER_CAP`、`EVAL_VIDEO` × 2 |
 | 11 收尾 | 5 档成功率表写入留档；NFS 暂存清空；按清单逐个 `scancel` 评估 job | 本机 | `EVAL_HOLD_RELEASE=PASS` |
 
@@ -227,7 +230,7 @@ R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-d
 | `_rollout.py::plan_pending`／`apply_results` | 递补改为跨档同步：某档某候选 rollout 失败 → 四档该候选全部退选，递补同一个下一候选（要求该候选四档规格都存在且 `tried=False`）；单档文件锁升级为四档目录锁 |
 | `generate_h5.py` | `--mode continue` 输入 `--specs-root <test-hard 目录>`（四档一起）；`--mode replay` 不变（gen2 用） |
 | `_report.py` | 报告增加 `derive_fail`、`sync_dropped` 计数（显式零值） |
-| 删除 `migrate_smvla_specs.py` | 见第一部分 §5 |
+| 删除 `migrate_smvla_specs.py` | 见 §7.5 |
 | `site/v6_tier_monotone.py` | 加 `--specs-root` 读 v7 四档实际值输出 `V7_TIER_MONOTONE` |
 
 ### 1.5 `scripts/parity/`
@@ -253,9 +256,9 @@ R8. `scripts/` 顶层四入口不变（P1）；新脚本落 `scripts/injection-d
 |---|---|---|
 | 母布局 reset（阶段 4，xhard4 配置） | 16 任务 × 24 候选 = 384 次成功目标；`--max-reset-attempts` 每任务 40 | ≤ 16 × 40 = 640 次 reset |
 | 派生 reset（阶段 4） | 13 任务 × 3 档 × 24 候选 = 936 次，每候选只 1 次、失败不重抽 | ≤ 936 次 reset |
-| gen1 轨迹（阶段 5） | (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100 局；同步递补上限每格 4 → 55 格 × 4 = 220 | ≤ 1320 次轨迹 |
-| gen2 轨迹（阶段 5） | 1100 正式局重放；基础设施失败每身份最多 1 次 | ≤ 1100 + 1100 |
-| v6 回归 H 侧（阶段 6，O/P 复用不重跑） | 16 任务 × 3 档 × 3 局 = 144 + (13 任务 × 3 档 + 16 任务 × 1 档) × 3 局 = 165 | ≤ 309（+ 基础设施重跑 ≤ 309） |
+| gen1 轨迹（阶段 6） | (13 任务 × 4 档 + 3 任务 × 1 档) × 20 局 = 1100 局；同步递补上限每格 4 → 55 格 × 4 = 220 | ≤ 1320 次轨迹 |
+| gen2 轨迹（阶段 6） | 1100 正式局重放；基础设施失败每身份最多 1 次 | ≤ 1100 + 1100 |
+| v6 回归 H 侧（阶段 5，O/P 复用不重跑） | 16 任务 × 3 档 × 3 局 = 144 + (13 任务 × 3 档 + 16 任务 × 1 档) × 3 局 = 165 | ≤ 309（+ 基础设施重跑 ≤ 309） |
 | 回注回放（阶段 7） | 13 × 3 + 16 = 55 次 reset | 55 |
 | 本机冒烟（阶段 3） | 1 任务 × (1 + 3) reset + 4 局 | 4 reset、4 轨迹 |
 | 评估冒烟（阶段 9） | 2 策略 × 2 局（xhard0、xhard1 各 1） | 4 |
