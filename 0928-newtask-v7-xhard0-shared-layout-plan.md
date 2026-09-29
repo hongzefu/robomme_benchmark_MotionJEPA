@@ -453,7 +453,7 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 - 包内 `src/robomme_hard/env_metadata/test-hard/xhard{1..4}/specs.jsonl` 整体替换为 v7（schema `hard-specs/3`）；xhard0 不打包规格，builder 直接读官方 test 元数据（12.222 §3.1，读取时校验源文件摘要与 12 条／任务）。
 - V6 的 `s4-setup-manifest.json`、`s4-to-delivery.json` 与 `scripts/configs/newtask-v6/v6-02/` 快照：v7 后失效，从工作树删除、git 历史保留（P1 允许删子目录内容；`configs/` 保留 `hard-parity-tolerances.json`）。`hard_regression.py` 的 `s4-subset`／`reset-replay` 子命令换成 v7 版（第二部分 §1.5）。
 - `migrate_smvla_specs.py` 的 `check` 在 v7 后必然 FAIL（钉死 1100 与 `13x3x20+16x20`），删除该文件（历史迁移已完成、git 可取回）。
-- h5 产物：v7 两次生成各 1100 局，落 `artifacts/newtask-v7/gen1/`、`gen2/`（bucket 被 HF 计费拒绝，不上传）；gen1 正式局保留在本机 `/data`，gen2 在 `PARITY_V7_TWICE=PASS` 留档后删除，只留逐局 sha 清单；v6 旧产物不动；xhard0 不生成 h5（它是评估身份，不是生成产物；12.222 §5 的轨迹比较是可选项，本文不列入预算）。
+- h5 产物：v7 两次生成各 1100 局，落 `artifacts/newtask-v7/gen1/`、`gen2/`（bucket 被 HF 计费拒绝，不上传）；gen1 正式局保留在本机 `/data`，gen2 在 `PARITY_V7_TWICE=PASS` 留档后删除，只留逐局 sha 清单；v6 本机大产物已于 2026-09-28 按用户「直接全删」「确认删除 但是保网站内容」删除（约 2.19T、13054 个文件），只保留 site-v11／v12 引用的 281 个文件（36G）；xhard0 不生成 h5（它是评估身份，不是生成产物；12.222 §5 的轨迹比较是可选项，本文不列入预算）。
 
 ### 7.6 验收（查什么 / 怎么查 / 过了说明什么 / 判定行）
 
