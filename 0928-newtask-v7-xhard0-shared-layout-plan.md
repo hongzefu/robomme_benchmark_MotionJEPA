@@ -18,10 +18,18 @@
 > 13. 「xhard0你理解错误 我需要走/data/hongzefu/robomme_benchmark_MotionJEPANewTask/src/robomme_hard路线生成+评估，生成和评估的结果都要和以前一致」
 > 14. 「原版评估和生成 零食用一个https://github.com/RoboMME/robomme_benchmark/tree/dataset-gen来实现」（「零食用」按上下文读作「都是用」：官方的评估与生成都由 `dataset-gen` 分支实现）
 > 15. xhard0 新增四行预算（生成 O 侧 192、H 侧 192、reset 层对拍 384 次、官方路线评估 2 × 192）经 AskUserQuestion 一次性批准：「全部四行批准」（2026-09-28）。
+> 16. 「梯度（每档现场抽）	低档物体更少时怎么取 你这两个在说什么 干扰的不也是梯度的一部分吗？ 低档物体更少时怎么取只说怎么取前k个 重写这个表格」（12.230.2 已落：物体数量归入梯度列）
+> 17. 「现在的梯度都不要取区间了 直接定死数字 保留确定性 都取上界 干扰容器数 8 → 10 → 13 → 15和 外环干扰数 4 → 6 → 8 → 10 这些地方 所有的xhard1 能否做到只比xhard0难一点点 保证梯度的均匀 给出方案」
+> 18. 「注意这个外环干扰要和内环加起来 和unmask xhard0实际生成的数字对比 我要的是目视语义结果的梯度」
+> 19. 「（内环 15）实际生成多少？有一部分取不到的！ 有哪些任务是有生成浮动的 你也要挖清楚了」
+> 20. 「h5有segementation 你来测！给出定值」（核实：h5 只落 RGB／深度，无分割；据此指令用官方环境按 xhard0 的 12 个 seed 跑 reset 探针，7 任务 × 1 档 × 12 局 = 84 次，见 §3.2.1）
+> 21. 「把这个详细展开的要写进计划」（附 §3.2.2 定值表原文）
 >
 > 上一轮（12.222）关于 xhard0 数量的最后决定：「和test的hard数量一致」→ 每任务 12 局。本文对原话 1 里「每个task episode数量和以前一致」的解读：**xhard0 每任务 12 局（沿用 12.222 决定），xhard1～4 每格仍 20 局（与现在一致）**。用户 2026-09-28 已确认 xhard0 取 12 局（原话 12）。
 
 **2026-09-28 修订（原话 13、14）**：此前本文把 xhard0 只当「评估身份」——评估走 `robomme_hard`，但不生成 h5、不与官方对拍，轨迹比较列为可选项。用户纠正：xhard0 的**生成与评估都必须走 `src/robomme_hard` 路线**，且两者的结果都要与「以前」一致；「以前」= 官方 `dataset-gen` 分支的实现（生成编排 `d53f21a7`、环境源码 `1fadc0ec`，两个锚点均在 `origin/dataset-gen` 上，`git merge-base --is-ancestor` 核实）。据此改写 §2、§5、§6 与第二部分 §1.5、§2、§3、§7.5～7.7；新增的生成／评估预算行已由用户一次性批准（原话 15），与原表同等效力。
+
+**2026-09-28 第二次修订（原话 16～21）**：此前本文（决策 3、D-5、R3）写的是「梯度数值沿用现行四档表，一个不改」。用户改为：**全部梯度定死为单个数字、不再取区间；物体数量按桌面目视总量（内环 + 外环／干扰）算梯度，基线是 xhard0 实际生成的数量而不是配置数；xhard1 只比 xhard0 难一点点、四档等差。** 为此先用官方环境实测了 xhard0 的实际放置数（§3.2.1），再据此定表（§3.2.2）。受影响段落：决策 3、§3.1、§3.2、§3.3、§6 阶段 1′、第二部分 R3、§1.7、§2、D-5、§7.3.2、§7.6、§5。
 
 # 第一部分（给人看）
 
@@ -29,7 +37,7 @@
 
 1. v7 的 `test-hard` 从 4 档变成 5 档：新增 **xhard0**，放在 xhard1 前面。
 2. xhard0 就是原来官方 test 里的 hard，一局不改：16 任务 × 1 档 × 12 局 = 192。**生成与评估都走 `src/robomme_hard`**，并分别与官方 `dataset-gen` 路线对拍：生成出的 h5 与官方生成器的产物在容差内一致（同型号 A40），评估的逐局终态与官方 `evaluation.py` 路线相同。
-3. xhard1～4 **四档共用同一批 20 个场景布局**。四档之间只有难度梯度不同（次数、数量、序列、演示选择）；梯度数值沿用现在的四档表，一个不改。
+3. xhard1～4 **四档共用同一批 20 个场景布局**。四档之间只有难度梯度不同（次数、数量、序列、演示选择）。**梯度数值按 §3.2.2 定值表：每档一个定数、无区间；物体数量按桌面目视总量等差，基线是 xhard0 实测放置数（§3.2.1）；xhard1 只比 xhard0 难一点点**（原话 17～21）。这推翻了本文初版「一个不改」的口径，v6 四档表只作历史对照。
 4. 局数：13 任务 × 4 档 × 20 局 + 3 任务（StopCube／InsertPeg／MoveCube，只有 xhard4）× 1 档 × 20 局 = 1100，加上 xhard0 的 192，共 1292。
 5. 评估接口不变（`scripts/README.md` 第 1 节那 4 处）：只多一个档名 `xhard0`，它的步数上限是 1300。
 6. parity 改为**固定 tag 锚点**，以后都这么做（§4）。
@@ -54,7 +62,7 @@
 | | 改前（v6，现在） | 改后（v7） |
 |---|---|---|
 | 场景布局 | 每档各抽各的，四档 seed 段不同（6e6／8e6／10e6／12e6），同一局号在四档里的场景没有关系 | 每任务先在 xhard4 配置下抽 20 个「母布局」，xhard1～3 直接沿用；四档同一 seed（`14e6 + 任务码×1e5 + 候选×100`） |
-| 难度梯度 | 各档按自己的区间抽 | 不变：各档仍按自己的区间在环境里现场抽，数值表一个不改 |
+| 难度梯度 | 各档按自己的区间抽（如抓取次数 [6,7]） | **每档一个定数、不再抽区间**（§3.2.2）；数量类梯度按桌面目视总量等差，以 xhard0 实测数为基线（§3.2.1）；仍在环境里按本档配置现场取值，只是取值集合缩成一个点 |
 | 低档物体更少 | 各档独立摆放 | 从母布局里取**前 k 个**（母布局按 xhard4 的最大数量摆，低档用得少就取前面几个，位置、颜色都不变） |
 | 某档在某个布局上抽不出合法场景 | 该档单独换一局 | 这个布局在四档**同时作废**，四档一起换下一个候选 |
 | 每格局数 | 20 | 20 |
@@ -63,32 +71,94 @@
 
 ### 3.2 逐任务：四档的差别是怎么做出来的
 
-格式 xhard1 → xhard2 → xhard3 → xhard4；`[a,b]` 表示在区间里均匀抽整数。数值与 `scripts/README.md` 第 3 节相同。
+#### 3.2.1 xhard0 的实际数量：配置数不等于桌上真有多少（2026-09-28 实测）
 
-| 任务 | 四档共用的布局（来自母布局） | 梯度（每档现场抽；物体数量也是梯度） | 取前 k 个：低档怎么从母布局里截 |
+用户指出「（内环 15）实际生成多少？有一部分取不到的」。读官方 `src/robomme/robomme_env/` 的放置循环，确实有一类任务是**放不下就静默减员**：`VideoUnmask`／`ButtonUnmask`／`VideoUnmaskSwap`／`ButtonUnmaskSwap` 的容器循环 `except RuntimeError: break`（第 i 个 256 次放不下，后面全不放）；`PickHighlight` 的块、`PickXtimes` 的每色块同样 `break`，`PickXtimes` 的目标圆盘失败只记日志；`BinFill` 单块失败跳过继续，且总块配置本来是 `spawn_cubes=[10,12]` 而非固定 12；`PatternLock` 路径长度靠最多 1000 次重抽、仍不合格就用最后一条。其余任务（SwingXtimes、VideoRepick、VideoPlaceButton、VideoPlaceOrder、RouteStick、StopCube、InsertPeg、MoveCube）失败即抛 `SceneGenerationError` 整局重抽，数量精确。
+
+h5 里没有 actor 列表也没有分割图（环境运行时 `obs_mode="rgb+depth+segmentation"`，但录像器落盘只留 RGB／深度），所以按用户原话 20 直接用官方环境实测：`robomme.env_record_wrapper.BenchmarkEnvBuilder(task, dataset="test").make_env_for_episode(ep)` + `env.reset()`（与官方 `evaluation.py` 同路），对 7 个会浮动的任务 × 官方 test 的 hard 12 局（原 episode 3,7,…,47）读 `len(env.unwrapped.spawned_bins)`／`len(all_cubes)`。探针脚本、日志与汇总在 `artifacts/newtask-v7/probe-hard-counts/`（`probe.log` 末行 `PROBE_DONE rows=84 errors=0`、`EXIT_CODE=0`），逐局数值留档 [`docs/validation/newtask-v7/xhard0-placed-counts.md`](docs/validation/newtask-v7/xhard0-placed-counts.md)。预算：7 任务 × 1 档 × 12 局 = 84 次 reset，另加 smoke 时 VideoUnmask 第 3 局重复 2 次，合计 86 次，本机 GPU 1，无轨迹、无录像（原话 20 授权）。
+
+| 任务 | 配置 | 12 局实际放置数 | 结论 |
 |---|---|---|---|
-| BinFill | 按钮位置、托盘偏移、12 个块的颜色／槽位／生成顺序 | 投入块数 6 → 7 → 8 → 9（总块数固定 12） | 不截：12 个块四档全用 |
-| PickXtimes | 按钮、目标区、目标块、3 个干扰块的位置与颜色 | 抓取次数 [6,7] → [8,9] → [10,12] → [13,15]；干扰块数 1 → 2 → 3 → 3 | 干扰块按母布局生成顺序取前 k 个 |
-| SwingXtimes | 同 PickXtimes，另加摆动目标点 | 摆动轮数 [4,5] → [6,7] → [8,9] → [10,11]；干扰块数 1 → 2 → 3 → 3 | 干扰块取前 k 个 |
+| VideoUnmask | 容器 15 | 5,6,6,5,6,4,4,5,6,6,6,6（均值 5.4） | **只放下 4～6 个**，15 是空数字 |
+| ButtonUnmask | 容器 15 | 5,5,5,5,4,5,6,6,6,4,6,6（均值 5.3） | 同上，4～6 |
+| VideoUnmaskSwap | 容器 4 | 全部 4 | 精确 |
+| ButtonUnmaskSwap | 容器 4 | 全部 4 | 精确 |
+| PickHighlight | 块 6 | 全部 6 | 精确 |
+| PickXtimes | 3 色各 1 块 | 全部 3，圆盘无缺失 | 精确 |
+| BinFill | 总块 [10,12] | 10,11,11,11,12,11,10,10,12,12,10,11 | 请求数＝实际数，没有丢块；但总块本来就是 10～12 |
+
+所以真正的断崖在 Unmask 两任务：xhard0 桌上平均 5 个容器，v6 的 xhard1 是 8 内环 + 8 干扰 = 16 个，一步涨到三倍；Swap 两任务是 4 → 8，翻倍。这就是原话 17、18 要修的地方。
+
+#### 3.2.2 定值表（原话 21 附表，逐字；全部定死、无区间；物体数按目视总量等差）
+
+定数规则：①区间一律取上界，xhard0 也取上界作基线；②等差：步长 =（顶档 − xhard0 基线）÷ 4 取整，上界导致某一步偏大时**下调顶档**、不上调低档（低档贴近 xhard0 优先）；③数量类维度按桌面目视总量（内环 + 外环／干扰、目标块 + 干扰块）算，不按外环／干扰单独算；④xhard0 一列写**实测值**（§3.2.1），不是配置数。
+
+| 任务 | 维度 | xhard0 实际 | xhard1 | xhard2 | xhard3 | xhard4 | 步长 |
+|---|---|---|---|---|---|---|---|
+| VideoUnmask | 桌面容器总数（内环 8 固定 + 干扰） | 5 | 8 + 0 = 8 | 8 + 4 = 12 | 8 + 8 = 16 | 8 + 12 = 20 | +3 / 4 / 4 / 4 |
+| | 干扰里藏 cube 数 | — | 0 | 2 | 4 | 6 | 干扰数一半 |
+| | pick | 2 | 2 | 3 | 3 | 3 | 上限 3 |
+| ButtonUnmask | 同 VideoUnmask | 5 | 8 | 12 | 16 | 20 | 同上（原顶 14 干扰改 12） |
+| VideoUnmaskSwap | 容器总数（内环 4 + 外环） | 4 | 4 + 2 = 6 | 4 + 4 = 8 | 4 + 6 = 10 | 4 + 8 = 12 | 2 |
+| | swap | 3 | 5 | 7 | 9 | 11 | 2 |
+| | pick | 2 | 2 | 3 | 3 | 3 | |
+| ButtonUnmaskSwap | 容器总数 | 4 | 6 | 8 | 10 | 12 | 2 |
+| | swap | 3 | 3 | 5 | 7 | 9 | 2（xhard1 靠外环 +2 拉开） |
+| | pick | 2 | 2 | 3 | 3 | 3 | |
+| PickHighlight | 总块 / pick | 6 / 3 | 7 / 4 | 8 / 5 | 9 / 6 | 10 / 7 | 1 / 1 |
+| PickXtimes | 桌面块总数（3 色块 + 干扰） | 3 | 4 | 5 | 6 | 7 | 1（需加第 4 干扰色） |
+| | 抓取次数 | 5 | 7 | 10 | 12 | 15 | 2～3 |
+| SwingXtimes | 桌面块总数 | 3 | 4 | 5 | 6 | 7 | 1 |
+| | 摆动轮数 | 3 | 5 | 7 | 9 | 11 | 2 |
+| BinFill | 总块 | 10～12 | 12 | 12 | 12 | 12 | 固定 |
+| | 投入块数 | 5 | 6 | 7 | 8 | 9 | 1 |
+| VideoRepick | 块 / swap / repick | 无锚 | 4 / 4 / 2 | 5 / 6 / 3 | 6 / 8 / 4 | 7 / 10 / 5 | 1 / 2 / 1 |
+| PatternLock | 节点数 | 8 | 12 | 16 | 20 | 24 | 4 |
+| RouteStick | 段数 | 7 | 10 | 13 | 16 | 19 | 3 |
+| VideoPlaceButton | 块数 / 放台次数 | 1 / 2 | 1 / 3 | 1 / 4 | 2 / 5 | 2 / 6 | 1 |
+| VideoPlaceOrder | 总放台次数（2 块） | 4 | 5 | 6 | 7 | 8 | 1 |
+
+StopCube／InsertPeg／MoveCube 只有 xhard4，数值不动。
+
+**相对 v6 四档表改了什么**（每处都能对回 `scripts/README.md` 第 3 节的旧值）：
+- **Unmask 两任务的贴身环带干扰**：8/10/13/15（VU）、8/10/12/14（BU）→ **0/4/8/12**，两任务相同；含 cube 数从 4/5/[6,7]/… → 0/2/4/6（恒为干扰数一半）。xhard1 干扰取 0：桌上 8 个容器全是候选，只比 xhard0 的 5 个多 3 个、间距更紧，语义与 hard 相同；贴身环带从 xhard2 起加入、每档 +4。若坚持 xhard1 也要有环带则是 2/6/10/14（总数 10/14/18/22），但 xhard1 会跳到两倍，故不取。
+- **Swap 两任务外环**：4/6/8/10 → **2/4/6/8**（总数 6/8/10/12，步 2；顶档 14 → 12 个容器）。外环含 cube = 外环数一半 → 1/2/3/4；代码已允许 ≥2 的偶数，不用改规则。swap：VUS [4,5]/[6,7]/[8,9]/[10,12] → 5/7/9/11；BUS 4/5/[6,7]/[8,9] → 3/5/7/9。
+- **PickXtimes／SwingXtimes 干扰块**：1/2/3/3 → **1/2/3/4**（顶部不再持平），需在 `utils/xhard.py::DISTRACTOR_COLORS` 加第 4 色（现只有黄／青／品红，不得与红／蓝／绿目标色相撞）。次数：PickXtimes [6,7]/[8,9]/[10,12]/[13,15] → 7/10/12/15；SwingXtimes [4,5]/[6,7]/[8,9]/[10,11] → 5/7/9/11。
+- **VideoRepick**：swap [3,4]/[5,6]/[7,8]/[9,12] → 4/6/8/10；repick 2/3/4/[5,6] → 2/3/4/5。
+- **PatternLock**：[9,12]/[13,16]/[17,20]/[21,25] → 12/16/20/24（25 格不必占满）。
+- **RouteStick**：[8,10]/[11,13]/[14,16]/[17,21] → 10/13/16/19（执行段 50·19 = 950 步，在上限内）。
+- **不变**：BinFill 6/7/8/9；PickHighlight 4/5/6/7 与 7/8/9/10；VideoPlaceButton 3/4/5/6（1/1/2/2 块）；VideoPlaceOrder 5/6/7/8；四个 Unmask 的 pick 2/3/3/3。
+- **顶档下调共七处**：VU 干扰 15 → 12、BU 14 → 12、Swap 外环 10 → 8、VUS swap 12 → 11、VideoRepick swap 12 → 10 与 repick 6 → 5、PatternLock 25 → 24、RouteStick 21 → 19。代价是 xhard4 比 v6 略容易；反过来保顶档就要放大步长、把 xhard1 推离 xhard0，与原话 17 冲突，故取下调。
+
+#### 3.2.3 逐任务：布局怎么共用、梯度怎么取、低档怎么截
+
+「布局」来自母布局、四档相同；「梯度」按 §3.2.2 定值在环境里现场取；「取前 k 个」只写低档从母布局截前缀的规则。
+
+| 任务 | 四档共用的布局（来自母布局） | 梯度（每档定值；物体数量也是梯度） | 取前 k 个：低档怎么从母布局里截 |
+|---|---|---|---|
+| BinFill | 按钮位置、托盘偏移、12 个块的颜色／槽位／生成顺序 | 投入块数 6 → 7 → 8 → 9（总块固定 12） | 不截：12 个块四档全用 |
+| PickXtimes | 按钮、目标区、3 色目标块、4 个干扰块的位置与颜色 | 抓取次数 7 → 10 → 12 → 15；干扰块数 1 → 2 → 3 → 4 | 干扰块按母布局生成顺序取前 k 个 |
+| SwingXtimes | 同 PickXtimes，另加摆动目标点 | 摆动轮数 5 → 7 → 9 → 11；干扰块数 1 → 2 → 3 → 4 | 干扰块取前 k 个 |
 | PickHighlight | 按钮、10 个块的位置与颜色 | 总块数 7 → 8 → 9 → 10；pick 数 4 → 5 → 6 → 7；高亮哪几个块每档重抽 | 块取前 k 个 |
-| VideoUnmask | 主容器位置与颜色、15 个干扰容器位置 | 干扰容器数 8 → 10 → 13 → 15；pick 2 → 3 → 3 → 3；干扰容器里放不放块每档重抽 | 干扰容器取前 k 个 |
-| ButtonUnmask | 同上，另加按钮位置；干扰容器共 14 个 | 干扰容器数 8 → 10 → 12 → 14；pick 2 → 3 → 3 → 3；放不放块每档重抽 | 干扰容器取前 k 个 |
-| VideoUnmaskSwap | 主容器位置与颜色、被选目标、发起交换的容器、外环 10 个干扰容器位置与颜色 | 外环干扰数 4 → 6 → 8 → 10；swap [4,5] → [6,7] → [8,9] → [10,12]；pick 2 → 3 → 3 → 3；交换路线与外环块分配每档重抽 | 外环干扰容器取前 k 个 |
-| ButtonUnmaskSwap | 同上 | 外环干扰数 4 → 6 → 8 → 10；swap 4 → 5 → [6,7] → [8,9]；pick 2 → 3 → 3 → 3；交换路线与外环块分配每档重抽 | 外环干扰容器取前 k 个 |
-| VideoRepick | 7 个块的位置与颜色（有按钮就含按钮） | 块数 4 → 5 → 6 → 7；swap [3,4] → [5,6] → [7,8] → [9,12]；repick 2 → 3 → 4 → [5,6]；目标块与交换顺序每档重抽 | 块取前 k 个 |
+| VideoUnmask | 8 个内环容器位置与颜色、12 个干扰容器位置 | 干扰容器数 0 → 4 → 8 → 12；pick 2 → 3 → 3 → 3；干扰里放 cube 的位置每档重抽（数量 0/2/4/6 定死） | 干扰容器取前 k 个（xhard1 取 0 个） |
+| ButtonUnmask | 同上，另加按钮位置 | 同上 | 同上 |
+| VideoUnmaskSwap | 4 个内环容器位置与颜色、被选目标、发起交换的容器、外环 8 个干扰容器位置与颜色 | 外环干扰数 2 → 4 → 6 → 8；swap 5 → 7 → 9 → 11；pick 2 → 3 → 3 → 3；交换路线与外环块分配每档重抽 | 外环干扰容器取前 k 个 |
+| ButtonUnmaskSwap | 同上 | 外环干扰数 2 → 4 → 6 → 8；swap 3 → 5 → 7 → 9；pick 2 → 3 → 3 → 3；交换路线与外环块分配每档重抽 | 外环干扰容器取前 k 个 |
+| VideoRepick | 7 个块的位置与颜色（有按钮就含按钮） | 块数 4 → 5 → 6 → 7；swap 4 → 6 → 8 → 10；repick 2 → 3 → 4 → 5；目标块与交换顺序每档重抽 | 块取前 k 个 |
 | VideoPlaceButton | 目标区、按钮、块的颜色与位置、放置台位置 | 块数 1 → 1 → 2 → 2；放台次数 3 → 4 → 5 → 6；演示序列、答案每档重抽 | 块取前 k 个；放置台按本档所需台数取前 k 个 |
 | VideoPlaceOrder | 同 VideoPlaceButton | 总放台次数 5 → 6 → 7 → 8（四档都是 2 块）；访问顺序、演示、答案每档重抽 | 放置台按本档所需台数取前 k 个 |
-| PatternLock | 一条 25 格不重访路径（母布局抽 21～25 个节点） | 节点数 L [9,12] → [13,16] → [17,20] → [21,25] | 取母路径的前 L 个节点（不重访路径的前缀仍不重访） |
-| RouteStick | 旋转角、障碍颜色、完整路线（节点与方向） | 段数 L [8,10] → [11,13] → [14,16] → [17,21] | 取母路线的前 L 段 |
+| PatternLock | 一条 24 格不重访路径（母布局抽 24 个节点） | 节点数 12 → 16 → 20 → 24 | 取母路径的前 L 个节点（不重访路径的前缀仍不重访） |
+| RouteStick | 旋转角、障碍颜色、完整路线（节点与方向） | 段数 10 → 13 → 16 → 19 | 取母路线的前 L 段 |
 | StopCube／InsertPeg／MoveCube | 只有 xhard4 | — | — |
 
 两个要点：
 - **「取前 k 个」为什么合法**：物体是一个个依次摆的，每个新物体只和已摆好的物体检查距离，所以前 k 个本身就是一组合法摆放。另外，环境在回注时本来就会重新检查，真不合法会直接报错，不会悄悄放过。
-- **梯度为什么不能也从母布局里截**：比如 VideoRepick 的交换计划要依赖块的数量，BinFill 投入块数一变，后面的分配就全变。所以梯度一律在环境里按本档配置重新抽；只有布局是注入的。
+- **梯度为什么不能也从母布局里截**：比如 VideoRepick 的交换计划要依赖块的数量，BinFill 投入块数一变，后面的分配就全变。所以梯度一律在环境里按本档配置重新取；只有布局是注入的。定值后「重新取」退化为取该档唯一的数，序列类（交换路线、演示顺序、高亮 id）仍随档重抽。
 
 ### 3.3 最高档 xhard4 和现在是否一致
 
-- **一致的**：配置数值、代码路径、回注方式都和 v6 的 xhard4 相同：先抽签冻结规格，生成与评估时按规格全量回注。梯度表一个数不改；StopCube／InsertPeg／MoveCube 仍然只有 xhard4，数值不动。
+- **一致的**：代码路径、回注方式和 v6 的 xhard4 相同：先抽签冻结规格，生成与评估时按规格全量回注。StopCube／InsertPeg／MoveCube 仍然只有 xhard4，数值不动。
+- **配置数值不再一致**（原话 17～21）：xhard4 有七处顶档下调（§3.2.2「顶档下调共七处」），区间全部定死为上界或等差值。所以 v7 的 xhard4 不是 v6 的 xhard4 换 seed，而是数值也变了的新顶档；v6 xhard4 规格与数值只在 git 历史保留。
 - **不一致的**：**具体这 20 局是重新抽的**。seed 从 v6 的 6e6 段换成 v7 的 14e6 段，所以场景和取值都和 v6 的 xhard4 不同，v6 的 xhard4 规格不再发布（git 历史保留）。
 - **一个细微差别**：v7 的母布局要同时让 xhard1～3 都派生成功才会入选，派生失败的布局四档一起作废。所以 xhard4 的 20 局是「对低档也可行」的布局，理论上比 v6 的 xhard4 略有筛选偏差。候选作废率会在阶段 4 实测，并写进留档。
 
@@ -159,9 +229,10 @@
 | 0 准备 | 取回原三档 144 局清单与官方 train 元数据；从官方 test 元数据导出 xhard0 的 192 局清单 `scripts/configs/newtask-v7/xhard0_manifest.json`；写布局白名单 | 本机 | `XHARD0_IDENTITY=PASS shape=16x1x12 identities=192` |
 | 0′ 定 v6 锚点 | 确认阶段 4 生成 H 时的代码到 `ce3843b4` 之间没有行为改动；打 tag `parity-anchor-v6` 并推送；把已有的 H 产物（144 + 165）登记为它的 P 缓存 | 本机 | `ANCHOR_EQUIV=PASS`；`PARITY_ANCHOR=PASS tag=parity-anchor-v6 cached=144+165 sha_bad=0` |
 | 1 改代码：xhard0 与规格模块 | builder 加 xhard0；新 seed 规则；`TIER_MAX_STEPS["xhard0"]=1300`；`hard_parity.py` 加 `--tier xhard0`、H 侧 worker 走 builder 取环境参数；`hard_regression.py` 加 `xhard0-reset-parity`／`xhard0-eval-parity`；定向单测 | 本机 | `XHARD0_NATIVE=PASS`；`UPSTREAM_GUARD=PASS`；短测通过 |
+| 1′ 改代码：梯度定值 | 按 §3.2.2 改 13 个环境的 `config_xhard1～4`、Unmask 的 `NEWVALUE_DISTRACTOR`、Swap 的外环数、`DISTRACTOR_COLORS` 第 4 色、PickXtimes xhard 分支 `break` → 抛错（第二部分 §1.7）；单测钉每环境每档配置等于定值表 | 本机 | `V7_TIER_VALUES=PASS envs=13 tiers=4 mismatch=0`；短测通过 |
 | 2 改代码：母布局与派生 | 母布局抽签、派生到 xhard1～3、四档同步作废与递补；parity 锚点子命令 | 本机 | 无仿真单测通过 |
 | 3 单格冒烟 | 1 任务 × 1 布局 × 4 档；xhard0 1 任务 × 1 局 O／H 各生成 1 次（`--dev-smoke`，本机 Ada 只验链路） | 本机 | 单格 `V7_LAYOUT_SHARED`、`V7_RESET_REPLAY` 通过；`NATIVE_SMOKE=PASS tier=xhard0` × 2 |
-| 4 正式抽签与派生 | 16 任务 × 30 候选母布局；13 任务 × 3 档 × 30 派生 | GL A40 | `V7_LAYOUT_SHARED=PASS layouts=20 tiers=4`；`V7_TIER_MONOTONE=PASS` |
+| 4 正式抽签与派生 | 16 任务 × 30 候选母布局；13 任务 × 3 档 × 30 派生 | GL A40 | `V7_LAYOUT_SHARED=PASS layouts=20 tiers=4`；`V7_TIER_FIXED=PASS`；`V7_VISUAL_COUNT=PASS` |
 | 5 v6 回归 OPH | 只生成 H：144 + 165；O、P 复用 | GL A40 | `PARITY_O_P`／`P_H`／`O_H=PASS tier=native compared=144`；`PARITY_P_H=PASS tier=xhard compared=165` |
 | 5′ xhard0 生成对拍 | O 侧官方 `_worker` + `robomme`（`1fadc0ec` worktree）生成 192；H 侧 `robomme_hard` builder 路线生成 192；O 上传 bucket | GL A40（O、H 两个占位 job） | `GENERATE=PASS side=O tier=xhard0 rows=192`、`GENERATE=PASS side=H tier=xhard0 rows=192`；`PARITY_O_H=PASS tier=xhard0 shape=16x1x12 compared=192 tol_over=0`；`BUCKET_SYNC=PASS side=O tier=xhard0` |
 | 6 v7 生成两次 | gen1 1100 局；gen2 在另一个占位 job 上重放 | GL A40 | `PARITY_V7_TWICE=PASS compared=1100 tol_over=0` |
@@ -180,7 +251,7 @@
 
 R1. `src/robomme/` 零改动（P2）；三个官方入口与录像器零 diff。xhard0 只在 `src/robomme_hard/` 侧新增条目与分派。
 R2. 不把 `"xhard0"` 加进 `difficulty.py::NEWVALUE_DIFFICULTIES`／`VALID_DIFFICULTIES`；xhard0 传给 `gym.make` 的 `difficulty` 是 `"hard"`（`normalize_robomme_difficulty` 不认 `"xhard0"`，`spec_kind_for` 据此选原值类别）。
-R3. 不改任何梯度取值（D-5）；`sampling_config` 由 `_extract.build_sampling(..., release="newtask-v6")` 提取的结果必须与 v7 xhard4 header 内嵌值相同（`tests/lightweight/test_sampling_config_split.py::test_v6_snapshot_matches_source` 继续钉死）。
+R3. 梯度取值只能等于 §3.2.2 定值表（D-5），每档单点、不留区间；改动只落 `src/robomme_hard/`（P2 适用，逐文件清单见 §1.7）。v6 数值不删：`_extract.build_sampling(..., release="newtask-v6")` 继续返回 v6 值（读旧规格用，`test_v6_snapshot_matches_source` 不动），新增 `release="newtask-v7"` 返回定值表，v7 header 内嵌值必须与之相同（新增 `test_v7_snapshot_matches_source`）。
 R4. 派生失败四档同步作废，不许单档换布局；失败不换 seed、不重试到成功；基础设施失败每身份最多重跑 1 次。
 R5. 对拍按 D-8／D-11～D-13；O 与已登记的 P 缓存不重新生成，tag 不移动不删除；`--calibrate` 仍只允许 `O:P`，v7 不重标、不改容差文件；两次生成必须同型号同驱动（A40），`generate` 的 A40 断言保留。
 R6. reset／轨迹预算按 P3 一次性授权（§2 预算表，用户 2026-09-28 已全表批准），乘式写法（P5）；超出任一行上限先停下找用户。
@@ -273,6 +344,29 @@ R9. xhard0 对拍的 O 侧只能是 vendor 的官方 `_worker`（`d53f21a7`）+ 
 - README 三份（`scripts/README.md`、`src/robomme_hard/README.md`、`scripts/parity/README.md`）按第一部分 §4 改数字与链路说明；`readme.md` 不动。
 - 测试：新增 `tests/lightweight/test_xhard0_native.py`（身份 16×1×12、分派实参、`TIER_MAX_STEPS` 五项）、`test_v7_layout_shared.py`（白名单形态、`derive`／layered 回注在无仿真夹具下的 `layout_injected`／`layout_drift` 行为、四档同步递补状态机）、`test_v7_seed_rule.py`（v7 四档同 seed、与 v5/v6 段互不重叠）；改 `test_v6_difficulty_tiers.py::test_v6_seed_rule_offsets_disjoint` 限定 v6 族；`test_hard_state_machine.py` 参数化 v6/v7；`test_hard_parity.py` 补 `H:H2`／`v7`／`xhard0`（清单导出、`shape=16x1x12`、H 侧 `--builder-route` 断言、R9 互斥）用例；`test_train_split_parity.py` 补 worker `builder_route` 夹具（假 builder 返回非 `{seed, difficulty}` 键集合时必须抛错）；`test_wrapper_chain.py`（gpu）对 test-hard episode 0（xhard0）与 episode 12（xhard1）各做一次。
 
+### 1.7 梯度定值（§3.2.2）的逐文件落点（全部在 `src/robomme_hard/`）
+
+| 文件::锚点 | 现值（v6） | v7 定值 |
+|---|---|---|
+| `robomme_env/VideoUnmask.py::NEWVALUE_DISTRACTOR` | xhard1 `(8,[4,4])`、xhard2 `(10,[5,5])`、xhard3 `(13,[6,7])`、xhard4 `XHARD_DISTRACTOR`(15) | xhard1 `(0,[0,0])`、xhard2 `(4,[2,2])`、xhard3 `(8,[4,4])`、xhard4 `(12,[6,6])`；`config_xhard*` 的 `bin=8`、`pick=2/3/3/3` 不变 |
+| `robomme_env/ButtonUnmask.py::NEWVALUE_DISTRACTOR` | xhard3 `(12,[6,6])`、xhard4 14 | 同 VideoUnmask：`(0,[0,0])`／`(4,[2,2])`／`(8,[4,4])`／`(12,[6,6])` |
+| `utils/unmask_distractor_sampler.py` | `count` 未验证 0 | `count=0` 时不放置、不停放、`verify_distractor_layout` 对空布局放行（阶段 3 单格冒烟第一次验证） |
+| `robomme_env/VideoUnmaskSwap.py`／`ButtonUnmaskSwap.py::v6_distractor_cfg(task, 2 + 2 * newvalue_tier(tier))` | 外环 4/6/8/10 | `2 * newvalue_tier(tier)` → 2/4/6/8；`cube_count_range=[count//2]*2` 不变 |
+| `VideoUnmaskSwap.py::config_xhard1～4` | swap `[4,5]/[6,7]/[8,9]/[10,12]`，pick 2/3/3/3 | `swap_min==swap_max` = 5/7/9/11；pick 不变 |
+| `ButtonUnmaskSwap.py::config_xhard1～4` | swap `4/5/[6,7]/[8,9]` | 3/5/7/9 |
+| `robomme_env/PickXtimes.py` 档位表 | 次数 `[6,7]/[8,9]/[10,12]/[13,15]`，干扰 1/2/3/3 | `number_min==number_max` = 7/10/12/15；干扰 1/2/3/4 |
+| `robomme_env/PickXtimes.py` xhard 分支的方块 `except RuntimeError: break` 与圆盘 `except: logger.debug` | 静默截断（漏改） | 与 PickHighlight 同款：xhard 下抛 `SceneGenerationError`，原三档分支不动 |
+| `utils/xhard.py::DISTRACTOR_COLORS` | 黄／青／品红 3 色 | 加第 4 色（候选橙 `(1, 0.5, 0, 1)`；须与红／蓝／绿目标色及 PickHighlight 高亮色目视可分，阶段 3 出图核对） |
+| `robomme_env/SwingXtimes.py` 档位表 | 轮数 `[4,5]/[6,7]/[8,9]/[10,11]`，干扰 1/2/3/3 | 5/7/9/11；干扰 1/2/3/4 |
+| `robomme_env/VideoRepick.py::config_xhard*` | swap `[3,4]/[5,6]/[7,8]/[9,12]`，repick `2/3/4/[5,6]` | swap 4/6/8/10；repick 2/3/4/5；块 4/5/6/7 不变 |
+| `robomme_env/PatternLock.py::config_xhard*` | `[9,12]/[13,16]/[17,20]/[21,25]` | `[12,12]/[16,16]/[20,20]/[24,24]` |
+| `robomme_env/RouteStick.py::config_xhard*` | `[8,10]/[11,13]/[14,16]/[17,21]` | `[10,10]/[13,13]/[16,16]/[19,19]` |
+| BinFill、PickHighlight、VideoPlaceButton、VideoPlaceOrder、StopCube、InsertPeg、MoveCube | 已是定值 | 不动 |
+| `utils/_extract.py::build_sampling` | `release="newtask-v6"` | 加 `"newtask-v7"` 分支（R3） |
+| `scripts/injection-dev/site/v6_tier_monotone.py` | 判「落在区间」 | 加 `--fixed`：判「等于定值且按档严格递增」→ `V7_TIER_FIXED` |
+| 测试 | `test_v6_snapshot_matches_source` | 新增 `tests/lightweight/test_v7_tier_values.py`：13 环境 × 4 档配置逐项等于 §3.2.2 → `V7_TIER_VALUES` |
+| 文档 | `scripts/README.md` 第 3 节、`src/robomme_hard/README.md` ② 的四档表 | 改成五档定值表（xhard0 列写实测放置数与配置数两项），旧表移入历史小节 |
+
 ## 2. 预算（P3 一次性授权，乘式写法；用户 2026-09-28 全表批准）
 
 | 项 | 乘式 | 上限 |
@@ -291,6 +385,7 @@ R9. xhard0 对拍的 O 侧只能是 vendor 的官方 `_worker`（`d53f21a7`）+ 
 | xhard0 reset 层对拍（阶段 7）（原话 15 批准） | 2 侧 × 16 任务 × 1 档 × 12 局 = 384 次 reset，本机 GPU 0 | 384 |
 | xhard0 官方路线评估对照（阶段 10′）（原话 15 批准） | 2 策略 × 16 任务 × 1 档 × 12 局 = 384 | 384 + 基础设施重评每策略 ≤ 20 → ≤ 424 |
 | xhard0 本机冒烟（阶段 3，计入 P3 单 worker 阈值内） | 1 任务 × 1 局 × O／H 两侧 | 2 轨迹 |
+| **xhard0 实际放置数探针（已完成 2026-09-28，原话 20 授权）** | 7 任务 × 1 档 × 12 局 = 84 次 reset + smoke 2 次 = 86，本机 GPU 1，无轨迹 | 86（实耗 86，`PROBE_DONE rows=84 errors=0`） |
 
 worker：GL 每占位 job 16 worker（1 CPU + 12 G／worker）；预计耗时以阶段 3 单格实测外推后填入，不预先编数。**标「原话 15 批准」的四行是 2026-09-28 按原话 13 新增、同日经 AskUserQuestion 一次性批准的，与其余行同等效力。**停止条件：任一阶段判定行 FAIL 即停该阶段及其后续，保留产物与日志。
 
@@ -372,6 +467,8 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 - 本文未估算耗时；以阶段 3 单格实测外推后补。
 - xhard0 生成对拍是首次对 test 的 hard seed 做 O:H；此前 144 局（train 元数据）O↔H 逐字节相同只能说明路线一致，不能替代 192 局的实测结论。
 - 策略层对照要求 192 局终态全同，依据是 12.212 同类比对（1100/1100 终态相同）；若 RRT 噪声真造成某局终态翻转，只记证据、不放宽判据，裁决交用户。
+- 梯度定值后的未验证项：Unmask xhard1 干扰 `count=0` 的采样器与停放路径从未跑过；第 4 干扰色的可分辨性未出图核对；七处顶档下调后的 episode 长度与 `TIER_MAX_STEPS` 余量未实测；PickXtimes xhard 分支改抛错后候选作废率未知。均以阶段 3 单格冒烟与阶段 4 实测为准。
+- xhard0 放置数探针只测了 7 个会浮动的任务的 12 个 test hard seed；train／val 的 hard 局与其他任务未测，PatternLock「1000 次不合格用最后一条」的触发率未测。
 
 ## 6. 留档与 commit 纪律
 
@@ -391,7 +488,7 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 | D-2 | xhard0 每任务 12 局（官方 test 每任务 50 = easy 26 / medium 12 / hard 12，原 episode 号 3,7,…,47） | 12.222 用户决定「和test的hard数量一致」；本文引言 |
 | D-3 | xhard1～4 每任务 20 个母布局，四档同一布局、同一 seed；13 个有梯度任务四档共用，StopCube／InsertPeg／MoveCube 只有 xhard4、母布局即自身 | 原话 2；§3 |
 | D-4 | 「布局」= 各环境取值点里与梯度无关的位置／颜色／朝向／槽位／初始化类点（白名单见第二部分 §1.3）；「梯度」= 次数、数量、序列、演示选择类点，按档现场重抽 | 原话 2「只有现在的梯度区别不一样」；§3.2 |
-| D-5 | 梯度维度与数值逐字沿用现行四档表（`scripts/README.md` 第 3 节），本轮不改任何梯度取值 | 原话 2 附表 |
+| D-5 | 梯度维度沿用现行四档表；**数值改为 §3.2.2 定值表**：每档单点、无区间；数量类按目视总量等差、以 xhard0 实测放置数（§3.2.1）为基线、xhard1 只比 xhard0 难一点点；等差冲突时下调顶档不上调低档。原话 2 附表只作历史对照 | 原话 17～21；§3.2 |
 | D-6 | 接口与 `scripts/README.md` 第 1 节四处差别完全一致：`dataset="test-hard"`、`resolve_episode → (seed, tier)`、`TIER_MAX_STEPS[tier]`、`make_env_for_episode(ep, max_steps=…)`；只多一个档名 `xhard0` 与一个步数项 `1300` | 原话 4；§4 |
 | D-7 | 发布名 v7：包内规格换成 `hard-specs/3`（含 v7 seed 规则与母布局字段），产物落 `artifacts/newtask-v7/`，留档落 `docs/validation/newtask-v7/`；V6 规格文件由 git 历史保留 | 原话 5；§5 |
 | D-8 | 对拍分两类：v6 回归 OPH（D-11/D-12，取代原「只做 `PARITY_O_H`」）与 `PARITY_V7_TWICE`（v7 全部正式局两次生成，同型号 A40、不同作业）；容差沿用现行 `hard-parity-tolerances.json`，不重标 | 原话 6；§6 |
@@ -453,7 +550,7 @@ xhard0 身份的静态核实（12.222 已用 `jq` 做过，本轮重跑一次原
 - **前缀合法性靠什么保证**：依序放置的对象只对已放对象做中心距／OBB 检查，前缀天然合法；四档的区域、最小中心距、内环 bin 数（VU/BU 8 个、VUS/BUS 4 个）、BinFill 12 槽相同，母布局在 xhard4 下合法 ⇒ 前缀在低档下合法。回注时环境里的二次复核（`object_generation.py::_assert_center_rules_hold`、`unmask_distractor_sampler.py::verify_distractor_layout`、`swap_uniform.verify_swap_sequence`、`BinFill._spawn_cubes_xhard` 槽位复核、`PatternLock._check_xhard_path`）照常执行，不合法会响亮失败而不是静默通过。
 - **派生仍可能失败**：梯度点现场重抽可能撞上 `SceneGenerationError`（外环交换某窗不可行、额外放台无候选），这时该候选在**四档同步作废**，按候选号顺延，不允许某档单独换布局（否则「同一布局」不成立）。
 - **PatternLock 没有布局**：它唯一的取值点是 `actions.path_nodes`，v7 把它当作可取前缀的布局点（xhard4 的 21～25 节点路径，低档取前 L 个节点，8 邻接不重访的前缀仍合法）；RouteStick 的 `actions.nodes` 同理。这是 D-10 范围内的自定细节。
-- **只把 `objects.num_repeats` 之类标量留给现场重抽**，不把 xhard4 的 14 次硬塞给 xhard1（不在 [6,7] 区间会被 `_assert_*` 拒绝）。
+- **只把 `objects.num_repeats` 之类标量留给现场取值**，不把 xhard4 的 15 次硬塞给 xhard1（不等于该档定值 7 会被 `_assert_*` 拒绝；定值后区间退化为单点，断言写成相等）。
 
 收益（静态盘点，未实测）：16 个环境全部落入「可行」——PickXtimes／SwingXtimes／PickHighlight／VideoUnmask／ButtonUnmask／RouteStick／PatternLock 只需白名单；BinFill／VideoPlaceOrder／VideoPlaceButton／VideoRepick／VideoUnmaskSwap／ButtonUnmaskSwap 由「梯度点现场重抽」消掉全部耦合问题；三个 xhard4 独有任务不涉及派生。
 
@@ -510,7 +607,8 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 | xhard0 reset 层评估一致 | 同卡两进程（只导 `robomme` / 只导 `robomme_hard`）各 reset 192 局，观测全键、仿真状态、`task_goal`、多选项逐位比 | 评估时两条路线建出的是同一场景 | `XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 diff=0` |
 | xhard0 策略层评估一致 | 每策略官方路线 192 局 vs v7 评估 xhard0 192 局，按 `(task, seed)` 对齐比终态 | 官方 `evaluation.py` 路线与 `evaluation_hard.py` 路线对同一策略给出同样结果 | `XHARD0_EVAL_PARITY=PASS policy=<名> compared=192 outcome_diff=0 steps_diff=<n>` × 2 |
 | 母布局共用 | 静态：xhard1～3 每行 `layout_parent.sha256 == xhard4 同候选 spec_sha256`，且该行 spec 里每个白名单路径的值等于母值（列表取前缀、逐项路径取子集）；四档 `seed` 相同 | 四档确实是同一批 20 个布局 | `V7_LAYOUT_SHARED=PASS tasks=13 layouts=20 tiers=4 rows=780 parent_mismatch=0 seed_mismatch=0` |
-| 梯度单调 | 对每任务每布局，四档在用户指定维度的实际值按档非降且落在各档区间（沿用 `site/v6_tier_monotone.py` 口径） | 只有梯度不同，且梯度确实分档 | `V7_TIER_MONOTONE=PASS cells=55 violations=0` |
+| 梯度定值 | 静态：13 环境 × 4 档的配置逐项等于 §3.2.2（单测）；动态：对每任务每布局，四档规格里的实际值等于该档定值且按档严格递增（`site/v6_tier_monotone.py --fixed`） | 每档只有一个数，且四档确实分开 | `V7_TIER_VALUES=PASS envs=13 tiers=4 mismatch=0`；`V7_TIER_FIXED=PASS cells=55 violations=0` |
+| 目视总量梯度 | 对 Unmask／Swap／PickXtimes／SwingXtimes 每档取 1 局，从规格数 `layout.bins.*` + `objects.distractors.bins.*`（或块数）得桌面总数，与 §3.2.2「xhard1～4」列逐格相等；xhard0 列以 §3.2.1 实测为准 | 桌上看到的数量就是表里的数量 | `V7_VISUAL_COUNT=PASS cells=24 mismatch=0` |
 | 回注零差 | 每格取 1 局经评估链 `make_env_for_episode` + `reset` 后 `spec_binding`：`injected_mismatch==0`，派生局 `layout_injected==|L 白名单命中数|`，`unused` 只含母布局多出的逐项路径 | 评估时建出的场景与生成时同一局 | `V7_RESET_REPLAY=PASS shape=13x3+16 injected_mismatch=0 layout_drift=0` |
 | v6 回归 OPH | O 存档、P = `parity-anchor-v6` 缓存、H = v7 HEAD 新生成（A40），§6.1 | v7 没改变官方原生路径与 v6 回注行为 | `PARITY_ANCHOR=PASS`；`PARITY_O_P`/`P_H`/`O_H=PASS tier=native shape=16x3x3 compared=144 tol_over=0`；`PARITY_P_H=PASS tier=xhard shape=13x3x3+16x3 compared=165 tol_over=0` |
 | v7 两次生成一致 | gen1 用 `generate_h5 --mode continue` 出正式 1100 局；gen2 用 `--mode replay --identities <gen1 交付清单>` 在另一占位 job（同型号 A40、同驱动）重放；`compare --pair H:H2 --tier v7` | 规格 → h5 的映射确定，只剩 RRT 墙钟噪声 | `PARITY_V7_TWICE=PASS shape=13x3x20+16x1x20 compared=1100 tol_over=0`（`sha_equal` 作参考） |
