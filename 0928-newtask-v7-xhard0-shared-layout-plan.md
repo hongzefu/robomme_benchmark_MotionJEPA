@@ -17,10 +17,11 @@
 > 12. 待决项经 AskUserQuestion 定（2026-09-28）：P3 预算「全表一次批准」；xhard0「12 局」；四档同废「接受，30 个候选」；产物「gen2 比完即删」。
 > 13. 「xhard0你理解错误 我需要走/data/hongzefu/robomme_benchmark_MotionJEPANewTask/src/robomme_hard路线生成+评估，生成和评估的结果都要和以前一致」
 > 14. 「原版评估和生成 零食用一个https://github.com/RoboMME/robomme_benchmark/tree/dataset-gen来实现」（「零食用」按上下文读作「都是用」：官方的评估与生成都由 `dataset-gen` 分支实现）
+> 15. xhard0 新增四行预算（生成 O 侧 192、H 侧 192、reset 层对拍 384 次、官方路线评估 2 × 192）经 AskUserQuestion 一次性批准：「全部四行批准」（2026-09-28）。
 >
 > 上一轮（12.222）关于 xhard0 数量的最后决定：「和test的hard数量一致」→ 每任务 12 局。本文对原话 1 里「每个task episode数量和以前一致」的解读：**xhard0 每任务 12 局（沿用 12.222 决定），xhard1～4 每格仍 20 局（与现在一致）**。用户 2026-09-28 已确认 xhard0 取 12 局（原话 12）。
 
-**2026-09-28 修订（原话 13、14）**：此前本文把 xhard0 只当「评估身份」——评估走 `robomme_hard`，但不生成 h5、不与官方对拍，轨迹比较列为可选项。用户纠正：xhard0 的**生成与评估都必须走 `src/robomme_hard` 路线**，且两者的结果都要与「以前」一致；「以前」= 官方 `dataset-gen` 分支的实现（生成编排 `d53f21a7`、环境源码 `1fadc0ec`，两个锚点均在 `origin/dataset-gen` 上，`git merge-base --is-ancestor` 核实）。据此改写 §2、§5、§6 与第二部分 §1.5、§2、§3、§7.5～7.7；新增的生成／评估预算行**尚未获批**（第二部分 §2 标「待批准」），获批前不执行。
+**2026-09-28 修订（原话 13、14）**：此前本文把 xhard0 只当「评估身份」——评估走 `robomme_hard`，但不生成 h5、不与官方对拍，轨迹比较列为可选项。用户纠正：xhard0 的**生成与评估都必须走 `src/robomme_hard` 路线**，且两者的结果都要与「以前」一致；「以前」= 官方 `dataset-gen` 分支的实现（生成编排 `d53f21a7`、环境源码 `1fadc0ec`，两个锚点均在 `origin/dataset-gen` 上，`git merge-base --is-ancestor` 核实）。据此改写 §2、§5、§6 与第二部分 §1.5、§2、§3、§7.5～7.7；新增的生成／评估预算行已由用户一次性批准（原话 15），与原表同等效力。
 
 # 第一部分（给人看）
 
@@ -162,16 +163,16 @@
 | 3 单格冒烟 | 1 任务 × 1 布局 × 4 档；xhard0 1 任务 × 1 局 O／H 各生成 1 次（`--dev-smoke`，本机 Ada 只验链路） | 本机 | 单格 `V7_LAYOUT_SHARED`、`V7_RESET_REPLAY` 通过；`NATIVE_SMOKE=PASS tier=xhard0` × 2 |
 | 4 正式抽签与派生 | 16 任务 × 30 候选母布局；13 任务 × 3 档 × 30 派生 | GL A40 | `V7_LAYOUT_SHARED=PASS layouts=20 tiers=4`；`V7_TIER_MONOTONE=PASS` |
 | 5 v6 回归 OPH | 只生成 H：144 + 165；O、P 复用 | GL A40 | `PARITY_O_P`／`P_H`／`O_H=PASS tier=native compared=144`；`PARITY_P_H=PASS tier=xhard compared=165` |
-| 5′ xhard0 生成对拍（**预算待批准**） | O 侧官方 `_worker` + `robomme`（`1fadc0ec` worktree）生成 192；H 侧 `robomme_hard` builder 路线生成 192；O 上传 bucket | GL A40（O、H 两个占位 job） | `GENERATE=PASS side=O tier=xhard0 rows=192`、`GENERATE=PASS side=H tier=xhard0 rows=192`；`PARITY_O_H=PASS tier=xhard0 shape=16x1x12 compared=192 tol_over=0`；`BUCKET_SYNC=PASS side=O tier=xhard0` |
+| 5′ xhard0 生成对拍 | O 侧官方 `_worker` + `robomme`（`1fadc0ec` worktree）生成 192；H 侧 `robomme_hard` builder 路线生成 192；O 上传 bucket | GL A40（O、H 两个占位 job） | `GENERATE=PASS side=O tier=xhard0 rows=192`、`GENERATE=PASS side=H tier=xhard0 rows=192`；`PARITY_O_H=PASS tier=xhard0 shape=16x1x12 compared=192 tol_over=0`；`BUCKET_SYNC=PASS side=O tier=xhard0` |
 | 6 v7 生成两次 | gen1 1100 局；gen2 在另一个占位 job 上重放 | GL A40 | `PARITY_V7_TWICE=PASS compared=1100 tol_over=0` |
-| 7 回放与入口冒烟 | 每格 1 局经评估链回放；xhard0 与 xhard1 各起 1 局；xhard0 reset 层对拍（**预算待批准**）：官方 `robomme` 进程与 `robomme_hard` 进程各 reset 192 局、逐位比对 | 本机 GPU 0 | `V7_RESET_REPLAY=PASS injected_mismatch=0`；`HARD_EVAL_SMOKE=PASS episodes=2`；`XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 diff=0` |
+| 7 回放与入口冒烟 | 每格 1 局经评估链回放；xhard0 与 xhard1 各起 1 局；xhard0 reset 层对拍：官方 `robomme` 进程与 `robomme_hard` 进程各 reset 192 局、逐位比对 | 本机 GPU 0 | `V7_RESET_REPLAY=PASS injected_mismatch=0`；`HARD_EVAL_SMOKE=PASS episodes=2`；`XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 diff=0` |
 | 8 发布与定 v7 锚点 | 替换包内规格、改 README、留档 `docs/validation/newtask-v7/`；打 tag `parity-anchor-v7` 并登记 | 本机 | `PARITY_ANCHOR=PASS tag=parity-anchor-v7`；`git diff --check` |
 | 9 评估准备 | benchmark 切两个 `PolicyEvalThirdParty-*` 分支；两个策略仓库从上次分支切 v7 分支，改 gitlink 并打开视频；自行提交 10 个评估占位 job（每个 4 CPU、32G，模型常驻方式不变）；本机起搬运进程；每策略冒烟 2 局 | GL A40 + 本机 | `POLICY_DIFF` × 2、`SUBMODULE_PIN`、`EVAL_SMOKE` × 2、冒烟视频已到 `/data` |
 | 10 评估两轮 | 每策略 646 + 646；边评边搬视频 | GL 10 × A40 | `EVAL_ROUND1/2`、`EVAL_IDENTITY_SET`、`EVAL_BINDING`、`EVAL_TIER_CAP`、`EVAL_VIDEO` × 2 |
-| 10′ xhard0 官方路线对照（**预算待批准**） | 每策略官方 `robomme` + `dataset="test"` 只评 hard 192 局；与阶段 10 的 xhard0 结果按 seed 逐局比终态 | GL 10 × A40 | `EVAL_OFFICIAL_XHARD0=PASS` × 2；`XHARD0_EVAL_PARITY=PASS compared=192 outcome_diff=0` × 2 |
+| 10′ xhard0 官方路线对照 | 每策略官方 `robomme` + `dataset="test"` 只评 hard 192 局；与阶段 10 的 xhard0 结果按 seed 逐局比终态 | GL 10 × A40 | `EVAL_OFFICIAL_XHARD0=PASS` × 2；`XHARD0_EVAL_PARITY=PASS compared=192 outcome_diff=0` × 2 |
 | 11 收尾 | 5 档成功率表写入留档；NFS 暂存清空；按清单逐个 `scancel` 评估 job | 本机 | `EVAL_HOLD_RELEASE=PASS` |
 
-第二部分 §2 预算里此前的各行已一次性批准；**本次修订新增的三行（阶段 5′、7 的 reset 对拍、10′）标「待批准」，获批前不执行这三段，其余阶段照表连续执行**。超出预算或判定 FAIL 即停该阶段及其后续并找用户。实施完成后，实测结果以子节追加在本表之后。
+第二部分 §2 预算全表（含 2026-09-28 为 xhard0 新增的四行，原话 15）已一次性批准，阶段按表连续执行。超出预算或判定 FAIL 即停该阶段及其后续并找用户。实施完成后，实测结果以子节追加在本表之后。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -285,13 +286,13 @@ R9. xhard0 对拍的 O 侧只能是 vendor 的官方 `_worker`（`d53f21a7`）+ 
 | 本机冒烟（阶段 3） | 1 任务 × (1 + 3) reset + 4 局 | 4 reset、4 轨迹 |
 | 评估冒烟（阶段 9） | 2 策略 × 2 局（xhard0、xhard1 各 1） | 4 |
 | 评估正式（阶段 10） | 2 策略 × (55 格 × 20 局 + 16 任务 × 12 局) = 2 × 1292 = 2584 | 2584 + 基础设施重评每策略每轮 ≤ 65 → ≤ 2844 |
-| **待批准** xhard0 生成 O 侧（阶段 5′） | 16 任务 × 1 档 × 12 局 = 192，官方 `_worker` + `robomme` | ≤ 192（+ 基础设施重跑 ≤ 192） |
-| **待批准** xhard0 生成 H 侧（阶段 5′） | 16 任务 × 1 档 × 12 局 = 192，`robomme_hard` builder 路线 | ≤ 192（+ 基础设施重跑 ≤ 192） |
-| **待批准** xhard0 reset 层对拍（阶段 7） | 2 侧 × 16 任务 × 1 档 × 12 局 = 384 次 reset，本机 GPU 0 | 384 |
-| **待批准** xhard0 官方路线评估对照（阶段 10′） | 2 策略 × 16 任务 × 1 档 × 12 局 = 384 | 384 + 基础设施重评每策略 ≤ 20 → ≤ 424 |
+| xhard0 生成 O 侧（阶段 5′）（原话 15 批准） | 16 任务 × 1 档 × 12 局 = 192，官方 `_worker` + `robomme` | ≤ 192（+ 基础设施重跑 ≤ 192） |
+| xhard0 生成 H 侧（阶段 5′）（原话 15 批准） | 16 任务 × 1 档 × 12 局 = 192，`robomme_hard` builder 路线 | ≤ 192（+ 基础设施重跑 ≤ 192） |
+| xhard0 reset 层对拍（阶段 7）（原话 15 批准） | 2 侧 × 16 任务 × 1 档 × 12 局 = 384 次 reset，本机 GPU 0 | 384 |
+| xhard0 官方路线评估对照（阶段 10′）（原话 15 批准） | 2 策略 × 16 任务 × 1 档 × 12 局 = 384 | 384 + 基础设施重评每策略 ≤ 20 → ≤ 424 |
 | xhard0 本机冒烟（阶段 3，计入 P3 单 worker 阈值内） | 1 任务 × 1 局 × O／H 两侧 | 2 轨迹 |
 
-worker：GL 每占位 job 16 worker（1 CPU + 12 G／worker）；预计耗时以阶段 3 单格实测外推后填入，不预先编数。**标「待批准」的四行是 2026-09-28 按原话 13 新增的，不在此前「全表一次批准」范围内，须用户一次性批准后才执行；其余行的授权不变。**停止条件：任一阶段判定行 FAIL 即停该阶段及其后续，保留产物与日志。
+worker：GL 每占位 job 16 worker（1 CPU + 12 G／worker）；预计耗时以阶段 3 单格实测外推后填入，不预先编数。**标「原话 15 批准」的四行是 2026-09-28 按原话 13 新增、同日经 AskUserQuestion 一次性批准的，与其余行同等效力。**停止条件：任一阶段判定行 FAIL 即停该阶段及其后续，保留产物与日志。
 
 ## 3. runbook（命令为拟定形态，参数名以实施时定稿为准）
 
@@ -317,7 +318,7 @@ uv run --frozen --no-sync python scripts/injection-dev/derive_specs.py --parent 
 uv run --frozen --no-sync python scripts/injection-dev/generate_h5.py --mode continue --specs-root <NFS>/v7 --output <NFS>/v7/gen1 --workers 16 --gpu 0
 uv run --frozen --no-sync python scripts/injection-dev/generate_h5.py --mode replay --identities <NFS>/v7/gen1/final-delivery.json --specs-root <NFS>/v7 --output <NFS>/v7/gen2 --workers 16 --gpu 0
 uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side H --tier native --manifest scripts/configs/newtask-v3/subset_manifest.json --workers 16 --gpu 0 --out /tmp/hs/H-native --stage <NFS>/hs-stage/H-native
-# 阶段 5′（待批准；O、H 各在一个占位 job 内，O 侧 src-root 为 1fadc0ec worktree、进程只导入 robomme）
+# 阶段 5′（O、H 各在一个占位 job 内，O 侧 src-root 为 1fadc0ec worktree、进程只导入 robomme）
 uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side O --tier xhard0 --manifest scripts/configs/newtask-v7/xhard0_manifest.json --src-root <1fadc0ec worktree> --workers 16 --gpu 0 --out /tmp/hs/O-xhard0 --stage <NFS>/hs-stage/O-xhard0
 uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side H --tier xhard0 --manifest scripts/configs/newtask-v7/xhard0_manifest.json --src-root <GL_REPO> --workers 16 --gpu 0 --out /tmp/hs/H-xhard0 --stage <NFS>/hs-stage/H-xhard0
 
@@ -325,7 +326,7 @@ uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side H
 uv run --no-sync python scripts/parity/hard_pull.py --stage <NFS>/hs-stage --dest artifacts/newtask-v7/parity --segments O-native,H-native,H-v7,H2-v7,O-xhard0,H-xhard0
 uv run --no-sync python scripts/parity/hard_parity.py compare --pair O:H --tier xhard0 --manifest scripts/configs/newtask-v7/xhard0_manifest.json   # → PARITY_O_H tier=xhard0
 uv run --no-sync python scripts/parity/hard_parity.py publish --side O --tier xhard0 --prefix O-1fadc0e-a40   # → BUCKET_SYNC
-uv run --no-sync python scripts/parity/hard_regression.py xhard0-reset-parity --src-root <1fadc0ec worktree> --gpu 0 --out artifacts/newtask-v7/xhard0-reset-parity   # → XHARD0_RESET_PARITY（待批准）
+uv run --no-sync python scripts/parity/hard_regression.py xhard0-reset-parity --src-root <1fadc0ec worktree> --gpu 0 --out artifacts/newtask-v7/xhard0-reset-parity   # → XHARD0_RESET_PARITY
 uv run --no-sync python scripts/parity/hard_regression.py xhard0-eval-parity --official <官方路线 episodes.jsonl> --hard <v7 评估 episodes.jsonl> --policy simplememvla   # → XHARD0_EVAL_PARITY
 uv run --no-sync python scripts/parity/hard_parity.py compare --pair O:H --tier native --manifest scripts/configs/newtask-v3/subset_manifest.json
 uv run --no-sync python scripts/parity/hard_parity.py compare --pair H:H2 --tier v7 --manifest artifacts/newtask-v7/gen1/final-delivery.json
@@ -354,7 +355,7 @@ timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu an
 | `record()` 点在派生局与母局不同（如 `objects.distractor_count`） | 派生规格只含本局实际值，回放比对的是派生规格，不比母局 |
 | 同步递补让四档目录锁竞争 | 目录锁 + 单写者；`--self-check` 核 identity 未变 |
 | gen1/gen2 落在不同型号卡 | `generate` 保留 A40 断言；launch 记 GPU 名与驱动，`compare` 前核对相同，否则只报容差、不报 `sha_equal` |
-| 144 清单来自官方 train 元数据，不含 test 的 hard seed | 阶段 5′ 用 `xhard0_manifest.json`（test 元数据 hard 子集）对 192 个身份逐一做 O:H 对拍，不再依赖 144 清单间接推断；预算待批准 |
+| 144 清单来自官方 train 元数据，不含 test 的 hard seed | 阶段 5′ 用 `xhard0_manifest.json`（test 元数据 hard 子集）对 192 个身份逐一做 O:H 对拍，不再依赖 144 清单间接推断 |
 | xhard0 走官方 `_worker` 时 `EpisodeJob.recovery_mode` 按 episode 号定（≤2 z、≤5 xy） | 两侧 job 都用原 test episode 号，只有 episode 3 带 `xy` 恢复，O、H 相同（R9）；`identities.jsonl` 记 `recovery_mode`，compare 前核两侧相等；评估路线不开恢复是官方本来的口径，不算不一致 |
 | H 侧 builder 路线取到的环境参数与官方 `_worker` 不同（多键或值不同） | worker 断言键集合恰为 `{seed, difficulty}` 且值等于 job，不同即抛错、该局记 infra 失败，不静默回退到直接拼参数 |
 | 官方路线策略评估的 `episodes.jsonl` 没有 seed 字段 | 官方侧脚本按 `(task, 原 episode 号)` 记录，`xhard0-eval-parity` 用 `xhard0_manifest.json` 把原 episode 号映射到 seed 再对齐；映射缺失即 FAIL |
@@ -505,9 +506,9 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 |---|---|---|---|
 | xhard0 身份 | 官方 test 元数据 hard 子集 vs builder 条目：任务、原 episode、seed、源文件 sha256 逐条相等 | 引入的恰好是原来的 192 个身份 | `XHARD0_IDENTITY=PASS shape=16x1x12 identities=192 missing=0 extra=0` |
 | xhard0 原生分支 | 捕获 `gym.make` 实参：`difficulty=="hard"`、无 `sampling_config`、无 `native_episode_spec`；`spec_binding` 返回 `available=False` | 没有误入新值路径 | `XHARD0_NATIVE=PASS runtime_difficulty=hard injected=0 tasks=16` |
-| xhard0 生成一致（待批准） | O 侧官方 `_worker`+`robomme@1fadc0ec` 与 H 侧 `robomme_hard` builder 路线各生成 192 局（A40、同驱动）；`compare --pair O:H --tier xhard0`；两侧 `identities.jsonl` 的 `recovery_mode` 逐局相等 | `robomme_hard` 生成 xhard0 的 h5 与官方生成器在容差内一致（sha 相等数作参考） | `PARITY_O_H=PASS tier=xhard0 shape=16x1x12 compared=192 tol_over=0` |
-| xhard0 reset 层评估一致（待批准） | 同卡两进程（只导 `robomme` / 只导 `robomme_hard`）各 reset 192 局，观测全键、仿真状态、`task_goal`、多选项逐位比 | 评估时两条路线建出的是同一场景 | `XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 diff=0` |
-| xhard0 策略层评估一致（待批准） | 每策略官方路线 192 局 vs v7 评估 xhard0 192 局，按 `(task, seed)` 对齐比终态 | 官方 `evaluation.py` 路线与 `evaluation_hard.py` 路线对同一策略给出同样结果 | `XHARD0_EVAL_PARITY=PASS policy=<名> compared=192 outcome_diff=0 steps_diff=<n>` × 2 |
+| xhard0 生成一致 | O 侧官方 `_worker`+`robomme@1fadc0ec` 与 H 侧 `robomme_hard` builder 路线各生成 192 局（A40、同驱动）；`compare --pair O:H --tier xhard0`；两侧 `identities.jsonl` 的 `recovery_mode` 逐局相等 | `robomme_hard` 生成 xhard0 的 h5 与官方生成器在容差内一致（sha 相等数作参考） | `PARITY_O_H=PASS tier=xhard0 shape=16x1x12 compared=192 tol_over=0` |
+| xhard0 reset 层评估一致 | 同卡两进程（只导 `robomme` / 只导 `robomme_hard`）各 reset 192 局，观测全键、仿真状态、`task_goal`、多选项逐位比 | 评估时两条路线建出的是同一场景 | `XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 diff=0` |
+| xhard0 策略层评估一致 | 每策略官方路线 192 局 vs v7 评估 xhard0 192 局，按 `(task, seed)` 对齐比终态 | 官方 `evaluation.py` 路线与 `evaluation_hard.py` 路线对同一策略给出同样结果 | `XHARD0_EVAL_PARITY=PASS policy=<名> compared=192 outcome_diff=0 steps_diff=<n>` × 2 |
 | 母布局共用 | 静态：xhard1～3 每行 `layout_parent.sha256 == xhard4 同候选 spec_sha256`，且该行 spec 里每个白名单路径的值等于母值（列表取前缀、逐项路径取子集）；四档 `seed` 相同 | 四档确实是同一批 20 个布局 | `V7_LAYOUT_SHARED=PASS tasks=13 layouts=20 tiers=4 rows=780 parent_mismatch=0 seed_mismatch=0` |
 | 梯度单调 | 对每任务每布局，四档在用户指定维度的实际值按档非降且落在各档区间（沿用 `site/v6_tier_monotone.py` 口径） | 只有梯度不同，且梯度确实分档 | `V7_TIER_MONOTONE=PASS cells=55 violations=0` |
 | 回注零差 | 每格取 1 局经评估链 `make_env_for_episode` + `reset` 后 `spec_binding`：`injected_mismatch==0`，派生局 `layout_injected==|L 白名单命中数|`，`unused` 只含母布局多出的逐项路径 | 评估时建出的场景与生成时同一局 | `V7_RESET_REPLAY=PASS shape=13x3+16 injected_mismatch=0 layout_drift=0` |
