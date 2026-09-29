@@ -6,6 +6,7 @@
 
 - [validation/README.md](validation/README.md)：通用记录与比较规范
 - [validation/newtask-v2/README.md](validation/newtask-v2/README.md)：newtask-v2 三路对拍的用例说明与运行索引
+- [validation/eval-cpu-20260928/result.md](validation/eval-cpu-20260928/result.md)：单 GPU 评估的 CPU 配额与启动开销实测；framesample 对照完成，SimpleMemVLA 故障停止，多轮扩展未执行；按用户要求仅保留小文件证据
 - [plans/](plans/)：历次计划（V2～V6 与 robomme_hard 拆包），2026-09-28 起根目录不再放计划文件
 
 体积约定：完整 HDF5、视频、详细日志与全部关键帧 PNG 留在仓库内 `artifacts/`（不入 Git）；

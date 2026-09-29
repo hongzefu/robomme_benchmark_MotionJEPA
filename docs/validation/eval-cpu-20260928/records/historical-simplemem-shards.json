@@ -1,0 +1,102 @@
+[
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard00of10.jsonl",
+    "count": 55,
+    "elapsed_s": 6120.500000000002
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard01of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5728.699999999998
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard02of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5729.699999999998
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard03of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5341.299999999998
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard04of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5174.7
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard05of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5532.4
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard06of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5763.0
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard07of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5986.300000000001
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard08of10.jsonl",
+    "count": 55,
+    "elapsed_s": 4713.0
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r1-shard09of10.jsonl",
+    "count": 55,
+    "elapsed_s": 6326.4
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard00of10.jsonl",
+    "count": 55,
+    "elapsed_s": 6466.300000000001
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard01of10.jsonl",
+    "count": 55,
+    "elapsed_s": 6817.599999999999
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard02of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5447.900000000001
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard03of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5155.800000000001
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard04of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5669.799999999998
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard05of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5969.3
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard06of10.jsonl",
+    "count": 55,
+    "elapsed_s": 6209.799999999997
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard07of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5715.600000000002
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard08of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5336.500000000001
+  },
+  {
+    "file": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/docs/eval-doc/testhard-0928/records/results-r2-shard09of10.jsonl",
+    "count": 55,
+    "elapsed_s": 5868.399999999999
+  }
+]
