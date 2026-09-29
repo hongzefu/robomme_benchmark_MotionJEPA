@@ -27,7 +27,7 @@ def build_draw_header(run_id, document, tasks, difficulty, seed_rule):
 
 def candidates(tmp_path):
     paths = _write_reset_drafts(tmp_path, samples=10)
-    document = site_io.packaged_sampling_document()
+    document = site_io.frozen_v6_sampling_document()  # v7 换包后包内已是 v7 定值，v6 检查读冻结快照
     for path in paths:
         records = [json.loads(line) for line in path.read_text().splitlines()]
         old = records[0]

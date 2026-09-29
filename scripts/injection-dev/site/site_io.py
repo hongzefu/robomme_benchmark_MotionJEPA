@@ -45,6 +45,15 @@ def packaged_sampling_document() -> dict[str, Any]:
     return {"tasks": copy.deepcopy(header["sampling_config"])}
 
 
+V6_FROZEN = REPO_ROOT / "scripts" / "configs" / "newtask-v6" / "v6-sampling-frozen.json"
+
+
+def frozen_v6_sampling_document() -> dict[str, Any]:
+    """v6 定值快照（v7 换包后包内 header 已是 v7 定值；v6 检查器一律读这份）。xhard4 档含全部 16 任务。"""
+    frozen = json.loads(V6_FROZEN.read_text(encoding="utf-8"))
+    return {"tasks": copy.deepcopy(frozen["sampling_config"]["xhard4"])}
+
+
 def load_sampling_document(path: str | Path | None) -> dict[str, Any]:
     if path is None:
         return packaged_sampling_document()

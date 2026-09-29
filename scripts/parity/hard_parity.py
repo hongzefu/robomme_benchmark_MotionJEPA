@@ -458,6 +458,17 @@ def side_lines(side_dir: Path) -> list[dict[str, Any]]:
                 line["robomme_module"] = payload.get("robomme_module")
             if line.get("worker") is None and payload.get("worker"):
                 line["worker"] = payload.get("worker")
+    else:
+        # bucket 拉回的一侧不含 _runner/results.json：按 launch 记录补 robomme_module。runner 探针本就断言
+        # robomme 解析到 <src_root>/src/robomme，故该值与探针原值相同（v7 实测 O-native 82 行有值者全部等于此路径）
+        launches = sorted(side_dir.glob("launch-*.json"))
+        launch = json.loads(launches[0].read_text()) if launches else {}
+        if launch.get("env_package") == "robomme" and launch.get("src_root"):
+            derived = f"{launch['src_root']}/src/robomme/__init__.py"
+            for line in lines:
+                if line.get("robomme_module") is None and line.get("worker") == "official._worker":
+                    line["robomme_module"] = derived
+                    line["robomme_module_source"] = "launch"
     return lines
 
 

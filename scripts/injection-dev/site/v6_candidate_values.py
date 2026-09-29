@@ -10,16 +10,16 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import v6_tier_monotone as tier_check  # noqa: E402
-from site_io import _check_sources, _read_jsonl, load_sampling_document  # noqa: E402
+from site_io import _check_sources, _read_jsonl, frozen_v6_sampling_document, load_sampling_document  # noqa: E402
 import site_io  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_CONFIG = None  # 缺省读包内 xhard4 header 的 sampling_config（site/site_io.py）
+DEFAULT_CONFIG = None  # 缺省读冻结的 v6 快照（site/site_io.py::frozen_v6_sampling_document；v7 换包后包内已是 v7 定值）
 
 
 def check_candidates(paths, sampling_config=DEFAULT_CONFIG):
     """固定检查 52 格各 10 条，来源与当前快照、源码逐项绑定。"""
-    document = load_sampling_document(sampling_config)
+    document = frozen_v6_sampling_document() if sampling_config is None else load_sampling_document(sampling_config)
     errors, mismatches, sources = [], [], []
     cells = {f"{env}/{tier}": {"episodes": [], "reset_failures": 0}
              for env in tier_check.GRADIENT_ENVS for tier in tier_check.NEWVALUE_TIERS}

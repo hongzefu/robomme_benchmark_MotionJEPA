@@ -40,7 +40,10 @@ DIFFICULTY = "xhard"
 #: 评估步数上限按档（用户 U-6：沿用上次评估 1500/1700/2000/2600 以便对比）；
 #: 值抄自 scripts/eval/v4_eval.py::NEWVALUE_MAX_STEPS（阶段 1 cmp 留证后该文件随 scripts/eval/ 删除）。
 #: xhard0 取 1300，与官方 scripts/evaluation.py 的默认步数相同（v7 方案 §7.4）。
-TIER_MAX_STEPS = {"xhard0": 1300, "xhard1": 1500, "xhard2": 1700, "xhard3": 2000, "xhard4": 2600}
+#: v7 按 B4 上调 xhard2／3／4（用户 2026-09-29 预定「超 90% 不回调抓取次数，上限上调为实测最大执行步数 × 1.25 向上取整到百」）：
+#: gen1 交付 1100 局实测最长执行步均为 PickXtimes（无演示段）——xhard2 1857／1700、xhard3 2293／2000、xhard4 2998／2600
+#: → 2400／2900／3800；xhard1 实测 1304／1500（0.869，未超 90%）不动。判定行 V7_STEP_HEADROOM 见 docs/validation/newtask-v7/。
+TIER_MAX_STEPS = {"xhard0": 1300, "xhard1": 1500, "xhard2": 2400, "xhard3": 2900, "xhard4": 3800}
 #: 回注绑定：只记录不回注的观测值（SpecRecorder.record）允许的浮点差（用户 U-13 方案甲，红线 R22，不做参数）。
 RECORDED_FLOAT_TOL = 1e-5
 

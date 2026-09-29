@@ -84,27 +84,21 @@ def _packaged_header(tier: str) -> dict:
 
 
 def test_v6_snapshot_matches_source() -> None:
-    """V7 起 v6 值只存在于包内 v6 规格 header 与冻结快照 v6-sampling-frozen.json：
-    冻结快照按档逐任务等于包内 xhard1..4 header 的 sampling_config（四个 header 互不相同，故按档存）。"""
+    """V7 换包后 v6 值只存在于冻结快照 v6-sampling-frozen.json（包内 v6 规格只在版本历史，tag parity-anchor-v6）：
+    快照按档自洽（逐档 sampling_config 的 digest 等于记下的散列），且与包内 v7 header 的 sampling_config 不同。"""
     from robomme_hard.env_record_wrapper import hard_specs  # noqa: PLC0415
 
     frozen = json.loads(V6_FROZEN.read_text(encoding="utf-8"))
     assert frozen["schema"] == "v6-sampling-frozen/1"
     assert frozen["four_headers_identical"] is False
     assert set(frozen["sampling_config"]) == set(NEWVALUE_TIERS)
-    headers = {tier: _packaged_header(tier) for tier in NEWVALUE_TIERS}
     for tier in NEWVALUE_TIERS:
-        header = headers[tier]
-        assert header["difficulty"] == tier
-        assert frozen["sampling_config"][tier] == header["sampling_config"], tier
-        assert frozen["sampling_config_sha256_by_tier"][tier] == header["sampling_config_sha256"], tier
-        assert hard_specs.digest(frozen["sampling_config"][tier]) == header["sampling_config_sha256"], tier
-        # 任务集合按 header 自身的 tasks（包内 v6 的 xhard1 header 含 16 任务、xhard2／3 含 13 任务）
-        assert set(frozen["sampling_config"][tier]) == set(header["tasks"]), tier
+        assert hard_specs.digest(frozen["sampling_config"][tier]) == frozen["sampling_config_sha256_by_tier"][tier], tier
+        header = _packaged_header(tier)
+        assert header["schema"] == hard_specs.SCHEMA_V7, tier
+        assert header["sampling_config_sha256"] != frozen["sampling_config_sha256_by_tier"][tier], tier
     assert set(frozen["sampling_config"]["xhard4"]) == set(READY_TASKS)
-    # 四个 header 确实不全相同（快照里 four_headers_identical=false 与事实一致）
-    digests = {headers[tier]["sampling_config_sha256"] for tier in NEWVALUE_TIERS}
-    assert len(digests) > 1
+    assert len(set(frozen["sampling_config_sha256_by_tier"].values())) > 1
 
 
 def test_v7_snapshot_matches_source(tmp_path) -> None:

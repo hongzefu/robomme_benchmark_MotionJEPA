@@ -63,7 +63,7 @@ def test_TIER_MAX_STEPS五档且xhard0为1300():
     from robomme_hard.env_record_wrapper import BUILDER_TIERS, TIER_MAX_STEPS  # noqa: PLC0415
 
     assert TIER_MAX_STEPS is V.TIER_MAX_STEPS and BUILDER_TIERS == V.BUILDER_TIERS
-    assert TIER_MAX_STEPS == {"xhard0": 1300, "xhard1": 1500, "xhard2": 1700, "xhard3": 2000, "xhard4": 2600}
+    assert TIER_MAX_STEPS == {"xhard0": 1300, "xhard1": 1500, "xhard2": 2400, "xhard3": 2900, "xhard4": 3800}  # v7 B4 上调
     assert tuple(TIER_MAX_STEPS) == V.BUILDER_TIERS
     steps = [TIER_MAX_STEPS[tier] for tier in V.BUILDER_TIERS]
     assert steps == sorted(steps)

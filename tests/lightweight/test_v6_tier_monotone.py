@@ -170,9 +170,9 @@ def test_final_plan_table_passes() -> None:
 @pytest.mark.parametrize("tier,count", [("xhard1", 8), ("xhard2", 10)])
 def test_button_unmask_plan_matches_approved_snapshot(tier, count) -> None:
     """递增检查挡不住错抄值，须逐档核对批准定值与冻结配置。"""
-    # 原 V6 快照已删；冻结配置真源改为包内 test-hard jsonl header（与原快照逐任务相同）
-    header_path = REPO_ROOT / "src/robomme_hard/env_metadata/test-hard/xhard4/specs.jsonl"
-    document = {"tasks": json.loads(header_path.open(encoding="utf-8").readline())["sampling_config"]}
+    # v7 换包后包内 header 已是 v7 定值；v6 批准定值改读冻结快照 scripts/configs/newtask-v6/v6-sampling-frozen.json
+    frozen = json.loads((REPO_ROOT / "scripts/configs/newtask-v6/v6-sampling-frozen.json").read_text(encoding="utf-8"))
+    document = {"tasks": frozen["sampling_config"]["xhard4"]}
     assert document["tasks"]["ButtonUnmask"]["decision"][tier]["distractor"]["count"] == count
     assert M.PLAN_TIERS["ButtonUnmask"][tier]["distractors"] == count
 

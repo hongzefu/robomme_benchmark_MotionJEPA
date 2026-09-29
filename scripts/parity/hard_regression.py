@@ -443,7 +443,6 @@ def cmd_xhard0_reset_parity(args) -> int:
     manifest = json.loads(Path(args.manifest).read_text())
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    det_diff, compared, frames_equal, max_frame_diff, first_diff = 0, 0, 0, 0, None
     rows = []
     tasks = [t for t in hs.ALL_TASKS if not args.tasks or t in args.tasks.split(",")]
     for task in tasks:
@@ -451,7 +450,6 @@ def cmd_xhard0_reset_parity(args) -> int:
         official = _run_probe("official", task, Path(args.src_root), episodes, args.gpu)
         hard = _run_probe("hard", task, REPO, list(range(len(episodes))), args.gpu)
         for o, h in zip(official, hard):
-            compared += 1
             fields = {
                 "seed": o["seed"] == h["seed"],
                 "difficulty": o["difficulty"] == "hard" and h["difficulty"] == "xhard0",
@@ -462,21 +460,40 @@ def cmd_xhard0_reset_parity(args) -> int:
                 "choices": o["choices"] == h["choices"],
             }
             bad = [k for k, v in fields.items() if not v]
-            det_diff += int(bool(bad))
-            if bad and first_diff is None:
-                first_diff = f"{task}/ep{o['episode']}:{bad}"
-            frames_equal += int(o["demo_frames"] == h["demo_frames"])
-            max_frame_diff = max(max_frame_diff, abs(o["demo_frames"] - h["demo_frames"]))
-            rows.append({"task": task, "source_episode": o["episode"], "hard_episode": h["episode"], "det_bad": bad,
+            # 演示前状态逐名不等、但每类 actor 的状态值集合相等 ⇒ 只是命名不同（如 robomme_hard BUS 的 F3 左右按钮改名），
+            # 场景逐位相同：单列 name_only，不计 det_diff（v7 方案 D-16 的实现细节，写进留档）
+            name_only = bad == ["pre_demo_state"] and _name_agnostic(o["pre_demo_state"]) == _name_agnostic(h["pre_demo_state"])
+            rows.append({"task": task, "source_episode": o["episode"], "hard_episode": h["episode"],
+                         "det_bad": [] if name_only else bad, "name_only": name_only,
                          "demo_frames": [o["demo_frames"], h["demo_frames"]],
-                         "demo_equal": o["demo_digest"] == h["demo_digest"], "post_equal": o["post_state"] == h["post_state"]})
-        print(f"XHARD0_RESET_TASK {task} compared={len(official)} det_bad={sum(bool(r['det_bad']) for r in rows if r['task'] == task)}",
-              flush=True)
-    (out / "xhard0-reset-parity.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
-    ok = det_diff == 0 and compared == 16 * hs.XHARD0_PER_TASK
-    print(f"XHARD0_RESET_PARITY={'PASS' if ok else 'FAIL'} shape=16x1x12 compared={compared} det_diff={det_diff} "
-          f"first_det_diff={first_diff or '-'}")
-    print(f"XHARD0_DEMO_DIFF=INFO frames_equal={frames_equal} max_frame_diff={max_frame_diff} "
+                         "demo_equal": o["demo_digest"] == h["demo_digest"], "post_equal": o["post_state"] == h["post_state"],
+                         "pre_state": [o["pre_demo_state"], h["pre_demo_state"]]})
+        mine = [r for r in rows if r["task"] == task]
+        print(f"XHARD0_RESET_TASK {task} compared={len(mine)} det_bad={sum(bool(r['det_bad']) for r in mine)} "
+              f"name_only={sum(r['name_only'] for r in mine)}", flush=True)
+    if args.merge_with:
+        rows += [r for r in map(json.loads, Path(args.merge_with).read_text().splitlines()) if r["task"] not in tasks]
+    (out / args.report_name).write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
+    return _xhard0_reset_verdict(rows, hs.XHARD0_PER_TASK)
+
+
+def _name_agnostic(state: Any) -> Any:
+    """状态摘要按类（actors／articulations…）取值的有序多重集，忽略实体名字。"""
+    if isinstance(state, dict) and all(isinstance(v, dict) for v in state.values()):
+        return {section: sorted(json.dumps(v, sort_keys=True) for v in items.values()) for section, items in state.items()}
+    return state
+
+
+def _xhard0_reset_verdict(rows: list[dict[str, Any]], per_task: int) -> int:
+    det = [r for r in rows if r["det_bad"]]
+    first = f"{det[0]['task']}/ep{det[0]['source_episode']}:{det[0]['det_bad']}" if det else "-"
+    name_only = [r for r in rows if r.get("name_only")]
+    ok = not det and len(rows) == 16 * per_task
+    print(f"XHARD0_RESET_PARITY={'PASS' if ok else 'FAIL'} shape=16x1x12 compared={len(rows)} det_diff={len(det)} "
+          f"name_only={len(name_only)} first_det_diff={first}"
+          + (f" name_only_tasks={sorted({r['task'] for r in name_only})}" if name_only else ""))
+    print(f"XHARD0_DEMO_DIFF=INFO frames_equal={sum(r['demo_frames'][0] == r['demo_frames'][1] for r in rows)} "
+          f"max_frame_diff={max((abs(r['demo_frames'][0] - r['demo_frames'][1]) for r in rows), default=0)} "
           f"demo_equal={sum(r['demo_equal'] for r in rows)} post_equal={sum(r['post_equal'] for r in rows)}")
     return 0 if ok else 1
 
@@ -527,6 +544,7 @@ def cmd_step_headroom(args) -> int:
     delivery = Path(args.delivery)
     rows = json.loads(delivery.read_text())["rows"]
     per_cell: dict[tuple[str, str], list[int]] = collections.defaultdict(list)
+    lengths: dict[tuple[str, str], list[tuple[int, int]]] = collections.defaultdict(list)
     for row in rows:
         path = delivery.parent / row["path"]
         with h5py.File(path, "r") as handle:
@@ -534,6 +552,7 @@ def cmd_step_headroom(args) -> int:
             steps = [k for k in episode if k.startswith("timestep_")]
             demo = sum(bool(episode[k]["info/is_video_demo"][()]) for k in steps)
         per_cell[(row["task"], row["tier"])].append(len(steps) - demo)
+        lengths[(row["task"], row["tier"])].append((demo, len(steps) - demo))
     over, worst = [], {}
     for (task, tier), values in sorted(per_cell.items()):
         cap = hs.TIER_MAX_STEPS[tier]
@@ -544,7 +563,12 @@ def cmd_step_headroom(args) -> int:
     for tier in {o["tier"] for o in over}:
         proposal[tier] = int(math.ceil(worst[tier] * 1.25 / 100.0) * 100)
     report = {"cells": len(per_cell), "worst_by_tier": worst, "over_90pct": over, "b4_proposal": proposal,
-              "per_cell_max": {f"{t}/{d}": max(v) for (t, d), v in per_cell.items()}}
+              "per_cell_max": {f"{t}/{d}": max(v) for (t, d), v in per_cell.items()},
+              # README 第 3 节 episode 长度表：每格 演示段 / 执行段 / 全部 的均值（四舍五入到整数）
+              "per_cell_mean": {f"{t}/{d}": {"demo": round(sum(a for a, _ in v) / len(v)),
+                                             "exec": round(sum(b for _, b in v) / len(v)),
+                                             "total": round(sum(a + b for a, b in v) / len(v)), "n": len(v)}
+                                for (t, d), v in lengths.items()}}
     if args.out:
         Path(args.out).write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n")
     label = "INFO" if args.info else ("PASS" if not over else "FAIL")
@@ -580,6 +604,8 @@ def main() -> int:
     x0.add_argument("--gpu", default="0")
     x0.add_argument("--tasks", default=None)
     x0.add_argument("--out", required=True)
+    x0.add_argument("--merge-with", default=None, help="与上一轮 jsonl 合并：本轮重跑的任务整段替换，其余沿用")
+    x0.add_argument("--report-name", default="xhard0-reset-parity.jsonl")
     x0.set_defaults(func=cmd_xhard0_reset_parity)
     xe = sub.add_parser("xhard0-eval-parity")
     xe.add_argument("--official", required=True)

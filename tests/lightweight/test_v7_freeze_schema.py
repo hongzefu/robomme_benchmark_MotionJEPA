@@ -156,14 +156,22 @@ def test_load_specs_v7拒绝混入v2文件(tmp_path):
 
 
 @pytest.mark.parametrize("tier", hard_specs.TIERS)
-def test_包内v6规格仍按v2通过(tier):
+def test_包内规格已换为v7(tier):
+    """阶段 8 换包后：包内四档为 hard-specs/3、v7 seed 规则；低档行带 layout_parent（指向 xhard4 母布局），xhard4 行不带。"""
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")  # 源码指纹不符只警告
         header, rows = hard_specs.load_specs(hard_specs.PACKAGED_SPECS_ROOT / tier / "specs.jsonl")
-    assert header["schema"] == hard_specs.SCHEMA
-    assert header["seed_rule"] == hard_specs.seed_rule_for(tier, "v6")
+    assert header["schema"] == hard_specs.SCHEMA_V7
+    assert header["seed_rule"] == hard_specs.seed_rule_for(tier, "v7")
     assert hard_specs.identity_sha256(header, rows) == header["identity_sha256"]
-    assert all("layout_parent" not in r for r in rows)
+    parents = {r.get("layout_parent") is None for r in rows}
+    assert parents == ({True} if tier == "xhard4" else {False})
+
+
+def test_包内v7规格跨档校验通过():
+    loaded = hard_specs.load_specs_v7(hard_specs.PACKAGED_SPECS_ROOT, check_fingerprint=False)
+    assert {t: sum(r["selected"] for r in rows) for t, (_, rows) in loaded.items()} == {
+        "xhard1": 13 * 20, "xhard2": 13 * 20, "xhard3": 13 * 20, "xhard4": 16 * 20}
 
 
 def test_parse_select与freeze_equiv已删():
