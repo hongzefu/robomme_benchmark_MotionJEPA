@@ -145,6 +145,14 @@ class MediaHandler(BaseHTTPRequestHandler):
                 if not head:
                     self.wfile.write(payload)
                 return
+            if path == '/api/subgoals':
+                # 逐段 subgoal 帧数（scripts/injection-dev/site/v7_subgoal_lengths.py 生成）；缺文件时返回空表，页面照常显示
+                sg = files.site_dir / 'subgoals.json'
+                payload = sg.read_bytes() if sg.exists() else b'{}'
+                self._headers(200, 'application/json; charset=utf-8', len(payload), Cache_Control='no-cache')
+                if not head:
+                    self.wfile.write(payload)
+                return
             if path == '/api/catalog':
                 payload = files.catalog_path.read_bytes()
                 self._headers(200, 'application/json; charset=utf-8', len(payload), Cache_Control='no-cache')
