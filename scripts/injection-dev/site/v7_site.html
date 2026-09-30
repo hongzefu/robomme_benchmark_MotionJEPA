@@ -62,6 +62,8 @@
 .oracle-link{border-color:#c9dcc0!important;background:#eef5e8}.oracle-link[aria-current="page"]{background:var(--soft);border-color:var(--green)!important}
     .goal{margin-top:10px;font-size:15.5px;line-height:1.75;background:#fff;border:1px solid #cfdcc6;border-left:4px solid var(--green);border-radius:10px;padding:10px 16px;max-width:1100px}.goal ol{margin:4px 0 8px;padding-left:22px;font-weight:600}.goal .k{color:#3a543f;font-size:13px;font-weight:650;margin-top:4px}
     .cfg-kv{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.cfg-kv span{background:#f3f5ef;border-radius:6px;padding:2px 8px;font-size:11.5px;font-variant-numeric:tabular-nums}.cfg-kv b{color:#3a543f;margin-right:4px}
+    .ov-table td.ov-cell{white-space:normal;min-width:190px;vertical-align:top;font-size:11.5px;line-height:1.6}.ov-table td:first-child{vertical-align:top}
+    .ov-cfg{color:#3a543f;font-weight:600;padding-bottom:4px;border-bottom:1px dashed var(--line);margin-bottom:4px}.ov-len{padding-bottom:4px;border-bottom:1px dashed var(--line);margin-bottom:4px}.ov-sr{font-weight:600}
     .cfg-sem{margin:4px 0 6px;padding-left:22px;font-size:15.5px;line-height:1.75;font-weight:600}
     .cfg-raw summary{cursor:pointer;font-size:11px;color:var(--muted)}.cfg-raw pre{font-size:10.5px;background:#f6f8f2;border-radius:8px;padding:8px;max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
     .outlier-link{margin:0 10px 6px;width:calc(100% - 20px);border:1px solid #f0c4bd!important;background:#fdf1ef}.outlier-link[aria-current="page"]{background:#fde5e1;border-color:#c2453a!important}
@@ -75,7 +77,7 @@
     <div class="brand"><div class="brand-name">RoboMME v7</div><div class="brand-caption">生成 vs SimpleMemVLA vs MME-VLA</div></div>
     <input class="search" id="task-search" type="search" placeholder="查找任务…" autocomplete="off" aria-label="搜索任务">
     <button class="task-link outlier-link" id="outlier-link" type="button" hidden><span class="task-index">★</span><span><span class="task-name">超出 xhard0 范围 &gt;15% 合集</span><span class="task-id" id="outlier-count"></span></span></button>
-    <button class="task-link outlier-link oracle-link" id="oracle-link" type="button" hidden><span class="task-index">∑</span><span><span class="task-name">各档 oracle 平均步数</span><span class="task-id">16 任务 × 5 档 · 难度配置总表</span></span></button>
+    <button class="task-link outlier-link oracle-link" id="oracle-link" type="button" hidden><span class="task-index">∑</span><span><span class="task-name">各档总表</span><span class="task-id">配置 · oracle 长度 · 成功率</span></span></button>
     <nav class="task-nav" id="task-nav" aria-label="全部任务"></nav>
   </aside>
   <main class="main" id="content">
@@ -183,44 +185,38 @@
       rows.forEach(r => { const tr = node('tr'); r.forEach((v, i) => tr.append(node('td', (head[i] === curTier ? 'is-cur ' : '') + (v.length > 24 ? 'txt' : ''), md(v)))); t.append(tr); });
       return t;
     }
+    // 总表：一行一个任务，xhard0～4 每格 = 任务配置 + oracle 长度（demo/exec/总，均值与上下界）+ 两个策略成功率
     function renderOracle() {
       const box = el('oracle-section'); box.textContent = '';
       const o = S.sg.oracle, tiers = S.cat.tiers;
-      box.append(node('h2', 'task-title', '各档 oracle planner 成功步数'));
-      box.append(node('div', 'task-sub', '生成 h5 都是 oracle planner 跑成功的演示；执行步 = h5 帧数 − 视频演示帧（info/is_video_demo）。每格：均值（最小～最大，局数）；第二行是含演示总帧均值与评估 max_steps。xhard0 为官方 hard 12 局（VideoPlaceOrder 两局官方即生成失败，不计）。点任务名进入该任务。'));
-      const t = node('table', 'sg-table'); const h = node('tr'); ['任务'].concat(tiers).forEach(x => h.append(node('th', '', x))); t.append(h);
-      const colAll = {}; tiers.forEach(x => { colAll[x] = []; });
+      box.append(node('h2', 'task-title', '各档总表：任务配置 · oracle 长度 · 成功率'));
+      box.append(node('div', 'task-sub', 'oracle 长度取生成 h5（都是 oracle planner 跑成功的演示）：demo = 视频演示帧（info/is_video_demo），exec = 执行步 = 帧数 − demo，总 = 帧数；每项写「均值（最小～最大）」。成功率为新入口评估：成功局数/局数（百分比）。xhard0 是官方 hard 12 局，配置每局随机，只写官方参考值；VideoPlaceOrder 有 2 局官方即生成失败，不计入长度。xhard1～4 同档各局配置相同。点任务名进入该任务。'));
+      const t = node('table', 'sg-table ov-table'); const h = node('tr');
+      ['任务'].concat(tiers).forEach(x => h.append(node('th', '', x))); t.append(h);
+      const rng = (m, a, b) => `${m}（${a}～${b}）`;
       S.cat.tasks.forEach(task => {
-        const tr = node('tr'); const td0 = node('td'); const a = node('a', '', `${task.name} · ${task.id}`); a.href = `#task=${task.id}&tier=xhard1&ep=1`; td0.append(a); tr.append(td0);
+        const tr = node('tr'); const td0 = node('td'); const a = node('a', '', `${task.name}`); a.href = `#task=${task.id}&tier=${Object.keys(task.tiers)[0]}&ep=1`;
+        td0.append(a, node('div', 'sg-tip', task.id)); tr.append(td0);
         tiers.forEach(x => {
-          const c = (o[task.id] || {})[x];
-          if (!c) { tr.append(node('td', 'na', '—')); return; }
-          colAll[x].push(c.mean);
-          const td = node('td', 'txt'); td.append(node('div', '', `${c.mean}（${c.min}～${c.max}，${c.n} 局）`));
-          td.append(node('small', 'sg-tip', `总 ${c.total_mean}${c.demo_mean ? `（演示 ${c.demo_mean}）` : ''} · max_steps ${c.max_steps ?? '—'}`));
-          tr.append(td);
+          const c = (o[task.id] || {})[x], cell = task.tiers[x];
+          if (!c || !cell) { tr.append(node('td', 'na', '—')); return; }
+          const td = node('td', 'ov-cell');
+          const cfg = node('div', 'ov-cfg'); tierConfig(task.id, x, null).forEach(l => cfg.append(node('div', '', l))); td.append(cfg);
+          const len = node('div', 'ov-len');
+          len.append(node('div', '', `demo ${rng(c.demo_mean, c.demo_min, c.demo_max)}`),
+                     node('div', '', `exec ${rng(c.mean, c.min, c.max)}`),
+                     node('div', '', `总 ${rng(c.total_mean, c.total_min, c.total_max)}`));
+          td.append(len);
+          const n = cell.episodes.length, sr = node('div', 'ov-sr');
+          policies().forEach(p => {
+            const r = cell.rates.new && cell.rates.new[p.id]; const k = r ? (r.success || 0) : 0;
+            sr.append(node('div', '', `${p.label} ${k}/${n}（${Math.round(100 * k / n)}%）`));
+          });
+          td.append(sr); tr.append(td);
         });
         t.append(tr);
       });
-      const tr = node('tr'); tr.append(node('td', 'v-base', '跨任务平均（每任务等权）'));
-      tiers.forEach(x => { const v = colAll[x]; tr.append(node('td', 'v-base', v.length ? `${(v.reduce((a, b) => a + b, 0) / v.length).toFixed(1)}（${v.length} 任务）` : '—')); });
-      t.append(tr);
-      const tr2 = node('tr'); tr2.append(node('td', 'v-base', '13 任务同口径平均（去掉只有 xhard4 的 3 个）'));
-      const only4 = new Set(S.cat.tasks.filter(x => !x.tiers.xhard1).map(x => x.id));
-      tiers.forEach(x => { const v = S.cat.tasks.filter(k => !only4.has(k.id) && (o[k.id] || {})[x]).map(k => o[k.id][x].mean); tr2.append(node('td', 'v-base', v.length ? `${(v.reduce((a, b) => a + b, 0) / v.length).toFixed(1)}（${v.length} 任务）` : '—')); });
-      t.append(tr2);
       box.append(t);
-      const c = S.sg.config;
-      if (c) {
-        box.append(node('h2', 'task-title', '各档难度配置（全部任务）'));
-        box.append(node('div', 'task-sub', `来源：${c.source} §3.2.2 定值表（逐字）。${md(c.tier_rule)}`));
-        Object.values(c.corrections || {}).forEach(x => box.append(node('p', 'sg-explain v-diff', x)));
-        box.append(cfgTable(c.tier_head, c.tier_rows, null));
-        box.append(node('div', 'task-sub', '§3.2.3 逐任务：布局怎么共用、梯度怎么取、低档怎么截（逐字）'));
-        box.append(cfgTable(c.layout_head, c.layout_rows, null));
-        const notes = node('div', 'notes'); notes.append(node('p', '', '两个要点：')); c.key_points.forEach(x => notes.append(node('p', '', '· ' + md(x))));
-        c.tier_notes.forEach(x => notes.append(node('p', '', md(x)))); box.append(notes);
-      }
     }
     function showView(name) {
       S.task = null; el('task-section').hidden = true;
@@ -449,13 +445,13 @@
       // 「同 VideoUnmask」这类行：维度与定值都照被引用任务的行（ButtonUnmask 与 VideoUnmask 四档定值相同）
       const same = rows.length === 1 && /^同 (\w+)/.exec(rows[0][1]);
       if (same) rows = c.tier_rows.filter(r => r[0] === same[1]);
-      if (!rows.length) return ['只有 xhard4，数值沿用原任务（本任务没有档位梯度）'];
+      if (!rows.length) return [tier === 'xhard0' ? '官方原任务配置（本任务只有 xhard0 与 xhard4，没有档位梯度）' : '只有 xhard4，数值沿用原任务（本任务没有档位梯度）'];
       return rows.map(r => {
         let v = md(r[col]);
         if (task === 'PatternLock' && tier !== 'xhard0') v = PL_ACTUAL[tier] + '（计划表写 ' + v + '，实测更正）';
         if (tier === 'xhard0') {
           const f = (X0_COUNT[task] || {})[r[1]];
-          v = f && rec && rec.new && rec.new.length ? `本局 ${f(rec.new)}（官方参考 ${v}）` : `官方随机，本局未记录（参考 ${v}）`;
+          v = !rec ? `官方随机（参考 ${v}）` : (f && rec.new && rec.new.length ? `本局 ${f(rec.new)}（官方参考 ${v}）` : `官方随机，本局未记录（参考 ${v}）`);
         }
         return `${md(r[1])}：${v}`;
       });

@@ -213,7 +213,9 @@ def main(argv=None) -> int:
             ex_ = [a for a, _ in xs]
             oracle[task][tier] = {"n": len(xs), "mean": round(statistics.mean(ex_), 1), "min": min(ex_),
                                   "max": max(ex_), "demo_mean": round(statistics.mean(b for _, b in xs), 1),
+                                  "demo_min": min(b for _, b in xs), "demo_max": max(b for _, b in xs),
                                   "total_mean": round(statistics.mean(a + b for a, b in xs), 1),
+                                  "total_min": min(a + b for a, b in xs), "total_max": max(a + b for a, b in xs),
                                   "max_steps": max_steps.get((task, tier))}
     lengths = json.loads((ART / "v7-lengths.json").read_text(encoding="utf-8"))
     diffs = [abs(oracle[k.split("/")[0]][k.split("/")[1]]["mean"] - v["exec"]) for k, v in lengths.items()]
