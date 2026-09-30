@@ -356,3 +356,33 @@ def test_stack_mad_none_when_counts_differ(tmp_path):
     assert det["front"]["count_equal"] is False and det["front"]["mad_max"] is None and det["front"]["init_mad"] == 0.0
     st = [e for e in doc["entries"] if e["name"] == "ENV_STACK" and "src=R1" in e["line"] and "smvla" in e["line"]][0]
     assert "demo_count_equal=1/2" in st["line"]
+
+
+def test_canary_reruns_and_killtest(tmp_path):
+    art, nfs, e0 = _layout(tmp_path, with_rec=False)
+    # N 里 jia 的金丝雀已有；ding 只有 infra 金丝雀，后由 C 补跑成功；K 的金丝雀被杀 → infra；K 的队列局不能进 PROD
+    _w(art / "official-rec" / "N" / "smvla" / "s-ding" / "smvla" / "results.jsonl",
+       [_new("B", 7, 200, "error", "N", seat="ding", canary=True, infra=True, infra_reason="env_build", steps=0, error=VK_ERR)])
+    _w(art / "official-rec" / "C" / "smvla" / "s-ding" / "smvla" / "results.jsonl", [_new("B", 7, 200, "fail", "C", seat="ding", canary=True)])
+    _w(art / "official-rec" / "K" / "smvla" / "s-new1" / "smvla" / "results.jsonl",
+       [_new("A", 3, 100, "error", "K", seat="new1", canary=True, infra=True, infra_reason="ConnectionClosed", steps=16),
+        _new("C", 11, 300, "fail", "K", seat="new1", claim_token="k1")])
+    log = nfs / "state" / "main" / "logs" / "N-smvla-s-new1.log"
+    log.parent.mkdir(parents=True)
+    log.write_text("SERVER_START policy=smvla\nSERVER_READY ready_s=1\nSERVER_KILLED_FOR_TEST\nSERVER_DIED pid=1\n"
+                   "SERVER_START policy=smvla\nSERVER_READY ready_s=2\nQUEUE_CLAIM=PASS dup=0 missing=0 requeued=4 done=192 total=192\n"
+                   "SEAT_DONE policy=smvla cond=N seat=new1 done=46 errors=0 infra=3 queue_check=PASS\n")
+    doc = _run(tmp_path, art, nfs, e0)
+    assert not [e for e in doc["entries"] if e["status"] == "ERROR"]
+    can = [e for e in doc["entries"] if e["name"] == "CANARY" and "policy=smvla" in e["line"]][0]
+    assert "from=ding:C,jia:N" in can["line"] and "seats_missing_real=new1,new2" in can["line"], can["line"]
+    ci = [e for e in doc["entries"] if e["name"] == "CANARY_INFRA" and "policy=smvla" in e["line"]][0]
+    assert "n=2" in ci["line"] and "new1:K:A/100:ConnectionClosed" in ci["line"]
+    pvo = [e for e in doc["entries"] if e["name"] == "PROD_VS_OFFICIAL" and "ref=历史" in e["line"]][0]
+    assert "s2f=0" in pvo["line"] and "f2s=0" in pvo["line"]  # K 的 C=fail 没进正式跑法
+    kt = [e for e in doc["entries"] if e["name"] == "KILLTEST" and "policy=smvla" in e["line"]][0]
+    assert "server_killed=yes server_restarted=yes requeued=4 done=46 errors=0" in kt["line"], kt["line"]
+    assert any(e["name"] == "KILLTEST" and e["status"] == "PENDING" and "policy=mme" in e["line"] for e in doc["entries"])
+    b = [e for e in doc["entries"] if e["line"].startswith("BUDGET=INFO item=5.2_金丝雀")][0]
+    assert "attempts=4" in b["line"] and "unique=3" in b["line"], b["line"]
+    assert any(e["line"].startswith("BUDGET=INFO item=其他_杀server测试 attempts=1") for e in doc["entries"])

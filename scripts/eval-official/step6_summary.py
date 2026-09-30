@@ -80,6 +80,7 @@ BUDGET_CAPS = (
     ("5.1 换条件评估", 576, 12),
     ("5.2 正式跑法", 384, 8),
     ("5.2 金丝雀", 16, None),
+    ("其他 杀server测试", 3, None),
 )
 BUDGET_OTHER_RETRY_CAP = 2  # 「其他 2」：2.2、3.1、金丝雀共用
 BUDGET_TOTAL_CAP = 2271
@@ -97,6 +98,7 @@ SECTION_TITLES = {
     "replay": "第 4 步 策略本身稳不稳定（POLICY_REPLAY／DET_RULE／IFACE_OPEN）",
     "eval_conditions": "5.1 新接口换条件还一致吗（EVAL_PARITY）",
     "prod": "5.2 正式跑法与第 6 步相对标准（PROD_VS_OFFICIAL／RELATIVE_ACCEPT）",
+    "killtest": "5.2 杀 server 续跑测试（KILLTEST）",
     "infra": "基础设施失败统计（INFRA；infra=True 永不算策略结果）",
     "incident": "GPU 计算模式事故（INCIDENT；*-vulkanfail-* 留档不进比较）",
     "speed": "测速（ENV_SPEED／EVAL_SPEED）",
@@ -108,7 +110,7 @@ FRAGMENTS = {
     "official-rerun": ("observer", "official"),
     "policy-replay": ("replay",),
     "eval-conditions": ("step3", "eval_conditions"),
-    "prod-vs-official": ("prod", "incident", "infra"),
+    "prod-vs-official": ("prod", "killtest", "incident", "infra"),
     "summary": tuple(SECTION_TITLES),
 }
 
@@ -347,6 +349,7 @@ class Sources:
         seen: set[str] = set()
         main: dict[tuple[str, int], dict] = {}
         canary: list[dict] = []
+        canary_infra: list[dict] = []
         infra: list[dict] = []
         st = {"files": len(files), "queue_done_docs": len(qdone), "lines": 0, "bad_lines": 0, "exact_dup": 0, "canary": 0,
               "infra": 0, "dup_final": 0, "other_policy": 0, "attempts": 0, "incident": 0}
@@ -381,6 +384,11 @@ class Sources:
                 hint = Path(fsrc).parent / "rec" / Path(rd).name
                 rec = dict(rec, rec_dir_stale=rd,
                            rec_dir=str(hint) if hint.is_dir() and not is_incident_path(hint) and fsrc.endswith(".jsonl") else None)
+            if (rec.get("infra") or rec.get("run_blocked")) and rec.get("canary"):
+                # 金丝雀的 infra 失败：单列（CANARY 另报），不进 INFRA／事故计数
+                st["canary_infra"] = st.get("canary_infra", 0) + 1
+                canary_infra.append(rec)
+                continue
             if rec.get("infra") or rec.get("run_blocked"):
                 st["infra"] += 1
                 st["incident"] += is_incident_record(rec)
@@ -404,7 +412,9 @@ class Sources:
                 index = build_rec_index(roots)
             d = pick_rec(index.get(key, []), rec.get("steps"))
             rec["rec_dir"] = str(d) if d else f"MISSING:{rec.get('rec_dir_stale') or key}"
-        return self._finish_merged(cond, policy, main, canary, st, infra, [str(r) for r in roots])
+        out = self._finish_merged(cond, policy, main, canary, st, infra, [str(r) for r in roots])
+        out["canary_infra"] = canary_infra
+        return out
 
     def _finish_merged(self, cond, policy, main, canary, st, infra, rec_roots) -> dict:
         mdir = self.lay.out / "merged"
@@ -512,6 +522,26 @@ def pick_rec(cands: list[Path], steps: Any = None) -> Path | None:
         return (str(created), mt, str(c))
 
     return max(cands, key=order)
+
+
+def parse_killtest(text: str) -> dict:
+    """席位日志：SERVER_KILLED_FOR_TEST 之后又有 SERVER_START + SERVER_READY → 已重启；requeued／done 取最后一行 QUEUE_CLAIM，
+    errors／infra／done（席位自己的局数）取 SEAT_DONE。"""
+    import re
+
+    lines = text.splitlines()
+    kill = next((i for i, l in enumerate(lines) if "SERVER_KILLED_FOR_TEST" in l), None)
+    after = lines[kill + 1:] if kill is not None else []
+    restarted = any(l.startswith("SERVER_START") for l in after) and any(l.startswith("SERVER_READY") for l in after)
+
+    def last_kv(prefix: str) -> dict:
+        ln = next((l for l in reversed(lines) if l.startswith(prefix)), "")
+        return dict(re.findall(r"(\w+)=(\S+)", ln))
+
+    q, sd = last_kv("QUEUE_CLAIM="), last_kv("SEAT_DONE")
+    return {"killed": kill is not None, "restarted": restarted, "requeued": q.get("requeued", "n/a"),
+            "q_done": q.get("done", "n/a"), "q_total": q.get("total", "n/a"), "queue_check": q.get("QUEUE_CLAIM", "n/a"),
+            "done": sd.get("done", "n/a"), "errors": sd.get("errors", "n/a"), "infra": sd.get("infra", "n/a")}
 
 
 def is_incident_path(p: Path | str) -> bool:
@@ -994,6 +1024,71 @@ class Summary:
                 self._vs_e0(S, cond, pol, small, "EVAL_VS_E0")
 
     # ------------------------------------------------------------------ 5.2 / 第 6 步
+    CANARY_CONDS = ("N", "N2", "N3", "K", "C")  # 顺序即「新旧」：C（金丝雀补跑）最后，同席位取最后一条真实金丝雀
+
+    def _canary(self, S: str, pol: str) -> None:
+        """金丝雀：每席位一局，取该席位最新的非 infra 记录；只有 infra 金丝雀的席位列为缺真实金丝雀，infra 金丝雀另行一行。
+        K（杀 server 测试）的队列局不是正式结果，不进 N／PROD，只有它的金丝雀参与这里。"""
+        real: dict[str, dict] = {}
+        infra_c: list[dict] = []
+        seats_all: set[str] = set()
+        for code in self.CANARY_CONDS:
+            src = self.src.get(code, pol) or {}
+            for c in src.get("canary", []):
+                real[str(c.get("seat"))] = dict(c, _cond=code)
+            for c in src.get("canary_infra", []):
+                infra_c.append(dict(c, _cond=code))
+            seats_all |= {str(c.get("seat")) for c in src.get("canary", []) + src.get("canary_infra", [])}
+        for code in ("N", "N2", "N3"):
+            seats_all |= {str(r.get("seat")) for r in ((self.src.get(code, pol) or {}).get("table") or {}).values() if r.get("seat")}
+        if not real and not infra_c:
+            self.rep.pending(S, "CANARY", {"policy": pol, "reason": "无金丝雀记录"})
+            return
+        rows = []
+        for seat, c in sorted(real.items()):
+            k = rec_key(c)
+            base = {code: (self.src.get(code, pol) or {"table": {}})["table"].get(k) for code in ("NP", "O1", "E0")}
+            base["N"] = base.pop("NP")
+            rows.append({"identity": f"{k[0]}/{k[1]}", "seat": seat, "cond": c["_cond"], "gpu": c.get("gpu_name"),
+                         "status": c.get("status"), "steps": c.get("steps"),
+                         **{f"{code}_status": (b or {}).get("status") for code, b in base.items()},
+                         **{f"{code}_steps": (b or {}).get("steps") for code, b in base.items()},
+                         "N_seat": (base["N"] or {}).get("seat")})
+        missing = sorted(seats_all - set(real))
+        path = self.detail / f"canary-{pol}.json"
+        path.write_text(dumps({"real": rows, "infra": infra_c, "seats_missing_real": missing}, indent=1) + "\n", encoding="utf-8")
+
+        def eq(code: str, field: str) -> str:
+            have = [r for r in rows if r[f"{code}_{field}"] is not None]
+            return f"{sum(r[field] == r[f'{code}_{field}'] for r in have)}/{len(have)}"
+
+        self.rep.add(S, "CANARY", "INFO", kv_line("CANARY", "INFO", {
+            "policy": pol, "n": len(rows), "seats": ",".join(r["seat"] for r in rows),
+            "from": ",".join(f"{r['seat']}:{r['cond']}" for r in rows),
+            "status_eq_N": eq("N", "status"), "steps_eq_N": eq("N", "steps"), "status_eq_O1": eq("O1", "status"),
+            "status_eq_E0": eq("E0", "status"), "seats_missing_real": ",".join(missing) or "none"}), {"json": str(path)})
+        if infra_c:
+            self.rep.add(S, "CANARY_INFRA", "INFO", kv_line("CANARY_INFRA", "INFO", {
+                "policy": pol, "n": len(infra_c),
+                "items": ";".join(f"{c.get('seat')}:{c['_cond']}:{c.get('task')}/{c.get('seed')}:{c.get('infra_reason')}" for c in infra_c)}))
+
+    def sec_killtest(self) -> None:
+        """每策略一个席位故意杀一次 server 验证续跑（5.2）：从席位日志读判定。"""
+        S = "killtest"
+        logs = {"mme": ("new1", self.lay.nfs / "state" / "final7" / "logs" / "K-mme-s-new1.log", "K"),
+                "smvla": ("new1", self.lay.nfs / "state" / "main" / "logs" / "N-smvla-s-new1.log", "N")}
+        for pol, (seat, log, cond) in logs.items():
+            if not log.exists():
+                self.rep.pending(S, "KILLTEST", {"policy": pol, "seat": seat, "reason": "席位日志不存在"})
+                continue
+            f = parse_killtest(log.read_text(encoding="utf-8", errors="replace"))
+            fields = {"policy": pol, "seat": seat, "cond": cond, "server_killed": f["killed"], "server_restarted": f["restarted"],
+                      "requeued": f["requeued"], "done": f["done"], "errors": f["errors"], "seat_infra": f["infra"],
+                      "queue_check": f["queue_check"], "log": log.name}
+            if cond == "K":
+                fields["done"] = f"{f['q_done']}/{f['q_total']}"
+            self.rep.add(S, "KILLTEST", "INFO", kv_line("KILLTEST", "INFO", fields), {"log": str(log)})
+
     def _queue_lines(self, S: str, pol: str) -> None:
         """两个队列（prod 原队列、prod2 补跑队列）各一行 QUEUE_CLAIM；另报 infra 终态（事故毒化）个数。"""
         for qname in ("prod", "prod2", "prod3"):
@@ -1065,31 +1160,8 @@ class Summary:
                     "official_max_ci_half_width_pp": ra.get("official_max_ci_half_width_pp"),
                     "rule": "主比较CI半宽>2×官方3对最大半宽"}))
             # 金丝雀：不进 192 比较，单独与同身份正式局、官方重跑一、官方历史成绩比
-            canaries = [c for code in ("N", "N2", "N3") for c in (self.src.get(code, pol) or {}).get("canary", [])]
-            if not canaries:
-                self.rep.pending(S, "CANARY", {"policy": pol, "reason": "无金丝雀记录"})
-            else:
-                rows = []
-                for c in canaries:
-                    k = rec_key(c)
-                    base = {code: (self.src.get(code, pol) or {"table": {}})["table"].get(k) for code in ("NP", "O1", "E0")}
-                    base["N"] = base.pop("NP")
-                    rows.append({"identity": f"{k[0]}/{k[1]}", "seat": c.get("seat"), "gpu": c.get("gpu_name"), "status": c.get("status"),
-                                 "steps": c.get("steps"),
-                                 **{f"{code}_status": (b or {}).get("status") for code, b in base.items()},
-                                 **{f"{code}_steps": (b or {}).get("steps") for code, b in base.items()},
-                                 "N_seat": (base["N"] or {}).get("seat")})
-                path = self.detail / f"canary-{pol}.json"
-                path.write_text(dumps(rows, indent=1) + "\n", encoding="utf-8")
+            self._canary(S, pol)
 
-                def eq(code: str, field: str) -> str:
-                    have = [r for r in rows if r[f"{code}_{field}"] is not None]
-                    return f"{sum(r[field] == r[f'{code}_{field}'] for r in have)}/{len(have)}"
-
-                self.rep.add(S, "CANARY", "INFO", kv_line("CANARY", "INFO", {
-                    "policy": pol, "n": len(rows), "seats": ",".join(sorted({str(r['seat']) for r in rows})),
-                    "status_eq_N": eq("N", "status"), "steps_eq_N": eq("N", "steps"), "status_eq_O1": eq("O1", "status"),
-                    "status_eq_E0": eq("E0", "status")}), {"json": str(path)})
 
     # ------------------------------------------------------------------ INFRA / 事故
     def sec_infra(self) -> None:
@@ -1252,7 +1324,8 @@ class Summary:
                 for pol in POLICIES:
                     s = self.src.get(code, pol)
                     if s:
-                        a += s["stats"]["attempts"] - s["stats"]["canary"] - s["stats"].get("incident", 0)
+                        a += (s["stats"]["attempts"] - s["stats"]["canary"] - s["stats"].get("canary_infra", 0)
+                              - s["stats"].get("incident", 0))
                         u += len(s["table"])
                         c += s["stats"]["canary"]
                         inc += s["stats"].get("incident", 0)
@@ -1263,9 +1336,19 @@ class Summary:
         a, u, _, inc = new_counts(E_CONDS)
         item("5.1 换条件评估", a + dir_real.get("5.1", 0), u,
              f"含事故留档目录真实局 {dir_real.get('5.1', 0)}、infra {dir_infra.get('5.1', 0)}", inc + dir_infra.get("5.1", 0))
-        a, u, c, inc = new_counts(("N", "N2", "N3"))
+        a, u, _, inc = new_counts(("N", "N2", "N3"))
         item("5.2 正式跑法", a + dir_real.get("5.2", 0), u, "含补跑队列 N2、N3", inc + dir_infra.get("5.2", 0))
-        item("5.2 金丝雀", c, c)
+        # 金丝雀：N／N2／N3／K／C 全部金丝雀局（含 infra 失败的）；去重单位 = (策略, 席位)
+        c_all, c_seats = 0, set()
+        for code in self.CANARY_CONDS:
+            for pol in POLICIES:
+                src = self.src.get(code, pol) or {}
+                cs = src.get("canary", []) + src.get("canary_infra", [])
+                c_all += len(cs)
+                c_seats |= {(pol, str(c.get("seat"))) for c in cs}
+        item("5.2 金丝雀", c_all, len(c_seats), "含 C 金丝雀补跑与 K 测试的金丝雀；重复席位计为重试")
+        a, u, _, inc = new_counts(("K",))
+        item("其他 杀server测试", a, u, "K：MME 杀 server 测试的队列局（不是正式结果）", inc)
         shared = sum(r["retries"] for r in rows if r["shared"])
         for r in rows:
             if r["shared"]:
@@ -1290,7 +1373,7 @@ class Summary:
         self.extra["budget"] = rows
 
     # ------------------------------------------------------------------ 主流程
-    SECTIONS = ("env_parity", "env_stack", "observer", "official", "step3", "replay", "eval_conditions", "prod", "infra", "incident",
+    SECTIONS = ("env_parity", "env_stack", "observer", "official", "step3", "replay", "eval_conditions", "prod", "killtest", "infra", "incident",
                 "speed", "budget")
 
     def run(self, sections: tuple[str, ...] | None = None) -> dict:
