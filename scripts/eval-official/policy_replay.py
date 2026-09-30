@@ -305,15 +305,22 @@ def trace_official_mme(rec: Rec, proxy_rec: str | Path | None) -> dict:
         j, g = _split_state(states[k])
         steps.append(_step_rec([fimg[e["front_idx"]]], [wimg[e["wrist_idx"]]], j, g, terminated=e["stop"],
                                status=e.get("status")))
-    if proxy_rec is None:
-        root = rec.dir.parent / "proxy"
-        found = find_proxy_conn(rec, root) if root.is_dir() else None
-        if found is None:
-            raise RuntimeError(f"找不到与 {rec.dir.name} 对应的代理连接目录（传 --proxy-rec）")
-        proxy_rec = found
+    # --proxy-rec 可给单个连接目录（conn-<pid>-<NNNN>，本身含 events.jsonl），也可给代理日志根目录
+    # （多局分片：一局一条连接，另有观察器预检等连接）；后者按本局客户端发出 sha 序列逐字匹配出唯一连接。
+    root = Path(proxy_rec) if proxy_rec is not None else rec.dir.parent / "proxy"
+    if (root / "events.jsonl").exists() and not any(root.glob("conn-*")):
+        conn_dir = root
+    else:
+        conn_dir = find_proxy_conn(rec, root) if root.is_dir() else None
+        if conn_dir is None:
+            raise RuntimeError(f"在 {root} 下找不到与 {rec.dir.name} 客户端发出序列一致的代理连接目录")
+    proxy_rec = conn_dir
     prx = Rec(proxy_rec)
     model = [a for _, a in prx.arrays("s2c.actions")]
     wire = [e["sha256"] for e in sorted((e for e in rec.kinds("ws") if e["dir"] == "send"), key=lambda e: e["idx"])]
+    c2s = [e["sha256"] for e in sorted((e for e in prx.kinds("msg") if e.get("dir") == "c2s"), key=lambda e: e["idx"])]
+    if c2s != wire:  # 连接目录与本局不对应（显式给错单个连接目录时）
+        raise RuntimeError(f"代理连接 {proxy_rec} 的 c2s 序列（{len(c2s)} 条）与 {rec.dir.name} 客户端发出序列（{len(wire)} 条）不一致")
     exec_rows = [a for _, a in rec.arrays("exec_action")]
     summ = rec.summary.get("summary", {})
     return {"policy": "mme", "kind": "official", "rec": str(rec.dir), "proxy_rec": str(proxy_rec),
@@ -611,7 +618,7 @@ def cmd_build_inputs(args) -> int:
               f"infers={meta['infers']} mismatch={mism} first_mismatch={first} exec_equal={ex['exec_equal']} "
               f"out={args.out}", flush=True)
         return 0 if ok else 1
-    ok = not sim["exhausted"]
+    ok = not sim["exhausted"] and mism in (None, 0)  # 官方 MME 有线上字节 sha 时也要求逐条一致
     print(f"BUILD_INPUTS={'PASS' if ok else 'FAIL'} policy={args.policy} kind=official messages={meta['messages']} "
           f"infers={meta['infers']} basis={trace['wire_basis']} mismatch={'n/a' if mism is None else mism} "
           f"first_mismatch={first} exec_equal={ex['exec_equal']} out={args.out}", flush=True)

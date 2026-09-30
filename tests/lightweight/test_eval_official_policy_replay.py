@@ -394,3 +394,86 @@ def test_driver_lock_busy_and_run_id():
     assert "WARN_GPU_BUSY" in s and "--query-compute-apps=pid,used_memory" in s
     assert 'rm -rf "$OUT/compare" "$OUT"/det-*' in s
     assert s.count('--run-id "$RUN_ID"') >= 3
+
+
+# ─────────────────────────── 官方 MME 多局分片：代理根目录下多条连接，按 sha 序列匹配本局
+
+
+def _write_official_mme_episode(ep_dir: Path, trace: dict) -> list[str]:
+    """按 mme_client_wrap 钩子的布局写一局官方录制（EpisodeRecorder 真编码帧）；返回本局发出 sha 序列。"""
+    R = pr.load_module("recorder")
+    sim = pr.simulate(trace)
+    rec = R.EpisodeRecorder(ep_dir, {"policy": "mme", "side": "official-observer", "task": "BinFill",
+                                     "source_episode": 31, "seed": 543100, "never_degrade": True})
+    rec.set_phase("reset")
+    r = trace["reset"]
+    fi = rec.add_frames("front", np.stack(r["front"]), tag="reset")
+    wi = rec.add_frames("wrist", np.stack(r["wrist"]), tag="reset")
+    st = np.stack([np.concatenate([j, g[:1]]).astype(np.float32) for j, g in zip(r["joint"], r["gripper"])])
+    rec.add_array("reset_state", st)
+    rec.add_event({"kind": "reset", "task_goal": trace["goal"], "front_idx": [fi[0], fi[-1]], "wrist_idx": [wi[0], wi[-1]]})
+    rec.set_phase("run")
+    shas = [pr.sha_bytes(m["raw"]) for m in sim["msgs"]]
+    for i, s in enumerate(shas):
+        rec.add_event({"kind": "ws", "conn": 0, "dir": "send", "idx": i, "sha256": s})
+    for k, a in enumerate(sim["exec_rows"]):
+        s = trace["steps"][k]
+        rec.add_array("exec_action", a, step=k)
+        f = rec.add_frames("front", s["front"][0], tag="step")[0]
+        w = rec.add_frames("wrist", s["wrist"][0], tag="step")[0]
+        rec.add_array("state", np.concatenate([s["joint"], s["gripper"][:1]]).astype(np.float32), step=k)
+        rec.add_event({"kind": "step", "k": k, "stop": s["terminated"], "status": s["status"], "front_idx": f, "wrist_idx": w})
+    assert rec.close({"return": sim["status"], "steps": sim["steps"]})["RECORDER_VERIFY"] == "PASS"
+    return shas
+
+
+def _write_proxy_conn(d: Path, shas: list[str], actions: list[np.ndarray]) -> None:
+    """按 mme_proxy 记账布局写一条连接目录（只有 events 与 arrays）。"""
+    d.mkdir(parents=True)
+    ev = [{"kind": "msg", "dir": "c2s", "idx": i, "sha256": s, "seq": i} for i, s in enumerate(shas)]
+    (d / "events.jsonl").write_text("".join(json.dumps(e) + "\n" for e in ev))
+    keys = {f"s2c.actions__{k:05d}": np.asarray(a) for k, a in enumerate(actions)}
+    np.savez(d / "arrays.npz", **keys)
+    (d / "arrays-index.jsonl").write_text("".join(
+        json.dumps({"key": k, "name": "s2c.actions", "k": i, "step": 3 + 2 * i}) + "\n" for i, k in enumerate(keys)))
+
+
+def test_official_mme_multi_episode_proxy_root(tmp_path, capsys):
+    R = pr.load_module("recorder")
+    try:
+        R.find_ffmpeg()
+    except Exception:
+        pytest.skip("无 ffmpeg")
+    root = tmp_path / "rec"
+    t_other = make_trace("mme", n_steps=30, seed=1)
+    t_me = make_trace("mme", n_steps=40, seed=2, end_status="fail")
+    shas = _write_official_mme_episode(root / "BinFill_31_543100", t_me)
+    other = [pr.sha_bytes(m["raw"]) for m in pr.simulate(t_other)["msgs"]]
+    px = root / "proxy"
+    _write_proxy_conn(px / "conn-111-0000", [], [])  # 观察器预检连接：无消息
+    _write_proxy_conn(px / "conn-111-0001", other, t_other["model_actions"])  # 别的局
+    _write_proxy_conn(px / "conn-111-0002", shas[:3], t_me["model_actions"][:1])  # 同局前缀（被截断的重试连接）
+    _write_proxy_conn(px / "conn-111-0003", shas, t_me["model_actions"])  # 本局
+    _write_proxy_conn(px / "conn-111-0004", other, t_other["model_actions"])
+    out = tmp_path / "B-mme"
+    rc = pr.main(["build-inputs", "--policy", "mme", "--rec", str(root / "BinFill_31_543100"), "--proxy-rec", str(px),
+                  "--kind", "official", "--out", str(out)])
+    line = capsys.readouterr().out.strip().splitlines()[-1]
+    assert rc == 0 and line.startswith("BUILD_INPUTS=PASS") and "mismatch=0" in line and "exec_equal=True" in line
+    assert json.loads((out / "meta.json").read_text())["proxy_rec"].endswith("conn-111-0003")
+    # 不给 --proxy-rec：在 <rec>/../proxy 自动匹配
+    assert pr.main(["build-inputs", "--policy", "mme", "--rec", str(root / "BinFill_31_543100"), "--kind", "official",
+                    "--out", str(tmp_path / "auto")]) == 0
+    # 显式给错单个连接目录：报错，不静默产出
+    with pytest.raises(RuntimeError):
+        pr.load_trace("mme", root / "BinFill_31_543100", "official", str(px / "conn-111-0001"))
+    # iface-open 同样能用代理根目录
+    old = tmp_path / "old"
+    old.mkdir()
+    (old / "utils.py").write_text(OLD_UTILS)
+    (old / "env_runner.py").write_text(OLD_RUNNER)
+    capsys.readouterr()
+    pr.main(["iface-open", "--policy", "mme", "--rec-official", str(root / "BinFill_31_543100"), "--proxy-rec", str(px),
+             "--old-src", str(old), "--out", str(tmp_path / "i.json")])
+    line = capsys.readouterr().out.strip().splitlines()[-1]
+    assert "payload_equal=yes" in line and "exec_equal=yes" in line and "wire_mismatch=0" in line
