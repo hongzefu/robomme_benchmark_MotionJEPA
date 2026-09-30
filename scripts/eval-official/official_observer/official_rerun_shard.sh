@@ -92,11 +92,13 @@ if [[ "$DRY" != 1 ]]; then
 fi
 
 # ---- SimpleMemVLA 片（历史顺序：先 SMVLA）
+# 分片总数取自清单（旧 load_episode_manifest 要求 n 恰为清单分片数；E0 清单为 10，R1 小样本清单为 1）
+SMVLA_N="$(python3 -c 'import json,sys; print(len({json.loads(l)["shard"] for l in open(sys.argv[1]) if l.strip()}))' "$MANIFEST")"
 SMVLA_RC=1
 for attempt in 1 2 3; do
   echo "XHARD0_PASS $attempt policy=smvla"
   resume=0; [[ "$attempt" -gt 1 ]] && resume=1
-  run env MANIFEST="$MANIFEST" SHARD="$SHARD/10" OUTDIR="$SMVLA_OUT" REC_ROOT="$NODE_TMP/smvla/rec" \
+  run env MANIFEST="$MANIFEST" SHARD="$SHARD/$SMVLA_N" OUTDIR="$SMVLA_OUT" REC_ROOT="$NODE_TMP/smvla/rec" \
     VIDEO_DIR="$NODE_TMP/smvla/videos" NODE_TMP="$NODE_TMP" V75_RESUME="$resume" \
     bash "$OBS_DIR/run_official_smvla.sh"
   SMVLA_RC=$?
