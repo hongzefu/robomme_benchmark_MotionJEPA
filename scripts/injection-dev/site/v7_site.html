@@ -57,7 +57,7 @@
     .sg-table{border-collapse:collapse;font-size:11.5px;margin:8px 0;display:block;max-width:100%;overflow-x:auto}
     .sg-table th,.sg-table td{padding:5px 9px;border-bottom:1px solid var(--line);text-align:left;font-variant-numeric:tabular-nums;white-space:nowrap}
     .sg-table th{background:#fafbf7;font-weight:600;color:#3a543f}.sg-table td.txt{white-space:normal;min-width:220px;max-width:460px}
-    .sg-table .is-cur{background:var(--soft)}.sg-table td.v-diff{background:#fde5e1;color:#9c2f25;font-weight:650}.sg-table td.v-near{background:#fff1d6;color:#8a5a0f;font-weight:650}.sg-table .sg-tip{font-weight:400;color:var(--muted)}.sg-table td.v-new{background:#e1ecfb;color:#1f4f8f;font-weight:650}.v-base{color:#3a543f;font-weight:650}
+    .sg-table .is-cur{background:var(--soft)}.sg-table td.v-diff{background:#fde5e1;color:#9c2f25;font-weight:650}.sg-table td.v-near{background:#fff1d6;color:#8a5a0f;font-weight:650}.sg-table td.sg-cls{color:#3a543f;background:#f6f8f2}.sg-table .sg-tip{font-weight:400;color:var(--muted)}.sg-table td.v-new{background:#e1ecfb;color:#1f4f8f;font-weight:650}.v-base{color:#3a543f;font-weight:650}
     .sg-ep{margin-top:16px}
 .outlier-link{margin:0 10px 6px;width:calc(100% - 20px);border:1px solid #f0c4bd!important;background:#fdf1ef}.outlier-link[aria-current="page"]{background:#fde5e1;border-color:#c2453a!important}
     .status-panel{padding:60px 20px;text-align:center;color:var(--muted)}
@@ -363,13 +363,13 @@
       const byTask = {}; rows.forEach(x => { byTask[x.task] = (byTask[x.task] || 0) + 1; });
       box.append(node('p', 'task-sub', Object.entries(byTask).map(([k, n]) => `${k} ${n}`).join(' · ') || '无'));
       const t = node('table', 'sg-table'); const h = node('tr');
-      ['任务', '档', '局', 'seed', '第几段', 'subgoal', '首次／后续', '帧数', 'xhard0 同类中位（范围）', '偏离'].forEach(x => h.append(node('th', '', x)));
+      ['任务', '档', '局', 'seed', '第几段', 'subgoal', '首次／后续', '帧数', '所属同类', 'xhard0 同类中位（范围）', '偏离'].forEach(x => h.append(node('th', '', x)));
       t.append(h);
       rows.forEach(x => {
         const tr = node('tr'); const a = node('a', '', x.task); a.href = `#task=${x.task}&tier=${x.tier}&ep=${x.idx}`;
         const td0 = node('td'); td0.append(a); tr.append(td0);
         [x.tier, String(x.idx), String(x.seed), String(x.seg)].forEach(v => tr.append(node('td', '', v)));
-        tr.append(node('td', 'txt', x.s.text), node('td', '', x.s.kind), node('td', '', String(x.s.frames)),
+        tr.append(node('td', 'txt', x.s.text), node('td', '', x.s.kind), node('td', '', String(x.s.frames)), node('td', 'txt sg-cls', `${x.s.tpl}（${x.s.kind}）`),
           node('td', '', `${x.r.base.median}（${x.r.base.min}～${x.r.base.max}）`), node('td', 'v-diff', x.r.tip));
         t.append(tr);
       });
@@ -393,12 +393,12 @@
       if (two) wrap.lastChild.append(node('small', '', same ? '新入口与官方旧入口逐段完全相同' : '新入口与官方旧入口逐段不同！'));
       if (!segs.length) { wrap.append(node('div', 'notes', '空 h5（官方原版即生成失败），没有 subgoal。')); return wrap; }
       const t = node('table', 'sg-table'); const h = node('tr');
-      ['#', 'subgoal', '帧数', '首次／后续', 'xhard0 同类中位（范围）', '本段与 xhard0 范围比'].forEach(x => h.append(node('th', '', x)));
+      ['#', 'subgoal', '帧数', '首次／后续', '所属同类', 'xhard0 同类中位（范围）', '本段与 xhard0 范围比'].forEach(x => h.append(node('th', '', x)));
       t.append(h);
       segs.forEach((s, i) => {
         const r = sgRow(s.tpl, s.kind), base = r && r.tiers.xhard0, mine = r && r.tiers[S.tier];
         const tr = node('tr');
-        tr.append(node('td', '', String(i + 1)), node('td', 'txt', s.text), node('td', '', String(s.frames)), node('td', '', s.kind),
+        tr.append(node('td', '', String(i + 1)), node('td', 'txt', s.text), node('td', '', String(s.frames)), node('td', '', s.kind), node('td', 'txt sg-cls', `${s.tpl}（${s.kind}）`),
           node('td', '', base ? `${base.median}（${base.min}～${base.max}）` : 'xhard0 无此类'));
         const { v, cls, tip } = segVerdict(S.task, S.tier, s);
         const td = node('td', cls, v); if (tip) { td.title = tip; td.append(node('small', 'sg-tip', `　${tip}`)); }
