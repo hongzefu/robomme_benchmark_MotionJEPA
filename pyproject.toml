@@ -18,12 +18,18 @@ dev = ["opencv-python", "pytest"]
 
 [tool.uv.sources]
 mani-skill = { git = "https://github.com/YinpeiDai/ManiSkill.git", rev = "07be6fbc66350ddca200abfb0a11b692f078f7fd" }
+openpi-client = { path = "third_party/mme-vla/packages/openpi-client", editable = true }
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
+eval-client = [
+    "openpi-client",
+    "pillow>=12.1.1",
+    "tree>=0.2.4",
+]
 server = [
     "dm-tree==0.1.8",
     "flask>=3.1.3",
