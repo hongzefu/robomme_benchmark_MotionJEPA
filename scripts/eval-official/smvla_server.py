@@ -46,9 +46,13 @@ _FIXED_ENV = {
     "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
     "PYTHONUTF8": "1",
 }
+# 确定性模式（第 4 步 --det）：cuBLAS 在建句柄时读取该变量，必须在 import torch 之前设定。
+DET_CUBLAS_WORKSPACE_CONFIG = ":4096:8"
 if __name__ == "__main__":  # 作为脚本运行：在 import numpy / torch 之前设定（OpenBLAS 线程数在加载时读取）
     for _k, _v in _FIXED_ENV.items():
         os.environ[_k] = _v
+    if "--det" in sys.argv[1:]:
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = DET_CUBLAS_WORKSPACE_CONFIG
 
 import argparse
 import asyncio
@@ -351,9 +355,25 @@ async def _serve(host: SMVLAPolicyHost, bind: str, port: int) -> None:
         await server.serve_forever()
 
 
+def enable_det() -> dict:
+    """确定性模式（默认关）：torch.use_deterministic_algorithms(True) + CUBLAS_WORKSPACE_CONFIG=:4096:8。
+    环境变量须已在 import torch 之前设好（见文件头），这里只核对，不在 torch 已加载后补设。"""
+    import torch
+
+    if os.environ.get("CUBLAS_WORKSPACE_CONFIG") != DET_CUBLAS_WORKSPACE_CONFIG:
+        raise RuntimeError(f"--det 需要在 import torch 前设 CUBLAS_WORKSPACE_CONFIG={DET_CUBLAS_WORKSPACE_CONFIG}，"
+                           f"当前为 {os.environ.get('CUBLAS_WORKSPACE_CONFIG')!r}")
+    torch.use_deterministic_algorithms(True)
+    return {"det": True, "cublas_workspace_config": os.environ.get("CUBLAS_WORKSPACE_CONFIG"),
+            "deterministic_algorithms": torch.are_deterministic_algorithms_enabled()}
+
+
 def cmd_serve(a) -> int:
     t0 = time.monotonic()
+    det_info = enable_det() if a.det else {"det": False, "cublas_workspace_config": os.environ.get("CUBLAS_WORKSPACE_CONFIG")}
+    print(f"SMVLA_DET det={'on' if det_info['det'] else 'off'} cublas={det_info['cublas_workspace_config']}", flush=True)
     host = SMVLAPolicyHost(a.ckpt)
+    host.metadata.update(det_info)
     print(f"SMVLA_LOAD load_s={host.load_s:.1f} config_sha={host.metadata['ckpt_config_sha256'][:12]} "
           f"torch={host.metadata['versions']['torch']} gpu={host.metadata['gpu_name']}", flush=True)
     if a.expect_config_sha and host.metadata["ckpt_config_sha256"] != a.expect_config_sha:
@@ -386,6 +406,8 @@ def main(argv=None) -> int:
     s.add_argument("--warmup", action="store_true", help="加载后跑一次假推理再重设种子")
     s.add_argument("--expect_config_sha", default=None, help="config.json 期望 sha256，不符即退出 2")
     s.add_argument("--metadata_out", default=None)
+    s.add_argument("--det", action="store_true",
+                   help="确定性模式：torch.use_deterministic_algorithms(True) + CUBLAS_WORKSPACE_CONFIG=:4096:8（默认关）")
     s.set_defaults(func=cmd_serve)
     a = ap.parse_args(argv)
     return a.func(a)

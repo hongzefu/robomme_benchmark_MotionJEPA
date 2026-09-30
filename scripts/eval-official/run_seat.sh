@@ -70,6 +70,9 @@ LOG="$OUT/seat-${SEAT}.log"
 
 TASKSET=()
 [[ -n "$CPUS" ]] && TASKSET=(taskset -c "$CPUS")
+# 两个 server 分支都先清掉会影响确定性／编译缓存的变量，再只设本席位要的（-u 须在赋值之前）
+CLEAN_ENV=(-u XLA_FLAGS -u JAX_COMPILATION_CACHE_DIR -u JAX_PERSISTENT_CACHE_MIN_ENTRY_SIZE_BYTES
+           -u JAX_PERSISTENT_CACHE_MIN_COMPILE_TIME_SECS -u CUBLAS_WORKSPACE_CONFIG)
 # 去代理变量、只连 127.0.0.1（GL 计算节点有 HTTP 代理）
 NOPROXY_ENV=(-u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY -u all_proxy -u ALL_PROXY
              NO_PROXY=127.0.0.1,localhost no_proxy=127.0.0.1,localhost)
@@ -160,14 +163,17 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志
       extra+=(JAX_COMPILATION_CACHE_DIR="${V75_JAX_CACHE_ROOT:-$REPO/artifacts/v7.5eval/jax-cache}/$(gpu_slug)")
     fi
     [[ "$DET" == "on" ]] && extra+=(XLA_FLAGS="--xla_gpu_deterministic_ops=true --xla_gpu_autotune_level=0")
-    ( cd "$REPO/third_party/mme-vla" && exec setsid env "${NOPROXY_ENV[@]}" "${extra[@]}" PYTHONUNBUFFERED=1 \
+    ( cd "$REPO/third_party/mme-vla" && exec setsid env "${CLEAN_ENV[@]}" "${NOPROXY_ENV[@]}" "${extra[@]}" PYTHONUNBUFFERED=1 \
         CUDA_VISIBLE_DEVICES="$GPU" "${TASKSET[@]}" "$MME_PY" scripts/serve_policy.py --seed=7 --port="$port" \
         policy:checkpoint --policy.config=mme_vla_suite --policy.dir="$MME_CKPT" ) >"$slog" 2>&1 &
   else
-    ( cd "$REPO" && exec setsid env "${NOPROXY_ENV[@]}" PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false \
+    # 确定性模式：与 run_policy_replay.sh 相同，--det + CUBLAS_WORKSPACE_CONFIG=:4096:8
+    local detarg=()
+    [[ "$DET" == "on" ]] && detarg=(--det) && extra=(CUBLAS_WORKSPACE_CONFIG=:4096:8)
+    ( cd "$REPO" && exec setsid env "${CLEAN_ENV[@]}" "${NOPROXY_ENV[@]}" "${extra[@]}" PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false \
         PYTHONUTF8=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MPLBACKEND=Agg CUDA_VISIBLE_DEVICES="$GPU" \
         "${TASKSET[@]}" "$SMVLA_PY" scripts/eval-official/smvla_server.py serve --port "$port" --ckpt "$SMVLA_CKPT" \
-        --warmup --metadata_out "$OUT/$pol/server-metadata-$port.json" ) >"$slog" 2>&1 &
+        --warmup "${detarg[@]}" --metadata_out "$OUT/$pol/server-metadata-$port.json" ) >"$slog" 2>&1 &
   fi
   SERVER_PID=$!
   local t0; t0=$(ts)
