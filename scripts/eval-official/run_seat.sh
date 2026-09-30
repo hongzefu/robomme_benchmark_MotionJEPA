@@ -8,7 +8,10 @@
 #   run_seat.sh --seat 甲 --seat-idx 1 --gpu 0 --cond N --out <dir> (--queue <dir> | --identities <json>)
 #               [--policies smvla,mme] [--cpus 0-3] [--canary Task:source_episode:seed] [--order forward|reverse|shuffle]
 #               [--mme-ckpt <run>/79999] [--smvla-ckpt <dir>] [--compile-cache on|off] [--det on|off]
-#               [--relay on|off] [--limit N] [--no-record]
+#               [--relay on|off] [--limit N] [--no-record] [--client-per-task]
+# --client-per-task（仅 identities 模式，计划 5.1 E1「每任务起新客户端进程、server 常驻」）：server 常驻，
+#   按身份文件里任务首次出现的顺序分组，每组起一个新客户端 ``--only <task>_<seed>,...``（组内按文件顺序），逐组串行；
+#   首次推理放宽仍只给 server 新（重）起后的第一个客户端；看门狗照常；结果都追加进同一个 results.jsonl。
 # 可用环境变量覆盖解释器：BENCH_PY、MME_PY、SMVLA_PY（默认 $REPO/artifacts/v7.5eval/venvs/smvla-env/bin/python）、
 # 缓存根 V75_JAX_CACHE_ROOT。
 #
@@ -27,7 +30,7 @@ MME_COMMIT="ecf086c3be7c2223167d9bb2f6ef1f0a6e24353b"
 MME_YAML_EXPECT="perceptual-framesamp-modul.yaml"
 
 SEAT="" ; SEAT_IDX="" ; GPU="" ; COND="" ; OUT="" ; QUEUE="" ; IDENTS="" ; POLICIES="smvla,mme" ; CPUS=""
-CANARY="" ; ORDER="forward" ; COMPILE_CACHE="off" ; DET="off" ; RELAY="off" ; LIMIT="0" ; NO_RECORD=""
+CANARY="" ; ORDER="forward" ; CLIENT_PER_TASK=0 ; ONLY_LIST="" ; COMPILE_CACHE="off" ; DET="off" ; RELAY="off" ; LIMIT="0" ; NO_RECORD=""
 MME_CKPT="${MME_CKPT:-/data/hongzefu/robomme_policy_learning_MotionJEPA/v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999}"
 SMVLA_CKPT="${SMVLA_CKPT:-/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/checkpoints/simplememvla_robomme}"
 READY_TIMEOUT=1200 ; FIRST_EXTRA=600 ; NOPROG_S=1200 ; MAX_CLIENT_RESTARTS=8 ; MAX_SERVER_RESTARTS=2
@@ -52,12 +55,16 @@ while [[ $# -gt 0 ]]; do
     --relay) RELAY="$2"; shift 2;;
     --limit) LIMIT="$2"; shift 2;;
     --no-record) NO_RECORD="--no-record"; shift;;
+    --client-per-task) CLIENT_PER_TASK=1; shift;;
     --noprog-s) NOPROG_S="$2"; shift 2;;
     *) echo "未知参数 $1" >&2; exit 2;;
   esac
 done
 if [[ -z "$SEAT" || -z "$SEAT_IDX" || -z "$GPU" || -z "$COND" || -z "$OUT" ]]; then
   echo "缺少必需参数（--seat --seat-idx --gpu --cond --out）" >&2; exit 2
+fi
+if (( CLIENT_PER_TASK == 1 )) && [[ -n "$QUEUE" ]]; then
+  echo "--client-per-task 只用于 --identities 模式" >&2; exit 2
 fi
 if [[ -n "$QUEUE" && -n "$IDENTS" ]] || [[ -z "$QUEUE" && -z "$IDENTS" ]]; then
   echo "--queue 与 --identities 必须二选一" >&2; exit 2
@@ -266,6 +273,8 @@ start_client() {  # $1 = 策略；$2 = 客户端连接端口；$3 = 是否带金
   FRESH_SERVER=0
   local src=() canary=() pol_env=()
   if [[ -n "$QUEUE" ]]; then src=(--queue "$QUEUE"); else src=(--identities "$IDENTS" --order "$ORDER"); fi
+  # 每任务一个客户端：只跑本组身份，组内保持文件顺序
+  [[ -n "$ONLY_LIST" ]] && src=(--identities "$IDENTS" --order forward --only "$ONLY_LIST")
   [[ "$with_canary" == 1 && -n "$CANARY" ]] && canary=(--canary "$CANARY")
   # smvla 旧官方环境与推理同进程、OMP_NUM_THREADS=1；新接口环境侧照设
   [[ "$pol" == "smvla" ]] && pol_env=(OMP_NUM_THREADS=1)
@@ -275,7 +284,7 @@ start_client() {  # $1 = 策略；$2 = 客户端连接端口；$3 = 是否带金
       --port "$cport" --out "$OUT/$pol" --episode-wall-s "$wall" --first-extra-s "$extra" --limit "$LIMIT" \
       "${canary[@]}" $NO_RECORD ) >>"$OUT/$pol/client.log" 2>&1 &
   CLIENT_PID=$!
-  echo "CLIENT_START policy=$pol port=$cport pid=$CLIENT_PID canary=${canary[1]:-none} wall_s=$wall first_extra_s=$extra"
+  echo "CLIENT_START policy=$pol port=$cport pid=$CLIENT_PID canary=${canary[1]:-none} wall_s=$wall first_extra_s=$extra only=${ONLY_LIST:-all}"
 }
 
 run_policy() {  # $1 = 策略；$2 = 策略号
@@ -296,7 +305,34 @@ run_policy() {  # $1 = 策略；$2 = 策略号
   cport="$port"; [[ "$pol" == "mme" && "$RELAY" == "on" ]] && cport=$((port + 1))
 
   rc=0
-  policy_loop "$pol" "$port" "$cport" || rc=$?
+  if (( CLIENT_PER_TASK == 1 )); then
+    local groups g task keys first_group=1
+    # 按任务首次出现顺序分组；每行 "<task>\t<key>,<key>,..."
+    groups="$("$BENCH_PY" - "$IDENTS" <<'PY'
+import json, sys
+rows = json.load(open(sys.argv[1], encoding="utf-8"))
+order, by = [], {}
+for r in rows:
+    t = r["task"]
+    if t not in by:
+        order.append(t); by[t] = []
+    by[t].append(f"{t}_{int(r['seed'])}")
+for t in order:
+    print(f"{t}\t{','.join(by[t])}")
+PY
+)" || { echo "RUN_BLOCKED reason=task_groups"; rc=3; }
+    while IFS=$'\t' read -r task keys; do
+      [[ -z "$task" ]] && continue
+      (( rc != 0 )) && break
+      ONLY_LIST="$keys"
+      echo "TASK_CLIENT policy=$pol task=$task n=$(awk -F, '{print NF}' <<< "$keys")"
+      policy_loop "$pol" "$port" "$cport" "$first_group" || rc=$?
+      first_group=0
+    done <<< "$groups"
+    ONLY_LIST=""
+  else
+    policy_loop "$pol" "$port" "$cport" 1 || rc=$?
+  fi
   stop_server
   local qrc=0
   write_report "$pol" "$rc" || qrc=$?
@@ -305,13 +341,13 @@ run_policy() {  # $1 = 策略；$2 = 策略号
   return "$rc"
 }
 
-policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口；返回 0 完成 / 3 阻塞 / 4 基础设施用尽
+policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口 $4 是否带金丝雀；返回 0 完成 / 3 阻塞 / 4 基础设施用尽
   local pol="$1" port="$2" cport="$3" rc slog
   # 无进展阈值须大于「单局墙钟 + 首次放宽 + 启动余量」，单局卡死先由客户端墙钟计时器以 75 退出并回收
   local noprog=$(( $(wall_of "$pol") + FIRST_EXTRA + 600 ))
   (( NOPROG_S > noprog )) && noprog=$NOPROG_S
-  local client_restarts=0 server_restarts=0 noprog_restarts=0 first=1 last
-  start_client "$pol" "$cport" "$first"; first=0
+  local client_restarts=0 server_restarts=0 noprog_restarts=0 last
+  start_client "$pol" "$cport" "${4:-1}"
   while true; do
     if ! kill -0 "$CLIENT_PID" 2>/dev/null; then
       wait "$CLIENT_PID"; rc=$?; CLIENT_PID=""
