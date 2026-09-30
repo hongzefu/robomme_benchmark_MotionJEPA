@@ -62,6 +62,7 @@
 .oracle-link{border-color:#c9dcc0!important;background:#eef5e8}.oracle-link[aria-current="page"]{background:var(--soft);border-color:var(--green)!important}
     .goal{margin-top:8px;font-size:12.5px;line-height:1.7;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;max-width:1100px}.goal ol{margin:2px 0;padding-left:20px}.goal .k{color:var(--muted);font-size:11px}
     .cfg-kv{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.cfg-kv span{background:#f3f5ef;border-radius:6px;padding:2px 8px;font-size:11.5px;font-variant-numeric:tabular-nums}.cfg-kv b{color:#3a543f;margin-right:4px}
+    .cfg-sem{margin:4px 0 6px;padding-left:20px;font-size:12.5px;line-height:1.75}
     .cfg-raw summary{cursor:pointer;font-size:11px;color:var(--muted)}.cfg-raw pre{font-size:10.5px;background:#f6f8f2;border-radius:8px;padding:8px;max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
     .outlier-link{margin:0 10px 6px;width:calc(100% - 20px);border:1px solid #f0c4bd!important;background:#fdf1ef}.outlier-link[aria-current="page"]{background:#fde5e1;border-color:#c2453a!important}
     .status-panel{padding:60px 20px;text-align:center;color:var(--muted)}
@@ -193,6 +194,7 @@
       p.append(node('summary', '', `难度配置：${S.task} 各档定值${tierRows.length ? '' : '（只有 xhard4，数值不动）'}`));
       const b = node('div', 'sg-body');
       b.append(node('p', '', `来源：${c.source} §3.2.2 定值表与 §3.2.3 逐任务表（逐字）。${md(c.tier_rule)}`));
+      if (c.corrections && c.corrections[S.task]) b.append(node('p', 'sg-explain v-diff', c.corrections[S.task]));
       if (tierRows.length) b.append(cfgTable(c.tier_head, tierRows, S.tier));
       if (lay.length) b.append(cfgTable(c.layout_head, lay, null));
       const notes = node('div', 'notes'); notes.append(node('p', '', '两个要点：')); c.key_points.forEach(x => notes.append(node('p', '', '· ' + md(x))));
@@ -230,6 +232,7 @@
       if (c) {
         box.append(node('h2', 'task-title', '各档难度配置（全部任务）'));
         box.append(node('div', 'task-sub', `来源：${c.source} §3.2.2 定值表（逐字）。${md(c.tier_rule)}`));
+        Object.values(c.corrections || {}).forEach(x => box.append(node('p', 'sg-explain v-diff', x)));
         box.append(cfgTable(c.tier_head, c.tier_rows, null));
         box.append(node('div', 'task-sub', '§3.2.3 逐任务：布局怎么共用、梯度怎么取、低档怎么截（逐字）'));
         box.append(cfgTable(c.layout_head, c.layout_rows, null));
@@ -310,14 +313,14 @@
       return v;
     }
 
-    function genColumn(g, tier) {
+    function genColumn(g, tier, rec) {
       const col = node('div', 'col'); const head = node('div', 'col-head');
       head.append(node('span', 'col-title', '生成演示'));
       if (g && g.status === 'generation_failed') head.append(Object.assign(node('span', 'badge s-generation_failed', '生成失败')));
       col.append(head);
       if (!g) { col.append(node('div', 'empty', '无生成记录')); return col; }
-      const meta = [`帧数 ${g.frames}`];
-      if (g.demo_frames) meta.push(`演示段 ${g.demo_frames}`);
+      const demo = g.demo_frames != null ? g.demo_frames : (rec && rec.frames === g.frames ? rec.demo : null);
+      const meta = demo == null ? [`总长 ${g.frames}`] : [`demo ${demo}`, `exec ${g.frames - demo}`, `总长 ${g.frames}`];
       if (g.h5_sha12) meta.push(`h5 sha ${g.h5_sha12}`);
       col.append(node('div', 'col-meta', meta.join(' · ')));
       if (g.media) col.append(videoEl(g.media));
@@ -365,9 +368,10 @@
         g.append(node('div', 'k', `task goal（h5 setup/task_goal，${(rec.goal || []).length} 种措辞） · difficulty = ${rec.difficulty ?? '—'} · oracle 执行 ${rec.frames - rec.demo} 步${rec.demo ? ` + 视频演示 ${rec.demo} 帧` : ''}`));
         const ol = node('ol'); (rec.goal || []).forEach(x => ol.append(node('li', '', x))); if (!(rec.goal || []).length) ol.append(node('li', '', '空 h5，无 task goal'));
         g.append(ol);
-        g.append(node('div', 'k', S.tier === 'xhard0' ? '本局实际配置：官方 hard，按官方代码随机，没有冻结规格（各档定值见上方「难度配置」）' : '本局实际配置（test-hard/' + S.tier + '/specs.jsonl 里 selected 行的 spec.objects）'));
+        g.append(node('div', 'k', S.tier === 'xhard0' ? '本局实际配置：官方 hard，按官方代码随机，没有冻结规格（各档定值见上方「难度配置」）' : '本局实际配置（由 test-hard/' + S.tier + '/specs.jsonl 里 selected 行的 spec 译成中文；目标颜色等以上面 task goal 为准）'));
         if (rec.config) {
-          const kv = node('div', 'cfg-kv');
+          const sem = node('ul', 'cfg-sem'); semConfig(S.task, rec.config).forEach(x => sem.append(node('li', '', x))); g.append(sem);
+          const kv = node('div', 'cfg-kv'); kv.hidden = true;
           Object.entries(rec.config).forEach(([k, v]) => {
             const flat = v === null || typeof v !== 'object' || (Array.isArray(v) && v.every(x => typeof x !== 'object') && v.length <= 12)
               || (v && typeof v === 'object' && 'actual' in v && 'requested' in v);
@@ -376,8 +380,7 @@
             sp.append(document.createTextNode(v && typeof v === 'object' && 'actual' in v ? `${v.actual}（请求 ${v.requested}）` : JSON.stringify(v)));
             kv.append(sp);
           });
-          g.append(kv);
-          const raw = node('details', 'cfg-raw'); raw.append(node('summary', '', '展开完整 spec.objects（JSON）')); raw.append(node('pre', '', JSON.stringify(rec.config, null, 1))); g.append(raw);
+          const raw = node('details', 'cfg-raw'); raw.append(node('summary', '', '展开原始 spec（JSON）')); raw.append(node('pre', '', JSON.stringify(rec.config, null, 1))); g.append(raw);
         }
         left.append(g);
       }
@@ -397,7 +400,7 @@
         }
         sec.append(label);
         const cols = node('div', 'cols');
-        cols.append(genColumn(ep.gen[entry], S.tier));
+        cols.append(genColumn(ep.gen[entry], S.tier, ((S.sg && S.sg.episodes && S.sg.episodes[S.task] || {})[S.tier] || {})[String(ep.idx)]));
         policies().forEach(p => cols.append(evalColumn(p, (ep.eval[entry] || {})[p.id])));
         sec.append(cols); box.append(sec);
       });
@@ -482,6 +485,87 @@
       box.append(t);
     }
     function showOutliers() { showView('outlier'); }
+
+    // ---- 本局配置的语义版（字段含义据 src/robomme_hard/robomme_env/*.py；颜色下标 0/1/2 = 红/蓝/绿，已用 BinFill、PickXtimes 的 task goal 核对）----
+    const CZ = { red: '红', blue: '蓝', green: '绿', yellow: '黄', cyan: '青', magenta: '品红', orange: '橙', purple: '紫', white: '白', black: '黑' };
+    const BASE = ['红', '蓝', '绿'];
+    const cz = x => CZ[x] || x;
+    const cnt = v => v && typeof v === 'object' ? v.actual : v;
+    const ordinal = n => `第 ${n} 个`;
+    function distractorLines(d, ring) {
+      if (!d) return [];
+      const colors = (d.cube_colors || []).map(cz).join('、');
+      return [`${ring}干扰容器 ${d.placed ?? d.requested ?? 0} 个，其中 ${d.cube_count ?? 0} 个下面藏着干扰方块${colors ? `（${colors}）` : ''}，其余是空的`];
+    }
+    function semConfig(task, c) {
+      const L = [];
+      switch (task) {
+        case 'PickXtimes': case 'SwingXtimes':
+          L.push(`桌上目标色方块 ${cnt(c.cube_count)} 个（红、蓝、绿各 1），另有干扰方块 ${cnt(c.distractor_count)} 个：${(c.distractors || []).map(x => cz(x.color)).join('、') || '无'}`);
+          L.push(`要找的颜色：${BASE[c.target_color_idx] ?? '见 task goal'}`);
+          L.push(task === 'PickXtimes' ? `抓起再放到目标上，重复 ${c.num_repeats} 次，最后按按钮` : `抓起方块左右摆动 ${c.num_repeats} 轮，放回桌面后按按钮`);
+          break;
+        case 'BinFill': {
+          const sp = c.spawn_numbers || [], tg = c.target_numbers || [];
+          L.push(`桌上共 ${c.spawn_actual} 块：${sp.map((n, i) => `${BASE[i]} ${n}`).join('、')}`);
+          L.push(`要投进篮子：${tg.map((n, i) => n ? `${BASE[i]} ${n} 块` : '').filter(Boolean).join('、')}，共 ${tg.reduce((a, b) => a + b, 0)} 块，然后按按钮`);
+          break;
+        }
+        case 'PickHighlight':
+          L.push(`桌上共 ${c.n_cubes_spawned ?? c.n_cubes} 块，按按钮后其中 ${c.highlight_count} 块会依次高亮`);
+          L.push(`高亮的块（按生成序号，从 1 数）：${(c.highlight_ids || []).map(i => i + 1).join('、')}；要把高亮过的块逐个拿起放到桌上，最后按按钮`);
+          break;
+        case 'VideoUnmask': case 'ButtonUnmask':
+          L.push(`内环 8 个容器，其中 3 个下面各藏一个红／蓝／绿目标方块，${task === 'VideoUnmask' ? '开头视频' : '按按钮时'}会展示哪个容器藏了什么`);
+          L.push(...distractorLines(c.distractors, ''));
+          L.push(`要按指定顺序拿起 ${c.n_picks} 个藏着目标色方块的容器（顺序见 task goal）`);
+          break;
+        case 'VideoUnmaskSwap': case 'ButtonUnmaskSwap':
+          L.push(`内环 4 个容器（藏着红／蓝／绿目标方块）${task === 'VideoUnmaskSwap' ? '在开头视频里' : '在按完两次按钮后'}两两交换 ${c.n_swaps} 次${c.swap_plan && c.swap_plan.counts ? `（4 个内环容器各被换动 ${c.swap_plan.counts.join('／')} 次）` : ''}`);
+          L.push(...distractorLines(c.distractors, '外环'));
+          L.push(`交换结束后要按顺序拿起 ${c.n_picks} 个藏着目标色方块的容器（顺序见 task goal）`);
+          break;
+        case 'VideoRepick':
+          L.push(`桌上 ${cnt(c.cube_count)} 个外观相同的方块，视频里先拿起其中一块（第 ${c.target + 1} 号）再放下`);
+          L.push(`随后方块两两交换 ${c.n_swaps} 次${c.swap_plan && c.swap_plan.counts ? `（各块被换动 ${c.swap_plan.counts.join('／')} 次）` : ''}`);
+          L.push(`要找出原来那一块，重复拿起放下 ${c.num_repeats} 次，最后按按钮`);
+          break;
+        case 'VideoPlaceButton':
+          L.push(`视频里有 ${(c.demo_ids || []).length} 块演示方块依次放到不同放置台上，中途按一次按钮`);
+          L.push(`问题问的是按钮${c.task_flag ? '之前' : '之后'}的放置位置，问第 ${(c.answer_demo_index ?? 0) + 1} 块演示方块（颜色见 task goal）`);
+          break;
+        case 'VideoPlaceOrder':
+          L.push(`视频里 ${(c.demo_ids || []).length} 块方块各自依次访问放置台：${(c.visit_counts_by_object || []).map((n, i) => `第 ${i + 1} 块 ${n} 次`).join('、')}`);
+          L.push(`按钮插在访问序列的第 ${c.button_after_visit_index} 次访问之后（原始字段 button_after_visit_index=${c.button_after_visit_index}）`);
+          L.push(`问题问第 ${(c.answer_demo_index ?? 0) + 1} 块演示方块的第 ${c.which_in_subset} 个放置位置（颜色见 task goal）`);
+          break;
+        case 'PatternLock': {
+          const p = (c.actions && c.actions.path_nodes) || [];
+          L.push(`5×5 点阵上的不重访路径，共 ${p.length} 个节点（${Math.max(p.length - 1, 0)} 步移动），视频演示后要照原样走一遍`);
+          L.push(`节点序列（行×列编号 0～24）：${p.join(' → ')}`);
+          break;
+        }
+        case 'RouteStick': {
+          const dir = (c.actions && c.actions.directions) || {};
+          const seq = Object.keys(dir).map(Number).sort((a, b) => a - b).map(k => dir[k] === 'clockwise' ? '顺' : '逆');
+          L.push(`绕障碍的路线共 ${c.L ?? seq.length} 段，视频演示后要照原样绕一遍`);
+          if (seq.length) L.push(`每段绕向（顺＝顺时针、逆＝逆时针）：${seq.join(' ')}（顺 ${seq.filter(x => x === '顺').length}、逆 ${seq.filter(x => x === '逆').length}）`);
+          if (c.rotation_deg != null) L.push(`场景整体旋转 ${c.rotation_deg.toFixed(1)}°`);
+          break;
+        }
+        case 'StopCube':
+          L.push('先移到按钮上方等待（remain static），在方块到达目标时按下按钮；本档冻结的配置只有方块颜色，等待时长由场景决定（见上方逐段帧数）');
+          break;
+        case 'InsertPeg':
+          L.push(`视频里抓起第 ${((c.sampling_trace || {}).random_peg_idx ?? 0) + 1} 根插销的某一端插入盒子一侧，之后要抓同一根的同一端、从同一侧插入`);
+          break;
+        case 'MoveCube':
+          L.push(`视频里用某种方式（原始字段 obj_sample=${c.obj_sample}、dir_sample=${(c.sampling_trace || {}).dir_sample}）把方块移到目标，之后要用同样方式再做一次（方式见 subgoal）`);
+          break;
+      }
+      if (!L.length) L.push('（该任务暂无语义译法，见下方原始 JSON）');
+      return L;
+    }
 
     function subgoalEpisode(ep) {
       const wrap = node('div', 'sg-ep');

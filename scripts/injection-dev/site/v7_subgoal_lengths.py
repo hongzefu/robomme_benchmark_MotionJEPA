@@ -125,14 +125,20 @@ def load_plan_tables(path: Path) -> dict:
 
 
 def load_specs() -> dict:
-    """(tier, seed) → spec.objects，只取 selected 的规格行。"""
+    """(tier, task, seed) → spec.objects（另并入 spec.actions 与 layout.rotation_deg），只取 selected 的规格行。"""
     out = {}
     for p in sorted((REPO_ROOT / "src/robomme_hard/env_metadata/test-hard").glob("xhard*/specs.jsonl")):
         tier = p.parent.name
         for line in p.open(encoding="utf-8"):
             r = json.loads(line)
             if r.get("record") == "spec" and r.get("selected"):
-                out[(tier, r["spec"]["task"], r["seed"])] = r["spec"].get("objects", {})
+                cfg = dict(r["spec"].get("objects", {}))
+                if "actions" in r["spec"]:  # PatternLock／RouteStick 的路径与方向在 actions 里
+                    cfg["actions"] = r["spec"]["actions"]
+                rot = r["spec"].get("layout", {}).get("rotation_deg")
+                if rot is not None:
+                    cfg["rotation_deg"] = rot
+                out[(tier, r["spec"]["task"], r["seed"])] = cfg
     return out
 
 
@@ -250,7 +256,17 @@ def main(argv=None) -> int:
     news = sum(c["verdict"] == "新增" for rows in summary.values() for r in rows for c in r["tiers"].values())
     if x0_same != x0_total:
         problems.append(f"xhard0 新旧入口逐段不同 {x0_total - x0_same} 局")
-    out = {"schema": "v7-subgoals/2", "oracle": oracle, "config": load_plan_tables(PLAN),
+    # 计划表与冻结规格不一致处：以规格实数为准，页面加「实测更正」（每条都用规格逐局核对，不符即 FAIL）
+    pl = {t: sorted({len(e["config"]["actions"]["path_nodes"]) for e in episodes["PatternLock"][t].values()})
+          for t in ("xhard1", "xhard2", "xhard3", "xhard4")}
+    if pl != {"xhard1": [12], "xhard2": [15], "xhard3": [18], "xhard4": [21]}:
+        problems.append(f"PatternLock 节点数与更正口径不符：{pl}")
+    corrections = {"PatternLock": "实测更正：0928 计划表写节点数 12 → 16 → 20 → 24，但冻结规格里实际是 12 → 15 → 18 → 21"
+                                  "（四档各 20 局全部如此）；src/robomme_hard/robomme_env/PatternLock.py 注释记为用户 2026-09-29"
+                                  "「直接改 12/15/18/21」（定长 24 在 v6 实测里几乎搜不出）。其余任务的计数字段与计划表逐局一致。"}
+    tables = load_plan_tables(PLAN)
+    tables["corrections"] = corrections
+    out = {"schema": "v7-subgoals/2", "oracle": oracle, "config": tables,
            "rule": f"同任务同模板，某档中位数与 xhard0 中位数相差超过 {int(RATIO * 100)}% 且超过 {FRAMES} 帧记为不一致；"
                    "xhard0 没有的模板记为新增。段 = simple_subgoal 文字连续相同的帧；模板 = 抹去序数词、颜色、数字，"
                    "并按本局首次 / 后续出现分开。",
