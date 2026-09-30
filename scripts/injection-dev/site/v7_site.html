@@ -60,9 +60,9 @@
     .sg-table .is-cur{background:var(--soft)}.sg-table td.v-diff{background:#fde5e1;color:#9c2f25;font-weight:650}.sg-table td.v-near{background:#fff1d6;color:#8a5a0f;font-weight:650}.sg-table td.sg-cls{color:#3a543f;background:#f6f8f2}.sg-table .sg-tip{font-weight:400;color:var(--muted)}.sg-table td.v-new{background:#e1ecfb;color:#1f4f8f;font-weight:650}.v-base{color:#3a543f;font-weight:650}
     .sg-ep{margin-top:16px}
 .oracle-link{border-color:#c9dcc0!important;background:#eef5e8}.oracle-link[aria-current="page"]{background:var(--soft);border-color:var(--green)!important}
-    .goal{margin-top:8px;font-size:12.5px;line-height:1.7;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;max-width:1100px}.goal ol{margin:2px 0;padding-left:20px}.goal .k{color:var(--muted);font-size:11px}
+    .goal{margin-top:10px;font-size:15.5px;line-height:1.75;background:#fff;border:1px solid #cfdcc6;border-left:4px solid var(--green);border-radius:10px;padding:10px 16px;max-width:1100px}.goal ol{margin:4px 0 8px;padding-left:22px;font-weight:600}.goal .k{color:#3a543f;font-size:13px;font-weight:650;margin-top:4px}
     .cfg-kv{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.cfg-kv span{background:#f3f5ef;border-radius:6px;padding:2px 8px;font-size:11.5px;font-variant-numeric:tabular-nums}.cfg-kv b{color:#3a543f;margin-right:4px}
-    .cfg-sem{margin:4px 0 6px;padding-left:20px;font-size:12.5px;line-height:1.75}
+    .cfg-sem{margin:4px 0 6px;padding-left:22px;font-size:15.5px;line-height:1.75;font-weight:600}
     .cfg-raw summary{cursor:pointer;font-size:11px;color:var(--muted)}.cfg-raw pre{font-size:10.5px;background:#f6f8f2;border-radius:8px;padding:8px;max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
     .outlier-link{margin:0 10px 6px;width:calc(100% - 20px);border:1px solid #f0c4bd!important;background:#fdf1ef}.outlier-link[aria-current="page"]{background:#fde5e1;border-color:#c2453a!important}
     .status-panel{padding:60px 20px;text-align:center;color:var(--muted)}
@@ -92,8 +92,6 @@
       <div class="tier-tabs" id="tier-tabs" role="group" aria-label="档位"></div>
       <div class="filters" id="filters" role="group" aria-label="筛选"></div>
       <div class="legend" id="legend"></div>
-      <details class="sg-panel cfg-panel" id="cfg-panel" hidden></details>
-      <details class="sg-panel" id="sg-panel" hidden></details>
       <details class="rerun-panel" id="rerun-panel" open hidden></details>
       <div class="chips" id="chips" role="group" aria-label="局号"></div>
       <section id="episode"></section>
@@ -184,22 +182,6 @@
       head.forEach(x => h.append(node('th', x === curTier ? 'is-cur' : '', x))); t.append(h);
       rows.forEach(r => { const tr = node('tr'); r.forEach((v, i) => tr.append(node('td', (head[i] === curTier ? 'is-cur ' : '') + (v.length > 24 ? 'txt' : ''), md(v)))); t.append(tr); });
       return t;
-    }
-    function renderCfgPanel() {
-      const p = el('cfg-panel'); p.textContent = '';
-      const c = S.sg && S.sg.config; if (!c) { p.hidden = true; return; }
-      p.hidden = false;
-      const tierRows = c.tier_rows.filter(r => r[0].split(/[／\/]/).map(x => x.trim()).includes(S.task));
-      const lay = c.layout_rows.filter(r => r[0].split(/[／\/]/).map(x => x.trim()).includes(S.task));
-      p.append(node('summary', '', `难度配置：${S.task} 各档定值${tierRows.length ? '' : '（只有 xhard4，数值不动）'}`));
-      const b = node('div', 'sg-body');
-      b.append(node('p', '', `来源：${c.source} §3.2.2 定值表与 §3.2.3 逐任务表（逐字）。${md(c.tier_rule)}`));
-      if (c.corrections && c.corrections[S.task]) b.append(node('p', 'sg-explain v-diff', c.corrections[S.task]));
-      if (tierRows.length) b.append(cfgTable(c.tier_head, tierRows, S.tier));
-      if (lay.length) b.append(cfgTable(c.layout_head, lay, null));
-      const notes = node('div', 'notes'); notes.append(node('p', '', '两个要点：')); c.key_points.forEach(x => notes.append(node('p', '', '· ' + md(x))));
-      c.tier_notes.forEach(x => notes.append(node('p', '', md(x))));
-      b.append(notes); p.append(b);
     }
     function renderOracle() {
       const box = el('oracle-section'); box.textContent = '';
@@ -368,20 +350,10 @@
         g.append(node('div', 'k', `task goal（h5 setup/task_goal，${(rec.goal || []).length} 种措辞） · difficulty = ${rec.difficulty ?? '—'} · oracle 执行 ${rec.frames - rec.demo} 步${rec.demo ? ` + 视频演示 ${rec.demo} 帧` : ''}`));
         const ol = node('ol'); (rec.goal || []).forEach(x => ol.append(node('li', '', x))); if (!(rec.goal || []).length) ol.append(node('li', '', '空 h5，无 task goal'));
         g.append(ol);
-        g.append(node('div', 'k', S.tier === 'xhard0' ? '本局实际配置：官方 hard，按官方代码随机，没有冻结规格（各档定值见上方「难度配置」）' : '本局实际配置（由 test-hard/' + S.tier + '/specs.jsonl 里 selected 行的 spec 译成中文；目标颜色等以上面 task goal 为准）'));
-        if (rec.config) {
-          const sem = node('ul', 'cfg-sem'); semConfig(S.task, rec.config).forEach(x => sem.append(node('li', '', x))); g.append(sem);
-          const kv = node('div', 'cfg-kv'); kv.hidden = true;
-          Object.entries(rec.config).forEach(([k, v]) => {
-            const flat = v === null || typeof v !== 'object' || (Array.isArray(v) && v.every(x => typeof x !== 'object') && v.length <= 12)
-              || (v && typeof v === 'object' && 'actual' in v && 'requested' in v);
-            if (!flat) return;
-            const sp = node('span'); sp.append(node('b', '', k));
-            sp.append(document.createTextNode(v && typeof v === 'object' && 'actual' in v ? `${v.actual}（请求 ${v.requested}）` : JSON.stringify(v)));
-            kv.append(sp);
-          });
-          const raw = node('details', 'cfg-raw'); raw.append(node('summary', '', '展开原始 spec（JSON）')); raw.append(node('pre', '', JSON.stringify(rec.config, null, 1))); g.append(raw);
-        }
+        g.append(node('div', 'k', S.tier === 'xhard0'
+          ? '任务配置（xhard0 = 官方 hard，每局随机：能从本局 subgoal 数出的写本局值，其余写官方参考值）'
+          : `任务配置（${S.tier} 定值，同档 20 局都一样；来源 0928 计划 §3.2.2，已与冻结规格逐局核对）`));
+        const cl = node('ul', 'cfg-sem'); tierConfig(S.task, S.tier, rec).forEach(x => cl.append(node('li', '', x))); g.append(cl);
         left.append(g);
       }
       const sync = node('button', 'sync', '同步播放'); sync.type = 'button'; sync.id = 'sync-play';
@@ -413,33 +385,6 @@
     const fmtCell = c => c ? `${c.median}（${c.min}～${c.max}，${c.n} 段）` : '—';
     function sgRow(tpl, kind) {
       return ((S.sg.summary || {})[S.task] || []).find(r => r.tpl === tpl && r.kind === kind);
-    }
-    function renderSgPanel() {
-      const p = el('sg-panel'); p.textContent = '';
-      const rows = S.sg && S.sg.summary && S.sg.summary[S.task];
-      if (!rows) { p.hidden = true; return; }
-      p.hidden = false;
-      const nd = rows.reduce((a, r) => a + Object.values(r.tiers).filter(c => c.verdict !== '一致' && c.verdict !== '基准').length, 0);
-      p.append(node('summary', '', `subgoal 逐段帧数：与 xhard0 对照（${nd ? `有 ${nd} 格不一致或新增` : '各档全部一致'}）`));
-      const b = node('div', 'sg-body');
-      b.append(node('p', 'sg-explain', (S.sg.explain || {})[S.task] || ''));
-      b.append(node('p', '', `口径：${S.sg.rule} 每格写「中位帧数（最小～最大，段数）」。xhard0 新入口与官方旧入口逐段完全相同：${S.sg.xhard0_new_old_same.join('/')} 局。`));
-      const t = node('table', 'sg-table'); const h = node('tr');
-      ['首次／后续', 'subgoal 模板'].concat(S.cat.tiers).forEach(x => h.append(node('th', S.cat.tiers.includes(x) && x === S.tier ? 'is-cur' : '', x)));
-      t.append(h);
-      rows.forEach(r => {
-        const tr = node('tr'); tr.append(node('td', '', r.kind), node('td', 'txt', r.tpl));
-        S.cat.tiers.forEach(tier => {
-          const c = r.tiers[tier];
-          const td = node('td', (c ? (VERDICT_CLS[c.verdict] || '') : '') + (tier === S.tier ? ' is-cur' : ''), fmtCell(c));
-          if (c && c.verdict !== '一致') td.title = c.verdict;
-          tr.append(td);
-        });
-        t.append(tr);
-      });
-      b.append(t);
-      b.append(node('p', '', '红色 = 与 xhard0 中位数相差超过阈值；蓝色 = xhard0 没有这种 subgoal；「—」= 该档没有这种 subgoal。'));
-      p.append(b);
     }
     // 逐段判定：本段帧数落在 xhard0 同类段的最小～最大内为「在范围内」；超出时按超出量占越过的那个边界的比例分两级
     function segVerdict(task, tier, s) {
@@ -486,85 +431,34 @@
     }
     function showOutliers() { showView('outlier'); }
 
-    // ---- 本局配置的语义版（字段含义据 src/robomme_hard/robomme_env/*.py；颜色下标 0/1/2 = 红/蓝/绿，已用 BinFill、PickXtimes 的 task goal 核对）----
-    const CZ = { red: '红', blue: '蓝', green: '绿', yellow: '黄', cyan: '青', magenta: '品红', orange: '橙', purple: '紫', white: '白', black: '黑' };
-    const BASE = ['红', '蓝', '绿'];
-    const cz = x => CZ[x] || x;
-    const cnt = v => v && typeof v === 'object' ? v.actual : v;
-    const ordinal = n => `第 ${n} 个`;
-    function distractorLines(d, ring) {
-      if (!d) return [];
-      const colors = (d.cube_colors || []).map(cz).join('、');
-      return [`${ring}干扰容器 ${d.placed ?? d.requested ?? 0} 个，其中 ${d.cube_count ?? 0} 个下面藏着干扰方块${colors ? `（${colors}）` : ''}，其余是空的`];
-    }
-    function semConfig(task, c) {
-      const L = [];
-      switch (task) {
-        case 'PickXtimes': case 'SwingXtimes':
-          L.push(`桌上目标色方块 ${cnt(c.cube_count)} 个（红、蓝、绿各 1），另有干扰方块 ${cnt(c.distractor_count)} 个：${(c.distractors || []).map(x => cz(x.color)).join('、') || '无'}`);
-          L.push(`要找的颜色：${BASE[c.target_color_idx] ?? '见 task goal'}`);
-          L.push(task === 'PickXtimes' ? `抓起再放到目标上，重复 ${c.num_repeats} 次，最后按按钮` : `抓起方块左右摆动 ${c.num_repeats} 轮，放回桌面后按按钮`);
-          break;
-        case 'BinFill': {
-          const sp = c.spawn_numbers || [], tg = c.target_numbers || [];
-          L.push(`桌上共 ${c.spawn_actual} 块：${sp.map((n, i) => `${BASE[i]} ${n}`).join('、')}`);
-          L.push(`要投进篮子：${tg.map((n, i) => n ? `${BASE[i]} ${n} 块` : '').filter(Boolean).join('、')}，共 ${tg.reduce((a, b) => a + b, 0)} 块，然后按按钮`);
-          break;
+    // ---- 每局的任务配置：粒度按 0928 计划 §3.2.2 定值表的维度 ----
+    // xhard1～4 同档 20 局定值（12 个任务逐局核对过冻结规格）；PatternLock 用实测 12/15/18/21（计划表写 12/16/20/24，见 corrections）
+    const PL_ACTUAL = { xhard1: '12', xhard2: '15', xhard3: '18', xhard4: '21' };
+    // xhard0 能从本局 subgoal 数出的维度：维度名 → 计数函数
+    const X0_COUNT = {
+      PickXtimes: { '抓取次数': s => s.filter(x => x.text.startsWith('pick up')).length },
+      BinFill: { '投入块数': s => s.filter(x => x.text.startsWith('pick up')).length },
+      SwingXtimes: { '摆动轮数': s => s.filter(x => x.text.includes('right-side')).length },
+      PickHighlight: { '总块 / pick': s => `总块未记录 / pick ${s.filter(x => x.text.includes('highlighted')).length}` },
+      VideoRepick: { '块 / swap / repick': s => `块与 swap 未记录 / repick ${s.filter(x => x.text.includes('correct cube')).length}` },
+    };
+    function tierConfig(task, tier, rec) {
+      const c = S.sg && S.sg.config; if (!c) return [];
+      const col = c.tier_head.indexOf(tier === 'xhard0' ? 'xhard0 实际' : tier);
+      let rows = c.tier_rows.filter(r => r[0].split(/[／\/]/).map(x => x.trim()).includes(task));
+      // 「同 VideoUnmask」这类行：维度与定值都照被引用任务的行（ButtonUnmask 与 VideoUnmask 四档定值相同）
+      const same = rows.length === 1 && /^同 (\w+)/.exec(rows[0][1]);
+      if (same) rows = c.tier_rows.filter(r => r[0] === same[1]);
+      if (!rows.length) return ['只有 xhard4，数值沿用原任务（本任务没有档位梯度）'];
+      return rows.map(r => {
+        let v = md(r[col]);
+        if (task === 'PatternLock' && tier !== 'xhard0') v = PL_ACTUAL[tier] + '（计划表写 ' + v + '，实测更正）';
+        if (tier === 'xhard0') {
+          const f = (X0_COUNT[task] || {})[r[1]];
+          v = f && rec && rec.new && rec.new.length ? `本局 ${f(rec.new)}（官方参考 ${v}）` : `官方随机，本局未记录（参考 ${v}）`;
         }
-        case 'PickHighlight':
-          L.push(`桌上共 ${c.n_cubes_spawned ?? c.n_cubes} 块，按按钮后其中 ${c.highlight_count} 块会依次高亮`);
-          L.push(`高亮的块（按生成序号，从 1 数）：${(c.highlight_ids || []).map(i => i + 1).join('、')}；要把高亮过的块逐个拿起放到桌上，最后按按钮`);
-          break;
-        case 'VideoUnmask': case 'ButtonUnmask':
-          L.push(`内环 8 个容器，其中 3 个下面各藏一个红／蓝／绿目标方块，${task === 'VideoUnmask' ? '开头视频' : '按按钮时'}会展示哪个容器藏了什么`);
-          L.push(...distractorLines(c.distractors, ''));
-          L.push(`要按指定顺序拿起 ${c.n_picks} 个藏着目标色方块的容器（顺序见 task goal）`);
-          break;
-        case 'VideoUnmaskSwap': case 'ButtonUnmaskSwap':
-          L.push(`内环 4 个容器（藏着红／蓝／绿目标方块）${task === 'VideoUnmaskSwap' ? '在开头视频里' : '在按完两次按钮后'}两两交换 ${c.n_swaps} 次${c.swap_plan && c.swap_plan.counts ? `（4 个内环容器各被换动 ${c.swap_plan.counts.join('／')} 次）` : ''}`);
-          L.push(...distractorLines(c.distractors, '外环'));
-          L.push(`交换结束后要按顺序拿起 ${c.n_picks} 个藏着目标色方块的容器（顺序见 task goal）`);
-          break;
-        case 'VideoRepick':
-          L.push(`桌上 ${cnt(c.cube_count)} 个外观相同的方块，视频里先拿起其中一块（第 ${c.target + 1} 号）再放下`);
-          L.push(`随后方块两两交换 ${c.n_swaps} 次${c.swap_plan && c.swap_plan.counts ? `（各块被换动 ${c.swap_plan.counts.join('／')} 次）` : ''}`);
-          L.push(`要找出原来那一块，重复拿起放下 ${c.num_repeats} 次，最后按按钮`);
-          break;
-        case 'VideoPlaceButton':
-          L.push(`视频里有 ${(c.demo_ids || []).length} 块演示方块依次放到不同放置台上，中途按一次按钮`);
-          L.push(`问题问的是按钮${c.task_flag ? '之前' : '之后'}的放置位置，问第 ${(c.answer_demo_index ?? 0) + 1} 块演示方块（颜色见 task goal）`);
-          break;
-        case 'VideoPlaceOrder':
-          L.push(`视频里 ${(c.demo_ids || []).length} 块方块各自依次访问放置台：${(c.visit_counts_by_object || []).map((n, i) => `第 ${i + 1} 块 ${n} 次`).join('、')}`);
-          L.push(`按钮插在访问序列的第 ${c.button_after_visit_index} 次访问之后（原始字段 button_after_visit_index=${c.button_after_visit_index}）`);
-          L.push(`问题问第 ${(c.answer_demo_index ?? 0) + 1} 块演示方块的第 ${c.which_in_subset} 个放置位置（颜色见 task goal）`);
-          break;
-        case 'PatternLock': {
-          const p = (c.actions && c.actions.path_nodes) || [];
-          L.push(`5×5 点阵上的不重访路径，共 ${p.length} 个节点（${Math.max(p.length - 1, 0)} 步移动），视频演示后要照原样走一遍`);
-          L.push(`节点序列（行×列编号 0～24）：${p.join(' → ')}`);
-          break;
-        }
-        case 'RouteStick': {
-          const dir = (c.actions && c.actions.directions) || {};
-          const seq = Object.keys(dir).map(Number).sort((a, b) => a - b).map(k => dir[k] === 'clockwise' ? '顺' : '逆');
-          L.push(`绕障碍的路线共 ${c.L ?? seq.length} 段，视频演示后要照原样绕一遍`);
-          if (seq.length) L.push(`每段绕向（顺＝顺时针、逆＝逆时针）：${seq.join(' ')}（顺 ${seq.filter(x => x === '顺').length}、逆 ${seq.filter(x => x === '逆').length}）`);
-          if (c.rotation_deg != null) L.push(`场景整体旋转 ${c.rotation_deg.toFixed(1)}°`);
-          break;
-        }
-        case 'StopCube':
-          L.push('先移到按钮上方等待（remain static），在方块到达目标时按下按钮；本档冻结的配置只有方块颜色，等待时长由场景决定（见上方逐段帧数）');
-          break;
-        case 'InsertPeg':
-          L.push(`视频里抓起第 ${((c.sampling_trace || {}).random_peg_idx ?? 0) + 1} 根插销的某一端插入盒子一侧，之后要抓同一根的同一端、从同一侧插入`);
-          break;
-        case 'MoveCube':
-          L.push(`视频里用某种方式（原始字段 obj_sample=${c.obj_sample}、dir_sample=${(c.sampling_trace || {}).dir_sample}）把方块移到目标，之后要用同样方式再做一次（方式见 subgoal）`);
-          break;
-      }
-      if (!L.length) L.push('（该任务暂无语义译法，见下方原始 JSON）');
-      return L;
+        return `${md(r[1])}：${v}`;
+      });
     }
 
     function subgoalEpisode(ep) {
@@ -696,7 +590,7 @@
       el('task-title').textContent = `${t.name} · ${t.id}`;
       const counts = Object.entries(t.tiers).map(([k, v]) => `${k} ${v.episodes.length} 局`).join(' · ');
       el('task-sub').textContent = counts;
-      renderNav(); renderMatrix(); renderTabs(); renderFilters(); renderCfgPanel(); renderSgPanel(); renderRerunPanel(); renderChips(); renderEpisode();
+      renderNav(); renderMatrix(); renderTabs(); renderFilters(); renderRerunPanel(); renderChips(); renderEpisode();
     }
 
     async function load() {
