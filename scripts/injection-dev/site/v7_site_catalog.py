@@ -12,6 +12,10 @@
 - **旧入口评估**（xhard0）：状态与步数取 ``official-<策略>-summary.json``，视频取
   ``eval-videos-official/<策略>/moved.jsonl``。
 
+- **MME 同卡重跑**（12.248，xhard0 两入口翻转的 11 局）：``rerun11/remote/mme-{official,hard}/…/episodes.jsonl``，
+  视频取同目录 ``videos-{official,hard}/`` 下与记录同名的 mp4。挂在对应局的 ``rerun.mmevla.{new,old}``，
+  顶层 ``rerun11`` 给出结论与判定行。源目录不存在时跳过。
+
 逐格核对：新入口成败数与 ``eval/<策略>-table.json`` 逐格相等；旧入口成功数与官方汇总相等。
 输出 ``catalog.json``（schema ``v7-site-catalog/1``）与 ``media-private.json``（媒体 ID 到绝对路径的白名单）。
 两个文件都以 ``open("x")`` 写入，拒绝覆盖。末行打印 ``V7_SITE_CATALOG=PASS|FAIL …``。
@@ -53,7 +57,10 @@ DEFAULT_SOURCES = {
     "eval_videos": ART / "eval-videos",
     "eval_videos_official": ART / "eval-videos-official",
     "tables": ART / "eval",
+    "rerun11": ART / "rerun11",
 }
+RERUN11_PARITY = ("RERUN11_PARITY=INFO shape=11x2 compared=11 missing=0 self_flip_off=5 self_flip_hard=4 "
+                  "cross_flip_new=6 steps_diff_new=10 node=gl1525")
 ERROR_NAME = re.compile(r"(?P<task>[A-Za-z]+)_(?P<tier>xhard\d)_(?P<ep>\d+)_(?P<seed>\d+)\.error(?P<n>\d+)\.mp4\Z")
 
 
@@ -110,6 +117,26 @@ def load_moved(path: Path) -> dict[tuple, dict]:
     return out
 
 
+def load_rerun11(root: Path) -> dict[tuple, dict]:
+    """(task, seed) → {"new": 记录, "old": 记录}；记录里的 video 换成本机 remote 副本路径。"""
+    out: dict[tuple, dict] = defaultdict(dict)
+    remote = Path(root) / "remote"
+    if not remote.is_dir():
+        return {}
+    for entry, side in (("old", "official"), ("new", "hard")):
+        files = glob.glob(str(remote / f"mme-{side}/*/*/*/episodes.jsonl"))
+        if len(files) != 1:
+            raise ValueError(f"重跑 {side} 记录文件应恰好 1 个，实际 {len(files)}")
+        final: dict[tuple, dict] = {}
+        for row in jsonl(Path(files[0])):
+            if row.get("status") in FINAL:
+                final[(row["task"], int(row["seed"]))] = row
+        for key, row in final.items():
+            row = dict(row, local_video=str(remote / f"videos-{side}" / Path(row["video"]).name))
+            out[key][entry] = row
+    return dict(out)
+
+
 def build_catalog(src: dict) -> tuple[dict, dict, dict]:
     media = Media()
     problems: list[str] = []
@@ -127,6 +154,7 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                for p, _ in POLICIES}
     old_vid = {p: {(r["task"], int(r["seed"])): r for r in jsonl(Path(src["eval_videos_official"]) / p / "moved.jsonl")}
                for p, _ in POLICIES}
+    rerun = load_rerun11(Path(src["rerun11"]))
     errors: dict[tuple, list[Path]] = defaultdict(list)
     for p, _ in POLICIES:
         for path in sorted((Path(src["eval_videos"]) / p / "_errors").glob("*.mp4")):
@@ -208,6 +236,18 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                 new = ep["eval"]["new"].get(p, {}).get("status")
                 ep["flip"][p] = new != rec["status"]
                 counts[f"flip_{p}"] += new != rec["status"]
+            rr = rerun.get((task, seed))
+            if rr is not None:
+                if set(rr) != {"new", "old"}:
+                    problems.append(f"重跑缺一侧 {task}/{seed}")
+                else:
+                    ep["rerun"] = {"mmevla": {
+                        entry: {"status": row["status"], "steps": row.get("steps"), "max_steps": row.get("max_steps"),
+                                "media": media.add(f"rerun11/{entry}/mmevla/{tier}/{task}/{seed}", Path(row["local_video"]))}
+                        for entry, row in rr.items()}}
+                    counts["rerun11"] += 1
+                    if not ep["flip"].get("mmevla"):
+                        problems.append(f"重跑局 {task}/{seed} 在原评估里不是 MME 翻转局")
         cells[(task, tier)].append(ep)
 
     # 逐格核对与汇总
@@ -241,6 +281,8 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
             mismatch += 1
             problems.append(f"{p} 旧入口成功数 {got} 与官方汇总不符")
 
+    if rerun and counts["rerun11"] != len(rerun):
+        problems.append(f"重跑 {len(rerun)} 局只挂上 {counts['rerun11']} 局")
     catalog = {
         "schema": "v7-site-catalog/1",
         "tiers": list(TIERS),
@@ -254,6 +296,13 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
             "error": "error 局不计入成功，列出三遍重评的录像。",
         },
     }
+    if rerun:
+        catalog["rerun11"] = {
+            "when": "2026-09-29 22:50～23:07（美东）",
+            "where": "GL 占位 job 62582190，gl1525，同一张 A40（GPU-78555493…），先旧入口后新入口串行",
+            "parity": RERUN11_PARITY,
+            "commit": "12.248",
+        }
     stats = {"identities": len(by_key), "counts": dict(counts), "table_mismatch": mismatch,
              "problems": problems, "media": len(media.paths)}
     return catalog, media.paths, stats
@@ -277,6 +326,7 @@ def main(argv=None) -> int:
             + " ".join(f"eval_new_{p}={c.get(f'eval_new_{p}', 0)}(+{c.get(f'eval_new_{p}_error', 0)}err/"
                        f"{c.get(f'eval_new_{p}_error_clips', 0)}clips) eval_old_{p}={c.get(f'eval_old_{p}', 0)} "
                        f"flip_{p}={c.get(f'flip_{p}', 0)}" for p, _ in POLICIES)
+            + f" rerun11={c.get('rerun11', 0)}"
             + f" media={stats['media']} table_mismatch={stats['table_mismatch']} problems={len(stats['problems'])}")
     if ok:
         args.out.mkdir(parents=True, exist_ok=True)

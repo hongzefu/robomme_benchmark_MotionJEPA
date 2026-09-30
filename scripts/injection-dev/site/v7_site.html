@@ -37,6 +37,19 @@
     .col video{width:100%;display:block;background:#111c19;aspect-ratio:16/9;object-fit:contain}.empty{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;background:#1b2621;color:#c9d6cb;font-size:12px;line-height:1.7}
     .attempts{display:flex;gap:5px;padding:8px 12px}.attempt{border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 8px;font-size:11px}.attempt[aria-pressed="true"]{background:var(--ink);color:#fff}
     .notes{margin-top:26px;font-size:11.5px;line-height:1.85;color:#58665c;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px}.notes p{margin:4px 0}
+    .rerun-panel{margin:16px 0 4px;background:#fff;border:1px solid #e3b875;border-radius:12px;font-size:12.5px;line-height:1.8}
+    .rerun-panel summary{cursor:pointer;padding:12px 16px;font-weight:650;color:#6b4a12;background:#fff4e3;border-radius:12px}
+    .rerun-panel[open] summary{border-radius:12px 12px 0 0;border-bottom:1px solid #f0d9ae}
+    .rerun-body{padding:10px 16px 14px}.rerun-body p{margin:6px 0}.rerun-body b{color:#172a26}
+    .rerun-body code{font-size:11px;background:#f3f5ef;padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+    .rr-table{border-collapse:collapse;font-size:11.5px;margin:8px 0;display:block;max-width:100%;overflow-x:auto}
+    .rr-table th,.rr-table td{padding:5px 9px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:left;font-variant-numeric:tabular-nums}
+    .rr-table th{background:#fafbf7;font-weight:600;color:#3a543f}.rr-table tr.is-here td{background:#fff4e3}
+    .rr-table a{color:var(--green);cursor:pointer;text-decoration:underline}
+    .rr-same{background:#e4efd9;border-radius:4px;padding:0 4px}
+    .st-success{color:var(--s-success);font-weight:650}.st-fail{color:var(--s-fail);font-weight:650}.st-timeout{color:#6f757a;font-weight:650}
+    .chip.is-rerun{outline:2px dashed #b9812a;outline-offset:1px}
+    .verdict{padding:12px 14px;font-size:12px;line-height:1.85}.verdict ul{margin:4px 0;padding-left:18px}.verdict b{color:#172a26}
     .status-panel{padding:60px 20px;text-align:center;color:var(--muted)}
     @media(max-width:1100px){.cols{grid-template-columns:1fr 1fr}}
     @media(max-width:820px){.sidebar{transform:translateX(-100%);transition:transform .2s}.sidebar.is-open{transform:none;box-shadow:12px 0 45px #172a2620}.main{margin-left:0;padding:16px 16px 28px}.mobile-menu{display:inline-block}.cols{grid-template-columns:1fr}}
@@ -60,6 +73,7 @@
       <div class="tier-tabs" id="tier-tabs" role="group" aria-label="档位"></div>
       <div class="filters" id="filters" role="group" aria-label="筛选"></div>
       <div class="legend" id="legend"></div>
+      <details class="rerun-panel" id="rerun-panel" open hidden></details>
       <div class="chips" id="chips" role="group" aria-label="局号"></div>
       <section id="episode"></section>
       <div class="notes" id="notes"></div>
@@ -72,7 +86,7 @@
     const STATUS_ZH = { success: '成功', fail: '失败', timeout: '超时', error: '错误', generation_failed: '生成失败' };
     const TIER_ZH = { xhard0: 'xhard0（原版 hard）', xhard1: 'xhard1', xhard2: 'xhard2', xhard3: 'xhard3', xhard4: 'xhard4' };
     const ENTRY_ZH = { new: '新入口 · robomme_hard', old: '旧入口 · 官方 robomme' };
-    const FILTERS = [['all', '全部'], ['both', '两者都成'], ['split', '分歧'], ['none', '两者都未成'], ['flip', '新旧入口翻转']];
+    const FILTERS = [['all', '全部'], ['both', '两者都成'], ['split', '分歧'], ['none', '两者都未成'], ['flip', '新旧入口翻转'], ['rerun', '同卡重跑的局']];
 
     function node(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
     const policies = () => S.cat.policies;
@@ -151,6 +165,7 @@
         case 'split': return a !== b;
         case 'none': return !a && !b;
         case 'flip': return !!ep.flip && Object.values(ep.flip).some(Boolean);
+        case 'rerun': return !!ep.rerun;
         default: return true;
       }
     }
@@ -159,7 +174,7 @@
       const box = el('filters'); box.textContent = '';
       box.append(node('span', '', '按新入口两策略成败筛选：'));
       FILTERS.forEach(([id, label]) => {
-        if (id === 'flip' && S.tier !== 'xhard0') return;
+        if ((id === 'flip' || id === 'rerun') && S.tier !== 'xhard0') return;
         const n = cell().episodes.filter(ep => { const f = S.filter; S.filter = id; const r = epMatches(ep); S.filter = f; return r; }).length;
         const b = node('button', 'filter', `${label} ${n}`); b.type = 'button'; b.dataset.filter = id;
         b.setAttribute('aria-pressed', String(S.filter === id));
@@ -171,7 +186,7 @@
       Object.entries(STATUS_ZH).filter(([k]) => k !== 'generation_failed').forEach(([k, v]) => {
         const s = node('span'); const i = node('i', 's-' + k); s.append(i, document.createTextNode(v)); lg.append(s);
       });
-      if (S.tier === 'xhard0') lg.append(node('span', '', '橙底 = 新旧入口成败翻转'));
+      if (S.tier === 'xhard0') lg.append(node('span', '', '橙底 = 新旧入口成败翻转；虚线框 = 已做同卡重跑（MME）'));
     }
 
     function renderChips() {
@@ -181,12 +196,13 @@
         b.setAttribute('aria-pressed', String(ep.idx === S.ep));
         b.setAttribute('aria-label', `第 ${ep.idx} 局`);
         if (ep.flip && Object.values(ep.flip).some(Boolean)) b.classList.add('is-flip');
+        if (ep.rerun) b.classList.add('is-rerun');
         b.hidden = !epMatches(ep);
         b.append(node('span', '', String(ep.idx).padStart(2, '0')));
         const dots = node('span', 'dots');
         policies().forEach(p => { const st = (ep.eval.new[p.id] || {}).status; const d = node('span', 'dot s-' + st); d.title = `${p.label}：${STATUS_ZH[st] || '—'}`; dots.append(d); });
         b.append(dots);
-        b.addEventListener('click', () => { S.ep = ep.idx; writeHash(); renderChips(); renderEpisode(); });
+        b.addEventListener('click', () => { S.ep = ep.idx; writeHash(); renderChips(); renderRerunPanel(); renderEpisode(); });
         box.append(b);
       });
     }
@@ -258,7 +274,7 @@
         const sec = node('div', 'entry'); const label = node('div', 'entry-label', ENTRY_ZH[entry]);
         if (entry === 'old') {
           const flips = policies().filter(p => ep.flip && ep.flip[p.id]).map(p => p.label);
-          if (flips.length) label.append(node('small', '', `与新入口成败不同：${flips.join('、')}`));
+          if (flips.length) label.append(node('small', '', `与新入口成败不同：${flips.join('、')}${ep.rerun ? '（原因已查明，见下方「同卡重跑」）' : ''}`));
         }
         sec.append(label);
         const cols = node('div', 'cols');
@@ -266,6 +282,92 @@
         policies().forEach(p => cols.append(evalColumn(p, (ep.eval[entry] || {})[p.id])));
         sec.append(cols); box.append(sec);
       });
+      if (ep.rerun) box.append(rerunSection(ep));
+    }
+
+    // ---- MME 同卡重跑（12.248）----
+    const stSpan = r => { const x = node('span', 'st-' + r.status, `${STATUS_ZH[r.status]}/${r.steps} 步`); return x; };
+    const same = (a, b) => a && b && a.status === b.status && a.steps === b.steps;
+    function rerunFacts(ep) {
+      const o0 = ep.eval.old.mmevla, n0 = ep.eval.new.mmevla, o1 = ep.rerun.mmevla.old, n1 = ep.rerun.mmevla.new;
+      const facts = [];
+      facts.push(['旧入口自己重跑', o0.status === o1.status ? `成败不变（${STATUS_ZH[o0.status]}）` : `${STATUS_ZH[o0.status]} → ${STATUS_ZH[o1.status]}，自己就复现不了`]);
+      facts.push(['新入口自己重跑', n0.status === n1.status ? `成败不变（${STATUS_ZH[n0.status]}）` : `${STATUS_ZH[n0.status]} → ${STATUS_ZH[n1.status]}，自己就复现不了`]);
+      facts.push(['同卡重跑后两入口', o1.status === n1.status ? `成败相同（都是${STATUS_ZH[o1.status]}）` : `仍然不同（旧 ${STATUS_ZH[o1.status]}、新 ${STATUS_ZH[n1.status]}）`]);
+      const twins = [];
+      if (same(n1, o0)) twins.push('新入口重跑 = 旧入口原来那次');
+      if (same(o1, n0)) twins.push('旧入口重跑 = 新入口原来那次');
+      if (same(n1, o1)) twins.push('同卡重跑两入口彼此相同');
+      if (same(o1, o0) && !twins.length) twins.push('旧入口两次完全相同');
+      if (same(n1, n0) && twins.length < 2 && !twins.includes('旧入口两次完全相同')) twins.push('新入口两次完全相同');
+      if (twins.length) facts.push(['成败与步数逐步相同', twins.join('；')]);
+      return facts;
+    }
+    function rerunSection(ep) {
+      const sec = node('div', 'entry');
+      const label = node('div', 'entry-label', '同卡重跑 · 只重跑 MME-VLA');
+      label.append(node('small', '', `${S.cat.rerun11.when} · ${S.cat.rerun11.where}`));
+      sec.append(label);
+      const cols = node('div', 'cols');
+      const card = node('div', 'col'); const h = node('div', 'col-head'); h.append(node('span', 'col-title', '这一局的四次结果')); card.append(h);
+      const v = node('div', 'verdict');
+      const t = node('table', 'rr-table');
+      const hr = node('tr'); ['', '原评估', '同卡重跑'].forEach(x => hr.append(node('th', '', x))); t.append(hr);
+      [['旧入口（官方 robomme）', ep.eval.old.mmevla, ep.rerun.mmevla.old], ['新入口（robomme_hard）', ep.eval.new.mmevla, ep.rerun.mmevla.new]].forEach(([name, a, b]) => {
+        const tr = node('tr'); tr.append(node('td', '', name));
+        [a, b].forEach(r => { const td = node('td'); td.append(stSpan(r)); tr.append(td); }); t.append(tr);
+      });
+      v.append(t);
+      const ul = node('ul');
+      rerunFacts(ep).forEach(([k, val]) => { const li = node('li'); li.append(node('b', '', k + '：'), document.createTextNode(val)); ul.append(li); });
+      v.append(ul);
+      v.append(node('div', '', '结论见上方「MME 两个入口为什么会有 11 局成败相反？」面板。'));
+      card.append(v); cols.append(card);
+      [['new', '新入口重跑 · MME-VLA'], ['old', '旧入口重跑 · MME-VLA']].forEach(([entry, title]) => {
+        const r = ep.rerun.mmevla[entry];
+        const col = node('div', 'col'); const hd = node('div', 'col-head');
+        hd.append(node('span', 'col-title', title), node('span', 'badge s-' + r.status, STATUS_ZH[r.status]));
+        col.append(hd, node('div', 'col-meta', `步数 ${r.steps} / 上限 ${r.max_steps}`), videoEl(r.media));
+        cols.append(col);
+      });
+      sec.append(cols);
+      return sec;
+    }
+    function rerunRows() {
+      const rows = [];
+      S.cat.tasks.forEach(t => { const c = t.tiers.xhard0; if (!c) return; c.episodes.forEach(ep => { if (ep.rerun) rows.push([t, ep]); }); });
+      return rows;
+    }
+    function renderRerunPanel() {
+      const box = el('rerun-panel');
+      if (S.tier !== 'xhard0' || !S.cat.rerun11) { box.hidden = true; return; }
+      box.hidden = false; box.textContent = '';
+      box.append(node('summary', '', 'MME 两个入口为什么会有 11 局成败相反？——已查明：MME 策略自己的计算每次都有细微差别，入口没有问题'));
+      const b = node('div', 'rerun-body');
+      const P = html => { const p = node('p'); p.innerHTML = html; b.append(p); };
+      P('<b>现象。</b>xhard0 的 192 局用两个入口各评了一次：旧入口（官方 <code>robomme</code>，<code>dataset="test"</code>）与新入口（<code>robomme_hard</code>，<code>dataset="test-hard"</code>）。两个入口建出的环境已证明逐字节相同（192/192）。SimpleMemVLA 两入口成败逐局相同，<b>MME-VLA 却有 11 局成败相反</b>（5 局成→败、5 局败→成、1 局超时→成，总数 50 对 51 几乎持平）。');
+      P('<b>两种可能。</b>A：MME 自己不稳定——GPU／JAX 数值在不同卡、不同编译历史下有微小差异，被策略放大。B：两个入口喂给 MME 的输入有系统差别——那就是 benchmark 的 bug。');
+      P('<b>怎么验证。</b>在同一张 A40 上，先用旧入口、再用新入口，把这 11 局各重跑一次（11 局 × 2 入口 = 22 局）。代码、模型、服务端种子（7）都和原评估相同。同入口重跑就变了 → A；各自稳定、两入口仍不同 → B。');
+      P('<b>结果。</b>① 同一个入口自己就复现不了：旧入口 5／11 局、新入口 4／11 局与自己原来成败不同。② 同一条轨迹会在另一个入口原样出现，连步数都逐步相同（下表绿底）：例如 ButtonUnmaskSwap 新入口重跑「成功/458 步」＝旧入口原来那次；VideoPlaceButton 新入口重跑「失败/178」＝旧入口两次。能跑出完全相同的轨迹，说明两个入口给策略的输入没有区别。③ 同一张卡上两入口仍有 6 局不同，说明不稳定不只来自换节点。');
+      P('<b>结论：A 成立，B 不成立。</b>benchmark 的新入口没有 bug；MME 在这些局上的成败接近随机，单次成功率本身带几个百分点的波动。MoveCube、SwingXtimes、VideoUnmaskSwap 552300 两次都是「两入口不同」，但每入口只有 2 个样本，不足以单独判为 B。');
+      P(`判定行：<code>${S.cat.rerun11.parity}</code>（留档 <code>docs/validation/newtask-v7/README.md</code> ⑥，提交 ${S.cat.rerun11.commit}）`);
+      const t = node('table', 'rr-table');
+      const hr = node('tr'); ['任务', '局', 'seed', '旧入口 原评估', '旧入口 重跑', '新入口 原评估', '新入口 重跑'].forEach(x => hr.append(node('th', '', x))); t.append(hr);
+      rerunRows().forEach(([task, ep]) => {
+        const tr = node('tr'); if (task.id === S.task && ep.idx === S.ep) tr.className = 'is-here';
+        const a = node('a', '', `${task.id}`); a.addEventListener('click', () => select(task.id, 'xhard0', ep.idx));
+        const td0 = node('td'); td0.append(a); tr.append(td0, node('td', '', `第 ${ep.idx} 局`), node('td', '', String(ep.seed)));
+        const cells = [ep.eval.old.mmevla, ep.rerun.mmevla.old, ep.eval.new.mmevla, ep.rerun.mmevla.new];
+        cells.forEach((r, i) => {
+          const td = node('td'); const sp = stSpan(r);
+          if (cells.some((q, j) => j !== i && same(q, r))) sp.classList.add('rr-same');
+          td.append(sp); tr.append(td);
+        });
+        t.append(tr);
+      });
+      b.append(t);
+      b.append(node('p', '', '绿底 = 这一格与同一行另一格的成败和步数完全相同（同一条轨迹）。点任务名跳到该局，下方「同卡重跑」一节可以直接看四段录像中的两段重跑。'));
+      box.append(b);
     }
 
     function renderNotes() {
@@ -284,7 +386,7 @@
       el('task-title').textContent = `${t.name} · ${t.id}`;
       const counts = Object.entries(t.tiers).map(([k, v]) => `${k} ${v.episodes.length} 局`).join(' · ');
       el('task-sub').textContent = counts;
-      renderNav(); renderMatrix(); renderTabs(); renderFilters(); renderChips(); renderEpisode();
+      renderNav(); renderMatrix(); renderTabs(); renderFilters(); renderRerunPanel(); renderChips(); renderEpisode();
     }
 
     async function load() {

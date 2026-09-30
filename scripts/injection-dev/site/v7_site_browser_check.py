@@ -2,12 +2,13 @@
 """v7 对照站点的浏览器交互检查（0929 站点方案 §6）：Playwright + headless Chromium，连测试实例，不碰线上 8070。
 
 逐格（16 任务 × 各自档位，共 71 格）按 hash 直达第 1 局，核对：
-- 栏数：xhard0 为 6 栏（新旧入口各 3 栏），其余 3 栏；
+- 栏数：xhard0 为 6 栏（新旧入口各 3 栏），做过 MME 同卡重跑的局再加 3 栏（说明卡 + 两段重跑），其余 3 栏；
 - 每个视频元数据可读（``readyState>=1``、无 ``error``），并实际播放首个评估视频（``currentTime>0.2``）；
 - 局号数等于目录局数。
 
 另外抽查：
-- xhard0「新旧入口翻转」筛选在全部任务上的合计等于目录 flip 数；
+- xhard0「新旧入口翻转」筛选在全部任务上的合计等于目录 flip 数；「同卡重跑的局」合计等于目录 rerun 数；
+- 每个重跑局的两段重跑视频可读并能播放，说明面板在 xhard0 可见、在其他档隐藏；
 - MME 两局 error 显示 3 个重评页签，可切换；
 - 两局生成失败显示「生成失败」；
 - 「同步播放」让本局全部视频前进；
@@ -56,13 +57,14 @@ def main() -> int:
         catalog = page.request.get(f"{args.base}/api/catalog").json()
         page.goto(f"{args.base}/", wait_until="domcontentloaded")
         page.wait_for_selector(".task-link")
-        flip_total = 0
+        flip_total = rerun_total = 0
+        rerun_eps, panel_bad = [], []
         error_eps, genfail_eps = [], []
         for task in catalog["tasks"]:
             for tier, cell in task["tiers"].items():
                 cells += 1
                 page.evaluate("h => { location.hash = h; }", f"#task={task['id']}&tier={tier}&ep=1")
-                want_cols = 6 if tier == "xhard0" else 3
+                want_cols = (6 + 3 * bool(cell["episodes"][0].get("rerun"))) if tier == "xhard0" else 3
                 try:
                     page.wait_for_function(
                         "([t, tier, n]) => document.querySelector('#episode h3')?.textContent.startsWith(t + ' · ' + tier + ' · 第 1 局')"
@@ -90,6 +92,11 @@ def main() -> int:
                 if tier == "xhard0":
                     flip_btn = page.locator('#filters .filter[data-filter="flip"]')
                     flip_total += int(flip_btn.inner_text().split()[-1])
+                    rerun_btn = page.locator('#filters .filter[data-filter="rerun"]')
+                    rerun_total += int(rerun_btn.inner_text().split()[-1])
+                    rerun_eps += [(task["id"], ep["idx"]) for ep in cell["episodes"] if ep.get("rerun")]
+                if page.locator("#rerun-panel").is_visible() != (tier == "xhard0" and "rerun11" in catalog):
+                    panel_bad.append(f"{task['id']}/{tier}")
                 for ep in cell["episodes"]:
                     if any(r.get("status") == "error" for r in ep["eval"]["new"].values()):
                         error_eps.append((task["id"], tier, ep["idx"]))
@@ -99,6 +106,32 @@ def main() -> int:
                         if any(ep.get("flip", {}).values()))
         if flip_total != want_flip:
             problems.append(f"翻转筛选合计 {flip_total} != 目录 {want_flip}")
+        if rerun_total != len(rerun_eps):
+            problems.append(f"重跑筛选合计 {rerun_total} != 目录 {len(rerun_eps)}")
+        if panel_bad:
+            problems.append(f"说明面板可见性不符：{panel_bad[:5]}")
+        rerun_played = 0
+        for tid, idx in rerun_eps:
+            page.evaluate("h => { location.hash = h; }", f"#task={tid}&tier=xhard0&ep={idx}")
+            try:
+                page.wait_for_function(
+                    "i => document.querySelector('#episode h3')?.textContent.includes('第 ' + i + ' 局')"
+                    " && document.querySelectorAll('#episode .col').length === 9"
+                    " && [...document.querySelectorAll('#episode video')].every(v => v.readyState >= 1 && !v.error)",
+                    arg=idx, timeout=15000)
+            except Exception:
+                problems.append(f"{tid}/xhard0/{idx} 重跑栏未就绪")
+                continue
+            page.evaluate("() => { const v = document.querySelectorAll('#episode video'); v[v.length - 1].play(); }")
+            if wait_played(page, "#episode .entry:last-child .col:last-child video"):
+                rerun_played += 1
+            else:
+                problems.append(f"{tid}/xhard0/{idx} 重跑视频未播放")
+            page.evaluate("() => document.querySelectorAll('video').forEach(v => v.pause())")
+        if rerun_eps:
+            page.evaluate("h => { location.hash = h; }", f"#task={rerun_eps[0][0]}&tier=xhard0&ep={rerun_eps[0][1]}")
+            page.wait_for_timeout(800)
+            page.screenshot(path=str(Path(args.shots) / "rerun-episode.png"), full_page=True)
 
         for task, tier, idx in error_eps:
             page.evaluate("h => { location.hash = h; }", f"#task={task}&tier={tier}&ep={idx}")
@@ -149,7 +182,8 @@ def main() -> int:
               "error_eps": error_eps, "genfail_eps": genfail_eps, "sync_ok": sync_ok, "problems": problems}
     (args.shots / "browser-result.json").write_text(json.dumps(result, ensure_ascii=False, indent=1))
     print(f"V7_SITE_BROWSER={'PASS' if ok else 'FAIL'} cells={cells} videos_meta={videos_meta} played={played} "
-          f"flip={flip_total} error_tabs={len(error_eps)} genfail={len(genfail_eps)} sync={int(sync_ok)} "
+          f"flip={flip_total} rerun={rerun_total} rerun_played={rerun_played} "
+          f"error_tabs={len(error_eps)} genfail={len(genfail_eps)} sync={int(sync_ok)} "
           f"overflow={int(any('溢出' in x for x in problems))} page_errors={len(page_errors)}")
     return 0 if ok else 1
 
