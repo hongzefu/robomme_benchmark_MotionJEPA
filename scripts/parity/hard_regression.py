@@ -11,6 +11,8 @@
 * ``xhard0-reset-parity``（GPU）：官方 robomme 与 robomme_hard 两进程各 reset 192 局，确定性层逐位比 →
   ``XHARD0_RESET_PARITY``；演示层只报告 ``XHARD0_DEMO_DIFF=INFO``。
 * ``xhard0-eval-parity``（纯 CPU）：两策略官方路线与 v7 xhard0 终态对照，只报告 → ``XHARD0_EVAL_PARITY=INFO``。
+* ``env-digest``（GPU，v7.5eval）：身份逐层摘要 + 原始数组 + 测速 → ``ENV_DIGEST_DONE``、``ENV_SPEED=INFO``。
+* ``env-digest-compare``（纯 CPU，v7.5eval）：两格逐层对拍，只报告 → ``ENV_DIGEST_PARITY``。
 
 旧的 ``s4-subset`` 与 S4 映射表随 v6 规格一起退役（git 历史可取回）。
 """
@@ -605,6 +607,843 @@ def cmd_step_headroom(args) -> int:
     return 0 if label != "FAIL" else 1
 
 
+# ── v7.5eval 环境检测（env-digest / env-digest-compare）───────────────────────
+# 0929-v7.5eval-restructure-plan.md §3.2 第 1 步第 1 项、2.1、§4 测速、口径 9。
+# 每个身份逐层存摘要（rows.jsonl）与原始数组（每身份一个 npz，np.savez_compressed 无损），对拍时摘要不等再读原始数组算差值。
+
+#: 层的固定顺序（first_diff 取这个顺序里第一个不等的层）
+ENV_DIGEST_LAYERS = ("identity", "pre_demo_state", "demo_frames", "reset_obs", "post_demo_state",
+                     "step_frames", "step_obs", "step_state", "step_status")
+#: 状态类层：键是 ``<分区>/<实体名>``，可做「仅改名」判定
+_ENV_STATE_LAYERS = ("pre_demo_state", "post_demo_state", "step_state")
+#: 数值观测层：摘要不等时算最大绝对差（单列 obs_max_abs）
+_ENV_NUMERIC_OBS_LAYERS = ("reset_obs", "step_obs")
+#: 两个摇杆任务动作只有 7 维
+_STICK_TASKS = ("PatternLock", "RouteStick")
+#: 未采到的计时段一律写这个字符串，不填 0
+UNCOLLECTED = "uncollected"
+#: 计时字段 → 实际包到的调用（写进每行 timing_notes，便于核对口径）
+ENV_TIMING_NOTES = {
+    "proc.import_numpy_s": "import numpy",
+    "proc.import_torch_s": "import torch",
+    "proc.import_sapien_s": "import sapien",
+    "proc.import_mani_skill_s": "import mani_skill + mani_skill.envs",
+    "proc.import_robomme_hard_s": "import robomme_hard.env_record_wrapper（连带注册 16 个任务类）",
+    "proc.spawn_to_worker_s": "父进程 Popen 前 time.time() → 子进程进入 worker 函数（解释器启动 + 本文件导入）",
+    "proc.first_vulkan_s": "进程内第一次 BaseEnv._setup_scene（含首个 sapien.render.RenderSystem 即首次 Vulkan 设备创建；"
+                           "另含 physx 场景构造，无法单独拆出）",
+    "make_env_s": "BenchmarkEnvBuilder.make_env_for_episode 整体",
+    "gym_make_s": "make_env_for_episode 内 gymnasium.make（任务类 __init__，含 BaseEnv 构造期 reset(reconfigure=True)）",
+    "wrapper_chain_s": "make_env_s − gym_make_s（DemonstrationWrapper / FailAwareWrapper 等包装链构造）",
+    "eval_reset_s": "评估实例 env.reset()（FailAwareWrapper 起整条链）",
+    "inner_reset_s": "eval reset 期间 mani_skill BaseEnv.reset 最外层调用累计",
+    "initialize_episode_s": "eval reset 期间任务类 _initialize_episode 累计",
+    "demo_s": "eval_reset_s − inner_reset_s（演示轨迹生成 + 初始一步）",
+    "demo_s_per_frame": "demo_s / 演示帧数",
+    "choices_s": "reset 后直接调 get_vqa_options 取多选项（评估实例不带 include_available_multi_choices）",
+    "step_s": "每步 env.step() 墙钟（列表）",
+    "step_physics_s": "每步内 BaseEnv._step_action 累计（物理步 + 控制器）",
+    "step_get_obs_s": "每步内 BaseEnv.get_obs 累计（含传感器渲染）",
+    "close_s": "env.close()",
+    "probe_make_s": "演示前状态探针：另建底层环境 gymnasium.make（原始实参）",
+    "probe_reset_s": "演示前状态探针：底层环境 reset()",
+    "probe_close_s": "演示前状态探针：底层环境 close()",
+    "class_timers": "按阶段（probe/make/reset/step/close）累计的类级计时：16 任务类 × {_load_agent,_load_scene,"
+                    "_initialize_episode}（口径 9 批准清单）+ BaseEnv.{_setup_scene,_setup_sensors,_load_lighting,"
+                    "_reconfigure,reset,_step_action,get_obs}；只计时、不改参数与返回值、只在本进程内",
+}
+
+
+def _env_digest(x: Any) -> str:
+    """与 ``_PROBE.digest`` 同一口径：数组字节 + dtype + shape 的 sha256。"""
+    import hashlib
+
+    import numpy as np
+
+    arr = np.ascontiguousarray(np.asarray(x))
+    return hashlib.sha256(arr.tobytes() + str(arr.dtype).encode() + str(arr.shape).encode()).hexdigest()
+
+
+def _env_json_digest(value: Any) -> str:
+    import hashlib
+
+    return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest()
+
+
+def _env_layer(keys: dict[str, str]) -> dict[str, Any]:
+    """一层的摘要：逐键摘要 + 整层摘要（逐键摘要字典的 json sha256）。"""
+    return {"digest": _env_json_digest(keys), "keys": dict(sorted(keys.items()))}
+
+
+def _env_np(x: Any):
+    """torch 张量 / 列表 → numpy（不改 dtype）。"""
+    import numpy as np
+
+    if hasattr(x, "detach"):
+        x = x.detach().cpu().numpy()
+    return np.asarray(x)
+
+
+def _env_flatten(tree: Any, prefix: str = "") -> dict[str, Any]:
+    """嵌套状态字典（get_state_dict）→ ``{"actors/<名>": ndarray, ...}``。"""
+    out: dict[str, Any] = {}
+    if isinstance(tree, dict):
+        for key, value in sorted(tree.items()):
+            out.update(_env_flatten(value, f"{prefix}/{key}" if prefix else str(key)))
+    else:
+        out[prefix] = _env_np(tree)
+    return out
+
+
+def _env_identity_key(row: dict[str, Any]) -> str:
+    return f"{row['task']}/ep{row['source_episode']}/seed{row['seed']}/b{row['builder_episode']}"
+
+
+def _env_rng_probe() -> dict[str, str]:
+    """全局随机状态 sha：torch CPU 生成器、numpy 全局 RandomState、python random（不碰 CUDA 生成器，免得提前初始化 CUDA）。"""
+    import hashlib
+    import random
+
+    import numpy as np
+    import torch
+
+    kind, keys, pos, has_gauss, cached = np.random.get_state()
+    np_bytes = np.asarray(keys).tobytes() + f"{kind}|{pos}|{has_gauss}|{cached!r}".encode()
+    return {"torch": hashlib.sha256(torch.random.get_rng_state().numpy().tobytes()).hexdigest(),
+            "numpy": hashlib.sha256(np_bytes).hexdigest(),
+            "python": hashlib.sha256(repr(random.getstate()).encode()).hexdigest()}
+
+
+def _env_rng_save():
+    import random
+
+    import numpy as np
+    import torch
+
+    return torch.random.get_rng_state(), np.random.get_state(), random.getstate()
+
+
+def _env_rng_restore(saved) -> None:
+    import random
+
+    import numpy as np
+    import torch
+
+    torch.random.set_rng_state(saved[0])
+    np.random.set_state(saved[1])
+    random.setstate(saved[2])
+
+
+class _EnvTimerHub:
+    """类级计时：按当前阶段累计秒数与调用次数；同一标签递归调用只计最外层。"""
+
+    def __init__(self) -> None:
+        self.phase = "init"
+        self.buckets: dict[str, dict[str, float]] = collections.defaultdict(lambda: collections.defaultdict(float))
+        self.counts: dict[str, dict[str, int]] = collections.defaultdict(lambda: collections.defaultdict(int))
+        self.first: dict[str, float] = {}
+        self.depth: dict[str, int] = collections.defaultdict(int)
+        self.wrapped: list[str] = []
+        self.missing: list[str] = []
+
+    def wrap(self, cls: type, name: str, label: str) -> None:
+        import functools
+
+        orig = cls.__dict__.get(name)
+        if orig is None:
+            self.missing.append(label)
+            return
+        hub = self
+
+        @functools.wraps(orig)
+        def timed(*a, **k):
+            hub.depth[label] += 1
+            started = time.perf_counter()
+            try:
+                return orig(*a, **k)
+            finally:
+                hub.depth[label] -= 1
+                if hub.depth[label] == 0:
+                    dt = time.perf_counter() - started
+                    hub.buckets[hub.phase][label] += dt
+                    hub.counts[hub.phase][label] += 1
+                    hub.first.setdefault(label, dt)
+
+        setattr(cls, name, timed)
+        self.wrapped.append(label)
+
+    def total(self, phase: str, label: str) -> float | str:
+        return round(self.buckets[phase][label], 6) if self.counts[phase].get(label) else UNCOLLECTED
+
+    def snapshot(self, phase: str) -> dict[str, float]:
+        return dict(self.buckets[phase])
+
+    def take(self, phase: str) -> dict[str, Any]:
+        return {"s": {k: round(v, 6) for k, v in sorted(self.buckets[phase].items())},
+                "n": dict(sorted(self.counts[phase].items()))}
+
+
+def _env_install_timers(tasks) -> _EnvTimerHub:
+    """口径 9：16 任务类各自的 _load_agent/_load_scene/_initialize_episode（48 个）+ BaseEnv 几个方法；只在本进程内。"""
+    from mani_skill.envs.sapien_env import BaseEnv
+    from mani_skill.utils.registration import REGISTERED_ENVS
+
+    hub = _EnvTimerHub()
+    for task in tasks:
+        cls = REGISTERED_ENVS[task].cls
+        for name in ("_load_agent", "_load_scene", "_initialize_episode"):
+            hub.wrap(cls, name, f"{task}.{name}")
+    for name in ("_setup_scene", "_setup_sensors", "_load_lighting", "_reconfigure", "reset", "_step_action", "get_obs"):
+        hub.wrap(BaseEnv, name, f"BaseEnv.{name}")
+    return hub
+
+
+def _env_fs_type(path: str) -> dict[str, str]:
+    """路径所在挂载点与文件系统类型（区分 NVMe / NFS 介质）。"""
+    best = ("", "?", "?")
+    try:
+        for line in Path("/proc/mounts").read_text().splitlines():
+            dev, mnt, fstype = line.split()[:3]
+            if (path == mnt or path.startswith(mnt.rstrip("/") + "/")) and len(mnt) > len(best[0]):
+                best = (mnt, fstype, dev)
+    except OSError:
+        pass
+    return {"path": path, "mount": best[0], "fstype": best[1], "device": best[2]}
+
+
+def _env_host_info() -> dict[str, Any]:
+    """主机、GPU（按 CUDA_VISIBLE_DEVICES 对到 nvidia-smi 一次性查询，不采样）、CPU、affinity、包版本、代码与 venv 介质。"""
+    import importlib.metadata as md
+    import os
+    import platform
+    import socket
+    import subprocess
+
+    visible = os.environ.get("CUDA_VISIBLE_DEVICES")
+    gpu: dict[str, Any] = {"cuda_visible_devices": visible}
+    try:
+        text = subprocess.run(["nvidia-smi", "--query-gpu=index,uuid,name,driver_version", "--format=csv,noheader"],
+                              capture_output=True, text=True, timeout=30).stdout
+        cards = [dict(zip(("index", "uuid", "name", "driver"), (c.strip() for c in l.split(",")))) for l in text.splitlines() if l.strip()]
+        want = (visible or "0").split(",")[0].strip()
+        hit = next((c for c in cards if want in (c["index"], c["uuid"])), None)
+        gpu.update(hit or {"name": UNCOLLECTED, "uuid": UNCOLLECTED, "driver": UNCOLLECTED})
+    except (OSError, subprocess.SubprocessError):
+        gpu.update({"name": UNCOLLECTED, "uuid": UNCOLLECTED, "driver": UNCOLLECTED})
+    cpu = UNCOLLECTED
+    try:
+        cpu = next(l.split(":", 1)[1].strip() for l in Path("/proc/cpuinfo").read_text().splitlines() if l.startswith("model name"))
+    except (OSError, StopIteration):
+        pass
+    versions = {}
+    for pkg in ("torch", "sapien", "mani_skill", "numpy", "gymnasium"):
+        try:
+            versions[pkg] = md.version(pkg)
+        except md.PackageNotFoundError:
+            versions[pkg] = UNCOLLECTED
+    return {"host": socket.gethostname(), "gpu": gpu, "cpu_model": cpu, "affinity_cores": len(os.sched_getaffinity(0)),
+            "python": platform.python_version(), "versions": versions,
+            "code_medium": _env_fs_type(str(REPO)), "venv_medium": _env_fs_type(sys.prefix)}
+
+
+def _env_stack(values: list, name: str, arrays: dict[str, Any], keys: dict[str, str]) -> None:
+    """逐元素转 numpy 后 stack，存进 arrays 并记摘要；参差不齐时退化为逐元素摘要的 json 摘要（不进 npz）。"""
+    import numpy as np
+
+    try:
+        arr = np.stack([_env_np(v) for v in values]) if len(values) else np.zeros((0,))
+    except (ValueError, TypeError):
+        keys[name] = _env_json_digest([_env_digest(_env_np(v)) if v is not None else None for v in values])
+        return
+    arrays[name] = arr
+    keys[name] = _env_digest(arr)
+
+
+def _env_digest_one(ident: dict[str, Any], builder, hub: _EnvTimerHub, fixed_steps: int, npz_path: Path) -> dict[str, Any]:
+    """单个身份：演示前状态探针 → make_env → reset → 取多选项 → 固定动作 N 步 → close；逐层摘要 + 原始数组。"""
+    import gymnasium as gym
+    import numpy as np
+
+    from robomme_hard.env_record_wrapper import TIER_MAX_STEPS
+    from robomme_hard.robomme_env.utils.vqa_options import get_vqa_options
+
+    task = ident["task"]
+    arrays: dict[str, Any] = {}
+    layers: dict[str, dict[str, str]] = {name: {} for name in ENV_DIGEST_LAYERS}
+    timing: dict[str, Any] = {}
+    rng: dict[str, Any] = {}
+    resolved = builder.resolve_identity(int(ident["builder_episode"]))
+    if int(resolved["seed"]) != int(ident["seed"]) or int(resolved.get("source_episode", -1)) != int(ident["source_episode"]):
+        raise RuntimeError(f"身份不符：输入 {ident}，builder {resolved}")
+    seed, tier = builder.resolve_episode(int(ident["builder_episode"]))
+
+    calls: list[tuple[str, dict[str, Any]]] = []
+    orig_make = gym.make
+
+    def make_spy(env_id, **kw):
+        started = time.perf_counter()
+        try:
+            return orig_make(env_id, **kw)
+        finally:
+            calls.append((env_id, kw))
+            timing["gym_make_s"] = round(time.perf_counter() - started, 6)
+
+    # ① 与 _PROBE 同序：先经 builder 建评估实例（顺带截获 gym.make 实参），再用同一实参另建底层环境 reset 取演示前状态，
+    #    最后才 reset 评估实例。探针前后保存/恢复全局随机状态，使探针对评估实例的全局随机流不可见。
+    rng["before_make"] = _env_rng_probe()
+    hub.phase = "make"
+    gym.make = make_spy
+    started = time.perf_counter()
+    try:
+        env = builder.make_env_for_episode(int(ident["builder_episode"]), max_steps=TIER_MAX_STEPS[tier])
+    finally:
+        gym.make = orig_make
+    timing["make_env_s"] = round(time.perf_counter() - started, 6)
+    timing.setdefault("gym_make_s", UNCOLLECTED)
+    timing["wrapper_chain_s"] = (round(timing["make_env_s"] - timing["gym_make_s"], 6)
+                                 if timing["gym_make_s"] != UNCOLLECTED else UNCOLLECTED)
+    rng["after_make"] = _env_rng_probe()
+    env_id, make_kw = calls[-1]
+
+    saved = _env_rng_save()
+    hub.phase = "probe"
+    started = time.perf_counter()
+    base = orig_make(env_id, **make_kw)
+    timing["probe_make_s"] = round(time.perf_counter() - started, 6)
+    started = time.perf_counter()
+    base.reset()  # 与 _PROBE 一致：seed 已随 gym.make 传入，reset 不另传（用户 2026-09-29 批准每局多 1 次底层 reset）
+    timing["probe_reset_s"] = round(time.perf_counter() - started, 6)
+    pre = _env_flatten(base.unwrapped.get_state_dict())
+    started = time.perf_counter()
+    base.close()
+    timing["probe_close_s"] = round(time.perf_counter() - started, 6)
+    del base
+    _env_rng_restore(saved)
+    for key, value in pre.items():
+        arrays[f"pre_demo_state/{key}"] = value
+        layers["pre_demo_state"][key] = _env_digest(value)
+
+    chain, e = [], env
+    while hasattr(e, "env"):
+        chain.append(type(e).__name__)
+        e = e.env
+    chain.append(type(e.unwrapped).__name__)
+    big = {k: _env_json_digest(v) for k, v in make_kw.items() if k in ("native_episode_spec", "sampling_config")}
+    small = {k: v for k, v in make_kw.items() if k not in big}
+
+    # ② 评估实例 reset（演示生成在内）
+    rng["before_reset"] = _env_rng_probe()
+    hub.phase = "reset"
+    started = time.perf_counter()
+    obs, info = env.reset()
+    timing["eval_reset_s"] = round(time.perf_counter() - started, 6)
+    rng["after_reset"] = _env_rng_probe()
+    timing["inner_reset_s"] = hub.total("reset", "BaseEnv.reset")
+    timing["inner_reset_calls"] = hub.counts["reset"].get("BaseEnv.reset", 0)
+    timing["initialize_episode_s"] = hub.total("reset", f"{task}._initialize_episode")
+    timing["demo_s"] = (round(timing["eval_reset_s"] - timing["inner_reset_s"], 6)
+                        if timing["inner_reset_s"] != UNCOLLECTED else UNCOLLECTED)
+    post = _env_flatten(env.unwrapped.get_state_dict())
+    for key, value in post.items():
+        arrays[f"post_demo_state/{key}"] = value
+        layers["post_demo_state"][key] = _env_digest(value)
+    obs = obs if isinstance(obs, dict) else {}
+    front, wrist = list(obs.get("front_rgb_list", [])), list(obs.get("wrist_rgb_list", []))
+    demo_frames = max(len(front) - 1, 0)
+    timing["demo_frames"] = demo_frames
+    timing["demo_s_per_frame"] = (round(timing["demo_s"] / demo_frames, 6)
+                                  if demo_frames and timing["demo_s"] != UNCOLLECTED else UNCOLLECTED)
+    demo_arrays: dict[str, Any] = {}
+    reset_arrays: dict[str, Any] = {}
+    for stream, frames in (("front", front), ("wrist", wrist)):
+        # 演示帧 = 列表去掉最后一个元素；最后一个元素是初始帧，归 reset_obs 层
+        _env_stack(frames[:-1], stream, demo_arrays, layers["demo_frames"])
+        if frames:
+            reset_arrays[f"{stream}_init"] = _env_np(frames[-1])
+            layers["reset_obs"][f"{stream}_init"] = _env_digest(reset_arrays[f"{stream}_init"])
+    for key, values in sorted(obs.items()):
+        if key not in ("front_rgb_list", "wrist_rgb_list"):
+            _env_stack(list(values), key, reset_arrays, layers["reset_obs"])
+    arrays.update({f"demo_frames/{k}": v for k, v in demo_arrays.items()})
+    arrays.update({f"reset_obs/{k}": v for k, v in reset_arrays.items()})
+
+    # ③ 多选项：评估实例不开 include_available_multi_choices（与评估一致），reset 后直接调同一函数取一次
+    demo_wrapper = env
+    while not hasattr(demo_wrapper, "include_available_multi_choices") and hasattr(demo_wrapper, "env"):
+        demo_wrapper = demo_wrapper.env
+    hub.phase = "choices"
+    started = time.perf_counter()
+    try:
+        raw = get_vqa_options(demo_wrapper, None, {"obj": None, "name": None, "seg_id": None}, task)
+        choices = [{"label": o.get("label"), "action": o.get("action", "Unknown"), "need_parameter": bool(o.get("available"))}
+                   for o in raw]
+    except Exception as exc:  # noqa: BLE001 如实记录
+        # 只记异常类型名：消息里可能带对象地址，进摘要会造成假差异；完整消息另存 choices_error_message（不进摘要）
+        choices = {"error": type(exc).__name__}
+        timing["choices_error_message"] = f"{exc}"[:300]
+    timing["choices_s"] = round(time.perf_counter() - started, 6)
+    rng["after_choices"] = _env_rng_probe()
+    goal = info.get("task_goal") if isinstance(info, dict) else None
+    identity_fields = {
+        "seed": int(seed), "tier": tier, "resolve_identity": resolved, "make_env_id": env_id,
+        "make_kwargs": json.loads(json.dumps(small, default=str)), "make_kwargs_big_sha256": big,
+        "wrapper_chain": chain, "task_goal": [str(g) for g in (goal if isinstance(goal, (list, tuple)) else [goal])],
+        "available_multi_choices": json.loads(json.dumps(choices, default=str)),
+    }
+    layers["identity"] = {k: _env_json_digest(v) for k, v in identity_fields.items()}
+
+    # ④ 固定动作 N 步：动作 = reset 返回的最后一个关节状态（7 维）+ 夹爪 1.0（摇杆任务只有 7 维），与 eval-smoke 同为「原地保持」
+    joint = np.asarray(_env_np(obs["joint_state_list"][-1]), dtype=np.float64).reshape(-1)[:7]
+    action = joint if task in _STICK_TASKS else np.concatenate([joint, [1.0]])
+    step_rows: dict[str, list] = collections.defaultdict(list)
+    statuses, step_s, physics_s, get_obs_s = [], [], [], []
+    hub.phase = "step"
+    for _ in range(fixed_steps):
+        before = hub.snapshot("step")
+        started = time.perf_counter()
+        obs_t, reward, terminated, truncated, info_t = env.step(action.copy())
+        step_s.append(round(time.perf_counter() - started, 6))
+        after = hub.snapshot("step")
+        physics_s.append(round(after.get("BaseEnv._step_action", 0.0) - before.get("BaseEnv._step_action", 0.0), 6))
+        get_obs_s.append(round(after.get("BaseEnv.get_obs", 0.0) - before.get("BaseEnv.get_obs", 0.0), 6))
+        status = (info_t or {}).get("status")
+        statuses.append({"status": status, "terminated": bool(_env_np(terminated).any()), "truncated": bool(_env_np(truncated).any()),
+                         "n_elems": len((obs_t or {}).get("front_rgb_list", []) or []),
+                         "error": (info_t or {}).get("error_message")})
+        if status == "error" or not isinstance(obs_t, dict):
+            break
+        for key, values in obs_t.items():
+            step_rows[key].append(values[-1] if len(values) else None)
+        step_rows["__reward"].append(_env_np(reward))
+        for key, value in _env_flatten(env.unwrapped.get_state_dict()).items():
+            step_rows[f"__state/{key}"].append(value)
+        if statuses[-1]["terminated"] or statuses[-1]["truncated"]:
+            break
+    for key, values in sorted(step_rows.items()):
+        if key in ("front_rgb_list", "wrist_rgb_list"):
+            name, layer = key.split("_")[0], "step_frames"
+        elif key.startswith("__state/"):
+            name, layer = key[len("__state/"):], "step_state"
+        else:
+            name, layer = key.lstrip("_"), "step_obs"
+        tmp: dict[str, Any] = {}
+        _env_stack(values, name, tmp, layers[layer])
+        for k, v in tmp.items():
+            arrays[f"{layer}/{k}"] = v
+    layers["step_status"] = {"statuses": _env_json_digest(statuses), "action": _env_digest(action)}
+    arrays["step_status/action"] = action
+    timing.update({"step_s": step_s, "step_physics_s": physics_s if hub.wrapped else UNCOLLECTED,
+                   "step_get_obs_s": get_obs_s if hub.wrapped else UNCOLLECTED})
+
+    hub.phase = "close"
+    started = time.perf_counter()
+    env.close()
+    timing["close_s"] = round(time.perf_counter() - started, 6)
+    timing["class_timers"] = {phase: hub.take(phase) for phase in ("probe", "make", "reset", "choices", "step", "close")}
+    for phase in ("probe", "make", "reset", "choices", "step", "close"):
+        hub.buckets.pop(phase, None)
+        hub.counts.pop(phase, None)
+    hub.phase = "idle"
+
+    npz_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = npz_path.with_suffix(".tmp.npz")
+    np.savez_compressed(tmp_path, **arrays)
+    tmp_path.replace(npz_path)
+    rng_consumed = {
+        "torch_rng_consumed_reset": rng["before_reset"]["torch"] != rng["after_reset"]["torch"],
+        "np_rng_consumed_reset": rng["before_reset"]["numpy"] != rng["after_reset"]["numpy"],
+        "py_rng_consumed_reset": rng["before_reset"]["python"] != rng["after_reset"]["python"],
+        "torch_rng_consumed_make": rng["before_make"]["torch"] != rng["after_make"]["torch"],
+        "np_rng_consumed_make": rng["before_make"]["numpy"] != rng["after_make"]["numpy"],
+        "torch_rng_consumed_choices": rng["after_reset"]["torch"] != rng["after_choices"]["torch"],
+        "np_rng_consumed_choices": rng["after_reset"]["numpy"] != rng["after_choices"]["numpy"],
+    }
+    return {"layers": {name: _env_layer(keys) for name, keys in layers.items()}, "identity_fields": identity_fields,
+            "rng": rng, **rng_consumed, "torch_rng_consumed": rng_consumed["torch_rng_consumed_reset"],
+            "np_rng_consumed": rng_consumed["np_rng_consumed_reset"], "timing": timing,
+            "steps_done": len(statuses), "step_statuses": statuses, "fixed_action": action.tolist(),
+            "npz": str(npz_path.relative_to(npz_path.parents[1])), "npz_bytes": npz_path.stat().st_size}
+
+
+def cmd_env_digest_worker(args) -> int:
+    """子进程：分记 import 耗时 → 装计时包装 → 逐身份跑 _env_digest_one，每身份一行追加到 rows.jsonl。"""
+    import os
+
+    entered = time.time()
+    proc: dict[str, Any] = {}
+    spawn = os.environ.get("V75_ENV_DIGEST_SPAWN_T")
+    proc["spawn_to_worker_s"] = round(entered - float(spawn), 6) if spawn else UNCOLLECTED
+    for label, mods in (("numpy", ("numpy",)), ("torch", ("torch",)), ("sapien", ("sapien",)),
+                        ("mani_skill", ("mani_skill", "mani_skill.envs")),
+                        ("robomme_hard", ("robomme_hard.env_record_wrapper",))):
+        started = time.perf_counter()
+        for mod in mods:
+            __import__(mod)
+        proc[f"import_{label}_s"] = round(time.perf_counter() - started, 6)
+    from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
+
+    hs = _hard_specs()
+    hub = _env_install_timers(hs.ALL_TASKS)
+    proc["timers_wrapped"] = len(hub.wrapped)
+    proc["timers_missing"] = hub.missing
+    host = _env_host_info()
+    idents = json.loads(Path(args.batch).read_text())
+    cell_dir = Path(args.out) / args.cell
+    rows_path = cell_dir / "rows.jsonl"
+    builders: dict[str, Any] = {}
+    for position, ident in enumerate(idents):
+        started = time.time()
+        row = {k: ident[k] for k in ("task", "source_episode", "seed", "builder_episode")}
+        row.update({"cell": args.cell, "mode": args.mode, "order_index": ident["_order_index"], "proc_index": args.proc_index,
+                    "position_in_proc": position, "pid": os.getpid(), "host": host, "timing_notes": ENV_TIMING_NOTES,
+                    "include_available_multi_choices": False, "fixed_steps": args.fixed_steps,
+                    "resume_generation": args.resume_generation, "resumed": args.resume_generation > 0,
+                    "proc_init": proc if position == 0 else {"note": "见本进程 position_in_proc=0 的行"}, "error": None})
+        try:
+            builder = builders.setdefault(ident["task"], BenchmarkEnvBuilder(
+                env_id=ident["task"], dataset="test-hard", action_space="joint_angle", max_steps=1300))
+            npz = cell_dir / "arrays" / f"{ident['task']}-ep{ident['source_episode']}-b{ident['builder_episode']}.npz"
+            row.update(_env_digest_one(ident, builder, hub, args.fixed_steps, npz))
+        except Exception as exc:  # noqa: BLE001 如实记录，续跑时重做
+            import traceback
+
+            row["error"] = f"{type(exc).__name__}: {exc}"[:800]
+            row["traceback"] = traceback.format_exc()[-3000:]
+            hub.phase = "idle"
+        if position == 0:
+            # 第一个身份出错也照记（只要 _setup_scene 被调到过）
+            first = hub.first.get("BaseEnv._setup_scene")
+            proc["first_vulkan_s"] = round(first, 6) if first is not None else UNCOLLECTED
+        row["wall_s"] = round(time.time() - started, 3)
+        with rows_path.open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps(row, ensure_ascii=False, sort_keys=True, default=str) + "\n")
+        print(f"ENV_DIGEST_ROW cell={args.cell} id={_env_identity_key(row)} wall_s={row['wall_s']} "
+              f"npz_mib={row.get('npz_bytes', 0) / 2**20:.1f} steps={row.get('steps_done')} "
+              f"torch_rng_consumed={row.get('torch_rng_consumed')} np_rng_consumed={row.get('np_rng_consumed')} "
+              f"error={row['error']}", flush=True)
+    return 0
+
+
+def _env_rows(cell_dir: Path) -> dict[str, dict[str, Any]]:
+    """rows.jsonl → {身份键: 最后一行无错的行}（有错的行不算完成）。"""
+    out: dict[str, dict[str, Any]] = {}
+    path = cell_dir / "rows.jsonl"
+    if not path.exists():
+        return out
+    for text in path.read_text().splitlines():
+        if not text.strip():
+            continue
+        try:
+            row = json.loads(text)
+        except json.JSONDecodeError:
+            continue  # 半行（进程被杀）
+        if row.get("error") is None and "layers" in row:
+            out[_env_identity_key(row)] = row
+    return out
+
+
+def _env_resume_generation(cell_dir: Path) -> int:
+    """本次运行的续跑代数：rows.jsonl 无任何行 → 0；否则 = 已有行里最大 resume_generation + 1（旧行缺字段按 0）。"""
+    path = cell_dir / "rows.jsonl"
+    gens = []
+    if path.exists():
+        for text in path.read_text().splitlines():
+            try:
+                gens.append(int(json.loads(text).get("resume_generation") or 0))
+            except (json.JSONDecodeError, ValueError, AttributeError):
+                continue
+    return max(gens) + 1 if gens else 0
+
+
+def _env_p50(values: list) -> str:
+    nums = sorted(v for v in values if isinstance(v, (int, float)))
+    if not nums:
+        return UNCOLLECTED
+    return f"{nums[len(nums) // 2]:.3f}"
+
+
+def _env_speed_line(cell: str, rows: list[dict[str, Any]]) -> str:
+    t = [r["timing"] for r in rows]
+    firsts = [r["proc_init"] for r in rows if r.get("position_in_proc") == 0 and isinstance(r.get("proc_init"), dict)]
+    host = rows[0]["host"] if rows else {}
+    fields = {
+        "rows": len(rows), "host": host.get("host", UNCOLLECTED),
+        "gpu": str((host.get("gpu") or {}).get("name", UNCOLLECTED)).replace(" ", "_"),
+        "cores": host.get("affinity_cores", UNCOLLECTED),
+        "procs": len(firsts),
+        "import_torch_s_p50": _env_p50([p.get("import_torch_s") for p in firsts]),
+        "import_sapien_s_p50": _env_p50([p.get("import_sapien_s") for p in firsts]),
+        "import_mani_skill_s_p50": _env_p50([p.get("import_mani_skill_s") for p in firsts]),
+        "import_robomme_hard_s_p50": _env_p50([p.get("import_robomme_hard_s") for p in firsts]),
+        "first_vulkan_s_p50": _env_p50([p.get("first_vulkan_s") for p in firsts]),
+        "make_env_s_p50": _env_p50([x.get("make_env_s") for x in t]),
+        "gym_make_s_p50": _env_p50([x.get("gym_make_s") for x in t]),
+        "eval_reset_s_p50": _env_p50([x.get("eval_reset_s") for x in t]),
+        "inner_reset_s_p50": _env_p50([x.get("inner_reset_s") for x in t]),
+        "demo_s_p50": _env_p50([x.get("demo_s") for x in t]),
+        "demo_s_per_frame_p50": _env_p50([x.get("demo_s_per_frame") for x in t]),
+        "step_s_p50": _env_p50([s for x in t for s in (x.get("step_s") or [])]),
+        "step_physics_s_p50": _env_p50([s for x in t if isinstance(x.get("step_physics_s"), list) for s in x["step_physics_s"]]),
+        "step_get_obs_s_p50": _env_p50([s for x in t if isinstance(x.get("step_get_obs_s"), list) for s in x["step_get_obs_s"]]),
+        "close_s_p50": _env_p50([x.get("close_s") for x in t]),
+        "wall_s_p50": _env_p50([r.get("wall_s") for r in rows]),
+    }
+    return f"ENV_SPEED=INFO cell={cell} " + " ".join(f"{k}={v}" for k, v in fields.items())
+
+
+def cmd_env_digest(args) -> int:
+    """ENV_DIGEST_DONE：按身份清单逐个建环境、固定动作走 N 步，逐层存摘要与原始数组（不接策略）。
+    默认每任务一个新进程（正序）；--resident 全部放进一个常驻进程；--reverse 倒序；已在 rows.jsonl 的身份跳过（续跑）。
+    ⚠ 演示前场景状态取自另建的底层环境 reset 后的状态（_PROBE 的做法），不是评估实例本身的瞬间状态。"""
+    import os
+    import subprocess
+
+    idents = json.loads(Path(args.identities).read_text())
+    for index, ident in enumerate(idents):
+        ident["_order_index"] = index
+    if args.reverse:
+        idents = idents[::-1]
+    if args.limit:
+        idents = idents[: args.limit]
+    cell_dir = Path(args.out) / args.cell
+    (cell_dir / "batches").mkdir(parents=True, exist_ok=True)
+    done = _env_rows(cell_dir)
+    todo = [i for i in idents if _env_identity_key(i) not in done]
+    generation = _env_resume_generation(cell_dir)
+    if args.resident and generation > 0 and not args.allow_resume_resident:
+        # 常驻条件的含义是「全部身份在同一进程里连续跑」；续跑会拆成多个进程，条件被静默改变
+        print(f"ENV_DIGEST_RESUME_REFUSED cell={args.cell} mode=resident resume_generation={generation} "
+              f"done={len(idents) - len(todo)} todo={len(todo)}（换新 --cell 重跑，或显式加 --allow-resume-resident）",
+              flush=True)
+        return 2
+    batches: list[list[dict[str, Any]]] = []
+    if args.resident:
+        batches = [todo] if todo else []
+    else:
+        for ident in todo:
+            if batches and batches[-1][0]["task"] == ident["task"]:
+                batches[-1].append(ident)
+            else:
+                batches.append([ident])
+    mode = "resident" if args.resident else "per-task"
+    mode += "-reverse" if args.reverse else "-forward"
+    print(f"ENV_DIGEST_PLAN cell={args.cell} identities={len(idents)} done={len(idents) - len(todo)} "
+          f"resume_generation={generation} resumed={generation > 0} "
+          f"todo={len(todo)} procs={len(batches)} mode={mode}", flush=True)
+    env = dict(os.environ)
+    if args.gpu is not None:
+        env["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
+    failures = 0
+    for proc_index, batch in enumerate(batches):
+        batch_path = cell_dir / "batches" / f"proc{proc_index:03d}-{os.getpid()}.json"
+        batch_path.write_text(json.dumps(batch, ensure_ascii=False))
+        env["V75_ENV_DIGEST_SPAWN_T"] = repr(time.time())
+        code = subprocess.run([sys.executable, str(Path(__file__).resolve()), "env-digest-worker", "--cell", args.cell,
+                               "--out", args.out, "--batch", str(batch_path), "--fixed-steps", str(args.fixed_steps),
+                               "--proc-index", str(proc_index), "--mode", mode,
+                               "--resume-generation", str(generation)], env=env, cwd=str(REPO)).returncode
+        if code != 0:
+            failures += 1
+            print(f"ENV_DIGEST_PROC_FAIL cell={args.cell} proc={proc_index} code={code} tasks={sorted({b['task'] for b in batch})}",
+                  flush=True)
+    done = _env_rows(cell_dir)
+    rows = [done[k] for k in (_env_identity_key(i) for i in idents) if k in done]
+    print(_env_speed_line(args.cell, rows), flush=True)
+    print(f"ENV_DIGEST_DONE cell={args.cell} rows={len(rows)}", flush=True)
+    return 0 if len(rows) == len(idents) and not failures else 1
+
+
+def _env_name_agnostic(keys: dict[str, str]) -> dict[str, list[str]]:
+    """与 _name_agnostic 同一思路：按分区（键的第一段）取逐键摘要的有序多重集，忽略实体名。"""
+    out: dict[str, list[str]] = collections.defaultdict(list)
+    for key, value in keys.items():
+        out[key.split("/")[0]].append(value)
+    return {k: sorted(v) for k, v in sorted(out.items())}
+
+
+def _env_load_npz(cell_dir: Path, row: dict[str, Any]):
+    import numpy as np
+
+    path = cell_dir / row["npz"]
+    return np.load(path) if path.exists() else None
+
+
+def _env_is_image(arr) -> bool:
+    """uint8 且形如 (H,W,3) 或 (N,H,W,3) 的数组按图像处理（含 reset_obs 的 front_init/wrist_init）。"""
+    return arr.dtype == "uint8" and arr.ndim in (3, 4) and arr.shape[-1] == 3
+
+
+def _env_image_diff(x, y) -> dict[str, Any] | None:
+    """逐帧 MAD（每帧在 H、W、通道上取平均绝对差，0–255 刻度）：最大值、均值、第一个不等帧、不等帧数；
+    帧数不同只比公共前缀并记两边帧数；单帧尺寸不同则不可测（返回 None）。"""
+    import numpy as np
+
+    if x.ndim == 3:
+        x, y = x[None], y[None]
+    if x.shape[1:] != y.shape[1:]:
+        return None
+    n = min(len(x), len(y))
+    out: dict[str, Any] = {"frames": [int(len(x)), int(len(y))]}
+    if n == 0:
+        out.update({"per_frame_mad_max": None, "per_frame_mad_mean": None, "first_diff_frame": None, "diff_frames": 0})
+        return out
+    mad = np.abs(x[:n].astype(np.int16) - y[:n].astype(np.int16)).mean(axis=(1, 2, 3))
+    bad = np.nonzero(mad > 0)[0]
+    out.update({"per_frame_mad_max": float(mad.max()), "per_frame_mad_mean": float(mad.mean()),
+                "first_diff_frame": int(bad[0]) if len(bad) else None, "diff_frames": int(len(bad))})
+    return out
+
+
+def _env_compare_row(a: dict[str, Any], b: dict[str, Any], dir_a: Path, dir_b: Path) -> dict[str, Any]:
+    """单个身份逐层比：相等 / 仅改名 / 键集合差 / 数值差（状态最大绝对差、图像逐帧 MAD）。
+    量不出来的（npz 缺失、形状或 dtype 不符、参差回退未存数组、只有键集合差）一律记 None 并计入 unmeasured，不填 0。"""
+    import numpy as np
+
+    detail: dict[str, Any] = {"id": _env_identity_key(a), "layers": {}, "npz_missing": [], "unmeasured": 0}
+    za = zb = None
+    loaded = False
+    first_diff = None
+    for layer in ENV_DIGEST_LAYERS:
+        la, lb = a["layers"].get(layer), b["layers"].get(layer)
+        if la is None or lb is None:
+            detail["layers"][layer] = {"equal": False, "missing": "a" if la is None else "b"}
+            first_diff = first_diff or layer
+            continue
+        if la["digest"] == lb["digest"]:
+            detail["layers"][layer] = {"equal": True}
+            continue
+        ka, kb = la["keys"], lb["keys"]
+        info: dict[str, Any] = {"equal": False}
+        only_a, only_b = sorted(set(ka) - set(kb)), sorted(set(kb) - set(ka))
+        if only_a or only_b:
+            info.update({"only_a": only_a[:20], "only_b": only_b[:20], "key_set_diff": True})
+            # 只有键集合不同时才可能「仅改名」；键集合相同而值不同（如两个同形 actor 互换位姿）是真差异
+            if layer in _ENV_STATE_LAYERS and _env_name_agnostic(ka) == _env_name_agnostic(kb):
+                info["name_only"] = True
+                detail["layers"][layer] = info
+                continue
+        diff_keys = sorted(k for k in set(ka) & set(kb) if ka[k] != kb[k])
+        info["diff_keys"] = diff_keys[:20]
+        info["diff_key_count"] = len(diff_keys)
+        first_diff = first_diff or layer
+        info["max_abs"] = None
+        info["image"] = None
+        if layer in ("identity", "step_status"):
+            detail["layers"][layer] = info
+            continue
+        if not diff_keys:
+            # 只有键集合差：公共键全相等，没有可量的数值
+            detail["unmeasured"] += 1
+            detail["layers"][layer] = info
+            continue
+        if not loaded:
+            za, zb, loaded = _env_load_npz(dir_a, a), _env_load_npz(dir_b, b), True
+            detail["npz_missing"] = [side for side, z in (("a", za), ("b", zb)) if z is None]
+        if za is None or zb is None:
+            detail["unmeasured"] += len(diff_keys)
+            detail["layers"][layer] = info
+            continue
+        worst: float | None = None
+        images: dict[str, Any] = {}
+        unmeasured: list[str] = []
+        for key in diff_keys:
+            name = f"{layer}/{key}"
+            if name not in za.files or name not in zb.files:
+                unmeasured.append(key)  # 参差回退只存了摘要
+                continue
+            x, y = za[name], zb[name]
+            if _env_is_image(x) and _env_is_image(y):
+                got = _env_image_diff(x, y)
+                if got is None:
+                    unmeasured.append(key)
+                else:
+                    images[key] = got
+                continue
+            if x.shape != y.shape or x.dtype.kind not in "biuf" or y.dtype.kind not in "biuf":
+                unmeasured.append(key)
+                continue
+            value = float(np.abs(x.astype(np.float64) - y.astype(np.float64)).max(initial=0.0))
+            worst = value if worst is None else max(worst, value)
+        info["max_abs"] = worst
+        if images:
+            maxes = [v["per_frame_mad_max"] for v in images.values() if v["per_frame_mad_max"] is not None]
+            means = [v["per_frame_mad_mean"] for v in images.values() if v["per_frame_mad_mean"] is not None]
+            info["image"] = {"per_frame_mad_max": max(maxes) if maxes else None,
+                             "per_frame_mad_mean": max(means) if means else None, "keys": images}
+        if unmeasured:
+            info["unmeasured_keys"] = unmeasured[:20]
+            detail["unmeasured"] += len(unmeasured)
+        detail["layers"][layer] = info
+    detail["first_diff"] = first_diff
+    return detail
+
+
+def _env_fmt(value: float | None) -> str:
+    return "n/a" if value is None else f"{value:.6g}"
+
+
+def cmd_env_digest_compare(args) -> int:
+    """ENV_DIGEST_PARITY（只报告）：两格按身份对齐逐层比，打一行汇总并写 json 明细。
+    state_max_abs／obs_max_abs／image_mad 在没有任何可量差异时为 n/a（全同时也是 n/a：摘要相等不再读数组）。"""
+    dir_a, dir_b = Path(args.a), Path(args.b)
+    rows_a, rows_b = _env_rows(dir_a), _env_rows(dir_b)
+    common = [k for k in rows_a if k in rows_b]
+    common.sort(key=lambda k: rows_a[k].get("order_index", 0))
+    details = [_env_compare_row(rows_a[k], rows_b[k], dir_a, dir_b) for k in common]
+    layer_equal = {layer: sum(d["layers"][layer]["equal"] for d in details) for layer in ENV_DIGEST_LAYERS}
+    name_only = {layer: sum(bool(d["layers"][layer].get("name_only")) for d in details) for layer in ENV_DIGEST_LAYERS}
+    key_set = sum(any(v.get("key_set_diff") for v in d["layers"].values()) for d in details)
+    firsts = [d["first_diff"] for d in details if d["first_diff"]]
+    first = min(firsts, key=ENV_DIGEST_LAYERS.index) if firsts else "-"
+    first_id = next((d["id"] for d in details if d["first_diff"] == first), "-")
+
+    def pick(layers, field):
+        vals = [v.get(field) for d in details for layer, v in d["layers"].items() if layer in layers]
+        vals = [x for x in vals if x is not None]
+        return max(vals) if vals else None
+
+    state = pick(_ENV_STATE_LAYERS, "max_abs")
+    obs = pick(_ENV_NUMERIC_OBS_LAYERS, "max_abs")
+    imgs = [v["image"] for d in details for v in d["layers"].values() if v.get("image")]
+    mad_max = max((i["per_frame_mad_max"] for i in imgs if i["per_frame_mad_max"] is not None), default=None)
+    mad_mean = max((i["per_frame_mad_mean"] for i in imgs if i["per_frame_mad_mean"] is not None), default=None)
+    frame_hits = [(d["id"], layer, key, v["first_diff_frame"], v["diff_frames"]) for d in details
+                  for layer, lv in d["layers"].items() if lv.get("image") for key, v in lv["image"]["keys"].items()]
+    first_frame = next((f"{layer}/{key}@{idx}" for _i, layer, key, idx, _n in frame_hits if idx is not None), "-")
+    diff_frames = sum(n for *_x, n in frame_hits)
+    npz_missing = sum(bool(d["npz_missing"]) for d in details)
+    unmeasured = sum(d["unmeasured"] for d in details)
+    missing_a = sorted(set(rows_b) - set(rows_a))
+    missing_b = sorted(set(rows_a) - set(rows_b))
+    resumed = {"a": sum(bool(r.get("resumed")) for r in rows_a.values()),
+               "b": sum(bool(r.get("resumed")) for r in rows_b.values())}
+    summary = {
+        "pair": f"{dir_a.name}:{dir_b.name}", "a": str(dir_a), "b": str(dir_b), "compared": len(details),
+        "rows_a": len(rows_a), "rows_b": len(rows_b), "missing_in_a": missing_a, "missing_in_b": missing_b,
+        "layer_equal": layer_equal, "name_only": name_only, "key_set_diff": key_set,
+        "first_diff": first, "first_diff_id": first_id, "identities_with_diff": len(firsts),
+        "state_max_abs": state, "obs_max_abs": obs,
+        "image_mad": mad_max, "image_mad_unit": None if mad_max is None else mad_max / 255.0,
+        "image_mad_mean": mad_mean, "image_first_diff_frame": first_frame, "image_diff_frames": diff_frames,
+        "npz_missing": npz_missing, "unmeasured": unmeasured, "resumed_rows": resumed,
+        "note": "演示前场景状态取自另建底层环境 reset 后的状态（_PROBE 做法），非评估实例瞬间状态；"
+                "image_mad = 各身份各图像键逐帧 MAD（0–255 刻度，每帧在 H、W、通道上平均）的最大值，image_mad_unit 为 ÷255，"
+                "image_mad_mean = 各图像键逐帧 MAD 均值的最大值；量不出来记 None（行里 n/a）并计入 unmeasured",
+        "details": details,
+    }
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.out).write_text(json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=1) + "\n")
+    print(f"ENV_DIGEST_PARITY pair={summary['pair']} compared={len(details)} "
+          f"layer_equal={','.join(f'{k}:{v}' for k, v in layer_equal.items())} first_diff={first} "
+          f"state_max_abs={_env_fmt(state)} image_mad={_env_fmt(mad_max)} "
+          f"image_mad_unit={_env_fmt(None if mad_max is None else mad_max / 255.0)} image_mad_mean={_env_fmt(mad_mean)} "
+          f"image_first_diff_frame={first_frame} image_diff_frames={diff_frames} obs_max_abs={_env_fmt(obs)} "
+          f"name_only={sum(name_only.values())} key_set_diff={key_set} npz_missing={npz_missing} unmeasured={unmeasured} "
+          f"rows_a={len(rows_a)} rows_b={len(rows_b)} missing_in_a={len(missing_a)} missing_in_b={len(missing_b)} "
+          f"resumed_a={resumed['a']} resumed_b={resumed['b']} first_diff_id={first_id}", flush=True)
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -646,6 +1485,32 @@ def main() -> int:
     sh.add_argument("--out", default=None)
     sh.add_argument("--info", action="store_true", help="冒烟外推只报告（阶段 3），不判 PASS/FAIL")
     sh.set_defaults(func=cmd_step_headroom)
+    ed = sub.add_parser("env-digest", help="v7.5eval 环境检测：逐层摘要 + 原始数组 + 测速（GPU）")
+    ed.add_argument("--cell", required=True, help="条件名（输出子目录）")
+    ed.add_argument("--identities", required=True, help="身份清单 json：[{task, source_episode, seed, builder_episode, ...}]")
+    ed.add_argument("--out", required=True)
+    ed.add_argument("--resident", action="store_true", help="全部身份放进一个常驻进程（默认每任务一个新进程）")
+    ed.add_argument("--reverse", action="store_true", help="身份倒序")
+    ed.add_argument("--fixed-steps", type=int, default=30)
+    ed.add_argument("--gpu", default=None, help="子进程的 CUDA_VISIBLE_DEVICES（不给则继承）")
+    ed.add_argument("--limit", type=int, default=0)
+    ed.add_argument("--allow-resume-resident", action="store_true",
+                    help="--resident 下允许续跑（续跑会把一个常驻进程拆成多个，改变条件；默认拒绝）")
+    ed.set_defaults(func=cmd_env_digest)
+    ew = sub.add_parser("env-digest-worker", help=argparse.SUPPRESS)
+    ew.add_argument("--cell", required=True)
+    ew.add_argument("--out", required=True)
+    ew.add_argument("--batch", required=True)
+    ew.add_argument("--fixed-steps", type=int, default=30)
+    ew.add_argument("--proc-index", type=int, default=0)
+    ew.add_argument("--mode", default="per-task-forward")
+    ew.add_argument("--resume-generation", type=int, default=0)
+    ew.set_defaults(func=cmd_env_digest_worker)
+    ec = sub.add_parser("env-digest-compare", help="两格环境检测结果逐层对拍（纯 CPU，只报告）")
+    ec.add_argument("--a", required=True, help="<out>/<cell> 目录")
+    ec.add_argument("--b", required=True)
+    ec.add_argument("--out", required=True, help="json 明细")
+    ec.set_defaults(func=cmd_env_digest_compare)
     args = parser.parse_args()
     return args.func(args)
 
