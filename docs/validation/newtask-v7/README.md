@@ -153,12 +153,12 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v7 first_divergence_n=13 first_divergence_m
   XHARD0_EVAL_PARITY=INFO policy=mmevla compared=192 status_diff=11 steps_diff=71
   ```
   SimpleMemVLA 两入口成败逐局相同（官方路线 141/192 = v7 路线 141/192，按任务也逐项相同）；MME 50 对 51、11 局翻转且方向对称（5 成→败、5 败→成、1 超时→成），原因未坐实。更正：MME 服务端每局 `reset` 把采样随机数重置为固定种子（`policy.py::reset`，`jax.random.key(seed)`），「随机数跨局消耗」不成立。候选：(A) GPU 渲染／JAX 数值在不同节点上的微小不确定性被 MME 放大（SimpleMemVLA 也有 16 局步数不同，说明链路存在数值不确定性）；(B) 两个 MME 分支（`official-xhard0` 与 `testhard-eval-v7`）客户端代码不同，喂给策略的输入有系统差别。区分办法：两入口各把这 11 局重跑一次（22 局，官方路线重评预算内），同入口重跑即翻转为 A，同入口稳定复现而两入口仍不同为 B。`hard_regression.py xhard0-eval-parity` 本轮按两策略实际结果文件名与官方记录无 `episode` 字段的事实改写了读入（`--official`／`--hard` 可给多个文件或目录）。
-- 视频（`eval_video_mover.py`，sha256 核对后删 NFS 副本）：SimpleMemVLA 1292/1292、MME-VLA 1290/1290 终态局视频在 `artifacts/newtask-v7/eval-videos/<策略>/<tier>/<task>/`；MME 两局 error 的 6 段重试录像在 `eval-videos/mmevla/_errors/`（sha256 逐个核对 OK）；NFS 视频暂存已清空。冒烟 2 局视频与正式评估同名，已被正式评估的版本覆盖。
+- 视频（`eval_video_mover.py`，sha256 核对后删 NFS 副本）：SimpleMemVLA 1292/1292、MME-VLA 1290/1290 终态局视频在 `artifacts/newtask-v7/eval-videos/<策略>/<tier>/<task>/`；MME 两局 error 的 6 段重试录像在 `eval-videos/mmevla/_errors/`（sha256 逐个核对 OK）。**更正（2026-09-29 晚）**：原文写「NFS 视频暂存已清空」不对——xhard0 旧入口（官方路线）两策略各 192 局的评估视频（`v7-eval-stage/<策略>/official/`，共 384 个、566 MB）当时漏搬：搬运工具只按 v7 路线记录的 `episode` 字段关联，官方路线记录只有 `source_episode`，实际也只起了 smoke 与 v7 两路搬运。12.248 给 `eval_video_mover.py` 加 `--tier` 与 `source_episode` 回退后补搬到 `artifacts/newtask-v7/eval-videos-official/<策略>/xhard0/<task>/`：`VMOVE_OFFICIAL=PASS policies=2 moved=384 sha_bad=0 nfs_left=0`。冒烟 2 局视频与正式评估同名，已被正式评估的版本覆盖。
 
 ## ⑦ 收尾状态与待用户裁决
 
 - 资源：`GEN_HOLD_RELEASE=PASS`（08:45 gen2 结束后 `scancel 62268734`）；评估占位 62315065～62315074 按片整片完成逐个释放（62315069、62315071 手动，其余由 `auto_release` 按清单 JobID 释放；取消前核对该 job 只剩 batch／extern 步骤），片 9 的 62315074 在登录节点脚本写出 `SHARD_DONE` 后释放。按 A6 名下最终只留 62268735。
-- NFS：gen1（828 GB）在本机副本两侧文件数／字节数相同且 1100 局逐局 sha 核对后删除；gen2 由 `hard_pull` 逐局 sha 核对后删除；评估视频暂存清空。`v7/specs*`、`v7-stage/` 各段清单与日志、`v7-eval/` 结果文件体积小，保留。
+- NFS：gen1（828 GB）在本机副本两侧文件数／字节数相同且 1100 局逐局 sha 核对后删除；gen2 由 `hard_pull` 逐局 sha 核对后删除；评估视频暂存清空（旧入口 384 个视频当时漏搬，12.248 补搬，见 ⑥ 视频条更正）。`v7/specs*`、`v7-stage/` 各段清单与日志、`v7-eval/` 结果文件体积小，保留。
 - 本机与 NFS 清理（用户 2026-09-29 原话「这些都删除 eval结果视频本地要保留」）：删除 `artifacts/newtask-v7/parity/h5/` 下全部对拍 h5——H2-v7（768 GB）、H-native、H-xhard、H-xhard0、O-native、O-xhard0、P-native、P-xhard、H-v7（仅 1100 个指向 gen1 的符号链接，删链接不穿透）；删除 GL 侧克隆 `robomme_benchmark-v7-gl` 及其 worktree `-v7-gl-o`（均无未提交改动，HEAD 77fbe70 已在推送的主分支）。保留：gen1 正式 1100 局 h5（删后复核文件数与字节数不变）、两策略评估视频、包内规格与候选池。
   - 影响：`parity-anchor-v6` 登记的 P 缓存本地副本已删，公开 bucket `HongzeFu/robomme-hard-parity` 仍有 `H-34a1cea-a40/native`（144）与 `H-b1afc80-a40/xhard`（165）；以后以该锚点做对拍前须先 `hard_pull`／`hf buckets sync` 拉回到 `docs/validation/parity-anchors.json` 登记的目录名，否则 `PARITY_ANCHOR` 报缺目录。第 1 项若日后选「换候选重生成」，GL 克隆需重新检出。
   - 对 `parity-anchor-v7` 的影响：它须登记 native（144）、xhard0（192）、v7（1100）三段 P 缓存；native 与 xhard0 两段本应取本次的 `H-native`、`H-xhard0`，这两份未上传 bucket、本地已删，当时判断须在 GL 重新生成 native 144 + xhard0 192 的 H 侧（v7 段仍可登记本机 gen1）；删除前未就此提醒用户，此处补记。**更正（同日）**：实际无需重新生成——xhard0 的 H 侧与 O 侧 192 局逐字节相同，可由 bucket O 段按 sha 完整重建；native 按用户「2a」沿用 v6 锚点缓存。见下条 `parity-anchor-v7`。
@@ -177,3 +177,22 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v7 first_divergence_n=13 first_divergence_m
   4. MME xhard0 两入口 11 局翻转是否要做同入口重跑对照（11 局 × 1 策略）坐实为策略随机性。
 - **用户裁决（2026-09-29，原话「1暂时不管 2暂时不管 3同意递补 4 没看懂详细讲」）**：第 1、2 项暂时不处理（交付集与 benchmark 代码保持现状，H2 本地副本继续保留）；第 3 项追认 InsertPeg 追加轮与手动补位 2 局；第 4 项经解释后用户原话「先把项目4设置为待定 收尾这次任务 推送」——**待定**（22 局两入口重跑对照未做，⑥ 的 A／B 两种原因均未排除）。
 - **推送**（自动模式拒绝，留用户手动）：benchmark `newtaskRelease-v5`、`PolicyEvalThirdParty-{simplememvla,mmevla}-0929-0608`、tag `parity-anchor-v6`；两策略仓库 `testhard-eval-v7-0929`（子模块指向 `4a36d505`，benchmark 推送后 GitHub 上才取得到）。
+
+## ⑧ 逐局对照站点（12.248，2026-09-29 晚）
+
+方案 `~/.claude/plans/` 下 0929 站点方案（用户原话：「给出方案 托管 类似 http://sled-vail.eecs.umich.edu:8060/#task=BinFill」「但是需要生成视频vsSimpleMemVLA vs MME-VLA」「你有的episode全部托管」「xhard0生成有两套方法 旧入口新入口 都要画出来」）。地址 `http://sled-vail.eecs.umich.edu:8070/#task=BinFill&tier=xhard1&ep=1`，tmux 会话 `site-v7-8070`（`artifacts/newtask-v7/site/launch.sh`），8060 的 v6 站点未动。
+
+- 每局按 `(tier, task, seed)` 拼接：xhard1～4 三栏（gen1 生成录像 | SimpleMemVLA | MME-VLA）；xhard0 两行各三栏（新入口 `robomme_hard` / 旧入口官方 `robomme`）。
+- xhard0 生成视频由 h5 离线合成（`scripts/injection-dev/site/v7_render_xhard0.py`，前视＋腕部 512×256，左上角 DEMO／EXEC，不跑仿真、不碰录像器）：
+  ```text
+  XHARD0_RENDER=PASS sides=2 episodes=192/192x2 rendered=190/190 generation_failed=2/2 frame_mismatch=0
+  XHARD0_OH_MEDIA=INFO identities=192 h5_sha_equal=192 mp4_sha_equal=192
+  ```
+  新入口 H-xhard0 的 h5 是 12.245 按 sha 从 O 段放回重建的（原始 H 侧与 O 侧逐字节相同），两行生成视频因此相同；两局生成失败为 VideoPlaceOrder seed 610701、611101（官方原版即 `DatasetGenerationError`，两侧都是 800 字节空 h5）。
+- 目录（`v7_site_catalog.py`）与浏览器检查（`v7_site_browser_check.py`，Playwright，测试实例 8071）：
+  ```text
+  V7_SITE_CATALOG=PASS identities=1292 gen_v7=1100 gen_xhard0_new=190 gen_xhard0_old=190 gen_failed=4 eval_new_simplememvla=1292(+0err/0clips) eval_old_simplememvla=192 flip_simplememvla=0 eval_new_mmevla=1290(+2err/6clips) eval_old_mmevla=192 flip_mmevla=11 media=4452 table_mismatch=0 problems=0
+  V7_SITE_READY host=0.0.0.0 port=8070 videos=4452
+  V7_SITE_BROWSER=PASS cells=71 videos_meta=261 played=71 flip=11 error_tabs=2 genfail=2 sync=1 overflow=0 page_errors=0
+  ```
+  逐格成败数与 `eval/<策略>-table.json` 全部相等，旧入口成功数与官方汇总相等（141/192、50/192）。

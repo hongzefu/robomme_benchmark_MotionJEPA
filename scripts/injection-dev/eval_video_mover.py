@@ -9,6 +9,8 @@
 往 ``<dest>/moved.jsonl`` 追加一行。已在 ``moved.jsonl`` 里的源路径跳过。每 ``--interval`` 秒打印
 ``VMOVE moved=<n> pending=<n> bytes=<n> stage_bytes=<n>``；``--once`` 扫一轮即退（评估结束后的全量对账），
 常驻模式下 ``--stop-file`` 出现且无待搬时退出；结束打印 ``EXIT_CODE=``。
+
+官方路线（xhard0 旧入口）的记录没有 ``episode``／``tier`` 字段：局号回退到 ``source_episode``，档位由 ``--tier`` 给出。
 """
 from __future__ import annotations
 
@@ -23,6 +25,11 @@ import time
 from pathlib import Path
 
 FINAL = ("success", "fail", "timeout")
+
+
+def episode_of(row: dict) -> int:
+    """局号：v7 路线记录写 ``episode``；官方路线（xhard0 旧入口）记录只有 ``source_episode``。"""
+    return int(row["episode"] if row.get("episode") is not None else row["source_episode"])
 
 
 def sha256(path: Path) -> str:
@@ -56,7 +63,7 @@ def terminal_records(pattern: str) -> dict[tuple[str, int], dict]:
             except json.JSONDecodeError:
                 continue  # 评估进程正在追加的半行，下一轮再读
             if row.get("status") in FINAL and row.get("video"):
-                last[(row["task"], int(row["episode"]))] = row
+                last[(row["task"], episode_of(row))] = row
     return last
 
 
@@ -80,6 +87,7 @@ def main() -> int:
     ap.add_argument("--interval", type=float, default=60.0)
     ap.add_argument("--once", action="store_true")
     ap.add_argument("--stop-file", default=None)
+    ap.add_argument("--tier", default=None, help="记录不带 tier 时使用的档位（官方路线 xhard0 旧入口）")
     args = ap.parse_args()
 
     stage, dest = Path(args.stage).resolve(), Path(args.dest)
@@ -96,6 +104,8 @@ def main() -> int:
     while True:
         pending = 0
         for key, row in terminal_records(args.records_glob).items():
+            if args.tier and not row.get("tier"):
+                row = {**row, "tier": args.tier}
             src = Path(row["video"])
             if str(src) in moved:
                 continue
@@ -142,7 +152,7 @@ def main() -> int:
             moved.add(str(src))
             moved_bytes += size
             with moved_log.open("a", encoding="utf-8") as handle:
-                handle.write(json.dumps({"policy": args.policy, "task": row["task"], "episode": int(row["episode"]),
+                handle.write(json.dumps({"policy": args.policy, "task": row["task"], "episode": episode_of(row),
                                          "tier": tier, "seed": row.get("seed"), "status": row["status"],
                                          "src": str(src), "dest": str(out), "sha256": digest, "bytes": size,
                                          "at": time.strftime("%Y-%m-%dT%H:%M:%S%z")}, ensure_ascii=False) + "\n")
