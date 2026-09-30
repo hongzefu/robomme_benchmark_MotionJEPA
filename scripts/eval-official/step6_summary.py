@@ -97,6 +97,8 @@ SECTION_TITLES = {
     "replay": "第 4 步 策略本身稳不稳定（POLICY_REPLAY／DET_RULE／IFACE_OPEN）",
     "eval_conditions": "5.1 新接口换条件还一致吗（EVAL_PARITY）",
     "prod": "5.2 正式跑法与第 6 步相对标准（PROD_VS_OFFICIAL／RELATIVE_ACCEPT）",
+    "infra": "基础设施失败统计（INFRA；infra=True 永不算策略结果）",
+    "incident": "GPU 计算模式事故（INCIDENT；*-vulkanfail-* 留档不进比较）",
     "speed": "测速（ENV_SPEED／EVAL_SPEED）",
     "budget": "预算核算（§3.4）",
 }
@@ -106,7 +108,7 @@ FRAGMENTS = {
     "official-rerun": ("observer", "official"),
     "policy-replay": ("replay",),
     "eval-conditions": ("step3", "eval_conditions"),
-    "prod-vs-official": ("prod",),
+    "prod-vs-official": ("prod", "incident", "infra"),
     "summary": tuple(SECTION_TITLES),
 }
 
@@ -261,6 +263,21 @@ class Layout:
         return [r for r in roots if r.is_dir()]
 
 
+    QUEUES = {"N": "prod", "N2": "prod2", "N3": "prod3"}
+
+    def queue_done(self, cond: str, policy: str) -> list[Path]:
+        q = self.QUEUES.get(cond)
+        if not q:
+            return []
+        return sorted((self.nfs / "queue" / q / policy / "done").glob("*.json"))
+
+    def incident_dirs(self) -> list[Path]:
+        out = []
+        for base in (self.art / "official-rec", self.nfs / "stage"):
+            out += [Path(p) for p in glob.glob(str(base / "*" / "*" / "*-vulkanfail-*")) if Path(p).is_dir()]
+        return sorted(out)
+
+
 class Sources:
     """按 (代号, 策略) 取逐局结果表，带缓存与加载统计。"""
 
@@ -270,6 +287,8 @@ class Sources:
 
     def get(self, code: str, policy: str) -> dict | None:
         """返回 {"src": 给 compare.py 的源说明, "table": {(task,seed): rec}, "stats": {...}, "canary": [...]}；无数据 → None。"""
+        if code == "NP":
+            return self.prod(policy, self.lay.keys("full192"))
         k = (code, policy)
         if k not in self._cache:
             try:
@@ -288,68 +307,266 @@ class Sources:
             d = self.lay.official_dir(code, policy)
             if d is None:
                 return None
-            table, stats = C.load_results(str(d))
-            return {"src": str(d), "table": table, "stats": stats, "canary": [], "kind": "official",
+            # 旧官方启动器把 0 步的 Vulkan 设备创建失败也写成 status=error 行（GPU 计算模式事故）：
+            # 这些行不是策略结果，先剔除再交给 compare.py（按原文件顺序拼接，「最后一条终态胜出」语义不变）
+            keep, infra = [], []
+            n_lines = 0
+            for f in C.expand_source(str(d)):
+                for r in read_jsonl_tolerant(f)[0]:
+                    n_lines += 1
+                    if r.get("status") == "error" and is_incident_record(r):
+                        infra.append(infra_row(dict(r, infra=True, seat=f"s{r.get('shard')}"), str(f)))
+                    else:
+                        keep.append(r)
+            mdir = self.lay.out / "merged"
+            mdir.mkdir(parents=True, exist_ok=True)
+            mpath = mdir / f"{code}-{policy}-official.jsonl"
+            mpath.write_text("".join(dumps(r) + "\n" for r in keep), encoding="utf-8")
+            if not keep:
+                return None
+            table, stats = C.load_results(str(mpath))
+            stats.update(lines=n_lines, incident=len(infra), source_dir=str(d))
+            return {"src": str(mpath), "table": table, "stats": stats, "canary": [], "kind": "official", "infra": infra,
                     "rec_roots": [str(r) for r in self.lay.official_rec_roots(code, policy)]}
         return self._load_new(code, policy)
 
     def _load_new(self, cond: str, policy: str) -> dict | None:
-        """合并新接口各席位结果：去掉逐字重复行（搬运期间可能两处各一份）、金丝雀单列、
-        基础设施失败行只在该身份没有正常终态时保留；失效的 rec_dir（节点 /tmp、已搬走的暂存）置空以便按目录索引。"""
+        """合并新接口各席位结果（含队列 done/ 里的终态副本）：
+        - 目录名含 ``-vulkanfail-`` 的事故留档一律不进比较（另在 INCIDENT 部分报告）；
+        - 去重：有 claim_token 按它，否则按记录内容（搬运期间两处各一份、队列 done 副本）；
+        - 金丝雀单列；``infra=True``／``run_blocked`` 的记录永不算策略结果，只进 INFRA 统计；
+        - 失效的 rec_dir（节点 /tmp、已搬走的暂存）置空以便按目录索引。"""
         roots = self.lay.new_roots(cond, policy)
         files: list[Path] = []
         for r in roots:
             files += sorted(Path(p) for p in glob.glob(str(r / "**" / "results*.jsonl"), recursive=True))
-        if not files:
+        files = [f for f in files if not is_incident_path(f)]
+        qdone = self.lay.queue_done(cond, policy)
+        if not files and not qdone:
             return None
         seen: set[str] = set()
         main: dict[tuple[str, int], dict] = {}
-        fallback: dict[tuple[str, int], dict] = {}
         canary: list[dict] = []
-        st = {"files": len(files), "lines": 0, "bad_lines": 0, "exact_dup": 0, "canary": 0, "infra": 0,
-              "dup_final": 0, "other_policy": 0, "attempts": 0}
-        for f in files:
-            rows, bad = read_jsonl_tolerant(f)
-            st["bad_lines"] += bad
-            for rec in rows:
-                st["lines"] += 1
-                if rec.get("policy") not in (None, policy):
-                    st["other_policy"] += 1
-                    continue
-                h = hashlib.sha256(json.dumps(rec, sort_keys=True).encode()).hexdigest()
-                if h in seen:
-                    st["exact_dup"] += 1
-                    continue
-                seen.add(h)
-                st["attempts"] += 1
-                rd = rec.get("rec_dir")
-                if rd and not Path(rd).exists():
-                    rec = dict(rec, rec_dir_stale=rd, rec_dir=None)
-                if rec.get("canary"):
-                    st["canary"] += 1
-                    canary.append(rec)
-                    continue
-                key = (rec.get("task"), int(rec.get("seed", (rec.get("identity") or {}).get("seed", -1))))
-                if rec.get("infra") or rec.get("run_blocked"):
-                    st["infra"] += 1
-                    fallback[key] = rec
-                    continue
-                if key in main:
-                    st["dup_final"] += 1
-                main[key] = rec
-        for key, rec in fallback.items():
-            main.setdefault(key, rec)
+        infra: list[dict] = []
+        st = {"files": len(files), "queue_done_docs": len(qdone), "lines": 0, "bad_lines": 0, "exact_dup": 0, "canary": 0,
+              "infra": 0, "dup_final": 0, "other_policy": 0, "attempts": 0, "incident": 0}
+
+        def records():
+            for f in files:
+                rows, bad = read_jsonl_tolerant(f)
+                st["bad_lines"] += bad
+                for rec in rows:
+                    yield rec, str(f)
+            for f in qdone:
+                try:
+                    yield json.loads(f.read_text(encoding="utf-8")), str(f)
+                except (OSError, json.JSONDecodeError):
+                    st["bad_lines"] += 1
+
+        for rec, fsrc in records():
+            st["lines"] += 1
+            if rec.get("policy") not in (None, policy):
+                st["other_policy"] += 1
+                continue
+            h = dedup_key(rec)
+            if h in seen:
+                st["exact_dup"] += 1
+                continue
+            seen.add(h)
+            st["attempts"] += 1
+            rec = {k: v for k, v in rec.items() if not k.startswith("_")}
+            rd = rec.get("rec_dir")
+            if rd and (not Path(rd).is_dir() or is_incident_path(rd)):
+                # 节点 /tmp 路径已失效：优先同一席位 results.jsonl 旁的 rec/<同名目录>（搬运后的位置）
+                hint = Path(fsrc).parent / "rec" / Path(rd).name
+                rec = dict(rec, rec_dir_stale=rd,
+                           rec_dir=str(hint) if hint.is_dir() and not is_incident_path(hint) and fsrc.endswith(".jsonl") else None)
+            if rec.get("infra") or rec.get("run_blocked"):
+                st["infra"] += 1
+                st["incident"] += is_incident_record(rec)
+                infra.append(infra_row(rec, fsrc))
+                continue
+            if rec.get("canary"):
+                st["canary"] += 1
+                canary.append(rec)
+                continue
+            key = rec_key(rec)
+            if key in main:
+                st["dup_final"] += 1
+            main[key] = rec
+        # 仍无录制目录的：按目录索引补（跳过事故留档、多个候选取步数与结果相符且最新的一个）；
+        # 实在找不到就写一个不存在的占位路径，使 compare.first_divergence 记 missing 而不回退到可能指向失败尝试的索引
+        index = None
+        for key, rec in list(main.items()) + [(rec_key(c), c) for c in canary]:
+            if rec.get("rec_dir"):
+                continue
+            if index is None:
+                index = build_rec_index(roots)
+            d = pick_rec(index.get(key, []), rec.get("steps"))
+            rec["rec_dir"] = str(d) if d else f"MISSING:{rec.get('rec_dir_stale') or key}"
+        return self._finish_merged(cond, policy, main, canary, st, infra, [str(r) for r in roots])
+
+    def _finish_merged(self, cond, policy, main, canary, st, infra, rec_roots) -> dict:
         mdir = self.lay.out / "merged"
         mdir.mkdir(parents=True, exist_ok=True)
         mpath = mdir / f"{cond}-{policy}.jsonl"
         mpath.write_text("".join(dumps(r) + "\n" for r in main.values()), encoding="utf-8")
         (mdir / f"{cond}-{policy}-canary.jsonl").write_text("".join(dumps(r) + "\n" for r in canary), encoding="utf-8")
+        base = {"stats": st, "canary": canary, "kind": "new", "rec_roots": rec_roots, "infra": infra}
         if not main:
-            return {"src": None, "table": {}, "stats": st, "canary": canary, "kind": "new", "rec_roots": [str(r) for r in roots]}
+            return {"src": None, "table": {}, **base}
         table, lstats = cmp_mod().load_results(str(mpath))
         st.update({"records": lstats["records"], "non_final": lstats["non_final"]})
-        return {"src": str(mpath), "table": table, "stats": st, "canary": canary, "kind": "new",
-                "rec_roots": [str(r) for r in roots]}
+        return {"src": str(mpath), "table": table, **base}
+
+    def prod(self, policy: str, keys: list[tuple[str, int]]) -> dict | None:
+        """正式跑法（5.2）逐身份结果：N 与补跑队列 N2、N3 合并，每身份取非 infra 的真实结果；
+        多个来源都有真实结果则标冲突（保留编号最小的来源，即 N 优先）。"""
+        ck = ("NP", policy)
+        if ck in self._cache:
+            return self._cache[ck]
+        codes = ("N", "N2", "N3")
+        srcs = {c: self.get(c, policy) for c in codes}
+        if all(v is None for v in srcs.values()):
+            self._cache[ck] = None
+            return None
+        tabs = {c: (srcs[c] or {}).get("table", {}) for c in codes}
+        raw: dict[tuple[str, int], dict] = {}
+        origin: dict[tuple[str, int], str] = {}
+        for c in reversed(codes):  # 后写者胜：N 最后写，冲突时保留 N
+            src = srcs[c]
+            if src and src.get("src"):
+                for r in read_jsonl_tolerant(Path(src["src"]))[0]:
+                    raw[rec_key(r)] = r
+                    origin[rec_key(r)] = c
+        infra_n = {(i["task"], i["seed"]) for i in (srcs["N"] or {}).get("infra", [])}
+        conflicts = sorted(k for k in raw if sum(k in tabs[c] for c in codes) > 1)
+        merge = {f"from_{c}": sum(v == c for v in origin.values()) for c in codes}
+        merge.update({"poisoned_replaced": len({k for k in infra_n if k in raw and origin[k] != "N"}),
+                      "still_missing": len([k for k in keys if k not in raw]), "conflicts": len(conflicts),
+                      "conflict_keys": [f"{k[0]}/{k[1]}" for k in conflicts],
+                      "poisoned_unreplaced": sorted(f"{k[0]}/{k[1]}" for k in infra_n if k not in raw)})
+        st = {"attempts": 0, "canary": 0}
+        roots = [r for c in codes for r in (srcs[c] or {}).get("rec_roots", [])]
+        out = self._finish_merged("NP", policy, raw, [], st, [], roots)
+        out["merge"] = merge
+        self._cache[ck] = out
+        return out
+
+
+def histogram(items) -> str:
+    """错误类型直方图：类型:次数;…（按次数降序）。"""
+    c: dict[str, int] = {}
+    for x in items:
+        c[x] = c.get(x, 0) + 1
+    return ";".join(f"{k}:{v}" for k, v in sorted(c.items(), key=lambda t: (-t[1], t[0]))) or "none"
+
+
+def rec_steps(d: Path) -> int | None:
+    """录制目录 summary.json 里记下的终局步数（录制器 close(summary) 写入）。"""
+    try:
+        doc = json.loads((Path(d) / "summary.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    st = (doc.get("summary") or {}).get("steps")
+    return int(st) if isinstance(st, (int, float)) else None
+
+
+def build_rec_index(roots) -> dict[tuple[str, int], list[Path]]:
+    """扫描录制根目录（排序、确定性），按 (task, seed) 收集全部候选录制目录；跳过 *-vulkanfail-* 事故留档。"""
+    out: dict[tuple[str, int], list[Path]] = {}
+    for root in roots:
+        for m in sorted(glob.glob(str(Path(root) / "**" / "meta.json"), recursive=True)):
+            d = Path(m).parent
+            if is_incident_path(d) or not (d / "frames-front.jsonl").exists():
+                continue
+            try:
+                meta = json.loads(Path(m).read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if meta.get("task") is None or meta.get("seed") is None:
+                continue
+            out.setdefault((meta["task"], int(meta["seed"])), []).append(d)
+    return out
+
+
+def pick_rec(cands: list[Path], steps: Any = None) -> Path | None:
+    """多个候选时：先留 summary 步数与结果记录相符的，再取最新（meta.created，其次目录 mtime，再按路径名定序）。"""
+    cands = [c for c in cands if not is_incident_path(c)]
+    if not cands:
+        return None
+    if steps is not None:
+        match = [c for c in cands if rec_steps(c) == int(steps)]
+        if match:
+            cands = match
+
+    def order(c: Path):
+        try:
+            created = json.loads((c / "meta.json").read_text(encoding="utf-8")).get("created") or ""
+        except (OSError, json.JSONDecodeError):
+            created = ""
+        try:
+            mt = c.stat().st_mtime
+        except OSError:
+            mt = 0.0
+        return (str(created), mt, str(c))
+
+    return max(cands, key=order)
+
+
+def is_incident_path(p: Path | str) -> bool:
+    """事故留档目录（如 s-ding-vulkanfail-0540）：保留原样、不进任何比较。"""
+    return any("-vulkanfail-" in part for part in Path(p).parts)
+
+
+def rec_key(rec: dict) -> tuple[str, int]:
+    return (rec.get("task"), int(rec.get("seed", (rec.get("identity") or {}).get("seed", -1))))
+
+
+def dedup_key(rec: dict) -> str:
+    if rec.get("claim_token"):
+        return "tok:" + str(rec["claim_token"])
+    body = {k: v for k, v in rec.items() if not k.startswith("_")}
+    return "sha:" + hashlib.sha256(json.dumps(body, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def error_type(rec: dict) -> str:
+    """infra 记录的错误类型：infra_reason + 错误文本最后一行的异常名与前 60 字。"""
+    import re
+
+    err = str(rec.get("error") or rec.get("env_exception") or "")
+    lines = [l.strip() for l in err.splitlines() if l.strip()]
+    last = lines[-1] if lines else "none"
+    m = re.search(r"([A-Za-z_][\w.]*(?:Error|Exception|Failed))\b[:]?\s*(.*)", last)
+    body = (m.group(1) + ":" + m.group(2)) if m else last
+    return f"{rec.get('infra_reason') or 'n/a'}|{body[:60]}".replace(" ", "_").replace(";", ",")
+
+
+#: §3.4 基础设施故障特征（小写匹配错误文本）
+INFRA_SIGNATURES = ("svulkan2", "vulkan", "exclusive", "createdeviceunique", "connectionrefused", "websocket",
+                    "connection reset", "out of memory", "cuda")
+
+
+def infra_signature(rec: dict) -> str | None:
+    """错误文本里第一个命中的 §3.4 基础设施特征（按 INFRA_SIGNATURES 顺序）；无则 None。"""
+    err = (str(rec.get("error") or "") + " " + str(rec.get("env_exception") or "")).lower()
+    return next((sig for sig in INFRA_SIGNATURES if sig in err), None)
+
+
+def is_incident_record(rec: dict) -> bool:
+    """0 步、环境没建成的基础设施失败（GPU 计算模式事故等）：
+    新接口 infra=True 记录或旧官方 status=error 行，steps 为 0／缺失，且 infra_reason=env_build 或命中 §3.4 特征。"""
+    if not (rec.get("infra") or rec.get("status") == "error"):
+        return False
+    if rec.get("steps"):
+        return False
+    return rec.get("infra_reason") == "env_build" or infra_signature(rec) is not None
+
+
+def infra_row(rec: dict, src: str) -> dict:
+    k = rec_key(rec)
+    return {"task": k[0], "seed": k[1], "seat": str(rec.get("seat")), "cond": rec.get("cond"), "steps": rec.get("steps"),
+            "type": error_type(rec), "incident": is_incident_record(rec), "sig": infra_signature(rec) or "none", "src": src}
 
 
 def coverage(src: dict | None, keys: list[tuple[str, int]]) -> tuple[int, int]:
@@ -406,26 +623,23 @@ class Summary:
                 "layer_equal": ",".join(f"{k}:{v}" for k, v in s["layer_equal"].items()),
                 "first_diff": s["first_diff"], "state_max_abs": s.get("state_max_abs"), "image_mad": s.get("image_mad"),
                 "image_mad_unit": s.get("image_mad_unit"), "obs_max_abs": s.get("obs_max_abs"),
-                "identities_with_diff": s.get("identities_with_diff"), "missing_in_a": len(s.get("missing_in_a", [])),
+                "identities_with_diff": s.get("identities_with_diff"),
+                "name_only": sum((s.get("name_only") or {}).values()), "key_set_diff": s.get("key_set_diff"),
+                "missing_in_a": len(s.get("missing_in_a", [])),
                 "missing_in_b": len(s.get("missing_in_b", [])), "unmeasured": s.get("unmeasured"),
                 "source": "reused" if fresh else "recomputed", "partial": "yes" if min(na, nb) < need else "no"})
             self.rep.add(S, "ENV_DIGEST_PARITY", "INFO", line, {"json": str(path)})
 
     # ------------------------------------------------------------------ 环境栈
     def _official_rec_index(self, run: str, policy: str) -> dict[tuple[str, int], Path]:
-        out: dict[tuple[str, int], Path] = {}
-        for root in self.lay.official_rec_roots(run, policy):
-            for m in sorted(glob.glob(str(root / "**" / "meta.json"), recursive=True)):
-                d = Path(m).parent
-                if not (d / "frames-front.jsonl").exists():
-                    continue
-                try:
-                    meta = json.loads(Path(m).read_text(encoding="utf-8"))
-                except (OSError, json.JSONDecodeError):
-                    continue
-                if meta.get("task") is None or meta.get("seed") is None:
-                    continue
-                out[(meta["task"], int(meta["seed"]))] = d
+        """官方录制按身份建索引：跳过事故留档；同一身份多份（如 s3 与 s3-resume）取步数与计入的结果相符且最新的一份。"""
+        table = (self.src.get(run, policy) or {}).get("table", {})
+        idx = build_rec_index(self.lay.official_rec_roots(run, policy))
+        out = {}
+        for k, cands in idx.items():
+            d = pick_rec(cands, (table.get(k) or {}).get("steps"))
+            if d is not None:
+                out[k] = d
         return out
 
     def _decode_prefix(self, mkv: Path, n: int) -> list[np.ndarray] | None:
@@ -471,9 +685,10 @@ class Summary:
             n = min(len(off), len(new))
             sha_eq = sum(off[i]["sha256"] == new_sha[i] for i in range(n))
             init_eq = off[-1]["sha256"] == new_sha[-1] if off else False
-            s = {"n_off": len(off), "n_new": len(new), "count_equal": len(off) == len(new), "sha_equal": int(sha_eq),
-                 "sha_compared": n, "init_sha_equal": bool(init_eq), "mad_max": 0.0 if sha_eq == n else None,
-                 "mad_mean": 0.0 if sha_eq == n else None, "init_mad": 0.0 if init_eq else None}
+            same_n = len(off) == len(new)
+            s = {"n_off": len(off), "n_new": len(new), "count_equal": same_n, "sha_equal": int(sha_eq),
+                 "sha_compared": n, "init_sha_equal": bool(init_eq), "mad_max": 0.0 if (same_n and sha_eq == n) else None,
+                 "mad_mean": 0.0 if (same_n and sha_eq == n) else None, "init_mad": 0.0 if init_eq else None}
             if (sha_eq < n or not init_eq) and self.decode and off:
                 encs = [r.get("enc") for r in off]
                 if all(e is not None for e in encs):
@@ -482,8 +697,9 @@ class Summary:
                         imgs = [dec[e] for e in encs]
                         mads = [float(np.abs(imgs[i].astype(np.int16) - new[i].astype(np.int16)).mean()) for i in range(n)
                                 if imgs[i].shape == new[i].shape]
-                        s["mad_max"] = max(mads) if mads else None
-                        s["mad_mean"] = float(np.mean(mads)) if mads else None
+                        # 帧数不同时逐帧对齐无意义：只报初始帧 MAD，逐帧 MAD 记 None（计入 unmeasured）
+                        s["mad_max"] = (max(mads) if mads else None) if same_n else None
+                        s["mad_mean"] = (float(np.mean(mads)) if mads else None) if same_n else None
                         if imgs[-1].shape == new[-1].shape:
                             s["init_mad"] = float(np.abs(imgs[-1].astype(np.int16) - new[-1].astype(np.int16)).mean())
             if s["mad_max"] is None:
@@ -563,13 +779,15 @@ class Summary:
         bn = Path(str(rec.get("video") or "")).name
         if not bn:
             return None
-        cands = [Path(rec["video"])]
+        first = Path(rec["video"])
+        if first.is_file() and not is_incident_path(first):
+            return first
+        cands = []
         for root in self.lay.official_rec_roots(run, policy):
-            cands += [Path(p) for p in glob.glob(str(root / "**" / bn), recursive=True)]
-        for c in cands:
-            if c.is_file():
-                return c
-        return None
+            cands += [Path(p) for p in sorted(glob.glob(str(root / "**" / bn), recursive=True))]
+        cands = [c for c in cands if c.is_file() and not is_incident_path(c)]
+        # 多份（如原片与续跑片）取最新
+        return max(cands, key=lambda c: (c.stat().st_mtime, str(c))) if cands else None
 
     @staticmethod
     def _video_frames_sha(path: Path) -> list[str]:
@@ -776,26 +994,49 @@ class Summary:
                 self._vs_e0(S, cond, pol, small, "EVAL_VS_E0")
 
     # ------------------------------------------------------------------ 5.2 / 第 6 步
+    def _queue_lines(self, S: str, pol: str) -> None:
+        """两个队列（prod 原队列、prod2 补跑队列）各一行 QUEUE_CLAIM；另报 infra 终态（事故毒化）个数。"""
+        for qname in ("prod", "prod2", "prod3"):
+            qdir = self.lay.nfs / "queue" / qname / pol
+            if not (qdir / "order.json").exists():
+                if qname == "prod":
+                    self.rep.pending(S, "QUEUE_CLAIM", {"queue": qname, "policy": pol, "reason": "队列未建"})
+                continue
+            st = cq_mod().ClaimQueue(qdir).check()
+            poisoned = 0
+            for f in (qdir / "done").glob("*.json"):
+                try:
+                    poisoned += bool(json.loads(f.read_text(encoding="utf-8")).get("infra"))
+                except (OSError, json.JSONDecodeError):
+                    pass
+            st["infra_terminal"] = poisoned
+            line = cq_mod().check_line(st) + f" queue={qname} policy={pol} infra_terminal={poisoned}"
+            if st["done"] < st["total"] and not self.final:
+                self.rep.add(S, "QUEUE_CLAIM", "PENDING", "QUEUE_CLAIM=PENDING " + line.split(" ", 1)[1], st)
+            else:
+                self.rep.add(S, "QUEUE_CLAIM", "PASS" if st["dup"] == 0 and st["missing"] == 0 else "FAIL", line, st)
+
     def sec_prod(self) -> None:
         S = "prod"
         C = cmp_mod()
         full = self.lay.keys("full192")
-        qroot = self.lay.nfs / "queue" / "prod"
         for pol in POLICIES:
-            # 队列核对
-            if (qroot / pol / "order.json").exists():
-                q = cq_mod().ClaimQueue(qroot / pol)
-                st = q.check()
-                line = cq_mod().check_line(st) + f" policy={pol}"
-                if st["done"] < st["total"] and not self.final:
-                    self.rep.add(S, "QUEUE_CLAIM", "PENDING", "QUEUE_CLAIM=PENDING " + line.split(" ", 1)[1], st)
-                else:
-                    self.rep.add(S, "QUEUE_CLAIM", "PASS" if st["dup"] == 0 and st["missing"] == 0 else "FAIL", line, st)
+            self._queue_lines(S, pol)
+            np_ = self.src.get("NP", pol)
+            if np_ is None:
+                self.rep.pending(S, "PROD_MERGE", {"policy": pol, "reason": "N/N2 均无结果"})
             else:
-                self.rep.pending(S, "QUEUE_CLAIM", {"policy": pol, "reason": "队列未建"})
+                mg = np_["merge"]
+                st = "INFO" if mg["conflicts"] == 0 else "FAIL"
+                self.rep.add(S, "PROD_MERGE", st, kv_line("PROD_MERGE", st, {
+                    "policy": pol, "from_N": mg["from_N"], "from_N2": mg["from_N2"], "from_N3": mg["from_N3"],
+                    "poisoned_replaced": mg["poisoned_replaced"],
+                    "still_missing": mg["still_missing"], "conflicts": mg["conflicts"],
+                    "poisoned_unreplaced": len(mg["poisoned_unreplaced"])}), mg)
             # 正式跑法 vs 官方各参照
-            ok, have = self._ready([("N", pol), ("E0", pol), ("O1", pol), ("O2", pol)], full)
-            srcs = {c: self.src.get(c, pol) for c in ("N", "E0", "O1", "O2")}
+            ok, have = self._ready([("NP", pol), ("E0", pol), ("O1", pol), ("O2", pol)], full)
+            have = have.replace("NP:", "N+N2:")
+            srcs = {c: self.src.get(c, pol) for c in ("NP", "E0", "O1", "O2")}
             if not ok and not self.partial and not self.final:
                 self.rep.pending(S, "PROD_VS_OFFICIAL", {"policy": pol, "have": have})
                 self.rep.pending(S, "RELATIVE_ACCEPT", {"policy": pol, "have": have})
@@ -806,13 +1047,13 @@ class Summary:
             else:
                 out = self.detail / f"prod-vs-official-{pol}.json"
                 refs = [f"重跑一={srcs['O1']['src']}", f"历史={srcs['E0']['src']}", f"重跑二={srcs['O2']['src']}"]
-                _, lines = call_cmd(C.cmd_prod_vs_official, prod=srcs["N"]["src"], ref=refs, policy=pol,
+                _, lines = call_cmd(C.cmd_prod_vs_official, prod=srcs["NP"]["src"], ref=refs, policy=pol,
                                     identities=str(self.lay.full192), out=str(out))
                 tag = "" if ok else " partial=yes"
                 self.rep.lines(S, "PROD_VS_OFFICIAL", [l + tag for l in lines if l.startswith("PROD_VS")], {"json": str(out)})
                 out2 = self.detail / f"relative-accept-{pol}.json"
                 rc, lines = call_cmd(C.cmd_relative_accept, e0=srcs["E0"]["src"], o1=srcs["O1"]["src"], o2=srcs["O2"]["src"],
-                                     prod=srcs["N"]["src"], identities=str(self.lay.full192), out=str(out2), policy=pol)
+                                     prod=srcs["NP"]["src"], identities=str(self.lay.full192), out=str(out2), policy=pol)
                 ra_lines = [l for l in lines if l.startswith("RELATIVE_ACCEPT")]
                 self.rep.lines(S, "RELATIVE_ACCEPT", [l + tag for l in ra_lines], {"json": str(out2)},
                                status="BLOCKED" if rc == 2 else "INFO")
@@ -824,14 +1065,15 @@ class Summary:
                     "official_max_ci_half_width_pp": ra.get("official_max_ci_half_width_pp"),
                     "rule": "主比较CI半宽>2×官方3对最大半宽"}))
             # 金丝雀：不进 192 比较，单独与同身份正式局、官方重跑一、官方历史成绩比
-            n = srcs["N"]
-            if not n or not n["canary"]:
+            canaries = [c for code in ("N", "N2", "N3") for c in (self.src.get(code, pol) or {}).get("canary", [])]
+            if not canaries:
                 self.rep.pending(S, "CANARY", {"policy": pol, "reason": "无金丝雀记录"})
             else:
                 rows = []
-                for c in n["canary"]:
-                    k = (c.get("task"), int(c.get("seed", -1)))
-                    base = {code: (self.src.get(code, pol) or {"table": {}})["table"].get(k) for code in ("N", "O1", "E0")}
+                for c in canaries:
+                    k = rec_key(c)
+                    base = {code: (self.src.get(code, pol) or {"table": {}})["table"].get(k) for code in ("NP", "O1", "E0")}
+                    base["N"] = base.pop("NP")
                     rows.append({"identity": f"{k[0]}/{k[1]}", "seat": c.get("seat"), "gpu": c.get("gpu_name"), "status": c.get("status"),
                                  "steps": c.get("steps"),
                                  **{f"{code}_status": (b or {}).get("status") for code, b in base.items()},
@@ -849,6 +1091,62 @@ class Summary:
                     "status_eq_N": eq("N", "status"), "steps_eq_N": eq("N", "steps"), "status_eq_O1": eq("O1", "status"),
                     "status_eq_E0": eq("E0", "status")}), {"json": str(path)})
 
+    # ------------------------------------------------------------------ INFRA / 事故
+    def sec_infra(self) -> None:
+        """infra=True 的记录永不算策略结果；按条件／席位计数并给错误类型直方图。"""
+        S = "infra"
+        for code in ("O1", "O2", "R1", "S3") + E_CONDS + ("N", "N2", "N3"):
+            for pol in POLICIES:
+                s = self.src.get(code, pol)
+                if not s:
+                    continue
+                by_seat: dict[str, list[dict]] = {}
+                for r in s.get("infra", []):
+                    by_seat.setdefault(r["seat"], []).append(r)
+                if not by_seat:
+                    self.rep.add(S, "INFRA", "INFO", kv_line("INFRA", "INFO", {"cond": code, "policy": pol, "seat": "all", "n": 0}))
+                for seat, rs in sorted(by_seat.items()):
+                    self.rep.add(S, "INFRA", "INFO", kv_line("INFRA", "INFO", {
+                        "cond": code, "policy": pol, "seat": seat, "n": len(rs), "zero_step": sum(not r["steps"] for r in rs),
+                        "incident": sum(r["incident"] for r in rs), "identities": len({(r["task"], r["seed"]) for r in rs}),
+                        "sigs": histogram(r.get("sig", "none") for r in rs),
+                        "hist": histogram(r["type"] for r in rs)}), rs)
+
+    def sec_incident(self) -> None:
+        """GPU 计算模式事故：*-vulkanfail-* 留档目录（不进比较）与队列里的 infra 终态（毒化）。"""
+        S = "incident"
+        dirs = self.lay.incident_dirs()
+        for d in dirs:
+            rows = [r for f in sorted(glob.glob(str(d / "**" / "results*.jsonl"), recursive=True)) for r in read_jsonl_tolerant(Path(f))[0]]
+            inf = [r for r in rows if r.get("infra") or r.get("run_blocked")]
+            parts = d.parts
+            self.rep.add(S, "INCIDENT", "INFO", kv_line("INCIDENT", "INFO", {
+                "dir": d.name, "cond": parts[-3], "policy": parts[-2], "records": len(rows), "real": len(rows) - len(inf),
+                "infra": len(inf), "incident_0step": sum(is_incident_record(r) for r in inf),
+                "hist": histogram(error_type(r) for r in inf), "compared": "excluded"}), {"path": str(d)})
+        for pol in POLICIES:
+            mg = (self.src.get("NP", pol) or {}).get("merge") or {}
+            for qname in ("prod", "prod2", "prod3"):
+                qdir = self.lay.nfs / "queue" / qname / pol / "done"
+                poisoned = []
+                for f in sorted(qdir.glob("*.json")):
+                    try:
+                        doc = json.loads(f.read_text(encoding="utf-8"))
+                    except (OSError, json.JSONDecodeError):
+                        continue
+                    if doc.get("infra"):
+                        poisoned.append(doc)
+                if not poisoned:
+                    continue
+                fields = {"queue": qname, "policy": pol, "infra_terminal": len(poisoned),
+                          "seats": ",".join(sorted({str(d.get("seat")) for d in poisoned})),
+                          "zero_step": sum(not d.get("steps") for d in poisoned),
+                          "incident": sum(is_incident_record(d) for d in poisoned)}
+                if qname == "prod":
+                    fields.update(replaced=mg.get("poisoned_replaced"), unreplaced=len(mg.get("poisoned_unreplaced", [])))
+                fields["hist"] = histogram(error_type(d) for d in poisoned)
+                self.rep.add(S, "INCIDENT", "INFO", kv_line("INCIDENT", "INFO", fields))
+
     # ------------------------------------------------------------------ 测速
     def sec_speed(self) -> None:
         S = "speed"
@@ -863,7 +1161,7 @@ class Summary:
                                               "wall_s": r.get("wall_s")}} for r in rows]
             summ = C.summarize_speed(recs, "cell").get(cell, {})
             self._speed_line(S, "ENV_SPEED", {"cell": cell, "rows": len(rows)}, summ, ENV_SPEED_KEYS)
-        for code in ("S3",) + E_CONDS + ("N",):
+        for code in ("S3",) + E_CONDS + ("N", "N2", "N3"):
             for pol in POLICIES:
                 s = self.src.get(code, pol)
                 if not s or not s["table"]:
@@ -893,12 +1191,14 @@ class Summary:
         S = "budget"
         rows = []
 
-        def item(label: str, attempts: int, unique: int, est: str = "") -> None:
+        def item(label: str, attempts: int, unique: int, est: str = "", incident: int = 0) -> None:
+            """attempts = 轨迹尝试（环境建成的局）；incident = 0 步基础设施失败（环境未建成），按 §3.4 计入该项重试。"""
             cap, rcap = next((c, r) for l, c, r in BUDGET_CAPS if l == label)
-            retries = max(0, attempts - unique)
-            rows.append({"item": label, "attempts": attempts, "unique": unique, "retries": retries, "cap": cap,
-                         "retry_cap": rcap if rcap is not None else f"共用{BUDGET_OTHER_RETRY_CAP}", "est": est,
-                         "over": attempts > cap + (rcap or 0)})
+            retries = max(0, attempts - unique) + incident
+            rows.append({"item": label, "attempts": attempts, "unique": unique, "incident": incident, "retries": retries, "cap": cap,
+                         "retry_cap": rcap if rcap is not None else f"共用{BUDGET_OTHER_RETRY_CAP}", "shared": rcap is None,
+                         "est": est, "over": attempts > cap + (rcap or 0),
+                         "retry_over": (retries > rcap) if rcap is not None else None})
 
         # 2.1：各格 rows.jsonl 全部行（含出错行）+ 开发期冒烟（估计）
         att = uniq = 0
@@ -914,50 +1214,84 @@ class Summary:
         n_nr = len(read_jsonl_tolerant(nr)[0]) if nr.exists() else 0
         item("2.2 录制器验证", n_nr, min(n_nr, 1))
 
-        def off_counts(codes: tuple) -> tuple[int, int]:
-            a = u = 0
+        def off_counts(codes: tuple) -> tuple[int, int, int]:
+            a = u = inc = 0
             for code in codes:
                 for pol in POLICIES:
                     s = self.src.get(code, pol)
                     if s:
-                        a += s["stats"]["lines"]
+                        a += s["stats"]["lines"] - s["stats"].get("incident", 0)
                         u += len(s["table"])
-            return a, u
+                        inc += s["stats"].get("incident", 0)
+            return a, u, inc
 
-        a, u = off_counts(("O1", "O2"))
-        item("2.3 官方重跑两遍", a, u, "按逐局文件行数;启动器内部整遍重评未落行的不计(估)")
-        a, u = off_counts(("R1",))
-        item("2.4 本机旧官方小样本", a, u, "同上(估)")
+        a, u, inc = off_counts(("O1", "O2"))
+        item("2.3 官方重跑两遍", a, u, "按逐局文件行数;启动器内部整遍重评未落行的不计(估)", inc)
+        a, u, inc = off_counts(("R1",))
+        item("2.4 本机旧官方小样本", a, u, "同上(估)", inc)
 
-        def new_counts(codes: tuple) -> tuple[int, int, int]:
-            a = u = c = 0
+        # 事故留档目录（不进比较）：真实局计入所属条目的轨迹尝试，infra 行计入该条目的重试
+        dir_real: dict[str, int] = {}
+        dir_infra: dict[str, int] = {}
+        dir_incident = 0
+        for d in self.lay.incident_dirs():
+            cond = d.parts[-3]
+            grp = "5.2" if cond.startswith("N") else ("3.1" if cond == "S3" else "5.1")
+            for f in sorted(glob.glob(str(d / "**" / "results*.jsonl"), recursive=True)):
+                for r in read_jsonl_tolerant(Path(f))[0]:
+                    if r.get("infra") or r.get("run_blocked"):
+                        dir_infra[grp] = dir_infra.get(grp, 0) + 1
+                        dir_incident += is_incident_record(r)
+                    elif not r.get("canary"):
+                        dir_real[grp] = dir_real.get(grp, 0) + 1
+
+        def new_counts(codes: tuple) -> tuple[int, int, int, int]:
+            """轨迹尝试 = 去重后全部记录 − 金丝雀 − 0 步事故记录（环境没建成，不算轨迹尝试，计入重试）。"""
+            a = u = c = inc = 0
             for code in codes:
                 for pol in POLICIES:
                     s = self.src.get(code, pol)
                     if s:
-                        a += s["stats"]["attempts"] - s["stats"]["canary"]
+                        a += s["stats"]["attempts"] - s["stats"]["canary"] - s["stats"].get("incident", 0)
                         u += len(s["table"])
                         c += s["stats"]["canary"]
-            return a, u, c
+                        inc += s["stats"].get("incident", 0)
+            return a, u, c, inc
 
-        a, u, _ = new_counts(("S3",))
-        item("3.1 跑通", a, u, "中断未写结果的尝试不计(估)")
-        a, u, _ = new_counts(E_CONDS)
-        item("5.1 换条件评估", a, u)
-        a, u, c = new_counts(("N",))
-        item("5.2 正式跑法", a, u)
+        a, u, _, inc = new_counts(("S3",))
+        item("3.1 跑通", a + dir_real.get("3.1", 0), u, "中断未写结果的尝试不计(估)", inc + dir_infra.get("3.1", 0))
+        a, u, _, inc = new_counts(E_CONDS)
+        item("5.1 换条件评估", a + dir_real.get("5.1", 0), u,
+             f"含事故留档目录真实局 {dir_real.get('5.1', 0)}、infra {dir_infra.get('5.1', 0)}", inc + dir_infra.get("5.1", 0))
+        a, u, c, inc = new_counts(("N", "N2", "N3"))
+        item("5.2 正式跑法", a + dir_real.get("5.2", 0), u, "含补跑队列 N2、N3", inc + dir_infra.get("5.2", 0))
         item("5.2 金丝雀", c, c)
+        shared = sum(r["retries"] for r in rows if r["shared"])
+        for r in rows:
+            if r["shared"]:
+                r["retry_over"] = shared > BUDGET_OTHER_RETRY_CAP
         total = sum(r["attempts"] for r in rows)
+        inc_all = sum(r["incident"] for r in rows)
+        rows.append({"item": "incident_infra_attempts", "attempts": 0, "unique": 0, "incident": inc_all, "retries": inc_all,
+                     "cap": "n/a", "retry_cap": "见各项", "shared": False, "over": False, "retry_over": None,
+                     "est": f"0 步、环境未建成（GPU 计算模式事故等），不计轨迹尝试、已计入各项重试；其中事故留档目录内 {dir_incident}"})
         for r in rows:
             self.rep.add(S, "BUDGET", "INFO", kv_line("BUDGET", "INFO", {
-                "item": r["item"].replace(" ", "_"), "attempts": r["attempts"], "unique": r["unique"], "retries": r["retries"],
-                "cap": r["cap"], "retry_cap": r["retry_cap"], "over": r["over"], "est": r["est"] or "none"}))
-        self.rep.add(S, "BUDGET", "INFO", kv_line("BUDGET_TOTAL", "INFO", {"attempts": total, "cap": BUDGET_TOTAL_CAP,
-                                                                           "over": total > BUDGET_TOTAL_CAP}))
+                "item": r["item"].replace(" ", "_"), "attempts": r["attempts"], "unique": r["unique"], "incident": r["incident"],
+                "retries": r["retries"], "cap": r["cap"], "retry_cap": r["retry_cap"], "over": r["over"],
+                "retry_over": "n/a" if r["retry_over"] is None else r["retry_over"], "est": r["est"] or "none"}))
+        retry_over_items = [r["item"].replace(" ", "_") for r in rows if r["retry_over"]]
+        self.rep.add(S, "BUDGET", "INFO", kv_line("BUDGET_TOTAL", "INFO", {
+            "trajectory_attempts": total, "cap": BUDGET_TOTAL_CAP, "over": total > BUDGET_TOTAL_CAP,
+            "incident_infra_attempts": inc_all, "all_attempts": total + inc_all,
+            "attempts_over_items": ",".join(r["item"].replace(" ", "_") for r in rows if r["over"]) or "none",
+            "retry_over_items": ",".join(retry_over_items) or "none", "shared_retries": shared,
+            "shared_retry_cap": BUDGET_OTHER_RETRY_CAP}))
         self.extra["budget"] = rows
 
     # ------------------------------------------------------------------ 主流程
-    SECTIONS = ("env_parity", "env_stack", "observer", "official", "step3", "replay", "eval_conditions", "prod", "speed", "budget")
+    SECTIONS = ("env_parity", "env_stack", "observer", "official", "step3", "replay", "eval_conditions", "prod", "infra", "incident",
+                "speed", "budget")
 
     def run(self, sections: tuple[str, ...] | None = None) -> dict:
         for sec in sections or self.SECTIONS:
@@ -1009,10 +1343,12 @@ class Summary:
                 parts.append(f"判定行 {len(es)} 条，其中待定（输入未齐）{n_pend} 条" + (f"、汇总出错 {n_err} 条" if n_err else "") + "。")
                 parts.append("")
                 if sec == "budget" and doc.get("budget"):
-                    parts += ["| 条目 | 轨迹尝试 | 去重身份 | 重试 | 上限 | 重试上限 | 超限 | 说明 |", "|---|---:|---:|---:|---:|---|---|---|"]
+                    parts += ["| 条目 | 轨迹尝试 | 去重身份 | 0 步事故 | 重试 | 上限 | 重试上限 | 尝试超限 | 重试超限 | 说明 |",
+                              "|---|---:|---:|---:|---:|---:|---|---|---|---|"]
+                    yn = lambda v: "—" if v is None else ("是" if v else "否")  # noqa: E731
                     for r in doc["budget"]:
-                        parts.append(f"| {r['item']} | {r['attempts']} | {r['unique']} | {r['retries']} | {r['cap']} | {r['retry_cap']} | "
-                                     f"{'是' if r['over'] else '否'} | {r['est'] or '—'} |")
+                        parts.append(f"| {r['item']} | {r['attempts']} | {r['unique']} | {r['incident']} | {r['retries']} | {r['cap']} | "
+                                     f"{r['retry_cap']} | {yn(r['over'])} | {yn(r['retry_over'])} | {r['est'] or '—'} |")
                     parts.append("")
                 parts += ["```text"] + [e["line"] for e in es] + ["```", ""]
                 details = sorted({(e.get("data") or {}).get("json") for e in es if isinstance(e.get("data"), dict) and (e["data"].get("json"))})
