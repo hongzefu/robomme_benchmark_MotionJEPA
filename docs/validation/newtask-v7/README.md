@@ -153,6 +153,26 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v7 first_divergence_n=13 first_divergence_m
   XHARD0_EVAL_PARITY=INFO policy=mmevla compared=192 status_diff=11 steps_diff=71
   ```
   SimpleMemVLA 两入口成败逐局相同（官方路线 141/192 = v7 路线 141/192，按任务也逐项相同）；MME 50 对 51、11 局翻转且方向对称（5 成→败、5 败→成、1 超时→成），原因未坐实。更正：MME 服务端每局 `reset` 把采样随机数重置为固定种子（`policy.py::reset`，`jax.random.key(seed)`），「随机数跨局消耗」不成立。候选：(A) GPU 渲染／JAX 数值在不同节点上的微小不确定性被 MME 放大（SimpleMemVLA 也有 16 局步数不同，说明链路存在数值不确定性）；(B) 两个 MME 分支（`official-xhard0` 与 `testhard-eval-v7`）客户端代码不同，喂给策略的输入有系统差别。区分办法：两入口各把这 11 局重跑一次（22 局，官方路线重评预算内），同入口重跑即翻转为 A，同入口稳定复现而两入口仍不同为 B。`hard_regression.py xhard0-eval-parity` 本轮按两策略实际结果文件名与官方记录无 `episode` 字段的事实改写了读入（`--official`／`--hard` 可给多个文件或目录）。
+- **11 局同卡重跑对照（2026-09-29 22:50～23:07，12.248）**：新占位 job 62582190（4 CPU／32G／1 A40，gl1525），同一张 A40（`GPU-78555493…`）上先官方入口、后 hard 入口串行各跑一次：11 局 × 2 入口 = 22 局，两段 `EVAL_RC=0`、`unresolved_errors=0`。子集清单由原清单按 (task, seed) 筛出（`RERUN11_MANIFEST=PASS official=11 hard=11 mismatch=0`），两入口代码为原评估同一 HEAD（官方 `927c56d`、hard `4f9e40f`，工作树无改动），server 同为 `--seed=7`、同一 checkpoint。四列对照（状态／步数）：
+
+  | task | seed | 原官方 | 新官方 | 原 hard | 新 hard |
+  |---|---|---|---|---|---|
+  | ButtonUnmaskSwap | 571100 | success/458 | fail/750 | fail/757 | success/458 |
+  | MoveCube | 640300 | timeout/1301 | timeout/1301 | success/207 | success/207 |
+  | PickXtimes | 511100 | success/879 | fail/736 | fail/737 | fail/737 |
+  | StopCube | 524300 | fail/95 | fail/96 | success/93 | fail/95 |
+  | SwingXtimes | 532300 | success/538 | success/538 | fail/437 | fail/437 |
+  | VideoPlaceButton | 600700 | fail/178 | fail/178 | success/204 | fail/178 |
+  | VideoPlaceOrder | 614701 | fail/194 | success/178 | success/176 | success/176 |
+  | VideoUnmask | 562300 | fail/378 | success/283 | success/284 | fail/378 |
+  | VideoUnmask | 564700 | success/293 | fail/296 | fail/349 | fail/415 |
+  | VideoUnmaskSwap | 550700 | fail/1191 | fail/450 | success/996 | success/996 |
+  | VideoUnmaskSwap | 552300 | success/255 | success/255 | fail/254 | fail/254 |
+
+  ```text
+  RERUN11_PARITY=INFO shape=11x2 compared=11 missing=0 self_flip_off=5 self_flip_hard=4 cross_flip_new=6 steps_diff_new=10 node=gl1525
+  ```
+  结论：**归因 A（策略端数值不确定性），B 不成立**。依据两条：①同一入口重跑，官方 5／11、hard 4／11 局成败与自己原来不同，同入口本身不可复现；②同一条轨迹会在另一个入口原样出现，而且步数逐步相同——ButtonUnmaskSwap 新 hard 为 success/458，等于原官方；VideoPlaceButton 新 hard 为 fail/178，等于官方两次；VideoUnmask 562300 新 hard 为 fail/378，等于原官方；PickXtimes 新官方 736 对 hard 737。这说明两入口喂给策略的输入可以产生完全相同的滚动，不存在系统差别。同卡同 job 串行时两入口仍有 6 局成败不同，说明不确定性不只来自跨节点，同卡上 JIT 编译历史、局序不同也足以触发。MoveCube、SwingXtimes、VideoUnmaskSwap 552300 三局在两次运行中都保持「官方与 hard 不同」，每入口只跑了 2 次，不足以把这三局单独判为 B；按 ② 的整体证据不另立任务。盲区：每局每入口只有 2 个样本，MME 这 11 局的成败本身近似随机，不能据此估计翻转率。产物：本机 `artifacts/newtask-v7/rerun11/`（清单、`run.log`、`compare.jsonl`、`remote/` 下两入口 `episodes.jsonl` 与 22 段视频，与 NFS 逐文件 sha256 相同后删 NFS 视频）。
 - 视频（`eval_video_mover.py`，sha256 核对后删 NFS 副本）：SimpleMemVLA 1292/1292、MME-VLA 1290/1290 终态局视频在 `artifacts/newtask-v7/eval-videos/<策略>/<tier>/<task>/`；MME 两局 error 的 6 段重试录像在 `eval-videos/mmevla/_errors/`（sha256 逐个核对 OK）。**更正（2026-09-29 晚）**：原文写「NFS 视频暂存已清空」不对——xhard0 旧入口（官方路线）两策略各 192 局的评估视频（`v7-eval-stage/<策略>/official/`，共 384 个、566 MB）当时漏搬：搬运工具只按 v7 路线记录的 `episode` 字段关联，官方路线记录只有 `source_episode`，实际也只起了 smoke 与 v7 两路搬运。12.248 给 `eval_video_mover.py` 加 `--tier` 与 `source_episode` 回退后补搬到 `artifacts/newtask-v7/eval-videos-official/<策略>/xhard0/<task>/`：`VMOVE_OFFICIAL=PASS policies=2 moved=384 sha_bad=0 nfs_left=0`。冒烟 2 局视频与正式评估同名，已被正式评估的版本覆盖。
 
 ## ⑦ 收尾状态与待用户裁决
@@ -175,7 +195,7 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v7 first_divergence_n=13 first_divergence_m
   2. ButtonUnmaskSwap 评估期碰撞检查缺陷（⑥）：是否修（改 `robomme_hard`，重钉两策略子模块，重评受影响局）。
   3. InsertPeg 追加轮后手动补位 2 局、超出每格递补上限 10（③ 第 3 条）是否追认。
   4. MME xhard0 两入口 11 局翻转是否要做同入口重跑对照（11 局 × 1 策略）坐实为策略随机性。
-- **用户裁决（2026-09-29，原话「1暂时不管 2暂时不管 3同意递补 4 没看懂详细讲」）**：第 1、2 项暂时不处理（交付集与 benchmark 代码保持现状，H2 本地副本继续保留）；第 3 项追认 InsertPeg 追加轮与手动补位 2 局；第 4 项经解释后用户原话「先把项目4设置为待定 收尾这次任务 推送」——**待定**（22 局两入口重跑对照未做，⑥ 的 A／B 两种原因均未排除）。
+- **用户裁决（2026-09-29，原话「1暂时不管 2暂时不管 3同意递补 4 没看懂详细讲」）**：第 1、2 项暂时不处理（交付集与 benchmark 代码保持现状，H2 本地副本继续保留）；第 3 项追认 InsertPeg 追加轮与手动补位 2 局；第 4 项经解释后用户原话「先把项目4设置为待定 收尾这次任务 推送」——当时设为待定；同日用户原话「MME 两个入口 11 局翻转：待定。需要两个入口各把这 11 局重跑一次（共 22 局）才能判断原因 给出实现方案 job你来申请」，按方案做了 22 局同卡重跑，**结论为 A（策略数值不确定性），B 不成立**，见 ⑥ 末条。
 - **推送**（自动模式拒绝，留用户手动）：benchmark `newtaskRelease-v5`、`PolicyEvalThirdParty-{simplememvla,mmevla}-0929-0608`、tag `parity-anchor-v6`；两策略仓库 `testhard-eval-v7-0929`（子模块指向 `4a36d505`，benchmark 推送后 GitHub 上才取得到）。
 
 ## ⑧ 逐局对照站点（12.248，2026-09-29 晚）
