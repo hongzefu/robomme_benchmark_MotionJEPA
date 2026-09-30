@@ -57,7 +57,7 @@
     .sg-table{border-collapse:collapse;font-size:11.5px;margin:8px 0;display:block;max-width:100%;overflow-x:auto}
     .sg-table th,.sg-table td{padding:5px 9px;border-bottom:1px solid var(--line);text-align:left;font-variant-numeric:tabular-nums;white-space:nowrap}
     .sg-table th{background:#fafbf7;font-weight:600;color:#3a543f}.sg-table td.txt{white-space:normal;min-width:220px;max-width:460px}
-    .sg-table .is-cur{background:var(--soft)}.sg-table td.v-diff{background:#fde5e1;color:#9c2f25;font-weight:650}.sg-table td.v-new{background:#fff1d6;color:#8a5a0f;font-weight:650}.v-base{color:#3a543f;font-weight:650}
+    .sg-table .is-cur{background:var(--soft)}.sg-table td.v-diff{background:#fde5e1;color:#9c2f25;font-weight:650}.sg-table td.v-near{background:#fff1d6;color:#8a5a0f;font-weight:650}.sg-table .sg-tip{font-weight:400;color:var(--muted)}.sg-table td.v-new{background:#e1ecfb;color:#1f4f8f;font-weight:650}.v-base{color:#3a543f;font-weight:650}
     .sg-ep{margin-top:16px}
     .status-panel{padding:60px 20px;text-align:center;color:var(--muted)}
     @media(max-width:1100px){.cols{grid-template-columns:1fr 1fr}}
@@ -326,7 +326,7 @@
         t.append(tr);
       });
       b.append(t);
-      b.append(node('p', '', '红色 = 与 xhard0 中位数相差超过阈值；黄色 = xhard0 没有这种 subgoal；「—」= 该档没有这种 subgoal。'));
+      b.append(node('p', '', '红色 = 与 xhard0 中位数相差超过阈值；蓝色 = xhard0 没有这种 subgoal；「—」= 该档没有这种 subgoal。'));
       p.append(b);
     }
     function subgoalEpisode(ep) {
@@ -340,16 +340,25 @@
       if (two) wrap.lastChild.append(node('small', '', same ? '新入口与官方旧入口逐段完全相同' : '新入口与官方旧入口逐段不同！'));
       if (!segs.length) { wrap.append(node('div', 'notes', '空 h5（官方原版即生成失败），没有 subgoal。')); return wrap; }
       const t = node('table', 'sg-table'); const h = node('tr');
-      ['#', 'subgoal', '帧数', '首次／后续', 'xhard0 同类中位', '与 xhard0 比'].forEach(x => h.append(node('th', '', x)));
+      ['#', 'subgoal', '帧数', '首次／后续', 'xhard0 同类中位（范围）', '本段与 xhard0 范围比'].forEach(x => h.append(node('th', '', x)));
       t.append(h);
       segs.forEach((s, i) => {
         const r = sgRow(s.tpl, s.kind), base = r && r.tiers.xhard0, mine = r && r.tiers[S.tier];
         const tr = node('tr');
         tr.append(node('td', '', String(i + 1)), node('td', 'txt', s.text), node('td', '', String(s.frames)), node('td', '', s.kind),
           node('td', '', base ? `${base.median}（${base.min}～${base.max}）` : 'xhard0 无此类'));
-        let v = S.tier === 'xhard0' ? '基准' : (mine ? mine.verdict : '—');
-        if (S.tier !== 'xhard0' && base && v === '一致' && (s.frames < base.min || s.frames > base.max)) v = '一致（本段超出 xhard0 范围）';
-        tr.append(node('td', VERDICT_CLS[v] || '', v));
+        // 逐段判定：本段帧数落在 xhard0 同类段的最小～最大内为「在范围内」；超出时按超出量占越过的那个边界的比例分两级
+        let v, cls = '', tip = '';
+        if (S.tier === 'xhard0') v = '基准';
+        else if (!base) { v = '新增（xhard0 无此类）'; cls = 'v-new'; }
+        else if (s.frames >= base.min && s.frames <= base.max) v = '在范围内';
+        else {
+          const edge = s.frames < base.min ? base.min : base.max, over = Math.abs(s.frames - edge), pct = 100 * over / edge;
+          tip = `${s.frames < base.min ? '比最小值短' : '比最大值长'} ${over} 帧（${pct.toFixed(1)}%）`;
+          if (pct < 15) { v = '不在范围内但小于15%'; cls = 'v-near'; } else { v = '不在范围内且大于15%'; cls = 'v-diff'; }
+        }
+        const td = node('td', cls, v); if (tip) { td.title = tip; td.append(node('small', 'sg-tip', `　${tip}`)); }
+        tr.append(td);
         t.append(tr);
       });
       wrap.append(t);
