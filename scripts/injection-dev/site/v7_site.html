@@ -62,8 +62,8 @@
 .oracle-link{border-color:#c9dcc0!important;background:#eef5e8}.oracle-link[aria-current="page"]{background:var(--soft);border-color:var(--green)!important}
     .goal{margin-top:10px;font-size:15.5px;line-height:1.75;background:#fff;border:1px solid #cfdcc6;border-left:4px solid var(--green);border-radius:10px;padding:10px 16px;max-width:1100px}.goal ol{margin:4px 0 8px;padding-left:22px;font-weight:600}.goal .k{color:#3a543f;font-size:13px;font-weight:650;margin-top:4px}
     .cfg-kv{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.cfg-kv span{background:#f3f5ef;border-radius:6px;padding:2px 8px;font-size:11.5px;font-variant-numeric:tabular-nums}.cfg-kv b{color:#3a543f;margin-right:4px}
-    .ov-table td.ov-cell{white-space:normal;min-width:190px;vertical-align:top;font-size:11.5px;line-height:1.6}.ov-table td:first-child{vertical-align:top}
-    .ov-cfg{color:#3a543f;font-weight:600;padding-bottom:4px;border-bottom:1px dashed var(--line);margin-bottom:4px}.ov-len{padding-bottom:4px;border-bottom:1px dashed var(--line);margin-bottom:4px}.ov-sr{font-weight:600}
+    .ov-table td.ov-cell{white-space:normal;vertical-align:top;font-size:11.5px;line-height:1.6}.ov-cell-in{display:flex;gap:14px;align-items:flex-start}.ov-cell-in>div{min-width:0}.ov-cell-in .ov-cfg{flex:0 1 220px}.ov-cell-in .ov-len{flex:0 0 auto;white-space:nowrap}.ov-cell-in .ov-sr{flex:0 0 auto;white-space:nowrap}.ov-table td:first-child{vertical-align:top}
+    .ov-cfg{color:#3a543f;font-weight:600}.ov-len{border-left:1px dashed var(--line);padding-left:12px}.ov-sr{border-left:1px dashed var(--line);padding-left:12px}.ov-sr{font-weight:600}
     .cfg-sem{margin:4px 0 6px;padding-left:22px;font-size:15.5px;line-height:1.75;font-weight:600}
     .cfg-raw summary{cursor:pointer;font-size:11px;color:var(--muted)}.cfg-raw pre{font-size:10.5px;background:#f6f8f2;border-radius:8px;padding:8px;max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
     .outlier-link{margin:0 10px 6px;width:calc(100% - 20px);border:1px solid #f0c4bd!important;background:#fdf1ef}.outlier-link[aria-current="page"]{background:#fde5e1;border-color:#c2453a!important}
@@ -188,9 +188,22 @@
     // 总表：一行一个任务，xhard0～4 每格 = 任务配置 + oracle 长度（demo/exec/总，均值与上下界）+ 两个策略成功率
     function renderOracle() {
       const box = el('oracle-section'); box.textContent = '';
-      const o = S.sg.oracle, tiers = S.cat.tiers;
+      const o = S.sg.oracle;
+      if (!S.ovShow) { S.ovShow = new Set(S.cat.tiers); try { const v = JSON.parse(localStorage.getItem('v7-ov-tiers')); if (Array.isArray(v) && v.length) S.ovShow = new Set(v); } catch (e) { /* 浏览器存储不可用时全显示 */ } }
+      const tiers = S.cat.tiers.filter(x => S.ovShow.has(x));
       box.append(node('h2', 'task-title', '各档总表：任务配置 · oracle 长度 · 成功率'));
       box.append(node('div', 'task-sub', 'oracle 长度取生成 h5（都是 oracle planner 跑成功的演示）：demo = 视频演示帧（info/is_video_demo），exec = 执行步 = 帧数 − demo，总 = 帧数；每项写「均值（最小～最大）」。成功率为新入口评估：成功局数/局数（百分比）。xhard0 是官方 hard 12 局，配置每局随机，只写官方参考值；VideoPlaceOrder 有 2 局官方即生成失败，不计入长度。xhard1～4 同档各局配置相同。点任务名进入该任务。'));
+      const bar = node('div', 'tier-tabs'); bar.append(node('span', 'task-sub', '显示档位：'));
+      S.cat.tiers.forEach(x => {
+        const b = node('button', 'tier-tab', x); b.type = 'button'; b.setAttribute('aria-pressed', String(S.ovShow.has(x)));
+        b.addEventListener('click', () => {
+          if (S.ovShow.has(x)) { if (S.ovShow.size > 1) S.ovShow.delete(x); } else S.ovShow.add(x);
+          try { localStorage.setItem('v7-ov-tiers', JSON.stringify([...S.ovShow])); } catch (e) { /* 忽略 */ }
+          renderOracle();
+        });
+        bar.append(b);
+      });
+      box.append(bar);
       const t = node('table', 'sg-table ov-table'); const h = node('tr');
       ['任务'].concat(tiers).forEach(x => h.append(node('th', '', x))); t.append(h);
       const rng = (m, a, b) => `${m}（${a}～${b}）`;
@@ -200,19 +213,19 @@
         tiers.forEach(x => {
           const c = (o[task.id] || {})[x], cell = task.tiers[x];
           if (!c || !cell) { tr.append(node('td', 'na', '—')); return; }
-          const td = node('td', 'ov-cell');
-          const cfg = node('div', 'ov-cfg'); tierConfig(task.id, x, null).forEach(l => cfg.append(node('div', '', l))); td.append(cfg);
+          const td = node('td', 'ov-cell'); const inner = node('div', 'ov-cell-in'); td.append(inner);
+          const cfg = node('div', 'ov-cfg'); tierConfig(task.id, x, null).forEach(l => cfg.append(node('div', '', l))); inner.append(cfg);
           const len = node('div', 'ov-len');
           len.append(node('div', '', `demo ${rng(c.demo_mean, c.demo_min, c.demo_max)}`),
                      node('div', '', `exec ${rng(c.mean, c.min, c.max)}`),
                      node('div', '', `总 ${rng(c.total_mean, c.total_min, c.total_max)}`));
-          td.append(len);
+          inner.append(len);
           const n = cell.episodes.length, sr = node('div', 'ov-sr');
           policies().forEach(p => {
             const r = cell.rates.new && cell.rates.new[p.id]; const k = r ? (r.success || 0) : 0;
             sr.append(node('div', '', `${p.label} ${k}/${n}（${Math.round(100 * k / n)}%）`));
           });
-          td.append(sr); tr.append(td);
+          inner.append(sr); tr.append(td);
         });
         t.append(tr);
       });
