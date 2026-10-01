@@ -6,11 +6,11 @@
 >
 > **代码锚点**：v7 交付规格 `src/robomme_hard/env_metadata/test-hard/xhard{1..4}/specs.jsonl`（四份 header 的 `sampling_config_sha256` 都是 `4a308ee7…`，`seed_rule.offset=14000000`）。官方环境源码 `1fadc0ec`、官方生成编排 `d53f21a7`（vendor 在 `scripts/parity/official/`）都不改。
 >
-> **commit 编号**：12.277 首版；12.278、12.279 修订局数口径；12.280 重写第一部分（表格 + 改动清单 + 验收；删 V6 对拍；建分支 v6）；12.281 修订（PickXtimes 去掉 9、10 次；抽样过滤执行步 > 1600；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick／PatternLock 改区间；非梯度参数一律不改）。12.282 为分支对齐文档。12.283 修订（四项拍板：各档布局独立抽、PickXtimes 50 局分 17／17／16、派生工具链保留不调用、只抽交付格、V6 留档保留）。12.284 本次修订（v8 站点与 v7 布局完全一致、评估板块置空不删；v8 不做两策略评估；`v6_site.py` 服务端改名保留）。真正的 V8 实施从 12.285 接续，仍须另行获批。
+> **commit 编号**：12.277 首版；12.278、12.279 修订局数口径；12.280 重写第一部分（表格 + 改动清单 + 验收；删 V6 对拍；建分支 v6）；12.281 修订（PickXtimes 去掉 9、10 次；抽样过滤执行步 > 1600；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick／PatternLock 改区间；非梯度参数一律不改）。12.282 为分支对齐文档。12.283 修订（四项拍板：各档布局独立抽、PickXtimes 50 局分 17／17／16、派生工具链保留不调用、只抽交付格、V6 留档保留）。12.284 修订（v8 站点与 v7 布局完全一致、评估板块置空不删；v8 不做两策略评估；`v6_site.py` 服务端改名保留）。12.285 本次修订（维持 A40；7 个占位 job 已提交；xhard0 评估对拍与生成并行；生成完自动建站并通知）。真正的 V8 实施从 12.286 接续，仍须另行获批。
 >
 > **术语**：执行步 = h5 的 `timestep_*` 个数减去 `info/is_video_demo` 为真的帧数（口径同 `hard_regression.py::cmd_step_headroom`）；`TIER_MAX_STEPS` 只约束执行段；d = 放置圆盘中心到机械臂底座 (−0.615, 0) 的水平距离，单位米。
 >
-> **已定**（用户原话逐字见第二部分 §2.8）：非梯度参数一律不改（PickXtimes 圆盘区域不动）；PickXtimes 去掉 9、10 次，交付 xhard1～3 = 6／7／8；SwingXtimes、StopCube 扩为 xhard1～5 每档一个定值；三任务每档 10 局；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick、PatternLock xhard1～3 改区间；抽样时全部任务过滤执行步超过 1600 的候选并递补，上限定死 1600；其余任务局数沿用 v7 总数、缺档平分；xhard0 保留，xhard0 对拍保留；V6 对拍不再跑，V6 设施删除；V7 对拍设施保留改名 V8；实施分支按本轮分支对齐改为 `newtaskRelease-taskV8`。**2026-10-01 四项拍板（原话见 §2.8 第 13～16 条）**：①各档布局各自独立抽初始化位置，不再从母布局派生、不要求前缀重叠；②PickXtimes 仍按 50 局分到三档，17／17／16；③派生工具链（`derive_specs.py`、`layout_whitelist.json`、`layout-shared`／`prefix-geometry` 守卫）保留，v8 不调用；④只抽交付的 43 格，不交付的档不抽、不生成；⑤`docs/validation/newtask-v6/` 与 `docs/plans/0925-newtask-release-v6-plan.md` 留档保留。**⑥站点与评估（原话见 §2.8 第 16 条）**：v8 交付一个与 v7 站点（`site/v7_site.html`）布局完全一致的逐局站点；v8 不做 SimpleMemVLA／MME-VLA 两策略评估，站点里所有评估板块（策略成功率列、成败筛选、每局的两段策略视频、旧入口对照、翻转标记）原位保留、内容置空，不删除；阶段 4 的「评估侧核对」取消，xhard0 评估对拍沿用 v7 结果不重跑。
+> **已定**（用户原话逐字见第二部分 §2.8）：非梯度参数一律不改（PickXtimes 圆盘区域不动）；PickXtimes 去掉 9、10 次，交付 xhard1～3 = 6／7／8；SwingXtimes、StopCube 扩为 xhard1～5 每档一个定值；三任务每档 10 局；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick、PatternLock xhard1～3 改区间；抽样时全部任务过滤执行步超过 1600 的候选并递补，上限定死 1600；其余任务局数沿用 v7 总数、缺档平分；xhard0 保留，xhard0 对拍保留；V6 对拍不再跑，V6 设施删除；V7 对拍设施保留改名 V8；实施分支按本轮分支对齐改为 `newtaskRelease-taskV8`。**2026-10-01 四项拍板（原话见 §2.8 第 13～16 条）**：①各档布局各自独立抽初始化位置，不再从母布局派生、不要求前缀重叠；②PickXtimes 仍按 50 局分到三档，17／17／16；③派生工具链（`derive_specs.py`、`layout_whitelist.json`、`layout-shared`／`prefix-geometry` 守卫）保留，v8 不调用；④只抽交付的 43 格，不交付的档不抽、不生成；⑤`docs/validation/newtask-v6/` 与 `docs/plans/0925-newtask-release-v6-plan.md` 留档保留。**⑥站点与评估（原话见 §2.8 第 16 条）**：v8 交付一个与 v7 站点（`site/v7_site.html`）布局完全一致的逐局站点；v8 不做 SimpleMemVLA／MME-VLA 两策略评估，站点里所有评估板块（策略成功率列、成败筛选、每局的两段策略视频、旧入口对照、翻转标记）原位保留、内容置空，不删除；阶段 4 的「评估侧核对」取消。**⑦席位与并行（原话见 §2.8 第 17～19 条）**：维持 A40；2026-10-01 16:05～16:07 EDT 已提交 7 个 48 h 占位 job——生成席 `v8gen-hold-1～4`（63003408～63003411，各 1 A40／4 CPU／48 G）、xhard0 评估席 `v8eval-hold-1～2`（63003486、63003487，同规格）、编排席 `v8eval-orch`（63003488，standard 分区 1 CPU／4 G 无 GPU），清单 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/gl-hold-logs/hold-jobs-v8gen-20261001.txt`；xhard0 评估对拍（16 × 1 × 12 = 192 局 × 2 策略，`XHARD0_EVAL_PARITY`）在评估席上与阶段 3 生成并行跑，v8 新局不评估；生成完成行一出现即自动跑站点目录、浏览器检查并推送通知，该链路只在当前会话存活时成立（P4），阶段 3 开工前先用小夹具走通「完成 → 建站 → 通知」。
 >
 > **待拍板**：无。原①（布局共用前缀还是独立）与 PickXtimes 局数已于 2026-10-01 拍板，见上「已定」。
 
@@ -105,7 +105,7 @@
 
 | 文件 | 改什么 |
 |---|---|
-| `hard_regression.py` | `step-headroom` 判据由「90% + ×1.25 提议」改为「全集最大执行步 ≤ 1600」并报全局最大值与抽样阶段被过滤的候选数；`reset-replay` 的 `V7_*` 判定行改 `V8_*`，92／32 改按任务查表（62／62／92／32）；`eval-smoke` 与 `xhard0-eval-parity` 保留不改、v8 不跑（无两策略评估）；`layout-shared`／`prefix-geometry` 保留不动、v8 不跑（独立布局下无母档可比）；新增 `tier-values` 子命令（自 `site/v6_tier_monotone.py --fixed` 迁入：定值任务逐档相等，RouteStick／PatternLock 落在区间内）；`xhard0-reset-parity`、`xhard0-eval-parity` **不动** |
+| `hard_regression.py` | `step-headroom` 判据由「90% + ×1.25 提议」改为「全集最大执行步 ≤ 1600」并报全局最大值与抽样阶段被过滤的候选数；`reset-replay` 的 `V7_*` 判定行改 `V8_*`，92／32 改按任务查表（62／62／92／32）；`eval-smoke` 保留不改、v8 不跑；`xhard0-eval-parity` 照跑（与生成并行）；`layout-shared`／`prefix-geometry` 保留不动、v8 不跑（独立布局下无母档可比）；新增 `tier-values` 子命令（自 `site/v6_tier_monotone.py --fixed` 迁入：定值任务逐档相等，RouteStick／PatternLock 落在区间内）；`xhard0-reset-parity`、`xhard0-eval-parity` **不动** |
 | `hard_parity.py` | `SHAPES`（`13x3x20+16x1x20`）改逐格表（按档 411／411／128／100／20） |
 | `train_split_config.py` | 删 `newtask-v6` release 条目 |
 | `scripts/README.md` | 同步 |
@@ -143,7 +143,7 @@
 | 四入口 | `ls -1 scripts/*.py` | 恰好四个 |
 | xhard0 与原三档 decision 不变 | `test_decision_visible_part_unchanged`（Pick／Swing／InsertPeg 同名测试）；`assert_native_decision` 剥掉 xhard1～5 子键后逐键相同 | 核心短测无 failed |
 | **xhard0 reset 对拍（保留）** | `hard_regression.py xhard0-reset-parity --src-root <官方 1fadc0ec worktree>` | `XHARD0_RESET_PARITY=PASS det_diff=0` |
-| xhard0 评估对拍 | **v8 不重跑**：xhard0 规格不变，沿用 v7 留档 `docs/validation/newtask-v7/README.md` 的 `XHARD0_EVAL_PARITY=PASS`；v8 不做两策略评估 | 引用 v7 判定行 |
+| **xhard0 评估对拍（保留，与生成并行）** | `hard_regression.py xhard0-eval-parity`，在评估席 63003486／63003487 上跑 192 局 × 2 策略，编排器在 63003488；证明阶段 1 改档位枚举没动到评估入口 | `XHARD0_EVAL_PARITY=PASS` |
 | 站点与 v7 布局一致 | `v8_site_browser_check.py`（Playwright，同 v7 检查器）：逐一核对侧栏、矩阵、档位页签、筛选、图例、局号条、单局区、注释区都在；评估位显示「—」／「未评估」且不缺元素；`--shots` 截图目视复核 | `V8_SITE=PASS sections=9 eval_placeholders=<n> missing=0` |
 | 交付形态 | `validate_specs` 按表 2 核对每格选中数 | `V8_DELIVERY_SET=PASS tasks=16 cells=43 total=1070` |
 | 档位取值 | `hard_regression.py tier-values` 读 spec：定值任务逐档相等，RouteStick／PatternLock 落在区间内 | `V8_TIER_VALUES=PASS tasks=16 mismatches=0` |
@@ -164,7 +164,8 @@
 | 1 | 档位结构 + 常量 + 测试同步 + 删 V6（§2.1、§2.3、§2.4、§2.5） | 核心短测通过；`UPSTREAM_GUARD=PASS`；`XHARD0_RESET_PARITY=PASS` |
 | 2 | 交付形态：逐格局数表、`v8` seed profile 与 `independent` 模式、builder 查表、逐格递补（§2.2） | 纯 CPU 夹具测试通过，覆盖「写 JSON → 读 JSON」之后的形态 |
 | 3 | 43 格各自独立抽签 → 生成（无派生步）；先按 P3／P5 一次性报预算（第二部分 §2.4） | `V8_DELIVERY_SET`、`V8_TIER_VALUES`、`V8_STEP_CAP`（over=0）、`V8_LAYOUT_INDEPENDENT`、`V8_RESET_REPLAY` |
-| 4 | A40 两次生成对拍；生成 v8 站点（评估板块置空） | `PARITY_*=PASS`；`V8_SITE=PASS` |
+| 3′（与 3 并行） | xhard0 评估对拍在评估席跑，不依赖新局 | `XHARD0_EVAL_PARITY=PASS` |
+| 4 | A40 两次生成对拍；生成完成即自动建站（评估板块置空）并推送通知 | `PARITY_*=PASS`；`V8_SITE=PASS` |
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -333,7 +334,7 @@ ROBOMME_ENV_PACKAGE=robomme_hard OMP_NUM_THREADS=1 uv run --no-sync python scrip
 
 - 本文件 12.277 首版、12.278／12.279 修订局数、12.280 重写第一部分并建分支、12.281 修订梯度（去 9／10 次、过滤 1600、VU／BU xhard1、区间档），每次只 `git add` 这一个文件。工作区里 `third_party/SimpleMemVLA` 的子模块内容改动（` m`）是他人在途工作，不动。
 - 探针产物 `artifacts/v8-probe/` 不进 git。探针脚本在会话 scratchpad 不保留，方法按 §2.4.1 可以复现。
-- 12.282 只记录本轮分支对齐文档；12.283 记录四项拍板；12.284 记录站点与评估口径，均不算 V8 实施。后续获批的 V8 实施在分支 `newtaskRelease-taskV8` 上进行；每个阶段单独 commit，从 12.285 接续。commit body 按第 11 条写用户原话、计划、过程、意外、实测与下一步。正式生成的留档写到 `docs/validation/newtask-v8/`。
+- 12.282 只记录本轮分支对齐文档；12.283 记录四项拍板；12.284 记录站点与评估口径；12.285 记录席位与并行口径，均不算 V8 实施。后续获批的 V8 实施在分支 `newtaskRelease-taskV8` 上进行；每个阶段单独 commit，从 12.286 接续。commit body 按第 11 条写用户原话、计划、过程、意外、实测与下一步。正式生成的留档写到 `docs/validation/newtask-v8/`。
 
 ## 2.8 口径来源：用户原话（逐字，按时间）
 
@@ -392,6 +393,12 @@ ROBOMME_ENV_PACKAGE=robomme_hard OMP_NUM_THREADS=1 uv run --no-sync python scrip
 16. 「你需要和上一代一样生成一个同样的网站尽可能保持这个布局的完全一致但是因为现在没有新的两个model的invution的制空不要删除。Evaluation就没有新的两个model的evaluation了」（2026-10-01）
    - 「invution的制空」按语音转写理解为「evaluation 的置空」。我的理解：v8 出一个与 v7 站点布局完全一致的逐局站点；v8 不跑 SimpleMemVLA／MME-VLA 评估，站点里评估相关板块原位保留、内容置空、不删；阶段 4 的评估侧核对随之取消，xhard0 评估对拍引用 v7 结果。
    - 复核时发现 §2.5 原拟删除的 `v6_site.py` 是 v7 站点服务端，改为改名 `site_server.py` 保留。
+17. 「维持使用A40。你可以开多少个job」「你现在就可以生成V40Jb开始排队了。A40的J0B」（2026-10-01；「V40Jb」按语音转写理解为「4 个 job」）
+   - 处置：按规约默认上限提交 4 个 A40 占位 job 63003408～63003411（4C/48G，超默认规格，已在当轮说明）。
+18. 「生成和Evaluation可以同步进行吗就是EXC的0的xhard0的Evaluation是否可以同步进行用四个站位J0B进行生成然后再用一些jb去进行。再用一些jb进行evaluation。并且只要生成完毕了就直接做网站然后通知用户」（2026-10-01）
+   - 我的理解：xhard0 评估对拍与新局生成并行，各用各的席位；生成完成后自动建站并通知。本条把第 16 条「xhard0 评估对拍沿用 v7 不重跑」改回「照跑」。
+19. 「同意使用两个A40席位。加上一个StandardCPU。」（2026-10-01）
+   - 处置：提交 63003486、63003487（A40 评估席）与 63003488（standard 编排席），本人名下共 7 个作业，超过默认 4 个已由本条放行。
 
 ## 2.9 现状、机理与上限取法（原第一部分 §1～§3、§4.1、§6，逐字搬入）
 
