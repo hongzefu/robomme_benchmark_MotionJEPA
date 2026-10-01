@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """v8 逐身份清单导出（v8 方案第二部分 §2.2 第 9 条；原 v7 版见 0928 方案第一部分 §5 第 3 条）。
 
+**须在阶段 3b 换包后运行**：builder 按包内 ``TIERS``／``EXPECTED_CELLS`` 读规格，换包前它们仍是 v7 值，
+即使 ``--specs-root`` 指向 v8 根也会因缺 xhard5、格表不符而失败或数不出 1262。
+
     uv run --no-sync python scripts/injection-dev/export_eval_identities.py \\
         --out artifacts/newtask-v8/eval-identities-1262.jsonl \\
         --official-out artifacts/newtask-v8/eval-official-xhard0-192.jsonl [--specs-root <v8 规格根>]

@@ -15,9 +15,9 @@
     uv run --no-sync python scripts/injection-dev/generate_h5.py --mode merge --specs <冻结根> --cells full \\
         --shards <gen1>/shard1,<gen1>/shard2,<gen1>/shard3,<gen1>/shard4 \\
         --specs-out artifacts/newtask-v8/specs-root --output <gen1>/merged
-    # 只重算聚合（规格根 + 各片账本目录）
+    # 只重算聚合（规格根 + 各片账本目录）；整树搬迁后（GL NFS → 本机 /data）用 --rebase 换 h5／mp4 前缀并逐个核 sha256
     uv run --no-sync python scripts/injection-dev/generate_h5.py --mode aggregate --specs <规格根> --cells full \\
-        --shards <账本目录,...> --output <写 delivery.json 的目录>
+        --shards <账本目录,...> --rebase <旧前缀>=<新前缀> --output <目录> [--out <新 delivery.json 路径>]
     # 对拍专用：按身份清单只读重放，不递补、不回写（--specs 给 v7／v8 规格根，缺省读包内）
     uv run --no-sync python scripts/injection-dev/generate_h5.py --mode replay \\
         --identities <gen1 的 delivery.json 或 jsonl> --specs <规格根> --output <输出目录>
@@ -84,6 +84,10 @@ def main() -> int:
                              "continue 缺省 full，split 必填）")
     parser.add_argument("--shards", default=None, help="merge／aggregate：逗号分隔的分片输出目录（各含 specs/、shard.json、results.jsonl）")
     parser.add_argument("--specs-out", default=None, help="merge：合并后的五档规格根（缺省 <output>/specs）")
+    parser.add_argument("--rebase", action="append", default=[], metavar="OLD=NEW",
+                        help="merge／aggregate：整树搬迁后把规格里记录的 h5／mp4 路径前缀 OLD 换成 NEW（可重复；"
+                             "替换后逐个核存在与 sha256，无前缀匹配或不符即该格 FAIL）")
+    parser.add_argument("--out", default=None, help="aggregate：delivery.json 输出路径（缺省 <output>/delivery.json；已存在即拒绝）")
     parser.add_argument("--identities", default=None, help="replay 模式的身份清单（delivery.json、final-delivery.json 或 jsonl）")
     parser.add_argument("--output", required=True)
     parser.add_argument("--workers", type=int, default=1)
@@ -113,14 +117,16 @@ def main() -> int:
         cells = _rollout.resolve_cells(args.cells or "full")
         merged_root = Path(args.specs_out) if args.specs_out else output / "specs"
         report = _rollout.merge_v8(Path(args.specs), cells, _shard_dirs(args.shards), merged_root, output,
-                                   cells_label=str(args.cells or "full"), code_baseline=_git_head(src_root))
+                                   cells_label=str(args.cells or "full"), code_baseline=_git_head(src_root),
+                                   rebase=_rollout.parse_rebase(args.rebase))
         return 0 if report["line"].startswith("V8_DELIVERY_SET=PASS") else 1
     if args.mode == "aggregate":
         if not args.specs:
             raise SystemExit("aggregate 模式必须给 --specs（v8 规格根）")
         report = _rollout.aggregate_v8(Path(args.specs), _rollout.resolve_cells(args.cells or "full"),
-                                       _shard_dirs(args.shards), output / "delivery.json",
-                                       cells_label=str(args.cells or "full"), code_baseline=_git_head(src_root))
+                                       _shard_dirs(args.shards), Path(args.out) if args.out else output / "delivery.json",
+                                       cells_label=str(args.cells or "full"), code_baseline=_git_head(src_root),
+                                       rebase=_rollout.parse_rebase(args.rebase))
         print(report["line"], flush=True)
         return 0 if report["line"].startswith("V8_DELIVERY_SET=PASS") else 1
 

@@ -19,7 +19,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -119,11 +121,12 @@ class FakeRunner:
             if record["ok"]:
                 h5 = wdir / "hdf5_files" / f"{row['task']}_ep{row['episode']}_seed{row['seed']}.h5"
                 h5.parent.mkdir(parents=True, exist_ok=True)
-                h5.write_bytes(f"h5-{tier}-{row['task']}-{row['candidate']}".encode())
+                payload = f"h5-{tier}-{row['task']}-{row['candidate']}".encode()
+                h5.write_bytes(payload)
                 (wdir / "videos").mkdir(exist_ok=True)
                 (wdir / "videos" / f"{row['task']}_ep{row['episode']}_seed{row['seed']}_demo.mp4").write_bytes(b"mp4")
                 steps = H.V8_EXEC_CAP + 1 if action == "over" else 100
-                record.update(h5=str(h5), h5_sha256=f"sha-{tier}-{row['task']}-{row['candidate']}", bytes=10,
+                record.update(h5=str(h5), h5_sha256=hashlib.sha256(payload).hexdigest(), bytes=len(payload),
                               frames=steps + 5, exec_steps=steps)
             elif action == "infra":
                 record.update(error_type="RunnerCrash", error="svulkan2 设备丢失")
@@ -362,7 +365,7 @@ def test_备用耗尽该格FAIL其余格继续(tmp_path, fake, monkeypatch, caps
               "--output", tmp_path / "out")
     text = capsys.readouterr().out
     assert rc == 1 and "V8_DELIVERY_SET=FAIL tasks=2 cells=2 total=3 expected=4" in text
-    assert "exhausted_cells=1" in text and "InsertPeg/xhard4:1/2:exhausted" in text
+    assert "exhausted_cells=1" in text and " problems=InsertPeg/xhard4:exhausted" in text  # 无空格 k=v 形式
     data = _guard_delivery(tmp_path / "out" / "delivery.json")
     ip, mc = data["cells"]["InsertPeg/xhard4"], data["cells"]["MoveCube/xhard4"]
     assert ip["status"] == "FAIL" and ip["reason"] == "exhausted" and ip["spares_left"] == 0 and ip["failed"] == 2
@@ -453,6 +456,13 @@ def test_四片生成合并聚合43格(tmp_path, fake, monkeypatch, capsys):
     # delivery.json 的 rows 与合并规格里的 selected 行逐一相等
     selected = {(r["task"], r["tier"], r["candidate"]) for _, rows in merged.values() for r in rows if r["selected"]}
     assert {(r["task"], r["tier"], r["candidate"]) for r in data["rows"]} == selected
+    # N3：目标已存在时重跑合并 → V8_MERGE=FAIL、退出码非零、一个文件都不改
+    before = {p: p.read_bytes() for p in [*(tmp_path / "specs-root").rglob("specs.jsonl"), gen1 / "merged" / "delivery.json"]}
+    capsys.readouterr()
+    assert _gen(monkeypatch, "--mode", "merge", "--specs", frozen, "--cells", "full", "--shards", shards,
+                "--specs-out", tmp_path / "specs-root", "--output", gen1 / "merged") == 1
+    assert "V8_MERGE=FAIL reason=targets_exist existing=6" in capsys.readouterr().out
+    assert all(p.read_bytes() == data for p, data in before.items())
     # 确定性：同输入再合并一次，五份文件逐字节相同
     assert _gen(monkeypatch, "--mode", "merge", "--specs", frozen, "--cells", "full", "--shards", shards,
                 "--specs-out", tmp_path / "specs-root-2", "--output", gen1 / "merged-2") == 0
@@ -468,6 +478,70 @@ def test_四片生成合并聚合43格(tmp_path, fake, monkeypatch, capsys):
     # 聚合只认齐全的规格：完整格表配一个只有 shard3 的规格根直接拒绝
     with pytest.raises(_rollout.RolloutError, match="任务集合与格表不符|缺少"):
         _rollout.aggregate_v8(gen1 / "shard3" / "specs", full, [gen1 / "shard3"], gen1 / "agg3" / "delivery.json")
+
+
+def test_整树搬迁后aggregate_rebase(tmp_path, fake, monkeypatch, capsys):
+    """N1：GL NFS 上生成 → rsync 回本机：漏 --rebase 即 FAIL；--rebase 后 h5／video／path 指向新位置、sha 逐个核对。"""
+    old, new = tmp_path / "nfs" / "gen1", tmp_path / "data" / "gen1"
+    root = build_root(old / "specs", SMOKE)
+    fake()
+    assert _gen(monkeypatch, "--mode", "continue", "--specs", root, "--cells", "smoke", "--output", old / "out") == 0
+    new.parent.mkdir(parents=True)
+    shutil.move(str(old), str(new))  # 整树搬迁，旧位置不复存在
+    capsys.readouterr()
+    args = ["--mode", "aggregate", "--specs", new / "specs", "--cells", "smoke", "--shards", new / "out"]
+    # 漏 --rebase：规格里记录的仍是旧路径，文件不在 → FAIL（不静默写旧路径当交付）
+    assert _gen(monkeypatch, *args, "--output", new / "agg-norebase") == 1
+    text = capsys.readouterr().out
+    assert "V8_DELIVERY_SET=FAIL" in text and "bad_h5=7" in text and "StopCube/xhard1:h5_missing" in text
+    # 前缀写错：无匹配 → h5_unmapped
+    assert _gen(monkeypatch, *args, "--rebase", f"{tmp_path / 'elsewhere'}={new}", "--output", new / "agg-wrong") == 1
+    assert "h5_unmapped" in capsys.readouterr().out
+    # 正确 --rebase → PASS；h5／video 绝对路径在新树下，path 相对新 delivery.json 可解析
+    assert _gen(monkeypatch, *args, "--rebase", f"{old}={new}", "--output", new / "agg") == 0
+    assert "V8_DELIVERY_SET=PASS tasks=6 cells=7 total=7" in capsys.readouterr().out
+    data = _guard_delivery(new / "agg" / "delivery.json")
+    assert all(r["h5"].startswith(str(new) + "/") and r["video"].startswith(str(new) + "/") for r in data["rows"])
+    assert data["rebase"] == [[str(old), str(new)]]
+    # 已存在的 delivery.json 不静默覆盖
+    with pytest.raises(_rollout.RolloutError, match="已存在"):
+        _gen(monkeypatch, *args, "--rebase", f"{old}={new}", "--output", new / "agg")
+    # 搬迁后某个 h5 内容被改 → sha 不符 → 该格 FAIL
+    victim = Path(data["rows"][0]["h5"])
+    victim.write_bytes(b"corrupted")
+    assert _gen(monkeypatch, *args, "--rebase", f"{old}={new}", "--out", new / "agg-bad" / "delivery.json",
+                "--output", new / "unused") == 1
+    out = capsys.readouterr().out
+    assert "h5_sha_mismatch" in out and "bad_h5=1" in out
+
+
+def test_超限先落账本再删媒体崩溃后恢复不重跑(tmp_path, fake, monkeypatch):
+    """N7：超限局的结果先写账本、再删媒体；删之前崩溃 → --resume 按账本补删，不重跑该局。"""
+    cells = {("SwingXtimes", "xhard5"): 1}
+    root = build_root(tmp_path / "specs", cells, spare=1)
+    out = tmp_path / "out"
+    fake({("xhard5", "SwingXtimes", 0): "over"})
+    real_purge = _rollout.purge_episode_media
+
+    def crash(*a, **k):
+        raise KeyboardInterrupt("删媒体前崩溃")
+
+    monkeypatch.setattr(_rollout, "purge_episode_media", crash)
+    with pytest.raises(KeyboardInterrupt):
+        _rollout.run_continue_v8(root, cells, out, src_root=REPO, workers=1, gpu="0", pkg="robomme_hard",
+                                 code_baseline="fixture")
+    ledger = _rollout.read_ledger(out / _rollout.LEDGER_NAME)
+    assert [(e["kind"], e["record"]["error_type"], e["record"]["purge_pending"]) for e in ledger] == \
+           [("result", "exec_over_cap", True)]
+    victim = _rollout.episode_dir(out, {"tier": "xhard5", "task": "SwingXtimes", "episode": 0})
+    assert list(victim.rglob("*.h5"))  # 媒体尚未删
+    monkeypatch.setattr(_rollout, "purge_episode_media", real_purge)
+    runner = fake()
+    summary = _rollout.run_continue_v8(root, cells, out, src_root=REPO, workers=1, gpu="0", pkg="robomme_hard",
+                                       code_baseline="fixture", resume=True)
+    assert runner.calls == [[("xhard5", "SwingXtimes", 1)]]  # 只跑递补，超限局不重跑
+    assert not list(victim.rglob("*.h5")) and not list(victim.rglob("*.mp4"))
+    assert summary["delivery_set"].startswith("V8_DELIVERY_SET=PASS") and summary["exec_over_cap"] == 1
 
 
 # ── replay、报告、identities ────────────────────────────────────────────────

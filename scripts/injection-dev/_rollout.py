@@ -296,9 +296,12 @@ def purge_episode_media(output: Path, row: dict[str, Any], h5: str | None) -> li
     return removed
 
 
-def enforce_exec_cap(record: dict[str, Any], row: dict[str, Any], output: Path, exec_cap: int) -> None:
+def enforce_exec_cap(record: dict[str, Any], row: dict[str, Any], output: Path, exec_cap: int, *,
+                     purge: bool = True) -> None:
     """v8 执行步上限（就地改 ``record``）：ok 却无 h5／无 ``exec_steps`` 的局记失败（不让缺数据的局混进交付）；
-    执行步 > ``exec_cap`` 的局记 ``exec_over_cap``、保留 ``exec_steps``，并删该局目录里的 h5／mp4。"""
+    执行步 > ``exec_cap`` 的局记 ``exec_over_cap``、保留 ``exec_steps``，并删该局目录里的 h5／mp4。
+    ``purge=False`` 时只标 ``record["purge_pending"] = True``，由调用方先追加账本再 ``purge_record_media``
+    （崩溃在两步之间时 ``--resume`` 重放账本会补删，不会重跑该局）。"""
     if not record.get("ok"):
         return
     steps = record.get("exec_steps")
@@ -307,21 +310,36 @@ def enforce_exec_cap(record: dict[str, Any], row: dict[str, Any], output: Path, 
         record.update(ok=False, error_type=kind, error=f"{kind}：ok 结果缺 h5 或执行步，不进交付")
         return
     if int(steps) > int(exec_cap):
-        purged = purge_episode_media(output, row, record.get("h5"))
-        record.update(ok=False, error_type="exec_over_cap", error=f"执行步 {steps} > 上限 {exec_cap}", purged=purged)
+        record.update(ok=False, error_type="exec_over_cap", error=f"执行步 {steps} > 上限 {exec_cap}")
+        if purge:
+            record["purged"] = purge_episode_media(output, row, record.get("h5"))
+        else:
+            record["purge_pending"] = True
+
+
+def purge_record_media(rows: list[dict[str, Any]], records: list[dict[str, Any]], output: Path) -> None:
+    """对标了 ``purge_pending`` 的结果删该局显式目录里的 h5／mp4，并把删除数写进行的 rollout 段。"""
+    by_key = {(r["task"], r["candidate"]): r for r in rows}
+    for record in records:
+        if record.get("purge_pending"):
+            row = by_key[(record["task"], record["candidate"])]
+            purged = purge_episode_media(output, row, record.get("h5"))
+            if row.get("rollout") is not None:
+                row["rollout"]["purged_files"] = len(purged)
 
 
 def apply_results(rows: list[dict[str, Any]], results: list[dict[str, Any]], pkg: str, code_baseline: str,
-                  output: Path, *, exec_cap: int | None = None) -> list[dict[str, Any]]:
+                  output: Path, *, exec_cap: int | None = None, purge: bool = True) -> list[dict[str, Any]]:
     """按结果更新行；失败的行退选并递补同格下一个未试候选。返回新一轮待跑行。
 
-    ``exec_cap``（v8）给出时先过 ``enforce_exec_cap``：超限局按失败处理（同格递补），``record`` 被就地改写。"""
+    ``exec_cap``（v8）给出时先过 ``enforce_exec_cap``：超限局按失败处理（同格递补），``record`` 被就地改写；
+    ``purge=False`` 时超限局的媒体留给调用方在追加账本之后删（见 ``purge_record_media``）。"""
     by_key = {(r["task"], r["candidate"]): r for r in rows}
     backfill = []
     for record in results:
         row = by_key[(record["task"], record["candidate"])]
         if exec_cap is not None:
-            enforce_exec_cap(record, row, output, exec_cap)
+            enforce_exec_cap(record, row, output, exec_cap, purge=purge)
         row["tried"] = True
         row["rollout"] = rollout_block(record, pkg, code_baseline, output)
         if not record["ok"]:
@@ -416,7 +434,10 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
                 # 规格尚未回写：按账本顺序逐条重放（与原轮次里的逐条处理顺序相同，递补选择因此逐一复现）
                 for entry in entries:
                     if entry["kind"] == "result":
-                        apply_results(rows, [dict(entry["record"])], pkg, code_baseline, output)
+                        record = dict(entry["record"])
+                        apply_results(rows, [record], pkg, code_baseline, output)
+                        # 账本已记超限、但崩溃发生在删媒体之前：此处补删（幂等）
+                        purge_record_media(rows, [record], output)
             attempted = len(entries)
             round_index = 1 + max((int(e["round"]) for e in entries), default=-1)
         pending = plan_pending(rows, header["delivery_per_cell"], redo, tasks)
@@ -436,11 +457,13 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
                                           "error": (str(record.get("error") or ""))[:300] or None})
                 else:
                     final.append(record)
-            backfill = apply_results(rows, final, pkg, code_baseline, output, exec_cap=exec_cap)
+            backfill = apply_results(rows, final, pkg, code_baseline, output, exec_cap=exec_cap, purge=False)
             if ledger is not None:
                 append_ledger(ledger, infra_entries + [
                     {"kind": "result", "tier": tier, "task": r["task"], "candidate": int(r["candidate"]),
                      "round": round_index, "record": r} for r in final])
+            # 先落账本、再删超限局的媒体（N7：崩溃后 --resume 按账本重放，不会重跑该局）
+            purge_record_media(rows, final, output)
             pending = retry + backfill
             round_index += 1
         header = write_back(specs, header, rows, file_sha)
@@ -662,7 +685,7 @@ _shard_all = [task for tasks in V8_SHARD_TASKS.values() for task in tasks]
 assert sorted(_shard_all) == sorted(hard_specs.ALL_TASKS), "四片须恰好覆盖 16 任务且互不重叠"
 #: 逐格与全局计数键（全部显式写出，零值也写）
 V8_CELL_COUNT_KEYS = ("expected", "candidates", "tried", "delivered", "failed", "exec_over_cap", "backfills",
-                      "infra_retries", "spares_left", "pending")
+                      "infra_retries", "spares_left", "pending", "bad_h5")
 V8_TOTAL_COUNT_KEYS = V8_CELL_COUNT_KEYS + ("exhausted_cells", "pending_cells", "failed_cells")
 
 
@@ -799,8 +822,37 @@ def _ledger_infra(dirs: list[Path]) -> tuple[dict[tuple[str, str], int], list[st
     return counts, paths
 
 
+def parse_rebase(items) -> list[tuple[str, str]]:
+    """``--rebase <旧前缀>=<新前缀>``（可重复）→ ``[(旧, 新)]``，按旧前缀长度降序（最长前缀优先匹配）。"""
+    out = []
+    for item in items or []:
+        old, sep, new = str(item).partition("=")
+        if not sep or not old or not new:
+            raise RolloutError(f"--rebase 须为 <旧前缀>=<新前缀>：{item!r}")
+        out.append((os.path.abspath(old), os.path.abspath(new)))
+    return sorted(out, key=lambda p: -len(p[0]))
+
+
+def rebase_path(path: str, rebase: list[tuple[str, str]]) -> str | None:
+    """按前缀替换（只认整段目录前缀）；没有任何前缀匹配返回 None（调用方判 FAIL，不静默保留旧路径）。"""
+    path = os.path.abspath(path)
+    for old, new in rebase:
+        if path == old or path.startswith(old.rstrip(os.sep) + os.sep):
+            return new + path[len(old):]
+    return None
+
+
+def _stream_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for chunk in iter(lambda: stream.read(1 << 24), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dirs: list[Path], out_path: Path, *,
-                 cells_label: str = "custom", code_baseline: str | None = None) -> dict[str, Any]:
+                 cells_label: str = "custom", code_baseline: str | None = None,
+                 rebase: list[tuple[str, str]] | None = None) -> dict[str, Any]:
     """聚合步：读格表涉及各档的规格结果段与各片账本，写 ``delivery.json``（``v8-delivery/1``）并返回判定行。
 
     逐格：``delivered``（selected 且 rollout ok）、``candidates``（该格规格行数）、``tried``、``failed``（含超限）、
@@ -811,9 +863,16 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
     ``rows`` 只含交付局（selected 且 rollout ok），每行必有 ``task tier episode candidate(==episode) seed exec_steps
     frames``（总帧数含演示帧）、``h5``（h5 绝对路径）、``path``（同一 h5 相对 ``delivery.json`` 所在目录，整树搬迁后
     仍可用）、``h5_sha256``、``env_module``，可选 ``video``（mp4 绝对路径）。逐格统计在 ``cells``
-    （``{"<task>/<tier>": {...}}``），全局计数在 ``counts``；两处计数键全部显式写零。"""
+    （``{"<task>/<tier>": {...}}``），全局计数在 ``counts``；两处计数键全部显式写零。
+
+    h5 核对：每个交付行的 h5 必须存在，否则该行记 ``h5_missing``、不进 ``rows``、该格 FAIL。``rebase``（整树搬迁后，
+    如 GL 的 NFS 输出 rsync 回本机）给出时，规格 rollout 段里记录的 h5 路径按前缀替换到新位置（无前缀匹配记
+    ``h5_unmapped``），替换后逐个重算 sha256 必须等于记录的 ``h5_sha256``（不符记 ``h5_sha_mismatch``）；
+    ``h5``／``video``／``path`` 都按新位置写。``out_path`` 已存在即拒绝（不静默覆盖）。"""
     cells = check_cells(cells)
     out_path = Path(out_path)
+    if out_path.exists():
+        raise RolloutError(f"{out_path} 已存在，拒绝覆盖；换一个 --out／--output 新路径")
     loaded = load_v8_root(Path(specs_root), cells)
     infra, ledgers = _ledger_infra([Path(d) for d in ledger_dirs])
     stray_infra = sorted(k for k in infra if k not in cells)
@@ -821,7 +880,7 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
         raise RolloutError(f"账本里有格表之外的基础设施重试：{stray_infra}")
     totals = {key: 0 for key in V8_TOTAL_COUNT_KEYS}
     cell_out: dict[str, dict[str, Any]] = {}
-    rows_out, over_rows, problems = [], [], []
+    rows_out, over_rows, problems, bad_rows = [], [], [], []
     for (task, tier), expected in cells.items():
         mine = [r for r in loaded[tier][1] if r["task"] == task]
         roll = lambda r: r["rollout"] or {}  # noqa: E731
@@ -836,23 +895,9 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
             "infra_retries": infra.get((task, tier), 0),
             "spares_left": sum(not r["tried"] and not r["selected"] for r in mine),
             "pending": sum(r["selected"] and r["rollout"] is None for r in mine),
+            "bad_h5": 0,
         }
-        if c["delivered"] == expected:
-            status, reason = "PASS", None
-        elif c["pending"]:
-            status, reason = "FAIL", "pending"
-            totals["pending_cells"] += 1
-        elif c["spares_left"] == 0:
-            status, reason = "FAIL", "exhausted"
-            totals["exhausted_cells"] += 1
-        else:
-            status, reason = "FAIL", "shortfall"
-        if status == "FAIL":
-            totals["failed_cells"] += 1
-            problems.append(f"{task}/{tier}:{c['delivered']}/{expected}:{reason}")
-        for key in V8_CELL_COUNT_KEYS:
-            totals[key] += c[key]
-        cell_out[f"{task}/{tier}"] = {"task": task, "tier": tier, "status": status, "reason": reason, **c}
+        bad_kinds: list[str] = []
         for r in sorted(mine, key=lambda r: int(r["candidate"])):
             rb = roll(r)
             if rb.get("error_type") == "exec_over_cap":
@@ -860,7 +905,22 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
                                   "exec_steps": rb.get("exec_steps")})
             if not hard_specs.delivered(r):
                 continue
-            h5_abs = os.path.abspath(rb["h5_path"]) if rb.get("h5_path") else None
+            recorded = rb.get("h5_path")
+            h5_abs, bad = (os.path.abspath(recorded) if recorded else None), None
+            if h5_abs and rebase:
+                h5_abs = rebase_path(h5_abs, rebase)
+                if h5_abs is None:
+                    bad = "h5_unmapped"
+            if bad is None and (not h5_abs or not Path(h5_abs).is_file()):
+                bad = "h5_missing"
+            if bad is None and rebase and _stream_sha256(Path(h5_abs)) != rb.get("h5_sha256"):
+                bad = "h5_sha_mismatch"
+            if bad is not None:
+                c["bad_h5"] += 1
+                bad_kinds.append(bad)
+                bad_rows.append({"task": task, "tier": tier, "candidate": int(r["candidate"]), "seed": int(r["seed"]),
+                                 "recorded_h5": recorded, "h5": h5_abs, "problem": bad})
+                continue
             # 两方统一口径（主会话 2026-10-01）：``h5`` = h5 绝对路径（站点 S4-A 读）；``path`` = 同一 h5 相对
             # delivery.json 所在目录（v7 delivery 的键名，hard_parity import-delivery／step-headroom 读）
             row_out = {"task": task, "tier": tier, "candidate": int(r["candidate"]), "seed": int(r["seed"]),
@@ -877,18 +937,38 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
                 if len(videos) == 1:
                     row_out["video"] = str(videos[0])
             rows_out.append(row_out)
-    ok = totals["failed_cells"] == 0 and totals["delivered"] == sum(cells.values())
+        if c["delivered"] == expected and not c["bad_h5"]:
+            status, reason = "PASS", None
+        elif c["pending"]:
+            status, reason = "FAIL", "pending"
+            totals["pending_cells"] += 1
+        elif c["delivered"] != expected and c["spares_left"] == 0:
+            status, reason = "FAIL", "exhausted"
+            totals["exhausted_cells"] += 1
+        elif c["delivered"] != expected:
+            status, reason = "FAIL", "shortfall"
+        else:
+            status, reason = "FAIL", bad_kinds[0]
+        if status == "FAIL":
+            totals["failed_cells"] += 1
+            problems.append(f"{task}/{tier}:{reason}")
+        for key in V8_CELL_COUNT_KEYS:
+            totals[key] += c[key]
+        cell_out[f"{task}/{tier}"] = {"task": task, "tier": tier, "status": status, "reason": reason, **c}
+    ok = totals["failed_cells"] == 0 and totals["delivered"] == sum(cells.values()) and not bad_rows
     n_tasks = len({task for task, _ in cells})
     line = (f"V8_DELIVERY_SET={'PASS' if ok else 'FAIL'} tasks={n_tasks} cells={len(cells)} total={totals['delivered']} "
             f"expected={totals['expected']} failed={totals['failed']} exec_over_cap={totals['exec_over_cap']} "
             f"backfills={totals['backfills']} infra_retries={totals['infra_retries']} "
-            f"exhausted_cells={totals['exhausted_cells']} pending_cells={totals['pending_cells']}"
-            + ("" if ok else f" problems={problems[:8]}"))
+            f"exhausted_cells={totals['exhausted_cells']} pending_cells={totals['pending_cells']} "
+            f"bad_h5={totals['bad_h5']}"
+            + ("" if ok else f" problems={';'.join(problems[:12])}" + (";..." if len(problems) > 12 else "")))
     report = {
         "schema": V8_DELIVERY_SCHEMA, "specs_root": str(specs_root), "cells_source": cells_label,
         "cells_table": cells_json(cells), "code_baseline": code_baseline, "exec_cap": hard_specs.V8_EXEC_CAP,
-        "ledgers": ledgers, "tasks": n_tasks, "cell_count": len(cells), "counts": totals,
-        "cells": cell_out, "rows": rows_out, "exec_over_cap_rows": over_rows, "line": line,
+        "ledgers": ledgers, "rebase": [list(p) for p in (rebase or [])], "tasks": n_tasks, "cell_count": len(cells),
+        "counts": totals, "cells": cell_out, "rows": rows_out, "bad_rows": bad_rows,
+        "exec_over_cap_rows": over_rows, "problems": problems, "line": line,
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -915,7 +995,13 @@ def run_continue_v8(specs_root: Path, cells: dict[tuple[str, str], int], output:
                                       gpu=gpu, pkg=pkg, code_baseline=code_baseline, resume=resume,
                                       max_infra_retries=max_infra_retries, batch_runner=batch_runner, tasks=tasks,
                                       ledger=ledger, check_traces=False)
-    report = aggregate_v8(specs_root, cells, [output], output / "delivery.json", cells_label=cells_label,
+    delivery = output / "delivery.json"
+    if delivery.exists():
+        # 只有 --resume 能走到这里：上一次的交付清单改名留证（显式打印），不静默覆盖
+        aside = delivery.with_name(f"delivery.json.prev-{int(time.time())}")
+        delivery.rename(aside)
+        print(f"# 上一次的 delivery.json 改名留证：{aside}", flush=True)
+    report = aggregate_v8(specs_root, cells, [output], delivery, cells_label=cells_label,
                           code_baseline=code_baseline)
     print(report["line"], flush=True)
     summary = {"attempted": sum(s["attempted"] for s in per_tier.values()),
@@ -977,7 +1063,8 @@ def split_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_out: Pa
 
 
 def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: list[Path], merged_root: Path,
-             out_dir: Path, *, cells_label: str = "full", code_baseline: str | None = None) -> dict[str, Any]:
+             out_dir: Path, *, cells_label: str = "full", code_baseline: str | None = None,
+             rebase: list[tuple[str, str]] | None = None) -> dict[str, Any]:
     """合并（全部片齐后）：各片格表两两不交、并集 == 格表；每片来源 identity 等于冻结根当前档；各片已跑完
     （无 selected 未跑行）；逐行身份键与冻结根逐字相同。合并文件 = 冻结根 header + 冻结根行（结果段
     ``selected``／``tried``／``rollout`` 取自所属片），只重算 ``delivery_sha256``，``identity_sha256`` 必须与冻结根
@@ -985,6 +1072,13 @@ def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: l
     from _freeze import write_jsonl_exclusive  # noqa: PLC0415
 
     cells = check_cells(cells)
+    # N3：写盘前先查全部目标（五档合并规格 + delivery.json）都不存在；存在即 FAIL 判定行、一个文件都不写
+    targets = [Path(merged_root) / tier / "specs.jsonl" for tier in cell_tiers(cells)] + [Path(out_dir) / "delivery.json"]
+    existing = [str(p) for p in targets if p.exists()]
+    if existing:
+        line = f"V8_MERGE=FAIL reason=targets_exist existing={len(existing)} first={existing[0]}"
+        print(line, flush=True)
+        return {"line": line, "existing": existing}
     owner: dict[tuple[str, str], Path] = {}
     metas = {}
     for shard in map(Path, shard_outs):
@@ -1044,7 +1138,7 @@ def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: l
     for tier, (header, rows) in merged.items():
         write_jsonl_exclusive(Path(merged_root) / tier / "specs.jsonl", [header, *rows])
     report = aggregate_v8(Path(merged_root), cells, list(map(Path, shard_outs)), Path(out_dir) / "delivery.json",
-                          cells_label=cells_label, code_baseline=code_baseline)
+                          cells_label=cells_label, code_baseline=code_baseline, rebase=rebase)
     print(f"V8_MERGE=PASS shards={len(metas)} tiers={len(merged)} cells={len(cells)} merged_root={merged_root}",
           flush=True)
     print(report["line"], flush=True)
