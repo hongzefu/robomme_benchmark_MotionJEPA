@@ -26,7 +26,10 @@ SCHEMA = "hard-specs/2"
 #: V7（0928 方案第二部分 §1.1）：/3 在 /2 的基础上多 header ``layout_rule`` 与行 ``layout_parent``；
 #: 身份键按 schema 分表，/2 的 identity_sha256 逐字不变（旧 v6 快照照旧可读）。
 SCHEMA_V7 = "hard-specs/3"
-SCHEMAS = (SCHEMA, SCHEMA_V7)
+#: V8（v8 方案第二部分 §2.2 第 2 条，R6）：/4 在 /3 的基础上多 header ``exec_cap``，且 ``delivery_per_cell``、
+#: ``select_rule``、``per_env`` 改为逐任务字典；签覆盖范围变了所以升 schema。/2、/3 的校验路径逐字不动。
+SCHEMA_V8 = "hard-specs/4"
+SCHEMAS = (SCHEMA, SCHEMA_V7, SCHEMA_V8)
 TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
 #: builder 档序：xhard0（官方 test 的 hard 子集，原生分支、不回注）在最前；TIERS 只含新值四档不变
 #: （EXPECTED_CELLS、freeze_specs --tier 等依赖它）。
@@ -57,9 +60,15 @@ RUNTIME = {
 # seed = offset + env_code × env_block + episode × 100 + attempt；env_code 是任务在 16 任务规范序里的 1-indexed 位置
 SEED_RULE = {"offset": 4_000_000, "env_block": 100_000, "episode_stride": 100,
              "formula": "offset + env_code*env_block + episode*100 + attempt"}
-#: 按档偏移的规则族：profile → {tier: offset}。V6（6e6～12e6）随 V6 删除已移除取值（v8 方案第二部分 §2.1b），
-#: 机制保留给 v8 将来登记（阶段 2 由 S2-A 加 "v8"）；新登记的偏移须与 V5（4e6）、V6 历史段、V7（14e6）互不重叠。
-TIER_SEED_OFFSETS: dict[str, dict[str, int]] = {}
+#: V8 按档 seed 偏移（v8 方案第二部分 §2.2 第 3 条，R9）：各档布局独立抽，档与档 seed 两两不交。
+#: 每档最大增量 16×100000 + 999×100 + 99 < 1.7e6，小于步长 2e6；最低 16e6 不碰 V5（4e6 起）、
+#: 旧 V6 段（6e6～13.7e6）与 V7／探针段（14e6～15.7e6）。
+V8_SEED_OFFSETS = {"xhard1": 16_000_000, "xhard2": 18_000_000, "xhard3": 20_000_000,
+                   "xhard4": 22_000_000, "xhard5": 24_000_000}
+#: 按档偏移的规则族：profile → {tier: offset}。V6（6e6～12e6）随 V6 删除已移除取值（v8 方案第二部分 §2.1b）；
+#: v8 登记在此。按档偏移的规则族只认本族登记的档位（不先经全局 TIERS 拒绝，xhard5 在阶段 3b 前即可用）；
+#: 新登记的偏移须与 V5（4e6）、旧 V6 段、V7（14e6）及已登记的族互不重叠。
+TIER_SEED_OFFSETS: dict[str, dict[str, int]] = {"v8": V8_SEED_OFFSETS}
 #: V7：四档同一 offset，同一候选号在四档里 seed 相同（母布局共用）；与 V5（4e6）、V6 历史段（6e6～12e6）互不重叠
 V7_SEED_OFFSET = 14_000_000
 SEED_PROFILES = ("v5", "v7", *TIER_SEED_OFFSETS)
@@ -81,6 +90,41 @@ EXPECTED_CELLS = frozenset(
     (task, tier) for tier in TIERS for task in ALL_TASKS if tier == "xhard4" or task not in XHARD4_ONLY
 )
 
+# ── V8 常量（v8 方案阶段 2；阶段 3b 前与 v7 并存，TIERS／BUILDER_TIERS／EXPECTED_CELLS／TIER_MAX_STEPS 不动，R10）──
+#: v8 新值五档（不含 xhard0）
+V8_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
+#: v8 抽样与交付的执行步上限：执行步（不含演示帧）> 1600 的候选记 exec_over_cap 并递补；/4 header ``exec_cap`` 必须等于它
+V8_EXEC_CAP = 1600
+
+
+def _v8_cells() -> dict[tuple[str, str], int]:
+    """v8 方案第一部分表 2 的 43 个新值格：(task, tier) → 正式交付局数（不含 xhard0）。"""
+    cells: dict[tuple[str, str], int] = {}
+    for tier, n in zip(("xhard1", "xhard2", "xhard3"), (17, 17, 16)):
+        cells[("PickXtimes", tier)] = n
+    for task in ("SwingXtimes", "StopCube"):
+        for tier in V8_TIERS:
+            cells[(task, tier)] = 10
+    for task in ("VideoUnmask", "ButtonUnmask"):
+        for tier in ("xhard1", "xhard2", "xhard3", "xhard4"):
+            cells[(task, tier)] = 20
+    for task in ("BinFill", "VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoPlaceButton", "VideoPlaceOrder",
+                 "PickHighlight", "VideoRepick"):
+        for tier in ("xhard1", "xhard2"):
+            cells[(task, tier)] = 40
+    for task in ("RouteStick", "PatternLock"):
+        for tier, n in zip(("xhard1", "xhard2", "xhard3"), (27, 27, 26)):
+            cells[(task, tier)] = n
+    for task in ("MoveCube", "InsertPeg"):
+        cells[(task, "xhard4")] = 20
+    return cells
+
+
+#: 43 格逐格表 {(task, tier): 局数}：完整根传给 load_specs_v8；冒烟／分片传各自的子表
+V8_CELLS: dict[tuple[str, str], int] = _v8_cells()
+assert len(V8_CELLS) == 43 and sum(V8_CELLS.values()) == 1070, "V8_CELLS 须为表 2 的 43 格、合计 1070"
+assert all(task in ALL_TASKS and tier in V8_TIERS for task, tier in V8_CELLS), "V8_CELLS 含未知任务或档位"
+
 # 签：进 identity_sha256 的 header 键与行键
 IDENTITY_HEADER_KEYS = ("schema", "difficulty", "tasks", "per_env", "runtime", "seed_rule", "select_rule",
                         "sampling_config_sha256", "recovery_rule", "identity_source")
@@ -92,11 +136,16 @@ HEADER_OPTIONAL = {"drafts_sha256", "legacy_identity_sha256", "source_files", "e
                    "dedup_dropped", "demo_frames_out_of_band", "notes"}
 ROW_KEYS = {"record", *IDENTITY_ROW_KEYS, "spec", "selected", "tried", "initial_selected", "rollout"}
 ROLLOUT_STATUSES = ("ok", "failed")
-#: 身份键按 schema 分表（/2 原样，保证 v6 规格摘要逐字不变）
+#: 身份键按 schema 分表（各 schema 的键表一经发布即冻结，已封存文件的 identity_sha256 逐字不变）；
+#: /4 = /3 的键 + ``exec_cap`` + ``delivery_per_cell``（逐任务配额与执行步上限进签，改了不重签必失败）
 IDENTITY_KEYS_BY_SCHEMA = {
     SCHEMA: (IDENTITY_HEADER_KEYS, IDENTITY_ROW_KEYS),
     SCHEMA_V7: (IDENTITY_HEADER_KEYS + ("layout_rule",), IDENTITY_ROW_KEYS + ("layout_parent",)),
+    SCHEMA_V8: (IDENTITY_HEADER_KEYS + ("layout_rule", "exec_cap", "delivery_per_cell"),
+                IDENTITY_ROW_KEYS + ("layout_parent",)),
 }
+#: /4 唯一合法的布局规则：各档布局独立抽，不派生
+V8_LAYOUT_RULE = {"mode": "independent"}
 
 
 def _schema_keys(schema: str) -> tuple[tuple[str, ...], tuple[str, ...], set[str], set[str]]:
@@ -135,16 +184,16 @@ def env_code(task: str) -> int:
 
 def seed_rule_for(difficulty: str = DIFFICULTY, profile: str = "v5") -> dict[str, Any]:
     """按档位与规则族给出 seed 规则；v5 只覆盖历史 xhard 单档，v7 四档同 offset，
-    TIER_SEED_OFFSETS 里登记的规则族按档偏移（v6 已删除）。"""
+    TIER_SEED_OFFSETS 里登记的规则族（v8）按档偏移、只用本族登记的档位校验（v6 已删除）。"""
     if difficulty == DIFFICULTY and profile == "v5":
         return dict(SEED_RULE)
-    if difficulty not in TIERS:
-        raise SpecsError(f"未知档位 {difficulty!r}，只支持 {TIERS}")
     if profile in TIER_SEED_OFFSETS:
         offsets = TIER_SEED_OFFSETS[profile]
         if difficulty not in offsets:
-            raise SpecsError(f"seed 规则 {profile} 未登记档位 {difficulty!r}")
+            raise SpecsError(f"seed 规则 {profile} 未登记档位 {difficulty!r}，只支持 {tuple(offsets)}")
         return {**SEED_RULE, "offset": offsets[difficulty]}
+    if difficulty not in TIERS:
+        raise SpecsError(f"未知档位 {difficulty!r}，只支持 {TIERS}")
     if profile == "v7":
         return {**SEED_RULE, "offset": V7_SEED_OFFSET}
     known = "／".join(("v7", *TIER_SEED_OFFSETS))
@@ -286,9 +335,95 @@ def load_specs_v7(root: str | Path, *, check_fingerprint: bool = True) -> dict[s
     return out
 
 
+def _is_int(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]]) -> None:
+    """``hard-specs/4`` 单文件校验（v8 方案第二部分 §2.2 第 2 条）：
+
+    * header：字段集合；``difficulty ∈ V8_TIERS``；runtime；``seed_rule == seed_rule_for(tier, "v8")``；
+      ``exec_cap == V8_EXEC_CAP``；``layout_rule == {"mode": "independent"}``；``tasks`` 不重复且每个 (task, tier)
+      都在 ``V8_CELLS`` 里；``select_rule`` 为 ``{task: [不重复非负整数]}``、``per_env`` 为 ``{task: 候选数（非负整数）}``、
+      ``delivery_per_cell`` 为 ``{task: 正整数}``，三者键集合都等于 ``tasks``；内嵌 sampling_config 散列自洽；
+    * 行：字段集合；``layout_parent is None``、``spec.spec_kind == "native-newvalue/2"``；档位、规格散列、seed 公式、
+      布尔位、rollout.status；逐任务 selected 行数 ≤ ``delivery_per_cell[task]``；
+    * 两个身份散列（签含 exec_cap、delivery_per_cell、seed_rule，改任一项不重签即失败）。
+    """
+    _, _, header_required, row_required = _schema_keys(SCHEMA_V8)
+    _exact_keys(header, header_required, "specs header", HEADER_OPTIONAL)
+    if header["record"] != "header":
+        raise SpecsError(f"specs 版本不符：{SCHEMA_V8}")
+    tier = header["difficulty"]
+    if tier not in V8_TIERS or header["runtime"] != RUNTIME:
+        raise SpecsError(f"hard-specs/4 档位或 runtime 不符：{tier!r}")
+    if header["seed_rule"] != seed_rule_for(tier, "v8"):
+        raise SpecsError(f"hard-specs/4 只接受 v8 按档 seed 规则（{tier}）")
+    if not _is_int(header["exec_cap"]) or header["exec_cap"] != V8_EXEC_CAP:
+        raise SpecsError(f"hard-specs/4 的 exec_cap 必须为 {V8_EXEC_CAP}：{header['exec_cap']!r}")
+    if header["layout_rule"] != V8_LAYOUT_RULE:
+        raise SpecsError(f"hard-specs/4 的 layout_rule 必须为 {V8_LAYOUT_RULE}：{header['layout_rule']!r}")
+    tasks = header["tasks"]
+    if not isinstance(tasks, list) or len(set(tasks)) != len(tasks):
+        raise SpecsError(f"hard-specs/4 的 tasks 必须是不重复列表：{tasks!r}")
+    stray = [task for task in tasks if (task, tier) not in V8_CELLS]
+    if stray:
+        raise SpecsError(f"hard-specs/4 的任务不在 {tier} 交付格内：{stray}")
+    for name in ("select_rule", "per_env", "delivery_per_cell"):
+        value = header[name]
+        if not isinstance(value, dict) or set(value) != set(tasks):
+            raise SpecsError(f"hard-specs/4 的 {name} 必须是键集合等于 tasks 的逐任务字典：{value!r}")
+    for task in tasks:
+        indices = header["select_rule"][task]
+        if not isinstance(indices, list) or not all(_is_int(i) and i >= 0 for i in indices) \
+                or len(set(indices)) != len(indices):
+            raise SpecsError(f"hard-specs/4 的 select_rule[{task}] 必须是不重复非负整数列表：{indices!r}")
+        if not _is_int(header["per_env"][task]) or header["per_env"][task] < 0:
+            raise SpecsError(f"hard-specs/4 的 per_env[{task}] 必须是非负整数：{header['per_env'][task]!r}")
+        if not _is_int(header["delivery_per_cell"][task]) or header["delivery_per_cell"][task] <= 0:
+            raise SpecsError(f"hard-specs/4 的 delivery_per_cell[{task}] 必须是正整数："
+                             f"{header['delivery_per_cell'][task]!r}")
+    if header["sampling_config_sha256"] != digest(header["sampling_config"]):
+        raise SpecsError("内嵌 sampling_config 散列不自洽")
+    seen, selected_count = set(), {}
+    for row in rows:
+        _exact_keys(row, row_required, "specs 行")
+        key = (row["task"], int(row["candidate"]))
+        if row["record"] != "spec" or key in seen or row["task"] not in tasks:
+            raise SpecsError(f"重复或额外的规格行：{key}")
+        seen.add(key)
+        if row["tier"] != tier:
+            raise SpecsError(f"规格行档位与 header 不符：{key}")
+        if row["layout_parent"] is not None or (row.get("spec") or {}).get("spec_kind") != "native-newvalue/2":
+            raise SpecsError(f"hard-specs/4 行 layout_parent 必须为 null、规格为 native-newvalue/2：{key}")
+        if row["spec_sha256"] != spec_sha256(row["spec"]):
+            raise SpecsError(f"规格散列不符：{key}")
+        if row["seed"] != seed_for(row["task"], row["episode"], row["attempt"], header["seed_rule"]):
+            raise SpecsError(f"seed 与公式不符：{key}")
+        for flag in ("selected", "tried", "initial_selected"):
+            if type(row[flag]) is not bool:
+                raise SpecsError(f"{flag} 必须是布尔：{key}")
+        rollout = row["rollout"]
+        if rollout is not None and rollout.get("status") not in ROLLOUT_STATUSES:
+            raise SpecsError(f"rollout.status 非法：{key}")
+        if row["selected"]:
+            selected_count[row["task"]] = selected_count.get(row["task"], 0) + 1
+    over = {task: n for task, n in selected_count.items() if n > header["delivery_per_cell"][task]}
+    if over:
+        raise SpecsError(f"逐任务 selected 行数超过 delivery_per_cell：{over}")
+    if identity_sha256(header, rows) != header["identity_sha256"]:
+        raise SpecsError("identity_sha256 不符（签或来源被改过）")
+    if delivery_sha256(rows) != header["delivery_sha256"]:
+        raise SpecsError("delivery_sha256 不符（正式交付集合被改过）")
+
+
 def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]]) -> None:
-    """封套校验：字段集合、runtime、seed 规则、配置散列、逐行 seed 与规格散列、两个身份散列、每格正式局数上限。"""
+    """封套校验：字段集合、runtime、seed 规则、配置散列、逐行 seed 与规格散列、两个身份散列、每格正式局数上限。
+    ``hard-specs/4`` 走独立分支 ``_validate_specs_v8``；/2、/3 走下面的原路径。"""
     schema = header.get("schema")
+    if schema == SCHEMA_V8:
+        _validate_specs_v8(header, rows)
+        return
     _, _, header_required, row_required = _schema_keys(schema)
     _exact_keys(header, header_required, "specs header", HEADER_OPTIONAL)
     if header["record"] != "header":
@@ -359,6 +494,64 @@ def load_specs(path: str | Path, *, check_fingerprint: bool = True):
             if provenance.get(key) not in (None, value):
                 warnings.warn(f"{path}：{key} 与当前源码不符（只警告，不拒绝）")
     return copy.deepcopy(header), copy.deepcopy(rows)
+
+
+def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], *,
+                  check_fingerprint: bool = True) -> dict[str, tuple[dict[str, Any], list[dict[str, Any]]]]:
+    """读 v8 规格根（``<root>/<tier>/specs.jsonl``，``hard-specs/4``），只校验调用方给定的格表。
+
+    ``expected_cells``：``{(task, tier): 局数}``，键必须是 ``V8_CELLS`` 键的子集、值为正整数（值可小于
+    ``V8_CELLS``，如冒烟每格 1 局）。完整根传 ``V8_CELLS``、冒烟传 7 格表、分片传该片子集。只读 ``expected_cells``
+    涉及的档位文件（其他档的文件即使存在也不读），逐份走 ``load_specs``（/4 校验），另查：
+
+    * 每份 ``schema == "hard-specs/4"``、``difficulty`` 等于目录档名；
+    * 每份 header ``tasks`` 的集合等于 ``expected_cells`` 在该档的任务集合；
+    * 每格 ``selected`` 行数等于 ``expected_cells`` 的值（相等，不是 ≤）；
+    * 同任务跨档 seed 两两不交（比全部规格行，不只 selected）。
+
+    返回 ``{tier: (header, rows)}``，与 ``load_specs_v7`` 同形态：键只含涉及的档位、按 ``V8_TIERS`` 顺序；
+    rows 为该档全部规格行（调用方按 ``selected`` 或 ``delivered`` 取）。任一不符抛 ``SpecsError``。
+    """
+    if not isinstance(expected_cells, dict) or not expected_cells:
+        raise SpecsError("expected_cells 必须是非空 {(task, tier): 局数} 字典")
+    stray = sorted(key for key in expected_cells if key not in V8_CELLS)
+    if stray:
+        raise SpecsError(f"expected_cells 含 V8_CELLS 之外的格：{stray}")
+    bad = {key: n for key, n in expected_cells.items() if not _is_int(n) or n <= 0}
+    if bad:
+        raise SpecsError(f"expected_cells 的局数必须是正整数：{bad}")
+    out: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
+    for tier in V8_TIERS:
+        want = {task for task, t in expected_cells if t == tier}
+        if not want:
+            continue
+        path = Path(root) / tier / "specs.jsonl"
+        if not path.is_file():
+            raise SpecsError(f"v8 规格根缺少 {path}")
+        header, rows = load_specs(path, check_fingerprint=check_fingerprint)
+        if header["schema"] != SCHEMA_V8 or header["difficulty"] != tier:
+            raise SpecsError(f"{path}：schema 须为 {SCHEMA_V8}、档位须为 {tier}"
+                             f"（实为 {header['schema']}／{header['difficulty']}）")
+        got_tasks = set(header["tasks"])
+        if got_tasks != want:
+            raise SpecsError(f"{tier} 任务集合不符：缺少 {sorted(want - got_tasks)}，多出 {sorted(got_tasks - want)}")
+        for task in sorted(want):
+            got = sum(1 for row in rows if row["task"] == task and row["selected"])
+            if got != expected_cells[(task, tier)]:
+                raise SpecsError(f"{task}/{tier} selected 行数 {got} ≠ 期望 {expected_cells[(task, tier)]}")
+        out[tier] = (header, rows)
+    seeds: dict[str, dict[str, set[int]]] = {}
+    for tier, (_, rows) in out.items():
+        for row in rows:
+            seeds.setdefault(row["task"], {}).setdefault(tier, set()).add(int(row["seed"]))
+    for task, by_tier in seeds.items():
+        names = list(by_tier)
+        for i, a in enumerate(names):
+            for b in names[i + 1:]:
+                common = by_tier[a] & by_tier[b]
+                if common:
+                    raise SpecsError(f"{task} 在 {a} 与 {b} 的 seed 相交：{sorted(common)[:5]}")
+    return out
 
 
 #: 规格根覆盖（0928 方案第二部分 §1.1）：设了即从该目录读 xhard{1..4}/specs.jsonl，缺省读包内
