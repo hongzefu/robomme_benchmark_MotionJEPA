@@ -19,7 +19,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | 判据 | 环境 A：sled-vail 本机（2026-09-26 口径） |
 |---|---|
 | 主机名（`hostname` 前缀） | `sled-vail` |
-| 仓库根 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（`newtaskRelease-v5` 分支；`dataset-gen-NewSeed` 分支另检出在 `/data/hongzefu/robomme_benchmark_MotionJEPA`） |
+| 仓库根 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`（`newtaskRelease-taskV8` 分支，对应 Markdown 的 NewTask V8 迭代；旧分支均保留；`dataset-gen-NewSeed` 分支另检出在 `/data/hongzefu/robomme_benchmark_MotionJEPA`） |
 | 共享存储路径（NFS） | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/` 存在、可直读；集群侧克隆 `robomme_benchmark-newtask-gl` |
 | 本机盘路径 | `/data/hongzefu/`（NVMe 14 TB） |
 | 单机工作盘路径 | 无（不适用） |

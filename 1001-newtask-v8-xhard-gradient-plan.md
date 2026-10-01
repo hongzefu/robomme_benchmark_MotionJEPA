@@ -2,15 +2,15 @@
 
 > **权威性**：本文件是 v8 配置调整的方案，只规划不实施：改 `src/robomme_hard` 常量、改 `TIER_MAX_STEPS`、删 V6、正式抽签与生成，每一步单独获批。
 >
-> **分支**：v8 在新分支 `newtaskRelease-v6` 上实施（用户 2026-10-01「让这个计划要开启一个新的 Branch 现在的 Branch 是 v5 改成 v6」），自 `newtaskRelease-v5` 的 `49ba3eb8`（12.279）分出；`newtaskRelease-v5` 停在 v7 交付态。工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。
+> **分支**：v8 的现行分支为 `newtaskRelease-taskV8`，基于旧分支 `newtaskRelease-v6` 的 `f406abe5`（12.281）仅新增，旧分支名称与提交指针均保留。旧 `newtaskRelease-v6` 自旧 `newtaskRelease-v5` 的 `49ba3eb8`（12.279）分出；`49ba3eb8` 已包含 V8 计划，不能称作纯 v7 交付态。历史用户原话与当时理解保留在第二部分 §2.8；本次只对齐分支名称与当前说明，V8 仍只规划不实施。工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。
 >
 > **代码锚点**：v7 交付规格 `src/robomme_hard/env_metadata/test-hard/xhard{1..4}/specs.jsonl`（四份 header 的 `sampling_config_sha256` 都是 `4a308ee7…`，`seed_rule.offset=14000000`）。官方环境源码 `1fadc0ec`、官方生成编排 `d53f21a7`（vendor 在 `scripts/parity/official/`）都不改。
 >
-> **commit 编号**：12.277 首版；12.278、12.279 修订局数口径；12.280 重写第一部分（表格 + 改动清单 + 验收；删 V6 对拍；建分支 v6）；12.281 本次修订（PickXtimes 去掉 9、10 次；抽样过滤执行步 > 1600；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick／PatternLock 改区间；非梯度参数一律不改）。实施从 12.282 接续。
+> **commit 编号**：12.277 首版；12.278、12.279 修订局数口径；12.280 重写第一部分（表格 + 改动清单 + 验收；删 V6 对拍；建分支 v6）；12.281 本次修订（PickXtimes 去掉 9、10 次；抽样过滤执行步 > 1600；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick／PatternLock 改区间；非梯度参数一律不改）。12.282 为本轮分支对齐文档，不算 V8 实施；真正的 V8 实施从 12.283 接续，仍须另行获批。
 >
 > **术语**：执行步 = h5 的 `timestep_*` 个数减去 `info/is_video_demo` 为真的帧数（口径同 `hard_regression.py::cmd_step_headroom`）；`TIER_MAX_STEPS` 只约束执行段；d = 放置圆盘中心到机械臂底座 (−0.615, 0) 的水平距离，单位米。
 >
-> **已定**（用户原话逐字见第二部分 §2.8）：非梯度参数一律不改（PickXtimes 圆盘区域不动）；PickXtimes 去掉 9、10 次，交付 xhard1～3 = 6／7／8；SwingXtimes、StopCube 扩为 xhard1～5 每档一个定值；三任务每档 10 局；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick、PatternLock xhard1～3 改区间；抽样时全部任务过滤执行步超过 1600 的候选并递补，上限定死 1600；其余任务局数沿用 v7 总数、缺档平分；xhard0 保留，xhard0 对拍保留；V6 对拍不再跑，V6 设施删除；V7 对拍设施保留改名 V8；实施分支 `newtaskRelease-v6`。
+> **已定**（用户原话逐字见第二部分 §2.8）：非梯度参数一律不改（PickXtimes 圆盘区域不动）；PickXtimes 去掉 9、10 次，交付 xhard1～3 = 6／7／8；SwingXtimes、StopCube 扩为 xhard1～5 每档一个定值；三任务每档 10 局；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick、PatternLock xhard1～3 改区间；抽样时全部任务过滤执行步超过 1600 的候选并递补，上限定死 1600；其余任务局数沿用 v7 总数、缺档平分；xhard0 保留，xhard0 对拍保留；V6 对拍不再跑，V6 设施删除；V7 对拍设施保留改名 V8；实施分支按本轮分支对齐改为 `newtaskRelease-taskV8`。
 >
 > **待拍板**：① 各档布局共用前缀（v7 做法：低档照抄母布局前缀）还是互不重叠。另：PickXtimes 去掉两档后按「每档 10 局」记 30 局；若要把 50 局平分到三档（17／17／16），说一句即可。
 
@@ -131,7 +131,7 @@
 | 留（只读） | `docs/validation/newtask-v6/`、`docs/plans/0925-newtask-release-v6-plan.md` 留档；是否删由用户另说 |
 | 不动 | `scripts/configs/newtask-v3/`、`newtask-v7/xhard0_manifest.json`、`hard-parity-tolerances.json`：xhard0 对拍与 V8 对拍仍用 |
 
-逐文件清单与理由见第二部分 §2.1b。另：`AGENTS.md` 第 0 条判据表的分支名改 `newtaskRelease-v6`。
+逐文件清单与理由见第二部分 §2.1b。另：`AGENTS.md` 第 0 条判据表的当前分支名在本轮分支对齐中改为 `newtaskRelease-taskV8`。
 
 ## 3. 验收
 
@@ -222,7 +222,7 @@
 | 留（只读） | `docs/validation/newtask-v6/`、`docs/plans/0925-newtask-release-v6-plan.md` | 留档，git 可取回；是否删由用户另说 |
 | 不动 | `scripts/configs/newtask-v3/`、`newtask-v7/xhard0_manifest.json`、`hard-parity-tolerances.json` | V3 官方 train 元数据、xhard0 清单、V7 对拍容差，xhard0 对拍与 V8 对拍仍用 |
 
-另：`AGENTS.md` 第 0 条判据表「仓库根」一栏的分支名 `newtaskRelease-v5` 改为 `newtaskRelease-v6`（标记块外，允许改）。
+另：`AGENTS.md` 第 0 条判据表「仓库根」一栏的当前分支名在本轮分支对齐中由 `newtaskRelease-v5` 改为 `newtaskRelease-taskV8`（标记块外，允许改）。
 
 ## 2.2 交付形态改动（合作者的表要求的，不属于数值配置）
 
@@ -329,7 +329,7 @@ ROBOMME_ENV_PACKAGE=robomme_hard OMP_NUM_THREADS=1 uv run --no-sync python scrip
 
 - 本文件 12.277 首版、12.278／12.279 修订局数、12.280 重写第一部分并建分支、12.281 修订梯度（去 9／10 次、过滤 1600、VU／BU xhard1、区间档），每次只 `git add` 这一个文件。工作区里 `third_party/SimpleMemVLA` 的子模块内容改动（` m`）是他人在途工作，不动。
 - 探针产物 `artifacts/v8-probe/` 不进 git。探针脚本在会话 scratchpad 不保留，方法按 §2.4.1 可以复现。
-- 实施在分支 `newtaskRelease-v6` 上进行；每个阶段单独 commit，从 12.282 接续。commit body 按第 11 条写用户原话、计划、过程、意外、实测与下一步。正式生成的留档写到 `docs/validation/newtask-v8/`。
+- 12.282 只记录本轮分支对齐文档，不算 V8 实施。后续获批的 V8 实施在分支 `newtaskRelease-taskV8` 上进行；每个阶段单独 commit，从 12.283 接续。commit body 按第 11 条写用户原话、计划、过程、意外、实测与下一步。正式生成的留档写到 `docs/validation/newtask-v8/`。
 
 ## 2.8 口径来源：用户原话（逐字，按时间）
 
