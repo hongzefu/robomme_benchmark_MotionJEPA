@@ -148,6 +148,6 @@ def test_check_xhard0改seed缺行多行均FAIL(manifest):
 def test_hard_parity的xhard0常量与包内一致():
     assert H.XHARD0_PER_TASK == V.XHARD0_PER_TASK
     assert H.XHARD0_EPISODES == V.XHARD0_EPISODES
-    assert "xhard0" in H.TIERS and "v7" in H.TIERS and "H2" in H.SIDES and "H:H2" in H.PAIRS
+    assert "xhard0" in H.TIERS and "v8" in H.TIERS and "H2" in H.SIDES and "H:H2" in H.PAIRS
     assert H.SHAPES["xhard0"] == "16x1x12"
     assert H.XHARD0_MANIFEST == MANIFEST
