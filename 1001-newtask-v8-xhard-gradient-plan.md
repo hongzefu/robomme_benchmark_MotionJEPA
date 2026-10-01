@@ -6,13 +6,13 @@
 >
 > **代码锚点**：v7 交付规格 `src/robomme_hard/env_metadata/test-hard/xhard{1..4}/specs.jsonl`（四份 header 的 `sampling_config_sha256` 都是 `4a308ee7…`，`seed_rule.offset=14000000`）。官方环境源码 `1fadc0ec`、官方生成编排 `d53f21a7`（vendor 在 `scripts/parity/official/`）都不改。
 >
-> **commit 编号**：12.277 首版；12.278、12.279 修订局数口径；12.280 重写第一部分（表格 + 改动清单 + 验收；删 V6 对拍；建分支 v6）；12.281 修订（PickXtimes 去掉 9、10 次；抽样过滤执行步 > 1600；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick／PatternLock 改区间；非梯度参数一律不改）。12.282 为分支对齐文档。12.283 修订（四项拍板：各档布局独立抽、PickXtimes 50 局分 17／17／16、派生工具链保留不调用、只抽交付格、V6 留档保留）。12.284 修订（v8 站点与 v7 布局完全一致、评估板块置空不删；v8 不做两策略评估；`v6_site.py` 服务端改名保留）。12.285 修订（维持 A40；7 个占位 job 已提交；xhard0 评估对拍与生成并行；生成完自动建站并通知）。12.286 本次修订（对抗验证：workflow 4 方向审查 57 条、反驳后保留 56 条，加 Codex 审查 9 条逐条核实成立，合并为 11 项修改——xhard5 不进全局族常量、按档 seed 偏移、阶段重排并补「换包」、schema/4 的加载与生成入口、判定行可产出且不误报、逐任务候选表、P3 一次性预算、GL 运行手册与 P4 通知链、站点逐段信息链、测试清单补全、表述更正；外加对抗验证后四项拍板）。真正的 V8 实施从 12.287 接续，仍须另行获批。
+> **commit 编号**：12.277 首版；12.278、12.279 修订局数口径；12.280 重写第一部分（表格 + 改动清单 + 验收；删 V6 对拍；建分支 v6）；12.281 修订（PickXtimes 去掉 9、10 次；抽样过滤执行步 > 1600；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick／PatternLock 改区间；非梯度参数一律不改）。12.282 为分支对齐文档。12.283 修订（四项拍板：各档布局独立抽、PickXtimes 50 局分 17／17／16、派生工具链保留不调用、只抽交付格、V6 留档保留）。12.284 修订（v8 站点与 v7 布局完全一致、评估板块置空不删；v8 不做两策略评估；`v6_site.py` 服务端改名保留）。12.285 修订（维持 A40；7 个占位 job 已提交；xhard0 评估对拍与生成并行；生成完自动建站并通知）。12.286 本次修订（对抗验证：workflow 4 方向审查 57 条、反驳后保留 56 条，加 Codex 审查 9 条逐条核实成立，合并为 11 项修改——xhard5 不进全局族常量、按档 seed 偏移、阶段重排并补「换包」、schema/4 的加载与生成入口、判定行可产出且不误报、逐任务候选表、P3 一次性预算、GL 运行手册与 P4 通知链、站点逐段信息链、测试清单补全、表述更正；外加对抗验证后四项拍板）。12.287 记录 P3 预算整表获批，并写定 gen1 与二次生成结果不同时的处置口径（第二部分 §2.2 第 11 条）。真正的 V8 实施从 12.288 接续，仍须另行获批。
 >
 > **术语**：执行步 = h5 的 `timestep_*` 个数减去 `info/is_video_demo` 为真的帧数（口径同 `hard_regression.py::cmd_step_headroom`）；`TIER_MAX_STEPS` 只约束执行段；d = 放置圆盘中心到机械臂底座 (−0.615, 0) 的水平距离，单位米。
 >
 > **已定**（用户原话逐字见第二部分 §2.8）：非梯度参数一律不改（PickXtimes 圆盘区域不动）；PickXtimes 去掉 9、10 次，交付 xhard1～3 = 6／7／8；SwingXtimes、StopCube 扩为 xhard1～5 每档一个定值、每档 10 局，PickXtimes 17／17／16；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick、PatternLock xhard1～3 改区间（RouteStick 区间内均匀抽；PatternLock 只保证落在区间内、区间内比例不保证均匀）；抽样时全部任务过滤执行步超过 1600 的候选并递补，上限定死 1600；其余任务局数沿用 v7 总数、缺档平分；xhard0 保留，xhard0 对拍保留；V6 对拍不再跑，V6 设施删除；V7 对拍设施保留改名 V8；实施分支按本轮分支对齐改为 `newtaskRelease-taskV8`。**2026-10-01 四项拍板（原话见 §2.8 第 13～16 条）**：①各档布局各自独立抽初始化位置，不再从母布局派生、不要求前缀重叠；②PickXtimes 仍按 50 局分到三档，17／17／16；③派生工具链（`derive_specs.py`、`layout_whitelist.json`、`layout-shared`／`prefix-geometry` 守卫）保留，v8 不调用；④只抽交付的 43 格，不交付的档不抽、不生成；⑤`docs/validation/newtask-v6/` 与 `docs/plans/0925-newtask-release-v6-plan.md` 留档保留。**⑥站点与评估（原话见 §2.8 第 16 条）**：v8 交付一个与 v7 站点（`site/v7_site.html`）布局完全一致的逐局站点；v8 不做 SimpleMemVLA／MME-VLA 两策略评估，站点里所有评估板块（策略成功率列、成败筛选、每局的两段策略视频、旧入口对照、翻转标记）原位保留、内容置空，不删除；阶段 4 的「评估侧核对」取消。**⑦席位与并行（原话见 §2.8 第 17～19 条）**：维持 A40；2026-10-01 16:05～16:07 EDT 已提交 7 个 48 h 占位 job——生成席 `v8gen-hold-1～4`（63003408～63003411，各 1 A40／4 CPU／48 G）、xhard0 评估席 `v8eval-hold-1～2`（63003486、63003487，同规格）、编排席 `v8eval-orch`（63003488，standard 分区 1 CPU／4 G 无 GPU），清单 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/gl-hold-logs/hold-jobs-v8gen-20261001.txt`；xhard0 评估在评估席上跑、与生成并行（规模与口径见 ⑧②），v8 新局不评估；生成完成后自动建站、浏览器检查并推送通知，该链路读取并核验最终报告而不是只听完成行，只在当前会话存活时成立（P4），阶段 2 用六种小夹具走通成功与失败两类路径（第二部分 §2.4.4）。**⑧对抗验证后四项拍板（2026-10-01，原话见 §2.8 第 20～24 条）**：①二次生成对拍要跑：交付集 43 格再生成一遍，1 任务 × (17 + 17 + 16) + 2 任务 × 5 档 × 10 + 2 任务 × 4 档 × 20 + 7 任务 × 2 档 × 40 + 2 任务 × (27 + 27 + 26) + 2 任务 × 1 档 × 20 = 1070 局；②xhard0 评估两条路线（官方路线、hard 路线）都重跑：16 任务 × 1 档 × 12 局 × 2 策略 × 2 路线 = 768 局，只出 `XHARD0_EVAL_PARITY=INFO`，「v8 没改坏 xhard0」由确定性的 `XHARD0_RESET_PARITY` 证明；③PatternLock 不改采样代码，只改表述，生成后逐格报告节点数分布；④7 个占位 job 等全部任务结束后按清单释放，现在不动。
 >
-> **待拍板**：无。**待批准**：P3 一次性预算表（第二部分 §2.4.3），须在阶段 1 开跑前一次批完；批准前不启动任何 reset／rollout。
+> **待拍板**：无。**已批准**：P3 一次性预算表（第二部分 §2.4.3）已于 2026-10-01 整表获批（原话「同意所有预算」，§2.8 第 25 条）：reset 上限约 4,452、rollout 上限约 3,272（另加基础设施重试每身份 ≤ 1 次）；之后按整份清单连续执行，不再逐阶段申请同一授权；超出任一行上限时暂停受影响部分，合并为一次补充授权。
 
 # 第一部分（给人看）
 
@@ -176,7 +176,7 @@
 | 步数上限 | `hard_regression.py step-headroom --delivery <delivery.json> --pool <候选池>` | 交付 h5 的非演示步全部 ≤ 1600；`filtered=` 是抽样阶段因超限被丢弃并递补的候选数；xhard0 按 1300 单独查 | `V8_STEP_CAP=PASS max=<实测> cap=1600 over=0 filtered=<n> xhard0_max=<实测> xhard0_cap=1300` | 3 |
 | 回注回放 | `hard_regression.py reset-replay`（换包后读包内） | 43 格各 1 局按规格回注 reset，注入值与记录一致 | `V8_RESET_REPLAY=PASS shape=cells43 resets=43 replay=43 injected_mismatch=0 layout_drift=0 unused=0 layout_hit_bad=0 errors=0` | 3b |
 | 评估入口 | `hard_regression.py eval-smoke`，xhard0 与 xhard5 各 1 局 | `evaluation_hard.py` 的 builder、按档步数上限、xhard5 档能走通 | `HARD_EVAL_SMOKE=PASS`（每局一行，带 task／episode／tier／seed） | 3b |
-| 二次生成对拍 | `hard_parity.py compare --pair H:H2 --tier v8` | 先核对「冻结交付集 = `delivery.json` = H = H2」，再逐局比身份、成败、配置、schema 与容差；FAIL 须逐身份分为「噪声」或「二次生成失败」交用户裁决（v7 先例：InsertPeg 二次生成失败致 FAIL，用户裁决放行） | `PARITY_H_H2=PASS tier=v8 compared=1070 cells=43 missing=0 extra=0 duplicate=0 identity_equal=1070 ...` | 4 |
+| 二次生成对拍 | `hard_parity.py compare --pair H:H2 --tier v8` | 先核对「冻结交付集 = `delivery.json` = H = H2」，再逐局比身份、成败、配置、schema 与容差；FAIL 须逐身份分为「噪声」或「二次生成失败」交用户裁决（v7 先例：InsertPeg 二次生成失败致 FAIL，用户裁决交付集不动）；交付永远以 gen1 为准，二次生成只用于对拍、不替换交付（处置口径见第二部分 §2.2 第 11 条） | `PARITY_H_H2=PASS tier=v8 compared=1070 cells=43 missing=0 extra=0 duplicate=0 identity_equal=1070 ...` | 4 |
 | xhard0 评估 | `scripts/eval-official/orchestrate.py` 在评估席跑两条路线，再逐策略 `hard_regression.py xhard0-eval-parity` | **只报告，不是闸门**：策略层不可复现（v7 MME 同入口同卡重跑 11 局有 5 局翻转），参考 v7 值 SimpleMemVLA status_diff 0／steps_diff 16、MME 11／71 | `XHARD0_EVAL_PARITY=INFO policy=<名> compared=192 status_diff=<n> steps_diff=<n>`（每策略一行） | 3′ |
 | 站点与 v7 布局一致 | `v8_site_browser_check.py --shots <目录>`（Playwright） | v7 页面的 15 个 DOM 区块都在（`sidebar`、`task-search`、`task-nav`、`status-panel`、`outlier-section`、`oracle-section`、`task-section`、`matrix`、`tier-tabs`、`filters`、`legend`、`rerun-panel`、`chips`、`episode`、`notes`）；评估位显示「未评估」、成败筛选零命中、无失败徽标、无评估媒体请求；逐段数据完整；配置面板数值与表 1 一致；xhard5 列与生成视频可播放；截图目视复核 | `V8_SITE=PASS sections=15 eval_placeholders=<n> eval_filter_hits=0 eval_media_requests=0 subgoal_missing=0 config_mismatch=0` | 4 |
 | 各档总表页 | `v8_oracle_browser_check.py` | oracle 区的逐格专家步数统计与 v8 交付 h5 一致 | `V8_ORACLE_BROWSER=PASS cells=59 missing=0` | 4 |
@@ -318,6 +318,14 @@
     - VideoUnmask／ButtonUnmask：四档各 20，不需要取整。
     - RouteStick／PatternLock：80 ÷ 3，取 27／27／26。
     - 取整按「低档多一局」，已按「取整等细节自己定」的长期指示决定。
+11. **gen1 与二次生成的区别，以及两者结果不同时怎么处理**（用户 2026-10-01 问「这些之前生成过程中有不同吗 如果不同是怎么处理的」，§2.8 第 26 条）：
+    - **两者做的事不同，所以局数不同**：gen1 是「抽候选 → 逐个生成 → 失败就从同格备用候选递补，直到每格凑够配额」，上限 1425 = 首轮 1070 + 备用 355；二次生成只把 gen1 已交付的 1070 个身份（同规格、同 seed）各重放一次，不递补，所以恰好 1070。交付数据集永远是 gen1；二次生成只用来对拍「同一份规格再生成一次是否得到同样的数据」，不替换交付。
+    - **v7 实测（`docs/validation/newtask-v7/README.md` ③⑤）**：gen1 首跑 `attempted=1130 delivered=1098 sync_dropped=27 backfills=25`，InsertPeg 12 个候选生成失败、递补上限用尽，只交付 18/20，`V7_DELIVERY_SET=FAIL`；追加抽 60 个 InsertPeg 候选（60 次 reset）、手动补位 2 局后交付 1100，超出每格递补上限的部分由用户事后追认（2026-09-29「3同意递补」）。二次生成在另一个占位 job 上重放 1100 局（2 小时 45 分），结果：1086 局逐字节相同；13 局 sha 不同，但身份、setup、结构、成败全相同，首个分叉步 ≥ 118，按噪声口径记录（1.2%，在 5% 硬线内）；1 局 `xhard4/InsertPeg/8` 二次生成在规划阶段失败（gen1 同身份成功 505 帧），使 `PARITY_H_H2=FAIL`。没有改判据，交用户在「(a) 认定偶发、交付集不动」与「(b) 换备用候选重生成并重评」之间裁决；用户 2026-09-29 裁决「1暂时不管」——交付集保持 gen1 不动，H2 副本保留，FAIL 不阻塞打 `parity-anchor-v7`。
+    - **v8 的处置口径（预先写定，不现场放宽）**：
+      - 逐身份分成四类并在判定行与留档里分别计数：逐字节相同；噪声（身份、setup、schema、成败相同，只有 sha 与帧数不同，记首个分叉步）；二次生成失败而 gen1 成功；成败相反。
+      - 噪声在容差内、且超容差局数 ≤ 5% 硬线时只记录；二次生成里冒过 1600 的局同样只记录，不回改交付（第一部分 §3）。
+      - 出现「二次生成失败」或「成败相反」即 `PARITY_H_H2=FAIL`，不改判据、不重试正常失败（只对基础设施错误重试每身份 ≤ 1 次），把逐身份证据交用户在 (a)／(b) 之间裁决；选 (b) 时用该格剩余备用候选，计入 §2.4.3 的递补上限，超出则合并为一次补充授权。
+      - gen1 某格备用候选耗尽时，不再像 v7 那样先手动补位再追认：该格判 FAIL、其余格继续，追加抽签须先补充授权。§2.2 第 6 条的候选表（InsertPeg 40 个，按 37.5% 失败率期望交付 25）就是为避免重演 v7 的 InsertPeg 缺口。
 
 ## 2.3 闸门总表
 
@@ -429,7 +437,7 @@ reset 与 rollout 分列，各自与 P3 阈值比较；成功、失败、递补�
 5. **布局独立带来的差异**：各档独立抽布局（按档 seed，R9）后，同任务跨档不再共享圆盘位置等前缀，跨档比较时布局噪声与难度梯度叠在一起；换取的是不需要派生链、每格过滤 > 1600 各自独立。`layout-shared`／`prefix-geometry` 守卫对 v8 规格无意义，不跑。
 6. **新增档位的结构改动面**：xhard5 只登记在全局合法档与 Swing／StopCube 的配置里（R8），避开了 VideoRepick 与两个 Swap 任务对 `NEWVALUE_DIFFICULTIES` 的遍历；按符号 grep 命中 21 个测试文件（第一部分 §2.4 逐个列出），另有 48 个测试文件提到 xhard1～4 字面值、多数不受影响。StopCube 的 xhard4 本来就在 v7 冻结规格里，新增的是 xhard1～3、5 四格，`reset-replay` 要覆盖。核心短测与 `XHARD0_RESET_PARITY` 必须全绿才能进阶段 2。
 7. **xhard0 评估只能出 INFO**：策略层不可复现（v7 MME 同入口同卡重跑 11 局有 5 局翻转），两路线的差异不能判为回归；「没改坏 xhard0」由 `XHARD0_RESET_PARITY` 判定。
-8. **二次生成 FAIL**：v7 先例——InsertPeg 二次生成在规划阶段失败致 `PARITY_H_H2=FAIL`，用户裁决放行。v8 同样逐身份分为「噪声」或「二次生成失败」交用户裁决，不改判据。
+8. **二次生成 FAIL**：v7 先例——InsertPeg 二次生成在规划阶段失败致 `PARITY_H_H2=FAIL`，用户裁决交付集不动。v8 按 §2.2 第 11 条逐身份分四类计数，出现「二次生成失败」或「成败相反」交用户裁决，不改判据。
 9. **席位时效**：7 个占位 job 于 2026-10-01 16:05～16:07 EDT 提交、48 h；阶段 1～2b 实施期间可能到期。按 R11 不提前释放；到期则按 `greatlakes.md` 重提并在汇报里说明。
 
 ## 2.6 盲区诚实清单
@@ -451,7 +459,7 @@ reset 与 rollout 分列，各自与 P3 阈值比较；成功、失败、递补�
 
 - 本文件 12.277 首版、12.278／12.279 修订局数、12.280 重写第一部分并建分支、12.281 修订梯度（去 9／10 次、过滤 1600、VU／BU xhard1、区间档），每次只 `git add` 这一个文件。工作区里 `third_party/SimpleMemVLA` 的子模块内容改动（` m`）是他人在途工作，不动。
 - 探针产物 `artifacts/v8-probe/` 不进 git。探针脚本在会话 scratchpad 不保留，方法按 §2.4.1 可以复现。
-- 12.282 只记录本轮分支对齐文档；12.283 记录四项拍板；12.284 记录站点与评估口径；12.285 记录席位与并行口径；12.286 记录对抗验证修订与之后的四项拍板；均不算 V8 实施。后续获批的 V8 实施在分支 `newtaskRelease-taskV8` 上进行；每个阶段单独 commit，从 12.287 接续。commit body 按第 11 条写用户原话、计划、过程、意外、实测与下一步。正式生成的留档写到 `docs/validation/newtask-v8/`（`launch.md` 记席位、会话名、命令与 env 覆盖，`result.md` 记判定行与结论）。
+- 12.282 只记录本轮分支对齐文档；12.283 记录四项拍板；12.284 记录站点与评估口径；12.285 记录席位与并行口径；12.286 记录对抗验证修订与之后的四项拍板；12.287 记录 P3 预算整表获批与 gen1／二次生成差异处置口径；均不算 V8 实施。后续获批的 V8 实施在分支 `newtaskRelease-taskV8` 上进行；每个阶段单独 commit，从 12.288 接续。commit body 按第 11 条写用户原话、计划、过程、意外、实测与下一步。正式生成的留档写到 `docs/validation/newtask-v8/`（`launch.md` 记席位、会话名、命令与 env 覆盖，`result.md` 记判定行与结论）。
 
 ## 2.8 口径来源：用户原话（逐字，按时间）
 
@@ -528,6 +536,12 @@ reset 与 rollout 分列，各自与 P3 阈值比较；成功、失败、递补�
    - 我的理解：xhard0 评估的官方路线与 hard 路线都重跑，16 任务 × 1 档 × 12 局 × 2 策略 × 2 路线 = 768 局，只出 INFO；PatternLock 保持现有拒绝采样，计划改述并在生成后报逐格分布。
 24. 「同意 修改计划」（2026-10-01）
    - 处置：按第 20～23 条改写本文件，即 12.286。
+25. 「同意所有预算」（2026-10-01，答 §2.4.3 P3 一次性预算表）
+   - 处置：整表获批，记入引言「已批准」与 12.287；阶段实施仍按 §3 实施步骤表另行获批。
+26. 「gen1（第一次生成，含递补）≤ 1,425 局／├ 二次生成 1,070 局　这些之前生成过程中有不同吗 如果不同是怎么处理的」（2026-10-01）
+   - 处置：按 v7 留档作答，并把 v7 实测与 v8 处置口径写进 §2.2 第 11 条。
+27. 「不执行 只改plan」（2026-10-01）
+   - 我的理解：本轮只改计划文件，不开始任何阶段的实施，也不启动任何 reset／rollout。
 
 ## 2.9 现状、机理与上限取法（原第一部分 §1～§3、§4.1、§6，逐字搬入）
 
