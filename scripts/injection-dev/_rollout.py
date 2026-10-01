@@ -808,9 +808,10 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
     ``pending``（selected 但未跑）。某格 delivered ≠ 局数 即该格 FAIL（备用耗尽记 ``exhausted``），其余格照常统计；
     全部格相等才 ``V8_DELIVERY_SET=PASS``。
 
-    ``rows`` 只含交付局（selected 且 rollout ok），每行必有 ``task tier candidate seed episode exec_steps h5``
-    （另带 ``frames`` 总帧数含演示帧、``h5_sha256``、``spec_sha256``）；``h5``（与同值的 ``path``）相对
-    ``delivery.json`` 所在目录（整树搬迁后仍可用）。逐格统计在 ``cells``，全局计数在 ``counts``（键全部显式写零）。"""
+    ``rows`` 只含交付局（selected 且 rollout ok），每行必有 ``task tier episode candidate(==episode) seed exec_steps
+    frames``（总帧数含演示帧）、``h5``（h5 绝对路径）、``path``（同一 h5 相对 ``delivery.json`` 所在目录，整树搬迁后
+    仍可用）、``h5_sha256``、``env_module``，可选 ``video``（mp4 绝对路径）。逐格统计在 ``cells``
+    （``{"<task>/<tier>": {...}}``），全局计数在 ``counts``；两处计数键全部显式写零。"""
     cells = check_cells(cells)
     out_path = Path(out_path)
     loaded = load_v8_root(Path(specs_root), cells)
@@ -819,7 +820,8 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
     if stray_infra:
         raise RolloutError(f"账本里有格表之外的基础设施重试：{stray_infra}")
     totals = {key: 0 for key in V8_TOTAL_COUNT_KEYS}
-    cell_out, rows_out, over_rows, problems = [], [], [], []
+    cell_out: dict[str, dict[str, Any]] = {}
+    rows_out, over_rows, problems = [], [], []
     for (task, tier), expected in cells.items():
         mine = [r for r in loaded[tier][1] if r["task"] == task]
         roll = lambda r: r["rollout"] or {}  # noqa: E731
@@ -850,7 +852,7 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
             problems.append(f"{task}/{tier}:{c['delivered']}/{expected}:{reason}")
         for key in V8_CELL_COUNT_KEYS:
             totals[key] += c[key]
-        cell_out.append({"task": task, "tier": tier, "status": status, "reason": reason, **c})
+        cell_out[f"{task}/{tier}"] = {"task": task, "tier": tier, "status": status, "reason": reason, **c}
         for r in sorted(mine, key=lambda r: int(r["candidate"])):
             rb = roll(r)
             if rb.get("error_type") == "exec_over_cap":
@@ -858,14 +860,23 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
                                   "exec_steps": rb.get("exec_steps")})
             if not hard_specs.delivered(r):
                 continue
-            rel = os.path.relpath(rb["h5_path"], out_path.parent) if rb.get("h5_path") else None
-            # ``h5``（站点 S4-A 读）与 ``path``（v7 delivery.json 的键名，step-headroom／import-delivery 读）同值
-            rows_out.append({"task": task, "tier": tier, "candidate": int(r["candidate"]), "seed": int(r["seed"]),
-                             "episode": int(r["episode"]), "spec_sha256": r["spec_sha256"],
-                             "h5_sha256": rb.get("h5_sha256"), "frames": rb.get("frames"),
-                             "exec_steps": rb.get("exec_steps"), "h5": rel, "path": rel,
-                             "env_module": rb.get("env_module"), "recovery_mode": None,
-                             "initial_selected": bool(r["initial_selected"]), "role": rb.get("role")})
+            h5_abs = os.path.abspath(rb["h5_path"]) if rb.get("h5_path") else None
+            # 两方统一口径（主会话 2026-10-01）：``h5`` = h5 绝对路径（站点 S4-A 读）；``path`` = 同一 h5 相对
+            # delivery.json 所在目录（v7 delivery 的键名，hard_parity import-delivery／step-headroom 读）
+            row_out = {"task": task, "tier": tier, "candidate": int(r["candidate"]), "seed": int(r["seed"]),
+                       "episode": int(r["episode"]), "spec_sha256": r["spec_sha256"],
+                       "h5_sha256": rb.get("h5_sha256"), "frames": rb.get("frames"),
+                       "exec_steps": rb.get("exec_steps"), "h5": h5_abs,
+                       "path": os.path.relpath(h5_abs, os.path.abspath(out_path.parent)) if h5_abs else None,
+                       # env_module 取自 runner 结果（REGISTERED_ENVS[task].cls.__module__），与 v7 delivery_rows 同取法
+                       "env_module": rb.get("env_module"), "recovery_mode": None,
+                       "initial_selected": bool(r["initial_selected"]), "role": rb.get("role")}
+            if h5_abs:
+                # 可选 video：只在该局显式目录的 videos/ 下找含 _seed<seed>_ 的唯一 mp4（找不到或不唯一就不写）
+                videos = sorted((Path(h5_abs).parents[1] / "videos").glob(f"*_seed{int(r['seed'])}_*.mp4"))
+                if len(videos) == 1:
+                    row_out["video"] = str(videos[0])
+            rows_out.append(row_out)
     ok = totals["failed_cells"] == 0 and totals["delivered"] == sum(cells.values())
     n_tasks = len({task for task, _ in cells})
     line = (f"V8_DELIVERY_SET={'PASS' if ok else 'FAIL'} tasks={n_tasks} cells={len(cells)} total={totals['delivered']} "

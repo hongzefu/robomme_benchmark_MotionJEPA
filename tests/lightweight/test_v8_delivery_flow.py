@@ -121,7 +121,7 @@ class FakeRunner:
                 h5.parent.mkdir(parents=True, exist_ok=True)
                 h5.write_bytes(f"h5-{tier}-{row['task']}-{row['candidate']}".encode())
                 (wdir / "videos").mkdir(exist_ok=True)
-                (wdir / "videos" / "demo.mp4").write_bytes(b"mp4")
+                (wdir / "videos" / f"{row['task']}_ep{row['episode']}_seed{row['seed']}_demo.mp4").write_bytes(b"mp4")
                 steps = H.V8_EXEC_CAP + 1 if action == "over" else 100
                 record.update(h5=str(h5), h5_sha256=f"sha-{tier}-{row['task']}-{row['candidate']}", bytes=10,
                               frames=steps + 5, exec_steps=steps)
@@ -160,8 +160,17 @@ def _guard_delivery(path: Path) -> dict:
     assert set(_rollout.V8_TOTAL_COUNT_KEYS) <= set(data["counts"]), data["counts"]
     for key in ("exec_over_cap", "backfills", "infra_retries", "failed"):
         assert isinstance(data["counts"][key], int)
-    for cell in data["cells"]:
+    assert isinstance(data["cells"], dict)
+    for name, cell in data["cells"].items():
+        assert name == f"{cell['task']}/{cell['tier']}"
         assert set(_rollout.V8_CELL_COUNT_KEYS) <= set(cell)
+    # 两方统一的行口径：h5 绝对路径、path 为同一文件相对 delivery.json 所在目录、candidate == episode
+    for r in data["rows"]:
+        assert {"task", "tier", "episode", "candidate", "seed", "exec_steps", "frames", "h5", "path", "h5_sha256",
+                "env_module"} <= set(r)
+        assert r["candidate"] == r["episode"] and Path(r["h5"]).is_absolute()
+        assert (path.parent / r["path"]).resolve() == Path(r["h5"]).resolve()
+        assert r["env_module"] == f"robomme_hard.robomme_env.{r['task']}"
     return data
 
 
@@ -299,10 +308,10 @@ def test_generate_h5冒烟根continue退出码0(tmp_path, fake, monkeypatch, cap
     data = _guard_delivery(tmp_path / "out" / "delivery.json")
     assert data["counts"]["exec_over_cap"] == 0 and data["counts"]["backfills"] == 0
     assert data["counts"]["infra_retries"] == 0 and data["counts"]["failed"] == 0
-    assert len(data["rows"]) == 7 and all((tmp_path / "out" / r["h5"]).is_file() for r in data["rows"])
-    # 站点（S4-A）契约：每行必有 task／tier／seed／episode／exec_steps／h5，h5 相对 delivery.json 所在目录
-    assert all({"task", "tier", "seed", "episode", "exec_steps", "h5", "frames"} <= set(r) for r in data["rows"])
-    assert all(r["exec_steps"] == 100 and r["h5"] == r["path"] for r in data["rows"])
+    assert len(data["rows"]) == 7 and all(Path(r["h5"]).is_file() for r in data["rows"])
+    assert all(r["exec_steps"] == 100 and r["frames"] == 105 for r in data["rows"])
+    # 可选 video：局目录 videos/ 下含 _seed<seed>_ 的唯一 mp4（绝对路径）
+    assert all(Path(r["video"]).is_absolute() and f"_seed{r['seed']}_" in r["video"] for r in data["rows"])
     assert {r["tier"] for r in data["rows"]} == {"xhard1", "xhard2", "xhard3", "xhard5"}
     assert len(runner.calls) == 4  # 每档一批
     # 回写后的规格仍可按冒烟格表加载；身份签不变
@@ -355,10 +364,10 @@ def test_备用耗尽该格FAIL其余格继续(tmp_path, fake, monkeypatch, caps
     assert rc == 1 and "V8_DELIVERY_SET=FAIL tasks=2 cells=2 total=3 expected=4" in text
     assert "exhausted_cells=1" in text and "InsertPeg/xhard4:1/2:exhausted" in text
     data = _guard_delivery(tmp_path / "out" / "delivery.json")
-    by = {(c["task"], c["tier"]): c for c in data["cells"]}
-    assert by[("InsertPeg", "xhard4")]["status"] == "FAIL" and by[("InsertPeg", "xhard4")]["reason"] == "exhausted"
-    assert by[("InsertPeg", "xhard4")]["spares_left"] == 0 and by[("InsertPeg", "xhard4")]["failed"] == 2
-    assert by[("MoveCube", "xhard4")]["status"] == "PASS" and by[("MoveCube", "xhard4")]["delivered"] == 2
+    ip, mc = data["cells"]["InsertPeg/xhard4"], data["cells"]["MoveCube/xhard4"]
+    assert ip["status"] == "FAIL" and ip["reason"] == "exhausted" and ip["spares_left"] == 0 and ip["failed"] == 2
+    assert ip["exec_over_cap"] == 0 and ip["backfills"] == 1 and ip["infra_retries"] == 0
+    assert mc["status"] == "PASS" and mc["delivered"] == 2 and mc["failed"] == 0
 
 
 def test_基础设施重试账本跨重启保留(tmp_path, fake, monkeypatch):
