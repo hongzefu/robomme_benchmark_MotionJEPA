@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """轻量测试：V7 规格封签 ``hard-specs/3``（0928 方案第二部分 §1.1）。
 
-* ``_freeze.freeze`` 带 ``layout_rule`` 时封成 /3：header 多 ``layout_rule``、行多 ``layout_parent``（母布局为 null），
+* ``_freeze.freeze(schema="hard-specs/3")``（v8 阶段 2 起 schema 显式传入）带 ``layout_rule`` 封成 /3：header 多 ``layout_rule``、行多 ``layout_parent``（母布局为 null），
   ``validate_specs`` 接受；/3 只认 v7 seed 规则、``layout_rule`` 形态与 ``layout_parent`` 形态不符即拒；
 * 身份键按 schema 分表：/3 的 ``identity_sha256`` 覆盖 ``layout_rule``／``layout_parent``；/2 的身份键与摘要算法不变，
   不带 ``layout_rule`` 封出的 /2 文件照旧通过 ``load_specs``（v8 阶段 1 删 v6 规则后改用 v7 规则造 /2）；
@@ -57,7 +57,7 @@ def test_freeze带layout_rule封成v3():
 def test_freeze不带layout_rule仍是v2且身份键不变():
     drafts = F.parent_drafts(TASKS, 4, difficulty="xhard1")
     header, rows = _freeze.freeze(drafts, F.header_parts(TASKS, difficulty="xhard1", layout_rule=None),
-                                  (0, 1), 4)
+                                  (0, 1), 4, schema=hard_specs.SCHEMA)
     assert header["schema"] == hard_specs.SCHEMA == "hard-specs/2"
     assert "layout_rule" not in header and all("layout_parent" not in r for r in rows)
     # /2 身份摘要按原键集合（与 V7 前逐字相同）
@@ -81,13 +81,13 @@ def test_v3只认v7种子规则与合法layout_rule(monkeypatch):
     monkeypatch.setattr(hard_specs, "SEED_PROFILES", (*hard_specs.SEED_PROFILES, "vtest"))
     drafts = F.parent_drafts(TASKS, 3, profile="vtest")
     with pytest.raises(hard_specs.SpecsError, match="v7 seed"):
-        _freeze.freeze(drafts, F.header_parts(TASKS, profile="vtest"), (0,), 3)
+        _freeze.freeze(drafts, F.header_parts(TASKS, profile="vtest"), (0,), 3, schema=hard_specs.SCHEMA_V7)
     drafts = F.parent_drafts(TASKS, 3)
     for bad in ({"mode": "independent", "parent_tier": "xhard4", "whitelist_sha256": "0"},
                 {"mode": "shared", "parent_tier": "xhard3", "whitelist_sha256": "0"},
                 {"mode": "shared", "parent_tier": "xhard4"}):
         with pytest.raises(hard_specs.SpecsError, match="layout_rule"):
-            _freeze.freeze(drafts, F.header_parts(TASKS, layout_rule=bad), (0,), 3)
+            _freeze.freeze(drafts, F.header_parts(TASKS, layout_rule=bad), (0,), 3, schema=hard_specs.SCHEMA_V7)
 
 
 def test_v3的layout_parent形态核对():
@@ -151,7 +151,7 @@ def test_load_specs_v7拒绝混入v2文件(tmp_path):
     v2 = tmp_path / "v2.jsonl"
     drafts = F.parent_drafts(("BinFill",), 3, difficulty="xhard3")
     header, rows = _freeze.freeze(drafts, F.header_parts(("BinFill",), difficulty="xhard3", layout_rule=None),
-                                  (0,), 3)
+                                  (0,), 3, schema=hard_specs.SCHEMA)
     _freeze.write_jsonl_exclusive(v2, [header, *rows])
     (root / "xhard3" / "specs.jsonl").unlink()
     (root / "xhard3" / "specs.jsonl").write_text(v2.read_text())

@@ -17,10 +17,26 @@ native_episode_spec=)``），环境包由 ``ROBOMME_ENV_PACKAGE`` 决定（默�
 
 恢复（``--resume``）：联合核对各轮 ``jobs.json``、``results.partial.jsonl``、局目录与 h5；局目录有完整 h5 而 partial
 无记录的身份标 ``UNKNOWN`` 并列清单交用户，不直接重跑、不直接采纳。
+
+v8（v8 方案第二部分 §2.2 第 7 条，``hard-specs/4``）：
+
+* 执行步 ``exec_steps`` = h5 的 ``timestep_*`` 数 − ``info/is_video_demo`` 为真的帧数（口径同
+  ``hard_regression.py::cmd_step_headroom``），由 ``h5_facts`` 算出写进结果段（不进签）；
+* ``run_continue`` 读到 /4 header 时自动启用 ``exec_cap``：执行步超过上限的局在 ``apply_results`` 里记
+  ``status=failed``、``error_type=exec_over_cap`` 并保留 ``exec_steps``，``selected=false``、``tried=true``，触发同格递补；
+  其 h5／mp4 只在该局的显式目录 ``<output>/episodes/<tier>/<task>_episode_<n>/`` 里删除（不跨运行 glob）；
+* ``plan_pending`` 接逐任务配额 ``delivery_per_cell[task]``；
+* 尝试账本 ``<output>/results.jsonl``：每条最终结果与每次基础设施重试各追加一行，``--resume`` 时按账本重放恢复
+  状态、基础设施重试计数跨重启保留（每身份 ≤ 1 次）；
+* ``run_continue_v8``：按格表逐档调用 ``run_continue``，收尾 ``aggregate_v8`` 写 ``delivery.json``（``v8-delivery/1``）
+  并打印 ``V8_DELIVERY_SET``；
+* 4 个生成席分片：``split_v8``（冻结根 → 每片自己的 ``<片输出>/specs`` 规格根、锁、账本）→ 各片 ``run_continue_v8``
+  → ``merge_v8``（全部片齐后确定性合并回五份规格，签必须与冻结根逐档相同）→ 聚合核全部格。
 """
 
 from __future__ import annotations
 
+import copy
 import datetime
 import hashlib
 import json
@@ -110,8 +126,10 @@ def h5_facts(path: Path) -> dict[str, Any]:
             size += len(chunk)
     with h5py.File(path, "r") as handle:
         episode = handle[list(handle.keys())[0]]
-        frames = sum(1 for k in episode.keys() if k.startswith("timestep_"))
-    return {"h5_sha256": digest.hexdigest(), "bytes": size, "frames": frames}
+        steps = [k for k in episode.keys() if k.startswith("timestep_")]
+        # 执行步口径同 hard_regression.py::cmd_step_headroom：总帧 − info/is_video_demo 为真的帧
+        demo = sum(bool(episode[k]["info/is_video_demo"][()]) for k in steps)
+    return {"h5_sha256": digest.hexdigest(), "bytes": size, "frames": len(steps), "exec_steps": len(steps) - demo}
 
 
 def run_batch(batch: list[dict[str, Any]], header: dict[str, Any], out_dir: Path, round_index: int, *,
@@ -212,6 +230,10 @@ def rollout_block(record: dict[str, Any], pkg: str, code_baseline: str, output: 
         block["h5_path"] = record.get("h5")
     else:
         block["error_type"] = record.get("error_type")
+        if record.get("purged") is not None:
+            block["purged_files"] = len(record["purged"])
+    if record.get("exec_steps") is not None:
+        block["exec_steps"] = int(record["exec_steps"])
     return block
 
 
@@ -230,6 +252,8 @@ def unknown_identities(out_dir: Path) -> list[str]:
                 recorded.add((r["task"], int(r["episode"]), str(r.get("difficulty"))))
     unknown = []
     for h5 in out_dir.glob("episodes/*/*/hdf5_files/*.h5"):
+        if ".aside" in h5.parents[1].name:
+            continue  # run_batch 挪开留证的旧局目录（``<局目录>.aside<时间戳>``）不参与恢复判定
         tier = h5.parents[2].name
         task, _, episode = h5.parents[1].name.rpartition("_episode_")
         if (task, int(episode), tier) not in recorded:
@@ -240,27 +264,64 @@ def unknown_identities(out_dir: Path) -> list[str]:
 # ── continue 模式：状态机 ──────────────────────────────────────────────────
 
 
-def plan_pending(rows: list[dict[str, Any]], per_cell: int, redo: set[tuple[str, int]] = frozenset(),
+def plan_pending(rows: list[dict[str, Any]], per_cell: int | dict[str, int], redo: set[tuple[str, int]] = frozenset(),
                  tasks: set[str] | None = None) -> list[dict[str, Any]]:
+    """待跑集 = 每格 ``selected`` 且 ``rollout`` 缺失的行。``per_cell`` 为整数（/2、/3 全局配额）或
+    ``{task: 配额}``（/4 逐任务配额）；任一格 selected 超过配额即拒绝。"""
     for row in rows:
         if (row["task"], row["candidate"]) in redo:
             row["rollout"], row["selected"] = None, True
     counts: dict[str, int] = {}
     for row in rows:
         counts[row["task"]] = counts.get(row["task"], 0) + int(row["selected"])
-    bad = {t: n for t, n in counts.items() if n > per_cell}
+    quota = (lambda task: int(per_cell[task])) if isinstance(per_cell, dict) else (lambda task: int(per_cell))  # noqa: E731
+    bad = {t: n for t, n in counts.items() if n > quota(t)}
     if bad:
         raise RolloutError(f"每格 selected 超过 delivery_per_cell={per_cell}：{bad}")
     return [row for row in rows if row["selected"] and row["rollout"] is None and (tasks is None or row["task"] in tasks)]
 
 
+def purge_episode_media(output: Path, row: dict[str, Any], h5: str | None) -> list[str]:
+    """只在该局的显式目录 ``<output>/episodes/<tier>/<task>_episode_<n>/`` 里删 h5 与 mp4（不跨运行 glob）；
+    记录的 h5 路径不在该目录内即拒绝删除。返回删掉的文件路径。"""
+    wdir = episode_dir(Path(output), row).resolve()
+    if h5 and wdir not in Path(h5).resolve().parents:
+        raise RolloutError(f"h5 不在该局目录内，拒绝删除：{h5}（期望在 {wdir} 下）")
+    removed: list[str] = []
+    if wdir.is_dir():
+        for path in sorted(wdir.rglob("*")):
+            if path.is_file() and path.suffix in (".h5", ".mp4"):
+                path.unlink()
+                removed.append(str(path))
+    return removed
+
+
+def enforce_exec_cap(record: dict[str, Any], row: dict[str, Any], output: Path, exec_cap: int) -> None:
+    """v8 执行步上限（就地改 ``record``）：ok 却无 h5／无 ``exec_steps`` 的局记失败（不让缺数据的局混进交付）；
+    执行步 > ``exec_cap`` 的局记 ``exec_over_cap``、保留 ``exec_steps``，并删该局目录里的 h5／mp4。"""
+    if not record.get("ok"):
+        return
+    steps = record.get("exec_steps")
+    if steps is None:
+        kind = "h5_missing" if not record.get("h5") else "exec_steps_missing"
+        record.update(ok=False, error_type=kind, error=f"{kind}：ok 结果缺 h5 或执行步，不进交付")
+        return
+    if int(steps) > int(exec_cap):
+        purged = purge_episode_media(output, row, record.get("h5"))
+        record.update(ok=False, error_type="exec_over_cap", error=f"执行步 {steps} > 上限 {exec_cap}", purged=purged)
+
+
 def apply_results(rows: list[dict[str, Any]], results: list[dict[str, Any]], pkg: str, code_baseline: str,
-                  output: Path) -> list[dict[str, Any]]:
-    """按结果更新行；失败的行退选并递补同格下一个未试候选。返回新一轮待跑行。"""
+                  output: Path, *, exec_cap: int | None = None) -> list[dict[str, Any]]:
+    """按结果更新行；失败的行退选并递补同格下一个未试候选。返回新一轮待跑行。
+
+    ``exec_cap``（v8）给出时先过 ``enforce_exec_cap``：超限局按失败处理（同格递补），``record`` 被就地改写。"""
     by_key = {(r["task"], r["candidate"]): r for r in rows}
     backfill = []
     for record in results:
         row = by_key[(record["task"], record["candidate"])]
+        if exec_cap is not None:
+            enforce_exec_cap(record, row, output, exec_cap)
         row["tried"] = True
         row["rollout"] = rollout_block(record, pkg, code_baseline, output)
         if not record["ok"]:
@@ -296,10 +357,34 @@ def write_back(specs: Path, header: dict[str, Any], rows: list[dict[str, Any]], 
     return new_header
 
 
+def read_ledger(path: Path) -> list[dict[str, Any]]:
+    """尝试账本（``<output>/results.jsonl``）：每行 ``{"kind": "result"|"infra_retry", tier, task, candidate, round, ...}``。"""
+    path = Path(path)
+    if not path.exists():
+        return []
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def append_ledger(path: Path, entries: list[dict[str, Any]]) -> None:
+    if not entries:
+        return
+    with Path(path).open("a", encoding="utf-8") as stream:
+        for entry in entries:
+            stream.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
 def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu: str, pkg: str,
                  code_baseline: str, redo: set[tuple[str, int]] = frozenset(), resume: bool = False,
-                 max_infra_retries: int = 1, batch_runner=None, tasks: set[str] | None = None) -> dict[str, Any]:
-    """``batch_runner`` 只供纯 CPU 夹具注入假 runner（STATE_MACHINE）。"""
+                 max_infra_retries: int = 1, batch_runner=None, tasks: set[str] | None = None,
+                 ledger: Path | None = None, check_traces: bool = True) -> dict[str, Any]:
+    """``batch_runner`` 只供纯 CPU 夹具注入假 runner（STATE_MACHINE）。
+
+    /4 规格自动启用 header ``exec_cap``（执行步超限按失败递补）与逐任务配额。``ledger``（v8 驱动传
+    ``<output>/results.jsonl``）给出时：每条最终结果与每次基础设施重试追加进账本；``resume`` 且规格尚未回写
+    （本档无 ``tried`` 行）时按账本顺序重放结果恢复状态，基础设施重试计数一律从账本累计（跨重启保留，每身份 ≤
+    ``max_infra_retries``），轮次号接着账本最大轮次往后编。``check_traces=False`` 供多档驱动只在入口查一次运行痕迹。"""
     runner = batch_runner or (lambda batch, header, idx: run_batch(
         batch, header, output, idx, src_root=src_root, workers=workers, gpu=gpu, pkg=pkg, resume=resume))
     lock = SpecsLock(specs)
@@ -307,30 +392,55 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
     try:
         file_sha = file_sha256(specs)
         header, rows = hard_specs.load_specs(specs, check_fingerprint=False)
+        exec_cap = int(header["exec_cap"]) if header["schema"] == hard_specs.SCHEMA_V8 else None
         if resume:
             unknown = unknown_identities(output)
             if unknown:
                 raise RolloutError(f"恢复歧义：以下身份有 h5 但无 partial 记录，标 UNKNOWN 交用户：{unknown}")
-        elif _has_run_traces(output):
+        elif check_traces and _has_run_traces(output):
             raise RolloutError(f"{output} 已有运行痕迹（episodes/ 或 _rounds/）；续跑用 --resume")
         output.mkdir(parents=True, exist_ok=True)
-        pending = plan_pending(rows, int(header["delivery_per_cell"]), redo, tasks)
+        tier = header["difficulty"]
         infra_retries: dict[tuple[str, int], int] = {}
         attempted = 0
         round_index = 0
+        if ledger is not None:
+            entries = [e for e in read_ledger(ledger) if e["tier"] == tier]
+            if entries and not resume:
+                raise RolloutError(f"{ledger} 已有 {tier} 的记录；续跑用 --resume")
+            for entry in entries:
+                key = (entry["task"], int(entry["candidate"]))
+                if entry["kind"] == "infra_retry":
+                    infra_retries[key] = infra_retries.get(key, 0) + 1
+            if entries and not any(r["tried"] for r in rows):
+                # 规格尚未回写：按账本顺序逐条重放（与原轮次里的逐条处理顺序相同，递补选择因此逐一复现）
+                for entry in entries:
+                    if entry["kind"] == "result":
+                        apply_results(rows, [dict(entry["record"])], pkg, code_baseline, output)
+            attempted = len(entries)
+            round_index = 1 + max((int(e["round"]) for e in entries), default=-1)
+        pending = plan_pending(rows, header["delivery_per_cell"], redo, tasks)
         while pending:
             results = runner(pending, header, round_index)
             attempted += len(results)
             retry = []
             final = []
+            infra_entries = []
             for record in results:
                 key = (record["task"], record["candidate"])
                 if is_infra(record) and infra_retries.get(key, 0) < max_infra_retries:
                     infra_retries[key] = infra_retries.get(key, 0) + 1
                     retry.append(next(r for r in pending if (r["task"], r["candidate"]) == key))
+                    infra_entries.append({"kind": "infra_retry", "tier": tier, "task": key[0], "candidate": key[1],
+                                          "round": round_index, "error_type": record.get("error_type"),
+                                          "error": (str(record.get("error") or ""))[:300] or None})
                 else:
                     final.append(record)
-            backfill = apply_results(rows, final, pkg, code_baseline, output)
+            backfill = apply_results(rows, final, pkg, code_baseline, output, exec_cap=exec_cap)
+            if ledger is not None:
+                append_ledger(ledger, infra_entries + [
+                    {"kind": "result", "tier": tier, "task": r["task"], "candidate": int(r["candidate"]),
+                     "round": round_index, "record": r} for r in final])
             pending = retry + backfill
             round_index += 1
         header = write_back(specs, header, rows, file_sha)
@@ -346,13 +456,15 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
 # ── continue 模式（v7）：四档共用母布局的候选池 ─────────────────────────────────
 
 
-V7_TIERS = hard_specs.TIERS
+#: v7 冻结四档与 xhard4 独有任务（v8 方案阶段 1 常量）：阶段 3b 把全局 TIERS／XHARD4_ONLY 切到 v8 后，
+#: v7 候选池与 v7 夹具的行为不随之改变
+V7_TIERS = hard_specs.V7_TIERS
 POOL_NAME = "v7-candidate-pool.json"
 V7_BACKFILL_CAP = 10  # 每格同步递补上限（0928 方案第二部分 §2）
 
 
 def _task_tiers(task: str) -> tuple[str, ...]:
-    return ("xhard4",) if task in hard_specs.XHARD4_ONLY else V7_TIERS
+    return ("xhard4",) if task in hard_specs.V7_XHARD4_ONLY else V7_TIERS
 
 
 def initial_pool(loaded: dict[str, tuple], per_cell: int) -> dict[str, Any]:
@@ -525,15 +637,430 @@ def run_continue_v7(specs_root: Path, output: Path, *, src_root: Path, workers: 
         lock.release()
 
 
+# ── continue 模式（v8）：逐格配额、执行步上限、分片、合并与聚合 ─────────────────────
+
+
+V8_DELIVERY_SCHEMA = "v8-delivery/1"
+V8_SHARD_SCHEMA = "v8-shard/1"
+LEDGER_NAME = "results.jsonl"
+SHARD_META = "shard.json"
+#: 2b 冒烟 7 格（v8 方案 §2.4.2 顺序第 2 条）：每格 1 局 → ``V8_DELIVERY_SET=PASS tasks=6 cells=7 total=7``
+V8_SMOKE_CELLS: dict[tuple[str, str], int] = {
+    ("StopCube", "xhard1"): 1, ("StopCube", "xhard5"): 1, ("SwingXtimes", "xhard5"): 1, ("VideoUnmask", "xhard1"): 1,
+    ("RouteStick", "xhard2"): 1, ("PatternLock", "xhard3"): 1, ("PickXtimes", "xhard3"): 1,
+}
+#: 4 个生成席的按任务切片（每片自己的 --output、规格根、锁与账本）。按「任务 v8 局数 × v6 评估实测单局用时」
+#: （export_eval_identities.TASK_SECONDS，生成用时的代理）做最长处理时间优先的贪心均衡后钉死：
+#: 加权负载（单 worker 折算）约 7.8／7.5／7.8／7.7 小时；格数 5／6／13／19，局数 180／240／310／340（合计 43 格、1070 局）。
+V8_SHARD_TASKS: dict[str, tuple[str, ...]] = {
+    "shard1": ("VideoPlaceButton", "PickHighlight", "MoveCube"),
+    "shard2": ("BinFill", "VideoUnmaskSwap", "VideoPlaceOrder"),
+    "shard3": ("PickXtimes", "ButtonUnmask", "VideoRepick", "InsertPeg", "RouteStick"),
+    "shard4": ("StopCube", "SwingXtimes", "VideoUnmask", "ButtonUnmaskSwap", "PatternLock"),
+}
+_shard_all = [task for tasks in V8_SHARD_TASKS.values() for task in tasks]
+assert sorted(_shard_all) == sorted(hard_specs.ALL_TASKS), "四片须恰好覆盖 16 任务且互不重叠"
+#: 逐格与全局计数键（全部显式写出，零值也写）
+V8_CELL_COUNT_KEYS = ("expected", "candidates", "tried", "delivered", "failed", "exec_over_cap", "backfills",
+                      "infra_retries", "spares_left", "pending")
+V8_TOTAL_COUNT_KEYS = V8_CELL_COUNT_KEYS + ("exhausted_cells", "pending_cells", "failed_cells")
+
+
+def order_cells(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
+    """格表按 (V8_TIERS 档序, ALL_TASKS 任务序) 排序（输出与合并的确定性）。"""
+    return {key: int(cells[key]) for key in sorted(cells, key=lambda k: (hard_specs.V8_TIERS.index(k[1]),
+                                                                         hard_specs.ALL_TASKS.index(k[0])))}
+
+
+def check_cells(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
+    if not isinstance(cells, dict) or not cells:
+        raise RolloutError("格表必须是非空 {(task, tier): 局数}")
+    stray = sorted(k for k in cells if k not in hard_specs.V8_CELLS)
+    if stray:
+        raise RolloutError(f"格表含 V8_CELLS 之外的格（不交付的格不抽、不生成）：{stray}")
+    bad = {k: n for k, n in cells.items() if not isinstance(n, int) or isinstance(n, bool) or not
+           0 < n <= hard_specs.V8_CELLS[k]}
+    if bad:
+        raise RolloutError(f"格表局数须为 1..表 2 配额的整数：{bad}")
+    return order_cells(cells)
+
+
+def resolve_cells(spec: str | Path) -> dict[tuple[str, str], int]:
+    """``--cells``：``full``（表 2 的 43 格）／``smoke``（2b 冒烟 7 格）／``shard1``～``shard4``（按任务切的四片，
+    局数取表 2）／格表 JSON 路径（``{"Task@tier": 局数}`` 或 ``{"cells": [{"task", "tier", "count"}]}``）。"""
+    text = str(spec)
+    if text == "full":
+        return check_cells(dict(hard_specs.V8_CELLS))
+    if text == "smoke":
+        return check_cells(dict(V8_SMOKE_CELLS))
+    if text in V8_SHARD_TASKS:
+        return check_cells({k: n for k, n in hard_specs.V8_CELLS.items() if k[0] in V8_SHARD_TASKS[text]})
+    path = Path(text)
+    if not path.is_file():
+        raise RolloutError(f"--cells 须为 full／smoke／shard1..4 或格表 JSON 路径：{text!r}")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    cells: dict[tuple[str, str], int] = {}
+    items = data["cells"] if isinstance(data, dict) and "cells" in data else data
+    if isinstance(items, dict):
+        for key, n in items.items():
+            task, _, tier = key.partition("@")
+            cells[(task, tier)] = n
+    else:
+        for item in items:
+            cells[(item["task"], item["tier"])] = item["count"]
+    return check_cells(cells)
+
+
+def cells_json(cells: dict[tuple[str, str], int]) -> dict[str, int]:
+    """格表 → JSON 可写形态 ``{"Task@tier": 局数}``（``resolve_cells`` 可读回）。"""
+    return {f"{task}@{tier}": n for (task, tier), n in order_cells(cells).items()}
+
+
+def cell_tiers(cells: dict[tuple[str, str], int]) -> list[str]:
+    return [tier for tier in hard_specs.V8_TIERS if any(t == tier for _, t in cells)]
+
+
+def compact_range(values) -> str:
+    values = list(values)
+    if values and values == list(range(values[0], values[0] + len(values))):
+        return f"{values[0]}..{values[-1]}"
+    return ",".join(str(v) for v in values)
+
+
+def detect_root_schema(root: Path) -> str | None:
+    """规格根的 schema：``<root>/<tier>/specs.jsonl`` 首行 header 的 schema；各档必须一致，否则拒绝。无文件返回 None。"""
+    schemas = {}
+    for tier in dict.fromkeys((*hard_specs.V7_TIERS, *hard_specs.V8_TIERS)):
+        path = Path(root) / tier / "specs.jsonl"
+        if path.is_file():
+            with path.open(encoding="utf-8") as stream:
+                schemas[tier] = json.loads(stream.readline())["schema"]
+    if not schemas:
+        return None
+    if len(set(schemas.values())) != 1:
+        raise RolloutError(f"{root} 各档 schema 不一致：{schemas}")
+    return next(iter(schemas.values()))
+
+
+def _seed_disjoint(loaded: dict[str, tuple]) -> None:
+    seeds: dict[str, dict[str, set[int]]] = {}
+    for tier, (_, rows) in loaded.items():
+        for row in rows:
+            seeds.setdefault(row["task"], {}).setdefault(tier, set()).add(int(row["seed"]))
+    for task, by_tier in seeds.items():
+        names = list(by_tier)
+        for i, a in enumerate(names):
+            for b in names[i + 1:]:
+                if by_tier[a] & by_tier[b]:
+                    raise RolloutError(f"{task} 在 {a} 与 {b} 的 seed 相交")
+
+
+def load_v8_root(root: Path, cells: dict[tuple[str, str], int]) -> dict[str, tuple[dict[str, Any], list[dict[str, Any]]]]:
+    """按格表读 v8 规格根：逐档 ``load_specs``（/4 校验）+ 档名、任务集合、逐格 ``delivery_per_cell`` 与格表相等、
+    跨档 seed 不交。全部行都未试过（刚冻结／刚切片）时另走 ``hard_specs.load_specs_v8`` 全量契约（含每格 selected
+    数 == 格表）；跑过之后某格备用耗尽会让 selected 少于配额，这时只按单文件校验读，逐格成败交给聚合判定。"""
+    cells = check_cells(cells)
+    out: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
+    for tier in cell_tiers(cells):
+        path = Path(root) / tier / "specs.jsonl"
+        if not path.is_file():
+            raise RolloutError(f"v8 规格根缺少 {path}")
+        header, rows = hard_specs.load_specs(path, check_fingerprint=False)
+        if header["schema"] != hard_specs.SCHEMA_V8 or header["difficulty"] != tier:
+            raise RolloutError(f"{path}：须为 {hard_specs.SCHEMA_V8} 且档位 {tier}（实为 {header['schema']}／"
+                               f"{header['difficulty']}）")
+        want = {task for task, t in cells if t == tier}
+        if set(header["tasks"]) != want:
+            raise RolloutError(f"{tier} 任务集合与格表不符：缺少 {sorted(want - set(header['tasks']))}，"
+                               f"多出 {sorted(set(header['tasks']) - want)}")
+        for task in sorted(want):
+            if header["delivery_per_cell"][task] != cells[(task, tier)]:
+                raise RolloutError(f"{task}/{tier} delivery_per_cell={header['delivery_per_cell'][task]} ≠ 格表 "
+                                   f"{cells[(task, tier)]}")
+        out[tier] = (header, rows)
+    _seed_disjoint(out)
+    if not any(row["tried"] for _, rows in out.values() for row in rows):
+        hard_specs.load_specs_v8(root, cells, check_fingerprint=False)
+    return out
+
+
+def _ledger_infra(dirs: list[Path]) -> tuple[dict[tuple[str, str], int], list[str]]:
+    counts: dict[tuple[str, str], int] = {}
+    paths = []
+    for d in dirs:
+        path = Path(d) / LEDGER_NAME
+        if not path.is_file():
+            raise RolloutError(f"缺少尝试账本 {path}（聚合要从账本读基础设施重试数）")
+        paths.append(str(path))
+        for entry in read_ledger(path):
+            if entry["kind"] == "infra_retry":
+                key = (entry["task"], entry["tier"])
+                counts[key] = counts.get(key, 0) + 1
+    return counts, paths
+
+
+def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dirs: list[Path], out_path: Path, *,
+                 cells_label: str = "custom", code_baseline: str | None = None) -> dict[str, Any]:
+    """聚合步：读格表涉及各档的规格结果段与各片账本，写 ``delivery.json``（``v8-delivery/1``）并返回判定行。
+
+    逐格：``delivered``（selected 且 rollout ok）、``candidates``（该格规格行数）、``tried``、``failed``（含超限）、
+    ``exec_over_cap``、``backfills``（被递补上来并试过的备用候选）、``infra_retries``（账本）、``spares_left``、
+    ``pending``（selected 但未跑）。某格 delivered ≠ 局数 即该格 FAIL（备用耗尽记 ``exhausted``），其余格照常统计；
+    全部格相等才 ``V8_DELIVERY_SET=PASS``。
+
+    ``rows`` 只含交付局（selected 且 rollout ok），每行必有 ``task tier candidate seed episode exec_steps h5``
+    （另带 ``frames`` 总帧数含演示帧、``h5_sha256``、``spec_sha256``）；``h5``（与同值的 ``path``）相对
+    ``delivery.json`` 所在目录（整树搬迁后仍可用）。逐格统计在 ``cells``，全局计数在 ``counts``（键全部显式写零）。"""
+    cells = check_cells(cells)
+    out_path = Path(out_path)
+    loaded = load_v8_root(Path(specs_root), cells)
+    infra, ledgers = _ledger_infra([Path(d) for d in ledger_dirs])
+    stray_infra = sorted(k for k in infra if k not in cells)
+    if stray_infra:
+        raise RolloutError(f"账本里有格表之外的基础设施重试：{stray_infra}")
+    totals = {key: 0 for key in V8_TOTAL_COUNT_KEYS}
+    cell_out, rows_out, over_rows, problems = [], [], [], []
+    for (task, tier), expected in cells.items():
+        mine = [r for r in loaded[tier][1] if r["task"] == task]
+        roll = lambda r: r["rollout"] or {}  # noqa: E731
+        c = {
+            "expected": expected,
+            "candidates": len(mine),
+            "tried": sum(r["tried"] for r in mine),
+            "delivered": sum(hard_specs.delivered(r) for r in mine),
+            "failed": sum(roll(r).get("status") == "failed" for r in mine),
+            "exec_over_cap": sum(roll(r).get("error_type") == "exec_over_cap" for r in mine),
+            "backfills": sum(r["tried"] and not r["initial_selected"] for r in mine),
+            "infra_retries": infra.get((task, tier), 0),
+            "spares_left": sum(not r["tried"] and not r["selected"] for r in mine),
+            "pending": sum(r["selected"] and r["rollout"] is None for r in mine),
+        }
+        if c["delivered"] == expected:
+            status, reason = "PASS", None
+        elif c["pending"]:
+            status, reason = "FAIL", "pending"
+            totals["pending_cells"] += 1
+        elif c["spares_left"] == 0:
+            status, reason = "FAIL", "exhausted"
+            totals["exhausted_cells"] += 1
+        else:
+            status, reason = "FAIL", "shortfall"
+        if status == "FAIL":
+            totals["failed_cells"] += 1
+            problems.append(f"{task}/{tier}:{c['delivered']}/{expected}:{reason}")
+        for key in V8_CELL_COUNT_KEYS:
+            totals[key] += c[key]
+        cell_out.append({"task": task, "tier": tier, "status": status, "reason": reason, **c})
+        for r in sorted(mine, key=lambda r: int(r["candidate"])):
+            rb = roll(r)
+            if rb.get("error_type") == "exec_over_cap":
+                over_rows.append({"task": task, "tier": tier, "candidate": int(r["candidate"]), "seed": int(r["seed"]),
+                                  "exec_steps": rb.get("exec_steps")})
+            if not hard_specs.delivered(r):
+                continue
+            rel = os.path.relpath(rb["h5_path"], out_path.parent) if rb.get("h5_path") else None
+            # ``h5``（站点 S4-A 读）与 ``path``（v7 delivery.json 的键名，step-headroom／import-delivery 读）同值
+            rows_out.append({"task": task, "tier": tier, "candidate": int(r["candidate"]), "seed": int(r["seed"]),
+                             "episode": int(r["episode"]), "spec_sha256": r["spec_sha256"],
+                             "h5_sha256": rb.get("h5_sha256"), "frames": rb.get("frames"),
+                             "exec_steps": rb.get("exec_steps"), "h5": rel, "path": rel,
+                             "env_module": rb.get("env_module"), "recovery_mode": None,
+                             "initial_selected": bool(r["initial_selected"]), "role": rb.get("role")})
+    ok = totals["failed_cells"] == 0 and totals["delivered"] == sum(cells.values())
+    n_tasks = len({task for task, _ in cells})
+    line = (f"V8_DELIVERY_SET={'PASS' if ok else 'FAIL'} tasks={n_tasks} cells={len(cells)} total={totals['delivered']} "
+            f"expected={totals['expected']} failed={totals['failed']} exec_over_cap={totals['exec_over_cap']} "
+            f"backfills={totals['backfills']} infra_retries={totals['infra_retries']} "
+            f"exhausted_cells={totals['exhausted_cells']} pending_cells={totals['pending_cells']}"
+            + ("" if ok else f" problems={problems[:8]}"))
+    report = {
+        "schema": V8_DELIVERY_SCHEMA, "specs_root": str(specs_root), "cells_source": cells_label,
+        "cells_table": cells_json(cells), "code_baseline": code_baseline, "exec_cap": hard_specs.V8_EXEC_CAP,
+        "ledgers": ledgers, "tasks": n_tasks, "cell_count": len(cells), "counts": totals,
+        "cells": cell_out, "rows": rows_out, "exec_over_cap_rows": over_rows, "line": line,
+    }
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    return report
+
+
+def run_continue_v8(specs_root: Path, cells: dict[tuple[str, str], int], output: Path, *, src_root: Path,
+                    workers: int, gpu: str, pkg: str, code_baseline: str, resume: bool = False,
+                    max_infra_retries: int = 1, batch_runner=None, cells_label: str = "custom") -> dict[str, Any]:
+    """v8 gen1（单片或冒烟）：按格表逐档 ``run_continue``（每档一个规格文件、一把锁；只跑格表在该档的任务，
+    逐任务配额、执行步上限、同格递补），账本 ``<output>/results.jsonl``；收尾 ``aggregate_v8`` 写
+    ``<output>/delivery.json`` 并打印 ``V8_DELIVERY_SET``。某格备用耗尽只让该格 FAIL，其余格照常跑完。"""
+    specs_root, output = Path(specs_root), Path(output)
+    cells = check_cells(cells)
+    loaded = load_v8_root(specs_root, cells)
+    ledger = output / LEDGER_NAME
+    if not resume and (_has_run_traces(output) or ledger.exists()):
+        raise RolloutError(f"{output} 已有运行痕迹（episodes/、_rounds/ 或账本）；续跑用 --resume")
+    output.mkdir(parents=True, exist_ok=True)
+    per_tier = {}
+    for tier in loaded:
+        tasks = {task for task, t in cells if t == tier}
+        per_tier[tier] = run_continue(specs_root / tier / "specs.jsonl", output, src_root=src_root, workers=workers,
+                                      gpu=gpu, pkg=pkg, code_baseline=code_baseline, resume=resume,
+                                      max_infra_retries=max_infra_retries, batch_runner=batch_runner, tasks=tasks,
+                                      ledger=ledger, check_traces=False)
+    report = aggregate_v8(specs_root, cells, [output], output / "delivery.json", cells_label=cells_label,
+                          code_baseline=code_baseline)
+    print(report["line"], flush=True)
+    summary = {"attempted": sum(s["attempted"] for s in per_tier.values()),
+               "rounds": sum(s["rounds"] for s in per_tier.values()),
+               "infra_retries": report["counts"]["infra_retries"], "delivered": report["counts"]["delivered"],
+               "exec_over_cap": report["counts"]["exec_over_cap"], "backfills": report["counts"]["backfills"],
+               "per_tier": per_tier, "delivery_set": report["line"]}
+    (output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    return summary
+
+
+def split_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_out: Path, *, label: str) -> dict[str, Any]:
+    """分片：从冻结根取格表涉及的格，逐档写 ``<shard_out>/specs/<tier>/specs.jsonl``（只含本片任务，按 /4 重签）
+    与 ``<shard_out>/shard.json``（格表、来源各档 identity 与文件 sha）。冻结根必须未跑过；行与 sampling 逐字
+    取自冻结根，合并时据此核对。"""
+    from _freeze import write_jsonl_exclusive  # noqa: PLC0415
+
+    cells = check_cells(cells)
+    shard_out = Path(shard_out)
+    if (shard_out / "specs").exists() or (shard_out / SHARD_META).exists():
+        raise RolloutError(f"{shard_out} 已有分片规格，禁止覆盖")
+    sources = {}
+    for tier in cell_tiers(cells):
+        path = Path(frozen_root) / tier / "specs.jsonl"
+        header, rows = hard_specs.load_specs(path, check_fingerprint=False)
+        if header["schema"] != hard_specs.SCHEMA_V8 or header["difficulty"] != tier:
+            raise RolloutError(f"{path} 不是 {tier} 的 {hard_specs.SCHEMA_V8}")
+        if any(r["tried"] for r in rows):
+            raise RolloutError(f"{path} 已跑过（有 tried 行），只能从未跑过的冻结根切片")
+        want = [task for task in header["tasks"] if (task, tier) in cells]
+        missing = sorted({task for task, t in cells if t == tier} - set(want))
+        if missing:
+            raise RolloutError(f"{path} 缺本片任务 {missing}")
+        for task in want:
+            if header["delivery_per_cell"][task] != cells[(task, tier)]:
+                raise RolloutError(f"{task}/{tier} 冻结配额 {header['delivery_per_cell'][task]} ≠ 格表 {cells[(task, tier)]}")
+        sub = copy.deepcopy(header)
+        sub["tasks"] = want
+        for key in ("per_env", "select_rule", "delivery_per_cell"):
+            sub[key] = {task: header[key][task] for task in want}
+        sub["sampling_config"] = {task: copy.deepcopy(header["sampling_config"][task]) for task in want}
+        sub["sampling_config_sha256"] = hard_specs.digest(sub["sampling_config"])
+        sub["run_id"] = f"{header['run_id']}-{label}"
+        sub["draw_stats"] = {"split": {"label": label, "source_identity_sha256": header["identity_sha256"],
+                                       "source_file_sha256": file_sha256(path)}}
+        sub_rows = [copy.deepcopy(r) for r in rows if r["task"] in want]
+        sub["identity_sha256"] = hard_specs.identity_sha256(sub, sub_rows)
+        sub["delivery_sha256"] = hard_specs.delivery_sha256(sub_rows)
+        hard_specs.validate_specs(sub, sub_rows)
+        write_jsonl_exclusive(shard_out / "specs" / tier / "specs.jsonl", [sub, *sub_rows])
+        sources[tier] = {"identity_sha256": header["identity_sha256"], "file_sha256": file_sha256(path)}
+    meta = {"schema": V8_SHARD_SCHEMA, "label": label, "frozen_root": str(frozen_root), "cells": cells_json(cells),
+            "sources": sources}
+    (shard_out / SHARD_META).write_text(json.dumps(meta, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    load_v8_root(shard_out / "specs", cells)
+    print(f"V8_SPLIT=PASS label={label} tiers={len(sources)} cells={len(cells)} total={sum(cells.values())} "
+          f"out={shard_out}", flush=True)
+    return meta
+
+
+def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: list[Path], merged_root: Path,
+             out_dir: Path, *, cells_label: str = "full", code_baseline: str | None = None) -> dict[str, Any]:
+    """合并（全部片齐后）：各片格表两两不交、并集 == 格表；每片来源 identity 等于冻结根当前档；各片已跑完
+    （无 selected 未跑行）；逐行身份键与冻结根逐字相同。合并文件 = 冻结根 header + 冻结根行（结果段
+    ``selected``／``tried``／``rollout`` 取自所属片），只重算 ``delivery_sha256``，``identity_sha256`` 必须与冻结根
+    逐档相同；写到 ``merged_root``（排他），再 ``aggregate_v8`` 核全部格写 ``<out_dir>/delivery.json``。"""
+    from _freeze import write_jsonl_exclusive  # noqa: PLC0415
+
+    cells = check_cells(cells)
+    owner: dict[tuple[str, str], Path] = {}
+    metas = {}
+    for shard in map(Path, shard_outs):
+        meta = json.loads((shard / SHARD_META).read_text(encoding="utf-8"))
+        if meta.get("schema") != V8_SHARD_SCHEMA:
+            raise RolloutError(f"{shard / SHARD_META} 不是 {V8_SHARD_SCHEMA}")
+        metas[shard] = meta
+        for key in resolve_cells_from_json(meta["cells"]):
+            if key in owner:
+                raise RolloutError(f"格 {key} 同时属于 {owner[key]} 与 {shard}")
+            owner[key] = shard
+    if set(owner) != set(cells):
+        raise RolloutError(f"分片未齐：缺 {sorted(set(cells) - set(owner))}，多出 {sorted(set(owner) - set(cells))}")
+    for (task, tier), shard in owner.items():
+        if resolve_cells_from_json(metas[shard]["cells"])[(task, tier)] != cells[(task, tier)]:
+            raise RolloutError(f"{task}/{tier} 分片局数与格表不符")
+    merged = {}
+    for tier in cell_tiers(cells):
+        path = Path(frozen_root) / tier / "specs.jsonl"
+        header, rows = hard_specs.load_specs(path, check_fingerprint=False)
+        if any(r["tried"] for r in rows):
+            raise RolloutError(f"{path} 已跑过；合并只认未跑过的冻结根")
+        if set(header["tasks"]) != {task for task, t in cells if t == tier}:
+            raise RolloutError(f"{path} 的任务集合与格表在 {tier} 的任务不符")
+        _, row_keys, _, _ = hard_specs._schema_keys(hard_specs.SCHEMA_V8)
+        shard_rows: dict[tuple[str, int], dict[str, Any]] = {}
+        for shard in sorted({owner[(task, tier)] for task in header["tasks"]}, key=str):
+            src = metas[shard]["sources"].get(tier) or {}
+            if src.get("identity_sha256") != header["identity_sha256"]:
+                raise RolloutError(f"{shard} 的 {tier} 来源 identity 与冻结根不符")
+            sh_header, sh_rows = hard_specs.load_specs(shard / "specs" / tier / "specs.jsonl", check_fingerprint=False)
+            for task in sh_header["tasks"]:
+                if sh_header["sampling_config"][task] != header["sampling_config"][task]:
+                    raise RolloutError(f"{shard} 的 {task}/{tier} sampling_config 与冻结根不符")
+            pending = [(r["task"], r["candidate"]) for r in sh_rows if r["selected"] and r["rollout"] is None]
+            if pending:
+                raise RolloutError(f"{shard} 的 {tier} 尚未跑完（selected 未跑 {len(pending)} 行）：{pending[:5]}")
+            for r in sh_rows:
+                shard_rows[(r["task"], int(r["candidate"]))] = r
+        out_rows = []
+        for row in rows:
+            key = (row["task"], int(row["candidate"]))
+            got = shard_rows.get(key)
+            if got is None or any(got[k] != row[k] for k in row_keys) or got["spec"] != row["spec"]:
+                raise RolloutError(f"{tier} 行 {key} 在分片里缺失或身份不符")
+            new = copy.deepcopy(row)
+            new.update(selected=got["selected"], tried=got["tried"], rollout=copy.deepcopy(got["rollout"]))
+            out_rows.append(new)
+        if len(shard_rows) != len(rows):
+            raise RolloutError(f"{tier} 分片行数 {len(shard_rows)} ≠ 冻结根 {len(rows)}")
+        new_header = copy.deepcopy(header)
+        new_header["delivery_sha256"] = hard_specs.delivery_sha256(out_rows)
+        if hard_specs.identity_sha256(new_header, out_rows) != header["identity_sha256"]:
+            raise RolloutError(f"{tier} 合并后 identity_sha256 与冻结根不符")
+        hard_specs.validate_specs(new_header, out_rows)
+        merged[tier] = (new_header, out_rows)
+    for tier, (header, rows) in merged.items():
+        write_jsonl_exclusive(Path(merged_root) / tier / "specs.jsonl", [header, *rows])
+    report = aggregate_v8(Path(merged_root), cells, list(map(Path, shard_outs)), Path(out_dir) / "delivery.json",
+                          cells_label=cells_label, code_baseline=code_baseline)
+    print(f"V8_MERGE=PASS shards={len(metas)} tiers={len(merged)} cells={len(cells)} merged_root={merged_root}",
+          flush=True)
+    print(report["line"], flush=True)
+    return report
+
+
+def resolve_cells_from_json(data: dict[str, int]) -> dict[tuple[str, str], int]:
+    cells = {}
+    for key, n in data.items():
+        task, _, tier = key.partition("@")
+        cells[(task, tier)] = n
+    return check_cells(cells)
+
+
 # ── replay 模式 ─────────────────────────────────────────────────────────
 
 
 def load_identities(path: Path) -> list[dict[str, Any]]:
-    """身份清单：S4 ``final-delivery.json``（取 ``successes``）或每行 ``{task, tier|difficulty, seed}`` 的 jsonl。"""
+    """身份清单：S4 ``final-delivery.json``（取 ``successes``）、gen1 的 ``delivery.json``（v7／v8，取 ``rows``）
+    或每行 ``{task, tier|difficulty, seed}`` 的 jsonl。"""
     text = Path(path).read_text(encoding="utf-8")
     if Path(path).suffix == ".json":
         items = json.loads(text)
-        items = items.get("successes", items)
+        if isinstance(items, dict) and items.get("schema") in ("v7-delivery/1", V8_DELIVERY_SCHEMA):
+            items = items["rows"]  # gen1 的 delivery.json：交付行即身份清单
+        elif isinstance(items, dict):
+            items = items.get("successes", items)
     else:
         items = [json.loads(line) for line in text.splitlines() if line.strip()]
     return [{"task": i["task"], "tier": i.get("tier", i.get("difficulty")), "seed": int(i["seed"])} for i in items]
@@ -549,8 +1076,12 @@ def run_replay(identities: list[dict[str, Any]], output: Path, *, src_root: Path
     output.mkdir(parents=True, exist_ok=True)
     scheduled: set[tuple[str, str, int]] = set()
     results: list[dict[str, Any]] = []
-    for tier in hard_specs.TIERS:
-        path = (specs_paths or {}).get(tier, hard_specs.packaged_specs_path(tier))
+    # 缺省读包内规格（档位跟随包内 TIERS）；显式给了规格路径（v7 根四档、v8 根含 xhard5——阶段 3b 换包前它不在
+    # 全局 TIERS 里）就只按给定档位读，不再混读包内其他档
+    specs_paths = dict(specs_paths or {})
+    tiers = tuple(specs_paths) if specs_paths else hard_specs.TIERS
+    for tier in tiers:
+        path = specs_paths[tier] if specs_paths else hard_specs.packaged_specs_path(tier)
         header, rows = hard_specs.load_specs(path, check_fingerprint=False)
         batch = [dict(r, _role="replay") for r in rows if (r["task"], tier, int(r["seed"])) in wanted]
         if not batch:
@@ -562,7 +1093,7 @@ def run_replay(identities: list[dict[str, Any]], output: Path, *, src_root: Path
     print(f"REPLAY_SET={'PASS' if equal else 'FAIL'} scheduled={len(scheduled)} equal={len(scheduled & wanted)}"
           + ("" if equal else f" missing={sorted(wanted - scheduled)[:5]}"), flush=True)
     with (output / "results.jsonl").open("w", encoding="utf-8") as stream:
-        for record in sorted(results, key=lambda r: (hard_specs.TIERS.index(r["tier"]), r["task"], r["candidate"])):
+        for record in sorted(results, key=lambda r: (tiers.index(r["tier"]), r["task"], r["candidate"])):
             stream.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
     summary = {"scheduled": len(scheduled), "wanted": len(wanted), "equal": equal, "ok": sum(r["ok"] for r in results),
                "failed": sum(not r["ok"] for r in results)}
