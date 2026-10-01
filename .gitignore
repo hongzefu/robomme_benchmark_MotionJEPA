@@ -213,3 +213,6 @@ __marimo__/
 
 # 产物根整体不进 git（注入运行的例外已随拆包阶段 0b 删除）。
 /artifacts/*
+
+# Claude Code 子代理 worktree（计划执行模式）
+/.claude/worktrees/
