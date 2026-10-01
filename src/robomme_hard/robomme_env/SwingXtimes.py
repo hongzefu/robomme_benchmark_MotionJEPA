@@ -135,6 +135,8 @@ NEWVALUE_DECISION = {
     "xhard2": _newvalue_decision(2),
     "xhard3": _newvalue_decision(3),
     "xhard4": _newvalue_decision(4),
+    # v8（1001 方案 §1 表 1）：xhard5 干扰块取 4——BLOCK_DISTRACTOR_COLORS 只有黄／青／品红／橙 4 色。
+    "xhard5": _newvalue_decision(4),
 }
 
 
@@ -173,7 +175,8 @@ def _native_decision(cls):
         # V4 xhard 专属（计划 2.5）：键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
         "xhard4": copy.deepcopy(XHARD_DECISION),
         # V6（计划 2.8）：xhard 之后追加 xhard1/2/3 三棵同结构子树（新值族，守卫同样放行）。
-        **{tier: copy.deepcopy(NEWVALUE_DECISION[tier]) for tier in ("xhard1", "xhard2", "xhard3")},
+        # v8（1001 方案 §2.1）：再追加 xhard5（只有本环境与 StopCube 有这一档，R8）。
+        **{tier: copy.deepcopy(NEWVALUE_DECISION[tier]) for tier in ("xhard1", "xhard2", "xhard3", "xhard5")},
     }
 
 
@@ -222,29 +225,36 @@ class SwingXtimes(BaseEnv):
     'number_max':2
     }
 
-    # V7 定值（0928 方案 §3.2.2）：每档一个定数，摆动轮数 5/7/9/11、干扰块 1/2/3/4（BLOCK_DISTRACTOR_COLORS）。
+    # v8 定值（1001 方案 §1 表 1 / §2.1）：每档一个定数，摆动轮数 4/5/6/7/8、干扰块 1/2/3/4/4（BLOCK_DISTRACTOR_COLORS）。
     config_xhard4 = {
-        'color': 3,
-        'number_min': 11,
-        'number_max': 11,
-    }
-
-    config_xhard1 = {
-        'color': 3,
-        'number_min': 5,
-        'number_max': 5,
-    }
-
-    config_xhard2 = {
         'color': 3,
         'number_min': 7,
         'number_max': 7,
     }
 
+    config_xhard1 = {
+        'color': 3,
+        'number_min': 4,
+        'number_max': 4,
+    }
+
+    config_xhard2 = {
+        'color': 3,
+        'number_min': 5,
+        'number_max': 5,
+    }
+
     config_xhard3 = {
         'color': 3,
-        'number_min': 9,
-        'number_max': 9,
+        'number_min': 6,
+        'number_max': 6,
+    }
+
+    # v8 新增：xhard5 摆动 8 轮（干扰 4 块，见 NEWVALUE_DECISION）。
+    config_xhard5 = {
+        'color': 3,
+        'number_min': 8,
+        'number_max': 8,
     }
 
     # Combine into a dictionary
@@ -256,6 +266,8 @@ class SwingXtimes(BaseEnv):
         'xhard1': config_xhard1,
         'xhard2': config_xhard2,
         'xhard3': config_xhard3,
+        # v8：xhard5 追加在末尾（测试断言前几键的顺序不变）
+        'xhard5': config_xhard5,
     }
 
 
