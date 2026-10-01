@@ -19,7 +19,8 @@ import _freeze  # noqa: E402
 from robomme_hard.env_record_wrapper import hard_specs  # noqa: E402
 
 LAYOUT_RULE = {"mode": "shared", "parent_tier": "xhard4", "whitelist_sha256": "0" * 64}
-DERIVED_TIERS = ("xhard1", "xhard2", "xhard3")
+#: v7 派生档＝冻结 v7 四档去掉母布局 xhard4（v8 阶段 1 起读 V7_TIERS，不随全局 TIERS 变化）
+DERIVED_TIERS = tuple(t for t in hard_specs.V7_TIERS if t != "xhard4")
 
 
 def header_parts(tasks, *, difficulty: str = "xhard4", layout_rule: dict | None = LAYOUT_RULE,
@@ -52,7 +53,7 @@ def freeze_parent(tasks, candidates: int, per_cell: int):
 
 def derive_tier(parent_header: dict, parent_rows: list[dict], tier: str, *, missing=frozenset()) -> tuple[dict, list]:
     """与 derive_specs.derive 同一写法：派生行 ``layout_parent`` 指向 xhard4 同候选；``missing`` 为派生失败的 (task, candidate)。"""
-    tasks = [t for t in parent_header["tasks"] if t not in hard_specs.XHARD4_ONLY]
+    tasks = [t for t in parent_header["tasks"] if t not in hard_specs.V7_XHARD4_ONLY]
     rows = []
     for mother in parent_rows:
         key = (mother["task"], int(mother["candidate"]))
@@ -81,7 +82,7 @@ def derive_tier(parent_header: dict, parent_rows: list[dict], tier: str, *, miss
 
 def build_root(root: Path, tasks=("BinFill", "StopCube"), candidates: int = 6, per_cell: int = 3,
                missing: dict[str, set] | None = None) -> Path:
-    """写出 ``<root>/xhard{1..4}/specs.jsonl``；``missing={tier: {(task, candidate)}}`` 模拟派生失败。"""
+    """写出 ``<root>/<V7_TIERS 各档>/specs.jsonl``；``missing={tier: {(task, candidate)}}`` 模拟派生失败。"""
     missing = missing or {}
     header4, rows4 = freeze_parent(tasks, candidates, per_cell)
     _freeze.write_jsonl_exclusive(root / "xhard4" / "specs.jsonl", [header4, *rows4])

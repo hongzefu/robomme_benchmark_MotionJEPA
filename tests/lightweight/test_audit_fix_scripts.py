@@ -4,7 +4,7 @@
 * N14：MoveCube 新值档按运动方式分层选局（``v4_specs.stratified_select``）；其他环境与原三档沿用 ``select``。
 * N2 落地：``--task-max-reset-attempts`` 的 ``TASK[@TIER]=N`` 解析与 ``draw_rows`` 的按环境尝试上限。
 
-    uv run --no-sync python -m pytest tests/lightweight/test_v6_audit_fix_scripts.py -q
+    uv run --no-sync python -m pytest tests/lightweight/test_audit_fix_scripts.py -q
 """
 
 from __future__ import annotations
@@ -71,7 +71,7 @@ def test_draw_rows_applies_per_task_attempts() -> None:
 
     samplings = {"VideoPlaceButton": {}, "BinFill": {}}
     rows, stats = _draw.draw_rows(["VideoPlaceButton", "BinFill"], samplings, 3, 5, workers=1, draw_one=fake_draw_one,
-                                  difficulty="xhard3", seed_rule=seed_rule_for("xhard3", "v6"),
+                                  difficulty="xhard3", seed_rule=seed_rule_for("xhard3", "v7"),
                                   max_reset_attempts_by_task={"VideoPlaceButton": 9})
     assert stats["attempted"] == 14 and stats["ok"] == 0
     counts = {}

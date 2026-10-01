@@ -73,37 +73,10 @@ def test_changed_decision_is_rejected_in_native_mode(task: str) -> None:
         module._resolve_sampling_config(cls, {"decision": tampered, "native": native})
 
 
-TEST_HARD_ROOT = REPO_ROOT / "src" / "robomme_hard" / "env_metadata" / "test-hard"
-V6_FROZEN = REPO_ROOT / "scripts" / "configs" / "newtask-v6" / "v6-sampling-frozen.json"
-NEWVALUE_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
-
-
-def _packaged_header(tier: str) -> dict:
-    with (TEST_HARD_ROOT / tier / "specs.jsonl").open(encoding="utf-8") as stream:
-        return json.loads(stream.readline())
-
-
-def test_v6_snapshot_matches_source() -> None:
-    """V7 换包后 v6 值只存在于冻结快照 v6-sampling-frozen.json（包内 v6 规格只在版本历史，tag parity-anchor-v6）：
-    快照按档自洽（逐档 sampling_config 的 digest 等于记下的散列），且与包内 v7 header 的 sampling_config 不同。"""
-    from robomme_hard.env_record_wrapper import hard_specs  # noqa: PLC0415
-
-    frozen = json.loads(V6_FROZEN.read_text(encoding="utf-8"))
-    assert frozen["schema"] == "v6-sampling-frozen/1"
-    assert frozen["four_headers_identical"] is False
-    assert set(frozen["sampling_config"]) == set(NEWVALUE_TIERS)
-    for tier in NEWVALUE_TIERS:
-        assert hard_specs.digest(frozen["sampling_config"][tier]) == frozen["sampling_config_sha256_by_tier"][tier], tier
-        header = _packaged_header(tier)
-        assert header["schema"] == hard_specs.SCHEMA_V7, tier
-        assert header["sampling_config_sha256"] != frozen["sampling_config_sha256_by_tier"][tier], tier
-    assert set(frozen["sampling_config"]["xhard4"]) == set(READY_TASKS)
-    assert len(set(frozen["sampling_config_sha256_by_tier"].values())) > 1
-
-
 def test_v7_snapshot_matches_source(tmp_path) -> None:
     """``train_split_config.py extract --release newtask-v7`` 导出的快照：逐任务等于进程内 ``native_blocks``，
-    且 13 个梯度任务读出的四档定值等于 V7 定值表（0928 方案 §3.2.2）；与冻结的 v6 快照在梯度任务上不同。"""
+    且梯度任务读出的定值等于 tests/_shared/v7_tier_values.py 的定值表（v8 阶段 1 起为 v8 取值）。
+    原尾部「与冻结 v6 快照不同」的比较随 V6 删除移除（v8 方案第一部分 §2.4）。"""
     from tests._shared.v7_tier_values import V7_TIER_VALUES, summarize  # noqa: PLC0415
 
     out = tmp_path / "sampling_config.json"
@@ -129,7 +102,3 @@ def test_v7_snapshot_matches_source(tmp_path) -> None:
         assert dump(block) == dump({"decision": decision, "native": native}), task
     got = {task: summarize(task, fresh["tasks"][task]["decision"]) for task in V7_TIER_VALUES}
     assert got == V7_TIER_VALUES
-    frozen = json.loads(V6_FROZEN.read_text(encoding="utf-8"))["sampling_config"]["xhard4"]
-    for task in ("PickXtimes", "SwingXtimes", "VideoUnmask", "ButtonUnmask", "VideoUnmaskSwap",
-                 "ButtonUnmaskSwap", "VideoRepick", "PatternLock", "RouteStick"):
-        assert fresh["tasks"][task] != frozen[task], f"{task}：v7 定值应与 v6 xhard4 header 不同"

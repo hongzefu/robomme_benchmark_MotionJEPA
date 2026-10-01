@@ -2,8 +2,8 @@
 """轻量测试：V7 seed 规则（0928 方案第二部分 §1.1）。
 
 * v7 四档同一 offset（14e6）：同一 (task, episode, attempt) 在四档里 seed 相同（母布局共用）；
-* v7 的 seed 区间与 V5（4e6）、V6 四档（6e6／8e6／10e6／12e6）在全部合法 episode／attempt 上互不重叠；
-* ``SEED_PROFILES`` 含 v7；xhard0 与历史 ``xhard`` 不接受 v7 规则。
+* v7 的 seed 区间与 V5（4e6）在全部合法 episode／attempt 上互不重叠（v8 阶段 1 删 V6 后，v6 比较一并移除）；
+* ``SEED_PROFILES`` 含 v7、不含 v6；xhard0 与历史 ``xhard`` 不接受 v7 规则。
 
     uv run --no-sync python -m pytest tests/lightweight/test_v7_seed_rule.py -q
 """
@@ -47,10 +47,9 @@ def test_v7四档同一规则且同候选同seed():
             assert len(seeds) == 1
 
 
-def test_v7区间与v5和v6互不重叠():
+def test_v7区间与v5互不重叠():
     v7 = _interval(V.seed_rule_for("xhard4", "v7"))
     others = {"v5": _interval(V.SEED_RULE)}
-    others.update({f"v6/{tier}": _interval(V.seed_rule_for(tier, "v6")) for tier in V.TIERS})
     for name, (lo, hi) in others.items():
         assert hi < v7[0] or v7[1] < lo, (name, (lo, hi), v7)
     # 单任务内 episode*100+attempt 不越过 env_block：同规则下不同任务互不重叠
@@ -70,5 +69,5 @@ def test_v7规则被档位识别_旧档名不接受v7():
         V.seed_rule_for(V.XHARD0, "v7")  # xhard0 照抄官方元数据 seed，没有 seed 规则
     with pytest.raises(V.SpecsError):
         V.seed_rule_for("xhard3", "v8")
-    # v6 各档 offset 互不相同，v7 与任何 v6 档都不相等
-    assert all(V.seed_rule_for(tier, "v6") != rule for tier in V.TIERS)
+    # v8 阶段 1：v6 规则族已删除
+    assert "v6" not in V.SEED_PROFILES

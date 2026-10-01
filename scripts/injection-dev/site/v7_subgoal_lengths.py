@@ -17,7 +17,7 @@
   逐局实际配置取 ``src/robomme_hard/env_metadata/test-hard/<tier>/specs.jsonl`` 中 selected 行的 ``spec.objects``。
 
 输出 ``<site-dir>/subgoals.json``（schema ``v7-subgoals/2``，以 ``open("x")`` 写入、拒绝覆盖），
-由 ``v6_site.py`` 的 ``/api/subgoals`` 路由提供给页面。末行打印 ``V7_SUBGOALS=PASS|FAIL …``。
+由 ``site_server.py`` 的 ``/api/subgoals`` 路由提供给页面。末行打印 ``V7_SUBGOALS=PASS|FAIL …``。
 
     uv run --no-sync python scripts/injection-dev/site/v7_subgoal_lengths.py --site-dir artifacts/newtask-v7/site-r11
 """

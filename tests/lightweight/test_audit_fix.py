@@ -4,7 +4,7 @@
 
 全部纯 CPU、不起 sapien 场景。
 
-    uv run --no-sync python -m pytest tests/lightweight/test_v6_audit_fix.py -q
+    uv run --no-sync python -m pytest tests/lightweight/test_audit_fix.py -q
 """
 
 from __future__ import annotations
