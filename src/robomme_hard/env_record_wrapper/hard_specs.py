@@ -57,10 +57,12 @@ RUNTIME = {
 # seed = offset + env_code × env_block + episode × 100 + attempt；env_code 是任务在 16 任务规范序里的 1-indexed 位置
 SEED_RULE = {"offset": 4_000_000, "env_block": 100_000, "episode_stride": 100,
              "formula": "offset + env_code*env_block + episode*100 + attempt"}
-V6_SEED_OFFSETS = {"xhard4": 6_000_000, "xhard1": 8_000_000, "xhard2": 10_000_000, "xhard3": 12_000_000}
-#: V7：四档同一 offset，同一候选号在四档里 seed 相同（母布局共用）；与 V5（4e6）、V6（6e6～12e6）段互不重叠
+#: 按档偏移的规则族：profile → {tier: offset}。V6（6e6～12e6）随 V6 删除已移除取值（v8 方案第二部分 §2.1b），
+#: 机制保留给 v8 将来登记（阶段 2 由 S2-A 加 "v8"）；新登记的偏移须与 V5（4e6）、V6 历史段、V7（14e6）互不重叠。
+TIER_SEED_OFFSETS: dict[str, dict[str, int]] = {}
+#: V7：四档同一 offset，同一候选号在四档里 seed 相同（母布局共用）；与 V5（4e6）、V6 历史段（6e6～12e6）互不重叠
 V7_SEED_OFFSET = 14_000_000
-SEED_PROFILES = ("v5", "v6", "v7")
+SEED_PROFILES = ("v5", "v7", *TIER_SEED_OFFSETS)
 MAX_ATTEMPTS = 100
 #: 16 任务规范序（与 scripts/injection-dev/seed_layout.py::ALL_TASKS 逐字相同；src 不反向依赖 scripts）
 ALL_TASKS = (
@@ -70,6 +72,10 @@ ALL_TASKS = (
 )
 #: xhard4 独有的三个任务：xhard1～3 这三格恰好 0 行
 XHARD4_ONLY = ("StopCube", "InsertPeg", "MoveCube")
+#: V7 冻结常量（v8 方案阶段 1）：v7 四档与 xhard4 独有任务的取值钉死在这里，load_specs_v7 与 v7 夹具只读它们；
+#: 阶段 3b 把 TIERS／XHARD4_ONLY 切到 v8 后，v7 路径的行为不随之改变。
+V7_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
+V7_XHARD4_ONLY = ("StopCube", "InsertPeg", "MoveCube")
 #: 55 格表：(task, tier) → 是否应有正式交付局（builder 按它断言每格行数）
 EXPECTED_CELLS = frozenset(
     (task, tier) for tier in TIERS for task in ALL_TASKS if tier == "xhard4" or task not in XHARD4_ONLY
@@ -128,16 +134,21 @@ def env_code(task: str) -> int:
 
 
 def seed_rule_for(difficulty: str = DIFFICULTY, profile: str = "v5") -> dict[str, Any]:
-    """按档位与规则族给出 seed 规则；v5 只覆盖历史 xhard 单档，v6 按档偏移。"""
+    """按档位与规则族给出 seed 规则；v5 只覆盖历史 xhard 单档，v7 四档同 offset，
+    TIER_SEED_OFFSETS 里登记的规则族按档偏移（v6 已删除）。"""
     if difficulty == DIFFICULTY and profile == "v5":
         return dict(SEED_RULE)
     if difficulty not in TIERS:
         raise SpecsError(f"未知档位 {difficulty!r}，只支持 {TIERS}")
-    if profile == "v6":
-        return {**SEED_RULE, "offset": V6_SEED_OFFSETS[difficulty]}
+    if profile in TIER_SEED_OFFSETS:
+        offsets = TIER_SEED_OFFSETS[profile]
+        if difficulty not in offsets:
+            raise SpecsError(f"seed 规则 {profile} 未登记档位 {difficulty!r}")
+        return {**SEED_RULE, "offset": offsets[difficulty]}
     if profile == "v7":
         return {**SEED_RULE, "offset": V7_SEED_OFFSET}
-    raise SpecsError(f"{difficulty} 只支持 seed 规则 v6／v7（收到 {profile!r}）")
+    known = "／".join(("v7", *TIER_SEED_OFFSETS))
+    raise SpecsError(f"{difficulty} 只支持 seed 规则 {known}（收到 {profile!r}）")
 
 
 def _known_seed_rule(difficulty: str, rule: dict[str, Any]) -> bool:
@@ -258,12 +269,14 @@ def _check_layout_parent(row: dict[str, Any], tier: str, key) -> None:
 def load_specs_v7(root: str | Path, *, check_fingerprint: bool = True) -> dict[str, tuple]:
     """读 v7 规格根（xhard{1..4}/specs.jsonl），另做跨文件校验：四档 seed 规则相同；派生行的
     ``layout_parent.spec_sha256`` 等于 xhard4 同候选行的 ``spec_sha256``、seed 相同。返回 ``{tier: (header, rows)}``。"""
-    out = {tier: load_specs(Path(root) / tier / "specs.jsonl", check_fingerprint=check_fingerprint) for tier in TIERS}
-    rules = {tier: out[tier][0]["seed_rule"] for tier in TIERS}
-    if len({canonical_json(r) for r in rules.values()}) != 1 or any(out[t][0]["schema"] != SCHEMA_V7 for t in TIERS):
+    out = {tier: load_specs(Path(root) / tier / "specs.jsonl", check_fingerprint=check_fingerprint)
+           for tier in V7_TIERS}
+    rules = {tier: out[tier][0]["seed_rule"] for tier in V7_TIERS}
+    if len({canonical_json(r) for r in rules.values()}) != 1 \
+            or any(out[t][0]["schema"] != SCHEMA_V7 for t in V7_TIERS):
         raise SpecsError("v7 规格根：四档 schema 须为 hard-specs/3 且 seed 规则相同")
     parents = {(row["task"], int(row["candidate"])): row for row in out["xhard4"][1]}
-    for tier in ("xhard1", "xhard2", "xhard3"):
+    for tier in V7_TIERS[:-1]:
         for row in out[tier][1]:
             key = (row["task"], int(row["candidate"]))
             mother = parents.get(key)

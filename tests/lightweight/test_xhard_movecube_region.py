@@ -12,7 +12,7 @@
 * 预算耗尽抛真 ``SceneGenerationError``；
 * N17：回放冻结规格时杆、goal、方块违反 U 都报 ``EpisodeSpecError``；合规规格回放逐值一致。
 
-    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_v6_xhard_movecube_region.py -q -s
+    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_xhard_movecube_region.py -q -s
 """
 
 from __future__ import annotations

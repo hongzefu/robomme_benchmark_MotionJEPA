@@ -11,7 +11,7 @@
 * 配置：VUS/BUS/VR 的四档新值分别挂在 decision.<tier> 下；M5(b) 保留前三个藏物槽，bin_3 恒空；
 * 源码结构：Unmask 两环境的 step 锁定循环里新值分支读预规划、原三档仍取最近邻。
 
-    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_v6_swap_uniform.py -q
+    PYTHONPATH="$PWD/src" uv run --project /data/hongzefu/robomme_benchmark_MotionJEPANewTask --no-sync python -m pytest tests/lightweight/test_swap_uniform.py -q
 """
 
 from __future__ import annotations

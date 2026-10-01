@@ -29,6 +29,12 @@ from robomme_hard.env_record_wrapper import hard_specs as V  # noqa: E402
 from robomme_hard.robomme_env.utils import episode_spec as es  # noqa: E402
 
 WHITELIST = V.PACKAGED_SPECS_ROOT / "layout_whitelist.json"
+#: 白名单 JSON 覆盖的 13 个梯度任务（v8 阶段 1 起写成独立常量，不再由 XHARD4_ONLY 推出：
+#: StopCube 在 v8 离开 xhard4 独有后 XHARD4_ONLY 会变，而白名单 JSON 不动；v8 方案第一部分 §2.4）
+WHITELIST_TASKS = frozenset({
+    "PickXtimes", "SwingXtimes", "BinFill", "VideoUnmaskSwap", "VideoUnmask", "ButtonUnmaskSwap", "ButtonUnmask",
+    "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder", "PickHighlight", "PatternLock", "RouteStick",
+})
 
 LAYOUT = {
     "L": ["layout.button_xy", "layout.cubes.*", "actions.path_nodes[:n]"],
@@ -96,8 +102,8 @@ def whitelist():
 def test_包内白名单覆盖13个梯度任务且三表齐全(whitelist):
     assert whitelist["schema"] == "layout-whitelist/1"
     tasks = whitelist["tasks"]
-    expected = {t for t in V.ALL_TASKS if t not in V.XHARD4_ONLY}
-    assert set(tasks) == expected and len(tasks) == 13
+    assert len(WHITELIST_TASKS) == 13 and WHITELIST_TASKS <= set(V.ALL_TASKS)
+    assert set(tasks) == WHITELIST_TASKS and len(tasks) == 13
     for task, layout in tasks.items():
         assert set(layout) == {"L", "G", "N"}, task
         for cls in ("L", "G", "N"):

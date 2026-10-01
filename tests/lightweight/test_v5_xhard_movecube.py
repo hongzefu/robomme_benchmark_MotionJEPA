@@ -8,7 +8,7 @@
 * 原三档逐位不变：easy/medium/hard 的规格、物体位姿与调用后随机流哨兵的 SHA-256 与改动前代码
   （基线 12.120，删 ``corner_bias`` 之前）算出的金标准相同；
 * V6（计划 2.6）：旧档已更名为 xhard4，V5 桌面中心圆禁区已换成统一区域 U，``MOVECUBE_CENTER_EXCLUSION`` /
-  ``MOVECUBE_REJECTION_BUDGET`` 与禁区校验用例随之删除，新判据见 ``test_v6_xhard_movecube_region.py``；
+  ``MOVECUBE_REJECTION_BUDGET`` 与禁区校验用例随之删除，新判据见 ``test_xhard_movecube_region.py``；
   本文件保留原三档金标准、杆几何、两段方块生成、回放复核（违规样例在 V6 下同样违规）；
 * ``MOVECUBE_EXEC_SPAWN``：xhard4 两段方块都以 ``include_existing=False`` 生成（L34），seed 1000442 / 1000446
   生成成功；真实模拟器上的同名检查在带 ``gpu`` 标记的用例里；
@@ -286,7 +286,7 @@ def test_real_reset_exec_spawn_and_peg_geometry() -> None:
             env.reset()
             u = env.unwrapped
             lay = u._spec.to_dict()["layout"]
-            from tests.lightweight.test_v6_xhard_movecube_region import segment_violations
+            from tests.lightweight.test_xhard_movecube_region import segment_violations
             for seg in ("demo", "execution"):
                 # V6（计划 2.6）：按统一区域 U 独立复核
                 assert segment_violations(lay[seg]) == []

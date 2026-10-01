@@ -25,7 +25,8 @@ from tests._shared import v7_specs_fixture as F  # noqa: E402
 import _rollout  # noqa: E402  （路径由夹具模块加入）
 from robomme_hard.env_record_wrapper import hard_specs  # noqa: E402
 
-TIERS = hard_specs.TIERS
+#: v8 阶段 1：v7 候选池只认冻结的 v7 四档（hard_specs.V7_TIERS），不随全局 TIERS／五档合法枚举变化
+TIERS = hard_specs.V7_TIERS
 
 
 def _row(task, tier, candidate, initial=False):
