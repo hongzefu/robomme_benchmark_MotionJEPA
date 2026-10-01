@@ -9,6 +9,9 @@
   （schema ``v8-delivery/1``）。生成视频在 h5 所在 episode 目录的 ``videos/`` 下（与 v7 gen1 同一约定），
   或在 ``--gen-videos`` 给出的目录下按 ``<tier>/<task>_episode_<episode>/videos`` 查找；
   取文件名不以 ``FAILED``／``success_NO_OBJECT`` 开头、且含 ``_seed<seed>_`` 的那一个 mp4，必须恰好 1 个。
+  ``delivery.json`` 口径（S2-B）：顶层 ``schema``、``rows``、``counts``、``cells``；每行 ``task``、``tier``、``episode``、
+  ``candidate``、``seed``、``exec_steps``、``frames``、``h5``（绝对路径，优先）、``path``（相对 delivery.json 目录）、
+  ``h5_sha256``、``env_module``、可选 ``video``（绝对路径）。缺 ``exec_steps``／``frames`` 即 FAIL。
 - **xhard0**（16 任务 × 12 局）：复用 v7 已渲染的 ``site-media/xhard0-gen``（``manifest-{H,O}.jsonl``，0 次渲染），
   新入口 H／旧入口 O 两行，与 v7 相同。
 - **评估**：v8 不做 SimpleMemVLA／MME-VLA 两策略评估（用户 2026-10-01，§2.8 第 16 条）。评估来源（v7 的
@@ -208,18 +211,21 @@ def load_delivery(path: Path) -> dict:
 
 
 def delivery_h5(row: dict, delivery_path: Path, path_base: Path) -> Path:
-    """逐局 h5：字段 ``h5``／``h5_path``／``path`` 任一；相对路径先相对 delivery.json 所在目录，再相对 path_base。"""
+    """逐局 h5：按 ``h5``（S2-B 口径为绝对路径，优先）→ ``h5_path`` → ``path``（相对 delivery.json 目录）取第一个；相对路径先相对 delivery.json 所在目录，再相对 path_base。"""
     raw = row.get("h5") or row.get("h5_path") or row.get("path")
     if not raw:
         raise ValueError(f"delivery 行缺 h5 路径：{row.get('task')}/{row.get('tier')}/{row.get('seed')}")
     return resolve(raw, Path(delivery_path).resolve().parent, path_base)
 
 
-def pick_gen_video(h5: Path, row: dict, gen_videos: Path | None) -> Path:
-    """生成视频：先看 ``video``／``mp4`` 字段，再看 h5 同 episode 的 ``videos/``，再看 ``--gen-videos``。"""
+def pick_gen_video(h5: Path, row: dict, gen_videos: Path | None, delivery_path: Path | None = None,
+                   path_base: Path | None = None) -> Path:
+    """生成视频：先看 ``video``／``mp4`` 字段（相对路径与 h5 同口径：先相对 delivery.json 所在目录、再相对
+    ``path_base``），再看 h5 同 episode 的 ``videos/``，再看 ``--gen-videos``。"""
     seed = int(row["seed"])
     if row.get("video") or row.get("mp4"):
-        return Path(row.get("video") or row.get("mp4"))
+        bases = [b for b in (Path(delivery_path).resolve().parent if delivery_path else None, path_base) if b is not None]
+        return resolve(row.get("video") or row.get("mp4"), *(bases or [REPO_ROOT]))
     dirs = [h5.parent.parent / "videos"]
     if gen_videos is not None:
         dirs.append(Path(gen_videos) / row["tier"] / f"{row['task']}_episode_{row['episode']}" / "videos")
@@ -359,7 +365,10 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                 ep["exec_cap"] = exec_cap.get(tier)
                 try:
                     h5 = delivery_h5(row, delivery_path, path_base)
-                    video = pick_gen_video(h5, row, src.get("gen_videos"))
+                    missing_keys = [k for k in ("exec_steps", "frames") if row.get(k) is None]
+                    if missing_keys:
+                        raise ValueError(f"delivery 行缺 {missing_keys}：{key}")
+                    video = pick_gen_video(h5, row, src.get("gen_videos"), delivery_path, path_base)
                     item = {"frames": row.get("frames"), "exec_steps": row.get("exec_steps"),
                             "media": media.add(f"gen/new/{tier}/{task}/{seed}", video)}
                     if row.get("frames") is not None and row.get("exec_steps") is not None:
@@ -447,6 +456,12 @@ def main(argv=None) -> int:
     for problem in stats["problems"][:40]:
         print(f"# {problem}", flush=True)
     ok = not stats["problems"] and stats["identities"] == stats["expected"]
+    targets = [args.out / "catalog.json", args.out / "media-private.json"]
+    exists = [str(t) for t in targets if t.exists()]
+    if ok and exists:  # 写入前确认两个目标都不存在，不留半份产物
+        print(f"# 目标文件已存在，拒绝覆盖：{exists}", flush=True)
+        stats["problems"].append("目标文件已存在")
+        ok = False
     if stats["identities"] != stats["expected"]:
         print(f"# 身份总数 {stats['identities']} ≠ 表 2 推出的 {stats['expected']}", flush=True)
     if ok:

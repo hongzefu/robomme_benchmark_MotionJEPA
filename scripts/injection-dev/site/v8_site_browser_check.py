@@ -21,7 +21,11 @@
 
 截图写到 ``--shots``。末行打印
 ``V8_SITE=PASS|FAIL sections=15 eval_placeholders=<n> eval_filter_hits=0 eval_media_requests=0 subgoal_missing=0 config_mismatch=0``
-（另附 cells、played、fail_badges、page_errors）。
+（另附 cells、played、fail_badges、page_errors）。**判定行按前缀匹配**：
+``V8_SITE=PASS sections=15 eval_placeholders=<n> eval_filter_hits=0 eval_media_requests=0 subgoal_missing=0 config_mismatch=0``
+之后可能追加键，接续脚本只认这段前缀。任何中断（超时、页面崩溃）都记入 problems 并照打判定行（FAIL）。
+实点筛选、xhard5 页签、同步播放、移动端几段的锚点按目录里实际存在的格选取（首选格缺了换同类格），
+一类都没有则跳过并计入 problems，所以子表目录不含 xhard5 时会判 FAIL 并写明原因。
 
     uv run --no-project --with playwright python scripts/injection-dev/site/v8_site_browser_check.py \\
       --base http://127.0.0.1:8081 --shots artifacts/newtask-v8/site-checks
@@ -78,6 +82,7 @@ def main() -> int:
     n = {"sections": 0, "cells": 0, "eval_placeholders": 0, "eval_filter_hits": 0, "subgoal_missing": 0,
          "config_mismatch": 0, "fail_badges": 0, "played": 0, "videos_meta": 0}
     want_placeholders = 0
+    gen_media: set[str] = set()
     with sync_playwright() as p:
         launch = {"headless": True, "args": ["--disable-gpu", "--autoplay-policy=no-user-gesture-required"]}
         if args.chrome:
@@ -87,177 +92,225 @@ def main() -> int:
         context.on("request", lambda r: media_requests.append(r.url) if MEDIA.search(r.url) else None)
         page = context.new_page()
         page.on("pageerror", lambda e: page_errors.append(str(e)))
-        catalog = page.request.get(f"{base}/api/catalog").json()
-        sg = page.request.get(f"{base}/api/subgoals").json()
-        gen_media = {g["media"] for t in catalog["tasks"] for cell in t["tiers"].values() for ep in cell["episodes"]
-                     for g in ep.get("gen", {}).values() if g.get("media")}
-        if any(ep.get("eval") for t in catalog["tasks"] for cell in t["tiers"].values() for ep in cell["episodes"]):
-            problems.append("目录里有非空评估（v8 评估应置空）")
-        if not isinstance(sg, dict) or sg.get("schema") != "v8-subgoals/1" or not sg.get("episodes"):
-            problems.append("subgoals.json 缺失或为空（/api/subgoals 不是 v8-subgoals/1）")
-            sg = {"episodes": {}, "oracle": {}}
-        # 数据层：每局逐段记录齐全（xhard0 两个入口）
-        for t in catalog["tasks"]:
-            for tier, cell in t["tiers"].items():
-                for ep in cell["episodes"]:
-                    rec = sg["episodes"].get(t["id"], {}).get(tier, {}).get(str(ep["idx"]))
-                    sides = ("new", "old") if tier == "xhard0" else ("new",)
-                    if rec is None or any(s not in rec for s in sides) or "goal" not in rec:
-                        n["subgoal_missing"] += 1
-        if n["subgoal_missing"]:
-            problems.append(f"逐段数据缺 {n['subgoal_missing']} 局")
+        try:
+            catalog = page.request.get(f"{base}/api/catalog").json()
+            sg = page.request.get(f"{base}/api/subgoals").json()
+            gen_media = {g["media"] for t in catalog["tasks"] for cell in t["tiers"].values() for ep in cell["episodes"]
+                         for g in ep.get("gen", {}).values() if g.get("media")}
+            if any(ep.get("eval") for t in catalog["tasks"] for cell in t["tiers"].values() for ep in cell["episodes"]):
+                problems.append("目录里有非空评估（v8 评估应置空）")
+            if not isinstance(sg, dict) or sg.get("schema") != "v8-subgoals/1" or not sg.get("episodes"):
+                problems.append("subgoals.json 缺失或为空（/api/subgoals 不是 v8-subgoals/1）")
+                sg = {"episodes": {}, "oracle": {}}
+            # 数据层：每局逐段记录齐全（xhard0 两个入口）
+            for t in catalog["tasks"]:
+                for tier, cell in t["tiers"].items():
+                    for ep in cell["episodes"]:
+                        rec = sg["episodes"].get(t["id"], {}).get(tier, {}).get(str(ep["idx"]))
+                        sides = ("new", "old") if tier == "xhard0" else ("new",)
+                        if rec is None or any(s not in rec for s in sides) or "goal" not in rec:
+                            n["subgoal_missing"] += 1
+            if n["subgoal_missing"]:
+                problems.append(f"逐段数据缺 {n['subgoal_missing']} 局")
 
-        page.goto(f"{base}/", wait_until="domcontentloaded")
-        page.wait_for_selector(".task-link")
-        present = page.evaluate("ids => ids.filter(id => document.getElementById(id))", list(SECTIONS))
-        n["sections"] = len(present)
-        if n["sections"] != len(SECTIONS):
-            problems.append(f"缺少区块：{sorted(set(SECTIONS) - set(present))}")
-        heads = page.locator("#matrix .oracle-table thead th").all_inner_texts()
-        if not any("xhard5" in h for h in heads):
-            problems.append("任务页总表表头缺 xhard5 列")
+            page.goto(f"{base}/", wait_until="domcontentloaded")
+            page.wait_for_selector("#task-nav .task-link")
+            page.wait_for_selector("#matrix .oracle-table thead th")  # 等首个任务页渲染完（侧栏 oracle-link 先于任务页出现）
+            present = page.evaluate("ids => ids.filter(id => document.getElementById(id))", list(SECTIONS))
+            n["sections"] = len(present)
+            if n["sections"] != len(SECTIONS):
+                problems.append(f"缺少区块：{sorted(set(SECTIONS) - set(present))}")
+            heads = page.locator("#matrix .oracle-table thead th").all_inner_texts()
+            if not any("xhard5" in h for h in heads):
+                problems.append("任务页总表表头缺 xhard5 列")
 
-        for task in catalog["tasks"]:
-            for tier, cell in task["tiers"].items():
-                n["cells"] += 1
-                key = f"{task['id']}/{tier}"
-                entries = 2 if tier == "xhard0" else 1
-                want_placeholders += 2 * entries
-                page.evaluate("h => { location.hash = h; }", f"#task={task['id']}&tier={tier}&ep=1")
-                try:
-                    page.wait_for_function(
-                        "([t, tier, n]) => document.querySelector('#episode h3')?.textContent.startsWith(t + ' · ' + tier + ' · 第 1 局')"
-                        " && document.querySelectorAll('#episode .col').length === n",
-                        arg=[task["id"], tier, 3 * entries], timeout=10000)
-                except Exception:
-                    problems.append(f"{key} 栏数或标题不符")
-                    continue
-                ph = page.locator("#episode .eval-placeholder")
-                cnt = ph.count()
-                n["eval_placeholders"] += cnt
-                if cnt != 2 * entries or page.locator("#episode .badge.s-unevaluated").count() != 2 * entries \
-                        or any("未评估" not in x for x in ph.all_inner_texts()):
-                    problems.append(f"{key} 评估占位 {cnt} != {2 * entries} 或文字不符")
-                bad = page.locator(FAIL_BADGES).count()
-                n["fail_badges"] += bad
-                if bad:
-                    problems.append(f"{key} 出现成败徽标 {bad} 个")
-                chips = page.locator("#chips .chip").count()
-                if chips != len(cell["episodes"]):
-                    problems.append(f"{key} 局号 {chips} != {len(cell['episodes'])}")
-                if page.locator("#chips .dot.s-unevaluated").count() != 2 * chips:
-                    problems.append(f"{key} 局号点不全是「未评估」")
-                counts = page.evaluate("() => Object.fromEntries([...document.querySelectorAll('#filters .filter')]"
-                                       ".map(b => [b.dataset.filter, Number(b.textContent.trim().split(/\\s+/).pop())]))")
-                hits = sum(counts.get(f, 0) for f in VERDICT_FILTERS)
-                n["eval_filter_hits"] += hits
-                if hits:
-                    problems.append(f"{key} 成败筛选命中 {hits}")
-                if counts.get("uneval") != len(cell["episodes"]):
-                    problems.append(f"{key} 未评估计数 {counts.get('uneval')} != {len(cell['episodes'])}")
-                # 逐段
-                rec = sg["episodes"].get(task["id"], {}).get(tier, {}).get("1")
-                if rec is not None:
-                    rows = page.locator("#episode .sg-ep .sg-table tr").count()
-                    segs = len(rec.get("new", []))
-                    goals = page.locator("#episode .goal ol li").count()
-                    if (segs and rows != segs + 1) or goals != max(1, len(rec.get("goal", []))):
-                        n["subgoal_missing"] += 1
-                        problems.append(f"{key} 第 1 局逐段表 {rows - 1}/{segs} 行或 goal {goals} 条不符")
-                # 配置（总表格 + 逐局）
-                if tier != "xhard0":
-                    want_dims = set(C.TABLE1.get(task["id"], {}))
-                    items = page.evaluate(
-                        "t => [...document.querySelectorAll(`#matrix td[data-tier=\"${t}\"][data-metric=\"config\"] [data-dim]`)]"
-                        ".map(d => [d.dataset.dim, JSON.parse(d.dataset.values)])", tier)
-                    lis = page.evaluate("() => [...document.querySelectorAll('#episode .cfg-sem li[data-dim]')]"
-                                        ".map(d => [d.dataset.dim, JSON.parse(d.dataset.value)])")
-                    if {d for d, _ in items} != want_dims or {d for d, _ in lis} != want_dims:
-                        n["config_mismatch"] += 1
-                        problems.append(f"{key} 配置维度不符：{sorted(d for d, _ in items)} vs 表 1 {sorted(want_dims)}")
-                    for dim, values in items:
-                        if not check_values(task["id"], tier, dim, values):
-                            n["config_mismatch"] += 1
-                            problems.append(f"{key} 总表配置 {dim}={values} 与表 1 不符")
-                    for dim, value in lis:
-                        if not check_values(task["id"], tier, dim, [value]):
-                            n["config_mismatch"] += 1
-                            problems.append(f"{key} 第 1 局配置 {dim}={value} 与表 1 不符")
-                    if not want_dims and C.NO_DIM_TEXT not in page.locator(
-                            f'#matrix td[data-tier="{tier}"][data-metric="config"]').inner_text():
-                        problems.append(f"{key} 无梯度任务的配置说明缺失")
-                # 生成视频
-                if cell["episodes"][0]["gen"].get("new", {}).get("media"):
+            for task in catalog["tasks"]:
+                for tier, cell in task["tiers"].items():
+                    n["cells"] += 1
+                    key = f"{task['id']}/{tier}"
+                    entries = 2 if tier == "xhard0" else 1
+                    want_placeholders += 2 * entries
+                    page.evaluate("h => { location.hash = h; }", f"#task={task['id']}&tier={tier}&ep=1")
                     try:
                         page.wait_for_function(
-                            "() => [...document.querySelectorAll('#episode video')].every(v => v.readyState >= 1 && !v.error)",
-                            timeout=15000)
-                        n["videos_meta"] += page.locator("#episode video").count()
+                            "([t, tier, n]) => document.querySelector('#episode h3')?.textContent.startsWith(t + ' · ' + tier + ' · 第 1 局')"
+                            " && document.querySelectorAll('#episode .col').length === n",
+                            arg=[task["id"], tier, 3 * entries], timeout=10000)
                     except Exception:
-                        problems.append(f"{key} 视频元数据未就绪")
-                    page.evaluate("() => document.querySelector('#episode .col video').play()")
-                    if wait_played(page, "#episode .col video"):
-                        n["played"] += 1
-                    else:
-                        problems.append(f"{key} 生成视频未播放")
-                    page.evaluate("() => document.querySelectorAll('video').forEach(v => v.pause())")
-                if tier == "xhard5" and task["id"] == "SwingXtimes":
-                    page.wait_for_timeout(300)
-                    page.screenshot(path=str(args.shots / "xhard5-swingxtimes.png"), full_page=True)
+                        problems.append(f"{key} 栏数或标题不符")
+                        continue
+                    ph = page.locator("#episode .eval-placeholder")
+                    cnt = ph.count()
+                    n["eval_placeholders"] += cnt
+                    if cnt != 2 * entries or page.locator("#episode .badge.s-unevaluated").count() != 2 * entries \
+                            or any("未评估" not in x for x in ph.all_inner_texts()):
+                        problems.append(f"{key} 评估占位 {cnt} != {2 * entries} 或文字不符")
+                    bad = page.locator(FAIL_BADGES).count()
+                    n["fail_badges"] += bad
+                    if bad:
+                        problems.append(f"{key} 出现成败徽标 {bad} 个")
+                    chips = page.locator("#chips .chip").count()
+                    if chips != len(cell["episodes"]):
+                        problems.append(f"{key} 局号 {chips} != {len(cell['episodes'])}")
+                    if page.locator("#chips .dot.s-unevaluated").count() != 2 * chips:
+                        problems.append(f"{key} 局号点不全是「未评估」")
+                    counts = page.evaluate("() => Object.fromEntries([...document.querySelectorAll('#filters .filter')]"
+                                           ".map(b => [b.dataset.filter, Number(b.textContent.trim().split(/\\s+/).pop())]))")
+                    hits = sum(counts.get(f, 0) for f in VERDICT_FILTERS)
+                    n["eval_filter_hits"] += hits
+                    if hits:
+                        problems.append(f"{key} 成败筛选命中 {hits}")
+                    if counts.get("uneval") != len(cell["episodes"]):
+                        problems.append(f"{key} 未评估计数 {counts.get('uneval')} != {len(cell['episodes'])}")
+                    # 逐段
+                    rec = sg["episodes"].get(task["id"], {}).get(tier, {}).get("1")
+                    if rec is not None:
+                        rows = page.locator("#episode .sg-ep .sg-table tr").count()
+                        segs = len(rec.get("new", []))
+                        goals = page.locator("#episode .goal ol li").count()
+                        if (segs and rows != segs + 1) or goals != max(1, len(rec.get("goal", []))):
+                            n["subgoal_missing"] += 1
+                            problems.append(f"{key} 第 1 局逐段表 {rows - 1}/{segs} 行或 goal {goals} 条不符")
+                    # 配置（总表格 + 逐局）
+                    if tier != "xhard0":
+                        want_dims = set(C.TABLE1.get(task["id"], {}))
+                        items = page.evaluate(
+                            "t => [...document.querySelectorAll(`#matrix td[data-tier=\"${t}\"][data-metric=\"config\"] [data-dim]`)]"
+                            ".map(d => [d.dataset.dim, JSON.parse(d.dataset.values)])", tier)
+                        lis = page.evaluate("() => [...document.querySelectorAll('#episode .cfg-sem li[data-dim]')]"
+                                            ".map(d => [d.dataset.dim, JSON.parse(d.dataset.value)])")
+                        if {d for d, _ in items} != want_dims or {d for d, _ in lis} != want_dims:
+                            n["config_mismatch"] += 1
+                            problems.append(f"{key} 配置维度不符：{sorted(d for d, _ in items)} vs 表 1 {sorted(want_dims)}")
+                        for dim, values in items:
+                            if not check_values(task["id"], tier, dim, values):
+                                n["config_mismatch"] += 1
+                                problems.append(f"{key} 总表配置 {dim}={values} 与表 1 不符")
+                        for dim, value in lis:
+                            if not check_values(task["id"], tier, dim, [value]):
+                                n["config_mismatch"] += 1
+                                problems.append(f"{key} 第 1 局配置 {dim}={value} 与表 1 不符")
+                        if not want_dims and C.NO_DIM_TEXT not in page.locator(
+                                f'#matrix td[data-tier="{tier}"][data-metric="config"]').inner_text():
+                            problems.append(f"{key} 无梯度任务的配置说明缺失")
+                    # 生成视频
+                    if cell["episodes"][0]["gen"].get("new", {}).get("media"):
+                        try:
+                            page.wait_for_function(
+                                "() => [...document.querySelectorAll('#episode video')].every(v => v.readyState >= 1 && !v.error)",
+                                timeout=15000)
+                            n["videos_meta"] += page.locator("#episode video").count()
+                        except Exception:
+                            problems.append(f"{key} 视频元数据未就绪")
+                        page.evaluate("() => document.querySelector('#episode .col video').play()")
+                        if wait_played(page, "#episode .col video"):
+                            n["played"] += 1
+                        else:
+                            problems.append(f"{key} 生成视频未播放")
+                        page.evaluate("() => document.querySelectorAll('video').forEach(v => v.pause())")
+                    if tier == "xhard5" and task["id"] == "SwingXtimes":
+                        page.wait_for_timeout(300)
+                        page.screenshot(path=str(args.shots / "xhard5-swingxtimes.png"), full_page=True)
 
-        # 实点成败筛选：可见局号必须为 0；再点「未评估」恢复全部
-        page.evaluate("h => { location.hash = h; }", "#task=BinFill&tier=xhard1&ep=1")
-        page.wait_for_function("() => document.querySelector('#episode h3')?.textContent.startsWith('BinFill · xhard1')")
-        for filt in ("both", "split", "none"):
-            page.click(f'#filters .filter[data-filter="{filt}"]')
-            visible = page.locator("#chips .chip:visible").count()
-            n["eval_filter_hits"] += visible
-            if visible:
-                problems.append(f"点「{filt}」后可见局号 {visible} 个")
-        page.click('#filters .filter[data-filter="uneval"]')
-        if page.locator("#chips .chip:visible").count() != page.locator("#chips .chip").count():
-            problems.append("「未评估」筛选没有显示全部局号")
-        page.click('#filters .filter[data-filter="all"]')
-        page.screenshot(path=str(args.shots / "xhard1-binfill.png"), full_page=True)
+            def goto(task: str, tier: str, ep: int = 1) -> None:
+                page.evaluate("h => { location.hash = h; }", f"#task={task}&tier={tier}&ep={ep}")
+                page.wait_for_function("p => document.querySelector('#episode h3')?.textContent.startsWith(p)",
+                                       arg=f"{task} · {tier} · 第 {ep} 局", timeout=10000)
 
-        # xhard5 页签
-        page.evaluate("h => { location.hash = h; }", "#task=StopCube&tier=xhard5&ep=1")
-        page.wait_for_function("() => document.querySelector('#episode h3')?.textContent.startsWith('StopCube · xhard5')")
-        if page.locator('#tier-tabs .tier-tab:has-text("xhard5"):not([disabled])').count() != 1:
-            problems.append("StopCube 的 xhard5 页签不可用")
-        page.screenshot(path=str(args.shots / "xhard5-stopcube.png"), full_page=True)
+            # 锚点按目录里实际存在的格选取：先取首选格，缺了换同类的第一格；一类都没有则跳过并计入 problems
+            cells_all = [(t["id"], tier, cell) for t in catalog["tasks"] for tier, cell in t["tiers"].items()]
 
-        # 同步播放：xhard0 BinFill 第 1 局，两段生成视频都前进
-        page.evaluate("h => { location.hash = h; }", "#task=BinFill&tier=xhard0&ep=1")
-        page.wait_for_function("() => document.querySelectorAll('#episode video').length === 2"
-                               " && [...document.querySelectorAll('#episode video')].every(v => v.readyState >= 1)")
-        page.click("#sync-play")
-        try:
-            page.wait_for_function("() => [...document.querySelectorAll('#episode video')].every(v => v.currentTime > 0.2)",
-                                   timeout=20000)
-        except Exception:
-            problems.append("同步播放后并非全部生成视频前进")
-        page.evaluate("() => document.querySelectorAll('video').forEach(v => v.pause())")
-        page.screenshot(path=str(args.shots / "xhard0-binfill.png"), full_page=True)
+            def anchor(prefer: tuple[str, str], ok) -> tuple[str, str, dict] | None:
+                hits = [c for c in cells_all if ok(c)]
+                return next((c for c in hits if c[:2] == prefer), hits[0] if hits else None)
 
-        page.evaluate("location.hash='#view=oracle'")
-        try:
-            page.wait_for_selector("#oracle-section .oracle-table", timeout=10000)
-            if page.locator("#oracle-section td[data-metric^='policy-'] .eval-uneval").count() == 0:
-                problems.append("各档总表成功率格没有显示「未评估」")
-        except Exception:
-            problems.append("各档总表未显示")
-        page.screenshot(path=str(args.shots / "oracle.png"), full_page=False)
+            def section(name: str, fn) -> None:
+                try:
+                    fn()
+                except Exception as exc:  # 单段失败只记 problems，后续段照跑，判定行照打
+                    problems.append(f"{name} 中断：{type(exc).__name__}: {str(exc).splitlines()[0][:200]}")
 
-        mobile = context.new_page()
-        mobile.set_viewport_size({"width": 390, "height": 900})
-        mobile.goto(f"{base}/#task=VideoPlaceOrder&tier=xhard0&ep=1", wait_until="domcontentloaded")
-        mobile.wait_for_selector("#episode .col")
-        overflow = mobile.evaluate("() => document.documentElement.scrollWidth - document.documentElement.clientWidth")
-        if overflow > 0:
-            problems.append(f"390px 横向溢出 {overflow}px")
-        mobile.screenshot(path=str(args.shots / "mobile.png"), full_page=True)
-        browser.close()
+            def filters_section():
+                a = anchor(("BinFill", "xhard1"), lambda c: c[1] != "xhard0") or anchor(("BinFill", "xhard0"), lambda c: True)
+                if a is None:
+                    problems.append("目录无任何格，跳过筛选实点")
+                    return
+                goto(a[0], a[1])
+                for filt in ("both", "split", "none"):
+                    page.click(f'#filters .filter[data-filter="{filt}"]')
+                    visible = page.locator("#chips .chip:visible").count()
+                    n["eval_filter_hits"] += visible
+                    if visible:
+                        problems.append(f"点「{filt}」后可见局号 {visible} 个")
+                page.click('#filters .filter[data-filter="uneval"]')
+                if page.locator("#chips .chip:visible").count() != page.locator("#chips .chip").count():
+                    problems.append("「未评估」筛选没有显示全部局号")
+                page.click('#filters .filter[data-filter="all"]')
+                page.screenshot(path=str(args.shots / f"filters-{a[0]}-{a[1]}.png"), full_page=True)
+
+            def xhard5_section():
+                a = anchor(("StopCube", "xhard5"), lambda c: c[1] == "xhard5")
+                if a is None:
+                    problems.append("目录无 xhard5 格，跳过 xhard5 页签检查")
+                    return
+                goto(a[0], a[1])
+                if page.locator('#tier-tabs .tier-tab:has-text("xhard5"):not([disabled])').count() != 1:
+                    problems.append(f"{a[0]} 的 xhard5 页签不可用")
+                page.screenshot(path=str(args.shots / f"xhard5-{a[0]}.png"), full_page=True)
+
+            def sync_section():
+                def both_media(c):
+                    return c[1] == "xhard0" and any(all(g.get("media") for g in ep["gen"].values()) and len(ep["gen"]) == 2
+                                                    for ep in c[2]["episodes"])
+                a = anchor(("BinFill", "xhard0"), both_media)
+                if a is None:
+                    problems.append("目录无两入口都有生成视频的 xhard0 局，跳过同步播放")
+                    return
+                ep = next(e for e in a[2]["episodes"] if len(e["gen"]) == 2 and all(g.get("media") for g in e["gen"].values()))
+                goto(a[0], a[1], ep["idx"])
+                page.wait_for_function("() => document.querySelectorAll('#episode video').length === 2"
+                                       " && [...document.querySelectorAll('#episode video')].every(v => v.readyState >= 1)",
+                                       timeout=15000)
+                page.click("#sync-play")
+                try:
+                    page.wait_for_function("() => [...document.querySelectorAll('#episode video')].every(v => v.currentTime > 0.2)",
+                                           timeout=20000)
+                except Exception:
+                    problems.append("同步播放后并非全部生成视频前进")
+                page.evaluate("() => document.querySelectorAll('video').forEach(v => v.pause())")
+                page.screenshot(path=str(args.shots / f"xhard0-{a[0]}.png"), full_page=True)
+
+            def oracle_section():
+                page.evaluate("location.hash='#view=oracle'")
+                try:
+                    page.wait_for_selector("#oracle-section .oracle-table", timeout=10000)
+                    if page.locator("#oracle-section td[data-metric^='policy-'] .eval-uneval").count() == 0:
+                        problems.append("各档总表成功率格没有显示「未评估」")
+                except Exception:
+                    problems.append("各档总表未显示")
+                page.screenshot(path=str(args.shots / "oracle.png"), full_page=False)
+
+            def mobile_section():
+                a = anchor(("VideoPlaceOrder", "xhard0"), lambda c: c[1] == "xhard0") or anchor(("BinFill", "xhard1"), lambda c: True)
+                if a is None:
+                    problems.append("目录无任何格，跳过移动端检查")
+                    return
+                mobile = context.new_page()
+                mobile.set_viewport_size({"width": 390, "height": 900})
+                mobile.goto(f"{base}/#task={a[0]}&tier={a[1]}&ep=1", wait_until="domcontentloaded")
+                mobile.wait_for_selector("#episode .col", timeout=15000)
+                overflow = mobile.evaluate("() => document.documentElement.scrollWidth - document.documentElement.clientWidth")
+                if overflow > 0:
+                    problems.append(f"390px 横向溢出 {overflow}px")
+                mobile.screenshot(path=str(args.shots / "mobile.png"), full_page=True)
+
+            for name, fn in (("成败筛选实点", filters_section), ("xhard5 页签", xhard5_section), ("同步播放", sync_section),
+                             ("各档总表", oracle_section), ("移动端", mobile_section)):
+                section(name, fn)
+        except Exception as exc:  # 任何中断都记入 problems，判定行照打
+            problems.append(f"检查中断：{type(exc).__name__}: {str(exc).splitlines()[0][:200]}")
+        finally:
+            browser.close()
 
     eval_media = sorted({m.group(1) for url in media_requests if (m := MEDIA.search(url)) and m.group(1) not in gen_media})
     n["eval_media_requests"] = len(eval_media)

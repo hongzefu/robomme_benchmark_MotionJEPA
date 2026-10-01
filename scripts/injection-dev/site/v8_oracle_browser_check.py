@@ -11,7 +11,10 @@
 - 可选 ``--delivery``：逐格执行步均值／最小／最大与 ``delivery.json`` 的 ``exec_steps`` 再核一遍（与交付 h5 一致）。
 
 逐格覆盖目录里全部 (任务, 档)（完整根 43 新值格 + 16 xhard0 格 = 59）。总表与单任务表都核；截图写 ``--shots``。
-末行打印 ``V8_ORACLE_BROWSER=PASS|FAIL cells=<n> missing=<n>``（另附 mismatch、page_errors）。
+末行打印 ``V8_ORACLE_BROWSER=PASS|FAIL cells=<n> missing=<n>``（另附 mismatch、page_errors）。**判定行按前缀匹配**：
+``V8_ORACLE_BROWSER=PASS cells=59 missing=0`` 之后可能追加键。任何中断都记入 problems 并照打判定行（FAIL）。
+``--expect-cells`` 缺省由目录推出：目录新值格等于 ``V8_CELLS`` 时为 ``len(V8_CELLS) + 16``（= 59），
+子表时为目录新值格数 + 16（xhard0 每任务一格）。
 
     uv run --no-project --with playwright python scripts/injection-dev/site/v8_oracle_browser_check.py \\
       --base http://127.0.0.1:8081 --shots artifacts/newtask-v8/site-checks/oracle \\
@@ -111,7 +114,8 @@ def main() -> int:
     ap.add_argument("--base", default="http://127.0.0.1:8081")
     ap.add_argument("--shots", type=Path, required=True)
     ap.add_argument("--delivery", type=Path, help="可选：再与 delivery.json 的 exec_steps 逐格核对")
-    ap.add_argument("--expect-cells", type=int, default=59, help="期望格数（完整根 43 + 16 = 59）")
+    ap.add_argument("--expect-cells", type=int, default=None,
+                    help="期望格数；缺省由目录推出（完整根 len(V8_CELLS)+16 = 59，子表为目录新值格数 + 16）")
     ap.add_argument("--chrome", help="Chromium 可执行文件；缺省用 Playwright 自带")
     args = ap.parse_args()
     args.shots.mkdir(parents=True, exist_ok=True)
@@ -120,6 +124,7 @@ def main() -> int:
     missing: list[str] = []
     errors: list[str] = []
     cells = 0
+    catalog: dict = {"tasks": []}
     table1 = {task: {dim: dict(v) for dim, v in dims.items()} for task, dims in C.TABLE1.items()}
     with sync_playwright() as pw:
         launch = {"headless": True, "args": ["--disable-gpu"]}
@@ -189,8 +194,17 @@ def main() -> int:
             problems.append(f"检查中断：{type(exc).__name__}: {exc}")
         finally:
             browser.close()
-    if cells != args.expect_cells:
-        problems.append(f"格数 {cells} != 期望 {args.expect_cells}")
+    expect = args.expect_cells
+    if expect is None:
+        try:
+            H = C.load_hard_specs()
+            new_cells = {(t["id"], tier) for t in catalog["tasks"] for tier in t["tiers"] if tier != "xhard0"}
+            expect = (len(H.V8_CELLS) if new_cells == set(H.V8_CELLS) else len(new_cells)) + len(C.NAMES)
+        except Exception as exc:
+            problems.append(f"无法推出期望格数：{type(exc).__name__}: {exc}")
+            expect = -1
+    if cells != expect:
+        problems.append(f"格数 {cells} != 期望 {expect}")
     problems += ["页面脚本错误：" + e for e in errors]
     report = {"cells": cells, "missing": missing, "problems": problems, "page_errors": errors}
     (args.shots / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

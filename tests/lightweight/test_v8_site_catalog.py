@@ -191,16 +191,20 @@ def build_synthetic(root: Path, cells: dict[tuple[str, str], int] | None = None,
             epdir = gen1 / "episodes" / tier / f"{task}_episode_{ep}"
             h5 = epdir / "hdf5_files" / f"{task}_ep{ep}_seed{seed}.h5"
             frames, demo = write_h5(h5, task, tier, seed)
-            link(mp4, epdir / "videos" / f"{task}_ep{ep}_seed{seed}_{tier}_synthetic.mp4")
+            video = epdir / "videos" / f"{task}_ep{ep}_seed{seed}_{tier}_synthetic.mp4"
+            link(mp4, video)
+            # S2-B 口径：h5 绝对路径、path 相对 delivery.json 目录、video 绝对路径（可选）
             delivery_rows.append({"task": task, "tier": tier, "episode": ep, "candidate": row["candidate"], "seed": seed,
-                                  "h5": str(h5.relative_to(gen1)), "frames": frames, "exec_steps": frames - demo,
-                                  "spec_sha256": row["spec_sha256"]})
+                                  "exec_steps": frames - demo, "frames": frames, "h5": str(h5.resolve()),
+                                  "path": str(h5.relative_to(gen1)), "h5_sha256": hashlib.sha256(h5.read_bytes()).hexdigest(),
+                                  "env_module": f"robomme_hard.robomme_env.{task}", "video": str(video.resolve())})
             idents.append({"candidate": row["candidate"], "episode": None, "round": None, "seed": seed, "shard": None,
                            "source_episode": None, "task": task, "tier": tier})
     gen1.mkdir(parents=True, exist_ok=True)
     (gen1 / "delivery.json").write_text(json.dumps({
         "schema": C.DELIVERY_SCHEMA, "rows": delivery_rows,
-        "counts": {"exec_over_cap": 0, "backfills": 0, "infra_retries": 0, "failed": 0}}, ensure_ascii=False))
+        "counts": {"exec_over_cap": 0, "backfills": 0, "infra_retries": 0, "failed": 0},
+        "cells": {f"{t}/{tier}": n for (t, tier), n in cells.items()}}, ensure_ascii=False))
     xdir = root / "xhard0-gen"
     manifests = {"H": [], "O": []}
     for code, task in enumerate(H.ALL_TASKS, 1):
@@ -349,6 +353,33 @@ def test_main_写出目录_且1262校验(tmp_path, full, capsys):
         assert C.main(src_args(dict(src, identities=bad), out2)) == 1
         assert capsys.readouterr().out.strip().splitlines()[-1].startswith("V8_SITE_CATALOG=FAIL")
         assert not out2.exists()
+
+
+def test_delivery口径_缺执行步即FAIL_相对视频路径可解析(tmp_path, capsys):
+    src = build_synthetic(tmp_path, {("StopCube", "xhard1"): 1, ("SwingXtimes", "xhard5"): 1})
+    data = json.loads(Path(src["delivery"]).read_text())
+    gen1 = Path(src["delivery"]).parent
+    for row in data["rows"]:  # h5 只留相对 path、video 改相对 delivery.json 目录
+        del row["h5"]
+        row["video"] = str(Path(row["video"]).relative_to(gen1.resolve()))
+    Path(src["delivery"]).write_text(json.dumps(data))
+    assert C.main(src_args(src, tmp_path / "site-ok")) == 0
+    capsys.readouterr()
+    del data["rows"][0]["exec_steps"]
+    Path(src["delivery"]).write_text(json.dumps(data))
+    assert C.main(src_args(src, tmp_path / "site-bad")) == 1
+    out = capsys.readouterr().out
+    assert "缺 ['exec_steps']" in out and out.strip().splitlines()[-1].startswith("V8_SITE_CATALOG=FAIL")
+
+
+def test_目标文件已存在_FAIL且不覆盖(tmp_path, capsys):
+    src = build_synthetic(tmp_path, {("StopCube", "xhard1"): 1})
+    out = tmp_path / "site"
+    out.mkdir()
+    (out / "media-private.json").write_text("{}")
+    assert C.main(src_args(src, out)) == 1
+    assert capsys.readouterr().out.strip().splitlines()[-1].startswith("V8_SITE_CATALOG=FAIL")
+    assert not (out / "catalog.json").exists() and (out / "media-private.json").read_text() == "{}"
 
 
 SMALL = {("SwingXtimes", "xhard5"): 2, ("StopCube", "xhard1"): 1, ("RouteStick", "xhard3"): 2}
