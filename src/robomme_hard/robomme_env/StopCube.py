@@ -33,7 +33,7 @@ from .utils.SceneGenerationError import SceneGenerationError as _RealSceneGenera
 from .utils.subgoal_evaluate_func import static_check
 from .utils.object_generation import *
 from .utils import reset_panda
-from .utils.difficulty import NEWVALUE_DIFFICULTIES, is_newvalue_difficulty, normalize_robomme_difficulty, require_xhard4_only
+from .utils.difficulty import is_newvalue_difficulty, normalize_robomme_difficulty
 from .utils.episode_spec import SpecRecorder
 from .utils.sampling_config import assert_native_decision, fill_missing_newvalue, split_sampling_config
 from ..logging_utils import logger
@@ -125,11 +125,18 @@ _CONFIG_CURRENT = {
     # 原 randint(2, 6) 即闭区间 [2, 5]
     "stop_time_range": {"low": 2, "high_exclusive": 6},
 }
-# xhard（C4 只锁这两项）：速度最快档 [60]、停止序号闭区间 [6, 15]（半开写 low=6, high_exclusive=16）。
-_CONFIG_XHARD = {
-    "move_interval_choices": [60],
-    "stop_time_range": {"low": 6, "high_exclusive": 16},
-}
+# v8（1001 方案 §1 表 1 / §2.1）：新值档 xhard1～xhard5，每档停止序号一个定数 k = 6／7／8／9／10
+# （半开写 low=k, high_exclusive=k+1）；方块速度一律最快档 [60]（同 v7 xhard4）。
+# v7 的 xhard4 是 [6, 15] 随机，v8 改为定值 9；xhard1～3、xhard5 为 v8 新增。
+_XHARD_STOP_TIME = {"xhard1": 6, "xhard2": 7, "xhard3": 8, "xhard4": 9, "xhard5": 10}
+
+
+def _config_xhard(stop_time):
+    """新值档配置：最快档 [60] + 停止序号定值 ``stop_time``。"""
+    return {
+        "move_interval_choices": [60],
+        "stop_time_range": {"low": stop_time, "high_exclusive": stop_time + 1},
+    }
 
 
 def _native_decision(cls):
@@ -142,7 +149,8 @@ def _native_decision(cls):
     return {
         "move_interval_choices": list(hard["move_interval_choices"]),
         "stop_time_range": dict(hard["stop_time_range"]),
-        "xhard4": copy.deepcopy(cls.configs["xhard4"]),
+        # v8：五个新值档子键（xhard1～5），assert_native_decision 按键名放行
+        **{tier: copy.deepcopy(cls.configs[tier]) for tier in _XHARD_STOP_TIME},
     }
 
 
@@ -152,11 +160,11 @@ def _resolve_sampling_config(cls, override):
     decision, native = split_sampling_config(override, native_default, decision_default)
     assert_native_decision(decision, decision_default, cls.__name__)
     # 旧快照（v2/v3 导出时还没有 xhard 条目）守卫照旧放行；这里补上源码申报的新值档默认值，
-    # 只影响新值档局，原三档不读这些键。V6：fill_missing_newvalue 只补 xhard1/2/3（本环境不加档，补了也不会被读），
-    # xhard 的旧快照兜底保持本环境 V4/V5 原有写法（按族键名 NEWVALUE_DIFFICULTIES[-1] 取，即最难档 xhard）。
+    # 只影响新值档局，原三档不读这些键。fill_missing_newvalue 只在同层已有 xhard4 时补 xhard1/2/3；
+    # xhard4 的旧快照兜底保持本环境 V4/V5 原有写法（v8 起写字面 "xhard4"，不再用 NEWVALUE_DIFFICULTIES[-1]）。
     fill_missing_newvalue(decision, decision_default)
-    if NEWVALUE_DIFFICULTIES[-1] not in decision:
-        decision[NEWVALUE_DIFFICULTIES[-1]] = copy.deepcopy(decision_default[NEWVALUE_DIFFICULTIES[-1]])
+    if "xhard4" not in decision:
+        decision["xhard4"] = copy.deepcopy(decision_default["xhard4"])
     native["decision"] = decision
     return native
 
@@ -177,12 +185,16 @@ class StopCube(BaseEnv):
     cube_spawn_half_size = 0.05
     cube_spawn_center = (0, 0)
 
-    # A6：三档同值（深拷贝各一份，防止互相串改），xhard 取新值
+    # A6：三档同值（深拷贝各一份，防止互相串改）；v8 新值档 xhard1～5 各取定值（xhard4 保持原位置，其余追加在后）
     configs = {
         "easy": copy.deepcopy(_CONFIG_CURRENT),
         "medium": copy.deepcopy(_CONFIG_CURRENT),
         "hard": copy.deepcopy(_CONFIG_CURRENT),
-        "xhard4": copy.deepcopy(_CONFIG_XHARD),
+        "xhard4": _config_xhard(_XHARD_STOP_TIME["xhard4"]),
+        "xhard1": _config_xhard(_XHARD_STOP_TIME["xhard1"]),
+        "xhard2": _config_xhard(_XHARD_STOP_TIME["xhard2"]),
+        "xhard3": _config_xhard(_XHARD_STOP_TIME["xhard3"]),
+        "xhard5": _config_xhard(_XHARD_STOP_TIME["xhard5"]),
     }
 
 
@@ -241,8 +253,7 @@ class StopCube(BaseEnv):
                 self.difficulty = "medium"
             else:  # seed_mod == 2
                 self.difficulty = "hard"
-        # V6（计划 2.13 / M2）：本环境原版无梯度、不加档，传入 xhard1/2/3 明确报错
-        require_xhard4_only(self.difficulty, "StopCube")
+        # v8（1001 方案 §2.1）：本环境接受 xhard1～xhard5 五个新值档，不再调用 require_xhard4_only
 
         self.highlight_starts = {}  # Use dictionary to store highlight start time for each button
         super().__init__(*args, robot_uids=robot_uids, **kwargs)

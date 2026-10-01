@@ -226,29 +226,31 @@ class PickXtimes(BaseEnv):
     'number_max':3
     }
 
-    # V7 定值（0928 方案 §3.2.2）：每档一个定数，抓取次数 7/10/12/15、干扰块 1/2/3/4（BLOCK_DISTRACTOR_COLORS）。
+    # v8 定值（1001 方案 §1 表 1 / §2.1）：每档一个定数，抓放次数 6/7/8/9、干扰块 1/2/3/4（BLOCK_DISTRACTOR_COLORS）。
+    # xhard4=9 次只为保住四键结构（v7 兼容的配置与测试），不交付、不评估（9 次超 1600 步上限，不得用于生成）；
+    # 本环境不加 xhard5；圆盘区域（XHARD_DECISION）是非梯度参数，不动。
     config_xhard4 = {
         'color': 3,
-        'number_min': 15,
-        'number_max': 15,
+        'number_min': 9,
+        'number_max': 9,
     }
 
     config_xhard1 = {
+        'color': 3,
+        'number_min': 6,
+        'number_max': 6,
+    }
+
+    config_xhard2 = {
         'color': 3,
         'number_min': 7,
         'number_max': 7,
     }
 
-    config_xhard2 = {
-        'color': 3,
-        'number_min': 10,
-        'number_max': 10,
-    }
-
     config_xhard3 = {
         'color': 3,
-        'number_min': 12,
-        'number_max': 12,
+        'number_min': 8,
+        'number_max': 8,
     }
 
     # Combine into a dictionary

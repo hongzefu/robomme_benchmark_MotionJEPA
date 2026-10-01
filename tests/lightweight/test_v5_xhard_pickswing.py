@@ -552,3 +552,28 @@ def test_swing_replay_colored_violation_is_wrapped() -> None:
     while cause is not None and not isinstance(cause, EpisodeSpecError):
         cause = cause.__cause__
     assert isinstance(cause, EpisodeSpecError)
+
+
+# ---------------------------------------------------------------------------
+# v8（1001 方案 §1 表 1）：逐档离线 reset——抓放／摆动次数与干扰块数按档取值；Swing 多一档 xhard5
+# ---------------------------------------------------------------------------
+V8_TIER_EXPECT = {
+    "PickXtimes": {"xhard1": (6, 1), "xhard2": (7, 2), "xhard3": (8, 3), "xhard4": (9, 4)},
+    "SwingXtimes": {"xhard1": (4, 1), "xhard2": (5, 2), "xhard3": (6, 3), "xhard4": (7, 4), "xhard5": (8, 4)},
+}
+
+
+@pytest.mark.parametrize("task,tier", [(task, tier) for task, rows in V8_TIER_EXPECT.items() for tier in rows])
+def test_v8_tier_counts_offline(task, tier) -> None:
+    repeats, n_distractors = V8_TIER_EXPECT[task][tier]
+    ok = 0
+    with OfflineScene():
+        for seed in (11, 12, 1234):
+            try:
+                env = run_offline(task, seed, difficulty=tier)
+            except SceneGenerationError:
+                continue
+            ok += 1
+            assert env.num_repeats == repeats, (task, tier, seed)
+            assert len(env.distractor_cubes) == n_distractors, (task, tier, seed)
+    assert ok >= 1, f"{task}@{tier} 三个 seed 全部放不下"

@@ -122,7 +122,8 @@ def test_V5预设常量不动且是深拷贝_xhard4改用V7定值(task):
 
 # V7 定值（0928 方案 §3.2.2）新值族档位表：贴身环带干扰 0/4/8/12、含 cube 恒为一半，两环境相同；
 # 其余键沿用 V5 预设；pick 2/3/3/3 不变。v6 值只存在于包内 v6 规格 header
-_V7_ROWS = {"xhard1": (2, 0, [0, 0]), "xhard2": (3, 4, [2, 2]), "xhard3": (3, 8, [4, 4]),
+# v8（1001 方案 §1 表 1）：xhard1 干扰 0 → 4、含 cube 0 → 2（pick 仍 2）；xhard2～4 不动
+_V7_ROWS = {"xhard1": (2, 4, [2, 2]), "xhard2": (3, 4, [2, 2]), "xhard3": (3, 8, [4, 4]),
             "xhard4": (3, 12, [6, 6])}
 V6_EXPECT = {"VideoUnmask": _V7_ROWS, "ButtonUnmask": _V7_ROWS}
 
@@ -142,7 +143,7 @@ def test_v6新值族档位表按计划且其余键沿用xhard(task):
         rest = {k: v for k, v in dist.items() if k not in ("count", "cube_count_range")}
         base = {k: v for k, v in uds.V5_DISTRACTOR_PRESETS[task].items() if k not in ("count", "cube_count_range")}
         assert rest == base
-        # V7：count 0（xhard1）也须被采样器接受
+        # 各档干扰配置都须被采样器接受（count 0 的合法性见 test_v7_tier_values）
         parsed = uds.parse_distractor_cfg(dist)
         assert parsed.count == count
     assert decision["xhard4"]["distractor"]["count"] == 12
@@ -359,7 +360,8 @@ def test_真reset验收(task):
     rows = [reset_check(task, seed) for seed in SIM_SEEDS[task]]
     for row in rows:
         print(json.dumps(row, ensure_ascii=False))
-        assert row["placed"] == EXPECT[task][0] and row["shortfall"] == 0
+        # V7 起 xhard4 decision 改用 12 个（不再是 V5 预设 EXPECT 的 15／14）；BASE a0d5c1d7 上此处已失败，v8 顺手改对
+        assert row["placed"] == row["requested"] == 12 and row["shortfall"] == 0
         assert row["out_of_ring"] == 0 and row["not_visible"] == 0
         assert row["range_ok"] and row["color_imbalance"] <= 1
         assert row["duplicate_actor_names"] == 0 and row["n_actor_names"] > 0

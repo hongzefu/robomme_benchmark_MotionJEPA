@@ -70,8 +70,10 @@ RS_ORIGINAL_DECISION = {
 PL_SEEDS = [5500900, 5500000, 5500300, 5500600, 7100001]
 
 # V7 定值（0928 方案 §3.2.2；用户 2026-09-29 定 PatternLock 12/15/18/21，不是 24）
-PL_V7_LENGTHS = {"xhard1": [12, 12], "xhard2": [15, 15], "xhard3": [18, 18], "xhard4": [21, 21]}
-RS_V7_LENGTHS = {"xhard1": [10, 10], "xhard2": [13, 13], "xhard3": [16, 16], "xhard4": [19, 19]}
+# v8（1001 方案 §1 表 1）：xhard1～3 由 V7 定值（PL 12/15/18、RS 10/13/16）改区间；xhard4 不动（21／19，不交付）。
+# 变量名沿用 V7_*，下方 V6 段的回归测试直接引用。
+PL_V7_LENGTHS = {"xhard1": [9, 12], "xhard2": [13, 15], "xhard3": [16, 18], "xhard4": [21, 21]}
+RS_V7_LENGTHS = {"xhard1": [8, 10], "xhard2": [11, 13], "xhard3": [14, 16], "xhard4": [19, 19]}
 # 包内 v6 规格 header 的 RouteStick xhard4 区间：回放按 header 取值、且区间宽时才能核抽样位置
 RS_V6_XHARD4_RANGE = [17, 21]
 
@@ -283,7 +285,7 @@ RS_NEW_LENGTHS = RS_V7_LENGTHS
 
 
 def test_v6_pl_seven_tiers_config_and_decision() -> None:
-    """7 档齐全；新档 5×5、节点数按计划 2.11；decision 四棵新值子树同结构、预算都是 20000。"""
+    """7 档齐全（v8 不加 xhard5）；新档 5×5、节点数按 v8 区间；decision 四棵新值子树同结构、预算都是 20000。"""
     assert list(PL.configs) == ["hard", "easy", "medium", "xhard4", "xhard1", "xhard2", "xhard3"]
     decision, _ = PL_MOD.native_blocks(PL)
     for tier, length in PL_NEW_LENGTHS.items():
@@ -370,7 +372,9 @@ def test_v6_rs_partial_snapshot_filled_v4_not() -> None:
     for tier in ("xhard1", "xhard2", "xhard3"):
         decision.pop(tier)
     env = _load(RS_MOD, RS, 3, "xhard2", sampling={"decision": copy.deepcopy(decision), "native": native})
-    assert env._spec.to_dict()["objects"]["L"] == RS_V7_LENGTHS["xhard2"][0]
+    # v8：xhard2 由定值 13 改区间 [11, 13]，补齐后的 L 落在源码区间内即可（原写「== 区间下端」只在定值时成立）
+    low, high = RS_V7_LENGTHS["xhard2"]
+    assert low <= env._spec.to_dict()["objects"]["L"] <= high
     decision.pop("xhard4")
     with pytest.raises(ValueError, match="segment_count_range"):
         _load(RS_MOD, RS, 3, "xhard2", sampling={"decision": decision, "native": native})

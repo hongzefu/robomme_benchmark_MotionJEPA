@@ -125,7 +125,8 @@ def _native_decision(cls):
         # V5 xhard 专属（计划 2.10）：键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
         "xhard4": copy.deepcopy(NEWVALUE_DECISION["xhard4"]),
         # V6：追加 xhard1/2/3 三棵同结构子树（xhard 保持首位与原值不变）
-        **{d: copy.deepcopy(NEWVALUE_DECISION[d]) for d in NEWVALUE_DIFFICULTIES if d != NEWVALUE_DIFFICULTIES[-1]},
+        # v8：xhard4 写字面值（不再用 NEWVALUE_DIFFICULTIES[-1] 指代最难档）
+        **{d: copy.deepcopy(NEWVALUE_DECISION[d]) for d in NEWVALUE_DIFFICULTIES if d != "xhard4"},
     }
 
 
@@ -136,7 +137,7 @@ def _resolve_sampling_config(cls, override):
     assert_native_decision(decision, decision_default, cls.__name__)
     # V6：V5 快照（已有顶层 xhard 子树）缺 xhard1/2/3 时从源码补齐；更早的快照不补，
     # 保持 V5「V4 及更早快照在新值档上直接报错、不静默取源码新值」的口径 13。
-    if NEWVALUE_DIFFICULTIES[-1] in decision:
+    if "xhard4" in decision:
         fill_missing_newvalue(decision, decision_default)
     native["decision"] = decision
     return native
@@ -186,17 +187,19 @@ class PatternLock(BaseEnv):
     }
 
     # V6（计划 2.11）：hard 与 xhard 之间插入三档，布局、搜法、预算与耗尽抛错全部沿用 xhard，只改节点数
+    # v8（1001 方案 §1 表 1 / §2.1）：xhard1～3 由定值 12/15/18 改区间 [9,12]/[13,15]/[16,18]；
+    # 采样代码不改（拒绝采样取第一条落在区间内的路径），区间内各节点数比例不保证均匀；xhard4 仍 21（不交付）。
     config_xhard1 = {
         "grid": 5,
-        "length": [12, 12]
+        "length": [9, 12]
     }
     config_xhard2 = {
         "grid": 5,
-        "length": [15, 15]
+        "length": [13, 15]
     }
     config_xhard3 = {
         "grid": 5,
-        "length": [18, 18]
+        "length": [16, 18]
     }
 
     # Combine into a dictionary

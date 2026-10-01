@@ -61,14 +61,14 @@ ORIGINAL_DECISION = {
 def test_original_three_configs_unchanged() -> None:
     for difficulty, expected in ORIGINAL_CONFIGS.items():
         assert CLS.configs[difficulty] == expected
-    # V6（计划 2.8）：新增 xhard1/2/3，共 7 档
+    # V6（计划 2.8）：新增 xhard1/2/3，共 7 档；v8（1001 方案 §2.1）不加 xhard5
     assert set(CLS.configs) == {"easy", "medium", "hard", "xhard4", "xhard1", "xhard2", "xhard3"}
     assert list(CLS.configs)[:4] == ["hard", "easy", "medium", "xhard4"]
 
 
 def test_xhard_config_values() -> None:
-    # V7 定值（0928 方案 §3.2.2）：xhard4 抓取次数定为 15
-    assert CLS.configs["xhard4"] == {"color": 3, "number_min": 15, "number_max": 15}
+    # v8（1001 方案 §1 表 1）：xhard4 抓放次数定为 9（不交付、不评估，只保四键结构）
+    assert CLS.configs["xhard4"] == {"color": 3, "number_min": 9, "number_max": 9}
 
 
 def test_decision_visible_part_unchanged() -> None:
@@ -78,8 +78,9 @@ def test_decision_visible_part_unchanged() -> None:
 
 def test_decision_xhard_entries() -> None:
     decision, _ = MOD.native_blocks(CLS)
-    assert decision["number_range"]["xhard4"] == [15, 15]
+    assert decision["number_range"]["xhard4"] == [9, 9]
     assert decision["color"]["xhard4"] == 3
+    assert "xhard5" not in decision and "xhard5" not in decision["number_range"]
     xhard = decision["xhard4"]
     # V5 S3f（计划 2.13）：新增 min_center_dist_m（L44）；删 corner_bias（L43）；方块区半宽 0.25（L46）
     assert set(xhard) == {"target_cube_position_policy", "goal_position_policy", "distractor", "min_center_dist_m"}
@@ -167,10 +168,10 @@ def test_subgoal_ordinal_covers_num_15() -> None:
 
 
 # ---------------------------------------------------------------------------
-# V7 定值（0928 方案 §3.2.2）：新值族 xhard1..4——抓取次数 7/10/12/15 定值、干扰块数 1/2/3/4
-# （BLOCK_DISTRACTOR_COLORS 前 k 个），其余字段沿用 xhard；v6 区间值只存在于包内 v6 规格 header
+# v8（1001 方案 §1 表 1）：新值族 xhard1..4——抓放次数 6/7/8/9 定值（原 V7 7/10/12/15；xhard4 不交付）、
+# 干扰块数 1/2/3/4（BLOCK_DISTRACTOR_COLORS 前 k 个），其余字段（含圆盘区域）沿用 xhard
 # ---------------------------------------------------------------------------
-V6_NUMBER_RANGE = {'xhard1': (7, 7), 'xhard2': (10, 10), 'xhard3': (12, 12), 'xhard4': (15, 15)}
+V6_NUMBER_RANGE = {'xhard1': (6, 6), 'xhard2': (7, 7), 'xhard3': (8, 8), 'xhard4': (9, 9)}
 V6_DISTRACTOR_COUNT = {"xhard1": 1, "xhard2": 2, "xhard3": 3, "xhard4": 4}
 
 

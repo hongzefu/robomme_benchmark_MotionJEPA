@@ -118,10 +118,12 @@ def _newvalue_distractor(count, cube_count_range):
 
 
 # V7 定值（0928 方案 §3.2.2）：贴身环带干扰 0/4/8/12、含 cube 数恒为一半；内环 8 固定 ⇒ 桌面容器总数 8/12/16/20。
+# v8（1001 方案 §1 表 1 / §2.1）：xhard1 干扰 0 → 4、含 cube 0 → 2（pick_count 仍 2），与 xhard2 同干扰、少抓一次；
+# xhard2～4 不动 ⇒ 干扰 4/4/8/12、桌面容器总数 12/12/16/20。
 # XHARD_DISTRACTOR（V5 预设 14 个）本身不动，xhard4 改用 12 个（顶档下调）。
 NEWVALUE_DISTRACTOR = {
     "xhard4": _newvalue_distractor(12, [6, 6]),
-    "xhard1": _newvalue_distractor(0, [0, 0]),
+    "xhard1": _newvalue_distractor(4, [2, 2]),
     "xhard2": _newvalue_distractor(4, [2, 2]),
     "xhard3": _newvalue_distractor(8, [4, 4]),
 }
