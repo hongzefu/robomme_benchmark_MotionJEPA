@@ -345,9 +345,12 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]]) -> No
     * header：字段集合；``difficulty ∈ V8_TIERS``；runtime；``seed_rule == seed_rule_for(tier, "v8")``；
       ``exec_cap == V8_EXEC_CAP``；``layout_rule == {"mode": "independent"}``；``tasks`` 不重复且每个 (task, tier)
       都在 ``V8_CELLS`` 里；``select_rule`` 为 ``{task: [不重复非负整数]}``、``per_env`` 为 ``{task: 候选数（非负整数）}``、
-      ``delivery_per_cell`` 为 ``{task: 正整数}``，三者键集合都等于 ``tasks``；内嵌 sampling_config 散列自洽；
-    * 行：字段集合；``layout_parent is None``、``spec.spec_kind == "native-newvalue/2"``；档位、规格散列、seed 公式、
-      布尔位、rollout.status；逐任务 selected 行数 ≤ ``delivery_per_cell[task]``；
+      ``delivery_per_cell`` 为 ``{task: 正整数}``，三者键集合都等于 ``tasks``；逐任务配额自洽：
+      ``delivery_per_cell[task] ≤ V8_CELLS[(task, tier)]``、``len(select_rule[task]) == delivery_per_cell[task]``、
+      ``per_env[task] ==`` 本文件该任务行数、``select_rule[task]`` 每个索引 ``< per_env[task]``；内嵌 sampling_config 散列自洽；
+    * 行：字段集合；``layout_parent is None``、``spec.spec_kind == "native-newvalue/2"``；``candidate == episode`` 且
+      ``0 ≤ episode < env_block // episode_stride``；档位、规格散列、seed 公式、布尔位、rollout.status；
+      逐任务 selected 行数 ≤ ``delivery_per_cell[task]``；
     * 两个身份散列（签含 exec_cap、delivery_per_cell、seed_rule，改任一项不重签即失败）。
     """
     _, _, header_required, row_required = _schema_keys(SCHEMA_V8)
@@ -380,11 +383,23 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]]) -> No
             raise SpecsError(f"hard-specs/4 的 select_rule[{task}] 必须是不重复非负整数列表：{indices!r}")
         if not _is_int(header["per_env"][task]) or header["per_env"][task] < 0:
             raise SpecsError(f"hard-specs/4 的 per_env[{task}] 必须是非负整数：{header['per_env'][task]!r}")
-        if not _is_int(header["delivery_per_cell"][task]) or header["delivery_per_cell"][task] <= 0:
-            raise SpecsError(f"hard-specs/4 的 delivery_per_cell[{task}] 必须是正整数："
-                             f"{header['delivery_per_cell'][task]!r}")
+        quota = header["delivery_per_cell"][task]
+        if not _is_int(quota) or quota <= 0:
+            raise SpecsError(f"hard-specs/4 的 delivery_per_cell[{task}] 必须是正整数：{quota!r}")
+        if quota > V8_CELLS[(task, tier)]:
+            raise SpecsError(f"hard-specs/4 的 delivery_per_cell[{task}]={quota} 超过表 2 格配额 "
+                             f"{V8_CELLS[(task, tier)]}（{tier}）")
+        if len(indices) != quota:
+            raise SpecsError(f"hard-specs/4 的 select_rule[{task}] 长度 {len(indices)} ≠ delivery_per_cell {quota}")
+        n_rows = sum(1 for row in rows if row.get("task") == task)
+        if header["per_env"][task] != n_rows:
+            raise SpecsError(f"hard-specs/4 的 per_env[{task}]={header['per_env'][task]} ≠ 本文件该任务行数 {n_rows}")
+        if any(i >= header["per_env"][task] for i in indices):
+            raise SpecsError(f"hard-specs/4 的 select_rule[{task}] 有索引越过 per_env={header['per_env'][task]}："
+                             f"{indices!r}")
     if header["sampling_config_sha256"] != digest(header["sampling_config"]):
         raise SpecsError("内嵌 sampling_config 散列不自洽")
+    max_episode = SEED_RULE["env_block"] // SEED_RULE["episode_stride"]
     seen, selected_count = set(), {}
     for row in rows:
         _exact_keys(row, row_required, "specs 行")
@@ -392,6 +407,11 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]]) -> No
         if row["record"] != "spec" or key in seen or row["task"] not in tasks:
             raise SpecsError(f"重复或额外的规格行：{key}")
         seen.add(key)
+        # /4 行 candidate 即抽签 episode（与 _freeze 写法一致），episode 不得越过 env_block，否则跨任务 seed 会撞段
+        if not _is_int(row["episode"]) or not 0 <= row["episode"] < max_episode:
+            raise SpecsError(f"hard-specs/4 行 episode 必须落在 [0, {max_episode})：{key} {row['episode']!r}")
+        if row["candidate"] != row["episode"]:
+            raise SpecsError(f"hard-specs/4 行 candidate 必须等于 episode：{key} {row['episode']!r}")
         if row["tier"] != tier:
             raise SpecsError(f"规格行档位与 header 不符：{key}")
         if row["layout_parent"] is not None or (row.get("spec") or {}).get("spec_kind") != "native-newvalue/2":
@@ -506,7 +526,11 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
 
     * 每份 ``schema == "hard-specs/4"``、``difficulty`` 等于目录档名；
     * 每份 header ``tasks`` 的集合等于 ``expected_cells`` 在该档的任务集合；
-    * 每格 ``selected`` 行数等于 ``expected_cells`` 的值（相等，不是 ≤）；
+    * ``expected_cells[key] ≤ V8_CELLS[key]``；
+    * 每格 header ``delivery_per_cell[task]`` 等于 ``expected_cells`` 的值；
+    * 每格 ``selected`` 行数等于 ``expected_cells`` 的值（相等，不是 ≤）。只数 ``selected``，不看 rollout 结果；
+      正式交付（``delivered``：selected 且 rollout ok）的逐格核对由 ``hard_regression.py delivery-set`` 的
+      ``V8_DELIVERY_SET`` 负责；
     * 同任务跨档 seed 两两不交（比全部规格行，不只 selected）。
 
     返回 ``{tier: (header, rows)}``，与 ``load_specs_v7`` 同形态：键只含涉及的档位、按 ``V8_TIERS`` 顺序；
@@ -520,6 +544,9 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
     bad = {key: n for key, n in expected_cells.items() if not _is_int(n) or n <= 0}
     if bad:
         raise SpecsError(f"expected_cells 的局数必须是正整数：{bad}")
+    over = {key: n for key, n in expected_cells.items() if n > V8_CELLS[key]}
+    if over:
+        raise SpecsError(f"expected_cells 的局数超过表 2 格配额 V8_CELLS：{over}")
     out: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
     for tier in V8_TIERS:
         want = {task for task, t in expected_cells if t == tier}
@@ -536,6 +563,9 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
         if got_tasks != want:
             raise SpecsError(f"{tier} 任务集合不符：缺少 {sorted(want - got_tasks)}，多出 {sorted(got_tasks - want)}")
         for task in sorted(want):
+            if header["delivery_per_cell"][task] != expected_cells[(task, tier)]:
+                raise SpecsError(f"{task}/{tier} delivery_per_cell={header['delivery_per_cell'][task]} ≠ "
+                                 f"期望 {expected_cells[(task, tier)]}")
             got = sum(1 for row in rows if row["task"] == task and row["selected"])
             if got != expected_cells[(task, tier)]:
                 raise SpecsError(f"{task}/{tier} selected 行数 {got} ≠ 期望 {expected_cells[(task, tier)]}")

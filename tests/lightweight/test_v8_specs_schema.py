@@ -196,7 +196,7 @@ def test_任务集合与每格局数必须相等(tmp_path):
         _load(tmp_path, fewer)
     # 格表要 2 局、文件只 selected 1 局（相等，不是 ≤）
     more = {**SMOKE_CELLS, ("StopCube", "xhard1"): 2}
-    with pytest.raises(H.SpecsError, match="selected 行数"):
+    with pytest.raises(H.SpecsError, match="delivery_per_cell="):
         _load(tmp_path, more)
     # 缺档文件
     (tmp_path / "xhard3" / "specs.jsonl").unlink()
@@ -252,7 +252,9 @@ def test_schema4篡改不重签必失败(mutate):
 def test_配额进签_放宽配额只因签名失败():
     header, rows = _tier()
     header = copy.deepcopy(header)
-    header["delivery_per_cell"]["StopCube"] = 5
+    # 配额 2→3（select_rule 同步，仍 ≤ 格配额 10、索引 < per_env 4）：取值自洽，只有签名拦得住
+    header["delivery_per_cell"]["StopCube"] = 3
+    header["select_rule"]["StopCube"] = [0, 1, 2]
     with pytest.raises(H.SpecsError, match="identity_sha256"):
         H.validate_specs(header, rows)
     H.validate_specs(_resign(header, rows), rows)  # 重签后取值本身合法
@@ -262,12 +264,18 @@ def test_配额进签_放宽配额只因签名失败():
     (lambda h: h.__setitem__("exec_cap", 1800), "exec_cap"),
     (lambda h: h.__setitem__("seed_rule", H.seed_rule_for("xhard4", "v8")), "v8"),
     (lambda h: h.__setitem__("layout_rule", {"mode": "shared"}), "layout_rule"),
-    (lambda h: h["delivery_per_cell"].__setitem__("StopCube", 1), "超过 delivery_per_cell"),
+    (lambda h: (h["delivery_per_cell"].__setitem__("StopCube", 1), h["select_rule"].__setitem__("StopCube", [0])),
+     "超过 delivery_per_cell"),
+    # F1：配额与格表／自身绑定
+    (lambda h: h["select_rule"].__setitem__("StopCube", [0]), "长度"),
+    (lambda h: h["per_env"].__setitem__("StopCube", 5), "per_env"),
+    (lambda h: h["select_rule"].__setitem__("StopCube", [0, 4]), "越过 per_env"),
     (lambda h: h["delivery_per_cell"].pop("StopCube"), "delivery_per_cell"),
     (lambda h: h["per_env"].__setitem__("StopCube", "4"), "per_env"),
     (lambda h: h["select_rule"].__setitem__("StopCube", [0, 0]), "select_rule"),
     (lambda h: h.__setitem__("tasks", [*h["tasks"], "BinFill"]), "交付格"),
-], ids=["exec_cap", "seed规则", "layout_rule", "配额低于selected", "配额缺任务", "per_env类型", "select_rule重复", "非交付格任务"])
+], ids=["exec_cap", "seed规则", "layout_rule", "配额低于selected", "select_rule长度不等配额", "per_env不等行数",
+        "select索引越界", "配额缺任务", "per_env类型", "select_rule重复", "非交付格任务"])
 def test_schema4重签后取值违规仍失败(mutate, match):
     header, rows = _tier()
     header = copy.deepcopy(header)
@@ -298,3 +306,50 @@ def test_schema4经load_specs读回(tmp_path):
     got_header, got_rows = H.load_specs(path, check_fingerprint=False)
     assert got_header == json.loads(path.read_text(encoding="utf-8").splitlines()[0])
     assert len(got_rows) == len(rows)
+
+
+# ── 审查续改 F1／F2：重签后仍失败（语义校验而非签名校验拦下）────────────────
+
+
+def test_F1_文件配额超过表2格配额_重签仍失败():
+    header, rows = build_tier("xhard5", {"StopCube": H.V8_CELLS[("StopCube", "xhard5")] + 1})  # build_tier 已正确签名
+    assert header["identity_sha256"] == H.identity_sha256(header, rows)
+    with pytest.raises(H.SpecsError, match="超过表 2 格配额"):
+        H.validate_specs(header, rows)
+
+
+@pytest.mark.parametrize("mutate,match", [
+    (lambda r: (r.__setitem__("episode", H.SEED_RULE["env_block"] // H.SEED_RULE["episode_stride"]),
+                r.__setitem__("candidate", r["episode"])), "episode 必须落在"),
+    (lambda r: (r.__setitem__("episode", -1), r.__setitem__("candidate", -1)), "episode 必须落在"),
+    (lambda r: r.__setitem__("candidate", 99), "candidate 必须等于 episode"),
+], ids=["episode上越界", "episode为负", "candidate不等episode"])
+def test_F2_行episode范围与candidate_重签仍失败(mutate, match):
+    header, rows = _tier()
+    bad = copy.deepcopy(rows)
+    target = next(r for r in bad if r["task"] == "SwingXtimes" and r["candidate"] == 4)  # 非 selected 的备用行
+    mutate(target)  # episode／candidate 检查在 seed 公式之前，不必重算 seed
+    with pytest.raises(H.SpecsError, match=match):
+        H.validate_specs(_resign(header, bad), bad)
+
+
+def test_F1_格表局数超过表2即拒(tmp_path):
+    build_root(tmp_path, SMOKE_CELLS)
+    with pytest.raises(H.SpecsError, match="超过表 2 格配额"):
+        _load(tmp_path, {**SMOKE_CELLS, ("StopCube", "xhard1"): H.V8_CELLS[("StopCube", "xhard1")] + 1})
+
+
+def test_F1_文件配额须等于格表_selected数单独核对(tmp_path):
+    # 文件配额 2、格表要 1：两边签名都对，按 delivery_per_cell 拒
+    write_tier(tmp_path, *build_tier("xhard1", {"StopCube": 2}))
+    with pytest.raises(H.SpecsError, match="delivery_per_cell="):
+        _load(tmp_path, {("StopCube", "xhard1"): 1})
+    # 文件配额 2 但只 selected 1 行（≤ 配额，单文件合法），格表要 2：配额相等、按 selected 数拒
+    header, rows = build_tier("xhard1", {"StopCube": 2})
+    rows[1]["selected"] = rows[1]["initial_selected"] = False
+    header = _resign(header, rows)
+    H.validate_specs(header, rows)
+    (tmp_path / "xhard1" / "specs.jsonl").unlink()
+    write_tier(tmp_path, header, rows)
+    with pytest.raises(H.SpecsError, match="selected 行数"):
+        _load(tmp_path, {("StopCube", "xhard1"): 2})
