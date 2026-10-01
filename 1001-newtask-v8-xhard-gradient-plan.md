@@ -6,11 +6,11 @@
 >
 > **代码锚点**：v7 交付规格 `src/robomme_hard/env_metadata/test-hard/xhard{1..4}/specs.jsonl`（四份 header 的 `sampling_config_sha256` 都是 `4a308ee7…`，`seed_rule.offset=14000000`）。官方环境源码 `1fadc0ec`、官方生成编排 `d53f21a7`（vendor 在 `scripts/parity/official/`）都不改。
 >
-> **commit 编号**：12.277 首版；12.278、12.279 修订局数口径；12.280 重写第一部分（表格 + 改动清单 + 验收；删 V6 对拍；建分支 v6）；12.281 修订（PickXtimes 去掉 9、10 次；抽样过滤执行步 > 1600；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick／PatternLock 改区间；非梯度参数一律不改）。12.282 为分支对齐文档。12.283 本次修订（四项拍板：各档布局独立抽、PickXtimes 50 局分 17／17／16、派生工具链保留不调用、只抽交付格、V6 留档保留）。真正的 V8 实施从 12.284 接续，仍须另行获批。
+> **commit 编号**：12.277 首版；12.278、12.279 修订局数口径；12.280 重写第一部分（表格 + 改动清单 + 验收；删 V6 对拍；建分支 v6）；12.281 修订（PickXtimes 去掉 9、10 次；抽样过滤执行步 > 1600；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick／PatternLock 改区间；非梯度参数一律不改）。12.282 为分支对齐文档。12.283 修订（四项拍板：各档布局独立抽、PickXtimes 50 局分 17／17／16、派生工具链保留不调用、只抽交付格、V6 留档保留）。12.284 本次修订（v8 站点与 v7 布局完全一致、评估板块置空不删；v8 不做两策略评估；`v6_site.py` 服务端改名保留）。真正的 V8 实施从 12.285 接续，仍须另行获批。
 >
 > **术语**：执行步 = h5 的 `timestep_*` 个数减去 `info/is_video_demo` 为真的帧数（口径同 `hard_regression.py::cmd_step_headroom`）；`TIER_MAX_STEPS` 只约束执行段；d = 放置圆盘中心到机械臂底座 (−0.615, 0) 的水平距离，单位米。
 >
-> **已定**（用户原话逐字见第二部分 §2.8）：非梯度参数一律不改（PickXtimes 圆盘区域不动）；PickXtimes 去掉 9、10 次，交付 xhard1～3 = 6／7／8；SwingXtimes、StopCube 扩为 xhard1～5 每档一个定值；三任务每档 10 局；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick、PatternLock xhard1～3 改区间；抽样时全部任务过滤执行步超过 1600 的候选并递补，上限定死 1600；其余任务局数沿用 v7 总数、缺档平分；xhard0 保留，xhard0 对拍保留；V6 对拍不再跑，V6 设施删除；V7 对拍设施保留改名 V8；实施分支按本轮分支对齐改为 `newtaskRelease-taskV8`。**2026-10-01 四项拍板（原话见 §2.8 第 13～16 条）**：①各档布局各自独立抽初始化位置，不再从母布局派生、不要求前缀重叠；②PickXtimes 仍按 50 局分到三档，17／17／16；③派生工具链（`derive_specs.py`、`layout_whitelist.json`、`layout-shared`／`prefix-geometry` 守卫）保留，v8 不调用；④只抽交付的 43 格，不交付的档不抽、不生成；⑤`docs/validation/newtask-v6/` 与 `docs/plans/0925-newtask-release-v6-plan.md` 留档保留。
+> **已定**（用户原话逐字见第二部分 §2.8）：非梯度参数一律不改（PickXtimes 圆盘区域不动）；PickXtimes 去掉 9、10 次，交付 xhard1～3 = 6／7／8；SwingXtimes、StopCube 扩为 xhard1～5 每档一个定值；三任务每档 10 局；VideoUnmask／ButtonUnmask xhard1 改 2／4／2；RouteStick、PatternLock xhard1～3 改区间；抽样时全部任务过滤执行步超过 1600 的候选并递补，上限定死 1600；其余任务局数沿用 v7 总数、缺档平分；xhard0 保留，xhard0 对拍保留；V6 对拍不再跑，V6 设施删除；V7 对拍设施保留改名 V8；实施分支按本轮分支对齐改为 `newtaskRelease-taskV8`。**2026-10-01 四项拍板（原话见 §2.8 第 13～16 条）**：①各档布局各自独立抽初始化位置，不再从母布局派生、不要求前缀重叠；②PickXtimes 仍按 50 局分到三档，17／17／16；③派生工具链（`derive_specs.py`、`layout_whitelist.json`、`layout-shared`／`prefix-geometry` 守卫）保留，v8 不调用；④只抽交付的 43 格，不交付的档不抽、不生成；⑤`docs/validation/newtask-v6/` 与 `docs/plans/0925-newtask-release-v6-plan.md` 留档保留。**⑥站点与评估（原话见 §2.8 第 16 条）**：v8 交付一个与 v7 站点（`site/v7_site.html`）布局完全一致的逐局站点；v8 不做 SimpleMemVLA／MME-VLA 两策略评估，站点里所有评估板块（策略成功率列、成败筛选、每局的两段策略视频、旧入口对照、翻转标记）原位保留、内容置空，不删除；阶段 4 的「评估侧核对」取消，xhard0 评估对拍沿用 v7 结果不重跑。
 >
 > **待拍板**：无。原①（布局共用前缀还是独立）与 PickXtimes 局数已于 2026-10-01 拍板，见上「已定」。
 
@@ -97,14 +97,15 @@
 | `derive_specs.py` | **保留不调用**（用户拍板③）：v8 不派生，各档布局互相独立；文件、`_check_layout_parent` 与白名单机制原样保留供 v7 规格继续通过 |
 | `_rollout.py` | **新增丢弃原因 `exec_over_cap`：候选的专家执行步 > 1600 即丢弃并递补，全部任务都过**；`_task_tiers`、`initial_pool`、`sync_drop_and_backfill`、`delivery_rows` 改逐格，递补按格独立（某格某候选失败只退该格，不再「一个候选全档退选」）；`V7_BACKFILL_CAP` 按任务（InsertPeg 按 v7 实际消耗留、BinFill 每档约 8～10）；判定行 `V7_DELIVERY_SET` 改 `V8_DELIVERY_SET` |
 | `export_eval_identities.py` | 1292／646 改按 1262 与逐任务数（62／62／92／32）重算；`V6_SECONDS` 改名 `TASK_SECONDS` |
-| `site/v7_site.py`、`v7_site_catalog.py` | 加 xhard5；1292 改 1262 |
+| `site/v8_site.py`、`v8_site.html`、`v8_site_catalog.py` | 由 v7 三件复制而来：`v8_site.html` 与 `v7_site.html` 的 DOM 结构、样式、侧栏、矩阵、档位页签、筛选、图例、局号条、单局区、注释区逐一保持一致，只加 xhard5 列与改标题；`v8_site_catalog.py` 把评估来源（`records_*`、`official_*`、`eval_videos*`、`tables`、`rerun11`）全部改为可缺省：缺省时每局 `eval.new`／`eval.old` 为空字典、`flip` 为空、矩阵成功率列显示「—」、成败筛选保留但无命中、单局区的两个策略视频位保留并显示「未评估」；1292 改 1262，加 xhard5。`v7_*` 三件原样保留 |
+| `site/v6_site.py` | **改名 `site_server.py` 保留**（§2.5 原列为删，纠正）：它是 v7／v8 站点的服务端（`create_server`、媒体白名单、Range、`/api/subgoals`），`v7_site.py`、`v7_subgoal_lengths.py` 都依赖它；`v6_site.html` 与 v6 目录脚本照删 |
 | 抽签规模 | 每格候选数 = 该格局数 × 1.3 再加抽签拒绝率；43 格各自独立，不存在「为不交付档抽母布局」 |
 
 ### 2.3 对拍与守卫（`scripts/parity/`）
 
 | 文件 | 改什么 |
 |---|---|
-| `hard_regression.py` | `step-headroom` 判据由「90% + ×1.25 提议」改为「全集最大执行步 ≤ 1600」并报全局最大值与抽样阶段被过滤的候选数；`reset-replay`／`eval-smoke` 的 `V7_*` 判定行改 `V8_*`，92／32 改按任务查表（62／62／92／32）；`layout-shared`／`prefix-geometry` 保留不动、v8 不跑（独立布局下无母档可比）；新增 `tier-values` 子命令（自 `site/v6_tier_monotone.py --fixed` 迁入：定值任务逐档相等，RouteStick／PatternLock 落在区间内）；`xhard0-reset-parity`、`xhard0-eval-parity` **不动** |
+| `hard_regression.py` | `step-headroom` 判据由「90% + ×1.25 提议」改为「全集最大执行步 ≤ 1600」并报全局最大值与抽样阶段被过滤的候选数；`reset-replay` 的 `V7_*` 判定行改 `V8_*`，92／32 改按任务查表（62／62／92／32）；`eval-smoke` 与 `xhard0-eval-parity` 保留不改、v8 不跑（无两策略评估）；`layout-shared`／`prefix-geometry` 保留不动、v8 不跑（独立布局下无母档可比）；新增 `tier-values` 子命令（自 `site/v6_tier_monotone.py --fixed` 迁入：定值任务逐档相等，RouteStick／PatternLock 落在区间内）；`xhard0-reset-parity`、`xhard0-eval-parity` **不动** |
 | `hard_parity.py` | `SHAPES`（`13x3x20+16x1x20`）改逐格表（按档 411／411／128／100／20） |
 | `train_split_config.py` | 删 `newtask-v6` release 条目 |
 | `scripts/README.md` | 同步 |
@@ -126,7 +127,7 @@
 
 | 处置 | 内容 |
 |---|---|
-| 删 | `scripts/configs/newtask-v6/`；`scripts/injection-dev/site/v6_*` 8 个文件（候选值、长度表、站点、检查器）；`site_io.py` 与 `train_split_config.py` 读 V6 快照的分支；`hard_specs.py` 的 v6 seed 偏移；`tests/lightweight/test_v6_candidate_values.py`、`test_v6_site_labels.py`、`test_v6_site_v11.py`、`test_v6_tier_monotone.py` |
+| 删 | `scripts/configs/newtask-v6/`；`scripts/injection-dev/site/v6_*` 中 7 个文件（候选值、长度表、`v6_site.html`、目录、检查器；**`v6_site.py` 不删，改名 `site_server.py`**，见 §2.2）；`site_io.py` 与 `train_split_config.py` 读 V6 快照的分支；`hard_specs.py` 的 v6 seed 偏移；`tests/lightweight/test_v6_candidate_values.py`、`test_v6_site_labels.py`、`test_v6_site_v11.py`、`test_v6_tier_monotone.py` |
 | 改名保留 | `test_v6_swap_uniform.py`、`test_v6_xhard_movecube_region.py`、`test_v6_audit_fix.py`、`test_v6_audit_fix_scripts.py`（测的是现行环境行为，不是 V6 对拍）；`V6_SECONDS` → `TASK_SECONDS` |
 | 留（只读） | `docs/validation/newtask-v6/`、`docs/plans/0925-newtask-release-v6-plan.md` 留档；是否删由用户另说 |
 | 不动 | `scripts/configs/newtask-v3/`、`newtask-v7/xhard0_manifest.json`、`hard-parity-tolerances.json`：xhard0 对拍与 V8 对拍仍用 |
@@ -142,7 +143,8 @@
 | 四入口 | `ls -1 scripts/*.py` | 恰好四个 |
 | xhard0 与原三档 decision 不变 | `test_decision_visible_part_unchanged`（Pick／Swing／InsertPeg 同名测试）；`assert_native_decision` 剥掉 xhard1～5 子键后逐键相同 | 核心短测无 failed |
 | **xhard0 reset 对拍（保留）** | `hard_regression.py xhard0-reset-parity --src-root <官方 1fadc0ec worktree>` | `XHARD0_RESET_PARITY=PASS det_diff=0` |
-| **xhard0 评估对拍（保留）** | `hard_regression.py xhard0-eval-parity` | `XHARD0_EVAL_PARITY=PASS` |
+| xhard0 评估对拍 | **v8 不重跑**：xhard0 规格不变，沿用 v7 留档 `docs/validation/newtask-v7/README.md` 的 `XHARD0_EVAL_PARITY=PASS`；v8 不做两策略评估 | 引用 v7 判定行 |
+| 站点与 v7 布局一致 | `v8_site_browser_check.py`（Playwright，同 v7 检查器）：逐一核对侧栏、矩阵、档位页签、筛选、图例、局号条、单局区、注释区都在；评估位显示「—」／「未评估」且不缺元素；`--shots` 截图目视复核 | `V8_SITE=PASS sections=9 eval_placeholders=<n> missing=0` |
 | 交付形态 | `validate_specs` 按表 2 核对每格选中数 | `V8_DELIVERY_SET=PASS tasks=16 cells=43 total=1070` |
 | 档位取值 | `hard_regression.py tier-values` 读 spec：定值任务逐档相等，RouteStick／PatternLock 落在区间内 | `V8_TIER_VALUES=PASS tasks=16 mismatches=0` |
 | 布局独立 | `validate_specs`：五份 header `layout_rule.mode == independent`，所有行 `layout_parent` 为 null；跨档同任务的位置类注入值不要求相同 | `V8_LAYOUT_INDEPENDENT=PASS files=5 rows=1070` |
@@ -162,7 +164,7 @@
 | 1 | 档位结构 + 常量 + 测试同步 + 删 V6（§2.1、§2.3、§2.4、§2.5） | 核心短测通过；`UPSTREAM_GUARD=PASS`；`XHARD0_RESET_PARITY=PASS` |
 | 2 | 交付形态：逐格局数表、`v8` seed profile 与 `independent` 模式、builder 查表、逐格递补（§2.2） | 纯 CPU 夹具测试通过，覆盖「写 JSON → 读 JSON」之后的形态 |
 | 3 | 43 格各自独立抽签 → 生成（无派生步）；先按 P3／P5 一次性报预算（第二部分 §2.4） | `V8_DELIVERY_SET`、`V8_TIER_VALUES`、`V8_STEP_CAP`（over=0）、`V8_LAYOUT_INDEPENDENT`、`V8_RESET_REPLAY` |
-| 4 | A40 两次生成对拍；评估侧核对 | `PARITY_*=PASS`；`XHARD0_EVAL_PARITY=PASS` |
+| 4 | A40 两次生成对拍；生成 v8 站点（评估板块置空） | `PARITY_*=PASS`；`V8_SITE=PASS` |
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -204,6 +206,8 @@
 | `tests/lightweight/test_xhard0_native.py` | `test_TIER_MAX_STEPS五档且xhard0为1300` | 精确字典（五档） | 新字典六档（仍非递减），测试名同步 | 都改 |
 | `tests/lightweight/test_sampling_config_split.py` | `test_v7_snapshot_matches_source` | v7 快照 | 换成 v8 快照或改名 | 都改 |
 | `scripts/parity/hard_regression.py` | `cmd_step_headroom` | 90% + B4 ×1.25 | 「全集最大 ≤ 1600」，报全局最大值与过滤数 | 都改 |
+| `scripts/injection-dev/site/v8_site.py`、`v8_site.html`、`v8_site_catalog.py`、`v8_site_browser_check.py` | 自 v7 四件复制 | 无 | 布局与 v7 逐一一致；目录脚本评估来源可缺省、置空渲染；浏览器检查器加「评估占位存在且不缺元素」断言，判定行 `V8_SITE` | 新增 |
+| `scripts/injection-dev/site/v6_site.py` | 整个文件 | v6／v7 站点共用服务端 | 改名 `site_server.py`，内容不改；`v7_site.py`、`v7_subgoal_lengths.py` 的引用同步 | 改名 |
 | `scripts/injection-dev/_rollout.py` | `sync_drop_and_backfill` | 只按生成失败递补 | 新增丢弃原因 `exec_over_cap`（候选专家执行步 > 1600），全部任务；递补计入预算 | 都改 |
 | `scripts/README.md`、`src/robomme_hard/README.md` | 第 1、3、4 节；② | v7 定值与上限 | 同步 | 都改 |
 
@@ -212,7 +216,8 @@
 | 处置 | 文件 | 说明 |
 |---|---|---|
 | 删 | `scripts/configs/newtask-v6/v6-sampling-frozen.json` | V6 定值快照，只被 v6 检查器与站点读 |
-| 删 | `scripts/injection-dev/site/v6_candidate_values.py`、`v6_gt_lengths.py`、`v6_gt_lengths.json`、`v6_site.py`、`v6_site.html`、`v6_site_catalog.py`、`v6_v0_native_definitions.py`、`v6_tier_monotone.py` | V6 站点、V6 长度表、V6 候选值与单调性检查器；`v6_tier_monotone.py --fixed` 的 V7 定值检查先迁入 `hard_regression.py tier-fixed` 再删。非 v6 文件没有 import 这些模块（`git grep` 核实） |
+| 删 | `scripts/injection-dev/site/v6_candidate_values.py`、`v6_gt_lengths.py`、`v6_gt_lengths.json`、`v6_site.html`、`v6_site_catalog.py`、`v6_v0_native_definitions.py`、`v6_tier_monotone.py` | V6 站点页面、V6 长度表、V6 候选值与单调性检查器；`v6_tier_monotone.py --fixed` 的 V7 定值检查先迁入 `hard_regression.py tier-values` 再删。`git grep` 核实：这 7 个文件只被 v6 测试与彼此引用 |
+| 改名保留 | `scripts/injection-dev/site/v6_site.py` → `site_server.py` | 2026-10-01 复核纠正：`v7_site.py` 用 `importlib` 加载它的 `create_server`，`v7_subgoal_lengths.py` 依赖它的 `/api/subgoals` 路由；删掉 v7／v8 站点就起不来。改名后 `v7_site.py`、`v8_site.py` 的加载路径同步 |
 | 删 | `scripts/injection-dev/site/site_io.py::V6_FROZEN`／`frozen_v6_sampling_document`；`scripts/parity/train_split_config.py` 的 `newtask-v6` release 条目 | 读 V6 快照的分支 |
 | 删 | `hard_specs.py::V6_SEED_OFFSETS`、`SEED_PROFILES` 的 `"v6"`、`seed_rule_for` 的 v6 分支 | V6 按档 seed 偏移；v7 单 offset 规则保留 |
 | 删 | `tests/lightweight/test_v6_candidate_values.py`、`test_v6_site_labels.py`、`test_v6_site_v11.py`、`test_v6_tier_monotone.py` | 只测被删的 V6 站点／检查器 |
@@ -256,6 +261,7 @@
 | 四入口 | `ls -1 scripts/*.py` | 恰好四个 |
 | 核心短测 | `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q` | 无 failed |
 | 布局独立 | `validate_specs`（`mode == independent`、`layout_parent` 全 null） | `V8_LAYOUT_INDEPENDENT=PASS files=5 rows=1070` |
+| 站点 | `v8_site_browser_check.py --shots <目录>`；评估位置空不缺 | `V8_SITE=PASS sections=9 eval_placeholders=<n> missing=0` |
 | 定值 | `hard_regression.py tier-values`（自 `v6_tier_monotone.py --fixed` 迁入） | `V8_TIER_VALUES`（由 V7_* 改名）；`layout-shared`／`prefix-geometry` 保留不跑 |
 | 交付、取值、上限 | 见第一部分 §3 | `V8_DELIVERY_SET`／`V8_TIER_VALUES`／`V8_STEP_CAP` |
 | 回注回放 | `hard_regression.py reset-replay` | `V8_RESET_REPLAY=PASS` |
@@ -319,7 +325,7 @@ ROBOMME_ENV_PACKAGE=robomme_hard OMP_NUM_THREADS=1 uv run --no-sync python scrip
 - xhard5 档没有在任何链路上跑过：本轮探针是把取值从外部传给 xhard4 的 decision（§2.4.1），等价于「xhard5 = 10 次、干扰 4 块」，但档位枚举、builder、派生都没经过。
 - SwingXtimes 5、7 轮与 PickHighlight、VideoRepick、Unmask、Swap、Place、PatternLock、RouteStick 都直接沿用 v7 每格 20 局的数据，本轮没有重测。
 - StopCube 每个值只有 1～3 局（执行步由时钟决定，波动 ≤ 10 步）；1/13 的生成失败是小样本。
-- 没有测新配置下的策略成功率。
+- 没有测新配置下的策略成功率；按用户 2026-10-01 决定，v8 不做两策略评估，站点评估板块置空。
 - VideoUnmask／ButtonUnmask xhard1 的 2／4／2 没单独测，上界按 xhard2 的 3／4／2（454／557）推断。RouteStick／PatternLock 区间档的最大按上端 16 段 800、18 节点 626，与定值时相同。
 - 230 局里有 19 局是我把区域写错（开局即 `ValueError`），不是环境问题；在 §2.10.1 单列，不计入任何失败率。
 
@@ -327,7 +333,7 @@ ROBOMME_ENV_PACKAGE=robomme_hard OMP_NUM_THREADS=1 uv run --no-sync python scrip
 
 - 本文件 12.277 首版、12.278／12.279 修订局数、12.280 重写第一部分并建分支、12.281 修订梯度（去 9／10 次、过滤 1600、VU／BU xhard1、区间档），每次只 `git add` 这一个文件。工作区里 `third_party/SimpleMemVLA` 的子模块内容改动（` m`）是他人在途工作，不动。
 - 探针产物 `artifacts/v8-probe/` 不进 git。探针脚本在会话 scratchpad 不保留，方法按 §2.4.1 可以复现。
-- 12.282 只记录本轮分支对齐文档；12.283 记录四项拍板，均不算 V8 实施。后续获批的 V8 实施在分支 `newtaskRelease-taskV8` 上进行；每个阶段单独 commit，从 12.284 接续。commit body 按第 11 条写用户原话、计划、过程、意外、实测与下一步。正式生成的留档写到 `docs/validation/newtask-v8/`。
+- 12.282 只记录本轮分支对齐文档；12.283 记录四项拍板；12.284 记录站点与评估口径，均不算 V8 实施。后续获批的 V8 实施在分支 `newtaskRelease-taskV8` 上进行；每个阶段单独 commit，从 12.285 接续。commit body 按第 11 条写用户原话、计划、过程、意外、实测与下一步。正式生成的留档写到 `docs/validation/newtask-v8/`。
 
 ## 2.8 口径来源：用户原话（逐字，按时间）
 
@@ -383,6 +389,9 @@ ROBOMME_ENV_PACKAGE=robomme_hard OMP_NUM_THREADS=1 uv run --no-sync python scrip
 15. 「1全部都是50局来分配 2保留 3只抽交付的 4留着」（2026-10-01）
    - 我的理解：①PickXtimes 50 局分三档 17／17／16（低档多一局），每任务合计改 62、全集 1070、含 xhard0 1262；②`derive_specs.py`、`layout_whitelist.json`、`layout-shared`／`prefix-geometry` 守卫保留在仓库，v8 不调用；③只抽 43 个交付格，不交付的档不抽、不生成；④`docs/validation/newtask-v6/` 与 `docs/plans/0925-newtask-release-v6-plan.md` 保留只读。
    - 第 8 条里 PickXtimes 「每档 10 局」的记法被本条取代。
+16. 「你需要和上一代一样生成一个同样的网站尽可能保持这个布局的完全一致但是因为现在没有新的两个model的invution的制空不要删除。Evaluation就没有新的两个model的evaluation了」（2026-10-01）
+   - 「invution的制空」按语音转写理解为「evaluation 的置空」。我的理解：v8 出一个与 v7 站点布局完全一致的逐局站点；v8 不跑 SimpleMemVLA／MME-VLA 评估，站点里评估相关板块原位保留、内容置空、不删；阶段 4 的评估侧核对随之取消，xhard0 评估对拍引用 v7 结果。
+   - 复核时发现 §2.5 原拟删除的 `v6_site.py` 是 v7 站点服务端，改为改名 `site_server.py` 保留。
 
 ## 2.9 现状、机理与上限取法（原第一部分 §1～§3、§4.1、§6，逐字搬入）
 
