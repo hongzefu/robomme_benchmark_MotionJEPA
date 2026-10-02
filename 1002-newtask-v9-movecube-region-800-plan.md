@@ -40,7 +40,7 @@
    - 新生成的 80 局（MoveCube 1 任务 × 1 档 × 50 + InsertPeg 1 任务 × 1 档 × 30）做两模型评估，口径与 V8 双模型评估完全一致（`docs/validation/v8-two-policy-gl10-20261002-01/`）：SimpleMemVLA `group_size=1`、MME-VLA `perceptual-framesamp-modul/79999`、执行段 1600 步严格截断计 timeout、第 1600 步成功记成功、tokenizer 以 GCS 校验和为可信源、权重按 v7.5eval 资产锁核对。
    - 与 V8 逐字节相同的 720 局（14 任务 × 各自 N，加 InsertPeg 20）复用 V8 的评估结果，按 (task, tier, seed, `spec_sha256`) 四元组对齐，不重跑。
    - 报告分两张：新 80 局单独一张；800 局总表（720 复用 + 80 新评）按任务、按档给两模型成功率。两张都写进 `result.md`，V9 整体成功率可与 V8 对照，但要注明 720 局的数字是 V8 当时跑的。
-   - V9 站点沿用 V8 站点的布局，59 格全部有评估板块，无置空。
+   - V9 站点与 V8 站点**独立**：独立目录 `artifacts/newtask-v9/site/`、独立端口（V8 正式站 8081、beta 站 8080 都不动，V9 起跑前探一个空闲端口，默认 8082）、独立 `catalog.json`；页面布局与 V8 完全一样（`v8_site.html`／`v8_site.py` 不改，只换目录与数据），59 格全部有评估板块，无置空。依据：用户原话「V9也要生成网站和V8独立。布局完全一样。」
 8. **席位**：生成用 4 个 GL 48 h 占位 job（`v9gen-hold-1～4`），评估用 10 个（`v9ev-hold-00～09`），规格都与 V8 相同：1 A40／4 CPU／48 GiB／48 h、`--gpu_cmode=shared`。依据：用户原话「J0B还是和之前一样生成的时候用四个。Evaluate的时候用十个」。
 
 ## 2. MoveCube 生成区域：现状、V9 与离线实测
@@ -280,6 +280,7 @@
    - 代码与环境：NFS 新建克隆 `robomme_benchmark-v9two`，冻结在换包提交之后的 HEAD；venv、子模块、权重、tokenizer 全部照 V8 评估 `launch.md` §二、§三的取法，权重期望值仍取 `artifacts/v7.5eval/assets-lock.json`。
    - 运行根 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9two-out/v9-two-policy-gl10-<日期>-01`，tmux 名 `ev-v9-<run_name>-sNN`，结果与视频按 `gl-run-products-back-to-data` 口径搬回本机 `artifacts/v9-evaluation/`，NFS 暂存在 `V9_EVAL_VIDEOS=PASS` 后才清。
    - 复用：720 局终态直接取 V8 账本（`artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/`），不重跑、不改写；站点评估视频同样 hardlink V8 的 mp4。
+8. **站点**：`artifacts/newtask-v9/site/` 是独立站，由 `site_server.py` 另起一个进程、另一个端口服务；不往 V8 的 `artifacts/newtask-v8/site/` 写任何文件，8081 的 V8 站保持原状。目录结构、`catalog.json` schema、页面模板与 V8 逐一相同，只是数据换成 992 局（720 hardlink + 80 新 + xhard0 192）。
 
 ## 2.3 闸门总表
 
@@ -303,7 +304,7 @@
 | `V9_EVAL_COVERAGE=PASS policies=2 expected=80 missing=0 extra=0 duplicate=0 conflicting_terminal=0 error_final=0` | `v8_report.py`（S1-F） | 4b |
 | `V9_EVAL_REPORT=PASS total=800 new=80 reused=720 count_mismatch=0 media_unexplained=0` | `v8_report.py --reuse`（S1-F） | 4b |
 | `V9_EVAL_VIDEOS=PASS policies=2 expected=160 videos=160 missing=0 decode_fail=0 sha_mismatch=0` | `eval_video_mover.py --mode v8 --once` 后 `v8_report.py` 核对 | 4b |
-| `V9_SITE=PASS cells=59 missing=0 eval_reused=720 eval_new=80 eval_empty=0` | `site/v8_oracle_browser_check.py` | 4c |
+| `V9_SITE=PASS cells=59 missing=0 eval_reused=720 eval_new=80 eval_empty=0 port=<V9 端口>` | `site/v8_oracle_browser_check.py`，对 V9 端口跑；同时对 8081 复跑 V8 检查确认 V8 站未变 | 4c |
 | `PRE_MERGE_REVIEW=PASS …`／`POST_MERGE_REVIEW=PASS …` | 计划执行模式，每次合并 | 1、2 |
 
 ## 2.4 runbook
@@ -354,7 +355,7 @@ stdout 打印两版的 JSON 统计。底图读 `artifacts/newtask-v8/gen1/shard1
      --reuse-manifest artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/manifest/manifest.json
    ```
    `V9_EVAL_COVERAGE`、`V9_EVAL_REPORT`、`V9_EVAL_VIDEOS` 三行 PASS、视频搬完后，按清单释放 10 个评估席。
-8. **建站（4c）**：`v8_continue_after_gen.py --site-dir artifacts/newtask-v9/site --eval-reuse artifacts/newtask-v8/site-eval --eval-new artifacts/v9-evaluation/<run_name>`，再做浏览器检查。站点链接给完整域名，如 `http://sled-vail.eecs.umich.edu:<端口>/`，端口起跑前先探。
+8. **建站（4c）**：`v8_continue_after_gen.py --site-dir artifacts/newtask-v9/site --eval-reuse artifacts/newtask-v8/site-eval --eval-new artifacts/v9-evaluation/<run_name>`，再用 `site_server.py` 在新端口起独立进程（起跑前 `(exec 3<>/dev/tcp/127.0.0.1/8082)` 探端口，被占就换），V8 的 8081 进程不碰，最后做浏览器检查。站点链接给完整域名，如 `http://sled-vail.eecs.umich.edu:8082/`。
 
 ### 2.4.3 P3 一次性预算表（阶段 1 开跑前一次批完）
 
@@ -436,6 +437,7 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
 9. 「你已经生成过的V8的就不要再生成了直接沿用现在的还要生成v9 V9只生成新增的这样做合理吗会导致Sample出问题吗然后生成完了和V8一样要做eval两个model都需要」
 10. 「J0B还是和之前一样生成的时候用四个。Evaluate的时候用十个。」
 11. 「好 把评估口径和席位改进计划」
+12. 「V9也要生成网站和V8独立。布局完全一样。」
 
 09-27 会话里的原话（区域最终版的来源）：「还是画圆环 橙色圆环 但是扩大半径！」「扩达圆环和现在的圆环 用同一个圆心 只要扩大两个的半径！」「原来的圆环不画了 交集画出更牵的颜色 再继续扩大一些 往两边撑」。
 
