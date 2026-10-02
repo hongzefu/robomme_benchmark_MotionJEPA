@@ -2,7 +2,8 @@
 """轻量测试：xhard0（官方 test 元数据 difficulty=="hard" 的 12 局，0928 方案第二部分 §1.1、§1.5）。
 
 * ``hard_specs`` 的 xhard0 常量：``XHARD0``／``BUILDER_TIERS``／``XHARD0_PER_TASK``／``XHARD0_EPISODES``、
-  ``TIER_MAX_STEPS`` 五档（xhard0 1300）；``TIERS`` 仍只含新值四档；
+  ``TIER_MAX_STEPS`` 六档（xhard0 1300、xhard1～5 均 1600）；v8 阶段 3b 起 ``TIERS`` 为新值五档、
+  ``BUILDER_TIERS`` 六项、``EXPECTED_CELLS`` 为 43 格逐格表（＝``V8_CELLS``）；
 * 清单 ``scripts/configs/newtask-v7/xhard0_manifest.json``：16 任务 × 12 局 = 192 行，逐条等于官方 test 元数据，
   recovery_mode 只有原 episode 3 为 ``xy``（官方 ≤2 z、≤5 xy、其余 off），摘要与源文件散列自洽；
 * ``hard_parity.check_xhard0`` 的判定：合规 PASS、改 seed／缺行／多行／builder 不符 FAIL。
@@ -49,21 +50,25 @@ def manifest():
 # ── hard_specs 常量 ────────────────────────────────────────────────────────
 def test_xhard0常量与档序():
     assert V.XHARD0 == "xhard0"
-    assert V.TIERS == ("xhard1", "xhard2", "xhard3", "xhard4")
-    assert V.BUILDER_TIERS == ("xhard0", "xhard1", "xhard2", "xhard3", "xhard4")
+    assert V.TIERS == ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5") == V.V8_TIERS
+    assert V.BUILDER_TIERS == ("xhard0", "xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
     assert V.XHARD0_PER_TASK == 12
     assert V.XHARD0_EPISODES == (3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47)
     assert len(V.XHARD0_EPISODES) == V.XHARD0_PER_TASK
-    # xhard0 不属于 55 格表（EXPECTED_CELLS 只管新值四档规格）
+    # xhard0 不属于交付格表（EXPECTED_CELLS 只管新值五档规格）；v8 为 43 格逐格局数，合计 1070
     assert all(tier != V.XHARD0 for _task, tier in V.EXPECTED_CELLS)
-    assert len(V.EXPECTED_CELLS) == 55
+    assert V.EXPECTED_CELLS == V.V8_CELLS
+    assert len(V.EXPECTED_CELLS) == 43 and sum(V.EXPECTED_CELLS.values()) == 1070
+    assert V.XHARD4_ONLY == ("InsertPeg", "MoveCube")
 
 
-def test_TIER_MAX_STEPS五档且xhard0为1300():
+def test_TIER_MAX_STEPS六档且xhard0为1300():
     from robomme_hard.env_record_wrapper import BUILDER_TIERS, TIER_MAX_STEPS  # noqa: PLC0415
 
     assert TIER_MAX_STEPS is V.TIER_MAX_STEPS and BUILDER_TIERS == V.BUILDER_TIERS
-    assert TIER_MAX_STEPS == {"xhard0": 1300, "xhard1": 1500, "xhard2": 2400, "xhard3": 2900, "xhard4": 3800}  # v7 B4 上调
+    assert TIER_MAX_STEPS == {"xhard0": 1300, "xhard1": 1600, "xhard2": 1600, "xhard3": 1600, "xhard4": 1600,
+                              "xhard5": 1600}  # v8：新值五档定死 1600（＝V8_EXEC_CAP）
+    assert all(TIER_MAX_STEPS[tier] == V.V8_EXEC_CAP for tier in V.TIERS)
     assert tuple(TIER_MAX_STEPS) == V.BUILDER_TIERS
     steps = [TIER_MAX_STEPS[tier] for tier in V.BUILDER_TIERS]
     assert steps == sorted(steps)

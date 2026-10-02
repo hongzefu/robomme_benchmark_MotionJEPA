@@ -4,7 +4,8 @@
 纯 CPU 合成夹具：本文件自带最小 /4 builder（不依赖 ``scripts/injection-dev/_freeze``），在 tmp_path 里写
 ``<root>/<tier>/specs.jsonl``，覆盖：
 
-* ``V8_CELLS`` 为表 2 的 43 格、合计 1070；``TIERS``／``BUILDER_TIERS``／``EXPECTED_CELLS``／``TIER_MAX_STEPS`` 仍是 v7 值（R10）；
+* ``V8_CELLS`` 为表 2 的 43 格、合计 1070；阶段 3b 换包后 ``TIERS``／``BUILDER_TIERS``／``EXPECTED_CELLS``／``TIER_MAX_STEPS``
+  切到 v8 值（R10），v7 冻结常量 ``V7_TIERS``／``V7_XHARD4_ONLY`` 不动；
 * ``load_specs_v8`` 对完整 43 格根、冒烟 7 格根、分片子集根三种往返；
 * 任务集合、每格 selected 数、跨档 seed 不交、schema 不符、缺档文件的拒绝；
 * schema/4 篡改（改配额、exec_cap、seed 规则而不重签）必失败；重签后仍违反取值约束的也失败。
@@ -128,15 +129,15 @@ def test_v8常量与表2一致():
     assert row_keys == v7_row
 
 
-def test_v7档位常量未动_R10():
-    assert H.TIERS == ("xhard1", "xhard2", "xhard3", "xhard4")
-    assert H.BUILDER_TIERS == ("xhard0", "xhard1", "xhard2", "xhard3", "xhard4")
-    assert H.TIER_MAX_STEPS == {"xhard0": 1300, "xhard1": 1500, "xhard2": 2400, "xhard3": 2900, "xhard4": 3800}
-    assert H.XHARD4_ONLY == ("StopCube", "InsertPeg", "MoveCube")
-    assert len(H.EXPECTED_CELLS) == 55
-    assert H.EXPECTED_CELLS == frozenset(
-        (task, tier) for tier in H.V7_TIERS for task in H.ALL_TASKS
-        if tier == "xhard4" or task not in H.V7_XHARD4_ONLY)
+def test_档位常量已切到v8且v7冻结常量不动_R10():
+    """阶段 3b 换包（R10 一个提交）：全局档位常量切到 v8；v7 冻结常量保持原值。"""
+    assert H.TIERS == H.V8_TIERS == ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
+    assert H.BUILDER_TIERS == ("xhard0", "xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
+    assert H.TIER_MAX_STEPS == {"xhard0": 1300, **{tier: H.V8_EXEC_CAP for tier in H.V8_TIERS}}
+    assert H.XHARD4_ONLY == ("InsertPeg", "MoveCube")
+    assert H.EXPECTED_CELLS == H.V8_CELLS and len(H.EXPECTED_CELLS) == 43
+    assert H.V7_TIERS == ("xhard1", "xhard2", "xhard3", "xhard4")
+    assert H.V7_XHARD4_ONLY == ("StopCube", "InsertPeg", "MoveCube")
 
 
 # ── load_specs_v8 往返 ─────────────────────────────────────────────────

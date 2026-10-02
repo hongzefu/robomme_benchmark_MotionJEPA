@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """轻量测试：``robomme_hard`` 评估构建器 ``dataset="test-hard"`` 的 xhard0 前缀（0928 方案第二部分 §1.1）。
 
-* 每任务局数：13 个梯度任务 12 + 4×20 = 92；StopCube／InsertPeg／MoveCube 12 + 20 = 32；
+* 每任务局数（v8 阶段 3b 换包后，按交付格表 ``EXPECTED_CELLS``）：PickXtimes／SwingXtimes／StopCube 62，
+  MoveCube／InsertPeg 32，其余 92；
 * episode 0..11 为 xhard0，seed 逐条等于官方 test 元数据 difficulty=="hard" 子集（原 episode 升序）；
-  之后按 xhard1→xhard4（只有 xhard4 的任务直接接 xhard4）、档内候选升序；
+  之后按 xhard1→xhard5 只排该任务在交付格表里的档（xhard5 只有 SwingXtimes、StopCube），档内候选升序；
+* 覆盖规格根：v7 ``hard-specs/3`` 文件拒绝；局部根（只含部分档）只发存在的档；
 * xhard0 的 ``_hard_env_kwargs`` 恰为 ``{"seed", "difficulty": "hard"}``（无 sampling_config、无规格）；
   ``resolve_identity`` 带 source_dataset／source_episode、candidate 与 spec_sha256 为 None；
 * ``override_metadata_path`` 与 test-hard 同用即拒绝；``specs_root`` 参数与环境变量 ``ROBOMME_HARD_SPECS_ROOT``。
@@ -51,14 +53,26 @@ def builders():
     return {task: _builder(task) for task in V.ALL_TASKS}
 
 
+#: v8 方案第一部分表 2 的逐任务合计（含 xhard0 12 局）
+V8_EPISODES = {task: 92 for task in V.ALL_TASKS} | {
+    "PickXtimes": 62, "SwingXtimes": 62, "StopCube": 62, "MoveCube": 32, "InsertPeg": 32}
+
+
+def test_逐任务局数常量合计1262():
+    assert sum(V8_EPISODES.values()) == 16 * 12 + 1070 == 1262
+    for task in V.ALL_TASKS:
+        assert V8_EPISODES[task] == V.XHARD0_PER_TASK + sum(n for (t, _), n in V.EXPECTED_CELLS.items() if t == task)
+    assert {t for (t, tier) in V.EXPECTED_CELLS if tier == "xhard5"} == {"SwingXtimes", "StopCube"}
+    assert {t for t in V.ALL_TASKS if {tier for (n, tier) in V.EXPECTED_CELLS if n == t} == {"xhard4"}} \
+        == set(V.XHARD4_ONLY) == {"InsertPeg", "MoveCube"}
+
+
 @pytest.mark.parametrize("task", V.ALL_TASKS)
 def test_每任务局数与档序(task, builders):
     b = builders[task]
-    xhard4_only = task in V.XHARD4_ONLY
-    assert b.get_episode_num() == (32 if xhard4_only else 92)
+    assert b.get_episode_num() == V8_EPISODES[task]
     tiers = [b.resolve_episode(ep)[1] for ep in range(b.get_episode_num())]
-    expected = ["xhard0"] * 12 + (["xhard4"] * 20 if xhard4_only else
-                                  [t for t in V.TIERS for _ in range(20)])
+    expected = ["xhard0"] * 12 + [t for t in V.TIERS for _ in range(V.EXPECTED_CELLS.get((task, t), 0))]
     assert tiers == expected
     # 档内候选升序
     for tier in V.TIERS:
@@ -91,6 +105,10 @@ def test_新值档条目仍带规格与配置(builders):
     assert "source_episode" not in identity and "specs_root" not in identity
     with pytest.raises(KeyError):
         b.resolve_episode(92)
+    # xhard5 档条目：只有 SwingXtimes、StopCube
+    stop = builders["StopCube"]
+    last = stop.get_episode_num() - 1
+    assert stop._hard_env_kwargs(last)["difficulty"] == "xhard5" and stop.resolve_identity(last)["tier"] == "xhard5"
 
 
 def test_test_hard拒绝override_metadata_path():
@@ -114,7 +132,7 @@ def test_官方hard子集不符即拒绝():
     with pytest.raises(ValueError, match="seed 唯一"):
         HB._xhard0_entries("PickXtimes", dup)
     # 其它难度的记录不混进来
-    assert b.get_episode_num() == 92
+    assert b.get_episode_num() == 62
 
 
 def _linked_root(tmp_path: Path) -> Path:
@@ -152,3 +170,40 @@ def test_specs_root环境变量与packaged_specs_path(tmp_path, monkeypatch):
         V.packaged_specs_path("xhard0")  # xhard0 没有规格文件
     b = _builder("StopCube")
     assert b.resolve_identity(12)["specs_root"] == str(root.resolve())
+
+
+def test_覆盖根_局部根只发存在的档(tmp_path):
+    """局部根（只含 xhard5）：只发 xhard5 局，与 hard_regression.delivery_index 的跳过口径一致。"""
+    root = tmp_path / "partial"
+    root.mkdir()
+    (root / "xhard5").symlink_to(V.PACKAGED_SPECS_ROOT / "xhard5", target_is_directory=True)
+    b = _builder("SwingXtimes", specs_root=root)
+    assert [b.resolve_episode(ep)[1] for ep in range(b.get_episode_num())] == ["xhard0"] * 12 + ["xhard5"] * 10
+    assert _builder("BinFill", specs_root=root).get_episode_num() == 12
+
+
+def test_覆盖根_v7规格拒绝(tmp_path):
+    """换包后 builder 只读 hard-specs/4：覆盖根里出现 /3 文件即拒绝（v7 由标签 parity-anchor-v7 复现）。"""
+    root = tmp_path / "v7root"
+    (root / "xhard1").mkdir(parents=True)
+    (root / "xhard1" / "specs.jsonl").write_text(json.dumps({"record": "header", "schema": V.SCHEMA_V7}) + "\n")
+    with pytest.raises(V.SpecsError, match="parity-anchor-v7"):
+        _builder("BinFill", specs_root=root)
+
+
+def test_覆盖根_空根拒绝(tmp_path):
+    (tmp_path / "empty").mkdir()
+    with pytest.raises(V.SpecsError, match="没有任何"):
+        _builder("BinFill", specs_root=tmp_path / "empty")
+
+
+def test_交付格表外的格有正式局即拒绝(monkeypatch):
+    """(任务, 档) 不在交付格表内却有正式局 → 拒绝（v8 方案第一部分 §2.1 difficulty.py 行的 3b 断言）。"""
+    shrunk = {k: v for k, v in V.EXPECTED_CELLS.items() if k != ("StopCube", "xhard5")}
+    monkeypatch.setattr(V, "EXPECTED_CELLS", shrunk)
+    HB._root_specs.cache_clear()
+    try:
+        with pytest.raises(ValueError):
+            _builder("StopCube")
+    finally:
+        HB._root_specs.cache_clear()
