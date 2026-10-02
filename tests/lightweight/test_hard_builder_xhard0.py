@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """轻量测试：``robomme_hard`` 评估构建器 ``dataset="test-hard"`` 的 xhard0 前缀（0928 方案第二部分 §1.1）。
 
-* 每任务局数（v8 阶段 3b 换包后，按交付格表 ``EXPECTED_CELLS``）：PickXtimes／SwingXtimes／StopCube 62，
-  MoveCube／InsertPeg 32，其余 92；
+* 每任务局数＝xhard0 12 + 交付格表 ``EXPECTED_CELLS`` 该任务合计（由格表推出，不写死）：v8 包为
+  PickXtimes／SwingXtimes／StopCube 62、MoveCube／InsertPeg 32、其余 92（合计 1262）；v9 阶段 3b 换包后每任务
+  12 + 50 = 62（合计 992）；
 * episode 0..11 为 xhard0，seed 逐条等于官方 test 元数据 difficulty=="hard" 子集（原 episode 升序）；
   之后按 xhard1→xhard5 只排该任务在交付格表里的档（xhard5 只有 SwingXtimes、StopCube），档内候选升序；
 * 覆盖规格根：v7 ``hard-specs/3`` 文件拒绝；局部根（只含部分档）只发存在的档；
@@ -53,13 +54,23 @@ def builders():
     return {task: _builder(task) for task in V.ALL_TASKS}
 
 
-#: v8 方案第一部分表 2 的逐任务合计（含 xhard0 12 局）
-V8_EPISODES = {task: 92 for task in V.ALL_TASKS} | {
-    "PickXtimes": 62, "SwingXtimes": 62, "StopCube": 62, "MoveCube": 32, "InsertPeg": 32}
+def _episodes_per_task(cells) -> dict:
+    """逐任务局数（含 xhard0 12 局）＝ 12 + 格表该任务合计。"""
+    return {task: V.XHARD0_PER_TASK + sum(n for (t, _), n in cells.items() if t == task) for task in V.ALL_TASKS}
+
+
+#: 包内交付格表推出的逐任务合计（含 xhard0 12 局）：v8 包 62／32／92（合计 1262），v9 包每任务 62（合计 992）
+V8_EPISODES = _episodes_per_task(V.EXPECTED_CELLS)
 
 
 def test_逐任务局数常量合计1262():
-    assert sum(V8_EPISODES.values()) == 16 * 12 + 1070 == 1262
+    """函数名沿用 v8；合计由格表推出：v8 表 1262、v9 表 992，包内取哪张随 ``EXPECTED_CELLS``。"""
+    assert _episodes_per_task(V.V8_CELLS) == {task: 92 for task in V.ALL_TASKS} | {
+        "PickXtimes": 62, "SwingXtimes": 62, "StopCube": 62, "MoveCube": 32, "InsertPeg": 32}
+    assert sum(_episodes_per_task(V.V8_CELLS).values()) == 16 * 12 + 1070 == 1262
+    assert _episodes_per_task(V.V9_CELLS) == {task: 62 for task in V.ALL_TASKS}
+    assert sum(_episodes_per_task(V.V9_CELLS).values()) == 16 * 12 + 800 == 992
+    assert sum(V8_EPISODES.values()) == 16 * 12 + sum(V.EXPECTED_CELLS.values())
     for task in V.ALL_TASKS:
         assert V8_EPISODES[task] == V.XHARD0_PER_TASK + sum(n for (t, _), n in V.EXPECTED_CELLS.items() if t == task)
     assert {t for (t, tier) in V.EXPECTED_CELLS if tier == "xhard5"} == {"SwingXtimes", "StopCube"}
@@ -104,7 +115,7 @@ def test_新值档条目仍带规格与配置(builders):
     assert identity["spec_sha256"] == V.spec_sha256(kwargs["native_episode_spec"])
     assert "source_episode" not in identity and "specs_root" not in identity
     with pytest.raises(KeyError):
-        b.resolve_episode(92)
+        b.resolve_episode(V8_EPISODES["BinFill"])
     # xhard5 档条目：只有 SwingXtimes、StopCube
     stop = builders["StopCube"]
     last = stop.get_episode_num() - 1
@@ -132,7 +143,7 @@ def test_官方hard子集不符即拒绝():
     with pytest.raises(ValueError, match="seed 唯一"):
         HB._xhard0_entries("PickXtimes", dup)
     # 其它难度的记录不混进来
-    assert b.get_episode_num() == 62
+    assert b.get_episode_num() == V8_EPISODES["PickXtimes"]
 
 
 def _linked_root(tmp_path: Path) -> Path:
@@ -148,7 +159,7 @@ def test_specs_root参数_身份带规格根(tmp_path, capsys):
     b = _builder("VideoRepick", specs_root=root)
     out = capsys.readouterr().out
     assert f"SPECS_ROOT={root.resolve()}" in out
-    assert b.get_episode_num() == 92
+    assert b.get_episode_num() == V8_EPISODES["VideoRepick"]
     assert b.resolve_identity(0)["specs_root"] == str(root.resolve())
     assert b.resolve_identity(40)["specs_root"] == str(root.resolve())
     # 显式给包内路径等同缺省：身份不带 specs_root
@@ -178,7 +189,8 @@ def test_覆盖根_局部根只发存在的档(tmp_path):
     root.mkdir()
     (root / "xhard5").symlink_to(V.PACKAGED_SPECS_ROOT / "xhard5", target_is_directory=True)
     b = _builder("SwingXtimes", specs_root=root)
-    assert [b.resolve_episode(ep)[1] for ep in range(b.get_episode_num())] == ["xhard0"] * 12 + ["xhard5"] * 10
+    assert [b.resolve_episode(ep)[1] for ep in range(b.get_episode_num())] == \
+        ["xhard0"] * 12 + ["xhard5"] * V.EXPECTED_CELLS[("SwingXtimes", "xhard5")]
     assert _builder("BinFill", specs_root=root).get_episode_num() == 12
 
 

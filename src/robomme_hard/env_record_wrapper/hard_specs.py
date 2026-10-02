@@ -115,18 +115,88 @@ def _v8_cells() -> dict[tuple[str, str], int]:
     return cells
 
 
-#: 43 格逐格表 {(task, tier): 局数}：完整根传给 load_specs_v8；冒烟／分片传各自的子表
+#: 43 格逐格表 {(task, tier): 局数}：完整根传给 load_specs_v8；冒烟／分片传各自的子表（v8 冻结常量，V9 起不再改）
 V8_CELLS: dict[tuple[str, str], int] = _v8_cells()
 assert len(V8_CELLS) == 43 and sum(V8_CELLS.values()) == 1070, "V8_CELLS 须为表 2 的 43 格、合计 1070"
 assert all(task in ALL_TASKS and tier in V8_TIERS for task, tier in V8_CELLS), "V8_CELLS 含未知任务或档位"
+
+
+def _v9_cells() -> dict[tuple[str, str], int]:
+    """v9 方案第一部分表 2 的 43 个新值格（档集合与 V8 相同）：每任务 50 局，在该任务 V8 交付的档里平分，
+    分不均时前面的档多 1 局（17／17／16、13／13／12／12），不含 xhard0。"""
+    cells: dict[tuple[str, str], int] = {}
+    for task in ("PickXtimes", "RouteStick", "PatternLock"):
+        for tier, n in zip(("xhard1", "xhard2", "xhard3"), (17, 17, 16)):
+            cells[(task, tier)] = n
+    for task in ("SwingXtimes", "StopCube"):
+        for tier in V8_TIERS:
+            cells[(task, tier)] = 10
+    for task in ("VideoUnmask", "ButtonUnmask"):
+        for tier, n in zip(("xhard1", "xhard2", "xhard3", "xhard4"), (13, 13, 12, 12)):
+            cells[(task, tier)] = n
+    for task in ("BinFill", "VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoPlaceButton", "VideoPlaceOrder",
+                 "PickHighlight", "VideoRepick"):
+        for tier in ("xhard1", "xhard2"):
+            cells[(task, tier)] = 25
+    for task in ("MoveCube", "InsertPeg"):
+        cells[(task, "xhard4")] = 50
+    return cells
+
+
+#: v9 交付格表（v9 方案第一部分表 2）：43 格、合计 800、每任务 50；格集合与 V8_CELLS 相同，只有局数不同
+V9_CELLS: dict[tuple[str, str], int] = _v9_cells()
+V9_PER_TASK = 50
+assert len(V9_CELLS) == 43 and sum(V9_CELLS.values()) == 800, "V9_CELLS 须为表 2 的 43 格、合计 800"
+assert set(V9_CELLS) == set(V8_CELLS), "V9_CELLS 的格集合须与 V8_CELLS 相同（不交付的档仍不抽签、不生成）"
+assert all(sum(n for (t, _), n in V9_CELLS.items() if t == task) == V9_PER_TASK for task in ALL_TASKS), \
+    "V9_CELLS 每任务须恰为 50 局"
 #: 交付格表 {(task, tier): 正式交付局数}（v8 阶段 3b 起即 V8_CELLS 的 43 格；builder 按它断言每格行数，
 #: 表外格恰好 0 行、表内格恰好等于表值）。v7 的 55 格由 V7_TIERS／V7_XHARD4_ONLY 推出，不再进全局常量。
+#: v9 阶段 1 只新增 V9_CELLS、不切这一行；切到 V9_CELLS 与换包（env_metadata/test-hard/ 换为 V9 规格）在
+#: v9 阶段 3b 同一提交由主会话完成（v9 方案 R7），换包前包内规格一律是 V8，表与包始终一致。
 EXPECTED_CELLS: dict[tuple[str, str], int] = V8_CELLS
+#: 已登记的完整交付格表（按版本）。``resolve_cell_table`` 按顺序 EXPECTED_CELLS → V8 → V9 找第一张能覆盖
+#: 给定子表的表，作为单文件配额上限（``_validate_specs_v8``）与 ``load_specs_v8`` 的格配额上限。
+CELL_TABLES: dict[str, dict[tuple[str, str], int]] = {"v8": V8_CELLS, "v9": V9_CELLS}
 assert TIERS == V8_TIERS, "阶段 3b 起全局 TIERS 须等于 V8_TIERS"
 assert all(TIER_MAX_STEPS[tier] == V8_EXEC_CAP for tier in TIERS) and tuple(TIER_MAX_STEPS) == BUILDER_TIERS, \
     "TIER_MAX_STEPS 须为 xhard0 + 五档、五档均等于 V8_EXEC_CAP"
-assert {task for task in ALL_TASKS if {t for name, t in V8_CELLS if name == task} == {"xhard4"}} == set(XHARD4_ONLY), \
-    "XHARD4_ONLY 须恰为交付格表里只在 xhard4 出现的任务"
+
+
+def xhard4_only_tasks(cells: dict[tuple[str, str], int]) -> set[str]:
+    """格表里只在 xhard4 出现的任务集合（XHARD4_ONLY 对参数格表的核对口径）。"""
+    return {task for task in ALL_TASKS if {t for name, t in cells if name == task} == {"xhard4"}}
+
+
+assert all(xhard4_only_tasks(table) == set(XHARD4_ONLY) for table in (EXPECTED_CELLS, *CELL_TABLES.values())), \
+    "XHARD4_ONLY 须恰为交付格表（EXPECTED_CELLS、V8_CELLS、V9_CELLS 各自）里只在 xhard4 出现的任务"
+
+
+def _fits(cells: dict[tuple[str, str], int], table: dict[tuple[str, str], int]) -> bool:
+    return all(key in table and _is_int(n) and n <= table[key] for key, n in cells.items())
+
+
+def resolve_cell_table(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
+    """给定（子）格表 → 用作配额上限的完整交付格表：按 ``EXPECTED_CELLS``、``V8_CELLS``、``V9_CELLS`` 的顺序取第一张
+    「含全部格且逐格局数 ≤ 表值」的表；都不覆盖时返回 ``EXPECTED_CELLS``（由调用方的逐项核对报出具体哪格超）。
+
+    这样 v8 子表（冒烟、分片、完整根）照旧落到 V8，阶段 3b 切换前 V9 子表（MoveCube／InsertPeg 50）也能落到 V9；
+    显式传入格表时不经本函数。"""
+    for table in (EXPECTED_CELLS, *CELL_TABLES.values()):
+        if _fits(cells, table):
+            return table
+    return EXPECTED_CELLS
+
+
+def header_cell_table(header: dict[str, Any]) -> dict[tuple[str, str], int] | None:
+    """/4 header 自带的逐任务配额 → ``resolve_cell_table`` 取配额上限格表（供不知道格表的单文件读取方用，如
+    ``_rollout`` 回写复核）；非 /4 或配额形态不对返回 None（交给 ``validate_specs`` 报具体错）。"""
+    if not isinstance(header, dict) or header.get("schema") != SCHEMA_V8:
+        return None
+    quota = header.get("delivery_per_cell")
+    if not isinstance(quota, dict):
+        return None
+    return resolve_cell_table({(task, header.get("difficulty")): n for task, n in quota.items()})
 
 # 签：进 identity_sha256 的 header 键与行键
 IDENTITY_HEADER_KEYS = ("schema", "difficulty", "tasks", "per_env", "runtime", "seed_rule", "select_rule",
@@ -343,20 +413,23 @@ def _is_int(value: Any) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
-def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]]) -> None:
-    """``hard-specs/4`` 单文件校验（v8 方案第二部分 §2.2 第 2 条）：
+def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]],
+                       expected_cells: dict[tuple[str, str], int] | None = None) -> None:
+    """``hard-specs/4`` 单文件校验（v8 方案第二部分 §2.2 第 2 条）。``expected_cells`` 是作配额上限的完整交付格表，
+    缺省 ``EXPECTED_CELLS``（v9 方案 §2.1：格表参数贯通 load_specs → validate_specs → 本函数）：
 
     * header：字段集合；``difficulty ∈ V8_TIERS``；runtime；``seed_rule == seed_rule_for(tier, "v8")``；
       ``exec_cap == V8_EXEC_CAP``；``layout_rule == {"mode": "independent"}``；``tasks`` 不重复且每个 (task, tier)
-      都在 ``V8_CELLS`` 里；``select_rule`` 为 ``{task: [不重复非负整数]}``、``per_env`` 为 ``{task: 候选数（非负整数）}``、
+      都在格表里；``select_rule`` 为 ``{task: [不重复非负整数]}``、``per_env`` 为 ``{task: 候选数（非负整数）}``、
       ``delivery_per_cell`` 为 ``{task: 正整数}``，三者键集合都等于 ``tasks``；逐任务配额自洽：
-      ``delivery_per_cell[task] ≤ V8_CELLS[(task, tier)]``、``len(select_rule[task]) == delivery_per_cell[task]``、
+      ``delivery_per_cell[task] ≤ 格表[(task, tier)]``、``len(select_rule[task]) == delivery_per_cell[task]``、
       ``per_env[task] ==`` 本文件该任务行数、``select_rule[task]`` 每个索引 ``< per_env[task]``；内嵌 sampling_config 散列自洽；
     * 行：字段集合；``layout_parent is None``、``spec.spec_kind == "native-newvalue/2"``；``candidate == episode`` 且
       ``0 ≤ episode < env_block // episode_stride``；档位、规格散列、seed 公式、布尔位、rollout.status；
       逐任务 selected 行数 ≤ ``delivery_per_cell[task]``；
     * 两个身份散列（签含 exec_cap、delivery_per_cell、seed_rule，改任一项不重签即失败）。
     """
+    table = EXPECTED_CELLS if expected_cells is None else expected_cells
     _, _, header_required, row_required = _schema_keys(SCHEMA_V8)
     _exact_keys(header, header_required, "specs header", HEADER_OPTIONAL)
     if header["record"] != "header":
@@ -373,7 +446,7 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]]) -> No
     tasks = header["tasks"]
     if not isinstance(tasks, list) or len(set(tasks)) != len(tasks):
         raise SpecsError(f"hard-specs/4 的 tasks 必须是不重复列表：{tasks!r}")
-    stray = [task for task in tasks if (task, tier) not in V8_CELLS]
+    stray = [task for task in tasks if (task, tier) not in table]
     if stray:
         raise SpecsError(f"hard-specs/4 的任务不在 {tier} 交付格内：{stray}")
     for name in ("select_rule", "per_env", "delivery_per_cell"):
@@ -390,9 +463,9 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]]) -> No
         quota = header["delivery_per_cell"][task]
         if not _is_int(quota) or quota <= 0:
             raise SpecsError(f"hard-specs/4 的 delivery_per_cell[{task}] 必须是正整数：{quota!r}")
-        if quota > V8_CELLS[(task, tier)]:
+        if quota > table[(task, tier)]:
             raise SpecsError(f"hard-specs/4 的 delivery_per_cell[{task}]={quota} 超过表 2 格配额 "
-                             f"{V8_CELLS[(task, tier)]}（{tier}）")
+                             f"{table[(task, tier)]}（{tier}）")
         if len(indices) != quota:
             raise SpecsError(f"hard-specs/4 的 select_rule[{task}] 长度 {len(indices)} ≠ delivery_per_cell {quota}")
         n_rows = sum(1 for row in rows if row.get("task") == task)
@@ -441,12 +514,14 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]]) -> No
         raise SpecsError("delivery_sha256 不符（正式交付集合被改过）")
 
 
-def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]]) -> None:
+def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]], *,
+                   expected_cells: dict[tuple[str, str], int] | None = None) -> None:
     """封套校验：字段集合、runtime、seed 规则、配置散列、逐行 seed 与规格散列、两个身份散列、每格正式局数上限。
-    ``hard-specs/4`` 走独立分支 ``_validate_specs_v8``；/2、/3 走下面的原路径。"""
+    ``hard-specs/4`` 走独立分支 ``_validate_specs_v8``（``expected_cells`` 作配额上限，缺省 ``EXPECTED_CELLS``）；
+    /2、/3 走下面的原路径（不看 ``expected_cells``）。"""
     schema = header.get("schema")
     if schema == SCHEMA_V8:
-        _validate_specs_v8(header, rows)
+        _validate_specs_v8(header, rows, EXPECTED_CELLS if expected_cells is None else expected_cells)
         return
     _, _, header_required, row_required = _schema_keys(schema)
     _exact_keys(header, header_required, "specs header", HEADER_OPTIONAL)
@@ -500,14 +575,17 @@ def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]]) -> None:
         raise SpecsError("delivery_sha256 不符（正式交付集合被改过）")
 
 
-def load_specs(path: str | Path, *, check_fingerprint: bool = True):
+def load_specs(path: str | Path, *, expected_cells: dict[tuple[str, str], int] | None = None,
+               check_fingerprint: bool = True):
     """唯一读取入口：返回 ``(header, rows)``（rows 为全部规格行，调用方按 ``delivered`` 取正式局）。
 
+    ``expected_cells``：/4 文件的配额上限格表，缺省 ``EXPECTED_CELLS``（读 V9 文件而 EXPECTED_CELLS 尚未切换时
+    显式传 ``V9_CELLS``）；/2、/3 文件不看它。
     源码指纹（``provenance``）与当前环境不符只 ``warnings.warn``，不拒绝（0927 计划 §3.4）。
     """
     records = read_jsonl(path)
     header, rows = records[0], records[1:]
-    validate_specs(header, rows)
+    validate_specs(header, rows, expected_cells=expected_cells)
     if check_fingerprint:
         provenance = header.get("provenance") or {}
         try:
@@ -522,16 +600,19 @@ def load_specs(path: str | Path, *, check_fingerprint: bool = True):
 
 
 def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], *,
+                  cell_table: dict[tuple[str, str], int] | None = None,
                   check_fingerprint: bool = True) -> dict[str, tuple[dict[str, Any], list[dict[str, Any]]]]:
-    """读 v8 规格根（``<root>/<tier>/specs.jsonl``，``hard-specs/4``），只校验调用方给定的格表。
+    """读 v8／v9 规格根（``<root>/<tier>/specs.jsonl``，``hard-specs/4``），只校验调用方给定的格表。
 
-    ``expected_cells``：``{(task, tier): 局数}``，键必须是 ``V8_CELLS`` 键的子集、值为正整数（值可小于
-    ``V8_CELLS``，如冒烟每格 1 局）。完整根传 ``V8_CELLS``、冒烟传 7 格表、分片传该片子集。只读 ``expected_cells``
+    ``expected_cells``：``{(task, tier): 局数}``，键必须是完整交付格表键的子集、值为正整数（值可小于表值，
+    如冒烟每格 1 局）。完整根传 ``V8_CELLS``／``V9_CELLS``、冒烟传冒烟表、分片传该片子集。
+    ``cell_table``：作配额上限的完整交付格表；缺省按 ``resolve_cell_table(expected_cells)`` 取（EXPECTED_CELLS →
+    V8 → V9 第一张能覆盖的表），并原样传给逐份 ``load_specs``。只读 ``expected_cells``
     涉及的档位文件（其他档的文件即使存在也不读），逐份走 ``load_specs``（/4 校验），另查：
 
     * 每份 ``schema == "hard-specs/4"``、``difficulty`` 等于目录档名；
     * 每份 header ``tasks`` 的集合等于 ``expected_cells`` 在该档的任务集合；
-    * ``expected_cells[key] ≤ V8_CELLS[key]``；
+    * ``expected_cells[key] ≤ cell_table[key]``；
     * 每格 header ``delivery_per_cell[task]`` 等于 ``expected_cells`` 的值；
     * 每格 ``selected`` 行数等于 ``expected_cells`` 的值（相等，不是 ≤）。只数 ``selected``，不看 rollout 结果；
       正式交付（``delivered``：selected 且 rollout ok）的逐格核对由 ``hard_regression.py delivery-set`` 的
@@ -543,15 +624,16 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
     """
     if not isinstance(expected_cells, dict) or not expected_cells:
         raise SpecsError("expected_cells 必须是非空 {(task, tier): 局数} 字典")
-    stray = sorted(key for key in expected_cells if key not in V8_CELLS)
+    table = resolve_cell_table(expected_cells) if cell_table is None else cell_table
+    stray = sorted(key for key in expected_cells if key not in table)
     if stray:
-        raise SpecsError(f"expected_cells 含 V8_CELLS 之外的格：{stray}")
+        raise SpecsError(f"expected_cells 含交付格表（V8_CELLS／V9_CELLS）之外的格：{stray}")
     bad = {key: n for key, n in expected_cells.items() if not _is_int(n) or n <= 0}
     if bad:
         raise SpecsError(f"expected_cells 的局数必须是正整数：{bad}")
-    over = {key: n for key, n in expected_cells.items() if n > V8_CELLS[key]}
+    over = {key: n for key, n in expected_cells.items() if n > table[key]}
     if over:
-        raise SpecsError(f"expected_cells 的局数超过表 2 格配额 V8_CELLS：{over}")
+        raise SpecsError(f"expected_cells 的局数超过表 2 格配额：{over}")
     out: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
     for tier in V8_TIERS:
         want = {task for task, t in expected_cells if t == tier}
@@ -560,7 +642,7 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
         path = Path(root) / tier / "specs.jsonl"
         if not path.is_file():
             raise SpecsError(f"v8 规格根缺少 {path}")
-        header, rows = load_specs(path, check_fingerprint=check_fingerprint)
+        header, rows = load_specs(path, expected_cells=table, check_fingerprint=check_fingerprint)
         if header["schema"] != SCHEMA_V8 or header["difficulty"] != tier:
             raise SpecsError(f"{path}：schema 须为 {SCHEMA_V8}、档位须为 {tier}"
                              f"（实为 {header['schema']}／{header['difficulty']}）")

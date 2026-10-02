@@ -255,6 +255,59 @@ def draw_candidates(task: str, tier: str, sampling: dict[str, Any], seed_rule: d
     return drafts, {"attempted": total, "ok": ok_n, "fail_class": fail_class}
 
 
+def draw_extra(frozen_header: dict[str, Any], task: str, tier: str, start: int, count: int, *,
+               allow_spares: bool = False, frozen_rows: list[dict[str, Any]] | None = None,
+               shard_rows: list[dict[str, Any]] | None = None, max_reset_attempts: int,
+               draw_one: Callable | None = None, sampling_check: Callable | None = None,
+               pkg: str = "robomme_hard", release: str | None = None,
+               gpus: str | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """抽签函数（CLI 与 S1-D ``v9_subset_specs.py extend`` 共用）：按冻结 header 给 ``task@tier`` 从候选号 ``start``
+    起追加 ``count`` 个候选，返回 ``(新规格行, 抽签统计)``；只抽签、不写盘。
+
+    核对（两种入口都做）：header 为 /4、档位与 seed 规则为 ``seed_rule_for(tier, "v8")``、任务在 header 内、
+    ``start == per_env[task]``（新候选号紧接已有候选）；源码重建的 ``sampling_config`` 与冻结值相等
+    （``sampling_check`` 注入或 ``check_sampling``）；新行 seed 按公式、规格散列自洽（``spec_rows_from_drafts``）。
+
+    ``allow_spares=False``（CLI 口径）另做两道拒绝：``frozen_rows`` 里有 tried 行（冻结根必须未跑过）、
+    ``shard_rows``（缺省用 ``frozen_rows``）里该任务还有未试备用。``allow_spares=True``（v9 InsertPeg 迁移：V8 片已跑过、
+    候选号 29～39 仍是未试备用）跳过这两道，其余核对照旧。"""
+    if H is None:
+        bootstrap()
+    if frozen_header.get("schema") != H.SCHEMA_V8 or frozen_header.get("difficulty") != tier:
+        raise AppendError(f"冻结 header 须为 {H.SCHEMA_V8} 且档位 {tier}")
+    if task not in frozen_header["tasks"]:
+        raise AppendError(f"冻结 header 的 {tier} 不含任务 {task}")
+    if frozen_header["seed_rule"] != H.seed_rule_for(tier, "v8"):
+        raise AppendError("冻结 header 的 seed_rule 不是 v8 规则")
+    if count <= 0 or max_reset_attempts <= 0:
+        raise AppendError(f"追加数与 reset 预算须为正整数：count={count} max_reset_attempts={max_reset_attempts}")
+    if int(start) != int(frozen_header["per_env"][task]):
+        raise AppendError(f"新候选须从 per_env={frozen_header['per_env'][task]} 起连续编号（收到 start={start}）")
+    if not allow_spares:
+        if frozen_rows is None:
+            raise AppendError("allow_spares=False 时须给 frozen_rows（核对冻结根未跑过、无未试备用）")
+        if any(r["tried"] for r in frozen_rows):
+            raise AppendError("冻结根已跑过（有 tried 行），冻结根只能是未跑过的")
+        check_rows = frozen_rows if shard_rows is None else shard_rows
+        spares = [r["candidate"] for r in check_rows if r["task"] == task and not r["tried"] and not r["selected"]]
+        if spares:
+            raise AppendError(f"片里 {task} 还有未试备用 {spares[:5]}，用不着追加")
+    sampling = frozen_header["sampling_config"][task]
+    if sampling_check is not None:
+        sampling_check(task, sampling)
+    else:
+        check_sampling(task, sampling, pkg, release or _extract.DEFAULT_RELEASE)
+    if draw_one is None:
+        gpu_list = _draw.parse_gpus(gpus)
+        if gpu_list:
+            os.environ["CUDA_VISIBLE_DEVICES"] = gpu_list[0]
+        _draw.assert_registry_owner(pkg)
+        draw_one = functools.partial(_draw._draw_one, difficulty=tier)
+    drafts, info = draw_candidates(task, tier, sampling, frozen_header["seed_rule"], int(start), int(count),
+                                   max_reset_attempts, draw_one)
+    return spec_rows_from_drafts(drafts, tier, frozen_header["seed_rule"]), info
+
+
 def spec_rows_from_drafts(drafts: list[dict[str, Any]], tier: str, seed_rule: dict[str, Any]) -> list[dict[str, Any]]:
     """成功抽签行 → 规格行（与 ``_freeze.freeze`` 写未选行同形）。"""
     rows = []
@@ -468,19 +521,10 @@ def main(argv: list[str] | None = None, *, draw_one: Callable | None = None,
         if args.dry_run:
             print("APPEND_DRY_RUN=PASS（未起环境、未写盘）", flush=True)
             return 0
-        if sampling_check is not None:
-            sampling_check(task, plan["sampling"])
-        else:
-            check_sampling(task, plan["sampling"], args.pkg, args.release or _extract.DEFAULT_RELEASE)
-        if draw_one is None:
-            gpus = _draw.parse_gpus(args.gpus)
-            if gpus:
-                os.environ["CUDA_VISIBLE_DEVICES"] = gpus[0]
-            _draw.assert_registry_owner(args.pkg)
-            draw_one = functools.partial(_draw._draw_one, difficulty=tier)
-        drafts, info = draw_candidates(task, tier, plan["sampling"], plan["seed_rule"], plan["per_env"], args.extra,
-                                       args.max_reset_attempts, draw_one)
-        new_rows = spec_rows_from_drafts(drafts, tier, plan["seed_rule"])
+        new_rows, info = draw_extra(plan["frozen"][0], task, tier, plan["per_env"], args.extra, allow_spares=False,
+                                    frozen_rows=plan["frozen"][1], shard_rows=plan["shard"][1],
+                                    max_reset_attempts=args.max_reset_attempts, draw_one=draw_one,
+                                    sampling_check=sampling_check, pkg=args.pkg, release=args.release, gpus=args.gpus)
         result = apply_append(plan, new_rows, info, max_reset_attempts=args.max_reset_attempts, pkg=args.pkg)
     except (AppendError, ValueError, RuntimeError) as exc:  # SpecsError 是 ValueError、RolloutError 是 RuntimeError
         print(f"APPEND_REASON {type(exc).__name__}: {exc}", flush=True)

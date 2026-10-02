@@ -3,7 +3,7 @@
 
 * ``hard_specs`` 的 xhard0 常量：``XHARD0``／``BUILDER_TIERS``／``XHARD0_PER_TASK``／``XHARD0_EPISODES``、
   ``TIER_MAX_STEPS`` 六档（xhard0 1300、xhard1～5 均 1600）；v8 阶段 3b 起 ``TIERS`` 为新值五档、
-  ``BUILDER_TIERS`` 六项、``EXPECTED_CELLS`` 为 43 格逐格表（＝``V8_CELLS``）；
+  ``BUILDER_TIERS`` 六项、``EXPECTED_CELLS`` 为 43 格逐格表（v8 包＝``V8_CELLS``，v9 阶段 3b 换包后＝``V9_CELLS``）；
 * 清单 ``scripts/configs/newtask-v7/xhard0_manifest.json``：16 任务 × 12 局 = 192 行，逐条等于官方 test 元数据，
   recovery_mode 只有原 episode 3 为 ``xy``（官方 ≤2 z、≤5 xy、其余 off），摘要与源文件散列自洽；
 * ``hard_parity.check_xhard0`` 的判定：合规 PASS、改 seed／缺行／多行／builder 不符 FAIL。
@@ -55,10 +55,11 @@ def test_xhard0常量与档序():
     assert V.XHARD0_PER_TASK == 12
     assert V.XHARD0_EPISODES == (3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47)
     assert len(V.XHARD0_EPISODES) == V.XHARD0_PER_TASK
-    # xhard0 不属于交付格表（EXPECTED_CELLS 只管新值五档规格）；v8 为 43 格逐格局数，合计 1070
-    assert all(tier != V.XHARD0 for _task, tier in V.EXPECTED_CELLS)
-    assert V.EXPECTED_CELLS == V.V8_CELLS
-    assert len(V.EXPECTED_CELLS) == 43 and sum(V.EXPECTED_CELLS.values()) == 1070
+    # xhard0 不属于交付格表（EXPECTED_CELLS 只管新值五档规格）；v8 为 43 格逐格局数、合计 1070，v9 阶段 3b 换包后
+    # 为 V9_CELLS（43 格、合计 800）——合计由格表推出，切换前后都成立
+    assert all(tier != V.XHARD0 for table in (V.EXPECTED_CELLS, V.V8_CELLS, V.V9_CELLS) for _task, tier in table)
+    assert V.EXPECTED_CELLS in (V.V8_CELLS, V.V9_CELLS)
+    assert len(V.EXPECTED_CELLS) == 43 and sum(V.EXPECTED_CELLS.values()) in (1070, 800)
     assert V.XHARD4_ONLY == ("InsertPeg", "MoveCube")
 
 

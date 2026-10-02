@@ -51,6 +51,33 @@ assert set(V8_DEFAULT_CANDIDATES) == set(hard_specs.V8_CELLS), "v8 候选表须�
 assert sum(V8_DEFAULT_CANDIDATES.values()) == 1425, "v8 候选合计须为 1425（§2.2 第 6 条）"
 assert all(V8_DEFAULT_CANDIDATES[k] > hard_specs.V8_CELLS[k] for k in V8_DEFAULT_CANDIDATES), "每格候选数须大于局数"
 
+#: v9 候选表（v9 方案第二部分 §2.2 第 3 条）：只列 V9 重新抽签的格；MoveCube xhard4 交付 50、候选 80
+#: （按失败率 35% 留量：80 × 0.65 = 52 ≥ 50）。InsertPeg 走 ``v9_subset_specs.py extend``（V8 未试 11 个 + 追加 35 个），
+#: 不经本表；其余 14 任务从 V8 交付行取子集，不抽签。``v8_default_candidates`` 不读本表：格局数 ≠ V8 表值时
+#: 候选数默认等于局数，V9 抽签必须显式 ``--candidates-per-env MoveCube=80``（``--dry-run`` 的 FREEZE_CELL 行可核对）。
+V9_CANDIDATES: dict[tuple[str, str], int] = {("MoveCube", "xhard4"): 80}
+assert all(V9_CANDIDATES[k] > hard_specs.V9_CELLS[k] for k in V9_CANDIDATES), "v9 每格候选数须大于局数"
+#: v9 MoveCube xhard4 逐运动方式配额（v9 方案第二部分 §2.2 第 4 条，审计 8）：way 0/1/2 = 17/17/16，合计 = 格局数 50
+V9_MOVECUBE_QUOTA_BY_WAY: dict[int, int] = {0: 17, 1: 17, 2: 16}
+assert sum(V9_MOVECUBE_QUOTA_BY_WAY.values()) == hard_specs.V9_CELLS[("MoveCube", "xhard4")]
+assert set(V9_MOVECUBE_QUOTA_BY_WAY) == set(MOVECUBE_WAYS)
+
+
+def default_quota_by_way(task: str, tier: str, quota: int) -> dict[int, int] | None:
+    """逐方式配额的默认取值：只有 MoveCube xhard4 且配额恰为 V9 格局数（50）时返回 ``V9_MOVECUBE_QUOTA_BY_WAY``，
+    其余（V7／V8 的 MoveCube 20、冒烟 1 局、别的任务）一律 None，即沿用原分层规则、行为逐字不变。"""
+    if task == "MoveCube" and tier == "xhard4" and int(quota) == sum(V9_MOVECUBE_QUOTA_BY_WAY.values()):
+        return dict(V9_MOVECUBE_QUOTA_BY_WAY)
+    return None
+
+
+def format_quota_by_way(quota_by_way: dict[int, int] | None) -> str:
+    """``{0:17,1:17,2:16}`` 形式（判定行与 ``--dry-run`` 打印用）；None 打印 ``-``。"""
+    if not quota_by_way:
+        return "-"
+    return "{" + ",".join(f"{way}:{int(n)}" for way, n in sorted(quota_by_way.items())) + "}"
+
+
 #: v8 抽签接受率（reset 成功数 ÷ 尝试数）：取 v7 xhard4 正式抽签实测（包内 xhard4 header
 #: ``draw_stats.main.per_task``，每任务 30 候选）；未列出的任务按 §2.4.3「其余 ÷ 0.97～1.0」取保守的 0.97。
 #: 只用于 ``--dry-run`` 的预算打印与 v8 默认 reset 上限，不进规格。
@@ -83,11 +110,25 @@ def _movecube_way(spec: dict[str, Any]) -> int | None:
     return int(way) if way is not None else None
 
 
+def candidates_by_way(ok_rows: list[dict[str, Any]]) -> dict[int | None, list[int]]:
+    """成功候选按运动方式分组（候选号升序）；读不到 way_idx 的归到 None。"""
+    by_way: dict[int | None, list[int]] = {}
+    for row in ok_rows:
+        by_way.setdefault(_movecube_way(row["spec"]), []).append(row["episode"])
+    return {way: sorted(eps) for way, eps in by_way.items()}
+
+
 def stratified_select(task: str, difficulty: str, ok_rows: list[dict[str, Any]], select,
-                      quota: int | None = None) -> list[int]:
+                      quota: int | None = None, quota_by_way: dict[int, int] | None = None) -> list[int]:
     """选正式局。``quota``（逐格配额，v8）缺省为 ``len(select)``，此时与原实现逐字同义；
     MoveCube 在新值档（v7 ``TIERS`` 或 v8 ``V8_TIERS``）按运动方式分层：每种 way 取编号最小的候选，
-    不足先按 ``select`` 再按候选编号补齐到配额。"""
+    不足先按 ``select`` 再按候选编号补齐到配额。
+
+    ``quota_by_way``（v9 MoveCube，``{0:17, 1:17, 2:16}``）给出时改走逐方式配额：每种方式在自己的候选里按
+    候选号升序取前 ``quota_by_way[way]`` 个，不挪用别的方式；某方式候选数 < 配额即抛 ``SpecsError``，报错里写
+    三种方式各有多少候选、各差几个。配额合计必须等于 ``quota``（给出时）。V7／V8 调用不传该参数，行为逐字不变。"""
+    if quota_by_way is not None:
+        return _select_by_way_quota(task, difficulty, ok_rows, quota, quota_by_way)
     quota = len(select) if quota is None else int(quota)
     episodes = [r["episode"] for r in ok_rows]
     default = [e for e in episodes if e in select][:quota]
@@ -109,6 +150,26 @@ def stratified_select(task: str, difficulty: str, ok_rows: list[dict[str, Any]],
         if episode in episodes and episode not in chosen:
             chosen.append(episode)
     return sorted(chosen[:quota])
+
+
+def _select_by_way_quota(task: str, difficulty: str, ok_rows: list[dict[str, Any]], quota: int | None,
+                         quota_by_way: dict[int, int]) -> list[int]:
+    if task != "MoveCube":
+        raise SpecsError(f"quota_by_way 只用于 MoveCube（收到 {task}）")
+    if set(quota_by_way) != set(MOVECUBE_WAYS) or any(not isinstance(n, int) or n < 0 for n in quota_by_way.values()):
+        raise SpecsError(f"quota_by_way 须为 {{0,1,2: 非负整数}}：{quota_by_way!r}")
+    total = sum(quota_by_way.values())
+    if quota is not None and int(quota) != total:
+        raise SpecsError(f"{task}/{difficulty} quota_by_way 合计 {total} ≠ 格配额 {quota}")
+    by_way = candidates_by_way(ok_rows)
+    have = {way: len(by_way.get(way, [])) for way in MOVECUBE_WAYS}
+    short = {way: quota_by_way[way] - have[way] for way in MOVECUBE_WAYS if have[way] < quota_by_way[way]}
+    if short:
+        detail = "，".join(f"way{way} 候选 {have[way]} 配额 {quota_by_way[way]} 差 {max(quota_by_way[way] - have[way], 0)}"
+                          for way in MOVECUBE_WAYS)
+        raise SpecsError(f"{task}/{difficulty} 逐方式配额 {format_quota_by_way(quota_by_way)} 选不满：{detail}"
+                         f"（无 way 候选 {len(by_way.get(None, []))} 个）")
+    return sorted(ep for way in MOVECUBE_WAYS for ep in by_way.get(way, [])[:quota_by_way[way]])
 
 
 def parse_select(text: str) -> tuple[int, ...]:
@@ -166,7 +227,8 @@ def parse_int_by_task(text: str | None, tasks, default: dict[str, int], label: s
 
 def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DEFAULT_SELECT,
            candidates_per_env: int | dict[str, int] = 10, *,
-           schema: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+           schema: str, quota_by_way: dict[str, dict[int, int] | None] | None = None,
+           expected_cells: dict[tuple[str, str], int] | None = None) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """纯函数：抽签行 → ``(header, rows)``。``schema`` 必须显式给出（``hard-specs/2``、``/3`` 或 ``/4``）。
 
     ``header_parts`` 必含 ``difficulty tasks seed_rule sampling_config recovery_rule identity_source run_id draw_stats
@@ -176,7 +238,13 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DE
     ``/4``：``select`` 为 ``{task: 索引元组}``（也接受全局元组，按每任务同一组索引展开），逐格配额 = 元组长度；
     某任务成功候选选不满配额即拒绝；header ``select_rule[task]`` 写实际选中的 episode 列表（MoveCube 分层后
     可能不是 ``0..n-1``）、``per_env[task]`` 写成功候选数、``delivery_per_cell[task]`` 写配额；
-    逐任务的尝试数、初选与请求候选数写进 ``draw_stats.freeze_per_env``（不进签）。"""
+    逐任务的尝试数、初选与请求候选数写进 ``draw_stats.freeze_per_env``（不进签）。
+
+    ``quota_by_way``（只对 /4）：``{task: {way: 配额}}``；缺省 None 时逐任务取 ``default_quota_by_way``（只有 V9 的
+    MoveCube xhard4 配额 50 才启用 17／17／16，V7／V8 不受影响）。启用时打印 ``FREEZE_WAYS`` 一行（逐方式配额与
+    逐方式候选数），并把两者写进 ``draw_stats.freeze_per_env[task]``（不进签）；某方式候选不足即抛错。
+    ``expected_cells``（只对 /4）：封签后校验用的配额上限格表，缺省按本档逐任务配额 ``resolve_cell_table`` 取
+    （V8 配额落 V8_CELLS，V9 的 MoveCube 50 落 V9_CELLS）。"""
     if schema not in hard_specs.SCHEMAS:
         raise SpecsError(f"未知 schema {schema!r}，只支持 {hard_specs.SCHEMAS}")
     difficulty, seed_rule = header_parts["difficulty"], header_parts["seed_rule"]
@@ -213,12 +281,24 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DE
         if [r["episode"] for r in ok_rows] != list(range(len(ok_rows))):
             raise SpecsError(f"{task} 的成功候选编号不连续")
         quota = len(select_by[task])
-        chosen = stratified_select(task, difficulty, ok_rows, select_by[task], quota if v8 else None)
+        ways = None
+        if v8:
+            ways = default_quota_by_way(task, difficulty, quota) if quota_by_way is None else quota_by_way.get(task)
+        if ways is not None:
+            have = candidates_by_way(ok_rows)
+            print(f"FREEZE_WAYS task={task} tier={difficulty} quota_by_way={format_quota_by_way(ways)} "
+                  f"candidates_by_way={format_quota_by_way({w: len(have.get(w, [])) for w in MOVECUBE_WAYS})} "
+                  f"no_way={len(have.get(None, []))}", flush=True)
+        chosen = stratified_select(task, difficulty, ok_rows, select_by[task], quota if v8 else None, ways)
         if v8 and len(chosen) != quota:
             raise SpecsError(f"{task}/{difficulty} 成功候选 {len(ok_rows)} 个，选不满配额 {quota}"
                              f"（select={list(select_by[task])}，选中 {chosen}）")
         per_env[task] = {"attempted": sum(1 for r in drafts if r["task"] == task), "candidates": len(ok_rows),
                          "initial_selected": chosen}
+        if ways is not None:
+            have = candidates_by_way(ok_rows)
+            per_env[task]["quota_by_way"] = {str(w): int(ways[w]) for w in MOVECUBE_WAYS}
+            per_env[task]["candidates_by_way"] = {str(w): len(have.get(w, [])) for w in MOVECUBE_WAYS}
         for row in ok_rows:
             flag = row["episode"] in chosen
             rows.append({
@@ -263,7 +343,9 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DE
     }
     header["identity_sha256"] = hard_specs.identity_sha256(header, rows)
     header["delivery_sha256"] = hard_specs.delivery_sha256(rows)
-    hard_specs.validate_specs(header, rows)
+    if v8 and expected_cells is None:
+        expected_cells = hard_specs.resolve_cell_table({(task, difficulty): delivery_per_cell[task] for task in tasks})
+    hard_specs.validate_specs(header, rows, expected_cells=expected_cells)
     return header, rows
 
 

@@ -329,11 +329,14 @@ def purge_record_media(rows: list[dict[str, Any]], records: list[dict[str, Any]]
 
 
 def apply_results(rows: list[dict[str, Any]], results: list[dict[str, Any]], pkg: str, code_baseline: str,
-                  output: Path, *, exec_cap: int | None = None, purge: bool = True) -> list[dict[str, Any]]:
+                  output: Path, *, exec_cap: int | None = None, purge: bool = True,
+                  same_way_tasks: frozenset[str] | set[str] = frozenset()) -> list[dict[str, Any]]:
     """按结果更新行；失败的行退选并递补同格下一个未试候选。返回新一轮待跑行。
 
     ``exec_cap``（v8）给出时先过 ``enforce_exec_cap``：超限局按失败处理（同格递补），``record`` 被就地改写；
-    ``purge=False`` 时超限局的媒体留给调用方在追加账本之后删（见 ``purge_record_media``）。"""
+    ``purge=False`` 时超限局的媒体留给调用方在追加账本之后删（见 ``purge_record_media``）。
+    ``same_way_tasks``（v9 方案 §2.2 第 4 条：MoveCube）里的任务只从与失败局同一运动方式（``way_idx``）的未试备用
+    里递补，没有同方式备用就不递补（该格最终记 ``exhausted``）；其他任务照旧按候选号取同格下一个。"""
     by_key = {(r["task"], r["candidate"]): r for r in rows}
     backfill = []
     for record in results:
@@ -346,11 +349,44 @@ def apply_results(rows: list[dict[str, Any]], results: list[dict[str, Any]], pkg
             row["selected"] = False
             spare = sorted((r for r in rows if r["task"] == row["task"] and not r["tried"] and not r["selected"]),
                            key=lambda r: r["candidate"])
+            if row["task"] in same_way_tasks:
+                way = row_way(row)
+                spare = [r for r in spare if row_way(r) == way]
             if spare:
                 spare[0]["selected"] = True
                 spare[0]["_role"] = "backfill"
                 backfill.append(spare[0])
     return backfill
+
+
+def row_way(row: dict[str, Any]) -> int | None:
+    """规格行的 MoveCube 运动方式（``_freeze._movecube_way``：最后一次 _initialize_episode 的 way_idx）；读不到为 None。"""
+    from _freeze import _movecube_way  # noqa: PLC0415
+
+    return _movecube_way(row.get("spec"))
+
+
+#: v9 起按运动方式同方式递补的任务（v9 方案 §2.2 第 4 条：MoveCube 逐方式配额 17／17／16，递补不跨方式）
+SAME_WAY_BACKFILL_TASKS = frozenset({"MoveCube"})
+
+
+def same_way_tasks_for(header: dict[str, Any]) -> frozenset[str]:
+    """/4 规格（新值档）里同方式递补的任务；/2、/3 一律空集（v7 及更早的递补规则逐字不变）。"""
+    if header.get("schema") != hard_specs.SCHEMA_V8 or header.get("difficulty") not in hard_specs.V8_TIERS:
+        return frozenset()
+    return frozenset(SAME_WAY_BACKFILL_TASKS & set(header.get("tasks") or ()))
+
+
+def load_specs_any(path: Path, *, check_fingerprint: bool = False):
+    """单文件读取：/4 文件的配额上限格表按 header 自带的逐任务配额推出（``hard_specs.header_cell_table``），
+    V8 文件落 V8_CELLS、V9 文件（MoveCube／InsertPeg 50）落 V9_CELLS，不受 ``EXPECTED_CELLS`` 是否已切换影响。"""
+    with Path(path).open(encoding="utf-8") as stream:
+        first = stream.readline()
+    try:
+        table = hard_specs.header_cell_table(json.loads(first))
+    except ValueError:
+        table = None  # 首行坏了：交给 load_specs 报具体错
+    return hard_specs.load_specs(path, expected_cells=table, check_fingerprint=check_fingerprint)
 
 
 def write_back(specs: Path, header: dict[str, Any], rows: list[dict[str, Any]], expected_file_sha: str) -> dict[str, Any]:
@@ -362,14 +398,14 @@ def write_back(specs: Path, header: dict[str, Any], rows: list[dict[str, Any]], 
     new_header["delivery_sha256"] = hard_specs.delivery_sha256(clean)
     if hard_specs.identity_sha256(new_header, clean) != header["identity_sha256"]:
         raise RolloutError("回写后 identity_sha256 变了——只允许改结果段")
-    hard_specs.validate_specs(new_header, clean)
+    hard_specs.validate_specs(new_header, clean, expected_cells=hard_specs.header_cell_table(new_header))
     fd, name = tempfile.mkstemp(prefix=".hardspecs-", dir=specs.parent)
     with os.fdopen(fd, "w", encoding="utf-8") as stream:
         for record in [new_header, *clean]:
             stream.write(hard_specs.canonical_json(record) + "\n")
     os.chmod(name, 0o644)
     os.replace(name, specs)
-    header2, _ = hard_specs.load_specs(specs, check_fingerprint=False)
+    header2, _ = load_specs_any(specs)
     if header2["identity_sha256"] != header["identity_sha256"]:
         raise RolloutError("回写后重读 identity_sha256 不符")
     return new_header
@@ -396,8 +432,12 @@ def append_ledger(path: Path, entries: list[dict[str, Any]]) -> None:
 def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu: str, pkg: str,
                  code_baseline: str, redo: set[tuple[str, int]] = frozenset(), resume: bool = False,
                  max_infra_retries: int = 1, batch_runner=None, tasks: set[str] | None = None,
-                 ledger: Path | None = None, check_traces: bool = True) -> dict[str, Any]:
+                 ledger: Path | None = None, check_traces: bool = True,
+                 same_way_tasks: frozenset[str] | set[str] | None = None) -> dict[str, Any]:
     """``batch_runner`` 只供纯 CPU 夹具注入假 runner（STATE_MACHINE）。
+
+    ``same_way_tasks`` 缺省按 header 取 ``same_way_tasks_for``（/4 新值档的 MoveCube 同方式递补；/2、/3 为空），
+    账本重放与正常轮次用同一规则。
 
     /4 规格自动启用 header ``exec_cap``（执行步超限按失败递补）与逐任务配额。``ledger``（v8 驱动传
     ``<output>/results.jsonl``）给出时：每条最终结果与每次基础设施重试追加进账本；``resume`` 且规格尚未回写
@@ -409,8 +449,9 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
     lock.acquire()  # 锁先于一切：取锁失败的进程 worker 数为零、直接退出
     try:
         file_sha = file_sha256(specs)
-        header, rows = hard_specs.load_specs(specs, check_fingerprint=False)
+        header, rows = load_specs_any(specs)
         exec_cap = int(header["exec_cap"]) if header["schema"] == hard_specs.SCHEMA_V8 else None
+        same_way = same_way_tasks_for(header) if same_way_tasks is None else frozenset(same_way_tasks)
         if resume:
             unknown = unknown_identities(output)
             if unknown:
@@ -435,7 +476,7 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
                 for entry in entries:
                     if entry["kind"] == "result":
                         record = dict(entry["record"])
-                        apply_results(rows, [record], pkg, code_baseline, output)
+                        apply_results(rows, [record], pkg, code_baseline, output, same_way_tasks=same_way)
                         # 账本已记超限、但崩溃发生在删媒体之前：此处补删（幂等）
                         purge_record_media(rows, [record], output)
             attempted = len(entries)
@@ -457,7 +498,8 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
                                           "error": (str(record.get("error") or ""))[:300] or None})
                 else:
                     final.append(record)
-            backfill = apply_results(rows, final, pkg, code_baseline, output, exec_cap=exec_cap, purge=False)
+            backfill = apply_results(rows, final, pkg, code_baseline, output, exec_cap=exec_cap, purge=False,
+                                     same_way_tasks=same_way)
             if ledger is not None:
                 append_ledger(ledger, infra_entries + [
                     {"kind": "result", "tier": tier, "task": r["task"], "candidate": int(r["candidate"]),
@@ -683,6 +725,15 @@ V8_SHARD_TASKS: dict[str, tuple[str, ...]] = {
 }
 _shard_all = [task for tasks in V8_SHARD_TASKS.values() for task in tasks]
 assert sorted(_shard_all) == sorted(hard_specs.ALL_TASKS), "四片须恰好覆盖 16 任务且互不重叠"
+#: v9 生成分片（v9 方案 §2.12、§2.4.2 第 4 条）：只有 MoveCube 一片走 freeze → split → continue；InsertPeg 不走 split，
+#: 由 ``v9_subset_specs.py extend`` 直接产出片根；其余 14 任务是 V8 子集、不生成。``--cells v9shard1`` 取 V9_CELLS 的局数。
+V9_SHARD_TASKS: dict[str, tuple[str, ...]] = {"shard1": ("MoveCube",)}
+#: v9 2b 冒烟格表（v9 方案 §2.4.2 第 2 条）：MoveCube、InsertPeg 的 xhard4 各 1 局（``--cells v9smoke``）
+V9_SMOKE_CELLS: dict[tuple[str, str], int] = {("MoveCube", "xhard4"): 1, ("InsertPeg", "xhard4"): 1}
+assert all(task in hard_specs.ALL_TASKS for tasks in V9_SHARD_TASKS.values() for task in tasks)
+assert all(0 < n <= hard_specs.V9_CELLS[k] for k, n in V9_SMOKE_CELLS.items())
+#: ``--cells`` 的 v9 具名格表：``v9shard1``（V9_SHARD_TASKS 的片，局数取 V9_CELLS）、``v9smoke``
+V9_CELL_NAMES = ("v9smoke", *(f"v9{name}" for name in V9_SHARD_TASKS))
 #: 逐格与全局计数键（全部显式写出，零值也写）
 V8_CELL_COUNT_KEYS = ("expected", "candidates", "tried", "delivered", "failed", "exec_over_cap", "backfills",
                       "infra_retries", "spares_left", "pending", "bad_h5")
@@ -695,22 +746,32 @@ def order_cells(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]
                                                                          hard_specs.ALL_TASKS.index(k[0])))}
 
 
-def check_cells(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
+def cell_table(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
+    """格表 → 作配额上限的完整交付格表（``hard_specs.resolve_cell_table``：EXPECTED_CELLS → V8 → V9 第一张覆盖的表）。"""
+    return hard_specs.resolve_cell_table(cells)
+
+
+def check_cells(cells: dict[tuple[str, str], int],
+                table: dict[tuple[str, str], int] | None = None) -> dict[tuple[str, str], int]:
+    """格表核对：键必须在交付格表里、局数 1..表值。``table`` 缺省按 ``cell_table(cells)`` 取（V8 子表落 V8_CELLS，
+    MoveCube／InsertPeg 50 这类 V9 子表落 V9_CELLS），显式给出时只按它核。"""
     if not isinstance(cells, dict) or not cells:
         raise RolloutError("格表必须是非空 {(task, tier): 局数}")
-    stray = sorted(k for k in cells if k not in hard_specs.V8_CELLS)
+    table = cell_table(cells) if table is None else table
+    stray = sorted(k for k in cells if k not in table)
     if stray:
-        raise RolloutError(f"格表含 V8_CELLS 之外的格（不交付的格不抽、不生成）：{stray}")
+        raise RolloutError(f"格表含 V8_CELLS／V9_CELLS 之外的格（不交付的格不抽、不生成）：{stray}")
     bad = {k: n for k, n in cells.items() if not isinstance(n, int) or isinstance(n, bool) or not
-           0 < n <= hard_specs.V8_CELLS[k]}
+           0 < n <= table[k]}
     if bad:
         raise RolloutError(f"格表局数须为 1..表 2 配额的整数：{bad}")
     return order_cells(cells)
 
 
 def resolve_cells(spec: str | Path) -> dict[tuple[str, str], int]:
-    """``--cells``：``full``（表 2 的 43 格）／``smoke``（2b 冒烟 7 格）／``shard1``～``shard4``（按任务切的四片，
-    局数取表 2）／格表 JSON 路径（``{"Task@tier": 局数}`` 或 ``{"cells": [{"task", "tier", "count"}]}``）。"""
+    """``--cells``：``full``（V8 表 2 的 43 格）／``smoke``（V8 2b 冒烟 7 格）／``shard1``～``shard4``（V8 按任务切的
+    四片，局数取 V8 表 2）／``v9shard1``（V9 MoveCube 一片，局数取 V9_CELLS）／``v9smoke``（V9 冒烟 2 格）／
+    格表 JSON 路径（``{"Task@tier": 局数}`` 或 ``{"cells": [{"task", "tier", "count"}]}``）。"""
     text = str(spec)
     if text == "full":
         return check_cells(dict(hard_specs.V8_CELLS))
@@ -718,9 +779,14 @@ def resolve_cells(spec: str | Path) -> dict[tuple[str, str], int]:
         return check_cells(dict(V8_SMOKE_CELLS))
     if text in V8_SHARD_TASKS:
         return check_cells({k: n for k, n in hard_specs.V8_CELLS.items() if k[0] in V8_SHARD_TASKS[text]})
+    if text == "v9smoke":
+        return check_cells(dict(V9_SMOKE_CELLS), hard_specs.V9_CELLS)
+    if text.startswith("v9") and text[2:] in V9_SHARD_TASKS:
+        return check_cells({k: n for k, n in hard_specs.V9_CELLS.items() if k[0] in V9_SHARD_TASKS[text[2:]]},
+                           hard_specs.V9_CELLS)
     path = Path(text)
     if not path.is_file():
-        raise RolloutError(f"--cells 须为 full／smoke／shard1..4 或格表 JSON 路径：{text!r}")
+        raise RolloutError(f"--cells 须为 full／smoke／shard1..4／{'／'.join(V9_CELL_NAMES)} 或格表 JSON 路径：{text!r}")
     data = json.loads(path.read_text(encoding="utf-8"))
     cells: dict[tuple[str, str], int] = {}
     items = data["cells"] if isinstance(data, dict) and "cells" in data else data
@@ -783,12 +849,13 @@ def load_v8_root(root: Path, cells: dict[tuple[str, str], int]) -> dict[str, tup
     跨档 seed 不交。全部行都未试过（刚冻结／刚切片）时另走 ``hard_specs.load_specs_v8`` 全量契约（含每格 selected
     数 == 格表）；跑过之后某格备用耗尽会让 selected 少于配额，这时只按单文件校验读，逐格成败交给聚合判定。"""
     cells = check_cells(cells)
+    table = cell_table(cells)
     out: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
     for tier in cell_tiers(cells):
         path = Path(root) / tier / "specs.jsonl"
         if not path.is_file():
             raise RolloutError(f"v8 规格根缺少 {path}")
-        header, rows = hard_specs.load_specs(path, check_fingerprint=False)
+        header, rows = hard_specs.load_specs(path, expected_cells=table, check_fingerprint=False)
         if header["schema"] != hard_specs.SCHEMA_V8 or header["difficulty"] != tier:
             raise RolloutError(f"{path}：须为 {hard_specs.SCHEMA_V8} 且档位 {tier}（实为 {header['schema']}／"
                                f"{header['difficulty']}）")
@@ -803,7 +870,7 @@ def load_v8_root(root: Path, cells: dict[tuple[str, str], int]) -> dict[str, tup
         out[tier] = (header, rows)
     _seed_disjoint(out)
     if not any(row["tried"] for _, rows in out.values() for row in rows):
-        hard_specs.load_specs_v8(root, cells, check_fingerprint=False)
+        hard_specs.load_specs_v8(root, cells, cell_table=table, check_fingerprint=False)
     return out
 
 
@@ -942,7 +1009,9 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
         elif c["pending"]:
             status, reason = "FAIL", "pending"
             totals["pending_cells"] += 1
-        elif c["delivered"] != expected and c["spares_left"] == 0:
+        elif c["delivered"] != expected and (c["spares_left"] == 0 or (
+                task in same_way_tasks_for(loaded[tier][0]) and not _same_way_spares(mine))):
+            # 同方式递补的任务（v9 MoveCube）：失败局所在方式已无未试备用，即使别的方式还有备用也记 exhausted
             status, reason = "FAIL", "exhausted"
             totals["exhausted_cells"] += 1
         elif c["delivered"] != expected:
@@ -975,12 +1044,29 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
     return report
 
 
+def _same_way_spares(rows: list[dict[str, Any]]) -> int:
+    """同方式递补口径下仍可用的备用数：落在「失败数多于递补数」（有缺口未补上）的方式里的未试备用行数。"""
+    failed: dict[int | None, int] = {}
+    backfilled: dict[int | None, int] = {}
+    for r in rows:
+        way = row_way(r)
+        if r["tried"] and not r["selected"] and (r["rollout"] or {}).get("status") == "failed":
+            failed[way] = failed.get(way, 0) + 1
+        if not r["initial_selected"] and (r["tried"] or r["selected"]):
+            backfilled[way] = backfilled.get(way, 0) + 1
+    short = {way for way, n in failed.items() if n > backfilled.get(way, 0)}
+    return sum(1 for r in rows if not r["tried"] and not r["selected"] and row_way(r) in short)
+
+
 def run_continue_v8(specs_root: Path, cells: dict[tuple[str, str], int], output: Path, *, src_root: Path,
                     workers: int, gpu: str, pkg: str, code_baseline: str, resume: bool = False,
                     max_infra_retries: int = 1, batch_runner=None, cells_label: str = "custom") -> dict[str, Any]:
     """v8 gen1（单片或冒烟）：按格表逐档 ``run_continue``（每档一个规格文件、一把锁；只跑格表在该档的任务，
     逐任务配额、执行步上限、同格递补），账本 ``<output>/results.jsonl``；收尾 ``aggregate_v8`` 写
-    ``<output>/delivery.json`` 并打印 ``V8_DELIVERY_SET``。某格备用耗尽只让该格 FAIL，其余格照常跑完。"""
+    ``<output>/delivery.json`` 并打印 ``V8_DELIVERY_SET``。某格备用耗尽只让该格 FAIL，其余格照常跑完。
+
+    递补规则（v9 方案 §2.2 第 4 条）：MoveCube 在新值档只从同一 ``way_idx`` 的未试备用里递补，没有同方式备用即
+    该格 ``exhausted``（``run_continue`` 按 /4 header 自动启用，见 ``same_way_tasks_for``）；其他任务不变。"""
     specs_root, output = Path(specs_root), Path(output)
     cells = check_cells(cells)
     loaded = load_v8_root(specs_root, cells)
@@ -1020,13 +1106,14 @@ def split_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_out: Pa
     from _freeze import write_jsonl_exclusive  # noqa: PLC0415
 
     cells = check_cells(cells)
+    table = cell_table(cells)
     shard_out = Path(shard_out)
     if (shard_out / "specs").exists() or (shard_out / SHARD_META).exists():
         raise RolloutError(f"{shard_out} 已有分片规格，禁止覆盖")
     sources = {}
     for tier in cell_tiers(cells):
         path = Path(frozen_root) / tier / "specs.jsonl"
-        header, rows = hard_specs.load_specs(path, check_fingerprint=False)
+        header, rows = hard_specs.load_specs(path, expected_cells=table, check_fingerprint=False)
         if header["schema"] != hard_specs.SCHEMA_V8 or header["difficulty"] != tier:
             raise RolloutError(f"{path} 不是 {tier} 的 {hard_specs.SCHEMA_V8}")
         if any(r["tried"] for r in rows):
@@ -1050,7 +1137,7 @@ def split_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_out: Pa
         sub_rows = [copy.deepcopy(r) for r in rows if r["task"] in want]
         sub["identity_sha256"] = hard_specs.identity_sha256(sub, sub_rows)
         sub["delivery_sha256"] = hard_specs.delivery_sha256(sub_rows)
-        hard_specs.validate_specs(sub, sub_rows)
+        hard_specs.validate_specs(sub, sub_rows, expected_cells=table)
         write_jsonl_exclusive(shard_out / "specs" / tier / "specs.jsonl", [sub, *sub_rows])
         sources[tier] = {"identity_sha256": header["identity_sha256"], "file_sha256": file_sha256(path)}
     meta = {"schema": V8_SHARD_SCHEMA, "label": label, "frozen_root": str(frozen_root), "cells": cells_json(cells),
@@ -1072,6 +1159,7 @@ def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: l
     from _freeze import write_jsonl_exclusive  # noqa: PLC0415
 
     cells = check_cells(cells)
+    table = cell_table(cells)
     # N3：写盘前先查全部目标（五档合并规格 + delivery.json）都不存在；存在即 FAIL 判定行、一个文件都不写
     targets = [Path(merged_root) / tier / "specs.jsonl" for tier in cell_tiers(cells)] + [Path(out_dir) / "delivery.json"]
     existing = [str(p) for p in targets if p.exists()]
@@ -1098,7 +1186,7 @@ def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: l
     merged = {}
     for tier in cell_tiers(cells):
         path = Path(frozen_root) / tier / "specs.jsonl"
-        header, rows = hard_specs.load_specs(path, check_fingerprint=False)
+        header, rows = hard_specs.load_specs(path, expected_cells=table, check_fingerprint=False)
         if any(r["tried"] for r in rows):
             raise RolloutError(f"{path} 已跑过；合并只认未跑过的冻结根")
         if set(header["tasks"]) != {task for task, t in cells if t == tier}:
@@ -1109,7 +1197,8 @@ def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: l
             src = metas[shard]["sources"].get(tier) or {}
             if src.get("identity_sha256") != header["identity_sha256"]:
                 raise RolloutError(f"{shard} 的 {tier} 来源 identity 与冻结根不符")
-            sh_header, sh_rows = hard_specs.load_specs(shard / "specs" / tier / "specs.jsonl", check_fingerprint=False)
+            sh_header, sh_rows = hard_specs.load_specs(shard / "specs" / tier / "specs.jsonl", expected_cells=table,
+                                                       check_fingerprint=False)
             for task in sh_header["tasks"]:
                 if sh_header["sampling_config"][task] != header["sampling_config"][task]:
                     raise RolloutError(f"{shard} 的 {task}/{tier} sampling_config 与冻结根不符")
@@ -1133,7 +1222,7 @@ def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: l
         new_header["delivery_sha256"] = hard_specs.delivery_sha256(out_rows)
         if hard_specs.identity_sha256(new_header, out_rows) != header["identity_sha256"]:
             raise RolloutError(f"{tier} 合并后 identity_sha256 与冻结根不符")
-        hard_specs.validate_specs(new_header, out_rows)
+        hard_specs.validate_specs(new_header, out_rows, expected_cells=table)
         merged[tier] = (new_header, out_rows)
     for tier, (header, rows) in merged.items():
         write_jsonl_exclusive(Path(merged_root) / tier / "specs.jsonl", [header, *rows])
@@ -1187,7 +1276,7 @@ def run_replay(identities: list[dict[str, Any]], output: Path, *, src_root: Path
     tiers = tuple(specs_paths) if specs_paths else hard_specs.TIERS
     for tier in tiers:
         path = specs_paths[tier] if specs_paths else hard_specs.packaged_specs_path(tier)
-        header, rows = hard_specs.load_specs(path, check_fingerprint=False)
+        header, rows = load_specs_any(path)
         batch = [dict(r, _role="replay") for r in rows if (r["task"], tier, int(r["seed"])) in wanted]
         if not batch:
             continue
