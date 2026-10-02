@@ -45,12 +45,18 @@ V9 合并复用（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.1
   ``report.md``。720 局终态是 V8 当时跑的（R-7），报告注明。
 - 视频：只核新评身份（模型数 × 新评行数）：本机 ``<videos>/<policy>/<tier>/<task>/<rec 目录名>/`` 的 front.mkv、wrist.mkv
   都在且读得出帧数（解码与缓存沿用 ``eval_video_mover.py`` 的 ``pick_decoder``／``DecodeCache``），``moved.jsonl``
-  记录过的逐文件 sha256 与现算一致；非 infra 错误终局无录像且写明原因计 error_final_no_video（同 V8）。
+  里该目录的逐文件 sha256 与现算一致；``moved.jsonl`` 无该目录记录的计 moved_record_absent（不计入 videos，>0 即 FAIL）；
+  非 infra 错误终局无录像且写明原因计 error_final_no_video（同 V8）。
 末三行：
 ``V9_EVAL_COVERAGE=PASS|FAIL policies= expected= missing= extra= duplicate= conflicting_terminal= error_final=``（error_final>0 即 FAIL）
 ``V9_EVAL_REPORT=PASS|FAIL total= new= reused= count_mismatch= media_unexplained=``（exec_over_cap>0 时追加该字段并 FAIL）
-``V9_EVAL_VIDEOS=PASS|FAIL policies= expected= videos= missing= decode_fail= sha_mismatch=``
+``V9_EVAL_VIDEOS=PASS|FAIL policies= expected= videos= missing= decode_fail= sha_mismatch= moved_record_absent=``
 退出码：三行都 PASS 为 0，否则 1。不传 ``--reuse`` 时一切同 V8。
+``--partial`` 与 ``--reuse`` 同用时：新评分表与进度估算照 ``--partial`` 口径出，但 V9 三行一律按严格口径判定（缺失按结局
+计数、未搬视频与复用对齐照常计数），且三行都追加 ``partial=1`` 并一律判 FAIL——评估中途必然 FAIL；V9 判定行只以评估结束、
+视频搬完后不带 ``--partial`` 的那次为准。
+report.json 键的分工（站点 S1-E 依赖）：``per_policy.<p>.cells／tasks／tiers`` 只统计本次 manifest 的新评身份（与 V8 report
+同口径）；800 局总表只在 ``v9.totals.<p>``（``tasks／tiers／cells／outcomes``），不混进 ``per_policy``。
 """
 
 from __future__ import annotations
@@ -955,36 +961,46 @@ def verify_new_videos(rep: dict, manifest_path: Path, policies: list[str], video
                                         "frames": frames})
                 continue
             rec = moved.get((pol, name, str(row.get("tier")), str(row.get("task"))))
-            if rec is None:
+            if rec is None:  # 无搬运记录：sha 无从核对，不计入 videos，判定行 moved_record_absent>0 即 FAIL
                 res["moved_record_absent"] += 1
-            else:
-                bad = [f for f, h in rec.items() if (d / f).is_file() and file_sha256(d / f) != h]
-                if bad:
-                    res["sha_mismatch"] += 1
-                    res["problems"].append({"policy": pol, "key": k, "problem": "sha_mismatch", "files": bad})
-                    continue
+                res["problems"].append({"policy": pol, "key": k, "problem": "moved_record_absent", "dir": str(d)})
+                continue
+            bad = [f for f, h in rec.items() if (d / f).is_file() and file_sha256(d / f) != h]
+            if bad:
+                res["sha_mismatch"] += 1
+                res["problems"].append({"policy": pol, "key": k, "problem": "sha_mismatch", "files": bad})
+                continue
             res["videos"] += 1
     res["pass"] = (expected > 0 and res["missing"] == 0 and res["decode_fail"] == 0 and res["sha_mismatch"] == 0
+                   and res["moved_record_absent"] == 0
                    and res["videos"] + res["error_final_no_video"] == expected)
     return res
 
 
 def v9_lines(rep: dict, v9: dict, vid: dict, *, expect_new: int, expect_reused: int) -> tuple[str, str, str]:
     c, r = rep["coverage"], rep["report"]
-    cov_pass = c["pass"] and c["error_final"] == 0
+    partial = bool(rep["partial"])
+    # 严格口径：缺失按结局计数（--partial 下 coverage.missing 记 0，这里不采用）；--partial 下三行一律 FAIL 并标 partial=1
+    missing = sum(p["outcomes"]["missing"] for p in rep["per_policy"].values()) if partial else c["missing"]
+    tail = " partial=1" if partial else ""
+    cov_pass = c["pass"] and c["error_final"] == 0 and missing == 0 and not partial
     cov_line = (f"V9_EVAL_COVERAGE={'PASS' if cov_pass else 'FAIL'} policies={len(rep['policies'])} "
-                f"expected={rep['v9']['new']} missing={c['missing']} extra={c['extra']} duplicate={c['duplicate']} "
-                f"conflicting_terminal={c['conflicting_terminal']} error_final={c['error_final']}")
+                f"expected={rep['v9']['new']} missing={missing} extra={c['extra']} duplicate={c['duplicate']} "
+                f"conflicting_terminal={c['conflicting_terminal']} error_final={c['error_final']}{tail}")
     cm = r["count_mismatch"] + len(v9["count_mismatch_detail"])
-    rep_pass = (cm == 0 and r["media_unexplained"] == 0 and r["exec_over_cap"] == 0
+    rep_pass = (cm == 0 and r["media_unexplained"] == 0 and r["exec_over_cap"] == 0 and not partial
                 and v9["new"] == expect_new and v9["reused"] == expect_reused)
     rep_line = (f"V9_EVAL_REPORT={'PASS' if rep_pass else 'FAIL'} total={v9['total']} new={v9['new']} "
                 f"reused={v9['reused']} count_mismatch={cm} media_unexplained={r['media_unexplained']}"
-                + (f" exec_over_cap={r['exec_over_cap']}" if r["exec_over_cap"] else ""))
+                + (f" exec_over_cap={r['exec_over_cap']}" if r["exec_over_cap"] else "") + tail)
     vid_line = (f"V9_EVAL_VIDEOS={'PASS' if vid['pass'] else 'FAIL'} policies={len(rep['policies'])} "
                 f"expected={vid['expected']} videos={vid['videos']} missing={vid['missing']} "
-                f"decode_fail={vid['decode_fail']} sha_mismatch={vid['sha_mismatch']}"
-                + (f" error_final_no_video={vid['error_final_no_video']}" if vid["error_final_no_video"] else ""))
+                f"decode_fail={vid['decode_fail']} sha_mismatch={vid['sha_mismatch']} "
+                f"moved_record_absent={vid['moved_record_absent']}"
+                + (f" error_final_no_video={vid['error_final_no_video']}" if vid["error_final_no_video"] else "")
+                + tail)
+    if partial:
+        vid_line = vid_line.replace("V9_EVAL_VIDEOS=PASS", "V9_EVAL_VIDEOS=FAIL", 1)
     return cov_line, rep_line, vid_line
 
 

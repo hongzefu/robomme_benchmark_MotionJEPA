@@ -532,7 +532,8 @@ def test_v9报告合并复用(tmp_path, capsys, monkeypatch):
     assert lines[-3:] == [
         "V9_EVAL_COVERAGE=PASS policies=2 expected=80 missing=0 extra=0 duplicate=0 conflicting_terminal=0 error_final=0",
         "V9_EVAL_REPORT=PASS total=800 new=80 reused=720 count_mismatch=0 media_unexplained=0",
-        "V9_EVAL_VIDEOS=PASS policies=2 expected=160 videos=160 missing=0 decode_fail=0 sha_mismatch=0",
+        "V9_EVAL_VIDEOS=PASS policies=2 expected=160 videos=160 missing=0 decode_fail=0 sha_mismatch=0 "
+        "moved_record_absent=0",
     ], (lines, rep["v9"]["count_mismatch_detail"][:5])
     assert rc == 0
     assert _tree_digest(fx["v8_dir"]) == before  # 不改写 V8 任何文件
@@ -545,8 +546,15 @@ def test_v9报告合并复用(tmp_path, capsys, monkeypatch):
     assert t["smvla"]["tasks"]["MoveCube"] == {"denominator": 50, "success": 50, "success_rate": 1.0}
     assert sum(v["denominator"] for v in t["mme"]["tiers"].values()) == 800
     assert rep["v9"]["v8_stage"].endswith("nfs-records/run")
-    # 新评分表仍按 V8 口径，分母 80
+    # 新评分表仍按 V8 口径，分母 80；per_policy.cells 只含新评两格（站点 S1-E 逐格对账依赖），800 局只在 v9.totals
     assert rep["per_policy"]["smvla"]["denominator"] == 80
+    for pol in POLICIES:
+        cells = rep["per_policy"][pol]["cells"]
+        assert set(cells) == {"MoveCube@xhard4", "InsertPeg@xhard4"}
+        assert cells["MoveCube@xhard4"]["denominator"] == 50 and cells["InsertPeg@xhard4"]["denominator"] == 30
+        assert sum(v["denominator"] for v in cells.values()) == 80
+        assert sum(v["denominator"] for v in rep["v9"]["totals"][pol]["cells"].values()) == 800
+    assert rep["per_policy"]["mme"]["cells"]["MoveCube@xhard4"]["success"] == 10
     md = (tmp_path / "out" / "report.md").read_text()
     assert md.startswith("# V9 双模型评估汇总") and "800 局总表" in md and "新评身份分表" in md
 
@@ -576,6 +584,27 @@ def test_v9视频缺失与sha不符(tmp_path, capsys, monkeypatch):
     v = kv(lines[-1])
     assert v["_verdict"] == "FAIL" and v["expected"] == "160" and v["videos"] == "158"
     assert v["missing"] == "1" and v["sha_mismatch"] == "1" and rc == 1
+
+
+def test_v9_moved记录缺失即FAIL(tmp_path, capsys, monkeypatch):
+    fx = _v9_setup(tmp_path)
+    mv = fx["videos"] / "moved.jsonl"
+    lines_in = mv.read_text().splitlines()
+    mv.write_text("\n".join(lines_in[1:]) + "\n")  # 删掉一条新评局的搬运记录
+    rc, rep, lines = _run_v9(fx, tmp_path / "out", capsys, monkeypatch)
+    v = kv(lines[-1])
+    assert v["_verdict"] == "FAIL" and v["moved_record_absent"] == "1" and v["videos"] == "159"
+    assert v["missing"] == "0" and v["sha_mismatch"] == "0" and rc == 1
+
+
+def test_v9_partial按严格口径判FAIL(tmp_path, capsys, monkeypatch):
+    fx = _v9_setup(tmp_path)
+    monkeypatch.setattr(v8r, "count_media_frames", lambda path, videos: 7)
+    rc = v8r.main(["--manifest", str(fx["manifest"]), "--stage", str(fx["stage"]), "--videos", str(fx["videos"]),
+                   "--policies", ",".join(POLICIES), "--out", str(tmp_path / "out"), "--reuse", str(fx["v8_dir"]),
+                   "--reuse-manifest", str(fx["v8_man"]), "--partial"])
+    lines = capsys.readouterr().out.strip().splitlines()
+    assert rc == 1 and all(kv(x)["_verdict"] == "FAIL" and kv(x)["partial"] == "1" for x in lines[-3:]), lines
 
 
 def test_zz_summary_line(request):
