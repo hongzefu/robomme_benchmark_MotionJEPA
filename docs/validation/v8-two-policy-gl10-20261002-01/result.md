@@ -105,3 +105,9 @@
 - 有语义调整的 17 格：PickHighlight xhard1／2（goal 重写为逐个抓取并补结尾按钮，subgoal 去掉颜色提示、结尾加按钮）；VideoUnmask、ButtonUnmask xhard2～4 与 VideoUnmaskSwap、ButtonUnmaskSwap xhard2（goal 由 2 个目标变 3 个，多出「next pick up another container…」分句）；ButtonUnmaskSwap xhard1／2（新增 subgoal「wait for the containers to finish swapping」）；VideoRepick xhard1／2（goal 不再用「again」、写明次数，新增等待段 static）；VideoPlaceButton xhard1／2（goal 只剩「where it was 〈序数〉 placed before／after the button was pressed」句式）；VideoPlaceButton、VideoPlaceOrder xhard1／2（subgoal「drop the cube onto table」改为「put the cube back to its original position」）。其余 26 格仅参数变化。
 - 页面：任务页当前档显示「与 xhard0 相比的 goal／subgoal 语义」面板（中文说明、新增／不再出现的句式与类型、仅重复次数变化）；逐局 task goal 与 subgoal 表中新句式／新类型带「语义调整」标签；各档总表新增一行「goal／subgoal 语义（相对 xhard0）」。
 - 检查：`V8_SITE=PASS … semantic_mismatch=0 page_errors=0`、`V8_ORACLE_BROWSER=PASS cells=59 missing=0 mismatch=0`；截图已目视。
+
+### 7.2 语义调整前后对照与合集（用户 2026-10-02「网站上有语义调整的需要把语义调整前后的都写上。然后也要做一个语义调整的合集」「不要写在这里了」）
+
+- `v8_semantic_diff.py` 对有调整的格另给调整前后数据：`goal_before`／`goal_after`（xhard0 与该档全部 goal 句式各附原文例句，标保留／去掉／新增）、`sub_pairs`（不再出现与新增的 subgoal 类型按文字相似度配对）、`example`（xhard0 第 1 局与该档一局的 task goal 与整条 subgoal 序列，新句式／新类型标出）。
+- 站点侧栏新增「语义调整合集」（`#view=semantic`）：17 格逐格三张「调整前 · xhard0 ｜ 调整后 · 本档」对照表（goal 句式、subgoal 类型、示例局全序列），卡片标题链接到该格任务页。任务页上的语义面板按用户要求撤下（容器隐藏）；逐局 goal／subgoal 的「语义调整」小标签保留。
+- 检查：`V8_SITE=PASS … semantic_mismatch=0 page_errors=0`（合集卡片恰为 17 格且每张都有对照表、任务页面板隐藏）；合集页截图已目视。

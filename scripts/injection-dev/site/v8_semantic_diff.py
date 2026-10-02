@@ -15,6 +15,10 @@
 - 一格「有语义调整」＝ goal 或 subgoal 有新增／不再出现；否则为「仅参数变化」（数量、次数、颜色、序数不同，句式相同）。
 
 每格附人工核读过原文的中文说明（``NOTES``）；逐局给出每条 goal、每段 subgoal 是否属于新增句式／类型，供页面高亮。
+有调整的格另给「调整前后」对照（用户 2026-10-02「有语义调整的需要把语义调整前后的都写上」）：
+``goal_before``／``goal_after``（xhard0 与该档全部 goal 句式，各附一句原文，标保留／去掉／新增）、
+``sub_pairs``（不再出现的 subgoal 类型与新增类型按文字相似度配对，配不上的单列）、
+``example``（xhard0 第 1 局与该档一局——优先含新增 subgoal 的局——的 task goal 与整条 subgoal 序列，新句式／新类型标出）。
 末行打印 ``V8_SEMANTIC=PASS|FAIL tasks=<n> cells=<n> changed=<n> param_only=<n> note_missing=<n>``。
 
     uv run --no-sync python scripts/injection-dev/site/v8_semantic_diff.py --site-dir artifacts/newtask-v8/site-eval
@@ -22,6 +26,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import re
 import sys
@@ -67,6 +72,34 @@ def norm_goal(text: str) -> str:
     return re.sub(r"\s+", " ", t).strip()
 
 
+def pair_subs(removed: list[dict], added: list[dict]) -> list[dict]:
+    """不再出现的类型与新增类型按模板文字相似度配对（≥0.5 才配），其余单列（调整前或调整后为空）。"""
+    pairs, left = [], list(added)
+    for r in removed:
+        best = max(left, key=lambda a: difflib.SequenceMatcher(None, r["tpl"], a["tpl"]).ratio(), default=None)
+        if best is not None and difflib.SequenceMatcher(None, r["tpl"], best["tpl"]).ratio() >= 0.5:
+            left.remove(best)
+            pairs.append({"before": {"tpl": r["tpl"], "example": r["example"]}, "after": {"tpl": best["tpl"], "example": best["example"]}})
+        else:
+            pairs.append({"before": {"tpl": r["tpl"], "example": r["example"]}, "after": None})
+    pairs += [{"before": None, "after": {"tpl": a["tpl"], "example": a["example"]}} for a in left]
+    return pairs
+
+
+def example(base: dict, eps: dict, g0: set, s0: set) -> dict:
+    """前后各一局：xhard0 第 1 局；该档优先取含新增 subgoal 类型的第一局，否则第 1 局。"""
+    first = lambda d: d[min(d, key=int)] if d else {}
+    b_idx = min(base, key=int) if base else None
+    a_idx = next((i for i in sorted(eps, key=int) if any(s["tpl"] not in s0 for s in eps[i].get("new") or [])),
+                 min(eps, key=int) if eps else None)
+    b, a = (base.get(b_idx) or {}), (eps.get(a_idx) or {})
+    return {
+        "before_ep": b_idx, "before_goal": b.get("goal") or [], "before_seq": [x["text"] for x in b.get("new") or []],
+        "after_ep": a_idx, "after_goal": a.get("goal") or [], "after_goal_new": [norm_goal(x) not in g0 for x in a.get("goal") or []],
+        "after_seq": [x["text"] for x in a.get("new") or []], "after_seq_new": [x["tpl"] not in s0 for x in a.get("new") or []],
+    }
+
+
 def build(sg: dict) -> tuple[dict, dict]:
     out = {"schema": "v8-semantic/1", "rule": __doc__.split("判定口径")[1].split("每格附")[0].strip(), "tasks": {}, "episodes": {}}
     stats = Counter()
@@ -108,6 +141,11 @@ def build(sg: dict) -> tuple[dict, dict]:
             }
             changed = any(cell[k] for k in ("goal_added", "goal_removed", "sub_added", "sub_removed"))
             cell["changed"] = changed
+            if changed:
+                cell["goal_before"] = [{"tpl": t, "example": g0_ex[t], "state": "kept" if t in g1 else "removed"} for t in sorted(g0)]
+                cell["goal_after"] = [{"tpl": t, "example": g_ex[t], "state": "kept" if t in g0 else "added"} for t in sorted(g1)]
+                cell["sub_pairs"] = pair_subs(cell["sub_removed"], cell["sub_added"])
+                cell["example"] = example(base, eps, g0, s0)
             cell["label"] = "有语义调整" if changed else "仅参数变化"
             note = NOTES.get((task, tier))
             if changed and not note:

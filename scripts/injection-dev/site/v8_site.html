@@ -107,6 +107,12 @@
     .sem-panel ul{margin:2px 0 8px;padding-left:20px}.sem-panel li{margin:2px 0}.sem-panel code{font-size:11.5px;background:#f4effa;padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
     .sem-panel .sem-k{font-weight:650;color:#4b2d78;margin-top:6px}.sem-panel.is-param{border-color:#d5dccf;border-left-color:#9aa596}.sem-panel.is-param h3{color:#3a543f}
     .sem-tag{display:inline-block;margin-left:6px;padding:0 6px;border-radius:5px;background:#7a4fb5;color:#fff;font-size:10.5px;font-weight:650;vertical-align:1px}
+    .sem-ba{width:100%;border-collapse:collapse;margin:4px 0 10px;font-size:12px;table-layout:fixed}.sem-ba th,.sem-ba td{border:1px solid #e4dcef;padding:6px 9px;vertical-align:top;text-align:left;overflow-wrap:anywhere}
+    .sem-ba th{background:#f7f3fb;color:#4b2d78;font-weight:650}.sem-ba td.sem-arrow{width:28px;text-align:center;color:#7a4fb5;border-left:0;border-right:0}
+    .sem-ba .st-removed{background:#fdeceb;text-decoration:line-through;text-decoration-color:#c2453a}.sem-ba .st-added{background:#f1e9fb;font-weight:600}.sem-ba .st-kept{color:#5f6b62}
+    .sem-ba ol{margin:0;padding-left:20px}.sem-ba li{margin:1px 0}.sem-ba .sem-none{color:#9aa596}.sem-ba small{display:block;color:#7c897e}
+    .sem-coll{display:flex;flex-direction:column;gap:16px}.sem-coll .sem-panel{margin:0}.sem-coll h3 a{color:#4b2d78}
+    .sem-link{border-color:#c9b6e4!important;background:#f6f1fb}.sem-link[aria-current="page"]{background:#ece2f7;border-color:#7a4fb5!important}
     .goal li.sem-changed{background:#f4effa;border-radius:6px;padding:0 6px}.sg-table tr.sem-changed td{background:#f4effa}
     .oracle-comparison .sem-yes{color:#4b2d78;font-weight:650}.oracle-comparison .sem-no{color:#7c897e}
     .cfg-raw summary{cursor:pointer;font-size:11px;color:var(--muted)}.cfg-raw pre{font-size:10.5px;background:#f6f8f2;border-radius:8px;padding:8px;max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -121,6 +127,7 @@
     <div class="brand"><div class="brand-name">RoboMME v8</div><div class="brand-caption">生成演示 · 两策略评估</div></div>
     <input class="search" id="task-search" type="search" placeholder="查找任务…" autocomplete="off" aria-label="搜索任务">
     <button class="task-link outlier-link" id="outlier-link" type="button" hidden><span class="task-index">★</span><span><span class="task-name">超出 xhard0 范围 &gt;15% 合集</span><span class="task-id" id="outlier-count"></span></span></button>
+    <button class="task-link outlier-link sem-link" id="semantic-link" type="button" hidden><span class="task-index">≠</span><span><span class="task-name">语义调整合集</span><span class="task-id" id="semantic-count"></span></span></button>
     <button class="task-link outlier-link oracle-link" id="oracle-link" type="button" hidden><span class="task-index">∑</span><span><span class="task-name">各档总表</span><span class="task-id">配置 · oracle 长度 · 成功率</span></span></button>
     <nav class="task-nav" id="task-nav" aria-label="全部任务"></nav>
   </aside>
@@ -132,6 +139,7 @@
     <div class="status-panel" id="status-panel" role="status">正在载入…</div>
     <section id="outlier-section" hidden></section>
     <section id="oracle-section" class="oracle-comparison" hidden></section>
+    <section id="semantic-section" hidden></section>
     <section id="task-section" hidden>
       <h2 class="task-title" id="task-title"></h2><div class="task-sub" id="task-sub"></div>
       <div id="matrix" class="oracle-comparison" aria-label="本任务各档配置、GT 长度与评估位"></div>
@@ -350,33 +358,80 @@
     }
     function showView(name) {
       S.task = null; el('task-section').hidden = true;
-      ['outlier', 'oracle'].forEach(v => { el(v + '-section').hidden = v !== name; if (v === name) el(v + '-link').setAttribute('aria-current', 'page'); else el(v + '-link').removeAttribute('aria-current'); });
+      ['outlier', 'oracle', 'semantic'].forEach(v => { el(v + '-section').hidden = v !== name; if (v === name) el(v + '-link').setAttribute('aria-current', 'page'); else el(v + '-link').removeAttribute('aria-current'); });
       if (location.hash !== '#view=' + (name === 'outlier' ? 'outliers' : name)) history.replaceState(null, '', '#view=' + (name === 'outlier' ? 'outliers' : name));
-      renderNav(); if (name === 'outlier') renderOutliers(); else renderOracle();
+      renderNav(); if (name === 'outlier') renderOutliers(); else if (name === 'semantic') renderSemanticAll(); else renderOracle();
     }
 
     // ---- xhard1～5 相对 xhard0 的 goal／subgoal 语义调整（v8_semantic_diff.py → /api/semantic）----
     const semCell = (task, tier) => (((S.sem || {}).tasks || {})[task] || {}).tiers?.[tier];
     const semEp = (task, tier, idx) => ((((S.sem || {}).episodes || {})[task] || {})[tier] || {})[String(idx)];
+    // 任务页不再显示语义调整面板（用户 2026-10-02「不要写在这里了」）：调整前后对照只在「语义调整合集」页；容器保留并隐藏
     function renderSemPanel() {
-      const box = el('sem-panel'); box.textContent = ''; box.className = 'sem-panel';
-      const c = semCell(S.task, S.tier);
-      if (!c) { box.hidden = true; return; }
-      box.hidden = false; box.dataset.changed = String(!!c.changed);
-      if (!c.changed) box.classList.add('is-param');
-      box.append(node('h3', '', `与 xhard0 相比的 goal／subgoal 语义：${c.label}`));
-      box.append(node('div', 'sem-note', c.note));
-      const list = (title, items, fmt) => {
-        if (!items || !items.length) return;
-        box.append(node('div', 'sem-k', title));
-        const ul = node('ul'); items.forEach(it => { const li = node('li'); fmt(li, it); ul.append(li); }); box.append(ul);
-      };
-      const code = (li, text) => li.append(node('code', '', text));
-      list('goal 新增句式（〈〉为参数占位）', c.goal_added, (li, it) => { code(li, it.tpl); li.append(node('div', '', '例：' + it.example)); });
-      list('goal 中不再出现的 xhard0 句式', c.goal_removed, (li, it) => { code(li, it.tpl); li.append(node('div', '', '例：' + it.example)); });
-      list('subgoal 新增类型', c.sub_added, (li, it) => { code(li, it.tpl); li.append(document.createTextNode(`　出现于 ${it.episodes}/${it.of} 局`)); });
-      list('subgoal 中不再出现的 xhard0 类型', c.sub_removed, (li, it) => code(li, it.tpl));
-      list('仅重复次数变化（不算语义调整）', c.sub_repeat_only, (li, it) => { code(li, `${it.tpl}（${it.kind}）`); li.append(document.createTextNode(`　${it.segments} 段`)); });
+      const box = el('sem-panel'); box.textContent = ''; box.className = 'sem-panel'; box.hidden = true;
+    }
+    // 调整前（xhard0）／调整后（本档）对照：goal 全部句式、subgoal 类型配对、示例局的 goal 与整条 subgoal 序列
+    function semDetail(tier, c) {
+      const wrap = node('div', 'sem-detail');
+      const head = (a, b) => { const tr = node('tr'); tr.append(node('th', '', a), node('th', '', b)); return tr; };
+      const STATE = { kept: '保留', removed: '去掉', added: '新增' };
+      const goalCol = items => { const td = node('td'); if (!items.length) td.append(node('span', 'sem-none', '（无）'));
+        items.forEach(it => { const d = node('div', 'st-' + it.state); d.append(node('code', '', it.tpl), node('small', '', `${STATE[it.state]} · 例：${it.example}`)); td.append(d); }); return td; };
+      wrap.append(node('div', 'sem-k', 'task goal 句式（〈〉为参数占位；划线 = 调整后不再出现，紫底 = 调整后新增）'));
+      const gt = node('table', 'sem-ba'); gt.append(head('调整前 · xhard0', `调整后 · ${tier}`));
+      const gr = node('tr'); gr.append(goalCol(c.goal_before || []), goalCol(c.goal_after || [])); gt.append(gr); wrap.append(gt);
+      if ((c.sub_pairs || []).length) {
+        wrap.append(node('div', 'sem-k', 'subgoal 类型（调整前 → 调整后）'));
+        const st = node('table', 'sem-ba'); st.append(head('调整前 · xhard0', `调整后 · ${tier}`));
+        c.sub_pairs.forEach(pr => {
+          const tr = node('tr');
+          [[pr.before, 'removed'], [pr.after, 'added']].forEach(([x, cls]) => {
+            const td = node('td'); if (!x) td.append(node('span', 'sem-none', cls === 'removed' ? '（xhard0 没有这一段）' : '（调整后去掉，无对应）'));
+            else { const d = node('div', 'st-' + cls); d.append(node('code', '', x.tpl), node('small', '', '例：' + x.example)); td.append(d); }
+            tr.append(td);
+          });
+          st.append(tr);
+        });
+        wrap.append(st);
+      }
+      const ex = c.example;
+      if (ex) {
+        wrap.append(node('div', 'sem-k', `示例：xhard0 第 ${ex.before_ep} 局 → ${tier} 第 ${ex.after_ep} 局（task goal 与整条 subgoal 序列）`));
+        const et = node('table', 'sem-ba'); et.append(head(`调整前 · xhard0 第 ${ex.before_ep} 局`, `调整后 · ${tier} 第 ${ex.after_ep} 局`));
+        const seqCol = (goal, gnew, seq, snew) => {
+          const td = node('td');
+          td.append(node('small', '', 'task goal'));
+          const g = node('ol'); goal.forEach((x, i) => { const li = node('li', gnew && gnew[i] ? 'st-added' : '', x); g.append(li); }); td.append(g);
+          td.append(node('small', '', 'subgoal 序列'));
+          const o = node('ol'); seq.forEach((x, i) => o.append(node('li', snew && snew[i] ? 'st-added' : '', x))); td.append(o);
+          return td;
+        };
+        const er = node('tr'); er.append(seqCol(ex.before_goal, null, ex.before_seq, null), seqCol(ex.after_goal, ex.after_goal_new, ex.after_seq, ex.after_seq_new));
+        et.append(er); wrap.append(et);
+      }
+      return wrap;
+    }
+
+    // ---- 语义调整合集：全部有调整的格，按任务排列，每格调整前后对照 ----
+    function semAll() {
+      const out = [];
+      if (!S.sem || !S.sem.tasks || !S.cat) return out;
+      S.cat.tasks.forEach(t => S.cat.tiers.forEach(tier => { const c = semCell(t.id, tier); if (c && c.changed) out.push({ task: t, tier, c }); }));
+      return out;
+    }
+    function renderSemanticAll() {
+      const box = el('semantic-section'); box.textContent = '';
+      const all = semAll();
+      box.append(node('h2', 'task-title', '语义调整合集'));
+      box.append(node('div', 'oracle-subtitle', `xhard1～5 相对 xhard0：${all.length} 格的 task goal／subgoal 有语义调整（数量、次数、颜色、序数等参数换成占位符后句式仍不同），其余格仅参数变化。每格列出调整前（xhard0）与调整后的原文对照。`));
+      const rule = node('details', 'cfg-raw'); rule.append(node('summary', '', '判定口径'), node('pre', '', (S.sem.rule || '').replace(/\*\*/g, ''))); box.append(rule);
+      const coll = node('div', 'sem-coll');
+      all.forEach(({ task, tier, c }) => {
+        const card = node('div', 'sem-panel'); card.dataset.task = task.id; card.dataset.tier = tier;
+        const h = node('h3'); const a = node('a', '', `${task.name} · ${task.id} · ${tier}`); a.href = `#task=${task.id}&tier=${tier}&ep=1`;
+        h.append(a); card.append(h, node('div', 'sem-note', c.note), semDetail(tier, c)); coll.append(card);
+      });
+      box.append(coll);
     }
 
     function renderTabs() {
@@ -755,7 +810,7 @@
     }
 
     function select(task, tier, ep) {
-      el('outlier-section').hidden = true; el('oracle-section').hidden = true; el('task-section').hidden = false; el('outlier-link').removeAttribute('aria-current'); el('oracle-link').removeAttribute('aria-current');
+      el('outlier-section').hidden = true; el('oracle-section').hidden = true; el('semantic-section').hidden = true; el('task-section').hidden = false; el('outlier-link').removeAttribute('aria-current'); el('oracle-link').removeAttribute('aria-current'); el('semantic-link').removeAttribute('aria-current');
       S.task = task;
       const t = taskObj();
       S.tier = tier && t.tiers[tier] ? tier : (t.tiers[S.tier] ? S.tier : Object.keys(t.tiers)[0]);
@@ -782,6 +837,11 @@
         const ol = el('outlier-link');
         if (S.sg && S.sg.episodes) { ol.hidden = false; el('outlier-count').textContent = `${outliers().length} 段`; }
         ol.addEventListener('click', () => { el('sidebar').classList.remove('is-open'); showOutliers(); });
+        const sml = el('semantic-link');
+        const semChanged = semAll();
+        if (S.sem && S.sem.tasks) { sml.hidden = false; el('semantic-count').textContent = `${semChanged.length} 格有调整 · 调整前后对照`; }
+        sml.addEventListener('click', () => { el('sidebar').classList.remove('is-open'); showView('semantic'); });
+        if (location.hash === '#view=semantic' && S.sem && S.sem.tasks) { showView('semantic'); return; }
         const orl = el('oracle-link');
         if (S.sg && S.sg.oracle) orl.hidden = false;
         orl.addEventListener('click', () => { el('sidebar').classList.remove('is-open'); showView('oracle'); });
@@ -796,7 +856,7 @@
     }
     el('task-search').addEventListener('input', renderNav);
     el('menu-toggle').addEventListener('click', () => el('sidebar').classList.toggle('is-open'));
-    window.addEventListener('hashchange', () => { if (!S.cat) return; if (location.hash === '#view=outliers') { if (S.sg) showOutliers(); return; } if (location.hash === '#view=oracle') { if (S.sg) showView('oracle'); return; } const h = readHash(); if (h.task && (h.task !== S.task || h.tier !== S.tier || h.ep !== S.ep)) select(h.task, h.tier, h.ep); });
+    window.addEventListener('hashchange', () => { if (!S.cat) return; if (location.hash === '#view=outliers') { if (S.sg) showOutliers(); return; } if (location.hash === '#view=oracle') { if (S.sg) showView('oracle'); return; } if (location.hash === '#view=semantic') { if (S.sem) showView('semantic'); return; } const h = readHash(); if (h.task && (h.task !== S.task || h.tier !== S.tier || h.ep !== S.ep)) select(h.task, h.tier, h.ep); });
     load();
   </script>
 </body>

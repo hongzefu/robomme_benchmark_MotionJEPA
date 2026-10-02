@@ -13,8 +13,9 @@ V8 双模型评估、xhard0 为阶段 3′ 两路线评估，评估断言由「�
 - **成败筛选**：两者都成／分歧／两者都未成／翻转按钮计数与目录推算一致，「未评估」为 0；实点三个成败筛选确认可见局号
   与计数一致（不一致计入 ``eval_mismatch``）；
 - **评估媒体**：每格第 1 局有评估视频的栏实际播放（``currentTime > 0.2``，计 ``eval_played``）；
-- **语义调整**（``/api/semantic``，``v8_semantic_diff.py``）：每个新值格的「与 xhard0 相比的 goal／subgoal 语义」面板存在且
-  有无调整与 ``semantic.json`` 一致，第 1 局 goal／subgoal 的「语义调整」标签数与逐局标记一致（不一致计 ``semantic_mismatch``）；
+- **语义调整**（``/api/semantic``，``v8_semantic_diff.py``）：任务页语义面板已撤下（只断言隐藏），第 1 局 goal／subgoal 的
+  「语义调整」标签数与逐局标记一致；「语义调整合集」页的卡片恰为 ``semantic.json`` 中有调整的格，每张都有调整前／后对照表
+  （不一致计 ``semantic_mismatch``）；
 - **逐段数据**：``/api/subgoals`` 必须是 ``v8-subgoals/1``（缺失或空对象即 FAIL），每局（含 xhard0 旧入口）都有逐段记录，
   第 1 局页面的逐段表行数、task goal 条数与数据一致（``subgoal_missing``）；
 - **任务页对比表已撤下**：用户 2026-10-01 要求任务页不再显示各档对比总表，``#matrix`` 保留为隐藏的空容器（区块数不变）；
@@ -173,11 +174,12 @@ def main() -> int:
                     ep1 = cell["episodes"][0]
                     if tier != "xhard0":
                         want_c = sem["tasks"].get(task["id"], {}).get("tiers", {}).get(tier)
-                        got_c = page.evaluate("() => { const b = document.getElementById('sem-panel'); return b && !b.hidden ? b.dataset.changed : null; }")
+                        # 任务页面板已撤下（用户「不要写在这里了」），只断言隐藏；调整前后对照在合集页核对
+                        got_c = page.evaluate("() => { const b = document.getElementById('sem-panel'); return b && b.hidden && !b.children.length ? 'hidden' : 'shown'; }")
                         want_e = sem["episodes"].get(task["id"], {}).get(tier, {}).get(str(ep1["idx"]), {})
                         tags = page.evaluate("() => [document.querySelectorAll('#episode .goal li.sem-changed').length,"
                                              " document.querySelectorAll('#episode .sg-table tr.sem-changed').length]")
-                        if want_c is None or got_c != str(bool(want_c["changed"])).lower() \
+                        if want_c is None or got_c != "hidden" \
                                 or tags != [sum(want_e.get("goal", [])), sum(want_e.get("sub", []))]:
                             n["semantic_mismatch"] += 1
                             problems.append(f"{key} 语义面板 {got_c} 或标签 {tags} 与 semantic.json 不符")
@@ -329,6 +331,23 @@ def main() -> int:
                 page.evaluate("() => document.querySelectorAll('video').forEach(v => v.pause())")
                 page.screenshot(path=str(args.shots / f"xhard0-{a[0]}.png"), full_page=True)
 
+            def semantic_section():
+                want = sorted((t, tier) for t, info in sem["tasks"].items() for tier, c in info["tiers"].items() if c["changed"])
+                page.evaluate("location.hash='#view=semantic'")
+                page.wait_for_selector("#semantic-section .sem-coll", timeout=10000)
+                cards = page.evaluate("() => [...document.querySelectorAll('#semantic-section .sem-coll > .sem-panel')]"
+                                      ".map(c => [c.dataset.task, c.dataset.tier, c.querySelectorAll('table.sem-ba').length,"
+                                      " c.querySelectorAll('th').length])")
+                got = sorted((c[0], c[1]) for c in cards)
+                if got != want:
+                    n["semantic_mismatch"] += 1
+                    problems.append(f"语义调整合集格 {len(got)} != {len(want)}")
+                thin = [c[:2] for c in cards if c[2] < 2 or c[3] < 4]
+                if thin:
+                    n["semantic_mismatch"] += 1
+                    problems.append(f"合集里缺调整前后对照表：{thin[:5]}")
+                page.screenshot(path=str(args.shots / "semantic.png"), full_page=True)
+
             def oracle_section():
                 page.evaluate("location.hash='#view=oracle'")
                 try:
@@ -355,7 +374,7 @@ def main() -> int:
                 mobile.screenshot(path=str(args.shots / "mobile.png"), full_page=True)
 
             for name, fn in (("成败筛选实点", filters_section), ("xhard5 页签", xhard5_section), ("同步播放", sync_section),
-                             ("各档总表", oracle_section), ("移动端", mobile_section)):
+                             ("各档总表", oracle_section), ("语义调整合集", semantic_section), ("移动端", mobile_section)):
                 section(name, fn)
         except Exception as exc:  # 任何中断都记入 problems，判定行照打
             problems.append(f"检查中断：{type(exc).__name__}: {str(exc).splitlines()[0][:200]}")
