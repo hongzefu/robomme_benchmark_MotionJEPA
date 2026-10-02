@@ -148,6 +148,8 @@ uv run --no-sync python scripts/parity/hard_regression.py step-headroom --delive
 - 回写只改 `selected`／`tried`／`rollout`，回写前整份 sha 必须与读入时相同；基础设施失败每身份最多重跑 1 次，任务失败不重试。
 - 预算红线（P3）：单 worker reset 总尝试 > 10 或多 worker 合计 > 50 须事先一次性授权，`--dry-run` 打印的数就是要报的数。
 - 包内 `env_metadata/test-hard/xhard{1..5}/specs.jsonl` 是 v8 这条链路的产物（阶段 3b 从封存规格根 `artifacts/newtask-v8/specs-root/` 逐字节换入；43 格共 1070 局，`V8_DELIVERY_SET=PASS tasks=16 cells=43 total=1070`）。v7 的包内规格（1100 局）由标签 `parity-anchor-v7` 保存，v7 实跑记录见 `docs/validation/newtask-v7/`。`site/` 为只读出图与核对工具，不起环境（v8 站点为 `v8_site*.py`／`v8_site.html`，`v7_*` 原样保留）。
+- `v9_subset_specs.py`（v9）：五个子命令 `derive`（14 个子集任务从 V8 交付行按候选号升序取前 N 局、加 InsertPeg 的 V8 交付 20 局，重签写子集根 → `V9_DERIVE`）、`extend`（InsertPeg 20 → 50 迁移：导入 V8 该格 40 行与已试终态、配额改 50、经 `append_candidates.draw_extra` 追加候选、写可直接 `--mode continue --resume` 的片根 → `V9_INSERTPEG_EXTEND`）、`assemble`（子集根 + MoveCube 片根 + InsertPeg 片根合成五档规格与 800 行 `v8-delivery/1` 清单，每行带 `source` → `V9_ASSEMBLE`）、`link`（按身份建 hardlink 交付树，不复制、不覆盖）、`verify`（720 复用局规格／h5／mp4 与 V8 逐字节相同 → `V9_SUBSET`）；不 reset（`extend --dry-run` 之外的抽签步除外）。
+- `v9_movecube_region_fig.py`（v9）：MoveCube xhard4 新旧生成区域与离线抽样落点的方案配图（只读，不 reset），产物在 `docs/validation/newtask-v9/figures/`。
 - xhard0 不走这条链路：身份清单 `configs/newtask-v7/xhard0_manifest.json` 由 `hard_parity.py export-xhard0-manifest` 从官方 test 元数据导出（16 任务 × 12 局 = 192）。
 
 ## 5. 对拍链路（`parity/`）
