@@ -33,7 +33,8 @@ xhard0_manifest.json`` 的 192 行；也接受 ``manifest-H.jsonl`` 形态）的
 ``round``／``shard`` 置空，``episode`` 按 (tier, task, seed) 排序编号。站点 catalog 只按 (tier, task, seed) 对账，
 不依赖 builder 的 episode 编号；总数仍由 catalog 按表 2 核 1262。合成文件已存在时只在内容逐字节相同时复用。
 
-**产物**（全部在 ``--work-dir``）：``heartbeat.json``（每步、每 ``--beat-s`` 秒与子进程每行输出时原子替换；
+**产物**（全部在 ``--work-dir``）：``heartbeat.json``（加锁成功后立即写一次本轮心跳，覆盖上一轮遗留；之后每步、
+每 ``--beat-s`` 秒与子进程每行输出时原子替换；拒绝执行（退出码 2）时记 ``status=aborted``；
 ``step``／``status``／``ts``／``epoch``／``pid``／``child_pid``／``server_pid``／``counts``，计数键显式写零）、
 ``progress.json``（已完成步骤，供崩溃后续行）、``logs/<step>.log``、``report.json``（schema
 ``v8-continue-report/1``：每步判定行原文、退出码、耗时；以 ``os.link`` 独占写入，从不覆盖）。
@@ -350,29 +351,45 @@ class Runner:
             sel = selectors.DefaultSelector()
             sel.register(fd, selectors.EVENT_READ)
             buf, deadline, reason = b"", time.time() + timeout, None
+
+            def take(chunk: bytes) -> None:
+                nonlocal buf
+                buf += chunk
+                while b"\n" in buf:
+                    raw, buf = buf.split(b"\n", 1)
+                    text = raw.decode("utf-8", "replace")
+                    lines.append(text)
+                    handle.write(text + "\n")
+                    handle.flush()
+                    print(f"[{step}] {text}", flush=True)
+
             try:
                 while True:
-                    events = sel.select(timeout=min(self.args.beat_s, max(0.05, deadline - time.time())))
+                    # 至多 1 秒醒一次查子进程是否已退出；心跳按 --beat-s 节奏写
+                    events = sel.select(timeout=min(1.0, self.args.beat_s, max(0.05, deadline - time.time())))
                     if events:
                         chunk = os.read(fd, 65536)
                         if not chunk:
                             break
-                        buf += chunk
-                        while b"\n" in buf:
-                            raw, buf = buf.split(b"\n", 1)
-                            text = raw.decode("utf-8", "replace")
-                            lines.append(text)
-                            handle.write(text + "\n")
-                            handle.flush()
-                            print(f"[{step}] {text}", flush=True)
+                        take(chunk)
                         self.beat()
                     else:
-                        self.beat(force=True)
+                        if time.time() - self.last_beat >= self.args.beat_s:
+                            self.beat(force=True)
                         if self.child.poll() is not None:
-                            break  # 子进程已退出、管道却被遗留的孙进程占着：不空等到超时
+                            # 子进程已退出、管道却被遗留的孙进程占着：先非阻塞读尽管道里剩下的数据再退出，不丢判定行
+                            os.set_blocking(fd, False)
+                            while True:
+                                try:
+                                    chunk = os.read(fd, 65536)
+                                except BlockingIOError:
+                                    break
+                                if not chunk:
+                                    break
+                                take(chunk)
+                            break
                     if time.time() > deadline:
                         reason = f"timeout_{int(timeout)}s"
-                        kill_group(self.child)
                         break
             finally:
                 sel.close()
@@ -380,7 +397,11 @@ class Runner:
                 text = buf.decode("utf-8", "replace")
                 lines.append(text)
                 handle.write(text + "\n")
-            rc = self.child.wait()
+            # 无论组长怎么结束（正常退出、超时、遗留孙进程），都对整组收尾：孙进程不成孤儿
+            rc = kill_group(self.child) if reason else self.child.wait()
+            if reason is None:
+                kill_group(self.child)
+            self.child.stdout.close()
             handle.write(f"# {now_iso()} EXIT_CODE={rc}\n")
         self.child = None
         return rc, lines, reason, log
@@ -428,14 +449,22 @@ class Runner:
             if gen_log and Path(gen_log).is_file():
                 exit_line = next((l for l in reversed(Path(gen_log).read_text(errors="replace").splitlines())
                                   if l.startswith("EXIT_CODE=")), None)
-            if delivery.is_file() and (not gen_log or exit_line):
+            parsed = False
+            if delivery.is_file():
+                try:  # 写到一半／不完整的 JSON 视为未就绪，继续等
+                    json.loads(delivery.read_text(encoding="utf-8"))
+                    parsed = True
+                except (OSError, ValueError):
+                    parsed = False
+            if parsed and (not gen_log or exit_line):
                 lines = [f"delivery={delivery}"] + ([exit_line] if exit_line else [])
                 if exit_line and exit_line.strip() != "EXIT_CODE=0":
                     return self.record("wait_report", "FAIL", lines=lines, elapsed=time.time() - started,
                                        reason=f"gen_{exit_line.strip()}")
                 return self.record("wait_report", "PASS", lines=lines, elapsed=time.time() - started)
             if time.time() >= deadline:
-                what = "delivery.json" if not delivery.is_file() else "EXIT_CODE行"
+                what = ("delivery.json" if not delivery.is_file() else
+                        "delivery.json可解析内容" if not parsed else "EXIT_CODE行")
                 return self.record("wait_report", "FAIL", elapsed=time.time() - started,
                                    reason=f"timeout_{int(self.args.wait_timeout)}s:{what}未出现",
                                    lines=[f"delivery={delivery} exists={int(delivery.is_file())}"])
@@ -482,8 +511,8 @@ class Runner:
                      or rows is None or int(total) != len(rows)):
             problems.append(f"total_mismatch:line={total},counts={counts.get('delivered')},"
                             f"rows={None if rows is None else len(rows)}")
-        if counts.get("failed_cells", 0) != 0:
-            problems.append(f"failed_cells={counts.get('failed_cells')}")
+        if "failed_cells" in counts and counts["failed_cells"] != 0:  # 缺键已计入 count_keys_absent，不兜底为 0
+            problems.append(f"failed_cells={counts['failed_cells']}")
         for key in ("delivered", "failed", "exec_over_cap", "backfills", "infra_retries"):
             if isinstance(counts.get(key), int):
                 self.counts[key] = counts[key]
@@ -694,20 +723,39 @@ class Runner:
 EXIT_CODES = {"PASS": 0, "FAIL": 1, "INFO": 3}
 
 
+def _group_alive(pgid: int) -> bool:
+    try:
+        os.killpg(pgid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
 def kill_group(proc: subprocess.Popen, grace: float = 5.0) -> int | None:
-    """收掉子进程所在进程组（子进程以 ``start_new_session`` 启动，组号 = 其 pid；只按这个精确组号发信号）。"""
-    if proc.poll() is not None:
-        return proc.returncode
+    """收掉子进程所在进程组（子进程以 ``start_new_session`` 启动，组号 = 其 pid；只按这个精确组号发信号）。
+
+    组长已退出也照样对整组发信号：``uv run`` 下的 playwright 驱动／chromium 等孙进程留在同一组里，组长退出后
+    不收就成孤儿。SIGTERM → 等组空（``killpg(pgid, 0)``）至 ``grace`` 秒 → SIGKILL → 再等至 5 秒。"""
+    pgid = proc.pid
     for sig, wait in ((signal.SIGTERM, grace), (signal.SIGKILL, 5.0)):
-        try:
-            os.killpg(proc.pid, sig)
-        except ProcessLookupError:
+        if proc.poll() is not None and not _group_alive(pgid):
             break
         try:
-            return proc.wait(timeout=wait)
-        except subprocess.TimeoutExpired:
-            continue
-    return proc.poll()
+            os.killpg(pgid, sig)
+        except ProcessLookupError:
+            break
+        deadline = time.time() + wait
+        while time.time() < deadline:
+            proc.poll()  # 回收组长，免得僵尸让组看起来还活着
+            if proc.returncode is not None and not _group_alive(pgid):
+                break
+            time.sleep(0.05)
+    try:
+        return proc.wait(timeout=5.0)
+    except subprocess.TimeoutExpired:
+        return proc.poll()
 
 
 def port_busy(host: str, port: int) -> bool:
@@ -762,6 +810,8 @@ def fingerprint_of(args: argparse.Namespace, cells: dict, overrides: dict) -> di
         "site_dir": real(args.site_dir), "xhard0_steps": real(args.xhard0_steps), "xhard0_gen": real(args.xhard0_gen),
         "identities": real(args.identities), "xhard0_manifest": real(args.xhard0_manifest),
         "allow_xhard0_info": bool(args.allow_xhard0_info), "cmd_overrides": {k: v for k, v in sorted(overrides.items())},
+        "pool": [real(p) for p in (args.pool or [args.specs_root])], "path_base": real(args.path_base),
+        "media_root": real(args.media_root), "workers": int(args.workers), "host": args.host, "port": int(args.port),
     }
 
 
@@ -776,6 +826,12 @@ def main(argv: list[str] | None = None) -> int:
     except BlockingIOError:
         print(f"V8_CONTINUE_BUSY work_dir={work} reason=another_instance_running", flush=True)
         return 2
+    # 加锁成功后立即写本轮心跳：覆盖上一轮遗留的 aborted／过期心跳，watchdog 据 mtime 与 pid 认本轮
+    hb_path = Path(args.heartbeat) if args.heartbeat else work / "heartbeat.json"
+    write_json_atomic(hb_path, {"schema": HEARTBEAT_SCHEMA, "step": "init", "status": "starting", "ts": now_iso(),
+                                "epoch": time.time(), "seq": 0, "pid": os.getpid(), "child_pid": None,
+                                "server_pid": None, "report": str(work / "report.json"),
+                                "counts": {key: 0 for key in COUNT_KEYS}})
     C = load_catalog_module()
     H = C.load_hard_specs()
     cells = parse_cells_arg(args.cells, dict(H.V8_CELLS))
@@ -793,6 +849,12 @@ def main(argv: list[str] | None = None) -> int:
         timeouts[step] = float(sec)
     runner = Runner(args)
     full = cells == dict(H.V8_CELLS)
+    def refuse(step: str) -> int:
+        """拒绝执行（参数／报告身份冲突）：心跳记 aborted，watchdog 立即报出而不是等停更。"""
+        runner.step, runner.status = step, "aborted"
+        runner.beat(force=True)
+        return 2
+
     cells_json = None
     if not full:
         cells_json = work / "cells.json"
@@ -801,7 +863,7 @@ def main(argv: list[str] | None = None) -> int:
             cells_json.write_text(text, encoding="utf-8")
         elif cells_json.read_text(encoding="utf-8") != text:
             print(f"V8_CONTINUE=FAIL step=preflight reason=cells_json_differs:{cells_json}", flush=True)
-            return 2
+            return refuse("preflight")
     runner.fingerprint = fingerprint_of(args, cells, {k: shlex.join(v) for k, v in overrides.items()})
     runner.vars = {
         "python": sys.executable, "hard_regression": str(HARD_REGRESSION), "site": str(SITE), "repo": str(REPO_ROOT),
@@ -822,7 +884,7 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, ValueError) as exc:
             runner.event(f"V8_CONTINUE=FAIL step=resume reason=report_unreadable:{type(exc).__name__} "
                          f"reused=0 report={runner.report_path}")
-            return 2
+            return refuse("resume")
         steps_ok = (isinstance(old, dict) and isinstance(old.get("steps"), list) and bool(old["steps"])
                     and all(isinstance(s, dict) and s.get("step") in STEPS and s.get("status") for s in old["steps"]))
         complete = (steps_ok and old.get("schema") == REPORT_SCHEMA
@@ -834,13 +896,16 @@ def main(argv: list[str] | None = None) -> int:
                     and all(isinstance(old["counts"].get(k), int) for k in COUNT_KEYS))
         if not complete:
             runner.event(f"V8_CONTINUE=FAIL step=resume reason=report_incomplete reused=0 report={runner.report_path}")
-            return 2
+            return refuse("resume")
         if old.get("fingerprint") != runner.fingerprint:
             diff = sorted(k for k in set(old.get("fingerprint", {})) | set(runner.fingerprint)
                           if old.get("fingerprint", {}).get(k) != runner.fingerprint.get(k))
             runner.event(f"V8_CONTINUE=FAIL step=resume reason=report_identity_mismatch:{','.join(diff)} reused=0 "
                          f"report={runner.report_path}")
-            return 2
+            return refuse("resume")
+        runner.step, runner.status = str(old.get("final_step")), "done"
+        runner.counts = {key: old["counts"][key] for key in COUNT_KEYS}
+        runner.beat(force=True)
         runner.event(old["final_line"].replace(" reused=0", " reused=1"))
         return int(old["exit_code"])
 
@@ -856,7 +921,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             runner.event(f"V8_CONTINUE=FAIL step=resume reason=progress_identity_mismatch reused=0 "
                          f"report={runner.report_path}")
-            return 2
+            return refuse("resume")
 
     def on_signal(signum, _frame):
         raise Interrupted(signum)
@@ -875,8 +940,8 @@ def main(argv: list[str] | None = None) -> int:
         runner.event(f"V8_CONTINUE_ABORT step={runner.step} signal={exc.signum} report=absent（可续行）")
         return 130
     finally:
-        signal.signal(signal.SIGTERM, signal.SIG_IGN)
-        signal.signal(signal.SIGHUP, signal.SIG_IGN)
+        for sig in (signal.SIGTERM, signal.SIGHUP, signal.SIGINT):
+            signal.signal(sig, signal.SIG_IGN)
         if runner.child is not None:
             kill_group(runner.child)
         if runner.server is not None:

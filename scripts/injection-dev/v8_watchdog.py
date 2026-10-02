@@ -8,6 +8,8 @@
   取「该步 2b 实测用时 × 3」）→ 向事件日志追加 ``P4_WATCHDOG=FAIL step=<名> stale_s=<n> reason=stale``，退出 1；
 * 心跳 ``status == "aborted"``（接续脚本收到信号中断）→ 立即 ``P4_WATCHDOG=FAIL … reason=aborted``，退出 1；
 * 心跳文件在 ``--grace-s``（缺省 = ``--stale-s``）内一直没出现 → ``P4_WATCHDOG=FAIL step=absent … reason=no_heartbeat``；
+  **本轮心跳**才算数：mtime 早于本 watchdog 启动时刻、或给了 ``--watch-pid`` 而心跳 ``pid`` 不等于它的，都是上一轮
+  遗留（续行场景），一律按「尚无心跳」处理；
 * ``--watch-pid`` 给定且该进程已不在、又没有收尾报告 → ``P4_WATCHDOG=FAIL … reason=pid_gone``（比 mtime 更快，
   不替代 mtime 判据）；
 * 被监督进程正常完成：``--report`` 写出、含 ``final_line``（``V8_CONTINUE=…``）且该行已出现在事件日志 →
@@ -15,8 +17,10 @@
   ``P4_NOTIFY`` 行表达，watchdog 只管「是否还活着、有没有收尾」）。
 
 「停止受影响部分」：FAIL 时只对参数显式给出的精确目标动手——``--kill-pid <pid>``（SIGTERM，``--kill-grace-s``
-后仍在再 SIGKILL）与 ``--kill-tmux <会话名>``（``tmux kill-session -t '=<会话名>'``，精确匹配）；不做任何 pkill／
-模式匹配，不 kill-server。除事件日志外不写任何文件（只读监督）。
+后仍在再 SIGKILL）与 ``--kill-tmux <会话名>``（``tmux kill-session -t '=<会话名>'``，精确匹配）；
+``--kill-heartbeat-groups`` 再收掉心跳里记录的 ``child_pid``／``server_pid`` 进程组（接续脚本以独立会话起它们，
+组号 == pid；``/proc/<pid>/stat`` 核得 pgid == pid 才 killpg，防 pid 复用）——接续脚本被 SIGKILL 时它们会成孤儿，
+tmux kill-session 也收不到。不做任何 pkill／模式匹配，不 kill-server。除事件日志外不写任何文件（只读监督）。
 
 事件日志与接续脚本共用（只追加、整行一次写入），主会话对它挂一个 Monitor::
 
@@ -96,8 +100,13 @@ def kill_tmux(name: str) -> str:
     return f"tmux:{name}:{'killed' if rc == 0 else f'rc{rc}'}"
 
 
+def _strip_reused(line: str) -> str:
+    return " ".join(part for part in line.split() if not part.startswith("reused="))
+
+
 def done_line(report: Path, event_log: Path) -> str | None:
-    """收尾报告与事件日志里的 ``V8_CONTINUE`` 行都在才算正常完成；返回报告里的收尾行。"""
+    """收尾报告与事件日志里的 ``V8_CONTINUE`` 行都在才算正常完成；返回报告里的收尾行。
+    比较时去掉 ``reused=`` 字段（复用报告时重打的收尾行与原行只差这一项）。"""
     data = read_json(report) if report.is_file() else None
     if not data:
         return None
@@ -108,7 +117,40 @@ def done_line(report: Path, event_log: Path) -> str | None:
         text = event_log.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return None
-    return final if final in text.splitlines() else None
+    want = _strip_reused(final)
+    return final if any(_strip_reused(l) == want for l in text.splitlines() if l.startswith("V8_CONTINUE=")) else None
+
+
+def proc_pgid(pid: int) -> int | None:
+    """/proc/<pid>/stat 的进程组号（第 5 字段；comm 可含空格，按最后一个 ')' 切）。"""
+    try:
+        with open(f"/proc/{pid}/stat", encoding="utf-8") as handle:
+            return int(handle.read().rsplit(")", 1)[1].split()[2])
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def kill_heartbeat_group(pid: int, grace: float) -> str:
+    """心跳里记录的 child_pid／server_pid：接续脚本以 start_new_session 起它们，组号 == pid。
+    只有 /proc 核得 pgid == pid 才 killpg 这个精确组号（防 pid 复用误杀）；否则不动。"""
+    if proc_pgid(pid) != pid:
+        return f"pg{pid}:skip"
+    try:
+        os.killpg(pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return f"pg{pid}:gone"
+    deadline = time.time() + grace
+    while time.time() < deadline:
+        try:
+            os.killpg(pid, 0)
+        except ProcessLookupError:
+            return f"pg{pid}:term"
+        time.sleep(0.1)
+    try:
+        os.killpg(pid, signal.SIGKILL)
+    except ProcessLookupError:
+        return f"pg{pid}:term"
+    return f"pg{pid}:kill"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -123,6 +165,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--watch-pid", type=int, default=None, help="可选：被监督进程 pid（消失且无报告即 FAIL）")
     ap.add_argument("--kill-pid", type=int, action="append", default=[], help="FAIL 时终止的精确 pid（可多次）")
     ap.add_argument("--kill-tmux", action="append", default=[], help="FAIL 时 kill-session 的精确 tmux 会话名（可多次）")
+    ap.add_argument("--kill-heartbeat-groups", action="store_true",
+                    help="FAIL 时再收掉心跳里记录的 child_pid／server_pid 进程组（/proc 核 pgid == pid 才动）")
     ap.add_argument("--kill-grace-s", type=float, default=10.0, help="SIGTERM 后等多少秒再 SIGKILL")
     ap.add_argument("--max-runtime-s", type=float, default=None, help="可选：总时长上限，超过即 FAIL reason=max_runtime")
     return ap
@@ -146,7 +190,13 @@ def main(argv: list[str] | None = None) -> int:
         append_line(event_log, line)
 
     def fail(step: str, stale: float, reason: str) -> int:
-        actions = [kill_pid(pid, args.kill_grace_s) for pid in args.kill_pid]
+        actions = []
+        if args.kill_heartbeat_groups:
+            beat = read_json(heartbeat) or {}
+            for key in ("child_pid", "server_pid"):
+                if isinstance(beat.get(key), int):
+                    actions.append(kill_heartbeat_group(beat[key], args.kill_grace_s))
+        actions += [kill_pid(pid, args.kill_grace_s) for pid in args.kill_pid]
         actions += [kill_tmux(name) for name in args.kill_tmux]
         emit(f"P4_WATCHDOG=FAIL step={step} stale_s={int(stale)} reason={reason} heartbeat={heartbeat} "
              f"killed={','.join(actions) if actions else 'none'}")
@@ -161,6 +211,7 @@ def main(argv: list[str] | None = None) -> int:
             emit(f"P4_WATCHDOG=DONE verdict={kv.get('V8_CONTINUE')} step={kv.get('step')} report={report}")
             return 0
         now = time.time()
+        mtime, beat = None, {}
         if heartbeat.is_file():
             try:
                 mtime = heartbeat.stat().st_mtime
@@ -168,6 +219,11 @@ def main(argv: list[str] | None = None) -> int:
                 time.sleep(0.05)
                 continue
             beat = read_json(heartbeat) or {}
+            # 续行场景：上一轮遗留的心跳（mtime 早于本 watchdog 启动，或不是 --watch-pid 那个进程写的）
+            # 一律当「本轮尚无心跳」，走 --grace-s，不据此判 FAIL
+            if mtime < started or (args.watch_pid is not None and beat.get("pid") != args.watch_pid):
+                mtime, beat = None, {}
+        if mtime is not None:
             step = str(beat.get("step") or "unknown")
             stale = now - mtime
             if beat.get("status") == "aborted":

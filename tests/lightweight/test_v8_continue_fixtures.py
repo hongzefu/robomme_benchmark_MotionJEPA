@@ -45,7 +45,12 @@ ap.add_argument("--exit", type=int, default=0)
 ap.add_argument("--get", action="append", default=[])
 ap.add_argument("--pidfile")
 ap.add_argument("--hang-if")
+ap.add_argument("--orphan-pidfile")
 a = ap.parse_args()
+if a.orphan_pidfile:  # 留一个继承 stdout 管道的孙进程，自己先退出
+    import subprocess
+    child = subprocess.Popen(["sleep", "60"])
+    open(a.orphan_pidfile, "w").write(str(child.pid))
 for url in a.get:
     body = urllib.request.urlopen(url, timeout=10).read()
     print(f"GET {url} bytes={len(body)}", flush=True)
@@ -115,8 +120,10 @@ def synth(tmp_path_factory):
 
 
 def fake_cmd(src: dict, *lines: str, exit_code: int = 0, get: tuple[str, ...] = (), pidfile: Path | None = None,
-             hang_if: Path | None = None) -> str:
+             hang_if: Path | None = None, orphan_pidfile: Path | None = None) -> str:
     argv = ["{python}", str(src["fake"])]
+    if orphan_pidfile:
+        argv += ["--orphan-pidfile", str(orphan_pidfile)]
     for line in lines:
         argv += ["--line", line]
     for url in get:
@@ -201,7 +208,8 @@ def wait_file(path: Path, timeout: float = 60) -> None:
 
 def snapshot(work: Path) -> dict[str, tuple[int, int]]:
     return {str(p.relative_to(work)): (p.stat().st_size, p.stat().st_mtime_ns)
-            for p in sorted(work.rglob("*")) if p.is_file() and p.name not in ("events.log", ".lock")}
+            for p in sorted(work.rglob("*"))
+            if p.is_file() and p.name not in ("events.log", "events2.log", ".lock", "heartbeat.json")}
 
 
 # ── ① 成功 ────────────────────────────────────────────────────────────
@@ -381,7 +389,7 @@ def test_5b_接续脚本与检查器一起崩溃_watchdog报FAIL_续行只跑未
     argv = cont_args(synth, work, site, cmds={"site_check": hang})
     proc = start_continue(argv)
     wd = start_watchdog(work, "--stale-s", "60", "--step-stale", "site_check=2", "--kill-pid", str(proc.pid),
-                        "--kill-grace-s", "0.5")
+                        "--kill-grace-s", "0.5", "--kill-heartbeat-groups")
     server_pid = None
     try:
         wait_file(pidfile)
@@ -399,6 +407,9 @@ def test_5b_接续脚本与检查器一起崩溃_watchdog报FAIL_续行只跑未
     assert wd.returncode == 1, wd_out
     assert line.startswith("P4_WATCHDOG=FAIL step=site_check") and "reason=stale" in line
     assert int(kv(line)["stale_s"]) >= 2 and f"pid{proc.pid}:gone" in line
+    # 接续脚本被 SIGKILL 后服务进程组成了孤儿：watchdog 按心跳记录的 server_pid（核 pgid == pid）收掉
+    assert f"pg{server_pid}:term" in line or f"pg{server_pid}:kill" in line
+    assert not alive(server_pid)
     assert line in (work / "events.log").read_text().splitlines()
     assert not (work / "report.json").exists()
     DETECTED.append(line)
@@ -424,12 +435,18 @@ def test_6_重复到达_复用报告不重跑不覆盖_身份不符拒绝(synth,
     work = success["work"]
     before = snapshot(work)
     site_before = {p.name: p.stat().st_mtime_ns for p in success["site"].iterdir()}
-    proc = run_continue(success["argv"])
+    events2 = work / "events2.log"
+    proc = run_continue(success["argv"] + ["--event-log", str(events2)])
     assert proc.returncode == 0, proc.stdout
     line = last(proc.stdout, "V8_CONTINUE=")
     assert line.startswith("V8_CONTINUE=PASS step=done") and "reused=1" in line
     assert "V8_CONTINUE_STEP" not in proc.stdout and "[catalog]" not in proc.stdout
     assert snapshot(work) == before
+    # 新事件日志里只有 reused=1 的收尾行：watchdog 去掉 reused= 后与报告收尾行相等 → DONE
+    wd = subprocess.run([PY, str(WATCHDOG), "--heartbeat", str(work / "heartbeat.json"), "--report",
+                         str(work / "report.json"), "--event-log", str(events2), "--stale-s", "5", "--poll-s", "0.2"],
+                        capture_output=True, text=True, timeout=20)
+    assert wd.returncode == 0 and last(wd.stdout, "P4_WATCHDOG=").startswith("P4_WATCHDOG=DONE verdict=PASS")
     assert {p.name: p.stat().st_mtime_ns for p in success["site"].iterdir()} == site_before
     # 输入身份变了（换一份 delivery）→ 拒绝复用，也不覆盖
     other = write_delivery(synth, "delivery.other.json", cells_source="other")
@@ -439,6 +456,52 @@ def test_6_重复到达_复用报告不重跑不覆盖_身份不符拒绝(synth,
     assert proc.returncode == 2 and "report_identity_mismatch:delivery" in last(proc.stdout, "V8_CONTINUE=")
     assert snapshot(work) == before
     CASES["6_duplicate"] = True
+
+
+def test_B1_续行时旧心跳不被当本轮_watchdog报DONE(synth, tmp_path):
+    """上一轮遗留 aborted 且早已过期的心跳：watchdog 先起、接续脚本后起，不得第一圈就判 FAIL。"""
+    work, site = tmp_path / "work", synth["root"] / "site-oldbeat"
+    work.mkdir()
+    old = work / "heartbeat.json"
+    old.write_text(json.dumps({"schema": "v8-continue-heartbeat/1", "step": "site_check", "status": "aborted",
+                               "pid": 1, "counts": {}}))
+    os.utime(old, (time.time() - 3600, time.time() - 3600))
+    wd = start_watchdog(work, "--stale-s", "5")
+    time.sleep(0.6)  # watchdog 已转过几圈，仍只把旧心跳当「尚无心跳」
+    assert wd.poll() is None, wd.stdout.read()
+    bad = write_delivery(synth, "delivery.oldbeat.json", line="V8_DELIVERY_SET=FAIL tasks=3 cells=3 total=5")
+    proc = run_continue(cont_args(synth, work, site, delivery=bad))
+    wd_out, _ = wd.communicate(timeout=20)
+    assert proc.returncode == 1
+    assert wd.returncode == 0, wd_out
+    assert last(wd_out, "P4_WATCHDOG=").startswith("P4_WATCHDOG=DONE verdict=FAIL step=report")
+    # --watch-pid：心跳 pid 不是被监督进程的，同样不算本轮
+    old.write_text(json.dumps({"step": "x", "status": "aborted", "pid": 1}))
+    wd = subprocess.run([PY, str(WATCHDOG), "--heartbeat", str(old), "--report", str(tmp_path / "none.json"),
+                         "--event-log", str(tmp_path / "ev.log"), "--stale-s", "60", "--grace-s", "0.5",
+                         "--poll-s", "0.1", "--watch-pid", str(os.getpid())], capture_output=True, text=True, timeout=20)
+    line = last(wd.stdout, "P4_WATCHDOG=")
+    assert wd.returncode == 1 and line.startswith("P4_WATCHDOG=FAIL step=absent") and "reason=no_heartbeat" in line
+
+
+def test_B2_N5_孙进程占管道_判定行不丢且收尾无孤儿_failed与backfills非零仍通过(synth, tmp_path):
+    work, site = tmp_path / "work", synth["root"] / "site-orphan"
+    orphan = tmp_path / "orphan.pid"
+    # N5：counts.failed=2、backfills=2（正常递补）而 V8_DELIVERY_SET=PASS → report 步应通过
+    dl = write_delivery(synth, "delivery.backfill.json", counts={"failed": 2, "backfills": 2, "tried": 7})
+    ds = fake_cmd(synth, *GUARD_OK["delivery_set"], orphan_pidfile=orphan)
+    stop = fake_cmd(synth, "V8_TIER_VALUES=FAIL tasks=3 cells=3 mismatches=1", exit_code=1)
+    started = time.time()
+    proc = run_continue(cont_args(synth, work, site, delivery=dl, cmds={"delivery_set": ds, "tier_values": stop}))
+    elapsed = time.time() - started
+    steps = {s["step"]: s for s in json.loads((work / "report.json").read_text())["steps"]}
+    assert steps["report"]["status"] == "PASS", steps["report"]
+    assert '"failed":2' in steps["report"]["lines"][-1] and '"backfills":2' in steps["report"]["lines"][-1]
+    assert steps["delivery_set"]["status"] == "PASS" and len(steps["delivery_set"]["lines"]) == 3
+    assert steps["delivery_set"]["elapsed_s"] < 5 and elapsed < 30
+    pid = int(orphan.read_text())
+    assert not alive(pid), "孙进程 sleep 成了孤儿"
+    assert proc.returncode == 1 and last(proc.stdout, "V8_CONTINUE=").startswith("V8_CONTINUE=FAIL step=tier_values")
 
 
 def test_端口占用探测():
