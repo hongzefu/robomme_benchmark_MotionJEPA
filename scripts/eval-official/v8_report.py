@@ -121,6 +121,19 @@ def is_error_final(row: dict) -> bool:
             and not row.get("run_blocked"))
 
 
+def error_reason(row: dict) -> str | None:
+    why = row.get("error") or row.get("infra_reason")
+    return str(why) if why else None
+
+
+def error_final_video_class(row: dict, has_media: bool) -> str | None:
+    """非 infra 错误终局的录像判定（报告与搬运脚本共用）：
+    None = 不是错误终局或有录像（照常核对）；"explained" = 无录像但写明原因（不计缺失）；"unexplained" = 无录像无原因。"""
+    if not is_error_final(row) or has_media:
+        return None
+    return "explained" if error_reason(row) else "unexplained"
+
+
 def analyze_attempts(state: dict) -> dict:
     """按账本 accept 决定每身份唯一权威终态（与 manifest 无关的部分；搬运脚本也复用）。
 
@@ -202,8 +215,9 @@ def analyze_attempts(state: dict) -> dict:
     for lr in state["ledger"]:
         if lr.get("kind") == "attempt_end" and lr.get("attempt_id"):
             ended[str(lr["attempt_id"])] = lr
+    pending_accept_ids = {a["attempt_id"] for a in accept_no_row}  # accept 已写、结果行未出现：只计冲突，不算废弃
     for aid, lr in ended.items():
-        if aid in by_attempt or aid in accepted_ids:
+        if aid in by_attempt or aid in accepted_ids or aid in pending_accept_ids:
             continue
         abandoned.append({"key": lr.get("key"), "attempt_id": aid, "attempt_no": lr.get("attempt_no"),
                           "status": lr.get("status") or "error", "infra": lr.get("infra"),
@@ -260,6 +274,25 @@ def load_manifest(path: Path) -> tuple[dict, list[dict], dict[str, str]]:
     return doc, rows, shard_of
 
 
+def load_shard_files(pattern: str | None) -> dict[str, str]:
+    """shard-NN.json → {key: "NN"}；pattern 为空返回空表。"""
+    out: dict[str, str] = {}
+    if not pattern:
+        return out
+    import glob as _glob
+
+    for sp in sorted(_glob.glob(pattern)):
+        p = Path(sp)
+        sid = p.stem.split("-", 1)[1] if "-" in p.stem else p.stem
+        try:
+            items = json.loads(p.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        for it in items:
+            out[key_of(it)] = sid
+    return out
+
+
 def cell_of(r: dict) -> str:
     return f"{r['task']}@{r['tier']}"
 
@@ -283,7 +316,7 @@ def wall_of(row: dict) -> float | None:
 
 
 def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: Path | None, *,
-                 partial: bool, expect_total: int, cap: int) -> dict:
+                 partial: bool, expect_total: int, cap: int, shard_files: str | None = None) -> dict:
     doc, mrows, shard_of = load_manifest(manifest_path)
     mkeys = {r["key"]: r for r in mrows}
     count_mismatch: list[str] = []
@@ -303,15 +336,22 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
     media_unexplained: list[dict] = []
     index: list[dict] = []
     per_policy: dict[str, Any] = {}
+    observed_seat: dict[str, str] = {}
 
     for pol in policies:
         st = load_policy(stage, pol)
+        # 实际所在席位以运行根里观测到的目录为准（分片可能重分到别的 sNN），不依赖 manifest 的 shard 字段
+        for r in st["results"] + st["ledger"]:
+            if r.get("key") and r.get("_seat"):
+                observed_seat[str(r["key"])] = r["_seat"][1:]
         an = analyze_attempts(st)
         acc = an["accepted"]
         conflict_n = len(an["conflicts"]) + (0 if partial else len(an["accept_no_row"]))
         seen_keys = {key_of(r) for r in an["rows"]} | {str(l.get("key")) for l in st["ledger"] if l.get("key")}
         extra = sorted(k for k in seen_keys if k not in mkeys)
         conflict_keys = {c["key"] for c in an["conflicts"]}
+        if not partial:  # accept 已写、结果行未出现：正式汇总只计 conflicting_terminal，不重复计 missing
+            conflict_keys |= {a["key"] for a in an["accept_no_row"]}
         outcome: dict[str, str] = {}
         for k in mkeys:
             if k in acc:
@@ -371,12 +411,13 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
             m = find_media(r, pol, videos)
             is_acc = aid in accepted_ids
             reason = None
-            if is_acc and r.get("status") == "error" and not media_ok(m):
-                # 非 infra 错误终局：无录像须有原因
-                why = r.get("infra_reason") or r.get("error")
+            efc = error_final_video_class(r, media_ok(m)) if is_acc else None
+            if efc is not None:
+                # 非 infra 错误终局无录像：写明原因即可（与搬运脚本 error_final_no_video 同一判定）
+                why = error_reason(r)
                 no_video_errors.append({"key": key_of(r), "attempt_id": aid, "status": "error",
                                         "reason": str(why)[:200] if why else None, "location": m["location"]})
-                if not why and not partial:
+                if efc == "unexplained" and not partial:
                     reason = "error_final_without_video_and_reason"
                     media_unexplained.append({"policy": pol, "key": key_of(r), "attempt_id": aid, "reason": reason,
                                               "path": m["path"]})
@@ -474,7 +515,8 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
     # 中途进度：按已完成局墙钟估算各席剩余
     progress = None
     if partial:
-        progress = estimate_progress(mkeys, shard_of, per_policy, policies, cell_den)
+        seat_of = {**shard_of, **load_shard_files(shard_files), **observed_seat}
+        progress = estimate_progress(mkeys, seat_of, per_policy, policies, cell_den)
     for p in per_policy.values():
         p.pop("_acc")
         p.pop("_outcome")
@@ -700,11 +742,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--partial", action="store_true", help="中途进度：不因缺失／媒体未就位判 FAIL")
     ap.add_argument("--expect-total", type=int, default=DEFAULT_TOTAL)
     ap.add_argument("--cap", type=int, default=DEFAULT_CAP)
+    ap.add_argument("--shard-files", default=None,
+                    help="--partial 估算用：实际分片文件 glob（shard-NN.json → 席 NN），覆盖 manifest 的 shard 字段；"
+                         "已观测到的身份一律以运行根里实际所在 sNN 为准")
     args = ap.parse_args(argv)
     policies = [p for p in args.policies.split(",") if p]
     rep = build_report(Path(args.manifest), Path(args.stage), policies,
                        Path(args.videos) if args.videos else None,
-                       partial=args.partial, expect_total=args.expect_total, cap=args.cap)
+                       partial=args.partial, expect_total=args.expect_total, cap=args.cap,
+                       shard_files=args.shard_files)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     index = rep.pop("_index")

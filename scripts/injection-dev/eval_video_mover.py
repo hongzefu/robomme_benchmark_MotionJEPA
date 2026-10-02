@@ -30,11 +30,14 @@ sha 不符：只删临时目录、保留 NFS 源，计 sha_mismatch（常驻模�
 ``VMOVE mode=v8 moved= pending= bytes= stage_bytes= sha_mismatch=``，``--stop-file`` 出现且无待搬时退出（结果行未写出的目录不碰）。
 ``--once``：搬到无待稳定目录后（单个目录持续不稳超过 ``--once-max-wait`` 秒即放弃、留在运行根计入 stage_left），再把
 ``<stage>/sNN/<policy>/rec/`` 下没有结果行的孤儿目录整目录搬到 ``<dest>/<policy>/_orphan/<sNN>/<目录名>/``，然后全量对账，打印
-``V8_EVAL_VIDEOS=PASS|FAIL policies= expected= videos= missing= decode_fail= sha_mismatch= error_attempt_videos= stage_left= orphan_videos=``：
+``V8_EVAL_VIDEOS=PASS|FAIL policies= expected= videos= missing= decode_fail= sha_mismatch= error_attempt_videos= stage_left= orphan_videos= error_final_no_video=``：
 expected = 每模型账本 accepted 终态数之和（权威终态口径复用 ``scripts/eval-official/v8_report.py``）；videos = 本机已有且
 front.mkv、wrist.mkv 都能读出帧数（>0）的终态录像目录数；error_attempt_videos = 本机已有的非权威尝试（错误／重试／迟到）目录数；
 stage_left = 对账后运行根里仍有可搬文件的录像目录数（rsync 失败、sha 不符、持续不稳、孤儿搬不走都在这里体现，>0 即 FAIL）；
-orphan_videos = 本次搬进 ``_orphan`` 的目录数。
+orphan_videos = 本次搬进 ``_orphan`` 的目录数（搬前先打印 ``ORPHAN_CANDIDATE``；--once 应在全部席位结束后跑）；
+error_final_no_video = 非 infra 错误终局无录像但结果行写明原因的数（不计 missing，与 v8_report 同一判定），
+PASS 要求 videos + error_final_no_video = expected。常驻模式 --stop-file 出现后，持续不稳或持续搬运失败超过
+``--once-max-wait`` 秒的目录放弃（打印 reason=unstable／move_failed），进程照常退出。
 帧数优先用 ``ffprobe -count_frames``，没有 ffprobe 时用 ``imageio-ffmpeg`` 自带 ffmpeg 全解码计帧，都没有则判 decode_fail
 （``reason=no_decoder``）。读得出的帧数按 (路径, 大小, mtime) 缓存在 ``<dest>/decode-cache.jsonl``。末行 ``EXIT_CODE=``（FAIL 为 1）。
 """
@@ -338,7 +341,10 @@ class DecodeCache:
 
 
 def v8_verify(stage: Path, dest: Path, policies: list[str], workers: int) -> tuple:
-    """本机对账：返回 (expected, videos, missing, decode_fail, error_attempt_videos, problems)。"""
+    """本机对账：返回 (expected, videos, missing, decode_fail, error_attempt_videos, error_final_no_video, problems)。
+
+    非 infra 错误终局无录像：结果行写明原因 → error_final_no_video（不计 missing）；无原因 → missing。
+    判定与 v8_report 的 error_final_without_video_and_reason 共用 ``error_final_video_class``。"""
     rm = v8_report_mod()
     decoder = pick_decoder()
     if decoder[0] != "ffprobe":
@@ -359,11 +365,17 @@ def v8_verify(stage: Path, dest: Path, policies: list[str], workers: int) -> tup
                 continue
             if v8_dest_dir(dest, pol, row, rm.rec_name(row)).is_dir():
                 error_attempt_videos += 1
-    missing = decode_fail = 0
+    missing = decode_fail = error_final_no_video = 0
     problems: list[dict] = []
     to_decode = []
     for pol, row, d in terminal_dirs:
-        if not d.is_dir() or not all((d / m).is_file() for m in V8_MEDIA):
+        has_media = d.is_dir() and all((d / m).is_file() for m in V8_MEDIA)
+        if rm.error_final_video_class(row, has_media) == "explained":
+            error_final_no_video += 1
+            problems.append({"policy": pol, "key": row.get("key"), "problem": "error_final_no_video",
+                             "reason": (rm.error_reason(row) or "")[:200]})
+            continue
+        if not has_media:
             missing += 1
             problems.append({"policy": pol, "key": row.get("key"), "problem": "missing", "dir": str(d)})
             continue
@@ -385,17 +397,19 @@ def v8_verify(stage: Path, dest: Path, policies: list[str], workers: int) -> tup
             decode_fail += 1
             problems.append({"policy": pol, "key": row.get("key"), "problem": "decode_fail", "dir": str(d),
                              "frames": frames, "reason": "no_decoder" if decoder[0] == "none" else None})
-    return expected, videos, missing, decode_fail, error_attempt_videos, problems
+    return expected, videos, missing, decode_fail, error_attempt_videos, error_final_no_video, problems
 
 
 def v8_verdict(stage: Path, dest: Path, policies: list[str], *, sha_mismatch: int, stage_left: int,
                orphan_videos: int, workers: int) -> tuple[bool, str, list]:
-    expected, videos, missing, decode_fail, error_attempt_videos, problems = v8_verify(stage, dest, policies, workers)
+    (expected, videos, missing, decode_fail, error_attempt_videos, error_final_no_video,
+     problems) = v8_verify(stage, dest, policies, workers)
     ok = (expected > 0 and missing == 0 and decode_fail == 0 and sha_mismatch == 0 and stage_left == 0
-          and videos == expected)
+          and videos + error_final_no_video == expected)
     line = (f"V8_EVAL_VIDEOS={'PASS' if ok else 'FAIL'} policies={len(policies)} expected={expected} videos={videos} "
             f"missing={missing} decode_fail={decode_fail} sha_mismatch={sha_mismatch} "
-            f"error_attempt_videos={error_attempt_videos} stage_left={stage_left} orphan_videos={orphan_videos}")
+            f"error_attempt_videos={error_attempt_videos} stage_left={stage_left} orphan_videos={orphan_videos} "
+            f"error_final_no_video={error_final_no_video}")
     return ok, line, problems
 
 
@@ -408,6 +422,7 @@ def v8_main(args) -> int:
     first_pending: dict[str, float] = {}
     failed: set[str] = set()
     gave_up: set[str] = set()
+    warned_orphans: set[str] = set()
     moved_bytes = moved_n = sha_mismatch = orphan_videos = 0
     last_report = 0.0
     while True:
@@ -417,6 +432,9 @@ def v8_main(args) -> int:
             known = {str(it["src"]) for it in items}
             for pol, seat, d in stage_rec_dirs(stage, policies):
                 if str(d) not in known:
+                    if str(d) not in warned_orphans:  # --once 应在全部席位结束后跑；此时仍无结果行的目录才当孤儿
+                        warned_orphans.add(str(d))
+                        print(f"ORPHAN_CANDIDATE policy={pol} seat={seat} dir={d}", flush=True)
                     items.append({"policy": pol, "row": None, "name": d.name, "src": d, "seat": seat,
                                   "out": dest / pol / "_orphan" / seat / d.name})
         for item in items:
@@ -432,7 +450,9 @@ def v8_main(args) -> int:
             # 收尾阶段（--once，或常驻模式 --stop-file 已出现）不无限等持续不稳的目录
             finishing = args.once or bool(args.stop_file and Path(args.stop_file).exists())
             if finishing and now - first_pending[key] > args.once_max_wait:
-                print(f"# 持续不稳超过 {args.once_max_wait:.0f}s，放弃并计入 stage_left：{src}", flush=True)
+                why = "move_failed" if key in failed else "unstable"
+                print(f"# 持续{'搬运失败' if why == 'move_failed' else '不稳'}超过 {args.once_max_wait:.0f}s，"
+                      f"放弃并计入 stage_left reason={why}：{src}", flush=True)
                 gave_up.add(key)
                 continue
             prev = seen.get(key)
@@ -445,8 +465,10 @@ def v8_main(args) -> int:
                 continue
             result, nbytes = v8_move_dir(item, dest, moved_log)
             seen.pop(key, None)
-            first_pending.pop(key, None)
+            if result in ("moved", "empty"):
+                first_pending.pop(key, None)  # 搬运失败不清：常驻模式 --stop-file 后持续失败也能按时放弃
             if result == "moved":
+                failed.discard(key)
                 moved_n += 1
                 moved_bytes += nbytes
                 orphan_videos += item.get("row") is None
@@ -473,7 +495,7 @@ def v8_main(args) -> int:
     if args.once:
         left = stage_rec_dirs(stage, policies)
         for pol, seat, d in left:
-            why = ("sha_mismatch_or_rsync_fail" if str(d) in failed else
+            why = ("move_failed" if str(d) in failed else
                    "unstable" if str(d) in gave_up else "not_moved")
             print(f"# 运行根残留 {json.dumps({'policy': pol, 'seat': seat, 'dir': str(d), 'reason': why}, ensure_ascii=False)}",
                   flush=True)

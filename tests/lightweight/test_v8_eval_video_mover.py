@@ -133,7 +133,8 @@ def test_v8_once_moves_completed_and_error_dirs(tmp_path, mkv):
     v = verdict(proc)
     assert v == {"_verdict": "PASS", "policies": "2", "expected": "3", "videos": "3", "missing": "0",
                  "decode_fail": "0", "sha_mismatch": "0", "error_attempt_videos": "1", "stage_left": "0",
-                 "orphan_videos": "1"}, proc.stdout
+                 "orphan_videos": "1", "error_final_no_video": "0"}, proc.stdout
+    assert "ORPHAN_CANDIDATE policy=mme seat=s01 dir=" in proc.stdout
     assert proc.stdout.strip().splitlines()[-1] == "EXIT_CODE=0"
     for d in (d_ok, d_err, d_retry, d_mme, d_can, orphan):
         assert not d.exists()
@@ -212,7 +213,7 @@ def test_v8_sha_mismatch_verdict_line(tmp_path, mkv, monkeypatch, capsys):
     out = capsys.readouterr().out
     line = [l for l in out.splitlines() if l.startswith("V8_EVAL_VIDEOS=")][0]
     assert line == ("V8_EVAL_VIDEOS=FAIL policies=1 expected=1 videos=0 missing=1 decode_fail=0 sha_mismatch=1 "
-                    "error_attempt_videos=0 stage_left=1 orphan_videos=0")
+                    "error_attempt_videos=0 stage_left=1 orphan_videos=0 error_final_no_video=0")
     assert out.strip().splitlines()[-1] == "EXIT_CODE=1"
 
 
@@ -307,6 +308,49 @@ def test_v8_node_incoming_skipped_and_dup_moved(tmp_path, mkv):
     assert (base / "VideoUnmask_xhard1_11.a1" / "front.mkv").exists()
     assert (base / "VideoUnmask_xhard1_11.a1.dup1" / "front.mkv").exists()
     assert not (dest / "smvla" / "_orphan").exists()
+
+
+def test_v8_resident_stop_file_exits_on_persistent_move_failure(tmp_path, mkv, monkeypatch, capsys):
+    """常驻模式 + --stop-file：持续 sha 不符的目录超过 --once-max-wait 即放弃（reason=move_failed），进程退出。"""
+    st = Stage(tmp_path, mkv)
+    _, d = st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    real = mover.sha256
+    monkeypatch.setattr(mover, "sha256", lambda p: "e" * 64 if ".incoming" in str(p) else real(p))
+    stop = tmp_path / "STOP"
+    stop.write_text("")
+    rc = mover.v8_main(ns(st, tmp_path / "videos", once=False, stop_file=str(stop), once_max_wait=0.3))
+    out = capsys.readouterr().out
+    assert rc == 0 and "reason=move_failed" in out and out.strip().splitlines()[-1] == "EXIT_CODE=0"
+    assert (d / "front.mkv").exists()
+
+
+def _accept_error(st: Stage, seat: str, policy: str, aid: str, key: str) -> None:
+    with (st.root / f"s{seat}" / policy / f"{policy}.ledger.jsonl").open("a") as fh:
+        fh.write(json.dumps({"kind": "accept", "key": key, "attempt_id": aid, "accepted_attempt_id": aid,
+                             "policy": policy}) + "\n")
+
+
+def test_v8_error_final_without_video(tmp_path, mkv):
+    """非 infra 错误终局：无录像但写明原因 → error_final_no_video，不计 missing；无原因 → missing。"""
+    st = Stage(tmp_path, mkv)
+    st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    aid, _ = st.result("00", "smvla", "VideoUnmask", "xhard1", 12, "error", media=False, infra=False,
+                       error="EnvError: scene invalid")
+    _accept_error(st, "00", "smvla", aid, "VideoUnmask_xhard1_12")
+    aid2, d2 = st.result("00", "smvla", "VideoUnmask", "xhard1", 13, "error", infra=False, error="EnvError: x")
+    _accept_error(st, "00", "smvla", aid2, "VideoUnmask_xhard1_13")  # 有录像的错误终局照常核对解码
+    proc = run_v8(st, tmp_path / "videos", "--once", policies="smvla")
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    v = verdict(proc)
+    assert (v["_verdict"], v["expected"], v["videos"], v["missing"], v["error_final_no_video"]) == \
+        ("PASS", "3", "2", "0", "1"), proc.stdout
+    # 同样的错误终局但结果行没写原因 → missing，FAIL
+    st2 = Stage(tmp_path / "b", mkv)
+    aid3, _ = st2.result("00", "smvla", "VideoUnmask", "xhard1", 12, "error", media=False, infra=False)
+    _accept_error(st2, "00", "smvla", aid3, "VideoUnmask_xhard1_12")
+    proc = run_v8(st2, tmp_path / "b" / "videos", "--once", policies="smvla")
+    v = verdict(proc)
+    assert (v["_verdict"], v["missing"], v["error_final_no_video"]) == ("FAIL", "1", "0") and proc.returncode == 1
 
 
 def test_v8_resident_stop_file_does_not_hang_on_unstable(tmp_path, mkv):

@@ -226,6 +226,48 @@ def test_error_final_accept_and_ledger_only_attempt(tmp_path):
     assert lines[-2].startswith("V8_EVAL_COVERAGE=PASS") and lines[-2].endswith("error_final=1") and rc == 0, lines
 
 
+def test_accept_without_row_only_conflict(tmp_path):
+    """accept 已写但结果行未出现：正式汇总只计 conflicting_terminal，不重复计 missing、不算废弃尝试。"""
+    man, st = setup(tmp_path)
+    k = "VideoUnmask_xhard2_1003"
+    st.all_ok(skip={("smvla", k)})
+    st.ledger("smvla", k, kind="attempt_start", attempt_id="noresult01", attempt_no=1)
+    st.ledger("smvla", k, kind="attempt_end", attempt_id="noresult01", attempt_no=1, status="success")
+    st.ledger("smvla", k, kind="accept", attempt_id="noresult01", accepted_attempt_id="noresult01")
+    rc, rep, lines = run(man, st, tmp_path / "out")
+    cov = kv(lines[-2])
+    assert (cov["conflicting_terminal"], cov["missing"]) == ("1", "0"), lines
+    sm = rep["per_policy"]["smvla"]
+    assert sm["abandoned"] == [] and sm["outcomes"]["conflict"] == 1 and sm["outcomes"]["missing"] == 0
+    assert rc == 1
+    # --partial 下当作未完成：不判冲突
+    _, _, lines = run(man, st, tmp_path / "o2", "--partial")
+    assert kv(lines[-2])["conflicting_terminal"] == "0"
+
+
+def test_partial_seat_from_observed_stage_dir(tmp_path):
+    """分片重分到别的 sNN（manifest shard 字段未改）：进度按运行根里实际所在席位估算；--shard-files 覆盖未开跑身份。"""
+    man, st = setup(tmp_path)
+    for pol in POLICIES:
+        st.budget(pol, "00")
+    k_moved = "VideoUnmask_xhard2_1003"  # manifest 分片 01
+    st.shard_of[k_moved] = "10"
+    st.result("smvla", k_moved, "success", wall=50.0)
+    (tmp_path / "newshards").mkdir()
+    (tmp_path / "newshards" / "shard-11.json").write_text(json.dumps(
+        [{"task": "SwingXtimes", "tier": "xhard1", "seed": 2003}]))
+    proc = subprocess.run([sys.executable, str(REPORT), "--manifest", str(man), "--stage", str(st.root),
+                           "--policies", "smvla", "--out", str(tmp_path / "o"), "--expect-total", "6", "--partial",
+                           "--shard-files", str(tmp_path / "newshards" / "shard-*.json")],
+                          capture_output=True, text=True, timeout=120)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    pr = json.loads((tmp_path / "o" / "report.json").read_text())["progress"]
+    assert pr["seats"]["10"]["detail"]["smvla"]["remaining"] == 0
+    assert pr["seats"]["11"]["detail"]["smvla"]["remaining"] == 1
+    assert pr["seats"]["01"]["detail"]["smvla"]["remaining"] == 1  # 01 只剩 SwingXtimes_xhard5_2002
+    assert pr["seats"]["00"]["detail"]["smvla"]["remaining"] == 3
+
+
 def test_duplicate_result_rows(tmp_path):
     man, st = setup(tmp_path)
     k = "VideoUnmask_xhard2_1003"
