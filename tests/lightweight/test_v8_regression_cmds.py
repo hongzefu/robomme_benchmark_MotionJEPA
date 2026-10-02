@@ -7,7 +7,8 @@ JSON → 守卫」往返，覆盖：
 
 * ``hard_regression.py delivery-set``：完整 43 格根、冒烟 7 格根、分片子集根三种格表各一次 PASS；判定行计数键（含零值）
   显式出现在判定行与 ``--out`` JSON 里；相等比较（少一局即 FAIL）、seed 跨档相交、``layout_parent`` 非空、跨档照抄
-  布局（位置指纹相同）各自判 FAIL；
+  布局（逐叶子比较：剔除恒定叶子后任一浮点叶子逐位相等，或 PatternLock 路径 ≥9 节点前缀相同）各自判 FAIL；用 v7
+  包内派生规格证明 13 个跨档任务都抓得出共享布局、同档独立抽样不误报；坏文件／备用耗尽不崩溃、照常打印判定行；
 * ``tier-values``：三种根 PASS（完整根 ``tasks=14 cells=41``）、区间任务逐格直方图、改值即 FAIL；
 * ``step-headroom``（v8）：``--pool`` 数 exec_over_cap 递补候选、xhard0 按 1300 单独查、超 1600／计数键缺失／
   过滤数与 delivery.json 不符即 FAIL；v7 清单仍分派到旧判据；
@@ -101,7 +102,9 @@ def make_spec(task: str, tier: str, cand: int) -> dict:
     want = {dim: _value(v, cand) for dim, v in R.V8_TIER_TABLE.get(task, {}).get(tier, {}).items()}
     ti = HS.V8_TIERS.index(tier)
     spec = {"spec_kind": "native-newvalue/2", "task": task, "objects": {}, "actions": {},
-            "layout": {"button_xy": [round(0.1 * ti + 0.001 * cand + 0.0003, 6), -0.25], "cube_count": 3}}
+            "layout": {"button_xy": [round(0.1 * ti + 0.001 * cand + 0.0003, 6), -0.25], "cube_count": 3,
+                       # 跨行恒定的浮点叶子（配置常量）：逐叶子比较须先剔除，不得误报
+                       "cube_min_center_dist": 0.05, "goal_xy": [0.12, -0.08]}}
     o, a = spec["objects"], spec["actions"]
     if task in ("PickXtimes", "SwingXtimes"):
         o["num_repeats"] = want["times" if task == "PickXtimes" else "rounds"]
@@ -374,14 +377,103 @@ def test_delivery_set_seed相交与parent非空与照抄布局(tmp_path, capsys)
     assert rc == 1 and line(out, "V8_SEED_DISJOINT").startswith("V8_SEED_DISJOINT=FAIL tasks=6 tier_pairs=1 shared=1")
 
 
-def test_位置指纹只取位置类叶子():
-    a = {"layout": {"cubes": {"r": [0.1, 0.2, 0.3]}, "count": 3, "mode": "x"}, "actions": {"path_nodes": [1, 2, 3]}}
-    b = copy.deepcopy(a)
-    b["layout"]["count"] = 5
-    assert R.layout_fingerprint(a) == R.layout_fingerprint(b)
-    b["actions"]["path_nodes"] = [1, 2, 4]
-    assert R.layout_fingerprint(a) != R.layout_fingerprint(b)
-    assert R.layout_fingerprint({"objects": {"n": 3}}) is None
+def _items(specs: list[tuple[str, int, dict, bool]]):
+    return [(tier, {"task": "T", "candidate": cand, "spec": spec}, delivered) for tier, cand, spec, delivered in specs]
+
+
+def test_逐叶子比较_前缀照抄判出_恒定浮点不误报():
+    """F1：低档位置叶子是高档的子集／前缀（v7 式派生）→ 记对；跨行恒定的浮点叶子剔除后独立布局 → 0。"""
+    const = {"cube_min_center_dist": 0.05, "goal_xy": [0.1, -0.1]}
+    high = {"layout": {**const, "cubes": {"a": [0.31, 0.12], "b": [0.42, -0.07], "c": [0.15, 0.2]}}}
+    low = {"layout": {**const, "cubes": {"a": [0.31, 0.12]}}}  # 子集：只放下母布局的第一个方块
+    other = {"layout": {**const, "cubes": {"a": [0.29, 0.11]}}}
+    hit = R.layout_overlap(_items([("xhard4", 0, high, True), ("xhard1", 0, low, True), ("xhard1", 1, other, True)]))
+    assert hit["pairs"] == 1 and "layout.cube_min_center_dist" in hit["constant"] and "layout.goal_xy" in hit["constant"]
+    indep = R.layout_overlap(_items([("xhard4", 0, high, True), ("xhard1", 1, other, True)]))
+    assert indep["pairs"] == 0 and indep["no_position"] == 0
+    # PatternLock 路径：低档是高档 ≥9 节点的前缀 → 记对；只有短前缀（<9）相同不记；整数 actions.nodes 不参与
+    path = list(range(21))
+    pl = R.layout_overlap(_items([("xhard3", 0, {"actions": {"path_nodes": path}}, True),
+                                  ("xhard1", 0, {"actions": {"path_nodes": path[:9]}}, True),
+                                  ("xhard2", 0, {"actions": {"path_nodes": path[:5] + [99, 98, 97, 96, 95]}}, True)]))
+    assert pl["pairs"] == 1
+    rs = R.layout_overlap(_items([("xhard1", 0, {"actions": {"nodes": [0, 2, 4, 2]}, "layout": {"r": 0.11}}, True),
+                                  ("xhard2", 0, {"actions": {"nodes": [0, 2, 4, 2]}, "layout": {"r": 0.27}}, True)]))
+    assert rs["pairs"] == 0
+    # 跨档任务剔除恒定叶子后无可比叶子 → no_position
+    flat = R.layout_overlap(_items([("xhard1", 0, {"layout": dict(const)}, True), ("xhard2", 0, {"layout": dict(const)}, True)]))
+    assert flat["no_position"] == 2
+
+
+def test_逐叶子比较抓得出v7共享布局():
+    """F1③：worktree 里包内 v7 规格是母布局派生（低档照抄 xhard4 或其前缀）：13 个跨档任务各自 layout_equal_pairs>0；
+    同档不同候选是独立抽样，把每个候选当成单独一档也不误报。"""
+    by_task: dict[str, list] = {}
+    for tier in HS.V7_TIERS:
+        records = HS.read_jsonl(HS.PACKAGED_SPECS_ROOT / tier / "specs.jsonl")
+        assert records[0]["schema"] == HS.SCHEMA_V7
+        for row in records[1:]:
+            by_task.setdefault(row["task"], []).append((tier, row, HS.delivered(row)))
+    cross = {task: R.layout_overlap(items)["pairs"] for task, items in by_task.items()
+             if len({t for t, *_ in items}) > 1}
+    assert len(cross) == 13 and all(n > 0 for n in cross.values()), cross
+    for task, items in by_task.items():
+        for tier in {t for t, *_ in items}:
+            solo = [(f"{t}#{r['candidate']}", r, d) for t, r, d in items if t == tier]
+            assert R.layout_overlap(solo)["pairs"] == 0, (task, tier)
+
+
+def test_坏文件与备用耗尽不崩溃(tmp_path, capsys):
+    """F4：某格备用候选耗尽（selected 少于期望，load_specs_v8 会抛）→ 逐格判 FAIL；坏 JSON 文件 → load_errors。"""
+    root = build_root(tmp_path / "root", H.V8_SMOKE_CELLS)
+
+    def exhaust(rows):
+        row = next(r for r in rows if r["task"] == "StopCube")
+        row.update(selected=False, rollout={"status": "failed", "error_type": "exec_over_cap", "exec_steps": 1700})
+    edit_root(root, "xhard5", exhaust)
+    rc, out = run(R.main, ["delivery-set", "--specs-root", root, "--cells", SMOKE], capsys)
+    keys = kv(line(out, "V8_DELIVERY_SET"))
+    assert rc == 1 and line(out, "V8_DELIVERY_SET").startswith("V8_DELIVERY_SET=FAIL tasks=6 cells=6 total=6")
+    assert keys["cell_mismatch"] == "1" and keys["load_errors"] == "1" and keys["exec_over_cap"] == "1"
+    assert line(out, "V8_SEED_DISJOINT").startswith("V8_SEED_DISJOINT=PASS")
+    (root / "xhard3" / "specs.jsonl").write_text('{"record": "header", oops\n')
+    (root / "xhard2" / "specs.jsonl").write_text("")
+    rc, out = run(R.main, ["delivery-set", "--specs-root", root, "--cells", SMOKE], capsys)
+    assert rc == 1 and int(kv(line(out, "V8_DELIVERY_SET"))["load_errors"]) >= 3
+    assert kv(line(out, "V8_LAYOUT_INDEPENDENT"))["load_errors"] == "2"
+    rc, out = run(R.main, ["tier-values", "--specs-root", root, "--cells", SMOKE], capsys)
+    assert rc == 1 and kv(line(out, "V8_TIER_VALUES"))["missing_files"] == "2"
+
+
+def test_pool坏文件计数与档目录补档名(tmp_path):
+    pool = tmp_path / "pool"
+    (pool / "xhard2").mkdir(parents=True)
+    (pool / "xhard2" / "specs.jsonl").write_text(
+        json.dumps({"record": "header"}) + "\n"
+        + json.dumps({"task": "BinFill", "candidate": 3, "rollout": {"status": "failed", "error_type": "exec_over_cap"}}) + "\n")
+    (pool / "bad.jsonl").write_text("{not json\n")
+    (pool / "results.json").write_text("")
+    found, errors = R.pool_scan([pool, tmp_path / "nope"])
+    assert found == {("BinFill", "xhard2", "c3")} and len(errors) == 3
+
+
+def test_specs_tiers局部根只含xhard5也判v8(tmp_path):
+    root = build_root(tmp_path / "root", {("SwingXtimes", "xhard5"): 1})
+    assert R.specs_tiers(str(root)) == (HS.V8_TIERS, True)
+
+
+def test_step_headroom_skip_xhard0只出INFO(tmp_path, capsys):
+    gen = tmp_path / "gen1"
+    root = build_root(gen / "specs-root", H.V8_SMOKE_CELLS, backfill=True, h5_root=gen)
+    delivery = write_delivery(root, gen / "delivery.json")
+    rc, out = run(R.main, ["step-headroom", "--delivery", delivery, "--pool", root, "--skip-xhard0"], capsys)
+    assert rc == 0 and line(out, "V8_STEP_CAP").startswith(
+        "V8_STEP_CAP=INFO max=3 cap=1600 over=0 filtered=7 xhard0_max=skipped xhard0_cap=1300")
+    assert "PASS" not in out
+    (root / "xhard1" / "broken.jsonl").write_text("{x\n")
+    rc, out = run(R.main, ["step-headroom", "--delivery", delivery, "--pool", root, "--xhard0", _xhard0_side(tmp_path)],
+                  capsys)
+    assert rc == 1 and kv(line(out, "V8_STEP_CAP"))["pool_load_errors"] == "1"
 
 
 # ── tier-values ────────────────────────────────────────────────────────

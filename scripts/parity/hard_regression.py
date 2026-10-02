@@ -135,14 +135,23 @@ def _hs_light():
 
 
 def specs_tiers(specs_root: str | None = None) -> tuple[tuple[str, ...], bool]:
-    """规格根（显式 > ``ROBOMME_HARD_SPECS_ROOT`` > 包内）的档序与是否 v8：xhard1 文件 header 为 ``hard-specs/4``
-    即按 ``V8_TIERS`` 读五档（v8 方案第二部分 §2.2 第 9 条「delivery_index 按 V8_TIERS 读」），否则按 ``TIERS``。"""
+    """规格根（显式 > ``ROBOMME_HARD_SPECS_ROOT`` > 包内）的档序与是否 v8：``V8_TIERS`` 下任一存在的档文件 header
+    为 ``hard-specs/4`` 即按 ``V8_TIERS`` 读五档（v8 方案第二部分 §2.2 第 9 条「delivery_index 按 V8_TIERS 读」；
+    只含 xhard5 等部分档的局部根也判 v8），否则按 ``TIERS``。首行读不出的文件跳过。"""
     hs = _hs_light()
-    path = hs.specs_root(specs_root) / "xhard1" / "specs.jsonl"
+    root = hs.specs_root(specs_root)
     v8 = False
-    if path.is_file():
-        with path.open(encoding="utf-8") as stream:
-            v8 = json.loads(stream.readline()).get("schema") == hs.SCHEMA_V8
+    for tier in hs.V8_TIERS:
+        path = root / tier / "specs.jsonl"
+        if not path.is_file():
+            continue
+        try:
+            with path.open(encoding="utf-8") as stream:
+                v8 = json.loads(stream.readline()).get("schema") == hs.SCHEMA_V8
+        except (OSError, ValueError, AttributeError):
+            continue
+        if v8:
+            break
     return (hs.V8_TIERS if v8 else hs.TIERS), v8
 
 
@@ -625,8 +634,12 @@ def cmd_xhard0_eval_parity(args) -> int:
 
 # ── V8 守卫（1001 方案第一部分 §3 验收表、第二部分 §2.3 闸门总表）：只读、纯 CPU ───────────────────────
 
-#: 位置类子树（布局指纹取材）：spec 里记录摆放位置、初始化位姿、路径节点、外环容器的分支
+#: 位置类子树（布局比较取材）：spec 里记录摆放位置、初始化位姿、路径节点、外环容器的分支
 POSITION_SUBTREES = ("layout", "initializations", "actions.path_nodes", "actions.nodes", "objects.distractors.bins")
+#: 整数路径序列里唯一参与判定的一条：PatternLock 的图案节点（5×5 网格），按前缀判
+PATH_NODES = "actions.path_nodes"
+#: 两条路径共同前缀至少这么长才算照抄（v8 PatternLock 最短 9 节点；独立抽样首 9 节点全同的概率约 25⁻¹×5⁻⁸≈1e-7）
+PATH_NODES_MIN_PREFIX = 9
 
 
 def _is_number(value: Any) -> bool:
@@ -634,8 +647,8 @@ def _is_number(value: Any) -> bool:
 
 
 def _position_leaves(tree: Any, prefix: str) -> dict[str, Any]:
-    """位置类取值：数值列表（坐标、位姿、路径节点序列）与浮点标量；整数／布尔计数、字符串、颜色名等非位置叶子丢弃
-    （这样「请求数／放置数」随档不同不会掩盖位置照抄）。"""
+    """位置类叶子：数值列表（坐标、位姿、路径节点序列）与浮点标量；整数／布尔计数、字符串、颜色名等非位置叶子丢弃。
+    列表的列表逐元素展开（``<路径>.<下标>``），所以前缀派生的低档与高档在同名叶子上可直接比较。"""
     out: dict[str, Any] = {}
     if isinstance(tree, dict):
         for key, value in tree.items():
@@ -650,9 +663,7 @@ def _position_leaves(tree: Any, prefix: str) -> dict[str, Any]:
     return out
 
 
-def layout_fingerprint(spec: dict[str, Any]) -> str | None:
-    """位置指纹：:data:`POSITION_SUBTREES` 各子树里的位置类叶子（:func:`_position_leaves`）按路径排序后的 sha256。
-    同任务两局指纹相同 ⇔ 全部位置类取值逐位相同（照抄布局）；没有任何位置叶子时返回 None（无法判独立）。"""
+def position_leaves(spec: dict[str, Any]) -> dict[str, Any]:
     leaves: dict[str, Any] = {}
     for path in POSITION_SUBTREES:
         node: Any = spec
@@ -660,16 +671,70 @@ def layout_fingerprint(spec: dict[str, Any]) -> str | None:
             node = node.get(part) if isinstance(node, dict) else None
         if node is not None:
             leaves.update(_position_leaves(node, path))
-    if not leaves:
-        return None
-    return hashlib.sha256(json.dumps(leaves, sort_keys=True).encode()).hexdigest()
+    return leaves
 
 
-def _read_v8_root(specs_root: str | Path, cells: dict[tuple[str, str], int]) -> tuple[dict[str, tuple], list[str]]:
-    """格表涉及各档的 /4 文件原样读出（不校验，校验另走 ``load_specs_v8``），使校验失败时计数仍可产出。"""
+def _has_float(value: Any) -> bool:
+    return isinstance(value, float) or (isinstance(value, list) and any(isinstance(v, float) for v in value))
+
+
+def layout_overlap(items: list[tuple[str, dict[str, Any], bool]]) -> dict[str, Any]:
+    """同一任务的跨档位置照抄检测（逐叶子，v8 方案第一部分 §3「布局独立」）。
+
+    ``items`` = 该任务全部规格行 ``(tier, row, 是否交付)``（含未交付行，用来识别恒定叶子）。口径：
+
+    1. 每行取 :func:`position_leaves`；
+    2. 剔除恒定叶子：在该任务全部规格行里出现 ≥ 2 次且取值处处相同的路径（如 ``layout.cube_min_center_dist``、
+       固定的 ``layout.goal_xy``、``layout.demo.region.*``）——它们是配置常量，不是抽出来的位置；
+    3. 剩下的叶子只保留**浮点**叶子（浮点标量或含浮点的列表），外加 PatternLock 的 ``actions.path_nodes``；
+       其余整数列表（如 RouteStick 的 ``actions.nodes``，取值只有几个格点）不参与判定，免得独立抽样偶然相同；
+    4. 对每一对「不同档的交付行」：两行共有的浮点叶子中任一**逐位相等**，或两条 ``path_nodes`` 有长度
+       ≥ :data:`PATH_NODES_MIN_PREFIX` 的共同前缀（短者是长者前缀），即记一对 ``layout_equal_pairs``。
+       理由：独立抽样的浮点坐标逐位相等的概率≈0，而 v7 式派生（低档照抄高档母布局或其前缀）必然在同名叶子上逐位相等。
+
+    返回 ``{"pairs", "no_position", "constant", "detail"}``；跨档交付行剔除后没有任何可比叶子记 ``no_position``。
+    """
+    leaves = [(tier, row, delivered, position_leaves(row.get("spec") or {})) for tier, row, delivered in items]
+    seen: dict[str, set[str]] = collections.defaultdict(set)
+    count: collections.Counter = collections.Counter()
+    for _, _, _, row_leaves in leaves:
+        for path, value in row_leaves.items():
+            seen[path].add(json.dumps(value, sort_keys=True))
+            count[path] += 1
+    constant = {path for path, values in seen.items() if count[path] >= 2 and len(values) == 1}
+    comparable = []
+    for tier, row, delivered, row_leaves in leaves:
+        if not delivered:
+            continue
+        floats = {p: json.dumps(v) for p, v in row_leaves.items() if p not in constant and _has_float(v)}
+        nodes = row_leaves.get(PATH_NODES) if PATH_NODES not in constant else None
+        comparable.append((tier, row, floats, nodes if isinstance(nodes, list) else None))
+    tiers = {tier for tier, *_ in comparable}
+    no_position = sum(1 for _, _, floats, nodes in comparable if not floats and nodes is None) if len(tiers) > 1 else 0
+    pairs, detail = 0, []
+    for i, (tier_a, row_a, floats_a, nodes_a) in enumerate(comparable):
+        for tier_b, row_b, floats_b, nodes_b in comparable[i + 1:]:
+            if tier_a == tier_b:
+                continue
+            hit = next((p for p in floats_a.keys() & floats_b.keys() if floats_a[p] == floats_b[p]), None)
+            if hit is None and nodes_a is not None and nodes_b is not None:
+                n = min(len(nodes_a), len(nodes_b))
+                if n >= PATH_NODES_MIN_PREFIX and nodes_a[:n] == nodes_b[:n]:
+                    hit = PATH_NODES
+            if hit is not None:
+                pairs += 1
+                if len(detail) < 6:
+                    detail.append(f"{row_a['task']}:{tier_a}/{row_a['candidate']}={tier_b}/{row_b['candidate']}@{hit}")
+    return {"pairs": pairs, "no_position": no_position, "constant": sorted(constant), "detail": detail}
+
+
+def _read_v8_root(specs_root: str | Path, cells: dict[tuple[str, str], int]) -> tuple[dict[str, tuple], list[str], list[str]]:
+    """格表涉及各档的 /4 文件原样读出（不校验，校验另走 ``load_specs_v8``），使校验失败时计数仍可产出。
+    返回 ``(files, missing, bad)``：缺文件记 ``missing``；空文件、坏 JSON、首行不是 header 记 ``bad``（不抛异常）。"""
     hs = _hs_light()
     files: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
     missing: list[str] = []
+    bad: list[str] = []
     for tier in hs.V8_TIERS:
         if not any(t == tier for _, t in cells):
             continue
@@ -677,9 +742,15 @@ def _read_v8_root(specs_root: str | Path, cells: dict[tuple[str, str], int]) -> 
         if not path.is_file():
             missing.append(str(path))
             continue
-        records = hs.read_jsonl(path)
+        try:
+            records = hs.read_jsonl(path)
+            if not records or records[0].get("record") != "header":
+                raise ValueError("空文件或首行不是 header")
+        except Exception as exc:  # noqa: BLE001 坏文件计数，不中断判定行
+            bad.append(f"{path}: {type(exc).__name__}: {exc}"[:300])
+            continue
         files[tier] = (records[0], records[1:])
-    return files, missing
+    return files, missing, bad
 
 
 def _write_report(path: str | None, report: dict[str, Any]) -> None:
@@ -696,9 +767,13 @@ def cmd_delivery_set(args) -> int:
       ``V8_EXEC_CAP`` 都判 FAIL。另报 /4 结果段里的 ``failed``／``exec_over_cap``／``backfills``（全部显式写零）。
     * seed 按档隔离：同任务不同档的 seed 集合（全部规格行，不只交付行）两两求交，``shared`` 为交集元素总数。
     * 布局独立：header ``layout_rule == {"mode": "independent"}``（``mode_bad``）、行 ``layout_parent`` 全空
-      （``parent_non_null``），**并且**同任务跨档交付行位置指纹（:func:`layout_fingerprint`）相同的对数
-      ``layout_equal_pairs`` 为 0；只查前两项是同义反复（冻结器自己写的标志）。跨档任务的交付行没有任何位置叶子记
-      ``no_position``，同样判 FAIL（无法证明独立）。
+      （``parent_non_null``），**并且**同任务跨档交付行逐叶子比较（:func:`layout_overlap`：剔除恒定叶子后任一浮点
+      位置叶子逐位相等，或 PatternLock 路径有 ≥ 9 节点的共同前缀）的对数 ``layout_equal_pairs`` 为 0；只查前两项是
+      同义反复（冻结器自己写的标志）。跨档任务的交付行剔除后没有任何可比叶子记 ``no_position``，同样判 FAIL。
+    * 健壮性：缺档文件计 ``missing_files``；空文件、坏 JSON、缺键的行与 ``load_specs_v8`` 抛出的异常（如某格备用候选
+      耗尽、selected 少于期望）一律计入 ``load_errors``，照常逐格计数并打印三行判定，不崩溃。
+    * 计数口径：``failed``／``exec_over_cap``／``backfills`` 取自 /4 行的结果段；``infra_retries`` 不落在规格行里，
+      只由 S2-B ``_rollout`` 聚合步的 ``V8_DELIVERY_SET`` 行与 ``delivery.json`` 给出，本命令不报。
     """
     hp, hs = _hp(), _hs_light()
     cells = hp.parse_cells(args.cells, hs)
@@ -707,23 +782,30 @@ def cmd_delivery_set(args) -> int:
         hs.load_specs_v8(args.specs_root, cells, check_fingerprint=False)
     except Exception as exc:  # noqa: BLE001 校验失败如实计入判定，不中断计数
         load_error = f"{type(exc).__name__}: {exc}"
-    files, missing_files = _read_v8_root(args.specs_root, cells)
+    files, missing_files, bad_files = _read_v8_root(args.specs_root, cells)
+    bad_rows: list[str] = []
     delivered: collections.Counter = collections.Counter()
     counts = {"failed": 0, "exec_over_cap": 0, "backfills": 0, "selected_not_ok": 0, "delivered_over_cap": 0}
     seeds: dict[str, dict[str, set[int]]] = collections.defaultdict(lambda: collections.defaultdict(set))
     parent_non_null = 0
-    delivered_rows: list[tuple[str, dict[str, Any]]] = []
+    by_task: dict[str, list[tuple[str, dict[str, Any], bool]]] = collections.defaultdict(list)
     for tier, (_, rows) in files.items():
         for row in rows:
-            rollout = row.get("rollout") or {}
-            seeds[row["task"]][tier].add(int(row["seed"]))
+            try:
+                seed = int(row["seed"])
+                task = row["task"]
+                rollout = row.get("rollout") or {}
+            except (KeyError, TypeError, ValueError, AttributeError) as exc:
+                bad_rows.append(f"{tier}:{type(exc).__name__}: {exc}"[:200])
+                continue
+            seeds[task][tier].add(seed)
+            by_task[task].append((tier, row, hs.delivered(row)))
             parent_non_null += int(row.get("layout_parent") is not None)
             if rollout.get("status") == "failed":
                 counts["failed"] += 1
                 counts["exec_over_cap"] += int(rollout.get("error_type") == "exec_over_cap")
             if hs.delivered(row):
                 delivered[(row["task"], tier)] += 1
-                delivered_rows.append((tier, row))
                 counts["backfills"] += int(not row.get("initial_selected"))
                 exec_steps = rollout.get("exec_steps")
                 counts["delivered_over_cap"] += int(_is_number(exec_steps) and exec_steps > hs.V8_EXEC_CAP)
@@ -733,7 +815,8 @@ def cmd_delivery_set(args) -> int:
                      if delivered.get((t, tier), 0) != n]
     extra_cells = sorted(f"{t}/{tier}" for (t, tier) in delivered if (t, tier) not in cells)
     total = sum(delivered.values())
-    ok_set = (load_error is None and not missing_files and not cell_mismatch and not extra_cells
+    load_errors = int(load_error is not None) + len(bad_files) + len(bad_rows)
+    ok_set = (load_errors == 0 and not missing_files and not cell_mismatch and not extra_cells
               and counts["selected_not_ok"] == 0 and counts["delivered_over_cap"] == 0
               and total == sum(cells.values()) > 0)
     set_line = (f"V8_DELIVERY_SET={'PASS' if ok_set else 'FAIL'} tasks={len({t for t, _ in delivered})} "
@@ -741,8 +824,9 @@ def cmd_delivery_set(args) -> int:
                 f"cell_mismatch={len(cell_mismatch)} extra_cells={len(extra_cells)} "
                 f"selected_not_ok={counts['selected_not_ok']} delivered_over_cap={counts['delivered_over_cap']} "
                 f"failed={counts['failed']} exec_over_cap={counts['exec_over_cap']} backfills={counts['backfills']} "
-                f"missing_files={len(missing_files)} load_errors={int(load_error is not None)}"
-                + ("" if ok_set else f" detail={(cell_mismatch + extra_cells + missing_files)[:6]} load_error={load_error!r}"))
+                f"missing_files={len(missing_files)} load_errors={load_errors}"
+                + ("" if ok_set else f" detail={(cell_mismatch + extra_cells + missing_files + bad_files + bad_rows)[:6]}"
+                   f" load_error={load_error!r}"))
     tier_pairs = shared = 0
     shared_detail: list[str] = []
     for task in sorted(seeds):
@@ -754,32 +838,25 @@ def cmd_delivery_set(args) -> int:
                 shared += len(common)
                 if common:
                     shared_detail.append(f"{task}:{a}&{b}={len(common)}")
-    ok_seed = shared == 0 and bool(seeds) and not missing_files
+    ok_seed = shared == 0 and bool(seeds) and not missing_files and not bad_files and not bad_rows
     seed_line = (f"V8_SEED_DISJOINT={'PASS' if ok_seed else 'FAIL'} tasks={len(seeds)} tier_pairs={tier_pairs} "
                  f"shared={shared}" + ("" if ok_seed else f" detail={shared_detail[:6]}"))
     mode_bad = sum(header.get("layout_rule") != hs.V8_LAYOUT_RULE for header, _ in files.values())
-    multi_tier = {t for t in {t for t, _ in delivered} if len({tier for task, tier in delivered if task == t}) > 1}
-    groups: dict[tuple[str, str], collections.Counter] = collections.defaultdict(collections.Counter)
-    no_position = 0
-    for tier, row in delivered_rows:
-        fingerprint = layout_fingerprint(row.get("spec") or {})
-        if fingerprint is None:
-            no_position += int(row["task"] in multi_tier)
-            continue
-        groups[(row["task"], fingerprint)][tier] += 1
-    layout_equal_pairs = 0
+    layout_equal_pairs = no_position = 0
     equal_detail: list[str] = []
-    for (task, _), by_tier in groups.items():
-        names = sorted(by_tier)
-        pairs = sum(by_tier[a] * by_tier[b] for i, a in enumerate(names) for b in names[i + 1:])
-        layout_equal_pairs += pairs
-        if pairs:
-            equal_detail.append(f"{task}:{'+'.join(names)}")
-    ok_layout = (bool(files) and not missing_files and mode_bad == 0 and parent_non_null == 0
+    per_task_pairs: dict[str, int] = {}
+    for task in sorted(by_task):
+        result = layout_overlap(by_task[task])
+        per_task_pairs[task] = result["pairs"]
+        layout_equal_pairs += result["pairs"]
+        no_position += result["no_position"]
+        equal_detail += result["detail"]
+    ok_layout = (bool(files) and not missing_files and not bad_files and not bad_rows and mode_bad == 0 and parent_non_null == 0
                  and layout_equal_pairs == 0 and no_position == 0)
     layout_line = (f"V8_LAYOUT_INDEPENDENT={'PASS' if ok_layout else 'FAIL'} files={len(files)} delivered={total} "
                    f"parent_non_null={parent_non_null} layout_equal_pairs={layout_equal_pairs} mode_bad={mode_bad} "
-                   f"no_position={no_position}" + ("" if ok_layout else f" detail={equal_detail[:6]}"))
+                   f"no_position={no_position} load_errors={len(bad_files) + len(bad_rows)}"
+                   + ("" if ok_layout else f" detail={equal_detail[:6]}"))
     for line in (set_line, seed_line, layout_line):
         print(line, flush=True)
     _write_report(args.out, {
@@ -790,12 +867,14 @@ def cmd_delivery_set(args) -> int:
                          "cell_mismatch": len(cell_mismatch), "extra_cells": len(extra_cells),
                          "missing_files": len(missing_files), "load_errors": int(load_error is not None), **counts,
                          "detail": {"cell_mismatch": cell_mismatch, "extra_cells": extra_cells,
-                                    "missing_files": missing_files, "load_error": load_error}},
+                                    "missing_files": missing_files, "load_error": load_error,
+                                    "bad_files": bad_files, "bad_rows": bad_rows}},
         "seed_disjoint": {"verdict": "PASS" if ok_seed else "FAIL", "tasks": len(seeds), "tier_pairs": tier_pairs,
                           "shared": shared, "detail": shared_detail},
         "layout_independent": {"verdict": "PASS" if ok_layout else "FAIL", "files": len(files), "delivered": total,
                                "parent_non_null": parent_non_null, "layout_equal_pairs": layout_equal_pairs,
-                               "mode_bad": mode_bad, "no_position": no_position, "detail": equal_detail},
+                               "mode_bad": mode_bad, "no_position": no_position, "per_task_pairs": per_task_pairs,
+                               "detail": equal_detail},
         "lines": [set_line, seed_line, layout_line]})
     return 0 if ok_set and ok_seed and ok_layout else 1
 
@@ -905,11 +984,12 @@ def cmd_tier_values(args) -> int:
     hp, hs = _hp(), _hs_light()
     cells = hp.parse_cells(args.cells, hs)
     valued = {key: n for key, n in cells.items() if key[0] in V8_TIER_TABLE}
-    files, missing_files = _read_v8_root(args.specs_root, valued)
+    files, missing_files, bad_files = _read_v8_root(args.specs_root, valued)
+    missing_files = missing_files + bad_files  # 坏文件与缺文件同样计入 missing_files，判定行照常打印
     by_cell: dict[tuple[str, str], list[dict[str, Any]]] = collections.defaultdict(list)
     for tier, (_, rows) in files.items():
         for row in rows:
-            if (row["task"], tier) in valued and (row.get("selected") if args.selected else hs.delivered(row)):
+            if (row.get("task"), tier) in valued and (row.get("selected") if args.selected else hs.delivered(row)):
                 by_cell[(row["task"], tier)].append(row)
     mismatches, checked = 0, 0
     detail: list[str] = []
@@ -972,12 +1052,20 @@ def _h5_steps(path: Path) -> tuple[int, int]:
 
 
 def pool_over_cap(paths: list[str | Path]) -> set[tuple]:
+    """:func:`pool_scan` 的身份集合（不含读取错误）。"""
+    return pool_scan(paths)[0]
+
+
+def pool_scan(paths: list[str | Path]) -> tuple[set[tuple], list[str]]:
     """抽样阶段因执行步超限（``error_type == "exec_over_cap"``）被丢弃并递补的候选身份集合。
 
     ``--pool`` 可给多个：目录（递归读 ``*.jsonl`` 与 ``results.json``——覆盖 /4 规格行的 ``rollout.error_type``、
     各轮 ``results.partial.jsonl`` 的逐局结果）或单个 json／jsonl 文件。身份按 (task, tier, seed) 去重（没有 seed 的
-    记录用候选号），同一候选在规格行与轮次结果里各出现一次只算一个。"""
+    记录用候选号），同一候选在规格行与轮次结果里各出现一次只算一个。记录不带档名时取文件所在路径里最近的档目录名
+    （``<档>/specs.jsonl``）。空文件、坏 JSON 不抛异常，逐文件计入返回的错误清单（调用方记 ``pool_load_errors``）。"""
     found: set[tuple] = set()
+    errors: list[str] = []
+    tiers = set(_hs_light().V8_TIERS)
 
     def take(record: Any, tier_hint: str | None = None) -> None:
         if not isinstance(record, dict):
@@ -991,18 +1079,25 @@ def pool_over_cap(paths: list[str | Path]) -> set[tuple]:
                    int(seed) if seed is not None else f"c{record.get('candidate', record.get('episode'))}"))
 
     for base in map(Path, paths):
+        if not base.exists():
+            errors.append(f"{base}: 不存在")
+            continue
         files = (sorted(base.rglob("*.jsonl")) + sorted(base.rglob("results.json"))) if base.is_dir() else [base]
         for file in files:
-            if file.suffix == ".jsonl":
-                for text in file.read_text(encoding="utf-8").splitlines():
-                    if text.strip():
-                        take(json.loads(text))
-            else:
-                payload = json.loads(file.read_text(encoding="utf-8"))
-                items = (payload.get("results") or payload.get("rows") or []) if isinstance(payload, dict) else payload
-                for record in items:
-                    take(record)
-    return found
+            hint = next((part for part in reversed(file.parent.parts) if part in tiers), None)
+            try:
+                if file.suffix == ".jsonl":
+                    for text in file.read_text(encoding="utf-8").splitlines():
+                        if text.strip():
+                            take(json.loads(text), hint)
+                else:
+                    payload = json.loads(file.read_text(encoding="utf-8"))
+                    items = (payload.get("results") or payload.get("rows") or []) if isinstance(payload, dict) else payload
+                    for record in items:
+                        take(record, hint)
+            except (OSError, ValueError, TypeError) as exc:
+                errors.append(f"{file}: {type(exc).__name__}: {exc}"[:300])
+    return found, errors
 
 
 def _xhard0_h5s(source: str | Path) -> tuple[list[Path], int]:
@@ -1024,7 +1119,13 @@ def _xhard0_h5s(source: str | Path) -> tuple[list[Path], int]:
 def _step_headroom_v8(args, delivery: dict[str, Any]) -> int:
     """V8_STEP_CAP（1001 方案第一部分 §3「步数上限」）：交付 h5 的非演示步全部 ≤ ``V8_EXEC_CAP``（1600）；
     ``filtered`` = 候选池里抽样阶段因 exec_over_cap 被丢弃并递补的候选数（与 delivery.json 的 ``exec_over_cap``
-    不一致即 FAIL）；xhard0 按 ``TIER_MAX_STEPS["xhard0"]``（1300）单独查。交付行自带 ``exec_steps`` 时与 h5 实测比对。"""
+    不一致即 FAIL）；xhard0 按 ``TIER_MAX_STEPS["xhard0"]``（1300）单独查。交付行自带 ``exec_steps`` 时与 h5 实测比对。
+
+    正式闸门（阶段 3）必须带 ``--xhard0``；``--skip-xhard0`` 只供局部核对，判定行改打 ``V8_STEP_CAP=INFO …
+    xhard0_max=skipped``，永不出 PASS。delivery.json 的四个全局计数键（``exec_over_cap``／``backfills``／
+    ``infra_retries``／``failed``）必须显式写出（含零），缺任一计 ``count_keys_absent`` 判 FAIL；其中
+    ``infra_retries`` 只由 S2-B 聚合行与 delivery.json 给出（规格行里没有），本命令只核其存在。候选池里的空文件、
+    坏 JSON 计 ``pool_load_errors`` 判 FAIL，判定行照常打印。"""
     hs = _hs_light()
     cap, x0cap = hs.V8_EXEC_CAP, hs.TIER_MAX_STEPS["xhard0"]
     if not args.pool:
@@ -1047,14 +1148,20 @@ def _step_headroom_v8(args, delivery: dict[str, Any]) -> int:
         if exec_steps > cap:
             over.append(f"{row['task']}/{row['tier']}/{row['episode']}:{exec_steps}")
     max_exec = max((e for values in per_cell.values() for _, e in values), default=0)
-    filtered = len(pool_over_cap(args.pool))
+    pool_found, pool_errors = pool_scan(args.pool)
+    filtered = len(pool_found)
     absent = [key for key in hs_count_keys() if delivery["counts"].get(key) is None]
     reported = delivery["counts"].get("exec_over_cap")
     filtered_mismatch = int(reported is None or int(reported) != filtered)
     x0_max: int | str = "skipped"
     x0_over = x0_missing = x0_rows = 0
     if args.xhard0:
-        x0_paths, x0_rows = _xhard0_h5s(args.xhard0)
+        try:
+            x0_paths, x0_rows = _xhard0_h5s(args.xhard0)
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            x0_paths, x0_rows = [], 0
+            x0_missing += 1
+            pool_errors.append(f"xhard0 来源读取失败：{type(exc).__name__}: {exc}"[:300])
         values = []
         for path in x0_paths:
             try:
@@ -1067,22 +1174,26 @@ def _step_headroom_v8(args, delivery: dict[str, Any]) -> int:
     else:
         x0_ok = True
     ok = (bool(rows) and not over and missing_h5 == 0 and exec_mismatch == 0 and filtered_mismatch == 0
-          and not absent and x0_ok and delivery["schema"] == _hp().V8_DELIVERY_SCHEMA)
+          and not absent and x0_ok and not pool_errors and delivery["schema"] == _hp().V8_DELIVERY_SCHEMA)
+    # --skip-xhard0 不是完整闸门：最多 INFO，不出 PASS
+    label = ("INFO" if not args.xhard0 else "PASS") if ok else "FAIL"
     report = {"cells": len(per_cell), "rows": len(rows), "max_exec": max_exec, "cap": cap, "over": over,
               "filtered": filtered, "filtered_delivery": reported, "count_keys_absent": absent,
               "missing_h5": missing_h5, "exec_steps_mismatch": exec_mismatch, "xhard0_max": x0_max,
+              "pool_load_errors": pool_errors, "verdict": None,
               "xhard0_cap": x0cap, "xhard0_over": x0_over, "xhard0_missing": x0_missing,
               "per_cell_max": {k: max(e for _, e in v) for k, v in per_cell.items()},
               "per_cell_mean": {k: {"demo": round(sum(a for a, _ in v) / len(v)), "exec": round(sum(b for _, b in v) / len(v)),
                                     "total": round(sum(a + b for a, b in v) / len(v)), "n": len(v)}
                                 for k, v in per_cell.items()}}
-    line = (f"V8_STEP_CAP={'PASS' if ok else 'FAIL'} max={max_exec} cap={cap} over={len(over)} filtered={filtered} "
+    line = (f"V8_STEP_CAP={label} max={max_exec} cap={cap} over={len(over)} filtered={filtered} "
             f"xhard0_max={x0_max} xhard0_cap={x0cap} rows={len(rows)} cells={len(per_cell)} missing_h5={missing_h5} "
             f"exec_steps_mismatch={exec_mismatch} filtered_delivery={'absent' if reported is None else reported} "
             f"filtered_mismatch={filtered_mismatch} count_keys_absent={len(absent)} xhard0_rows={x0_rows} "
-            f"xhard0_over={x0_over} xhard0_missing={x0_missing}"
-            + ("" if ok else f" detail={(over + absent)[:6]}"))
+            f"xhard0_over={x0_over} xhard0_missing={x0_missing} pool_load_errors={len(pool_errors)}"
+            + ("" if ok else f" detail={(over + absent + pool_errors)[:6]}"))
     report["line"] = line
+    report["verdict"] = label
     _write_report(args.out, report)
     print(line, flush=True)
     return 0 if ok else 1
@@ -2047,8 +2158,9 @@ def build_parser() -> argparse.ArgumentParser:
     sh.add_argument("--pool", nargs="+", default=None,
                     help="v8 必填：候选池（生成输出目录、/4 规格根或 results 文件，可多个），数 exec_over_cap 候选")
     sh.add_argument("--xhard0", default=None,
-                    help="v8：xhard0 h5 来源（hard_parity 一侧目录或 identities.jsonl），按 1300 单独查")
-    sh.add_argument("--skip-xhard0", action="store_true", help="v8：显式不查 xhard0（判定行写 xhard0_max=skipped）")
+                    help="v8：xhard0 h5 来源（hard_parity 一侧目录或 identities.jsonl），按 1300 单独查；正式闸门必须带")
+    sh.add_argument("--skip-xhard0", action="store_true",
+                    help="v8：显式不查 xhard0（只供局部核对；判定行打 V8_STEP_CAP=INFO … xhard0_max=skipped，不出 PASS）")
     sh.add_argument("--v7", action="store_true", help="强制走 v7 旧判据 V7_STEP_HEADROOM（90%% + B4 ×1.25）")
     sh.add_argument("--out", default=None)
     sh.add_argument("--info", action="store_true", help="仅 v7：冒烟外推只报告（阶段 3），不判 PASS/FAIL")

@@ -191,7 +191,8 @@ def read_delivery(path: Path) -> dict[str, Any]:
 
     * 顶层 ``schema``（v8 为 ``v8-delivery/1``）；
     * 全局计数 ``exec_over_cap``／``backfills``／``infra_retries``／``failed``：放在 ``counts``（或 ``totals``）字典里，
-      或直接放在顶层；缺失的键在 ``counts`` 里记为 ``None``（调用方据此判「没有显式写零」）；
+      或直接放在顶层；缺失的键在 ``counts`` 里记为 ``None``（调用方据此判「没有显式写零」）；``infra_retries``
+      只由 S2-B 聚合行与 delivery.json 给出（/4 规格行里没有），守卫只核其显式存在；
     * 逐格 ``cells``：``{"<task>/<tier>": {...}}`` 或 ``[{task, tier, ...}]``，原样保留在 ``cells`` 里（键统一成
       ``"<task>/<tier>"``）；
     * 逐局 ``rows``（或 ``delivered``）：``task``、``tier``（或 ``difficulty``）、``episode``、``seed``、``candidate``、
