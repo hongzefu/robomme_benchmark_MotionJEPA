@@ -1,6 +1,6 @@
 > **用途与顺序**：本方案接在根目录 [V8 计划](1001-newtask-v8-xhard-gradient-plan.md)全部完成之后，规划在 Great Lakes 上评估 SimpleMemVLA 与 MME-VLA。本轮只新增这份方案，不提交占位作业、不启动评估、不修改原 V8 计划或在途实现。原计划中的 xhard0 两路线评估仍属于原计划，本方案不接管。
 >
-> **用户原话，按时间顺序**：①「把方案写在根目录，在V8 Plan Markdown之后，开始两个模型的 evaluation 在 Great Lakes 上进行。」②「这是 V8 Plan Markdown 结束之后开始进行。」③「然后告诉我预估的时间，如果我用十个卡去并行的话。」④（2026-10-02，问口径）「是所有的已经生成过验证过的eisde都要evaluate吗?注意我说的是XHARD1234」⑤（同日，定口径，语音转写原样保留）「修改计划凭X号的12345。Xhard0不评」——即只评 xhard1～xhard5，xhard0 不评。⑥（同日）「这次评估会保留所有视频吗?需要保留所有视频如果没有保留的话。」⑦（同日，交 Codex 审计 `AUDIT_BASE=d7a15870` 七条 P2 意见后）「参考以上Codex的审计意见对于计划进行修改。」⑧（同日，改计划途中两条）「一千600步到了就timeout。」「直接计为timeout」「注意我说的一千600步是指执行步数不包括Demo」⑨（同日）「MME资产的这个锁你要把它锁上。simpleMVRA的这个1600步也要写上。reset额度可以放开到十倍」「如果有问题可以放开到石碑。还有什么没有定下来我需要开跑之后用户去睡觉一直跑到美国东部时间早上十二点。」（语音转写：simpleMVRA 即 SimpleMemVLA，石碑即十倍）
+> **用户原话，按时间顺序**：①「把方案写在根目录，在V8 Plan Markdown之后，开始两个模型的 evaluation 在 Great Lakes 上进行。」②「这是 V8 Plan Markdown 结束之后开始进行。」③「然后告诉我预估的时间，如果我用十个卡去并行的话。」④（2026-10-02，问口径）「是所有的已经生成过验证过的eisde都要evaluate吗?注意我说的是XHARD1234」⑤（同日，定口径，语音转写原样保留）「修改计划凭X号的12345。Xhard0不评」——即只评 xhard1～xhard5，xhard0 不评。⑥（同日）「这次评估会保留所有视频吗?需要保留所有视频如果没有保留的话。」⑦（同日，交 Codex 审计 `AUDIT_BASE=d7a15870` 七条 P2 意见后）「参考以上Codex的审计意见对于计划进行修改。」⑧（同日，改计划途中两条）「一千600步到了就timeout。」「直接计为timeout」「注意我说的一千600步是指执行步数不包括Demo」⑨（同日）「MME资产的这个锁你要把它锁上。simpleMVRA的这个1600步也要写上。reset额度可以放开到十倍」「如果有问题可以放开到石碑。还有什么没有定下来我需要开跑之后用户去睡觉一直跑到美国东部时间早上十二点。」（语音转写：simpleMVRA 即 SimpleMemVLA，石碑即十倍）⑩（同日 03:13 EDT 后，AskUserQuestion 四问的答复）开工授权：「不开工只审核计划」；中午 12 点未跑完：「继续跑到完成」；tokenizer 可信 SHA256 来源：「对 GCS 官方对象的校验和」；第 1600 步恰好成功：「记成功」。
 >
 > **规划锚点**：工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-taskV8`，读取时 HEAD 为 `ae5b85762de69fbdba0728b4f333409a3047d2dd`（12.298）。这是规划依据，不是最终评估版本；实施时记录 V8 收尾提交、评估适配提交、两个 gitlink 的完整 SHA 与权重清单。提交编号沿用仓库 `12.<小版本>`，提交前重新核对。当前 `third_party/SimpleMemVLA` 有他人在途改动，本轮不读取其修改、不提交、不清理。
 >
@@ -15,7 +15,7 @@
 1. **开始时间**：必须等 V8 阶段 1、2、2b、3、3′、3b、4 全部完成并留档，包括换包、xhard0 原计划评估、二次生成及站点检查；不能以 gen1 已完成、站点已生成或 GPU 空闲代替。H2 若存在原计划允许保留 gen1 的正常失败，按原计划预定动作留档即可；不要求把已有 FAIL 改为 PASS，也不将未处理的身份、依赖或产物错误当作收尾。
 2. **两个模型**：SimpleMemVLA 官方 RoboMME 权重与 MME-VLA `perceptual-framesamp-modul/79999`，依据现有 `scripts/eval-official/run_seat.sh`；不是 motion/50000 模型。执行前核实最终来源与权重字节，不能仅凭目录名认定相同。
 3. **范围（用户 2026-10-02 定）**：只评 V8 新值档交付集 xhard1～xhard5（16 任务 × 43 格，1070 局），**xhard0 不评**；两模型各一遍、单一冻结身份集。xhard0 已由 V8 阶段 3′ 两路线评估覆盖（768 局全部取得终态，见 `docs/validation/newtask-v8/result.md`），本轮不复测、不进分母、不作对照列。此范围用于下述耗时估计，尚不启动。
-4. **步数（用户 2026-10-02 定：严格截断）**：交付的 xhard1～5 一律 1600（本轮不评 xhard0，其 1300 不涉及），取自 V8 最终 `hard_specs.TIER_MAX_STEPS`。1600 只数策略执行段的 `env.step`，不含 reset 内生成的演示帧。**执行段累计到第 1600 步仍未成功即直接计为 timeout**（`status=timeout`、`task_success=false`），不再执行第 1601 步，SimpleMemVLA 动作块剩余部分直接丢弃；第 1600 步及之前环境报成功的照常记成功。截断在环境侧共享入口做，两模型同一口径；这改变了现有客户端「按 `count > max_steps` 或按动作块数判停、可能略超」的旧语义，是本轮有意的评估协议变化，不与 V7／V8 xhard0 历史结果逐步对齐。
+4. **步数（用户 2026-10-02 定：严格截断）**：交付的 xhard1～5 一律 1600（本轮不评 xhard0，其 1300 不涉及），取自 V8 最终 `hard_specs.TIER_MAX_STEPS`。1600 只数策略执行段的 `env.step`，不含 reset 内生成的演示帧。**执行段累计到第 1600 步仍未成功即直接计为 timeout**（`status=timeout`、`task_success=false`），不再执行第 1601 步，SimpleMemVLA 动作块剩余部分直接丢弃；第 1600 步及之前环境报成功的照常记成功（含恰好在第 1600 步成功，用户已确认）。截断在环境侧共享入口做，两模型同一口径；这改变了现有客户端「按 `count > max_steps` 或按动作块数判停、可能略超」的旧语义，是本轮有意的评估协议变化，不与 V7／V8 xhard0 历史结果逐步对齐。
 5. **分数**：每任务、每档分别报告成功率及固定分母，另报全局微平均、任务宏平均、错误数、超时数；缺失不得消失在分母里。记录独立 `task_success`，执行成功不等于任务成功。不为提高成功率重跑正常失败。
 6. **范围不外溢**：不改官方 `src/robomme/`、录像器和模型实现；不启动额外采样生成；本次不含把评估视频填回 V8 网站的改造，结果先按留档与媒体索引交付。
 7. **全部视频保留（用户 2026-10-02 定）**：2 模型 × 1070 局 = 2140 个正式身份，每局都录像（成功、失败、timeout 一视同仁），基础设施错误与重试的每一次尝试只要录到了画面也保留，不按成败挑选、不抽样；冒烟局视频同样保留，单独目录、不计入正式分母。正式运行禁用 `--no-record`。全部视频搬回本机 `artifacts/v8-evaluation/<run_name>/videos/<策略>/<tier>/<task>/`，GL 侧 NFS 暂存只在逐个 sha256 核对一致后才删；本机副本不删。V7 教训：旧入口 384 个评估视频当时漏搬、事后补搬（`docs/validation/newtask-v7/README.md` ⑥ 视频条），本轮以视频数量闸门堵住。
@@ -104,7 +104,7 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 
 - 不修改原 V8 计划、V8 在途源文件、`src/robomme/**` 或两个策略子模块。受保护目录需要改动时另列具体锚点，不能通过运行时覆盖绕过。
 - 不执行旧 `v75-lanes/gl/seat_run.sh`：它硬编码旧 worktree、旧产物位置并包含裸 `python3`。新编排必须使用显式 V8 锚点、当前存储边界和 uv。
-- MME 候选 NFS 权重为 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v75eval/ckpt/mme/perceptual-framesamp-modul/79999`；SimpleMemVLA 候选为 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/checkpoints/simplememvla_robomme`。依据现有 GL 启动脚本，**本轮未验证路径存在、完整性或最终可加载性**。MME 同时核对父目录 `history_config.txt` 与 `params/assets`，指纹须有独立可信期望值，现场自算仅能记录当前字节。**MME tokenizer 也进资产锁**：锁定源码 `third_party/mme-vla/src/openpi/models/tokenizer.py` 经 `openpi.shared.download.maybe_download("gs://big_vision/paligemma_tokenizer.model")` 读取，缓存命中直接返回、不验哈希；错误但可加载的 tokenizer 会改变文本输入而不改变权重指纹。执行时把 `OPENPI_DATA_HOME` 固定到本轮 `artifacts` 下的缓存目录，server 启动前对该文件比对独立可信 SHA256（来源记进 launch.md），不一致即停，不现场下载顶替。
+- MME 候选 NFS 权重为 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v75eval/ckpt/mme/perceptual-framesamp-modul/79999`；SimpleMemVLA 候选为 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/checkpoints/simplememvla_robomme`。依据现有 GL 启动脚本，**本轮未验证路径存在、完整性或最终可加载性**。MME 同时核对父目录 `history_config.txt` 与 `params/assets`，指纹须有独立可信期望值，现场自算仅能记录当前字节。**MME tokenizer 也进资产锁**：锁定源码 `third_party/mme-vla/src/openpi/models/tokenizer.py` 经 `openpi.shared.download.maybe_download("gs://big_vision/paligemma_tokenizer.model")` 读取，缓存命中直接返回、不验哈希；错误但可加载的 tokenizer 会改变文本输入而不改变权重指纹。执行时把 `OPENPI_DATA_HOME` 固定到本轮 `artifacts` 下的缓存目录，server 启动前对该文件比对独立可信 SHA256，不一致即停，不现场下载顶替。**可信值来源（用户已定）**：读 GCS 官方对象 `gs://big_vision/paligemma_tokenizer.model` 的服务端校验和元数据（md5／crc32c），与本地缓存文件现算的同类校验和比对一致后，才把本地文件的 SHA256 记为本轮锁值写进 launch.md；GCS 元数据取不到或不一致即停、交用户，不退回「以现有缓存自证」。
 - GL 工作副本以仓库约定 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl` 为基准；执行前确认其归属与状态，不能覆盖其他会话改动。产物落该工作副本 `artifacts/v8-evaluation/<run_name>/`，本机收回到本仓库同一相对根。
 - 建议新运行名 `v8-two-policy-gl10-20261001-01`，执行前确认未占用并在一次清单中批准；不能覆盖已有目录。档案放 `docs/validation/<run_name>/`，首次实际启动前记录代码、权重、规格、资源和命令。
 
@@ -148,7 +148,7 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 
 冒烟选题：SwingXtimes 全部子任务都是 `demonstration=False`，单靠它证明不了演示生成、录像与两模型消费演示历史的路径，所以每个模型把 xhard1 那局换成有演示的 VideoUnmask（xhard1 有 20 局），保留 SwingXtimes@xhard5 覆盖最高档；冒烟验收要求有演示那局 `demo_frames>0`。冒烟独立于正式统计，不把冒烟成绩当作额外正式样本。额外金丝雀预算为零；十席先做不触发 reset 的输入与服务检查，再执行其分配的正式首局。正常终止、策略失败、到 1600 步计 timeout 均不重试；基础设施故障只重试原身份，不换 seed，不递补新场景。
 
-执行前一次确认：①两模型和权重版本；②完整 D、两模型各一遍及上述尝试上限；③十张 A40、每席4 CPU/48 GiB/48小时；④新 run_name；⑤适配文件清单与子代理写入边界。旧 V8 已批准预算不自动覆盖本表。此时再集中提出未知项，不分阶段重复申请同一授权。
+执行前一次确认（2026-10-02 已定：步数严格 1600 计 timeout、第 1600 步成功记成功、reset 可放开到十倍、tokenizer 以 GCS 校验和为可信源、中午未完成继续跑；**未定：开工授权——用户当前答复「不开工只审核计划」**）：①两模型和权重版本；②完整 D、两模型各一遍及上述尝试上限；③十张 A40、每席4 CPU/48 GiB/48小时；④新 run_name；⑤适配文件清单与子代理写入边界。旧 V8 已批准预算不自动覆盖本表。此时再集中提出未知项，不分阶段重复申请同一授权。
 
 ## 5. 运行手册与闸门
 
@@ -167,11 +167,12 @@ srun --jobid=<本轮JobID> --overlap --exact --ntasks=1 \
 1. 清点真实工作副本、uv 管理的解释器与权重路径。`UV_LINK_MODE=copy`，显式 `UV_CACHE_DIR=$HOME/.cache/uv`；模型及其他持久缓存落本轮 `artifacts`。计算节点只用 `uv run --frozen --no-sync` 或已核验的 uv venv 解释器，不现场安装。若从编排作业派发，清除继承的 `SLURM_*` 后再显式指定目标 JobID。
 2. 在 clean、固定提交的执行副本运行；主检出的子模块在途修改不能带入，不能替别人提交或清理。本机与 NFS 通过 rsync 同步输入，核 SHA256；记录实际 import 路径，不能误用旧包。
 3. E-A 按四步转换输出十片及 manifest，并保留原 JSONL（1262 行）哈希、筛掉的 xhard0 计数（192）与补指纹所连接的 gen1 记录哈希。每模型身份集合必须等于 D（1070，43 格）；执行清单含任何 xhard0 身份或缺指纹即停。不重新生成或重新抽签。xhard0 本轮不评。
-4. 启 server 前先过 tokenizer SHA256 闸门。先跑冒烟表的第一项（1 模型 × VideoUnmask × xhard1 × 1 局、单 worker），通过后串行完成剩余三项。核对真实 reset 次数（含 build）、`exec_steps≤1600`、SimpleMemVLA `hard_bound=102`、`demo_frames>0`、模型 reset 和结果格式；失败不直接启十卡，转第 8 步异常收尾。
+4. 启 server 前先过 tokenizer SHA256 闸门。先跑冒烟表的第一项（1 模型 × VideoUnmask × xhard1 × 1 局、单 worker），通过后串行完成剩余三项。核对真实 reset 次数（含 build）、`exec_steps≤1600`、SimpleMemVLA `hard_bound=102`、`demo_frames>0`、模型 reset 和结果格式；失败不直接启十卡，转第 9 步异常收尾。
 5. 十席 tmux 命名 `ev-v8-<run_name>-s00`～`s09`；独立输出 `<root>/sNN/<policy>/`。端口按 `18000 + 100×席号 + 10×策略号` 起，先探服务与相邻端口，冲突有限次换位。server就绪与首次推理分别设超时，不能把监听成功当作首次推理可用。
 6. 每任务命令用 `PYTHONUNBUFFERED=1`、`set -o pipefail` 和 `tee`；结果持久化后写 `EXIT_CODE`。持久监督器覆盖主进程死亡、无进展、日志/报告写失败；独立测试监督器自身崩溃的通知路径。不得仅凭 tmux 存活宣称有自动唤醒；本轮未注册后台启动或唤醒。
 7. 结果齐全后运行汇总，核每格分母、终态、退出码、预算及媒体；录像结束后再解码检查。视频全部回传本机（必做，见第一部分 §1 第 7 条）：评估期间可常驻运行 `eval_video_mover.py` 边跑边搬，评估结束后再 `--once` 全量对账；每个文件 rsync 后两端 sha256 相同才删 NFS 副本，本机副本一律不删。`V8_EVAL_VIDEOS=PASS` 之前不得清理 NFS 评估目录或释放占位作业里仍有未搬视频的席位。
-8. 收尾分三路，都要走完：**成功**——全部闸门通过、视频搬完后留档并释放；**失败**（冒烟失败、闸门 FAIL、预算耗尽）——停受影响部分，保存日志、结果行、已录视频（照常搬回本机核 sha256）与失败判定行，写 `result.md` 失败段，再释放本轮 JobID；**中断**（用户叫停、作业到期、节点故障）——精确停本轮 tmux，记录停在哪一身份与未完成范围，同样先搬已产出视频再释放。三路都输出 `V8_EVAL_CLEANUP=DONE outcome=<pass/fail/aborted> jobs_released=<n> videos_kept=<n>`。只释放本轮清单里的 JobID，tmux 只按精确名称逐个清理；禁止全用户取消和全局杀 tmux。
+8. **无人值守与时限（用户已定）**：用户开跑后去睡觉，回来时间为东部时间中午 12 点；到点未跑完**继续跑到完成**，48 小时占位作业足够，中午只出一份中途进度（已完成身份数、各格成功率、预计剩余时间、异常），不停作业。主会话未注册任何后台唤醒，会话断开后作业仍在 tmux 内继续、监督进程负责失败停机与收尾，但最终汇总、提交与释放资源要等主会话恢复后再做；不得对用户承诺「睡着期间一定会自动处理完」。
+9. 收尾分三路，都要走完：**成功**——全部闸门通过、视频搬完后留档并释放；**失败**（冒烟失败、闸门 FAIL、预算耗尽）——停受影响部分，保存日志、结果行、已录视频（照常搬回本机核 sha256）与失败判定行，写 `result.md` 失败段，再释放本轮 JobID；**中断**（用户叫停、作业到期、节点故障）——精确停本轮 tmux，记录停在哪一身份与未完成范围，同样先搬已产出视频再释放。三路都输出 `V8_EVAL_CLEANUP=DONE outcome=<pass/fail/aborted> jobs_released=<n> videos_kept=<n>`。只释放本轮清单里的 JobID，tmux 只按精确名称逐个清理；禁止全用户取消和全局杀 tmux。
 
 测试命令模板：核实 `command -v uv`、`pyproject.toml`、`uv.lock` 后，以显式缓存目录运行 `uv run --no-sync python -m pytest tests/lightweight/test_v8_eval_manifest.py tests/lightweight/test_v8_eval_client.py tests/lightweight/test_v8_eval_report.py -q`；这些测试文件是拟新增项，当前不能直接运行。真实冒烟只在 E2 进行，计入上表。
 
