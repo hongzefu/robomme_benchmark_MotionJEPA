@@ -22,13 +22,26 @@
 | `v8-glsetup` | sled-vail | 建 NFS 克隆 `robomme_benchmark-v8gen`、`robomme_benchmark-v8eval` 与 venv（已结束） |
 | `v8-x0reset-s1` | sled-vail | 阶段 1 `XHARD0_RESET_PARITY`（GPU 0） |
 | `v8-x0eval` | GL 登录节点 | 阶段 3′ 编排器 |
+| `v8-smoke2b` | GL 登录节点 | 阶段 2b 冒烟（生成席 63003408） |
+| `v8-freeze-1`～`4` | GL 登录节点 | 阶段 3 五档冻结（四个生成席） |
+| `v8-gen1-1`～`4` | GL 登录节点 | 阶段 3 gen1 四片生成 |
+| `v8-h2-1`、`v8-h2-2`、`v8-h2-2b`、`v8-h2-3`、`v8-h2-4` | GL 登录节点 | 阶段 4 H2 回放 |
+| `v8-sup` | GL 登录节点 | BinFill xhard2 补抽 + 片 2 续跑 |
+| `v8-sync`、`v8-sync-1`～`4` | sled-vail | gen1 回传（单路后改四路并行） |
+| `v8-beta`、`v8-beta-site` | sled-vail | beta 站合并与 catalog |
+| `site-v8beta-8080` | sled-vail | beta 站服务（保留） |
+| `v8-official`、`v8-watchdog` | sled-vail | 正式链路（aggregate + P4 接续）与独立 watchdog |
+| `site-v8-8081` | sled-vail | 正式站服务（保留） |
+| `v8-import`、`v8-compare` | sled-vail | H 侧登记与 H:H2 对拍 |
+| `v8-gate3b-gpu0`、`v8-gate3b-gpu1`、`v8-gate3b-replay` | sled-vail | 换包 GPU 闸门 |
+| `v8-nfs-cleanup` | sled-vail | 收尾删除 NFS 大文件 |
 
 ## 四、NFS 克隆
 
 `N=/nfs/turbo/coe-chaijy-unreplicated/hongzefu`。两份克隆自本机工作副本 `git clone --no-hardlinks --branch newtaskRelease-taskV8`，`origin` 指回本机路径（git 操作只在 sled-vail 发起）；venv 用 `uv venv --python $N/uv-python/cpython-3.11.14-linux-x86_64-gnu/bin/python3.11` + `UV_LINK_MODE=copy uv sync --frozen`。
 
 - `$N/robomme_benchmark-v8eval`：冻结在阶段 1 合入后的 `047fa39511e258dcae3fb27ecb3a2184fd1bbf20`（12.292），供 3′ 的 hard 路线。
-- `$N/robomme_benchmark-v8gen`：阶段 2 通过后快进并冻结，供 2b、3、4。
+- `$N/robomme_benchmark-v8gen`：冒烟在 `48857961` 上跑；阶段 3 冻结、gen1、补抽与 H2 全部冻结在 `348c5a38`（阶段 2 生成链路代码的最终版；其后 S2-D 只新增本机接续脚本，生成链路零 diff）。
 
 ## 五、阶段 3′：xhard0 评估（16 任务 × 1 档 × 12 局 × 2 策略 × 2 路线 = 768 局）
 
