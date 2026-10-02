@@ -11,7 +11,7 @@ AGENTS.md P4 的落地：不只听「完成行」，而是读取并核验 gen1 �
    且为 0）。超时 → FAIL（「完成行超时未到」）。
 2. ``report``：核 ``delivery.json``——``schema == v8-delivery/1``、``exec_cap == 1600``、``specs_root`` 与 ``--specs-root``
    为同一路径、``cells_table`` 与 ``--cells`` 格表相等、``counts`` 的计数键**显式存在**且为非负整数（零值也必须写出，
-   不用 ``.get(k, 0)`` 兜底）、``line`` 以 ``V8_DELIVERY_SET=PASS`` 开头且 ``total=`` 等于 ``counts.delivered`` 与
+   不用 ``.get(k, 0)`` 兜底）、``line`` 以 ``V8_DELIVERY_SET=PASS``（或 V9 同名 ``V9_DELIVERY_SET=PASS``）开头且 ``total=`` 等于 ``counts.delivered`` 与
    ``len(rows)``、``failed_cells == 0``。
 3. ``delivery_set``：``hard_regression.py delivery-set`` → ``V8_DELIVERY_SET``／``V8_SEED_DISJOINT``／
    ``V8_LAYOUT_INDEPENDENT`` 三行 PASS，且 ``total=`` 与报告一致。
@@ -31,7 +31,21 @@ AGENTS.md P4 的落地：不只听「完成行」，而是读取并核验 gen1 �
 ``rows``（task／tier／seed／candidate），xhard0 取 ``--xhard0-manifest``（缺省 ``scripts/configs/newtask-v7/
 xhard0_manifest.json`` 的 192 行；也接受 ``manifest-H.jsonl`` 形态）的 task／seed／episode（记为 ``source_episode``）；
 ``round``／``shard`` 置空，``episode`` 按 (tier, task, seed) 排序编号。站点 catalog 只按 (tier, task, seed) 对账，
-不依赖 builder 的 episode 编号；总数仍由 catalog 按表 2 核 1262。合成文件已存在时只在内容逐字节相同时复用。
+不依赖 builder 的 episode 编号；总数仍由 catalog 按格表核（``sum(格表) + 16 × 12``：V8 1262、V9 992）。合成文件已存在时
+只在内容逐字节相同时复用。
+
+**格表**（v9 方案 §2.1 S1-E）：``--cells full``／``v8``（缺省，``V8_CELLS``，V8 行为不变）｜``v9``（``V9_CELLS``）｜
+``{"Task/tier": n}`` JSON 文件。局数、期望格数一律由格表推出；非 V8 完整表时写 ``<work-dir>/cells.json`` 传给守卫与
+catalog（``--cells-json``），不依赖 ``EXPECTED_CELLS``，阶段 3b 切换前后行为相同。守卫判定行 ``V8_*`` 与 ``V9_*`` 同名
+等价（S1-C 按格表版本出 ``V9_DELIVERY_SET`` 等）。
+
+**V9 建站（阶段 4c，§2.4.2 第 8 步、§2.4.4）**：``--site-dir`` 指向 V9 独立目录（如 ``artifacts/newtask-v9/site``，
+已有本轮产物时按 progress／report 指纹复用，非空且无可复用记录即 FAIL，不覆盖）；``--eval-reuse <V8 site-eval 目录>``
+``--reused <reused.json>`` ``--eval-new <V9 评估运行目录>`` 原样透传给 catalog（复用 720 + 新评 80），``--port`` 是服务
+端口并透传给总表检查器，检查器在 V8 行之外再出 ``V9_SITE=PASS cells=59 missing=0 eval_reused=… eval_new=… eval_empty=0
+port=…``（期望复用数取 ``reused.json`` 的 ``count``，期望新评数 = 格表合计 − 复用数），该行也是本步必需判定行。
+``--site-only``：3b 已跑过全部守卫、4c 只建站时用——跳过 ``wait_report``／``report``／三个守卫（记 ``SKIP``），必须
+给 ``--identities``（4b 导出的 ``eval-identities-992.jsonl``），收尾行追加 ``site_only=1``。
 
 **产物**（全部在 ``--work-dir``）：``heartbeat.json``（加锁成功后立即写一次本轮心跳，覆盖上一轮遗留；之后每步、
 每 ``--beat-s`` 秒与子进程每行输出时原子替换；拒绝执行（退出码 2）时记 ``status=aborted``；
@@ -56,6 +70,15 @@ xhard0_manifest.json`` 的 192 行；也接受 ``manifest-H.jsonl`` 形态）的
       --delivery artifacts/newtask-v8/gen1/delivery.local.json --specs-root artifacts/newtask-v8/specs-root \\
       --xhard0-steps artifacts/newtask-v7/parity/h5/H-xhard0 --work-dir artifacts/newtask-v8/continue \\
       --site-dir artifacts/newtask-v8/site --port 8090
+
+V9 阶段 4c（评估完成后只建站）::
+
+    uv run --no-sync python scripts/injection-dev/v8_continue_after_gen.py --site-only --cells v9 \\
+      --delivery artifacts/newtask-v9/delivery/delivery.local.json --specs-root artifacts/newtask-v9/specs-root \\
+      --identities artifacts/v9-evaluation/inputs/eval-identities-992.jsonl \\
+      --work-dir artifacts/newtask-v9/continue-site --site-dir artifacts/newtask-v9/site --port 8082 \\
+      --eval-reuse artifacts/newtask-v8/site-eval --reused artifacts/v9-evaluation/<run_name>/manifest/reused.json \\
+      --eval-new artifacts/v9-evaluation/<run_name>
 """
 from __future__ import annotations
 
@@ -108,6 +131,10 @@ EXPECT = {
     "site_check": ("V8_SITE",),
     "oracle_check": ("V8_ORACLE_BROWSER",),
 }
+#: 守卫判定行的 V9 同名（S1-C 按格表版本输出 V9_*）：两者等价，记在 V8 名下
+VERDICT_ALIASES = {"V8_DELIVERY_SET": "V9_DELIVERY_SET", "V8_SEED_DISJOINT": "V9_SEED_DISJOINT",
+                   "V8_LAYOUT_INDEPENDENT": "V9_LAYOUT_INDEPENDENT", "V8_TIER_VALUES": "V9_TIER_VALUES",
+                   "V8_STEP_CAP": "V9_STEP_CAP"}
 READY_RE = re.compile(r"^V8_SITE_READY\b.*\bport=(\d+)")
 #: 缺省命令模板：``{名}`` 逐 token 替换；``@pool``／``@xhard0_args``／``@cells_json_args`` 展开为多个 token
 DEFAULT_CMDS = {
@@ -117,7 +144,7 @@ DEFAULT_CMDS = {
                       "@xhard0_args"],
     "catalog": ["{python}", "{site}/v8_site_catalog.py", "--specs-root", "{specs_root}", "--delivery", "{delivery}",
                 "--identities", "{identities}", "--xhard0-gen", "{xhard0_gen}", "--path-base", "{path_base}",
-                "@cells_json_args", "--out", "{site_dir}"],
+                "@cells_json_args", "@eval_args", "--out", "{site_dir}"],
     "subgoals": ["{python}", "{site}/v8_subgoal_lengths.py", "--site-dir", "{site_dir}", "--specs-root", "{specs_root}",
                  "--delivery", "{delivery}", "--xhard0-gen", "{xhard0_gen}", "--path-base", "{path_base}",
                  "--workers", "{workers}"],
@@ -126,8 +153,8 @@ DEFAULT_CMDS = {
     "site_check": ["uv", "run", "--no-project", "--with", "playwright", "python", "{site}/v8_site_browser_check.py",
                    "--base", "{base}", "--shots", "{shots}/site"],
     "oracle_check": ["uv", "run", "--no-project", "--with", "playwright", "python", "{site}/v8_oracle_browser_check.py",
-                     "--base", "{base}", "--shots", "{shots}/oracle", "--delivery", "{delivery}",
-                     "--expect-cells", "{expect_cells}"],
+                     "--base", "{base}", "--port", "{port_actual}", "--shots", "{shots}/oracle", "--delivery", "{delivery}",
+                     "--expect-cells", "{expect_cells}", "@v9_expect_args"],
 }
 DEFAULT_TIMEOUTS = {"delivery_set": 1800, "tier_values": 1800, "step_headroom": 3600, "catalog": 1800,
                     "subgoals": 3600, "serve": 120, "site_check": 1800, "oracle_check": 1800}
@@ -185,14 +212,21 @@ def parse_kv(line: str) -> dict[str, str]:
 
 
 def verdict_lines(lines: list[str], names: tuple[str, ...]) -> dict[str, str | None]:
-    """每个判定行名取最后一次出现的原文（``NAME=PASS|FAIL|INFO`` 开头，``V8_SITE`` 不会误配 ``V8_SITE_READY``）。"""
+    """每个判定行名取最后一次出现的原文（``NAME=PASS|FAIL|INFO`` 开头，``V8_SITE`` 不会误配 ``V8_SITE_READY``）；
+    ``VERDICT_ALIASES`` 里的 V9 同名行记在 V8 名下。"""
     out: dict[str, str | None] = {name: None for name in names}
     for raw in lines:
         line = raw.strip()
         for name in names:
-            if re.match(rf"^{re.escape(name)}=(PASS|FAIL|INFO)\b", line):
-                out[name] = line
+            for alias in (name, VERDICT_ALIASES.get(name)):
+                if alias and re.match(rf"^{re.escape(alias)}=(PASS|FAIL|INFO)\b", line):
+                    out[name] = line
     return out
+
+
+def verdict_of(line: str) -> str:
+    """判定行 ``NAME=PASS …`` 的结论（PASS／FAIL／INFO）。"""
+    return line.split("=", 1)[1].split()[0] if "=" in line else ""
 
 
 def load_catalog_module():
@@ -203,10 +237,16 @@ def load_catalog_module():
     return module
 
 
-def parse_cells_arg(spec: str, full: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
-    """``full``（表 2 的 43 格）或 JSON 文件（``{"Task/tier": n}``，与 catalog ``--cells-json`` 同形态）。"""
-    if spec == "full":
+def parse_cells_arg(spec: str, full: dict[tuple[str, str], int],
+                    v9: dict[tuple[str, str], int] | None = None) -> dict[tuple[str, str], int]:
+    """``full``／``v8``（V8 完整格表）、``v9``（V9 完整格表）或 JSON 文件（``{"Task/tier": n}``，与 catalog
+    ``--cells-json`` 同形态）。"""
+    if spec in ("full", "v8"):
         return dict(full)
+    if spec == "v9":
+        if v9 is None:
+            raise SystemExit("--cells v9 需要 V9_CELLS")
+        return dict(v9)
     raw = json.loads(Path(spec).read_text(encoding="utf-8"))
     cells: dict[tuple[str, str], int] = {}
     for key, n in raw.items():
@@ -332,6 +372,10 @@ class Runner:
                 out += (["--xhard0", self.vars["xhard0_steps"]] if self.vars["xhard0_steps"] else ["--skip-xhard0"])
             elif token == "@cells_json_args":
                 out += (["--cells-json", self.vars["cells_json"]] if self.vars["cells_json"] else [])
+            elif token == "@eval_args":
+                out += self.vars["eval_args"]
+            elif token == "@v9_expect_args":
+                out += self.vars["v9_expect_args"]
             else:
                 out.append(token.format(**{k: v for k, v in self.vars.items() if isinstance(v, (str, int))}))
         return out
@@ -411,7 +455,7 @@ class Runner:
         self.beat(force=True)
         started = time.time()
         rc, lines, reason, log = self.run_child(step, self.command(step), self.vars["timeouts"][step])
-        found = verdict_lines(lines, EXPECT[step])
+        found = verdict_lines(lines, self.vars.get("expect", EXPECT)[step])
         kept = [line for line in found.values() if line]
         status = "PASS"
         if reason:
@@ -421,10 +465,10 @@ class Runner:
         missing = [name for name, line in found.items() if line is None]
         if status == "PASS" and missing:
             status, reason = "FAIL", "line_missing:" + ",".join(missing)
-        not_pass = [name for name, line in found.items() if line and not line.startswith(f"{name}=PASS")]
+        not_pass = [name for name, line in found.items() if line and verdict_of(line) != "PASS"]
         if status == "PASS" and not_pass:
             info_ok = (step == "step_headroom" and not self.vars["xhard0_steps"] and not_pass == ["V8_STEP_CAP"]
-                       and found["V8_STEP_CAP"].startswith("V8_STEP_CAP=INFO"))
+                       and verdict_of(found["V8_STEP_CAP"]) == "INFO")
             status, reason = ("INFO", "xhard0_skipped") if info_ok else ("FAIL", "verdict:" + ",".join(not_pass))
         if status in ("PASS", "INFO") and step == "delivery_set":
             total = parse_kv(found["V8_DELIVERY_SET"]).get("total")
@@ -504,7 +548,7 @@ class Runner:
         if rows is None:
             problems.append("rows_absent")
         line = delivery.get("line") if isinstance(delivery.get("line"), str) else ""
-        if not line.startswith("V8_DELIVERY_SET=PASS"):
+        if not re.match(r"^V[89]_DELIVERY_SET=PASS\b", line):
             problems.append("line_not_pass" if line else "line_absent")
         total = parse_kv(line).get("total")
         if line and (total is None or not total.isdigit() or int(total) != counts.get("delivered")
@@ -637,7 +681,7 @@ class Runner:
         if step == "step_headroom":
             for line in prev.get("lines", []):
                 kv = parse_kv(line)
-                if line.startswith("V8_STEP_CAP=") and kv.get("filtered", "").isdigit():
+                if re.match(r"^V[89]_STEP_CAP=", line) and kv.get("filtered", "").isdigit():
                     self.counts["filtered"] = int(kv["filtered"])
         extra = {k: v for k, v in prev.items() if k not in ("step", "status", "rc", "lines", "elapsed_s", "reason",
                                                              "log", "reused", "ended")}
@@ -652,6 +696,7 @@ class Runner:
                  f"delivered={self.counts['delivered']} filtered={self.counts['filtered']} "
                  f"exec_over_cap={self.counts['exec_over_cap']} backfills={self.counts['backfills']} "
                  f"infra_retries={self.counts['infra_retries']} reused={int(reused)}"
+                 + (" site_only=1" if self.args.site_only else "")
                  + (f" reason={reason}" if reason else "") + f" report={self.report_path}")
         report = {"schema": REPORT_SCHEMA, "fingerprint": self.fingerprint, "verdict": verdict, "final_step": step,
                   "reason": reason, "site_built": site_built, "site_dir": real(self.args.site_dir),
@@ -665,9 +710,23 @@ class Runner:
         self.event(final)
         return EXIT_CODES[verdict]
 
+    def skip_guards(self) -> None:
+        """``--site-only``：3b 已验过交付与守卫，4c 只建站；前五步记 SKIP（不冒充 PASS），交付行数照实记进计数。"""
+        try:
+            rows = json.loads(Path(self.args.delivery).read_text(encoding="utf-8")).get("rows")
+            self.counts["delivered"] = len(rows) if isinstance(rows, list) else 0
+        except (OSError, ValueError, AttributeError):
+            self.counts["delivered"] = 0
+        for name in ("wait_report", "report", *GUARD_STEPS):
+            self.step = name
+            self.record(name, "SKIP", reason="site_only", lines=[f"SITE_ONLY delivery={self.args.delivery}"])
+
     def run(self) -> int:
         steps_order = [("wait_report", self.wait_report), ("report", self.check_report)]
         steps_order += [(s, lambda s=s: self.run_step(s)) for s in GUARD_STEPS]
+        if self.args.site_only:
+            self.skip_guards()
+            steps_order = []
         for name, fn in steps_order:
             if name in ("wait_report", "report") or not self.reusable(name):
                 entry = fn()
@@ -675,7 +734,7 @@ class Runner:
                 entry = self.reuse(name)
             if entry["status"] == "FAIL":
                 return self.finish("FAIL", name, entry["reason"], False)
-        info = self.steps["step_headroom"]["status"] == "INFO"
+        info = self.steps.get("step_headroom", {}).get("status") == "INFO"
         if info and not self.args.allow_xhard0_info:
             return self.finish("INFO", "step_headroom", "xhard0_skipped_site_not_built", False)
         site = Path(self.args.site_dir)
@@ -767,13 +826,32 @@ def port_busy(host: str, port: int) -> bool:
         return False
 
 
+def cells_help() -> str:
+    """``--cells`` 帮助文字：格数与局数由格表推出（不写死）。"""
+    try:
+        H = load_catalog_module().load_hard_specs()
+        n_x0 = len(H.ALL_TASKS) * 12
+        desc = [f"{name}（{len(t)} 格 {sum(t.values())} 局 + xhard0 {n_x0} = {sum(t.values()) + n_x0}）"
+                for name, t in (("full／v8", H.V8_CELLS), ("v9", H.V9_CELLS))]
+    except Exception:  # 帮助文字不因格表加载失败而报错
+        desc = ["full／v8（V8_CELLS）", "v9（V9_CELLS）"]
+    return "｜".join(desc) + "｜{\"Task/tier\": n} JSON 文件；缺省 full（V8）"
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--delivery", required=True, help="gen1 聚合产物 delivery.json（v8-delivery/1）")
-    ap.add_argument("--specs-root", required=True, help="v8 /4 规格根（须与 delivery.json 的 specs_root 为同一路径）")
-    ap.add_argument("--cells", default="full", help="full（表 2 的 43 格）或 {\"Task/tier\": n} JSON 文件")
+    ap.add_argument("--delivery", required=True, help="生成聚合产物 delivery.json（v8-delivery/1；V9 为 assemble 写出的清单）")
+    ap.add_argument("--specs-root", required=True, help="/4 规格根（须与 delivery.json 的 specs_root 为同一路径）")
+    ap.add_argument("--cells", default="full", help=cells_help())
     ap.add_argument("--work-dir", required=True, help="心跳、进度、日志、报告目录（同一完成事件复用同一目录）")
-    ap.add_argument("--site-dir", required=True, help="站点输出目录（首次须不存在或为空）")
+    ap.add_argument("--site-dir", required=True,
+                    help="站点输出目录（V8 artifacts/newtask-v8/site、V9 artifacts/newtask-v9/site；首次须不存在或为空，"
+                         "已有本轮产物时按指纹复用）")
+    ap.add_argument("--site-only", action="store_true",
+                    help="只建站：跳过 wait_report／report／三个守卫（记 SKIP），须给 --identities（V9 阶段 4c）")
+    ap.add_argument("--eval-reuse", default=None, help="透传 catalog：V8 站点目录（artifacts/newtask-v8/site-eval）")
+    ap.add_argument("--reused", default=None, help="透传 catalog：S1-F 产出的 reused.json（复用集合唯一依据）")
+    ap.add_argument("--eval-new", default=None, help="透传 catalog：V9 新评运行目录（结构同 V8 评估运行）")
     ap.add_argument("--event-log", default=None, help="事件日志（缺省 <work-dir>/events.log；与 watchdog 共用）")
     ap.add_argument("--heartbeat", default=None, help="心跳文件（缺省 <work-dir>/heartbeat.json）")
     ap.add_argument("--gen-log", default=None, help="可选：生成日志，须出现 EXIT_CODE=0 才算完成")
@@ -793,7 +871,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--media-root", default=str(REPO_ROOT / "artifacts"), help="站点服务媒体白名单根")
     ap.add_argument("--workers", type=int, default=16, help="subgoals 的 --workers")
     ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--port", type=int, default=8090, help="站点服务端口（0 = 系统分配）；占用即 FAIL")
+    ap.add_argument("--port", type=int, default=8090,
+                    help="站点服务端口（0 = 系统分配；V9 独立站用 8082 等空闲端口）；占用即 FAIL；实际端口透传给总表检查器")
     ap.add_argument("--shots", default=None, help="浏览器截图目录（缺省 <work-dir>/shots）")
     ap.add_argument("--step-timeout", action="append", default=[], metavar="STEP=SECONDS",
                     help=f"覆盖单步超时（缺省 {DEFAULT_TIMEOUTS}）")
@@ -812,6 +891,10 @@ def fingerprint_of(args: argparse.Namespace, cells: dict, overrides: dict) -> di
         "allow_xhard0_info": bool(args.allow_xhard0_info), "cmd_overrides": {k: v for k, v in sorted(overrides.items())},
         "pool": [real(p) for p in (args.pool or [args.specs_root])], "path_base": real(args.path_base),
         "media_root": real(args.media_root), "workers": int(args.workers), "host": args.host, "port": int(args.port),
+        **({"site_only": True} if args.site_only else {}),
+        **({"eval_reuse": real(args.eval_reuse), "reused": real(args.reused),
+            "reused_sha256": sha256_file(Path(args.reused)) if args.reused and Path(args.reused).is_file() else None,
+            "eval_new": real(args.eval_new)} if (args.eval_reuse or args.reused or args.eval_new) else {}),
     }
 
 
@@ -834,7 +917,24 @@ def main(argv: list[str] | None = None) -> int:
                                 "counts": {key: 0 for key in COUNT_KEYS}})
     C = load_catalog_module()
     H = C.load_hard_specs()
-    cells = parse_cells_arg(args.cells, dict(H.V8_CELLS))
+    cells = parse_cells_arg(args.cells, dict(H.V8_CELLS), dict(H.V9_CELLS))
+    # V9 透传参数（复用 + 新评）：参数不全或 reused.json 不可读在 refuse 定义后拒绝
+    v9_eval = bool(args.eval_reuse or args.reused or args.eval_new)
+    preflight = None
+    if v9_eval and not (args.eval_reuse and args.reused):
+        preflight = "v9_eval_needs_eval_reuse_and_reused"
+    elif args.site_only and not args.identities:
+        preflight = "site_only_needs_identities"
+    eval_args: list[str] = []
+    v9_expect_args: list[str] = []
+    if v9_eval and preflight is None:
+        eval_args = ["--eval-reuse", str(args.eval_reuse), "--reused", str(args.reused)]
+        eval_args += ["--eval-new", str(args.eval_new)] if args.eval_new else []
+        try:
+            n_reused = int(json.loads(Path(args.reused).read_text(encoding="utf-8"))["count"])
+            v9_expect_args = ["--expect-reused", str(n_reused), "--expect-new", str(sum(cells.values()) - n_reused)]
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            preflight = f"reused_unreadable:{type(exc).__name__}"
     overrides: dict[str, list[str]] = {}
     for item in args.cmd:
         step, sep, cmd = item.partition("=")
@@ -855,6 +955,9 @@ def main(argv: list[str] | None = None) -> int:
         runner.beat(force=True)
         return 2
 
+    if preflight is not None:
+        print(f"V8_CONTINUE=FAIL step=preflight reason={preflight}", flush=True)
+        return refuse("preflight")
     cells_json = None
     if not full:
         cells_json = work / "cells.json"
@@ -874,8 +977,10 @@ def main(argv: list[str] | None = None) -> int:
         "media_root": str(args.media_root), "workers": str(args.workers), "host": args.host, "port": str(args.port),
         "shots": str(args.shots or work / "shots"), "work_dir": str(work), "base": "",
         "expect_cells": str(len(cells) + len(H.ALL_TASKS)), "identities": str(args.identities or ""),
-        "cmd_overrides": overrides, "timeouts": timeouts,
+        "cmd_overrides": overrides, "timeouts": timeouts, "eval_args": eval_args, "v9_expect_args": v9_expect_args,
     }
+    if v9_eval:  # V9 复用模式：总表检查器另出 V9_SITE 行，也是该步必需判定行
+        runner.vars["expect"] = dict(EXPECT, oracle_check=EXPECT["oracle_check"] + ("V9_SITE",))
 
     # 同一完成事件重复到达：报告已在 → 核身份、来源、完整性后复用，不重跑、不覆盖
     if runner.report_path.exists():

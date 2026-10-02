@@ -13,12 +13,25 @@
 逐格覆盖目录里全部 (任务, 档)（完整根 43 新值格 + 16 xhard0 格 = 59）。只核「各档总表」页（任务页对比表已按用户要求撤下，只断言其隐藏）；截图写 ``--shots``。
 末行打印 ``V8_ORACLE_BROWSER=PASS|FAIL cells=<n> missing=<n>``（另附 mismatch、page_errors）。**判定行按前缀匹配**：
 ``V8_ORACLE_BROWSER=PASS cells=59 missing=0`` 之后可能追加键。任何中断都记入 problems 并照打判定行（FAIL）。
-``--expect-cells`` 缺省由目录推出：目录新值格等于 ``V8_CELLS`` 时为 ``len(V8_CELLS) + 16``（= 59），
-子表时为目录新值格数 + 16（xhard0 每任务一格）。
+``--expect-cells`` 缺省由目录推出：目录新值格等于完整格表（``V8_CELLS``／``V9_CELLS``，两者格集合相同）时为
+``len(格表) + 16``（= 59），子表时为目录新值格数 + 16（xhard0 每任务一格）。
+
+**端口**：``--port`` 给出时替换 ``--base`` 里的端口（主机不变；V9 独立站缺省 8082，V8 正式站 8081 不动）。
+
+**V9 站点**（v9 方案第一部分 §5「站点」行，目录 ``eval.mode == "v9-reuse"`` 时自动启用）：逐局按 ``eval_origin`` 数
+「复用／新评／置空」——复用、新评两类须两模型都有终态，否则算置空；末行另打印
+``V9_SITE=PASS|FAIL cells=<n> missing=<n> eval_reused=<n> eval_new=<n> eval_empty=<n> port=<port>``（在
+``V8_ORACLE_BROWSER`` 行之后）。PASS 要求总表检查通过、``eval_empty == 0``、复用 + 新评 = 新值局总数、计数与目录
+``eval.reuse.counts`` 一致，给了 ``--expect-reused``／``--expect-new`` 时还要相等。V8 目录（无 ``eval.mode``）只打印原判定行。
 
     uv run --no-project --with playwright python scripts/injection-dev/site/v8_oracle_browser_check.py \\
       --base http://127.0.0.1:8081 --shots artifacts/newtask-v8/site-checks/oracle \\
       --delivery artifacts/newtask-v8/gen1/delivery.json
+
+    # V9（阶段 4c）
+    uv run --no-project --with playwright python scripts/injection-dev/site/v8_oracle_browser_check.py \\
+      --port 8082 --shots artifacts/newtask-v9/site-checks/oracle \\
+      --delivery artifacts/newtask-v9/delivery/delivery.local.json --expect-reused 720 --expect-new 80
 """
 from __future__ import annotations
 
@@ -27,10 +40,11 @@ import importlib.util
 import json
 import statistics
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
-from playwright.sync_api import sync_playwright
+# playwright 只在 main() 里导入：纯函数（V9 计数、端口替换）可在没有 playwright 的环境里单测
 
 HERE = Path(__file__).resolve().parent
 _spec = importlib.util.spec_from_file_location("v8_site_catalog", HERE / "v8_site_catalog.py")
@@ -115,17 +129,80 @@ def delivery_exec(path: Path) -> dict:
     return {k: {"mean": round(statistics.mean(v), 1), "min": min(v), "max": max(v), "n": len(v)} for k, v in by_cell.items()}
 
 
+def with_port(base: str, port: int | None) -> str:
+    """``--port`` 给出时替换 base 的端口（主机、协议不变）；返回去掉末尾斜杠的 base。"""
+    base = base.rstrip("/")
+    if port is None:
+        return base
+    parts = urlsplit(base)
+    return urlunsplit((parts.scheme, f"{parts.hostname}:{int(port)}", parts.path, "", "")).rstrip("/")
+
+
+def base_port(base: str) -> int | None:
+    parts = urlsplit(base)
+    return parts.port or {"http": 80, "https": 443}.get(parts.scheme)
+
+
+def v9_eval_counts(catalog: dict) -> dict | None:
+    """V9 目录（``eval.mode == "v9-reuse"``）逐局数「复用／新评／置空」；V8 目录返回 None。
+
+    只数新值局（xhard1～5）；``eval_origin`` 为 ``reused``／``new`` 且两模型都有终态才算数，其余（含缺字段）算置空。"""
+    head = catalog.get("eval") or {}
+    if head.get("mode") != "v9-reuse":
+        return None
+    n = Counter()
+    for task in catalog.get("tasks", []):
+        for tier, cell in task.get("tiers", {}).items():
+            if tier == "xhard0":
+                continue
+            for ep in cell.get("episodes", []):
+                n["episodes"] += 1
+                origin = ep.get("eval_origin")
+                items = (ep.get("eval") or {}).get("new") or {}
+                done = all((items.get(p) or {}).get("status") in C.FINAL for p, _ in C.POLICIES)
+                n[f"eval_{origin}" if origin in ("reused", "new") and done else "eval_empty"] += 1
+    return {k: n[k] for k in ("episodes", "eval_reused", "eval_new", "eval_empty")}
+
+
+def v9_problems(counts: dict, catalog: dict, expect_reused: int | None = None,
+                expect_new: int | None = None) -> list[str]:
+    """V9 计数的判定：无置空、复用 + 新评 = 新值局总数、与目录记录的计数一致、与期望值一致（给了才比）。"""
+    out = []
+    if counts["eval_empty"]:
+        out.append(f"评估置空 {counts['eval_empty']} 局")
+    if counts["eval_reused"] + counts["eval_new"] != counts["episodes"]:
+        out.append(f"复用 {counts['eval_reused']} + 新评 {counts['eval_new']} ≠ 新值局 {counts['episodes']}")
+    recorded = ((catalog.get("eval") or {}).get("reuse") or {}).get("counts") or {}
+    for key in ("eval_reused", "eval_new", "eval_empty"):
+        if recorded.get(key) != counts[key]:
+            out.append(f"{key} 页面目录数 {counts[key]} 与目录 eval.reuse.counts 记录 {recorded.get(key)} 不符")
+    for key, want in (("eval_reused", expect_reused), ("eval_new", expect_new)):
+        if want is not None and counts[key] != want:
+            out.append(f"{key}={counts[key]} ≠ 期望 {want}")
+    return out
+
+
+def v9_site_line(ok: bool, cells: int, missing: int, counts: dict, port: int | None) -> str:
+    return (f"V9_SITE={'PASS' if ok else 'FAIL'} cells={cells} missing={missing} eval_reused={counts['eval_reused']} "
+            f"eval_new={counts['eval_new']} eval_empty={counts['eval_empty']} port={port}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--base", default="http://127.0.0.1:8081")
+    ap.add_argument("--port", type=int, default=None, help="替换 --base 的端口（V9 独立站，如 8082）")
+    ap.add_argument("--expect-reused", type=int, default=None, help="V9：期望复用局数（如 720）")
+    ap.add_argument("--expect-new", type=int, default=None, help="V9：期望新评局数（如 80）")
     ap.add_argument("--shots", type=Path, required=True)
     ap.add_argument("--delivery", type=Path, help="可选：再与 delivery.json 的 exec_steps 逐格核对")
     ap.add_argument("--expect-cells", type=int, default=None,
-                    help="期望格数；缺省由目录推出（完整根 len(V8_CELLS)+16 = 59，子表为目录新值格数 + 16）")
+                    help="期望格数；缺省由目录推出（完整根 len(格表)+16 = 59，子表为目录新值格数 + 16）")
     ap.add_argument("--chrome", help="Chromium 可执行文件；缺省用 Playwright 自带")
     args = ap.parse_args()
+    from playwright.sync_api import sync_playwright  # noqa: PLC0415（解析参数之后再导入：--help 不需要 playwright）
+
     args.shots.mkdir(parents=True, exist_ok=True)
-    base = args.base.rstrip("/")
+    base = with_port(args.base, args.port)
     problems: list[str] = []
     missing: list[str] = []
     errors: list[str] = []
@@ -199,7 +276,8 @@ def main() -> int:
         try:
             H = C.load_hard_specs()
             new_cells = {(t["id"], tier) for t in catalog["tasks"] for tier in t["tiers"] if tier != "xhard0"}
-            expect = (len(H.V8_CELLS) if new_cells == set(H.V8_CELLS) else len(new_cells)) + len(C.NAMES)
+            tables = [table for table in (H.V8_CELLS, H.V9_CELLS) if new_cells == set(table)]
+            expect = (len(tables[0]) if tables else len(new_cells)) + len(C.NAMES)
         except Exception as exc:
             problems.append(f"无法推出期望格数：{type(exc).__name__}: {exc}")
             expect = -1
@@ -213,6 +291,16 @@ def main() -> int:
     ok = not problems and not missing
     print(f"V8_ORACLE_BROWSER={'PASS' if ok else 'FAIL'} cells={cells} missing={len(missing)} "
           f"mismatch={len(problems)} page_errors={len(errors)}", flush=True)
+    counts = v9_eval_counts(catalog)
+    if counts is None:
+        return 0 if ok else 1
+    v9_bad = v9_problems(counts, catalog, args.expect_reused, args.expect_new)
+    for line in v9_bad:
+        print(f"# V9 {line}")
+    report["v9"] = {"counts": counts, "problems": v9_bad, "port": base_port(base)}
+    (args.shots / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    ok = ok and not v9_bad
+    print(v9_site_line(ok, cells, len(missing), counts, base_port(base)), flush=True)
     return 0 if ok else 1
 
 
