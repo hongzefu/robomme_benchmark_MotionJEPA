@@ -368,6 +368,8 @@ class Runner:
                         self.beat()
                     else:
                         self.beat(force=True)
+                        if self.child.poll() is not None:
+                            break  # 子进程已退出、管道却被遗留的孙进程占着：不空等到超时
                     if time.time() > deadline:
                         reason = f"timeout_{int(timeout)}s"
                         kill_group(self.child)
