@@ -341,7 +341,7 @@ def test_main_写出目录_且1262校验(tmp_path, full, capsys):
     assert C.main(src_args(src, out)) == 0
     line = capsys.readouterr().out.strip().splitlines()[-1]
     assert line.startswith("V8_SITE_CATALOG=PASS identities=1262 expected=1262 gen_v8=1070 ")
-    assert "eval_filled=0 config_mismatch=0" in line
+    assert "eval_filled=0 " in line and "eval_unevaluated=1262 " in line and "config_mismatch=0 " in line  # 不给 --eval-run 时全部未评估
     assert (out / "catalog.json").is_file() and (out / "media-private.json").is_file()
     # 少一个身份 → FAIL；多一个身份 → FAIL；均不写产物
     idents = Path(src["identities"]).read_text().splitlines()

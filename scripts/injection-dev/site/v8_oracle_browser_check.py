@@ -5,7 +5,7 @@
 
 - 数据一律来自 ``/api/subgoals``（``v8_subgoal_lengths.py`` 从 v8 规格与真实 h5 统计）与 ``/api/catalog``；
   ``subgoals.json`` 缺失时服务端返回 ``{}``，本检查器据此判 FAIL，不允许页面静默缺内容；
-- 不读评估记录：成功率格必须显示「未评估」；执行步上限（原任务页表格行，已撤下，不再核对）等于 ``subgoals.json`` 的 ``max_steps``
+- 成功率格（2026-10-02 起评估接入）：按目录每格 ``rates.new``（xhard0 另有 ``rates.old``）推算「百分比」与「成功 / 局数」，与页面逐格一致；执行步上限（原任务页表格行，已撤下，不再核对）等于 ``subgoals.json`` 的 ``max_steps``
   （规格 ``exec_cap``／xhard0 1300）；
 - 配置格逐维与表 1 一致（``v8_site_catalog.TABLE1``），不对照任何计划表格；去掉 v7 的 PatternLock 定值断言；
 - 可选 ``--delivery``：逐格执行步均值／最小／最大与 ``delivery.json`` 的 ``exec_steps`` 再核一遍（与交付 h5 一致）。
@@ -64,7 +64,13 @@ CHECK_JS = """({cat, oracle, metrics, scope}) => {
                 if (metric.includes('policy-')) {
                     const old = metric.startsWith('old-');
                     if (old && tier !== 'xhard0') { if (text !== '—') bad.push(key + ' 旧入口适用范围不符'); }
-                    else if (text !== '未评估') bad.push(key + ' 评估位应为「未评估」：' + text);
+                    else {
+                        const pid = metric.replace(/^(old-)?policy-/, ''), counts = ((c.rates || {})[old ? 'old' : 'new'] || {})[pid];
+                        const n = c.episodes.length, s = (counts || {}).success || 0;
+                        if (!counts || !Object.keys(counts).length) bad.push(key + ' 成功率格缺评估数据');
+                        else if (!text.includes(Math.round(100 * s / n) + '%') || !text.includes(s + ' / ' + n + ' 局成功'))
+                            bad.push(key + ' 成功率不符：' + text + ' vs ' + s + '/' + n);
+                    }
                     continue;
                 }
                 const value = cell.querySelector('.oracle-value')?.textContent || '', range = cell.querySelector('.oracle-range')?.textContent || '';

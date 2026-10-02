@@ -14,9 +14,16 @@
   ``h5_sha256``、``env_module``、可选 ``video``（绝对路径）。缺 ``exec_steps``／``frames`` 即 FAIL。
 - **xhard0**（16 任务 × 12 局）：复用 v7 已渲染的 ``site-media/xhard0-gen``（``manifest-{H,O}.jsonl``，0 次渲染），
   新入口 H／旧入口 O 两行，与 v7 相同。
-- **评估**：v8 不做 SimpleMemVLA／MME-VLA 两策略评估（用户 2026-10-01，§2.8 第 16 条）。评估来源（v7 的
-  ``records_*``、``official_*``、``eval_videos*``、``tables``、``rerun11``）一律不读；每局 ``eval`` 为空字典、
-  ``eval_status = "unevaluated"``——「未评估」是独立状态，不是失败，页面任何成败筛选都不得命中。
+- **评估**（2026-10-02 起接入，用户「把所有的结果放在8081端口」）：
+  - xhard1～5：V8 双模型评估运行 ``--eval-run``（``artifacts/v8-evaluation/<run_name>``）——每身份唯一权威终态取
+    ``nfs-records/run/sNN/<smvla|mme>/<pol>.ledger.jsonl`` 的 ``accept`` 行所指结果行（不按最后一条），步数取
+    ``exec_steps``、上限取 ``effective_max_steps``；视频取 ``site-media/manifest.jsonl``（``v8_eval_transcode.py``
+    把 FFV1 录像展开重复帧后转成的 H.264 mp4）。逐格成败数与 ``report/report.json`` 的 ``per_policy.<p>.cells`` 核对。
+  - xhard0：V8 阶段 3′ 两路线评估 ``--xhard0-eval``（``artifacts/newtask-v8/xhard0-eval``）——hard 路线
+    （``robomme_hard``）记 ``new``、官方路线记 ``old``，同一身份取最后一个终态行；只有 MME-VLA 录了视频
+    （``<route>/mme/sN/videos/``），SimpleMemVLA 当时不录（``VIDEO_DIR=`` 为空），评估位只给结局与步数。
+    两路线结局不同记 ``flip``。
+  - 策略 ID 映射：评估侧 ``smvla``／``mme`` → 页面 ``simplememvla``／``mmevla``。
 - **配置**：每局从规格行 ``spec.objects``／``spec.actions`` 按 ``DIMS`` 抽取表 1 的维度值（不写死数值），
   逐格汇总取值集合；``TABLE1`` 是表 1 的参照值，只用来核对（``config_mismatch``），不进页面。
 - **身份清单**：``eval-identities-1262.jsonl``（S2-B ``export_eval_identities.py`` 产出），总数由表 2 推出
@@ -25,12 +32,15 @@
 输出 ``catalog.json``（schema ``v8-site-catalog/1``）与 ``media-private.json``（媒体 ID → 绝对路径白名单），
 都以 ``open("x")`` 写入、拒绝覆盖。末行打印
 ``V8_SITE_CATALOG=PASS|FAIL identities=<n> expected=<n> gen_v8=<n> gen_xhard0_new=<n> gen_xhard0_old=<n>
-gen_failed=<n> eval_unevaluated=<n> eval_filled=0 config_mismatch=0 media=<n> problems=<n>``。
+gen_failed=<n> eval_filled=<n> eval_media=<n> eval_unevaluated=<n> flip=<n> rate_mismatch=<n> config_mismatch=0
+media=<n> problems=<n>``。
 
     uv run --no-sync python scripts/injection-dev/site/v8_site_catalog.py \\
       --specs-root artifacts/newtask-v8/specs-root --delivery artifacts/newtask-v8/gen1/delivery.json \\
       --identities artifacts/newtask-v8/eval-identities-1262.jsonl \\
-      --xhard0-gen artifacts/newtask-v7/site-media/xhard0-gen --out artifacts/newtask-v8/site
+      --xhard0-gen artifacts/newtask-v7/site-media/xhard0-gen \\
+      --eval-run artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01 \\
+      --xhard0-eval artifacts/newtask-v8/xhard0-eval --out artifacts/newtask-v8/site-eval
 
 本模块只用标准库（``DIMS``／``TABLE1``／路径解析供 ``v8_subgoal_lengths.py`` 与浏览器检查器复用）；
 ``hard_specs`` 按文件路径加载（它只依赖标准库），不导入 ``robomme_hard`` 包。
@@ -38,6 +48,7 @@ gen_failed=<n> eval_unevaluated=<n> eval_filled=0 config_mismatch=0 media=<n> pr
 from __future__ import annotations
 
 import argparse
+import glob
 import hashlib
 import importlib.util
 import json
@@ -51,6 +62,9 @@ ART7 = REPO_ROOT / "artifacts/newtask-v7"
 TIERS = ("xhard0", "xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
 NEW_TIERS = TIERS[1:]
 POLICIES = (("simplememvla", "SimpleMemVLA"), ("mmevla", "MME-VLA"))
+#: 评估侧策略名 → 页面策略 ID
+EVAL_POLICY = {"smvla": "simplememvla", "mme": "mmevla"}
+FINAL = ("success", "fail", "timeout")
 XHARD0_PER_TASK = 12
 DELIVERY_SCHEMA = "v8-delivery/1"
 NAMES = {
@@ -68,7 +82,10 @@ DEFAULT_SOURCES = {
     "gen_videos": None,
     "path_base": REPO_ROOT,
     "cells_json": None,
+    "eval_run": None,      # 正式：artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01
+    "xhard0_eval": None,   # 正式：artifacts/newtask-v8/xhard0-eval
 }
+NO_VIDEO_X0_SMVLA = "SimpleMemVLA 的 xhard0 评估（V8 阶段 3′）当时未录视频，只有结局与步数。"
 
 
 # ── 表 1 维度：从规格行抽值（不写死数值）──────────────────────────────────
@@ -268,6 +285,82 @@ def expected_identities(cells: dict[tuple[str, str], int], n_tasks: int = len(NA
     return sum(cells.values()) + n_tasks * XHARD0_PER_TASK
 
 
+# ── 评估来源 ──────────────────────────────────────────────────────────
+
+
+def load_eval_run(run: Path) -> tuple[dict, dict, dict]:
+    """V8 双模型评估运行：返回 (按身份的权威结果行, 按 (策略, key) 的转码 mp4, report.json)。
+
+    权威结果 = 账本 ``accept`` 行的 ``accepted_attempt_id`` 所指结果行；身份键 (tier, task, seed)，值 {页面策略 ID: 行}。"""
+    run = Path(run)
+    out: dict[tuple, dict] = defaultdict(dict)
+    for seat in sorted(glob.glob(str(run / "nfs-records/run/s[0-9]*"))):
+        for pol, pid in EVAL_POLICY.items():
+            d = Path(seat) / pol
+            if not (d / "results.jsonl").exists():
+                continue
+            rows = {r["attempt_id"]: r for r in jsonl(d / "results.jsonl") if r.get("attempt_id")}
+            for led in jsonl(d / f"{pol}.ledger.jsonl"):
+                if led.get("kind") != "accept":
+                    continue
+                row = rows.get(led["accepted_attempt_id"])
+                if row is None:
+                    raise ValueError(f"accept 指向的结果行不存在：{d} {led['accepted_attempt_id']}")
+                key = (row["tier"], row["task"], int(row["seed"]))
+                if pid in out[key]:
+                    raise ValueError(f"同一身份两条 accept：{pol} {key}")
+                out[key][pid] = row
+    media = {}
+    manifest = run / "site-media/manifest.jsonl"
+    if manifest.exists():
+        for r in jsonl(manifest):
+            if r.get("mp4_frames") == r.get("frames") and not r.get("error"):
+                media[(EVAL_POLICY[r["policy"]], r["key"])] = r["mp4"]
+    report = json.loads((run / "report/report.json").read_text(encoding="utf-8"))
+    return dict(out), media, report
+
+
+def load_xhard0_eval(root: Path) -> dict:
+    """V8 阶段 3′：(task, seed) → {"new"|"old": {页面策略 ID: 行（MME 带 local_video）}}；同一身份取最后一个终态行。"""
+    root = Path(root)
+    out: dict[tuple, dict] = defaultdict(lambda: {"new": {}, "old": {}})
+    for route, entry in (("hard", "new"), ("official", "old")):
+        patterns = {"simplememvla": [str(root / route / "smvla/*.jsonl")],
+                    "mmevla": [str(root / route / "mme/s*/*/ckpt*/seed*/episodes.jsonl")]}
+        for pid, pats in patterns.items():
+            final: dict[tuple, dict] = {}
+            for path in sorted(p for pat in pats for p in glob.glob(pat)):
+                for row in jsonl(Path(path)):
+                    if row.get("status") not in FINAL:
+                        continue
+                    if pid == "mmevla" and row.get("video"):  # 官方路线：记录写 NFS 原路径，本机副本在 sN/videos/ 同名
+                        shard_dir = Path(path).parents[3]
+                        row = dict(row, local_video=str(shard_dir / "videos" / Path(row["video"]).name))
+                    elif pid == "mmevla" and row.get("episode") is not None:
+                        # hard 路线：记录不写视频路径，文件在 episodes.jsonl 同目录 videos/，名为 <task>_ep<episode>_<status>_<goal>_hard.mp4
+                        hits = sorted((Path(path).parent / "videos").glob(f"{row['task']}_ep{int(row['episode'])}_*.mp4"))
+                        if len(hits) == 1 and f"_{row['status']}_" in hits[0].name:
+                            row = dict(row, local_video=str(hits[0]))
+                    final[(row["task"], int(row["seed"]))] = row
+            for key, row in final.items():
+                out[key][entry][pid] = row
+    return dict(out)
+
+
+def _fill_config(entry: dict, task: str, tier: str, eps: list[dict]) -> None:
+    """格级配置：xhard0 / 无梯度任务给说明文字，其余按 DIMS 汇总逐局取值集合与分布。"""
+    if tier == "xhard0":
+        entry["config"] = [{"dim": None, "values": [], "text": XHARD0_TEXT}]
+    elif not DIMS[task]:
+        entry["config"] = [{"dim": None, "values": [], "text": NO_DIM_TEXT}]
+    else:
+        entry["config"] = []
+        for dim, _ in DIMS[task]:
+            dist = Counter(ep["config"][dim] for ep in eps if "config" in ep)
+            entry["config"].append({"dim": dim, "values": sorted(v for v in dist if v is not None),
+                                    "dist": {str(k): n for k, n in sorted(dist.items(), key=lambda x: str(x[0]))}})
+
+
 # ── 构建 ────────────────────────────────────────────────────────────
 
 
@@ -311,6 +404,12 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
     xgen = {side: {(r["task"], int(r["seed"])): r for r in jsonl(Path(src["xhard0_gen"]) / f"manifest-{side}.jsonl")}
             for side in ("H", "O")}
 
+    # 评估来源
+    # 不给评估来源（合成夹具、单测）时保持「全部未评估」：eval 为空、eval_status = unevaluated
+    has_eval = bool(src.get("eval_run"))
+    ev_rows, ev_media, ev_report = load_eval_run(src["eval_run"]) if has_eval else ({}, {}, {})
+    x0_eval = load_xhard0_eval(src["xhard0_eval"]) if has_eval and src.get("xhard0_eval") else {}
+
     # 身份清单
     idents = jsonl(src["identities"])
     by_key = {(r["tier"], r["task"], int(r["seed"])): r for r in idents}
@@ -336,8 +435,10 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
         ep = {"seed": seed, "eval_episode": ident.get("episode"), "round": ident.get("round"),
               "shard": ident.get("shard"), "candidate": ident.get("candidate"),
               "source_episode": ident.get("source_episode"),
-              "gen": {}, "eval": {}, "eval_status": "unevaluated"}
-        counts["eval_unevaluated"] += 1
+              "gen": {}, "eval": {"new": {}} if has_eval else {}}
+        if not has_eval:
+            ep["eval_status"] = "unevaluated"
+            counts["eval_unevaluated"] += 1
         if tier == "xhard0":
             for side, entry in (("H", "new"), ("O", "old")):
                 row = xgen[side].get((task, seed))
@@ -355,7 +456,33 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                     except (OSError, ValueError) as exc:
                         problems.append(f"xhard0 {side} 视频不可用 {task}/{seed}：{exc}")
                 ep["gen"][entry] = item
-        else:
+        if tier == "xhard0" and has_eval:
+            ep["eval_source"] = "V8 阶段 3′ xhard0 两路线评估（新入口 = hard 路线，旧入口 = 官方路线）"
+            ep["eval"]["old"] = {}
+            ep["flip"] = {}
+            rec = x0_eval.get((task, seed), {"new": {}, "old": {}})
+            for p, _ in POLICIES:
+                for entry in ("new", "old"):
+                    row = rec[entry].get(p)
+                    if row is None:
+                        problems.append(f"xhard0 {entry} {p} 缺评估记录 {task}/{seed}")
+                        counts["eval_unevaluated"] += 1
+                        continue
+                    item = {"status": row["status"], "steps": row.get("steps"), "max_steps": row.get("max_steps")}
+                    if p == "mmevla":
+                        try:
+                            item["media"] = media.add(f"eval/{entry}/{p}/{tier}/{task}/{seed}", Path(row["local_video"]))
+                            counts["eval_media"] += 1
+                        except (OSError, ValueError, KeyError) as exc:
+                            problems.append(f"xhard0 {entry} {p} 视频不可用 {task}/{seed}：{exc}")
+                    else:
+                        item["no_video"] = NO_VIDEO_X0_SMVLA
+                    ep["eval"][entry][p] = item
+                    counts["eval_filled"] += 1
+                a, b = (ep["eval"]["new"].get(p) or {}).get("status"), (ep["eval"]["old"].get(p) or {}).get("status")
+                ep["flip"][p] = a is not None and b is not None and a != b
+                counts["flip"] += ep["flip"][p]
+        if tier != "xhard0":
             row = gen.get(key)
             spec = spec_rows.get(key)
             if row is None or spec is None:
@@ -383,6 +510,27 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                     if not table1_ok(task, dim, tier, value):
                         counts["config_mismatch"] += 1
                         problems.append(f"配置与表 1 不符 {task}/{tier}/seed {seed}：{dim}={value!r}")
+        if tier != "xhard0" and has_eval:
+            ep["eval_source"] = f"V8 双模型评估 {Path(src['eval_run']).name}（执行段 1600 步严格截断）"
+            for p, _ in POLICIES:
+                row = ev_rows.get(key, {}).get(p)
+                if row is None:
+                    problems.append(f"{p} 缺评估权威结果 {key}")
+                    counts["eval_unevaluated"] += 1
+                    continue
+                item = {"status": row["status"], "steps": row.get("exec_steps"),
+                        "max_steps": row.get("effective_max_steps") or row.get("max_steps")}
+                mp4 = ev_media.get((p, row["key"]))
+                if mp4 is None:
+                    problems.append(f"{p} 缺评估视频 {row['key']}")
+                else:
+                    try:
+                        item["media"] = media.add(f"eval/new/{p}/{tier}/{task}/{seed}", resolve(mp4, path_base))
+                        counts["eval_media"] += 1
+                    except (OSError, ValueError) as exc:
+                        problems.append(f"{p} 评估视频不可用 {row['key']}：{exc}")
+                ep["eval"]["new"][p] = item
+                counts["eval_filled"] += 1
         cells[(task, tier)].append(ep)
 
     tasks = []
@@ -394,17 +542,25 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                 continue
             for i, ep in enumerate(eps, 1):
                 ep["idx"] = i
-            entry = {"episodes": eps, "rates": {}, "eval_status": "unevaluated"}
+            if not has_eval:
+                tiers[tier] = {"episodes": eps, "rates": {}, "eval_status": "unevaluated"}
+                _fill_config(tiers[tier], task, tier, eps)
+                continue
+            rates = {"new": {p: dict(Counter(ep["eval"]["new"][p]["status"] for ep in eps if p in ep["eval"]["new"]))
+                             for p, _ in POLICIES}}
             if tier == "xhard0":
-                entry["config"] = [{"dim": None, "values": [], "text": XHARD0_TEXT}]
-            elif not DIMS[task]:
-                entry["config"] = [{"dim": None, "values": [], "text": NO_DIM_TEXT}]
+                rates["old"] = {p: dict(Counter(ep["eval"]["old"][p]["status"] for ep in eps if p in ep["eval"].get("old", {})))
+                                for p, _ in POLICIES}
             else:
-                entry["config"] = []
-                for dim, _ in DIMS[task]:
-                    dist = Counter(ep["config"][dim] for ep in eps if "config" in ep)
-                    entry["config"].append({"dim": dim, "values": sorted(v for v in dist if v is not None),
-                                            "dist": {str(k): n for k, n in sorted(dist.items(), key=lambda x: str(x[0]))}})
+                for pol, p in EVAL_POLICY.items():
+                    want = ev_report["per_policy"][pol]["cells"].get(f"{task}@{tier}", {})
+                    want = {k: want.get(k, 0) for k in FINAL if want.get(k)}
+                    got = {k: v for k, v in rates["new"][p].items() if v}
+                    if want != got:
+                        counts["rate_mismatch"] += 1
+                        problems.append(f"{p} {task}/{tier} 成败数与 report.json 不符：{got} vs {want}")
+            entry = {"episodes": eps, "rates": rates}
+            _fill_config(entry, task, tier, eps)
             tiers[tier] = entry
         tasks.append({"id": task, "name": NAMES[task], "tiers": tiers})
 
@@ -412,12 +568,17 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
         "schema": "v8-site-catalog/1",
         "tiers": list(TIERS),
         "policies": [{"id": p, "label": label} for p, label in POLICIES],
-        "eval": {"status": "unevaluated",
-                 "reason": "v8 新局不做 SimpleMemVLA／MME-VLA 两策略评估（用户 2026-10-01）；评估板块原位保留、内容置空。"},
+        "eval": ({"status": "evaluated", "run": Path(src["eval_run"]).name,
+                  "summary": {EVAL_POLICY[pol]: {"success": sum(c.get("success", 0) for c in ev_report["per_policy"][pol]["cells"].values()),
+                                                 "denominator": ev_report["per_policy"][pol]["denominator"]}
+                              for pol in EVAL_POLICY}}
+                 if has_eval else {"status": "unevaluated", "reason": "未提供评估来源（--eval-run），评估位显示「未评估」。"}),
         "tasks": tasks,
         "notes": {
-            "eval": "评估位一律显示「未评估」：v8 不做两策略评估，评估板块（成功率、成败筛选、两段策略视频、旧入口对照、翻转标记）"
-                    "原位保留、内容置空。「未评估」不是失败，任何成败筛选都不会命中。",
+            "eval": "xhard1～5：V8 双模型评估（2026-10-02，十张 A40，SimpleMemVLA 官方权重与 MME-VLA perceptual-framesamp-modul/79999，"
+                    "执行段 1600 步严格截断计 timeout），每身份取唯一权威终态；评估视频为录像器 FFV1 无损录像展开重复帧后转成的 H.264"
+                    "（左前视、右腕部，左上角 DEMO／EXEC），无损原片留在本机存档。xhard0：V8 阶段 3′ 两路线评估（上限 1300），"
+                    "新入口 = hard 路线、旧入口 = 官方路线；SimpleMemVLA 当时未录视频，MME-VLA 有视频。",
             "config": "xhard1～5 的任务配置逐局取自 v8 冻结规格（hard-specs/4）的规格行，格内汇总为取值集合；"
                       "RouteStick／PatternLock 是区间，列出实际取值分布。",
             "xhard0_gen": "xhard0 生成视频复用 v7 由 h5 离线合成的版本（左前视、右腕部，左上角 DEMO／EXEC），版式与录像器视频不同；"
@@ -435,7 +596,8 @@ def verdict_line(stats: dict, ok: bool) -> str:
     return (f"V8_SITE_CATALOG={'PASS' if ok else 'FAIL'} identities={stats['identities']} expected={stats['expected']} "
             f"gen_v8={c.get('gen_v8', 0)} gen_xhard0_new={c.get('gen_new_xhard0', 0)} "
             f"gen_xhard0_old={c.get('gen_old_xhard0', 0)} gen_failed={c.get('gen_failed', 0)} "
-            f"eval_unevaluated={c.get('eval_unevaluated', 0)} eval_filled=0 "
+            f"eval_filled={c.get('eval_filled', 0)} eval_media={c.get('eval_media', 0)} "
+            f"eval_unevaluated={c.get('eval_unevaluated', 0)} flip={c.get('flip', 0)} rate_mismatch={c.get('rate_mismatch', 0)} "
             f"config_mismatch={c.get('config_mismatch', 0)} media={stats['media']} problems={len(stats['problems'])}")
 
 
@@ -451,7 +613,8 @@ def main(argv=None) -> int:
     except Exception as exc:  # 规格校验、文件缺失等：照实 FAIL，不写产物
         print(f"# {type(exc).__name__}: {exc}", flush=True)
         print("V8_SITE_CATALOG=FAIL identities=0 expected=0 gen_v8=0 gen_xhard0_new=0 gen_xhard0_old=0 gen_failed=0 "
-              "eval_unevaluated=0 eval_filled=0 config_mismatch=0 media=0 problems=1", flush=True)
+              "eval_filled=0 eval_media=0 eval_unevaluated=0 flip=0 rate_mismatch=0 config_mismatch=0 media=0 problems=1",
+              flush=True)
         return 1
     for problem in stats["problems"][:40]:
         print(f"# {problem}", flush=True)

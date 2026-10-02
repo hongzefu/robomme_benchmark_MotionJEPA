@@ -88,3 +88,13 @@
 2. 冒烟 1 的两局错误被记为非 infra（`ModuleNotFoundError: openpi_client`），分类口径上环境缺包应属基础设施，本轮未改分类逻辑，仅留档。
 3. PickXtimes、StopCube、PickHighlight 三任务两模型全部 0 成功；PickXtimes／StopCube 无 timeout（环境提前判失败），PickHighlight 多为 1600 步 timeout。未做额外诊断。
 4. 录像体量约 125 MB／局（FFV1 无损双相机＋逐步数组），计划 §6 的 5 GB 估计偏小两个数量级（launch.md §七 4）。
+
+## 七、站点（8081）
+
+用户 2026-10-02：「把所有的结果放在8081端口」「注意你给我链接要是 http://sled-vail.eecs.umich.edu:8081/ 你现在给的是错误的」。
+
+- 站点：**http://sled-vail.eecs.umich.edu:8081/**（tmux `site-v8-8081`，`v8_site.py --site-dir artifacts/newtask-v8/site-eval`，日志 `artifacts/newtask-v8/logs/site-v8-8081-eval.log`，`V8_SITE_READY videos=3974`）；原无评估的站点目录 `artifacts/newtask-v8/site/` 保留不动，beta 站 8080 不动。
+- 评估视频转码：`scripts/injection-dev/site/v8_eval_transcode.py`——录像器 FFV1 无损 mkv 浏览器不能播，且同流重复帧只编一份，须按 `frames-*.jsonl` 的 `idx→enc` 展开回逐帧原图，再左右拼成 512×256（左上角 DEMO／EXEC）以 libx264 crf23 输出 mp4；`V8_EVAL_TRANSCODE=PASS episodes=2140 frame_mismatch=0 stream_len_mismatch=0 failed=0`，产物 `artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/site-media/`（2.8 GB，manifest 逐局帧数与 sha256）；无损原片不动。
+- 目录：`v8_site_catalog.py --eval-run artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01 --xhard0-eval artifacts/newtask-v8/xhard0-eval --out artifacts/newtask-v8/site-eval`（另拷原站 `subgoals.json`）→ `V8_SITE_CATALOG=PASS identities=1262 expected=1262 gen_v8=1070 gen_xhard0_new=190 gen_xhard0_old=190 gen_failed=4 eval_filled=2908 eval_media=2524 eval_unevaluated=0 flip=18 rate_mismatch=0 config_mismatch=0 media=3974 problems=0`。xhard1～5 每身份取账本 accept 权威结果、逐格成败数与 `report.json` 核对一致；xhard0 取阶段 3′ 两路线（新入口 = hard 路线、旧入口 = 官方路线），MME-VLA 两入口 384 个视频，SimpleMemVLA 当时未录视频、评估位注明「只有结局与步数」；两路线翻转 18 处均为 MME-VLA。
+- 浏览器检查（Playwright，`--base http://sled-vail.eecs.umich.edu:8081`，截图 `artifacts/newtask-v8/site-eval-checks/`）：`V8_SITE=PASS sections=15 eval_placeholders=0 eval_missing=0 eval_mismatch=0 eval_played=118 subgoal_missing=0 config_mismatch=0 cells=59 played=59 page_errors=0`；`V8_ORACLE_BROWSER=PASS cells=59 missing=0 mismatch=0 page_errors=0`。截图已目视：局号点颜色、筛选计数、评估徽标与步数、评估视频（EXEC／DEMO 标签）均正常。
+- 规则：「给用户的网页链接一律写完整域名」已写入 AgentMetaRules 正本第 23 条（`361e987`）并回流 benchmark／policy／mjepa 三仓库；`docs/validation/newtask-v8/result.md` 中的短主机名链接一并改为完整域名。

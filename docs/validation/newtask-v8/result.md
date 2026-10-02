@@ -4,7 +4,7 @@
 
 ## ① 一句话结论
 
-v8 交付集 **1070 局**（16 任务 × 43 格；含 xhard0 共 1262 局）已生成、通过全部交付闸门并换入包内规格；执行步全集最大 1479（上限 1600，抽样阶段因超限被过滤的候选为 0）；正式逐局站点 http://sled-vail:8081/ 经 P4 严格链路建成；beta 站 http://sled-vail:8080/ 按用户要求保留原状。二次生成对拍 `PARITY_H_H2=PASS`（1070 局：逐字节相同 1058、噪声 12、H2 失败 0、成败相反 0）；xhard0 两路线评估 768 局全部取得终态（只报告：SimpleMemVLA 两路线成败逐局一致，MME-VLA 18 局翻转）。7 个 GL 占位 job 已按清单释放。
+v8 交付集 **1070 局**（16 任务 × 43 格；含 xhard0 共 1262 局）已生成、通过全部交付闸门并换入包内规格；执行步全集最大 1479（上限 1600，抽样阶段因超限被过滤的候选为 0）；正式逐局站点 http://sled-vail.eecs.umich.edu:8081/ 经 P4 严格链路建成；beta 站 http://sled-vail.eecs.umich.edu:8080/ 按用户要求保留原状。二次生成对拍 `PARITY_H_H2=PASS`（1070 局：逐字节相同 1058、噪声 12、H2 失败 0、成败相反 0）；xhard0 两路线评估 768 局全部取得终态（只报告：SimpleMemVLA 两路线成败逐局一致，MME-VLA 18 局翻转）。7 个 GL 占位 job 已按清单释放。
 
 ## ② 版本与代码状态
 
@@ -119,7 +119,7 @@ v7 参考：SimpleMemVLA 0／16，MME-VLA 11／71。MME 同入口同卡重跑即
 5. 「第一次完成，开始建网站还需要多久」「gen1 完成后、开始建站还要多久 查清楚了吗？？？？」——已答（瓶颈是 NFS 回传，改 4 路并行）。
 6. 「分片完成了有部分片完成了之后你可以把其他片的内容分担给另外的片码。」——在跑的 gen1 片无法中途迁移；改为先完成的片在自己席位上立即起该片 H2。
 7. BinFill xhard2 39/40 时提问，用户选择「补抽到 40（推荐）」。
-8. 「先不管增量 先建一个beta网站」「暂时停止所有其他的工作正在进行的后台就不用管了先把网站给我」——beta 站 http://sled-vail:8080/（1069 局，BinFill xhard2 39 局，只在 beta 启动包装中放宽该格校验）。
+8. 「先不管增量 先建一个beta网站」「暂时停止所有其他的工作正在进行的后台就不用管了先把网站给我」——beta 站 http://sled-vail.eecs.umich.edu:8080/（1069 局，BinFill xhard2 39 局，只在 beta 启动包装中放宽该格校验）。
 9. 「你现在的4片是什么情况各生成了多少有哪些生成失败」——已答（④）。
 10. 「你的Taskgoal都更新了吗?」——已逐局核对（⑤）。
 11. 「每个页面的这个表格不要再显示了。太占位置」——任务页撤下各档对比表（12.300），只在「各档总表」页保留。
@@ -143,7 +143,7 @@ v7 参考：SimpleMemVLA 0／16，MME-VLA 11／71。MME 同入口同卡重跑即
   - rollout：冒烟 7 格 × 1 = 7；gen1 1114（首轮 1070 + 递补 44，含补抽 1）；H2 1070；评估冒烟 2；3′ 768。均在批准上限内（rollout 上限 3,272）。
 - 收尾清理：NFS 上 gen1（481 GB，本机副本已逐个核 sha256）、H2 对拍副本（480 GB）、冒烟（2.9 GB）、评估结果目录按显式路径删除；评估结果先拷回本机。本机保留正式局 h5 + 视频 + 规格（`artifacts/newtask-v8/gen1`、`specs-root`）、正式站与 beta 站、闸门日志。
 - 7 个 GL 占位 job 已于 2026-10-02 02:33 按清单逐个 scancel（R11）。
-- 站点：正式站 http://sled-vail:8081/（tmux `site-v8-8081`）；beta 站 http://sled-vail:8080/（tmux `site-v8beta-8080`，用户要求保留原状）。
+- 站点：正式站 http://sled-vail.eecs.umich.edu:8081/（tmux `site-v8-8081`）；beta 站 http://sled-vail.eecs.umich.edu:8080/（tmux `site-v8beta-8080`，用户要求保留原状）。
 - 遗留：`scripts/injection-dev/_freeze.py` 的 /2、/3 档位预检仍读全局 `TIERS`（S3b 报告未解决事项 1，现由 validate_specs 兜底）；`scripts/README.md` 第 3 节长度表仍是 v7 数值（已标注）；`test_TaskGoal.py` 2 个与 `test_step_error_handling.py` 2 个测试在 BASE 就失败，未处理。
 
 ## ⑫ 归档文件清单

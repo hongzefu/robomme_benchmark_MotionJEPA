@@ -111,15 +111,15 @@
 </head>
 <body>
   <aside class="sidebar" id="sidebar" aria-label="任务选择">
-    <div class="brand"><div class="brand-name">RoboMME v8</div><div class="brand-caption">生成演示 · 评估位置空（未评估）</div></div>
+    <div class="brand"><div class="brand-name">RoboMME v8</div><div class="brand-caption">生成演示 · 两策略评估</div></div>
     <input class="search" id="task-search" type="search" placeholder="查找任务…" autocomplete="off" aria-label="搜索任务">
     <button class="task-link outlier-link" id="outlier-link" type="button" hidden><span class="task-index">★</span><span><span class="task-name">超出 xhard0 范围 &gt;15% 合集</span><span class="task-id" id="outlier-count"></span></span></button>
-    <button class="task-link outlier-link oracle-link" id="oracle-link" type="button" hidden><span class="task-index">∑</span><span><span class="task-name">各档总表</span><span class="task-id">配置 · oracle 长度 · 评估位</span></span></button>
+    <button class="task-link outlier-link oracle-link" id="oracle-link" type="button" hidden><span class="task-index">∑</span><span><span class="task-name">各档总表</span><span class="task-id">配置 · oracle 长度 · 成功率</span></span></button>
     <nav class="task-nav" id="task-nav" aria-label="全部任务"></nav>
   </aside>
   <main class="main" id="content">
     <header class="topbar">
-      <div><h1>v8 逐局对照</h1><p>每一局并排展示生成演示与两个策略的评估位。v8 新局不做两策略评估，评估位原位保留、显示「未评估」。xhard0 分新入口（robomme_hard）与旧入口（官方 robomme）两行。</p></div>
+      <div><h1>v8 逐局对照</h1><p>每一局并排展示生成演示与 SimpleMemVLA、MME-VLA 两个策略的评估结果与视频。xhard1～5 为 V8 双模型评估（执行段 1600 步截断）；xhard0 为 V8 阶段 3′ 两路线评估，分新入口（robomme_hard）与旧入口（官方 robomme）两行。</p></div>
       <button class="mobile-menu" id="menu-toggle" type="button" aria-controls="sidebar" aria-expanded="false">切换任务</button>
     </header>
     <div class="status-panel" id="status-panel" role="status">正在载入…</div>
@@ -147,7 +147,7 @@
     // 成败筛选（both/split/none/flip/rerun）只认已评估的终态；「未评估」是独立状态，不算失败，不会被任何成败筛选命中
     const FILTERS = [['all', '全部'], ['both', '两者都成'], ['split', '分歧'], ['none', '两者都未成'], ['flip', '新旧入口翻转'], ['rerun', '同卡重跑的局'], ['uneval', '未评估']];
     const FINAL = ['success', 'fail', 'timeout', 'error'];
-    const UNEVAL_TEXT = '未评估：v8 新局不做 SimpleMemVLA／MME-VLA 两策略评估，评估位原位保留、内容置空。';
+    const UNEVAL_TEXT = '未评估：本局没有该策略的评估记录。';
 
     function node(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
     const policies = () => S.cat.policies;
@@ -212,7 +212,7 @@
       if (!S.oracleTask) S.oracleTask = 'all';
       if (!onlyTask) {
         box.append(node('h2', 'task-title', '任务对比'));
-        box.append(node('div', 'oracle-subtitle', '任务配置 · GT 总长度 / demo / execution · 策略成功率（v8 未评估）'));
+        box.append(node('div', 'oracle-subtitle', '任务配置 · GT 总长度 / demo / execution · 策略成功率'));
       }
       const controls = node('div', 'oracle-controls');
       const taskLabel = node('label', 'oracle-task-filter', '任务');
@@ -243,7 +243,7 @@
       const scroll = node('div', 'oracle-scroll');
       scroll.tabIndex = 0; scroll.setAttribute('role', 'region');
       scroll.setAttribute('aria-label', '六档任务对比表，可横向滚动'); box.append(scroll);
-      box.append(node('p', 'oracle-legend', 'xhard0～5 同时展示。GT = ground truth；长度第一行为均值，第二行为最小～最大。v8 不做两策略评估，成功率各格显示「未评估」（不是失败）。'));
+      box.append(node('p', 'oracle-legend', 'xhard0～5 同时展示。GT = ground truth；长度第一行为均值，第二行为最小～最大。成功率 = 成功局数 / 本格局数；xhard1～5 来自 V8 双模型评估（1600 步截断），xhard0 来自阶段 3′（新入口 = hard 路线，上限 1300）。'));
       const notes = node('div', 'oracle-notes');
       const note = (title, text) => {
         const part = node('div'); part.append(node('strong', '', title), node('p', '', text)); return part;
@@ -367,7 +367,7 @@
 
     function renderFilters() {
       const box = el('filters'); box.textContent = '';
-      box.append(node('span', '', '按新入口两策略成败筛选（v8 未评估，成败筛选不会命中）：'));
+      box.append(node('span', '', '按新入口两策略成败筛选：'));
       FILTERS.forEach(([id, label]) => {
         if ((id === 'flip' || id === 'rerun') && S.tier !== 'xhard0') return;
         const n = cell().episodes.filter(ep => { const f = S.filter; S.filter = id; const r = epMatches(ep); S.filter = f; return r; }).length;
@@ -377,7 +377,7 @@
         box.append(b);
       });
       const lg = el('legend'); lg.textContent = '';
-      lg.append(node('span', '', '局号下两个点：左 SimpleMemVLA、右 MME-VLA（新入口）；空心 = 未评估。'));
+      lg.append(node('span', '', '局号下两个点：左 SimpleMemVLA、右 MME-VLA（新入口）。'));
       Object.entries(STATUS_ZH).filter(([k]) => k !== 'generation_failed').forEach(([k, v]) => {
         const s = node('span'); const i = node('i', 's-' + k); s.append(i, document.createTextNode(v)); lg.append(s);
       });
@@ -429,7 +429,7 @@
       if (r) head.append(node('span', 'badge s-' + r.status, STATUS_ZH[r.status] || r.status));
       else head.append(node('span', 'badge s-unevaluated', '未评估'));
       col.append(head);
-      // v8：评估位原位保留、内容置空；不发任何评估媒体请求
+      // 没有评估记录的局显示占位（正常数据下不出现）
       if (!r) { col.append(node('div', 'col-meta', '步数 — · 上限 —'), node('div', 'empty eval-placeholder', UNEVAL_TEXT)); return col; }
       const meta = [];
       if (r.steps != null) meta.push(`步数 ${r.steps}${r.max_steps ? ' / 上限 ' + r.max_steps : ''}`);
@@ -446,7 +446,7 @@
         });
         holder.append(videoEl(r.attempts[0]));
         col.append(tabs, holder);
-      } else col.append(node('div', 'empty', '无视频'));
+      } else col.append(node('div', 'empty', r.no_video || '无视频'));
       return col;
     }
 
@@ -455,7 +455,7 @@
       const ep = cell().episodes.find(e => e.idx === S.ep); if (!ep) return;
       const head = node('div', 'episode-head'); const left = node('div');
       left.append(node('h3', '', `${S.task} · ${S.tier} · 第 ${ep.idx} 局`));
-      const meta = [`seed ${ep.seed}`, `身份 episode ${ep.eval_episode ?? '—'}`, ep.round == null ? '未评估（无轮次）' : `第 ${ep.round} 轮`];
+      const meta = [`seed ${ep.seed}`, `身份 episode ${ep.eval_episode ?? '—'}`, ep.eval_source || (ep.round == null ? '—' : `第 ${ep.round} 轮`)];
       if (ep.episode != null) meta.push(`生成 episode ${ep.episode}`);
       if (ep.candidate != null) meta.push(`候选 ${ep.candidate}`);
       if (ep.source_episode != null) meta.push(`原 episode ${ep.source_episode}`);
@@ -478,7 +478,7 @@
         left.append(g);
       }
       const sync = node('button', 'sync', '同步播放'); sync.type = 'button'; sync.id = 'sync-play';
-      sync.title = '同步播放本局全部视频（v8 只有生成演示视频）';
+      sync.title = '同步播放本局全部视频（生成演示与两策略评估）';
       sync.addEventListener('click', () => {
         const vids = [...box.querySelectorAll('video')];
         vids.forEach(v => { v.pause(); v.currentTime = 0; });
