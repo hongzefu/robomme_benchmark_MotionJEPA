@@ -420,13 +420,78 @@ def test_infra重试只一次_额度从账本计(tmp_path, capsys):
     assert not [x for x in _ledger(tmp_path) if x["kind"] == "accept"]
 
 
-def test_正常终态不重试(tmp_path):
+def test_非infra错误是最终结局_accept_跨重启不重跑(tmp_path):
+    """口径裁定：status=error、infra=false 的尝试即该身份结局，写 accept（status=error），之后同身份记 late；
+    重启（第二个 SeatRunner）不重跑、不占 infra 额度。"""
     a = _ident(0)
     pol = StepPolicy()
-    r = _runner(tmp_path, pol, [a], env_factory=lambda ep: Env(reset_raises="scene invalid"))
+    ef = lambda ep: Env(reset_raises="scene invalid")  # noqa: E731
+    r = _runner(tmp_path, pol, [a], env_factory=ef)
     r.run_identities([a])
     rows = _results(tmp_path)
-    assert len(rows) == 1 and rows[0]["status"] == "error" and rows[0]["infra"] is False
+    assert len(rows) == 1 and rows[0]["status"] == "error" and rows[0]["infra"] is False and rows[0]["late"] is False
+    acc = [x for x in _ledger(tmp_path) if x["kind"] == "accept"]
+    assert len(acc) == 1 and acc[0]["status"] == "error" and acc[0]["accepted_attempt_id"] == rows[0]["attempt_id"]
+    r2 = _runner(tmp_path, pol, [a], env_factory=ef)  # 模拟进程重启
+    r2.run_identities([a])
+    assert len(pol.calls) == 1 and len(_results(tmp_path)) == 1 and r2.ledger.infra_retries_used() == 0
+    late = r2.run_one(a, attempt=2)  # 同身份再来一条非 infra 错误 → late
+    assert late["late"] is True
+    led = _ledger(tmp_path)
+    assert sum(x["kind"] == "accept" for x in led) == 1
+    assert [x["late"] for x in led if x["kind"] == "attempt_end"] == [False, True]
+
+
+def test_M1_旧账本缺accept的非infra错误_重启不当infra重试(tmp_path):
+    """防御：账本里最后一次未作废尝试是非 infra 错误但缺 accept（如本修复前写的账本），重启后跳过、不占 infra 额度。"""
+    a, b = _ident(0), _ident(1)
+    pol = StepPolicy()
+    ef = lambda ep: Env(reset_raises="scene invalid")  # noqa: E731
+    _runner(tmp_path, pol, [a, b], env_factory=ef).run_identities([a])
+    lp = tmp_path / "mme.ledger.jsonl"
+    lp.write_text("".join(l + "\n" for l in lp.read_text().splitlines() if json.loads(l)["kind"] != "accept"))
+    pol2 = StepPolicy()
+    r2 = _runner(tmp_path, pol2, [a, b], env_factory=lambda ep: Env(success_at=2), infra_retry_budget=1)
+    assert r2.ledger.last_end_final(a["key"]) and a["key"] not in r2.ledger.accepted
+    r2.run_identities([a, b])
+    assert len(pol2.calls) == 1  # 只跑 b
+    assert r2.ledger.infra_retries_used() == 0 and r2.ledger.infra_retries_left() == 1
+    assert [x["key"] for x in _results(tmp_path)] == [a["key"], b["key"]]
+
+
+def test_infra错误用满不accept(tmp_path):
+    a = _ident(0)
+    r = _runner(tmp_path, StepPolicy(infra_always=True), [a])
+    r.run_identities([a])
+    assert len(_results(tmp_path)) == 2 and not [x for x in _ledger(tmp_path) if x["kind"] == "accept"]
+    assert not r.ledger.last_end_final(a["key"])
+
+
+def test_墙钟超时结果行取session实际值(tmp_path, monkeypatch):
+    class Exit(Exception):
+        pass
+
+    def fake_exit(code):
+        raise Exit(code)
+
+    monkeypatch.setattr(EC.os, "_exit", fake_exit)
+    a = _ident(0)
+    r = _runner(tmp_path, StepPolicy(), [a], env_factory=lambda ep: Env())
+    s = EC.EnvSession(a["task"], a["builder_episode"], max_steps=CAP, builder=r.builder_for(a["task"], CAP),
+                      step_cap=CAP)
+    s.reset()
+    for _ in range(7):
+        s.step(np.zeros(8))
+    for i, sess in enumerate((s, None)):
+        rec = dict(r.base_record(a, attempt=i + 1, canary=False), attempt_id=f"id{i}", exec_steps=0, reset_calls=0,
+                   cap_hit=False, rec_dir="x")
+        with pytest.raises(Exit):
+            r._on_wall_timeout(rec, None, 1.0, {"finished": False, "canary": False, "session": sess})
+    rows = _results(tmp_path)
+    assert (rows[0]["exec_steps"], rows[0]["reset_calls"], rows[0]["cap_hit"], rows[0]["demo_frames"]) == (7, 2, False, 2)
+    assert (rows[1]["exec_steps"], rows[1]["reset_calls"], rows[1]["cap_hit"]) == (None, None, None)
+    assert all(x["status"] == "error" and x["infra"] is True for x in rows)
+    assert not [x for x in _ledger(tmp_path) if x["kind"] == "accept"]
 
 
 # ── accept / late / 悬空恢复 ────────────────────────────────────────────────

@@ -545,7 +545,8 @@ class AttemptLedger:
     * 作废尝试：``attempt_end.budget_exhausted=true`` 的尝试没有执行段（额度在 build／reset 前就被拒），不计入每身份
       2 次上限、也不计入 infra 重试额度；
     * infra 重试：``attempt_start.retry=true`` 且未作废的尝试数，对 ``--infra-retry-budget``；
-    * 权威终态：每身份第一条 ``accept`` 行的 ``accepted_attempt_id``。
+    * 权威终态：每身份第一条 ``accept`` 行的 ``accepted_attempt_id``；success／fail／timeout 与非 infra 错误
+      （status=error、infra=false）都 accept，infra 错误不 accept（重试额度或 2 次用满时该身份无 accept，汇总计 missing）。
     """
 
     def __init__(self, path: Path | str, *, seat: str, policy: str):
@@ -620,6 +621,14 @@ class AttemptLedger:
     def infra_retries_left(self) -> int:
         return int(self.infra_retry_budget or 0) - self.infra_retries_used()
 
+    def last_end_final(self, key: str) -> bool:
+        """最后一次未作废尝试的 attempt_end 是否已是最终结局（非 infra 错误等）：是则该身份不再重跑。"""
+        live = [r for r in self.starts.get(key, []) if not self._void(r["attempt_id"])]
+        if not live:
+            return False
+        end = self.ended.get(live[-1]["attempt_id"])
+        return bool(end) and self.is_final(end)
+
     def dangling(self) -> list[dict]:
         """有 attempt_start、无 attempt_end 的尝试（进程被杀等）。"""
         return [r for rows in self.starts.values() for r in rows if r["attempt_id"] not in self.ended]
@@ -639,19 +648,30 @@ class AttemptLedger:
         self.append({"kind": "attempt_start", "key": key, "attempt_id": attempt_id, "attempt_no": attempt_no,
                      "retry": bool(retry), **extra})
 
-    def is_late(self, key: str, status: str | None) -> bool:
-        return status in TERMINAL_STATUSES and key in self.accepted
+    @staticmethod
+    def is_final(record: dict) -> bool:
+        """该尝试是否构成身份的最终结局（主会话 2026-10-02 口径裁定）：success／fail／timeout，以及非基础设施错误
+        （status=error、infra=false、非 budget_exhausted、非 run_blocked——如 reset 失败、环境自报 error、客户端
+        TypeError 等）。infra=true 的错误不是结局（可在额度内重试；额度或 2 次用满则不 accept，汇总计 missing）。"""
+        status = record.get("status")
+        if status in TERMINAL_STATUSES:
+            return True
+        return (status == "error" and not record.get("infra") and not record.get("budget_exhausted")
+                and not record.get("run_blocked"))
+
+    def is_late(self, record: dict) -> bool:
+        return self.is_final(record) and record["key"] in self.accepted
 
     def attempt_end(self, record: dict) -> bool:
-        """写 attempt_end；终态且该身份尚无 accept 时再写 accept。返回 late。"""
+        """写 attempt_end；最终结局且该身份尚无 accept 时再写 accept（status 可为 error）。返回 late。"""
         key, status = record["key"], record.get("status")
-        late = self.is_late(key, status)
+        late = self.is_late(record)
         base = {"key": key, "attempt_id": record["attempt_id"], "attempt_no": record["attempt_no"]}
         self.append({"kind": "attempt_end", **base, "status": status, "infra": bool(record.get("infra")),
                      "cap_hit": bool(record.get("cap_hit")), "exec_steps": record.get("exec_steps"),
                      "budget_exhausted": bool(record.get("budget_exhausted")), "late": late,
                      **({"recovered": True} if record.get("recovered") else {})})
-        if status in TERMINAL_STATUSES and not late:
+        if self.is_final(record) and not late:
             self.append({"kind": "accept", **base, "accepted_attempt_id": record["attempt_id"], "status": status})
         return late
 
@@ -831,7 +851,7 @@ class SeatRunner:
         policy_kw = self.policy_kwargs(int(eff))
         limit = self.args.episode_wall_s + (self.args.first_extra_s if self.episodes_done == 0 else 0)
         # first_extra_s 只给「server 刚（重）起后的第一局」：由 run_seat.sh 在 server 新起时传 600，客户端单独重起时传 0
-        state = {"finished": False, "canary": canary}
+        state = {"finished": False, "canary": canary, "session": session}
         timer = None
         if limit > 0:
             timer = threading.Timer(limit, self._on_wall_timeout, args=(record, claim, limit, state))
@@ -906,7 +926,7 @@ class SeatRunner:
     def _finish(self, record: dict, canary: bool) -> None:
         """写结果行；V8 正式尝试再写账本 attempt_end（终态且首个 → accept）。late 先算好写进结果行。"""
         if self.v8 and not canary:
-            record["late"] = self.ledger.is_late(record["key"], record.get("status"))
+            record["late"] = self.ledger.is_late(record)
         append_result(self.results_path, record)
         if self.v8 and not canary:
             self.ledger.attempt_end(record)
@@ -936,7 +956,11 @@ class SeatRunner:
                 return
             rec = dict(record, status="error", task_success=False, steps=None, infra=True, infra_reason="episode_wall",
                        error=f"INFRA_TIMEOUT episode_wall>{limit:.0f}s")
-            if self.v8:
+            if self.v8:  # 取 session 实际值；拿不到写 null（不写 0）
+                sess = state.get("session")
+                rec.update(exec_steps=getattr(sess, "steps", None), reset_calls=getattr(sess, "reset_calls", None),
+                           cap_hit=getattr(sess, "cap_hit", None),
+                           demo_frames=(getattr(sess, "timing", None) or {}).get("demo_frames"))
                 self._finish(rec, bool(state.get("canary")))
             else:
                 append_result(self.results_path, rec)
@@ -987,14 +1011,15 @@ class SeatRunner:
         return n
 
     def run_identities_v8(self, rows: list[dict]) -> int:
-        """V8：已有 accept 的身份跳过；已用满 2 次尝试的跳过；用过 1 次未 accept 的需 infra 重试额度。"""
+        """V8：已有 accept 的身份跳过；已用满 2 次尝试的跳过；最后一次未作废尝试已是最终结局（含非 infra 错误，
+        即使账本缺 accept）的跳过、不占 infra 额度；只有最后一次为 infra 错误的才按 infra 重试额度重跑。"""
         led = self.ledger
         self.recover_dangling()
         pending: list[dict] = []
         skip_acc = skip_full = skip_budget = 0
         for ident in rows:
             k = key_of(ident)
-            if k in led.accepted:
+            if k in led.accepted or led.last_end_final(k):
                 skip_acc += 1
             elif led.attempts_used(k) >= V8_MAX_ATTEMPTS:
                 skip_full += 1
@@ -1007,7 +1032,7 @@ class SeatRunner:
             ident = pending.pop(0)
             k = key_of(ident)
             used = led.attempts_used(k)
-            if k in led.accepted or used >= V8_MAX_ATTEMPTS:
+            if k in led.accepted or led.last_end_final(k) or used >= V8_MAX_ATTEMPTS:
                 continue
             retry = used >= 1
             if retry and led.infra_retries_left() <= 0:

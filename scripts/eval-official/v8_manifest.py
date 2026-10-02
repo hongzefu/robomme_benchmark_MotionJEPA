@@ -4,7 +4,8 @@
     python scripts/eval-official/v8_manifest.py --identities <eval-identities-1262.jsonl> \\
         --delivery <gen1/delivery.local.json> --shards 10 --out-dir <dir>
 
-四步，任何一步不过即打印 ``V8_EVAL_SHARDS=FAIL ...`` 并以非零退出（不写任何产物）：
+四步，任何一步不过即打印 ``V8_EVAL_SHARDS=FAIL ...`` 并以非零退出（四步不过不写产物；写出后读回核对不过则删掉
+本次写出的 manifest.json 与 shard-NN.json，不留半成品）：
 
 1. 核源集：``export_eval_identities.py`` 的 1262 行（xhard0 16×12=192 + 新值 43 格 1070），逐格对
    ``hard_specs.EXPECTED_CELLS``；xhard0 行 candidate=null、source_episode 为整数，新值行 candidate 为整数、
@@ -273,6 +274,10 @@ def build(identities: Path, delivery_path: Path, shards: int) -> tuple[dict, lis
     return manifest, parts
 
 
+def output_paths(out_dir: Path, shards: int) -> list[Path]:
+    return [out_dir / f"shard-{i:02d}.json" for i in range(shards)] + [out_dir / "manifest.json"]
+
+
 def write_outputs(out_dir: Path, manifest: dict, parts: list[list[dict]]) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     for i, p in enumerate(parts):
@@ -281,6 +286,16 @@ def write_outputs(out_dir: Path, manifest: dict, parts: list[list[dict]]) -> Non
                                                      encoding="utf-8")
     (out_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
                                            encoding="utf-8")
+
+
+def remove_outputs(out_dir: Path, shards: int) -> int:
+    """读回核对不过时删掉本次写出的产物（只删 manifest.json 与 shard-NN.json，不碰目录里其他文件）。"""
+    n = 0
+    for path in output_paths(out_dir, shards):
+        if path.exists():
+            path.unlink()
+            n += 1
+    return n
 
 
 def verify_outputs(out_dir: Path, manifest: dict, shards: int) -> dict:
@@ -304,9 +319,14 @@ def main(argv: list[str] | None = None) -> int:
     try:
         manifest, parts = build(Path(args.identities), Path(args.delivery), args.shards)
         write_outputs(out_dir, manifest, parts)
-        chk = verify_outputs(out_dir, manifest, args.shards)
+        try:
+            chk = verify_outputs(out_dir, manifest, args.shards)
+        except (OSError, ValueError, KeyError) as e:
+            chk = {"verify_error": f"{type(e).__name__}: {e}"}
         if any(chk.values()):
-            raise ManifestError("verify", f"读回核对不符 {chk}", **chk)
+            removed = remove_outputs(out_dir, args.shards)
+            raise ManifestError("verify", f"读回核对不符 {chk}，已删本次产物 {removed} 个",
+                                **{k: v for k, v in chk.items() if isinstance(v, int)})
     except ManifestError as e:
         c = e.counts
         print(f"V8_EVAL_SHARDS=FAIL shards={args.shards} missing={c.get('missing', 0)} extra={c.get('extra', 0)} "

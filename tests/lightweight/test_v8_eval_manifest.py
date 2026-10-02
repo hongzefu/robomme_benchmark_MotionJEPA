@@ -191,3 +191,16 @@ def test_TASK_SECONDS与导出脚本一致():
     tree = ast.parse((REPO / "scripts" / "injection-dev" / "export_eval_identities.py").read_text())
     node = next(n for n in tree.body if isinstance(n, ast.Assign) and getattr(n.targets[0], "id", "") == "TASK_SECONDS")
     assert ast.literal_eval(node.value) == M.TASK_SECONDS
+
+
+def test_读回核对不过即删本次产物(tmp_path, capsys, monkeypatch):
+    src, d = _source_and_delivery()
+    out = tmp_path / "out"
+    out.mkdir()
+    (out / "keep.txt").write_text("other")  # 目录里其他文件不动
+    monkeypatch.setattr(M, "verify_outputs", lambda *a, **k: {"missing": 0, "extra": 0, "duplicate": 1,
+                                                                "roundtrip_mismatch": 0})
+    rc, last, out = _run(tmp_path, src, d, capsys)
+    assert rc != 0 and "stage=verify" in last and "duplicate=1" in last
+    assert not (out / "manifest.json").exists() and not list(out.glob("shard-*.json"))
+    assert (out / "keep.txt").read_text() == "other"
