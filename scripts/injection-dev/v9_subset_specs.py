@@ -61,6 +61,10 @@ DERIVE_META = "v9-derive.json"
 CELLS_JSON = "cells.json"
 SOURCE_REUSE = "v8-reuse"
 SOURCE_NEW = "v9-new"
+#: 交付清单行必有的键（与 V8 ``gen1/delivery.local.json`` 行、``_rollout.aggregate_v8`` 的 row_out 同键；``video`` 可选，
+#: assemble 一律补齐）。站点目录 ``v8_site_catalog.py``、subgoals、step-headroom 都按这些键读。
+DELIVERY_ROW_KEYS = ("task", "tier", "candidate", "seed", "episode", "spec_sha256", "h5_sha256", "frames",
+                     "exec_steps", "h5", "path", "env_module", "recovery_mode", "initial_selected", "role")
 
 
 class SubsetError(RuntimeError):
@@ -666,18 +670,32 @@ def assemble(subset: Path, movecube: Path, insertpeg: Path, v8_delivery: Path, o
             b.write(a.read())
     loaded = H.load_specs_v8(out_specs, dict(cells), cell_table=H.V9_CELLS, check_fingerprint=False)
     # 交付清单
-    _, v8_index = load_delivery(v8_delivery)
-    _, mc_index = load_delivery(mc_delivery)
-    _, ip_index = load_delivery(ip_delivery)
+    v8_data, v8_index = load_delivery(v8_delivery)
+    mc_data, mc_index = load_delivery(mc_delivery)
+    ip_data, ip_index = load_delivery(ip_delivery)
     base = os.path.abspath(out_delivery.parent)
     rows_out: list[dict[str, Any]] = []
     cell_out: dict[str, dict[str, Any]] = {}
+    over_rows: list[dict[str, Any]] = []
+    totals = {key: 0 for key in _rollout.V8_TOTAL_COUNT_KEYS}
     for (task, t), expected in cells.items():
         mine = [r for r in loaded[t][1] if r["task"] == task]
-        c = {"task": task, "tier": t, "expected": expected, "candidates": len(mine),
-             "tried": sum(r["tried"] for r in mine), "delivered": 0, "reused": 0, "new": 0,
-             "failed": sum((r["rollout"] or {}).get("status") == "failed" for r in mine),
-             "spares_left": sum(not r["tried"] and not r["selected"] for r in mine)}
+        roll = lambda r: r["rollout"] or {}  # noqa: E731
+        # 逐格计数键与 _rollout.aggregate_v8 同口径（由合成后规格结果段算）；infra_retries 取各来源清单该格的值
+        src_cells = mc_data if task == mc_task else ip_data if task == ip_task else v8_data
+        c = {"expected": expected, "candidates": len(mine), "tried": sum(r["tried"] for r in mine),
+             "delivered": sum(H.delivered(r) for r in mine),
+             "failed": sum(roll(r).get("status") == "failed" for r in mine),
+             "exec_over_cap": sum(roll(r).get("error_type") == "exec_over_cap" for r in mine),
+             "backfills": sum(r["tried"] and not r["initial_selected"] for r in mine),
+             "infra_retries": int(((src_cells.get("cells") or {}).get(f"{task}/{t}") or {}).get("infra_retries", 0)),
+             "spares_left": sum(not r["tried"] and not r["selected"] for r in mine),
+             "pending": sum(r["selected"] and r["rollout"] is None for r in mine), "bad_h5": 0}
+        reused_n = new_n = 0
+        for r in sorted(mine, key=lambda r: int(r["candidate"])):
+            if roll(r).get("error_type") == "exec_over_cap":
+                over_rows.append({"task": task, "tier": t, "candidate": int(r["candidate"]), "seed": int(r["seed"]),
+                                  "exec_steps": roll(r).get("exec_steps")})
         for row in delivered_rows(mine, task):
             cand = int(row["candidate"])
             key = (task, t, cand)
@@ -690,30 +708,51 @@ def assemble(subset: Path, movecube: Path, insertpeg: Path, v8_delivery: Path, o
             errs = check_against_delivery(row, drow, label)
             if errs:
                 problems += errs
+                c["bad_h5"] += 1
                 continue
             h5 = drow.get("h5")
             if not h5 or not Path(h5).is_file():
                 problems.append(f"{label}：{task}@{t}#{cand} 的 h5 不存在：{h5}")
+                c["bad_h5"] += 1
                 continue
             video = main_video(h5, drow)
             if not video or not Path(video).is_file():
                 problems.append(f"{label}：{task}@{t}#{cand} 找不到唯一主视频（{video}）")
+                c["bad_h5"] += 1
                 continue
-            out_row = {"task": task, "tier": t, "candidate": cand, "seed": int(row["seed"]),
-                       "episode": int(row["episode"]), "spec_sha256": row["spec_sha256"],
-                       "h5_sha256": drow["h5_sha256"], "frames": drow.get("frames"),
-                       "exec_steps": drow.get("exec_steps"), "h5": os.path.abspath(h5),
-                       "path": os.path.relpath(os.path.abspath(h5), base), "env_module": drow.get("env_module"),
-                       "recovery_mode": drow.get("recovery_mode"), "initial_selected": drow.get("initial_selected"),
-                       "role": drow.get("role"), "video": os.path.abspath(video), "video_sha256": file_sha256(Path(video)),
-                       "source": source}
+            missing = [k for k in DELIVERY_ROW_KEYS if k not in drow]
+            if missing:
+                problems.append(f"{label}：{task}@{t}#{cand} 清单行缺键 {missing}")
+                continue
+            # 来源清单原行逐键拷贝（与 V8 delivery.local.json 同键同口径），只改写随清单位置变化的 path、
+            # 补齐绝对 h5／video，另加 video_sha256 与 source
+            out_row = copy.deepcopy(drow)
+            out_row.update(h5=os.path.abspath(h5), path=os.path.relpath(os.path.abspath(h5), base),
+                           video=os.path.abspath(video), video_sha256=file_sha256(Path(video)), source=source)
             rows_out.append(out_row)
-            c["delivered"] += 1
-            c["reused" if source == SOURCE_REUSE else "new"] += 1
-        c["status"] = "PASS" if c["delivered"] == expected else "FAIL"
-        if c["status"] == "FAIL":
-            problems.append(f"{task}/{t} 交付 {c['delivered']} ≠ {expected}")
-        cell_out[f"{task}/{t}"] = c
+            if source == SOURCE_REUSE:
+                reused_n += 1
+            else:
+                new_n += 1
+        if c["delivered"] == expected and not c["bad_h5"]:
+            status, reason = "PASS", None
+        elif c["pending"]:
+            status, reason = "FAIL", "pending"
+            totals["pending_cells"] += 1
+        elif c["delivered"] != expected and c["spares_left"] == 0:
+            status, reason = "FAIL", "exhausted"
+            totals["exhausted_cells"] += 1
+        elif c["delivered"] != expected:
+            status, reason = "FAIL", "shortfall"
+        else:
+            status, reason = "FAIL", "bad_h5"
+        if status == "FAIL":
+            totals["failed_cells"] += 1
+            problems.append(f"{task}/{t}:{reason}（交付 {c['delivered']} ≠ {expected} 或清单行有问题）")
+        for k in _rollout.V8_CELL_COUNT_KEYS:
+            totals[k] += c[k]
+        cell_out[f"{task}/{t}"] = {"task": task, "tier": t, "status": status, "reason": reason, **c,
+                                   "reused": reused_n, "new": new_n}
     reused = sum(r["source"] == SOURCE_REUSE for r in rows_out)
     new = len(rows_out) - reused
     expect_new = cells[(mc_task, tier)] + cells[(ip_task, tier)] - len(v8_reuse_ip)
@@ -727,17 +766,26 @@ def assemble(subset: Path, movecube: Path, insertpeg: Path, v8_delivery: Path, o
             f"cells={len(cells)}")
     if not ok:
         return {"line": line, "problems": problems}
+    n_tasks = len({t for t, _ in cells})
+    # 顶层 line 与 V8 聚合同口径（按 V9 格表算），判定行名换 V9_DELIVERY_SET；整合判定另存 assemble_line
+    set_line = (f"V9_DELIVERY_SET=PASS tasks={n_tasks} cells={len(cells)} total={totals['delivered']} "
+                f"expected={totals['expected']} failed={totals['failed']} exec_over_cap={totals['exec_over_cap']} "
+                f"backfills={totals['backfills']} infra_retries={totals['infra_retries']} "
+                f"exhausted_cells={totals['exhausted_cells']} pending_cells={totals['pending_cells']} "
+                f"bad_h5={totals['bad_h5']} reused={reused} new={new}")
     report = {
         "schema": _rollout.V8_DELIVERY_SCHEMA, "specs_root": str(out_specs), "cells_source": "v9-assemble",
-        "cells_table": _rollout.cells_json(cells), "code_baseline": None, "exec_cap": H.V8_EXEC_CAP,
-        "ledgers": [], "rebase": [], "tasks": len({t for t, _ in cells}), "cell_count": len(cells),
-        "counts": {"expected": sum(cells.values()), "delivered": len(rows_out), "reused": reused, "new": new},
-        "cells": cell_out, "rows": rows_out, "bad_rows": [], "exec_over_cap_rows": [], "problems": [],
+        "cells_table": _rollout.cells_json(cells), "code_baseline": mc_data.get("code_baseline"),
+        "exec_cap": H.V8_EXEC_CAP,
+        "ledgers": [*v8_data.get("ledgers", []), *mc_data.get("ledgers", []), *ip_data.get("ledgers", [])],
+        "rebase": [], "tasks": n_tasks, "cell_count": len(cells),
+        "counts": {**totals, "reused": reused, "new": new},
+        "cells": cell_out, "rows": rows_out, "bad_rows": [], "exec_over_cap_rows": over_rows, "problems": [],
         "sources": {"v8_delivery": str(v8_delivery), "v8_delivery_sha256": file_sha256(Path(v8_delivery)),
                     "movecube_delivery": str(mc_delivery), "movecube_delivery_sha256": file_sha256(mc_delivery),
                     "insertpeg_delivery": str(ip_delivery), "insertpeg_delivery_sha256": file_sha256(ip_delivery),
                     "subset_root": str(subset_root), "movecube_root": str(mc_root), "insertpeg_root": str(ip_root)},
-        "line": line,
+        "line": set_line, "assemble_line": line,
     }
     write_text_exclusive(out_delivery, json.dumps(report, ensure_ascii=False, indent=1) + "\n")
     return {"line": line, "problems": [], "report": report}

@@ -352,6 +352,27 @@ def test_assemble五档可加载_来源标记正确(assembled):
     assert sorted(c for (t, _, c), s in src.items() if t == "InsertPeg" and s == "v9-new") == [5, 6]
     assert {s for (t, _, _), s in src.items() if t == "MoveCube"} == {"v9-new"}
     assert {s for (t, _, _), s in src.items() if t == "StopCube"} == {"v8-reuse"}
+    # 接口契约（S1-E／站点目录、subgoals、step-headroom 消费）：顶层键与计数键、逐格键与 V8 聚合清单同口径
+    v8_data = json.loads(assembled["v8"]["delivery"].read_text())
+    assert set(v8_data) <= set(data)
+    for key in ("line", "counts", "cells_table", "cells", "exec_cap", "cell_count", "tasks"):
+        assert key in data
+    assert data["cells_table"] == _rollout.cells_json(ASM_V9) and data["cell_count"] == 7 and data["tasks"] == 3
+    assert set(_rollout.V8_TOTAL_COUNT_KEYS) <= set(data["counts"])
+    assert data["counts"]["delivered"] == data["counts"]["expected"] == 20
+    assert (data["counts"]["reused"], data["counts"]["new"]) == (14, 6)
+    assert data["line"].startswith("V9_DELIVERY_SET=PASS tasks=3 cells=7 total=20 expected=20")
+    assert data["assemble_line"] == result["line"]
+    v8_cell_keys = set(next(iter(v8_data["cells"].values())))
+    assert all(v8_cell_keys <= set(c) and c["status"] == "PASS" for c in data["cells"].values())
+    v8_rows = {(r["task"], r["tier"], r["candidate"]): r for r in v8_data["rows"]}
+    for row in data["rows"]:
+        for key in ("h5", "path", "exec_steps", "frames", "seed", "episode", "video", *V.DELIVERY_ROW_KEYS):
+            assert row.get(key) is not None or key in ("recovery_mode",), (key, row)
+        if row["source"] == "v8-reuse":  # 复用行 = V8 原行逐键拷贝 + video／video_sha256／source（path 随清单位置重算）
+            orig = v8_rows[(row["task"], row["tier"], row["candidate"])]
+            assert set(row) == set(orig) | {"video", "video_sha256", "source"}
+            assert all(row[k] == orig[k] for k in orig if k not in ("path",))
     for row in data["rows"]:
         assert Path(row["h5"]).is_file() and Path(row["video"]).is_file()
         assert row["video_sha256"] == hashlib.sha256(Path(row["video"]).read_bytes()).hexdigest()
