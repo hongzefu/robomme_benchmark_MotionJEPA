@@ -331,7 +331,10 @@ EXPECT_SET = {
 
 
 @pytest.mark.parametrize("kind", ["full", SMOKE, "shard"])
-def test_delivery_set三种格表往返(tmp_path, capsys, kind):
+def test_delivery_set三种格表往返(tmp_path, capsys, kind, monkeypatch):
+    # 本用例的三种格表都是 V8 夹具；v9 阶段 3b 起 --cells full 取当前 EXPECTED_CELLS（= V9_CELLS），这里钉回 V8 表
+    hs = R._hs_light()
+    monkeypatch.setattr(hs, "EXPECTED_CELLS", hs.V8_CELLS)
     backfill = kind == SMOKE
     root = build_root(tmp_path / "root", _cells(kind), backfill=backfill)
     report = tmp_path / "report.json"

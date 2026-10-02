@@ -579,6 +579,8 @@ def test_分片子集根往返(tmp_path):
 
 
 def test_四片生成合并聚合43格(tmp_path, fake, monkeypatch, capsys):
+    # V8 四片夹具：v9 阶段 3b 起 EXPECTED_CELLS 是 V9_CELLS，单文件读取的缺省配额上限须钉回 V8 表
+    monkeypatch.setattr(H, "EXPECTED_CELLS", H.V8_CELLS)
     full = _rollout.resolve_cells("full")
     total = sum(full.values())  # 合计由格表推出（V8 表 1070）
     frozen = build_root(tmp_path / "frozen", full, spare=1)

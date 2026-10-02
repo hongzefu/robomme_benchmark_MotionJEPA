@@ -152,9 +152,9 @@ assert all(sum(n for (t, _), n in V9_CELLS.items() if t == task) == V9_PER_TASK 
     "V9_CELLS 每任务须恰为 50 局"
 #: 交付格表 {(task, tier): 正式交付局数}（v8 阶段 3b 起即 V8_CELLS 的 43 格；builder 按它断言每格行数，
 #: 表外格恰好 0 行、表内格恰好等于表值）。v7 的 55 格由 V7_TIERS／V7_XHARD4_ONLY 推出，不再进全局常量。
-#: v9 阶段 1 只新增 V9_CELLS、不切这一行；切到 V9_CELLS 与换包（env_metadata/test-hard/ 换为 V9 规格）在
-#: v9 阶段 3b 同一提交由主会话完成（v9 方案 R7），换包前包内规格一律是 V8，表与包始终一致。
-EXPECTED_CELLS: dict[tuple[str, str], int] = V8_CELLS
+#: v9 阶段 1 只新增 V9_CELLS、不切这一行；v9 阶段 3b 换包（env_metadata/test-hard/ 换为 V9 规格）与本行切到
+#: V9_CELLS 在同一提交完成（v9 方案 R7），表与包始终一致。
+EXPECTED_CELLS: dict[tuple[str, str], int] = V9_CELLS
 #: 已登记的完整交付格表（按版本）。``resolve_cell_table`` 按顺序 EXPECTED_CELLS → V8 → V9 找第一张能覆盖
 #: 给定子表的表，作为单文件配额上限（``_validate_specs_v8``）与 ``load_specs_v8`` 的格配额上限。
 CELL_TABLES: dict[str, dict[tuple[str, str], int]] = {"v8": V8_CELLS, "v9": V9_CELLS}

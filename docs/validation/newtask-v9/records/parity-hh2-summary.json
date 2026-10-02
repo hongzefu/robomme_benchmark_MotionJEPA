@@ -1,0 +1,252 @@
+{
+  "verdict": "FAIL",
+  "counts": {
+    "identity_equal": 80,
+    "setup_equal": 79,
+    "schema_equal": 79,
+    "success_equal": 79,
+    "both_success": 79,
+    "both_fail": 0,
+    "sha_equal": 72,
+    "frames_equal": 73,
+    "binding_ok": 80,
+    "recovery_mismatch": 0
+  },
+  "worst": {
+    "action_max": 3.6262932773792533,
+    "state_max": 3.620829224586487,
+    "image_mad": 8.110519456178013,
+    "frames_max": 8
+  },
+  "tolerances": {
+    "action_max": 0.041265913943240015,
+    "state_max": 0.04113650321960449,
+    "image_mad": 1.0,
+    "frames_max": 5.0
+  },
+  "tol_hits": [
+    {
+      "key": [
+        "InsertPeg",
+        "xhard4",
+        23304700
+      ],
+      "over": {
+        "action_max": 3.3027275391042847,
+        "state_max": 3.296148419380188,
+        "image_mad": 8.110519456178013,
+        "frames_max": 7
+      },
+      "class": "noise",
+      "first_divergence": 142
+    },
+    {
+      "key": [
+        "MoveCube",
+        "xhard4",
+        23401600
+      ],
+      "over": {
+        "action_max": 2.0,
+        "state_max": 1.8264151811599731,
+        "image_mad": 4.000935678193064
+      },
+      "class": "noise",
+      "first_divergence": 174
+    },
+    {
+      "key": [
+        "MoveCube",
+        "xhard4",
+        23402100
+      ],
+      "over": {
+        "action_max": 2.0,
+        "state_max": 0.07879011332988739,
+        "image_mad": 1.1667639988196123
+      },
+      "class": "noise",
+      "first_divergence": 423
+    },
+    {
+      "key": [
+        "MoveCube",
+        "xhard4",
+        23403900
+      ],
+      "over": {
+        "action_max": 2.0,
+        "state_max": 0.4271790087223053,
+        "image_mad": 2.935224335769127,
+        "frames_max": 6
+      },
+      "class": "noise",
+      "first_divergence": 186
+    },
+    {
+      "key": [
+        "MoveCube",
+        "xhard4",
+        23404800
+      ],
+      "over": {
+        "action_max": 3.6262932773792533,
+        "state_max": 3.620829224586487,
+        "image_mad": 2.424357244544161,
+        "frames_max": 8
+      },
+      "class": "noise",
+      "first_divergence": 422
+    },
+    {
+      "key": [
+        "MoveCube",
+        "xhard4",
+        23404900
+      ],
+      "over": {
+        "action_max": 3.1115840077400208,
+        "state_max": 3.1115840077400208,
+        "image_mad": 3.996119545210345
+      },
+      "class": "noise",
+      "first_divergence": 208
+    },
+    {
+      "key": [
+        "MoveCube",
+        "xhard4",
+        23405300
+      ],
+      "over": {
+        "action_max": 0.06258865659646012,
+        "state_max": 0.06233033537864685
+      },
+      "class": "noise",
+      "first_divergence": 425
+    }
+  ],
+  "noise": 7,
+  "tol_over": 0,
+  "hard_line_5pct": true,
+  "both_fail": [],
+  "left_dir": "/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v9/parity/h5/H-v9",
+  "right_dir": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9gen-out/h2",
+  "p_anchor": null,
+  "left_problems": [],
+  "right_problems": [],
+  "manifest_rows": 80,
+  "manifest_duplicate": 0,
+  "terminal": {
+    "byte_equal": 72,
+    "noise": 7,
+    "h2_fail": 1,
+    "flipped": 0,
+    "structural": 0
+  },
+  "denominator": {
+    "expected": 80,
+    "frozen_n": 80,
+    "frozen_cells": 2,
+    "missing": 0,
+    "extra": 0,
+    "duplicate": 0,
+    "sizes": {
+      "frozen": 80,
+      "delivery": 80,
+      "left": 80,
+      "right": 80,
+      "identities": 80
+    },
+    "subset": 80,
+    "outside_subset": {
+      "frozen": 720,
+      "delivery": 0,
+      "left": 0,
+      "right": 0
+    }
+  },
+  "identities": "artifacts/newtask-v9/delivery/delivery.local.json",
+  "terminal_by_identity": {
+    "InsertPeg/xhard4/23303300": "byte_equal",
+    "InsertPeg/xhard4/23303400": "byte_equal",
+    "InsertPeg/xhard4/23303500": "byte_equal",
+    "InsertPeg/xhard4/23303600": "byte_equal",
+    "InsertPeg/xhard4/23303700": "byte_equal",
+    "InsertPeg/xhard4/23303800": "byte_equal",
+    "InsertPeg/xhard4/23303900": "byte_equal",
+    "InsertPeg/xhard4/23304200": "byte_equal",
+    "InsertPeg/xhard4/23304300": "byte_equal",
+    "InsertPeg/xhard4/23304400": "byte_equal",
+    "InsertPeg/xhard4/23304500": "byte_equal",
+    "InsertPeg/xhard4/23304700": "noise",
+    "InsertPeg/xhard4/23304800": "byte_equal",
+    "InsertPeg/xhard4/23304900": "byte_equal",
+    "InsertPeg/xhard4/23305000": "byte_equal",
+    "InsertPeg/xhard4/23305300": "byte_equal",
+    "InsertPeg/xhard4/23305400": "byte_equal",
+    "InsertPeg/xhard4/23305600": "byte_equal",
+    "InsertPeg/xhard4/23305700": "byte_equal",
+    "InsertPeg/xhard4/23305800": "byte_equal",
+    "InsertPeg/xhard4/23305900": "byte_equal",
+    "InsertPeg/xhard4/23306000": "byte_equal",
+    "InsertPeg/xhard4/23306200": "byte_equal",
+    "InsertPeg/xhard4/23306300": "byte_equal",
+    "InsertPeg/xhard4/23306500": "byte_equal",
+    "InsertPeg/xhard4/23306700": "byte_equal",
+    "InsertPeg/xhard4/23306900": "byte_equal",
+    "InsertPeg/xhard4/23307000": "byte_equal",
+    "InsertPeg/xhard4/23307300": "byte_equal",
+    "InsertPeg/xhard4/23307400": "byte_equal",
+    "MoveCube/xhard4/23400000": "byte_equal",
+    "MoveCube/xhard4/23400100": "byte_equal",
+    "MoveCube/xhard4/23400200": "byte_equal",
+    "MoveCube/xhard4/23400300": "byte_equal",
+    "MoveCube/xhard4/23400400": "byte_equal",
+    "MoveCube/xhard4/23400500": "byte_equal",
+    "MoveCube/xhard4/23400600": "byte_equal",
+    "MoveCube/xhard4/23400700": "byte_equal",
+    "MoveCube/xhard4/23400800": "byte_equal",
+    "MoveCube/xhard4/23400900": "byte_equal",
+    "MoveCube/xhard4/23401000": "byte_equal",
+    "MoveCube/xhard4/23401100": "byte_equal",
+    "MoveCube/xhard4/23401300": "byte_equal",
+    "MoveCube/xhard4/23401400": "byte_equal",
+    "MoveCube/xhard4/23401500": "byte_equal",
+    "MoveCube/xhard4/23401600": "noise",
+    "MoveCube/xhard4/23401700": "byte_equal",
+    "MoveCube/xhard4/23401800": "byte_equal",
+    "MoveCube/xhard4/23401900": "byte_equal",
+    "MoveCube/xhard4/23402000": "byte_equal",
+    "MoveCube/xhard4/23402100": "noise",
+    "MoveCube/xhard4/23402200": "byte_equal",
+    "MoveCube/xhard4/23402400": "byte_equal",
+    "MoveCube/xhard4/23402500": "byte_equal",
+    "MoveCube/xhard4/23402600": "byte_equal",
+    "MoveCube/xhard4/23402700": "byte_equal",
+    "MoveCube/xhard4/23402800": "byte_equal",
+    "MoveCube/xhard4/23402900": "byte_equal",
+    "MoveCube/xhard4/23403000": "byte_equal",
+    "MoveCube/xhard4/23403100": "byte_equal",
+    "MoveCube/xhard4/23403200": "byte_equal",
+    "MoveCube/xhard4/23403500": "byte_equal",
+    "MoveCube/xhard4/23403900": "noise",
+    "MoveCube/xhard4/23404000": "byte_equal",
+    "MoveCube/xhard4/23404200": "byte_equal",
+    "MoveCube/xhard4/23404300": "byte_equal",
+    "MoveCube/xhard4/23404400": "byte_equal",
+    "MoveCube/xhard4/23404500": "byte_equal",
+    "MoveCube/xhard4/23404800": "noise",
+    "MoveCube/xhard4/23404900": "noise",
+    "MoveCube/xhard4/23405000": "byte_equal",
+    "MoveCube/xhard4/23405300": "noise",
+    "MoveCube/xhard4/23405500": "byte_equal",
+    "MoveCube/xhard4/23405700": "byte_equal",
+    "MoveCube/xhard4/23405900": "byte_equal",
+    "MoveCube/xhard4/23406000": "byte_equal",
+    "MoveCube/xhard4/23406100": "byte_equal",
+    "MoveCube/xhard4/23406500": "byte_equal",
+    "MoveCube/xhard4/23406600": "h2_fail",
+    "MoveCube/xhard4/23407000": "byte_equal"
+  }
+}

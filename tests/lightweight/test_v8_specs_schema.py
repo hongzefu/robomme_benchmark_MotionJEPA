@@ -160,14 +160,13 @@ def test_v9常量与表2一致():
 def test_档位常量已切到v8且v7冻结常量不动_R10():
     """阶段 3b 换包（R10 一个提交）：全局档位常量切到 v8；v7 冻结常量保持原值。
 
-    v9 阶段 1 只新增 ``V9_CELLS``、不切 ``EXPECTED_CELLS``（v9 方案 R7、§2.1 审计 1：切早了包内 V8 规格会被拒），
-    所以这里仍断言 ``EXPECTED_CELLS == V8_CELLS``。v9 阶段 3b 换包时由主会话在同一提交里把下面这一行改成
-    ``H.EXPECTED_CELLS == H.V9_CELLS``（V8／V7 冻结常量的断言不动）。"""
+    v9 阶段 1 只新增 ``V9_CELLS``、不切 ``EXPECTED_CELLS``（v9 方案 R7、§2.1 审计 1：切早了包内 V8 规格会被拒）；
+    v9 阶段 3b 换包提交里 ``EXPECTED_CELLS`` 切到 ``V9_CELLS``（V8／V7 冻结常量的断言不动）。"""
     assert H.TIERS == H.V8_TIERS == ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
     assert H.BUILDER_TIERS == ("xhard0", "xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
     assert H.TIER_MAX_STEPS == {"xhard0": 1300, **{tier: H.V8_EXEC_CAP for tier in H.V8_TIERS}}
     assert H.XHARD4_ONLY == ("InsertPeg", "MoveCube")
-    assert H.EXPECTED_CELLS == H.V8_CELLS and len(H.EXPECTED_CELLS) == 43  # 3b 换包时改为 == H.V9_CELLS
+    assert H.EXPECTED_CELLS == H.V9_CELLS and len(H.EXPECTED_CELLS) == 43 and sum(H.EXPECTED_CELLS.values()) == 800
     assert hasattr(H, "V9_CELLS") and H.V9_CELLS != H.V8_CELLS
     assert H.V8_CELLS == H._v8_cells() and sum(H.V8_CELLS.values()) == 1070  # V8 冻结常量不随 V9 变
     assert H.V7_TIERS == ("xhard1", "xhard2", "xhard3", "xhard4")

@@ -74,12 +74,15 @@ def _run(tmp_path, src, delivery, capsys, shards=10):
     return rc, last, out
 
 
-def test_夹具规模():
+def test_夹具规模(monkeypatch):
+    # V8 夹具（1262 身份／1070 交付）：v9 阶段 3b 起 EXPECTED_CELLS 是 V9_CELLS，本文件 V8 用例钉回 V8 表
+    monkeypatch.setattr(HS, "EXPECTED_CELLS", HS.V8_CELLS)
     src, d = _source_and_delivery()
     assert len(src) == 1262 and len(d["rows"]) == 1070 and len(HS.EXPECTED_CELLS) == 43
 
 
-def test_正常_十片_判定行_往返_nullable(tmp_path, capsys):
+def test_正常_十片_判定行_往返_nullable(tmp_path, capsys, monkeypatch):
+    monkeypatch.setattr(HS, "EXPECTED_CELLS", HS.V8_CELLS)  # V8 夹具钉 V8 表（同 test_夹具规模）
     src, d = _source_and_delivery()
     rc, last, out = _run(tmp_path, src, d, capsys)
     assert rc == 0
@@ -159,7 +162,8 @@ def test_源集字段不符即停(tmp_path, capsys):
     assert rc != 0 and "stage=source" in last
 
 
-def test_执行清单xhard0混入与格数不符():
+def test_执行清单xhard0混入与格数不符(monkeypatch):
+    monkeypatch.setattr(HS, "EXPECTED_CELLS", HS.V8_CELLS)  # V8 夹具钉 V8 表（同 test_夹具规模）
     src, d = _source_and_delivery()
     new, dropped = M.filter_new(src, HS)
     assert dropped == 192 and all(r["tier"] != "xhard0" for r in new)

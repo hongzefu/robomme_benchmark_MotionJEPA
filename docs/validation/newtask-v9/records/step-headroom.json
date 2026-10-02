@@ -1,0 +1,324 @@
+{
+ "cap": 1600,
+ "cells": 43,
+ "count_keys_absent": [],
+ "exec_steps_mismatch": 0,
+ "filtered": 0,
+ "filtered_delivery": 0,
+ "line": "V9_STEP_CAP=PASS max=1469 cap=1600 over=0 filtered=0 xhard0_max=1074 xhard0_cap=1300 rows=800 cells=43 missing_h5=0 exec_steps_mismatch=0 filtered_delivery=0 filtered_mismatch=0 count_keys_absent=0 xhard0_rows=192 xhard0_over=0 xhard0_missing=0 pool_load_errors=0",
+ "max_exec": 1469,
+ "missing_h5": 0,
+ "over": [],
+ "per_cell_max": {
+  "BinFill/xhard1": 1430,
+  "BinFill/xhard2": 1469,
+  "ButtonUnmask/xhard1": 390,
+  "ButtonUnmask/xhard2": 558,
+  "ButtonUnmask/xhard3": 552,
+  "ButtonUnmask/xhard4": 548,
+  "ButtonUnmaskSwap/xhard1": 489,
+  "ButtonUnmaskSwap/xhard2": 639,
+  "InsertPeg/xhard4": 305,
+  "MoveCube/xhard4": 342,
+  "PatternLock/xhard1": 434,
+  "PatternLock/xhard2": 503,
+  "PatternLock/xhard3": 592,
+  "PickHighlight/xhard1": 939,
+  "PickHighlight/xhard2": 1145,
+  "PickXtimes/xhard1": 1262,
+  "PickXtimes/xhard2": 1449,
+  "PickXtimes/xhard3": 1430,
+  "RouteStick/xhard1": 500,
+  "RouteStick/xhard2": 650,
+  "RouteStick/xhard3": 800,
+  "StopCube/xhard1": 372,
+  "StopCube/xhard2": 435,
+  "StopCube/xhard3": 491,
+  "StopCube/xhard4": 554,
+  "StopCube/xhard5": 615,
+  "SwingXtimes/xhard1": 630,
+  "SwingXtimes/xhard2": 725,
+  "SwingXtimes/xhard3": 801,
+  "SwingXtimes/xhard4": 891,
+  "SwingXtimes/xhard5": 962,
+  "VideoPlaceButton/xhard1": 234,
+  "VideoPlaceButton/xhard2": 228,
+  "VideoPlaceOrder/xhard1": 223,
+  "VideoPlaceOrder/xhard2": 223,
+  "VideoRepick/xhard1": 514,
+  "VideoRepick/xhard2": 722,
+  "VideoUnmask/xhard1": 282,
+  "VideoUnmask/xhard2": 433,
+  "VideoUnmask/xhard3": 430,
+  "VideoUnmask/xhard4": 440,
+  "VideoUnmaskSwap/xhard1": 286,
+  "VideoUnmaskSwap/xhard2": 435
+ },
+ "per_cell_mean": {
+  "BinFill/xhard1": {
+   "demo": 0,
+   "exec": 1195,
+   "n": 25,
+   "total": 1195
+  },
+  "BinFill/xhard2": {
+   "demo": 0,
+   "exec": 1350,
+   "n": 25,
+   "total": 1350
+  },
+  "ButtonUnmask/xhard1": {
+   "demo": 0,
+   "exec": 376,
+   "n": 13,
+   "total": 376
+  },
+  "ButtonUnmask/xhard2": {
+   "demo": 0,
+   "exec": 526,
+   "n": 13,
+   "total": 526
+  },
+  "ButtonUnmask/xhard3": {
+   "demo": 0,
+   "exec": 518,
+   "n": 12,
+   "total": 518
+  },
+  "ButtonUnmask/xhard4": {
+   "demo": 0,
+   "exec": 520,
+   "n": 12,
+   "total": 520
+  },
+  "ButtonUnmaskSwap/xhard1": {
+   "demo": 0,
+   "exec": 468,
+   "n": 25,
+   "total": 468
+  },
+  "ButtonUnmaskSwap/xhard2": {
+   "demo": 0,
+   "exec": 621,
+   "n": 25,
+   "total": 621
+  },
+  "InsertPeg/xhard4": {
+   "demo": 237,
+   "exec": 234,
+   "n": 50,
+   "total": 471
+  },
+  "MoveCube/xhard4": {
+   "demo": 247,
+   "exec": 193,
+   "n": 50,
+   "total": 440
+  },
+  "PatternLock/xhard1": {
+   "demo": 366,
+   "exec": 365,
+   "n": 17,
+   "total": 731
+  },
+  "PatternLock/xhard2": {
+   "demo": 455,
+   "exec": 455,
+   "n": 17,
+   "total": 911
+  },
+  "PatternLock/xhard3": {
+   "demo": 553,
+   "exec": 553,
+   "n": 16,
+   "total": 1106
+  },
+  "PickHighlight/xhard1": {
+   "demo": 0,
+   "exec": 872,
+   "n": 25,
+   "total": 872
+  },
+  "PickHighlight/xhard2": {
+   "demo": 0,
+   "exec": 1035,
+   "n": 25,
+   "total": 1035
+  },
+  "PickXtimes/xhard1": {
+   "demo": 0,
+   "exec": 991,
+   "n": 17,
+   "total": 991
+  },
+  "PickXtimes/xhard2": {
+   "demo": 0,
+   "exec": 1144,
+   "n": 17,
+   "total": 1144
+  },
+  "PickXtimes/xhard3": {
+   "demo": 0,
+   "exec": 1248,
+   "n": 16,
+   "total": 1248
+  },
+  "RouteStick/xhard1": {
+   "demo": 459,
+   "exec": 459,
+   "n": 17,
+   "total": 918
+  },
+  "RouteStick/xhard2": {
+   "demo": 588,
+   "exec": 588,
+   "n": 17,
+   "total": 1176
+  },
+  "RouteStick/xhard3": {
+   "demo": 756,
+   "exec": 756,
+   "n": 16,
+   "total": 1512
+  },
+  "StopCube/xhard1": {
+   "demo": 0,
+   "exec": 366,
+   "n": 10,
+   "total": 366
+  },
+  "StopCube/xhard2": {
+   "demo": 0,
+   "exec": 428,
+   "n": 10,
+   "total": 428
+  },
+  "StopCube/xhard3": {
+   "demo": 0,
+   "exec": 485,
+   "n": 10,
+   "total": 485
+  },
+  "StopCube/xhard4": {
+   "demo": 0,
+   "exec": 549,
+   "n": 10,
+   "total": 549
+  },
+  "StopCube/xhard5": {
+   "demo": 0,
+   "exec": 608,
+   "n": 10,
+   "total": 608
+  },
+  "SwingXtimes/xhard1": {
+   "demo": 0,
+   "exec": 581,
+   "n": 10,
+   "total": 581
+  },
+  "SwingXtimes/xhard2": {
+   "demo": 0,
+   "exec": 649,
+   "n": 10,
+   "total": 649
+  },
+  "SwingXtimes/xhard3": {
+   "demo": 0,
+   "exec": 727,
+   "n": 10,
+   "total": 727
+  },
+  "SwingXtimes/xhard4": {
+   "demo": 0,
+   "exec": 800,
+   "n": 10,
+   "total": 800
+  },
+  "SwingXtimes/xhard5": {
+   "demo": 0,
+   "exec": 897,
+   "n": 10,
+   "total": 897
+  },
+  "VideoPlaceButton/xhard1": {
+   "demo": 926,
+   "exec": 202,
+   "n": 25,
+   "total": 1129
+  },
+  "VideoPlaceButton/xhard2": {
+   "demo": 1090,
+   "exec": 203,
+   "n": 25,
+   "total": 1293
+  },
+  "VideoPlaceOrder/xhard1": {
+   "demo": 1494,
+   "exec": 202,
+   "n": 25,
+   "total": 1696
+  },
+  "VideoPlaceOrder/xhard2": {
+   "demo": 1603,
+   "exec": 201,
+   "n": 25,
+   "total": 1805
+  },
+  "VideoRepick/xhard1": {
+   "demo": 412,
+   "exec": 404,
+   "n": 25,
+   "total": 816
+  },
+  "VideoRepick/xhard2": {
+   "demo": 522,
+   "exec": 564,
+   "n": 25,
+   "total": 1085
+  },
+  "VideoUnmask/xhard1": {
+   "demo": 66,
+   "exec": 260,
+   "n": 13,
+   "total": 326
+  },
+  "VideoUnmask/xhard2": {
+   "demo": 66,
+   "exec": 409,
+   "n": 13,
+   "total": 475
+  },
+  "VideoUnmask/xhard3": {
+   "demo": 66,
+   "exec": 398,
+   "n": 12,
+   "total": 464
+  },
+  "VideoUnmask/xhard4": {
+   "demo": 66,
+   "exec": 412,
+   "n": 12,
+   "total": 478
+  },
+  "VideoUnmaskSwap/xhard1": {
+   "demo": 318,
+   "exec": 258,
+   "n": 25,
+   "total": 576
+  },
+  "VideoUnmaskSwap/xhard2": {
+   "demo": 300,
+   "exec": 409,
+   "n": 25,
+   "total": 709
+  }
+ },
+ "pool_load_errors": [],
+ "rows": 800,
+ "verdict": "PASS",
+ "xhard0_cap": 1300,
+ "xhard0_max": 1074,
+ "xhard0_missing": 0,
+ "xhard0_over": 0
+}

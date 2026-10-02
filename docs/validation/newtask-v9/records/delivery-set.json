@@ -1,0 +1,250 @@
+{
+ "cells": {
+  "BinFill/xhard1": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "BinFill/xhard2": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "ButtonUnmask/xhard1": {
+   "delivered": 13,
+   "expected": 13
+  },
+  "ButtonUnmask/xhard2": {
+   "delivered": 13,
+   "expected": 13
+  },
+  "ButtonUnmask/xhard3": {
+   "delivered": 12,
+   "expected": 12
+  },
+  "ButtonUnmask/xhard4": {
+   "delivered": 12,
+   "expected": 12
+  },
+  "ButtonUnmaskSwap/xhard1": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "ButtonUnmaskSwap/xhard2": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "InsertPeg/xhard4": {
+   "delivered": 50,
+   "expected": 50
+  },
+  "MoveCube/xhard4": {
+   "delivered": 50,
+   "expected": 50
+  },
+  "PatternLock/xhard1": {
+   "delivered": 17,
+   "expected": 17
+  },
+  "PatternLock/xhard2": {
+   "delivered": 17,
+   "expected": 17
+  },
+  "PatternLock/xhard3": {
+   "delivered": 16,
+   "expected": 16
+  },
+  "PickHighlight/xhard1": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "PickHighlight/xhard2": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "PickXtimes/xhard1": {
+   "delivered": 17,
+   "expected": 17
+  },
+  "PickXtimes/xhard2": {
+   "delivered": 17,
+   "expected": 17
+  },
+  "PickXtimes/xhard3": {
+   "delivered": 16,
+   "expected": 16
+  },
+  "RouteStick/xhard1": {
+   "delivered": 17,
+   "expected": 17
+  },
+  "RouteStick/xhard2": {
+   "delivered": 17,
+   "expected": 17
+  },
+  "RouteStick/xhard3": {
+   "delivered": 16,
+   "expected": 16
+  },
+  "StopCube/xhard1": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "StopCube/xhard2": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "StopCube/xhard3": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "StopCube/xhard4": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "StopCube/xhard5": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "SwingXtimes/xhard1": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "SwingXtimes/xhard2": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "SwingXtimes/xhard3": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "SwingXtimes/xhard4": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "SwingXtimes/xhard5": {
+   "delivered": 10,
+   "expected": 10
+  },
+  "VideoPlaceButton/xhard1": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "VideoPlaceButton/xhard2": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "VideoPlaceOrder/xhard1": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "VideoPlaceOrder/xhard2": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "VideoRepick/xhard1": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "VideoRepick/xhard2": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "VideoUnmask/xhard1": {
+   "delivered": 13,
+   "expected": 13
+  },
+  "VideoUnmask/xhard2": {
+   "delivered": 13,
+   "expected": 13
+  },
+  "VideoUnmask/xhard3": {
+   "delivered": 12,
+   "expected": 12
+  },
+  "VideoUnmask/xhard4": {
+   "delivered": 12,
+   "expected": 12
+  },
+  "VideoUnmaskSwap/xhard1": {
+   "delivered": 25,
+   "expected": 25
+  },
+  "VideoUnmaskSwap/xhard2": {
+   "delivered": 25,
+   "expected": 25
+  }
+ },
+ "delivery_manifest": {
+  "bad_rows": 0,
+  "mismatch": 0,
+  "rows": 800,
+  "sources": {
+   "v8-reuse": 720,
+   "v9-new": 80
+  }
+ },
+ "delivery_set": {
+  "backfills": 45,
+  "cell_mismatch": 0,
+  "cells": 43,
+  "delivered_over_cap": 0,
+  "detail": {
+   "bad_files": [],
+   "bad_rows": [],
+   "cell_mismatch": [],
+   "extra_cells": [],
+   "load_error": null,
+   "missing_files": []
+  },
+  "exec_over_cap": 0,
+  "expected_total": 800,
+  "extra_cells": 0,
+  "failed": 70,
+  "load_errors": 0,
+  "missing_files": 0,
+  "selected_not_ok": 0,
+  "tasks": 16,
+  "total": 800,
+  "verdict": "PASS"
+ },
+ "layout_independent": {
+  "delivered": 800,
+  "detail": [],
+  "files": 5,
+  "layout_equal_pairs": 0,
+  "mode_bad": 0,
+  "no_position": 0,
+  "parent_non_null": 0,
+  "per_task_pairs": {
+   "BinFill": 0,
+   "ButtonUnmask": 0,
+   "ButtonUnmaskSwap": 0,
+   "InsertPeg": 0,
+   "MoveCube": 0,
+   "PatternLock": 0,
+   "PickHighlight": 0,
+   "PickXtimes": 0,
+   "RouteStick": 0,
+   "StopCube": 0,
+   "SwingXtimes": 0,
+   "VideoPlaceButton": 0,
+   "VideoPlaceOrder": 0,
+   "VideoRepick": 0,
+   "VideoUnmask": 0,
+   "VideoUnmaskSwap": 0
+  },
+  "verdict": "PASS"
+ },
+ "lines": [
+  "V9_DELIVERY_SET=PASS tasks=16 cells=43 total=800 new=80 reused=720 expected_cells=43 expected_total=800 cell_mismatch=0 extra_cells=0 selected_not_ok=0 delivered_over_cap=0 failed=70 exec_over_cap=0 backfills=45 missing_files=0 load_errors=0 delivery_rows=800 delivery_mismatch=0 delivery_bad_rows=0",
+  "V9_SEED_DISJOINT=PASS tasks=16 tier_pairs=48 shared=0",
+  "V9_LAYOUT_INDEPENDENT=PASS files=5 delivered=800 parent_non_null=0 layout_equal_pairs=0 mode_bad=0 no_position=0 load_errors=0"
+ ],
+ "seed_disjoint": {
+  "detail": [],
+  "shared": 0,
+  "tasks": 16,
+  "tier_pairs": 48,
+  "verdict": "PASS"
+ },
+ "version": "v9"
+}
