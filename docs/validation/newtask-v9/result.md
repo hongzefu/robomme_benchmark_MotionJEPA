@@ -1,6 +1,6 @@
 # newtask v9 运行档案：result（验收后写）
 
-计划：根目录 `1002-newtask-v9-movecube-region-800-plan.md`；起跑记录见同目录 `launch.md`；各阶段判定行原文见 `records/gates.txt`。双模型评估另见 `docs/validation/v9-two-policy-gl10-20261002-01/`。
+计划：`docs/plans/1002-newtask-v9-movecube-region-800-plan.md`；起跑记录见同目录 `launch.md`；各阶段判定行原文见 `records/gates.txt`。双模型评估另见 `docs/validation/v9-two-policy-gl10-20261002-01/`。
 
 ## ① 一句话结论与指标速览
 

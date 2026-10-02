@@ -107,7 +107,7 @@
 
 用户指出「（内环 15）实际生成多少？有一部分取不到的」。读官方 `src/robomme/robomme_env/` 的放置循环，确实有一类任务是**放不下就静默减员**：`VideoUnmask`／`ButtonUnmask`／`VideoUnmaskSwap`／`ButtonUnmaskSwap` 的容器循环 `except RuntimeError: break`（第 i 个 256 次放不下，后面全不放）；`PickHighlight` 的块、`PickXtimes` 的每色块同样 `break`，`PickXtimes` 的目标圆盘失败只记日志；`BinFill` 单块失败跳过继续，且总块配置本来是 `spawn_cubes=[10,12]` 而非固定 12；`PatternLock` 路径长度靠最多 1000 次重抽、仍不合格就用最后一条。其余任务（SwingXtimes、VideoRepick、VideoPlaceButton、VideoPlaceOrder、RouteStick、StopCube、InsertPeg、MoveCube）失败即抛 `SceneGenerationError` 整局重抽，数量精确。
 
-h5 里没有 actor 列表也没有分割图（环境运行时 `obs_mode="rgb+depth+segmentation"`，但录像器落盘只留 RGB／深度），所以按用户原话 20 直接用官方环境实测：`robomme.env_record_wrapper.BenchmarkEnvBuilder(task, dataset="test").make_env_for_episode(ep)` + `env.reset()`（与官方 `evaluation.py` 同路），对 7 个会浮动的任务 × 官方 test 的 hard 12 局（原 episode 3,7,…,47）读 `len(env.unwrapped.spawned_bins)`／`len(all_cubes)`。探针脚本、日志与汇总在 `artifacts/newtask-v7/probe-hard-counts/`（`probe.log` 末行 `PROBE_DONE rows=84 errors=0`、`EXIT_CODE=0`），逐局数值留档 [`docs/validation/newtask-v7/xhard0-placed-counts.md`](docs/validation/newtask-v7/xhard0-placed-counts.md)。预算：7 任务 × 1 档 × 12 局 = 84 次 reset，另加 smoke 时 VideoUnmask 第 3 局重复 2 次，合计 86 次，本机 GPU 1，无轨迹、无录像（原话 20 授权）。
+h5 里没有 actor 列表也没有分割图（环境运行时 `obs_mode="rgb+depth+segmentation"`，但录像器落盘只留 RGB／深度），所以按用户原话 20 直接用官方环境实测：`robomme.env_record_wrapper.BenchmarkEnvBuilder(task, dataset="test").make_env_for_episode(ep)` + `env.reset()`（与官方 `evaluation.py` 同路），对 7 个会浮动的任务 × 官方 test 的 hard 12 局（原 episode 3,7,…,47）读 `len(env.unwrapped.spawned_bins)`／`len(all_cubes)`。探针脚本、日志与汇总在 `artifacts/newtask-v7/probe-hard-counts/`（`probe.log` 末行 `PROBE_DONE rows=84 errors=0`、`EXIT_CODE=0`），逐局数值留档 [`docs/validation/newtask-v7/xhard0-placed-counts.md`](../../docs/validation/newtask-v7/xhard0-placed-counts.md)。预算：7 任务 × 1 档 × 12 局 = 84 次 reset，另加 smoke 时 VideoUnmask 第 3 局重复 2 次，合计 86 次，本机 GPU 1，无轨迹、无录像（原话 20 授权）。
 
 | 任务 | 配置 | 12 局实际放置数 | 结论 |
 |---|---|---|---|
@@ -646,9 +646,9 @@ xhard0 身份的静态核实（12.222 已用 `jq` 做过，本轮重跑一次原
 
 #### 7.3.1 现状为什么做不到共用
 
-- 现在四档各有一套 seed 偏移（[`hard_specs.py`](src/robomme_hard/env_record_wrapper/hard_specs.py)::`V6_SEED_OFFSETS`：xhard4 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6），布局天然互不相同。
-- 回注通道 [`episode_spec.py`](src/robomme_hard/robomme_env/utils/episode_spec.py)::`SpecRecorder.value` 在回注模式下**对每个取值点都先按本局 seed 真抽一次，再拿抽到的值与冻结值比对，最后返回冻结值**；`hard_specs.py::spec_binding` 把所有 value 点的不等都计入 `injected_mismatch`，而 [`hard_regression.py`](scripts/parity/hard_regression.py) 的 `reset-replay`／`eval-smoke` 要求它为 0。因此「把 xhard4 的规格改一改喂给 xhard1」会在每个布局点都记一条不等，直接触发闸门。
-- 仓库里没有「给定母规格派生各档规格」的入口：[`generate_h5.py`](scripts/injection-dev/generate_h5.py) 的 `--mode replay` 只按 `(task, tier, seed)` 去已有规格行里查；`freeze_specs.py` 只会 reset 抽签。
+- 现在四档各有一套 seed 偏移（[`hard_specs.py`](../../src/robomme_hard/env_record_wrapper/hard_specs.py)::`V6_SEED_OFFSETS`：xhard4 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6），布局天然互不相同。
+- 回注通道 [`episode_spec.py`](../../src/robomme_hard/robomme_env/utils/episode_spec.py)::`SpecRecorder.value` 在回注模式下**对每个取值点都先按本局 seed 真抽一次，再拿抽到的值与冻结值比对，最后返回冻结值**；`hard_specs.py::spec_binding` 把所有 value 点的不等都计入 `injected_mismatch`，而 [`hard_regression.py`](../../scripts/parity/hard_regression.py) 的 `reset-replay`／`eval-smoke` 要求它为 0。因此「把 xhard4 的规格改一改喂给 xhard1」会在每个布局点都记一条不等，直接触发闸门。
+- 仓库里没有「给定母规格派生各档规格」的入口：[`generate_h5.py`](../../scripts/injection-dev/generate_h5.py) 的 `--mode replay` 只按 `(task, tier, seed)` 去已有规格行里查；`freeze_specs.py` 只会 reset 抽签。
 - 纯 JSON 截断（xhard4 规格按低档数量取前缀）对 PickXtimes／SwingXtimes／PickHighlight／PatternLock／RouteStick 可行，但对 VideoRepick（`swap_initiators_remaining` 必须是 range(k−1) 的完整排列、`swap_pairs` 引用 ≥k 的块、可行图 G 随块集合变化）、VideoPlaceButton xhard1/2（台数 5→4、额外放台候选按占用表重算）、VideoUnmaskSwap／ButtonUnmaskSwap（`cube_bins`／`label_perm` 与 count 耦合、外环规划要重跑可行性）不可行，BinFill 的 `target_numbers` 是每色聚合值也没有「前缀」可取。**所以不能靠改 JSON，必须让梯度类取值点在环境里现场重抽。**
 
 #### 7.3.2 分层回注：布局注入、梯度重抽、记录点重导出
@@ -688,7 +688,7 @@ xhard0 身份的静态核实（12.222 已用 `jq` 做过，本轮重跑一次原
 
 v7 seed 规则（`hard_specs.py` 新增 profile `"v7"`）：`seed = 14_000_000 + env_code × 100_000 + candidate × 100 + attempt`，**四档同一 offset**，同一候选号在四档里 seed 相同；与 V5 段（4e6）、V6 四段（6e6～12e6）互不重叠。`validate_specs` 对 v7 文件要求：四档 header 的 `seed_rule` 相同；每行 `seed` 等于公式；派生行的 `layout_parent.spec_sha256` 等于 xhard4 同候选行的 `spec_sha256`。
 
-身份键仍是 `(task, tier, seed)`（[`hard_parity.py`](scripts/parity/hard_parity.py)::`ident`），同 seed 跨档靠 tier 区分。`resolve_identity` 对派生行多返回 `layout_parent`，对 xhard0 返回 `source_dataset="test"`、`source_episode`、`spec_sha256=None`。
+身份键仍是 `(task, tier, seed)`（[`hard_parity.py`](../../scripts/parity/hard_parity.py)::`ident`），同 seed 跨档靠 tier 区分。`resolve_identity` 对派生行多返回 `layout_parent`，对 xhard0 返回 `source_dataset="test"`、`source_episode`、`spec_sha256=None`。
 
 #### 7.3.4 改动前后链路
 
@@ -774,7 +774,7 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 
 **结论先说**：现行容差只有一套，标定自**同型号（A40）、同驱动、不同节点**的 O:P 144 对，**不是跨 GPU 型号的容差**；跨型号只做过 1 条身份的逐位探针，结论是「逐位一致只在同型号 + 同驱动内成立」，跨型号的容差判据至今没有标定。
 
-权威配置 [`scripts/configs/hard-parity-tolerances.json`](scripts/configs/hard-parity-tolerances.json)，消费者 `hard_parity.py::pair_metrics`／`calibrate`／`cmd_compare`：
+权威配置 [`scripts/configs/hard-parity-tolerances.json`](../../scripts/configs/hard-parity-tolerances.json)，消费者 `hard_parity.py::pair_metrics`／`calibrate`／`cmd_compare`：
 
 | 指标 | 阈值 | 比较的量 |
 |---|---:|---|
@@ -785,7 +785,7 @@ README 要改的只有数字与说明：第 1 节「换数据集」的局数、�
 
 公式 `阈值 = max(观测最大差 × 1.5, 下界)`，帧数先向上取整；下界 0.005／0.005／1.0／5；「合理性上界」0.05／0.05／10／200 检查的是**原始最大差**、超了只让标定 FAIL，不截断阈值。标定数据：O（gl1517，job 62126060）与 P（gl1504，job 62126061），均 A40、驱动 595.71.05、16 worker；144 对里 143 对逐字节相同，唯一非零的一对是 `PickHighlight/hard/seed 12300` 从第 549 步起分叉（动作最大差 0.0275、图像平均差 0.144、帧数相同），O 与 H 在该身份上逐字节相同，报告归因为 P 侧那次运行的 RRT 墙钟噪声（`docs/validation/newtask-v6/hard-split/stage4.md`「容差标定」）。所以：阈值 = 0.0275×1.5、0.0274×1.5，图像与帧数取下界。
 
-**为什么它不是「多卡」容差**：[`20260927-cross-hardware-probe.md`](docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md) 用同一条身份（BinFill/ep0/seed 4000/easy）在四张卡上跑官方 A 路：A40 两个节点 sha 相同；RTX 6000 Ada（本机）vs RTX A6000（aspen）只有 16 个 `joint_action` 值差 ≤ 2.24e-18；**Ada vs A40 从第 7 步起全面分叉**：`joint_state` 最大 0.029 rad、`eef_state` 0.0377、`front_depth` 最大 2.67e3、RGB 逐像素最大 211～235。这说明 0.029 rad 的跨型号状态差已到 0.041 阈值的约七成（该探针里型号与驱动大版本同时不同，没有拆开归因），且图像逐像素差远超 1（`image_mad` 是平均值，单局是否超 1.0 未算），跨型号数据没有进过任何标定。因此 D-9 要求 v7 两次生成都在 A40 上做；本机 Ada 与 aspen A6000 只用于冒烟与静态验收，不产正式对拍数据。
+**为什么它不是「多卡」容差**：[`20260927-cross-hardware-probe.md`](../../docs/validation/newtask-v6/hard-split/20260927-cross-hardware-probe.md) 用同一条身份（BinFill/ep0/seed 4000/easy）在四张卡上跑官方 A 路：A40 两个节点 sha 相同；RTX 6000 Ada（本机）vs RTX A6000（aspen）只有 16 个 `joint_action` 值差 ≤ 2.24e-18；**Ada vs A40 从第 7 步起全面分叉**：`joint_state` 最大 0.029 rad、`eef_state` 0.0377、`front_depth` 最大 2.67e3、RGB 逐像素最大 211～235。这说明 0.029 rad 的跨型号状态差已到 0.041 阈值的约七成（该探针里型号与驱动大版本同时不同，没有拆开归因），且图像逐像素差远超 1（`image_mad` 是平均值，单局是否超 1.0 未算），跨型号数据没有进过任何标定。因此 D-9 要求 v7 两次生成都在 A40 上做；本机 Ada 与 aspen A6000 只用于冒烟与静态验收，不产正式对拍数据。
 
 另有一个容易混淆的数：`hard_specs.py::RECORDED_FLOAT_TOL = 1e-5` 是回注校验里「只记录不回注」的浮点观测点允许的漂移，与轨迹对拍容差无关；派生局的 `layout_drawn` 核随机流**不用它**，要求逐位相等（§1.2）。
 

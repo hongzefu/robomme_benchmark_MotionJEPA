@@ -1,6 +1,6 @@
 # newtask v8 运行档案：result
 
-计划：根目录 `1001-newtask-v8-xhard-gradient-plan.md`；起跑档案见同目录 `launch.md`。本文件记录实测判定行与结论，判定行一律原文内联。
+计划：`docs/plans/1001-newtask-v8-xhard-gradient-plan.md`；起跑档案见同目录 `launch.md`。本文件记录实测判定行与结论，判定行一律原文内联。
 
 ## ① 一句话结论
 

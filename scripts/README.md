@@ -1,6 +1,6 @@
 # scripts/ 说明
 
-> 按 `newtaskRelease-v5` 12.214 写成，v7（12.237 起，方案 `0928-newtask-v7-xhard0-shared-layout-plan.md`）更新第 1、3、4、5 节：新增 xhard0 档、xhard1～4 共用 20 个母布局、五档定值。v8（阶段 3b 换包起，方案 `1001-newtask-v8-xhard-gradient-plan.md`）再更新第 1、3、4、5 节：新值档扩到 xhard1～xhard5、只交付 43 格（1070 局）、各格布局独立抽、步数上限 xhard1～5 一律 1600。官方锚点：环境源码 `RoboMME/robomme_benchmark@1fadc0ec`（`src/robomme/` 与之逐字节相同）、生成编排 `d53f21a7`（`parity/official/` 四文件逐字节 vendor）。历史正文（V4/V5 逐环境字段表、V6 发布说明）见 [`docs/ledger/scripts-README-legacy-20260928.md`](../docs/ledger/scripts-README-legacy-20260928.md)，不再维护。
+> 按 `newtaskRelease-v5` 12.214 写成，v7（12.237 起，方案 `docs/plans/0928-newtask-v7-xhard0-shared-layout-plan.md`）更新第 1、3、4、5 节：新增 xhard0 档、xhard1～4 共用 20 个母布局、五档定值。v8（阶段 3b 换包起，方案 `1001-newtask-v8-xhard-gradient-plan.md`）再更新第 1、3、4、5 节：新值档扩到 xhard1～xhard5、只交付 43 格（1070 局）、各格布局独立抽、步数上限 xhard1～5 一律 1600。官方锚点：环境源码 `RoboMME/robomme_benchmark@1fadc0ec`（`src/robomme/` 与之逐字节相同）、生成编排 `d53f21a7`（`parity/official/` 四文件逐字节 vendor）。历史正文（V4/V5 逐环境字段表、V6 发布说明）见 [`docs/ledger/scripts-README-legacy-20260928.md`](../docs/ledger/scripts-README-legacy-20260928.md)，不再维护。
 
 # 第一部分　使用
 
@@ -59,7 +59,7 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 
 ## 3. 六档配置对比、局数与 episode 长度
 
-**配置对比**（v8，源 `1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1；代码真源为各环境的 `native_blocks` 与包内 header 的 `sampling_config`，测试侧副本 `tests/_shared/v7_tier_values.py`）。xhard0 列就是官方 hard 配置（`[a,b]` 为整数均匀区间；RouteStick、PatternLock 的 xhard1～3 也是区间：RouteStick 在区间内均匀抽，PatternLock 拒绝采样、只保证落在区间内）。「不交付」= 数值仍在代码里、v8 不生成；「无」= 该任务没有这个档的配置。各档布局独立抽。v7 的五档表见标签 `parity-anchor-v7` 下的本文件。
+**配置对比**（v8，源 `docs/plans/1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1；代码真源为各环境的 `native_blocks` 与包内 header 的 `sampling_config`，测试侧副本 `tests/_shared/v7_tier_values.py`）。xhard0 列就是官方 hard 配置（`[a,b]` 为整数均匀区间；RouteStick、PatternLock 的 xhard1～3 也是区间：RouteStick 在区间内均匀抽，PatternLock 拒绝采样、只保证落在区间内）。「不交付」= 数值仍在代码里、v8 不生成；「无」= 该任务没有这个档的配置。各档布局独立抽。v7 的五档表见标签 `parity-anchor-v7` 下的本文件。
 
 | 环境 | 梯度维度 | xhard0（官方 hard） | xhard1 | xhard2 | xhard3 | xhard4 | xhard5 |
 |---|---|---|---|---|---|---|---|

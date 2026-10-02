@@ -1,6 +1,6 @@
 # newtask v8 运行档案：launch（起跑时写定）
 
-计划：根目录 `1001-newtask-v8-xhard-gradient-plan.md`（12.290 获批）。本文件按计划第二部分 §2.4.2 记录各运行阶段的席位、tmux 会话名、命令与 env 覆盖；结果见同目录 `result.md`。
+计划：`docs/plans/1001-newtask-v8-xhard-gradient-plan.md`（12.290 获批）。本文件按计划第二部分 §2.4.2 记录各运行阶段的席位、tmux 会话名、命令与 env 覆盖；结果见同目录 `result.md`。
 
 ## 一、用户授权口径
 

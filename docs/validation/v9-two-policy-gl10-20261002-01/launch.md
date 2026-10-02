@@ -1,6 +1,6 @@
 # V9 双模型评估运行档案：launch（起跑时写定）
 
-计划：根目录 `1002-newtask-v9-movecube-region-800-plan.md` 第一部分 §1 第 7、8 条与第二部分 §2.2 第 7 条、§2.4.2 第 7 步。本轮只评 V9 新生成的 80 局（MoveCube xhard4 50 + InsertPeg xhard4 30），与 V8 逐字节相同的 720 局复用 V8 双模型评估（`docs/validation/v8-two-policy-gl10-20261002-01/`）。结果见同目录 `result.md`。
+计划：`docs/plans/1002-newtask-v9-movecube-region-800-plan.md` 第一部分 §1 第 7、8 条与第二部分 §2.2 第 7 条、§2.4.2 第 7 步。本轮只评 V9 新生成的 80 局（MoveCube xhard4 50 + InsertPeg xhard4 30），与 V8 逐字节相同的 720 局复用 V8 双模型评估（`docs/validation/v8-two-policy-gl10-20261002-01/`）。结果见同目录 `result.md`。
 
 ## 一、用户授权口径（2026-10-02）
 

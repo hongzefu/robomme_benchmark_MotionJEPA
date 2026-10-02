@@ -1,6 +1,6 @@
 # v7.5eval 实施留档（新接口 · 官方重跑两遍 · 正式跑法 vs 官方）
 
-> 方案：仓库根 [`0929-v7.5eval-restructure-plan.md`](../../../0929-v7.5eval-restructure-plan.md)（下称「方案」），本目录是它的实测留档（方案第二部分 §6）。代码锚点：benchmark `newtaskRelease-v5`，工具提交链 12.266 `d393f59c` → 12.275 `198965ae`（见下表）；策略仓库零改动：MME `hongzefu/robomme_policy_learning_MotionJEPA` `eval-official-v1` = `ecf086c3`，SimpleMemVLA fork `eval-official-v1` = `c564c17d`，两者均无新提交。实跑一律从 detached worktree 钉提交起跑（方案 R6），本机在 `artifacts/v7.5eval/wt/<提交>`，GL 在 NFS `v75eval/wt/<提交>`。运行环境：环境 A（sled-vail，2 × RTX 6000 Ada）＋ GL spgpu A40 八席 ＋ standard 编排席一席。
+> 方案：[`docs/plans/0929-v7.5eval-restructure-plan.md`](../../plans/0929-v7.5eval-restructure-plan.md)（下称「方案」），本目录是它的实测留档（方案第二部分 §6）。代码锚点：benchmark `newtaskRelease-v5`，工具提交链 12.266 `d393f59c` → 12.275 `198965ae`（见下表）；策略仓库零改动：MME `hongzefu/robomme_policy_learning_MotionJEPA` `eval-official-v1` = `ecf086c3`，SimpleMemVLA fork `eval-official-v1` = `c564c17d`，两者均无新提交。实跑一律从 detached worktree 钉提交起跑（方案 R6），本机在 `artifacts/v7.5eval/wt/<提交>`，GL 在 NFS `v75eval/wt/<提交>`。运行环境：环境 A（sled-vail，2 × RTX 6000 Ada）＋ GL spgpu A40 八席 ＋ standard 编排席一席。
 >
 > 写法：高层导读，判定行一律内联原文（取自 `artifacts/v7.5eval/summary/verdicts.txt`，由 `scripts/eval-official/step6_summary.py --final` 于 2026-09-30 08:10:46 EDT 生成，0 条 PENDING／BLOCKED，汇总脚本的终版与本留档同一提交落地）；逐局记录与视频在 `artifacts/v7.5eval/`（不进 git），本目录不复述其内容。GL 侧（NFS `v75eval/`）的状态、报告、日志、队列与跳过标记已归档到 `artifacts/v7.5eval/nfs-archive/`（849M，`rsync -rc` 核对 0 差异）后删除 NFS 原件；车道辅助脚本的最终版保存在 `scripts/eval-official/v75-lanes/{gl,local}/`。
 

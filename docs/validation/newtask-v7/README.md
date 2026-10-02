@@ -1,6 +1,6 @@
 # newtask-v7 实施留档（xhard0 ＋ 共用母布局 ＋ 五档定值）
 
-> 方案：仓库根 `0928-newtask-v7-xhard0-shared-layout-plan.md`。代码锚点：GL 生成段 HEAD `77fbe70a`（12.236，起跑到 gen2 完成期间 GL 克隆冻结）；换包与评估钉位 `4a36d505`（12.237）。工作副本 worktree `v7-run`，每次提交后主检出 `newtaskRelease-v5` 本地快进（推送被自动模式拒绝，留给用户）。GL 硬件：A40（driver 595.71.05），占位 job 内 `srun --overlap --gpu_cmode=shared`。本文件是导读，判定行一律内联原文；过程细节见 12.236／12.237 的 commit body。
+> 方案：`docs/plans/0928-newtask-v7-xhard0-shared-layout-plan.md`。代码锚点：GL 生成段 HEAD `77fbe70a`（12.236，起跑到 gen2 完成期间 GL 克隆冻结）；换包与评估钉位 `4a36d505`（12.237）。工作副本 worktree `v7-run`，每次提交后主检出 `newtaskRelease-v5` 本地快进（推送被自动模式拒绝，留给用户）。GL 硬件：A40（driver 595.71.05），占位 job 内 `srun --overlap --gpu_cmode=shared`。本文件是导读，判定行一律内联原文；过程细节见 12.236／12.237 的 commit body。
 
 ## ① 一句话结论与指标速览
 

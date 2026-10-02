@@ -36,7 +36,7 @@ import h5py
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ART = REPO_ROOT / "artifacts/newtask-v7"
-PLAN = REPO_ROOT / "0928-newtask-v7-xhard0-shared-layout-plan.md"
+PLAN = REPO_ROOT / "docs" / "plans" / "0928-newtask-v7-xhard0-shared-layout-plan.md"
 XHARD0_SIDES = (("new", "H-xhard0"), ("old", "O-xhard0-bucket"))
 ORDINALS = ("first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth "
             "fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth last").split()

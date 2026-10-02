@@ -1,6 +1,6 @@
 # V9 双模型评估运行档案：result
 
-计划：根目录 `1002-newtask-v9-movecube-region-800-plan.md`；起跑档案见同目录 `launch.md`。评估执行副本冻结在 `820ca142`（12.333）。汇总全文 `records/report.md`。
+计划：`docs/plans/1002-newtask-v9-movecube-region-800-plan.md`；起跑档案见同目录 `launch.md`。评估执行副本冻结在 `820ca142`（12.333）。汇总全文 `records/report.md`。
 
 ## 一、结论
 

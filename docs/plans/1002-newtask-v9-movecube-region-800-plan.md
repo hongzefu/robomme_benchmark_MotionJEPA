@@ -45,7 +45,7 @@
 
 ## 2. MoveCube 生成区域：现状、V9 与离线实测
 
-![MoveCube xhard4 V9 生成区域](docs/validation/newtask-v9/figures/movecube_v9_region.png)
+![MoveCube xhard4 V9 生成区域](../../docs/validation/newtask-v9/figures/movecube_v9_region.png)
 
 图 `docs/validation/newtask-v9/figures/movecube_v9_region.png` 由 `scripts/injection-dev/v9_movecube_region_fig.py` 出图。脚本纯 numpy，不 reset 环境，不计入 P3。拒绝规则逐条照抄 `MoveCube.py::_load_scene_xhard4_region` 与 `utils/object_generation.py::_region_rules_violation`。
 
