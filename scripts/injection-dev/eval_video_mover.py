@@ -17,16 +17,22 @@
     python scripts/injection-dev/eval_video_mover.py --mode v8 --stage <NFS 运行根> \\
         --dest artifacts/v8-evaluation/<R>/videos [--policies smvla,mme] [--once] [--stop-file F] [--interval S]
 
-扫 ``<stage>/sNN/<policy>/results.jsonl`` 的 V8 结果行（``v8: true``，含 error／infra 尝试与迟到终态），按 ``rec_dir`` 的目录名
-``<key>.a<n>`` 找 ``<stage>/sNN/<policy>/rec/<目录名>/``；只搬「结果行已写出」的目录（进行中的不碰），且目录内全部文件
-``--stable-sec`` 秒无变化、没有 rsync 临时文件（点开头）。整目录 ``rsync -a`` 到 ``<dest>/<policy>/<tier>/<task>/<目录名>/`` →
-逐文件两端 sha256 相同 → 才删 NFS 副本 → 往 ``<dest>/moved.jsonl`` 追加一行（``mode: "v8"``，含逐文件 sha256）；已搬的源不再
-存在，自然跳过，可续。sha 不符：删本机这份不完整副本、保留 NFS 源，计 sha_mismatch（常驻模式下一轮重试）。常驻模式每
-``--interval`` 秒打印 ``VMOVE mode=v8 moved= pending= bytes= stage_bytes= sha_mismatch=``，``--stop-file`` 出现且无待搬时退出。
-``--once``：搬到无待稳定目录后做全量对账，打印
-``V8_EVAL_VIDEOS=PASS|FAIL policies= expected= videos= missing= decode_fail= sha_mismatch= error_attempt_videos=``：
+扫 ``<stage>/sNN/<policy>/results.jsonl`` 的 V8 结果行（``v8: true``，含 error／infra／金丝雀尝试与迟到终态），按 ``rec_dir``
+的目录名（``<key>.a<n>``、``<key>.canary.a<n>``）找 ``<stage>/sNN/<policy>/rec/<目录名>/``；只搬「结果行已写出」的目录（进行中的
+不碰），且目录内文件 ``--stable-sec`` 秒无变化、没有 rsync 临时文件（``.<name>.<6 位随机>``）。录像器自己留下的点开头文件
+（非空 ``.ffmpeg-<stream>.log``、close 失败时的 ``.spool/``）照常整目录搬；NFS 删除占位 ``.nfs*`` 不搬不删。
+整目录先 ``rsync -a`` 到 ``<dest>/.incoming/<随机>/`` → 逐文件两端 sha256 相同 → 原子改名到 ``<dest>/<policy>/<tier>/<task>/<目录名>/``
+（目标已存在且内容相同视为已搬；内容不同则落 ``<目标>.dupN``，本机已有副本一律不删）→ 只删核对过的源文件 → 往
+``<dest>/moved.jsonl`` 追加一行（``mode: "v8"``，含逐文件 sha256；源目录删不掉记 ``src_left: true``）；已搬的源不再存在，可续。
+sha 不符：只删临时目录、保留 NFS 源，计 sha_mismatch（常驻模式下一轮重试）。常驻模式每 ``--interval`` 秒打印
+``VMOVE mode=v8 moved= pending= bytes= stage_bytes= sha_mismatch=``，``--stop-file`` 出现且无待搬时退出（结果行未写出的目录不碰）。
+``--once``：搬到无待稳定目录后（单个目录持续不稳超过 ``--once-max-wait`` 秒即放弃、留在运行根计入 stage_left），再把
+``<stage>/sNN/<policy>/rec/`` 下没有结果行的孤儿目录整目录搬到 ``<dest>/<policy>/_orphan/<sNN>/<目录名>/``，然后全量对账，打印
+``V8_EVAL_VIDEOS=PASS|FAIL policies= expected= videos= missing= decode_fail= sha_mismatch= error_attempt_videos= stage_left= orphan_videos=``：
 expected = 每模型账本 accepted 终态数之和（权威终态口径复用 ``scripts/eval-official/v8_report.py``）；videos = 本机已有且
-front.mkv、wrist.mkv 都能读出帧数（>0）的终态录像目录数；error_attempt_videos = 本机已有的非权威尝试（错误／重试／迟到）目录数。
+front.mkv、wrist.mkv 都能读出帧数（>0）的终态录像目录数；error_attempt_videos = 本机已有的非权威尝试（错误／重试／迟到）目录数；
+stage_left = 对账后运行根里仍有可搬文件的录像目录数（rsync 失败、sha 不符、持续不稳、孤儿搬不走都在这里体现，>0 即 FAIL）；
+orphan_videos = 本次搬进 ``_orphan`` 的目录数。
 帧数优先用 ``ffprobe -count_frames``，没有 ffprobe 时用 ``imageio-ffmpeg`` 自带 ffmpeg 全解码计帧，都没有则判 decode_fail
 （``reason=no_decoder``）。读得出的帧数按 (路径, 大小, mtime) 缓存在 ``<dest>/decode-cache.jsonl``。末行 ``EXIT_CODE=``（FAIL 为 1）。
 """
@@ -38,7 +44,9 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 import shutil
+import uuid
 import subprocess
 import sys
 import time
@@ -115,17 +123,33 @@ def v8_report_mod():
     return _REPORT_MOD
 
 
+RSYNC_TMP = re.compile(r"^\.[^/]+\.[A-Za-z0-9]{6}$")  # rsync 写入中的临时文件：.<name>.<6 位随机>
+
+
+def is_nfs_placeholder(p: Path) -> bool:
+    """NFS 删除占位（silly rename）：不搬、不删、不算可搬文件。"""
+    return p.name.startswith(".nfs")
+
+
 def tree_files(root: Path) -> list[Path]:
-    return sorted(p for p in root.rglob("*") if p.is_file() or p.is_symlink())
+    """可搬文件（递归，含录像器留下的点开头文件与 .spool/），不含 .nfs* 占位。"""
+    out = []
+    for p in root.rglob("*"):
+        if (p.is_file() or p.is_symlink()) and not is_nfs_placeholder(p):
+            out.append(p)
+    return sorted(out)
 
 
 def dir_snapshot(root: Path) -> tuple | None:
-    """目录内全部文件 (相对路径, 大小, mtime_ns)；有 rsync 临时文件（点开头）时返回 None（仍在写）。"""
+    """目录内可搬文件 (相对路径, 大小, mtime_ns)；有 rsync 临时文件时返回 None（仍在写）。"""
     snap = []
     for p in tree_files(root):
-        if p.name.startswith("."):
+        if RSYNC_TMP.match(p.name):
             return None
-        st = p.stat()
+        try:
+            st = p.lstat()
+        except FileNotFoundError:
+            return None
         snap.append((str(p.relative_to(root)), st.st_size, st.st_mtime_ns))
     return tuple(snap)
 
@@ -154,42 +178,89 @@ def v8_dest_dir(dest: Path, policy: str, row: dict, name: str) -> Path:
     return dest / policy / str(row.get("tier") or "_notier") / str(row.get("task")) / name
 
 
+def dir_digests(root: Path) -> dict[str, str]:
+    return {str(f.relative_to(root)): sha256(f) for f in tree_files(root)}
+
+
 def v8_move_dir(item: dict, dest: Path, moved_log: Path) -> tuple[str, int]:
-    """rsync 整目录 → 逐文件 sha256 → 删源 → 记 moved.jsonl。返回 (结果, 字节数)；结果 ∈ moved / rsync_fail / sha_mismatch。"""
-    src, row = item["src"], item["row"]
-    out = v8_dest_dir(dest, item["policy"], row, item["name"])
-    out.parent.mkdir(parents=True, exist_ok=True)
-    proc = subprocess.run(["rsync", "-a", f"{src}/", f"{out}/"], capture_output=True, text=True)
+    """rsync 整目录到 <dest>/.incoming/<随机>/ → 逐文件 sha256 → 原子改名到目标 → 只删核对过的源文件 → 记 moved.jsonl。
+
+    返回 (结果, 字节数)；结果 ∈ moved / rsync_fail / sha_mismatch。本机已有副本一律不删；sha 不符只删临时目录。
+    item 为结果行尝试（row 有值）或孤儿目录（row 为 None、带 out）。
+    """
+    src, row = item["src"], item.get("row") or {}
+    out = item.get("out") or v8_dest_dir(dest, item["policy"], row, item["name"])
+    incoming = dest / ".incoming" / uuid.uuid4().hex
+    incoming.parent.mkdir(parents=True, exist_ok=True)
+    proc = subprocess.run(["rsync", "-a", "--exclude=.nfs*", f"{src}/", f"{incoming}/"], capture_output=True, text=True)
     if proc.returncode != 0:
         print(f"# rsync 失败 {src}: {proc.stderr.strip()[:300]}", flush=True)
+        shutil.rmtree(incoming, ignore_errors=True)
         return "rsync_fail", 0
     files: dict[str, str] = {}
     nbytes = 0
-    for f in tree_files(src):
+    for f in tree_files(src):  # 核对清单：此刻源里的可搬文件；核对之后新出现的文件不删
         rel = str(f.relative_to(src))
         digest = sha256(f)
-        tgt = out / rel
+        tgt = incoming / rel
         if not tgt.is_file() or sha256(tgt) != digest:
-            print(f"# sha256 不一致，保留 NFS 副本并删本机不完整副本 {src} 文件 {rel}", flush=True)
-            shutil.rmtree(out, ignore_errors=True)
+            print(f"# sha256 不一致，保留 NFS 副本、只删临时目录 {src} 文件 {rel}", flush=True)
+            shutil.rmtree(incoming, ignore_errors=True)
             return "sha_mismatch", 0
         files[rel] = digest
         nbytes += f.stat().st_size
-    for f in tree_files(src):
-        f.unlink()
+    if not files:
+        shutil.rmtree(incoming, ignore_errors=True)
+        return "empty", 0
+    out.parent.mkdir(parents=True, exist_ok=True)
+    final = out
+    if out.exists():
+        if dir_digests(out) == files:  # 上次已拷到本机、删源前中断：内容相同，不再落第二份
+            shutil.rmtree(incoming, ignore_errors=True)
+        else:
+            n = 1
+            while Path(f"{out}.dup{n}").exists():
+                n += 1
+            final = Path(f"{out}.dup{n}")
+            print(f"# 本机已有内容不同的 {out}，新版本落 {final.name}", flush=True)
+            os.rename(incoming, final)
+    else:
+        os.rename(incoming, final)
+    for rel in files:
+        (src / rel).unlink(missing_ok=True)
     for d in sorted((p for p in src.rglob("*") if p.is_dir()), key=lambda p: len(p.parts), reverse=True):
-        d.rmdir()
-    src.rmdir()
+        try:
+            d.rmdir()
+        except OSError:
+            pass
+    src_left = False
+    try:
+        src.rmdir()
+    except OSError:
+        src_left = True  # 残留 .nfs* 占位或核对后新出现的文件
     with moved_log.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps({"mode": "v8", "policy": item["policy"], "key": row.get("key"),
                                  "task": row.get("task"), "tier": row.get("tier"), "seed": row.get("seed"),
                                  "attempt_id": row.get("attempt_id"), "attempt_no": row.get("attempt_no"),
-                                 "status": row.get("status"), "infra": row.get("infra"), "seat": row.get("_seat"),
-                                 "src": str(src), "dest": str(out), "files": files, "bytes": nbytes,
-                                 "at": time.strftime("%Y-%m-%dT%H:%M:%S%z")}, ensure_ascii=False) + "\n")
+                                 "status": row.get("status"), "infra": row.get("infra"),
+                                 "canary": bool(row.get("canary")), "orphan": item.get("row") is None,
+                                 "seat": row.get("_seat") or item.get("seat"),
+                                 "src": str(src), "dest": str(final), "files": files, "bytes": nbytes,
+                                 "src_left": src_left, "at": time.strftime("%Y-%m-%dT%H:%M:%S%z")},
+                                ensure_ascii=False) + "\n")
         handle.flush()
         os.fsync(handle.fileno())
     return "moved", nbytes
+
+
+def stage_rec_dirs(stage: Path, policies: list[str]) -> list[tuple[str, str, Path]]:
+    """运行根里仍有可搬文件的录像目录 (policy, sNN, 路径)。"""
+    out = []
+    for pol in policies:
+        for d in sorted(stage.glob(f"s*/{pol}/rec/*")):
+            if d.is_dir() and tree_files(d):
+                out.append((pol, d.parents[2].name, d))
+    return out
 
 
 def pick_decoder() -> tuple[str, str | None]:
@@ -256,7 +327,8 @@ class DecodeCache:
         return n
 
 
-def v8_verify(stage: Path, dest: Path, policies: list[str], sha_mismatch: int, workers: int) -> tuple[bool, str, list]:
+def v8_verify(stage: Path, dest: Path, policies: list[str], workers: int) -> tuple:
+    """本机对账：返回 (expected, videos, missing, decode_fail, error_attempt_videos, problems)。"""
     rm = v8_report_mod()
     decoder = pick_decoder()
     if decoder[0] != "ffprobe":
@@ -303,10 +375,17 @@ def v8_verify(stage: Path, dest: Path, policies: list[str], sha_mismatch: int, w
             decode_fail += 1
             problems.append({"policy": pol, "key": row.get("key"), "problem": "decode_fail", "dir": str(d),
                              "frames": frames, "reason": "no_decoder" if decoder[0] == "none" else None})
-    ok = expected > 0 and missing == 0 and decode_fail == 0 and sha_mismatch == 0 and videos == expected
+    return expected, videos, missing, decode_fail, error_attempt_videos, problems
+
+
+def v8_verdict(stage: Path, dest: Path, policies: list[str], *, sha_mismatch: int, stage_left: int,
+               orphan_videos: int, workers: int) -> tuple[bool, str, list]:
+    expected, videos, missing, decode_fail, error_attempt_videos, problems = v8_verify(stage, dest, policies, workers)
+    ok = (expected > 0 and missing == 0 and decode_fail == 0 and sha_mismatch == 0 and stage_left == 0
+          and videos == expected)
     line = (f"V8_EVAL_VIDEOS={'PASS' if ok else 'FAIL'} policies={len(policies)} expected={expected} videos={videos} "
             f"missing={missing} decode_fail={decode_fail} sha_mismatch={sha_mismatch} "
-            f"error_attempt_videos={error_attempt_videos}")
+            f"error_attempt_videos={error_attempt_videos} stage_left={stage_left} orphan_videos={orphan_videos}")
     return ok, line, problems
 
 
@@ -316,20 +395,36 @@ def v8_main(args) -> int:
     dest.mkdir(parents=True, exist_ok=True)
     moved_log = dest / "moved.jsonl"
     seen: dict[str, tuple[tuple | None, float]] = {}
+    first_pending: dict[str, float] = {}
     failed: set[str] = set()
-    moved_bytes = moved_n = sha_mismatch = 0
+    gave_up: set[str] = set()
+    moved_bytes = moved_n = sha_mismatch = orphan_videos = 0
     last_report = 0.0
     while True:
         pending = 0
-        for item in v8_attempt_dirs(stage, policies):
+        items = v8_attempt_dirs(stage, policies)
+        if args.once:  # 对账轮：没有结果行的孤儿录像目录也整目录搬到 _orphan
+            known = {str(it["src"]) for it in items}
+            for pol, seat, d in stage_rec_dirs(stage, policies):
+                if str(d) not in known:
+                    items.append({"policy": pol, "row": None, "name": d.name, "src": d, "seat": seat,
+                                  "out": dest / pol / "_orphan" / seat / d.name})
+        for item in items:
             src = item["src"]
             key = str(src)
-            if not src.is_dir():
-                continue  # 尚未同步到运行根，或已搬走（moved.jsonl 有记录）
-            if args.once and key in failed:
-                continue  # 对账轮里同一目录只试一次，sha 不符已计数
+            if not src.is_dir() or not tree_files(src):
+                continue  # 尚未同步到运行根、已搬走，或只剩 .nfs* 占位
+            if (args.once and key in failed) or key in gave_up:
+                continue  # 对账轮里同一目录只试一次；失败的留在运行根，计入 stage_left
             snap = dir_snapshot(src)
             now = time.time()
+            first_pending.setdefault(key, now)
+            # 收尾阶段（--once，或常驻模式 --stop-file 已出现）不无限等持续不稳的目录
+            finishing = args.once or bool(args.stop_file and Path(args.stop_file).exists())
+            if finishing and now - first_pending[key] > args.once_max_wait:
+                print(f"# 持续不稳超过 {args.once_max_wait:.0f}s，放弃并计入 stage_left：{src}", flush=True)
+                gave_up.add(key)
+                continue
             prev = seen.get(key)
             if snap is None or prev is None or prev[0] != snap:
                 seen[key] = (snap, now)
@@ -340,10 +435,12 @@ def v8_main(args) -> int:
                 continue
             result, nbytes = v8_move_dir(item, dest, moved_log)
             seen.pop(key, None)
+            first_pending.pop(key, None)
             if result == "moved":
                 moved_n += 1
                 moved_bytes += nbytes
-            else:
+                orphan_videos += item.get("row") is None
+            elif result != "empty":
                 sha_mismatch += result == "sha_mismatch"
                 failed.add(key)
                 if not args.once:
@@ -364,7 +461,14 @@ def v8_main(args) -> int:
         time.sleep(max(0.05, min(args.stable_sec, args.interval)))
     rc = 0
     if args.once:
-        ok, line, problems = v8_verify(stage, dest, policies, sha_mismatch, args.decode_workers)
+        left = stage_rec_dirs(stage, policies)
+        for pol, seat, d in left:
+            why = ("sha_mismatch_or_rsync_fail" if str(d) in failed else
+                   "unstable" if str(d) in gave_up else "not_moved")
+            print(f"# 运行根残留 {json.dumps({'policy': pol, 'seat': seat, 'dir': str(d), 'reason': why}, ensure_ascii=False)}",
+                  flush=True)
+        ok, line, problems = v8_verdict(stage, dest, policies, sha_mismatch=sha_mismatch, stage_left=len(left),
+                                        orphan_videos=orphan_videos, workers=args.decode_workers)
         for p in problems[:50]:
             print(f"# {json.dumps(p, ensure_ascii=False)}", flush=True)
         print(line, flush=True)
@@ -381,6 +485,8 @@ def main() -> int:
     ap.add_argument("--records-glob", default=None, help="终态记录 jsonl 的 glob（v7 模式必填）")
     ap.add_argument("--policies", default="smvla,mme", help="v8 模式：要搬的模型（运行根下 sNN/<policy>/）")
     ap.add_argument("--decode-workers", type=int, default=4, help="v8 --once 解码核对并行数")
+    ap.add_argument("--once-max-wait", type=float, default=300.0,
+                    help="v8 --once：单个目录持续不稳超过该秒数即放弃（留在运行根、计入 stage_left）")
     ap.add_argument("--stage", required=True, help="NFS 视频暂存根（只用于统计积压字节数与越界检查）")
     ap.add_argument("--dest", required=True)
     ap.add_argument("--identities", default=None, help="eval-identities-1262.jsonl（逐局核对 tier／seed）")

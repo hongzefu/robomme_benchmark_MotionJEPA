@@ -70,8 +70,10 @@ class Stage:
                 shutil.copy(self.mkv, d / m)
         (d / "summary.json").write_text('{"RECORDER_VERIFY": "PASS"}\n')
         (d / "events.jsonl").write_text('{"seq": 0}\n')
-        (d / "spool").mkdir(exist_ok=True)
-        (d / "spool" / "chunk-0.bin").write_bytes(b"\x00\x01")  # 子目录也整目录搬
+        # 录像器残留：非空 ffmpeg stderr 日志（recorder 不删）与 close 失败时保留的 .spool/
+        (d / ".ffmpeg-front.log").write_text("[ffv1 @ 0x0] warning\n")
+        (d / ".spool").mkdir(exist_ok=True)
+        (d / ".spool" / "front.raw").write_bytes(b"\x00\x01")
         return d
 
     def result(self, seat, policy, task, tier, seed, status, *, attempt_no=1, accept=True, media=True,
@@ -120,27 +122,37 @@ def test_v8_once_moves_completed_and_error_dirs(tmp_path, mkv):
     _, d_err = st.result("00", "smvla", "SwingXtimes", "xhard5", 22, "error", accept=False, infra_reason="env_build")
     _, d_retry = st.result("00", "smvla", "SwingXtimes", "xhard5", 22, "timeout", attempt_no=2)
     _, d_mme = st.result("01", "mme", "VideoUnmask", "xhard1", 11, "fail")
-    inflight = st.rec("01", "mme", "BinFill_xhard3_33.a1")  # 结果行尚未写出 → 不碰
+    _, d_can = st.result("00", "mme", "SwingXtimes", "xhard5", 22, "success", accept=False, canary=True, media=False,
+                         rec_dir="/tmp/R-s00/rec/mme/SwingXtimes_xhard5_22.canary.a1")
+    d_can = st.rec("00", "mme", "SwingXtimes_xhard5_22.canary.a1")
+    orphan = st.rec("01", "mme", "BinFill_xhard3_33.a1")  # 没有结果行：常驻模式不碰，--once 对账轮搬进 _orphan
     shas = {p.name: sha(p / "front.mkv") for p in (d_ok, d_err, d_retry, d_mme)}
     dest = tmp_path / "videos"
     proc = run_v8(st, dest, "--once")
     assert proc.returncode == 0, proc.stdout + proc.stderr
     v = verdict(proc)
     assert v == {"_verdict": "PASS", "policies": "2", "expected": "3", "videos": "3", "missing": "0",
-                 "decode_fail": "0", "sha_mismatch": "0", "error_attempt_videos": "1"}, proc.stdout
+                 "decode_fail": "0", "sha_mismatch": "0", "error_attempt_videos": "1", "stage_left": "0",
+                 "orphan_videos": "1"}, proc.stdout
     assert proc.stdout.strip().splitlines()[-1] == "EXIT_CODE=0"
-    for d in (d_ok, d_err, d_retry, d_mme):
+    for d in (d_ok, d_err, d_retry, d_mme, d_can, orphan):
         assert not d.exists()
-    assert inflight.exists() and (inflight / "front.mkv").exists()
+    assert (dest / "mme" / "_orphan" / "s01" / "BinFill_xhard3_33.a1" / "front.mkv").exists()
+    assert (dest / "mme" / "xhard5" / "SwingXtimes" / "SwingXtimes_xhard5_22.canary.a1" / "wrist.mkv").exists()
     out_ok = dest / "smvla" / "xhard1" / "VideoUnmask" / "VideoUnmask_xhard1_11.a1"
     out_err = dest / "smvla" / "xhard5" / "SwingXtimes" / "SwingXtimes_xhard5_22.a1"
     assert sha(out_ok / "front.mkv") == shas[out_ok.name]
-    assert (out_ok / "spool" / "chunk-0.bin").read_bytes() == b"\x00\x01"
-    assert (out_err / "wrist.mkv").exists()
+    # 录像器残留的点开头文件（非空 .ffmpeg-<stream>.log、.spool/）照常整目录搬走
+    assert (out_ok / ".spool" / "front.raw").read_bytes() == b"\x00\x01"
+    assert (out_ok / ".ffmpeg-front.log").read_text().startswith("[ffv1")
+    assert (out_err / "wrist.mkv").exists() and (out_err / ".ffmpeg-front.log").exists()
+    assert not (dest / ".incoming").exists() or not any((dest / ".incoming").iterdir())
     rows = [json.loads(l) for l in (dest / "moved.jsonl").read_text().splitlines()]
-    assert len(rows) == 4 and all(r["mode"] == "v8" for r in rows)
+    assert len(rows) == 6 and all(r["mode"] == "v8" and r["src_left"] is False for r in rows)
+    assert sum(r["orphan"] for r in rows) == 1 and sum(r["canary"] for r in rows) == 1
     err_row = next(r for r in rows if r["status"] == "error")
-    assert err_row["files"]["front.mkv"] == shas[out_err.name] and "spool/chunk-0.bin" in err_row["files"]
+    assert err_row["files"]["front.mkv"] == shas[out_err.name]
+    assert ".spool/front.raw" in err_row["files"] and ".ffmpeg-front.log" in err_row["files"]
 
 
 def test_v8_moved_jsonl_resume_idempotent(tmp_path, mkv):
@@ -161,23 +173,32 @@ def test_v8_moved_jsonl_resume_idempotent(tmp_path, mkv):
     assert len((dest / "moved.jsonl").read_text().splitlines()) == 3
 
 
-def test_v8_sha_mismatch_keeps_source(tmp_path, mkv, monkeypatch):
+def ns(st: Stage, dest: Path, **kw) -> argparse.Namespace:
+    base = dict(stage=str(st.root), dest=str(dest), policies="smvla", once=True, stop_file=None, interval=0.05,
+                stable_sec=0.0, decode_workers=1, once_max_wait=300.0)
+    base.update(kw)
+    return argparse.Namespace(**base)
+
+
+def test_v8_sha_mismatch_keeps_source_and_existing_copy(tmp_path, mkv, monkeypatch):
     st = Stage(tmp_path, mkv)
     st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
     dest = tmp_path / "videos"
+    # 本机早已有一份（此前核对过的）副本：sha 不符时也不能删它
+    prior = dest / "smvla" / "xhard1" / "VideoUnmask" / "VideoUnmask_xhard1_11.a1"
+    prior.mkdir(parents=True)
+    (prior / "front.mkv").write_bytes(b"older-verified-copy")
     real = mover.sha256
 
-    def fake(path: Path) -> str:  # 本机一侧的文件 sha 总是对不上
-        return "0" * 64 if str(dest) in str(path) else real(path)
+    def fake(path: Path) -> str:  # 临时目录一侧的文件 sha 总是对不上
+        return "0" * 64 if ".incoming" in str(path) else real(path)
 
     monkeypatch.setattr(mover, "sha256", fake)
-    args = argparse.Namespace(stage=str(st.root), dest=str(dest), policies="smvla", once=True, stop_file=None,
-                              interval=0.05, stable_sec=0.0, decode_workers=1)
-    rc = mover.v8_main(args)
-    assert rc == 1
+    assert mover.v8_main(ns(st, dest)) == 1
     src = st.root / "s00" / "smvla" / "rec" / "VideoUnmask_xhard1_11.a1"
     assert (src / "front.mkv").exists() and (src / "summary.json").exists()  # 源一个文件都没删
-    assert not (dest / "smvla" / "xhard1" / "VideoUnmask" / "VideoUnmask_xhard1_11.a1").exists()  # 不完整副本已删
+    assert (prior / "front.mkv").read_bytes() == b"older-verified-copy"  # 本机已有副本未动
+    assert not any((dest / ".incoming").iterdir())  # 只删了临时目录
     assert not (dest / "moved.jsonl").exists() or not (dest / "moved.jsonl").read_text().strip()
 
 
@@ -186,15 +207,63 @@ def test_v8_sha_mismatch_verdict_line(tmp_path, mkv, monkeypatch, capsys):
     st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
     dest = tmp_path / "videos"
     real = mover.sha256
-    monkeypatch.setattr(mover, "sha256", lambda p: "f" * 64 if str(dest) in str(p) else real(p))
-    args = argparse.Namespace(stage=str(st.root), dest=str(dest), policies="smvla", once=True, stop_file=None,
-                              interval=0.05, stable_sec=0.0, decode_workers=1)
-    assert mover.v8_main(args) == 1
+    monkeypatch.setattr(mover, "sha256", lambda p: "f" * 64 if ".incoming" in str(p) else real(p))
+    assert mover.v8_main(ns(st, dest)) == 1
     out = capsys.readouterr().out
     line = [l for l in out.splitlines() if l.startswith("V8_EVAL_VIDEOS=")][0]
     assert line == ("V8_EVAL_VIDEOS=FAIL policies=1 expected=1 videos=0 missing=1 decode_fail=0 sha_mismatch=1 "
-                    "error_attempt_videos=0")
+                    "error_attempt_videos=0 stage_left=1 orphan_videos=0")
     assert out.strip().splitlines()[-1] == "EXIT_CODE=1"
+
+
+def test_v8_existing_different_target_goes_to_dup(tmp_path, mkv):
+    st = Stage(tmp_path, mkv)
+    st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    dest = tmp_path / "videos"
+    prior = dest / "smvla" / "xhard1" / "VideoUnmask" / "VideoUnmask_xhard1_11.a1"
+    prior.mkdir(parents=True)
+    (prior / "front.mkv").write_bytes(b"different")
+    mover.v8_main(ns(st, dest))
+    assert (prior / "front.mkv").read_bytes() == b"different"
+    dup = prior.parent / "VideoUnmask_xhard1_11.a1.dup1"
+    assert (dup / "wrist.mkv").exists()
+    row = json.loads((dest / "moved.jsonl").read_text().splitlines()[0])
+    assert row["dest"] == str(dup)
+
+
+def test_v8_nfs_placeholder_src_left(tmp_path, mkv):
+    st = Stage(tmp_path, mkv)
+    _, d = st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    (d / ".nfs000000001234abcd00000001").write_bytes(b"busy")  # NFS 删除占位：不搬不删、目录删不掉
+    dest = tmp_path / "videos"
+    assert mover.v8_main(ns(st, dest)) == 0
+    row = json.loads((dest / "moved.jsonl").read_text().splitlines()[0])
+    assert row["src_left"] is True and not any(".nfs" in k for k in row["files"])
+    assert (d / ".nfs000000001234abcd00000001").exists() and not (d / "front.mkv").exists()
+
+
+def test_v8_rsync_tmp_pending_then_give_up(tmp_path, mkv, capsys):
+    """有 rsync 临时文件（.<name>.<6 位随机>）的目录判正在写；--once 超过 --once-max-wait 即放弃、FAIL、不死循环。"""
+    st = Stage(tmp_path, mkv)
+    _, d = st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    (d / ".wrist.mkv.Ab3dE9").write_bytes(b"partial")
+    assert mover.v8_main(ns(st, tmp_path / "videos", once_max_wait=0.3)) == 1
+    out = capsys.readouterr().out
+    line = [l for l in out.splitlines() if l.startswith("V8_EVAL_VIDEOS=")][0]
+    assert "stage_left=1" in line and line.startswith("V8_EVAL_VIDEOS=FAIL") and "unstable" in out
+    assert (d / "front.mkv").exists()
+
+
+def test_v8_non_authoritative_rsync_fail_is_fail(tmp_path, mkv, monkeypatch, capsys):
+    st = Stage(tmp_path, mkv)
+    st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    _, d_err = st.result("00", "smvla", "VideoUnmask", "xhard1", 12, "error", accept=False, error="boom")
+    real = mover.v8_move_dir
+    monkeypatch.setattr(mover, "v8_move_dir",
+                        lambda item, dest, log: ("rsync_fail", 0) if item["src"] == d_err else real(item, dest, log))
+    assert mover.v8_main(ns(st, tmp_path / "videos")) == 1
+    line = [l for l in capsys.readouterr().out.splitlines() if l.startswith("V8_EVAL_VIDEOS=")][0]
+    assert line.startswith("V8_EVAL_VIDEOS=FAIL") and "videos=1 missing=0" in line and "stage_left=1" in line
 
 
 def test_v8_decode_fail_and_missing(tmp_path, mkv):
@@ -210,12 +279,26 @@ def test_v8_decode_fail_and_missing(tmp_path, mkv):
 def test_v8_resident_stop_file(tmp_path, mkv):
     st = Stage(tmp_path, mkv)
     _, d = st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    _, d_err = st.result("00", "smvla", "VideoUnmask", "xhard1", 12, "error", accept=False, error="boom")
+    inflight = st.rec("00", "smvla", "BinFill_xhard3_33.a1")  # 结果行尚未写出 → 常驻模式不碰
     stop = tmp_path / "STOP"
     stop.write_text("")
     proc = run_v8(st, tmp_path / "videos", "--stop-file", str(stop))
     assert proc.returncode == 0, proc.stdout + proc.stderr
-    assert not d.exists() and "V8_EVAL_VIDEOS=" not in proc.stdout
+    assert not d.exists() and not d_err.exists() and "V8_EVAL_VIDEOS=" not in proc.stdout
+    assert inflight.exists() and (inflight / "front.mkv").exists()
     assert proc.stdout.strip().splitlines()[-1] == "EXIT_CODE=0"
+
+
+def test_v8_resident_stop_file_does_not_hang_on_unstable(tmp_path, mkv):
+    st = Stage(tmp_path, mkv)
+    _, d = st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    (d / ".front.mkv.Qw12Er").write_bytes(b"partial")  # 残留 rsync 临时文件
+    stop = tmp_path / "STOP"
+    stop.write_text("")
+    proc = run_v8(st, tmp_path / "videos", "--stop-file", str(stop), "--once-max-wait", "0.3")
+    assert proc.returncode == 0 and "持续不稳" in proc.stdout, proc.stdout + proc.stderr
+    assert (d / "front.mkv").exists()
 
 
 def test_v7_default_mode_regression(tmp_path):
@@ -247,7 +330,10 @@ def test_v7_default_mode_regression(tmp_path):
 
 
 def test_zz_summary_line(request):
-    """放在最后：本次会话（与 test_v8_eval_report.py 同跑时含其全部用例）没有任何失败才打印判定行。"""
+    """放在最后：本次会话（与 test_v8_eval_report.py 同跑时含其全部用例）没有失败才打印判定行；有跳过则打印 SKIPPED。"""
     assert request.session.testsfailed == 0, "前面有用例失败"
-    print("V8_EVAL_VIDEO_MOVER_TESTS=PASS")
-    print("V8_EVAL_REPORT_TESTS=PASS")
+    tr = request.config.pluginmanager.get_plugin("terminalreporter")
+    skipped = len(tr.stats.get("skipped", [])) if tr is not None else 0
+    verdict_word = "SKIPPED" if skipped else "PASS"
+    print(f"V8_EVAL_VIDEO_MOVER_TESTS={verdict_word}")
+    print(f"V8_EVAL_REPORT_TESTS={verdict_word}")

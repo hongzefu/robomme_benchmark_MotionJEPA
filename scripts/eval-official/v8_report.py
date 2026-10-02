@@ -67,7 +67,7 @@ def read_jsonl(path: Path) -> list[dict]:
 def key_of(row: dict) -> str:
     if row.get("key"):
         return str(row["key"])
-    return f"{row['task']}_{row['tier']}_{row['seed']}"
+    return f"{row.get('task')}_{row.get('tier')}_{row.get('seed')}"
 
 
 def seat_dirs(stage: Path) -> list[Path]:
@@ -124,7 +124,8 @@ def analyze_attempts(state: dict) -> dict:
       late:       [结果行]  accept 之外的终态行（迟到）
       abandoned:  [结果行]  非终态（error 等）且未被接受的尝试
     """
-    rows = [r for r in state["results"] if r.get("v8")]
+    # 金丝雀尝试（rec 目录 <key>.canary.a<n>）不进终态分母、不算迟到／废弃；录像仍由搬运脚本照搬
+    rows = [r for r in state["results"] if r.get("v8") and not r.get("canary")]
     by_attempt: dict[str, list[dict]] = defaultdict(list)
     no_id: list[dict] = []
     for r in rows:
@@ -324,6 +325,16 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
         oc = Counter(outcome.values())
         if sum(oc.values()) != len(mkeys):
             count_mismatch.append(f"{pol} 结局计数和 {sum(oc.values())} != 分母 {len(mkeys)}")
+
+        # 必备字段：缺 exec_steps 或身份字段（tier／seed／spec_sha256）的 V8 结果行不静默放过
+        for r in an["rows"]:
+            ident = dict(r.get("identity") or {})
+            lacks = [f for f in ("tier", "seed", "spec_sha256") if r.get(f, ident.get(f)) is None]
+            if "exec_steps" not in r or (r.get("status") in TERMINAL and r.get("exec_steps") is None):
+                lacks.append("exec_steps")
+            if lacks:
+                count_mismatch.append(f"{pol} {key_of(r)} "
+                                      f"attempt_id={r.get('attempt_id')} 缺字段 {','.join(lacks)}")
 
         # 越限
         for r in an["rows"]:

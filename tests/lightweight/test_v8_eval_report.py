@@ -299,7 +299,35 @@ def test_partial_progress(tmp_path):
     assert kv(lines[-2])["_verdict"] == "FAIL" and kv(lines[-2])["missing"] == "10"
 
 
+def test_missing_fields_and_canary(tmp_path):
+    man, st = setup(tmp_path)
+    k1, k2 = "VideoUnmask_xhard1_1001", "SwingXtimes_xhard5_2001"
+    st.all_ok(skip={("smvla", k1), ("smvla", k2)})
+    aid = uuid.uuid4().hex
+    d = st._dir("smvla", k1)
+    row = {"v8": True, "key": k1, "task": "VideoUnmask", "tier": "xhard1", "seed": 1001, "policy": "smvla",
+           "attempt_id": aid, "attempt_no": 1, "status": "fail", "task_success": False, "rec_dir": f"/x/{k1}.a1"}
+    with (d / "results.jsonl").open("a") as fh:  # 缺 exec_steps 与 spec_sha256
+        fh.write(json.dumps(row) + "\n")
+    st.ledger("smvla", k1, kind="accept", attempt_id=aid, accepted_attempt_id=aid)
+    st._dir("smvla", k1).joinpath("rec", f"{k1}.a1").mkdir(parents=True)
+    for f in ("front.mkv", "wrist.mkv", "summary.json"):
+        (d / "rec" / f"{k1}.a1" / f).write_text("x")
+    # 金丝雀成功局：不进分母、不算迟到；正式局另有 fail
+    st.result("smvla", k2, "success", canary=True, accept=False, rec_dir=f"/x/{k2}.canary.a1")
+    st.result("smvla", k2, "fail")
+    rc, rep, lines = run(man, st, tmp_path / "out")
+    cov, r = kv(lines[-2]), kv(lines[-1])
+    assert r["_verdict"] == "FAIL" and r["count_mismatch"] == "1", lines
+    assert "exec_steps" in rep["count_mismatch_detail"][0] and "spec_sha256" in rep["count_mismatch_detail"][0]
+    assert cov["late_ignored"] == "0" and cov["_verdict"] == "PASS"
+    assert rep["per_policy"]["smvla"]["outcomes"]["fail"] == 2
+    assert rc == 1
+
+
 def test_zz_summary_line(request):
-    """放在最后（pytest 按定义顺序执行）：本次会话前面没有任何失败才打印判定行。"""
+    """放在最后（pytest 按定义顺序执行）：本次会话前面没有失败、也没有跳过才打印 PASS。"""
     assert request.session.testsfailed == 0, "前面有用例失败"
-    print("V8_EVAL_REPORT_TESTS=PASS")
+    tr = request.config.pluginmanager.get_plugin("terminalreporter")
+    skipped = len(tr.stats.get("skipped", [])) if tr is not None else 0
+    print("V8_EVAL_REPORT_TESTS=SKIPPED" if skipped else "V8_EVAL_REPORT_TESTS=PASS")
