@@ -162,7 +162,7 @@ def main() -> int:
     parser.add_argument("--seed-profile", default="v7", choices=("v7", "v8"),
                         help="v7（默认）：四档同 offset 14e6，xhard4 母布局（hard-specs/3）；"
                              "v8：按档 seed 偏移、各档布局独立抽（hard-specs/4）")
-    parser.add_argument("--cells", default="full", help="v8 格表：full／smoke／shard1..shard4／格表 JSON 路径")
+    parser.add_argument("--cells", default="full", help="v8 格表：full／smoke／shard1..shard4；V9：v9shard1／v9smoke；或格表 JSON 路径")
     parser.add_argument("--whitelist", default=str(hard_specs.PACKAGED_SPECS_ROOT / "layout_whitelist.json"),
                         help="v7：布局白名单（其 sha256 写进 header.layout_rule）")
     parser.add_argument("--max-reset-attempts", type=int, default=None,
@@ -191,7 +191,8 @@ def main() -> int:
             print(f"FREEZE_CELL tier={args.tier} task={task} quota={plan['quota'][task]} "
                   f"candidates={plan['candidates'][task]} spare={plan['candidates'][task] - plan['quota'][task]} "
                   f"accept={_freeze.V8_DRAW_ACCEPT.get(task, _freeze.V8_DRAW_ACCEPT_DEFAULT)} "
-                  f"reset_cap={plan['reset_caps'][task]} select={_rollout.compact_range(plan['select'][task])}",
+                  f"reset_cap={plan['reset_caps'][task]} select={_rollout.compact_range(plan['select'][task])} "
+                  f"quota_by_way={_freeze.format_quota_by_way(_freeze.default_quota_by_way(task, args.tier, plan['quota'][task]))}",
                   flush=True)
         print(f"FREEZE_PLAN profile=v8 tier={args.tier} cells={args.cells} tasks={len(tasks)} "
               f"quota={sum(plan['quota'].values())} candidates={sum(plan['candidates'].values())} "

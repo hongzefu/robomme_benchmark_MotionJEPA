@@ -153,14 +153,14 @@ def main() -> int:
             else:
                 tiers = [t for t in hard_specs.V8_TIERS if (specs_dir / t / "specs.jsonl").is_file()]
                 for tier in tiers:
-                    hard_specs.load_specs(specs_dir / tier / "specs.jsonl", check_fingerprint=False)
+                    _rollout.load_specs_any(specs_dir / tier / "specs.jsonl", check_fingerprint=False)
             specs_paths = {tier: specs_dir / tier / "specs.jsonl" for tier in tiers}
         elif specs_dir is not None:
             # v7：规格根目录（xhard{1..4}/specs.jsonl，gen2 按 gen1 交付清单重放）
             hard_specs.load_specs_v7(specs_dir, check_fingerprint=False)
             specs_paths = {tier: specs_dir / tier / "specs.jsonl" for tier in hard_specs.V7_TIERS}
         elif args.specs:
-            header, _ = hard_specs.load_specs(args.specs, check_fingerprint=False)
+            header, _ = _rollout.load_specs_any(args.specs, check_fingerprint=False)
             specs_paths = {header["difficulty"]: Path(args.specs)}
         summary = _rollout.run_replay(_rollout.load_identities(Path(args.identities)), output, src_root=src_root,
                                       workers=args.workers, gpu=args.gpu, pkg=args.pkg, resume=args.resume,
@@ -196,7 +196,7 @@ def main() -> int:
               f"sync_dropped={summary['sync_dropped']} backfills={summary['backfills']} out={output}")
         return 0 if summary["delivery_set"].startswith("V7_DELIVERY_SET=PASS") else 1
     specs = Path(args.specs)
-    before, _ = hard_specs.load_specs(specs, check_fingerprint=False)
+    before, _ = _rollout.load_specs_any(specs, check_fingerprint=False)
     if before["schema"] == hard_specs.SCHEMA_V8:
         raise SystemExit("hard-specs/4 须按规格根（<root>/<tier>/specs.jsonl）配 --cells 跑，不接受单文件")
     redo = set()
@@ -209,7 +209,7 @@ def main() -> int:
     print(f"GENERATE_CONTINUE_DONE attempted={summary['attempted']} rounds={summary['rounds']} "
           f"infra_retries={summary['infra_retries']} delivered={summary['delivered']} out={output}")
     if args.self_check:
-        after, rows = hard_specs.load_specs(specs, check_fingerprint=False)
+        after, rows = _rollout.load_specs_any(specs, check_fingerprint=False)
         same = after["identity_sha256"] == before["identity_sha256"]
         print(f"ROLLBACK_WRITE={'PASS' if same else 'FAIL'} identity_unchanged={int(same)} "
               f"delivered={sum(hard_specs.delivered(r) for r in rows)}")

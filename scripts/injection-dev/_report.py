@@ -35,7 +35,14 @@ def per_cell_quota(header: dict[str, Any], task: str) -> int:
 
 
 def build_report(specs: Path, check_demo: bool = True) -> dict[str, Any]:
-    header, rows = hard_specs.load_specs(specs, check_fingerprint=False)
+    # /4 单文件的配额上限格表按 header 自带的逐任务配额推出：V9 文件（MoveCube／InsertPeg 50）在 3b 换包前
+    # EXPECTED_CELLS 仍是 V8 时也能读（V9 计划 S1-B 遗留配合项）
+    with Path(specs).open(encoding="utf-8") as stream:
+        try:
+            table = hard_specs.header_cell_table(json.loads(stream.readline()))
+        except ValueError:
+            table = None  # 首行坏了：交给 load_specs 报具体错
+    header, rows = hard_specs.load_specs(specs, expected_cells=table, check_fingerprint=False)
     totals = {key: 0 for key in COUNT_KEYS}
     cells = sorted({r["task"] for r in rows})
     totals["cells"] = len(cells)
