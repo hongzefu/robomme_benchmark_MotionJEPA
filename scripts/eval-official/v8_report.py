@@ -27,6 +27,36 @@
 ``V8_EVAL_REPORT=PASS|FAIL count_mismatch= media_unexplained= exec_over_cap=``
 ``--partial``：中途进度，不因缺失／媒体未就位判 FAIL（冲突、越限照判），另报已完成数、各格已完成与按已完成局墙钟估算的各席剩余时间。
 退出码：两行都 PASS 为 0，否则 1。
+
+V9 合并复用（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.1、§2.2 第 7 条、§2.4.2 第 7 步）：
+
+    python scripts/eval-official/v8_report.py --manifest <V9 run>/manifest/manifest.json --stage <V9 运行根> \
+        --videos <V9 本机视频根> --out <dir> \
+        --reuse <V8 结果目录> --reuse-manifest <V8 manifest.json>
+
+- ``--manifest`` 是 ``v8_manifest.py --exclude-evaluated`` 的新评清单（默认核对 80 行）；复用集合**只认**同目录
+  ``reused.json``（sha256 须等于 manifest ``reused.sha256``，``v8_manifest_sha256`` 须等于 ``--reuse-manifest`` 现算值）。
+- ``--reuse``：V8 运行根（含 ``sNN/<policy>/``）；给的是 V8 结果目录（如
+  ``artifacts/v8-evaluation/<R>``）时自动取其下 ``nfs-records/run``。只读，不重算、不改写 V8 任何文件。
+- 复用行：按 ``v8_key`` 找 V8 manifest 行，四元组 (task, tier, seed, spec_sha256) 须逐条相等；终态取 V8 账本
+  ``accepted_attempt_id`` 指向的结果行（同 V8 口径 ``analyze_attempts``），结果行的 spec_sha256 也须相等；任一不符、
+  V8 无 accepted 终态、或与新评行四元组重叠 → count_mismatch。
+- 新评 80 局照 V8 口径出分表；另出 800 局总表（按任务、按档、按格，两模型成功率），写进 ``report.json`` 的 ``v9`` 与
+  ``report.md``。720 局终态是 V8 当时跑的（R-7），报告注明。
+- 视频：只核新评身份（模型数 × 新评行数）：本机 ``<videos>/<policy>/<tier>/<task>/<rec 目录名>/`` 的 front.mkv、wrist.mkv
+  都在且读得出帧数（解码与缓存沿用 ``eval_video_mover.py`` 的 ``pick_decoder``／``DecodeCache``），``moved.jsonl``
+  里该目录的逐文件 sha256 与现算一致；``moved.jsonl`` 无该目录记录的计 moved_record_absent（不计入 videos，>0 即 FAIL）；
+  非 infra 错误终局无录像且写明原因计 error_final_no_video（同 V8）。
+末三行：
+``V9_EVAL_COVERAGE=PASS|FAIL policies= expected= missing= extra= duplicate= conflicting_terminal= error_final=``（error_final>0 即 FAIL）
+``V9_EVAL_REPORT=PASS|FAIL total= new= reused= count_mismatch= media_unexplained=``（exec_over_cap>0 时追加该字段并 FAIL）
+``V9_EVAL_VIDEOS=PASS|FAIL policies= expected= videos= missing= decode_fail= sha_mismatch= moved_record_absent=``
+退出码：三行都 PASS 为 0，否则 1。不传 ``--reuse`` 时一切同 V8。
+``--partial`` 与 ``--reuse`` 同用时：新评分表与进度估算照 ``--partial`` 口径出，但 V9 三行一律按严格口径判定（缺失按结局
+计数、未搬视频与复用对齐照常计数），且三行都追加 ``partial=1`` 并一律判 FAIL——评估中途必然 FAIL；V9 判定行只以评估结束、
+视频搬完后不带 ``--partial`` 的那次为准。
+report.json 键的分工（站点 S1-E 依赖）：``per_policy.<p>.cells／tasks／tiers`` 只统计本次 manifest 的新评身份（与 V8 report
+同口径）；800 局总表只在 ``v9.totals.<p>``（``tasks／tiers／cells／outcomes``），不混进 ``per_policy``。
 """
 
 from __future__ import annotations
@@ -43,6 +73,9 @@ from typing import Any
 TERMINAL = ("success", "fail", "timeout")
 DEFAULT_CAP = 1600
 DEFAULT_TOTAL = 1070
+V9_DEFAULT_NEW = 80
+V9_DEFAULT_REUSED = 720
+REUSED_SCHEMA = "v9-eval-reused/1"
 MEDIA_FILES = ("front.mkv", "wrist.mkv")
 
 
@@ -316,7 +349,8 @@ def wall_of(row: dict) -> float | None:
 
 
 def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: Path | None, *,
-                 partial: bool, expect_total: int, cap: int, shard_files: str | None = None) -> dict:
+                 partial: bool, expect_total: int, cap: int, shard_files: str | None = None,
+                 keep_internal: bool = False) -> dict:
     doc, mrows, shard_of = load_manifest(manifest_path)
     mkeys = {r["key"]: r for r in mrows}
     count_mismatch: list[str] = []
@@ -517,9 +551,10 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
     if partial:
         seat_of = {**shard_of, **load_shard_files(shard_files), **observed_seat}
         progress = estimate_progress(mkeys, seat_of, per_policy, policies, cell_den)
-    for p in per_policy.values():
-        p.pop("_acc")
-        p.pop("_outcome")
+    if not keep_internal:
+        for p in per_policy.values():
+            p.pop("_acc")
+            p.pop("_outcome")
 
     coverage_pass = all(cov[k] == 0 for k in ("missing", "extra", "duplicate", "conflicting_terminal"))
     report_pass = not count_mismatch and not media_unexplained and not exec_over_cap
@@ -732,6 +767,278 @@ def lines_of(rep: dict) -> tuple[str, str]:
     return cov_line, rep_line
 
 
+# ---------------------------------------------------------------- V9：合并 V8 复用
+
+def file_sha256(path: Path) -> str:
+    import hashlib
+
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 22), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def resolve_reuse_stage(d: Path) -> Path:
+    """V8 运行根：本身含 sNN/ 即用；否则取 V8 结果目录下的 ``nfs-records/run``（本机搬回的运行根）或 ``run``。"""
+    for cand in (d, d / "nfs-records" / "run", d / "run"):
+        if cand.is_dir() and seat_dirs(cand):
+            return cand
+    raise FileNotFoundError(f"--reuse {d} 下找不到含 sNN/ 的 V8 运行根（试过 ., nfs-records/run, run）")
+
+
+def _quad(r: dict) -> tuple:
+    ident = dict(r.get("identity") or {})
+    return tuple(str(r.get(f, ident.get(f))) for f in ("task", "tier", "seed", "spec_sha256"))
+
+
+def _rate_table(entries: list[tuple[str, str, str]], key_fn) -> dict[str, dict]:
+    """entries = [(task, tier, outcome)] → {分组: {denominator, success, success_rate}}。"""
+    den: Counter = Counter()
+    suc: Counter = Counter()
+    for task, tier, oc in entries:
+        k = key_fn(task, tier)
+        den[k] += 1
+        suc[k] += oc == "success"
+    return {k: {"denominator": den[k], "success": suc[k], "success_rate": suc[k] / den[k] if den[k] else None}
+            for k in sorted(den)}
+
+
+def build_reuse(rep: dict, manifest_path: Path, reuse_dir: Path, reuse_manifest: Path, policies: list[str],
+                *, expect_reused: int) -> dict:
+    """读 reused.json（唯一复用依据）→ 对齐 V8 manifest → 取 V8 账本 accepted 终态 → 800 局总表。只读 V8。"""
+    mismatch: list[str] = []
+    doc = json.loads(manifest_path.read_text(encoding="utf-8"))
+    _, new_rows, _ = load_manifest(manifest_path)
+    meta = doc.get("reused") or {}
+    rpath = manifest_path.parent / str(meta.get("path") or "reused.json")
+    out: dict[str, Any] = {"reused_path": str(rpath), "reuse_dir": str(reuse_dir), "reuse_manifest": str(reuse_manifest)}
+    if not meta:
+        mismatch.append("manifest 无 reused 键（不是 --exclude-evaluated 产出的清单）")
+    try:
+        raw = rpath.read_bytes()
+        rdoc = json.loads(raw.decode("utf-8"))
+    except (OSError, ValueError) as e:
+        mismatch.append(f"reused.json 读不出：{type(e).__name__}: {e}")
+        raw, rdoc = b"", {"rows": []}
+    out["reused_sha256"] = __import__("hashlib").sha256(raw).hexdigest()
+    if meta and out["reused_sha256"] != meta.get("sha256"):
+        mismatch.append(f"reused.json sha256={out['reused_sha256'][:12]} != manifest.reused.sha256="
+                        f"{str(meta.get('sha256'))[:12]}")
+    if rdoc.get("schema") != REUSED_SCHEMA:
+        mismatch.append(f"reused.json schema={rdoc.get('schema')!r}")
+    rrows = list(rdoc.get("rows") or [])
+    if not (rdoc.get("count") == len(rrows) == expect_reused) or (meta and meta.get("count") != len(rrows)):
+        mismatch.append(f"复用行数 rows={len(rrows)} count={rdoc.get('count')} manifest={meta.get('count')} "
+                        f"expect={expect_reused}")
+    v8_sha = file_sha256(reuse_manifest)
+    out["reuse_manifest_sha256"] = v8_sha
+    if rdoc.get("v8_manifest_sha256") != v8_sha:
+        mismatch.append(f"reused.json v8_manifest_sha256 与 --reuse-manifest 现算 {v8_sha[:12]} 不符")
+    v8doc = json.loads(reuse_manifest.read_text(encoding="utf-8"))
+    v8_by_key = {key_of(r): r for r in v8doc.get("rows") or []}
+    rquads = Counter(_quad(r) for r in rrows)
+    mismatch += [f"复用四元组重复 {q}" for q, n in rquads.items() if n > 1]
+    rkeys = Counter(str(r.get("v8_key")) for r in rrows)
+    mismatch += [f"复用 v8_key 重复 {k}" for k, n in rkeys.items() if n > 1]
+    new_quads = {_quad(r) for r in new_rows}
+    mismatch += [f"复用行与新评行四元组重叠 {q}" for q in rquads if q in new_quads]
+    for r in rrows:
+        m = v8_by_key.get(str(r.get("v8_key")))
+        if m is None:
+            mismatch.append(f"复用 {r.get('v8_key')} 不在 V8 manifest")
+        elif _quad(m) != _quad(r):
+            mismatch.append(f"复用 {r.get('v8_key')} 四元组与 V8 manifest 不符 reused={_quad(r)} v8={_quad(m)}")
+    try:
+        v8_stage = resolve_reuse_stage(reuse_dir)
+    except FileNotFoundError as e:
+        mismatch.append(str(e))
+        v8_stage = None
+    out["v8_stage"] = str(v8_stage) if v8_stage else None
+    totals: dict[str, Any] = {}
+    for pol in policies:
+        acc = analyze_attempts(load_policy(v8_stage, pol))["accepted"] if v8_stage else {}
+        reused_entries: list[tuple[str, str, str]] = []
+        for r in rrows:
+            k = str(r.get("v8_key"))
+            row = acc.get(k)
+            if row is None:
+                mismatch.append(f"{pol} 复用 {k} V8 账本无 accepted 终态")
+                oc = "missing"
+            else:
+                oc = str(row.get("status"))
+                if _quad(row) != _quad(r):
+                    mismatch.append(f"{pol} 复用 {k} V8 结果行四元组 {_quad(row)} 与 reused.json {_quad(r)} 不符")
+            reused_entries.append((str(r.get("task")), str(r.get("tier")), oc))
+        outcome = rep["per_policy"][pol]["_outcome"]
+        new_entries = [(str(r["task"]), str(r["tier"]), outcome[r["key"]]) for r in new_rows]
+        allv = new_entries + reused_entries
+        oc_all = Counter(o for *_, o in allv)
+        by_task = _rate_table(allv, lambda t, _tier: t)
+        totals[pol] = {
+            "denominator": len(allv), "new": len(new_entries), "reused": len(reused_entries),
+            "outcomes": {s: oc_all[s] for s in (*TERMINAL, "error", "missing", "conflict")},
+            "success": oc_all["success"],
+            "micro_success_rate": oc_all["success"] / len(allv) if allv else None,
+            "task_macro_success_rate": (statistics.fmean(v["success_rate"] for v in by_task.values())
+                                        if by_task else None),
+            "new_success": sum(o == "success" for *_, o in new_entries),
+            "reused_success": sum(o == "success" for *_, o in reused_entries),
+            "tasks": by_task,
+            "tiers": _rate_table(allv, lambda _t, tier: tier),
+            "cells": _rate_table(allv, lambda t, tier: f"{t}@{tier}"),
+        }
+    out.update({"new": len(new_rows), "reused": len(rrows), "total": len(new_rows) + len(rrows),
+                "count_mismatch_detail": mismatch, "totals": totals})
+    return out
+
+
+_MOVER = None
+_DECODE: dict[str, Any] = {}
+
+
+def video_mover_mod():
+    """只读复用 scripts/injection-dev/eval_video_mover.py 的解码器选择与帧数缓存（V8 视频核对逻辑）。"""
+    global _MOVER
+    if _MOVER is None:
+        import importlib.util
+
+        path = Path(__file__).resolve().parents[1] / "injection-dev" / "eval_video_mover.py"
+        spec = importlib.util.spec_from_file_location("eval_video_mover_for_v9_report", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _MOVER = mod
+    return _MOVER
+
+
+def count_media_frames(path: Path, videos: Path) -> int | None:
+    """front.mkv／wrist.mkv 帧数（读不出为 None）；缓存写 ``<videos>/decode-cache.jsonl``，与搬运脚本共用。"""
+    mv = video_mover_mod()
+    if "decoder" not in _DECODE:
+        _DECODE["decoder"] = mv.pick_decoder()
+    if _DECODE.get("root") != str(videos):
+        _DECODE["root"], _DECODE["cache"] = str(videos), mv.DecodeCache(videos / "decode-cache.jsonl")
+    if _DECODE["decoder"][0] == "none":
+        return None
+    return _DECODE["cache"].frames(path, _DECODE["decoder"])
+
+
+def verify_new_videos(rep: dict, manifest_path: Path, policies: list[str], videos: Path | None) -> dict:
+    """只核新评身份：expected = 模型数 × 新评行数；accepted 终态录像在本机、两路都读得出帧、sha256 与 moved.jsonl 一致。"""
+    _, new_rows, _ = load_manifest(manifest_path)
+    expected = len(policies) * len(new_rows)
+    res = {"expected": expected, "videos": 0, "missing": 0, "decode_fail": 0, "sha_mismatch": 0,
+           "error_final_no_video": 0, "moved_record_absent": 0, "problems": []}
+    moved: dict[tuple, dict] = {}
+    if videos is not None:
+        for row in read_jsonl(videos / "moved.jsonl"):
+            if row.get("mode") == "v8" and row.get("dest") and isinstance(row.get("files"), dict):
+                moved[(str(row.get("policy")), Path(str(row["dest"])).name, str(row.get("tier")),
+                       str(row.get("task")))] = row["files"]
+    for pol in policies:
+        acc = rep["per_policy"][pol]["_acc"]
+        for m in new_rows:
+            k = m["key"]
+            row = acc.get(k)
+            if row is None:
+                res["missing"] += 1
+                res["problems"].append({"policy": pol, "key": k, "problem": "no_accepted_terminal"})
+                continue
+            name = rec_name(row) or "_norec"
+            d = (videos / pol / str(row.get("tier") or "_notier") / str(row.get("task")) / name) if videos else None
+            has = d is not None and d.is_dir() and all((d / f).is_file() for f in MEDIA_FILES)
+            if error_final_video_class(row, has) == "explained":
+                res["error_final_no_video"] += 1
+                continue
+            if not has:
+                res["missing"] += 1
+                res["problems"].append({"policy": pol, "key": k, "problem": "missing", "dir": str(d)})
+                continue
+            frames = {f: count_media_frames(d / f, videos) for f in MEDIA_FILES}
+            if not all(frames.values()):
+                res["decode_fail"] += 1
+                res["problems"].append({"policy": pol, "key": k, "problem": "decode_fail", "dir": str(d),
+                                        "frames": frames})
+                continue
+            rec = moved.get((pol, name, str(row.get("tier")), str(row.get("task"))))
+            if rec is None:  # 无搬运记录：sha 无从核对，不计入 videos，判定行 moved_record_absent>0 即 FAIL
+                res["moved_record_absent"] += 1
+                res["problems"].append({"policy": pol, "key": k, "problem": "moved_record_absent", "dir": str(d)})
+                continue
+            bad = [f for f, h in rec.items() if (d / f).is_file() and file_sha256(d / f) != h]
+            if bad:
+                res["sha_mismatch"] += 1
+                res["problems"].append({"policy": pol, "key": k, "problem": "sha_mismatch", "files": bad})
+                continue
+            res["videos"] += 1
+    res["pass"] = (expected > 0 and res["missing"] == 0 and res["decode_fail"] == 0 and res["sha_mismatch"] == 0
+                   and res["moved_record_absent"] == 0
+                   and res["videos"] + res["error_final_no_video"] == expected)
+    return res
+
+
+def v9_lines(rep: dict, v9: dict, vid: dict, *, expect_new: int, expect_reused: int) -> tuple[str, str, str]:
+    c, r = rep["coverage"], rep["report"]
+    partial = bool(rep["partial"])
+    # 严格口径：缺失按结局计数（--partial 下 coverage.missing 记 0，这里不采用）；--partial 下三行一律 FAIL 并标 partial=1
+    missing = sum(p["outcomes"]["missing"] for p in rep["per_policy"].values()) if partial else c["missing"]
+    tail = " partial=1" if partial else ""
+    cov_pass = c["pass"] and c["error_final"] == 0 and missing == 0 and not partial
+    cov_line = (f"V9_EVAL_COVERAGE={'PASS' if cov_pass else 'FAIL'} policies={len(rep['policies'])} "
+                f"expected={rep['v9']['new']} missing={missing} extra={c['extra']} duplicate={c['duplicate']} "
+                f"conflicting_terminal={c['conflicting_terminal']} error_final={c['error_final']}{tail}")
+    cm = r["count_mismatch"] + len(v9["count_mismatch_detail"])
+    rep_pass = (cm == 0 and r["media_unexplained"] == 0 and r["exec_over_cap"] == 0 and not partial
+                and v9["new"] == expect_new and v9["reused"] == expect_reused)
+    rep_line = (f"V9_EVAL_REPORT={'PASS' if rep_pass else 'FAIL'} total={v9['total']} new={v9['new']} "
+                f"reused={v9['reused']} count_mismatch={cm} media_unexplained={r['media_unexplained']}"
+                + (f" exec_over_cap={r['exec_over_cap']}" if r["exec_over_cap"] else "") + tail)
+    vid_line = (f"V9_EVAL_VIDEOS={'PASS' if vid['pass'] else 'FAIL'} policies={len(rep['policies'])} "
+                f"expected={vid['expected']} videos={vid['videos']} missing={vid['missing']} "
+                f"decode_fail={vid['decode_fail']} sha_mismatch={vid['sha_mismatch']} "
+                f"moved_record_absent={vid['moved_record_absent']}"
+                + (f" error_final_no_video={vid['error_final_no_video']}" if vid["error_final_no_video"] else "")
+                + tail)
+    if partial:
+        vid_line = vid_line.replace("V9_EVAL_VIDEOS=PASS", "V9_EVAL_VIDEOS=FAIL", 1)
+    return cov_line, rep_line, vid_line
+
+
+def render_v9_md(rep: dict, lines: tuple[str, ...]) -> str:
+    v9 = rep["v9"]
+    pols = list(v9["totals"])
+    L = ["# V9 双模型评估汇总" + ("（中途进度）" if rep["partial"] else ""), ""]
+    L.append(f"- 新评 {v9['new']} 局（本次运行）+ 复用 {v9['reused']} 局（V8 评估，终态取 V8 账本 `accepted_attempt_id`）"
+             f" = 总表 {v9['total']} 局。复用集合唯一依据：`{v9['reused_path']}`（sha256 `{v9['reused_sha256']}`）；"
+             f"V8 运行根 `{v9['v8_stage']}`；V8 manifest `{v9['reuse_manifest']}`。")
+    L.append(f"- 注意（R-7）：复用的 {v9['reused']} 局是 V8 2026-10-02 跑的结果，新评 {v9['new']} 局是之后跑的；权重、tokenizer、"
+             "客户端钉在同一锁值，但 MME-VLA 同入口重跑本有翻转，总表新旧两部分不是同一时刻的采样。")
+    L += ["", "```", *lines, "```", "", "## 800 局总表", ""]
+    L.append("| 模型 | 分母 | 成功 | 失败 | timeout | error | 缺失 | 冲突 | 全局微平均 | 任务宏平均 | 新评成功 | 复用成功 |")
+    L.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+    for pol, t in v9["totals"].items():
+        o = t["outcomes"]
+        L.append(f"| {pol} | {t['denominator']} | {o['success']} | {o['fail']} | {o['timeout']} | {o['error']} | "
+                 f"{o['missing']} | {o['conflict']} | {pct(t['micro_success_rate'])} | {pct(t['task_macro_success_rate'])} | "
+                 f"{t['new_success']}/{t['new']} | {t['reused_success']}/{t['reused']} |")
+    for title, field in (("按任务（跨档，800 局）", "tasks"), ("按档（跨任务，800 局）", "tiers"), ("按格（800 局）", "cells")):
+        L += ["", f"## {title}", "", "| 分组 | " + " | ".join(pols) + " |", "|---|" + "---:|" * len(pols)]
+        groups = sorted(next(iter(v9["totals"].values()))[field]) if pols else []
+        for g in groups:
+            L.append(f"| {g} | " + " | ".join(
+                f"{v9['totals'][p][field][g]['success']}/{v9['totals'][p][field][g]['denominator']} "
+                f"{pct(v9['totals'][p][field][g]['success_rate'])}" for p in pols) + " |")
+    if v9["count_mismatch_detail"]:
+        L += ["", "## 复用对齐不符", ""] + [f"- {x}" for x in v9["count_mismatch_detail"][:200]]
+    vid = rep["v9_videos"]
+    L += ["", "## 新评视频核对", "",
+          f"期望 {vid['expected']}，通过 {vid['videos']}，缺失 {vid['missing']}，解码失败 {vid['decode_fail']}，"
+          f"sha 不符 {vid['sha_mismatch']}，错误终局无录像（写明原因）{vid['error_final_no_video']}，"
+          f"moved.jsonl 无记录 {vid['moved_record_absent']}。"]
+    L += ["", "---", "", "以下为新评身份分表（V8 口径，分母为新评行数）。", ""]
+    return "\n".join(L) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--manifest", required=True)
@@ -740,34 +1047,61 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--videos", default=None, help="本机视频根（eval_video_mover --mode v8 的 --dest）")
     ap.add_argument("--partial", action="store_true", help="中途进度：不因缺失／媒体未就位判 FAIL")
-    ap.add_argument("--expect-total", type=int, default=DEFAULT_TOTAL)
+    ap.add_argument("--expect-total", type=int, default=None,
+                    help=f"manifest 身份数（默认 {DEFAULT_TOTAL}；带 --reuse 时默认新评 {V9_DEFAULT_NEW}）")
     ap.add_argument("--cap", type=int, default=DEFAULT_CAP)
     ap.add_argument("--shard-files", default=None,
                     help="--partial 估算用：实际分片文件 glob（shard-NN.json → 席 NN），覆盖 manifest 的 shard 字段；"
                          "已观测到的身份一律以运行根里实际所在 sNN 为准")
+    ap.add_argument("--reuse", default=None, help="V9：V8 结果目录或运行根（只读，终态取 V8 账本 accepted_attempt_id）")
+    ap.add_argument("--reuse-manifest", default=None, help="V9：V8 manifest.json（与 reused.json 的 v8_manifest_sha256 核对）")
+    ap.add_argument("--expect-reused", type=int, default=V9_DEFAULT_REUSED, help="V9：复用行数（默认 720）")
     args = ap.parse_args(argv)
+    v9 = args.reuse is not None
+    if v9 != (args.reuse_manifest is not None):
+        ap.error("--reuse 与 --reuse-manifest 须同时给出")
+    expect_total = args.expect_total if args.expect_total is not None else (V9_DEFAULT_NEW if v9 else DEFAULT_TOTAL)
     policies = [p for p in args.policies.split(",") if p]
-    rep = build_report(Path(args.manifest), Path(args.stage), policies,
-                       Path(args.videos) if args.videos else None,
-                       partial=args.partial, expect_total=args.expect_total, cap=args.cap,
-                       shard_files=args.shard_files)
+    videos = Path(args.videos) if args.videos else None
+    rep = build_report(Path(args.manifest), Path(args.stage), policies, videos,
+                       partial=args.partial, expect_total=expect_total, cap=args.cap,
+                       shard_files=args.shard_files, keep_internal=v9)
+    v9_out = None
+    if v9:
+        rep["v9"] = build_reuse(rep, Path(args.manifest), Path(args.reuse), Path(args.reuse_manifest), policies,
+                                expect_reused=args.expect_reused)
+        vid = verify_new_videos(rep, Path(args.manifest), policies, videos)
+        rep["v9_videos"] = vid
+        for p in rep["per_policy"].values():
+            p.pop("_acc")
+            p.pop("_outcome")
+        v9_out = v9_lines(rep, rep["v9"], vid, expect_new=expect_total, expect_reused=args.expect_reused)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     index = rep.pop("_index")
     cov_line, rep_line = lines_of(rep)
     rep["verdict_lines"] = [cov_line, rep_line]
+    if v9_out:
+        rep["v9_verdict_lines"] = list(v9_out)
     (out / "report.json").write_text(json.dumps(rep, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
                                      encoding="utf-8")
     with (out / "video-index.jsonl").open("w", encoding="utf-8") as fh:
         for row in index:
             fh.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
-    (out / "report.md").write_text(render_md(rep, cov_line, rep_line), encoding="utf-8")
+    md = render_md(rep, cov_line, rep_line)
+    if v9_out:
+        md = render_v9_md(rep, v9_out) + md.replace("# V8 双模型评估汇总", "## 新评身份分表（V8 口径）", 1)
+    (out / "report.md").write_text(md, encoding="utf-8")
     if rep.get("progress"):
         pr = rep["progress"]
         done = " ".join(f"{p}={v['done']}/{v['denominator']}" for p, v in pr["policies"].items())
         print(f"V8_EVAL_PROGRESS {done} est_remaining_s="
               f"{'unobserved' if pr['est_remaining_s'] is None else round(pr['est_remaining_s'])} "
               f"slowest_seat={pr['slowest_seat']}", flush=True)
+    if v9_out:
+        for line in v9_out:
+            print(line, flush=True)
+        return 0 if all(line.split()[0].endswith("=PASS") for line in v9_out) else 1
     print(cov_line, flush=True)
     print(rep_line, flush=True)
     return 0 if rep["coverage"]["pass"] and rep["report"]["pass"] else 1
