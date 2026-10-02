@@ -405,12 +405,17 @@ def test_逐叶子比较_前缀照抄判出_恒定浮点不误报():
     assert flat["no_position"] == 2
 
 
+#: v7 包内规格小样本（v8 阶段 3b 换包后包内已是 /4）：截自 f9ba91eb 的 xhard{1..4}/specs.jsonl，每任务 2 个
+#: 四档都交付的候选，行内容照抄、保持母布局派生关系；header 只留少数键（不能走 load_specs）
+V7_SAMPLE_ROOT = Path(__file__).resolve().parents[1] / "fixtures" / "v7_specs_sample"
+
+
 def test_逐叶子比较抓得出v7共享布局():
-    """F1③：worktree 里包内 v7 规格是母布局派生（低档照抄 xhard4 或其前缀）：13 个跨档任务各自 layout_equal_pairs>0；
-    同档不同候选是独立抽样，把每个候选当成单独一档也不误报。"""
+    """F1③：v7 规格是母布局派生（低档照抄 xhard4 或其前缀）：13 个跨档任务各自 layout_equal_pairs>0；
+    同档不同候选是独立抽样，把每个候选当成单独一档也不误报。换包后改读 v7 冻结小样本 ``V7_SAMPLE_ROOT``。"""
     by_task: dict[str, list] = {}
     for tier in HS.V7_TIERS:
-        records = HS.read_jsonl(HS.PACKAGED_SPECS_ROOT / tier / "specs.jsonl")
+        records = HS.read_jsonl(V7_SAMPLE_ROOT / tier / "specs.jsonl")
         assert records[0]["schema"] == HS.SCHEMA_V7
         for row in records[1:]:
             by_task.setdefault(row["task"], []).append((tier, row, HS.delivered(row)))
@@ -614,10 +619,14 @@ def test_eval_smoke每任务局数按格表推出():
                                              "InsertPeg": 32}
     assert {t: R.expected_episodes(t, v8) for t in HS.ALL_TASKS} == want
     assert sum(want.values()) == 1262
-    # 换包前包内仍是 v7 规格（R10）：按冻结的 V7 常量 92／32
-    assert "xhard5" not in HS.TIERS
-    v7 = {t: R.expected_episodes(t, HS) for t in HS.ALL_TASKS}
+    # 换包前（全局 TIERS 不含 xhard5）按冻结的 V7 常量 92／32
+    v7ns = types.SimpleNamespace(TIERS=HS.V7_TIERS, V8_CELLS=HS.V8_CELLS, XHARD0_PER_TASK=HS.XHARD0_PER_TASK,
+                                 V7_TIERS=HS.V7_TIERS, V7_XHARD4_ONLY=HS.V7_XHARD4_ONLY)
+    v7 = {t: R.expected_episodes(t, v7ns) for t in HS.ALL_TASKS}
     assert v7["StopCube"] == v7["MoveCube"] == v7["InsertPeg"] == 32 and v7["PickXtimes"] == v7["BinFill"] == 92
+    # v8 阶段 3b 换包后包内 TIERS 含 xhard5：真实 hard_specs 即按 V8_CELLS 推出
+    assert "xhard5" in HS.TIERS
+    assert {t: R.expected_episodes(t, HS) for t in HS.ALL_TASKS} == want
 
 
 def test_reset_replay在v8根按V8_TIERS读(tmp_path):
@@ -630,8 +639,8 @@ def test_reset_replay在v8根按V8_TIERS读(tmp_path):
     assert stop == [("xhard1", 12), ("xhard5", 13)]
     targets = R._replay_targets(str(root))
     assert [t["tier"] for t in targets] == sorted((t["tier"] for t in targets), key=HS.V8_TIERS.index)
-    # v7 包内规格仍走 v7 档序
-    assert R.specs_tiers(None) == (HS.TIERS, False)
+    # v8 阶段 3b 换包后包内规格为 /4：缺省根即按 V8_TIERS 读
+    assert R.specs_tiers(None) == (HS.V8_TIERS, True)
 
 
 # ── hard_parity compare --tier v8：分母核对与五终态 ─────────────────────

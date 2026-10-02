@@ -30,9 +30,10 @@ SCHEMA_V7 = "hard-specs/3"
 #: ``select_rule``、``per_env`` 改为逐任务字典；签覆盖范围变了所以升 schema。/2、/3 的校验路径逐字不动。
 SCHEMA_V8 = "hard-specs/4"
 SCHEMAS = (SCHEMA, SCHEMA_V7, SCHEMA_V8)
-TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
-#: builder 档序：xhard0（官方 test 的 hard 子集，原生分支、不回注）在最前；TIERS 只含新值四档不变
-#: （EXPECTED_CELLS、freeze_specs --tier 等依赖它）。
+#: 新值档（不含 xhard0）。v8 阶段 3b 换包起为五档 xhard1～xhard5，与 ``V8_TIERS`` 相同（下方断言）；
+#: v7 四档另由冻结常量 ``V7_TIERS`` 保存（R10）。EXPECTED_CELLS、packaged_specs_path、builder 等依赖它。
+TIERS = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
+#: builder 档序：xhard0（官方 test 的 hard 子集，原生分支、不回注）在最前，其后新值五档（共六项）。
 XHARD0 = "xhard0"
 BUILDER_TIERS = (XHARD0, *TIERS)
 #: xhard0 每任务 12 局＝官方 test 元数据 difficulty=="hard" 的原 episode 3,7,…,47（只作核对值，筛选按 difficulty）
@@ -40,13 +41,11 @@ XHARD0_PER_TASK = 12
 XHARD0_EPISODES = tuple(range(3, 48, 4))
 #: 历史 V4/V5 单档名（seed 规则 v5 只对它合法），保留以便核对旧快照。
 DIFFICULTY = "xhard"
-#: 评估步数上限按档（用户 U-6：沿用上次评估 1500/1700/2000/2600 以便对比）；
-#: 值抄自 scripts/eval/v4_eval.py::NEWVALUE_MAX_STEPS（阶段 1 cmp 留证后该文件随 scripts/eval/ 删除）。
-#: xhard0 取 1300，与官方 scripts/evaluation.py 的默认步数相同（v7 方案 §7.4）。
-#: v7 按 B4 上调 xhard2／3／4（用户 2026-09-29 预定「超 90% 不回调抓取次数，上限上调为实测最大执行步数 × 1.25 向上取整到百」）：
-#: gen1 交付 1100 局实测最长执行步均为 PickXtimes（无演示段）——xhard2 1857／1700、xhard3 2293／2000、xhard4 2998／2600
-#: → 2400／2900／3800；xhard1 实测 1304／1500（0.869，未超 90%）不动。判定行 V7_STEP_HEADROOM 见 docs/validation/newtask-v7/。
-TIER_MAX_STEPS = {"xhard0": 1300, "xhard1": 1500, "xhard2": 2400, "xhard3": 2900, "xhard4": 3800}
+#: 评估步数上限按档（只约束执行段，演示段不计）。xhard0 取 1300，与官方 scripts/evaluation.py 的默认步数相同（v7 方案 §7.4）。
+#: v8 阶段 3b 起 xhard1～xhard5 一律 1600（＝``V8_EXEC_CAP``，下方断言；v8 方案第一部分表 1 末行）：抽样时已过滤
+#: 执行步超过 1600 的候选并递补，交付集按构造不超。历史值：v7 为 1500／2400／2900／3800（B4 上调，
+#: 判定行 V7_STEP_HEADROOM 见 docs/validation/newtask-v7/），v6 为 1500／1700／2000／2600。
+TIER_MAX_STEPS = {"xhard0": 1300, "xhard1": 1600, "xhard2": 1600, "xhard3": 1600, "xhard4": 1600, "xhard5": 1600}
 #: 回注绑定：只记录不回注的观测值（SpecRecorder.record）允许的浮点差（用户 U-13 方案甲，红线 R22，不做参数）。
 RECORDED_FLOAT_TOL = 1e-5
 
@@ -79,18 +78,14 @@ ALL_TASKS = (
     "ButtonUnmaskSwap", "ButtonUnmask", "VideoRepick", "VideoPlaceButton", "VideoPlaceOrder",
     "PickHighlight", "InsertPeg", "MoveCube", "PatternLock", "RouteStick",
 )
-#: xhard4 独有的三个任务：xhard1～3 这三格恰好 0 行
-XHARD4_ONLY = ("StopCube", "InsertPeg", "MoveCube")
+#: 只在 xhard4 交付的任务（v8 阶段 3b 起：StopCube 拆成五档定值后离开，只剩 InsertPeg、MoveCube）
+XHARD4_ONLY = ("InsertPeg", "MoveCube")
 #: V7 冻结常量（v8 方案阶段 1）：v7 四档与 xhard4 独有任务的取值钉死在这里，load_specs_v7 与 v7 夹具只读它们；
 #: 阶段 3b 把 TIERS／XHARD4_ONLY 切到 v8 后，v7 路径的行为不随之改变。
 V7_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4")
 V7_XHARD4_ONLY = ("StopCube", "InsertPeg", "MoveCube")
-#: 55 格表：(task, tier) → 是否应有正式交付局（builder 按它断言每格行数）
-EXPECTED_CELLS = frozenset(
-    (task, tier) for tier in TIERS for task in ALL_TASKS if tier == "xhard4" or task not in XHARD4_ONLY
-)
 
-# ── V8 常量（v8 方案阶段 2；阶段 3b 前与 v7 并存，TIERS／BUILDER_TIERS／EXPECTED_CELLS／TIER_MAX_STEPS 不动，R10）──
+# ── V8 常量（v8 方案阶段 2 新增；阶段 3b 起 TIERS／BUILDER_TIERS／EXPECTED_CELLS／TIER_MAX_STEPS 切到这里，R10）──
 #: v8 新值五档（不含 xhard0）
 V8_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
 #: v8 抽样与交付的执行步上限：执行步（不含演示帧）> 1600 的候选记 exec_over_cap 并递补；/4 header ``exec_cap`` 必须等于它
@@ -124,6 +119,14 @@ def _v8_cells() -> dict[tuple[str, str], int]:
 V8_CELLS: dict[tuple[str, str], int] = _v8_cells()
 assert len(V8_CELLS) == 43 and sum(V8_CELLS.values()) == 1070, "V8_CELLS 须为表 2 的 43 格、合计 1070"
 assert all(task in ALL_TASKS and tier in V8_TIERS for task, tier in V8_CELLS), "V8_CELLS 含未知任务或档位"
+#: 交付格表 {(task, tier): 正式交付局数}（v8 阶段 3b 起即 V8_CELLS 的 43 格；builder 按它断言每格行数，
+#: 表外格恰好 0 行、表内格恰好等于表值）。v7 的 55 格由 V7_TIERS／V7_XHARD4_ONLY 推出，不再进全局常量。
+EXPECTED_CELLS: dict[tuple[str, str], int] = V8_CELLS
+assert TIERS == V8_TIERS, "阶段 3b 起全局 TIERS 须等于 V8_TIERS"
+assert all(TIER_MAX_STEPS[tier] == V8_EXEC_CAP for tier in TIERS) and tuple(TIER_MAX_STEPS) == BUILDER_TIERS, \
+    "TIER_MAX_STEPS 须为 xhard0 + 五档、五档均等于 V8_EXEC_CAP"
+assert {task for task in ALL_TASKS if {t for name, t in V8_CELLS if name == task} == {"xhard4"}} == set(XHARD4_ONLY), \
+    "XHARD4_ONLY 须恰为交付格表里只在 xhard4 出现的任务"
 
 # 签：进 identity_sha256 的 header 键与行键
 IDENTITY_HEADER_KEYS = ("schema", "difficulty", "tasks", "per_env", "runtime", "seed_rule", "select_rule",
@@ -192,8 +195,9 @@ def seed_rule_for(difficulty: str = DIFFICULTY, profile: str = "v5") -> dict[str
         if difficulty not in offsets:
             raise SpecsError(f"seed 规则 {profile} 未登记档位 {difficulty!r}，只支持 {tuple(offsets)}")
         return {**SEED_RULE, "offset": offsets[difficulty]}
-    if difficulty not in TIERS:
-        raise SpecsError(f"未知档位 {difficulty!r}，只支持 {TIERS}")
+    # v7 规则族只认冻结的 V7_TIERS（阶段 3b 后全局 TIERS 含 xhard5，v7 行为不随之改变）
+    if difficulty not in V7_TIERS:
+        raise SpecsError(f"未知档位 {difficulty!r}，只支持 {V7_TIERS}")
     if profile == "v7":
         return {**SEED_RULE, "offset": V7_SEED_OFFSET}
     known = "／".join(("v7", *TIER_SEED_OFFSETS))
@@ -449,7 +453,8 @@ def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]]) -> None:
     if header["record"] != "header":
         raise SpecsError(f"specs 版本不符：{schema}")
     tier = header["difficulty"]
-    if tier not in TIERS or header["runtime"] != RUNTIME:
+    # /2、/3 只服务 v6／v7 四档：按冻结的 V7_TIERS 校验（阶段 3b 后全局 TIERS 含 xhard5，旧路径行为不变）
+    if tier not in V7_TIERS or header["runtime"] != RUNTIME:
         raise SpecsError("specs 档位或 runtime 不符")
     if not _known_seed_rule(tier, header["seed_rule"]):
         raise SpecsError("specs 的 seed 规则与档位不符")
@@ -584,7 +589,7 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
     return out
 
 
-#: 规格根覆盖（0928 方案第二部分 §1.1）：设了即从该目录读 xhard{1..4}/specs.jsonl，缺省读包内
+#: 规格根覆盖（0928 方案第二部分 §1.1）：设了即从该目录读 xhard{1..5}/specs.jsonl（按 TIERS），缺省读包内
 SPECS_ROOT_ENV = "ROBOMME_HARD_SPECS_ROOT"
 PACKAGED_SPECS_ROOT = Path(__file__).resolve().parents[1] / "env_metadata" / "test-hard"
 _ANNOUNCED_ROOTS: set[str] = set()

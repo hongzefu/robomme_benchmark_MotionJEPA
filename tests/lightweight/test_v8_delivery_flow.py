@@ -275,14 +275,16 @@ def test_freeze_v8写出的规格过load_specs_v8(tmp_path):
                                   {"MoveCube": 8}, schema=H.SCHEMA_V8)
     chosen = header["select_rule"]["MoveCube"]
     assert len(chosen) == 5 and {c % 3 for c in chosen} == {0, 1, 2}
-    # 选不满配额、调用方给 layout_rule、全局 TIERS 外的 xhard5 走 /3 都拒
+    # 选不满配额、调用方给 layout_rule、xhard5 走 /2、/3 都拒
     with pytest.raises(H.SpecsError, match="选不满配额"):
         _freeze.freeze(_drafts("BinFill", "xhard1", 2), _parts("xhard1", ["BinFill"]), {"BinFill": (0, 1, 2)}, 2,
                        schema=H.SCHEMA_V8)
     with pytest.raises(H.SpecsError, match="layout_rule"):
         _freeze.freeze(_drafts("BinFill", "xhard1", 2), {**_parts("xhard1", ["BinFill"]), "layout_rule": {}},
                        {"BinFill": (0,)}, 2, schema=H.SCHEMA_V8)
-    with pytest.raises(H.SpecsError, match="未知档位"):
+    # 阶段 3b 换包后全局 TIERS 含 xhard5：_freeze 的档位预检放行，改由 validate_specs 的 /2、/3 分支（按冻结的
+    # V7_TIERS）拒绝，报错为「specs 档位或 runtime 不符」；两条路径都含「档位」
+    with pytest.raises(H.SpecsError, match="档位"):
         _freeze.freeze(_drafts("StopCube", "xhard5", 2), _parts("xhard5", ["StopCube"]), (0,), 2, schema=H.SCHEMA)
 
 

@@ -1,12 +1,15 @@
 """``robomme_hard`` 的评估构建器：官方 ``BenchmarkEnvBuilder`` 的子类（0927 计划第一部分 §4.2）。
 
-对外只新增 ``dataset="test-hard"`` 一个取值；``xhard1``～``xhard4`` 不是合法的 ``dataset``。
+对外只新增 ``dataset="test-hard"`` 一个取值；``xhard1``～``xhard5`` 不是合法的 ``dataset``。
 
 * ``train`` / ``test`` / ``val``：沿用官方父类的元数据逻辑；只把四个 Unmask 任务的 ``train`` 元数据改读
   ``robomme_hard/env_metadata/train``（400 条，E-12）。
-* ``test-hard``：依次读包内 ``env_metadata/test-hard/<tier>/specs.jsonl``（xhard1→xhard4），取本任务
-  ``selected`` 且 ``rollout.status=="ok"`` 的行，档内按 ``candidate`` 升序，拼接编为 episode 0..N-1。
-  每格行数对照 55 格表 ``EXPECTED_CELLS`` 断言：表内格恰好 ``header.delivery_per_cell`` 行，表外格恰好 0 行。
+* ``test-hard``：xhard0 12 局在前，再依次读包内 ``env_metadata/test-hard/<tier>/specs.jsonl``（xhard1→xhard5，
+  v8 ``hard-specs/4``，经 ``load_specs_v8`` 整根校验），取本任务 ``selected`` 且 ``rollout.status=="ok"`` 的行，
+  档内按 ``candidate`` 升序，拼接编为 episode 0..N-1。每格行数对照交付格表 ``EXPECTED_CELLS``（43 格逐格局数）
+  断言：(任务, 档) 必须在表内才可有正式局，表内格恰好等于表值，表外格恰好 0 行（xhard5 只含 SwingXtimes、StopCube）。
+  规格根覆盖（冒烟／分片等局部根）只读存在的档文件，按各档 header 的 ``delivery_per_cell`` 自洽校验，且须是表的子集。
+  换包（v8 阶段 3b）后不再读 v7 ``hard-specs/3`` 规格；v7 由标签 ``parity-anchor-v7`` 复现（R10）。
 * ``make_env_for_episode`` 整段覆写：runtime 四项、seed、difficulty 照抄官方拼法；test-hard 时在 ``gym.make`` 前加
   ``sampling_config`` 与 ``native_episode_spec``（回注）；包装链与官方逐项相同，但 wrapper 一律绝对导入
   ``robomme_hard`` 的类（``DemonstrationWrapper``、``OraclePlannerDemonstrationWrapper`` 是复制件，其余是借用）。
@@ -21,6 +24,7 @@ P2：本子类覆写 ``__init__``、``_resolve_metadata_path``、``resolve_episo
 from __future__ import annotations
 
 import functools
+import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -39,10 +43,35 @@ HARD_TRAIN_TASKS = frozenset({"ButtonUnmask", "ButtonUnmaskSwap", "VideoUnmask",
 _RUNTIME_KEYS = ("obs_mode", "control_mode", "render_mode", "reward_mode")
 
 
+def _override_cells(root: str) -> Dict[tuple, int]:
+    """规格根覆盖（非包内）的格表：只看存在的档文件，取 header ``tasks``／``delivery_per_cell``；须全是 /4。"""
+    cells: Dict[tuple, int] = {}
+    for tier in hard_specs.TIERS:
+        path = hard_specs.packaged_specs_path(tier, root)
+        if not path.is_file():
+            continue  # 局部根（冒烟／分片）只含部分档；与 hard_regression.delivery_index 的跳过口径相同
+        with path.open(encoding="utf-8") as stream:
+            header = json.loads(stream.readline())
+        if header.get("schema") != hard_specs.SCHEMA_V8:
+            raise hard_specs.SpecsError(f"{path}：builder 只读 {hard_specs.SCHEMA_V8}（实为 {header.get('schema')}）；"
+                                        "v7 规格请检出标签 parity-anchor-v7 复现")
+        for task in header["tasks"]:
+            cells[(task, tier)] = int(header["delivery_per_cell"][task])
+    if not cells:
+        raise hard_specs.SpecsError(f"规格根 {root} 下没有任何 {'／'.join(hard_specs.TIERS)} 规格文件")
+    return cells
+
+
 @functools.lru_cache(maxsize=None)
-def _tier_specs(tier: str, root: str):
-    """每档 jsonl（包内或规格根覆盖）只读一次并做完整封套校验；返回值只读使用，不得修改。"""
-    return hard_specs.load_specs(hard_specs.packaged_specs_path(tier, root))
+def _root_specs(root: str):
+    """每个规格根（包内或覆盖）只读一次：``load_specs_v8`` 整根校验（逐档 /4 封套、格表、每格 selected 数、
+    跨档 seed 不交）。包内根的格表必须恰为 ``EXPECTED_CELLS``；覆盖根按 ``_override_cells``。
+    返回 ``({tier: (header, rows)}, cells)``，只读使用，不得修改。"""
+    if Path(root) == hard_specs.PACKAGED_SPECS_ROOT:
+        cells = dict(hard_specs.EXPECTED_CELLS)
+    else:
+        cells = _override_cells(root)
+    return hard_specs.load_specs_v8(Path(root), cells), cells
 
 
 def _xhard0_entries(env_id: str, metadata_index: Dict) -> List[Dict[str, Any]]:
@@ -73,16 +102,18 @@ def _test_hard_entries(env_id: str, xhard0: List[Dict[str, Any]], root: str) -> 
     if env_id not in hard_specs.ALL_TASKS:
         raise ValueError(f"test-hard 不含环境 {env_id!r}")
     entries: List[Dict[str, Any]] = list(xhard0)
+    specs, cells = _root_specs(root)
     for tier in hard_specs.TIERS:
-        header, rows = _tier_specs(tier, root)
+        expected = cells.get((env_id, tier), 0)
+        if expected and (env_id, tier) not in hard_specs.EXPECTED_CELLS:
+            raise ValueError(f"test-hard ({env_id}, {tier}) 不在交付格表 EXPECTED_CELLS 内")
+        if tier not in specs:
+            continue  # 覆盖根缺该档文件：本档不发局（cells 里也没有该档）
+        header, rows = specs[tier]
         chosen = sorted((row for row in rows if row["task"] == env_id and hard_specs.delivered(row)),
                         key=lambda row: int(row["candidate"]))
-        # 包内正式规格每格 20 局；规格根覆盖（冒烟／换包前核对）只要求各档自洽
-        if Path(root) == hard_specs.PACKAGED_SPECS_ROOT and int(header["delivery_per_cell"]) != 20:
-            raise ValueError(f"test-hard {tier} 的 delivery_per_cell={header['delivery_per_cell']}，应为 20")
-        expected = int(header["delivery_per_cell"]) if (env_id, tier) in hard_specs.EXPECTED_CELLS else 0
         if len(chosen) != expected:
-            raise ValueError(f"test-hard {env_id}@{tier} 正式局 {len(chosen)} 行，55 格表要求恰好 {expected} 行")
+            raise ValueError(f"test-hard {env_id}@{tier} 正式局 {len(chosen)} 行，交付格表要求恰好 {expected} 行")
         for row in chosen:
             entries.append({
                 "tier": tier,
@@ -181,7 +212,7 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
         return entry
 
     def resolve_episode(self, episode: int):
-        """返回 ``(seed, difficulty)``，与官方二元组同形；test-hard 下 difficulty 就是档位（xhard1..4）。"""
+        """返回 ``(seed, difficulty)``，与官方二元组同形；test-hard 下 difficulty 就是档位（xhard0..5）。"""
         if self._episode_map is None:
             return super().resolve_episode(episode)
         entry = self._entry(episode)

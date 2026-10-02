@@ -30,13 +30,18 @@ for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts", REPO_ROOT / "scripts" / 
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-PACKAGED_XHARD4 = REPO_ROOT / "src" / "robomme_hard" / "env_metadata" / "test-hard" / "xhard4" / "specs.jsonl"
+PACKAGED_ROOT = REPO_ROOT / "src" / "robomme_hard" / "env_metadata" / "test-hard"
+PACKAGED_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
 
 
 def _ready_tasks() -> tuple[str, ...]:
-    """已接口化的环境取自包内 xhard4 header 的 sampling_config（16 任务；原 V6 快照已随拆包阶段 2 删除）。"""
-    header = json.loads(PACKAGED_XHARD4.open(encoding="utf-8").readline())
-    return tuple(sorted(header["sampling_config"]))
+    """已接口化的环境取自包内各档 header 的 sampling_config 之并（16 任务；原 V6 快照已随拆包阶段 2 删除）。
+    v8 阶段 3b 换包后各档只含本档交付格的任务（xhard4 只剩 6 个），所以按五档取并，不再只读 xhard4。"""
+    tasks: set[str] = set()
+    for tier in PACKAGED_TIERS:
+        with (PACKAGED_ROOT / tier / "specs.jsonl").open(encoding="utf-8") as stream:
+            tasks |= set(json.loads(stream.readline())["sampling_config"])
+    return tuple(sorted(tasks))
 
 
 READY_TASKS = _ready_tasks()

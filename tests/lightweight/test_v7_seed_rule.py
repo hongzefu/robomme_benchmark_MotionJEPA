@@ -104,8 +104,8 @@ def test_v8按档偏移两两不交且不碰旧段():
 
 
 def test_v8规则按本族档位校验():
-    # xhard5 不在阶段 3b 前的全局 TIERS 里，但 v8 规则族已登记，应可用（不先经全局 TIERS 拒绝）
-    assert "xhard5" not in V.TIERS
+    # v8 规则族只按本族登记的档位校验（不经全局 TIERS）；阶段 3b 换包后全局 TIERS 也含 xhard5
+    assert "xhard5" in V.TIERS and V.TIERS == V.V8_TIERS
     assert V.seed_rule_for("xhard5", "v8")["offset"] == 24_000_000
     for tier in V.V8_TIERS:
         rule = V.seed_rule_for(tier, "v8")
@@ -117,7 +117,7 @@ def test_v8规则按本族档位校验():
     for bad in (V.XHARD0, V.DIFFICULTY, "xhard6"):
         with pytest.raises(V.SpecsError, match="v8"):
             V.seed_rule_for(bad, "v8")
-    # v5／v7 报错路径不变
+    # v5／v7 报错路径不变（v7 只认冻结的 V7_TIERS，换包后 xhard5 仍拒）
     with pytest.raises(V.SpecsError, match="未知档位"):
         V.seed_rule_for("xhard5", "v7")
     with pytest.raises(V.SpecsError):

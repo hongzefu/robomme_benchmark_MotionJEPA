@@ -5,7 +5,8 @@
   ``validate_specs`` 接受；/3 只认 v7 seed 规则、``layout_rule`` 形态与 ``layout_parent`` 形态不符即拒；
 * 身份键按 schema 分表：/3 的 ``identity_sha256`` 覆盖 ``layout_rule``／``layout_parent``；/2 的身份键与摘要算法不变，
   不带 ``layout_rule`` 封出的 /2 文件照旧通过 ``load_specs``（v8 阶段 1 删 v6 规则后改用 v7 规则造 /2）；
-* ``load_specs_v7`` 的跨文件核对：派生行指向 xhard4 同候选且摘要／seed 相同；
+* ``load_specs_v7`` 的跨文件核对：派生行指向 xhard4 同候选且摘要／seed 相同（v8 阶段 3b 换包后一律读合成 v7 夹具；
+  包内规格改为断言已是 /4、不再被 ``load_specs_v7`` 接受）；
 * ``parse_select("0..19")``；``freeze_equiv`` 已删。
 
     uv run --no-sync python -m pytest tests/lightweight/test_v7_freeze_schema.py -q
@@ -159,23 +160,44 @@ def test_load_specs_v7拒绝混入v2文件(tmp_path):
         hard_specs.load_specs_v7(root, check_fingerprint=False)
 
 
+def test_合成v7根跨档校验通过(tmp_path):
+    """v8 阶段 3b 换包后包内已是 /4，原「包内 v7 规格跨档校验」改读合成 v7 夹具：四档 /3、v7 seed 规则，
+    低档行带 layout_parent（指向 xhard4 母布局），xhard4 行不带；load_specs_v7 逐档 selected 数等于 per_cell × 任务数。"""
+    root = F.build_root(tmp_path / "v7", candidates=4, per_cell=2)
+    loaded = hard_specs.load_specs_v7(root, check_fingerprint=False)
+    assert tuple(loaded) == hard_specs.V7_TIERS
+    for tier, (header, rows) in loaded.items():
+        assert header["schema"] == hard_specs.SCHEMA_V7
+        assert header["seed_rule"] == hard_specs.seed_rule_for(tier, "v7")
+        assert hard_specs.identity_sha256(header, rows) == header["identity_sha256"]
+        assert {r.get("layout_parent") is None for r in rows} == ({True} if tier == "xhard4" else {False})
+    want = {t: 2 * (len(TASKS) if t == "xhard4" else len([x for x in TASKS if x not in hard_specs.V7_XHARD4_ONLY]))
+            for t in hard_specs.V7_TIERS}
+    assert {t: sum(r["selected"] for r in rows) for t, (_, rows) in loaded.items()} == want
+
+
+def test_v7规则族不随全局TIERS扩到xhard5():
+    """阶段 3b 后全局 TIERS 含 xhard5：v7 seed 规则与 /3 校验仍只认冻结的 V7_TIERS。"""
+    assert "xhard5" in hard_specs.TIERS and "xhard5" not in hard_specs.V7_TIERS
+    with pytest.raises(hard_specs.SpecsError):
+        hard_specs.seed_rule_for("xhard5", "v7")
+
+
 @pytest.mark.parametrize("tier", hard_specs.TIERS)
-def test_包内规格已换为v7(tier):
-    """阶段 8 换包后：包内四档为 hard-specs/3、v7 seed 规则；低档行带 layout_parent（指向 xhard4 母布局），xhard4 行不带。"""
+def test_包内规格已换为v8(tier):
+    """v8 阶段 3b 换包后：包内五档为 hard-specs/4、按档 v8 seed 规则、各档布局独立（layout_parent 全为 null）。"""
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")  # 源码指纹不符只警告
         header, rows = hard_specs.load_specs(hard_specs.PACKAGED_SPECS_ROOT / tier / "specs.jsonl")
-    assert header["schema"] == hard_specs.SCHEMA_V7
-    assert header["seed_rule"] == hard_specs.seed_rule_for(tier, "v7")
-    assert hard_specs.identity_sha256(header, rows) == header["identity_sha256"]
-    parents = {r.get("layout_parent") is None for r in rows}
-    assert parents == ({True} if tier == "xhard4" else {False})
+    assert header["schema"] == hard_specs.SCHEMA_V8
+    assert header["seed_rule"] == hard_specs.seed_rule_for(tier, "v8")
+    assert header["exec_cap"] == hard_specs.V8_EXEC_CAP
+    assert {r.get("layout_parent") is None for r in rows} == {True}
 
 
-def test_包内v7规格跨档校验通过():
-    loaded = hard_specs.load_specs_v7(hard_specs.PACKAGED_SPECS_ROOT, check_fingerprint=False)
-    assert {t: sum(r["selected"] for r in rows) for t, (_, rows) in loaded.items()} == {
-        "xhard1": 13 * 20, "xhard2": 13 * 20, "xhard3": 13 * 20, "xhard4": 16 * 20}
+def test_包内规格不再被load_specs_v7接受():
+    with pytest.raises(hard_specs.SpecsError):
+        hard_specs.load_specs_v7(hard_specs.PACKAGED_SPECS_ROOT, check_fingerprint=False)
 
 
 def test_parse_select与freeze_equiv已删():
