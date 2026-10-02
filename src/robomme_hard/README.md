@@ -38,7 +38,7 @@ v8 定值表见 [`scripts/README.md`](../../scripts/README.md) 第 3 节，源 `
 | RouteStick | 段数 L | [4,7] | [8,10] | [11,13] | [14,16] | [17,21] | 执行段 = 50·L |
 | VideoPlaceButton | 放台次数（都放回原位） | 2（放桌面） | 1 块 3 次 | 1 块 4 次 | 2 块 5 次 | 2 块 6 次 | 额外放台 = 放到无关台（原版 `additional_place` 语义），见四.9；xhard3/4 台数 4→5（`config_xhard3/4["targets"]=5`，xhard1/2 仍 4），额外放台按完整序列占用表抽取，before 题答案 = 按钮前最后一次放置的台 |
 | VideoPlaceOrder | 总放台次数（都放回原位） | 1 块 v∈[2,4] | 2 块 (2,3)=5 | 2 块 (3,3)=6 | 2 块 (3,4)=7 | 2 块 (4,4)=8 | 每档总数定值，哪块多访问随机 |
-| MoveCube | 不加档 | 原三档同值 | — | — | — | 圆环 U | 只有 xhard4 |
+| MoveCube | 不加档 | 原三档同值 | — | — | — | 圆环 U（V9：r 0.24–0.42 ∩ 离基座 0.31–0.80） | 只有 xhard4 |
 | InsertPeg / StopCube | 不加档 | 原三档同值 | — | — | — | 原 xhard 改名 | 数值不动 |
 
 
