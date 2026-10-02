@@ -8,7 +8,9 @@ results.jsonl 与录像目录、按指令退出 0／3／5／75 或挂住。
 覆盖：正常成功、单局超时退出 75 被重启、server 死后重起、客户端退出 5／3 不重启、tokenizer 哈希不符
 RUN_BLOCKED 且不启 server、哈希相符 TOKENIZER_SHA=PASS 且 OPENPI_DATA_HOME 进 server 环境、录像同步
 （完成目录周期搬、进行中目录只在收尾搬、sha 不符不删源）、TERM 中断仍全量同步并写 V8_SEAT_DONE outcome=aborted、
-监督进程（run_seat.sh）被 KILL 后回收残留子进程并照常收尾、旧调用方式（无 --v8）参数拼装不变。
+监督进程（run_seat.sh）被 KILL 后回收残留子进程并照常收尾、旧调用方式（无 --v8）参数拼装不变；
+NFS 原子发布（.incoming 后 mv、目标已存在落 .dupN 不覆盖）、SEAT_REC_SYNC 累计计数与 left=、
+TERM 同时发给 tee 与全部子进程（模拟 slurmstepd 发给整个 step）仍在 60 s 内写出收尾三行、参数错误也写 V8_SEAT_DONE。
 末尾判定行 ``V8_EVAL_ORCHESTRATION=PASS``。
 """
 from __future__ import annotations
@@ -38,7 +40,8 @@ pytestmark = pytest.mark.skipif(shutil.which("bash") is None or shutil.which("rs
 
 PASSED: list[str] = []
 EXPECTED = ["old_mode", "v8_flags", "wall_restart", "server_died", "no_restart_5", "no_restart_3",
-            "tokenizer_mismatch", "gl_success", "gl_sha_mismatch", "gl_term", "gl_supervisor_dead"]
+            "tokenizer_mismatch", "gl_bad_args", "gl_success", "gl_sha_mismatch", "gl_term", "gl_term_group",
+            "gl_supervisor_dead"]
 
 FAKE_CLIENT = r'''
 import json, os, sys, time
@@ -405,6 +408,9 @@ def test_gl_成功两策略_tokenizer通过_录像同步(fk):
     idx = _free_seat_idx()
     nn = f"{idx:02d}"
     fk.plan(smvla=[{"write": True, "inprogress": True, "orphan": True, "sleep": 4}], mme=[{"write": True}])
+    pre = fk.tmp / "stage" / f"s{nn}" / "smvla" / "rec" / f"{fk.keys[1]}.a1"  # 已发布的同名目录：不得覆盖
+    pre.mkdir(parents=True)
+    (pre / "marker.txt").write_text("keep")
     p = subprocess.run(["bash", str(fk.gl_sh), *fk.gl_args(idx, "smvla,mme")], env=fk.env(),
                        capture_output=True, text=True, timeout=RUN_TIMEOUT)
     o = p.stdout
@@ -428,8 +434,12 @@ def test_gl_成功两策略_tokenizer通过_录像同步(fk):
         assert (stage / pol / "results.jsonl").exists()
         for k in fk.keys:
             d = stage / pol / "rec" / f"{k}.a1"
+            if pol == "smvla" and k == fk.keys[1]:
+                assert sorted(x.name for x in d.iterdir()) == ["marker.txt"]  # 原目录未被覆盖
+                d = d.with_name(d.name + ".dup1")
             assert (d / "summary.json").exists() and (d / "front.mkv").exists() and (d / "sub" / "meta.json").exists()
         assert list((local / pol).iterdir()) == []  # 节点副本已删
+        assert list((stage / pol / "rec" / ".incoming").iterdir()) == []  # 暂存区已全部 mv 走
     # 完成目录在运行中被周期同步搬走；进行中目录（无结果行、无 summary）与无结果行的目录只在收尾全量同步时搬
     for k in fk.keys:
         assert f"REC_SYNCED policy=smvla dir={k}.a1 mode=periodic" in o
@@ -437,7 +447,9 @@ def test_gl_成功两策略_tokenizer通过_录像同步(fk):
     assert f"dir={fk.keys[0]}.a9 mode=periodic" not in o
     assert "REC_SYNCED policy=smvla dir=Orphan_xhard1_1.a1 mode=final" in o
     assert "dir=Orphan_xhard1_1.a1 mode=periodic" not in o
-    assert any(l.startswith("SEAT_REC_SYNC=PASS n=") for l in lines)
+    assert f"REC_SYNC_DUP dir={fk.keys[1]}.a1 published_as={fk.keys[1]}.a1.dup1" in o
+    # 累计：smvla 2 完成 + 1 进行中 + 1 无结果行，mme 2 完成 = 6
+    assert any(l.startswith("SEAT_REC_SYNC=PASS n=6 ") and " left=0 " in l for l in lines), o
     assert (stage / f"run_v8_gl-s{nn}.log").exists() and (stage / "smvla" / f"seat-{nn}.log").exists()
     PASSED.append("gl_success")
 
@@ -454,11 +466,13 @@ def test_gl_sha不符不删源(fk):
     o = p.stdout
     assert p.returncode == 7, o + p.stderr
     assert "REC_SYNC_SHA_MISMATCH file=corrupt.bin" in o
-    assert any(l.startswith("SEAT_REC_SYNC=FAIL") for l in o.splitlines())
+    assert any(l.startswith("SEAT_REC_SYNC=FAIL n=0 bytes=0 left=2 ") for l in o.splitlines()), o
     assert f"V8_SEAT_DONE seat={nn} outcome=fail rc=7" in o and o.strip().splitlines()[-1] == "EXIT_CODE=7"
     local = fk.tmp / "node-tmp" / "rec" / "smvla"
-    for k in fk.keys:  # 源未删
+    pub = fk.tmp / "stage" / f"s{nn}" / "smvla" / "rec"
+    for k in fk.keys:  # 源未删，也未发布（只留在 .incoming）
         assert (local / f"{k}.a1" / "front.mkv").exists()
+        assert not (pub / f"{k}.a1").exists() and (pub / ".incoming" / f"{k}.a1").exists()
     PASSED.append("gl_sha_mismatch")
 
 
@@ -488,13 +502,60 @@ def test_gl_TERM中断仍全量同步(fk):
     assert "V8_SEAT_SIGNAL sig=TERM" in o
     assert f"dir={fk.keys[0]}.a9 mode=periodic" not in o
     assert f"REC_SYNCED policy=smvla dir={fk.keys[0]}.a9 mode=final" in o
-    assert any(l.startswith("SEAT_REC_SYNC=PASS n=1") for l in o.splitlines())
+    assert any(l.startswith("SEAT_REC_SYNC=PASS n=1 ") and " left=0 " in l for l in o.splitlines()), o
     assert f"V8_SEAT_DONE seat={nn} outcome=aborted rc=143" in o and o.strip().splitlines()[-1] == "EXIT_CODE=143"
     d = fk.tmp / "stage" / f"s{nn}" / "smvla" / "rec" / f"{fk.keys[0]}.a9" / "front.mkv"
     assert d.exists()
     time.sleep(0.5)
     assert _alive_with(str(fk.tmp), "env_client.py") == [] and _alive_with(str(fk.tmp), "smvla_server.py") == []
     PASSED.append("gl_term")
+
+
+def test_gl_参数错误也写收尾行(fk):
+    p = subprocess.run(["bash", str(fk.gl_sh), "--run-name", "r", "--seat", "3"], env=fk.env(), capture_output=True,
+                       text=True, timeout=30)
+    assert p.returncode == 2
+    assert "V8_SEAT_DONE seat=3 outcome=fail rc=2" in p.stdout and p.stdout.strip().splitlines()[-1] == "EXIT_CODE=2"
+    p = subprocess.run(["bash", str(fk.gl_sh), *fk.gl_args(1), "--no-record"], env=fk.env(), capture_output=True,
+                       text=True, timeout=30)
+    assert p.returncode == 2 and "outcome=fail rc=2" in p.stdout
+    PASSED.append("gl_bad_args")
+
+
+def test_gl_TERM发给全组仍写出收尾三行(fk):
+    """模拟 slurmstepd：TERM 同时发给主进程、全部 tee、run_seat.sh、server、客户端。"""
+    idx = _free_seat_idx()
+    nn = f"{idx:02d}"
+    fk.plan(smvla=[{"inprogress": True, "sleep": 1000}])
+    proc = subprocess.Popen(["bash", str(fk.gl_sh), *fk.gl_args(idx)], env=fk.env(), stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, text=True)
+    try:
+        _wait_for(fk.fake / "client_smvla_ready")
+        time.sleep(1.0)
+        tees = _alive_with(str(fk.tmp), "tee ")
+        assert len(tees) >= 3, tees  # 主日志、每策略日志、run_seat 日志三个 tee
+        targets = set(_alive_with(str(fk.tmp), "")) | {proc.pid}
+        t0 = time.time()
+        for pid in targets:
+            try:
+                os.kill(pid, signal.SIGTERM)
+            except OSError:
+                pass
+        o, _ = proc.communicate(timeout=RUN_TIMEOUT)
+        took = time.time() - t0
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+    assert proc.returncode == 143, o
+    lines = [l for l in o.splitlines() if l.strip()]
+    assert any(l.startswith("SEAT_REC_SYNC=PASS n=1 ") for l in lines), o
+    assert any(l.startswith(f"V8_SEAT_DONE seat={nn} outcome=aborted rc=143") for l in lines), o
+    assert lines[-1] == "EXIT_CODE=143"
+    log = (fk.tmp / "stage" / f"s{nn}" / f"run_v8_gl-s{nn}.log").read_text()
+    for needle in ("SEAT_REC_SYNC=PASS", f"V8_SEAT_DONE seat={nn} outcome=aborted rc=143", "EXIT_CODE=143"):
+        assert needle in log
+    assert took < 60, took
+    PASSED.append("gl_term_group")
 
 
 def test_gl_监督进程被杀_回收并收尾(fk):
@@ -516,6 +577,7 @@ def test_gl_监督进程被杀_回收并收尾(fk):
             proc.kill()
     assert proc.returncode == 137, o
     assert "V8_SUPERVISOR_DIED" in o and "REAP_ORPHAN role=client" in o and "REAP_ORPHAN role=server" in o
+    assert "REAP_ORPHAN_GONE role=client" in o and "REAP_ORPHAN_GONE role=server" in o
     assert f"V8_SEAT_DONE seat={nn} outcome=fail rc=137" in o and o.strip().splitlines()[-1] == "EXIT_CODE=137"
     assert any(l.startswith("SEAT_REC_SYNC=PASS") for l in o.splitlines())
     time.sleep(0.5)

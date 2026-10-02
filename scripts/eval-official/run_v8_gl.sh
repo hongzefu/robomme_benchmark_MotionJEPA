@@ -10,17 +10,22 @@
 #      <stage>/sNN/<policy>/；录像写节点本地 <local-root>/rec/<policy>/（默认 local-root=/tmp/<R>-sNN）。
 #      一律带 --never-degrade（视频无损全保留），不接受 --no-record。
 #   3. 后台同步循环每 --sync-interval 秒（默认 120）把「该策略 results.jsonl 已有行的 rec_dir 指向它、且目录内
-#      summary.json 已写出」的录像目录 rsync -rt 到 <stage>/sNN/<policy>/rec/<目录名>/，逐文件 sha256 一致后才删节点副本；
-#      进行中的目录不碰。
-#   4. 正常、失败、中断（trap TERM/INT）三路收尾：先回收子进程，再对节点上剩余的全部录像目录做全量同步并核对，
-#      打印 SEAT_REC_SYNC=PASS|FAIL n= bytes=，再打印 V8_SEAT_DONE seat=NN outcome=pass|fail|aborted rc=，末行 EXIT_CODE=<rc>。
+#      summary.json 已写出」的录像目录原子发布到 NFS：先 rsync 到 <stage>/sNN/<policy>/rec/.incoming/<目录名>/
+#      （重试时 rsync 加 -c），逐文件 sha256 与节点副本一致后 mv 成 <stage>/sNN/<policy>/rec/<目录名>/（目标已存在则落
+#      <目录名>.dupN，不覆盖），再删节点副本；进行中的目录不碰。点开头目录（.incoming）不是已发布录像。
+#   4. 正常、失败、中断（trap TERM/INT/HUP）三路收尾：先回收子进程（等待 ≤25 s），再对节点上剩余的全部录像目录做
+#      全量同步（只做 rsync + sha256 + mv），打印 SEAT_REC_SYNC=PASS|FAIL n= bytes= left=（n／bytes 为周期 + 收尾累计，
+#      left 为节点残留目录数），再打印 V8_SEAT_DONE seat=NN outcome=pass|fail|aborted rc=，末行 EXIT_CODE=<rc>。
+#      参数错误与目录创建失败也写 V8_SEAT_DONE outcome=fail。
+#   信号：slurmstepd 会把 TERM/INT 发给 step 内全部进程，所以所有日志 tee 都忽略 TERM/INT/HUP/PIPE 并以 -p 运行，
+#   主脚本忽略 PIPE，保证收尾三行在 tee 存活时写出（日志文件里一定有）。
 #
 # 用法（一席一行）：
 #   bash <repo>/scripts/eval-official/run_v8_gl.sh --run-name R --seat NN --repo <NFS 执行副本> --stage <NFS 运行根> \
 #     --shard <shard-NN.json> --policies smvla,mme --mme-ckpt D --smvla-ckpt D --openpi-data-home D \
 #     --tokenizer-sha256 H --reset-budget N --infra-retry-budget N [--limit N] \
 #     [--episode-wall-smvla S] [--episode-wall-mme S] [--sync-interval S] [--local-root DIR]
-# 退出码：0 全部策略 rc=0 且录像同步 PASS；中断 130/143；其余失败取首个非零策略 rc（录像同步 FAIL 且策略全 0 时为 7）；
+# 退出码：0 全部策略 rc=0 且录像同步 PASS；中断 130/143（HUP 129）；其余失败取首个非零策略 rc（录像同步 FAIL 且策略全 0 时为 7）；
 #   参数错误 2；执行环境缺失（解释器、shard 等）3。
 # 不嵌入任何 JobID，不含 /data 默认路径。
 set -uo pipefail
@@ -30,7 +35,13 @@ RUN_NAME="" ; SEAT="" ; REPO="" ; STAGE="" ; SHARD="" ; POLICIES="smvla,mme"
 MME_CKPT="" ; SMVLA_CKPT="" ; OPENPI_HOME="" ; TOKENIZER_SHA="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET=""
 LIMIT="0" ; WALL_SMVLA="" ; WALL_MME="" ; SYNC_INTERVAL=120 ; LOCAL_ROOT="" ; COND="V8"
 
-usage() { sed -n '2,27p' "${BASH_SOURCE[0]}" >&2; }
+usage() { sed -n '2,32p' "${BASH_SOURCE[0]}" >&2; }
+die2() {  # 参数错误：也写收尾两行，便于外层 Monitor 统一判定
+  echo "$1" >&2
+  echo "V8_SEAT_DONE seat=${SEAT:-?} outcome=fail rc=2 reason=bad_args"
+  echo "EXIT_CODE=2"
+  exit 2
+}
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --run-name) RUN_NAME="$2"; shift 2;;
@@ -50,13 +61,11 @@ while [[ $# -gt 0 ]]; do
     --episode-wall-mme) WALL_MME="$2"; shift 2;;
     --sync-interval) SYNC_INTERVAL="$2"; shift 2;;
     --local-root) LOCAL_ROOT="$2"; shift 2;;
-    --no-record) echo "run_v8_gl.sh 禁止 --no-record（全部视频保留）" >&2; exit 2;;
+    --no-record) die2 "run_v8_gl.sh 禁止 --no-record（全部视频保留）";;
     -h|--help) usage; exit 0;;
-    *) echo "未知参数 $1" >&2; usage; exit 2;;
+    *) usage; die2 "未知参数 $1";;
   esac
 done
-
-die2() { echo "$1" >&2; exit 2; }
 [[ -n "$RUN_NAME" && -n "$SEAT" && -n "$REPO" && -n "$STAGE" && -n "$SHARD" ]] \
   || die2 "缺少必需参数（--run-name --seat --repo --stage --shard）"
 [[ "$RUN_NAME" =~ ^[A-Za-z0-9._-]+$ ]] || die2 "--run-name 只许字母数字 . _ -"
@@ -111,16 +120,18 @@ for n in sorted(names):
 PY
 }
 
-# 同步一个录像目录：rsync -rt → 逐文件 sha256 → 一致才删源；成功时把字节数加进 SYNC_BYTES
-SYNC_BYTES=0
-sync_one_dir() {  # $1 = 源目录；$2 = 目的目录
-  local src="$1" dst="$2" f rel a b bytes=0 bad=0
-  mkdir -p "$dst" || return 1
-  rsync -rt "$src/" "$dst/" || { echo "REC_SYNC_RSYNC_FAIL src=$src"; return 1; }
+# 同步一个录像目录（原子发布）：rsync 到 <dst_root>/.incoming/<name>/（已存在即重试，加 -c）→ 逐文件 sha256 →
+# 一致才 mv 成 <dst_root>/<name>（已存在则 <name>.dupN，不覆盖）→ 删节点副本；成功时在计数文件追加一行「1 <字节数>」。
+sync_one_dir() {  # $1 = 源目录；$2 = 目的根（<stage>/sNN/<pol>/rec）；$3 = 目录名
+  local src="$1" root="$2" name="$3" inc f rel a b bytes=0 bad=0 copt=() target k
+  inc="$root/.incoming/$name"
+  [[ -d "$inc" ]] && copt=(-c)
+  mkdir -p "$inc" || { echo "REC_SYNC_MKDIR_FAIL dir=$inc"; return 1; }
+  rsync -rt --delete "${copt[@]}" "$src/" "$inc/" || { echo "REC_SYNC_RSYNC_FAIL src=$src"; return 1; }
   while IFS= read -r -d '' f; do
     rel="${f#"$src"/}"
     a="$(sha256sum "$f" | awk '{print $1}')"
-    b="$(sha256sum "$dst/$rel" 2>/dev/null | awk '{print $1}')"
+    b="$(sha256sum "$inc/$rel" 2>/dev/null | awk '{print $1}')"
     if [[ -z "$a" || "$a" != "$b" ]]; then
       echo "REC_SYNC_SHA_MISMATCH file=$rel src_sha=$a dst_sha=${b:-missing}"; bad=1
     else
@@ -128,18 +139,29 @@ sync_one_dir() {  # $1 = 源目录；$2 = 目的目录
     fi
   done < <(find "$src" -type f -print0)
   (( bad == 0 )) || return 1
+  target="$root/$name"; k=0
+  while [[ -e "$target" ]]; do k=$((k + 1)); target="$root/$name.dup$k"; done
+  mv -T -- "$inc" "$target" || { echo "REC_SYNC_MV_FAIL from=$inc to=$target"; return 1; }
+  (( k > 0 )) && echo "REC_SYNC_DUP dir=$name published_as=$(basename "$target")"
   rm -rf -- "$src" || return 1
-  SYNC_BYTES=$((SYNC_BYTES + bytes))
+  echo "1 $bytes" >> "$TALLY"
   return 0
 }
 
-# $1 = periodic|final。periodic 只搬「结果行已指向且 summary.json 已写出」的目录；final 搬节点上剩余全部目录。
-# 打印统计并返回 0（全部成功）/1（有失败）。final 时打印 SEAT_REC_SYNC 判定行。
-sync_recordings() {
-  local mode="$1" pol src dst name n=0 fail=0 left=0
-  SYNC_BYTES=0
+left_on_node() {
+  local pol left=0
   for pol in "${POLS[@]}"; do
-    src="$REC_LOCAL/$pol"; dst="$SEAT_STAGE/$pol/rec"
+    [[ -d "$REC_LOCAL/$pol" ]] && left=$((left + $(find "$REC_LOCAL/$pol" -mindepth 1 -maxdepth 1 -type d | wc -l)))
+  done
+  echo "$left"
+}
+
+# $1 = periodic|final。periodic 只搬「结果行已指向且 summary.json 已写出」的目录；final 搬节点上剩余全部目录。
+# 返回 0（本轮全部成功且 final 时节点无残留）/1。final 时打印 SEAT_REC_SYNC 判定行（n／bytes 为累计）。
+sync_recordings() {
+  local mode="$1" pol src name fail=0 left=0 n bytes
+  for pol in "${POLS[@]}"; do
+    src="$REC_LOCAL/$pol"
     [[ -d "$src" ]] || continue
     if [[ "$mode" == "periodic" ]]; then
       local -A done_names=()
@@ -152,21 +174,20 @@ sync_recordings() {
       if [[ "$mode" == "periodic" ]]; then
         [[ -n "${done_names[$name]:-}" && -f "$src/$name/summary.json" ]] || continue
       fi
-      if sync_one_dir "$src/$name" "$dst/$name"; then
-        n=$((n + 1)); echo "REC_SYNCED policy=$pol dir=$name mode=$mode"
+      if sync_one_dir "$src/$name" "$SEAT_STAGE/$pol/rec" "$name"; then
+        echo "REC_SYNCED policy=$pol dir=$name mode=$mode"
       else
         fail=$((fail + 1)); echo "REC_SYNC_FAIL policy=$pol dir=$name mode=$mode"
       fi
     done
   done
   if [[ "$mode" == "final" ]]; then
-    for pol in "${POLS[@]}"; do
-      [[ -d "$REC_LOCAL/$pol" ]] && left=$((left + $(find "$REC_LOCAL/$pol" -mindepth 1 -maxdepth 1 -type d | wc -l)))
-    done
+    left="$(left_on_node)"
+    read -r n bytes < <(awk '{n += $1; b += $2} END {printf "%d %d\n", n, b}' "$TALLY" 2>/dev/null || echo "0 0")
     if (( fail == 0 && left == 0 )); then
-      echo "SEAT_REC_SYNC=PASS n=$n bytes=$SYNC_BYTES seat=$SEAT"
+      echo "SEAT_REC_SYNC=PASS n=${n:-0} bytes=${bytes:-0} left=0 seat=$SEAT"
     else
-      echo "SEAT_REC_SYNC=FAIL n=$n bytes=$SYNC_BYTES seat=$SEAT failed=$fail left_on_node=$left"
+      echo "SEAT_REC_SYNC=FAIL n=${n:-0} bytes=${bytes:-0} left=$left seat=$SEAT failed=$fail"
     fi
   fi
   (( fail == 0 && left == 0 ))
@@ -192,8 +213,8 @@ stop_sync_loop() {
 # ---------------- 子进程回收 ----------------
 # run_seat.sh 异常死亡（如被 KILL）时，其 setsid 起的 server／客户端进程组可能残留：按 .v8-pgids 回收，
 # 只杀命令行确属本评估入口的进程组（防 PID 复用误杀）。
-reap_orphans() {
-  local f="$SEAT_STAGE/.v8-pgids" role pid cmd
+reap_orphans() {  # $1 = TERM 后宽限秒数；$2 = KILL 后等进程组退出并核显存释放的上限秒数
+  local f="$SEAT_STAGE/.v8-pgids" grace="${1:-10}" post="${2:-30}" role pid cmd i
   [[ -f "$f" ]] || return 0
   while read -r role pid; do
     [[ "$pid" =~ ^[0-9]+$ ]] || continue
@@ -203,18 +224,31 @@ reap_orphans() {
       *env_client.py*|*smvla_server.py*|*serve_policy.py*|*mme_client.py*)
         echo "REAP_ORPHAN role=$role pgid=$pid"
         kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null
-        local i; for i in $(seq 1 20); do kill -0 "$pid" 2>/dev/null || break; sleep 0.5; done
-        kill -KILL -- "-$pid" 2>/dev/null || true;;
+        for i in $(seq 1 $((grace * 2))); do kill -0 -- "-$pid" 2>/dev/null || break; sleep 0.5; done
+        kill -KILL -- "-$pid" 2>/dev/null || kill -KILL "$pid" 2>/dev/null || true
+        for i in $(seq 1 $((post * 2))); do
+          if ! kill -0 -- "-$pid" 2>/dev/null && \
+             ! nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null | grep -qw "$pid"; then
+            break
+          fi
+          sleep 0.5
+        done
+        if kill -0 -- "-$pid" 2>/dev/null; then echo "REAP_ORPHAN_STUCK role=$role pgid=$pid"
+        else echo "REAP_ORPHAN_GONE role=$role pgid=$pid"; fi;;
     esac
   done < "$f"
 }
 
-stop_run_seat() {  # 转发 TERM 给 run_seat.sh（它会收掉 server／客户端），最多等 180 s
+stop_run_seat() {  # 转发 TERM 给 run_seat.sh（它会收掉 server／客户端），最多等 25 s，超时连同其子进程 KILL
   [[ -n "$RUN_SEAT_PID" ]] || return 0
   if kill -0 "$RUN_SEAT_PID" 2>/dev/null; then
     kill -TERM "$RUN_SEAT_PID" 2>/dev/null
-    local i; for i in $(seq 1 180); do kill -0 "$RUN_SEAT_PID" 2>/dev/null || break; sleep 1; done
-    kill -0 "$RUN_SEAT_PID" 2>/dev/null && kill -KILL "$RUN_SEAT_PID" 2>/dev/null
+    local i; for i in $(seq 1 50); do kill -0 "$RUN_SEAT_PID" 2>/dev/null || break; sleep 0.5; done
+    if kill -0 "$RUN_SEAT_PID" 2>/dev/null; then
+      echo "RUN_SEAT_KILL pid=$RUN_SEAT_PID（25 s 未退出）"
+      pkill -KILL -P "$RUN_SEAT_PID" 2>/dev/null
+      kill -KILL "$RUN_SEAT_PID" 2>/dev/null
+    fi
   fi
   wait "$RUN_SEAT_PID" 2>/dev/null
   RUN_SEAT_PID=""
@@ -224,10 +258,10 @@ finalize() {  # $1 = outcome；$2 = rc
   local outcome="$1" rc="$2" src
   (( FINALIZED == 1 )) && return
   FINALIZED=1
-  trap '' TERM INT  # 收尾期间不再被打断
+  trap '' TERM INT HUP  # 收尾期间不再被打断
   stop_sync_loop
   stop_run_seat
-  reap_orphans
+  reap_orphans 3 10  # 收尾路径压短：TERM 宽限 3 s、KILL 后 ≤10 s
   if ! sync_recordings final; then
     [[ "$outcome" == "pass" ]] && outcome="fail"
     (( rc == 0 )) && rc=7
@@ -239,17 +273,27 @@ finalize() {  # $1 = outcome；$2 = rc
 
 on_signal() {  # $1 = 信号名
   ABORTED=1
-  [[ "$1" == "INT" ]] && ABORT_RC=130 || ABORT_RC=143
+  case "$1" in INT) ABORT_RC=130;; HUP) ABORT_RC=129;; *) ABORT_RC=143;; esac
   echo "V8_SEAT_SIGNAL sig=$1 seat=$SEAT $(ts_iso)"
   finalize aborted "$ABORT_RC"
 }
 trap 'on_signal TERM' TERM
 trap 'on_signal INT' INT
+trap 'on_signal HUP' HUP
+trap '' PIPE  # 输出管道断了也不能让收尾被 SIGPIPE 杀掉
 
 # ---------------- 主流程 ----------------
-mkdir -p "$SEAT_STAGE" "$REC_LOCAL" || { echo "RUN_BLOCKED reason=mkdir stage=$SEAT_STAGE local=$REC_LOCAL"; echo "EXIT_CODE=3"; exit 3; }
+if ! mkdir -p "$SEAT_STAGE" "$REC_LOCAL"; then
+  echo "RUN_BLOCKED reason=mkdir stage=$SEAT_STAGE local=$REC_LOCAL"
+  echo "V8_SEAT_DONE seat=$SEAT outcome=fail rc=3 reason=mkdir"
+  echo "EXIT_CODE=3"
+  exit 3
+fi
+TALLY="$LOCAL_ROOT/rec-sync-tally.txt"  # 周期 + 收尾同步的累计计数（每成功一个目录一行「1 <字节数>」）
+: > "$TALLY"
 SEAT_LOG="$SEAT_STAGE/run_v8_gl-s$SEAT.log"
-exec > >(tee -a "$SEAT_LOG") 2>&1
+# tee 忽略 TERM/INT/HUP/PIPE 并以 -p 运行：slurmstepd 发给全组的信号不能先杀掉日志管道
+exec > >(trap '' TERM INT HUP PIPE; exec tee -p -a "$SEAT_LOG") 2>&1
 
 CPUS="$("$BENCH_PY" -c 'import os;print(",".join(map(str,sorted(os.sched_getaffinity(0)))))' 2>/dev/null)"
 echo "V8_SEAT_START run_name=$RUN_NAME seat=$SEAT idx=$SEAT_IDX host=$(hostname) cpus=${CPUS:-?} repo=$REPO \
@@ -287,7 +331,7 @@ for i in "${!POLS[@]}"; do
   fi
   echo "V8_POLICY_START seat=$SEAT policy=$pol $(ts_iso)"
   bash "$REPO/scripts/eval-official/run_seat.sh" "${args[@]}" \
-    > >(tee -a "$SEAT_STAGE/$pol/seat-$SEAT.log") 2>&1 &
+    > >(trap '' TERM INT HUP PIPE; exec tee -p -a "$SEAT_STAGE/$pol/seat-$SEAT.log") 2>&1 &
   RUN_SEAT_PID=$!
   while true; do
     wait "$RUN_SEAT_PID"; rc=$?
@@ -297,7 +341,7 @@ for i in "${!POLS[@]}"; do
   echo "V8_POLICY_DONE seat=$SEAT policy=$pol rc=$rc $(ts_iso)"
   if (( rc > 128 )); then
     echo "V8_SUPERVISOR_DIED seat=$SEAT policy=$pol rc=$rc（run_seat.sh 被信号终止，回收残留子进程）"
-    reap_orphans
+    reap_orphans 10 30  # KILL 后等进程组退出并核显存释放（≤30 s）再起下一个策略
   fi
   (( rc != 0 && overall == 0 )) && overall=$rc
 done

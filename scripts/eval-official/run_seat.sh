@@ -497,7 +497,8 @@ rec_root=${REC_ROOT:-<out>/<policy>/rec} wall_smvla=$(wall_of smvla) wall_mme=$(
 }
 
 # main 放后台、外层转发 TERM/INT：信号能到达 main 的 trap（cleanup 杀掉 setsid 起的 server／客户端进程组）
-exec > >(tee -a "$LOG") 2>&1
+# tee 忽略 TERM/INT/HUP/PIPE：slurmstepd 把信号发给 step 内全部进程时，日志管道须活到收尾行写完
+exec > >(trap '' TERM INT HUP PIPE; exec tee -p -a "$LOG") 2>&1
 main &
 MAIN_PID=$!
 trap 'kill -TERM "$MAIN_PID" 2>/dev/null' TERM INT
