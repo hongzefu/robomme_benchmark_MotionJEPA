@@ -72,7 +72,9 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 
 ### 3.1 子代理分工与合并（简述）
 
-身份与结果适配、十席编排可以按不同文件并行；汇总依赖身份字段契约，测试跟随各自责任文件。先整合身份适配，再整合编排，最后整合汇总。每块先检查越界与定向测试，整合后再检查跨模块契约；主会话负责真实冒烟、作业清单、最终验收和提交。子代理不提交、不推送。具体写入边界见第二部分分配表，本轮不派实施型子代理。
+改代码按 `CLAUDE.md`「计划执行模式」交给**写入型子代理**做，主会话不直接改这些代码，子代理也不许碰主仓库。拆成三块，文件互不重叠：E-A 管身份清单和两个客户端的适配（含 1600 截断、`max_steps` 透传、reset 额度、尝试账本），E-B 管 GL 十席编排和 tokenizer 闸门，E-C 管汇总报告和视频搬运。三块可以同时开工；E-B、E-C 只依赖 E-A 先定下的字段与命令行约定，这份约定在派发提示里写死。
+
+每个子代理在自己的 git worktree（`.claude/worktrees/agent-<id>/`）里改，每次提交的标题都以 `sub/E-A: `（或 `sub/E-B: `、`sub/E-C: `）开头，只提交到自己的分支、不推送。做完后按 E-A → E-B → E-C 的顺序一个一个合回 `newtaskRelease-taskV8`：**合并前**主会话先核对改动文件没有越出它的可写集合，在它的 worktree 里复跑定向测试，再派一个只读审查子代理对着计划逐项审，结论 PASS 才合；**合并时**用 `--no-ff` 合并提交，子代理的每个 `sub/` 提交原样保留在历史里；**合并后**再跑核心短测、核对文件清单与受保护目录零 diff，PASS 才推送并合下一个。审查 FAIL 就把问题交回原子代理续改，两轮仍不过交用户。GPU 冒烟、真实 GL 运行、留档和最终提交由主会话在三块都合完后串行做。
 
 ## 4. 验收与实施顺序
 
@@ -92,7 +94,7 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 | 阶段 | 内容 | 进入下一步的条件 |
 |---|---|---|
 | E0 | 等 V8 全部结束，冻结输入；一次确认执行清单 | `V8_PREREQUISITE`、运行名和预算获准 |
-| E1 | 申请十席并记录 JobID；实施客户端、启动器、汇总适配 | 定向测试与范围审查通过 |
+| E1 | 申请十席并记录 JobID；同时按第二部分 §3 派三个 worktree 写入型子代理实现 E-A／E-B／E-C，按 E-A→E-B→E-C 逐个审查、`--no-ff` 合并、推送 | 三块各自 `PRE_MERGE_REVIEW=PASS` 与 `POST_MERGE_REVIEW=PASS` |
 | E2 | 最小单 worker 冒烟，再检查十席运行环境与端口；冒烟或闸门失败走异常收尾（见 E5） | `V8_EVAL_INPUTS`、`V8_STEP_CAP_CONTRACT`、`V8_EVAL_SMOKE`、`V8_EVAL_SHARDS` |
 | E3 | 十席正式评估；失败按类型记账，保留固定分母 | 每身份最终状态与实际尝试账本齐全 |
 | E4 | 结果、视频、退出码与预算核验；视频全部搬回本机并核 sha256 后才清 NFS 暂存；留档提交 | `V8_EVAL_COVERAGE`、`V8_EVAL_REPORT`、`V8_EVAL_VIDEOS` |
@@ -119,18 +121,32 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 | 新增 `scripts/eval-official/run_v8_gl.sh` | 读取固定清单，十席独立输出、tmux 与 srun 编排、进度监督、退出记录 | 不嵌入旧 JobID、工作副本 SHA 或 `/data` 权重默认路径 |
 | `scripts/injection-dev/eval_video_mover.py`（搬运入口） | V8 模式：读 V8 结果记录；除终态局外，错误／重试尝试录到的视频也搬（现版只搬 `success/fail/timeout` 终态局，其余会随 NFS 清理丢失）；目标目录按本轮 `run_name` | 原 v7 行为保留；rsync → 两端 sha256 相同 → 才删 NFS 副本 → 写 `moved.jsonl` 的流程不变 |
 | 新增 `scripts/eval-official/v8_report.py` | 按持久账本的 `accepted_attempt_id` 取每身份唯一权威终态（不复用 `compare.py` 的「最后一条终态胜出」）；迟到与废弃尝试单列不入分数；冲突终态判 FAIL；任务×档成功率、timeout 数、错误与预算报告、视频索引 | 不用缺失默认零制造成功；每次尝试保留、不覆盖原错误 |
-| 新增 `tests/lightweight/test_v8_eval_{manifest,client,report}.py` | 格表/身份/四步清单转换/1600 截断与 102 块透传/reset 额度跨重启/权威终态与迟到/错误/媒体合同测试及真实 JSON 往返 | CPU 合成夹具不触发仿真，不改变受保护目录 |
+| 新增 `tests/lightweight/test_v8_eval_{manifest,client,orchestration,report,video_mover}.py` | 格表/身份/四步清单转换/1600 截断与 102 块透传/reset 额度跨重启/权威终态与迟到/错误/媒体合同测试及真实 JSON 往返 | CPU 合成夹具不触发仿真，不改变受保护目录 |
 
 ## 3. 子代理分配表
 
-表中是后续实施分工，不是本轮写入授权。全部禁触 `src/robomme/**`、`src/robomme_hard/**`、子模块、依赖配置和 V8 原计划；每个共享文件只有一个负责人。
+执行机制按 `CLAUDE.md`「计划执行模式」：本表经用户批准即为写入型子代理的派发授权，表外不派；用户当前答复为「不开工只审核计划」，**未批准前一个也不派**。
 
-| 编号／目标 | 可写文件集合 | 接口契约与依赖 | 整合顺序 | 验收地点、命令与判定 | 资源及共享归属 |
-|---|---|---|---|---|---|
-| E-A 身份及客户端 | `v8_manifest.py`、`env_client.py`、`smvla_client.py`（只限reset重试记账）、`test_v8_eval_manifest.py`、`test_v8_eval_client.py` | 四步清单转换；完整身份、nullable 字段、`max_steps` 显式透传与 1600 截断、共享入口 reset 额度与持久尝试账本（含 `accepted_attempt_id`）；依赖最终 V8 包 | 1 | 本机 uv 定向 pytest；`V8_EVAL_ADAPTER_TESTS=PASS`、`V8_STEP_CAP_CONTRACT=PASS` | CPU，无端口；env_client与smvla_client唯一负责人 |
-| E-B GL 编排 | `run_seat.sh`、`run_v8_gl.sh` | 先冻结 E-A 的 CLI 契约；持久尝试额度；固定 `OPENPI_DATA_HOME` 与 server 启动前 tokenizer SHA256 闸门；成功／失败／中断三路收尾；与 E-A 可并行开发 | 2 | 本机 `bash -n`，零仿真假服务覆盖成功、超时、server死、监督进程死、tokenizer 哈希不符、冒烟失败后的异常收尾；`V8_EVAL_ORCHESTRATION=PASS` | CPU；真实端口由主会话分配；run_seat 唯一负责人 |
-| E-C 汇总与视频 | `v8_report.py`、`test_v8_eval_report.py`、`scripts/injection-dev/eval_video_mover.py` | 消费 E-A 的身份与结果协议；零缺失/正常失败/错误/重复/迟到均覆盖；`V8_EVAL_VIDEOS` 计数与错误尝试视频搬运 | 3 | 本机 uv 定向 pytest；`V8_EVAL_REPORT_TESTS=PASS` | CPU；报告文件唯一负责人 |
-| 主会话 | 本计划、`docs/validation/<run_name>/` 和索引；运行产物 | 顺序接收 E-A/B/C，审查文件范围、测试、提交后再真实运行 | 4 | 定向短测及第一部分验收表 | 十张 A40；tmux 前缀 `ev-v8-`；同一卡只有一个 srun 评估步骤 |
+**派发前核对**（主会话，任一不满足不派）：`~/.claude/settings.json` 的 `worktree.baseRef` 为 `"head"`；主检出 `git status --short --ignore-submodules=dirty` 为空（`third_party/SimpleMemVLA` 子模块内容改动是他人在途工作，不算、不动）；记 `BASE=$(git rev-parse HEAD)` 写进本表；`git check-ignore -q .claude/worktrees/probe` 成功；`git worktree list` 存档，已有的 `.claude/worktrees/v7`、`/data/hongzefu/v6-draft/*` 等一律不动。
+
+**派发方式**：三个子代理同一决策点一批发出，各自 `isolation: "worktree"` + `model: "opus"`。提示固定写：子任务编号与目标、可写集合、禁触路径、接口契约、验收命令与判定行、「代码库里不只你一个在改：不碰集合外文件、不回滚他人改动、不改验收命令与判据文件」、「禁止写主检出任何路径（含 Bash 绝对路径）」、「每个 commit subject 以 `sub/<编号>: ` 开头，body 写目标／改动文件／验证命令与判定行」、「不 push、不 checkout／merge／rebase 工作分支、不 amend」、「每条 git 命令单独一次 Bash」、「不得再派子代理、不得起超过 5 分钟的任务」、交回格式（worktree 路径、分支、BASE、HEAD sha、`git diff --name-only BASE..HEAD`、`git log --oneline BASE..HEAD`、验收原始输出、未解决事项、「未派生子代理、未 push」声明）。
+
+**worktree 内验收环境**（本仓库 `CLAUDE.md` 固定取法）：`UV_PROJECT_ENVIRONMENT=/data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv PYTHONPATH=<worktree>/src uv run --no-sync python -m pytest <定向测试> -q`；先跑 `… python -c "import robomme_hard; print(robomme_hard.__file__)"`，打印路径必须以 `<worktree>/src/` 开头。worktree 内只跑 `tests/lightweight/` 的 CPU 定向测试；`scripts/eval-official/` 的模块按 worktree 内相对路径导入，同样先打印 `__file__` 核实。GPU 冒烟、`UPSTREAM_GUARD` 等留给合并后主会话。
+
+**公共禁触路径**（三块都适用）：`src/robomme/**`、`src/robomme_hard/**`、`third_party/**`（含两个策略子模块与 gitlink）、`pyproject.toml`、`uv.lock`、`scripts/*.py` 顶层四入口、`1001-newtask-v8-xhard-gradient-plan.md`、本计划文件、`artifacts/**`、`docs/**`，以及其他两块的可写文件。
+
+| 编号／目标 | 可写文件集合 | 禁触路径（公共之外） | 接口契约与依赖 | 合并顺序 | 验收命令与判定行（worktree 内、上述环境） | 资源占用 | 共享文件归属裁决 |
+|---|---|---|---|---|---|---|---|
+| E-A 身份清单与客户端适配 | 新增 `scripts/eval-official/v8_manifest.py`；改 `scripts/eval-official/env_client.py`、`scripts/eval-official/smvla_client.py`（只限 V8 模式 `retries=0` 与异常分类，不碰推理与动作块循环）；新增 `tests/lightweight/test_v8_eval_manifest.py`、`tests/lightweight/test_v8_eval_client.py` | `scripts/eval-official/mme_client.py`（MME 不改，截断与额度都落在 `env_client`）、`run_seat.sh`、E-C 文件 | 产出并在交回报告里写死：执行清单 JSON 字段表、`env_client run` 新增的 V8 命令行参数、结果行字段（含 `attempt_id`、`accepted_attempt_id`、`exec_steps`、`status=timeout` 语义）、持久账本文件格式与路径约定 | 1 | `pytest tests/lightweight/test_v8_eval_manifest.py tests/lightweight/test_v8_eval_client.py -q` → `V8_EVAL_ADAPTER_TESTS=PASS`、`V8_STEP_CAP_CONTRACT=PASS cap=1600 over=0 smvla_blocks_v8=102 smvla_blocks_legacy=84` | CPU，无端口、无 GPU、无 tmux | `env_client.py`、`smvla_client.py` 唯一写者是 E-A |
+| E-B GL 十席编排 | 改 `scripts/eval-official/run_seat.sh`；新增 `scripts/eval-official/run_v8_gl.sh`、`tests/lightweight/test_v8_eval_orchestration.py` | `env_client.py`、`smvla_client.py`、`mme_client.py`、E-C 文件 | 按派发提示里写死的 E-A 命令行与账本约定调用；固定 `OPENPI_DATA_HOME`、server 启动前 tokenizer SHA256 闸门（GCS 校验和来源）；成功／失败／中断三路收尾输出 `V8_EVAL_CLEANUP=`；tmux 名 `ev-v8-<run_name>-sNN` | 2（E-A 合入后再合；合并前在 E-A 合入后的 HEAD 上复核契约） | `bash -n scripts/eval-official/run_seat.sh scripts/eval-official/run_v8_gl.sh` 退出 0；`pytest tests/lightweight/test_v8_eval_orchestration.py -q`（零仿真假服务：成功、超时、server 死、监督进程死、tokenizer 哈希不符、冒烟失败异常收尾）→ `V8_EVAL_ORCHESTRATION=PASS` | CPU；测试只用临时目录与随机空闲端口，不起真实 server、不提交 GL 作业 | `run_seat.sh` 唯一写者是 E-B |
+| E-C 汇总与视频搬运 | 新增 `scripts/eval-official/v8_report.py`、`tests/lightweight/test_v8_eval_report.py`、`tests/lightweight/test_v8_eval_video_mover.py`；改 `scripts/injection-dev/eval_video_mover.py`（新增 V8 模式，旧 v7 行为不变） | `env_client.py`、`smvla_client.py`、`run_seat.sh`、`scripts/eval-official/compare.py`、`step6_summary.py`（不改旧汇总，新报告不复用其「最后一条胜出」） | 按 E-A 结果行与账本约定消费；`accepted_attempt_id` 为唯一权威终态；输出 `V8_EVAL_COVERAGE=`、`V8_EVAL_REPORT=`、`V8_EVAL_VIDEOS=` | 3 | `pytest tests/lightweight/test_v8_eval_report.py tests/lightweight/test_v8_eval_video_mover.py -q`（零缺失、正常失败、错误、重复、迟到、冲突终态、错误尝试视频搬运、sha 不符不删源）→ `V8_EVAL_REPORT_TESTS=PASS` | CPU，临时目录，不碰真实 NFS | `eval_video_mover.py` 唯一写者是 E-C |
+| 主会话（不派子代理） | 本计划、`docs/validation/<run_name>/` 与索引；运行产物；合并提交 | — | 派发前核对、三次合并前审查与合并后审查、GPU 冒烟、GL 申请与十席运行、留档提交 | 4 | 合并后核心短测 `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q`（失败集合须等于 BASE 既有集合）、`git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py`、`ls -1 scripts/*.py` 恰 4 个、`UPSTREAM_GUARD=PASS`；之后第一部分验收表全部判定行 | 十张 A40；tmux 前缀 `ev-v8-`；同卡只一个 srun 评估步骤 | 理由：GPU、集群作业、留档与提交切不开、只能串行，归主会话 |
+
+**合并前审查（每块一次）**：主检出 `git status --short --ignore-submodules=dirty` 无非预期改动 → `git diff --name-only <BASE>..<TIP>` 逐项 ⊆ 该块可写集合（越界 `SCOPE=FAIL`）→ 在其 worktree 复跑上表验收 → 派一个只读审查子代理（`model: "opus"`，不加 isolation，钉 `REVIEW_BASE`／`REVIEW_TIP` 完整 sha，只许 `git diff/log/show`），审计划条目是否完成、有无越界、接口契约、`sub/` 前缀与 body、有无凭据／日志／大文件，输出 `PRE_MERGE_REVIEW=PASS|FAIL base=<sha> tip=<sha> files=<n> commits=<n> findings=<n>`。FAIL → 用 `SendMessage` 把 findings 交回原子代理续改，第二轮只复核增量，两轮仍 FAIL 交用户。
+
+**合并与合并后审查**：`git merge --no-ff <TIP sha> -F <scratchpad 消息文件>`（合 sha 不合分支名；subject 按 `12.<小版本>` 体例，body 摘录子代理报告、`PRE_MERGE_REVIEW` 行与改动文件清单）→ 跑上表主会话那一行的短测与闸门 → `git diff --name-only <合并前 HEAD>..HEAD` 与本表核对 → `POST_MERGE_REVIEW=PASS|FAIL merge=<sha> tests=<结果> files=<n>`。PASS 立即 `git push` 再合下一块；FAIL 停止后续合并、不 push、证据交用户，不 reset／rebase。
+
+**清理**：三块都 `POST_MERGE_REVIEW=PASS` 且已推送后，只删本表登记的 `agent-<id>` worktree（`git worktree list` 删前删后各一次、`git worktree remove`、`git branch -d`，未合并分支拒删即保留交用户）。
 
 ## 4. 尝试预算与一次确认清单
 
@@ -174,7 +190,7 @@ srun --jobid=<本轮JobID> --overlap --exact --ntasks=1 \
 8. **无人值守与时限（用户已定）**：用户开跑后去睡觉，回来时间为东部时间中午 12 点；到点未跑完**继续跑到完成**，48 小时占位作业足够，中午只出一份中途进度（已完成身份数、各格成功率、预计剩余时间、异常），不停作业。主会话未注册任何后台唤醒，会话断开后作业仍在 tmux 内继续、监督进程负责失败停机与收尾，但最终汇总、提交与释放资源要等主会话恢复后再做；不得对用户承诺「睡着期间一定会自动处理完」。
 9. 收尾分三路，都要走完：**成功**——全部闸门通过、视频搬完后留档并释放；**失败**（冒烟失败、闸门 FAIL、预算耗尽）——停受影响部分，保存日志、结果行、已录视频（照常搬回本机核 sha256）与失败判定行，写 `result.md` 失败段，再释放本轮 JobID；**中断**（用户叫停、作业到期、节点故障）——精确停本轮 tmux，记录停在哪一身份与未完成范围，同样先搬已产出视频再释放。三路都输出 `V8_EVAL_CLEANUP=DONE outcome=<pass/fail/aborted> jobs_released=<n> videos_kept=<n>`。只释放本轮清单里的 JobID，tmux 只按精确名称逐个清理；禁止全用户取消和全局杀 tmux。
 
-测试命令模板：核实 `command -v uv`、`pyproject.toml`、`uv.lock` 后，以显式缓存目录运行 `uv run --no-sync python -m pytest tests/lightweight/test_v8_eval_manifest.py tests/lightweight/test_v8_eval_client.py tests/lightweight/test_v8_eval_report.py -q`；这些测试文件是拟新增项，当前不能直接运行。真实冒烟只在 E2 进行，计入上表。
+测试命令模板：核实 `command -v uv`、`pyproject.toml`、`uv.lock` 后，以显式缓存目录运行 `uv run --no-sync python -m pytest tests/lightweight/test_v8_eval_manifest.py tests/lightweight/test_v8_eval_client.py tests/lightweight/test_v8_eval_orchestration.py tests/lightweight/test_v8_eval_report.py tests/lightweight/test_v8_eval_video_mover.py -q`；这些测试文件是拟新增项，当前不能直接运行。真实冒烟只在 E2 进行，计入上表。
 
 ## 6. 风险与盲区
 
