@@ -21,11 +21,23 @@ worktree，官方 ``_worker``）；H 修改后（拆包后 HEAD，``--force-mirr
         --manifest <原三档 144 局清单 subset_manifest.json> --calibrate
 
 ``generate`` 默认断言 GPU 型号为 A40；``--dev-smoke`` 放行本机 Ada（开发冒烟，``NATIVE_SMOKE``）。
+
+v8 二次生成对拍（1001 方案第一部分 §3「二次生成对拍」、第二部分 §2.2 第 7、9、11 条）::
+
+    # gen1 交付登记成 H 侧（读 _rollout 聚合步写的 delivery.json，schema v8-delivery/1）
+    uv run --no-sync python scripts/parity/hard_parity.py import-delivery --delivery <gen1>/delivery.json --tier v8
+    # H2＝同一交付集再生成一遍（GL A40）
+    uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side H2 --tier v8 \
+        --manifest <gen1>/delivery.json --specs-root artifacts/newtask-v8/specs-root --src-root <...> --out <...>
+    # 比对：先核分母「冻结交付集 = delivery.json = H = H2」，再逐身份按五个互斥终态计数
+    uv run --no-sync python scripts/parity/hard_parity.py compare --pair H:H2 --tier v8 \
+        --manifest <gen1>/delivery.json --specs-root artifacts/newtask-v8/specs-root
 """
 
 from __future__ import annotations
 
 import argparse
+import collections
 import concurrent.futures as cf
 import datetime
 import hashlib
@@ -46,22 +58,30 @@ RUNNER = ROOT / "scripts" / "parity" / "train_split_runner.py"
 GENERATE_H5 = ROOT / "scripts" / "injection-dev" / "generate_h5.py"
 VENDOR = ROOT / "scripts" / "parity" / "official"
 TOLERANCES = ROOT / "scripts" / "configs" / "hard-parity-tolerances.json"
-# v7 起默认目录（v7 方案第二部分 §1.5）；compare／publish／binding 另可用 --h5-root／--compare-root 显式指定
-LOCAL_H5_ROOT = ROOT / "artifacts" / "newtask-v7" / "parity" / "h5"
-COMPARE_ROOT = ROOT / "artifacts" / "newtask-v7" / "parity" / "compare"
+# v8 起默认目录（1001 方案第一部分 §2.3）；compare／publish／binding 另可用 --h5-root／--compare-root 显式指定
+LOCAL_H5_ROOT = ROOT / "artifacts" / "newtask-v8" / "parity" / "h5"
+COMPARE_ROOT = ROOT / "artifacts" / "newtask-v8" / "parity" / "compare"
 ANCHORS = ROOT / "docs" / "validation" / "parity-anchors.json"
+#: xhard0 清单 v8 不变（xhard0 即官方 hard，§2.5「不动」）
 XHARD0_MANIFEST = ROOT / "scripts" / "configs" / "newtask-v7" / "xhard0_manifest.json"
+HARD_SPECS_FILE = ROOT / "src" / "robomme_hard" / "env_record_wrapper" / "hard_specs.py"
 BUCKET = "HongzeFu/robomme-hard-parity"
 HF = ["uvx", "--from", "huggingface_hub==1.8.0", "--with", "click", "hf"]
-#: H2＝v7 正式局的第二次生成（gen2），与 H（gen1）比对 PARITY_V7_TWICE
+#: H2＝v8 正式局的第二次生成（gen2），与 H（gen1）比对 PARITY_H_H2
 SIDES = ("O", "P", "H", "H2")
 PAIRS = ("O:P", "P:H", "O:H", "H:H2")
-#: native＝原三档 144；xhard＝v6 四档回归 165；xhard0＝官方 test 的 hard 192；v7＝v7 正式局 1100
-TIERS = ("native", "xhard", "xhard0", "v7")
-TIER_NAMES = ("xhard1", "xhard2", "xhard3", "xhard4")
+#: native＝原三档 144；xhard＝v6 四档回归 165；xhard0＝官方 test 的 hard 192；v8＝v8 正式局 1070（43 格）
+TIERS = ("native", "xhard", "xhard0", "v8")
+TIER_NAMES = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
 XHARD0_PER_TASK = 12
 XHARD0_EPISODES = tuple(range(3, 48, 4))
-SHAPES = {"native": "16x3x3", "xhard": "13x3x3+16x3", "xhard0": "16x1x12", "v7": "13x3x20+16x1x20"}
+#: v8 形状＝逐格表（hard_specs.V8_CELLS）按档求和 411／411／128／100／20，共 43 格（测试核对与 V8_CELLS 一致）
+SHAPES = {"native": "16x3x3", "xhard": "13x3x3+16x3", "xhard0": "16x1x12", "v8": "cells43:411+411+128+100+20"}
+#: v8 交付清单（S2-B ``_rollout`` 聚合步写）的 schema 与必须显式写出（含零值）的计数键（§2.2 第 7 条）
+V8_DELIVERY_SCHEMA = "v8-delivery/1"
+DELIVERY_COUNT_KEYS = ("exec_over_cap", "backfills", "infra_retries", "failed")
+#: v8 二次生成对拍逐身份五个互斥终态（§2.2 第 11 条），合计必须等于 compared
+TERMINAL_STATES = ("byte_equal", "noise", "h2_fail", "flipped", "structural")
 # 容差自定规则（用户 U-22，第二部分 §3.4）：最大值 × 1.5，带下界与合理性上界
 TOL_RULES = {
     "action_max": {"floor": 0.005, "ceiling": 0.05},
@@ -134,20 +154,147 @@ def xhard_rows(manifest: Path) -> list[dict[str, Any]]:
              "seed": int(s["seed"])} for s in items]
 
 
-def v7_rows(delivery: Path) -> list[dict[str, Any]]:
-    """v7 正式局：gen1 的 ``delivery.json``（行键 task/tier/candidate/seed/episode）。"""
-    payload = json.loads(delivery.read_text())
-    rows = payload["rows"] if isinstance(payload, dict) else payload
-    return [{"task": r["task"], "tier": r.get("tier", r.get("difficulty")), "episode": int(r["episode"]),
-             "seed": int(r["seed"]), "candidate": r.get("candidate")} for r in rows]
+_HARD_SPECS_LIGHT = None
+
+
+def hard_specs_light():
+    """``hard_specs`` 是纯函数模块，但经 ``robomme_hard.env_record_wrapper`` 包导入会连带导入仿真（R9 精神：本进程
+    不导入 robomme_hard 包）。已导入过包时直接复用包内模块；否则按文件路径单独加载一份（不经包 ``__init__``）。"""
+    global _HARD_SPECS_LIGHT
+    loaded = sys.modules.get("robomme_hard.env_record_wrapper.hard_specs")
+    if loaded is not None:
+        return loaded
+    if _HARD_SPECS_LIGHT is None:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("_hard_specs_light", HARD_SPECS_FILE)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        _HARD_SPECS_LIGHT = module
+    return _HARD_SPECS_LIGHT
+
+
+# ── v8 交付清单读取适配（S2-B 产出，键名以 §2.2 第 7 条为准；不确定的键名集中在这里兜底）──────────────
+
+
+def _first(mapping: dict[str, Any], *keys: str, default: Any = None) -> Any:
+    for key in keys:
+        if key in mapping and mapping[key] is not None:
+            return mapping[key]
+    return default
+
+
+def read_delivery(path: Path) -> dict[str, Any]:
+    """读 gen1 的 ``delivery.json``，归一成 ``{schema, base, rows, counts, cells, raw}``。
+
+    假设的字段（S2-B 契约，v8 方案第二部分 §2.2 第 7 条）：
+
+    * 顶层 ``schema``（v8 为 ``v8-delivery/1``）；
+    * 全局计数 ``exec_over_cap``／``backfills``／``infra_retries``／``failed``：放在 ``counts``（或 ``totals``）字典里，
+      或直接放在顶层；缺失的键在 ``counts`` 里记为 ``None``（调用方据此判「没有显式写零」）；``infra_retries``
+      只由 S2-B 聚合行与 delivery.json 给出（/4 规格行里没有），守卫只核其显式存在；
+    * 逐格 ``cells``：``{"<task>/<tier>": {...}}`` 或 ``[{task, tier, ...}]``，原样保留在 ``cells`` 里（键统一成
+      ``"<task>/<tier>"``）；
+    * 逐局 ``rows``（或 ``delivered``）：``task``、``tier``（或 ``difficulty``）、``episode``、``seed``、``candidate``、
+      h5 路径 ``path``（相对 delivery.json 所在目录；或 ``h5_path``／``h5`` 绝对路径）、``h5_sha256``（或 ``sha256``）、
+      ``exec_steps``、``frames``、``env_module``。
+    """
+    path = Path(path)
+    payload = json.loads(path.read_text())
+    if isinstance(payload, list):
+        payload = {"rows": payload}
+    rows = []
+    for r in payload.get("rows") or payload.get("delivered") or []:
+        rows.append({"task": r["task"], "tier": r.get("tier", r.get("difficulty")), "episode": int(r["episode"]),
+                     "seed": int(r["seed"]), "candidate": r.get("candidate", r.get("episode")),
+                     "path": _first(r, "path", "h5_path", "h5"), "h5_sha256": _first(r, "h5_sha256", "sha256"),
+                     "exec_steps": r.get("exec_steps"), "frames": r.get("frames"), "env_module": r.get("env_module"),
+                     "recovery_mode": r.get("recovery_mode")})
+    source = payload.get("counts") or payload.get("totals") or payload
+    counts = {key: source.get(key) for key in DELIVERY_COUNT_KEYS}
+    cells: dict[str, Any] = {}
+    raw_cells = payload.get("cells") or {}
+    if isinstance(raw_cells, dict):
+        cells = {str(k): v for k, v in raw_cells.items()}
+    else:
+        cells = {f"{c['task']}/{c.get('tier', c.get('difficulty'))}": c for c in raw_cells}
+    return {"schema": payload.get("schema"), "base": path.parent, "rows": rows, "counts": counts, "cells": cells,
+            "raw": payload}
+
+
+def delivery_h5(delivery: dict[str, Any], row: dict[str, Any]) -> Path | None:
+    """交付行的 h5 绝对路径：相对路径按 delivery.json 所在目录解析（v7 同口径）。"""
+    if not row.get("path"):
+        return None
+    path = Path(row["path"])
+    return path if path.is_absolute() else delivery["base"] / path
+
+
+def v8_rows(delivery: Path) -> list[dict[str, Any]]:
+    """v8 正式局：gen1 的 ``delivery.json``（经 :func:`read_delivery` 适配）。重复行原样保留，由 compare 计数。"""
+    return [{"task": r["task"], "tier": r["tier"], "episode": r["episode"], "seed": r["seed"],
+             "candidate": r["candidate"], "h5_sha256": r["h5_sha256"]} for r in read_delivery(delivery)["rows"]]
 
 
 def rows_for(tier: str, manifest: Path) -> list[dict[str, Any]]:
     if tier in ("native", "xhard0"):
         return native_rows(manifest)
-    if tier == "v7":
-        return v7_rows(manifest)
+    if tier == "v8":
+        return v8_rows(manifest)
     return xhard_rows(manifest)
+
+
+def parse_cells(spec: str | None, hs=None) -> dict[tuple[str, str], int]:
+    """格表参数：``full``（43 格 ``V8_CELLS``）、``smoke``（2b 冒烟 7 格各 1 局）或 JSON（文件路径或内联文本）。
+    JSON 接受 ``{"<task>/<tier>": n}``、``{task: {tier: n}}``、``[[task, tier, n], ...]`` 或
+    ``[{"task", "tier", "n"|"count"}, ...]``；键必须在 ``V8_CELLS`` 内、局数为正整数且不超过表 2。"""
+    hs = hs or hard_specs_light()
+    spec = spec or "full"
+    if spec == "full":
+        return dict(hs.V8_CELLS)
+    if spec == "smoke":
+        return dict(V8_SMOKE_CELLS)
+    text = Path(spec).read_text() if Path(spec).is_file() else spec
+    payload = json.loads(text)
+    cells: dict[tuple[str, str], int] = {}
+    if isinstance(payload, dict):
+        for key, value in payload.items():
+            if isinstance(value, dict):
+                for tier, n in value.items():
+                    cells[(key, tier)] = n
+            else:
+                task, _, tier = str(key).partition("/")
+                cells[(task, tier)] = value
+    else:
+        for item in payload:
+            if isinstance(item, dict):
+                cells[(item["task"], item["tier"])] = item.get("n", item.get("count"))
+            else:
+                task, tier, n = item
+                cells[(task, tier)] = n
+    bad = {k: v for k, v in cells.items()
+           if k not in hs.V8_CELLS or not isinstance(v, int) or isinstance(v, bool) or not 0 < v <= hs.V8_CELLS[k]}
+    if not cells or bad:
+        raise ParityError(f"格表非法（须为 V8_CELLS 的非空子集、局数为不超过表 2 的正整数）：{bad or '空'}")
+    return cells
+
+
+#: 2b 冒烟 7 格（v8 方案第一部分 §3「最小冒烟」）：每格 1 局
+V8_SMOKE_CELLS = {("StopCube", "xhard1"): 1, ("StopCube", "xhard5"): 1, ("SwingXtimes", "xhard5"): 1,
+                  ("VideoUnmask", "xhard1"): 1, ("RouteStick", "xhard2"): 1, ("PatternLock", "xhard3"): 1,
+                  ("PickXtimes", "xhard3"): 1}
+
+
+def frozen_delivery(specs_root: Path, cells: dict[tuple[str, str], int]) -> list[dict[str, Any]]:
+    """冻结交付集：v8 /4 规格根里 ``delivered``（selected 且 rollout ok）的行；先过 ``load_specs_v8`` 全部校验。"""
+    hs = hard_specs_light()
+    try:
+        loaded = hs.load_specs_v8(specs_root, cells, check_fingerprint=False)
+    except Exception as exc:  # noqa: BLE001 冻结根本身不合法即停（第⑤类之上的前置错误）
+        raise ParityError(f"冻结规格根校验失败：{type(exc).__name__}: {exc}") from exc
+    return [{"task": r["task"], "tier": tier, "episode": int(r["episode"]), "seed": int(r["seed"]),
+             "h5_sha256": (r.get("rollout") or {}).get("h5_sha256")}
+            for tier, (_, rows) in loaded.items() for r in rows if hs.delivered(r)]
 
 
 def ident(row: dict[str, Any]) -> tuple[str, str, int]:
@@ -251,8 +398,8 @@ def cmd_generate(args) -> int:
     rows = rows_for(args.tier, args.manifest)
     if args.tier == "xhard" and args.side != "H":
         raise ParityError("xhard 只生成 H 侧（P 侧复用 parity-anchor-v6 登记的缓存）")
-    if args.tier == "v7" and args.side not in ("H2",):
-        raise ParityError("v7 经 hard_parity 只生成 H2（gen2）；gen1 由 generate_h5 --mode continue 出，再 import-delivery 登记为 H")
+    if args.tier == "v8" and args.side not in ("H2",):
+        raise ParityError("v8 经 hard_parity 只生成 H2（gen2）；gen1 由 generate_h5 --mode continue 出，再 import-delivery 登记为 H")
     if args.tier == "xhard0" and args.side not in ("O", "H"):
         raise ParityError("xhard0 只生成 O、H 两侧（首次，无 P）")
     if args.smoke:
@@ -297,9 +444,9 @@ def cmd_generate(args) -> int:
         command = [sys.executable, str(GENERATE_H5), "--mode", "replay", "--identities", str(identities),
                    "--output", str(out), "--workers", str(args.workers), "--gpu", str(args.gpu),
                    "--pkg", "robomme_hard", "--src-root", str(args.src_root)]
-        if args.tier == "v7":
+        if args.tier == "v8":
             if args.specs_root is None:
-                raise ParityError("--tier v7 须给 --specs-root（v7 四档规格根，gen2 按 gen1 交付清单重放）")
+                raise ParityError("--tier v8 须给 --specs-root（v8 五档 /4 规格根，gen2 按 gen1 交付清单重放）")
             command += ["--specs", str(args.specs_root)]
         if args.dev_smoke:
             command.append("--dev-smoke")
@@ -645,16 +792,22 @@ def cmd_anchor(args) -> int:
 
 
 def cmd_import_delivery(args) -> int:
-    """gen1 → H 侧：把 delivery.json 与逐局 h5 登记成 ``<h5-root>/H-v7/identities.jsonl``（只读 symlink，sha 重算核对）。"""
-    payload = json.loads(args.delivery.read_text())
+    """gen1 → H 侧：把 delivery.json 与逐局 h5 登记成 ``<h5-root>/H-v8/identities.jsonl``（只读 symlink，sha 重算核对）。
+    交付行缺 h5 路径、缺 ``h5_sha256`` 或文件不存在都记为 sha_mismatch（不静默跳过）。"""
+    delivery = read_delivery(args.delivery)
+    if delivery["schema"] != V8_DELIVERY_SCHEMA:
+        raise ParityError(f"--tier v8 只接受 {V8_DELIVERY_SCHEMA}：{delivery['schema']!r}")
     out = args.h5_root / f"H-{args.tier}"
     if out.exists():
         raise ParityError(f"{out} 已存在")
     out.mkdir(parents=True)
-    base = args.delivery.parent
     lines, bad = [], 0
-    for r in payload["rows"]:
-        src = (base / r["path"]).resolve()
+    for r in delivery["rows"]:
+        h5 = delivery_h5(delivery, r)
+        if h5 is None or not h5.is_file() or not r.get("h5_sha256"):
+            bad += 1
+            continue
+        src = h5.resolve()
         rel = Path("episodes") / r["tier"] / f"{r['task']}_episode_{r['episode']}" / "hdf5_files" / src.name
         (out / rel).parent.mkdir(parents=True, exist_ok=True)
         (out / rel).symlink_to(src)
@@ -665,9 +818,9 @@ def cmd_import_delivery(args) -> int:
                       "env_package": "robomme_hard", "env_module": r.get("env_module"), "wrapper_modules": None,
                       "worker": "train_split_worker.run_one", "robomme_module": None, "recovery_mode": r.get("recovery_mode"),
                       "path": str(rel), "bytes": src.stat().st_size, "sha256": actual, "frames": r.get("frames"),
-                      "media": [], "source": str(args.delivery)})
+                      "exec_steps": r.get("exec_steps"), "media": [], "source": str(args.delivery)})
     (out / "identities.jsonl").write_text("".join(json.dumps(l, ensure_ascii=False, sort_keys=True) + "\n" for l in lines))
-    for launch in sorted(base.glob("launch-*.json")):
+    for launch in sorted(delivery["base"].glob("launch-*.json")):
         shutil.copy2(launch, out / launch.name)
     status = "PASS" if bad == 0 and lines else "FAIL"
     print(f"IMPORT_DELIVERY={status} tier={args.tier} rows={len(lines)} sha_mismatch={bad} out={out}", flush=True)
@@ -681,10 +834,68 @@ def _classify_over(record: dict[str, Any]) -> str:
     return "noise" if ok_layers and fd is not None and int(fd) > 0 else "fail"
 
 
+def _v8_denominator(args, rows: list[dict[str, Any]], left_lines: list[dict[str, Any]],
+                    right_lines: list[dict[str, Any]]) -> dict[str, Any]:
+    """v8 分母核对（§2.2 第 11 条）：冻结交付集 F（/4 规格根里 delivered 的行）= delivery.json 的行 D = H 侧 = H2 侧。
+
+    * ``missing``：F 中至少缺席 D／H／H2 之一的身份数；
+    * ``extra``：出现在 D∪H∪H2 却不在 F 里的身份数；
+    * ``duplicate``：四方各自的重复出现次数之和（同一身份在一方出现 k 次记 k−1）；
+    * 比对全集 ``universe`` = F∪D∪H∪H2，``compared`` = 其大小，空集即 FAIL。
+    """
+    cells = parse_cells(args.cells)
+    frozen = frozen_delivery(args.specs_root, cells)
+    sources = {"frozen": [ident(r) for r in frozen], "delivery": [ident(r) for r in rows],
+               "left": [ident(line) for line in left_lines], "right": [ident(line) for line in right_lines]}
+    sets = {name: set(items) for name, items in sources.items()}
+    counters = {name: collections.Counter(items) for name, items in sources.items()}
+    dup_keys = {key for counter in counters.values() for key, c in counter.items() if c > 1}
+    duplicate = sum(c - 1 for counter in counters.values() for c in counter.values() if c > 1)
+    universe = set().union(*sets.values())
+    in_all = set.intersection(*sets.values())
+    return {"cells": cells, "expected": sum(cells.values()), "frozen_n": len(frozen),
+            "frozen_cells": len({key[:2] for key in sets["frozen"]}), "universe": universe, "in_all": in_all,
+            "dup_keys": dup_keys, "duplicate": duplicate, "missing": len(sets["frozen"] - in_all),
+            "extra": len(universe - sets["frozen"]), "sizes": {name: len(items) for name, items in sources.items()},
+            "frozen_sha": {ident(r): r.get("h5_sha256") for r in frozen},
+            "delivery_sha": {ident(r): r.get("h5_sha256") for r in rows}}
+
+
+def classify_terminal(key: tuple, a: dict[str, Any] | None, b: dict[str, Any] | None, m: dict[str, Any],
+                      denom: dict[str, Any], binding_ok: bool, recovery_bad: bool) -> str:
+    """逐身份五个互斥终态（§2.2 第 11 条），每个身份恰好落一类：
+
+    ⑤ ``structural``：身份不在四方交集、有重复、包归属（来源）不符、gen1 的 h5 sha 与交付清单／冻结规格不符、
+      两侧都没产出、h5 打不开、setup 或结构（schema、帧号连续）不等；
+    ③ ``h2_fail``：gen1（左）成功而二次生成（右）失败；④ ``flipped``：gen1 失败而二次生成成功；
+    ① ``byte_equal``：两侧 h5 sha 相同；② ``noise``：身份／setup／schema／成败相同，只 sha 与帧数不同（首个分叉步另记）。
+    """
+    if key not in denom["in_all"] or key in denom["dup_keys"] or not binding_ok or recovery_bad:
+        return "structural"
+    success_a = bool(a and a.get("success") and a.get("path"))
+    success_b = bool(b and b.get("success") and b.get("path"))
+    if success_a:
+        sha_a = a.get("sha256")
+        for source in (denom["delivery_sha"].get(key), denom["frozen_sha"].get(key)):
+            if source is not None and source != sha_a:
+                return "structural"
+    if success_a and not success_b:
+        return "h2_fail"
+    if success_b and not success_a:
+        return "flipped"
+    if not success_a and not success_b:
+        return "structural"
+    if m.get("error") is not None or not m.get("setup_equal") or not m.get("schema_equal") or not m.get("contiguous"):
+        return "structural"
+    return "byte_equal" if a.get("sha256") is not None and a.get("sha256") == b.get("sha256") else "noise"
+
+
 def cmd_compare(args) -> int:
     left_side, right_side = args.pair.split(":")
     if args.calibrate and args.pair != "O:P":
         raise ParityError("--calibrate 只允许 O:P（R21）")
+    if args.tier == "v8" and args.specs_root is None:
+        raise ParityError("--tier v8 须给 --specs-root（冻结交付集取自 /4 规格根的 delivered 行，用于分母核对）")
     rows = rows_for(args.tier, args.manifest)
     anchor_entry = None
     dirs = {}
@@ -716,7 +927,15 @@ def cmd_compare(args) -> int:
     for label, problems in ((left_side, left_problems), (right_side, right_problems)):
         print(f"SIDE_SELF_CHECK={'PASS' if not problems else 'FAIL'} side={label} tier={args.tier} "
               f"problems={len(problems)}" + (f" detail={problems[:3]}" if problems else ""), flush=True)
-    keys = sorted({ident(r) for r in rows})
+    # 分母：调用方清单本身不得为空、不得有重复身份（空清单时各项计数都是 0 = 0，旧口径会误判 PASS）
+    manifest_ids = [ident(r) for r in rows]
+    manifest_dup = len(manifest_ids) - len(set(manifest_ids))
+    denom = None
+    if args.tier == "v8":
+        denom = _v8_denominator(args, rows, side_lines(left_dir), side_lines(right_dir))
+        keys = sorted(denom["universe"])
+    else:
+        keys = sorted(set(manifest_ids))
     jobs = {}
     with cf.ProcessPoolExecutor(max_workers=args.workers) as pool:
         for key in keys:
@@ -727,12 +946,14 @@ def cmd_compare(args) -> int:
     tol = None if args.calibrate else load_tolerances()
     counts = {k: 0 for k in ("identity_equal", "setup_equal", "schema_equal", "success_equal", "both_success",
                              "both_fail", "sha_equal", "frames_equal", "binding_ok", "recovery_mismatch")}
+    terminal = {state: 0 for state in TERMINAL_STATES}
+    noise_divergence: list[int] = []
     tol_hits, pair_rows, both_fail_rows = [], [], []
     for key in keys:
         a, b, m = left.get(key), right.get(key), metrics.get(key, {})
         record = {"task": key[0], "tier": key[1], "seed": key[2], "left": a, "right": b,
                   **{k: v for k, v in m.items() if k not in ("left", "right")}}
-        present = a is not None and b is not None
+        present = a is not None and b is not None and (denom is None or key in denom["in_all"])
         counts["identity_equal"] += int(present)
         success_a = bool(a and a["success"] and a.get("path"))
         success_b = bool(b and b["success"] and b.get("path"))
@@ -744,8 +965,8 @@ def cmd_compare(args) -> int:
             counts["both_fail"] += 1
             both_fail_rows.append({"key": key, "left": a.get("error_type"), "right": b.get("error_type")})
         rec_a, rec_b = (a or {}).get("recovery_mode"), (b or {}).get("recovery_mode")
-        if present and rec_a is not None and rec_b is not None and rec_a != rec_b:
-            counts["recovery_mismatch"] += 1
+        recovery_bad = present and rec_a is not None and rec_b is not None and rec_a != rec_b
+        counts["recovery_mismatch"] += int(recovery_bad)
         counts["setup_equal"] += int(bool(m.get("setup_equal")) and m.get("error") is None)
         counts["schema_equal"] += int(bool(m.get("schema_equal")) and bool(m.get("contiguous")))
         counts["sha_equal"] += int(present and a.get("sha256") is not None and a.get("sha256") == b.get("sha256"))
@@ -754,6 +975,12 @@ def cmd_compare(args) -> int:
                                      for side, line in ((left_side, a), (right_side, b)))
         counts["binding_ok"] += int(binding_ok)
         record["binding_ok"] = binding_ok
+        if denom is not None:
+            state = classify_terminal(key, a, b, m, denom, binding_ok, recovery_bad)
+            terminal[state] += 1
+            record["terminal"] = state
+            if state == "noise" and m.get("first_divergence") is not None:
+                noise_divergence.append(int(m["first_divergence"]))
         if tol and m.get("error") is None and m:
             over = {k: m[f] for k, f in (("action_max", "action_max"), ("state_max", "state_max"),
                                           ("image_mad", "image_mad"), ("frames_max", "frames_diff")) if m[f] > tol[k]}
@@ -768,9 +995,15 @@ def cmd_compare(args) -> int:
             stream.write(json.dumps(record, ensure_ascii=False, sort_keys=True, default=str) + "\n")
     n = len(keys)
     produced = counts["both_success"] + counts["both_fail"]
-    judged = all(counts[k] == n for k in ("identity_equal", "success_equal", "binding_ok")) \
+    judged = n > 0 and manifest_dup == 0 \
+        and all(counts[k] == n for k in ("identity_equal", "success_equal", "binding_ok")) \
         and counts["setup_equal"] == counts["both_success"] and counts["schema_equal"] == counts["both_success"] \
         and produced == n and counts["recovery_mismatch"] == 0 and not left_problems and not right_problems
+    if denom is not None:
+        if sum(terminal.values()) != n:  # 互斥终态合计必须等于 compared（实现自检，不应发生）
+            raise ParityError(f"五终态合计 {sum(terminal.values())} ≠ compared {n}")
+        judged = judged and denom["missing"] == denom["extra"] == denom["duplicate"] == 0 \
+            and n == denom["expected"] == denom["frozen_n"] and terminal["byte_equal"] + terminal["noise"] == n
     ok_metrics = [m for m in metrics.values() if m.get("error") is None]
     worst = {k: max((m[f] for m in ok_metrics), default=0.0) for k, f in (
         ("action_max", "action_max"), ("state_max", "state_max"), ("image_mad", "image_mad"), ("frames_max", "frames_diff"))}
@@ -800,10 +1033,24 @@ def cmd_compare(args) -> int:
     hard_line = len(tol_hits) > 0.05 * n
     verdict = "PASS" if judged and fail_over == 0 and not hard_line else "FAIL"
     tol_text = " ".join(f"{k}={worst[k]:.3g}/{tol[k]:.3g}" for k in ("action_max", "state_max", "image_mad", "frames_max"))
-    print(f"{name}={verdict} {base} tol_over={fail_over} noise={noise} over_total={len(tol_hits)} "
-          f"hard_line_5pct={'HIT' if hard_line else 'ok'} {tol_text} sha_equal={counts['sha_equal']} "
-          f"frames_equal={counts['frames_equal']} binding_ok={counts['binding_ok']} "
-          f"recovery_mismatch={counts['recovery_mismatch']}", flush=True)
+    tail = (f"hard_line_5pct={'HIT' if hard_line else 'ok'} {tol_text} sha_equal={counts['sha_equal']} "
+            f"frames_equal={counts['frames_equal']} binding_ok={counts['binding_ok']} "
+            f"recovery_mismatch={counts['recovery_mismatch']}")
+    if denom is None:
+        print(f"{name}={verdict} {base} tol_over={fail_over} noise={noise} over_total={len(tol_hits)} {tail}"
+              + ("" if n and not manifest_dup else f" manifest_rows={len(rows)} manifest_duplicate={manifest_dup}"),
+              flush=True)
+    else:
+        # v8：分母与五终态在前（§3 判定行形状）；容差分类里的 noise 改名 tol_noise，免得与终态 noise 同名
+        print(f"{name}={verdict} tier={args.tier} compared={n} cells={denom['frozen_cells']} missing={denom['missing']} "
+              f"extra={denom['extra']} duplicate={denom['duplicate']} identity_equal={counts['identity_equal']} "
+              + " ".join(f"{state}={terminal[state]}" for state in TERMINAL_STATES)
+              + f" expected={denom['expected']} frozen={denom['sizes']['frozen']} delivery={denom['sizes']['delivery']} "
+              f"left_rows={denom['sizes']['left']} right_rows={denom['sizes']['right']} shape={shape} "
+              f"setup_equal={counts['setup_equal']} schema_equal={counts['schema_equal']} "
+              f"success_equal={counts['success_equal']} both_success={counts['both_success']} both_fail={counts['both_fail']} "
+              f"noise_first_divergence_min={min(noise_divergence) if noise_divergence else None} "
+              f"tol_over={fail_over} tol_noise={noise} over_total={len(tol_hits)} {tail}", flush=True)
     if both_fail_rows:
         print(f"PARITY_BOTH_FAIL=REVIEW pair={args.pair} tier={args.tier} n={len(both_fail_rows)} "
               f"detail={both_fail_rows[:5]}", flush=True)
@@ -813,7 +1060,14 @@ def cmd_compare(args) -> int:
     summary = {"verdict": verdict, "counts": counts, "worst": worst, "tolerances": tol, "tol_hits": tol_hits,
                "noise": noise, "tol_over": fail_over, "hard_line_5pct": hard_line, "both_fail": both_fail_rows,
                "left_dir": str(left_dir), "right_dir": str(right_dir), "p_anchor": args.p_anchor,
-               "left_problems": left_problems, "right_problems": right_problems}
+               "left_problems": left_problems, "right_problems": right_problems,
+               "manifest_rows": len(rows), "manifest_duplicate": manifest_dup}
+    if denom is not None:
+        summary["terminal"] = terminal
+        summary["denominator"] = {k: denom[k] for k in ("expected", "frozen_n", "frozen_cells", "missing", "extra",
+                                                         "duplicate", "sizes")}
+        summary["terminal_by_identity"] = {"/".join(map(str, r_key)): rec["terminal"]
+                                           for r_key, rec in zip(keys, pair_rows)}
     (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str) + "\n")
     return 0 if verdict == "PASS" else 1
 
@@ -965,7 +1219,8 @@ def build_parser() -> argparse.ArgumentParser:
     gen.add_argument("--stage", type=Path, default=None, help="NFS 暂存目录；每局 sha 后复制过去并删本地大文件")
     gen.add_argument("--smoke", type=int, default=0, help="只跑前 N 局（SHARD_SMOKE）")
     gen.add_argument("--dev-smoke", action="store_true", help="放行非 A40（本机开发冒烟 NATIVE_SMOKE）")
-    gen.add_argument("--specs-root", type=Path, default=None, help="--tier v7：v7 四档规格根（含 xhard{1..4}/specs.jsonl）")
+    gen.add_argument("--specs-root", type=Path, default=None,
+                     help="--tier v8：v8 五档 /4 规格根（含 xhard{1..5}/specs.jsonl，如 artifacts/newtask-v8/specs-root）")
     gen.add_argument("--resume", action="store_true")
     gen.set_defaults(func=cmd_generate)
     pub = sub.add_parser("publish")
@@ -986,7 +1241,12 @@ def build_parser() -> argparse.ArgumentParser:
     cmp_ = sub.add_parser("compare")
     cmp_.add_argument("--pair", choices=PAIRS, required=True)
     cmp_.add_argument("--tier", choices=TIERS, required=True)
-    cmp_.add_argument("--manifest", type=Path, required=True)
+    cmp_.add_argument("--manifest", type=Path, required=True,
+                      help="身份清单；--tier v8 时为 gen1 的 delivery.json（v8-delivery/1）")
+    cmp_.add_argument("--specs-root", type=Path, default=None,
+                      help="--tier v8 必填：冻结 /4 规格根，其 delivered 行即冻结交付集（分母核对：冻结集 = delivery.json = H = H2）")
+    cmp_.add_argument("--cells", default="full",
+                      help="--tier v8：格表 full（43 格）｜smoke（2b 冒烟 7 格）｜JSON 文件或内联 JSON（分片子集）")
     cmp_.add_argument("--left", type=Path, default=None)
     cmp_.add_argument("--right", type=Path, default=None)
     cmp_.add_argument("--p-anchor", default=None, help="P 侧锚点 tag（从 docs/validation/parity-anchors.json 取目录并先核验）")
@@ -1010,7 +1270,7 @@ def build_parser() -> argparse.ArgumentParser:
     anc.set_defaults(func=cmd_anchor)
     dlv = sub.add_parser("import-delivery", help="gen1 的 delivery.json 与逐局 h5 登记成 H 侧 identities.jsonl")
     dlv.add_argument("--delivery", type=Path, required=True)
-    dlv.add_argument("--tier", default="v7", choices=("v7",))
+    dlv.add_argument("--tier", default="v8", choices=("v8",))
     dlv.add_argument("--h5-root", type=Path, default=LOCAL_H5_ROOT)
     dlv.set_defaults(func=cmd_import_delivery)
     bind = sub.add_parser("binding", help="ENV_PACKAGE_BINDING：三侧 native identities 的包归属")
