@@ -402,6 +402,182 @@ def test_missing_fields_and_canary(tmp_path):
     assert rc == 1
 
 
+# ---------------------------------------------------------------- V9：--reuse 合并复用（1002 方案 S1-F）
+
+def _v9_rows(n_new=80, n_reused=720):
+    """新评 80 行（MoveCube／InsertPeg xhard4）与复用 720 行（其余任务五档）；MoveCube 新评与 V8 同 seed 不同 spec。"""
+    new = []
+    for i in range(n_new):
+        task = "MoveCube" if i < 50 else "InsertPeg"
+        cand = i if i < 50 else 29 + i - 50
+        seed = 22_000_000 + (0 if task == "MoveCube" else 100_000) + cand
+        new.append({"task": task, "tier": "xhard4", "seed": seed, "candidate": cand, "builder_episode": cand,
+                    "source_episode": None, "spec_sha256": f"{'9' * 56}{i:08d}", "effective_max_steps": 1600,
+                    "key": f"{task}_xhard4_{seed}", "shard": f"{i % 10:02d}"})
+    reused = []
+    tasks = ("PickXtimes", "VideoUnmask", "BinFill", "StopCube")
+    for i in range(n_reused):
+        task, tier = tasks[i % 4], f"xhard{1 + (i // 4) % 5}"
+        seed = 16_000_000 + i
+        reused.append({"task": task, "tier": tier, "seed": seed, "candidate": i, "builder_episode": i,
+                       "source_episode": None, "spec_sha256": f"{'8' * 56}{i:08d}", "effective_max_steps": 1600,
+                       "key": f"{task}_{tier}_{seed}", "shard": "00"})
+    return new, reused
+
+
+def _write_stage_rows(stage: Path, rows: list[dict], status_of, *, seat_of=lambda r: "00", rec_root=None,
+                      late_status=None):
+    """按契约写 sNN/<policy>/results.jsonl 与账本（每身份一次尝试 + accept）；rec_root 给出时按 V8 搬运布局落录像。"""
+    for pol in POLICIES:
+        for r in rows:
+            d = stage / f"s{seat_of(r)}" / pol
+            d.mkdir(parents=True, exist_ok=True)
+            aid = uuid.uuid4().hex
+            st = status_of(pol, r)
+            name = f"{r['key']}.a1"
+            res = {"v8": True, "key": r["key"], "task": r["task"], "tier": r["tier"], "seed": r["seed"],
+                   "candidate": r["candidate"], "spec_sha256": r["spec_sha256"], "policy": pol, "attempt_id": aid,
+                   "attempt_no": 1, "status": st, "task_success": st == "success", "exec_steps": 100,
+                   "infra": False, "rec_dir": f"/tmp/R/rec/{pol}/{name}", "recorder_verify": "PASS"}
+            led = [{"kind": "attempt_start", "attempt_id": aid, "attempt_no": 1},
+                   {"kind": "attempt_end", "attempt_id": aid, "attempt_no": 1, "status": st},
+                   {"kind": "accept", "attempt_id": aid, "accepted_attempt_id": aid, "attempt_no": 1}]
+            with (d / "results.jsonl").open("a") as fh:
+                fh.write(json.dumps(res) + "\n")
+                if late_status and late_status(pol, r):  # accept 之后迟到的另一终态：不得被当成终态
+                    fh.write(json.dumps(dict(res, attempt_id=uuid.uuid4().hex, attempt_no=2,
+                                             status=late_status(pol, r),
+                                             task_success=late_status(pol, r) == "success")) + "\n")
+            with (d / f"{pol}.ledger.jsonl").open("a") as fh:
+                for x in led:
+                    fh.write(json.dumps({"t": 0, "key": r["key"], "policy": pol, **x}) + "\n")
+            if rec_root is not None:
+                vd = rec_root / pol / r["tier"] / r["task"] / name
+                vd.mkdir(parents=True, exist_ok=True)
+                for f in ("front.mkv", "wrist.mkv", "summary.json"):
+                    (vd / f).write_text(f"{pol}-{name}-{f}")
+
+
+def _v9_setup(tmp_path):
+    new, reused_rows = _v9_rows()
+    # V8：复用 720 行 + V8 同 seed 的 MoveCube 旧局（spec 不同，不得被认成复用）
+    v8_extra = [dict(r, spec_sha256="7" * 64) for r in new[:20]]
+    v8_rows = reused_rows + v8_extra
+    v8_dir = tmp_path / "v8"
+    (v8_dir / "manifest").mkdir(parents=True)
+    v8_man = v8_dir / "manifest" / "manifest.json"
+    v8_man.write_text(json.dumps({"schema": "v8-eval-manifest/1", "total": len(v8_rows), "rows": v8_rows}))
+    # V8 账本：smvla 偶数号成功、mme 全失败；每身份另写一条迟到 success（不入分数）
+    _write_stage_rows(v8_dir / "nfs-records" / "run", v8_rows,
+                      lambda pol, r: "success" if pol == "smvla" and r["candidate"] % 2 == 0 else "fail",
+                      late_status=lambda pol, r: "success" if pol == "mme" else None)
+    # V9 新评：smvla 全成功、mme 前 10 局成功
+    stage, videos = tmp_path / "v9stage", tmp_path / "v9videos"
+    _write_stage_rows(stage, new, lambda pol, r: "success" if pol == "smvla" or r["candidate"] < 10 else "fail",
+                      seat_of=lambda r: r["shard"], rec_root=videos)
+    # moved.jsonl：逐文件 sha256（与 V8 搬运脚本同格式）
+    import hashlib
+    with (videos / "moved.jsonl").open("w") as fh:
+        for pol in POLICIES:
+            for r in new:
+                d = videos / pol / r["tier"] / r["task"] / f"{r['key']}.a1"
+                fh.write(json.dumps({"mode": "v8", "policy": pol, "key": r["key"], "task": r["task"], "tier": r["tier"],
+                                     "dest": str(d), "files": {f.name: hashlib.sha256(f.read_bytes()).hexdigest()
+                                                               for f in sorted(d.iterdir())}}) + "\n")
+    mdir = tmp_path / "v9run" / "manifest"
+    mdir.mkdir(parents=True)
+    rdoc = {"schema": "v9-eval-reused/1", "v8_manifest": str(v8_man),
+            "v8_manifest_sha256": hashlib.sha256(v8_man.read_bytes()).hexdigest(), "count": len(reused_rows),
+            "rows": sorted(({"task": r["task"], "tier": r["tier"], "seed": r["seed"], "spec_sha256": r["spec_sha256"],
+                             "v8_key": r["key"]} for r in reused_rows), key=lambda x: (x["task"], x["tier"], x["seed"]))}
+
+    def write_reused(doc):
+        text = json.dumps(doc, ensure_ascii=False, indent=1, sort_keys=True) + "\n"
+        (mdir / "reused.json").write_text(text)
+        cells: dict[str, int] = {}
+        for r in new:
+            cells[f"{r['task']}@{r['tier']}"] = cells.get(f"{r['task']}@{r['tier']}", 0) + 1
+        man = {"schema": "v8-eval-manifest/1", "total": len(new), "xhard0_dropped": 192, "cells": cells,
+               "shards": {}, "rows": new,
+               "reused": {"path": "reused.json", "sha256": hashlib.sha256(text.encode()).hexdigest(),
+                          "count": doc["count"], "v8_manifest": str(v8_man),
+                          "v8_manifest_sha256": doc["v8_manifest_sha256"]}}
+        (mdir / "manifest.json").write_text(json.dumps(man))
+
+    write_reused(rdoc)
+    return {"new": new, "reused": reused_rows, "v8_dir": v8_dir, "v8_man": v8_man, "stage": stage, "videos": videos,
+            "manifest": mdir / "manifest.json", "rdoc": rdoc, "write_reused": write_reused}
+
+
+def _run_v9(fx, out, capsys, monkeypatch):
+    monkeypatch.setattr(v8r, "count_media_frames", lambda path, videos: 7)
+    rc = v8r.main(["--manifest", str(fx["manifest"]), "--stage", str(fx["stage"]), "--videos", str(fx["videos"]),
+                   "--policies", ",".join(POLICIES), "--out", str(out), "--reuse", str(fx["v8_dir"]),
+                   "--reuse-manifest", str(fx["v8_man"])])
+    lines = capsys.readouterr().out.strip().splitlines()
+    rep = json.loads((out / "report.json").read_text())
+    return rc, rep, lines
+
+
+def _tree_digest(root: Path) -> dict:
+    import hashlib
+    return {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in sorted(root.rglob("*")) if p.is_file()}
+
+
+def test_v9报告合并复用(tmp_path, capsys, monkeypatch):
+    fx = _v9_setup(tmp_path)
+    before = _tree_digest(fx["v8_dir"])
+    rc, rep, lines = _run_v9(fx, tmp_path / "out", capsys, monkeypatch)
+    assert lines[-3:] == [
+        "V9_EVAL_COVERAGE=PASS policies=2 expected=80 missing=0 extra=0 duplicate=0 conflicting_terminal=0 error_final=0",
+        "V9_EVAL_REPORT=PASS total=800 new=80 reused=720 count_mismatch=0 media_unexplained=0",
+        "V9_EVAL_VIDEOS=PASS policies=2 expected=160 videos=160 missing=0 decode_fail=0 sha_mismatch=0",
+    ], (lines, rep["v9"]["count_mismatch_detail"][:5])
+    assert rc == 0
+    assert _tree_digest(fx["v8_dir"]) == before  # 不改写 V8 任何文件
+    t = rep["v9"]["totals"]
+    # 复用终态取 V8 账本 accepted_attempt_id：smvla 偶数号成功 360；mme 全 fail（迟到 success 不入分数）
+    assert t["smvla"]["denominator"] == t["mme"]["denominator"] == 800
+    assert t["smvla"]["reused_success"] == 360 and t["smvla"]["new_success"] == 80 and t["smvla"]["success"] == 440
+    assert t["mme"]["reused_success"] == 0 and t["mme"]["new_success"] == 10 and t["mme"]["success"] == 10
+    assert sum(v["denominator"] for v in t["smvla"]["tasks"].values()) == 800
+    assert t["smvla"]["tasks"]["MoveCube"] == {"denominator": 50, "success": 50, "success_rate": 1.0}
+    assert sum(v["denominator"] for v in t["mme"]["tiers"].values()) == 800
+    assert rep["v9"]["v8_stage"].endswith("nfs-records/run")
+    # 新评分表仍按 V8 口径，分母 80
+    assert rep["per_policy"]["smvla"]["denominator"] == 80
+    md = (tmp_path / "out" / "report.md").read_text()
+    assert md.startswith("# V9 双模型评估汇总") and "800 局总表" in md and "新评身份分表" in md
+
+    # 篡改 reused.json 一条 spec_sha256（同步更新 manifest 里的 sha，使只剩四元组不符）→ count_mismatch
+    doc = json.loads(json.dumps(fx["rdoc"]))
+    doc["rows"][0]["spec_sha256"] = "0" * 64
+    fx["write_reused"](doc)
+    rc, rep, lines = _run_v9(fx, tmp_path / "out2", capsys, monkeypatch)
+    r = kv(lines[-2])
+    assert r["_verdict"] == "FAIL" and int(r["count_mismatch"]) >= 1 and rc == 1
+    assert any("四元组" in x for x in rep["v9"]["count_mismatch_detail"])
+
+    # 篡改 reused.json 但不更新 manifest.reused.sha256 → count_mismatch
+    fx["write_reused"](fx["rdoc"])
+    (fx["manifest"].parent / "reused.json").write_text(json.dumps(doc))
+    rc, rep, lines = _run_v9(fx, tmp_path / "out3", capsys, monkeypatch)
+    assert kv(lines[-2])["_verdict"] == "FAIL" and any("sha256" in x for x in rep["v9"]["count_mismatch_detail"])
+
+
+def test_v9视频缺失与sha不符(tmp_path, capsys, monkeypatch):
+    import shutil
+    fx = _v9_setup(tmp_path)
+    r0, r1 = fx["new"][0], fx["new"][1]
+    shutil.rmtree(fx["videos"] / "mme" / "xhard4" / r0["task"] / f"{r0['key']}.a1")
+    (fx["videos"] / "smvla" / "xhard4" / r1["task"] / f"{r1['key']}.a1" / "front.mkv").write_text("tampered")
+    rc, rep, lines = _run_v9(fx, tmp_path / "out", capsys, monkeypatch)
+    v = kv(lines[-1])
+    assert v["_verdict"] == "FAIL" and v["expected"] == "160" and v["videos"] == "158"
+    assert v["missing"] == "1" and v["sha_mismatch"] == "1" and rc == 1
+
+
 def test_zz_summary_line(request):
     """放在最后（pytest 按定义顺序执行）：本次会话前面没有失败、也没有跳过才打印 PASS。"""
     assert request.session.testsfailed == 0, "前面有用例失败"
