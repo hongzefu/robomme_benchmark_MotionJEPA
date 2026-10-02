@@ -8,7 +8,17 @@
 #   run_seat.sh --seat 甲 --seat-idx 1 --gpu 0 --cond N --out <dir> (--queue <dir> | --identities <json>)
 #               [--policies smvla,mme] [--cpus 0-3] [--canary Task:source_episode:seed] [--order forward|reverse|shuffle]
 #               [--mme-ckpt <run>/79999] [--smvla-ckpt <dir>] [--compile-cache on|off] [--det on|off]
-#               [--relay on|off] [--limit N] [--no-record] [--client-per-task]
+#               [--relay on|off] [--limit N] [--no-record] [--client-per-task] [--never-degrade]
+#               [--episode-wall-smvla S] [--episode-wall-mme S]
+# V8 模式（1001-v8-post-evaluation-gl-plan.md、契约 C3；不带 --v8 时一切同旧版）：
+#   run_seat.sh ... --identities <shard-NN.json> --v8 --ledger-dir <dir> --reset-budget N --infra-retry-budget N
+#               [--rec-root <dir>] [--openpi-data-home <dir> --tokenizer-sha256 <hex>]（跑 mme 时这两项必填）
+#   账本 <ledger-dir>/<policy>.ledger.jsonl；录像根 <rec-root>/<policy>（传给客户端 --rec-root）；
+#   单局墙钟默认 smvla 900 s、mme 1200 s；客户端退出 5（reset 额度耗尽）与 3（阻塞）不重启、照实收尾；
+#   MME server 启动前 OPENPI_DATA_HOME 固定为 --openpi-data-home，核 <dir>/big_vision/paligemma_tokenizer.model 的
+#   sha256：不符打印 RUN_BLOCKED reason=tokenizer_sha 并不启 server，相符打印 TOKENIZER_SHA=PASS sha256=<hex>。
+#   V8 模式不接受 --queue、--canary、--client-per-task、--no-record；setsid 起的进程组记在 <out>/.v8-pgids，
+#   供外层 run_v8_gl.sh 在本脚本异常死亡后回收。
 # --client-per-task（仅 identities 模式，计划 5.1 E1「每任务起新客户端进程、server 常驻」）：server 常驻，
 #   按身份文件里任务首次出现的顺序分组，每组起一个新客户端 ``--only <task>_<seed>,...``（组内按文件顺序），逐组串行；
 #   首次推理放宽仍只给 server 新（重）起后的第一个客户端；看门狗照常；结果都追加进同一个 results.jsonl。
@@ -31,6 +41,9 @@ MME_YAML_EXPECT="perceptual-framesamp-modul.yaml"
 
 SEAT="" ; SEAT_IDX="" ; GPU="" ; COND="" ; OUT="" ; QUEUE="" ; IDENTS="" ; POLICIES="smvla,mme" ; CPUS=""
 CANARY="" ; ORDER="forward" ; CLIENT_PER_TASK=0 ; ONLY_LIST="" ; COMPILE_CACHE="off" ; DET="off" ; RELAY="off" ; LIMIT="0" ; NO_RECORD=""
+NEVER_DEGRADE="" ; WALL_SMVLA="" ; WALL_MME=""
+V8=0 ; LEDGER_DIR="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET="" ; REC_ROOT="" ; OPENPI_HOME="" ; TOKENIZER_SHA=""
+TOKENIZER_REL="big_vision/paligemma_tokenizer.model"
 MME_CKPT="${MME_CKPT:-/data/hongzefu/robomme_policy_learning_MotionJEPA/v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999}"
 SMVLA_CKPT="${SMVLA_CKPT:-/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/checkpoints/simplememvla_robomme}"
 READY_TIMEOUT=1200 ; FIRST_EXTRA=600 ; NOPROG_S=1200 ; MAX_CLIENT_RESTARTS=8 ; MAX_SERVER_RESTARTS=2
@@ -57,6 +70,16 @@ while [[ $# -gt 0 ]]; do
     --no-record) NO_RECORD="--no-record"; shift;;
     --client-per-task) CLIENT_PER_TASK=1; shift;;
     --noprog-s) NOPROG_S="$2"; shift 2;;
+    --never-degrade) NEVER_DEGRADE="--never-degrade"; shift;;
+    --episode-wall-smvla) WALL_SMVLA="$2"; shift 2;;
+    --episode-wall-mme) WALL_MME="$2"; shift 2;;
+    --v8) V8=1; shift;;
+    --ledger-dir) LEDGER_DIR="$2"; shift 2;;
+    --reset-budget) RESET_BUDGET="$2"; shift 2;;
+    --infra-retry-budget) INFRA_RETRY_BUDGET="$2"; shift 2;;
+    --rec-root) REC_ROOT="$2"; shift 2;;
+    --openpi-data-home) OPENPI_HOME="$2"; shift 2;;
+    --tokenizer-sha256) TOKENIZER_SHA="$2"; shift 2;;
     *) echo "未知参数 $1" >&2; exit 2;;
   esac
 done
@@ -69,8 +92,29 @@ fi
 if [[ -n "$QUEUE" && -n "$IDENTS" ]] || [[ -z "$QUEUE" && -z "$IDENTS" ]]; then
   echo "--queue 与 --identities 必须二选一" >&2; exit 2
 fi
+is_uint() { [[ "$1" =~ ^[0-9]+$ ]]; }
+for _w in "$WALL_SMVLA" "$WALL_MME"; do
+  [[ -z "$_w" ]] || is_uint "$_w" || { echo "--episode-wall-smvla／--episode-wall-mme 须为非负整数秒" >&2; exit 2; }
+done
+if (( V8 == 1 )); then
+  [[ -n "$IDENTS" ]] || { echo "--v8 只用于 --identities 模式（执行清单 shard JSON）" >&2; exit 2; }
+  [[ -z "$CANARY" ]] || { echo "--v8 不接受 --canary（金丝雀预算为零）" >&2; exit 2; }
+  (( CLIENT_PER_TASK == 0 )) || { echo "--v8 不接受 --client-per-task" >&2; exit 2; }
+  [[ -z "$NO_RECORD" ]] || { echo "--v8 禁止 --no-record（视频全部保留）" >&2; exit 2; }
+  [[ -n "$LEDGER_DIR" ]] || { echo "--v8 必须给 --ledger-dir" >&2; exit 2; }
+  is_uint "$RESET_BUDGET" || { echo "--v8 必须给 --reset-budget <非负整数>" >&2; exit 2; }
+  is_uint "$INFRA_RETRY_BUDGET" || { echo "--v8 必须给 --infra-retry-budget <非负整数>" >&2; exit 2; }
+elif [[ -n "$LEDGER_DIR$RESET_BUDGET$INFRA_RETRY_BUDGET$REC_ROOT$OPENPI_HOME$TOKENIZER_SHA" ]]; then
+  echo "--ledger-dir／--reset-budget／--infra-retry-budget／--rec-root／--openpi-data-home／--tokenizer-sha256 只能与 --v8 同用" >&2
+  exit 2
+fi
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"  # 转绝对路径（server 子进程会 cd 进子模块）
+if (( V8 == 1 )); then
+  LEDGER_DIR="$(mkdir -p "$LEDGER_DIR" && cd "$LEDGER_DIR" && pwd)"
+  [[ -n "$REC_ROOT" ]] && REC_ROOT="$(mkdir -p "$REC_ROOT" && cd "$REC_ROOT" && pwd)"
+  [[ -n "$OPENPI_HOME" && -d "$OPENPI_HOME" ]] && OPENPI_HOME="$(cd "$OPENPI_HOME" && pwd)"
+fi
 [[ -n "$IDENTS" ]] && IDENTS="$(cd "$(dirname "$IDENTS")" && pwd)/$(basename "$IDENTS")"
 [[ -n "$QUEUE" ]] && QUEUE="$(mkdir -p "$QUEUE" && cd "$QUEUE" && pwd)"
 LOG="$OUT/seat-${SEAT}.log"
@@ -160,6 +204,28 @@ preflight_mme() {
   echo "MME_PREFLIGHT=PASS commit=$head history_config=$hc ckpt=$MME_CKPT py=$MME_PY"
 }
 
+tokenizer_gate() {  # V8：MME server 启动前核 OPENPI_DATA_HOME 下 tokenizer 的 sha256（不现场下载顶替）
+  local f actual
+  if [[ -z "$OPENPI_HOME" || -z "$TOKENIZER_SHA" ]]; then
+    echo "RUN_BLOCKED reason=tokenizer_sha detail=missing_args（V8 跑 mme 须给 --openpi-data-home 与 --tokenizer-sha256）"
+    return 1
+  fi
+  f="$OPENPI_HOME/$TOKENIZER_REL"
+  if [[ ! -f "$f" ]]; then
+    echo "RUN_BLOCKED reason=tokenizer_sha detail=file_missing file=$f"; return 1
+  fi
+  actual="$(sha256sum "$f" | awk '{print $1}')"
+  if [[ "${actual,,}" != "${TOKENIZER_SHA,,}" ]]; then
+    echo "RUN_BLOCKED reason=tokenizer_sha expected=${TOKENIZER_SHA,,} actual=$actual file=$f"; return 1
+  fi
+  echo "TOKENIZER_SHA=PASS sha256=$actual file=$f openpi_data_home=$OPENPI_HOME"
+}
+
+note_pgid() {  # V8：记下 setsid 起的进程组，供外层编排在本脚本异常死亡后回收（$1 = 角色，$2 = pid）
+  (( V8 == 1 )) && echo "$1 $2" >> "$OUT/.v8-pgids" 2>/dev/null
+  return 0
+}
+
 start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志
   local pol="$1" port="$2" slog="$3"
   local extra=()
@@ -170,6 +236,8 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志
       extra+=(JAX_COMPILATION_CACHE_DIR="${V75_JAX_CACHE_ROOT:-$REPO/artifacts/v7.5eval/jax-cache}/$(gpu_slug)")
     fi
     [[ "$DET" == "on" ]] && extra+=(XLA_FLAGS="--xla_gpu_deterministic_ops=true --xla_gpu_autotune_level=0")
+    # V8：tokenizer 缓存根固定（server 在 env 清理后启动，须显式写进 server 环境）
+    (( V8 == 1 )) && extra+=(OPENPI_DATA_HOME="$OPENPI_HOME")
     ( cd "$REPO/third_party/mme-vla" && exec setsid env "${CLEAN_ENV[@]}" "${NOPROXY_ENV[@]}" "${extra[@]}" PYTHONUNBUFFERED=1 \
         CUDA_VISIBLE_DEVICES="$GPU" "${TASKSET[@]}" "$MME_PY" scripts/serve_policy.py --seed=7 --port="$port" \
         policy:checkpoint --policy.config=mme_vla_suite --policy.dir="$MME_CKPT" ) >"$slog" 2>&1 &
@@ -183,6 +251,7 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志
         --warmup "${detarg[@]}" --metadata_out "$OUT/$pol/server-metadata-$port.json" ) >"$slog" 2>&1 &
   fi
   SERVER_PID=$!
+  note_pgid server "$SERVER_PID"
   local t0; t0=$(ts)
   echo "SERVER_START policy=$pol port=$port pid=$SERVER_PID log=$slog"
   while true; do
@@ -214,7 +283,13 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志
   return 0
 }
 
-wall_of() { [[ "$1" == "mme" ]] && echo 900 || echo 600; }
+wall_of() {  # 单局墙钟：显式参数优先；否则旧版 smvla 600／mme 900，V8 默认 smvla 900／mme 1200
+  if [[ "$1" == "mme" ]]; then
+    if [[ -n "$WALL_MME" ]]; then echo "$WALL_MME"; elif (( V8 == 1 )); then echo 1200; else echo 900; fi
+  else
+    if [[ -n "$WALL_SMVLA" ]]; then echo "$WALL_SMVLA"; elif (( V8 == 1 )); then echo 900; else echo 600; fi
+  fi
+}
 
 restart_server() {  # 起 server 失败时保留 RUN_BLOCKED 的 3，其余记基础设施 4
   local rc
@@ -241,7 +316,8 @@ if p.exists():
 main = [r for r in rows if not r.get("canary")]
 last = {}
 for r in main:
-    last[(r["task"], int(r["seed"]))] = r
+    # V8 结果行带 key（task_tier_seed）；旧行仍按 (task, seed)
+    last[r["key"] if r.get("v8") and r.get("key") else (r["task"], int(r["seed"]))] = r
 final = list(last.values())
 rep = {"policy": pol, "cond": cond, "seat": seat, "loop_exit_status": int(rc), "records": len(rows),
        "canary": sum(1 for r in rows if r.get("canary")), "done": sum(1 for r in final if not r.get("infra")),
@@ -271,19 +347,25 @@ start_client() {  # $1 = 策略；$2 = 客户端连接端口；$3 = 是否带金
   # 首次推理放宽只给 server 新（重）起后的第一个客户端；客户端单独重起（server 已热）不放宽
   (( FRESH_SERVER == 1 )) && extra="$FIRST_EXTRA"
   FRESH_SERVER=0
-  local src=() canary=() pol_env=()
+  local src=() canary=() pol_env=() v8args=()
   if [[ -n "$QUEUE" ]]; then src=(--queue "$QUEUE"); else src=(--identities "$IDENTS" --order "$ORDER"); fi
   # 每任务一个客户端：只跑本组身份，组内保持文件顺序
   [[ -n "$ONLY_LIST" ]] && src=(--identities "$IDENTS" --order forward --only "$ONLY_LIST")
   [[ "$with_canary" == 1 && -n "$CANARY" ]] && canary=(--canary "$CANARY")
   # smvla 旧官方环境与推理同进程、OMP_NUM_THREADS=1；新接口环境侧照设
   [[ "$pol" == "smvla" ]] && pol_env=(OMP_NUM_THREADS=1)
+  if (( V8 == 1 )); then
+    v8args=(--v8 --ledger "$LEDGER_DIR/$pol.ledger.jsonl" --reset-budget "$RESET_BUDGET"
+            --infra-retry-budget "$INFRA_RETRY_BUDGET")
+    [[ -n "$REC_ROOT" ]] && v8args+=(--rec-root "$REC_ROOT/$pol")
+  fi
   ( cd "$REPO" && exec setsid env "${NOPROXY_ENV[@]}" "${pol_env[@]}" GLIBC_TUNABLES=glibc.rtld.optional_static_tls=16384 \
       PYTHONUNBUFFERED=1 CUDA_VISIBLE_DEVICES="$GPU" V75_DATA_ROOT="${V75_DATA_ROOT:-/data}" "${TASKSET[@]}" \
       "$BENCH_PY" scripts/eval-official/env_client.py run --policy "$pol" "${src[@]}" --cond "$COND" --seat "$SEAT" \
       --port "$cport" --out "$OUT/$pol" --episode-wall-s "$wall" --first-extra-s "$extra" --limit "$LIMIT" \
-      "${canary[@]}" $NO_RECORD ) >>"$OUT/$pol/client.log" 2>&1 &
+      "${canary[@]}" $NO_RECORD $NEVER_DEGRADE "${v8args[@]}" ) >>"$OUT/$pol/client.log" 2>&1 &
   CLIENT_PID=$!
+  note_pgid client "$CLIENT_PID"
   echo "CLIENT_START policy=$pol port=$cport pid=$CLIENT_PID canary=${canary[1]:-none} wall_s=$wall first_extra_s=$extra only=${ONLY_LIST:-all}"
 }
 
@@ -291,7 +373,10 @@ run_policy() {  # $1 = 策略；$2 = 策略号
   local pol="$1" pidx="$2" base port cport slog rc
   mkdir -p "$OUT/$pol"
   [[ -n "$SERVER_PID" ]] && { echo "RUN_BLOCKED reason=previous_server_alive pid=$SERVER_PID"; return 3; }
-  if [[ "$pol" == "mme" ]]; then preflight_mme || return 3; fi
+  if [[ "$pol" == "mme" ]]; then
+    if (( V8 == 1 )); then tokenizer_gate || return 3; fi
+    preflight_mme || return 3
+  fi
   [[ "$pol" == "smvla" && ! -x "$SMVLA_PY" ]] && { echo "RUN_BLOCKED reason=smvla_venv_missing $SMVLA_PY"; return 3; }
   base=$((18000 + 100 * SEAT_IDX + 10 * pidx))
   port="$(pick_port "$base")" || { echo "INFRA port_exhausted base=$base"; return 4; }
@@ -354,6 +439,8 @@ policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口 $4 是否带金
       echo "CLIENT_EXIT policy=$pol rc=$rc"
       if (( rc == 0 )); then break; fi
       if (( rc == 3 )); then echo "RUN_BLOCKED reason=client policy=$pol"; return 3; fi
+      # V8：reset 额度耗尽（客户端退出 5）不重启，照实收尾
+      if (( V8 == 1 && rc == 5 )); then echo "RESET_BUDGET_EXHAUSTED policy=$pol seat=$SEAT（客户端退出 5，不重启）"; return 5; fi
       client_restarts=$((client_restarts + 1))
       if (( client_restarts > MAX_CLIENT_RESTARTS )); then echo "INFRA_EXHAUSTED policy=$pol client_restarts=$client_restarts"; return 4; fi
       start_client "$pol" "$cport" 0
@@ -394,6 +481,10 @@ main() {
   trap 'exit 143' TERM INT
   echo "SEAT_START seat=$SEAT idx=$SEAT_IDX gpu=$GPU cpus=${CPUS:-all} cond=$COND policies=$POLICIES host=$(hostname) \
 git=$(git -C "$REPO" rev-parse HEAD) compile_cache=$COMPILE_CACHE det=$DET relay=$RELAY"
+  if (( V8 == 1 )); then
+    echo "V8_MODE ledger_dir=$LEDGER_DIR reset_budget=$RESET_BUDGET infra_retry_budget=$INFRA_RETRY_BUDGET \
+rec_root=${REC_ROOT:-<out>/<policy>/rec} wall_smvla=$(wall_of smvla) wall_mme=$(wall_of mme) never_degrade=${NEVER_DEGRADE:+1}"
+  fi
   local overall=0 pol pidx rc
   IFS=',' read -r -a POLS <<< "$POLICIES"
   for pol in "${POLS[@]}"; do
