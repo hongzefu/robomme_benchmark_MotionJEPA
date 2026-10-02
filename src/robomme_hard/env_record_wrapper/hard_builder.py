@@ -65,12 +65,14 @@ def _override_cells(root: str) -> Dict[tuple, int]:
 @functools.lru_cache(maxsize=None)
 def _root_specs(root: str):
     """每个规格根（包内或覆盖）只读一次：``load_specs_v8`` 整根校验（逐档 /4 封套、格表、每格 selected 数、
-    跨档 seed 不交）。包内根的格表必须恰为 ``EXPECTED_CELLS``；覆盖根按 ``_override_cells``。
+    跨档 seed 不交）。包内根的格表必须恰为 ``EXPECTED_CELLS``（配额上限也取它，不写死 V8／V9 的局数；v9 阶段 3b
+    切换 ``EXPECTED_CELLS`` 后自动跟随）；覆盖根按 ``_override_cells``，配额上限由 ``load_specs_v8`` 按
+    ``resolve_cell_table`` 取（先 ``EXPECTED_CELLS``，覆盖不了再看 V8／V9 表）。
     返回 ``({tier: (header, rows)}, cells)``，只读使用，不得修改。"""
     if Path(root) == hard_specs.PACKAGED_SPECS_ROOT:
         cells = dict(hard_specs.EXPECTED_CELLS)
-    else:
-        cells = _override_cells(root)
+        return hard_specs.load_specs_v8(Path(root), cells, cell_table=hard_specs.EXPECTED_CELLS), cells
+    cells = _override_cells(root)
     return hard_specs.load_specs_v8(Path(root), cells), cells
 
 

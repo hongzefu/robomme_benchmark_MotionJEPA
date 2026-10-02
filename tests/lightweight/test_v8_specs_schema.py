@@ -4,7 +4,8 @@
 纯 CPU 合成夹具：本文件自带最小 /4 builder（不依赖 ``scripts/injection-dev/_freeze``），在 tmp_path 里写
 ``<root>/<tier>/specs.jsonl``，覆盖：
 
-* ``V8_CELLS`` 为表 2 的 43 格、合计 1070；阶段 3b 换包后 ``TIERS``／``BUILDER_TIERS``／``EXPECTED_CELLS``／``TIER_MAX_STEPS``
+* ``V8_CELLS`` 为表 2 的 43 格、合计 1070；``V9_CELLS``（v9 方案表 2）43 格、合计 800、每任务 50；格表参数
+  贯通 ``load_specs → validate_specs → _validate_specs_v8``；阶段 3b 换包后 ``TIERS``／``BUILDER_TIERS``／``EXPECTED_CELLS``／``TIER_MAX_STEPS``
   切到 v8 值（R10），v7 冻结常量 ``V7_TIERS``／``V7_XHARD4_ONLY`` 不动；
 * ``load_specs_v8`` 对完整 43 格根、冒烟 7 格根、分片子集根三种往返；
 * 任务集合、每格 selected 数、跨档 seed 不交、schema 不符、缺档文件的拒绝；
@@ -129,23 +130,78 @@ def test_v8常量与表2一致():
     assert row_keys == v7_row
 
 
+def test_v9常量与表2一致():
+    """v9 方案第一部分表 2：43 格、合计 800、每任务 50；格集合与 V8 相同；V8 冻结常量不动。"""
+    assert len(H.V9_CELLS) == 43 and sum(H.V9_CELLS.values()) == 800
+    assert set(H.V9_CELLS) == set(H.V8_CELLS)
+    per_tier = {tier: sum(n for (_, t), n in H.V9_CELLS.items() if t == tier) for tier in H.V8_TIERS}
+    assert per_tier == {"xhard1": 272, "xhard2": 272, "xhard3": 92, "xhard4": 144, "xhard5": 20}
+    per_task = {}
+    for (task, _), n in H.V9_CELLS.items():
+        per_task[task] = per_task.get(task, 0) + n
+    assert per_task == {task: 50 for task in H.ALL_TASKS} and H.V9_PER_TASK == 50
+    row = lambda task: [H.V9_CELLS.get((task, t)) for t in H.V8_TIERS]  # noqa: E731
+    for task in ("PickXtimes", "RouteStick", "PatternLock"):
+        assert row(task) == [17, 17, 16, None, None]
+    for task in ("SwingXtimes", "StopCube"):
+        assert row(task) == [10, 10, 10, 10, 10]
+    for task in ("VideoUnmask", "ButtonUnmask"):
+        assert row(task) == [13, 13, 12, 12, None]
+    for task in ("BinFill", "VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoPlaceButton", "VideoPlaceOrder",
+                 "PickHighlight", "VideoRepick"):
+        assert row(task) == [25, 25, None, None, None]
+    for task in ("MoveCube", "InsertPeg"):
+        assert row(task) == [None, None, None, 50, None]
+    assert H.xhard4_only_tasks(H.V9_CELLS) == set(H.XHARD4_ONLY) == H.xhard4_only_tasks(H.V8_CELLS)
+    assert H.CELL_TABLES == {"v8": H.V8_CELLS, "v9": H.V9_CELLS}
+    print(f"V9_CELLS=PASS cells={len(H.V9_CELLS)} total={sum(H.V9_CELLS.values())} per_task={H.V9_PER_TASK}")
+
+
 def test_档位常量已切到v8且v7冻结常量不动_R10():
-    """阶段 3b 换包（R10 一个提交）：全局档位常量切到 v8；v7 冻结常量保持原值。"""
+    """阶段 3b 换包（R10 一个提交）：全局档位常量切到 v8；v7 冻结常量保持原值。
+
+    v9 阶段 1 只新增 ``V9_CELLS``、不切 ``EXPECTED_CELLS``（v9 方案 R7、§2.1 审计 1：切早了包内 V8 规格会被拒），
+    所以这里仍断言 ``EXPECTED_CELLS == V8_CELLS``。v9 阶段 3b 换包时由主会话在同一提交里把下面这一行改成
+    ``H.EXPECTED_CELLS == H.V9_CELLS``（V8／V7 冻结常量的断言不动）。"""
     assert H.TIERS == H.V8_TIERS == ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
     assert H.BUILDER_TIERS == ("xhard0", "xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
     assert H.TIER_MAX_STEPS == {"xhard0": 1300, **{tier: H.V8_EXEC_CAP for tier in H.V8_TIERS}}
     assert H.XHARD4_ONLY == ("InsertPeg", "MoveCube")
-    assert H.EXPECTED_CELLS == H.V8_CELLS and len(H.EXPECTED_CELLS) == 43
+    assert H.EXPECTED_CELLS == H.V8_CELLS and len(H.EXPECTED_CELLS) == 43  # 3b 换包时改为 == H.V9_CELLS
+    assert hasattr(H, "V9_CELLS") and H.V9_CELLS != H.V8_CELLS
+    assert H.V8_CELLS == H._v8_cells() and sum(H.V8_CELLS.values()) == 1070  # V8 冻结常量不随 V9 变
     assert H.V7_TIERS == ("xhard1", "xhard2", "xhard3", "xhard4")
     assert H.V7_XHARD4_ONLY == ("StopCube", "InsertPeg", "MoveCube")
+
+
+def test_格表参数贯通三层_缺省取EXPECTED_CELLS():
+    """v9 方案 §2.1：``load_specs(expected_cells=)`` → ``validate_specs`` → ``_validate_specs_v8``，三层缺省都取
+    ``EXPECTED_CELLS``；V9 文件（MoveCube 50）在切换前须显式传 ``V9_CELLS``，``load_specs_v8`` 自动落到 V9 表。"""
+    header, rows = build_tier("xhard4", {"MoveCube": 50, "InsertPeg": 50})
+    with pytest.raises(H.SpecsError, match="超过表 2 格配额 20"):
+        H.validate_specs(header, rows, expected_cells=H.V8_CELLS)
+    H.validate_specs(header, rows, expected_cells=H.V9_CELLS)
+    # 缺省 = EXPECTED_CELLS：阶段 1（= V8）拒，3b 切到 V9 后放行——两种状态下本断言都成立
+    if H.EXPECTED_CELLS is H.V8_CELLS:
+        with pytest.raises(H.SpecsError, match="超过表 2 格配额 20"):
+            H.validate_specs(header, rows)
+    else:
+        H.validate_specs(header, rows)
+    assert H.header_cell_table(header) is H.V9_CELLS
+    assert H.resolve_cell_table({("MoveCube", "xhard4"): 20}) is H.EXPECTED_CELLS
+    assert H.resolve_cell_table({("MoveCube", "xhard4"): 21}) is H.V9_CELLS
+    assert H.resolve_cell_table({("BinFill", "xhard1"): 26}) is H.V8_CELLS  # 25 < 26 ≤ 40：V9 盖不住、V8 盖得住
 
 
 # ── load_specs_v8 往返 ─────────────────────────────────────────────────
 
 
-def test_完整43格根往返(tmp_path):
-    build_root(tmp_path, H.V8_CELLS)
-    out = _load(tmp_path, H.V8_CELLS)
+@pytest.mark.parametrize("version", ["v8", "v9"])
+def test_完整43格根往返(tmp_path, version):
+    """完整 43 格根往返：V9 格表（v9 方案 §2.1）与 V8 格表各一遍；总数由格表推出，不写死。"""
+    table = H.CELL_TABLES[version]
+    build_root(tmp_path, table)
+    out = _load(tmp_path, table)
     assert list(out) == list(H.V8_TIERS)
     total = 0
     for tier, (header, rows) in out.items():
@@ -153,7 +209,15 @@ def test_完整43格根往返(tmp_path):
         for row in rows:
             if row["selected"]:
                 total += 1
-    assert total == 1070
+    assert total == sum(table.values()) == {"v8": 1070, "v9": 800}[version]
+    # 显式配额上限：V9 根按 V8 表读必拒（MoveCube 50 > 20）
+    if version == "v9":
+        with pytest.raises(H.SpecsError, match="超过表 2 格配额"):
+            H.load_specs_v8(tmp_path, table, cell_table=H.V8_CELLS, check_fingerprint=False)
+        # 单文件 load_specs 按 V8 表读同样拒 V9 xhard4；显式 V9 表即过
+        with pytest.raises(H.SpecsError, match="超过表 2 格配额"):
+            H.load_specs(tmp_path / "xhard4" / "specs.jsonl", expected_cells=H.V8_CELLS, check_fingerprint=False)
+        H.load_specs(tmp_path / "xhard4" / "specs.jsonl", expected_cells=H.V9_CELLS, check_fingerprint=False)
 
 
 def test_冒烟7格根往返(tmp_path):

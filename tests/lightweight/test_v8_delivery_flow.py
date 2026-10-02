@@ -5,6 +5,8 @@
 生成用 monkeypatch 把 ``_rollout.run_batch`` 换成假 runner（在显式局目录里写假 h5／mp4、直接给出执行步）。覆盖：
 
 * 候选表合计 1425、四片恰好覆盖 43 格 1070 局、冒烟 7 格；``freeze_specs.plan_v8`` 的逐任务 CLI；
+* v9（v9 方案 §2.1 S1-B 行）：``V9_CANDIDATES``、``V9_SHARD_TASKS``（``--cells v9shard1``）、``V9_SMOKE_CELLS``
+  （``--cells v9smoke``）；MoveCube 逐方式配额 17／17／16（某方式候选不足即抛错并报差额）与同方式递补；
 * freeze v8 写出的 /4 能通过 ``load_specs_v8``（冒烟根、分片子集根）；MoveCube 分层 + 逐格配额；选不满即拒；
 * ``h5_facts.exec_steps`` = timestep 数 − 演示帧；
 * ``generate_h5 --mode continue`` 在合成冒烟根上退出码 0，``delivery.json`` 计数键显式零值（写 JSON → 读 JSON → 守卫）；
@@ -186,12 +188,29 @@ def test_候选表与四片与冒烟格表():
     shards = {name: _rollout.resolve_cells(name) for name in ("shard1", "shard2", "shard3", "shard4")}
     keys = [k for cells in shards.values() for k in cells]
     assert len(keys) == len(set(keys)) == 43 and set(keys) == set(H.V8_CELLS)
-    assert sum(sum(c.values()) for c in shards.values()) == 1070
+    assert sum(sum(c.values()) for c in shards.values()) == sum(H.V8_CELLS.values()) == 1070
     smoke = _rollout.resolve_cells("smoke")
     assert len(smoke) == 7 and len({t for t, _ in smoke}) == 6 and sum(smoke.values()) == 7
     assert _rollout.resolve_cells("full") == _rollout.order_cells(H.V8_CELLS)
-    with pytest.raises(_rollout.RolloutError, match="V8_CELLS 之外"):
+    with pytest.raises(_rollout.RolloutError, match="V9_CELLS 之外"):
         _rollout.check_cells({("MoveCube", "xhard1"): 1})
+    # v9：V8 分片表冻结不动；V9 只有 MoveCube 一片（局数取 V9_CELLS），冒烟 MoveCube／InsertPeg xhard4 各 1 局
+    assert _rollout.V8_SHARD_TASKS["shard1"] == ("VideoPlaceButton", "PickHighlight", "MoveCube")
+    assert _rollout.V9_SHARD_TASKS == {"shard1": ("MoveCube",)}
+    assert _rollout.resolve_cells("v9shard1") == {("MoveCube", "xhard4"): H.V9_CELLS[("MoveCube", "xhard4")]} \
+        == {("MoveCube", "xhard4"): 50}
+    assert _rollout.V9_SMOKE_CELLS == {("MoveCube", "xhard4"): 1, ("InsertPeg", "xhard4"): 1}
+    assert _rollout.resolve_cells("v9smoke") == _rollout.order_cells(_rollout.V9_SMOKE_CELLS)
+    assert _freeze.V9_CANDIDATES == {("MoveCube", "xhard4"): 80}
+    assert all(_freeze.V9_CANDIDATES[k] > H.V9_CELLS[k] for k in _freeze.V9_CANDIDATES)
+    # 格表按 V9 局数也能过 check_cells（MoveCube 50 > V8 的 20，落到 V9 表）；超过 V9 表即拒
+    assert _rollout.check_cells({("InsertPeg", "xhard4"): 50}) == {("InsertPeg", "xhard4"): 50}
+    with pytest.raises(_rollout.RolloutError, match="1..表 2 配额"):
+        _rollout.check_cells({("InsertPeg", "xhard4"): 51})
+    with pytest.raises(_rollout.RolloutError, match="1..表 2 配额"):
+        _rollout.check_cells({("MoveCube", "xhard4"): 50}, H.V8_CELLS)  # 显式按 V8 表核
+    with pytest.raises(_rollout.RolloutError, match="v9shard1"):
+        _rollout.resolve_cells("v9shard9")
 
 
 def test_plan_v8逐任务CLI与dry_run(capsys, monkeypatch, tmp_path):
@@ -220,6 +239,19 @@ def test_plan_v8逐任务CLI与dry_run(capsys, monkeypatch, tmp_path):
     # 全局旧写法兼容
     plan = freeze_specs.plan_v8("xhard5", full, "all", "15", "0..9", 40, None)
     assert plan["candidates"] == {"StopCube": 15, "SwingXtimes": 15} and plan["reset_caps"]["StopCube"] == 40
+    # v9：MoveCube 一片；不显式给候选数时按现行逻辑「格局数 ≠ V8 表值 → 候选数 = 局数」（50），必须显式给 80
+    v9 = _rollout.resolve_cells("v9shard1")
+    plan = freeze_specs.plan_v8("xhard4", v9, "all", None, "default", None, None)
+    assert plan["tasks"] == ["MoveCube"] and plan["quota"] == {"MoveCube": 50} and plan["candidates"] == {"MoveCube": 50}
+    plan = freeze_specs.plan_v8("xhard4", v9, "all", "MoveCube=80", "default", None, None)
+    assert plan["candidates"] == {"MoveCube": _freeze.V9_CANDIDATES[("MoveCube", "xhard4")]} == {"MoveCube": 80}
+    assert plan["select"]["MoveCube"] == tuple(range(50))
+    assert _freeze.default_quota_by_way("MoveCube", "xhard4", plan["quota"]["MoveCube"]) == {0: 17, 1: 17, 2: 16}
+    assert _freeze.format_quota_by_way(_freeze.V9_MOVECUBE_QUOTA_BY_WAY) == "{0:17,1:17,2:16}"
+    # V7／V8 的 MoveCube（20、冒烟 1）不启用逐方式配额
+    assert _freeze.default_quota_by_way("MoveCube", "xhard4", 20) is None
+    assert _freeze.default_quota_by_way("MoveCube", "xhard4", 1) is None
+    assert _freeze.default_quota_by_way("InsertPeg", "xhard4", 50) is None
     # --dry-run：逐格打印，不写盘
     out = tmp_path / "x" / "specs.jsonl"
     monkeypatch.setattr(sys, "argv", ["freeze_specs.py", "--tier", "xhard5", "--seed-profile", "v8", "--cells", "full",
@@ -228,6 +260,14 @@ def test_plan_v8逐任务CLI与dry_run(capsys, monkeypatch, tmp_path):
     text = capsys.readouterr().out
     assert text.count("FREEZE_CELL tier=xhard5") == 2 and "FREEZE_PLAN profile=v8 tier=xhard5" in text
     assert "candidates=26" in text and not out.exists()
+    # v9 dry-run：--cells v9shard1 + 显式 --candidates-per-env MoveCube=80，候选表逐格打印
+    monkeypatch.setattr(sys, "argv", ["freeze_specs.py", "--tier", "xhard4", "--seed-profile", "v8", "--cells",
+                                      "v9shard1", "--candidates-per-env", "MoveCube=80", "--out", str(out), "--dry-run"])
+    assert freeze_specs.main() == 0
+    text = capsys.readouterr().out
+    assert "FREEZE_CELL tier=xhard4 task=MoveCube quota=50 candidates=80 spare=30" in text
+    assert "FREEZE_PLAN profile=v8 tier=xhard4 cells=v9shard1 tasks=1 quota=50 candidates=80" in text
+    assert not out.exists()
 
 
 def test_draw_rows_by_task逐任务候选数():
@@ -286,6 +326,125 @@ def test_freeze_v8写出的规格过load_specs_v8(tmp_path):
     # V7_TIERS）拒绝，报错为「specs 档位或 runtime 不符」；两条路径都含「档位」
     with pytest.raises(H.SpecsError, match="档位"):
         _freeze.freeze(_drafts("StopCube", "xhard5", 2), _parts("xhard5", ["StopCube"]), (0,), 2, schema=H.SCHEMA)
+
+
+def _way_drafts(task: str, tier: str, ways: list[int]) -> list[dict]:
+    """合成抽签行，候选 ``i`` 的运动方式为 ``ways[i]``（MoveCube 规格的最后一次 initializations.way_idx）。"""
+    rule = H.seed_rule_for(tier, "v8")
+    rows = []
+    for episode, way in enumerate(ways):
+        spec = {"spec_kind": "native-newvalue/2", "task": task, "tier": tier, "layout": {"x": episode},
+                "initializations": {"0": {"way_idx": 0}, "1": {"way_idx": way}}}
+        rows.append({"task": task, "difficulty": tier, "episode": episode, "attempt": 0,
+                     "seed": H.seed_for(task, episode, 0, rule), "reset_ok": True, "spec": spec,
+                     "spec_sha256": H.spec_sha256(spec)})
+    return rows
+
+
+def test_v9逐方式配额与同方式递补(tmp_path, fake, monkeypatch, capsys):
+    """v9 方案 §2.2 第 4 条（审计 8）：MoveCube xhard4 交付 50 按运动方式 17／17／16；某方式候选不足即响亮 FAIL
+    （报三种方式各有多少候选、差几个），不悄悄挪；生成时 MoveCube 只在同一方式里递补，没有同方式备用即 exhausted。"""
+    quota = H.V9_CELLS[("MoveCube", "xhard4")]
+    select = {"MoveCube": tuple(range(quota))}
+    parts = _parts("xhard4", ["MoveCube"])
+    # 合成候选 48／16／16：way1 只有 16 < 17 → 抛错，报差额
+    ways = [0] * 48 + [1] * 16 + [2] * 16
+    with pytest.raises(H.SpecsError, match="way1 候选 16 配额 17 差 1"):
+        _freeze.freeze(_way_drafts("MoveCube", "xhard4", ways), parts, select, {"MoveCube": 80}, schema=H.SCHEMA_V8)
+    text = capsys.readouterr().out
+    assert "FREEZE_WAYS task=MoveCube tier=xhard4 quota_by_way={0:17,1:17,2:16} candidates_by_way={0:48,1:16,2:16}" in text
+    # 直接调 stratified_select：报错里三种方式都列出
+    rows = [{"episode": r["episode"], "spec": r["spec"]} for r in _way_drafts("MoveCube", "xhard4", ways)]
+    with pytest.raises(H.SpecsError) as err:
+        _freeze.stratified_select("MoveCube", "xhard4", rows, select["MoveCube"], quota, {0: 17, 1: 17, 2: 16})
+    assert all(f"way{w} 候选" in str(err.value) for w in (0, 1, 2)) and "way0 候选 48 配额 17 差 0" in str(err.value)
+    # 候选够（交错分布）：逐方式按候选号取，恰为 17／17／16
+    ways = [i % 3 for i in range(80)]
+    header, spec_rows = _freeze.freeze(_way_drafts("MoveCube", "xhard4", ways), parts, select, {"MoveCube": 80},
+                                       schema=H.SCHEMA_V8)
+    chosen = header["select_rule"]["MoveCube"]
+    by_way = {w: [c for c in chosen if ways[c] == w] for w in (0, 1, 2)}
+    assert {w: len(v) for w, v in by_way.items()} == {0: 17, 1: 17, 2: 16}
+    assert all(v == [c for c in range(80) if ways[c] == w][:len(v)] for w, v in by_way.items())  # 每方式取最小候选号
+    stats = header["draw_stats"]["freeze_per_env"]["MoveCube"]
+    assert stats["quota_by_way"] == {"0": 17, "1": 17, "2": 16}
+    assert stats["candidates_by_way"] == {"0": 27, "1": 27, "2": 26}
+    assert header["delivery_per_cell"] == {"MoveCube": 50} and header["per_env"] == {"MoveCube": 80}
+    H.validate_specs(header, spec_rows, expected_cells=H.V9_CELLS)
+    # V7／V8 不传 quota_by_way：原分层规则（每方式先取 1 个，再按 select 补齐）逐字不变
+    old_rows = [{"episode": i, "spec": r["spec"]} for i, r in enumerate(_way_drafts("MoveCube", "xhard4", [0, 0, 0, 1, 2]))]
+    assert _freeze.stratified_select("MoveCube", "xhard4", old_rows, (0, 1, 2)) == [0, 3, 4]
+    # 冻结根 → v9shard1 切片 → 片根按 V9 格表可读（EXPECTED_CELLS 仍是 V8 也不影响）
+    frozen = tmp_path / "frozen"
+    _freeze.write_jsonl_exclusive(frozen / "xhard4" / "specs.jsonl", [header, *spec_rows])
+    v9cells = _rollout.resolve_cells("v9shard1")
+    _rollout.split_v8(frozen, v9cells, tmp_path / "v9s1", label="v9shard1")
+    assert set(_rollout.load_v8_root(tmp_path / "v9s1" / "specs", v9cells)) == {"xhard4"}
+    H.load_specs_v8(tmp_path / "v9s1" / "specs", v9cells, check_fingerprint=False)
+
+    # 同方式递补：MoveCube 配额 3（候选 0／1／2 的方式 0／1／2），备用 3（方式 0）、4（方式 1）；InsertPeg 照旧按候选号
+    cells = {("InsertPeg", "xhard4"): 1, ("MoveCube", "xhard4"): 3}
+    root = build_root(tmp_path / "specs", cells, spares={("InsertPeg", "xhard4"): 2, ("MoveCube", "xhard4"): 2})
+    fake({("xhard4", "MoveCube", 1): "fail", ("xhard4", "MoveCube", 2): "fail", ("xhard4", "InsertPeg", 0): "fail"})
+    _write_cells(tmp_path / "cells.json", cells)
+    capsys.readouterr()
+    rc = _gen(monkeypatch, "--mode", "continue", "--specs", root, "--cells", tmp_path / "cells.json",
+              "--output", tmp_path / "out")
+    text = capsys.readouterr().out
+    assert rc == 1 and "problems=MoveCube/xhard4:exhausted" in text
+    assert "InsertPeg/xhard4" not in text.split("problems=")[1]
+    _, rows = H.load_specs(root / "xhard4" / "specs.jsonl", check_fingerprint=False)
+    mc = {r["candidate"]: r for r in rows if r["task"] == "MoveCube"}
+    # 方式 1 的候选 1 失败 → 只从方式 1 的备用 4 递补（不取候选号更小的方式 0 备用 3）
+    assert H.delivered(mc[4]) and not mc[4]["initial_selected"]
+    # 方式 2 的候选 2 失败 → 没有方式 2 的备用 → 不递补，方式 0 的备用 3 原样未试
+    assert (mc[3]["tried"], mc[3]["selected"]) == (False, False)
+    ip = {r["candidate"]: r for r in rows if r["task"] == "InsertPeg"}
+    assert H.delivered(ip[1]) and not ip[2]["tried"]  # 别的任务递补规则不变：按候选号取下一个
+    data = _guard_delivery(tmp_path / "out" / "delivery.json")
+    cell = data["cells"]["MoveCube/xhard4"]
+    assert cell["status"] == "FAIL" and cell["reason"] == "exhausted" and cell["spares_left"] == 1
+    assert cell["delivered"] == 2 and cell["backfills"] == 1 and cell["failed"] == 2
+    assert data["cells"]["InsertPeg/xhard4"]["status"] == "PASS"
+
+
+def test_append_candidates的draw_extra入口():
+    """v9 方案 §2.4.2 第 3 步：``draw_extra`` 供 ``v9_subset_specs.py extend`` 调用。``allow_spares=False``（CLI 口径）
+    冻结根跑过或还有未试备用即拒；``allow_spares=True`` 跳过这两道，sampling／seed 公式／规格散列核对照旧。"""
+    import append_candidates as AC  # noqa: PLC0415
+
+    AC.bootstrap()
+    header, rows = freeze_tier("xhard4", {("InsertPeg", "xhard4"): 2}, spare=2)  # per_env 4，候选 2、3 为未试备用
+    checked = []
+
+    def draw(task, seed, episode, sampling):
+        return True, {"spec_kind": "native-newvalue/2", "task": task, "layout": {"x": episode}}, None, None
+
+    kw = dict(max_reset_attempts=10, draw_one=draw, sampling_check=lambda task, sampling: checked.append(task))
+    with pytest.raises(AC.AppendError, match="未试备用"):
+        AC.draw_extra(header, "InsertPeg", "xhard4", 4, 3, frozen_rows=rows, **kw)
+    ran = [dict(r, tried=True) for r in rows]
+    with pytest.raises(AC.AppendError, match="已跑过"):
+        AC.draw_extra(header, "InsertPeg", "xhard4", 4, 3, frozen_rows=ran, **kw)
+    with pytest.raises(AC.AppendError, match="frozen_rows"):
+        AC.draw_extra(header, "InsertPeg", "xhard4", 4, 3, **kw)
+    assert checked == []  # 被拒时不进 sampling 核对、不抽签
+    new_rows, info = AC.draw_extra(header, "InsertPeg", "xhard4", 4, 3, allow_spares=True, **kw)
+    assert checked == ["InsertPeg"] and info["ok"] == 3 and info["attempted"] == 3
+    assert [r["candidate"] for r in new_rows] == [4, 5, 6]
+    assert all(r["seed"] == H.seed_for("InsertPeg", r["episode"], 0, header["seed_rule"]) for r in new_rows)
+    assert all((r["selected"], r["tried"], r["rollout"], r["layout_parent"]) == (False, False, None, None)
+               for r in new_rows)
+    # 其余核对照旧：起点须紧接 per_env、sampling 核对失败即抛
+    with pytest.raises(AC.AppendError, match="per_env"):
+        AC.draw_extra(header, "InsertPeg", "xhard4", 5, 3, allow_spares=True, **kw)
+
+    def bad_sampling(task, sampling):
+        raise AC.AppendError(f"{task} 重建的 sampling_config 与冻结值不符")
+
+    with pytest.raises(AC.AppendError, match="sampling_config"):
+        AC.draw_extra(header, "InsertPeg", "xhard4", 4, 3, allow_spares=True, max_reset_attempts=10, draw_one=draw,
+                      sampling_check=bad_sampling)
 
 
 def test_h5_facts执行步口径(tmp_path):
@@ -421,6 +580,7 @@ def test_分片子集根往返(tmp_path):
 
 def test_四片生成合并聚合43格(tmp_path, fake, monkeypatch, capsys):
     full = _rollout.resolve_cells("full")
+    total = sum(full.values())  # 合计由格表推出（V8 表 1070）
     frozen = build_root(tmp_path / "frozen", full, spare=1)
     identities = {t: H.load_specs(frozen / t / "specs.jsonl", check_fingerprint=False)[0]["identity_sha256"]
                   for t in H.V8_TIERS}
@@ -447,13 +607,13 @@ def test_四片生成合并聚合43格(tmp_path, fake, monkeypatch, capsys):
                 "--specs-out", tmp_path / "specs-root", "--output", gen1 / "merged") == 0
     text = capsys.readouterr().out
     assert "V8_MERGE=PASS shards=4 tiers=5 cells=43" in text
-    assert "V8_DELIVERY_SET=PASS tasks=16 cells=43 total=1070 expected=1070 failed=2 exec_over_cap=1 backfills=2 " \
-           "infra_retries=0 exhausted_cells=0 pending_cells=0" in text
+    assert f"V8_DELIVERY_SET=PASS tasks=16 cells=43 total={total} expected={total} failed=2 exec_over_cap=1 " \
+           "backfills=2 infra_retries=0 exhausted_cells=0 pending_cells=0" in text
     data = _guard_delivery(gen1 / "merged" / "delivery.json")
-    assert data["cell_count"] == 43 and len(data["rows"]) == 1070 and data["tasks"] == 16
+    assert data["cell_count"] == len(full) == 43 and len(data["rows"]) == total and data["tasks"] == 16
     assert all((gen1 / "merged" / r["path"]).is_file() for r in data["rows"])
     # 合并后的五份规格：签与冻结根逐档相同，完整格表契约通过
-    merged = H.load_specs_v8(tmp_path / "specs-root", H.V8_CELLS, check_fingerprint=False)
+    merged = H.load_specs_v8(tmp_path / "specs-root", full, check_fingerprint=False)
     assert {t: merged[t][0]["identity_sha256"] for t in merged} == identities
     # delivery.json 的 rows 与合并规格里的 selected 行逐一相等
     selected = {(r["task"], r["tier"], r["candidate"]) for _, rows in merged.values() for r in rows if r["selected"]}
