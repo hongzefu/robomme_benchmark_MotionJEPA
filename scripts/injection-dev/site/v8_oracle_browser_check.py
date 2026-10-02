@@ -5,12 +5,12 @@
 
 - 数据一律来自 ``/api/subgoals``（``v8_subgoal_lengths.py`` 从 v8 规格与真实 h5 统计）与 ``/api/catalog``；
   ``subgoals.json`` 缺失时服务端返回 ``{}``，本检查器据此判 FAIL，不允许页面静默缺内容；
-- 不读评估记录：成功率格必须显示「未评估」；执行步上限格（任务页）等于 ``subgoals.json`` 的 ``max_steps``
+- 不读评估记录：成功率格必须显示「未评估」；执行步上限（原任务页表格行，已撤下，不再核对）等于 ``subgoals.json`` 的 ``max_steps``
   （规格 ``exec_cap``／xhard0 1300）；
 - 配置格逐维与表 1 一致（``v8_site_catalog.TABLE1``），不对照任何计划表格；去掉 v7 的 PatternLock 定值断言；
 - 可选 ``--delivery``：逐格执行步均值／最小／最大与 ``delivery.json`` 的 ``exec_steps`` 再核一遍（与交付 h5 一致）。
 
-逐格覆盖目录里全部 (任务, 档)（完整根 43 新值格 + 16 xhard0 格 = 59）。总表与单任务表都核；截图写 ``--shots``。
+逐格覆盖目录里全部 (任务, 档)（完整根 43 新值格 + 16 xhard0 格 = 59）。只核「各档总表」页（任务页对比表已按用户要求撤下，只断言其隐藏）；截图写 ``--shots``。
 末行打印 ``V8_ORACLE_BROWSER=PASS|FAIL cells=<n> missing=<n>``（另附 mismatch、page_errors）。**判定行按前缀匹配**：
 ``V8_ORACLE_BROWSER=PASS cells=59 missing=0`` 之后可能追加键。任何中断都记入 problems 并照打判定行（FAIL）。
 ``--expect-cells`` 缺省由目录推出：目录新值格等于 ``V8_CELLS`` 时为 ``len(V8_CELLS) + 16``（= 59），
@@ -175,20 +175,14 @@ def main() -> int:
                     problems.append(f"{width}px 页面横向溢出")
                 page.screenshot(path=str(args.shots / f"oracle-{width}.png"))
             page.set_viewport_size({"width": 1440, "height": 1000})
-            # 单任务表：含旧入口与执行步上限，逐任务核对
-            task_checked = 0
+            # 任务页不再显示各档对比表（用户 2026-10-01「每个页面的这个表格不要再显示了。太占位置」）：
+            # 逐任务确认 #matrix 是隐藏的空容器；配置、长度与评估位只在上面的「各档总表」核对
             for task in catalog["tasks"]:
                 tier = next(iter(task["tiers"]))
                 page.evaluate("h => { location.hash = h; }", f"#task={task['id']}&tier={tier}&ep=1")
-                page.wait_for_function("t => document.querySelector('#task-section:not([hidden]) #matrix td[data-task=\"' + t + '\"]')",
-                                       arg=task["id"])
-                install_cfg_check(page, table1)
-                res = page.evaluate(CHECK_JS, {"cat": catalog, "oracle": sg["oracle"], "metrics": TASK_METRICS, "scope": "#matrix"})
-                problems += [f"任务页 {x}" for x in res["bad"]]
-                missing += [f"任务页 {x}" for x in res["missing"]]
-                task_checked += res["checked"]
-            if task_checked != cells:
-                problems.append(f"任务页核对格数 {task_checked} != {cells}")
+                page.wait_for_function("() => !document.getElementById('task-section').hidden")
+                if not page.evaluate("() => { const m = document.getElementById('matrix'); return m && m.hidden && !m.children.length; }"):
+                    problems.append(f"任务页 {task['id']} 的对比表未撤下")
             page.screenshot(path=str(args.shots / "task-1440.png"))
         except Exception as exc:
             problems.append(f"检查中断：{type(exc).__name__}: {exc}")

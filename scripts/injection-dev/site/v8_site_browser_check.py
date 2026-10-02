@@ -13,9 +13,11 @@
 - **评估媒体**：全程拦截 ``/media/<id>`` 请求，凡不是目录里生成视频的 ID 记为 ``eval_media_requests``；
 - **逐段数据**：``/api/subgoals`` 必须是 ``v8-subgoals/1``（缺失或空对象即 FAIL），每局（含 xhard0 旧入口）都有逐段记录，
   第 1 局页面的逐段表行数、task goal 条数与数据一致（``subgoal_missing``）；
-- **配置**：任务页总表的配置格（``data-dim``／``data-values``）与逐局配置（``li[data-dim]``）逐维与表 1 一致
-  （``v8_site_catalog.TABLE1``，定值相等、区间落在内），维度集合与表 1 相同（``config_mismatch``）；
-- **xhard5 与生成视频**：表头含 xhard5、SwingXtimes／StopCube 的 xhard5 页签可用，每格第 1 局的生成视频元数据可读并实际播放
+- **任务页对比表已撤下**：用户 2026-10-01 要求任务页不再显示各档对比总表，``#matrix`` 保留为隐藏的空容器（区块数不变）；
+  同一张表只在「各档总表」页显示，由 ``v8_oracle_browser_check.py`` 逐格核对；
+- **配置**：逐局配置（``li[data-dim]``）逐维与表 1 一致（``v8_site_catalog.TABLE1``，定值相等、区间落在内），
+  维度集合与表 1 相同（``config_mismatch``）；
+- **xhard5 与生成视频**：SwingXtimes／StopCube 的 xhard5 页签可用，每格第 1 局的生成视频元数据可读并实际播放
   （``currentTime > 0.2``）；「同步播放」让 xhard0 本局两段生成视频前进；
 - 390px 宽度下无横向溢出；页面无脚本错误。
 
@@ -115,14 +117,15 @@ def main() -> int:
 
             page.goto(f"{base}/", wait_until="domcontentloaded")
             page.wait_for_selector("#task-nav .task-link")
-            page.wait_for_selector("#matrix .oracle-table thead th")  # 等首个任务页渲染完（侧栏 oracle-link 先于任务页出现）
+            page.wait_for_selector("#tier-tabs button")  # 等首个任务页渲染完（侧栏 oracle-link 先于任务页出现）
             present = page.evaluate("ids => ids.filter(id => document.getElementById(id))", list(SECTIONS))
             n["sections"] = len(present)
             if n["sections"] != len(SECTIONS):
                 problems.append(f"缺少区块：{sorted(set(SECTIONS) - set(present))}")
-            heads = page.locator("#matrix .oracle-table thead th").all_inner_texts()
-            if not any("xhard5" in h for h in heads):
-                problems.append("任务页总表表头缺 xhard5 列")
+            # 任务页不再显示各档对比总表（用户 2026-10-01）：#matrix 保留为空并隐藏；该表只在「各档总表」页，
+            # 由 v8_oracle_browser_check.py 逐格核对配置、长度与评估位
+            if not page.evaluate("() => { const m = document.getElementById('matrix'); return m && m.hidden && !m.children.length; }"):
+                problems.append("任务页 #matrix 未隐藏或仍有内容")
 
             for task in catalog["tasks"]:
                 for tier, cell in task["tiers"].items():
@@ -171,28 +174,18 @@ def main() -> int:
                         if (segs and rows != segs + 1) or goals != max(1, len(rec.get("goal", []))):
                             n["subgoal_missing"] += 1
                             problems.append(f"{key} 第 1 局逐段表 {rows - 1}/{segs} 行或 goal {goals} 条不符")
-                    # 配置（总表格 + 逐局）
+                    # 配置（逐局；各档总表的配置格由 v8_oracle_browser_check.py 核对）
                     if tier != "xhard0":
                         want_dims = set(C.TABLE1.get(task["id"], {}))
-                        items = page.evaluate(
-                            "t => [...document.querySelectorAll(`#matrix td[data-tier=\"${t}\"][data-metric=\"config\"] [data-dim]`)]"
-                            ".map(d => [d.dataset.dim, JSON.parse(d.dataset.values)])", tier)
                         lis = page.evaluate("() => [...document.querySelectorAll('#episode .cfg-sem li[data-dim]')]"
                                             ".map(d => [d.dataset.dim, JSON.parse(d.dataset.value)])")
-                        if {d for d, _ in items} != want_dims or {d for d, _ in lis} != want_dims:
+                        if {d for d, _ in lis} != want_dims:
                             n["config_mismatch"] += 1
-                            problems.append(f"{key} 配置维度不符：{sorted(d for d, _ in items)} vs 表 1 {sorted(want_dims)}")
-                        for dim, values in items:
-                            if not check_values(task["id"], tier, dim, values):
-                                n["config_mismatch"] += 1
-                                problems.append(f"{key} 总表配置 {dim}={values} 与表 1 不符")
+                            problems.append(f"{key} 配置维度不符：{sorted(d for d, _ in lis)} vs 表 1 {sorted(want_dims)}")
                         for dim, value in lis:
                             if not check_values(task["id"], tier, dim, [value]):
                                 n["config_mismatch"] += 1
                                 problems.append(f"{key} 第 1 局配置 {dim}={value} 与表 1 不符")
-                        if not want_dims and C.NO_DIM_TEXT not in page.locator(
-                                f'#matrix td[data-tier="{tier}"][data-metric="config"]').inner_text():
-                            problems.append(f"{key} 无梯度任务的配置说明缺失")
                     # 生成视频
                     if cell["episodes"][0]["gen"].get("new", {}).get("media"):
                         try:

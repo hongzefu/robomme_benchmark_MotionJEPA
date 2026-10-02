@@ -185,8 +185,12 @@
       });
     }
 
+    // 任务页不再显示各档对比总表（用户 2026-10-01「每个页面的这个表格不要再显示了。太占位置」）；
+    // #matrix 容器保留以维持与 v7 一致的 DOM 区块，内容置空并隐藏；同一张表在「各档总表」页照常显示。
     function renderMatrix() {
-      renderComparison(el('matrix'), taskObj());
+      const m = el('matrix');
+      m.textContent = '';
+      m.hidden = true;
     }
 
     // ---- 难度配置（v8 冻结规格逐局取值，见 catalog.tiers[tier].config）与 oracle 总表 ----
