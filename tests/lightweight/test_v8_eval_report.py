@@ -79,7 +79,7 @@ class Stage:
             fh.write(json.dumps({"t": 0, "key": key, "seat": self.shard_of.get(key), "policy": policy, **row}) + "\n")
 
     def result(self, policy, key, status, *, attempt_no=1, attempt_id=None, accept=True, late=False,
-               exec_steps=100, media=True, wall=10.0, write_ledger=True, **extra):
+               exec_steps=100, media=True, wall=10.0, write_ledger=True, accept_error=False, **extra):
         aid = attempt_id or uuid.uuid4().hex
         d = self._dir(policy, key)
         ident = self.ident.get(key) or {"task": key.split("_")[0], "tier": key.split("_")[1],
@@ -99,7 +99,7 @@ class Stage:
                 self.ledger(policy, key, kind="reset_claim", attempt_id=aid, attempt_no=attempt_no)
             self.ledger(policy, key, kind="attempt_end", attempt_id=aid, attempt_no=attempt_no, status=status,
                         late=late)
-            if accept and status in ("success", "fail", "timeout"):
+            if (accept and status in ("success", "fail", "timeout")) or accept_error:
                 self.ledger(policy, key, kind="accept", attempt_id=aid, accepted_attempt_id=aid, attempt_no=attempt_no)
         if media:
             rd = d / "rec" / name
@@ -153,7 +153,7 @@ def test_zero_missing_all_pass(tmp_path):
     cov, r = kv(lines[-2]), kv(lines[-1])
     assert lines[-2].startswith("V8_EVAL_COVERAGE=PASS") and lines[-1].startswith("V8_EVAL_REPORT=PASS"), lines
     assert cov == {"_verdict": "PASS", "policies": "2", "missing": "0", "extra": "0", "duplicate": "0",
-                   "conflicting_terminal": "0", "late_ignored": "0"}
+                   "conflicting_terminal": "0", "late_ignored": "0", "error_final": "0"}
     assert r == {"_verdict": "PASS", "count_mismatch": "0", "media_unexplained": "0", "exec_over_cap": "0"}
     assert rc == 0
     sm = rep["per_policy"]["smvla"]
@@ -183,13 +183,47 @@ def test_error_identity_and_infra_retry(tmp_path):
     rc, rep, lines = run(man, st, tmp_path / "out")
     cov, r = kv(lines[-2]), kv(lines[-1])
     assert cov["_verdict"] == "FAIL" and cov["missing"] == "1" and cov["conflicting_terminal"] == "0"
+    assert cov["error_final"] == "0"
     assert r["_verdict"] == "PASS" and r["media_unexplained"] == "0", lines  # 无录像的错误行有原因
     sm = rep["per_policy"]["smvla"]
-    assert sm["outcomes"]["error"] == 1 and sm["outcomes"]["success"] == 5
+    # 额度耗尽的错误尝试没有 accept：身份记 missing（错误尝试另列废弃），不是 error 终局
+    assert sm["outcomes"]["error"] == 0 and sm["outcomes"]["missing"] == 1 and sm["outcomes"]["success"] == 5
     assert sm["budget"]["infra_retries_total"] == 1 and sm["budget"]["seats"]["s01"]["budget_exhausted"] == 1
     assert {x["key"] for x in sm["abandoned"]} == {k_retry, k_err}
     assert {x["key"] for x in sm["errors_without_video"]} == {k_retry, k_err}
     assert rc == 1
+
+
+def test_error_final_accept_and_ledger_only_attempt(tmp_path):
+    man, st = setup(tmp_path)
+    k_fin, k_infra, k_dang = "VideoUnmask_xhard2_1003", "SwingXtimes_xhard5_2002", "SwingXtimes_xhard1_2003"
+    st.all_ok(skip={("mme", k_fin), ("mme", k_infra), ("mme", k_dang)})
+    # 非 infra 错误终局：E-A 写 accept 指向 error 行 → 合法结局，记 error、占分母、不算成功
+    st.result("mme", k_fin, "error", accept_error=True, error="EnvError: scene invalid", exec_steps=37)
+    # accept 指向 infra=true 的 error 行 → 仍算冲突
+    st.result("mme", k_infra, "error", accept_error=True, infra=True, infra_reason="env_build", media=False)
+    # 悬空尝试恢复：账本有 attempt_end(infra) 而 results.jsonl 无对应行 → 计入废弃尝试，不报错；随后重试成功
+    st.ledger("mme", k_dang, kind="attempt_start", attempt_id="dangling01", attempt_no=1)
+    st.ledger("mme", k_dang, kind="attempt_end", attempt_id="dangling01", attempt_no=1, status="error", infra=True,
+              infra_reason="episode_wall_recovered")
+    st.result("mme", k_dang, "success", attempt_no=2)
+    rc, rep, lines = run(man, st, tmp_path / "out")
+    cov, r = kv(lines[-2]), kv(lines[-1])
+    assert cov["error_final"] == "1" and cov["missing"] == "0" and cov["conflicting_terminal"] == "1", lines
+    assert r["_verdict"] == "PASS", lines
+    mm = rep["per_policy"]["mme"]
+    assert mm["outcomes"]["error"] == 1 and mm["outcomes"]["conflict"] == 1 and mm["outcomes"]["success"] == 4
+    assert mm["cells"]["VideoUnmask@xhard2"]["error"] == 1 and mm["cells"]["VideoUnmask@xhard2"]["done"] == 1
+    assert [c["reason"] for c in mm["conflicts"]] == ["accept_infra_error"]
+    dang = [x for x in mm["abandoned"] if x["attempt_id"] == "dangling01"]
+    assert len(dang) == 1 and dang[0]["key"] == k_dang
+    assert rc == 1  # 冲突照判 FAIL
+    # 去掉冲突那一条后：error 终局不影响覆盖 PASS
+    man2, st2 = setup(tmp_path / "b")
+    st2.all_ok(skip={("mme", k_fin)})
+    st2.result("mme", k_fin, "error", accept_error=True, error="EnvError: scene invalid")
+    rc, _, lines = run(man2, st2, tmp_path / "b" / "out")
+    assert lines[-2].startswith("V8_EVAL_COVERAGE=PASS") and lines[-2].endswith("error_final=1") and rc == 0, lines
 
 
 def test_duplicate_result_rows(tmp_path):
@@ -227,11 +261,12 @@ def test_conflicting_terminal(tmp_path):
     st.all_ok(skip={("mme", k1), ("mme", k2)})
     st.result("mme", k1, "fail", attempt_no=1)
     st.result("mme", k1, "success", attempt_no=2)  # 同一身份第二条 accept → 冲突
-    aid = st.result("mme", k2, "error", attempt_no=1, accept=False, error="boom", media=False)
+    aid = st.result("mme", k2, "error", attempt_no=1, accept=False, error="boom", media=False,
+                    budget_exhausted=True)  # 额度耗尽的错误不是合法终局
     st.ledger("mme", k2, kind="accept", attempt_id=aid, accepted_attempt_id=aid)  # accept 指向非终态 → 冲突
     rc, rep, lines = run(man, st, tmp_path / "out")
     cov = kv(lines[-2])
-    assert cov["_verdict"] == "FAIL" and cov["conflicting_terminal"] == "2", lines
+    assert cov["_verdict"] == "FAIL" and cov["conflicting_terminal"] == "2" and cov["missing"] == "0", lines
     reasons = sorted(c["reason"] for c in rep["per_policy"]["mme"]["conflicts"])
     assert reasons == ["accept_not_terminal", "multiple_accept"]
     assert rep["per_policy"]["mme"]["outcomes"]["conflict"] == 2  # 冲突不择优、不算成功

@@ -13,14 +13,17 @@
 
 口径：
 - 每身份唯一权威终态 = 账本 ``accept`` 行的 ``accepted_attempt_id`` 对应的结果行；不是「最后一条」。
-- 迟到终态（同一身份 accept 之后再来的 success／fail／timeout）与废弃尝试（error／infra 尝试）单列，不入分数。
-- 同一身份两条不同 ``accepted_attempt_id``、accept 指向的结果行不是终态、或同一 attempt_id 的结果行自相矛盾 → conflicting_terminal。
-- 分母固定为 manifest 身份数（默认核对 1070）／模型；没有 accept 的身份不进成功、照样占分母
-  （有 error 尝试的记 error，一次尝试都没有的记 missing）。
+- 合法权威结局：success／fail／timeout，或「非 infra 错误终局」（status=error、infra=false、非 budget_exhausted、
+  非 run_blocked；记 error 列、占分母、不算成功，判定行追加 error_final=）。
+- 迟到终态（同一身份 accept 之后再来的终态）与废弃尝试（未被接受的 error／infra 尝试；账本有 attempt_end 而
+  results.jsonl 无对应行的悬空尝试也算）单列，不入分数。金丝雀行（canary）不进终态分母。
+- 同一身份两条不同 ``accepted_attempt_id``、accept 指向 infra 错误或其他非终态行、或同一 attempt_id 的结果行自相矛盾
+  → conflicting_terminal。
+- 分母固定为 manifest 身份数（默认核对 1070）／模型；没有 accept 的身份一律记 missing（不进成功、照样占分母）。
 - ``exec_steps`` 大于 ``--cap``（1600）的结果行计入 exec_over_cap，>0 即 FAIL。
 
 产出 ``<out>/report.json``、``<out>/report.md``（中文）、``<out>/video-index.jsonl``；末两行判定：
-``V8_EVAL_COVERAGE=PASS|FAIL policies= missing= extra= duplicate= conflicting_terminal= late_ignored=``
+``V8_EVAL_COVERAGE=PASS|FAIL policies= missing= extra= duplicate= conflicting_terminal= late_ignored= error_final=``（error_final 为契约字段后的追加字段：非 infra 错误终局数）
 ``V8_EVAL_REPORT=PASS|FAIL count_mismatch= media_unexplained= exec_over_cap=``
 ``--partial``：中途进度，不因缺失／媒体未就位判 FAIL（冲突、越限照判），另报已完成数、各格已完成与按已完成局墙钟估算的各席剩余时间。
 退出码：两行都 PASS 为 0，否则 1。
@@ -112,6 +115,12 @@ def rec_name(row: dict) -> str | None:
     return None
 
 
+def is_error_final(row: dict) -> bool:
+    """非 infra 错误是该身份的最终结局（E-A 会写 accept）：status=error、infra=false、非额度耗尽、非运行阻塞。"""
+    return (row.get("status") == "error" and not row.get("infra") and not row.get("budget_exhausted")
+            and not row.get("run_blocked"))
+
+
 def analyze_attempts(state: dict) -> dict:
     """按账本 accept 决定每身份唯一权威终态（与 manifest 无关的部分；搬运脚本也复用）。
 
@@ -164,9 +173,9 @@ def analyze_attempts(state: dict) -> dict:
                               "statuses": sorted(map(str, statuses))})
             continue
         row = lst[-1]
-        if row.get("status") not in TERMINAL:
-            conflicts.append({"key": key, "reason": "accept_not_terminal", "attempt_id": aid,
-                              "status": row.get("status")})
+        if row.get("status") not in TERMINAL and not is_error_final(row):
+            reason = "accept_infra_error" if row.get("status") == "error" and row.get("infra") else "accept_not_terminal"
+            conflicts.append({"key": key, "reason": reason, "attempt_id": aid, "status": row.get("status")})
             continue
         if key_of(row) != key:
             conflicts.append({"key": key, "reason": "accept_key_mismatch", "attempt_id": aid, "row_key": key_of(row)})
@@ -188,6 +197,18 @@ def analyze_attempts(state: dict) -> dict:
             abandoned.append(r)
     for r in no_id:
         (late if r.get("status") in TERMINAL else abandoned).append(r)
+    # 悬空尝试恢复：账本有 attempt_end 而 results.jsonl 无对应行 → 计入废弃尝试，不报错
+    ended: dict[str, dict] = {}
+    for lr in state["ledger"]:
+        if lr.get("kind") == "attempt_end" and lr.get("attempt_id"):
+            ended[str(lr["attempt_id"])] = lr
+    for aid, lr in ended.items():
+        if aid in by_attempt or aid in accepted_ids:
+            continue
+        abandoned.append({"key": lr.get("key"), "attempt_id": aid, "attempt_no": lr.get("attempt_no"),
+                          "status": lr.get("status") or "error", "infra": lr.get("infra"),
+                          "infra_reason": lr.get("infra_reason") or lr.get("reason") or "ledger_only_attempt_end",
+                          "ledger_only": True, "_seat": lr.get("_seat")})
     return {"rows": rows, "by_attempt": by_attempt, "accepted": accepted, "conflicts": conflicts,
             "accept_no_row": accept_no_row, "duplicate": duplicate, "late": late, "late_ids": late_ids,
             "abandoned": abandoned}
@@ -292,18 +313,16 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
         extra = sorted(k for k in seen_keys if k not in mkeys)
         conflict_keys = {c["key"] for c in an["conflicts"]}
         outcome: dict[str, str] = {}
-        err_keys = {key_of(r) for r in an["abandoned"]}
         for k in mkeys:
             if k in acc:
-                outcome[k] = acc[k]["status"]
+                outcome[k] = acc[k]["status"]  # success／fail／timeout，或非 infra 错误终局 error
             elif k in conflict_keys:
                 outcome[k] = "conflict"
-            elif k in err_keys:
-                outcome[k] = "error"
             else:
-                outcome[k] = "missing"
-        missing = [k for k in mkeys if k not in acc]
+                outcome[k] = "missing"  # 无 accept：只有 infra 错误尝试或一次都没跑，错误尝试另列废弃
+        missing = [k for k in mkeys if k not in acc and k not in conflict_keys]  # 冲突身份只计 conflicting_terminal
         cov["missing"] += 0 if partial else len(missing)
+        cov["error_final"] += sum(1 for k in mkeys if k in acc and acc[k].get("status") == "error")
         cov["extra"] += len(extra)
         cov["duplicate"] += an["duplicate"]
         cov["conflicting_terminal"] += conflict_n
@@ -352,7 +371,16 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
             m = find_media(r, pol, videos)
             is_acc = aid in accepted_ids
             reason = None
-            if is_acc:
+            if is_acc and r.get("status") == "error" and not media_ok(m):
+                # 非 infra 错误终局：无录像须有原因
+                why = r.get("infra_reason") or r.get("error")
+                no_video_errors.append({"key": key_of(r), "attempt_id": aid, "status": "error",
+                                        "reason": str(why)[:200] if why else None, "location": m["location"]})
+                if not why and not partial:
+                    reason = "error_final_without_video_and_reason"
+                    media_unexplained.append({"policy": pol, "key": key_of(r), "attempt_id": aid, "reason": reason,
+                                              "path": m["path"]})
+            elif is_acc:
                 if not media_ok(m):
                     reason = "accepted_terminal_media_absent" if m["location"] == "absent" else "accepted_terminal_media_incomplete"
                     if not partial:
@@ -381,7 +409,7 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
         for c, den in sorted(cell_den.items()):
             ks = [k for k in mkeys if cell_of(mkeys[k]) == c]
             cc = Counter(outcome[k] for k in ks)
-            cells[c] = {"denominator": den, "done": sum(cc[s] for s in TERMINAL), "success": cc["success"],
+            cells[c] = {"denominator": den, "done": sum(cc[s] for s in (*TERMINAL, "error")), "success": cc["success"],
                         "fail": cc["fail"], "timeout": cc["timeout"], "error": cc["error"], "missing": cc["missing"],
                         "conflict": cc["conflict"], "success_rate": cc["success"] / den if den else None}
         tasks: dict[str, dict] = {}
@@ -458,7 +486,7 @@ def build_report(manifest_path: Path, stage: Path, policies: list[str], videos: 
         "manifest": str(manifest_path), "stage": str(stage), "videos": str(videos) if videos else None,
         "partial": partial, "cap": cap, "expect_total": expect_total, "policies": policies,
         "coverage": {"pass": coverage_pass, **{k: cov[k] for k in
-                                              ("missing", "extra", "duplicate", "conflicting_terminal", "late_ignored")}},
+                                              ("missing", "extra", "duplicate", "conflicting_terminal", "late_ignored", "error_final")}},
         "report": {"pass": report_pass, "count_mismatch": len(count_mismatch),
                    "media_unexplained": len(media_unexplained), "exec_over_cap": len(exec_over_cap)},
         "count_mismatch_detail": count_mismatch, "media_unexplained_detail": media_unexplained,
@@ -495,7 +523,7 @@ def estimate_progress(mkeys: dict, shard_of: dict, per_policy: dict, policies: l
         detail = {}
         for pol in policies:
             outcome = per_policy[pol]["_outcome"]
-            rem = [k for k in mkeys if shard_of.get(k, "?") == sid and outcome[k] not in TERMINAL]
+            rem = [k for k in mkeys if shard_of.get(k, "?") == sid and outcome[k] not in (*TERMINAL, "error")]
             secs = 0.0
             fallback = 0
             for k in rem:
@@ -656,7 +684,7 @@ def lines_of(rep: dict) -> tuple[str, str]:
     c, r = rep["coverage"], rep["report"]
     cov_line = (f"V8_EVAL_COVERAGE={'PASS' if c['pass'] else 'FAIL'} policies={len(rep['policies'])} "
                 f"missing={c['missing']} extra={c['extra']} duplicate={c['duplicate']} "
-                f"conflicting_terminal={c['conflicting_terminal']} late_ignored={c['late_ignored']}")
+                f"conflicting_terminal={c['conflicting_terminal']} late_ignored={c['late_ignored']} error_final={c['error_final']}")
     rep_line = (f"V8_EVAL_REPORT={'PASS' if r['pass'] else 'FAIL'} count_mismatch={r['count_mismatch']} "
                 f"media_unexplained={r['media_unexplained']} exec_over_cap={r['exec_over_cap']}")
     return cov_line, rep_line

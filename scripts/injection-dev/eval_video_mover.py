@@ -21,6 +21,8 @@
 的目录名（``<key>.a<n>``、``<key>.canary.a<n>``）找 ``<stage>/sNN/<policy>/rec/<目录名>/``；只搬「结果行已写出」的目录（进行中的
 不碰），且目录内文件 ``--stable-sec`` 秒无变化、没有 rsync 临时文件（``.<name>.<6 位随机>``）。录像器自己留下的点开头文件
 （非空 ``.ffmpeg-<stream>.log``、close 失败时的 ``.spool/``）照常整目录搬；NFS 删除占位 ``.nfs*`` 不搬不删。
+``rec/`` 下点开头的目录（节点同步的 ``.incoming/`` 等）不碰、不算孤儿；节点同步落的 ``rec/<目录名>.dupN/`` 随同一结果行照常搬，
+目的地沿用 ``.dupN`` 名、不覆盖。
 整目录先 ``rsync -a`` 到 ``<dest>/.incoming/<随机>/`` → 逐文件两端 sha256 相同 → 原子改名到 ``<dest>/<policy>/<tier>/<task>/<目录名>/``
 （目标已存在且内容相同视为已搬；内容不同则落 ``<目标>.dupN``，本机已有副本一律不删）→ 只删核对过的源文件 → 往
 ``<dest>/moved.jsonl`` 追加一行（``mode: "v8"``，含逐文件 sha256；源目录删不掉记 ``src_left: true``）；已搬的源不再存在，可续。
@@ -166,11 +168,17 @@ def v8_attempt_dirs(stage: Path, policies: list[str]) -> list[dict]:
             name = rm.rec_name(row)
             if not name:
                 continue
-            src = Path(row["_seat_dir"]) / pol / "rec" / name
-            if str(src) in seen:
-                continue
-            seen.add(str(src))
-            out.append({"policy": pol, "row": row, "name": name, "src": src})
+            rec = Path(row["_seat_dir"]) / pol / "rec"
+            # 节点同步若目标已存在会落 rec/<name>.dupN/：同一结果行的副本照常搬，目的地沿用 .dupN 名
+            dup_re = re.compile(rf"^{re.escape(name)}\.dup\d+$")
+            names = [name] + (sorted(p.name for p in rec.glob(f"{glob.escape(name)}.dup*") if dup_re.match(p.name))
+                              if rec.is_dir() else [])
+            for nm in names:
+                src = rec / nm
+                if str(src) in seen:
+                    continue
+                seen.add(str(src))
+                out.append({"policy": pol, "row": row, "name": nm, "src": src})
     return out
 
 
@@ -254,10 +262,12 @@ def v8_move_dir(item: dict, dest: Path, moved_log: Path) -> tuple[str, int]:
 
 
 def stage_rec_dirs(stage: Path, policies: list[str]) -> list[tuple[str, str, Path]]:
-    """运行根里仍有可搬文件的录像目录 (policy, sNN, 路径)。"""
+    """运行根里仍有可搬文件的录像目录 (policy, sNN, 路径)；点开头的目录（节点同步的 .incoming 等）跳过、不算孤儿。"""
     out = []
     for pol in policies:
         for d in sorted(stage.glob(f"s*/{pol}/rec/*")):
+            if d.name.startswith("."):
+                continue
             if d.is_dir() and tree_files(d):
                 out.append((pol, d.parents[2].name, d))
     return out

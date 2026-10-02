@@ -290,6 +290,25 @@ def test_v8_resident_stop_file(tmp_path, mkv):
     assert proc.stdout.strip().splitlines()[-1] == "EXIT_CODE=0"
 
 
+def test_v8_node_incoming_skipped_and_dup_moved(tmp_path, mkv):
+    """节点同步的 rec/.incoming/ 不碰、不算孤儿；rec/<名>.dupN/ 随同一结果行照常搬，目的地沿用 .dupN 名。"""
+    st = Stage(tmp_path, mkv)
+    _, d = st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
+    dup = st.rec("00", "smvla", "VideoUnmask_xhard1_11.a1.dup1")
+    (dup / "front.mkv").write_bytes((dup / "front.mkv").read_bytes())
+    incoming = st.rec("00", "smvla", ".incoming")
+    dest = tmp_path / "videos"
+    proc = run_v8(st, dest, "--once", policies="smvla")
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    v = verdict(proc)
+    assert (v["stage_left"], v["orphan_videos"], v["videos"]) == ("0", "0", "1"), proc.stdout
+    assert not d.exists() and not dup.exists() and incoming.exists()
+    base = dest / "smvla" / "xhard1" / "VideoUnmask"
+    assert (base / "VideoUnmask_xhard1_11.a1" / "front.mkv").exists()
+    assert (base / "VideoUnmask_xhard1_11.a1.dup1" / "front.mkv").exists()
+    assert not (dest / "smvla" / "_orphan").exists()
+
+
 def test_v8_resident_stop_file_does_not_hang_on_unstable(tmp_path, mkv):
     st = Stage(tmp_path, mkv)
     _, d = st.result("00", "smvla", "VideoUnmask", "xhard1", 11, "success")
