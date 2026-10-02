@@ -1,6 +1,6 @@
 > **用途与顺序**：本方案接在根目录 [V8 计划](1001-newtask-v8-xhard-gradient-plan.md)全部完成之后，规划在 Great Lakes 上评估 SimpleMemVLA 与 MME-VLA。本轮只新增这份方案，不提交占位作业、不启动评估、不修改原 V8 计划或在途实现。原计划中的 xhard0 两路线评估仍属于原计划，本方案不接管。
 >
-> **用户原话，按时间顺序**：①「把方案写在根目录，在V8 Plan Markdown之后，开始两个模型的 evaluation 在 Great Lakes 上进行。」②「这是 V8 Plan Markdown 结束之后开始进行。」③「然后告诉我预估的时间，如果我用十个卡去并行的话。」④（2026-10-02，问口径）「是所有的已经生成过验证过的eisde都要evaluate吗?注意我说的是XHARD1234」⑤（同日，定口径，语音转写原样保留）「修改计划凭X号的12345。Xhard0不评」——即只评 xhard1～xhard5，xhard0 不评。
+> **用户原话，按时间顺序**：①「把方案写在根目录，在V8 Plan Markdown之后，开始两个模型的 evaluation 在 Great Lakes 上进行。」②「这是 V8 Plan Markdown 结束之后开始进行。」③「然后告诉我预估的时间，如果我用十个卡去并行的话。」④（2026-10-02，问口径）「是所有的已经生成过验证过的eisde都要evaluate吗?注意我说的是XHARD1234」⑤（同日，定口径，语音转写原样保留）「修改计划凭X号的12345。Xhard0不评」——即只评 xhard1～xhard5，xhard0 不评。⑥（同日）「这次评估会保留所有视频吗?需要保留所有视频如果没有保留的话。」
 >
 > **规划锚点**：工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-taskV8`，读取时 HEAD 为 `ae5b85762de69fbdba0728b4f333409a3047d2dd`（12.298）。这是规划依据，不是最终评估版本；实施时记录 V8 收尾提交、评估适配提交、两个 gitlink 的完整 SHA 与权重清单。提交编号沿用仓库 `12.<小版本>`，提交前重新核对。当前 `third_party/SimpleMemVLA` 有他人在途改动，本轮不读取其修改、不提交、不清理。
 >
@@ -18,6 +18,7 @@
 4. **步数**：交付的 xhard1～5 一律 1600（本轮不评 xhard0，其 1300 不涉及），沿用 V8 最终 `hard_specs.TIER_MAX_STEPS` 和 builder 语义。交付专家 h5 不超过 1600 不代表策略能成功；按冻结的客户端与环境终止语义记录 timeout、`task_success=false`，不宣称严格截断外部动作数。
 5. **分数**：每任务、每档分别报告成功率及固定分母，另报全局微平均、任务宏平均、错误数、超时数；缺失不得消失在分母里。记录独立 `task_success`，执行成功不等于任务成功。不为提高成功率重跑正常失败。
 6. **范围不外溢**：不改官方 `src/robomme/`、录像器和模型实现；不启动额外采样生成；本次不含把评估视频填回 V8 网站的改造，结果先按留档与媒体索引交付。
+7. **全部视频保留（用户 2026-10-02 定）**：2 模型 × 1070 局 = 2140 个正式身份，每局都录像（成功、失败、timeout 一视同仁），基础设施错误与重试的每一次尝试只要录到了画面也保留，不按成败挑选、不抽样；冒烟局视频同样保留，单独目录、不计入正式分母。正式运行禁用 `--no-record`。全部视频搬回本机 `artifacts/v8-evaluation/<run_name>/videos/<策略>/<tier>/<task>/`，GL 侧 NFS 暂存只在逐个 sha256 核对一致后才删；本机副本不删。V7 教训：旧入口 384 个评估视频当时漏搬、事后补搬（`docs/validation/newtask-v7/README.md` ⑥ 视频条），本轮以视频数量闸门堵住。
 
 ### 1.1 每个模型的身份数
 
@@ -85,6 +86,7 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 | 适配与小规模实跑 | JSONL 往返、nullable 字段、xhard5、上限边界和单 worker 真推理；不要求策略成功 | `V8_EVAL_SMOKE=PASS infra_errors=0 identity_errors=0` |
 | 两模型覆盖 | 每模型按 D 核对逐身份唯一终态，错误单列；覆盖通过不表示所有任务成功 | `V8_EVAL_COVERAGE=PASS policies=2 missing=0 extra=0 duplicate=0` |
 | 结果与媒体 | 对独立成功字段、退出码、视频终态/解码、报告分母交叉核对；无录像的错误行须明确说明 | `V8_EVAL_REPORT=PASS count_mismatch=0 media_unexplained=0` |
+| 视频全量保留 | 按 2 模型 × D 逐身份核对本机视频存在、可完整解码、与 NFS 暂存 sha256 一致；错误尝试的视频另行计数；通过说明 2140 个正式身份一个视频都没丢，NFS 暂存可清 | `V8_EVAL_VIDEOS=PASS policies=2 expected=2140 videos=2140 missing=0 decode_fail=0 sha_mismatch=0 error_attempt_videos=<n>` |
 
 | 阶段 | 内容 | 进入下一步的条件 |
 |---|---|---|
@@ -92,7 +94,7 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 | E1 | 申请十席并记录 JobID；实施客户端、启动器、汇总适配 | 定向测试与范围审查通过 |
 | E2 | 最小单 worker 冒烟，再检查十席运行环境与端口 | `V8_EVAL_INPUTS`、`V8_EVAL_SMOKE`、`V8_EVAL_SHARDS` |
 | E3 | 十席正式评估；失败按类型记账，保留固定分母 | 每身份最终状态与实际尝试账本齐全 |
-| E4 | 结果、视频、退出码与预算核验；留档提交 | `V8_EVAL_COVERAGE`、`V8_EVAL_REPORT` |
+| E4 | 结果、视频、退出码与预算核验；视频全部搬回本机并核 sha256 后才清 NFS 暂存；留档提交 | `V8_EVAL_COVERAGE`、`V8_EVAL_REPORT`、`V8_EVAL_VIDEOS` |
 | E5 | 按本轮清单释放自己的 JobID | 原作业和他人资源不受影响 |
 
 # 第二部分（技术细节，供 agent 追踪）
@@ -114,6 +116,7 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 | `smvla_client.py::run_episode` 的 reset 重试入口 | V8 模式下禁用内部自动重试（`retries=0`），每次实际 reset 前领持久额度并记录；异常返回外层统一分类 | 当前 `RESET_RETRIES=2` 代表首试加两次重试，共最多3次；旧模式保持原值；不修改模型推理与动作块循环 |
 | `run_seat.sh` 参数解析与客户端启动段 | 透传 V8 模式与重试额度；整合预算不能因进程重启清零 | 原模型启动、reset、清理逻辑保持；新值冒烟不走官方 episode 推导公式 |
 | 新增 `scripts/eval-official/run_v8_gl.sh` | 读取固定清单，十席独立输出、tmux 与 srun 编排、进度监督、退出记录 | 不嵌入旧 JobID、工作副本 SHA 或 `/data` 权重默认路径 |
+| `scripts/injection-dev/eval_video_mover.py`（搬运入口） | V8 模式：读 V8 结果记录；除终态局外，错误／重试尝试录到的视频也搬（现版只搬 `success/fail/timeout` 终态局，其余会随 NFS 清理丢失）；目标目录按本轮 `run_name` | 原 v7 行为保留；rsync → 两端 sha256 相同 → 才删 NFS 副本 → 写 `moved.jsonl` 的流程不变 |
 | 新增 `scripts/eval-official/v8_report.py` | 固定身份去重与终态检查，任务×档成功率、错误与预算报告、视频索引 | 不用缺失默认零制造成功；每次尝试保留、不覆盖原错误 |
 | 新增 `tests/lightweight/test_v8_eval_{manifest,client,report}.py` | 格表/身份/上限/错误/媒体合同测试及真实 JSON 往返 | CPU 合成夹具不触发仿真，不改变受保护目录 |
 
@@ -125,7 +128,7 @@ V8 将新值档上限由历史最高 3800 降到 1600，长失败局可能缩短
 |---|---|---|---|---|---|
 | E-A 身份及客户端 | `v8_manifest.py`、`env_client.py`、`smvla_client.py`（只限reset重试记账）、`test_v8_eval_manifest.py`、`test_v8_eval_client.py` | JSONL→JSON；完整身份、nullable 字段、逐档上限和持久尝试账本；依赖最终 V8 包 | 1 | 本机 uv 定向 pytest；`V8_EVAL_ADAPTER_TESTS=PASS` | CPU，无端口；env_client与smvla_client唯一负责人 |
 | E-B GL 编排 | `run_seat.sh`、`run_v8_gl.sh` | 先冻结 E-A 的 CLI 契约；持久尝试额度；与 E-A 可并行开发 | 2 | 本机 `bash -n`，零仿真假服务覆盖成功、超时、server死、监督进程死；`V8_EVAL_ORCHESTRATION=PASS` | CPU；真实端口由主会话分配；run_seat 唯一负责人 |
-| E-C 汇总 | `v8_report.py`、`test_v8_eval_report.py` | 消费 E-A 的身份与结果协议；零缺失/正常失败/错误/重复/迟到均覆盖 | 3 | 本机 uv 定向 pytest；`V8_EVAL_REPORT_TESTS=PASS` | CPU；报告文件唯一负责人 |
+| E-C 汇总与视频 | `v8_report.py`、`test_v8_eval_report.py`、`scripts/injection-dev/eval_video_mover.py` | 消费 E-A 的身份与结果协议；零缺失/正常失败/错误/重复/迟到均覆盖；`V8_EVAL_VIDEOS` 计数与错误尝试视频搬运 | 3 | 本机 uv 定向 pytest；`V8_EVAL_REPORT_TESTS=PASS` | CPU；报告文件唯一负责人 |
 | 主会话 | 本计划、`docs/validation/<run_name>/` 和索引；运行产物 | 顺序接收 E-A/B/C，审查文件范围、测试、提交后再真实运行 | 4 | 定向短测及第一部分验收表 | 十张 A40；tmux 前缀 `ev-v8-`；同一卡只有一个 srun 评估步骤 |
 
 ## 4. 尝试预算与一次确认清单
@@ -165,7 +168,7 @@ srun --jobid=<本轮JobID> --overlap --exact --ntasks=1 \
 4. 先跑冒烟表的第一项（1 模型×1任务×1档×1局、单worker），通过后串行完成剩余三项。核对真实 reset 次数、上限、模型 reset 和结果格式；失败不直接启十卡。
 5. 十席 tmux 命名 `ev-v8-<run_name>-s00`～`s09`；独立输出 `<root>/sNN/<policy>/`。端口按 `18000 + 100×席号 + 10×策略号` 起，先探服务与相邻端口，冲突有限次换位。server就绪与首次推理分别设超时，不能把监听成功当作首次推理可用。
 6. 每任务命令用 `PYTHONUNBUFFERED=1`、`set -o pipefail` 和 `tee`；结果持久化后写 `EXIT_CODE`。持久监督器覆盖主进程死亡、无进展、日志/报告写失败；独立测试监督器自身崩溃的通知路径。不得仅凭 tmux 存活宣称有自动唤醒；本轮未注册后台启动或唤醒。
-7. 结果齐全后运行汇总，核每格分母、终态、退出码、预算及媒体；录像结束后再解码检查。若回传本机，用 rsync 并比 SHA256，源文件删除须有明确授权，本方案不预授权删除。
+7. 结果齐全后运行汇总，核每格分母、终态、退出码、预算及媒体；录像结束后再解码检查。视频全部回传本机（必做，见第一部分 §1 第 7 条）：评估期间可常驻运行 `eval_video_mover.py` 边跑边搬，评估结束后再 `--once` 全量对账；每个文件 rsync 后两端 sha256 相同才删 NFS 副本，本机副本一律不删。`V8_EVAL_VIDEOS=PASS` 之前不得清理 NFS 评估目录或释放占位作业里仍有未搬视频的席位。
 8. 留档后只释放本轮 JobID，tmux 只按精确名称逐个清理；禁止全用户取消和全局杀 tmux。
 
 测试命令模板：核实 `command -v uv`、`pyproject.toml`、`uv.lock` 后，以显式缓存目录运行 `uv run --no-sync python -m pytest tests/lightweight/test_v8_eval_manifest.py tests/lightweight/test_v8_eval_client.py tests/lightweight/test_v8_eval_report.py -q`；这些测试文件是拟新增项，当前不能直接运行。真实冒烟只在 E2 进行，计入上表。
@@ -177,6 +180,7 @@ srun --jobid=<本轮JobID> --overlap --exact --ntasks=1 \
 - **reset预算须落到实际入口**：底层演示生成可能含额外 reset；入口隐含重试也可能放大次数，必须在冒烟实测并限制。
 - **运行器能力缺口**：当前 xhard0 客户端不能直接评新值档；拟新增判定行、十席控制器、完整媒体汇总尚未实现。
 - **原计划在执行**：读取锚点是阶段2收尾提交，不能由此认定V8完成；后续一定重新核实阶段3、3′、3b、4的证据。
+- **视频体量**：V7 两策略评估视频 2590 个、本机共 5.6 GB（`artifacts/newtask-v7/eval-videos`），按此估本轮约 5 GB 量级，本机 `/data` 剩余约 3.5 TB，不构成约束；NFS 暂存体量随搬运进度波动，未实测。
 - **十卡资源只是情景**：不将旧7个占位作业视为本轮十张可用卡；排队、到期、配额和转交都需到执行时核实。
 
 ## 7. 留档与提交纪律
