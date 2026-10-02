@@ -274,21 +274,47 @@ def test_表1与测试侧取值表一致():
     valued = [key for key in HS.V8_CELLS if key[0] in R.V8_TIER_TABLE]
     assert len(valued) == 41 and {k: set(v) for k, v in R.V8_TIER_TABLE.items()} == {
         t: {tier for task, tier in valued if task == t} for t in R.V8_TIER_TABLE}
+    # v9：格集合与 V8 相同（只局数不同），表 1 的取值维度逐格照用
+    assert {key for key in HS.V9_CELLS if key[0] in R.V8_TIER_TABLE} == set(valued)
 
 
 def test_格表解析与形状():
-    assert H.parse_cells("full") == HS.V8_CELLS and sum(H.parse_cells("full").values()) == 1070
+    # full 跟随包内 EXPECTED_CELLS（v9 阶段 3b 切换前 V8 1070、切换后 V9 800）；v8full／v9full 不随切换漂移
+    assert H.parse_cells("full") == HS.EXPECTED_CELLS
+    assert H.parse_cells_versioned("full")[1] == ("v9" if HS.EXPECTED_CELLS == HS.V9_CELLS else "v8")
+    assert H.parse_cells_versioned("v8full") == (HS.V8_CELLS, "v8") and sum(HS.V8_CELLS.values()) == 1070
+    for name in ("v9full", "v9"):
+        assert H.parse_cells_versioned(name) == (HS.V9_CELLS, "v9") and sum(H.parse_cells(name).values()) == 800
+    assert H.parse_cells_versioned("v9smoke") == ({("MoveCube", "xhard4"): 1, ("InsertPeg", "xhard4"): 1}, "v9")
+    assert H.parse_cells_versioned("v9shard1") == ({("MoveCube", "xhard4"): 50}, "v9")
+    # 只能被 V9_CELLS 覆盖的 JSON 子表判 v9（_rollout 的 Task@tier 写法也认）；能被 V8 覆盖的判 v8
+    assert H.parse_cells_versioned('{"InsertPeg@xhard4": 50}') == ({("InsertPeg", "xhard4"): 50}, "v9")
+    assert H.parse_cells_versioned('{"cells": [{"task": "MoveCube", "tier": "xhard4", "count": 3}]}')[1] == "v8"
     assert H.parse_cells("smoke") == H.V8_SMOKE_CELLS and len(H.V8_SMOKE_CELLS) == 7
     assert H.parse_cells('{"PickXtimes/xhard1": 17, "MoveCube": {"xhard4": 3}}') == {
         ("PickXtimes", "xhard1"): 17, ("MoveCube", "xhard4"): 3}
     assert H.parse_cells('[["StopCube", "xhard5", 1], {"task": "BinFill", "tier": "xhard2", "n": 2}]') == {
         ("StopCube", "xhard5"): 1, ("BinFill", "xhard2"): 2}
-    for bad in ('{"PickXtimes/xhard4": 1}', '{"PickXtimes/xhard1": 18}', '{"BinFill/xhard1": 0}', "{}"):
+    # 跨表混用（VideoUnmask 20 只在 V8 合法、MoveCube 50 只在 V9 合法）也拒
+    for bad in ('{"PickXtimes/xhard4": 1}', '{"PickXtimes/xhard1": 18}', '{"BinFill/xhard1": 0}', "{}",
+                '{"MoveCube/xhard4": 51}', '{"VideoUnmask/xhard1": 20, "MoveCube/xhard4": 50}'):
         with pytest.raises(H.ParityError):
             H.parse_cells(bad)
     per_tier = [sum(n for (_, t), n in HS.V8_CELLS.items() if t == tier) for tier in HS.V8_TIERS]
     assert H.SHAPES["v8"] == "cells43:" + "+".join(map(str, per_tier)) and per_tier == [411, 411, 128, 100, 20]
-    assert H.TIER_NAMES == HS.V8_TIERS and "v7" not in H.TIERS and "v8" in H.TIERS
+    v9_tier = [sum(n for (_, t), n in HS.V9_CELLS.items() if t == tier) for tier in HS.V8_TIERS]
+    assert H.SHAPES["v9"] == "cells43:" + "+".join(map(str, v9_tier)) and v9_tier == [272, 272, 92, 144, 20]
+    assert H.TIER_NAMES == HS.V8_TIERS and "v7" not in H.TIERS and {"v8", "v9"} <= set(H.TIERS)
+    assert H.default_h5_root("v9").parts[-3:] == ("newtask-v9", "parity", "h5")
+    assert H.default_h5_root("v8") == H.LOCAL_H5_ROOT and H.default_compare_root("v8") == H.COMPARE_ROOT
+    # hard_parity 自带的 v9 具名格表与 _rollout 同值（hard_parity 只用标准库、不 import _rollout）
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "injection-dev"))
+    import _rollout  # noqa: PLC0415
+
+    assert H.V9_SMOKE_CELLS == _rollout.V9_SMOKE_CELLS
+    assert {k: tuple(v) for k, v in H.V9_SHARD_TASKS.items()} == {k: tuple(v) for k, v in _rollout.V9_SHARD_TASKS.items()}
+    for name in ("v9smoke", "v9shard1"):
+        assert H.parse_cells(name) == _rollout.resolve_cells(name)
     assert H.LOCAL_H5_ROOT.parts[-3:] == ("newtask-v8", "parity", "h5")
 
 
@@ -613,20 +639,25 @@ def test_pool_over_cap按身份去重(tmp_path):
 
 
 def test_eval_smoke每任务局数按格表推出():
-    v8 = types.SimpleNamespace(TIERS=HS.V8_TIERS, V8_CELLS=HS.V8_CELLS, XHARD0_PER_TASK=HS.XHARD0_PER_TASK,
-                               V7_TIERS=HS.V7_TIERS, V7_XHARD4_ONLY=HS.V7_XHARD4_ONLY)
+    v8 = types.SimpleNamespace(TIERS=HS.V8_TIERS, V8_CELLS=HS.V8_CELLS, EXPECTED_CELLS=HS.V8_CELLS,
+                               XHARD0_PER_TASK=HS.XHARD0_PER_TASK, V7_TIERS=HS.V7_TIERS, V7_XHARD4_ONLY=HS.V7_XHARD4_ONLY)
     want = {t: 92 for t in HS.ALL_TASKS} | {"PickXtimes": 62, "SwingXtimes": 62, "StopCube": 62, "MoveCube": 32,
                                              "InsertPeg": 32}
     assert {t: R.expected_episodes(t, v8) for t in HS.ALL_TASKS} == want
     assert sum(want.values()) == 1262
+    # v9：每任务 12 + 50 = 62，共 992；EXPECTED_CELLS 切到 V9 与显式传格表两种入口同值
+    v9ns = types.SimpleNamespace(**{**vars(v8), "EXPECTED_CELLS": HS.V9_CELLS})
+    want9 = {t: 62 for t in HS.ALL_TASKS}
+    assert {t: R.expected_episodes(t, v9ns) for t in HS.ALL_TASKS} == want9
+    assert {t: R.expected_episodes(t, v8, HS.V9_CELLS) for t in HS.ALL_TASKS} == want9 and sum(want9.values()) == 992
     # 换包前（全局 TIERS 不含 xhard5）按冻结的 V7 常量 92／32
     v7ns = types.SimpleNamespace(TIERS=HS.V7_TIERS, V8_CELLS=HS.V8_CELLS, XHARD0_PER_TASK=HS.XHARD0_PER_TASK,
                                  V7_TIERS=HS.V7_TIERS, V7_XHARD4_ONLY=HS.V7_XHARD4_ONLY)
     v7 = {t: R.expected_episodes(t, v7ns) for t in HS.ALL_TASKS}
     assert v7["StopCube"] == v7["MoveCube"] == v7["InsertPeg"] == 32 and v7["PickXtimes"] == v7["BinFill"] == 92
-    # v8 阶段 3b 换包后包内 TIERS 含 xhard5：真实 hard_specs 即按 V8_CELLS 推出
+    # 包内 TIERS 含 xhard5：真实 hard_specs 按当前 EXPECTED_CELLS 推出（v9 阶段 3b 切换前 V8、切换后 V9）
     assert "xhard5" in HS.TIERS
-    assert {t: R.expected_episodes(t, HS) for t in HS.ALL_TASKS} == want
+    assert {t: R.expected_episodes(t, HS) for t in HS.ALL_TASKS} == (want9 if HS.EXPECTED_CELLS == HS.V9_CELLS else want)
 
 
 def test_reset_replay在v8根按V8_TIERS读(tmp_path):
@@ -769,3 +800,227 @@ def test_import_delivery只收v8清单(tmp_path):
     bad.write_text(json.dumps({"schema": "v7-delivery/1", "rows": []}))
     with pytest.raises(H.ParityError, match="v8-delivery/1"):
         H.main(["import-delivery", "--delivery", str(bad), "--h5-root", str(tmp_path / "h5")])
+
+
+# ── v9（1002 方案 §2.3；子代理 S1-C）：判定行按格表版本、reset-replay 新键、compare --identities ──────────
+
+
+#: V9 才合法的子表（MoveCube xhard4 50 > V8 的 20）：规格根按 header 推出 V9
+V9_ONLY_CELLS = {("MoveCube", "xhard4"): 50}
+
+
+def _v9_delivery(root: Path, out: Path, new: set[tuple[str, str]] | None = None) -> Path:
+    """assemble 形态的交付清单：逐局身份 + ``source``（MoveCube 全部、InsertPeg 候选号 ≥ 20 记 v9-new，其余 v8-reuse）。"""
+    rows = []
+    for r in all_rows(root):
+        if not HS.delivered(r):
+            continue
+        is_new = r["task"] == "MoveCube" or (r["task"] == "InsertPeg" and r["candidate"] >= 20)
+        rows.append({"task": r["task"], "tier": r["tier"], "episode": r["episode"], "seed": r["seed"],
+                     "candidate": r["candidate"], "source": "v9-new" if is_new else "v8-reuse"})
+    out.write_text(json.dumps({"schema": H.V8_DELIVERY_SCHEMA, "rows": rows}))
+    return out
+
+
+def test_delivery_set_v9全表打V9行与new_reused(tmp_path, capsys):
+    root = build_root(tmp_path / "root", HS.V9_CELLS)
+    delivery = _v9_delivery(root, tmp_path / "delivery.local.json")
+    rc, out = run(R.main, ["delivery-set", "--specs-root", root, "--cells", "v9full", "--delivery", delivery], capsys)
+    assert rc == 0, out
+    assert line(out, "V9_DELIVERY_SET").startswith(
+        "V9_DELIVERY_SET=PASS tasks=16 cells=43 total=800 new=80 reused=720 expected_cells=43 expected_total=800"), out
+    assert line(out, "V9_SEED_DISJOINT").startswith("V9_SEED_DISJOINT=PASS")
+    assert line(out, "V9_LAYOUT_INDEPENDENT").startswith("V9_LAYOUT_INDEPENDENT=PASS files=5 delivered=800")
+    assert "V8_" not in out and kv(line(out, "V9_DELIVERY_SET"))["delivery_mismatch"] == "0"
+    # 不给 --delivery：不打 new／reused
+    rc, out = run(R.main, ["delivery-set", "--specs-root", root, "--cells", "v9"], capsys)
+    assert rc == 0 and "new=" not in line(out, "V9_DELIVERY_SET")
+    # 清单少一局 → delivery_mismatch=1 FAIL；source 写坏 → delivery_bad_rows
+    payload = json.loads(delivery.read_text())
+    short = tmp_path / "short.json"
+    short.write_text(json.dumps({**payload, "rows": payload["rows"][1:]}))
+    rc, out = run(R.main, ["delivery-set", "--specs-root", root, "--cells", "v9full", "--delivery", short], capsys)
+    assert rc == 1 and kv(line(out, "V9_DELIVERY_SET"))["delivery_mismatch"] == "1"
+    payload["rows"][0]["source"] = "v8"
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps(payload))
+    rc, out = run(R.main, ["delivery-set", "--specs-root", root, "--cells", "v9full", "--delivery", bad], capsys)
+    assert rc == 1 and kv(line(out, "V9_DELIVERY_SET"))["delivery_bad_rows"] == "1"
+    # 用 V8 表核 V9 根：判定行仍是 V8_ 前缀且 FAIL（3b 切换前核 V9 根必须显式 v9full）
+    rc, out = run(R.main, ["delivery-set", "--specs-root", root, "--cells", "v8full"], capsys)
+    assert rc == 1 and line(out, "V8_DELIVERY_SET").startswith("V8_DELIVERY_SET=FAIL")
+
+
+def test_规格根按header推版本(tmp_path):
+    v9 = build_root(tmp_path / "v9", V9_ONLY_CELLS)
+    assert H.root_cell_table(v9) == ("v9", HS.V9_CELLS) and R.specs_version(str(v9)) == ("v9", HS.V9_CELLS)
+    v8 = build_root(tmp_path / "v8", H.V8_SMOKE_CELLS)
+    assert H.root_cell_table(v8) == ("v8", HS.V8_CELLS)
+    assert H.root_cell_table(tmp_path / "empty") is None
+    # 单文件读取按 header 推格表：V9 文件（MoveCube 50）在 EXPECTED_CELLS 仍为 V8 时也能读
+    header, rows = H.load_specs_any(v9 / "xhard4" / "specs.jsonl")
+    assert header["delivery_per_cell"] == {"MoveCube": 50} and len(rows) == 52
+    index = R.delivery_index(str(v9))
+    assert len(index) == 50 and all(hit["row"]["spec_sha256"] for hit in index.values())
+
+
+def _fake_replay(monkeypatch, root: Path, calls: list) -> None:
+    """替身 builder／env／spec_binding（不建环境、不 reset）：绑定规格 sha 取 builder 身份里的 spec_sha256。"""
+    from robomme_hard import env_record_wrapper as W
+
+    targets = {t["builder_episode"]: t for t in R._replay_targets(str(root))}
+
+    class Env:
+        def __init__(self, sha):
+            self.sha = sha
+
+        def reset(self):
+            return {"front_rgb_list": [0, 0]}, {}
+
+        def close(self):
+            pass
+
+    class Builder:
+        def __init__(self, task, dataset):
+            self.task = task
+
+        def resolve_identity(self, ep):
+            t = targets[ep]
+            return {"seed": t["seed"], "tier": t["tier"], "spec_sha256": t["spec_sha256"]}
+
+        def make_env_for_episode(self, ep, max_steps):
+            calls.append(ep)
+            return Env(targets[ep]["spec_sha256"])
+
+    monkeypatch.setattr(W, "BenchmarkEnvBuilder", Builder)
+    monkeypatch.setattr(W, "spec_binding", lambda env: {
+        "available": True, "mode": "replay", "spec_sha256": env.sha, "injected_mismatch": 0, "layout_drift": 0,
+        "unused": 0, "layered": False})
+    monkeypatch.setenv(HS.SPECS_ROOT_ENV, str(root))
+
+
+def test_reset_replay续跑键含spec_sha256_同seed不同规格负例(tmp_path, monkeypatch, capsys):
+    root = build_root(tmp_path / "root", V9_ONLY_CELLS)
+    calls: list = []
+    _fake_replay(monkeypatch, root, calls)
+    (target,) = R._replay_targets(str(root))
+    out = tmp_path / "gates" / "reset-replay.jsonl"
+    out.parent.mkdir()
+    # 同 (task, tier, seed)、不同 spec_sha256 的旧记录（如 v8 MoveCube）：不得当成已完成、也不得进判定
+    stale = {**target, "spec_sha256": "0" * 64, "ok": True,
+             "binding": {"mode": "replay", "spec_sha256": "0" * 64, "injected_mismatch": 0, "unused": 0}}
+    out.write_text(json.dumps(stale) + "\n")
+    assert R.replay_key(stale) != R.replay_key(target) and R.replay_key(stale)[:3] == R.replay_key(target)[:3]
+    argv = ["reset-replay", "--specs-root", root, "--out", out, "--limit", "1"]
+    rc, text = run(R.main, argv, capsys)
+    assert rc == 0 and calls == [target["builder_episode"]], text
+    assert line(text, "V9_RESET_REPLAY").startswith(
+        "V9_RESET_REPLAY=PASS shape=cells1 resets=1 replay=1 injected_mismatch=0 layout_drift=0 spec_bound=1"), text
+    # 再跑：新键已完成，不再 reset
+    rc, text = run(R.main, argv, capsys)
+    assert rc == 0 and len(calls) == 1 and "resets=1" in line(text, "V9_RESET_REPLAY")
+    # 只有旧记录（换个文件）→ 旧键记录不计入：判定前先重跑；若绑定 sha 不符则 spec_bound=0 FAIL
+    monkeypatch.setattr(sys.modules["robomme_hard.env_record_wrapper"], "spec_binding", lambda env: {
+        "available": True, "mode": "replay", "spec_sha256": "f" * 64, "injected_mismatch": 0, "layout_drift": 0,
+        "unused": 0, "layered": False})
+    other = tmp_path / "gates" / "other.jsonl"
+    other.write_text(json.dumps(stale) + "\n")
+    rc, text = run(R.main, ["reset-replay", "--specs-root", root, "--out", other, "--limit", "1"], capsys)
+    assert rc == 1 and kv(line(text, "V9_RESET_REPLAY"))["spec_bound"] == "0"
+
+
+def test_reset_replay_out必须是文件(tmp_path):
+    with pytest.raises(SystemExit, match="必须是 jsonl 文件路径"):
+        R.main(["reset-replay", "--out", str(tmp_path)])
+    with pytest.raises(SystemExit, match="必须是 jsonl 文件路径"):
+        R.main(["reset-replay", "--out", str(tmp_path / "gates") + "/"])
+    with pytest.raises(SystemExit):
+        R.main(["reset-replay"])  # --out 必填
+
+
+def test_reset_replay判定行按版本(tmp_path):
+    targets = [{"task": "MoveCube", "tier": "xhard4", "seed": i, "spec_sha256": f"s{i}"} for i in range(43)]
+    rows = [{**t, "ok": True, "binding": {"mode": "replay", "spec_sha256": t["spec_sha256"], "injected_mismatch": 0,
+                                          "layout_drift": 0, "unused": 0}} for t in targets]
+    ok, text = R.replay_verdict(targets, rows, version="v9", table=HS.V9_CELLS, limited=False)
+    assert ok and text == ("V9_RESET_REPLAY=PASS shape=cells43 resets=43 replay=43 injected_mismatch=0 layout_drift=0 "
+                           "spec_bound=43 unused=0 layout_hit_bad=0 errors=0")
+    ok, text = R.replay_verdict(targets, rows, version="v8", table=HS.V8_CELLS, limited=False)
+    assert ok and text.startswith("V8_RESET_REPLAY=PASS shape=cells43")
+    rows[0]["binding"]["spec_sha256"] = "other"
+    ok, text = R.replay_verdict(targets, rows, version="v9", table=HS.V9_CELLS, limited=False)
+    assert not ok and "spec_bound=42" in text
+    ok, _ = R.replay_verdict(targets[:42], rows[1:], version="v9", table=HS.V9_CELLS, limited=False)
+    assert not ok  # 未截断却少一格
+
+
+def test_step_headroom_v9清单打V9行(tmp_path, capsys):
+    gen = tmp_path / "gen1"
+    root = build_root(gen / "specs-root", V9_ONLY_CELLS, h5_root=gen)
+    delivery = write_delivery(root, gen / "delivery.json")
+    rc, out = run(R.main, ["step-headroom", "--delivery", delivery, "--pool", root, "--skip-xhard0"], capsys)
+    assert rc == 0 and line(out, "V9_STEP_CAP").startswith("V9_STEP_CAP=INFO max=3 cap=1600 over=0 filtered=0"), out
+
+
+@pytest.fixture
+def v9_sides(tmp_path, monkeypatch):
+    """v9 冒烟根（MoveCube／InsertPeg 各 1 局）+ 带 source 的清单：MoveCube 为 v9-new、InsertPeg（候选 0）为 v8-reuse。"""
+    monkeypatch.setattr(H, "TOLERANCES", tmp_path / "tol.json")
+    (tmp_path / "tol.json").write_text(json.dumps(TOL))
+    gen = tmp_path / "gen1"
+    root = build_root(gen / "specs-root", H.V9_SMOKE_CELLS, h5_root=gen)
+    delivery = write_delivery(root, gen / "delivery.json")
+    payload = json.loads(delivery.read_text())
+    for row in payload["rows"]:
+        row["source"] = "v9-new" if row["task"] == "MoveCube" else "v8-reuse"
+    delivery.write_text(json.dumps(payload))
+    h5_root = tmp_path / "h5"
+    assert H.main(["import-delivery", "--tier", "v9", "--delivery", str(delivery), "--identities", str(delivery),
+                   "--h5-root", str(h5_root)]) == 0
+    left, right = h5_root / "H-v9", h5_root / "H2-v9"
+    lines = []
+    for item in map(json.loads, (left / "identities.jsonl").read_text().splitlines()):
+        target = right / item["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((left / item["path"]).read_bytes())
+        lines.append({**item, "side": "H2"})
+    (right / "identities.jsonl").write_text("".join(json.dumps(x) + "\n" for x in lines))
+    return {"root": root, "delivery": delivery, "h5_root": h5_root, "left": left, "right": right, "tmp": tmp_path}
+
+
+def _compare_v9(s, capsys, run_name, extra=()):
+    rc = H.main(["compare", "--pair", "H:H2", "--tier", "v9", "--manifest", str(s["delivery"]),
+                 "--specs-root", str(s["root"]), "--cells", "v9smoke", "--identities", str(s["delivery"]),
+                 "--h5-root", str(s["h5_root"]), "--compare-root", str(s["tmp"] / "cmp"), "--run-name", run_name,
+                 "--workers", "2", *extra])
+    out = capsys.readouterr().out
+    return rc, out, kv(line(out, "PARITY_H_H2"))
+
+
+def test_compare_v9只比identities子集(v9_sides, capsys):
+    s = v9_sides
+    # import-delivery --identities：H 侧只登记 v9-new 的 1 局
+    assert len((s["left"] / "identities.jsonl").read_text().splitlines()) == 1
+    rc, out, keys = _compare_v9(s, capsys, "ok")
+    assert rc == 0, out
+    assert line(out, "PARITY_H_H2").startswith(
+        "PARITY_H_H2=PASS tier=v9 compared=1 cells=1 missing=0 extra=0 duplicate=0 identity_equal=1 "
+        "byte_equal=1 noise=0 h2_fail=0 flipped=0 structural=0"), out
+    assert keys["identities"] == "1" and keys["manifest_rows_all"] == "2" and keys["hard_line_5pct"] == "ok"
+    assert keys["shape"] == "cells43:272+272+92+144+20"
+    # 子集身份在 H2 缺席 → missing=1 FAIL
+    (s["right"] / "identities.jsonl").write_text("")
+    rc, out, keys = _compare_v9(s, capsys, "missing")
+    assert rc == 1 and keys["missing"] == "1"
+
+
+def test_compare_v9格表与档不符即报错(v9_sides):
+    s = v9_sides
+    with pytest.raises(H.ParityError, match="--cells 与 --tier v9 不符"):
+        H.main(["compare", "--pair", "H:H2", "--tier", "v9", "--manifest", str(s["delivery"]),
+                "--specs-root", str(s["root"]), "--cells", '{"VideoUnmask/xhard1": 20}', "--h5-root", str(s["h5_root"]),
+                "--compare-root", str(s["tmp"] / "cmp"), "--run-name", "bad"])
+    with pytest.raises(H.ParityError, match="子集为空"):
+        empty = s["tmp"] / "empty.jsonl"
+        empty.write_text("")
+        H.read_identity_subset(empty)

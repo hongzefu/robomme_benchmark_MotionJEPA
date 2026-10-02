@@ -728,16 +728,35 @@ def test_report读逐任务配额(tmp_path):
     assert _report.per_cell_quota({"delivery_per_cell": 20}, "BinFill") == 20
 
 
-def test_export_eval_identities的1262口径():
-    assert export_eval_identities.EXPECTED_TOTAL == 1262
-    assert export_eval_identities.IDENTITIES_NAME == "eval-identities-1262.jsonl"
-    assert not hasattr(export_eval_identities, "V6_SECONDS") and export_eval_identities.TASK_SECONDS["BinFill"] == 224.0
-    rows = [{"task": t, "tier": "xhard0", "episode": i, "round": None, "shard": None}
-            for t in H.ALL_TASKS for i in range(12)]
-    rows += [{"task": t, "tier": tier, "episode": 12 + i, "round": None, "shard": None}
-             for (t, tier), n in H.V8_CELLS.items() for i in range(n)]
-    official = [r for r in rows if r["tier"] == "xhard0"]
-    ok, facts = export_eval_identities.check_rows(rows, official)
-    assert ok and facts["episodes"] == 1262 and facts["cells"] == 43
-    rows[0]["round"] = 1
-    assert not export_eval_identities.check_rows(rows, official)[0]
+def test_export_eval_identities的1262口径(tmp_path, monkeypatch):
+    """总数由格表推出：V8 1262 = 192 + 1070、V9 992 = 192 + 800；模块默认值随包内 EXPECTED_CELLS（3b 切换前 V8）。
+    V9 格表时 --official-out 用默认（V8 根，审计 10）或缺 --delivery 即报错退出，不碰 builder、不写文件。"""
+    E = export_eval_identities
+    assert E.expected_total(H.V8_CELLS) == 1262 and E.identities_name(H.V8_CELLS) == "eval-identities-1262.jsonl"
+    assert E.expected_total(H.V9_CELLS) == 992 and E.identities_name(H.V9_CELLS) == "eval-identities-992.jsonl"
+    assert E.EXPECTED_TOTAL == E.expected_total(H.EXPECTED_CELLS)
+    assert E.IDENTITIES_NAME == f"eval-identities-{E.EXPECTED_TOTAL}.jsonl"
+    assert E.OFFICIAL_OUT_DEFAULT == "artifacts/newtask-v8/eval-official-xhard0-192.jsonl"  # 审计 10：默认值不动
+    assert not hasattr(E, "V6_SECONDS") and E.TASK_SECONDS["BinFill"] == 224.0
+    for table, total in ((H.V8_CELLS, 1262), (H.V9_CELLS, 992)):
+        rows = [{"task": t, "tier": "xhard0", "episode": i, "seed": i, "round": None, "shard": None}
+                for t in H.ALL_TASKS for i in range(12)]
+        rows += [{"task": t, "tier": tier, "episode": 12 + i, "seed": 1000 * len(t) + 10 * H.V8_TIERS.index(tier) + i,
+                  "round": None, "shard": None} for (t, tier), n in table.items() for i in range(n)]
+        official = [r for r in rows if r["tier"] == "xhard0"]
+        ok, facts = E.check_rows(rows, official, table)
+        assert ok and facts["episodes"] == facts["expected"] == total and facts["cells"] == 43
+        ids = {(r["task"], r["tier"], r["seed"]) for r in rows if r["tier"] != "xhard0"}
+        assert E.check_rows(rows, official, table, ids)[0]
+        assert not E.check_rows(rows, official, table, ids - {next(iter(ids))})[0]  # 交付清单少一局 → FAIL
+        # 用另一张表核同一批行 → 逐格局数不符
+        other = H.V9_CELLS if table is H.V8_CELLS else H.V8_CELLS
+        assert not E.check_rows(rows, official, other)[0]
+        rows[0]["round"] = 1
+        assert not E.check_rows(rows, official, table)[0]
+    monkeypatch.setattr(E, "resolve_table", lambda root: ("v9", H.V9_CELLS))
+    with pytest.raises(SystemExit):
+        E.main(["--delivery", str(tmp_path / "d.json")])
+    with pytest.raises(SystemExit):
+        E.main(["--official-out", str(tmp_path / "o.jsonl")])
+    assert not list(tmp_path.iterdir())
