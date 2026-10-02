@@ -36,8 +36,13 @@
 | `v9-extend-insertpeg` | sled-vail | 阶段 3 InsertPeg extend 抽签（GPU 1） |
 | `v9-gen-movecube` | GL 登录节点 | 阶段 3 MoveCube 生成（席 1） |
 | `v9-gen-insertpeg` | GL 登录节点 | 阶段 3 InsertPeg 生成（席 2） |
+| `v9-h2-insertpeg`、`v9-h2-movecube` | GL 登录节点 | 阶段 4 H2 二次生成（席 2、席 1） |
+| `v9-3b-verify`、`v9-3b-replay`、`v9-x0reset-3b` | sled-vail | 3b 子集逐字节核对、回注回放（GPU 1）、换包后 xhard0 对拍（GPU 0） |
+| `v9-compare` | sled-vail | 阶段 4 H 侧登记与 H:H2 对拍 |
+| `v9-site-build`、`site-v9-8082` | sled-vail | 阶段 4c 建站；V9 站常驻服务（保留） |
+| `v9-transcode`、`v9-nfs-cleanup` | sled-vail | 评估视频转码；NFS 产物搬回与清理 |
 
-后续阶段新增的会话在 `result.md` 补记。
+评估侧会话见 `docs/validation/v9-two-policy-gl10-20261002-01/launch.md` §七。
 
 ## 五、阶段 3 命令（逐字）
 
