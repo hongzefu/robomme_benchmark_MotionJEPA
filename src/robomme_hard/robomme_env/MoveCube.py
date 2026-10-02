@@ -235,7 +235,12 @@ class MoveCube(BaseEnv):
         # 依据：artifacts/newtask-v6/plan-probes/reach/（A/B/C 三路实测）与 reach/U/region.py 离线定义。
         # 三个 *_max_trials 是杆／goal／方块各自拒绝循环的预算（方块受推距与推起点约束，单次接受率最低约 0.5%，
         # 故给 4096；离线估计最坏段耗尽概率约 1e-9），超出抛 SceneGenerationError。
-        "region": {"center": [-0.06, 0.0], "r_in": 0.12, "r_out": 0.20, "base_dist": [0.35, 0.76],
+        # V9（计划 1002-newtask-v9-movecube-region-800-plan.md §2，用户 2026-10-02 定最终版）：圆环由 V6 的
+        # 0.12–0.20 扩到 r_in 0.24、r_out 0.42；base_dist 由 [0.35, 0.76]（两头各留 4 cm）改为 [0.31, 0.80]，
+        # 正好是可达边界——依据 docs/validation/newtask-v6/records/legacy/plan-probes/reach/{A,B} 探针实测：
+        # 末端全 yaw 可达 0.31–0.80 m，抓杆 0.27–0.80 m 全部成功（0.80–0.85 m 仅 48%，不在 V9 范围内）。
+        # 区域 U = 圆环 0.24–0.42 ∩ 离基座 0.31–0.80，只剩左右两块；center、push_len_max、两个 gap 与三个预算不变。
+        "region": {"center": [-0.06, 0.0], "r_in": 0.24, "r_out": 0.42, "base_dist": [0.31, 0.80],
                    "push_len_max": 0.30, "peg_gap": 0.04, "goal_peg_gap": 0.02,
                    "peg_max_trials": 128, "goal_max_trials": 256, "cube_max_trials": 4096},
     }

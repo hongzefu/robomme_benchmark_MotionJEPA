@@ -73,7 +73,8 @@ def test_configs_three_tiers_identical_and_xhard4_values() -> None:
     assert x["peg_yaw_range"]["offset_rad"] == pytest.approx(np.pi)
     # V5 L33：corner_bias 删键；V6（计划 2.6）：V5 的中心圆禁区换成统一区域 U（圆环版，用户 2026-09-25 定）
     assert "corner_bias" not in x and "center_exclusion" not in x
-    assert x["region"] == {"center": [-0.06, 0.0], "r_in": 0.12, "r_out": 0.20, "base_dist": [0.35, 0.76],
+    # V9（1002 计划 §2）：圆环 0.24–0.42，离基座 0.31–0.80；其余键沿用 V6
+    assert x["region"] == {"center": [-0.06, 0.0], "r_in": 0.24, "r_out": 0.42, "base_dist": [0.31, 0.80],
                            "push_len_max": 0.30, "peg_gap": 0.04, "goal_peg_gap": 0.02,
                            "peg_max_trials": 128, "goal_max_trials": 256, "cube_max_trials": 4096}
 
@@ -88,8 +89,8 @@ def test_decision_visible_part_unchanged_and_guard() -> None:
     assert decision["peg_yaw_range"]["xhard4"] == CLS.configs["xhard4"]["peg_yaw_range"]
     # 演示段与执行段各自一份（可取不同值）
     tuned = copy.deepcopy(decision)
-    tuned["demo_layout"]["xhard4"]["region"]["r_in"] = 0.10
-    tuned["execution_layout"]["xhard4"]["region"]["r_in"] = 0.14
+    tuned["demo_layout"]["xhard4"]["region"]["r_in"] = 0.22        # V9 默认 0.24 下偏 0.02
+    tuned["execution_layout"]["xhard4"]["region"]["r_in"] = 0.26   # V9 默认 0.24 上偏 0.02
     assert_native_decision(tuned, decision, "MoveCube")
     bad = copy.deepcopy(decision)
     bad["demo_layout"]["peg_position_policy"]["jitter_span"] = 0.2
