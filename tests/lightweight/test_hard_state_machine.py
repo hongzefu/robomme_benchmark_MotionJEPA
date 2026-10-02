@@ -36,7 +36,7 @@ def _specs(tmp_path: Path, candidates: int = 5, select=(0, 1)) -> Path:
              "sampling_config": {"BinFill": {"decision": {}, "native": {}}, "PickXtimes": {"decision": {}, "native": {}}},
              "recovery_rule": {"rule": "off"}, "identity_source": "formula", "run_id": "fixture",
              "draw_stats": {}, "provenance": {}}
-    header, rows = _freeze.freeze(drafts, parts, select, candidates)
+    header, rows = _freeze.freeze(drafts, parts, select, candidates, schema=hard_specs.SCHEMA)
     path = tmp_path / "specs.jsonl"
     _freeze.write_jsonl_exclusive(path, [header, *rows])
     return path

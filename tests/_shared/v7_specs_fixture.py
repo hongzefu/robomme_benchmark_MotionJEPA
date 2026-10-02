@@ -48,7 +48,8 @@ def parent_drafts(tasks, candidates: int, *, difficulty: str = "xhard4", profile
 
 def freeze_parent(tasks, candidates: int, per_cell: int):
     """xhard4 母布局：``select=0..per_cell-1``，封成 ``hard-specs/3``。"""
-    return _freeze.freeze(parent_drafts(tasks, candidates), header_parts(tasks), tuple(range(per_cell)), candidates)
+    return _freeze.freeze(parent_drafts(tasks, candidates), header_parts(tasks), tuple(range(per_cell)), candidates,
+                          schema=hard_specs.SCHEMA_V7)
 
 
 def derive_tier(parent_header: dict, parent_rows: list[dict], tier: str, *, missing=frozenset()) -> tuple[dict, list]:

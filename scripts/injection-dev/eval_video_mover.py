@@ -82,7 +82,7 @@ def main() -> int:
     ap.add_argument("--records-glob", required=True, help="终态记录 jsonl 的 glob")
     ap.add_argument("--stage", required=True, help="NFS 视频暂存根（只用于统计积压字节数与越界检查）")
     ap.add_argument("--dest", required=True)
-    ap.add_argument("--identities", default=None, help="eval-identities-1292.jsonl（逐局核对 tier／seed）")
+    ap.add_argument("--identities", default=None, help="eval-identities-1262.jsonl（逐局核对 tier／seed）")
     ap.add_argument("--stable-sec", type=float, default=10.0)
     ap.add_argument("--interval", type=float, default=60.0)
     ap.add_argument("--once", action="store_true")
