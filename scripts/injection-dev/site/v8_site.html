@@ -102,6 +102,13 @@
     .oracle-comparison .oracle-table thead th.oracle-current{background:#dce8d3}
     .oracle-comparison .oracle-tier-button[aria-pressed="true"]{background:var(--green);color:#fff}
     .cfg-sem{margin:4px 0 6px;padding-left:22px;font-size:15.5px;line-height:1.75;font-weight:600}
+    .sem-panel{margin:12px 0 4px;background:#fff;border:1px solid #c9b6e4;border-left:4px solid #7a4fb5;border-radius:12px;padding:10px 16px;font-size:12.5px;line-height:1.75}
+    .sem-panel h3{margin:0 0 4px;font-size:13.5px;color:#4b2d78}.sem-panel .sem-note{margin:4px 0 8px;color:#3d3550}
+    .sem-panel ul{margin:2px 0 8px;padding-left:20px}.sem-panel li{margin:2px 0}.sem-panel code{font-size:11.5px;background:#f4effa;padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+    .sem-panel .sem-k{font-weight:650;color:#4b2d78;margin-top:6px}.sem-panel.is-param{border-color:#d5dccf;border-left-color:#9aa596}.sem-panel.is-param h3{color:#3a543f}
+    .sem-tag{display:inline-block;margin-left:6px;padding:0 6px;border-radius:5px;background:#7a4fb5;color:#fff;font-size:10.5px;font-weight:650;vertical-align:1px}
+    .goal li.sem-changed{background:#f4effa;border-radius:6px;padding:0 6px}.sg-table tr.sem-changed td{background:#f4effa}
+    .oracle-comparison .sem-yes{color:#4b2d78;font-weight:650}.oracle-comparison .sem-no{color:#7c897e}
     .cfg-raw summary{cursor:pointer;font-size:11px;color:var(--muted)}.cfg-raw pre{font-size:10.5px;background:#f6f8f2;border-radius:8px;padding:8px;max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
     .outlier-link{margin:0 10px 6px;width:calc(100% - 20px);border:1px solid #f0c4bd!important;background:#fdf1ef}.outlier-link[aria-current="page"]{background:#fde5e1;border-color:#c2453a!important}
     .status-panel{padding:60px 20px;text-align:center;color:var(--muted)}
@@ -129,6 +136,7 @@
       <h2 class="task-title" id="task-title"></h2><div class="task-sub" id="task-sub"></div>
       <div id="matrix" class="oracle-comparison" aria-label="本任务各档配置、GT 长度与评估位"></div>
       <div class="tier-tabs" id="tier-tabs" role="group" aria-label="档位"></div>
+      <div class="sem-panel" id="sem-panel" hidden></div>
       <div class="filters" id="filters" role="group" aria-label="筛选"></div>
       <div class="legend" id="legend"></div>
       <details class="rerun-panel" id="rerun-panel" open hidden></details>
@@ -205,6 +213,7 @@
         ['config', '任务配置'], ['total', 'GT 总长度 · 帧'],
         ['demo', 'GT demo · 帧'], ['exec', 'GT execution · 步'],
         ...policies().map(p => ['policy-' + p.id, p.label + ' 成功率']), ['n', '长度样本 · 局'],
+        ['semantic', 'goal／subgoal 语义（相对 xhard0）'],
       ];
       if (onlyTask) metrics.push(...policies().map(p => ['old-policy-' + p.id, p.label + '（xhard0 旧入口）']), ['max_steps', '执行步上限（规格）']);
       const metricState = onlyTask ? 'taskMetrics' : 'oracleMetrics';
@@ -296,6 +305,13 @@
               td.dataset.task = task.id; td.dataset.tier = tier; td.dataset.metric = metric;
               const cell = task.tiers[tier], gt = (S.sg?.oracle?.[task.id] || {})[tier];
               if (!cell) td.append(node('span', 'oracle-secondary', '无该档位'));
+              else if (metric === 'semantic') {
+                const c = semCell(task.id, tier);
+                if (tier === 'xhard0') td.append(node('span', 'oracle-secondary', '基准'));
+                else if (!c) td.append(node('span', 'oracle-secondary', '未记录'));
+                else { const sp = node('span', c.changed ? 'sem-yes' : 'sem-no', c.label); sp.title = c.note; td.append(sp);
+                  if (c.changed) td.append(node('span', 'oracle-range', `goal +${c.goal_added.length}/−${c.goal_removed.length} · subgoal +${c.sub_added.length}/−${c.sub_removed.length}`)); }
+              }
               else if (metric === 'config') {
                 const cfg = node('div', 'oracle-config');
                 tierConfigItems(task.id, tier).forEach(it => { const d = node('div', '', it.text); if (it.dim) { d.dataset.dim = it.dim; d.dataset.values = JSON.stringify(it.values); } cfg.append(d); });
@@ -337,6 +353,30 @@
       ['outlier', 'oracle'].forEach(v => { el(v + '-section').hidden = v !== name; if (v === name) el(v + '-link').setAttribute('aria-current', 'page'); else el(v + '-link').removeAttribute('aria-current'); });
       if (location.hash !== '#view=' + (name === 'outlier' ? 'outliers' : name)) history.replaceState(null, '', '#view=' + (name === 'outlier' ? 'outliers' : name));
       renderNav(); if (name === 'outlier') renderOutliers(); else renderOracle();
+    }
+
+    // ---- xhard1～5 相对 xhard0 的 goal／subgoal 语义调整（v8_semantic_diff.py → /api/semantic）----
+    const semCell = (task, tier) => (((S.sem || {}).tasks || {})[task] || {}).tiers?.[tier];
+    const semEp = (task, tier, idx) => ((((S.sem || {}).episodes || {})[task] || {})[tier] || {})[String(idx)];
+    function renderSemPanel() {
+      const box = el('sem-panel'); box.textContent = ''; box.className = 'sem-panel';
+      const c = semCell(S.task, S.tier);
+      if (!c) { box.hidden = true; return; }
+      box.hidden = false; box.dataset.changed = String(!!c.changed);
+      if (!c.changed) box.classList.add('is-param');
+      box.append(node('h3', '', `与 xhard0 相比的 goal／subgoal 语义：${c.label}`));
+      box.append(node('div', 'sem-note', c.note));
+      const list = (title, items, fmt) => {
+        if (!items || !items.length) return;
+        box.append(node('div', 'sem-k', title));
+        const ul = node('ul'); items.forEach(it => { const li = node('li'); fmt(li, it); ul.append(li); }); box.append(ul);
+      };
+      const code = (li, text) => li.append(node('code', '', text));
+      list('goal 新增句式（〈〉为参数占位）', c.goal_added, (li, it) => { code(li, it.tpl); li.append(node('div', '', '例：' + it.example)); });
+      list('goal 中不再出现的 xhard0 句式', c.goal_removed, (li, it) => { code(li, it.tpl); li.append(node('div', '', '例：' + it.example)); });
+      list('subgoal 新增类型', c.sub_added, (li, it) => { code(li, it.tpl); li.append(document.createTextNode(`　出现于 ${it.episodes}/${it.of} 局`)); });
+      list('subgoal 中不再出现的 xhard0 类型', c.sub_removed, (li, it) => code(li, it.tpl));
+      list('仅重复次数变化（不算语义调整）', c.sub_repeat_only, (li, it) => { code(li, `${it.tpl}（${it.kind}）`); li.append(document.createTextNode(`　${it.segments} 段`)); });
     }
 
     function renderTabs() {
@@ -464,7 +504,12 @@
       if (rec) {
         const g = node('div', 'goal');
         g.append(node('div', 'k', `task goal（h5 setup/task_goal，${(rec.goal || []).length} 种措辞） · difficulty = ${rec.difficulty ?? '—'} · oracle 执行 ${rec.frames - rec.demo} 步${rec.demo ? ` + 视频演示 ${rec.demo} 帧` : ''}`));
-        const ol = node('ol'); (rec.goal || []).forEach(x => ol.append(node('li', '', x))); if (!(rec.goal || []).length) ol.append(node('li', '', '空 h5，无 task goal'));
+        const semE = semEp(S.task, S.tier, ep.idx);
+        const ol = node('ol'); (rec.goal || []).forEach((x, i) => {
+          const li = node('li', '', x);
+          if (semE && semE.goal[i]) { li.classList.add('sem-changed'); li.append(node('span', 'sem-tag', '语义调整')); li.title = '该措辞的句式 xhard0 没有（见上方「语义调整」说明）'; }
+          ol.append(li);
+        }); if (!(rec.goal || []).length) ol.append(node('li', '', '空 h5，无 task goal'));
         g.append(ol);
         g.append(node('div', 'k', S.tier === 'xhard0'
           ? '任务配置（xhard0 = 官方 hard，每局随机：能从本局 subgoal 数出的写本局值）'
@@ -611,6 +656,8 @@
         const { v, cls, tip } = segVerdict(S.task, S.tier, s);
         const td = node('td', cls, v); if (tip) { td.title = tip; td.append(node('small', 'sg-tip', `　${tip}`)); }
         tr.append(td);
+        const semE = semEp(S.task, S.tier, ep.idx);
+        if (semE && semE.sub[i]) { tr.classList.add('sem-changed'); tr.children[1].append(node('span', 'sem-tag', '语义调整')); }
         t.append(tr);
       });
       wrap.append(t);
@@ -719,7 +766,7 @@
       el('task-title').textContent = `${t.name} · ${t.id}`;
       const counts = Object.entries(t.tiers).map(([k, v]) => `${k} ${v.episodes.length} 局`).join(' · ');
       el('task-sub').textContent = counts;
-      renderNav(); renderMatrix(); renderTabs(); renderFilters(); renderRerunPanel(); renderChips(); renderEpisode();
+      renderNav(); renderMatrix(); renderTabs(); renderSemPanel(); renderFilters(); renderRerunPanel(); renderChips(); renderEpisode();
     }
 
     async function load() {
@@ -728,6 +775,7 @@
         if (!res.ok) throw new Error(res.status);
         S.cat = await res.json();
         try { const r2 = await fetch('/api/subgoals', { cache: 'no-store' }); S.sg = r2.ok ? await r2.json() : null; } catch (e) { S.sg = null; }
+        try { const r3 = await fetch('/api/semantic', { cache: 'no-store' }); S.sem = r3.ok ? await r3.json() : null; } catch (e) { S.sem = null; }
         el('status-panel').hidden = true; el('task-section').hidden = false;
         renderNotes();
         if (!S.sg || !S.sg.schema) el('notes').prepend(node('p', 'sg-missing', '逐段数据缺失：subgoals.json 未生成或为空（v8_subgoal_lengths.py），总表与逐段表无内容。'));

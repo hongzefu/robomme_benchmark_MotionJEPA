@@ -13,6 +13,8 @@ V8 双模型评估、xhard0 为阶段 3′ 两路线评估，评估断言由「�
 - **成败筛选**：两者都成／分歧／两者都未成／翻转按钮计数与目录推算一致，「未评估」为 0；实点三个成败筛选确认可见局号
   与计数一致（不一致计入 ``eval_mismatch``）；
 - **评估媒体**：每格第 1 局有评估视频的栏实际播放（``currentTime > 0.2``，计 ``eval_played``）；
+- **语义调整**（``/api/semantic``，``v8_semantic_diff.py``）：每个新值格的「与 xhard0 相比的 goal／subgoal 语义」面板存在且
+  有无调整与 ``semantic.json`` 一致，第 1 局 goal／subgoal 的「语义调整」标签数与逐局标记一致（不一致计 ``semantic_mismatch``）；
 - **逐段数据**：``/api/subgoals`` 必须是 ``v8-subgoals/1``（缺失或空对象即 FAIL），每局（含 xhard0 旧入口）都有逐段记录，
   第 1 局页面的逐段表行数、task goal 条数与数据一致（``subgoal_missing``）；
 - **任务页对比表已撤下**：用户 2026-10-01 要求任务页不再显示各档对比总表，``#matrix`` 保留为隐藏的空容器（区块数不变）；
@@ -96,7 +98,7 @@ def main() -> int:
     base = args.base.rstrip("/")
     problems: list[str] = []
     page_errors: list[str] = []
-    n = {"sections": 0, "cells": 0, "eval_placeholders": 0, "eval_missing": 0, "eval_mismatch": 0, "eval_played": 0,
+    n = {"semantic_mismatch": 0, "sections": 0, "cells": 0, "eval_placeholders": 0, "eval_missing": 0, "eval_mismatch": 0, "eval_played": 0,
          "subgoal_missing": 0, "config_mismatch": 0, "played": 0, "videos_meta": 0}
     with sync_playwright() as p:
         launch = {"headless": True, "args": ["--disable-gpu", "--autoplay-policy=no-user-gesture-required"]}
@@ -109,6 +111,10 @@ def main() -> int:
         try:
             catalog = page.request.get(f"{base}/api/catalog").json()
             sg = page.request.get(f"{base}/api/subgoals").json()
+            sem = page.request.get(f"{base}/api/semantic").json()
+            if not isinstance(sem, dict) or sem.get("schema") != "v8-semantic/1":
+                problems.append("/api/semantic 不是 v8-semantic/1")
+                sem = {"tasks": {}, "episodes": {}}
             for t in catalog["tasks"]:
                 for tier, cell in t["tiers"].items():
                     for ep in cell["episodes"]:
@@ -165,6 +171,16 @@ def main() -> int:
                     if cnt:
                         problems.append(f"{key} 出现「未评估」占位 {cnt} 个")
                     ep1 = cell["episodes"][0]
+                    if tier != "xhard0":
+                        want_c = sem["tasks"].get(task["id"], {}).get("tiers", {}).get(tier)
+                        got_c = page.evaluate("() => { const b = document.getElementById('sem-panel'); return b && !b.hidden ? b.dataset.changed : null; }")
+                        want_e = sem["episodes"].get(task["id"], {}).get(tier, {}).get(str(ep1["idx"]), {})
+                        tags = page.evaluate("() => [document.querySelectorAll('#episode .goal li.sem-changed').length,"
+                                             " document.querySelectorAll('#episode .sg-table tr.sem-changed').length]")
+                        if want_c is None or got_c != str(bool(want_c["changed"])).lower() \
+                                or tags != [sum(want_e.get("goal", [])), sum(want_e.get("sub", []))]:
+                            n["semantic_mismatch"] += 1
+                            problems.append(f"{key} 语义面板 {got_c} 或标签 {tags} 与 semantic.json 不符")
                     badges = page.evaluate("() => [...document.querySelectorAll('#episode .col.is-eval')]"
                                            ".map(c => [c.dataset.policy, (c.querySelector('.badge')?.className || '').replace('badge s-', '')])")
                     want_badges = [[p, ev_status(ep1, entry, p)] for entry in (("new", "old") if tier == "xhard0" else ("new",))
@@ -355,7 +371,8 @@ def main() -> int:
     print(f"V8_SITE={'PASS' if ok else 'FAIL'} sections={n['sections']} eval_placeholders={n['eval_placeholders']} "
           f"eval_missing={n['eval_missing']} eval_mismatch={n['eval_mismatch']} eval_played={n['eval_played']} "
           f"subgoal_missing={n['subgoal_missing']} config_mismatch={n['config_mismatch']} "
-          f"cells={n['cells']} played={n['played']} page_errors={len(page_errors)}", flush=True)
+          f"cells={n['cells']} played={n['played']} semantic_mismatch={n['semantic_mismatch']} page_errors={len(page_errors)}",
+          flush=True)
     return 0 if ok else 1
 
 
