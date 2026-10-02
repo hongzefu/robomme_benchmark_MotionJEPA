@@ -14,8 +14,10 @@
 > 3. 局数改为每任务 50 局，在该任务 V8 交付的 xhard1～5 档里平分，没有交付的档不要；16 任务共 800 局，不算 xhard0。
 > 4. 区域图放进本计划（第一部分 §2）。
 > 5. 子代理全部在本计划里定下来（第二部分 §2.12）。
+> 6. 评估：生成完成后，新生成的 80 局（MoveCube 50 + InsertPeg 30）和 V8 一样做两模型（SimpleMemVLA、MME-VLA）评估；与 V8 逐字节相同的 720 局直接复用 V8 的评估结果，不重跑。
+> 7. 席位：和 V8 一样，生成用 4 个 GL 48 h 占位 job，评估用 10 个。
 >
-> **待拍板**：无。本文件按「其他都不要动」推定了两项，见总览第 4、7 条。用户要改时只需改这两条，其余结构不变。
+> **待拍板**：无。本文件按「其他都不要动」推定了一项，见总览第 4 条。用户要改时只需改这一条，其余结构不变。
 
 # 第一部分（给人看）
 
@@ -34,9 +36,12 @@
    - 其余 14 任务：从 V8 交付行里按候选号升序取前 N 局，N 见表 2，不 reset、不 rollout。
 5. **xhard0**：16 任务 × 1 档 × 12 局 = 192，环境与规格都不动。用 `XHARD0_RESET_PARITY` 证明改 `MoveCube.py` 没有碰到 xhard0 分支。
 6. **seed**：沿用 V8 的按档偏移 `seed_rule_for(tier, "v8")`，xhard4 是 22e6。这样 MoveCube 的 V9 局会和 V8 的 MoveCube 局 seed 相同、布局不同。两者靠 header 的 `sampling_config_sha256` 和数据集版本区分，风险见 §2.5 R-3。
-7. **评估与站点（推定）**：
-   - V9 不做新的两策略评估。
-   - V9 站点沿用 V8 站点的布局。和 V8 逐字节相同的 720 局（14 任务 × 各自 N，加 InsertPeg 20）复用 V8 已有的评估结果。新生成的 80 局（MoveCube 50 + InsertPeg 30）评估板块原位置空。
+7. **评估与站点**：依据：用户原话「生成完了和V8一样要做eval两个model都需要」「Evaluate的时候用十个」。
+   - 新生成的 80 局（MoveCube 1 任务 × 1 档 × 50 + InsertPeg 1 任务 × 1 档 × 30）做两模型评估，口径与 V8 双模型评估完全一致（`docs/validation/v8-two-policy-gl10-20261002-01/`）：SimpleMemVLA `group_size=1`、MME-VLA `perceptual-framesamp-modul/79999`、执行段 1600 步严格截断计 timeout、第 1600 步成功记成功、tokenizer 以 GCS 校验和为可信源、权重按 v7.5eval 资产锁核对。
+   - 与 V8 逐字节相同的 720 局（14 任务 × 各自 N，加 InsertPeg 20）复用 V8 的评估结果，按 (task, tier, seed, `spec_sha256`) 四元组对齐，不重跑。
+   - 报告分两张：新 80 局单独一张；800 局总表（720 复用 + 80 新评）按任务、按档给两模型成功率。两张都写进 `result.md`，V9 整体成功率可与 V8 对照，但要注明 720 局的数字是 V8 当时跑的。
+   - V9 站点沿用 V8 站点的布局，59 格全部有评估板块，无置空。
+8. **席位**：生成用 4 个 GL 48 h 占位 job（`v9gen-hold-1～4`），评估用 10 个（`v9ev-hold-00～09`），规格都与 V8 相同：1 A40／4 CPU／48 GiB／48 h、`--gpu_cmode=shared`。依据：用户原话「J0B还是和之前一样生成的时候用四个。Evaluate的时候用十个」。
 
 ## 2. MoveCube 生成区域：现状、V9 与离线实测
 
@@ -135,7 +140,8 @@
 | `scripts/injection-dev/_freeze.py`、`_rollout.py` | 新增 `V9_CANDIDATES`（只含 MoveCube 80、InsertPeg 追加量）；`check_cells` 用 `EXPECTED_CELLS`；V9 分片表 `V9_SHARD_TASKS`（2 片：MoveCube、InsertPeg） | S1-B |
 | `scripts/parity/hard_regression.py`、`hard_parity.py`、`scripts/injection-dev/export_eval_identities.py` | 判定行名加 V9；`expected_episodes` 改由格表推出；`SHAPES["v9"]`；identities 992 | S1-C |
 | `scripts/injection-dev/v9_subset_specs.py`（新） | 从 V8 specs-root 与 gen1 产物派生 V9 子集规格并重签；用 hardlink 建 V9 产物树（不复制 618G） | S1-D |
-| `scripts/injection-dev/site/v8_site_catalog.py` 等 | 局数口径由格表推出（1262 → 992）；V9 站点目录与 V8 评估结果的按身份复用 | S1-E |
+| `scripts/injection-dev/site/v8_site_catalog.py` 等 | 局数口径由格表推出（1262 → 992）；V9 站点目录与 V8 评估结果的按身份复用，加新 80 局评估结果的接入 | S1-E |
+| `scripts/eval-official/v8_manifest.py`、`v8_report.py` | 清单加 `--exclude-evaluated <V8 manifest.json>`：从 992 身份里剔除 xhard0 与已评过的 720 局，只留新 80 局，十片均衡；报告加 `--reuse <V8 结果目录>`：合并 720 复用 + 80 新评出 800 局总表与新 80 局分表 | S1-F |
 | 测试（逐文件见第二部分 §2.1） | 1070／43／62／92／32／1262 一类写死的数改成从格表推出，或换成 V9 值 | 各块各管自己的 |
 
 ## 5. 验收
@@ -151,7 +157,12 @@
 | 新区域确实生效 | 从 80 局新规格读 `layout.<seg>.region` 与实际落点 | MoveCube 50 局两段的方块、goal、抓杆点都在新 U 内，至少一处落在旧 U 之外 | `V9_MOVECUBE_LAYOUT=PASS episodes=50 in_region=300 outside_old=<n>` |
 | 规格可回放 | `hard_regression.py reset-replay` | 800 局每格抽 1 局回注，复现布局 | `V9_RESET_REPLAY=PASS shape=cells43 resets=43 replay=43 injected_mismatch=0 layout_drift=0` |
 | 新局可复现 | 80 局二次生成，与 gen1 对拍 | 同规格、同代码两次生成一致 | `PARITY_H_H2=PASS tier=v9 compared=80 missing=0 identity_equal=80` |
-| 站点 | 浏览器检查 | 59 格（43 + 16）都在；新 80 局评估板块置空、复用的 720 局评估与 V8 同 | `V9_SITE=PASS cells=59 missing=0 eval_reused=720 eval_empty=80` |
+| 评估清单 | `v8_manifest.py --exclude-evaluated` | 新 80 局身份与 V8 已评身份零重叠，十片两两不交、并集 80 | `V9_EVAL_SHARDS=PASS shards=10 total=80 cells=2 reused=720 missing=0 extra=0 duplicate=0 xhard0=0` |
+| 评估冒烟 | 单 worker、单局、两模型各一次 | 两模型都能消费 V9 规格并产出终态，1600 截断生效 | `V9_EVAL_SMOKE=PASS infra_errors=0 identity_errors=0 exec_steps_max<=1600` |
+| 两模型覆盖 | `v8_report.py` 按账本 `accepted_attempt_id` 核对 | 新 80 局每模型逐身份唯一终态，无冲突、无 error | `V9_EVAL_COVERAGE=PASS policies=2 expected=80 missing=0 extra=0 duplicate=0 conflicting_terminal=0 error_final=0` |
+| 评估报告 | `v8_report.py --reuse` | 800 局总表分母 = 720 复用 + 80 新评，复用行的 `spec_sha256` 与 V8 manifest 逐条相等 | `V9_EVAL_REPORT=PASS total=800 new=80 reused=720 count_mismatch=0 media_unexplained=0` |
+| 评估视频 | 搬回本机后逐文件 sha256 | 2 模型 × 80 局 = 160 个视频一个不丢 | `V9_EVAL_VIDEOS=PASS policies=2 expected=160 videos=160 missing=0 decode_fail=0 sha_mismatch=0` |
+| 站点 | 浏览器检查 | 59 格（43 + 16）都在；720 局评估与 V8 同，新 80 局评估板块有结果 | `V9_SITE=PASS cells=59 missing=0 eval_reused=720 eval_new=80 eval_empty=0` |
 | 核心短测 | `timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q` | 无 failed | 末行 `passed` |
 
 **为什么子集能逐字节等于 V8**：子集局不 reset、不 rollout。规格行只改 header 和 `selected` 标记，h5 与 mp4 用 hardlink 指向 V8 的同一份 inode，sha256 自然相等。如果哪一局不等，就说明取错了行，或者 V8 产物被动过；这两种都不是数值误差。
@@ -161,10 +172,10 @@
 改代码切成 5 块，全部是 worktree 隔离的写入型子代理，各管一组互不重叠的文件：
 
 - **第一批（两块并行）**：S1-A 只管 MoveCube 区域的三个数及其测试；S1-B 管格表常量（`hard_specs.py`、`hard_builder.py`、`_freeze.py`、`_rollout.py`）及其测试。
-- **第二批（三块并行）**：S1-B 合入后派出，因为都要 import `V9_CELLS`。S1-C 改对拍与回归脚本的局数口径；S1-D 写子集派生与产物树工具；S1-E 改站点目录的局数口径与评估复用。
-- **主会话自做**：跑冒烟、抽签、生成、对拍、建站，以及出图、计划、留档。这些是跑任务不是改代码，主会话自己用 tmux + Monitor 串行跑。
+- **第二批（四块并行）**：S1-B 合入后派出，因为都要 import `V9_CELLS`。S1-C 改对拍与回归脚本的局数口径；S1-D 写子集派生与产物树工具；S1-E 改站点目录的局数口径、评估复用与新评接入；S1-F 改评估清单与汇总报告（只评新 80 局、合并 720 复用）。
+- **主会话自做**：跑冒烟、抽签、生成、对拍、十席评估、建站，以及出图、计划、留档。这些是跑任务不是改代码，主会话自己用 tmux + Monitor 串行跑。
 
-**合并顺序**：A → B → C → D → E，合一个、审一个、push 一个。
+**合并顺序**：A → B → C → D → E → F，合一个、审一个、push 一个。
 
 **每次合并前**：
 1. 核对改动文件没出可写集合；
@@ -180,12 +191,14 @@
 | 0 | 建分支 `newtaskRelease-taskV9`；派发前核对（主检出 clean、`worktree.baseRef=head`、`.claude/worktrees` 被忽略、`git worktree list` 存档） | 四项全过 |
 | 1 | 派 S1-A、S1-B，审查后按 A → B 合并 | 两次 `POST_MERGE_REVIEW=PASS`；`V9_MOVECUBE_REGION=PASS`；`V9_CELLS=PASS` |
 | 1b | 主会话跑 xhard0 环境层对拍 | `XHARD0_RESET_PARITY=PASS … compared=192 det_diff=0` |
-| 2 | 派 S1-C、S1-D、S1-E，审查后按 C → D → E 合并 | 三次 `POST_MERGE_REVIEW=PASS` |
+| 2 | 派 S1-C、S1-D、S1-E、S1-F，审查后按 C → D → E → F 合并 | 四次 `POST_MERGE_REVIEW=PASS` |
 | 2b | 最小冒烟：MoveCube xhard4 1 任务 × 1 档 × 1 局；InsertPeg xhard4 1 任务 × 1 档 × 1 局 | 两局生成完成、执行步 ≤ 1600 |
 | 3 | 抽签：MoveCube 整任务重抽 80 候选；InsertPeg 追加候选；生成 80 局新局（有失败就递补） | `V9_DELIVERY_SET`、`V9_STEP_CAP`、`V9_MOVECUBE_LAYOUT` |
 | 3b | 子集派生 + 产物树 + 合并 xhard4 规格文件 + 换包（`env_metadata/test-hard/` 换为 V9 规格），一个提交完成 | `V9_SUBSET`、`V9_RESET_REPLAY`、`UPSTREAM_GUARD`、核心短测 |
-| 4 | 80 局二次生成对拍；建 V9 站点并做浏览器检查；推送通知 | `PARITY_H_H2`、`V9_SITE` |
-| 5 | 留档 `docs/validation/newtask-v9/`；释放本轮占位 job | `launch.md`、`result.md` 写完；按清单 `scancel` |
+| 4 | 80 局二次生成对拍；释放 4 个生成席 | `PARITY_H_H2`；按清单 `scancel` 生成席 |
+| 4b | 两模型评估新 80 局：提交 10 个评估席、评估清单、冒烟、十席实跑、视频搬回、汇总报告；释放 10 个评估席 | `V9_EVAL_SHARDS`、`V9_EVAL_SMOKE`、`V9_EVAL_COVERAGE`、`V9_EVAL_REPORT`、`V9_EVAL_VIDEOS`；按清单 `scancel` 评估席 |
+| 4c | 建 V9 站点（720 复用 + 80 新评）并做浏览器检查；推送通知 | `V9_SITE` |
+| 5 | 留档 `docs/validation/newtask-v9/`（生成）与 `docs/validation/v9-two-policy-gl10-<日期>-01/`（评估） | 两处 `launch.md`、`result.md` 写完；`squeue -u $USER` 无本轮 job |
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -225,12 +238,16 @@
 | `tests/lightweight/test_v9_subset_specs.py`（新） | 合成夹具：V8 风格 2 档 3 任务，含递补（初选失败、递补候选交付），断言取的是交付行最小 N 个而不是 `select_rule[:N]`、重签后 `load_specs_v8(root, cells)` 能过、改任一行即 FAIL | — | 新增 | S1-D |
 | `scripts/README.md` | 列入 `v9_subset_specs.py`、`v9_movecube_region_fig.py` | — | 补一行 | S1-D |
 | `scripts/injection-dev/site/v8_site_catalog.py` | 核 1262 → 由格表推出（992）；新增 `--eval-reuse <V8 site-eval 目录>`：按身份（task, tier, seed, 规格 `spec_sha256`）复用评估结果，身份或 `spec_sha256` 不同即置空 | 1262 | 992 | S1-E |
-| `scripts/injection-dev/site/v8_oracle_browser_check.py` | 期望 59 格不变；新增对「复用 720／置空 80」的计数输出 `V9_SITE=…` | — | — | S1-E |
+| `scripts/injection-dev/site/v8_oracle_browser_check.py` | 期望 59 格不变；新增对「复用 720／新评 80／置空 0」的计数输出 `V9_SITE=…` | — | — | S1-E |
 | `scripts/injection-dev/v8_continue_after_gen.py` | 帮助文字与默认局数改由格表推出；建站目标目录参数化 | — | — | S1-E |
 | `tests/lightweight/test_v8_site_catalog.py` | `test_完整合成目录_1262*`、`test_main_写出目录_且1262校验` 改为由格表推出；新增 `test_v9评估复用按身份与spec_sha` | 1262 | 992 | S1-E |
+| `scripts/eval-official/v8_manifest.py` | 新增 `--exclude-evaluated <V8 manifest.json>`：步骤 2 筛新值行后，再剔除与 V8 manifest `rows` 四元组 (task, tier, seed, `spec_sha256`) 相同的行，剔除数写进 `reused=`；剩余行必须恰为 `EXPECTED_CELLS` 与 V8 格表之差（MoveCube xhard4 50 + InsertPeg xhard4 新 30），否则 FAIL；`--shards 10` 均衡切片；判定行名 `V9_EVAL_SHARDS` | 1070 全评 | 只评新 80 | S1-F |
+| `scripts/eval-official/v8_report.py` | 新增 `--reuse <V8 结果目录> --reuse-manifest <V8 manifest.json>`：复用行按四元组从 V8 账本取 `accepted_attempt_id` 终态，不重算；输出新 80 局分表与 800 局总表（按任务、按档、两模型），判定行 `V9_EVAL_COVERAGE`（expected=80）、`V9_EVAL_REPORT`（total=800 new=80 reused=720）、`V9_EVAL_VIDEOS`（expected=160） | 1070 | 80 + 720 | S1-F |
+| `scripts/eval-official/run_v8_gl.sh` | 只参数化 run_name 与 manifest 目录（若已参数化则不改），编排逻辑、tokenizer 闸门、三路收尾不动 | — | — | S1-F |
+| `tests/lightweight/test_v8_eval_manifest.py`、`test_v8_eval_report.py` | 新增 `test_v9剔除已评身份`（合成 V8 manifest + 992 身份 → 80 行、reused=720、四元组一处不同即不剔除）、`test_v9报告合并复用`（复用行终态来自 V8 账本、分母 800、篡改一条 `spec_sha256` 即 count_mismatch） | — | 新增 | S1-F |
 | `docs/validation/newtask-v9/figures/movecube_v9_region.png`、`scripts/injection-dev/v9_movecube_region_fig.py` | 本计划配图与出图脚本 | — | 已在 12.318 提交 | 主会话 |
 
-不改：其余 15 个环境、`difficulty.py`、`sampling_config.py`、`TIER_MAX_STEPS`、`V8_SEED_OFFSETS`、`scripts/parity/official/`、eval-official 的 `v8_manifest.py`／`v8_report.py`（V9 不做评估）。
+不改：其余 15 个环境、`difficulty.py`、`sampling_config.py`、`TIER_MAX_STEPS`、`V8_SEED_OFFSETS`、`scripts/parity/official/`、eval-official 的 `env_client.py`／`smvla_client.py`／`mme_client.py`／`run_seat.sh`（评估口径与 V8 相同，客户端与单席运行器不动）。
 
 ## 2.2 交付形态
 
@@ -258,6 +275,11 @@
    - `site/` 是站点。
    - 新生成产物按 `gl-run-products-back-to-data` 口径落 `/data`，NFS 不留大文件。
 6. **xhard0**：规格、视频、评估结果都沿用 V8。站点里的 xhard0 视频沿用 `artifacts/newtask-v7/site-media/xhard0-gen`。
+7. **评估**：
+   - 身份源：`export_eval_identities.py` 的 992 行 → `v8_manifest.py --exclude-evaluated artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/manifest/manifest.json --shards 10` → 新 80 局、十片各 8 局。
+   - 代码与环境：NFS 新建克隆 `robomme_benchmark-v9two`，冻结在换包提交之后的 HEAD；venv、子模块、权重、tokenizer 全部照 V8 评估 `launch.md` §二、§三的取法，权重期望值仍取 `artifacts/v7.5eval/assets-lock.json`。
+   - 运行根 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9two-out/v9-two-policy-gl10-<日期>-01`，tmux 名 `ev-v9-<run_name>-sNN`，结果与视频按 `gl-run-products-back-to-data` 口径搬回本机 `artifacts/v9-evaluation/`，NFS 暂存在 `V9_EVAL_VIDEOS=PASS` 后才清。
+   - 复用：720 局终态直接取 V8 账本（`artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/`），不重跑、不改写；站点评估视频同样 hardlink V8 的 mp4。
 
 ## 2.3 闸门总表
 
@@ -276,7 +298,12 @@
 | `V9_SUBSET=PASS reused=720 spec_equal=720 h5_equal=720 video_equal=720` | `v9_subset_specs.py verify` | 3b |
 | `V9_RESET_REPLAY=PASS shape=cells43 resets=43 replay=43 injected_mismatch=0 layout_drift=0` | `hard_regression.py::cmd_reset_replay` | 3b |
 | `PARITY_H_H2=PASS tier=v9 compared=80 missing=0 extra=0 identity_equal=80` | `hard_parity.py::cmd_compare --identities <新 80>` | 4 |
-| `V9_SITE=PASS cells=59 missing=0 eval_reused=720 eval_empty=80` | `site/v8_oracle_browser_check.py` | 4 |
+| `V9_EVAL_SHARDS=PASS shards=10 total=80 cells=2 reused=720 missing=0 extra=0 duplicate=0 xhard0=0` | `v8_manifest.py --exclude-evaluated`（S1-F） | 4b |
+| `V9_EVAL_SMOKE=PASS infra_errors=0 identity_errors=0 exec_steps_max<=1600` | 单席单 worker 冒烟（两模型各 1 局，主会话据输出写判定行） | 4b |
+| `V9_EVAL_COVERAGE=PASS policies=2 expected=80 missing=0 extra=0 duplicate=0 conflicting_terminal=0 error_final=0` | `v8_report.py`（S1-F） | 4b |
+| `V9_EVAL_REPORT=PASS total=800 new=80 reused=720 count_mismatch=0 media_unexplained=0` | `v8_report.py --reuse`（S1-F） | 4b |
+| `V9_EVAL_VIDEOS=PASS policies=2 expected=160 videos=160 missing=0 decode_fail=0 sha_mismatch=0` | `eval_video_mover.py --mode v8 --once` 后 `v8_report.py` 核对 | 4b |
+| `V9_SITE=PASS cells=59 missing=0 eval_reused=720 eval_new=80 eval_empty=0` | `site/v8_oracle_browser_check.py` | 4c |
 | `PRE_MERGE_REVIEW=PASS …`／`POST_MERGE_REVIEW=PASS …` | 计划执行模式，每次合并 | 1、2 |
 
 ## 2.4 runbook
@@ -291,7 +318,7 @@ stdout 打印两版的 JSON 统计。底图读 `artifacts/newtask-v8/gen1/shard1
 
 ### 2.4.2 正式运行手册（获批后）
 
-1. **算力**：aspen 优先（`ssh sled-aspen`，2 × A6000，GPU 空闲时）。aspen 不可用时，GL 提交 2 个 48 h 占位 job（`--account=chaijy2 --partition=spgpu --gres=gpu:1 --cpus-per-task=4 --mem=48G --time=48:00:00 --wrap='sleep infinity'`，作业名 `v9gen-hold-1／2`），JobID 记入清单 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/gl-hold-logs/hold-jobs-v9gen-<日期>.txt`。工作负载一律 `srun --jobid=<hold> --overlap --exact --ntasks=1 --gpu_cmode=shared`。登录前先 `ssh -O check greatlakes`；master 不存活时，先问用户用哪种 Okta 验证方式。
+1. **算力（用户已定：生成 4 席、评估 10 席）**：开工第一步先提交 4 个生成席，`sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=gpu:a40:1 --gpu_cmode=shared --cpus-per-task=4 --mem=48G --time=48:00:00 --job-name=v9gen-hold-<n> --wrap='sleep infinity'`，JobID 记入清单 `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/gl-hold-logs/hold-jobs-v9gen-<日期>.txt`。4 席分工：席 1、2 跑 gen1 两片（MoveCube、InsertPeg），席 3、4 跑 2b 冒烟与 1b／3b 的 xhard0 对拍，gen1 片完成后席 3、4 接 H2 二次生成两片。阶段 4b 开始前再提交 10 个评估席（同规格，`--job-name=v9ev-hold-NN`，清单 `hold-jobs-v9ev-<日期>.txt`）；排不上的席位把分片切小给先完成的席位接力，不干等（V8 经验）。两份清单合计 14 个 job，超过正本第 8 条默认 4 个，用户已在本计划口径里审核通过。工作负载一律 `srun --jobid=<hold> --overlap --exact --ntasks=1 --gpu_cmode=shared`。登录前先 `ssh -O check greatlakes`；master 不存活时，先问用户用哪种 Okta 验证方式。
 2. **冒烟（2b）**：`generate_h5.py` 用冒烟格表，1 任务 × 1 档 × 1 局 × 2 任务，单 worker。
 3. **抽签（3）**：
 
@@ -311,7 +338,23 @@ stdout 打印两版的 JSON 统计。底图读 `artifacts/newtask-v8/gen1/shard1
    ```
 
    把 `specs-root` 拷入 `src/robomme_hard/env_metadata/test-hard/`，与 `EXPECTED_CELLS` 在同一提交（R7）。
-6. **对拍与建站（4）**：先跑 `hard_parity.py` 二次生成 80 局，再跑 `v8_continue_after_gen.py --site-dir artifacts/newtask-v9/site --eval-reuse artifacts/newtask-v8/site-eval`，最后做浏览器检查。站点链接给完整域名，如 `http://sled-vail.eecs.umich.edu:<端口>/`，端口起跑前先探。
+6. **对拍（4）**：跑 `hard_parity.py` 二次生成 80 局；`PARITY_H_H2` 出来后按清单释放 4 个生成席。
+7. **评估（4b）**：
+   ```bash
+   uv run --no-sync python scripts/injection-dev/export_eval_identities.py --out artifacts/v9-evaluation/inputs/eval-identities-992.jsonl
+   uv run --no-sync python scripts/eval-official/v8_manifest.py --identities artifacts/v9-evaluation/inputs/eval-identities-992.jsonl \
+     --delivery artifacts/newtask-v9/delivery/delivery.local.json \
+     --exclude-evaluated artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/manifest/manifest.json \
+     --shards 10 --out-dir artifacts/v9-evaluation/<run_name>/manifest
+   ```
+   末行 `V9_EVAL_SHARDS=PASS …`。然后在 NFS 建 `robomme_benchmark-v9two` 克隆与三套 venv（照 V8 `setup_clone.sh`），资产锁核对权重与 tokenizer，提交 10 个评估席，先在一席跑两模型各 1 局冒烟（`V9_EVAL_SMOKE`），再十席 `run_v8_gl.sh` 实跑（tmux `ev-v9-<run_name>-sNN`，每席日志挂一个 Monitor，过滤 `RESULT|EXIT_CODE=|Traceback|RUN_BLOCKED|server died|TOKENIZER_SHA`）。期间 `eval_video_mover.py --mode v8` 常驻搬视频，结束后 `--once` 全量对账。最后：
+   ```bash
+   uv run --no-sync python scripts/eval-official/v8_report.py --run artifacts/v9-evaluation/<run_name> \
+     --reuse artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01 \
+     --reuse-manifest artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/manifest/manifest.json
+   ```
+   `V9_EVAL_COVERAGE`、`V9_EVAL_REPORT`、`V9_EVAL_VIDEOS` 三行 PASS、视频搬完后，按清单释放 10 个评估席。
+8. **建站（4c）**：`v8_continue_after_gen.py --site-dir artifacts/newtask-v9/site --eval-reuse artifacts/newtask-v8/site-eval --eval-new artifacts/v9-evaluation/<run_name>`，再做浏览器检查。站点链接给完整域名，如 `http://sled-vail.eecs.umich.edu:<端口>/`，端口起跑前先探。
 
 ### 2.4.3 P3 一次性预算表（阶段 1 开跑前一次批完）
 
@@ -327,9 +370,11 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
 | 生成新局 | 3 | ≤ 80 + 46 = 126（每次 rollout 含 1 次 reset） | 首轮 MoveCube 1 任务 × 1 档 × 50 + InsertPeg 1 任务 × 1 档 × 30 = 80；递补后合计 ≤ 80 + 46 = 126（每个候选至多试一次） | 2 席 × 4 | 某格候选耗尽即该格 FAIL，按 §2.4.5 处置 | 约 1.5～2 小时 |
 | 回注回放 | 3b | 43 格 × 1 = 43 | 0 | 1 | 任一不符即停 | 约 15 分钟 |
 | 二次生成 | 4 | 80 | 新局 80，只回放、不递补 | 2 席 × 4 | 失败如实记录；基础设施重试每身份 ≤ 1 次 | 约 1 小时 |
-| **合计** | | 上限 768 × 2 + 6 + 124 + 55 + 126 + 43 + 80 = **1,970** | 上限 2 + 126 + 80 = **208** | | 基础设施重试另列 ≤ 206（每身份 ≤ 1 次，账本跨重启保留） | 约 5～6 小时 |
+| 评估冒烟 | 4b | 2 模型 × 1 局 = 2 | 2 | 1 席 | 任一 infra error 即停 | 约 15 分钟 |
+| 两模型评估 | 4b | 2 模型 × (1 任务 × 1 档 × 50 + 1 任务 × 1 档 × 30) = 160（每局 1 次 reset） | 160 | 10 席 × 1 | 策略失败如实记 0／1 不重试；基础设施重试每身份 ≤ 1 次 | SimpleMemVLA 每局 200～280 s、MME-VLA 约 40 s，每席 8 局，约 1 小时（不含排队） |
+| **合计** | | 上限 768 × 2 + 6 + 124 + 55 + 126 + 43 + 80 + 2 + 160 = **2,132** | 上限 2 + 126 + 80 + 2 + 160 = **370** | | 基础设施重试另列 ≤ 368（每身份 ≤ 1 次，账本跨重启保留） | 约 6～7 小时 |
 
-已有产物复用：子集 720 局的规格、h5、视频、评估结果，以及 xhard0 的全部产物，0 次 reset、0 次渲染。超出本表任一行的上限时，暂停受影响部分，合并为一次补充授权。
+已有产物复用：子集 720 局的规格、h5、视频、两模型评估结果，以及 xhard0 的全部产物，0 次 reset、0 次渲染、0 次策略推理。超出本表任一行的上限时，暂停受影响部分，合并为一次补充授权。
 
 ### 2.4.4 自动建站与通知链（P4）
 
@@ -345,6 +390,9 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
 | H2 新局正常失败 | 如实记录，不重试，不影响 gen1 交付（沿用 V8 预定 (a)） |
 | 基础设施故障 | 每身份重试 ≤ 1 次，记原因与次数 |
 | `V9_SUBSET` 不等 | 停止 3b，不提交。核对取行规则与 V8 产物是否被改动 |
+| 评估席 07～09 长期排队 | 照 V8：把未起分片重分给先完成的席位接力，取消排队作业，不新增席位 |
+| 评估出现冲突终态或 error | 不自动择优，`V9_EVAL_COVERAGE=FAIL` 交用户 |
+| 评估中断（用户叫停、作业到期） | 精确停本轮 tmux，记录停在哪一身份，先搬已产出视频再释放 |
 
 ## 2.5 风险登记
 
@@ -353,6 +401,8 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
 - **R-3 seed 同号不同布局**：V9 MoveCube 的 `MoveCube_ep<k>_seed<s>` 与 V8 同名。所以站点、评估复用必须按 `spec_sha256` 区分，不能只看 (task, tier, seed)。S1-E 的复用键已含 `spec_sha256`。
 - **R-4 hardlink 依赖 V8 产物在同一文件系统**：`artifacts/` 在 `/data` 本机盘，同盘可以建 hardlink。V8 产物以后若被清理，hardlink 仍保住数据，但两边的 inode 删除责任要写进 `result.md`。
 - **R-5 xhard4 规格文件混合**：同一文件里有子集行、V8 InsertPeg 行、新 MoveCube／InsertPeg 行。合并步逐任务核对 `sampling_config`，`V9_RESET_REPLAY` 每格各抽 1 局回放。
+- **R-6 评估席位排队**：V8 实测 spgpu 有 253 个排队作业时 07～09 席始终未起，靠接力完成。V9 只有 80 局，排队比跑还久的可能更大；预定动作见 §2.4.5，不因排队扩席位。
+- **R-7 复用评估的时间差**：720 局的评估结果是 V8 2026-10-02 跑的，新 80 局是之后跑的；两模型权重、tokenizer、客户端代码都钉在同一锁值，但 MME-VLA 同入口重跑本就有翻转（V8 xhard0 两路线 18 局翻转），所以 800 局总表里新旧两部分不是同一时刻的采样。`result.md` 要写明。
 
 ## 2.6 盲区诚实清单
 
@@ -360,7 +410,7 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
 2. `V9_RESET_REPLAY` 每格只抽 1 局回放，不是全量回放。
 3. 子集取前 N 局：V8 交付行里候选号的分布与难度无关，但没做过「前 N 局与全体」的统计对比。
 4. 相机投影按桌面 z = 0，没算物体高度。
-5. 评估复用只覆盖与 V8 逐字节相同的 720 局。新 80 局没有策略评估，V9 整体的策略成功率无法与 V8 直接比较。
+5. 评估复用只覆盖与 V8 逐字节相同的 720 局，新 80 局另评。MoveCube 的 50 局和 V8 的 20 局区域不同，MoveCube 一行的成功率变化不能只归因于策略。
 
 ## 2.7 留档与 commit 纪律
 
@@ -370,7 +420,8 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
   - 合并提交 subject 用 `12.3xx <中文描述>`，body 按正本第 11 条六项详写；
   - 每次合并后立即 push。
 - 正式生成按正本第 13 条在 `docs/validation/newtask-v9/` 写 `launch.md`（起跑时）和 `result.md`（验收后），附本轮 tmux 会话清单与占位 JobID 清单。
-- 生成结束、commit 完成后，按清单逐个 `scancel` 自己的 JobID。
+- 评估另按 V8 体例在 `docs/validation/v9-two-policy-gl10-<日期>-01/` 写 `launch.md`、`result.md`、`records/`；`result.md` 第一张表是新 80 局两模型结果，第二张是 800 局总表并注明 720 局复用自 V8。
+- 生成结束释放 4 个生成席；评估结束、视频搬回后释放 10 个评估席。都按清单逐个 `scancel`。
 
 ## 2.8 口径来源：用户原话（逐字，按时间，2026-10-02）
 
@@ -382,6 +433,9 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
 6. 「这一点在V9也要改。」
 7. 「意思就是说每一个task都是五十个然后根据XHard12345有的就评分没有的就不要」
 8. 「参考之前的做法你要把所有的的subagent都要定下来。」
+9. 「你已经生成过的V8的就不要再生成了直接沿用现在的还要生成v9 V9只生成新增的这样做合理吗会导致Sample出问题吗然后生成完了和V8一样要做eval两个model都需要」
+10. 「J0B还是和之前一样生成的时候用四个。Evaluate的时候用十个。」
+11. 「好 把评估口径和席位改进计划」
 
 09-27 会话里的原话（区域最终版的来源）：「还是画圆环 橙色圆环 但是扩大半径！」「扩达圆环和现在的圆环 用同一个圆心 只要扩大两个的半径！」「原来的圆环不画了 交集画出更牵的颜色 再继续扩大一些 往两边撑」。
 
@@ -400,8 +454,9 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
 | S1-B | 1 | 格表切 V9（800） | `src/robomme_hard/env_record_wrapper/hard_specs.py`；`src/robomme_hard/env_record_wrapper/hard_builder.py`；`scripts/injection-dev/_freeze.py`；`scripts/injection-dev/_rollout.py`；`tests/lightweight/test_v8_specs_schema.py`；`tests/lightweight/test_hard_builder_xhard0.py`；`tests/lightweight/test_xhard0_native.py`；`tests/lightweight/test_v8_delivery_flow.py`（除 `test_export_eval_identities的1262口径`） | `robomme_env/**`、`hard_regression.py`、`hard_parity.py`、`export_eval_identities.py`、`site/**` | 导出 `V9_CELLS`、`EXPECTED_CELLS = V9_CELLS`、`V9_CANDIDATES`、`V9_SHARD_TASKS`；`load_specs_v8(root, expected_cells)` 签名不变；`V8_CELLS`、`V8_DEFAULT_CANDIDATES`、`V8_SHARD_TASKS` 冻结不动；与 S1-A 并行 | 2 | 上列测试 + `test_v7_*` 冻结测试定向 pytest 无 failed | CPU | `S1B_TESTS=PASS failed=0`、`V9_CELLS=PASS cells=43 total=800 per_task=50` |
 | S1-C | 2 | 对拍与回归口径切 V9 | `scripts/parity/hard_regression.py`（含新子命令 `movecube-layout`）；`scripts/parity/hard_parity.py`；`scripts/injection-dev/export_eval_identities.py`；`tests/lightweight/test_v8_regression_cmds.py`；`tests/lightweight/test_v8_delivery_flow.py` 中仅 `test_export_eval_identities的1262口径`；`tests/lightweight/test_v9_movecube_layout.py`（新） | `src/**`、`_freeze.py`、`_rollout.py`、`site/**`、`v9_subset_specs.py` | 只 import S1-B 的 `EXPECTED_CELLS`／`V9_CELLS`；判定行格式按 §2.3；`movecube-layout` 读规格 `layout.<seg>.region` 与落点，规则复用 `MoveCube._in_region_u`，不重写；派发于 S1-B 合入之后 | 3 | 上列测试定向 pytest；合成规格夹具上 `movecube-layout` 输出 PASS、篡改一点输出 FAIL | CPU | `S1C_TESTS=PASS failed=0` |
 | S1-D | 2 | 子集派生与产物树工具 | `scripts/injection-dev/v9_subset_specs.py`（新）；`tests/lightweight/test_v9_subset_specs.py`（新）；`scripts/README.md` | `src/**`、`hard_specs.py`、`_rollout.py`（只 import 其重签函数，不改）、`artifacts/**`（worktree 内只用合成夹具） | 输入 V8 specs-root + `delivery.local.json`；输出 V9 specs-root，能被 `load_specs_v8(root, V9_CELLS)` 加载；取行规则「交付行候选号升序前 N」；`link` 只建 hardlink、目标存在且内容不同即响亮失败、不覆盖；派发于 S1-B 合入之后 | 4 | `test_v9_subset_specs.py` 无 failed；`v9_subset_specs.py --help` 正常 | CPU | `S1D_TESTS=PASS failed=0` |
-| S1-E | 2 | 站点局数口径与评估复用 | `scripts/injection-dev/site/v8_site_catalog.py`；`scripts/injection-dev/site/v8_oracle_browser_check.py`；`scripts/injection-dev/v8_continue_after_gen.py`；`tests/lightweight/test_v8_site_catalog.py` | `src/**`、`scripts/parity/**`、`site_server.py`、`v8_site.py` 的页面布局 | 局数由 `EXPECTED_CELLS` 推出；`--eval-reuse` 的复用键为 (task, tier, seed, `spec_sha256`)；站点布局与 V8 完全一致；派发于 S1-B 合入之后 | 5 | `test_v8_site_catalog.py` 无 failed | CPU | `S1E_TESTS=PASS failed=0` |
-| 主会话自做 | 0、1b、2b、3、3b、4、5 | 建分支、出图与计划、冒烟、抽签、生成、子集派生实跑、换包提交、对拍、建站、留档、释放占位 job | 本计划、`docs/validation/newtask-v9/**`、`src/robomme_hard/env_metadata/test-hard/**`（换包，R7）、`v9_movecube_region_fig.py` | — | 换包必须在 S1-A～E 全部合入之后；GPU 任务串行由主会话 tmux 起 | — | — | GL／aspen 2 席 | §2.3 的 V9 全部闸门 |
+| S1-E | 2 | 站点局数口径与评估复用 | `scripts/injection-dev/site/v8_site_catalog.py`；`scripts/injection-dev/site/v8_oracle_browser_check.py`；`scripts/injection-dev/v8_continue_after_gen.py`；`tests/lightweight/test_v8_site_catalog.py` | `src/**`、`scripts/parity/**`、`site_server.py`、`v8_site.py` 的页面布局 | 局数由 `EXPECTED_CELLS` 推出；`--eval-reuse` 的复用键为 (task, tier, seed, `spec_sha256`)；新增 `--eval-new <V9 评估结果目录>` 接入新 80 局，结果目录结构与 V8 相同；站点布局与 V8 完全一致；派发于 S1-B 合入之后 | 5 | `test_v8_site_catalog.py` 无 failed | CPU | `S1E_TESTS=PASS failed=0` |
+| S1-F | 2 | 评估清单只评新 80 局、报告合并复用 | `scripts/eval-official/v8_manifest.py`；`scripts/eval-official/v8_report.py`；`scripts/eval-official/run_v8_gl.sh`（只参数化 run_name 与 manifest 目录）；`tests/lightweight/test_v8_eval_manifest.py`；`tests/lightweight/test_v8_eval_report.py` | `env_client.py`、`smvla_client.py`、`mme_client.py`、`run_seat.sh`、`eval_video_mover.py`、`src/**`、`site/**` | 身份四元组 (task, tier, seed, `spec_sha256`)；manifest 与 shard JSON 字段不变（V8 的 `v8-eval-manifest/1` 加 `reused` 一键）；复用行终态取 V8 账本 `accepted_attempt_id`；判定行按 §2.3；派发于 S1-B 合入之后 | 6 | `pytest tests/lightweight/test_v8_eval_manifest.py tests/lightweight/test_v8_eval_report.py tests/lightweight/test_v8_eval_orchestration.py -q` 无 failed；`bash -n run_v8_gl.sh` | CPU | `S1F_TESTS=PASS failed=0` |
+| 主会话自做 | 0、1b、2b、3、3b、4、4b、4c、5 | 建分支、出图与计划、冒烟、抽签、生成、子集派生实跑、换包提交、对拍、十席评估、建站、留档、释放占位 job | 本计划、`docs/validation/newtask-v9/**`、`docs/validation/v9-two-policy-gl10-*/**`、`src/robomme_hard/env_metadata/test-hard/**`（换包，R7）、`v9_movecube_region_fig.py` | — | 换包必须在 S1-A～F 全部合入之后；GPU 任务串行由主会话 tmux 起 | — | — | GL 生成 4 席 + 评估 10 席；tmux 前缀 `v9-gen-`、`ev-v9-` | §2.3 的 V9 全部闸门 |
 
 **共享文件归属裁决**：
 - `tests/lightweight/test_v8_delivery_flow.py`：`test_export_eval_identities的1262口径` 归 S1-C，其余测试归 S1-B。两块串行（S1-C 在 S1-B 之后派发），同一时间只有一个写者。
@@ -409,3 +464,4 @@ reset 与 rollout 分列，各自与 P3 阈值比较。成功、失败、递补�
 - `scripts/README.md` 只归 S1-D。
 - `src/robomme_hard/README.md` 只归 S1-A。
 - 换包目录 `env_metadata/test-hard/` 只归主会话。
+- `scripts/eval-official/**` 只归 S1-F；S1-E 的 `--eval-new` 只读 S1-F 产出的结果目录，不改 eval-official。
