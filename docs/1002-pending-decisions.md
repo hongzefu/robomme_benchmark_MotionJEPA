@@ -434,7 +434,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
   - `.claude/worktrees/v7`（分支 `v7-impl`）与 `/data/hongzefu/v6-draft/` 下的 `movecube`、`pipeline`、`swap`、`vp`（分支 `v6-draft-*`）——仓库 `CLAUDE.md` 把它们列为「在用 worktree，不动」，需用户确认是否仍在用；
   - `/tmp/claude-114466650/` 下的 `baseline-wt`（detached `504daee5`），由另一会话建立。
 - 待定：推送、删除还是保留。删除 worktree 用 `git worktree remove`，删分支只用 `git branch -d`。
-- **执行（2026-10-03）**：`.claude/worktrees/v7` 在关闭其中的闲置进程（PID 2006672，用户同意关闭）后被宿主连同 `v7-impl` 分支自动清掉，分支已按原 sha `cd09b014` 补回；`v6-draft/{swap,vp}` 与 `baseline-wt` 已删；`v6-draft/{movecube,pipeline}` 删除被权限拦截、仍在。分支全部保留（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
+- **执行（2026-10-03）**：`.claude/worktrees/v7` 在关闭其中的闲置进程（PID 2006672，用户同意关闭）后被宿主连同 `v7-impl` 分支自动清掉，分支已按原 sha `cd09b014` 补回；`v6-draft/{swap,vp}` 与 `baseline-wt` 已删；`v6-draft/{movecube,pipeline}` 经用户授权后补删；分支全部保留（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ---
 
