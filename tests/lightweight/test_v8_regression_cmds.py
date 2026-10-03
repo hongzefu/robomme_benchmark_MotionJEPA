@@ -641,36 +641,58 @@ def test_pool_over_cap按身份去重(tmp_path):
 # ── eval-smoke 局数、reset-replay 档序 ─────────────────────────────────
 
 
-def test_eval_smoke每任务局数按格表推出():
-    v8 = types.SimpleNamespace(TIERS=HS.V8_TIERS, V8_CELLS=HS.V8_CELLS, EXPECTED_CELLS=HS.V8_CELLS,
-                               XHARD0_PER_TASK=HS.XHARD0_PER_TASK, V7_TIERS=HS.V7_TIERS, V7_XHARD4_ONLY=HS.V7_XHARD4_ONLY)
-    want = {t: 92 for t in HS.ALL_TASKS} | {"PickXtimes": 62, "SwingXtimes": 62, "StopCube": 62, "MoveCube": 32,
-                                             "InsertPeg": 32}
+def _set_xhard0_switch(monkeypatch, flag: bool) -> int:
+    """按开关 XHARD0_IN_TEST_HARD 设定 hard_specs（S1 合并前包内可能还没有这两个名字，故 raising=False）；返回前置局数。"""
+    # 轻量加载的 hard_specs 与包内 hard_specs 可能是两个模块对象（看导入先后），逐个都设
+    mods = {id(m): m for m in (HS, R._hs_light(), sys.modules.get("robomme_hard.env_record_wrapper.hard_specs"))
+            if m is not None}
+    for mod in mods.values():
+        monkeypatch.setattr(mod, "XHARD0_IN_TEST_HARD", flag, raising=False)
+        monkeypatch.setattr(mod, "xhard0_prefix", lambda: HS.XHARD0_PER_TASK if flag else 0, raising=False)
+    return HS.XHARD0_PER_TASK if flag else 0
+
+
+def _ns_with_switch(flag: bool, **kw) -> types.SimpleNamespace:
+    """带开关的替身 hard_specs 命名空间（expected_episodes 只读这些名字）。"""
+    return types.SimpleNamespace(XHARD0_IN_TEST_HARD=flag, xhard0_prefix=lambda: HS.XHARD0_PER_TASK if flag else 0, **kw)
+
+
+@pytest.mark.parametrize("flag", [False, True])
+def test_eval_smoke每任务局数按格表推出(monkeypatch, flag):
+    pre = _set_xhard0_switch(monkeypatch, flag)
+    base = dict(V8_CELLS=HS.V8_CELLS, XHARD0_PER_TASK=HS.XHARD0_PER_TASK, V7_TIERS=HS.V7_TIERS,
+                V7_XHARD4_ONLY=HS.V7_XHARD4_ONLY)
+    v8 = _ns_with_switch(flag, TIERS=HS.V8_TIERS, EXPECTED_CELLS=HS.V8_CELLS, **base)
+    want = {t: 80 for t in HS.ALL_TASKS} | {"PickXtimes": 50, "SwingXtimes": 50, "StopCube": 50, "MoveCube": 20,
+                                             "InsertPeg": 20}
+    want = {t: n + pre for t, n in want.items()}
     assert {t: R.expected_episodes(t, v8) for t in HS.ALL_TASKS} == want
-    assert sum(want.values()) == 1262
-    # v9：每任务 12 + 50 = 62，共 992；EXPECTED_CELLS 切到 V9 与显式传格表两种入口同值
-    v9ns = types.SimpleNamespace(**{**vars(v8), "EXPECTED_CELLS": HS.V9_CELLS})
-    want9 = {t: 62 for t in HS.ALL_TASKS}
+    assert sum(want.values()) == 1070 + 16 * pre
+    # v9：每任务 前置 + 50（开关开 62、共 992；关 50、共 800）；EXPECTED_CELLS 切到 V9 与显式传格表两种入口同值
+    v9ns = _ns_with_switch(flag, TIERS=HS.V8_TIERS, EXPECTED_CELLS=HS.V9_CELLS, **base)
+    want9 = {t: 50 + pre for t in HS.ALL_TASKS}
     assert {t: R.expected_episodes(t, v9ns) for t in HS.ALL_TASKS} == want9
-    assert {t: R.expected_episodes(t, v8, HS.V9_CELLS) for t in HS.ALL_TASKS} == want9 and sum(want9.values()) == 992
-    # 换包前（全局 TIERS 不含 xhard5）按冻结的 V7 常量 92／32
-    v7ns = types.SimpleNamespace(TIERS=HS.V7_TIERS, V8_CELLS=HS.V8_CELLS, XHARD0_PER_TASK=HS.XHARD0_PER_TASK,
-                                 V7_TIERS=HS.V7_TIERS, V7_XHARD4_ONLY=HS.V7_XHARD4_ONLY)
+    assert {t: R.expected_episodes(t, v8, HS.V9_CELLS) for t in HS.ALL_TASKS} == want9
+    assert sum(want9.values()) == (992 if flag else 800)
+    # 换包前（全局 TIERS 不含 xhard5）按冻结的 V7 常量 80／20 + 前置
+    v7ns = _ns_with_switch(flag, TIERS=HS.V7_TIERS, **base)
     v7 = {t: R.expected_episodes(t, v7ns) for t in HS.ALL_TASKS}
-    assert v7["StopCube"] == v7["MoveCube"] == v7["InsertPeg"] == 32 and v7["PickXtimes"] == v7["BinFill"] == 92
+    assert v7["StopCube"] == v7["MoveCube"] == v7["InsertPeg"] == 20 + pre and v7["PickXtimes"] == v7["BinFill"] == 80 + pre
     # 包内 TIERS 含 xhard5：真实 hard_specs 按当前 EXPECTED_CELLS 推出（v9 阶段 3b 切换前 V8、切换后 V9）
     assert "xhard5" in HS.TIERS
     assert {t: R.expected_episodes(t, HS) for t in HS.ALL_TASKS} == (want9 if HS.EXPECTED_CELLS == HS.V9_CELLS else want)
 
 
-def test_reset_replay在v8根按V8_TIERS读(tmp_path):
+@pytest.mark.parametrize("flag", [False, True])
+def test_reset_replay在v8根按V8_TIERS读(tmp_path, monkeypatch, flag):
+    pre = _set_xhard0_switch(monkeypatch, flag)
     root = build_root(tmp_path / "root", H.V8_SMOKE_CELLS)
     tiers, v8 = R.specs_tiers(str(root))
     assert v8 and tiers == HS.V8_TIERS
     index = R.delivery_index(str(root))
-    assert len(index) == 7 and min(h["builder_episode"] for h in index.values()) == HS.XHARD0_PER_TASK
+    assert len(index) == 7 and min(h["builder_episode"] for h in index.values()) == pre
     stop = sorted((k[1], h["builder_episode"]) for k, h in index.items() if k[0] == "StopCube")
-    assert stop == [("xhard1", 12), ("xhard5", 13)]
+    assert stop == [("xhard1", pre), ("xhard5", pre + 1)]
     targets = R._replay_targets(str(root))
     assert [t["tier"] for t in targets] == sorted((t["tier"] for t in targets), key=HS.V8_TIERS.index)
     # v8 阶段 3b 换包后包内规格为 /4：缺省根即按 V8_TIERS 读

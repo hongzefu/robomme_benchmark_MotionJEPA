@@ -112,7 +112,8 @@ def run_one(payload: tuple) -> dict[str, Any]:
                     and builder.resolve_identity(ep)["seed"] == job.seed
                     and builder.resolve_identity(ep)["source_episode"] == job.episode]
             if len(hits) != 1:
-                raise ValueError(f"test-hard builder 里找不到唯一的 xhard0 条目：{job.task} seed={job.seed} ep={job.episode}")
+                raise ValueError(f"test-hard builder 里找不到唯一的 xhard0 条目：{job.task} seed={job.seed} ep={job.episode}"
+                                 f"（命中 {len(hits)} 条；xhard0 已默认退出 test-hard，需 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1）")
             chosen = builder._hard_env_kwargs(hits[0])
             if set(chosen) != {"seed", "difficulty"} or chosen != {"seed": job.seed, "difficulty": job.difficulty}:
                 raise ValueError(f"builder 路线的环境参数与官方 job 不符：{chosen}")
