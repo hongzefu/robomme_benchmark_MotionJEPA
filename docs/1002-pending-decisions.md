@@ -21,6 +21,7 @@
 | B3 | `scripts/README.md` 局数与长度表过时 | 10-02 V9 | 换成 V9 数据 |
 | B4 | V9 交付树 hardlink 的删除责任 | 10-02 V9 | 与 F4 一并定 |
 | B5 | `TIER_MAX_STEPS` 查表去留（入口已固定 1600） | 10-02 V9 | 保留不动，待裁决 |
+| B6 | xhard0 已退出 test-hard（12.341，开关 `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1` 可恢复）；`v8_site_catalog.py` 自带 `XHARD0_PER_TASK=12`、已有 992 身份文件与站点按历史口径工作，以后重导身份文件时需跟进 | 10-02 V9 | 已定；站点与重导待处理 |
 | C1 | 核心短测 4 个既有失败 + 2 个连带失败 | 09-17 起 | 改测试对齐官方行为 |
 | C2 | 核心短测整体未维护（耗时 477 s 超 280 s 预算、v7/v8 历史用例、monkeypatch 钉 V8 表、命名错位、重叠断言） | 10-02 | 先拆 ≤2 分钟定稿核心集，其余待裁决 |
 | D1 | PickXtimes、StopCube、PickHighlight 两模型全 0 成功，未诊断 | 10-02 V8 评估 | 视需要立项诊断 |
@@ -292,6 +293,8 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 6. **重叠断言**：`TIER_MAX_STEPS` 六档值在 `test_xhard0_native.py`、`test_v8_specs_schema.py`、`test_v9_packaged_800.py` 三处各断一遍；`EXPECTED_CELLS` 合计在 `test_xhard0_native.py`（`in (1070, 800)`）、`test_v8_specs_schema.py`、`test_hard_builder_xhard0.py`、`test_v9_packaged_800.py` 重复。
 7. **收集范围**：不带 `tests` 参数时 pytest 会扫到 `third_party/` 并报 53 个收集错误（1932 条）；`tests/dataset/` 需要 MuJoCo／数据集，从未纳入日常口径。
 8. **未验证的引用**：`tests/fixtures/injection_legacy/*.json` 在 `tests/` 内无引用方（`scripts/`、`src/` 未查）；`test_hard_state_machine.py`、`test_v4_xhard_stopcube.py`、`test_v5_xhard_patternlock_routestick.py`、`test_v5_xhard_videounmask_buttonunmask.py` 含 v7 字样、未逐条核对。
+
+9. **12.341 新增的小缺口**（S2 审查 findings）：`hard_regression.py::cmd_xhard0_reset_parity` 关档时的 `SystemExit`、`export_eval_identities.py` 关档时 `official=skipped` 路径没有测试覆盖；`export_eval_identities.py` docstring／`--official-out` help 仍有「192 局」「V9 必须显式给」旧叙述。
 
 **建议处置顺序**：先定 1（拆核心集、改 AGENTS.md 第 4 条覆盖项的命令），再清 2（修或删 6 个失败），3～5 随「旧代码去留」（用户 2026-10-02 已定本轮「代码不改了」）一并决定，6～8 顺手。全部待用户裁决。
 
