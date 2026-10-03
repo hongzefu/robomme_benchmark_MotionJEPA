@@ -10,130 +10,127 @@
 
 # 第一部分（给人看）
 
-## 一、最终要得到的接口
+## 一、要实现的目标
 
-**GroundSG + Oracle、GroundSG + QwenVL 两组各自接入官方评估流程；每组都能选择 `test-hard` 或 `test-hard0`。** 模型配置与数据集是两个独立参数。
+**这次实现两件事：让当前仓库能单独选择 xhard0；让 GroundSG + Oracle、GroundSG + QwenVL 都能通过官方评估流程运行。**
 
-| 参数 | 评估哪些场景 | 每任务局号 | 步数参数 |
-|---|---|---|---|
-| `dataset="test-hard"` | 当前 V9 的 xhard1～5，有效任务档位格保持现状 | `0..49`，跨该任务的有效档位共50局 | 1600，沿用当前 V9 设置 |
-| **`dataset="test-hard0"`，新增** | 已有、已做过对拍的 xhard0，即官方 test 中的 hard 子集 | `0..11`，对应官方原 episode `3,7,…,47` | 1300，沿用官方 hard 评估设置 |
+**目标1：增加 xhard0 的独立数据集接口。** 保留 `dataset="test-hard"` 选择当前 V9；新增 `dataset="test-hard0"` 选择已经做过环境对拍的 xhard0。新接口复用现有数据与环境路径，不重新生成场景，不把 xhard0 加回默认的 `test-hard`。
 
-`test-hard0` 是本方案选定的新接口名；不再增加同义别名。它独立取 xhard0，不把 xhard0 塞回默认的 `test-hard`，也不需要重新生成数据。
+**目标2：接入两组指定模型的官方评估。** 新增 `--mme-variant ground-sg-oracle` 和 `--mme-variant ground-sg-qwenvl`，分别使用官方 Oracle、QwenVL 预测器及同一套 GroundSG VLA 配置。现有 FrameSamp + Modulation 继续作为兼容默认路线。模型实现已经存在，本次要完成的是当前仓库的调用接入。
 
-接口覆盖范围：xhard0 为 **16任务 × 1档 × 12局 = 192局**。V9 按现有有效档位分配，完整乘式为 `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2任务×2档×13 + 2任务×2档×12 + 7任务×2档×25 + 2任务×1档×50 = 800局`，分组依据 `hard_specs.py::_v9_cells`。这些数字说明接口返回范围，**不构成本轮实跑任务**。
+**目标3：数据集与模型可以独立选择，并验证接入后行为与官方一致。** 最终应支持下面四种组合：
 
-使用方式如下，均为实现后的接口示例：
+| 模型选择 | `test-hard`：当前 V9 | `test-hard0`：已有 xhard0 |
+|---|---|---|
+| GroundSG + Oracle：`ground-sg-oracle` | 可以评估 | 可以评估 |
+| GroundSG + QwenVL：`ground-sg-qwenvl` | 可以评估 | 可以评估 |
 
-```python
-from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
+“支持四种组合”是接口目标，不是本轮启动四批评估。xhard0 的接口范围为 **16任务 × 1档 × 12局 = 192局**；V9保留现有有效档位分配，按 `hard_specs.py::_v9_cells` 为 `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2任务×2档×13 + 2任务×2档×12 + 7任务×2档×25 + 2任务×1档×50 = 800局`。本轮只改计划，不下载、安装或执行评估。
 
-# 现有 V9 接口，保持默认行为
-v9 = BenchmarkEnvBuilder(
-    env_id="MoveCube", dataset="test-hard",
-    action_space="joint_angle", max_steps=1600,
-)
+## 二、两个当前仓库分别改哪些部分
 
-# 新增 xhard0 接口，复用原来的官方 hard 子集
-hard0 = BenchmarkEnvBuilder(
-    env_id="MoveCube", dataset="test-hard0",
-    action_space="joint_angle", max_steps=1300,
-)
-```
+### 2.1 两个仓库的分工
 
-## 二、从哪里接到哪里
+这里的两个仓库是 **benchmark 仓库**和 **MME-VLA 策略库**。MME-VLA 已通过本仓库的 `third_party/mme-vla` 子模块引用；其来源是 `hongzefu/robomme_policy_learning_MotionJEPA`，实际使用文首锁定的 gitlink。
 
-修改分成两条接线，它们在同一个 builder 汇合：
+| 仓库 | 目前负责什么 | 本方案要改什么 |
+|---|---|---|
+| **benchmark**：`robomme_benchmark_MotionJEPANewTask` | 场景、数据集选择、环境创建、评估启动和结果记录 | **新增接口与接入代码全部放在这里**：下面分别列 xhard0 改动和新模型评估改动 |
+| **MME-VLA**：`third_party/mme-vla` | 官方评估循环、Oracle/QwenVL预测器、VLA推理服务 | **无需改源码或gitlink**。直接复用现有 `EpisodeEvaluator`、两种预测器及 `serve_policy.py`；由benchmark传入所需参数 |
 
-```text
-使用示例：
-scripts/evaluation_hard.py --dataset test-hard 或 test-hard0
-  → robomme_hard.BenchmarkEnvBuilder(dataset=所选值)
-  → 对应场景
+因此，下面的“改哪些文件”都是 benchmark 内的改动。策略库不是漏改，它已经提供这两组评估的实现；本方案只把它们接到当前环境接口。SimpleMemVLA库本轮不涉及。
 
-真实 MME 评估：
-run_seat.sh --dataset ... --mme-variant ...
-  → env_client：选择数据集、校验本局身份、创建 EnvSession
-  → 官方单局评估流程 EpisodeEvaluator.eval_each_episode
-  → 本仓库的 EnvRunner 适配对象
-  → EnvSession.reset/step
-  → 同一个 BenchmarkEnvBuilder 对应的场景
-```
+### 2.2 为了单独评估 xhard0，benchmark 要改什么
 
-[当前 evaluation_hard.py](scripts/evaluation_hard.py) 是带 `DummyModel` 的用法示例；给它加数据集选择，展示用户如何切换场景。真实 MME 评估仍经 `scripts/eval-official/` 启动，不把示例脚本误当成已经接好的 MME 客户端。
+| 文件／位置 | 具体改动 | 改完之后 |
+|---|---|---|
+| `src/robomme_hard/env_record_wrapper/hard_builder.py::BenchmarkEnvBuilder.__init__`、`_ALLOWED_DATASETS` | 增加 `test-hard0`；直接复用已有 `_xhard0_entries` 建立本地局号映射 | 可以单独获得xhard0，不需要打开旧的“前置xhard0”开关，不读取V9规格 |
+| `src/robomme_hard/env_record_wrapper/__init__.py` | 导出新数据集常量 `TEST_HARD0` | 外部调用保持同一套builder接口 |
+| `scripts/evaluation_hard.py` 的builder创建处 | 增加 `--dataset`；默认 `test-hard`，可选 `test-hard0`；按选择传1600或1300 | 同一示例入口可以切换两套场景，不新增顶层脚本 |
+| `scripts/eval-official/env_client.py::EnvSession.builder/SeatRunner.builder_for` | 把两个位置硬编码的 `test-hard` 改成接收数据集参数；缓存、身份校验和结果同时记录dataset | 正式评估选了xhard0后，真正建出的也是xhard0环境 |
+| `scripts/eval-official/v8_manifest.py::check_source` | 修正仍要求192个xhard0前缀的旧假设，使其支持当前无前缀V9清单 | V9与xhard0清单分开处理，不沿用错误的旧局号 |
+| `scripts/README.md`、`src/robomme_hard/README.md` | 补两种dataset的用法、索引和边界 | 用户能明确知道如何切换及各自评哪些场景 |
 
-### 2.1 数据集接线：复用保留的 xhard0 路径
+**xhard0只增加选择入口，保留原路径。** 本地 `episode=0..11` 对应官方原 `source_episode=3,7,…,47`；seed照抄官方test元数据，标签为 `xhard0`，真正传给环境仍是 `difficulty="hard"`。复用现有 `resolve_identity/_hard_env_kwargs`，不加入规格回注或新seed公式。旧 `XHARD0_IN_TEST_HARD` 开关保留历史兼容、默认关闭；新接口与该开关独立。
 
-[hard_builder.py](src/robomme_hard/env_record_wrapper/hard_builder.py) 已保留 `_xhard0_entries`、`resolve_identity` 和 `_hard_env_kwargs` 的 xhard0 分支。只在 `BenchmarkEnvBuilder.__init__` 新增选择：
-
-- `test-hard` 保持现有 V9 分支。
-- `test-hard0` 读取官方 test 元数据，直接将 `_xhard0_entries` 枚举为 `0..11`，随后复用现有解析、建环境和包装链。
-- 对外身份记 `tier="xhard0"`；真正传给环境仍为 `difficulty="hard"`，seed 原样使用官方元数据。不附加 `sampling_config`、`native_episode_spec` 或新 seed 偏移。
-
-新分支不读取 V9 的 specs；即使 V9 规格目录不可用，xhard0 仍应能构建。旧 `XHARD0_IN_TEST_HARD` 开关保留作历史兼容，默认继续关闭；**新 `test-hard0` 不受它影响**。当前 V9 正式入口固定关闭旧开关，避免两种数据集混在一起。
-
-### 2.2 模型接线：使用官方已有单局评估流程
-
-当前 [mme_client.py](scripts/eval-official/mme_client.py) 的 `run_loop` 为 FrameSamp 裁掉了子目标分支。新增两组都复用官方 `EpisodeEvaluator`：`ground-sg-oracle` 选择官方 `OracleSubgoalPredictor`，`ground-sg-qwenvl` 选择官方 `QwenVLSubgoalPredictor`。二者都设 `subgoal_type="grounded_subgoal"`，与官方 `scripts/eval.sh` 的 `symbolic_groundedSG_oracle`、`symbolic_groundedSG_qwenvl` 对应。
-
-拟新增 `scripts/eval-official/mme_official_adapter.py`：入口仍是本仓库已有的 `run_episode(session, identity, conn_info, recorder)`，内部使用所选预测器、官方参数和环境适配对象调用官方单局评估。两组动作策略都接 `symbolic-grounded-subgoal/79999` 与 `symbolic-grounded-subgoal.yaml`；QwenVL 路线另透传官方 GroundSG 预测器 adapter 路径。现有 FrameSamp 客户端作为默认路线保留，不加入 SimpleSG 路线。
-
-适配对象把 `get_init_obs()`、`step(action)`、当前 `info`、任务与局号等接口接到 `EnvSession`。官方代码继续负责一局内部的调用顺序；本仓库负责选哪一局、结果放哪里以及已有的运行监督。具体字段和导入接缝列在第二部分。
-
-### 2.3 对齐边界：沿用已定步数口径
-
-`test-hard0` 使用官方 hard 的 `max_steps=1300` 和原有终止顺序，不套 V9 的严格1600步截断。官方客户端按 `count > max_steps` 判断超时，因此1300是配置值，可能执行到第1301步；不在此次接线中改掉已对拍的行为。
-
-`test-hard` 的正式评估继续使用现有 `EnvSession.step_cap=1600`，第1600步成功仍记成功。示例 `evaluation_hard.py` 只按数据集向 builder 传1300或1600，保留其原有包装器计数方式；示例不是正式评估的严格截断实现。这几种既有边界分别标注，不把它们宣称为同一终止协议。
-
-## 三、用户最后怎样调用
-
-只改现有 `scripts/evaluation_hard.py`，新增可选参数 `--dataset`，默认 `test-hard`，允许 `test-hard0`；不新建第五个 `scripts/` 顶层入口。
+实现后，示例入口这样选择：
 
 ```bash
-# 实现后的示例命令，本轮不执行
+# 以下是拟新增参数的用法，本轮不执行
 uv run --no-sync python scripts/evaluation_hard.py --dataset test-hard
 uv run --no-sync python scripts/evaluation_hard.py --dataset test-hard0
 ```
 
-真实 MME 启动参数拆成两个独立选择：
+`evaluation_hard.py` 目前使用 `DummyModel`，上述命令展示数据集接口；真实模型评估使用下一节的接入与启动脚本。
 
-| 参数 | 拟支持值 | 作用 |
+### 2.3 为了增加两组 GroundSG 的评估，benchmark 要改什么
+
+| 文件／位置 | 具体改动 | 接到策略库的什么能力 |
 |---|---|---|
-| `--dataset` | `test-hard`、`test-hard0` | 选择评估场景 |
-| `--mme-variant` | `framesamp-modul`（默认）、**`ground-sg-oracle`、`ground-sg-qwenvl`** | 新增的两组正是 GroundSG + Oracle、GroundSG + QwenVL |
-| `--mme-ckpt` | 已有、已核实的对应权重路径 | 交给官方 server；配置与变体不符即报错 |
-| `--qwenvl-groundsg-adapter` | 已有本地 GroundSG adapter 的绝对路径，仅 QwenVL 路线必填 | 映射到官方 `args.qwenvl_groundSG_adapter_path`，不是传给 VLA server 的 checkpoint |
+| **新增** `scripts/eval-official/mme_official_adapter.py` | 把当前 `EnvSession` 包装为官方评估需要的runner，提供 `get_init_obs/step/info` 等接口；调用官方单局流程 | `examples/robomme/eval.py::EpisodeEvaluator` 与 `env_runner.py::EnvRunner` 的原有行为 |
+| `scripts/eval-official/env_client.py::build_parser/cmd_run/SeatRunner/run_one` | 解析模型变体与Qwen adapter路径，选择客户端路线，持有预测器上下文并记录所选配置 | Oracle或QwenVL预测器；两组均为 `grounded_subgoal` |
+| `scripts/eval-official/run_seat.sh` | 接收并传递dataset、模型变体、VLA checkpoint及Qwen adapter；按变体检查对应配置 | 原 `scripts/serve_policy.py` 启动VLA；环境客户端调用对应官方预测器 |
+| `scripts/eval-official/run_v8_gl.sh` | 在现有V9路线透传模型变体和Qwen adapter参数 | V9可选两组GroundSG；它继续只接受 `test-hard`，xhard0使用 `run_seat.sh` 非V8路线 |
+| 对应轻量测试与上述两份README | 分别验证两种模型选择、参数传递、官方流程对齐与调用说明 | 同一组官方函数作为独立对照，不只验证“能跑完” |
 
-`run_seat.sh` 支持这两种数据集。现有 `run_v8_gl.sh` 保持 V9 专用，只允许 `test-hard` 并透传变体；xhard0 使用 `run_seat.sh` 的非 V8 路线。结果按数据集和变体分目录，避免相互覆盖；这里不安排下载、集群席位或正式批次。
+两组的准确映射如下，**不需要在策略库里重新实现任何模型**：
 
-目录隔离放在调用方指定的运行根：`<运行根>/<dataset>/<mme-variant>/`；其内保留现有 `sNN/mme/` 或单席 `mme/` 布局，使现有汇总和录像搬运仍能读取。不同变体分别调用一次入口，不将它们共写进同一份 `mme/results.jsonl`。
-
-具体选择组合是 `--dataset test-hard --mme-variant ground-sg-oracle`、`--dataset test-hard --mme-variant ground-sg-qwenvl`；需要评 xhard0 时，两组均把 dataset 换为 `test-hard0`。以上是参数片段，其余已有必需参数仍按入口传入，不能直接当完整启动命令执行。
-
-## 四、怎样确认接线正确
-
-xhard0 的已有环境对拍结论继续作为依据，不重做大规模 reset、生成或全量策略评估。新验证只覆盖本次增加的入口、参数传递和官方评估接线。
-
-| 查什么 | 怎么查／通过说明什么 | 拟用判定行 |
+| benchmark新增选择 | 复用的官方预测器 | 传给官方的关键参数 |
 |---|---|---|
-| 新入口返回已有 xhard0 | 不启动仿真，逐任务比较原 episode、seed、difficulty、环境参数与已有清单；规格读取函数被调用即失败 | `HARD0_INTERFACE=PASS tasks=16 per_task=12 total=192 specs_reads=0` |
-| 原 V9 入口保持现状 | 与实施前同开关状态比较任务局数和逐局身份，默认仍为上文乘式800局；新入口不受旧开关影响 | `DATASET_ROUTING=PASS crossed=0 default_changed=0` |
-| 官方流程接入不改内容 | 两组分别对照官方原预测器；相同观测/info、固定Qwen底层回复与动作回复，比较完整请求、执行动作及终止结果 | `OFFICIAL_ADAPTER=PASS variants=2 payload_diff=0 exec_diff=0 terminal_diff=0` |
-| 边界与错误分支 | 验xhard0原有1300配置的终止行为、V9严格1600边界、缺失字段/网络/记录异常的官方返回与外层归类 | `EVAL_BOUNDARY=PASS hard0_changed=0 v9_over_cap=0` |
-| 数据集与模型选择传到底 | 两dataset×两新增变体的4种静态路由全覆盖；Qwen adapter到客户端、GroundSG checkpoint到server，预测器类型和结果标签正确 | `EVAL_WIRING=PASS routes=4 dataset_mismatch=0 variant_mismatch=0 predictor_mismatch=0` |
+| `ground-sg-oracle` | `OracleSubgoalPredictor` | `use_oracle=True`、`use_qwenvl=False`、`subgoal_type="grounded_subgoal"` |
+| `ground-sg-qwenvl` | `QwenVLSubgoalPredictor` → `Qwen3VLModel` | `use_oracle=False`、`use_qwenvl=True`、`subgoal_type="grounded_subgoal"`，另传 `qwenvl_groundSG_adapter_path` |
 
-第一行的192是 `16任务×1档×12局` 的静态身份检查数量，不是192次 reset。上述判定均待实施，不是本轮已完成的动态验证。需要真实冒烟时另定最小执行范围，本方案不自行增加实跑预算。
+两组都给VLA server传 `symbolic-grounded-subgoal/79999` 与 `symbolic-grounded-subgoal.yaml`。QwenVL额外需要的 `--qwenvl-groundsg-adapter` 传到环境客户端的 `args.qwenvl_groundSG_adapter_path`；它和VLA的 `--mme-ckpt` 是两个参数，不能传混。预测器由客户端按官方生命周期复用，临时图像目录与正式录像分开。
 
-### 子代理分工与合并（简述）
+官方单局循环在benchmark客户端进程内运行；客户端与策略库原有VLA server之间仍通过WebSocket通信。源码定义加载、依赖检查、连接收尾等具体接缝见第二部分，不改官方推理与子目标规则。QwenVL实际客户端依赖及本地缓存是否齐全仍待核实，本轮不补装或下载。
 
-实施时分三块：A负责数据集与示例入口，B负责官方单局评估适配及环境接线，C负责启动参数透传。先固定字段，再并行修改互不重叠的文件；按A→B→C整合，每次先审写入范围和定向测试，再检查整合后的接线。文档、最终检查和提交由主会话负责，子代理不暂存、不提交、不推送。
+### 2.4 两项改动怎样连起来
 
-| 阶段 | 内容 | 完成条件 |
+`env_client.py` 同时接收“评哪个数据集”和“用哪组模型”，是上述两项改动的交汇点。xhard0改动决定环境来源；新模型改动决定官方评估选择哪个预测器，两者不会相互绑定。
+
+```text
+已有路线：
+benchmark的test-hard → 现有FrameSamp客户端 → WebSocket → MME-VLA原服务
+
+新增路线：
+benchmark选择dataset与mme-variant
+  → 创建所选数据集的EnvSession
+  → mme_official_adapter进入官方EpisodeEvaluator循环
+  → runner/EnvSession.reset取得初始观测
+  → 需要新动作块时：所选官方预测器 → WebSocket请求GroundSG服务返回动作
+  → runner/EnvSession.step执行动作，取得新观测
+  → 按官方循环继续；动作块用完再请求下一块，直到本局结束
+```
+
+改动只发生在选择与接入层。图像、状态和动作沿用官方格式、不在适配层改数；无新增训练参数。图像 `uint8[H,W,3]`、每视角 `3HW` 字节，状态 `float32[8]`、32字节；动作沿用官方返回dtype、形状与截取规则，具体边界沿用第二部分合同。
+
+**保留两套既定结束口径。** xhard0传 `max_steps=1300`，保持官方 `count > max_steps` 的原有顺序，可能执行到第1301步；V9正式评估保留 `step_cap=1600`，第1600步成功仍算成功。示例脚本只向builder传1300/1600，仍使用原包装器的计数方式，不把示例误写成正式严格截断入口。
+
+输出根按 `<运行根>/<dataset>/<mme-variant>/` 分开，内部保持原有 `sNN/mme/` 或单席 `mme/` 格式，继续供现有报告和录像工具读取。两种模型的结果各自成列。
+
+### 2.5 怎么确认这两项接线完成
+
+已有xhard0环境对拍作为依据，本次只验证新入口与官方接入。下列均为实施后的判据，不是当前已通过的运行结果。
+
+| 要确认的目标 | 怎么查／通过说明什么 | 判定行 |
 |---|---|---|
-| 1 | 增加独立`test-hard0`与示例参数 | `HARD0_INTERFACE`、`DATASET_ROUTING` |
-| 2 | 接入官方单局评估；补dataset透传与身份分流 | `OFFICIAL_ADAPTER`、`EVAL_BOUNDARY` |
-| 3 | 补启动参数、输出隔离和使用说明 | `EVAL_WIRING`；旧默认路线回归通过 |
+| 新入口选中原xhard0 | 静态比原episode、seed、difficulty及建环境参数；规格读取函数调用即失败 | `HARD0_INTERFACE=PASS tasks=16 per_task=12 total=192 specs_reads=0` |
+| 原V9入口与新入口不串 | 对照同开关状态下的原身份；默认V9保持上文乘式800局，新接口始终只含xhard0 | `DATASET_ROUTING=PASS crossed=0 default_changed=0` |
+| 两组模型接入官方流程 | 独立官方参照与新适配路径输入相同，比较请求、执行动作及终态；Qwen引擎用不加载权重的测试替身 | `OFFICIAL_ADAPTER=PASS variants=2 payload_diff=0 exec_diff=0 terminal_diff=0` |
+| 步数及错误收尾未改变 | 分别核xhard0原终止行为、V9严格1600边界与异常收尾 | `EVAL_BOUNDARY=PASS hard0_changed=0 v9_over_cap=0` |
+| 参数从入口传到底 | 覆盖两个dataset×两个新增模型的4种静态路由，核Qwen adapter到客户端、GroundSG checkpoint到server | `EVAL_WIRING=PASS routes=4 dataset_mismatch=0 variant_mismatch=0 predictor_mismatch=0` |
+
+`192`对应 `16任务×1档×12局` 的静态身份检查，4种路由也是零仿真检查，不安排批量reset或重做已有环境对拍。
+
+### 2.6 子代理分工与合并（简述）
+
+A负责xhard0的数据集和示例入口，B负责官方单局适配及 `env_client`，C负责启动参数。共享文件 `env_client.py` 只由B修改；三组按约定接口并行，按A→B→C整合。每次整合前检查文件范围和定向测试，整合后检查真实调用位置是否完整接上；两份README、最终验收和提交归主会话。策略库全程只读，子代理不暂存、不提交、不推送。
+
+| 顺序 | 内容 | 完成条件 |
+|---|---|---|
+| 1 | 增加独立 `test-hard0`，保留默认V9接口 | `HARD0_INTERFACE`、`DATASET_ROUTING` |
+| 2 | 接入GroundSG + Oracle和GroundSG + QwenVL的官方流程 | `OFFICIAL_ADAPTER`、`EVAL_BOUNDARY` |
+| 3 | 贯通启动参数、隔离结果、补使用说明 | `EVAL_WIRING`，旧默认FrameSamp路线回归通过 |
 
 # 第二部分（技术细节，供 agent 追踪）
 
