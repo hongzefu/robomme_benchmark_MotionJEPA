@@ -27,11 +27,11 @@
 - 只有 ``results.jsonl`` 的 ``generate_h5.py`` 输出根（行 ``{"kind": "result", "record": {...}}``）。
 身份按 (task, seed) 对齐；``tier`` 为 ``xhard0`` 的身份接受侧行写成官方难度名 ``hard``。
 
-逐帧结构的具体口径（对计划 3.1「逐帧键集合、dtype、shape 全同」的细化，见 ``compare_h5`` 注释）：真实 V9 二次生成里
+逐帧结构的具体口径（对计划 3.1「逐帧键集合、dtype、shape 全同」的细化，主会话裁定）：真实 V9 二次生成里
 ``action/waypoint_action`` 每帧都在，但无待执行路点时录像器写 float32 的 NaN 占位、有路点时写 float64 实值，两种签名落在
-哪些帧随轨迹而变（V9 新生成 7 个分叉局里有 3 局在分叉后出现这种差异）。所以只对「两侧文件里签名都随帧变化」的多态字段
-放行分叉后的签名差异（按内容差异计，第 0 帧仍须全同）；其余字段两侧必须每帧签名恒定且相同，只在一侧随帧变化
-（如某一帧缺字段）即结构不同。
+哪些帧随轨迹而变（V9 新生成 7 个分叉局里有 3 局在分叉后出现这种差异）。只有显式白名单 ``POLYMORPHIC_KEYS`` 里的字段
+放行这种差异：每帧签名须属于登记的允许集合，分叉后两侧签名不同按内容差异计（第 0 帧仍须全同）；其余字段两侧必须每帧
+签名恒定且相同，某一帧缺字段即结构不同。
 
 ``eval-extract --format v8`` 可重复给 ``--root``（G9 的正式评估那一遍：180 局在 V8 运行根、MoveCube 新规格 12 局在 V9
 运行根），各根按自己的账本判后逐身份按规格指纹选根；``--allow-extra`` 放行运行根里的清单外身份（正式评估覆盖全集）。
@@ -77,6 +77,14 @@ EXTRACT_SCHEMA = "noise-eval-extract/1"
 GEN_CLASSES = ("byte_equal", "diverge", "gen_fail", "structural", "unknown")
 #: 求解器走完任务列表仍未成功的记录类型（计入「生成失败」）；其余失败类型一律「原因不明」
 SOLVER_FAIL_TYPES = ("DatasetGenerationError", "PlannerExhausted")
+#: 多态字段白名单：{h5 时间步组内的数据集路径: 允许的签名集合 {(dtype, shape)}}。只有这里登记的字段允许各帧签名不同。
+#: action/waypoint_action：录像器（robomme_hard.env_record_wrapper.RecordWrapper）无待执行路点时写 float32 的 NaN 占位、
+#: 有路点时写 float64 实值，分叉后各帧占位状态随轨迹变化。来源：2026-10-03 只读扫描 V9 交付 h5 与 V9 二次生成
+#: （artifacts/newtask-v9/parity/h2-nfs）共 23 个非空 h5（12 局两侧，去掉 1 个空文件）的全部时间步：多签名字段只有这一个，
+#: 签名恰为 float32 (7,)（276 帧，全部 NaN）与 float64 (7,)（11728 帧）。主会话裁定以显式白名单替代自动识别。
+POLYMORPHIC_KEYS: dict[str, frozenset] = {
+    "action/waypoint_action": frozenset({("float32", (7,)), ("float64", (7,))}),
+}
 #: 评估终态
 TERMINAL = ("success", "fail", "timeout")
 #: 说明发生在 reset 之前的基础设施原因（env_client：环境构建失败、录像器初始化失败，都在 0 步时记）
@@ -368,10 +376,9 @@ def compare_h5(left: str | Path, right: str | Path) -> dict[str, Any]:
                 if nl == 0 or nr == 0:
                     return {**out, "verdict": "structural", "reason": f"{top}:no_frame0"}
                 # 逐帧结构（第一遍只读元数据）。每个数据集在每帧的「签名」= 不存在，或 (dtype, shape)。
-                # 「多态字段」= 在两侧文件里签名都随帧变化的数据集（实测 action/waypoint_action：无待执行路点时录像器写
-                # float32 的 NaN 占位、有路点时写 float64 实值，两种签名的帧落在哪里随轨迹而变）；它在分叉后的签名差异按内容
-                # 差异计（第 0 帧仍须全同）。其余字段两侧都必须每帧签名恒定且相同——只在一侧随帧变化（如某一帧缺字段）、
-                # 或两侧恒定签名不同、或任一侧出现过另一侧从未出现的字段，一律结构不同。
+                # 白名单多态字段（POLYMORPHIC_KEYS）：两侧每一帧的签名都必须属于登记的允许集合，集合外（含不存在）即结构
+                # 不同；分叉后两侧同帧签名不同按内容差异计（第 0 帧仍须全同）。非白名单字段两侧都必须每帧签名恒定且相同——
+                # 只在一侧随帧变化（如某一帧缺字段）、两侧恒定签名不同、或任一侧出现过另一侧从未出现的字段，一律结构不同。
                 lsch = [_tree(le[lfr[i]]) for i in range(nl)]
                 rsch = [_tree(re_[rfr[i]]) for i in range(nr)]
                 lall = set().union(*(set(d) for d, _a in lsch))
@@ -383,13 +390,20 @@ def compare_h5(left: str | Path, right: str | Path) -> dict[str, Any]:
                 for key in sorted(lall):
                     lsig = [d.get(key) for d, _a in lsch]
                     rsig = [d.get(key) for d, _a in rsch]
-                    lvar, rvar = len(set(lsig)) > 1, len(set(rsig)) > 1
-                    if lvar and rvar:
+                    if key in POLYMORPHIC_KEYS:
+                        allowed = POLYMORPHIC_KEYS[key]
+                        for side, sig in (("ref", lsig), ("new", rsig)):
+                            bad = next((i for i, x in enumerate(sig) if x not in allowed), None)
+                            if bad is not None:
+                                return {**out, "verdict": "structural",
+                                        "reason": f"{top}:frame{bad}:polymorphic_signature_{side}",
+                                        "detail": [key, str(sig[bad])]}
                         variable.add(key)
                         continue
+                    lvar, rvar = len(set(lsig)) > 1, len(set(rsig)) > 1
                     if lvar or rvar:
                         side, sig, other = ("ref", lsig, rsig[0]) if lvar else ("new", rsig, lsig[0])
-                        frame = next(i for i, s in enumerate(sig) if s != other)
+                        frame = next(i for i, x in enumerate(sig) if x != other)
                         return {**out, "verdict": "structural", "reason": f"{top}:frame{frame}:schema_{side}",
                                 "detail": [key, str(sig[frame]), str(other)]}
                     if lsig[0] != rsig[0]:
@@ -409,7 +423,7 @@ def compare_h5(left: str | Path, right: str | Path) -> dict[str, Any]:
                         if i == 0:
                             return {**out, "verdict": "structural", "reason": f"{top}:frame0:schema",
                                     "detail": sig_diff[:10]}
-                        out["variable_signature_frames"] += 1  # 只可能是多态字段（其余字段上面已判恒定且相同）
+                        out["variable_signature_frames"] += 1  # 只可能是白名单多态字段（其余字段上面已判恒定且相同）
                     if local_first is None:
                         same = not sig_diff and la == ra and all(
                             _value_key(lg[ds][()]) == _value_key(rg[ds][()]) for ds in ld)
@@ -803,18 +817,14 @@ def read_extract(path: str | Path) -> tuple[dict[str, Any], list[dict[str, Any]]
 # ── 新跑核验 ────────────────────────────────────────────────────────────────
 
 
+#: 来源报告 ``out_root_state`` 的合法取值：S3 ``noise_run.py::check_out_root`` 只写这两个字符串之一（不存在／空目录），
+#: 非空在 preflight 即拒跑。其余任何取值（含缺字段、字典、大小写变体）一律判 RUN_FRESH=FAIL reason=out_root_state。
+OUT_ROOT_STATES = ("absent", "empty_dir")
+
+
 def _root_was_empty(state: Any) -> bool:
-    """来源报告 ``out_root_state``：起跑前输出根不存在或为空。接受字符串（empty／absent／missing／nonexistent）
-    或字典（``empty=True``、``exists=False``、``entries``／``n_entries`` 为 0 任一）。"""
-    if isinstance(state, str):
-        return state.lower() in ("empty", "absent", "missing", "nonexistent", "not_exist", "not_exists")
-    if isinstance(state, dict):
-        if state.get("empty") is True or state.get("exists") is False:
-            return True
-        for key in ("entries", "n_entries"):
-            if key in state and int(state[key]) == 0:
-                return True
-    return False
+    """来源报告 ``out_root_state`` 是否表明起跑前输出根不存在或为空：严格只认 ``OUT_ROOT_STATES``。"""
+    return isinstance(state, str) and state in OUT_ROOT_STATES
 
 
 def _related(a: Path, b: Path) -> bool:
@@ -860,13 +870,13 @@ def run_fresh(extract: tuple[dict, list[dict]], prov: dict[str, Any], expect: in
             fresh += bool(ok)
         if reused:
             reasons.append(f"attempt_id_reused={reused}")
-        if "out_root_state" in prov and not _root_was_empty(prov["out_root_state"]):
-            reasons.append("out_root_not_empty_at_start")
+        if not _root_was_empty(prov.get("out_root_state")):
+            reasons.append("out_root_state")
         ledger_new = fresh == len(rows) and len(rows) > 0
     elif fmt == "legacy":
         empty = _root_was_empty(prov.get("out_root_state"))
         if not empty:
-            reasons.append("out_root_not_empty_at_start")
+            reasons.append("out_root_state")
         if meta.get("rec_checked") is not True:
             reasons.append("rec_not_checked")
         ledger_new = empty
@@ -884,7 +894,7 @@ def run_fresh(extract: tuple[dict, list[dict]], prov: dict[str, Any], expect: in
     ok = not reasons
     line = (f"RUN_FRESH={'PASS' if ok else 'FAIL'} pass={prov.get('pass')} fresh={fresh}/{expect} "
             f"ledger_new={'yes' if ledger_new else 'no'} assets={assets} fingerprint={fp} "
-            f"retried_after_steps={retried}")
+            f"retried_after_steps={retried}" + ("" if ok else f" reason={','.join(r.split(':')[0].split('=')[0] for r in reasons)}"))
     return ok, line, reasons
 
 
@@ -1309,11 +1319,12 @@ def gate_eval(group: dict[str, Any], ref_rows: list[dict[str, Any]], new_rows: l
 
 def _fx_h5(path: Path, *, frames: int = 4, seed: int = 1, setup_seed: int | None = None, drop: tuple | None = None,
            diverge_at: int | None = None, frame0_delta: bool = False, waypoint_frames: Iterable[int] = (),
-           waypoint_nan_frames: Iterable[int] = ()) -> Path:
+           waypoint_nan_frames: Iterable[int] = (), waypoint_int_frames: Iterable[int] = ()) -> Path:
     """小型 h5：一个 ``episode_<seed>`` 组，``setup`` 组 + ``timestep_<i>`` 组（动作／观测／信息三类数据集）。
     ``drop=(帧号, 数据集)`` 删一个字段；``diverge_at`` 起动作与关节状态加偏移；``frame0_delta`` 改第 0 帧图像；
     ``waypoint_frames`` 里的帧写 float64 实值的 ``action/waypoint_action``，``waypoint_nan_frames`` 里的帧写 float32 的 NaN
-    占位（仿录像器：有待执行路点写实值、没有写占位，两种签名的帧随轨迹而变）。"""
+    占位（仿录像器：有待执行路点写实值、没有写占位，两种签名的帧随轨迹而变）；``waypoint_int_frames`` 写白名单外的 int64
+    签名（反例用）。"""
     import h5py
     import numpy as np
 
@@ -1340,6 +1351,8 @@ def _fx_h5(path: Path, *, frames: int = 4, seed: int = 1, setup_seed: int | None
                 g["action/waypoint_action"] = np.full(7, 0.3, dtype=np.float64)
             elif i in set(waypoint_nan_frames):
                 g["action/waypoint_action"] = np.full(7, np.nan, dtype=np.float32)
+            elif i in set(waypoint_int_frames):
+                g["action/waypoint_action"] = np.zeros(7, dtype=np.int64)
             if drop is not None and drop[0] == i:
                 del g[drop[1]]
     return path
@@ -1448,11 +1461,12 @@ def selftest(verbose: bool = True) -> tuple[bool, str, list[tuple[str, bool]]]:
         ref_e, same_e, bad_e = {}, {}, {}
         for i in ids:
             s = i["seed"]
-            # seed 5 是正常分叉局：第 2 帧起分叉，间歇字段 waypoint_action 的有无也随之不同（不得判结构不同）
-            ref_e[("T", s)] = {"h5": _fx_h5(tmp / "ref" / f"e{s}.h5", seed=s,
-                                            waypoint_frames=(1, 2) if s == 5 else ())}
+            # seed 5 是正常分叉局：第 2 帧起分叉，白名单字段 waypoint_action 的 NaN 占位帧也随之不同（不得判结构不同）
+            ref_e[("T", s)] = {"h5": _fx_h5(tmp / "ref" / f"e{s}.h5", seed=s, waypoint_frames=(1, 2) if s == 5 else (),
+                                            waypoint_nan_frames=(0, 3) if s == 5 else ())}
             same_e[("T", s)] = {"h5": _fx_h5(tmp / "same" / f"e{s}.h5", seed=s, diverge_at=2 if s == 5 else None,
-                                             waypoint_frames=(1, 3) if s == 5 else ())}
+                                             waypoint_frames=(1, 3) if s == 5 else (),
+                                             waypoint_nan_frames=(0, 2) if s == 5 else ())}
         ref_root = _fx_side(tmp / "ref", ref_e)
         same_root = _fx_side(tmp / "same", same_e)
         rows, counts = gen_compare(ref_root, same_root, ids)
@@ -1485,6 +1499,13 @@ def selftest(verbose: bool = True) -> tuple[bool, str, list[tuple[str, bool]]]:
         rows_b, _c = gen_compare(ref_root, _fx_side(tmp / "bad3", bad_e), ids)
         ok, line, _r, _t = gate_gen(ggroup, rows_b)
         expect("setup 改一个值", False, ok, line)
+        # 反例：白名单多态字段出现集合外签名（int64）
+        bad_e = dict(same_e)
+        bad_e[("T", 5)] = {"h5": _fx_h5(tmp / "bad4" / "e5.h5", seed=5, diverge_at=2, waypoint_frames=(1,),
+                                        waypoint_nan_frames=(0, 2), waypoint_int_frames=(3,))}
+        rows_b, _c = gen_compare(ref_root, _fx_side(tmp / "bad4", bad_e), ids)
+        ok, line, _r, _t = gate_gen(ggroup, rows_b)
+        expect("白名单字段集合外签名", False, ok, line)
 
         # ── 评估 ──
         ebase, ref_path = _noisy_eval_baseline(tmp)
@@ -1542,14 +1563,17 @@ def selftest(verbose: bool = True) -> tuple[bool, str, list[tuple[str, bool]]]:
         stage = _fx_v8_stage(tmp / "clean-stage", "p", clean)
         first = extract_v8(stage, "p", eids)
         prov1 = {"pass": "pass1", "started_at": 1500.0, "out_root": str(stage), "assets_sha": "abc",
-                 "fingerprint": "f" * 64, "out_root_state": "empty"}
+                 "fingerprint": "f" * 64, "out_root_state": "empty_dir"}
         m1 = {"kind": "meta", "schema": EXTRACT_SCHEMA, "format": "v8", "root": str(stage.resolve()), **first[1]}
         ok1, line1, _r = run_fresh((m1, first[0]), prov1, 192, [])
         expect("same_code_first_pass_fresh", True, ok1, line1)
-        prov ={"pass": "pass2", "started_at": 1500.0, "out_root": str(stage), "assets_sha": "abc",
-                "fingerprint": "f" * 64, "out_root_state": "empty"}
+        prov = {"pass": "pass2", "started_at": 1500.0, "out_root": str(stage), "assets_sha": "abc",
+                "fingerprint": "f" * 64, "out_root_state": "absent"}
         ok, line, _r = run_fresh((m1, first[0]), prov, 192, [(m1, first[0])])
         expect("第二遍复用第一遍的输出根", False, ok, line)
+        # 反例：来源报告 out_root_state 为 S3 不会写出的取值（只认 absent／empty_dir）
+        ok, line, _r = run_fresh((m1, first[0]), dict(prov1, out_root_state="empty"), 192, [])
+        expect("out_root_state 未知取值", False, ok, line)
         # 反例：改动冻结文件里一条线而不改 sha256
         tampered = json.loads(json.dumps(ebase))
         tampered["groups"][0]["lines"]["s2f"]["line"] += 5
@@ -1567,7 +1591,7 @@ def selftest(verbose: bool = True) -> tuple[bool, str, list[tuple[str, bool]]]:
         lid = [{"id": id_str("T", "xhard0", 0), "task": "T", "tier": "xhard0", "seed": 0}]
         lrows, lmeta = extract_legacy(lroot, "p", lid)
         lm = {"kind": "meta", "schema": EXTRACT_SCHEMA, "format": "legacy", "root": str(lroot.resolve()), **lmeta}
-        ok, line, _r = run_fresh((lm, lrows), {"pass": "d0", "out_root": str(lroot), "out_root_state": "empty",
+        ok, line, _r = run_fresh((lm, lrows), {"pass": "d0", "out_root": str(lroot), "out_root_state": "empty_dir",
                                                "assets_sha": "abc", "fingerprint": "f" * 64}, 1, [])
         expect("旧路线墙钟超时后重试成功", False, ok or not lrows[0]["retried_after_steps"], line)
 

@@ -65,38 +65,53 @@ def test_中间帧缺字段判结构不同(tmp_path):
     assert rows[0]["class"] == "structural" and "frame2" in rows[0]["reason"]
 
 
-def test_间歇字段有无随轨迹变化按分叉计(tmp_path):
-    # 参照侧第 1、2 帧有 waypoint_action；新侧第 2 帧起分叉，且只有第 1、3 帧有 → 分叉（不是结构不同）
-    ref = {("T", 0): {"h5": ng._fx_h5(tmp_path / "r" / "0.h5", seed=0, waypoint_frames=(1, 2))}}
-    new = {("T", 0): {"h5": ng._fx_h5(tmp_path / "n" / "0.h5", seed=0, waypoint_frames=(1, 3), diverge_at=2)}}
-    rows, _ = ng.gen_compare(ng._fx_side(tmp_path / "r", ref), ng._fx_side(tmp_path / "n", new), _ids(1))
-    assert rows[0]["class"] == "diverge" and rows[0]["first_divergence"] == 2
-    assert rows[0]["variable_signature_frames"] == 2 and rows[0]["variable_keys"] == ["action/waypoint_action"]
+def _wp_pair(tmp_path, name, ref_kw, new_kw):
+    ref = {("T", 0): {"h5": ng._fx_h5(tmp_path / f"{name}-r" / "0.h5", seed=0, **ref_kw)}}
+    new = {("T", 0): {"h5": ng._fx_h5(tmp_path / f"{name}-n" / "0.h5", seed=0, **new_kw)}}
+    rows, _ = ng.gen_compare(ng._fx_side(tmp_path / f"{name}-r", ref), ng._fx_side(tmp_path / f"{name}-n", new), _ids(1))
+    return rows[0]
 
 
-def test_多态字段占位签名随轨迹变化按分叉计(tmp_path):
+def test_白名单常量():
+    assert ng.POLYMORPHIC_KEYS == {"action/waypoint_action": frozenset({("float32", (7,)), ("float64", (7,))})}
+
+
+def test_白名单字段占位签名随轨迹变化按分叉计(tmp_path):
     # 实测形态：waypoint_action 每帧都在，无路点时 float32 NaN 占位、有路点时 float64 实值
-    ref = {("T", 0): {"h5": ng._fx_h5(tmp_path / "r" / "0.h5", seed=0, waypoint_frames=(1, 2), waypoint_nan_frames=(0, 3))}}
-    new = {("T", 0): {"h5": ng._fx_h5(tmp_path / "n" / "0.h5", seed=0, waypoint_frames=(1, 3), waypoint_nan_frames=(0, 2),
-                                      diverge_at=2)}}
-    rows, _ = ng.gen_compare(ng._fx_side(tmp_path / "r", ref), ng._fx_side(tmp_path / "n", new), _ids(1))
-    assert rows[0]["class"] == "diverge" and rows[0]["first_divergence"] == 2
-    # 恒定字段改 dtype 仍判结构不同：参照侧全帧 float64，新侧全帧 float32
-    ref = {("T", 1): {"h5": ng._fx_h5(tmp_path / "r2" / "1.h5", seed=1, waypoint_frames=range(4))}}
-    new = {("T", 1): {"h5": ng._fx_h5(tmp_path / "n2" / "1.h5", seed=1, waypoint_nan_frames=range(4))}}
-    rows, _ = ng.gen_compare(ng._fx_side(tmp_path / "r2", ref), ng._fx_side(tmp_path / "n2", new),
-                             [{"id": "T|xhard1|1", "task": "T", "tier": "xhard1", "seed": 1}])
-    assert rows[0]["class"] == "structural" and rows[0]["reason"].endswith(":signature")
+    row = _wp_pair(tmp_path, "a", dict(waypoint_frames=(1, 2), waypoint_nan_frames=(0, 3)),
+                   dict(waypoint_frames=(1, 3), waypoint_nan_frames=(0, 2), diverge_at=2))
+    assert row["class"] == "diverge" and row["first_divergence"] == 2
+    assert row["variable_signature_frames"] == 2 and row["variable_keys"] == ["action/waypoint_action"]
 
 
-def test_间歇字段只在一侧出现或初帧有无不同判结构不同(tmp_path):
-    ref = {("T", 0): {"h5": ng._fx_h5(tmp_path / "r" / "0.h5", seed=0)},
-           ("T", 1): {"h5": ng._fx_h5(tmp_path / "r" / "1.h5", seed=1, waypoint_frames=(1,))}}
-    new = {("T", 0): {"h5": ng._fx_h5(tmp_path / "n" / "0.h5", seed=0, waypoint_frames=(2,), diverge_at=1)},
-           ("T", 1): {"h5": ng._fx_h5(tmp_path / "n" / "1.h5", seed=1, waypoint_frames=(0, 1))}}
-    rows, _ = ng.gen_compare(ng._fx_side(tmp_path / "r", ref), ng._fx_side(tmp_path / "n", new), _ids(2))
-    assert rows[0]["class"] == "structural" and rows[0]["reason"].endswith("dataset_universe")
-    assert rows[1]["class"] == "structural" and rows[1]["reason"].endswith("frame0:schema")
+def test_白名单字段一侧全程实值另一侧有占位不判结构不同(tmp_path):
+    # 「某一遍一帧都没走到占位」：参照侧全程 float64，新侧第 2、3 帧是 NaN 占位
+    row = _wp_pair(tmp_path, "b", dict(waypoint_frames=range(4)),
+                   dict(waypoint_frames=(0, 1), waypoint_nan_frames=(2, 3), diverge_at=2))
+    assert row["class"] == "diverge" and row["first_divergence"] == 2
+
+
+def test_白名单字段集合外签名判结构不同(tmp_path):
+    row = _wp_pair(tmp_path, "c", dict(waypoint_frames=range(4)),
+                   dict(waypoint_frames=(0, 1, 2), waypoint_int_frames=(3,), diverge_at=2))
+    assert row["class"] == "structural" and "polymorphic_signature_new" in row["reason"]
+    # 白名单字段在某帧不存在也属集合外
+    row = _wp_pair(tmp_path, "d", dict(waypoint_frames=range(4)), dict(waypoint_frames=(0, 1, 3), diverge_at=2))
+    assert row["class"] == "structural" and "frame2:polymorphic_signature_new" in row["reason"]
+
+
+def test_白名单字段第0帧签名不同判结构不同(tmp_path):
+    row = _wp_pair(tmp_path, "e", dict(waypoint_frames=range(4)), dict(waypoint_frames=(1, 2, 3), waypoint_nan_frames=(0,)))
+    assert row["class"] == "structural" and row["reason"].endswith("frame0:schema")
+
+
+def test_非白名单字段随帧变化或只在一侧出现判结构不同(tmp_path):
+    # 非白名单字段单帧缺失（另一侧恒定）
+    row = _wp_pair(tmp_path, "f", {}, dict(drop=(2, "obs/gripper_state"), diverge_at=1))
+    assert row["class"] == "structural" and row["reason"].endswith("frame2:schema_new")
+    # 字段只在一侧出现
+    row = _wp_pair(tmp_path, "g", {}, dict(waypoint_frames=range(4)))
+    assert row["class"] == "structural" and row["reason"].endswith("dataset_universe")
 
 
 def test_内容全同字节不同判原因不明(tmp_path):
@@ -380,7 +395,7 @@ def _ext(tmp_path, name, *, root, started, prefix):
 
 def test_run_fresh_v8(tmp_path):
     prov = {"pass": "g9-mme-1", "started_at": 50.0, "out_root": "/r1", "assets_sha": "abc", "fingerprint": "9" * 64,
-            "out_root_state": "empty"}
+            "out_root_state": "empty_dir"}
     first = _ext(tmp_path, "a.jsonl", root="/r1", started=100.0, prefix="a")
     ok, line, _ = ng.run_fresh(first, prov, 2, [])
     assert ok and line.startswith("RUN_FRESH=PASS pass=g9-mme-1 fresh=2/2 ledger_new=yes assets=PASS fingerprint=999999999999")
@@ -403,10 +418,30 @@ def test_run_fresh_legacy_输出根须为空(tmp_path):
     root = _legacy(tmp_path, rows, rec=("T_0",))
     got, meta, _ok, _line = ng.eval_extract("legacy", root, "p", _lid(1))
     prov = {"pass": "d0", "out_root": str(root), "assets_sha": "a", "fingerprint": "x" * 64}
-    ok, line, _ = ng.run_fresh((meta, got), {**prov, "out_root_state": {"exists": True, "entries": 0}}, 1, [])
-    assert ok and "ledger_new=yes" in line
-    ok, line, _ = ng.run_fresh((meta, got), {**prov, "out_root_state": {"exists": True, "entries": 3}}, 1, [])
-    assert not ok and "ledger_new=no" in line
+    for state in ("absent", "empty_dir"):
+        ok, line, _ = ng.run_fresh((meta, got), {**prov, "out_root_state": state}, 1, [])
+        assert ok and "ledger_new=yes" in line
+
+
+@pytest.mark.parametrize("state", ["empty", "missing", "nonexistent", "EMPTY_DIR", "nonempty", None,
+                                   {"exists": False}, {"exists": True, "entries": 0}])
+def test_run_fresh_out_root_state_未知取值判FAIL(tmp_path, state):
+    rows = [{"task": "T", "seed": 0, "status": "success", "steps": 5, "rec_dir": "/x/rec/T_0"}]
+    root = _legacy(tmp_path, rows, rec=("T_0",))
+    got, meta, _ok, _line = ng.eval_extract("legacy", root, "p", _lid(1))
+    prov = {"pass": "d0", "out_root": str(root), "assets_sha": "a", "fingerprint": "x" * 64}
+    if state is not None:
+        prov["out_root_state"] = state
+    ok, line, why = ng.run_fresh((meta, got), prov, 1, [])
+    assert not ok and line.startswith("RUN_FRESH=FAIL") and "reason=" in line and "out_root_state" in line
+    assert "out_root_state" in why
+    # v8 格式同样严格
+    ext = ng._fx_extract(["success"], [5], ids=_ids(1), root="/r9", started=100.0)
+    prov8 = {"pass": "g", "started_at": 1.0, "out_root": "/r9", "assets_sha": "a", "fingerprint": "x" * 64}
+    if state is not None:
+        prov8["out_root_state"] = state
+    ok, line, why = ng.run_fresh(ext, prov8, 1, [])
+    assert not ok and "out_root_state" in why
 
 
 # ── 评估两遍比较、冻结与闸门 ───────────────────────────────────────────────
