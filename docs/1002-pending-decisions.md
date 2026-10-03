@@ -100,6 +100,8 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v9 first_divergence_n=7 first_divergence_me
     5. 两模型重评该身份（`artifacts/v9-evaluation/v9-two-policy-gl10-20261002-01/manifest/shard-08.json` 中的 `MoveCube_xhard4_23406600`，`builder_episode` 60 不变，`reused.json` 不受影响），重出报告，重建 8082 站。
 - **(c) 先审核容差（A5）再重判**：不动生成。若改为只数非 noise 的超容差局，V9 只剩 h2_fail 一项。
 
+**2026-10-03 补记**：用户原话「我现在不能够再去改和 Main branch TestHard 一致的数据集了……就必须保持完全一致」，选项 (b) 因数据冻结作废。V9 交付集 16 任务 × 50 局 = 800 局的完整对拍事实（782 局逐字节可复现、17 局轨迹分叉、1 局第二次生成失败）与逐局明细见 [`1003-generation-parity-reproducibility.md`](1003-generation-parity-reproducibility.md)。是否正式结案仍待用户裁决。
+
 ### A2 V7 二次生成对拍 FAIL（2026-09-29，暂缓中）
 
 - 判定行（`docs/validation/newtask-v7/README.md`）：`PARITY_H_H2=FAIL tier=v7 shape=13x3x20+16x1x20 compared=1100 identity_equal=1100 setup_equal=1099 schema_equal=1099 success_equal=1099 both_success=1099 both_fail=0 tol_over=0 noise=13 over_total=13 hard_line_5pct=ok … sha_equal=1086 frames_equal=1086 binding_ok=1100 recovery_mismatch=0`
@@ -198,6 +200,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
   - `cmd_compare`：`verdict = PASS` 需要 `fail_over == 0` 且不过 5% 硬线；硬线把 noise 也计算在内。
 - 影响：V8 的 12 局、V9 的 7 局 noise 都是按它判为超容差；V9 的硬线 HIT 由它决定。
 - 可选处置：维持现值／用 V8 1070 对（12 局 noise）重新标定／改硬线口径（例如只数非 noise 的超容差局）。
+- **2026-10-03 补记**：数据冻结后修改容差不改变交付集，只改变判定行的 PASS／FAIL；现行标准的三个问题与实测见 [`1003-generation-parity-reproducibility.md`](1003-generation-parity-reproducibility.md) 第五节。容差文件未改动，是否结案待用户裁决。
 
 ### A6 权重核对判 FAIL 被放行（V8 评估 2026-10-02；V9 沿用放行口径）
 
