@@ -1,29 +1,27 @@
 # scripts/ 说明
 
-> V9 定稿口径（12.333 `820ca142` 换包；本文 12.338 重写，方案 `docs/plans/1002-v9-final-cleanup-plan.md`）。用户定义（2026-10-02）：**`dataset="test-hard"` 的交付集严格是 800 局 = 16 任务 × 每任务 50 局**（xhard1～xhard5 共 43 格）；官方 hard 的 xhard0 12 局保留在 test-hard 里但**不算在 800 内**；步数上限是固定常量表，不从 episode 读。官方锚点：环境源码 `RoboMME/robomme_benchmark@1fadc0ec`（`src/robomme/` 与之逐字节相同）、生成编排 `d53f21a7`（`parity/official/` 四文件逐字节 vendor）。v8 口径的本文（1262 局、43 格 1070、v7 实测长度表）见 12.337 以前的版本；V4/V5 逐环境字段表与 V6 发布说明见 [`docs/ledger/scripts-README-legacy-20260928.md`](../docs/ledger/scripts-README-legacy-20260928.md)，均不再维护。
+> V9 定稿口径（12.333 `820ca142` 换包；本文 12.338 重写，方案 `docs/plans/1002-v9-final-cleanup-plan.md`）。用户定义（2026-10-02）：**`dataset="test-hard"` 的交付集严格是 800 局 = 16 任务 × 每任务 50 局**（xhard1～xhard5 共 43 格）；官方 hard 的 xhard0 12 局保留在 test-hard 里但**不算在 800 内**；步数上限在入口构造时写死 `max_steps=1600`，六档一律 1600，不按档查表、不从 episode 读。官方锚点：环境源码 `RoboMME/robomme_benchmark@1fadc0ec`（`src/robomme/` 与之逐字节相同）、生成编排 `d53f21a7`（`parity/official/` 四文件逐字节 vendor）。v8 口径的本文（1262 局、43 格 1070、v7 实测长度表）见 12.337 以前的版本；V4/V5 逐环境字段表与 V6 发布说明见 [`docs/ledger/scripts-README-legacy-20260928.md`](../docs/ledger/scripts-README-legacy-20260928.md)，均不再维护。
 
 # 第一部分　使用
 
 ## 1. 入口：`evaluation_hard.py`
 
-`scripts/` 顶层四个入口里，`dataset_replay.py`、`evaluation.py`、`run_example.py` 与官方逐字节相同，用法见仓库根 `readme.md`。新增的只有 `evaluation_hard.py`：跑六档（xhard0～xhard5）的评估入口，**调用方式与官方 `evaluation.py` 完全一样**，只差 4 处（3 个 hunk），其余逐字相同（核查：`diff scripts/evaluation.py scripts/evaluation_hard.py`；测试 `tests/lightweight/test_v9_packaged_800.py` 钉死 `HARD_ENTRY_DIFF=PASS hunks=3`）。
+`scripts/` 顶层四个入口里，`dataset_replay.py`、`evaluation.py`、`run_example.py` 与官方逐字节相同，用法见仓库根 `readme.md`。新增的只有 `evaluation_hard.py`：跑六档（xhard0～xhard5）的评估入口，**调用方式与官方 `evaluation.py` 完全一样**，只差 3 行，其余逐字相同（核查：`diff scripts/evaluation.py scripts/evaluation_hard.py`；测试 `tests/lightweight/test_v9_packaged_800.py` 钉死 `HARD_ENTRY_DIFF=PASS hunks=3`）。
 
 ```diff
 - from robomme.env_record_wrapper import BenchmarkEnvBuilder
-+ from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, TIER_MAX_STEPS
++ from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
 -         dataset="test",
 +         dataset="test-hard",
--         env = env_builder.make_env_for_episode(episode)
-+         seed, tier = env_builder.resolve_episode(episode)
-+         env = env_builder.make_env_for_episode(episode, max_steps=TIER_MAX_STEPS[tier])
+-         max_steps=1300,  # we set 1300 in MME-VLA experiments.
++         max_steps=1600,  # V9: fixed 1600 for every episode (no per-tier lookup).
 ```
 
-四处差别用人话说：
+三处差别用人话说：
 
 1. **换包**。新值档的环境代码放在 `robomme_hard` 包里，与官方 `robomme` 并列、互不干扰。它的 builder 是官方 builder 的子类，用法一样（`BenchmarkEnvBuilder(env_id, dataset, action_space, max_steps)` → `get_episode_num()` → `make_env_for_episode(i)` → `env.reset()`／`env.step()`），只是多认一个数据集名 `test-hard`。
 2. **换数据集**。官方 `test` 每任务 50 局（easy／medium／hard 混排）。`test-hard` 每任务 **62 局 = xhard0 12 局 + V9 交付 50 局**，16 任务共 992 局；其中 V9 交付集 **16 × 50 = 800 局**是用户定义的正式集合，xhard0 是官方 hard 原局、只作对照、不计入 800。episode 号顺序：先 xhard0 12 局（按官方原 episode 号），再按 xhard1→xhard5 排该任务交付的档、档内按候选号升序（每格局数见第 3 节局数表）。
-3. **多拿一个档位**。`resolve_episode` 和官方一样返回两个值，第二个值在 `test-hard` 下就是档位名（`xhard0`～`xhard5`）。
-4. **步数上限是固定常量表**。`TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}`，用上一步拿到的档位查表后传给 `make_env_for_episode`；不传就用构造 builder 时的 `max_steps`。这个数**不从 episode、不从规格文件读**（规格 header 只签 `exec_cap`＝1600，行里没有 `max_steps`）。xhard0 的 1300 与官方 `evaluation.py` 默认值相同；1600 是新值档的执行步上限，V9 交付集按构造不超（实测最大 1469，见第 3 节末）。
+3. **步数上限是一个写死的数**。构造 builder 时 `max_steps=1600`（官方入口是 1300），父类存为 `max_steps_without_demonstration = 1600 + 2`；之后每局 `make_env_for_episode(episode)` 与官方一样不传 `max_steps`，于是六档（含 xhard0）一律 1600，**不按档查表、不从 episode 或规格文件读**（规格 header 只签 `exec_cap`＝1600，行里没有 `max_steps`）。1600 是新值档的执行步上限，V9 交付集按构造不超（实测最大 1469、xhard0 最大 1074，见第 3 节末）。`resolve_episode` 仍和官方一样返回两个值，第二个值在 `test-hard` 下是档位名（`xhard0`～`xhard5`），入口不需要用它。包内常量表 `TIER_MAX_STEPS`（xhard0 1300 / 其余 1600）入口已不引用，只剩 `eval-official` 评估流水线在用，去留待定（`docs/1002-pending-decisions.md` B5）。
 
 ### 每一局的场景从哪里来
 
@@ -91,7 +89,7 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 
 一句话：**800 = 16 任务 × 50 局**（xhard1～5）；**992 = 800 + 16 任务 × 1 档 × 12 局（xhard0）**。闸门 `V9_DELIVERY_SET=PASS tasks=16 cells=43 total=800 new=80 reused=720`、`V9_SEED_DISJOINT=PASS`、`V9_LAYOUT_INDEPENDENT=PASS`，测试 `V9_PACKAGED=PASS total=800 per_task=50 cells=43 episodes_per_task=62 total_with_xhard0=992`。
 
-**步数上限与实测**：`TIER_MAX_STEPS`（xhard0 1300 / xhard1～xhard5 一律 1600）只约束执行段，演示段不计入；抽样时过滤执行步超过 1600 的候选（`exec_over_cap` 递补），交付集按构造不超。V9 交付实测：`V9_STEP_CAP=PASS max=1469 cap=1600 over=0 xhard0_max=1074 xhard0_cap=1300 rows=800`（`hard_regression.py step-headroom`）。逐格步数均值表不再维护，逐局长度看 V9 站点（`http://sled-vail.eecs.umich.edu:8082/`）的 oracle 总表。历史上限：v7 为 1500 / 2400 / 2900 / 3800，v6 为 1500 / 1700 / 2000 / 2600。
+**步数上限与实测**：`evaluation_hard.py` 构造时固定 `max_steps=1600`，六档（含 xhard0）一律 1600，逐局不传、不按档查表，与官方入口形态相同（官方为 1300）。上限只约束执行段，演示段不计入。生成侧抽样时过滤执行步超过 1600 的候选（`exec_over_cap` 递补），交付集按构造不超：`V9_STEP_CAP=PASS max=1469 cap=1600 over=0 xhard0_max=1074 xhard0_cap=1300 rows=800`（`hard_regression.py step-headroom`，xhard0 当时按 1300 查、实测最大 1074，在 1600 内）。包内常量表 `TIER_MAX_STEPS`（xhard0 1300 / xhard1～5 1600）入口已不再引用，只剩 `eval-official` 评估流水线在用（已跑的 800 局双模型评估按它执行），去留待定（`docs/1002-pending-decisions.md` B5）。逐格步数均值表不再维护，逐局长度看 V9 站点（`http://sled-vail.eecs.umich.edu:8082/`）的 oracle 总表。历史上限：v7 为 1500 / 2400 / 2900 / 3800，v6 为 1500 / 1700 / 2000 / 2600。
 
 # 第二部分　开发者文档
 
@@ -156,7 +154,7 @@ uv run --no-sync python scripts/parity/hard_regression.py eval-smoke --task BinF
 ls -1 scripts/*.py                                                        # 恰好四个入口（P1）
 git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py  # 录像器零 diff
 uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstream
-diff scripts/evaluation.py scripts/evaluation_hard.py                     # 恰好第 1 节的 4 处
+diff scripts/evaluation.py scripts/evaluation_hard.py                     # 恰好第 1 节的 3 行
 uv run --no-sync python -m pytest tests/lightweight/test_v9_packaged_800.py -q -s   # V9_PACKAGED / V9_MAX_STEPS / HARD_ENTRY_DIFF
 timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q
 ```

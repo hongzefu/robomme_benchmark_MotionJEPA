@@ -122,15 +122,14 @@ v7（12.237 起）另跑：上面四行以 tag `parity-anchor-v6` 为 P 侧重�
 ## ⑤ 使用
 
 ```python
-from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, TIER_MAX_STEPS   # 与官方唯一不同的 import
-builder = BenchmarkEnvBuilder(env_id="BinFill", dataset="test-hard", action_space="joint_angle", max_steps=1300)
+from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # 与官方唯一不同的 import
+builder = BenchmarkEnvBuilder(env_id="BinFill", dataset="test-hard", action_space="joint_angle", max_steps=1600)  # V9 入口固定 1600
 for episode in range(builder.get_episode_num()):             # BinFill 92 局：xhard0 十二局 → xhard1、xhard2 各四十局
-    seed, tier = builder.resolve_episode(episode)             # (seed, tier)，与官方二元组同形
-    env = builder.make_env_for_episode(episode, max_steps=TIER_MAX_STEPS[tier])
+    env = builder.make_env_for_episode(episode)               # 与官方一样不传 max_steps，六档一律 1600
     obs, info = env.reset()
 ```
 
-- 与官方 `dataset="test"` 的对应：`test` 每任务 50 局、三档混排、步数上限一个数；`test-hard` 每任务 62 局（V9：12 + 50，见 ①），xhard0 在前（按官方原 episode 号），再按 xhard1→xhard5 只排该任务交付的档、档内按 `candidate` 升序；步数上限按档 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}`（xhard0 同官方默认；v7 曾为 1500／2400／2900／3800；不逐局传就用构造时的 `max_steps`）。步数上限是固定常量表，不从 episode 或规格文件读（规格 header 只签 `exec_cap`＝1600，行里没有 `max_steps`）。`specs_root` 覆盖（或环境变量 `ROBOMME_HARD_SPECS_ROOT`）可指局部 v8／v9 根，只发存在的档；v7 `hard-specs/3` 根在换包后不再被 builder 接受。
+- 与官方 `dataset="test"` 的对应：`test` 每任务 50 局、三档混排、步数上限一个数；`test-hard` 每任务 62 局（V9：12 + 50，见 ①），xhard0 在前（按官方原 episode 号），再按 xhard1→xhard5 只排该任务交付的档、档内按 `candidate` 升序；步数上限由入口 `evaluation_hard.py` 构造时写死 `max_steps=1600`、逐局不传（六档含 xhard0 一律 1600；官方入口为 1300）；包内常量表 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}` 入口不再引用、只剩 eval-official 评估流水线在用（去留待定，`docs/1002-pending-decisions.md` B5）。上限不从 episode 或规格文件读（规格 header 只签 `exec_cap`＝1600，行里没有 `max_steps`）。`specs_root` 覆盖（或环境变量 `ROBOMME_HARD_SPECS_ROOT`）可指局部 v8／v9 根，只发存在的档；v7 `hard-specs/3` 根在换包后不再被 builder 接受。
 - `builder.resolve_identity(episode)` 只读返回 `{episode, tier, candidate, seed, spec_sha256, source_run}`（xhard0 另带 `source_dataset`、`source_episode`，`candidate` 为空）；`spec_binding(env)` 须在 `reset()` 之后调用。
 - `train`／`test`／`val` 行为同官方；只有四个 Unmask 任务的 `train` 元数据改读本包 `env_metadata/train`（400 条）。`override_metadata_path` 语义同官方。
 - 生产命令（不随包分发，在仓库 `scripts/injection-dev/` 下，路径直跑；详见 `scripts/README.md` 第 4 节）：v8 为每档一次 `freeze_specs.py --tier <档> --seed-profile v8 --cells full`（档内逐任务独立抽，只抽交付格）→ `generate_h5.py --mode continue --specs <规格根> --cells full`（或 `split`／各片 `continue`／`merge` 四席分片）（按 header schema 分派到 v8 驱动，逐格递补、执行步超过 1600 记 `exec_over_cap` 并递补）。v7 的「母布局抽签 → `derive_specs.py` 派生 → 四档同步生成」链路保留但 v8 不调用。

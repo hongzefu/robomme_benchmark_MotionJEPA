@@ -8,14 +8,15 @@
    未入选候选行仍留在文件里（用户决定「不裁，只加校验」），由 builder 过滤。
 2. builder 实际发出的 episode：每任务 62 = xhard0 官方 hard 12 局（不算在 800 里）+ V9 50 局，16 任务 992；
    前 12 局档位 xhard0，其后按 xhard1→xhard5 单调不降。
-3. 步数上限只来自固定常量表 ``TIER_MAX_STEPS``（xhard0 1300、xhard1～5 一律 1600），规格文件 header 与行里
-   都没有 ``max_steps`` 键——不从 episode 读。
-4. ``scripts/evaluation_hard.py`` 与官方 ``scripts/evaluation.py`` 只差 3 个 hunk（4 行改动）：换包 import、
-   ``dataset="test-hard"``、``resolve_episode`` 取档 + ``max_steps=TIER_MAX_STEPS[tier]``。
+3. 入口 ``scripts/evaluation_hard.py`` 的步数上限是构造时写死的一个数 ``max_steps=1600``（六档含 xhard0 一律
+   1600），``make_env_for_episode(episode)`` 与官方一样不传、不按档查表；规格文件 header 与行里都没有 ``max_steps``
+   键——不从 episode 读。包内常量表 ``TIER_MAX_STEPS`` 入口不再引用（评估流水线 eval-official 仍用，去留待定 B5）。
+4. ``scripts/evaluation_hard.py`` 与官方 ``scripts/evaluation.py`` 只差 3 个单行 hunk：换包 import、
+   ``dataset="test-hard"``、``max_steps`` 1300→1600。
 
 只读包内 jsonl 与官方 test 元数据，不 ``gym.make``、不起仿真。判定行：
 ``V9_PACKAGED=PASS total=800 per_task=50 cells=43 episodes_per_task=62 total_with_xhard0=992``、
-``V9_MAX_STEPS=PASS``、``HARD_ENTRY_DIFF=PASS hunks=3``。
+``V9_MAX_STEPS=PASS entry=1600``、``HARD_ENTRY_DIFF=PASS hunks=3``。
 
     uv run --no-sync python -m pytest tests/lightweight/test_v9_packaged_800.py -q -s
 """
@@ -99,18 +100,24 @@ def test_builder每任务62局_前12局xhard0_后50局按档单调(builders):
           f"episodes_per_task=62 total_with_xhard0={total}")
 
 
-def test_max_steps只来自固定常量表(packaged):
-    assert TIER_MAX_STEPS is H.TIER_MAX_STEPS
-    assert TIER_MAX_STEPS == {"xhard0": XHARD0_CAP, **{tier: EXEC_CAP for tier in H.TIERS}}
-    assert H.V8_EXEC_CAP == EXEC_CAP
+def test_max_steps入口固定1600不按档查表(packaged):
+    src = (REPO_ROOT / "scripts" / "evaluation_hard.py").read_text(encoding="utf-8")
+    assert src.count("max_steps=1600") == 1, "入口构造时须写死 max_steps=1600"
+    assert "max_steps=1300" not in src
+    assert "TIER_MAX_STEPS" not in src and "resolve_episode" not in src, "入口不得按档查表"
+    assert "env_builder.make_env_for_episode(episode)" in src, "make_env_for_episode 须与官方一样不传 max_steps"
+    # 规格文件里没有 max_steps 键：上限不从 episode 读
     for tier, (header, rows) in packaged.items():
         assert "max_steps" not in header, f"{tier} header 不应含 max_steps"
         assert header.get("exec_cap") == EXEC_CAP
         assert all("max_steps" not in row for row in rows), f"{tier} 规格行不应含 max_steps"
-    print(f"\nV9_MAX_STEPS=PASS xhard0={XHARD0_CAP} xhard1_5={EXEC_CAP} source=TIER_MAX_STEPS")
+    # 包内常量表只剩评估流水线在用，入口不用；记录其现值（去留待定 B5）
+    assert TIER_MAX_STEPS is H.TIER_MAX_STEPS
+    assert TIER_MAX_STEPS == {"xhard0": XHARD0_CAP, **{tier: EXEC_CAP for tier in H.TIERS}}
+    print(f"\nV9_MAX_STEPS=PASS entry={EXEC_CAP} per_tier_lookup=none source=evaluation_hard.py")
 
 
-def test_evaluation_hard与官方入口只差3个hunk():
+def test_evaluation_hard与官方入口只差3行():
     official = (REPO_ROOT / "scripts" / "evaluation.py").read_text(encoding="utf-8").splitlines()
     hard = (REPO_ROOT / "scripts" / "evaluation_hard.py").read_text(encoding="utf-8").splitlines()
     diff = [line for line in difflib.unified_diff(official, hard, n=0, lineterm="") if line[:3] not in ("---", "+++")]
@@ -118,10 +125,10 @@ def test_evaluation_hard与官方入口只差3个hunk():
     removed = [line[1:] for line in diff if line.startswith("-")]
     added = [line[1:] for line in diff if line.startswith("+")]
     assert len(hunks) == 3, f"hunk 数 {len(hunks)} ≠ 3：{diff}"
-    assert len(removed) == 3 and len(added) == 4, diff
+    assert len(removed) == 3 and len(added) == 3, diff
     assert any("from robomme.env_record_wrapper import BenchmarkEnvBuilder" in line for line in removed)
-    assert any("from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, TIER_MAX_STEPS" in line for line in added)
+    assert any(line.strip() == "from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder" for line in added)
     assert any('dataset="test"' in line for line in removed) and any('dataset="test-hard"' in line for line in added)
-    assert any("seed, tier = env_builder.resolve_episode(episode)" in line for line in added)
-    assert any("max_steps=TIER_MAX_STEPS[tier]" in line for line in added)
+    assert any("max_steps=1300" in line for line in removed) and any("max_steps=1600" in line for line in added)
+    assert not any("TIER_MAX_STEPS" in line or "resolve_episode" in line for line in added)
     print(f"\nHARD_ENTRY_DIFF=PASS hunks={len(hunks)} removed={len(removed)} added={len(added)}")

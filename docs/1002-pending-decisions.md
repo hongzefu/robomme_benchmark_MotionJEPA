@@ -20,7 +20,9 @@
 | B2 | V9 站点标题仍为「RoboMME v8」 | 10-02 V9 | 按 catalog 区分版本 |
 | B3 | `scripts/README.md` 局数与长度表过时 | 10-02 V9 | 换成 V9 数据 |
 | B4 | V9 交付树 hardlink 的删除责任 | 10-02 V9 | 与 F4 一并定 |
+| B5 | `TIER_MAX_STEPS` 查表去留（入口已固定 1600） | 10-02 V9 | 保留不动，待裁决 |
 | C1 | 核心短测 4 个既有失败 + 2 个连带失败 | 09-17 起 | 改测试对齐官方行为 |
+| C2 | 核心短测整体未维护（耗时 477 s 超 280 s 预算、v7/v8 历史用例、monkeypatch 钉 V8 表、命名错位、重叠断言） | 10-02 | 先拆 ≤2 分钟定稿核心集，其余待裁决 |
 | D1 | PickXtimes、StopCube、PickHighlight 两模型全 0 成功，未诊断 | 10-02 V8 评估 | 视需要立项诊断 |
 | D2 | V7.5 预算超额事后追认 | 09-30 V7.5 | 追认 |
 | D3 | V8 评估各轮审查遗留的小问题 | 10-02 V8 评估 | 视需要小修 |
@@ -251,6 +253,14 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 
 ---
 
+### B5 `TIER_MAX_STEPS` 查表去留（2026-10-02 新增，待定）
+
+- **现状**：入口 `scripts/evaluation_hard.py` 自 12.339 起构造时固定 `max_steps=1600`、逐局不传，不再引用包内常量表 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}`（用户原话：「max_steps 应该是一个固定的数值……不需要再从 episode 里面读」「可以，全部 1600」「第二个问题我只要改 evaluation_hard」「查表问题设为待定写入 Docs 里面」）。
+- **仍在用这张表的地方**：`scripts/eval-official/env_client.py::tier_max_steps` 与 `scripts/eval-official/v8_manifest.py`（清单每局写 `effective_max_steps = TIER_MAX_STEPS[tier]`，客户端起环境前核对相等并以 `step_cap` 截断）——已跑完的 V9 800 局双模型评估（`docs/validation/v9-two-policy-gl10-20261002-01/`）与 xhard0 192 局评估就是按它执行的（xhard1～5 1600、xhard0 1300）；`scripts/parity/hard_regression.py`（reset-replay、eval-smoke、step-headroom 的 xhard0 按 1300 查）；`scripts/injection-dev/site/v8_subgoal_lengths.py`；测试 `test_xhard0_native.py::test_TIER_MAX_STEPS六档且xhard0为1300`、`test_v8_specs_schema.py`、`test_v9_packaged_800.py`（只记录现值）。
+- **选项**：(a) 保留不动——表只描述评估流水线与历史评估口径，与入口「全部 1600」并存，README 已写明两者关系；(b) 拉平成全 1600——改 `hard_specs.py` 一行与 3 个测试、评估客户端的 xhard0 校验，但已跑的 xhard0 评估记录（1300）与表不再一致；(c) 删表改单常量 `EXEC_CAP=1600`——动包代码与上述全部使用者。
+- **影响面**：(a) 零改动；(b)(c) 触及 `src/robomme_hard`（P2 逐个批准）与评估清单校验，须重跑 eval-official 冒烟。
+- **建议**：(a)，待用户裁决。
+
 ## C 类：测试
 - **裁决**：2026-10-02 用户认可按清单删除 V6/V7/V8 产物（`newtask-v8/gen1` 整删，V9 delivery 的硬链接随之成为唯一引用，空间由 V9 独占）。阶段 A（12.338）已先把 8082 站引用的小件搬入 `newtask-v9/`、拼出 `v9-evaluation/final/`；删除在阶段 B（12.339）执行。
 
@@ -269,6 +279,21 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 可选处置：改测试、对齐官方行为（推荐，`tests/` 不受 P1、P2 约束：未知环境改断言 `[]`、改为 `back-and-forth`、对官方没有实现的两项标 `xfail` 并注明原因）／维持现状，继续在留档里写「既有失败」。
 
 ---
+
+### C2 核心短测整体未维护（2026-10-02 新增，待定）
+
+用户原话：「现在的短测问题非常多，没有维护过。把所有短测维护问题也写入待定。」「不要再每次都跑核心短测了，时间太长了。」以下为 2026-10-02 只读盘点（`tests/lightweight/` 98 个 `.py`，`pytest --collect-only` 1874 条）得到的问题清单，全部待定、本轮不改：
+
+1. **耗时超预算**：`timeout 280s … -m 'not gpu and not slow'` 这条「核心短测」实跑 476.7 s（12.338 实测，1758 passed / 6 failed / 3 skipped / 80 deselected），280 s 限时在 85% 处被截断、拿不到汇总行；AGENTS.md 第 4 条「5 分钟内」的口径已不成立。候选：拆出一个 ≤ 2 分钟的「定稿核心集」（`test_v9_packaged_800`、`test_hard_builder_xhard0`、`test_xhard0_native`、`test_v9_*`、`test_upstream_*`）作日常门禁，其余标 `slow`。
+2. **6 个长期失败未处理**（C1）：`test_TaskGoal.py` 2 条、`test_step_error_handling.py` 2 条、`test_v8_eval_report.py::test_zz_summary_line`、`test_v8_eval_video_mover.py::test_zz_summary_line`；自 `30f36e44` 起每次都失败，靠「与基线相同」放行。
+3. **历史口径测试仍在跑**：`test_v7_*.py` 8 个文件（母布局派生、白名单语义、v7 seed 规则、v7 候选池、layered 录制、外环弧、BinFill 嵌套、v7 站点目录）测的是 V9 不再调用的 v7 链路；`tests/_shared/v7_specs_fixture.py`、`tests/fixtures/v7_specs_sample/` 只服务它们。
+4. **用 monkeypatch 钉回 V8 格表才能过的用例**：`test_v8_delivery_flow.py::test_四片生成合并聚合43格`、`test_v8_eval_manifest.py` 三条（`test_夹具规模` 等）、`test_v8_regression_cmds.py::test_delivery_set三种格表往返[full]`——断言的是 1070／1262 的 V8 数字，与包内 V9（800／992）不符，靠 `monkeypatch.setattr(EXPECTED_CELLS, V8_CELLS)` 维持。
+5. **文件名与内容错位**：`tests/_shared/v7_tier_values.py` 名字叫 v7、内容是 v8/v9 取值表，被 `test_v7_tier_values.py`、`test_v8_regression_cmds.py`、`test_sampling_config_split.py` 引用；`test_hard_builder_xhard0.py::test_逐任务局数常量合计1262` 函数名仍写 1262、实断 992。
+6. **重叠断言**：`TIER_MAX_STEPS` 六档值在 `test_xhard0_native.py`、`test_v8_specs_schema.py`、`test_v9_packaged_800.py` 三处各断一遍；`EXPECTED_CELLS` 合计在 `test_xhard0_native.py`（`in (1070, 800)`）、`test_v8_specs_schema.py`、`test_hard_builder_xhard0.py`、`test_v9_packaged_800.py` 重复。
+7. **收集范围**：不带 `tests` 参数时 pytest 会扫到 `third_party/` 并报 53 个收集错误（1932 条）；`tests/dataset/` 需要 MuJoCo／数据集，从未纳入日常口径。
+8. **未验证的引用**：`tests/fixtures/injection_legacy/*.json` 在 `tests/` 内无引用方（`scripts/`、`src/` 未查）；`test_hard_state_machine.py`、`test_v4_xhard_stopcube.py`、`test_v5_xhard_patternlock_routestick.py`、`test_v5_xhard_videounmask_buttonunmask.py` 含 v7 字样、未逐条核对。
+
+**建议处置顺序**：先定 1（拆核心集、改 AGENTS.md 第 4 条覆盖项的命令），再清 2（修或删 6 个失败），3～5 随「旧代码去留」（用户 2026-10-02 已定本轮「代码不改了」）一并决定，6～8 顺手。全部待用户裁决。
 
 ## D 类：评估结果与预算
 

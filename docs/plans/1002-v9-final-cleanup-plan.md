@@ -14,7 +14,7 @@
 2. xhard0 去留：用户选「**保留 xhard0，但它不算在 800 里**」→ test-hard 每任务仍是 xhard0 官方 hard 12 局 + V9 50 局 = 62 局，16 任务共 992；README 必须把「800」与「992」两个数都写清。
 3. 规格 jsonl：「不裁，只加校验」→ 五份 `env_metadata/test-hard/xhard{1..5}/specs.jsonl` 原样保留（含 718 条未入选候选行），只加测试断言正式局 800。
 4. 「max_steps 应该是一个固定的数值……不需要再从 episode 里面读」→ 现状已是常量表 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～5: 1600}`，规格文件 header 与行里都没有 `max_steps`，只需 README 写明并由测试钉住。
-5. 「调用和传统的 RoboMME 完全一样，只是 `evaluation_hard.py` 有一个小区别」→ 已核对 `diff scripts/evaluation.py scripts/evaluation_hard.py` 恰好 4 处，本轮不碰入口，README 第 6 节核查清单保留此 diff 判据。
+5. 「调用和传统的 RoboMME 完全一样，只是 `evaluation_hard.py` 有一个小区别」→ 阶段 A 时 diff 为 4 处；阶段 A′（用户纠偏「一千六百步……又是从 task 中读出了 max_steps，这样是不对的」）改为构造时固定 `max_steps=1600`、逐局不传，diff 只剩 3 行；README 第 6 节核查清单保留此判据。
 6. 「历史的产物也要清理……只需要保留最新版本 V9 的生成的 H5 文件和评估的文件，需要上传 HuggingFace」→ 评估树选「拼出 V9 专属评估树：800 局报告 + 视频」；上传选「本轮只做本地清理，上传下轮单独做」；NFS 选「删除 train-parity 651 GB」；删除清单用户已认可（§四）。
 7. 「代码不改了」→ 取消此前「一并删除旧代码」的选项；`src/robomme_hard`、`scripts/` 零 diff。
 
@@ -85,7 +85,21 @@ README 重写范围：第 1 节局数句与第 2 点改 V9；第 3 节「局数�
 
 阶段 A 结束时：`artifacts/` 体积不减（硬链接与 mv 不占新空间，仅多约 350 MB 的 nfs-records 拷贝），8080/8081/8082 三个站都还在，历史产物一个不少。
 
-**阶段 B：其余清理（破坏性）**——commit `12.339`，阶段 A 的判定行全 PASS 且已 push 后才开始。
+**阶段 A′：入口 `max_steps` 改为构造时固定 1600（用户 2026-10-02 纠偏）**——commit `12.339`，已获批后执行。
+
+用户原话：「我刚才跟你说了那个一千六百步的事情你为什么没有做……现在这个很明显又送入了一千三百步，又是从 task 中读出了 max_steps，这样是不对的。」裁决：xhard0 也用 1600（「可以，全部 1600」）；「第二个问题我只要改 evaluation_hard」；「查表问题设为待定写入 Docs 里面」。`get_episode_num()` 维持 62（用户未改口「保留 xhard0 但不计入 800」）。
+
+现状链路（已核实）：构造时 `max_steps=1300` 被父类存为 `max_steps_without_demonstration=1302` 仅作缺省；每局 `make_env_for_episode(episode, max_steps=TIER_MAX_STEPS[tier])` 用 `档位上限 + 2` 覆盖它，交给 `DemonstrationWrapper`，`step()` 里 `steps_without_demonstration >= max_steps_without_demonstration` 即 truncated。所以 1300 是死参数，真正生效的是逐局按档查表。
+
+| 步 | 内容 | 判据 |
+|---|---|---|
+| A′1 | `scripts/evaluation_hard.py`：构造改 `max_steps=1600`（注释改为「V9：固定 1600，不按档查表」）；`make_env_for_episode(episode)` 与官方一样不传；删 `seed, tier = env_builder.resolve_episode(episode)` 行与 import 里的 `TIER_MAX_STEPS`。与官方 diff 只剩 3 行：import 换包、`dataset="test-hard"`、`1300→1600` | `diff scripts/evaluation.py scripts/evaluation_hard.py` 恰 3 个单行 hunk |
+| A′2 | `tests/lightweight/test_v9_packaged_800.py`：`HARD_ENTRY_DIFF` 改为断言 3 hunk、-3/+3 行、含 `max_steps=1600`、不含 `TIER_MAX_STEPS`/`resolve_episode`；`V9_MAX_STEPS` 改为断言入口源码里 `max_steps=1600` 字面量且 `make_env_for_episode(episode)` 不带 `max_steps=`（常量表断言保留，但注明「评估流水线用、入口不用」） | `HARD_ENTRY_DIFF=PASS hunks=3`、`V9_MAX_STEPS=PASS entry=1600` |
+| A′3 | `scripts/README.md` 第 1 节：diff 块换成三行版；第 4 点改为「入口固定 `max_steps=1600`，六档一律 1600、不按档查表；`TIER_MAX_STEPS` 只剩评估流水线（eval-official）在用，xhard0 在那里是 1300」；第 3 节「步数上限与实测」段整段改为（用户 2026-10-02 点名「这里也要对应更改」）：「**步数上限与实测**：`evaluation_hard.py` 构造时固定 `max_steps=1600`，六档（含 xhard0）一律 1600，逐局不传、不按档查表，与官方入口形态相同（官方为 1300）。上限只约束执行段，演示段不计入。生成侧抽样时过滤执行步超过 1600 的候选（`exec_over_cap` 递补），交付集按构造不超：`V9_STEP_CAP=PASS max=1469 cap=1600 over=0 xhard0_max=1074 xhard0_cap=1300 rows=800`（`hard_regression.py step-headroom`，xhard0 当时按 1300 查、实测最大 1074，在 1600 内）。包内常量表 `TIER_MAX_STEPS`（xhard0 1300 / xhard1～5 1600）入口已不再引用，只剩 `eval-official` 评估流水线在用（已跑的 800 局双模型评估按它执行），去留待定（`docs/1002-pending-decisions.md` B5）。逐格步数均值表不再维护，逐局长度看 V9 站点（`http://sled-vail.eecs.umich.edu:8082/`）的 oracle 总表。历史上限：v7 为 1500 / 2400 / 2900 / 3800，v6 为 1500 / 1700 / 2000 / 2600。」第 6 节核查行改「恰好 3 处」。`src/robomme_hard/README.md` ⑤ 节入口示例同步（去掉 `TIER_MAX_STEPS` 行） | `git diff --check` |
+| A′4 | `docs/1002-pending-decisions.md` 新增 **B5「`TIER_MAX_STEPS` 查表去留」**：现状（入口已不用；eval-official 客户端与清单 `effective_max_steps` 仍按表，xhard0=1300；3 个测试断言）、选项（保留不动 / 拉平全 1600 / 删表改单常量）、影响面；标「待定」。`docs/validation/newtask-v9/cleanup-20261002.md` 追加 A′ 段 | 文件存在 |
+| A′5 | 定向测试 + 核心短测（失败 ≤ 基线 6）+ `UPSTREAM_GUARD` + 四入口 + 录像器零 diff；一个 sonnet 只读审查者核对 diff 三行与文档一致；commit 12.339 并 push | `git status -sb` 无 ahead |
+
+**阶段 B：其余清理（破坏性）**——**用户 2026-10-02 指示不做**（「你的第二阶段不要做，我只要去改这个定稿的问题，历史产物不要清理！」），以下步骤表只作留档、不执行。
 
 | 步 | 内容 | 判据 |
 |---|---|---|
@@ -93,7 +107,7 @@ README 重写范围：第 1 节局数句与第 2 点改 V9；第 3 节「局数�
 | B2 | 按清单删本机产物（§四第 4 条；每目录删前 `ls -ld`，大目录进 tmux + Monitor） | 清单逐项「不存在」；`newtask-v9/delivery` 800 h5 + 800 mp4 可读、硬链接数回 1；`v9-evaluation/final` 1600 条记录可读 |
 | B3 | 删 NFS `robomme_benchmark-newtask-gl/artifacts/train-parity` 651 GB（§四第 6 条） | 删后 `du` |
 | B4 | 留档第二段（删前/删后 `du`、逐目录 `ls -ld` 原文）；`docs/1002-pending-decisions.md` F3/F4 追加裁决 | `du -sh artifacts` 约 0.5 TB |
-| B5 | commit 12.339 并 push | `git status -sb` 无 ahead |
+| B5 | commit 12.340 并 push | `git status -sb` 无 ahead |
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -174,4 +188,4 @@ rm -rf /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/
 
 ## 七 留档与 commit 纪律
 
-阶段 A commit `12.338 V9 定稿收尾（阶段 A）：README 换 V9 口径、800 局校验测试、V9 评估树与站点媒体重定向`；阶段 B commit `12.339 V9 定稿收尾（阶段 B）：历史产物清理（本机 ≈1.6 TB、NFS 651 GB）`，body 按第 11 条六项（用户原话含「我现在只需要保留最新版本的 task…」「代码不改了」「把计划落下根目录」），push。
+阶段 A commit `12.338 V9 定稿收尾（阶段 A）：README 换 V9 口径、800 局校验测试、V9 评估树与站点媒体重定向`；阶段 A′ commit `12.339 V9 定稿收尾（阶段 A′）：evaluation_hard.py 固定 max_steps=1600、不按档查表`；阶段 B commit `12.340 V9 定稿收尾（阶段 B）：历史产物清理（本机 ≈1.6 TB、NFS 651 GB）`，body 按第 11 条六项（用户原话含「我现在只需要保留最新版本的 task…」「代码不改了」「把计划落下根目录」），push。
