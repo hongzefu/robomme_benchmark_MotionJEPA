@@ -730,20 +730,28 @@ def test_report读逐任务配额(tmp_path):
     assert _report.per_cell_quota({"delivery_per_cell": 20}, "BinFill") == 20
 
 
-def test_export_eval_identities的1262口径(tmp_path, monkeypatch):
-    """总数由格表推出：V8 1262 = 192 + 1070、V9 992 = 192 + 800；模块默认值随包内 EXPECTED_CELLS（3b 切换前 V8）。
-    V9 格表时 --official-out 用默认（V8 根，审计 10）或缺 --delivery 即报错退出，不碰 builder、不写文件。"""
+@pytest.mark.parametrize("flag", [False, True])
+def test_export_eval_identities的1262口径(tmp_path, monkeypatch, flag):
+    """总数由格表推出：开关开 V8 1262 = 192 + 1070、V9 992 = 192 + 800；开关关（xhard0 退出 test-hard）V8 1070、V9 800。
+    V9 格表时缺 --delivery 即报错退出；开关开时 --official-out 用默认（V8 根，审计 10）也报错退出，不碰 builder、不写文件。"""
     E = export_eval_identities
-    assert E.expected_total(H.V8_CELLS) == 1262 and E.identities_name(H.V8_CELLS) == "eval-identities-1262.jsonl"
-    assert E.expected_total(H.V9_CELLS) == 992 and E.identities_name(H.V9_CELLS) == "eval-identities-992.jsonl"
-    assert E.EXPECTED_TOTAL == E.expected_total(H.EXPECTED_CELLS)
+    # S1 合并前包内可能还没有这两个名字，故 raising=False
+    monkeypatch.setattr(H, "XHARD0_IN_TEST_HARD", flag, raising=False)
+    monkeypatch.setattr(H, "xhard0_prefix", lambda: H.XHARD0_PER_TASK if flag else 0, raising=False)
+    pre = H.XHARD0_PER_TASK if flag else 0
+    assert E.xhard0_total() == 16 * pre
+    v8_total, v9_total = (1262, 992) if flag else (1070, 800)
+    assert E.expected_total(H.V8_CELLS) == v8_total and E.identities_name(H.V8_CELLS) == f"eval-identities-{v8_total}.jsonl"
+    assert E.expected_total(H.V9_CELLS) == v9_total and E.identities_name(H.V9_CELLS) == f"eval-identities-{v9_total}.jsonl"
+    if not flag:
+        assert E.identities_name(H.V9_CELLS) == "eval-identities-800.jsonl"
     assert E.IDENTITIES_NAME == f"eval-identities-{E.EXPECTED_TOTAL}.jsonl"
     assert E.OFFICIAL_OUT_DEFAULT == "artifacts/newtask-v8/eval-official-xhard0-192.jsonl"  # 审计 10：默认值不动
     assert not hasattr(E, "V6_SECONDS") and E.TASK_SECONDS["BinFill"] == 224.0
-    for table, total in ((H.V8_CELLS, 1262), (H.V9_CELLS, 992)):
+    for table, total in ((H.V8_CELLS, v8_total), (H.V9_CELLS, v9_total)):
         rows = [{"task": t, "tier": "xhard0", "episode": i, "seed": i, "round": None, "shard": None}
-                for t in H.ALL_TASKS for i in range(12)]
-        rows += [{"task": t, "tier": tier, "episode": 12 + i, "seed": 1000 * len(t) + 10 * H.V8_TIERS.index(tier) + i,
+                for t in H.ALL_TASKS for i in range(pre)]
+        rows += [{"task": t, "tier": tier, "episode": pre + i, "seed": 1000 * len(t) + 10 * H.V8_TIERS.index(tier) + i,
                   "round": None, "shard": None} for (t, tier), n in table.items() for i in range(n)]
         official = [r for r in rows if r["tier"] == "xhard0"]
         ok, facts = E.check_rows(rows, official, table)
@@ -754,11 +762,15 @@ def test_export_eval_identities的1262口径(tmp_path, monkeypatch):
         # 用另一张表核同一批行 → 逐格局数不符
         other = H.V9_CELLS if table is H.V8_CELLS else H.V8_CELLS
         assert not E.check_rows(rows, official, other)[0]
+        if not flag:  # 关档时多出 xhard0 行即 FAIL（不许静默错位）
+            extra = {"task": H.ALL_TASKS[0], "tier": "xhard0", "episode": 999, "seed": 0, "round": None, "shard": None}
+            assert not E.check_rows(rows + [extra], official, table)[0]
         rows[0]["round"] = 1
         assert not E.check_rows(rows, official, table)[0]
     monkeypatch.setattr(E, "resolve_table", lambda root: ("v9", H.V9_CELLS))
-    with pytest.raises(SystemExit):
-        E.main(["--delivery", str(tmp_path / "d.json")])
+    if flag:
+        with pytest.raises(SystemExit):
+            E.main(["--delivery", str(tmp_path / "d.json")])
     with pytest.raises(SystemExit):
         E.main(["--official-out", str(tmp_path / "o.jsonl")])
     assert not list(tmp_path.iterdir())
