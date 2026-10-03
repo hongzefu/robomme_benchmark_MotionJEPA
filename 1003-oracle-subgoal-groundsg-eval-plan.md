@@ -158,13 +158,13 @@ A负责xhard0数据集和示例，B负责官方单局适配及`env_client`，C�
 
 **一个占位job仍占一张GPU，但其唯一一个`srun --gpu_cmode=shared`内部可以有两条独立评估进程树。** 每路各有VLA server、client、环境，Qwen路线各自持有Qwen预测器；不共用有历史/RNG状态的服务。两路只分担同一份清单的互斥子集，不能用重复跑同一批身份冒充吞吐翻倍。
 
-新增`run_concurrent_gl.sh --workers-per-gpu 1|2`统一管理；`run_seat.sh`参数化当前写死的`XLA_PYTHON_CLIENT_MEM_FRACTION=0.75`。两份服务不能各预占75%后假定显存足够。先依据实际加载、首次编译、Qwen历史与Vulkan峰值确定每路可用配置；单路与双路计时使用相同的每进程内存配置，且先确认相对原单路配置没有行为改变。不改权重、精度、attention、动作块或模型reset来换速度。
+新增`run_concurrent_gl.sh --workers-per-gpu 1|2`统一管理；`run_seat.sh`参数化当前写死的`XLA_PYTHON_CLIENT_MEM_FRACTION=0.75`。两份服务不能各预占75%后假定显存足够。依据实际加载、首次编译、Qwen历史与Vulkan峰值确定双路可用配置；**单路计时保留该模型原有已验证配置，双路使用经行为核验的共驻配置**，记录所有资源差异。不能先降低单路显存使其变慢，再宣称双路更快。比较的是同一job资源包络内两套实际部署方案，不改权重、精度、attention、动作块或模型reset。
 
 三模型×两dataset分别使用同一GPU、同一job的4 CPU/48 GiB配置做对照，双路从实际CPU亲和集合分成两组，录像编码也分开。同一模型在其对照期间不换GPU、依赖或存储。每模型每dataset锁定W：V9为`VideoUnmask 1任务×xhard1×1局 + MoveCube 1任务×xhard4×1局=2局`；xhard0为同两任务`2任务×1档×1局=2局`。这些是代表负载，不能声称覆盖所有任务性能。
 
 对W按**单路→双路→双路→单路**执行；后半反转身份顺序/交换两路归属，每批始终完成相同W。每批每路先预热1局，最先的单任务、单局、单worker预热同时承担smoke，失败即停该候选。另以相同四批做监控开启对照，两套批次先后顺序预先固定并交错安排，不用同一局不同阶段充当监控开关实验。完整数量与预算见第二部分。
 
-测速分开记录启动/JIT、预热、执行、录像核验与NFS收尾。吞吐分子是W中有完整正常终态的局数（success/fail/timeout均算，基础设施error不算有效完成），分母是外层共同开始至所有路录像同步及退出完成的墙钟；不能平均现有`episode_wall_s`代替，它未含`recorder.close`。同时报执行步/秒、模型推理和Qwen推理延迟、CPU占用、显存峰值。
+测速分开记录启动/JIT、预热、执行、录像核验与NFS收尾。所有lane完成预热且预热视频核验/同步完成后到达屏障，以同一单调时钟记`t0`；计时清单W执行、录像核验/NFS同步及所有子树退出完成时记`t1`。吞吐分子是W中有完整正常终态的局数（success/fail/timeout均算，基础设施error不算有效完成），分母为`t1-t0`；另报包括冷启动/预热的总耗时，不能平均现有不含`recorder.close`的`episode_wall_s`代替。同时报执行步/秒、模型推理和Qwen推理延迟、CPU占用、显存峰值。
 
 GPU占用按三模型分别给出稳态均值、0%比例、慢步/非慢步分层值，不以中位数或单张截图作结论。只用本轮GPU上的一个持久采样进程，必要字段、500ms间隔；**间隔和持久进程都不代表零干扰**。监控关闭的批次作为速度决策基准；开启批次用于占用诊断和开销对照。若监控明显改变步时/吞吐或驱动锁等待，正式运行关闭它，报告占用数值来自有干扰的诊断条件。
 
@@ -196,7 +196,7 @@ GPU占用按三模型分别给出稳态均值、0%比例、慢步/非慢步分�
 | `src/robomme_hard/env_record_wrapper/__init__.py` | 导出`TEST_HARD0` | 原导出保留 |
 | `scripts/evaluation_hard.py`的builder创建处 | 加`--dataset`参数；默认test-hard/1600，test-hard0/1300；视频目录含dataset，避免相同局号覆盖 | 不传参数仍跑原示例范围；显式可选xhard0 |
 | 新`scripts/eval-official/mme_official_adapter.py` | 按变体接官方Oracle或QwenVL预测器与单局循环；管理预测器上下文，适配`EnvSession`；见下文合同 | GroundSG两种来源明确分开；原`mme_client.py`保持默认 |
-| `scripts/eval-official/env_client.py::build_parser/cmd_run/EnvSession.builder/SeatRunner.builder_for/run_one` | 解析dataset/变体/Qwen adapter；两个建builder点均透传dataset；持有并传递按变体隔离的预测器上下文；记录模型选择 | 旧调用不传dataset时，按原模式推导：V8→test-hard，非V8→test-hard0 |
+| `scripts/eval-official/env_client.py::build_parser/cmd_run/EnvSession.builder/SeatRunner.builder_for/run_one` | 解析dataset/变体/Qwen adapter；透传dataset、持有独立预测器上下文；结果记录route/lane/并发数/资源指纹/monitor/batch/phase；将持久账本开关与V8身份及step_cap解耦，支持warmup/measure阶段切换 | 旧调用保持原推导；新hard0可记账但仍是1300原语义，测速重复批次不会跳过W |
 | `scripts/eval-official/v8_manifest.py::check_source` | V9源集的xhard0期望数跟随现有`xhard0_prefix()`，支持当前800源集；不把该工具改成xhard0导出器 | 修复当前无前缀源集仍被要求含192个xhard0的问题 |
 | `scripts/eval-official/run_seat.sh`的解析、MME预检、server/client启动 | 新增dataset/variant/Qwen adapter；server加载两组共用的GroundSG配置；client按变体加载预测器，核Qwen实际运行解释器与本地依赖/缓存，透传离线约束和路径 | 不传variant仍为framesamp；缺Qwen依赖或资产直接报错，不下载或换Oracle |
 | `scripts/eval-official/run_v8_gl.sh`参数解析与内层调用 | 透传variant与Qwen adapter、显式dataset=test-hard；拒绝test-hard0，避免无条件`--v8`误校验 | 继续只管V9路线，两组GroundSG均可选 |
@@ -287,9 +287,9 @@ xhard0的session设`step_cap=None`，由官方循环和原wrapper结束；V9保�
 | 两新模型原官方hard正式对照侧 | `2模型×16任务×1档×12局=384` | 768 |
 | 三模型测速的计时回合 | `3模型×[4批×W(V9)+4批×W(xhard0)]×2监控条件=96` | 192 |
 | 测速预热兼新入口smoke | `3模型×2dataset×1任务×1档×1局×(1+2+2+1)×2监控条件=72` | 144 |
-| 原官方入口最小smoke | `2新模型×1任务(VideoUnmask)×1档(hard)×1局=2` | 4 |
+| 原/新hard入口最小smoke，在完整D0之前 | `2新模型×2入口×1任务(VideoUnmask)×1档(hard/xhard0)×1局=4` | 8 |
 | 正式基础设施重试 | 在上述正式身份内每新模型全局至多10次、每身份至多追加1次，`2模型×10=20`；不增加新身份 | 40 |
-| **总计** | **2368正式 + 168测速/预热 + 2原入口smoke + 20重试 = 2558次** | **5116** |
+| **总计** | **2368正式 + 168测速/预热 + 4原/新入口smoke + 20重试 = 2560次** | **5120** |
 
 reset预算以现有正常一局build/reset各1次为基准；原官方runner也要在外围记录实际构造/reset调用，内层多一次就多计一次。模型的reset RPC另记，不冒充环境reset。构造失败、半局、超时、重跑和所有侧均消耗相应上限；固定输入离线回放不调用环境reset，因此不额外占仿真预算，但记录次数和耗时。若正常调用链超出预计2次，停止放量并统一修正预算，不能藏在官方顶层重试里。
 
@@ -300,24 +300,26 @@ reset预算以现有正常一局build/reset各1次为基准；原官方runner也
 ## 六、同GPU两路的实现合同与测速判据
 
 1. **进程与端口**：`run_concurrent_gl.sh`在一个`srun`内管理`lane0/1`；每lane独立VLA server、client、Qwen上下文与环境。当前官方server全连接共享`self._policy`，reset会改全局RNG和历史，所以两client共连一个server不合格。端口及可选录制代理端口由本轮命名空间分配，启动前探测并校验连接对象；lane、模型、dataset与入口都写入结果。
-2. **目录与清理**：路径至少含`<run>/<stage>/<dataset>/<variant>/sNN/laneK/`，独立`.v8-pgids`、ledger、progress、results、录制、Qwen临时文件和同步清单；节点本地目录同样含lane。现有`run_v8_gl.sh`是单个PID/目录状态，不能直接两次后台调用同一个stage。只按登记的PID/PGID及启动身份回收本轮进程；一路错误不误杀另一条，父进程退出要收齐本轮全部子树。禁止按GPU、用户名或程序名全局杀进程。
+2. **目录与清理**：正式路径至少含`<run>/<stage>/<dataset>/<variant>/sNN/laneK/`；测速还必须含`monitor-off|on/batch-1..4/phase-warmup|measure/`或等价唯一batch_id。每批每阶段独立`.v8-pgids`归属、ledger、progress、results、录制、Qwen临时文件和同步清单；节点本地目录同样隔离。预热和计时可保留同一模型进程，但要切换独立阶段账本，重复W不能被前一批accepted结果跳过。现有`run_v8_gl.sh`是单个PID/目录状态，不能两次后台调用同一个stage。只按登记的PID/PGID及启动身份回收本轮进程；一路错误不误杀另一条，父进程退出要收齐本轮全部子树。禁止按GPU、用户名或程序名全局杀进程。
 3. **资源**：旧job每席4 CPU/48 GiB不变；单路用现有合法CPU集合，双路各2核并限制模型/编码线程到其集合，记录原始亲和。显存配置参数要透传到真正的server环境，固定默认0.75但双路不得隐式采用。先在无仿真的已记录输入回放中核同一模型分配变化前后的行为与加载/首推理峰值，再跑预算内smoke；给Qwen、KV、Vulkan、录像余量，不能以两份JAX比例和小于1代替实测。内存不够时报告该双路方案不可用，使用已通过的一路，不擅自扩job规格、量化或改attention。
-4. **固定工作量**：每批W的并集完全相同，双路每路分一个身份，后半互换归属；两路的预热各1局，和正式统计隔离。ABBA监控关/开两套的相对顺序按模型/dataset预先交错固化，不能事后择最快批次。需要进程重启时编译/预热成本单列；每个批次所有编码/解码核验与NFS同步完成、子进程退出后才记结束，不能只取环境循环计时。
+4. **固定工作量与时间**：每批W的并集完全相同，双路每路分一个身份，后半互换归属；两路的预热各1局，和正式统计隔离。ABBA监控关/开两套的相对顺序按模型/dataset预先交错固化，不能事后择最快批次。计时从全部lane预热/预热视频同步屏障后的共同`t0`开始，到W结果、编码/解码核验、NFS同步与全部子树退出后的`t1`结束；进程启动和预热成本单列。每批断言`manifest=2 newly_executed=2 terminal=2`（W的任务×档位×局数见§五），禁止跨批resume去重，不能把前一批已完成结果算作本批吞吐。
 5. **并发行为**：各模型独立验证固定观测/状态/回复序列及模型返回、执行动作；同一lane的reset/历史不能被另一路改变。真实批次同身份的初始化、执行轨迹和终态差异必须列出；若两路仅因更早失败而显得快，不采纳该提速结论。出现状态污染、缺证据或新增行为差异即`PERF_VALID=FAIL`，不通过扩大容差使双路过关。
 6. **监控影响**：关/开是同模型、同dataset、同并发数、同W的独立匹配批次；记录步时、吞吐、CPU时间及驱动锁等待，没有可用采样的字段标未采集。不得仅在不同负载阶段切监控或重复启动全卡nvidia-smi。计时决策使用关闭监控的批次；占用曲线来自开启批次，并附两者差异。启用造成显著退化或无法排除干扰时，正式主线关闭监控，不能宣称诊断曲线为无扰动实况。
-7. **逐模型选择**：`speedup = 相同W的单路完整墙钟 / 双路完整墙钟`。两次无监控配对均`speedup>=1.10`、有效性/资源/行为闸门通过，才记录选择2；否则选择已通过的1。每模型每dataset都写`CONCURRENCY_DECISION model=... dataset=... selected=1|2 reason=...`及原始时间；数据不足写`uncertain`并选1保守执行，不自动加测。若单路也不可用则该模型阻塞，不发布可运行结论。即使测得xhard0两路更快，严格原入口D0证据仍用事先规定的单路完整运行，不补跑一套正式分母。
+7. **逐模型选择**：`speedup = 相同W在原有已验证单路配置下的完整墙钟 / 双路候选配置下的完整墙钟`，不能用人为降额后的慢单路作唯一基线。两次无监控配对均`speedup>=1.10`、有效性/资源/行为闸门通过，才记录选择2；否则选择已通过的1。每模型每dataset都写`CONCURRENCY_DECISION model=... dataset=... selected=1|2 reason=...`及原始时间；数据不足写`uncertain`并选1保守执行，不自动加测。若单路也不可用则该模型阻塞，不发布可运行结论。即使测得xhard0两路更快，严格原入口D0证据仍用事先规定的单路完整运行，不补跑一套正式分母。
 
 ## 七、原官方 hard 的独立执行与完全一致
 
 **来源钉死。** 原官方环境取已有官方源码`856bc3a189d4172f3f47dbee4424d585f8d78db3`；部署前核其`src/robomme`与既有对拍锚点`1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`逐字节一致。[旧预检](docs/validation/v7.5eval/preflight.md)曾验证这两者相同，但本轮仍重新核源，不能只引用历史PASS。不初始化主子模块中被要求为空的第二份benchmark；使用本轮专用只读官方源码根，已有源缺失就阻塞，不下载。
 
-`official_hard_runner.py`是外围身份驱动，不是模型实现：按原metadata筛D0，原侧调用官方`EnvRunner(dataset="test")`与原局号；新侧调用新builder本地局号。官方原方法/参数和源码摘要进入记录。原侧单独进程，启动前和注册环境后都断言`robomme.__file__`来自官方根、`robomme_hard`不在模块中；不能在同一个已注册hard环境的进程里换父类冒充原侧。两侧使用相同客户端依赖栈，不能拿历史sapien3.0.3旧venv与本库3.0.2直接声称全一致。
+`official_hard_runner.py`是外围身份驱动，不是模型实现：按原metadata筛D0，原侧按官方签名`EnvRunner(env_id, video_save_dir, max_steps=1300)`构造，其内部builder固定`dataset="test"`，再向`make_env`传原局号；不虚构EnvRunner的dataset参数。新侧调用新builder本地局号。官方原方法/参数和源码摘要进入记录。原侧单独进程，启动前和注册环境后都断言`robomme.__file__`来自官方根、`robomme_hard`不在模块中；不能在同一个已注册hard环境的进程里换父类冒充原侧。两侧使用相同客户端依赖栈，不能拿历史sapien3.0.3旧venv与本库3.0.2直接声称全一致。
 
 原侧不能依赖`mme_official_adapter.py`或`policy_replay.old_mme_module`；后者共享本库循环，只换打包函数，无法构成独立参照。历史`official_observer/run_official_mme.sh`硬编码FrameSamp及旧目录，`v75-lanes`也是一次性历史脚本，本轮只借鉴其来源守卫/透明记录机制，不直接复跑。新观测只能包策略客户端与通信接口，不对受保护环境源码做运行时覆盖。
 
+由E在新原侧runner中显式安装透明观察：在**MME层原`EnvRunner.get_init_obs/step`外围委托调用**，原方法原样执行并记录每一步输入/输出，不覆盖`src/robomme`方法；不能只抓VLA决策点通信而漏掉动作块内部步骤。Qwen的原媒体、请求、历史、原始与解析后回复在`end_episode`删除临时图像前独立无损保存。旧observer没有这些完整Qwen事件，且自动挂钩依赖旧顶层CLI，不能认为直接import新runner就会自动记录；可借用其存取/透明代理组件，原侧证据不得经过B适配器生成。
+
 对两新模型的每个D0身份分别核：环境和模型身份；演示/初始观测、state、task_goal与起点；Oracle在线文字，或Qwen原始图像、请求、生成参数、原始及解析后文本；VLA完整请求与返回动作；实际env.step动作；后续观测与终态。原始字节或可还原的无损记录必须可定位，不只留丢失后无法复核的汇总哈希。Qwen路径等非语义差异按预声明映射规范化，但媒体内容、文字、数值与时序不得排除；记录器自身异常、缺帧和少事件直接FAIL。
 
-先做已预算的原入口单任务smoke与固定输入验证；原侧和新侧完整D0都以独立单路采集，分片配对安排在同GPU，不混原/新两侧共驻。比较全量通过才能写`HARD_REAL_ALIGNMENT=PASS`。固定回复夹具只能证明接线，不能代替真实Qwen/VLA一致性；`temperature=0`、同seed或同权重也不自动保证逐位。原/新差异不能用旧MME噪声带免责；保存首个观测/预测器请求/文本/VLA动作/实际执行动作分叉，按真实失败处理，不擅改确定性配置或阈值。
+先做已预算的原/新两入口单任务smoke与固定输入验证；新入口smoke独立于之后的测速预热，不借用一个尚未执行的预热声称已通过。随后原侧和新侧完整D0都以独立单路采集，分片配对安排在同GPU，不混原/新两侧共驻。比较全量通过才能写`HARD_REAL_ALIGNMENT=PASS`。固定回复夹具只能证明接线，不能代替真实Qwen/VLA一致性；`temperature=0`、同seed或同权重也不自动保证逐位。原/新差异不能用旧MME噪声带免责；保存首个观测/预测器请求/文本/VLA动作/实际执行动作分叉，按真实失败处理，不擅改确定性配置或阈值。
 
 ## 八、Great Lakes 运行手册与完整报告
 
@@ -327,8 +329,8 @@ reset预算以现有正常一局build/reset各1次为基准；原官方runner也
 4. 一个job只运行一个srun；在其内部串行执行相应阶段，或由`run_concurrent_gl.sh`管理2条lane。原hard参照与新test-hard0严格对照固定1路；三模型性能各在同GPU上比较1/2路；V9正式用每模型通过的选择。`run_v8_gl.sh`仍仅服务V9内层，原hard和新test-hard0由统一外层按route调度各自入口，不给它们强行加`--v8`。
 5. 先单任务、单局、单worker的最小smoke，再按预算执行原官方hard完整对照、三模型测速、两新模型V9完整评估。原hard对齐FAIL停止受影响模型后续放量，保存已开始部分和所有差异；正常任务fail/timeout只入分数，不重试。候选双路OOM等失败停止该候选，保留单路已验证选择。任何扩大资源、场景或重跑超预算，统一列变更，不先执行后补记。
 6. 所有超过5分钟的阶段进入带`ev-sg-`前缀的detached tmux，保持`PYTHONUNBUFFERED=1`、`pipefail`、`tee`和`EXIT_CODE`；每路监督服务生死与无进度，不只探端口。用零仿真夹具验证成功→下一阶段、失败/监督器崩溃→停止并通知；主会话持续处理宿主等待事件，未建立自动唤醒不得承诺无人值守自动接续。通知只报有意义变化、完成、失败或需处理事项。
-7. 汇总按`(route,dataset,model,identity)`接受唯一终态，以持久`accepted_attempt_id`为准，弃用和迟到attempt单列；启动器恢复不得清掉ledger，预先分配预算之和不超总表。原hard及非V8新test-hard0补同等账本，不改变其1300停止语义。禁止原顶层无限重评，所有外层重启也受本表20次基础设施额度约束。
-8. `groundsg_eval_report.py`分别输出六个正式结果集合（2模型×3路线），固定分母、逐任务/档位成功率、error/missing/timeout、原hard严格差异及三模型测速选择。现`v8_report.py`基础coverage可在`error_final>0`时PASS，故不能只复用其判定；新终验要求`partial=false`、无缺重冲突、`error_final=0`、成功字段一致、步数边界正确、媒体全量可解码和传输SHA匹配。正常任务失败是有效0分，不影响完整覆盖的通过。
+7. 正式汇总按`(route,dataset,model,identity)`接受唯一终态，以持久`accepted_attempt_id`为准，弃用和迟到attempt单列；测速另把monitor/batch/phase纳入身份命名空间，禁止跨批恢复去重。启动器恢复不得清掉ledger，预先分配预算之和不超总表。原hard及非V8新test-hard0补同等账本：将`ledger_enabled`与`v8_identity_mode/step_cap`解耦，由启动器显式传账本与预算，不能为启用记账把hard0强制切成V8校验或1600步。禁止原顶层无限重评，所有外层重启也受本表20次基础设施额度约束。
+8. `groundsg_eval_report.py`分别输出六个正式结果集合（2模型×3路线），按V9规格身份或hard原局号分别解析，不能给hard记录伪造spec_sha256来塞进V8模式；固定分母、逐任务/档位成功率、error/missing/timeout、原hard严格差异及三模型测速选择。现`v8_report.py`基础coverage可在`error_final>0`时PASS，故不能只复用其判定；新终验要求`partial=false`、无缺重冲突、`error_final=0`、成功字段一致、步数边界正确、媒体全量可解码和传输SHA匹配。正常任务失败是有效0分，不影响完整覆盖的通过。
 9. 所有正式和已产生的失败尝试视频保留，测速/预热视频独立保存。跨节点搬运以原子完成标记和逐文件SHA核同源，未核前不删除源；NFS只清本轮已核临时副本，本机正式产物不删。执行结束、异常和中断都保存账本/日志/部分报告，再按本轮精确清单收server、lane、tmux与JobID，禁止全局kill或scancel。
 
 拟运行参数示意（仅表达调度方式，未执行；变量必须是核实的本轮绝对路径）：
@@ -355,7 +357,7 @@ srun --jobid="$HOLD_JOB" --overlap --exact --ntasks=1 \
 | `CONCURRENCY_DECISION` | 三模型各自选择与证据，不把2路设成无条件默认 |
 | `FULL_EVAL_COVERAGE=PASS formal=2368 error_final=0 missing=0 extra=0 duplicate=0 partial=0` | 两模型×(D9+D0+D0)，新test-hard0同一份正式结果复用于严格对照 |
 | `FULL_EVAL_REPORT=PASS`、`FULL_EVAL_VIDEOS=PASS` | 六集合分母、success字段、步数、视频完整解码/搬运SHA和入口标签正确 |
-| `EVAL_BUDGET=PASS attempts<=2558 resets<=5116`、`EVAL_CLEANUP=DONE` | 预算包含所有阶段、错误和重试，资源按归属精确回收 |
+| `EVAL_BUDGET=PASS attempts<=2560 resets<=5120`、`EVAL_CLEANUP=DONE` | 预算包含所有阶段、错误和重试，资源按归属精确回收 |
 
 ## 九、风险、盲区与留档
 
@@ -364,4 +366,8 @@ srun --jobid="$HOLD_JOB" --overlap --exact --ntasks=1 \
 - 官方原生录像与本repo环境记录会并存；是否增加录像开销需实施时如实记录，不能为提速修改官方循环。
 - 官方源码定义加载需要依赖闭合与来源校验；目前只有静态可行性，未运行新接缝。不得把计划中的复用说成已经完成。
 - QwenVL还需要客户端侧的官方Qwen底座、GroundSG adapter及依赖；本轮只读源码，没有检查或补齐这些运行资产。能通过零仿真接线测试，不等于真实Qwen推理已验证。
+- 单GPU两路是否容纳、是否提速，三个模型可能不同；Qwen包含额外模型和KV缓存。当前GPU占用未在本轮测量，“占用不满”来自用户观察，不能写成本轮实测。若两个代表任务不足以支持结论，报告不确定并保留单路，不自行扩大样本。
+- 完全一致是本轮要求的严格目标，不是已证事实。旧MME已有跨进程波动记录；新模型若仍不一致，必须保留FAIL和第一处分叉，不能把条件缩成“成功率一样”或仅给fixed-input夹具PASS。
+- 只读记录和监控也可能影响规划/调度。严格对齐两侧采用匹配记录条件；测速使用正式录像方式，额外高成本逐决策全量比对另做，不混入速度数字。监控有干扰时关闭正式监控并说明诊断边界。
+- 实施启动即建`docs/validation/<run_name>/launch.md`，固定代码/源/资产/环境、清单、完整命令、预算与tmux/JobID归属；完成后写`result.md`及`records/`的清洗日志、完整指标、差异和视频索引，并更新总索引。性能结果分别给三模型的一路/双路耗时、吞吐、稳态GPU统计、显存与选择；保留失败候选。权重、视频和原始大数据留`artifacts/`，不复制脚本/YAML到档案充可复现记录。
 - 本轮只对根计划做结构、链接、源码锚点、命令语法与`git diff --check`核对，动态判定全部待执行。只提交这一个文件，保留他人在途状态，按既有upstream推送；若以后实施，在提交正文记录用户原话、接口差异和测试结果，必要验证记录放`docs/validation/`，不在规则文件追加进度。
