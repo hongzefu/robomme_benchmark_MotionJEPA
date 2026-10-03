@@ -242,6 +242,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
   - 配置表里 MoveCube xhard4 仍写「圆环 U」，没写 V9 新区域。
 - 替换数据源：`docs/validation/newtask-v9/records/step-headroom.json` 的 `per_cell_mean`（43 格，含 demo、exec、total、n）、`per_cell_max`、`max_exec=1469`；xhard0 列沿用原来源。
 - 属于纯文档更新，用户点头即可直接改。
+- **裁决**：2026-10-02 用户「我现在只需要保留最新版本的 task 就是 taskV9……每个 task 只要 50 个」「保留 xhard0，但它不算在 800 里」「不裁 jsonl，只加校验」「代码不改了」。12.338 已把 `scripts/README.md` 重写为 V9 口径（800 = 16 × 50、992 = 800 + 192、`TIER_MAX_STEPS` 固定表），长度均值表撤下、改引 `V9_STEP_CAP`；新测试 `tests/lightweight/test_v9_packaged_800.py` 钉死。方案 `docs/plans/1002-v9-final-cleanup-plan.md`。
 
 ### B4 V9 交付树 hardlink 的删除责任
 
@@ -251,6 +252,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 ---
 
 ## C 类：测试
+- **裁决**：2026-10-02 用户认可按清单删除 V6/V7/V8 产物（`newtask-v8/gen1` 整删，V9 delivery 的硬链接随之成为唯一引用，空间由 V9 独占）。阶段 A（12.338）已先把 8082 站引用的小件搬入 `newtask-v9/`、拼出 `v9-evaluation/final/`；删除在阶段 B（12.339）执行。
 
 ### C1 核心短测 4 个既有失败 + 2 个连带失败
 
@@ -342,6 +344,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 另有 `corlvis-site`（8051）不属于本仓库，不在本清单范围。
 - 停服务只用 `tmux kill-session -t '=<会话名>'`，删前删后各 `tmux ls` 一次（AGENTS.md 第 7 条）。
 - 依赖提醒：站点目录只放 JSON，媒体文件引用别处——8081 与 8082 依赖 `artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/site-media`、`artifacts/newtask-v7/site-media/xhard0-gen`、`artifacts/newtask-v8/gen1`、`artifacts/newtask-v8/xhard0-eval`；8082 另依赖 `artifacts/v9-evaluation/v9-two-policy-gl10-20261002-01/site-media`；8070 依赖 `artifacts/newtask-v7/` 下的 `gen1`、`eval-videos`、`eval-videos-official`、`site-media`。删这些产物会让对应站点失效。
+- **裁决**：2026-10-02 用户「website 8082 是错的，它写的还是 V8，应该是 V9」→ 12.338 把 `v8_site.html` 可见文案改为 V9 口径并重启 8082（`V8_ORACLE_BROWSER=PASS cells=59`）。8080／8081 两个 V8 站的数据随 `newtask-v8` 在阶段 B 删除，届时停掉；只留 8082。
 
 ### F2 8081／8082 站紫色「语义调整」小标签留不留
 
@@ -360,6 +363,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 
 - 五份工作区都干净。另有 V7 期的小目录：`v7`、`v7-eval`、`v7-eval-stage`、`v7-logs`、`v7-scripts`、`v7-stage`（1.4 G）、`SimpleMemVLA-official-xhard0`（111 M）、`robomme_policy_learning-official-xhard0`（27 M）、`robomme_policy_learning-testhard-v7`。
 - 建议：若 A1 选 (b) 需要在 GL 上重新生成和评估，保留 `v9gen`、`v9two`；其余可删。删除按显式路径，先 `ls -ld` 核对。
+- **裁决（部分）**：2026-10-02 用户选「删除 `robomme_benchmark-newtask-gl/artifacts/train-parity` 651 GB」；克隆的源码与在途改动不动，其余克隆仍待定。执行在阶段 B。
 
 ### F4 本机大产物保留策略（`/data` 共 14 T，剩 3.2 T）
 
@@ -374,6 +378,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 | `artifacts/v9-evaluation` | 29 G | 新 80 局录像 |
 
 - 用户 2026-09-24 定的规则是「收尾只保留最终产物」：对拍 h5（如 `artifacts/newtask-v7/parity` 180 G）与冒烟产物属可删。但 A1、A2 未定前，V9、V7 的对拍 h5 是证据，建议裁决后再删。8070 站依赖 V7 的 gen1 与 eval-videos。
+- **裁决**：2026-10-02 用户「历史的产物也要清理……只需要保留最新版本 V9 的生成的 H5 文件和评估的文件，需要上传 HuggingFace」；清单（`newtask-v6`、`newtask-v7`、`newtask-v8`、`v7.5eval`、`v8-evaluation`、`branch-alignment`、`v8-probe`、`eval-reload-20260929`、`train-parity`）已认可，`newtask-v9/parity` 23 G 保留，HF 上传下轮单独做。执行在阶段 B。
 
 ### F5 09-28 拆包（hard-split）会话遗留（已基本清理）
 

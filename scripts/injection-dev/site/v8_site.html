@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>RoboMME v8 · 逐局对照</title>
+  <title>RoboMME v9 · 逐局对照</title>
   <style>
     :root{--paper:#f6f7f2;--card:#fff;--ink:#172a26;--muted:#6e7a72;--line:#e1e6dc;--green:#246847;--soft:#eaf0e5;--accent:#d4e4a4;--sidebar:250px;
       --s-success:#2e8b57;--s-fail:#c2453a;--s-timeout:#9aa0a6;--s-error:#222;--s-genfail:#7a5ab8;--s-uneval:#8a948b}
@@ -124,7 +124,7 @@
 </head>
 <body>
   <aside class="sidebar" id="sidebar" aria-label="任务选择">
-    <div class="brand"><div class="brand-name">RoboMME v8</div><div class="brand-caption">生成演示 · 两策略评估</div></div>
+    <div class="brand"><div class="brand-name">RoboMME v9</div><div class="brand-caption">生成演示 · 两策略评估</div></div>
     <input class="search" id="task-search" type="search" placeholder="查找任务…" autocomplete="off" aria-label="搜索任务">
     <button class="task-link outlier-link" id="outlier-link" type="button" hidden><span class="task-index">★</span><span><span class="task-name">超出 xhard0 范围 &gt;15% 合集</span><span class="task-id" id="outlier-count"></span></span></button>
     <button class="task-link outlier-link sem-link" id="semantic-link" type="button" hidden><span class="task-index">≠</span><span><span class="task-name">语义调整合集</span><span class="task-id" id="semantic-count"></span></span></button>
@@ -133,7 +133,7 @@
   </aside>
   <main class="main" id="content">
     <header class="topbar">
-      <div><h1>v8 逐局对照</h1><p>每一局并排展示生成演示与 SimpleMemVLA、MME-VLA 两个策略的评估结果与视频。xhard1～5 为 V8 双模型评估（执行段 1600 步截断）；xhard0 为 V8 阶段 3′ 两路线评估，分新入口（robomme_hard）与旧入口（官方 robomme）两行。</p></div>
+      <div><h1>v9 逐局对照</h1><p>每一局并排展示生成演示与 SimpleMemVLA、MME-VLA 两个策略的评估结果与视频。xhard1～5 为 V9 交付集（16 任务 × 50 局 = 800 局）的双模型评估（执行段 1600 步截断；其中 720 局与 V8 逐字节相同、直接复用 V8 评估，80 局新评）；xhard0 为官方 hard 12 局对照（不计入 800），沿用 V8 阶段 3′ 两路线评估，分新入口（robomme_hard）与旧入口（官方 robomme）两行。</p></div>
       <button class="mobile-menu" id="menu-toggle" type="button" aria-controls="sidebar" aria-expanded="false">切换任务</button>
     </header>
     <div class="status-panel" id="status-panel" role="status">正在载入…</div>
@@ -260,14 +260,14 @@
       const scroll = node('div', 'oracle-scroll');
       scroll.tabIndex = 0; scroll.setAttribute('role', 'region');
       scroll.setAttribute('aria-label', '六档任务对比表，可横向滚动'); box.append(scroll);
-      box.append(node('p', 'oracle-legend', 'xhard0～5 同时展示。GT = ground truth；长度第一行为均值，第二行为最小～最大。成功率 = 成功局数 / 本格局数；xhard1～5 来自 V8 双模型评估（1600 步截断），xhard0 来自阶段 3′（新入口 = hard 路线，上限 1300）。'));
+      box.append(node('p', 'oracle-legend', 'xhard0～5 同时展示。GT = ground truth；长度第一行为均值，第二行为最小～最大。成功率 = 成功局数 / 本格局数；xhard1～5 来自 V9 双模型评估（720 局复用 V8、80 局新评，1600 步截断），xhard0 来自 V8 阶段 3′（新入口 = hard 路线，上限 1300）。'));
       const notes = node('div', 'oracle-notes');
       const note = (title, text) => {
         const part = node('div'); part.append(node('strong', '', title), node('p', '', text)); return part;
       };
       notes.append(
         note('长度口径', 'GT 长度取成功生成的 HDF5。demo 是 info/is_video_demo 标记的视频演示帧；execution = 总帧数 − demo；总长度包含视频演示。长度样本数与评估分母分别展示。'),
-        note('配置来源与例外', 'xhard0 为官方 hard，各局配置随机；xhard1～5 的配置逐局取自 v8 冻结规格，格内列出实际取值（RouteStick／PatternLock 为区间，附取值分布）。VideoPlaceOrder 的 2 局官方生成失败不计入长度。点击任务名可进入逐局页面。')
+        note('配置来源与例外', 'xhard0 为官方 hard，各局配置随机；xhard1～5 的配置逐局取自 V9 冻结规格，格内列出实际取值（RouteStick／PatternLock 为区间，附取值分布）。VideoPlaceOrder 的 2 局官方生成失败不计入长度。点击任务名可进入逐局页面。')
       );
       box.append(notes);
       taskFilter.addEventListener('change', () => { S.oracleTask = taskFilter.value; drawTable(); });
@@ -568,12 +568,12 @@
         g.append(ol);
         g.append(node('div', 'k', S.tier === 'xhard0'
           ? '任务配置（xhard0 = 官方 hard，每局随机：能从本局 subgoal 数出的写本局值）'
-          : `任务配置（${S.tier}，本局取自 v8 冻结规格 hard-specs/4 的规格行）`));
+          : `任务配置（${S.tier}，本局取自 V9 冻结规格 hard-specs/4 的规格行）`));
         g.append(episodeConfig(ep, rec));
         left.append(g);
       } else {
         const g = node('div', 'goal');
-        g.append(node('div', 'k', `任务配置（${S.tier}${S.tier === 'xhard0' ? '' : '，本局取自 v8 冻结规格'}）· 逐段数据缺失（subgoals.json 未载入）`));
+        g.append(node('div', 'k', `任务配置（${S.tier}${S.tier === 'xhard0' ? '' : '，本局取自 V9 冻结规格'}）· 逐段数据缺失（subgoals.json 未载入）`));
         g.append(episodeConfig(ep, null));
         left.append(g);
       }

@@ -2,7 +2,7 @@
 
 ## ① 一句话与对拍结论
 
-`robomme_hard` 与官方 `robomme` 并列、分层继承：`src/robomme/` 逐字节等于官方 `1fadc0ec`（`UPSTREAM_BYTES=PASS`），本包只放差异——16 个环境类与改过／新增／传递依赖改过模块的 utils、wrapper 复制；依赖闭包干净的官方模块用 shim 借用；`BenchmarkEnvBuilder` 子类化并新增 `dataset="test-hard"`（v8：每任务 xhard0 12 局 + 交付格表 `EXPECTED_CELLS` 里该任务各档局数；PickXtimes／SwingXtimes／StopCube 62 局，MoveCube／InsertPeg 32 局，其余 11 任务 92 局；合计 192 + 1070 = 1262，新值 43 格。v7 的 1292 局包由标签 `parity-anchor-v7` 保存）。
+`robomme_hard` 与官方 `robomme` 并列、分层继承：`src/robomme/` 逐字节等于官方 `1fadc0ec`（`UPSTREAM_BYTES=PASS`），本包只放差异——16 个环境类与改过／新增／传递依赖改过模块的 utils、wrapper 复制；依赖闭包干净的官方模块用 shim 借用；`BenchmarkEnvBuilder` 子类化并新增 `dataset="test-hard"`（V9 定稿，12.333 换包：每任务 xhard0 官方 hard 12 局 + 交付格表 `EXPECTED_CELLS`＝`V9_CELLS` 里该任务各档局数，16 任务每任务恰 50 局、43 格共 800 局；用户定义的交付集就是这 800 局，xhard0 不算在内；builder 每任务发 12 + 50 = 62 局、合计 992。v8 的 1262 局包与 v7 的 1292 局包分别由 git 历史（12.332 `b462e358` 之前）与标签 `parity-anchor-v7` 保存）。
 
 三侧对拍（A40@greatlakes，16 worker，判定为「输入绑定、结构与任务成功一致，且动作／状态／图像／帧数差异在标定容差内」，不是字节级）：
 
@@ -19,7 +19,7 @@ v7（12.237 起）另跑：上面四行以 tag `parity-anchor-v6` 为 P 侧重�
 
 ## ② 六档定值表与交付格（v8）
 
-v8 定值表见 [`scripts/README.md`](../../scripts/README.md) 第 3 节，源 `docs/plans/1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1、表 2。要点：新值档扩到 xhard1～xhard5，但只有 SwingXtimes、StopCube 有 xhard5（各档 10 局）；PickXtimes 交付 xhard1～3（17／17／16 局，抓放 6／7／8 次）；VideoUnmask／ButtonUnmask 交付 xhard1～4 各 20 局；BinFill、两个 Swap、VideoPlaceButton、VideoPlaceOrder、PickHighlight、VideoRepick 交付 xhard1～2 各 40 局；RouteStick、PatternLock 交付 xhard1～3（27／27／26 局，段数／节点数为区间）；MoveCube、InsertPeg 只有 xhard4 20 局。各格布局独立抽签（`layout_rule={"mode":"independent"}`，`layout_parent` 全为 null），不再共用母布局。步数上限 xhard0 1300、xhard1～5 一律 1600（`TIER_MAX_STEPS`，＝`V8_EXEC_CAP`；抽样时已过滤执行步超过 1600 的候选）。xhard0 就是官方 hard（配置区间见该表 xhard0 列）；xhard0 桌面实测放置数（官方 test hard 12 局）：VideoUnmask 容器均值 5.42、ButtonUnmask 5.25（最大 6），Swap 两任务容器 4，PickHighlight 总块 6，PickXtimes 桌面块 3，BinFill 总块 10～12。v7（历史）xhard1～4 共用每任务 20 个母布局（xhard4 抽签、低档派生，`layout_parent` 指回母行）；v8 起各档独立抽。PickXtimes／SwingXtimes 第 4 个干扰块用橙色（`utils/xhard.py::BLOCK_DISTRACTOR_COLORS`，不动四个 Unmask／Swap 共用的三色池）。
+各档取值表见 [`scripts/README.md`](../../scripts/README.md) 第 3 节（V9 取值与 v8 相同，只有 MoveCube xhard4 生成区域改为圆环 r_in 0.24／r_out 0.42、base_dist [0.31, 0.80]；每格局数按 V9 每任务 50 局平分，见该节局数表），源 `docs/plans/1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1 与 `docs/plans/1002-newtask-v9-movecube-region-800-plan.md` 表 2。以下为 v8 交付格的历史要点（V9 局数已变）：新值档扩到 xhard1～xhard5，但只有 SwingXtimes、StopCube 有 xhard5（各档 10 局）；PickXtimes 交付 xhard1～3（17／17／16 局，抓放 6／7／8 次）；VideoUnmask／ButtonUnmask 交付 xhard1～4 各 20 局；BinFill、两个 Swap、VideoPlaceButton、VideoPlaceOrder、PickHighlight、VideoRepick 交付 xhard1～2 各 40 局；RouteStick、PatternLock 交付 xhard1～3（27／27／26 局，段数／节点数为区间）；MoveCube、InsertPeg 只有 xhard4 20 局。各格布局独立抽签（`layout_rule={"mode":"independent"}`，`layout_parent` 全为 null），不再共用母布局。步数上限 xhard0 1300、xhard1～5 一律 1600（`TIER_MAX_STEPS`，＝`V8_EXEC_CAP`；抽样时已过滤执行步超过 1600 的候选）。xhard0 就是官方 hard（配置区间见该表 xhard0 列）；xhard0 桌面实测放置数（官方 test hard 12 局）：VideoUnmask 容器均值 5.42、ButtonUnmask 5.25（最大 6），Swap 两任务容器 4，PickHighlight 总块 6，PickXtimes 桌面块 3，BinFill 总块 10～12。v7（历史）xhard1～4 共用每任务 20 个母布局（xhard4 抽签、低档派生，`layout_parent` 指回母行）；v8 起各档独立抽。PickXtimes／SwingXtimes 第 4 个干扰块用橙色（`utils/xhard.py::BLOCK_DISTRACTOR_COLORS`，不动四个 Unmask／Swap 共用的三色池）。
 
 ### ②′ 历史：v6 四档定稿表（逐字搬自 `docs/plans/0925-newtask-release-v6-plan.md` 第一部分 §三；v7 起不再使用）
 
@@ -130,7 +130,7 @@ for episode in range(builder.get_episode_num()):             # BinFill 92 局：
     obs, info = env.reset()
 ```
 
-- 与官方 `dataset="test"` 的对应：`test` 每任务 50 局、三档混排、步数上限一个数；`test-hard` 每任务 62／32／92 局（见 ①），xhard0 在前（按官方原 episode 号），再按 xhard1→xhard5 只排该任务交付的档、档内按 `candidate` 升序；步数上限按档 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}`（xhard0 同官方默认；v7 曾为 1500／2400／2900／3800；不逐局传就用构造时的 `max_steps`）。`specs_root` 覆盖（或环境变量 `ROBOMME_HARD_SPECS_ROOT`）可指局部 v8 根，只发存在的档；v7 `hard-specs/3` 根在换包后不再被 builder 接受。
+- 与官方 `dataset="test"` 的对应：`test` 每任务 50 局、三档混排、步数上限一个数；`test-hard` 每任务 62 局（V9：12 + 50，见 ①），xhard0 在前（按官方原 episode 号），再按 xhard1→xhard5 只排该任务交付的档、档内按 `candidate` 升序；步数上限按档 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}`（xhard0 同官方默认；v7 曾为 1500／2400／2900／3800；不逐局传就用构造时的 `max_steps`）。步数上限是固定常量表，不从 episode 或规格文件读（规格 header 只签 `exec_cap`＝1600，行里没有 `max_steps`）。`specs_root` 覆盖（或环境变量 `ROBOMME_HARD_SPECS_ROOT`）可指局部 v8／v9 根，只发存在的档；v7 `hard-specs/3` 根在换包后不再被 builder 接受。
 - `builder.resolve_identity(episode)` 只读返回 `{episode, tier, candidate, seed, spec_sha256, source_run}`（xhard0 另带 `source_dataset`、`source_episode`，`candidate` 为空）；`spec_binding(env)` 须在 `reset()` 之后调用。
 - `train`／`test`／`val` 行为同官方；只有四个 Unmask 任务的 `train` 元数据改读本包 `env_metadata/train`（400 条）。`override_metadata_path` 语义同官方。
 - 生产命令（不随包分发，在仓库 `scripts/injection-dev/` 下，路径直跑；详见 `scripts/README.md` 第 4 节）：v8 为每档一次 `freeze_specs.py --tier <档> --seed-profile v8 --cells full`（档内逐任务独立抽，只抽交付格）→ `generate_h5.py --mode continue --specs <规格根> --cells full`（或 `split`／各片 `continue`／`merge` 四席分片）（按 header schema 分派到 v8 驱动，逐格递补、执行步超过 1600 记 `exec_over_cap` 并递补）。v7 的「母布局抽签 → `derive_specs.py` 派生 → 四档同步生成」链路保留但 v8 不调用。
