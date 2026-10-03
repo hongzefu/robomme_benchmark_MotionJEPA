@@ -109,6 +109,7 @@ PARITY_REFERENCE=INFO pair=H:H2 tier=v9 first_divergence_n=7 first_divergence_me
 - 当时给的选项：(a) 认定偶发、交付集不动；(b) 换备用候选。
 - 用户 2026-09-29 原话：「1暂时不管 2暂时不管 3同意递补 4 没看懂详细讲」，即暂不处理，交付集不动，保留 H2 本地副本。
 - 待定：是否正式结案。V7 交付已被 V8、V9 取代，建议结案。
+- **现状更正（2026-10-03 资源清理）**：上面「保留 H2 本地副本」已不成立——V7 H2 实体 09-29 已删，V7 gen1（1100 局）与 P 侧拉回缓存在 2026-10-03 按 `1003-resource-cleanup-plan.md` 口径 2 删除；比对记录 `newtask-v7/parity/compare`、`newtask-v7/logs/cmp-h2.log` 原地保留（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ### A3 V7.5 评估 MME 相对标准 inside=no（2026-09-30 跑完，10-01 晚再问，未定）
 
@@ -138,6 +139,8 @@ POLICY_REPLAY=INFO cond=P1 policy=mme det=on mode=restart n=5 bitwise=5/5 max_ab
 **证据**：`docs/validation/v7.5eval/summary.md`（§2、§6，§7「用户待决事项」第 1 条）、`docs/validation/v7.5eval/prod-vs-official.md`、`docs/validation/v7.5eval/official-rerun.md`。
 
 **可选处置**：接受（认定为 MME 非确定性带来的 1 局级差异）／不接受（需追加样本或换判据口径，另立计划）。
+
+- **2026-10-03 资源清理**：按用户「xhard0也都要保留」，`artifacts/v7.5eval` 除 `venvs/` 外全部原地保留（官方路线三份检出删除，重跑需从 origin 取回并重建 venv）；本条判定仍待用户裁决（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ### A4 V8 xhard0 两入口评估 MME 18 局成败相反（2026-10-01，只出 INFO、从未判定）
 
@@ -178,6 +181,8 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 证据：`docs/validation/newtask-v8/records/xhard0-eval-parity-mmevla.jsonl`（116 行，只记有差异的局）、`docs/validation/newtask-v8/records/xhard0-eval-parity-simplememvla.jsonl`。V7 参考在 `docs/validation/newtask-v7/README.md`「11 局同卡重跑对照」：`RERUN11_PARITY=INFO shape=11x2 compared=11 missing=0 self_flip_off=5 self_flip_hard=4 …`，结论「归因 A（策略端数值不确定性），B 不成立」。
 
 **可选处置**：认可「不判回归」（xhard0 环境的正确性已由两次 `XHARD0_RESET_PARITY=PASS det_diff=0` 证明）／要求进一步诊断。
+
+- **2026-10-03 资源清理**：xhard0 两份 h5、V7 xhard0 评估录像、`v8eval-xhard0` 等全部保留；`robomme_benchmark-v8eval` 克隆删除（HEAD 已在 `origin/newtaskRelease-taskV8`）。本条判定仍待用户裁决（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ### A5 对拍容差阈值从未经用户审核（2026-09-28 定，一直沿用到 V9）
 
@@ -254,6 +259,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 
 - `artifacts/newtask-v9/delivery`（名义 436 G）中有 720 局是指向 `artifacts/newtask-v8/gen1` 的 hardlink。单删 V8 gen1 不会释放空间，必须同时删 V9 delivery 才行，反之亦然。
 - 待定：V8、V9 产物的保留策略，与 F4 一并决定。
+- **执行（2026-10-03）**：V9 的 720 局两个名字（`newtask-v9/delivery` 与 `newtask-v8/gen1` 的 720 个局目录）都原地保留，`delivery/` 1601 个文件三次 sha 不变；`newtask-v8/gen1` 只删 349 个非 V9 局（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ---
 
@@ -376,6 +382,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 停服务只用 `tmux kill-session -t '=<会话名>'`，删前删后各 `tmux ls` 一次（AGENTS.md 第 7 条）。
 - 依赖提醒：站点目录只放 JSON，媒体文件引用别处——8081 与 8082 依赖 `artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01/site-media`、`artifacts/newtask-v7/site-media/xhard0-gen`、`artifacts/newtask-v8/gen1`、`artifacts/newtask-v8/xhard0-eval`；8082 另依赖 `artifacts/v9-evaluation/v9-two-policy-gl10-20261002-01/site-media`；8070 依赖 `artifacts/newtask-v7/` 下的 `gen1`、`eval-videos`、`eval-videos-official`、`site-media`。删这些产物会让对应站点失效。
 - **裁决**：2026-10-02 用户「website 8082 是错的，它写的还是 V8，应该是 V9」→ 12.338 把 `v8_site.html` 可见文案改为 V9 口径并重启 8082（`V8_ORACLE_BROWSER=PASS cells=59`）。8080／8081 两个 V8 站的数据随 `newtask-v8` 在阶段 B 删除，届时停掉；只留 8082。
+- **执行（2026-10-03）**：`site-v12-8060`、`site-v7-8070`、`site-v8beta-8080`、`site-v8-8081` 四个会话已逐个精确停掉，端口释放；8082 照常（`V9_SITE=PASS cells=59 eval_reused=720 eval_new=80`）（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ### F2 8081／8082 站紫色「语义调整」小标签留不留
 
@@ -395,6 +402,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 五份工作区都干净。另有 V7 期的小目录：`v7`、`v7-eval`、`v7-eval-stage`、`v7-logs`、`v7-scripts`、`v7-stage`（1.4 G）、`SimpleMemVLA-official-xhard0`（111 M）、`robomme_policy_learning-official-xhard0`（27 M）、`robomme_policy_learning-testhard-v7`。
 - 建议：若 A1 选 (b) 需要在 GL 上重新生成和评估，保留 `v9gen`、`v9two`；其余可删。删除按显式路径，先 `ls -ld` 核对。
 - **裁决（部分）**：2026-10-02 用户选「删除 `robomme_benchmark-newtask-gl/artifacts/train-parity` 651 GB」；克隆的源码与在途改动不动，其余克隆仍待定。执行在阶段 B。
+- **执行（2026-10-03）**：`robomme_benchmark-v8gen`、`-v8eval`、`-v8two`、`v7`、三份官方检出、`newtask-v4-gl`、`slurm-holds`、`hs-scripts`、`hs-xhw-probe-20260927`（4 个结果文件先抄进 `docs/validation/newtask-v6/hard-split/records/xhw-probe/`）、`hs-logs`，以及 `train-parity` 非 compare 子树等共 747 条移入隔离区后删除；`v9gen`、`v9two` 及 xhard0 相关目录保留（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ### F4 本机大产物保留策略（`/data` 共 14 T，剩 3.2 T）
 
@@ -410,6 +418,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 
 - 用户 2026-09-24 定的规则是「收尾只保留最终产物」：对拍 h5（如 `artifacts/newtask-v7/parity` 180 G）与冒烟产物属可删。但 A1、A2 未定前，V9、V7 的对拍 h5 是证据，建议裁决后再删。8070 站依赖 V7 的 gen1 与 eval-videos。
 - **裁决**：2026-10-02 用户「历史的产物也要清理……只需要保留最新版本 V9 的生成的 H5 文件和评估的文件，需要上传 HuggingFace」；清单（`newtask-v6`、`newtask-v7`、`newtask-v8`、`v7.5eval`、`v8-evaluation`、`branch-alignment`、`v8-probe`、`eval-reload-20260929`、`train-parity`）已认可，`newtask-v9/parity` 23 G 保留，HF 上传下轮单独做。执行在阶段 B。
+- **执行（2026-10-03）**：按 `1003-resource-cleanup-plan.md` 终版（V9 及其来源、xhard0、全部比对记录原地保留）本机移走 2190 条后删除；HF 只删 `_probe/bucket-probe.txt`。V9 交付集与评估在本机仍是唯一副本（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ### F5 09-28 拆包（hard-split）会话遗留（已基本清理）
 
@@ -425,6 +434,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
   - `.claude/worktrees/v7`（分支 `v7-impl`）与 `/data/hongzefu/v6-draft/` 下的 `movecube`、`pipeline`、`swap`、`vp`（分支 `v6-draft-*`）——仓库 `CLAUDE.md` 把它们列为「在用 worktree，不动」，需用户确认是否仍在用；
   - `/tmp/claude-114466650/` 下的 `baseline-wt`（detached `504daee5`），由另一会话建立。
 - 待定：推送、删除还是保留。删除 worktree 用 `git worktree remove`，删分支只用 `git branch -d`。
+- **执行（2026-10-03）**：`.claude/worktrees/v7` 在关闭其中的闲置进程（PID 2006672，用户同意关闭）后被宿主连同 `v7-impl` 分支自动清掉，分支已按原 sha `cd09b014` 补回；`v6-draft/{swap,vp}` 与 `baseline-wt` 已删；`v6-draft/{movecube,pipeline}` 删除被权限拦截、仍在。分支全部保留（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
 
 ---
 

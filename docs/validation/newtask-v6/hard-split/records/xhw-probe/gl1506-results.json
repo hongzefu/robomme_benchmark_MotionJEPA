@@ -1,0 +1,30 @@
+{
+  "schema": "train-parity-runner-results/1",
+  "official_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src",
+  "src_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src",
+  "official_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src/scripts/data-generation/generate_dataset.py",
+  "robomme_module": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/artifacts/train-parity/local-smoke-01/official-src/src/robomme/__init__.py",
+  "removed_sys_path_entries": [
+    "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-newtask-gl/src"
+  ],
+  "workers": 1,
+  "gpu": "0",
+  "sampling_config": null,
+  "episode_specs": null,
+  "worker": "official._worker",
+  "elapsed_seconds": 57.406,
+  "results": [
+    {
+      "task": "BinFill",
+      "episode": 0,
+      "seed": 4000,
+      "difficulty": "easy",
+      "gpu": "0",
+      "recovery_mode": "z",
+      "attempt_count": 1,
+      "ok": true,
+      "raw_h5_path": "/tmp/hs-xhw-probe/BinFill_episode_0/hdf5_files/BinFill_ep0_seed4000.h5",
+      "timestep_count": 550
+    }
+  ]
+}
