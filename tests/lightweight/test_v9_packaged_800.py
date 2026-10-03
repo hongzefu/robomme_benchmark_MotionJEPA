@@ -6,8 +6,8 @@
 1. 包内五份 ``env_metadata/test-hard/xhard{1..5}/specs.jsonl`` 的正式局（``delivered``：``selected`` 且
    ``rollout.status=="ok"``）恰好 800 行、16 任务各 50 局、逐格等于 ``V9_CELLS``、档内 seed 不重复；
    未入选候选行仍留在文件里（用户决定「不裁，只加校验」），由 builder 过滤。
-2. builder 实际发出的 episode：每任务 62 = xhard0 官方 hard 12 局（不算在 800 里）+ V9 50 局，16 任务 992；
-   前 12 局档位 xhard0，其后按 xhard1→xhard5 单调不降。
+2. builder 实际发出的 episode：开关 ``XHARD0_IN_TEST_HARD`` 默认关，每任务恰 50 局（全在 xhard1～5、逐格等于
+   ``V9_CELLS``、按档单调不降），16 任务 800；开关开时恢复每任务 62 = xhard0 官方 hard 12 局 + 50，合计 992。
 3. 入口 ``scripts/evaluation_hard.py`` 的步数上限是构造时写死的一个数 ``max_steps=1600``（六档含 xhard0 一律
    1600），``make_env_for_episode(episode)`` 与官方一样不传、不按档查表；规格文件 header 与行里都没有 ``max_steps``
    键——不从 episode 读。包内常量表 ``TIER_MAX_STEPS`` 入口不再引用（评估流水线 eval-official 仍用，去留待定 B5）。
@@ -15,7 +15,7 @@
    ``dataset="test-hard"``、``max_steps`` 1300→1600。
 
 只读包内 jsonl 与官方 test 元数据，不 ``gym.make``、不起仿真。判定行：
-``V9_PACKAGED=PASS total=800 per_task=50 cells=43 episodes_per_task=62 total_with_xhard0=992``、
+``V9_PACKAGED=PASS total=800 per_task=50 cells=43 episodes_per_task=50 xhard0_in_test_hard=False``、
 ``V9_MAX_STEPS=PASS entry=1600``、``HARD_ENTRY_DIFF=PASS hunks=3``。
 
     uv run --no-sync python -m pytest tests/lightweight/test_v9_packaged_800.py -q -s
@@ -74,30 +74,41 @@ def test_包内正式局恰好800且每任务50(packaged):
     assert total_rows >= V9_TOTAL
 
 
-@pytest.fixture(scope="module")
-def builders():
+def _builders(flag: bool, monkeypatch) -> dict:
+    monkeypatch.setattr(H, "XHARD0_IN_TEST_HARD", flag)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         return {task: BenchmarkEnvBuilder(task, dataset="test-hard") for task in H.ALL_TASKS}
 
 
-def test_builder每任务62局_前12局xhard0_后50局按档单调(builders):
-    order = {tier: i for i, tier in enumerate(("xhard0", *H.TIERS))}
+def test_builder默认每任务50局_按档单调(monkeypatch):
+    builders = _builders(False, monkeypatch)
+    order = {tier: i for i, tier in enumerate(H.TIERS)}
+    total = 0
+    for task, builder in builders.items():
+        n = builder.get_episode_num()
+        assert n == V9_PER_TASK, f"{task} 发出 {n} 局，应为 50"
+        tiers = [builder.resolve_episode(i)[1] for i in range(n)]
+        assert all(t in H.TIERS for t in tiers) and Counter(tiers) == {
+            t: c for (tk, t), c in H.V9_CELLS.items() if tk == task
+        }, f"{task} 50 局档位分布与 V9_CELLS 不符"
+        assert all(order[a] <= order[b] for a, b in zip(tiers, tiers[1:])), f"{task} 档位顺序非单调"
+        total += n
+    assert total == V9_TOTAL
+    print(f"\nV9_PACKAGED=PASS total={total} per_task={V9_PER_TASK} cells={len(H.V9_CELLS)} "
+          f"episodes_per_task={V9_PER_TASK} xhard0_in_test_hard={H.XHARD0_IN_TEST_HARD}")
+
+
+def test_builder开关开时每任务62局_前12局xhard0(monkeypatch):
+    builders = _builders(True, monkeypatch)
     total = 0
     for task, builder in builders.items():
         n = builder.get_episode_num()
         assert n == XHARD0_PER_TASK + V9_PER_TASK == 62, f"{task} 发出 {n} 局，应为 62"
-        tiers = [builder.resolve_episode(i)[1] for i in range(n)]
-        assert tiers[:XHARD0_PER_TASK] == ["xhard0"] * XHARD0_PER_TASK, f"{task} 前 12 局不是 xhard0"
-        rest = tiers[XHARD0_PER_TASK:]
-        assert all(t in H.TIERS for t in rest) and Counter(rest) == {
-            t: n for (tk, t), n in H.V9_CELLS.items() if tk == task
-        }, f"{task} 后 50 局档位分布与 V9_CELLS 不符"
-        assert all(order[a] <= order[b] for a, b in zip(rest, rest[1:])), f"{task} 档位顺序非单调"
+        tiers = [builder.resolve_episode(i)[1] for i in range(XHARD0_PER_TASK)]
+        assert tiers == ["xhard0"] * XHARD0_PER_TASK
         total += n
     assert total == 16 * 62 == 992
-    print(f"\nV9_PACKAGED=PASS total={V9_TOTAL} per_task={V9_PER_TASK} cells={len(H.V9_CELLS)} "
-          f"episodes_per_task=62 total_with_xhard0={total}")
 
 
 def test_max_steps入口固定1600不按档查表(packaged):
