@@ -25,14 +25,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 16100300,
-   "spec_sha256": "d123a52c189387208b80c97efc27a64fdd37b7c8714a85ed53bbc45ad190e214",
-   "task": "PickXtimes",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 17,
    "candidate": 0,
    "seed": 18100000,
@@ -57,14 +49,6 @@
    "tier": "xhard2"
   },
   {
-   "builder_episode": 20,
-   "candidate": 3,
-   "seed": 18100300,
-   "spec_sha256": "9b5a28479a60687dd91a1f77a8f483b64ffe8c5f346d1a12e04722a534c393cb",
-   "task": "PickXtimes",
-   "tier": "xhard2"
-  },
-  {
    "builder_episode": 34,
    "candidate": 0,
    "seed": 20100000,
@@ -85,14 +69,6 @@
    "candidate": 2,
    "seed": 20100200,
    "spec_sha256": "7059cb6e9d883682ba4b294f412710b219e176c03e0dbceb3a2f39b90a91dad8",
-   "task": "PickXtimes",
-   "tier": "xhard3"
-  },
-  {
-   "builder_episode": 37,
-   "candidate": 3,
-   "seed": 20100300,
-   "spec_sha256": "424583e05b101bbdc8a486b7d02b640ddd853155ecfa367ac3012e9d84687697",
    "task": "PickXtimes",
    "tier": "xhard3"
   },
@@ -161,6 +137,14 @@
    "tier": "xhard3"
   },
   {
+   "builder_episode": 22,
+   "candidate": 2,
+   "seed": 20200200,
+   "spec_sha256": "baf5fb87592ec7610ee7a1eb77771b7a8f30e8cee8e2cd00f93f056651d0b4fa",
+   "task": "StopCube",
+   "tier": "xhard3"
+  },
+  {
    "builder_episode": 30,
    "candidate": 0,
    "seed": 22200000,
@@ -177,6 +161,14 @@
    "tier": "xhard4"
   },
   {
+   "builder_episode": 32,
+   "candidate": 2,
+   "seed": 22200200,
+   "spec_sha256": "ff937094e54b8cc41a4c3f733732a6e5d9cb775d49fc18e1582e5eb86f4f151c",
+   "task": "StopCube",
+   "tier": "xhard4"
+  },
+  {
    "builder_episode": 40,
    "candidate": 0,
    "seed": 24200000,
@@ -189,6 +181,14 @@
    "candidate": 1,
    "seed": 24200100,
    "spec_sha256": "a028a830c59f9b8d75067e42f77d042c76e9f8b8d379e20f216ef99b8e86f543",
+   "task": "StopCube",
+   "tier": "xhard5"
+  },
+  {
+   "builder_episode": 42,
+   "candidate": 2,
+   "seed": 24200200,
+   "spec_sha256": "1d750d4a192cfa1c2afe93ae729e81116ea73bea7fa203945e83f87cef87c238",
    "task": "StopCube",
    "tier": "xhard5"
   },
@@ -257,6 +257,14 @@
    "tier": "xhard3"
   },
   {
+   "builder_episode": 22,
+   "candidate": 2,
+   "seed": 20300200,
+   "spec_sha256": "5532c4b5881b62baffa8f86334e546ed0c9f8785975a22302b4a5415024a86bf",
+   "task": "SwingXtimes",
+   "tier": "xhard3"
+  },
+  {
    "builder_episode": 30,
    "candidate": 0,
    "seed": 22300000,
@@ -273,6 +281,14 @@
    "tier": "xhard4"
   },
   {
+   "builder_episode": 32,
+   "candidate": 2,
+   "seed": 22300200,
+   "spec_sha256": "4c3b8660023544e8896048ea484e42ea10ae60b3679c0b1be959629eca07618d",
+   "task": "SwingXtimes",
+   "tier": "xhard4"
+  },
+  {
    "builder_episode": 40,
    "candidate": 0,
    "seed": 24300001,
@@ -285,6 +301,14 @@
    "candidate": 1,
    "seed": 24300100,
    "spec_sha256": "a70aaa5295f254cde7a518e7ee917bf2ed82729b89c49b62aa33a2c5926cc946",
+   "task": "SwingXtimes",
+   "tier": "xhard5"
+  },
+  {
+   "builder_episode": 42,
+   "candidate": 2,
+   "seed": 24300200,
+   "spec_sha256": "d42dddb0d86a7dfa4bc9623edb52980fe4f01cf9b4ac7056160c984b6dd3703e",
    "task": "SwingXtimes",
    "tier": "xhard5"
   },
@@ -313,30 +337,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 16400300,
-   "spec_sha256": "278d52944ec83cda1bd348da4b318c8cf85bcc5641971cc0344978458301c913",
-   "task": "BinFill",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 4,
-   "seed": 16400400,
-   "spec_sha256": "d19f4fae5d5c8b58eadffc63f806e5be2fcc640d101790a0a46d3565d7763c00",
-   "task": "BinFill",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 6,
-   "seed": 16400600,
-   "spec_sha256": "8bfc20638b65fe20201f7559304f1b8c7810708347f63f0015fccfc2be976670",
-   "task": "BinFill",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 25,
    "candidate": 1,
    "seed": 18400100,
@@ -357,30 +357,6 @@
    "candidate": 7,
    "seed": 18400700,
    "spec_sha256": "f685214e3e4f06f22e5696bb935a87f3bacb26e65e268a641b8c446c542cbc3b",
-   "task": "BinFill",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 28,
-   "candidate": 9,
-   "seed": 18400900,
-   "spec_sha256": "3643fffd5da7b6fcd2e9a7b58e73c92fb7f702ce88f8854fb8d53e0be38b08a2",
-   "task": "BinFill",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 29,
-   "candidate": 10,
-   "seed": 18401000,
-   "spec_sha256": "1186c135ae53183ce1d10df1110e4fa0fcbce7f9da8df07cd6b4da322f56b72f",
-   "task": "BinFill",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 30,
-   "candidate": 11,
-   "seed": 18401100,
-   "spec_sha256": "95cc2252d08984a35bde37c3c67ebc3a0c45fe2acc1ba52915a1bbd955b1a394",
    "task": "BinFill",
    "tier": "xhard2"
   },
@@ -409,30 +385,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 16500300,
-   "spec_sha256": "6f96006825f1e5283edf8c3231213e8a4028ffba1e9064f02bc3ae6948ce9ba6",
-   "task": "VideoUnmaskSwap",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 4,
-   "seed": 16500400,
-   "spec_sha256": "1579ab1dde0146a67e6c7074d6ee9edd49a88719a1915dc7156410e1e7277b4d",
-   "task": "VideoUnmaskSwap",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 5,
-   "seed": 16500500,
-   "spec_sha256": "4f7b39fa764b28ab51ed48996f20c6e5585b0fb8a2aedda21daf5fff99694da6",
-   "task": "VideoUnmaskSwap",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 25,
    "candidate": 0,
    "seed": 18500000,
@@ -453,30 +405,6 @@
    "candidate": 2,
    "seed": 18500200,
    "spec_sha256": "fa3e9d945b779997ea3373e88a52f9da7f9e80ae2481e5cae3a3f7ffe62fa40a",
-   "task": "VideoUnmaskSwap",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 28,
-   "candidate": 3,
-   "seed": 18500300,
-   "spec_sha256": "300d35b1f69aba021a5c2b27919c14fbe4cb0a3ee7f074d67ae55dec060d8ba7",
-   "task": "VideoUnmaskSwap",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 29,
-   "candidate": 4,
-   "seed": 18500400,
-   "spec_sha256": "bff1853dbbfe96c9b6a54c01ef9a77066e36ea82e28c1a61515265b6ac75e3c2",
-   "task": "VideoUnmaskSwap",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 30,
-   "candidate": 5,
-   "seed": 18500500,
-   "spec_sha256": "fc50135fb0fcb703d0e964f7b71f83fe969009e8d96f8e97964e944509fb420c",
    "task": "VideoUnmaskSwap",
    "tier": "xhard2"
   },
@@ -601,30 +529,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 16700302,
-   "spec_sha256": "8f2d2dc974d4a7ab0676dec792dd9455356099279b71bad29b511c26072e27c7",
-   "task": "ButtonUnmaskSwap",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 4,
-   "seed": 16700402,
-   "spec_sha256": "25a74e9397adf5f4841354fb26cfb6d637dfd90c9b46521a774ad5689a855468",
-   "task": "ButtonUnmaskSwap",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 5,
-   "seed": 16700500,
-   "spec_sha256": "424a10c9b6dca61460b4d8e243f07d754037f8386bf194c1e94ab06d75e0006f",
-   "task": "ButtonUnmaskSwap",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 25,
    "candidate": 0,
    "seed": 18700000,
@@ -645,30 +549,6 @@
    "candidate": 2,
    "seed": 18700201,
    "spec_sha256": "dae9fb3df4af56c4525c0442f9d445eca5ce5e160808d30a0d93f108c65a7026",
-   "task": "ButtonUnmaskSwap",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 28,
-   "candidate": 3,
-   "seed": 18700300,
-   "spec_sha256": "6a05d7922c07d1286a51aa7eeaa77be023e7ddbd26f7562889779498e99bd985",
-   "task": "ButtonUnmaskSwap",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 29,
-   "candidate": 4,
-   "seed": 18700400,
-   "spec_sha256": "0d3c596a9b5358d9abe0c9f952c6fae2399824a926255f3b08b6c976d4694939",
-   "task": "ButtonUnmaskSwap",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 30,
-   "candidate": 5,
-   "seed": 18700501,
-   "spec_sha256": "57a315961ec1ba1c847fabd2879a2660bcd924c2ab7e5fb6faa4b6d020a00377",
    "task": "ButtonUnmaskSwap",
    "tier": "xhard2"
   },
@@ -793,30 +673,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 16900301,
-   "spec_sha256": "819596fbcec7139f829e2cf84b32c7ff348d4195f7c36af5fb6b2891f32b3eee",
-   "task": "VideoRepick",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 4,
-   "seed": 16900401,
-   "spec_sha256": "7e61e9e482f95beafea5afa3de8ad439780b6c3ad5d39f0945b7f25da127b506",
-   "task": "VideoRepick",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 5,
-   "seed": 16900501,
-   "spec_sha256": "47ea2f5a655028a1a2a38827e8d23486d3cf0aa961401f40cda3a117f329f521",
-   "task": "VideoRepick",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 25,
    "candidate": 0,
    "seed": 18900000,
@@ -837,30 +693,6 @@
    "candidate": 2,
    "seed": 18900200,
    "spec_sha256": "1edc85c9eee4e2b2b92fc0a85fcb0187575e13b76590175904911a1f73d4f47f",
-   "task": "VideoRepick",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 28,
-   "candidate": 3,
-   "seed": 18900300,
-   "spec_sha256": "c89299340511db2a3651f7bb12ec4d6b87099d8fd2d47202b2a72820f210750a",
-   "task": "VideoRepick",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 29,
-   "candidate": 4,
-   "seed": 18900400,
-   "spec_sha256": "574a33ca4f27638b117381f23cf6581ae2bdb730d32aa72878001ff168eb135d",
-   "task": "VideoRepick",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 30,
-   "candidate": 5,
-   "seed": 18900501,
-   "spec_sha256": "5248a197c0cba50edb40121982bdf698edc879e93512d3a21ec36cff0aa1b852",
    "task": "VideoRepick",
    "tier": "xhard2"
   },
@@ -889,30 +721,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 17000300,
-   "spec_sha256": "c5913a57b262d305509332e86cb687c511c6afec31155ef4dd1ca0f91dc3c0e5",
-   "task": "VideoPlaceButton",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 4,
-   "seed": 17000400,
-   "spec_sha256": "823959e7e5c70f8073b45ee17c57b9a02c39612aa6435282fe7ebed7fcadce0d",
-   "task": "VideoPlaceButton",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 5,
-   "seed": 17000500,
-   "spec_sha256": "127068d7ec980f35f139d6e38cd7edb6112bdc669a9526aae6fa1ce75b3702a8",
-   "task": "VideoPlaceButton",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 25,
    "candidate": 0,
    "seed": 19000000,
@@ -933,30 +741,6 @@
    "candidate": 3,
    "seed": 19000300,
    "spec_sha256": "ba129c9c82365f7b4ae6113283ec2d486d17453a8837a9968566f5cb4ce30d2f",
-   "task": "VideoPlaceButton",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 28,
-   "candidate": 4,
-   "seed": 19000400,
-   "spec_sha256": "327d36108c8116943b7058e96f0d96d20b63e3448f07e4ef2a9c8cefb8e9e703",
-   "task": "VideoPlaceButton",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 29,
-   "candidate": 5,
-   "seed": 19000500,
-   "spec_sha256": "f3e32f46660ec85c91d12ca555ee5a444994334de4b92a068fef4e55f589c2c0",
-   "task": "VideoPlaceButton",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 30,
-   "candidate": 6,
-   "seed": 19000600,
-   "spec_sha256": "10d58b58e8b1e620b44007bedef54c7f540f22b9bcb03f280da0cde4616502ff",
    "task": "VideoPlaceButton",
    "tier": "xhard2"
   },
@@ -985,30 +769,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 17100301,
-   "spec_sha256": "17d05e00c639acc0bef0e6a5d52ac814f0d685959823a80b234b1050cbc5fc02",
-   "task": "VideoPlaceOrder",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 4,
-   "seed": 17100400,
-   "spec_sha256": "40b0b0a1c49ec31c294571dba6d70ec1a0bb687957277409688c2adbb4fec32b",
-   "task": "VideoPlaceOrder",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 5,
-   "seed": 17100500,
-   "spec_sha256": "bd6c319cd973ba11d266f4a8b7bb5d86e2e110f5a9a2cd5c3b66be2cbc62cab5",
-   "task": "VideoPlaceOrder",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 25,
    "candidate": 0,
    "seed": 19100003,
@@ -1029,30 +789,6 @@
    "candidate": 2,
    "seed": 19100200,
    "spec_sha256": "ac94c583770fab1aa15d4b5c289b253a30b3df60c1b06c99228f3283584622ad",
-   "task": "VideoPlaceOrder",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 28,
-   "candidate": 3,
-   "seed": 19100300,
-   "spec_sha256": "af41c705579551773c1ac07c06705fbfaa7588f02400c07892e59ac01507f508",
-   "task": "VideoPlaceOrder",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 29,
-   "candidate": 4,
-   "seed": 19100401,
-   "spec_sha256": "d7b5ca8580975e0f8998a81db4a1733ca720d517609b37b1c4bb034a0fc14f26",
-   "task": "VideoPlaceOrder",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 30,
-   "candidate": 5,
-   "seed": 19100502,
-   "spec_sha256": "7b9b0cb5c633f18c1b27bd274a4854866aa43446db928233dda1e817f1aab873",
    "task": "VideoPlaceOrder",
    "tier": "xhard2"
   },
@@ -1081,30 +817,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 17200300,
-   "spec_sha256": "d71ed216ebfbec84b5b4a754dd0b194c082749ec9db28cf31f813d5b48eb29b1",
-   "task": "PickHighlight",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 4,
-   "seed": 17200400,
-   "spec_sha256": "752ec16229b819cf453a09141b65076e943a7efbb6c2ceccb47b8811ef63d8bd",
-   "task": "PickHighlight",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 5,
-   "seed": 17200500,
-   "spec_sha256": "2023d8c176203878801904c3d5f34e889ebe7ea6f4c17856e5b195836e2a5cda",
-   "task": "PickHighlight",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 25,
    "candidate": 0,
    "seed": 19200000,
@@ -1125,30 +837,6 @@
    "candidate": 2,
    "seed": 19200200,
    "spec_sha256": "aaff56c672a947cbc3503dc8931d449b5b493fb37b57885800a4a4913bd8d744",
-   "task": "PickHighlight",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 28,
-   "candidate": 3,
-   "seed": 19200300,
-   "spec_sha256": "3a7eae7f390ffa772833ed0831c75d499cac95dfe56adf39e448d3675dc8a8ac",
-   "task": "PickHighlight",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 29,
-   "candidate": 4,
-   "seed": 19200400,
-   "spec_sha256": "25c02307dbb8e005a60ff67b0f9c81871232d77b142cc7fd67a644a35461f683",
-   "task": "PickHighlight",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 30,
-   "candidate": 5,
-   "seed": 19200500,
-   "spec_sha256": "025a2133a6c68da603416d44dcf69bb8ed8a7af57c852cfca015b6a46a35fa0c",
    "task": "PickHighlight",
    "tier": "xhard2"
   },
@@ -1177,78 +865,6 @@
    "tier": "xhard4"
   },
   {
-   "builder_episode": 3,
-   "candidate": 5,
-   "seed": 23300500,
-   "spec_sha256": "3b2d0150cc438e75de4660832a19f8e7306330bb391b737c88c67e74bdb63a20",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 6,
-   "seed": 23300600,
-   "spec_sha256": "6b63d3417ebec3532f94c530ca7afec7b2b0769b62b1ccc5413b7b5bf44cbf65",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 7,
-   "seed": 23300700,
-   "spec_sha256": "cc9546f9a4cc8c309b9d9f4bdae4fee7c27c6a6c410130ea3e4dae475dced818",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 6,
-   "candidate": 8,
-   "seed": 23300800,
-   "spec_sha256": "9a1e54c2ed3c11a225590713f7f7b56b9f054bc43733d475df5ed598f0fc94f4",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 7,
-   "candidate": 10,
-   "seed": 23301000,
-   "spec_sha256": "c67ec8bf96f55a83569d3c9426f85753d728f3cd827792810f62c841c64e8582",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 8,
-   "candidate": 12,
-   "seed": 23301200,
-   "spec_sha256": "6ee44653abf69d98745de20c186191fa8db6d3223c235a55f880c9af694e2ae7",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 9,
-   "candidate": 13,
-   "seed": 23301300,
-   "spec_sha256": "8b8b312ed3b2df2220c919d87c77a924cc4b27ae5c41c883416db35065c0dbed",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 10,
-   "candidate": 14,
-   "seed": 23301400,
-   "spec_sha256": "398f20efa43e3b24972fb896e1e325eb584589bf3b22b18821b5b60f8906a896",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 11,
-   "candidate": 15,
-   "seed": 23301500,
-   "spec_sha256": "c96e91befa5f72c29d38d3953b990ef395903821e539083199f355e02a2c04ee",
-   "task": "InsertPeg",
-   "tier": "xhard4"
-  },
-  {
    "builder_episode": 0,
    "candidate": 0,
    "seed": 23400000,
@@ -1269,78 +885,6 @@
    "candidate": 2,
    "seed": 23400200,
    "spec_sha256": "af72b7d347cc966933eb0bc92f8c9bc00a7dd1143006b809d66890f219a15949",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 23400300,
-   "spec_sha256": "12d7c126357009fdb55a4da31cb53aa53a454295e6d8908647396a6835f88add",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 4,
-   "candidate": 4,
-   "seed": 23400400,
-   "spec_sha256": "2e73a07e6872f505c997cb64b350e81c7a0881f0d9cb8568aeb95304b794a2af",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 5,
-   "candidate": 5,
-   "seed": 23400500,
-   "spec_sha256": "cb69d502855c7a2dcf6e06f1259e5e0c3ee2a5723ac1d156abcbfba4299228b6",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 6,
-   "candidate": 6,
-   "seed": 23400600,
-   "spec_sha256": "433a84c1fba87cfd3140f1da577c669d0ea0c32755352b7cd9461835cd92bd2a",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 7,
-   "candidate": 7,
-   "seed": 23400700,
-   "spec_sha256": "1335a5e684953aa87a4c43cc8b8f9baa31465066d8b44aedbba1efaa61f60ccb",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 8,
-   "candidate": 8,
-   "seed": 23400800,
-   "spec_sha256": "2f0eceaf652b08a06f81d828e13e6680acb8c51325324a6166555c62db9f0bde",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 9,
-   "candidate": 9,
-   "seed": 23400900,
-   "spec_sha256": "94605bf3521f31020e5af9ab80c28bcd5d26861ed740950eecea4fd5f8e78c49",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 10,
-   "candidate": 10,
-   "seed": 23401000,
-   "spec_sha256": "9e42ab1fcd1f8f1be218ef55a7170c3601b9aee840afe06adbc61962e8a09ef0",
-   "task": "MoveCube",
-   "tier": "xhard4"
-  },
-  {
-   "builder_episode": 11,
-   "candidate": 11,
-   "seed": 23401100,
-   "spec_sha256": "85dd62d7c32e79a28fd2a5fdce10f67052acc6a2870573852d8bbdda185ba3a0",
    "task": "MoveCube",
    "tier": "xhard4"
   },
@@ -1369,14 +913,6 @@
    "tier": "xhard1"
   },
   {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 17500300,
-   "spec_sha256": "2e0865f2e21001af0fda776d4b0c1768595a67199fa7d2093b80f2988063ea51",
-   "task": "PatternLock",
-   "tier": "xhard1"
-  },
-  {
    "builder_episode": 17,
    "candidate": 0,
    "seed": 19500000,
@@ -1397,14 +933,6 @@
    "candidate": 2,
    "seed": 19500200,
    "spec_sha256": "962b898030659606cce973638c48f9a85934dafbf7f26a119e6d5fcdfe5ab7bc",
-   "task": "PatternLock",
-   "tier": "xhard2"
-  },
-  {
-   "builder_episode": 20,
-   "candidate": 3,
-   "seed": 19500300,
-   "spec_sha256": "107d700deceab0100e476641d4e2e2106f5fff3f6f0a1189817e4623becf003e",
    "task": "PatternLock",
    "tier": "xhard2"
   },
@@ -1433,14 +961,6 @@
    "tier": "xhard3"
   },
   {
-   "builder_episode": 37,
-   "candidate": 3,
-   "seed": 21500300,
-   "spec_sha256": "ddda1c5e7213434cdbf8853a2f65b0ca7e283274ede6d7d9285ca7f54adfe184",
-   "task": "PatternLock",
-   "tier": "xhard3"
-  },
-  {
    "builder_episode": 0,
    "candidate": 0,
    "seed": 17600000,
@@ -1461,14 +981,6 @@
    "candidate": 2,
    "seed": 17600200,
    "spec_sha256": "54a71368138046169b66fa8138ac65aa91df4083eb59527da0d6be042a8be832",
-   "task": "RouteStick",
-   "tier": "xhard1"
-  },
-  {
-   "builder_episode": 3,
-   "candidate": 3,
-   "seed": 17600300,
-   "spec_sha256": "12bdc2d44eb5be4b41ed67cddf2579a445257d42f31c3782243b6ad93e5880fc",
    "task": "RouteStick",
    "tier": "xhard1"
   },
@@ -1497,14 +1009,6 @@
    "tier": "xhard2"
   },
   {
-   "builder_episode": 20,
-   "candidate": 3,
-   "seed": 19600300,
-   "spec_sha256": "0331fd5273a3e98f489c64df64ea2e968dbf98b33f055fcfc6314f7751cc73d3",
-   "task": "RouteStick",
-   "tier": "xhard2"
-  },
-  {
    "builder_episode": 34,
    "candidate": 0,
    "seed": 21600000,
@@ -1527,19 +1031,11 @@
    "spec_sha256": "ad128b075278252012d2b122d083c213aab8a7d3ca31ef0d79d90273c4db252b",
    "task": "RouteStick",
    "tier": "xhard3"
-  },
-  {
-   "builder_episode": 37,
-   "candidate": 3,
-   "seed": 21600300,
-   "spec_sha256": "777c547abca0b3587db7f9c949bd3eedd6b58983da9aeb8d241353c847506e91",
-   "task": "RouteStick",
-   "tier": "xhard3"
   }
  ],
- "rule": "V9 包内规格交付行（hard_specs.delivered），每任务 12 局按各档交付局数比例最大余数法分配（余数相同档位升序优先），每格取 candidate 升序最小的 N 个；builder_episode 按 XHARD0_IN_TEST_HARD=0 的 test-hard 编号",
- "schema": "gate-set-v9/1",
- "sha256": "902ea3624b0bfe4b8790c7473a8e7ec5c3f4a3eb05cb7a2d066690c5fe399757",
+ "rule": "V9 包内规格交付行（hard_specs.delivered），每个交付格（任务, 档）取 candidate 升序最小的 3 个；builder_episode 按 XHARD0_IN_TEST_HARD=0 的 test-hard 编号",
+ "schema": "gate-set-v9/2",
+ "sha256": "5a869f0a69be7d539d7df9b25ac81cfb2795bc20948bebe2c7b1fc06e5e9d9b8",
  "source": {
   "xhard1": {
    "delivery_sha256": "b4c0ec4fd1d6185a5d1bd2962f33f064e6d7e0f253c8340bbcc71505ca298424",
