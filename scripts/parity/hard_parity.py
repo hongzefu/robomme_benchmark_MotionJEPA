@@ -552,6 +552,21 @@ class Mover(threading.Thread):
         self.scan()
 
 
+def xhard0_subset_rows(rows: list[dict[str, Any]], subset: set[tuple[str, str, int]]) -> list[dict[str, Any]]:
+    """``generate --tier xhard0 --identities``：从完整 xhard0 清单行（tier 为官方 ``hard``）里按 (task, seed) 筛出子集。
+
+    子集身份的 tier 须为 ``xhard0``；有清单外身份即报错。只筛要生成的 jobs，传给运行器的 ``--xhard0-manifest``
+    仍是完整 192 行清单（运行器把清单与官方 test 元数据 hard 子集双向核对，不能传子集）。"""
+    bad_tier = sorted(s for s in subset if s[1] != "xhard0")
+    if bad_tier:
+        raise ParityError(f"--tier xhard0 的 --identities 身份 tier 须为 xhard0：{bad_tier[:3]}")
+    keys = {(task, int(seed)) for task, _tier, seed in subset}
+    stray = sorted(keys - {(r["task"], int(r["seed"])) for r in rows})
+    if stray:
+        raise ParityError(f"--identities 含 xhard0 清单之外的身份 {len(stray)} 个：{stray[:3]}")
+    return [r for r in rows if (r["task"], int(r["seed"])) in keys]
+
+
 def cmd_generate(args) -> int:
     facts = gpu_facts()
     if not args.dev_smoke and "A40" not in facts["gpu_model"]:
@@ -562,13 +577,16 @@ def cmd_generate(args) -> int:
     if args.tier in DELIVERY_TIERS and args.side not in ("H2",):
         raise ParityError(f"{args.tier} 经 hard_parity 只生成 H2（gen2）；gen1 由 generate_h5 --mode continue 出，再 import-delivery 登记为 H")
     if args.identities is not None:
-        if args.tier not in DELIVERY_TIERS:
-            raise ParityError("--identities 只用于 --tier v8／v9")
-        subset = read_identity_subset(args.identities)
-        stray = sorted(subset - {ident(r) for r in rows})
-        if stray:
-            raise ParityError(f"--identities 含交付清单之外的身份 {len(stray)} 个：{stray[:3]}")
-        rows = [r for r in rows if ident(r) in subset]
+        if args.tier == "xhard0":
+            rows = xhard0_subset_rows(rows, read_identity_subset(args.identities))
+        elif args.tier not in DELIVERY_TIERS:
+            raise ParityError("--identities 只用于 --tier v8／v9／xhard0")
+        else:
+            subset = read_identity_subset(args.identities)
+            stray = sorted(subset - {ident(r) for r in rows})
+            if stray:
+                raise ParityError(f"--identities 含交付清单之外的身份 {len(stray)} 个：{stray[:3]}")
+            rows = [r for r in rows if ident(r) in subset]
     if args.tier == "xhard0" and args.side not in ("O", "H"):
         raise ParityError("xhard0 只生成 O、H 两侧（首次，无 P）")
     if args.smoke:
@@ -1446,7 +1464,8 @@ def build_parser() -> argparse.ArgumentParser:
                      help="--tier v8／v9：五档 /4 规格根（含 xhard{1..5}/specs.jsonl，如 artifacts/newtask-v8/specs-root、"
                           "artifacts/newtask-v9/specs-root）")
     gen.add_argument("--identities", type=Path, default=None,
-                     help="--tier v8／v9：只重放该" + IDENTITIES_HELP + "；子集须 ⊆ --manifest")
+                     help="--tier v8／v9：只重放该" + IDENTITIES_HELP + "；子集须 ⊆ --manifest。--tier xhard0："
+                          "身份 tier 须为 xhard0，只生成子集，运行器仍拿完整 --manifest 核对")
     gen.add_argument("--resume", action="store_true")
     gen.set_defaults(func=cmd_generate)
     pub = sub.add_parser("publish")
