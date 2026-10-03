@@ -10,6 +10,9 @@ jsonl 一行分「签」与「结果」两段（0927 计划第一部分 §5.3，
 
 ``delivery_sha256`` 另盖「哪几局是正式交付」：排序后的
 ``(task, tier, candidate, seed, spec_sha256, rollout.h5_sha256)``，只取 ``selected`` 且 ``rollout.status=="ok"`` 的行。
+
+xhard0（官方 hard 12 局）是否前置在 test-hard 里由 ``XHARD0_IN_TEST_HARD`` 决定：V9 定稿默认关（每任务 50 局、
+16 任务 800 局），环境变量 ``ROBOMME_HARD_XHARD0_IN_TEST_HARD=1`` 可恢复 12 + 50。
 """
 
 from __future__ import annotations
@@ -18,6 +21,7 @@ import copy
 import hashlib
 import json
 import math
+import os
 import warnings
 from pathlib import Path
 from typing import Any
@@ -38,6 +42,16 @@ XHARD0 = "xhard0"
 BUILDER_TIERS = (XHARD0, *TIERS)
 #: xhard0 每任务 12 局＝官方 test 元数据 difficulty=="hard" 的原 episode 3,7,…,47（只作核对值，筛选按 difficulty）
 XHARD0_PER_TASK = 12
+#: xhard0（官方 hard 12 局）是否前置在 test-hard 里。V9 定稿默认关（每任务恰 50 局、16 任务 800 局）；
+#: 设环境变量 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1 可恢复为 12 + 50（xhard0 源码、常量与清单全部保留）。
+XHARD0_IN_TEST_HARD: bool = os.environ.get("ROBOMME_HARD_XHARD0_IN_TEST_HARD", "0") == "1"
+
+
+def xhard0_prefix() -> int:
+    """test-hard 里排在新值档前面的 xhard0 局数：开关开为 XHARD0_PER_TASK，关为 0。"""
+    return XHARD0_PER_TASK if XHARD0_IN_TEST_HARD else 0
+
+
 XHARD0_EPISODES = tuple(range(3, 48, 4))
 #: 历史 V4/V5 单档名（seed 规则 v5 只对它合法），保留以便核对旧快照。
 DIFFICULTY = "xhard"

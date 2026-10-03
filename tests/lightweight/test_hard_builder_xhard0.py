@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """轻量测试：``robomme_hard`` 评估构建器 ``dataset="test-hard"`` 的 xhard0 前缀（0928 方案第二部分 §1.1）。
 
-* 每任务局数＝xhard0 12 + 交付格表 ``EXPECTED_CELLS`` 该任务合计（由格表推出，不写死）：v8 包为
+* 开关 ``hard_specs.XHARD0_IN_TEST_HARD``（默认关）两档参数化：关时每任务 50、无 xhard0（V9 合计 800）；
+  开时每任务局数＝xhard0 12 + 交付格表 ``EXPECTED_CELLS`` 该任务合计（由格表推出，不写死）：v8 包为
   PickXtimes／SwingXtimes／StopCube 62、MoveCube／InsertPeg 32、其余 92（合计 1262）；v9 阶段 3b 换包后每任务
   12 + 50 = 62（合计 992）；
 * episode 0..11 为 xhard0，seed 逐条等于官方 test 元数据 difficulty=="hard" 子集（原 episode 升序）；
@@ -49,42 +50,77 @@ def _builder(task, **kwargs):
         return BenchmarkEnvBuilder(task, dataset="test-hard", **kwargs)
 
 
-@pytest.fixture(scope="module")
-def builders():
-    return {task: _builder(task) for task in V.ALL_TASKS}
+@pytest.fixture(params=[False, True], ids=["xhard0关", "xhard0开"])
+def flag(request, monkeypatch):
+    """开关两档：关（V9 默认，每任务 50）与开（12 + 50）。以模块属性 monkeypatch，builder 构造时读取。"""
+    monkeypatch.setattr(V, "XHARD0_IN_TEST_HARD", request.param)
+    return request.param
 
 
-def _episodes_per_task(cells) -> dict:
-    """逐任务局数（含 xhard0 12 局）＝ 12 + 格表该任务合计。"""
-    return {task: V.XHARD0_PER_TASK + sum(n for (t, _), n in cells.items() if t == task) for task in V.ALL_TASKS}
+@pytest.fixture
+def xhard0_on(monkeypatch):
+    monkeypatch.setattr(V, "XHARD0_IN_TEST_HARD", True)
+    return True
 
 
-#: 包内交付格表推出的逐任务合计（含 xhard0 12 局）：v8 包 62／32／92（合计 1262），v9 包每任务 62（合计 992）
-V8_EPISODES = _episodes_per_task(V.EXPECTED_CELLS)
+@pytest.fixture
+def xhard0_off(monkeypatch):
+    monkeypatch.setattr(V, "XHARD0_IN_TEST_HARD", False)
+    return False
 
 
-def test_逐任务局数常量合计1262():
-    """函数名沿用 v8；合计由格表推出：v8 表 1262、v9 表 992，包内取哪张随 ``EXPECTED_CELLS``。"""
+_BUILDER_CACHE: dict = {}
+
+
+@pytest.fixture
+def builders(flag):
+    if flag not in _BUILDER_CACHE:
+        _BUILDER_CACHE[flag] = {task: _builder(task) for task in V.ALL_TASKS}
+    return _BUILDER_CACHE[flag]
+
+
+def _episodes_per_task(cells, prefix: int = V.XHARD0_PER_TASK) -> dict:
+    """逐任务局数＝xhard0 前缀（开 12、关 0）+ 格表该任务合计。"""
+    return {task: prefix + sum(n for (t, _), n in cells.items() if t == task) for task in V.ALL_TASKS}
+
+
+def _expected(prefix: int) -> dict:
+    return _episodes_per_task(V.EXPECTED_CELLS, prefix)
+
+
+def test_逐任务局数常量_开关两档合计():
+    """开关开：v8 表 1262、v9 表 992；开关关：v9 表每任务 50、合计 800。包内取哪张随 ``EXPECTED_CELLS``。"""
     assert _episodes_per_task(V.V8_CELLS) == {task: 92 for task in V.ALL_TASKS} | {
         "PickXtimes": 62, "SwingXtimes": 62, "StopCube": 62, "MoveCube": 32, "InsertPeg": 32}
     assert sum(_episodes_per_task(V.V8_CELLS).values()) == 16 * 12 + 1070 == 1262
     assert _episodes_per_task(V.V9_CELLS) == {task: 62 for task in V.ALL_TASKS}
     assert sum(_episodes_per_task(V.V9_CELLS).values()) == 16 * 12 + 800 == 992
-    assert sum(V8_EPISODES.values()) == 16 * 12 + sum(V.EXPECTED_CELLS.values())
+    assert _episodes_per_task(V.V9_CELLS, 0) == {task: 50 for task in V.ALL_TASKS}
+    assert sum(_episodes_per_task(V.V9_CELLS, 0).values()) == 800
     for task in V.ALL_TASKS:
-        assert V8_EPISODES[task] == V.XHARD0_PER_TASK + sum(n for (t, _), n in V.EXPECTED_CELLS.items() if t == task)
+        assert _expected(12)[task] == V.XHARD0_PER_TASK + sum(n for (t, _), n in V.EXPECTED_CELLS.items() if t == task)
     assert {t for (t, tier) in V.EXPECTED_CELLS if tier == "xhard5"} == {"SwingXtimes", "StopCube"}
     assert {t for t in V.ALL_TASKS if {tier for (n, tier) in V.EXPECTED_CELLS if n == t} == {"xhard4"}} \
         == set(V.XHARD4_ONLY) == {"InsertPeg", "MoveCube"}
 
 
+def test_xhard0_prefix随开关(monkeypatch):
+    monkeypatch.setattr(V, "XHARD0_IN_TEST_HARD", False)
+    assert V.xhard0_prefix() == 0
+    monkeypatch.setattr(V, "XHARD0_IN_TEST_HARD", True)
+    assert V.xhard0_prefix() == 12
+
+
 @pytest.mark.parametrize("task", V.ALL_TASKS)
-def test_每任务局数与档序(task, builders):
+def test_每任务局数与档序(task, flag, builders):
+    prefix = 12 if flag else 0
     b = builders[task]
-    assert b.get_episode_num() == V8_EPISODES[task]
+    assert b.get_episode_num() == _expected(prefix)[task]
     tiers = [b.resolve_episode(ep)[1] for ep in range(b.get_episode_num())]
-    expected = ["xhard0"] * 12 + [t for t in V.TIERS for _ in range(V.EXPECTED_CELLS.get((task, t), 0))]
+    expected = ["xhard0"] * prefix + [t for t in V.TIERS for _ in range(V.EXPECTED_CELLS.get((task, t), 0))]
     assert tiers == expected
+    if not flag:
+        assert b.get_episode_num() == 50 and "xhard0" not in tiers
     # 档内候选升序
     for tier in V.TIERS:
         cands = [b.resolve_identity(ep)["candidate"] for ep in range(b.get_episode_num()) if tiers[ep] == tier]
@@ -92,8 +128,8 @@ def test_每任务局数与档序(task, builders):
 
 
 @pytest.mark.parametrize("task", V.ALL_TASKS)
-def test_xhard0种子等于官方test元数据hard子集(task, builders):
-    b = builders[task]
+def test_xhard0种子等于官方test元数据hard子集(task, xhard0_on):
+    b = _builder(task)
     official = _official_hard(task)
     assert len(official) == 12
     for ep, record in enumerate(official):
@@ -105,17 +141,26 @@ def test_xhard0种子等于官方test元数据hard子集(task, builders):
         assert b._hard_env_kwargs(ep) == {"seed": int(record["seed"]), "difficulty": "hard"}
 
 
-def test_新值档条目仍带规格与配置(builders):
+def test_开关关_episode0为xhard1行(xhard0_off):
+    b = _builder("BinFill")
+    identity = b.resolve_identity(0)
+    assert identity["tier"] == "xhard1" and isinstance(identity["candidate"], int)
+    assert "source_episode" not in identity
+    assert b._hard_env_kwargs(0)["difficulty"] == "xhard1"
+
+
+def test_新值档条目仍带规格与配置(flag, builders):
+    prefix = 12 if flag else 0
     b = builders["BinFill"]
-    kwargs = b._hard_env_kwargs(12)
+    kwargs = b._hard_env_kwargs(prefix)
     assert kwargs["difficulty"] == "xhard1"
     assert set(kwargs) == {"seed", "difficulty", "sampling_config", "native_episode_spec"}
-    identity = b.resolve_identity(12)
+    identity = b.resolve_identity(prefix)
     assert identity["tier"] == "xhard1" and isinstance(identity["candidate"], int)
     assert identity["spec_sha256"] == V.spec_sha256(kwargs["native_episode_spec"])
     assert "source_episode" not in identity and "specs_root" not in identity
     with pytest.raises(KeyError):
-        b.resolve_episode(V8_EPISODES["BinFill"])
+        b.resolve_episode(_expected(prefix)["BinFill"])
     # xhard5 档条目：只有 SwingXtimes、StopCube
     stop = builders["StopCube"]
     last = stop.get_episode_num() - 1
@@ -128,7 +173,7 @@ def test_test_hard拒绝override_metadata_path():
                             override_metadata_path=TEST_META / "record_dataset_BinFill_metadata.json")
 
 
-def test_官方hard子集不符即拒绝():
+def test_官方hard子集不符即拒绝(xhard0_on):
     b = _builder("PickXtimes")
     index = {("PickXtimes", r["episode"]): dict(r) for r in _official_hard("PickXtimes")}
     entries = HB._xhard0_entries("PickXtimes", index)
@@ -143,7 +188,7 @@ def test_官方hard子集不符即拒绝():
     with pytest.raises(ValueError, match="seed 唯一"):
         HB._xhard0_entries("PickXtimes", dup)
     # 其它难度的记录不混进来
-    assert b.get_episode_num() == V8_EPISODES["PickXtimes"]
+    assert b.get_episode_num() == _expected(12)["PickXtimes"]
 
 
 def _linked_root(tmp_path: Path) -> Path:
@@ -154,12 +199,12 @@ def _linked_root(tmp_path: Path) -> Path:
     return root
 
 
-def test_specs_root参数_身份带规格根(tmp_path, capsys):
+def test_specs_root参数_身份带规格根(tmp_path, capsys, flag):
     root = _linked_root(tmp_path)
     b = _builder("VideoRepick", specs_root=root)
     out = capsys.readouterr().out
     assert f"SPECS_ROOT={root.resolve()}" in out
-    assert b.get_episode_num() == V8_EPISODES["VideoRepick"]
+    assert b.get_episode_num() == _expected(12 if flag else 0)["VideoRepick"]
     assert b.resolve_identity(0)["specs_root"] == str(root.resolve())
     assert b.resolve_identity(40)["specs_root"] == str(root.resolve())
     # 显式给包内路径等同缺省：身份不带 specs_root
@@ -167,7 +212,7 @@ def test_specs_root参数_身份带规格根(tmp_path, capsys):
     assert "specs_root" not in packaged.resolve_identity(0)
 
 
-def test_specs_root环境变量与packaged_specs_path(tmp_path, monkeypatch):
+def test_specs_root环境变量与packaged_specs_path(tmp_path, monkeypatch, xhard0_on):
     root = _linked_root(tmp_path)
     monkeypatch.delenv(V.SPECS_ROOT_ENV, raising=False)
     assert V.specs_root() == V.PACKAGED_SPECS_ROOT
@@ -183,15 +228,19 @@ def test_specs_root环境变量与packaged_specs_path(tmp_path, monkeypatch):
     assert b.resolve_identity(12)["specs_root"] == str(root.resolve())
 
 
-def test_覆盖根_局部根只发存在的档(tmp_path):
-    """局部根（只含 xhard5）：只发 xhard5 局，与 hard_regression.delivery_index 的跳过口径一致。"""
+def test_覆盖根_局部根只发存在的档(tmp_path, flag):
+    """局部根（只含 xhard5）：只发 xhard5 局，与 hard_regression.delivery_index 的跳过口径一致；开关关时无 xhard0。"""
+    prefix = 12 if flag else 0
     root = tmp_path / "partial"
     root.mkdir()
     (root / "xhard5").symlink_to(V.PACKAGED_SPECS_ROOT / "xhard5", target_is_directory=True)
     b = _builder("SwingXtimes", specs_root=root)
     assert [b.resolve_episode(ep)[1] for ep in range(b.get_episode_num())] == \
-        ["xhard0"] * 12 + ["xhard5"] * V.EXPECTED_CELLS[("SwingXtimes", "xhard5")]
-    assert _builder("BinFill", specs_root=root).get_episode_num() == 12
+        ["xhard0"] * prefix + ["xhard5"] * V.EXPECTED_CELLS[("SwingXtimes", "xhard5")]
+    if flag:
+        assert _builder("BinFill", specs_root=root).get_episode_num() == 12
+    else:  # 关时 BinFill 在局部根里零局：父类空映射
+        assert _builder("BinFill", specs_root=root).get_episode_num() == 0
 
 
 def test_覆盖根_v7规格拒绝(tmp_path):
