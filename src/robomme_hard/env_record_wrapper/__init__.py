@@ -16,4 +16,4 @@ from .episode_dataset_resolver import (
 )
 from .OraclePlannerDemonstrationWrapper import OraclePlannerDemonstrationWrapper
 from . import hard_specs
-from .hard_specs import RECORDED_FLOAT_TOL, TIER_MAX_STEPS, spec_binding
+from .hard_specs import BUILDER_TIERS, RECORDED_FLOAT_TOL, TIER_MAX_STEPS, spec_binding

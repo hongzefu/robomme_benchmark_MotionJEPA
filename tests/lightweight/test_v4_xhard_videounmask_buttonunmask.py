@@ -79,7 +79,11 @@ def test_xhard_values_match_user_decisions(task) -> None:
     dist = decision["xhard4"]["distractor"]
     # V5（S3b，docs/plans/0924-newtask-release-v5-plan.md 2.3 / 2.4）：V4 的 3 个外环 [0.2675, 0.45]、cube [1,2] 作废，
     # 改为贴身环带 + 按密度定数 + 半数含 cube + 三色平衡轮转，统一 7 键 schema
-    expect_count, expect_cubes = {"VideoUnmask": (15, [7, 8]), "ButtonUnmask": (14, [7, 7])}[task]
+    # V7 定值（0928 方案 §3.2.2）：xhard4 贴身环带干扰下调为 12 个、含 cube 恒为一半 [6,6]（两环境相同）；
+    # V5 预设 XHARD_DISTRACTOR（15／14）常量本身保留不动，但不再作为 xhard4 的 decision
+    expect_count, expect_cubes = 12, [6, 6]
+    assert (mod.XHARD_DISTRACTOR["count"], mod.XHARD_DISTRACTOR["cube_count_range"]) == \
+        {"VideoUnmask": (15, [7, 8]), "ButtonUnmask": (14, [7, 7])}[task]
     assert sorted(dist) == sorted(["count", "ring_max_abs_xy", "cube_count_range", "color_pool",
                                    "color_rule", "min_gap_factor", "max_trials"])
     assert dist["count"] == expect_count                             # L6 / L10

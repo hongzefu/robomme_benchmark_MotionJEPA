@@ -28,8 +28,9 @@ sys.path.insert(0, str(REPO_ROOT / "scripts" / "injection-dev"))
 
 from seed_layout import ALL_TASKS  # noqa: E402
 
-DEFAULT_RELEASE = "newtask-v6"
+DEFAULT_RELEASE = "newtask-v7"
 # 拆包阶段 2 起 scripts/configs/newtask-v4～v6 的快照已删（新值配置真源是包内 test-hard jsonl header）；
+# v8 阶段 1 删 V6：v6 冻结快照与 newtask-v6 条目一并移除；
 # 缺省落点改到不进 git 的 artifacts/，不再在 scripts/configs/ 下重建快照
 DEFAULT_OUTPUT = REPO_ROOT / "artifacts" / "hard-split" / f"sampling_config.{DEFAULT_RELEASE}.json"
 # 每个发布版本快照里的说明文字；V4 那一句逐字保留，保证 V4 的 --verify 照旧字节一致
@@ -37,7 +38,8 @@ RELEASE_NOTES = {
     "newtask-v4": "V4 快照：原三档部分等于原值（v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），xhard 条目为 V4 新值",
     "newtask-v5": "V5 快照：原三档部分等于原值（V0 闸门逐字核验；v3 快照 scripts/configs/newtask-v3/native_sampling.json 冻结留档），"
                   "xhard 条目为 V5 新值（docs/plans/0924-newtask-release-v5-plan.md）；V4 快照 scripts/configs/newtask-v4/ 已作废、原样留档",
-    "newtask-v6": "V6 快照：原 easy/medium/hard 三档按 V0 核验；新值族 xhard1 < xhard2 < xhard3 < xhard4 四档条目为 V6 新值（docs/plans/0925-newtask-release-v6-plan.md）；V5 快照 scripts/configs/newtask-v5/ 原样留档",
+    "newtask-v7": "v7 机制、v8 取值：原 easy/medium/hard 三档按 V0 核验；新值族条目为 v8 定值（发布标签沿用 newtask-v7 的 "
+                  "release 分支机制，取值见 1001-newtask-v8-xhard-gradient-plan.md 第二部分 §2.1）",
 }
 
 

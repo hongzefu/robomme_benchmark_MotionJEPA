@@ -28,9 +28,21 @@ def count_demo_frames(h5_path: str | Path) -> int:
         return sum(bool(episode[k]["info"]["is_video_demo"][()]) for k in episode if k.startswith("timestep_"))
 
 
+def per_cell_quota(header: dict[str, Any], task: str) -> int:
+    """逐格配额：/2、/3 的 ``delivery_per_cell`` 是全局整数；/4（v8）是 ``{task: n}`` 逐任务字典。"""
+    quota = header["delivery_per_cell"]
+    return int(quota[task]) if isinstance(quota, dict) else int(quota)
+
+
 def build_report(specs: Path, check_demo: bool = True) -> dict[str, Any]:
-    header, rows = hard_specs.load_specs(specs, check_fingerprint=False)
-    per_cell = int(header["delivery_per_cell"])
+    # /4 单文件的配额上限格表按 header 自带的逐任务配额推出：V9 文件（MoveCube／InsertPeg 50）在 3b 换包前
+    # EXPECTED_CELLS 仍是 V8 时也能读（V9 计划 S1-B 遗留配合项）
+    with Path(specs).open(encoding="utf-8") as stream:
+        try:
+            table = hard_specs.header_cell_table(json.loads(stream.readline()))
+        except ValueError:
+            table = None  # 首行坏了：交给 load_specs 报具体错
+    header, rows = hard_specs.load_specs(specs, expected_cells=table, check_fingerprint=False)
     totals = {key: 0 for key in COUNT_KEYS}
     cells = sorted({r["task"] for r in rows})
     totals["cells"] = len(cells)
@@ -44,7 +56,7 @@ def build_report(specs: Path, check_demo: bool = True) -> dict[str, Any]:
         totals["rollout_ok"] += sum((r["rollout"] or {}).get("status") == "ok" for r in mine)
         totals["rollout_failed"] += sum((r["rollout"] or {}).get("status") == "failed" for r in mine)
         totals["backfilled"] += sum(r["selected"] and not r["initial_selected"] for r in delivered)
-        totals["selected_shortfall"] += max(0, per_cell - len(delivered))
+        totals["selected_shortfall"] += max(0, per_cell_quota(header, task) - len(delivered))
         if check_demo and task in DEMO_TASKS:
             for row in delivered:
                 path = row["rollout"].get("h5_path")

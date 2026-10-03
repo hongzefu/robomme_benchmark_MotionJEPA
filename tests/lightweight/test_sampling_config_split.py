@@ -30,13 +30,18 @@ for extra in (REPO_ROOT / "src", REPO_ROOT / "scripts", REPO_ROOT / "scripts" / 
     if str(extra) not in sys.path:
         sys.path.insert(0, str(extra))
 
-PACKAGED_XHARD4 = REPO_ROOT / "src" / "robomme_hard" / "env_metadata" / "test-hard" / "xhard4" / "specs.jsonl"
+PACKAGED_ROOT = REPO_ROOT / "src" / "robomme_hard" / "env_metadata" / "test-hard"
+PACKAGED_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
 
 
 def _ready_tasks() -> tuple[str, ...]:
-    """已接口化的环境取自包内 xhard4 header 的 sampling_config（16 任务；原 V6 快照已随拆包阶段 2 删除）。"""
-    header = json.loads(PACKAGED_XHARD4.open(encoding="utf-8").readline())
-    return tuple(sorted(header["sampling_config"]))
+    """已接口化的环境取自包内各档 header 的 sampling_config 之并（16 任务；原 V6 快照已随拆包阶段 2 删除）。
+    v8 阶段 3b 换包后各档只含本档交付格的任务（xhard4 只剩 6 个），所以按五档取并，不再只读 xhard4。"""
+    tasks: set[str] = set()
+    for tier in PACKAGED_TIERS:
+        with (PACKAGED_ROOT / tier / "specs.jsonl").open(encoding="utf-8") as stream:
+            tasks |= set(json.loads(stream.readline())["sampling_config"])
+    return tuple(sorted(tasks))
 
 
 READY_TASKS = _ready_tasks()
@@ -73,12 +78,16 @@ def test_changed_decision_is_rejected_in_native_mode(task: str) -> None:
         module._resolve_sampling_config(cls, {"decision": tampered, "native": native})
 
 
-def test_v6_snapshot_matches_source(tmp_path) -> None:
-    """robomme_hard 源码提取出的 sampling_config 与包内 xhard4 header 逐任务相同（原 V6 快照已删，真源改为包内 jsonl）。"""
+def test_v7_snapshot_matches_source(tmp_path) -> None:
+    """``train_split_config.py extract --release newtask-v7`` 导出的快照：逐任务等于进程内 ``native_blocks``，
+    且梯度任务读出的定值等于 tests/_shared/v7_tier_values.py 的定值表（v8 阶段 1 起为 v8 取值）。
+    原尾部「与冻结 v6 快照不同」的比较随 V6 删除移除（v8 方案第一部分 §2.4）。"""
+    from tests._shared.v7_tier_values import V7_TIER_VALUES, summarize  # noqa: PLC0415
+
     out = tmp_path / "sampling_config.json"
     result = subprocess.run(
         [sys.executable, str(REPO_ROOT / "scripts" / "parity" / "train_split_config.py"), "extract",
-         "--release", "newtask-v6", "--pkg", "robomme_hard", "--output", str(out)],
+         "--release", "newtask-v7", "--pkg", "robomme_hard", "--output", str(out)],
         capture_output=True,
         text=True,
         cwd=REPO_ROOT,
@@ -86,11 +95,15 @@ def test_v6_snapshot_matches_source(tmp_path) -> None:
     assert result.returncode == 0, result.stdout + result.stderr
     fresh = json.loads(out.read_text(encoding="utf-8"))
     assert len(fresh["tasks_ready"]) == 16 and fresh["tasks_pending"] == []
-    packaged = json.loads(PACKAGED_XHARD4.open(encoding="utf-8").readline())["sampling_config"]
-    assert fresh["tasks"] == packaged
     assert fresh["tasks_ready"] == sorted(READY_TASKS)
     for task in READY_TASKS:
         block = fresh["tasks"][task]
         assert set(block) == {"decision", "native"}
         assert set(block["native"]) >= {"parameters", "positions"}
         assert block["decision"], f"{task} 的 decision 块不能为空"
+        module = _module(task)
+        decision, native = module.native_blocks(getattr(module, task))
+        dump = lambda payload: json.dumps(payload, sort_keys=True, ensure_ascii=False)  # noqa: E731
+        assert dump(block) == dump({"decision": decision, "native": native}), task
+    got = {task: summarize(task, fresh["tasks"][task]["decision"]) for task in V7_TIER_VALUES}
+    assert got == V7_TIER_VALUES

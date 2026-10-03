@@ -179,7 +179,8 @@ def native_blocks(cls, *, release="newtask-v6"):
         }
         native["parameters"]["xhard"] = {"object_selection": {"pickup_selected_indices": [0, 1, 2]}}
         return _legacy_decision(cls, legacy_configs, release), native
-    if release != "newtask-v6":
+    # newtask-v7：与 v6 同一解析路径，取当前类常量（即 V7 定值；v6 值只存于包内 v6 规格 header，0928 方案 R3）
+    if release not in ("newtask-v6", "newtask-v7"):
         raise ValueError(f"VideoUnmaskSwap 不支持 sampling_config release {release!r}")
     native["parameters"]["configs"] = copy.deepcopy(cls.configs)
     return _native_decision(cls), native
@@ -223,7 +224,7 @@ def _native_decision(cls):
         **{
             tier: {
                 "swap_speed_multiplier": 1.0 if newvalue_tier(tier) == 1 else NEWVALUE_SWAP_SPEED_MULTIPLIER,
-                "distractor": v6_distractor_cfg("VideoUnmaskSwap", 2 + 2 * newvalue_tier(tier)),
+                "distractor": v6_distractor_cfg("VideoUnmaskSwap", 2 * newvalue_tier(tier)),  # V7：外环 2/4/6/8
                 "distractor_swap": v6_distractor_swap_cfg("VideoUnmaskSwap"),
                 "swap_plan_v6": v6_inner_swap_plan_cfg("VideoUnmaskSwap"),
             }
@@ -283,14 +284,14 @@ class VideoUnmaskSwap(BaseEnv):
         "pick_min":2,
         "pick_max":2
     }
-    # V6 新值四档只调整 swap/pick 次数与外环干扰数量；容器布局机制沿用原 xhard。
-    config_xhard1 = {"bin": 4, "swap_min": 4, "swap_max": 5, "pick_min": 2, "pick_max": 2}
-    config_xhard2 = {"bin": 4, "swap_min": 6, "swap_max": 7, "pick_min": 3, "pick_max": 3}
-    config_xhard3 = {"bin": 4, "swap_min": 8, "swap_max": 9, "pick_min": 3, "pick_max": 3}
+    # V7 定值（0928 方案 §3.2.2）：swap 5/7/9/11、pick 2/3/3/3、外环 2/4/6/8；容器布局机制沿用原 xhard。
+    config_xhard1 = {"bin": 4, "swap_min": 5, "swap_max": 5, "pick_min": 2, "pick_max": 2}
+    config_xhard2 = {"bin": 4, "swap_min": 7, "swap_max": 7, "pick_min": 3, "pick_max": 3}
+    config_xhard3 = {"bin": 4, "swap_min": 9, "swap_max": 9, "pick_min": 3, "pick_max": 3}
     config_xhard4 = {
         "bin":4,
-        "swap_min":10,
-        "swap_max":12,
+        "swap_min":11,
+        "swap_max":11,
         "pick_min":3,
         "pick_max":3
     }

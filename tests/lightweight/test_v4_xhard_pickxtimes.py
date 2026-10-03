@@ -38,7 +38,7 @@ from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     assert_native_decision,
 )
 from robomme_hard.robomme_env.utils.subgoal_language import get_subgoal_with_index  # noqa: E402
-from robomme_hard.robomme_env.utils.xhard import DISTRACTOR_COLORS  # noqa: E402
+from robomme_hard.robomme_env.utils.xhard import BLOCK_DISTRACTOR_COLORS, DISTRACTOR_COLORS  # noqa: E402
 
 MOD = importlib.import_module("robomme_hard.robomme_env.PickXtimes")
 CLS = MOD.PickXtimes
@@ -61,13 +61,14 @@ ORIGINAL_DECISION = {
 def test_original_three_configs_unchanged() -> None:
     for difficulty, expected in ORIGINAL_CONFIGS.items():
         assert CLS.configs[difficulty] == expected
-    # V6（计划 2.8）：新增 xhard1/2/3，共 7 档
+    # V6（计划 2.8）：新增 xhard1/2/3，共 7 档；v8（1001 方案 §2.1）不加 xhard5
     assert set(CLS.configs) == {"easy", "medium", "hard", "xhard4", "xhard1", "xhard2", "xhard3"}
     assert list(CLS.configs)[:4] == ["hard", "easy", "medium", "xhard4"]
 
 
 def test_xhard_config_values() -> None:
-    assert CLS.configs["xhard4"] == {"color": 3, "number_min": 13, "number_max": 15}
+    # v8（1001 方案 §1 表 1）：xhard4 抓放次数定为 9（不交付、不评估，只保四键结构）
+    assert CLS.configs["xhard4"] == {"color": 3, "number_min": 9, "number_max": 9}
 
 
 def test_decision_visible_part_unchanged() -> None:
@@ -77,8 +78,9 @@ def test_decision_visible_part_unchanged() -> None:
 
 def test_decision_xhard_entries() -> None:
     decision, _ = MOD.native_blocks(CLS)
-    assert decision["number_range"]["xhard4"] == [13, 15]
+    assert decision["number_range"]["xhard4"] == [9, 9]
     assert decision["color"]["xhard4"] == 3
+    assert "xhard5" not in decision and "xhard5" not in decision["number_range"]
     xhard = decision["xhard4"]
     # V5 S3f（计划 2.13）：新增 min_center_dist_m（L44）；删 corner_bias（L43）；方块区半宽 0.25（L46）
     assert set(xhard) == {"target_cube_position_policy", "goal_position_policy", "distractor", "min_center_dist_m"}
@@ -88,9 +90,11 @@ def test_decision_xhard_entries() -> None:
     # C1：圆盘区域独立一套（值沿用原区域，允许留在中间）
     assert xhard["goal_position_policy"] == {"region_center": [-0.1, 0], "region_half_size": 0.2}
     assert xhard["goal_position_policy"] is not decision["goal_position_policy"]
-    # A5/B2：固定三个干扰色，顺序与共用色池一致
-    assert xhard["distractor"]["colors"] == [entry["name"] for entry in DISTRACTOR_COLORS]
-    assert xhard["distractor"]["colors"] == ["yellow", "cyan", "magenta"]
+    # V7：xhard4 干扰块 4 个，取 BLOCK_DISTRACTOR_COLORS（三色池 + 第 4 色），顺序与色池一致
+    assert xhard["distractor"]["colors"] == [entry["name"] for entry in BLOCK_DISTRACTOR_COLORS]
+    assert xhard["distractor"]["colors"] == ["yellow", "cyan", "magenta", "orange"]
+    # 三色池本身不动（四个 Unmask／Swap 任务共用）
+    assert [entry["name"] for entry in DISTRACTOR_COLORS] == ["yellow", "cyan", "magenta"]
 
 
 def test_native_snapshot_unchanged() -> None:
@@ -164,10 +168,11 @@ def test_subgoal_ordinal_covers_num_15() -> None:
 
 
 # ---------------------------------------------------------------------------
-# V6（计划 2.8）：新值族 xhard1/2/3——次数区间内插、干扰块数 1/2/3（DISTRACTOR_COLORS 前 k 个），其余字段沿用 xhard
+# v8（1001 方案 §1 表 1）：新值族 xhard1..4——抓放次数 6/7/8/9 定值（原 V7 7/10/12/15；xhard4 不交付）、
+# 干扰块数 1/2/3/4（BLOCK_DISTRACTOR_COLORS 前 k 个），其余字段（含圆盘区域）沿用 xhard
 # ---------------------------------------------------------------------------
-V6_NUMBER_RANGE = {'xhard1': (6, 7), 'xhard2': (8, 9), 'xhard3': (10, 12), 'xhard4': (13, 15)}
-V6_DISTRACTOR_COUNT = {"xhard1": 1, "xhard2": 2, "xhard3": 3, "xhard4": min(4, len(DISTRACTOR_COLORS))}
+V6_NUMBER_RANGE = {'xhard1': (6, 6), 'xhard2': (7, 7), 'xhard3': (8, 8), 'xhard4': (9, 9)}
+V6_DISTRACTOR_COUNT = {"xhard1": 1, "xhard2": 2, "xhard3": 3, "xhard4": 4}
 
 
 @pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3"])
@@ -182,7 +187,7 @@ def test_v6_newvalue_decision_subtree(tier) -> None:
     # 键结构与 xhard 完全相同；只有干扰色列表按档截取前 k 个
     assert set(decision[tier]) == set(decision["xhard4"])
     k = V6_DISTRACTOR_COUNT[tier]
-    assert decision[tier]["distractor"]["colors"] == [entry["name"] for entry in DISTRACTOR_COLORS[:k]]
+    assert decision[tier]["distractor"]["colors"] == [entry["name"] for entry in BLOCK_DISTRACTOR_COLORS[:k]]
     other = {key: value for key, value in decision[tier].items() if key != "distractor"}
     assert other == {key: value for key, value in decision["xhard4"].items() if key != "distractor"}
     dcfg = {key: value for key, value in decision[tier]["distractor"].items() if key != "colors"}

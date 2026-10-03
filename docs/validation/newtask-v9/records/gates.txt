@@ -1,0 +1,55 @@
+# V9 生成各阶段判定行（原文，按阶段）
+## 1b xhard0（artifacts/newtask-v9/gates/xhard0-reset-parity-s1/run.log）
+XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 det_diff=0 name_only=12 first_det_diff=- name_only_tasks=['ButtonUnmaskSwap']
+## 2b 冒烟（artifacts/newtask-v9/logs/smoke2b.log）
+FREEZE_PLAN profile=v8 tier=xhard4 cells=v9smoke tasks=2 quota=2 candidates=6 reset_budget<=10 workers=1 pkg=robomme_hard out=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9gen-out/smoke/specs/xhard4/specs.jsonl
+V8_DELIVERY_SET=PASS tasks=2 cells=2 total=2 expected=2 failed=0 exec_over_cap=0 backfills=0 infra_retries=0 exhausted_cells=0 pending_cells=0 bad_h5=0
+GENERATE_CONTINUE_DONE attempted=2 rounds=1 infra_retries=0 delivered=2 exec_over_cap=0 backfills=0 out=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9gen-out/smoke/gen
+## 3 MoveCube 冻结／生成、InsertPeg extend／生成（NFS v9gen-out/logs 与本机 logs）
+FREEZE_WAYS task=MoveCube tier=xhard4 quota_by_way={0:17,1:17,2:16} candidates_by_way={0:27,1:25,2:28} no_way=0
+FREEZE_DONE rows=80 selected=50 reset_attempted=80 identity=e2f77d8e23b0 out=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9gen-out/movecube-frozen/xhard4/specs.jsonl
+APPEND_DRAW tried=35 ok=35 shortfall=0 max_reset_attempts=55 fail_class={}
+V9_INSERTPEG_EXTEND=PASS imported_ok=20 imported_fail=9 spares=11 appended=35 quota=50
+### gen-movecube
+ROUND xhard4/0 jobs=50 ok=40 infra=0 wall_s=474
+ROUND xhard4/1 jobs=10 ok=7 infra=0 wall_s=120
+ROUND xhard4/2 jobs=3 ok=3 infra=0 wall_s=54
+V8_DELIVERY_SET=PASS tasks=1 cells=1 total=50 expected=50 failed=13 exec_over_cap=0 backfills=13 infra_retries=0 exhausted_cells=0 pending_cells=0 bad_h5=0
+GENERATE_CONTINUE_DONE attempted=63 rounds=3 infra_retries=0 delivered=50 exec_over_cap=0 backfills=13 out=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9gen-out/gen/shard-movecube
+全部完成 rc=0
+### gen-insertpeg
+ROUND xhard4/5 jobs=30 ok=20 infra=0 wall_s=351
+ROUND xhard4/6 jobs=10 ok=6 infra=0 wall_s=138
+ROUND xhard4/7 jobs=4 ok=2 infra=0 wall_s=65
+ROUND xhard4/8 jobs=2 ok=2 infra=0 wall_s=53
+V8_DELIVERY_SET=FAIL tasks=1 cells=1 total=50 expected=50 failed=25 exec_over_cap=0 backfills=55 infra_retries=0 exhausted_cells=0 pending_cells=0 bad_h5=20 problems=InsertPeg/xhard4:h5_missing
+GENERATE_CONTINUE_DONE attempted=75 rounds=9 infra_retries=0 delivered=50 exec_over_cap=0 backfills=55 out=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9gen-out/gen/insertpeg-root
+全部完成 rc=1
+### h2-movecube
+EPISODE_DONE side=H2 xhard4/MoveCube/66 success=0 sha=26c4d449632e
+全部完成 rc=0
+### h2-insertpeg
+全部完成 rc=0
+## 3b
+V9_SUBSET_PICKS cells=42 ok=42
+V9_SUBSET=PASS reused=720 spec_equal=720 h5_equal=720 video_equal=720
+V9_RESET_REPLAY=PASS shape=cells43 resets=43 replay=43 injected_mismatch=0 layout_drift=0 spec_bound=43 unused=0 layout_hit_bad=0 errors=0
+XHARD0_RESET_PARITY=PASS shape=16x1x12 compared=192 det_diff=0 name_only=12 first_det_diff=- name_only_tasks=['ButtonUnmaskSwap']
+## 4 H:H2（artifacts/newtask-v9/logs/compare-hh2.log）
+IMPORT_DELIVERY=PASS tier=v9 rows=80 sha_mismatch=0 out=/data/hongzefu/robomme_benchmark_MotionJEPANewTask/artifacts/newtask-v9/parity/h5/H-v9
+PARITY_H_H2=FAIL tier=v9 compared=80 cells=2 missing=0 extra=0 duplicate=0 identity_equal=80 byte_equal=72 noise=7 h2_fail=1 flipped=0 structural=0 expected=80 frozen=80 delivery=80 left_rows=80 right_rows=80 shape=cells43:272+272+92+144+20 setup_equal=79 schema_equal=79 success_equal=79 both_success=79 both_fail=0 noise_first_divergence_min=142 tol_over=0 tol_noise=7 over_total=7 hard_line_5pct=HIT action_max=3.63/0.0413 state_max=3.62/0.0411 image_mad=8.11/1 frames_max=8/5 sha_equal=72 frames_equal=73 binding_ok=80 recovery_mismatch=0 identities=80 manifest_rows_all=800
+PARITY_REFERENCE=INFO pair=H:H2 tier=v9 first_divergence_n=7 first_divergence_median=208 first_divergence_min=142
+## 3（本机，主会话终端输出）
+V9_MOVECUBE_LAYOUT=PASS episodes=50 in_region=300 outside_old=300 points=300 expected_episodes=50 region_mismatch=0 bad_rows=0 load_errors=0
+V9_MOVECUBE_WAYS=PASS ways=17/17/16 expected=17/17/16 way_idx=0/1/2 unknown=0 episodes=50
+本机重聚合 MoveCube：V8_DELIVERY_SET=PASS tasks=1 cells=1 total=50 expected=50 failed=13 exec_over_cap=0 backfills=13 infra_retries=0 exhausted_cells=0 pending_cells=0 bad_h5=0
+本机重聚合 InsertPeg（--rebase V8 NFS 前缀→本机 V8 gen1）：V8_DELIVERY_SET=PASS tasks=1 cells=1 total=50 expected=50 failed=25 exec_over_cap=0 backfills=55 infra_retries=0 exhausted_cells=0 pending_cells=0 bad_h5=0
+## 3b（本机，主会话终端输出）
+V9_DERIVE=PASS cells=42 subset=700 insertpeg=20 total=720 tiers=5
+V9_ASSEMBLE=PASS rows=800 reused=720 new=80 cells=43
+V9_LINK=PASS rows=800 files=1600 linked=1600 skipped=0
+V9_DELIVERY_SET=PASS tasks=16 cells=43 total=800 new=80 reused=720 expected_cells=43 expected_total=800 cell_mismatch=0 extra_cells=0 selected_not_ok=0 delivered_over_cap=0 failed=70 exec_over_cap=0 backfills=45 missing_files=0 load_errors=0 delivery_rows=800 delivery_mismatch=0 delivery_bad_rows=0
+V9_SEED_DISJOINT=PASS tasks=16 tier_pairs=48 shared=0
+V9_LAYOUT_INDEPENDENT=PASS files=5 delivered=800 parent_non_null=0 layout_equal_pairs=0 mode_bad=0 no_position=0 load_errors=0
+V9_STEP_CAP=PASS max=1469 cap=1600 over=0 filtered=0 xhard0_max=1074 xhard0_cap=1300 rows=800 cells=43 missing_h5=0 exec_steps_mismatch=0
+换包后核心短测：6 failed, 1754 passed, 3 skipped（6 个失败均在 BASE 30f36e44 即存在）；UPSTREAM_GUARD=PASS；录像器零 diff；scripts/ 顶层四入口

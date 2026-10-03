@@ -42,6 +42,8 @@ def run_one(payload: tuple) -> dict[str, Any]:
     # V4：payload 可带第 4 项 disable_recovery（runner --no-recovery）；三元组时行为与改动前逐字相同
     job, sampling_config, episode_spec = payload[:3]
     disable_recovery = bool(payload[3]) if len(payload) > 3 else False
+    # V7 xhard0（v7 方案第二部分 §1.5）：第 5 项 builder_route="test-hard" 时 gym.make 实参取自 robomme_hard builder
+    builder_route = payload[4] if len(payload) > 4 else None
     import generate_dataset as official  # 官方固定源码，父进程已把其目录放进 sys.path
 
     os.environ["CUDA_VISIBLE_DEVICES"] = job.gpu
@@ -49,7 +51,9 @@ def run_one(payload: tuple) -> dict[str, Any]:
     raw_path = worker_dir / "hdf5_files" / f"{job.task}_ep{job.episode}_seed{job.seed}.h5"
     record_env: Any | None = None
     env_package = os.environ.get("ROBOMME_ENV_PACKAGE", "robomme")
-    binding: dict[str, Any] = {"env_package": env_package, "env_module": None, "wrapper_modules": None}
+    binding: dict[str, Any] = {"env_package": env_package, "env_module": None, "wrapper_modules": None,
+                               "builder_route": builder_route, "builder_episode": None, "builder_tier": None,
+                               "recovery_mode": job.recovery_mode}
     caught: BaseException | None = None
     error_traceback: str | None = None
     try:
@@ -98,6 +102,22 @@ def run_one(payload: tuple) -> dict[str, Any]:
             # D 路走的是步 4 的原值回注通道 native_episode_spec：原抽样照常执行、
             # 用于建场景的值来自冻结规格；旧的 episode_spec 注入通道保持不变（红线 R9）。
             kwargs["native_episode_spec"] = episode_spec
+        if builder_route is not None:
+            if builder_route != "test-hard" or env_package != "robomme_hard":
+                raise ValueError(f"builder_route={builder_route!r} 只允许 test-hard 且环境包为 robomme_hard")
+            builder_mod = importlib.import_module("robomme_hard.env_record_wrapper.hard_builder")
+            builder = builder_mod.BenchmarkEnvBuilder(job.task, dataset="test-hard")
+            hits = [ep for ep in range(builder.get_episode_num())
+                    if builder.resolve_identity(ep)["tier"] == "xhard0"
+                    and builder.resolve_identity(ep)["seed"] == job.seed
+                    and builder.resolve_identity(ep)["source_episode"] == job.episode]
+            if len(hits) != 1:
+                raise ValueError(f"test-hard builder 里找不到唯一的 xhard0 条目：{job.task} seed={job.seed} ep={job.episode}")
+            chosen = builder._hard_env_kwargs(hits[0])
+            if set(chosen) != {"seed", "difficulty"} or chosen != {"seed": job.seed, "difficulty": job.difficulty}:
+                raise ValueError(f"builder 路线的环境参数与官方 job 不符：{chosen}")
+            kwargs.update(chosen)
+            binding.update(builder_episode=hits[0], builder_tier="xhard0")
         # ─────────────────────────────────────────────────────────────────────
         worker_dir.mkdir(parents=True, exist_ok=False)
         base_env = gym.make(job.task, **kwargs)
@@ -177,7 +197,13 @@ def run_one(payload: tuple) -> dict[str, Any]:
                         {"mismatches": recorder.mismatches,
                          "value_points": len(recorder.trace),
                          "consumed": sorted(consumed),
-                         "unused": unused},
+                         "unused": unused,
+                         # V7 分层回注（§1.5）：layout_drift 已计入 mismatches；layout_overridden 只报告
+                         "layered": bool(getattr(recorder, "layered", False)),
+                         "layout_hit": len({i["path"] for i in recorder.trace
+                                            if i["path"] in (getattr(recorder, "_layered_hit", None) or ())}),
+                         "layout_overridden": int(getattr(recorder, "layout_overridden", 0)),
+                         "layout_drift": int(getattr(recorder, "layout_drift", 0))},
                         ensure_ascii=False, indent=2,
                     ) + "\n",
                     encoding="utf-8",

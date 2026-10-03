@@ -1,0 +1,15 @@
+{"task": "BinFill", "seed": 543501, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "BinFill", "seed": 543900, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "ButtonUnmask", "seed": 583500, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "ButtonUnmask", "seed": 584701, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "ButtonUnmaskSwap", "seed": 571500, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "InsertPeg", "seed": 630300, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "InsertPeg", "seed": 631100, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "InsertPeg", "seed": 631501, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "InsertPeg", "seed": 632300, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "InsertPeg", "seed": 632700, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "InsertPeg", "seed": 633100, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "InsertPeg", "seed": 634700, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "MoveCube", "seed": 643900, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "PickHighlight", "seed": 622300, "official": ["timeout", 1301], "hard": ["timeout", 1300]}
+{"task": "VideoPlaceOrder", "seed": 610701, "official": ["timeout", 1344], "hard": ["timeout", 1300]}

@@ -34,7 +34,7 @@ from .utils.sampling_config import assert_native_decision, fill_missing_newvalue
 from .utils import reset_panda
 from .utils.difficulty import normalize_robomme_difficulty, is_newvalue_difficulty
 from .utils.SceneGenerationError import SceneGenerationError
-from .utils.xhard import DISTRACTOR_COLORS, cube_obb2d_exact
+from .utils.xhard import BLOCK_DISTRACTOR_COLORS, cube_obb2d_exact
 
 from ..logging_utils import logger
 
@@ -103,13 +103,13 @@ NATIVE_SAMPLING = {
 #   （删 corner_bias 键，推翻 V4 J5），与干扰方块一样在区域内均匀抽；V5 L46 半宽 0.2 → 0.25
 #   （P1 探针：10 cm 三块团 33.5% → 10.2%，演示 13/13）。
 # * goal_position_policy：放置圆盘独立一套区域参数（C1：圆盘可以留在中间，值沿用原区域，V5 不变）。
-# * distractor：三个干扰方块，黄／青／品红各一（DISTRACTOR_COLORS），在方块区域内均匀放置；V5 L46 半宽同为 0.25。
+# * distractor：四个干扰方块，黄／青／品红／第 4 色各一（BLOCK_DISTRACTOR_COLORS，V7），在方块区域内均匀放置；V5 L46 半宽同为 0.25。
 # * min_center_dist_m：V5 L44，6 块（3 有色 + 3 干扰）两两中心距下限（米），留一个方块宽的缝。
 XHARD_DECISION = {
     "target_cube_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.25},
     "goal_position_policy": {"region_center": [-0.1, 0], "region_half_size": 0.2},
     "distractor": {
-        "colors": [entry["name"] for entry in DISTRACTOR_COLORS],
+        "colors": [entry["name"] for entry in BLOCK_DISTRACTOR_COLORS],
         "region_center": [-0.1, 0],
         "region_half_size": 0.25,
     },
@@ -119,9 +119,9 @@ XHARD_DECISION = {
 
 def _newvalue_decision(n_distractors):
     """V6（计划 2.8）：新值族某档的 decision 子树——键结构与 ``XHARD_DECISION`` 完全相同，
-    只把干扰方块颜色截成 ``DISTRACTOR_COLORS`` 前 k 个；区域、中心距等其余字段沿用 xhard。"""
+    只把干扰方块颜色截成 ``BLOCK_DISTRACTOR_COLORS`` 前 k 个；区域、中心距等其余字段沿用 xhard。"""
     tree = copy.deepcopy(XHARD_DECISION)
-    tree["distractor"]["colors"] = [entry["name"] for entry in DISTRACTOR_COLORS[:n_distractors]]
+    tree["distractor"]["colors"] = [entry["name"] for entry in BLOCK_DISTRACTOR_COLORS[:n_distractors]]
     return tree
 
 
@@ -130,7 +130,7 @@ NEWVALUE_DECISION = {
     "xhard1": _newvalue_decision(1),
     "xhard2": _newvalue_decision(2),
     "xhard3": _newvalue_decision(3),
-    "xhard4": _newvalue_decision(min(4, len(DISTRACTOR_COLORS))),
+    "xhard4": _newvalue_decision(4),
 }
 
 # V5 L45：xhard 方块（有色 + 干扰）每块的拒绝采样预算（原三档沿用 spawn_random_cube 默认 256，不受影响）。
@@ -226,30 +226,31 @@ class PickXtimes(BaseEnv):
     'number_max':3
     }
 
-    # V4 xhard（派生自 hard，计划 2.4）：颜色 3 不变，重复抓放次数 [6,15]。
+    # v8 定值（1001 方案 §1 表 1 / §2.1）：每档一个定数，抓放次数 6/7/8/9、干扰块 1/2/3/4（BLOCK_DISTRACTOR_COLORS）。
+    # xhard4=9 次只为保住四键结构（v7 兼容的配置与测试），不交付、不评估（9 次超 1600 步上限，不得用于生成）；
+    # 本环境不加 xhard5；圆盘区域（XHARD_DECISION）是非梯度参数，不动。
     config_xhard4 = {
         'color': 3,
-        'number_min': 13,
-        'number_max': 15,
+        'number_min': 9,
+        'number_max': 9,
     }
 
-    # V6 新值族：次数与干扰数按定稿分档。
     config_xhard1 = {
         'color': 3,
         'number_min': 6,
-        'number_max': 7,
+        'number_max': 6,
     }
 
     config_xhard2 = {
         'color': 3,
-        'number_min': 8,
-        'number_max': 9,
+        'number_min': 7,
+        'number_max': 7,
     }
 
     config_xhard3 = {
         'color': 3,
-        'number_min': 10,
-        'number_max': 12,
+        'number_min': 8,
+        'number_max': 8,
     }
 
     # Combine into a dictionary
@@ -728,11 +729,11 @@ class PickXtimes(BaseEnv):
         """
         min_center_dist = float(self._sampling["decision"][self.difficulty]["min_center_dist_m"])
         dcfg = self._sampling["decision"][self.difficulty]["distractor"]
-        palette = {entry["name"]: entry["rgba"] for entry in DISTRACTOR_COLORS}
+        palette = {entry["name"]: entry["rgba"] for entry in BLOCK_DISTRACTOR_COLORS}
         names = list(dcfg["colors"])
         unknown = [name for name in names if name not in palette]
         if unknown:
-            raise SceneGenerationError(f"PickXtimes xhard: 干扰色不在 DISTRACTOR_COLORS 里: {unknown}")
+            raise SceneGenerationError(f"PickXtimes xhard: 干扰色不在 BLOCK_DISTRACTOR_COLORS 里: {unknown}")
         self._spec.record("objects.distractors", [{"name": f"cube_{n}_0", "color": n} for n in names])
         for name in names:
             cube_name = f"cube_{name}_0"

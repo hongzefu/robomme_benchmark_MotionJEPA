@@ -7,7 +7,7 @@ import cv2
 import imageio
 
 from pathlib import Path
-from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, TIER_MAX_STEPS
+from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
 
 class VideoRecorder:
     BORDER_COLOR = (255, 0, 0)
@@ -82,12 +82,11 @@ for task in TASKS:
         env_id=task,
         dataset="test-hard",
         action_space="joint_angle", # change this to your model's action space
-        max_steps=1300,  # we set 1300 in MME-VLA experiments.
+        max_steps=1600,  # V9: fixed 1600 for every episode (no per-tier lookup).
     )
     episode_count = env_builder.get_episode_num()
     for episode in range(episode_count):
-        seed, tier = env_builder.resolve_episode(episode)
-        env = env_builder.make_env_for_episode(episode, max_steps=TIER_MAX_STEPS[tier])
+        env = env_builder.make_env_for_episode(episode)
         obs, info = env.reset()
         task_goal = info["task_goal"][0] # you can take alternative task goals if you want
         print(f"\nTask goal: {task_goal}")

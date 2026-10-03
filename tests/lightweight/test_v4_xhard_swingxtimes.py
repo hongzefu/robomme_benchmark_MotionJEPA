@@ -34,7 +34,7 @@ from robomme_hard.robomme_env.utils.sampling_config import (  # noqa: E402
     _strip_xhard,
     assert_native_decision,
 )
-from robomme_hard.robomme_env.utils.xhard import DISTRACTOR_COLORS  # noqa: E402
+from robomme_hard.robomme_env.utils.xhard import BLOCK_DISTRACTOR_COLORS, DISTRACTOR_COLORS  # noqa: E402
 
 MOD = importlib.import_module("robomme_hard.robomme_env.SwingXtimes")
 CLS = MOD.SwingXtimes
@@ -54,13 +54,16 @@ ORIGINAL_DECISION = {
 def test_original_three_configs_unchanged() -> None:
     for difficulty, expected in ORIGINAL_CONFIGS.items():
         assert CLS.configs[difficulty] == expected
-    # V6（计划 2.8）：新增 xhard1/2/3，共 7 档
-    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard4", "xhard1", "xhard2", "xhard3"}
+    # V6（计划 2.8）：新增 xhard1/2/3，共 7 档；v8（1001 方案 §2.1）末尾追加 xhard5，共 8 档
+    assert set(CLS.configs) == {"easy", "medium", "hard", "xhard4", "xhard1", "xhard2", "xhard3", "xhard5"}
     assert list(CLS.configs)[:4] == ["hard", "easy", "medium", "xhard4"]
+    assert list(CLS.configs)[-1] == "xhard5"
 
 
 def test_xhard_config_values() -> None:
-    assert CLS.configs["xhard4"] == {"color": 3, "number_min": 10, "number_max": 11}
+    # v8（1001 方案 §1 表 1）：xhard4 摆动轮数定为 7、xhard5 定为 8
+    assert CLS.configs["xhard4"] == {"color": 3, "number_min": 7, "number_max": 7}
+    assert CLS.configs["xhard5"] == {"color": 3, "number_min": 8, "number_max": 8}
 
 
 def test_decision_visible_part_unchanged() -> None:
@@ -70,13 +73,15 @@ def test_decision_visible_part_unchanged() -> None:
 
 def test_decision_xhard_entries() -> None:
     decision, _ = MOD.native_blocks(CLS)
-    assert decision["number_range"]["xhard4"] == [10, 11]
+    assert decision["number_range"]["xhard4"] == [7, 7]
     assert decision["color"]["xhard4"] == 3
     # V5 S3f（计划 2.14）：新增 min_center_dist_m（L44）
     assert set(decision["xhard4"]) == {"distractor", "min_center_dist_m"}
     assert decision["xhard4"]["min_center_dist_m"] == 0.08
     dcfg = decision["xhard4"]["distractor"]
-    assert dcfg["colors"] == [entry["name"] for entry in DISTRACTOR_COLORS] == ["yellow", "cyan", "magenta"]
+    # V7：xhard4 干扰块 4 个，取 BLOCK_DISTRACTOR_COLORS；三色池本身不动
+    assert dcfg["colors"] == [entry["name"] for entry in BLOCK_DISTRACTOR_COLORS] == ["yellow", "cyan", "magenta", "orange"]
+    assert [entry["name"] for entry in DISTRACTOR_COLORS] == ["yellow", "cyan", "magenta"]
     # 干扰方块区域沿用原方块区域
     _, native = MOD.native_blocks(CLS)
     assert dcfg["region_center"] == native["positions"]["cubes"]["region_center"]
@@ -127,25 +132,26 @@ def test_disk_avoid_obb_shape() -> None:
 
 
 # ---------------------------------------------------------------------------
-# V6（计划 2.8）：新值族 xhard1/2/3——次数区间内插、干扰块数 1/2/3（DISTRACTOR_COLORS 前 k 个），其余字段沿用 xhard
+# v8（1001 方案 §1 表 1）：新值族 xhard1..5——摆动轮数 4/5/6/7/8 定值（原 V7 5/7/9/11）、干扰块数 1/2/3/4/4
+# （BLOCK_DISTRACTOR_COLORS 前 k 个，只有 4 色故 xhard5 取 4），其余字段沿用 xhard
 # ---------------------------------------------------------------------------
-V6_NUMBER_RANGE = {'xhard1': (4, 5), 'xhard2': (6, 7), 'xhard3': (8, 9), 'xhard4': (10, 11)}
-V6_DISTRACTOR_COUNT = {"xhard1": 1, "xhard2": 2, "xhard3": 3, "xhard4": min(4, len(DISTRACTOR_COLORS))}
+V6_NUMBER_RANGE = {'xhard1': (4, 4), 'xhard2': (5, 5), 'xhard3': (6, 6), 'xhard4': (7, 7), 'xhard5': (8, 8)}
+V6_DISTRACTOR_COUNT = {"xhard1": 1, "xhard2": 2, "xhard3": 3, "xhard4": 4, "xhard5": 4}
 
 
-@pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3"])
+@pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3", "xhard5"])
 def test_v6_newvalue_config_values(tier) -> None:
     lo, hi = V6_NUMBER_RANGE[tier]
     assert CLS.configs[tier] == {"color": 3, "number_min": lo, "number_max": hi}
 
 
-@pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3", "xhard4"])
+@pytest.mark.parametrize("tier", ["xhard1", "xhard2", "xhard3", "xhard4", "xhard5"])
 def test_v6_newvalue_decision_subtree(tier) -> None:
     decision, _ = MOD.native_blocks(CLS)
     # 键结构与 xhard 完全相同；只有干扰色列表按档截取前 k 个
     assert set(decision[tier]) == set(decision["xhard4"])
     k = V6_DISTRACTOR_COUNT[tier]
-    assert decision[tier]["distractor"]["colors"] == [entry["name"] for entry in DISTRACTOR_COLORS[:k]]
+    assert decision[tier]["distractor"]["colors"] == [entry["name"] for entry in BLOCK_DISTRACTOR_COLORS[:k]]
     other = {key: value for key, value in decision[tier].items() if key != "distractor"}
     assert other == {key: value for key, value in decision["xhard4"].items() if key != "distractor"}
     dcfg = {key: value for key, value in decision[tier]["distractor"].items() if key != "colors"}
@@ -166,3 +172,18 @@ def test_v6_partial_snapshot_with_xhard4_is_filled() -> None:
     resolved = MOD._resolve_sampling_config(CLS, {"decision": old, "native": native})
     assert resolved["decision"]["xhard1"] == decision["xhard1"]
     assert resolved["decision"]["xhard4"] == decision["xhard4"]
+
+
+def test_v8_xhard5_registered_and_stripped() -> None:
+    """v8：xhard5 只在本环境（与 StopCube）登记；剥掉新值键后原三档可见部分不变，NEWVALUE_DECISION 含 xhard5。"""
+    assert MOD.NEWVALUE_DECISION["xhard5"] == MOD.NEWVALUE_DECISION["xhard4"]
+    decision, _ = MOD.native_blocks(CLS)
+    assert decision["xhard5"] == MOD.NEWVALUE_DECISION["xhard5"]
+    assert decision["number_range"]["xhard5"] == [8, 8]
+    assert _strip_xhard(decision) == ORIGINAL_DECISION
+    # xhard5 收窄被守卫放行
+    _, native = MOD.native_blocks(CLS)
+    narrowed = copy.deepcopy(decision)
+    narrowed["xhard5"]["min_center_dist_m"] = 0.07
+    resolved = MOD._resolve_sampling_config(CLS, {"decision": narrowed, "native": native})
+    assert resolved["decision"]["xhard5"]["min_center_dist_m"] == 0.07

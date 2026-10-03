@@ -20,7 +20,8 @@ import _rollout  # noqa: E402
 from robomme_hard.env_record_wrapper import hard_specs  # noqa: E402
 
 TIER = "xhard1"
-RULE = hard_specs.seed_rule_for(TIER, "v6")
+#: v8 阶段 1：v6 seed 规则已删，夹具改用 v7 规则（/2 schema 同样接受 v7 规则）
+RULE = hard_specs.seed_rule_for(TIER, "v7")
 
 
 def _specs(tmp_path: Path, candidates: int = 5, select=(0, 1)) -> Path:
@@ -35,7 +36,7 @@ def _specs(tmp_path: Path, candidates: int = 5, select=(0, 1)) -> Path:
              "sampling_config": {"BinFill": {"decision": {}, "native": {}}, "PickXtimes": {"decision": {}, "native": {}}},
              "recovery_rule": {"rule": "off"}, "identity_source": "formula", "run_id": "fixture",
              "draw_stats": {}, "provenance": {}}
-    header, rows = _freeze.freeze(drafts, parts, select, candidates)
+    header, rows = _freeze.freeze(drafts, parts, select, candidates, schema=hard_specs.SCHEMA)
     path = tmp_path / "specs.jsonl"
     _freeze.write_jsonl_exclusive(path, [header, *rows])
     return path

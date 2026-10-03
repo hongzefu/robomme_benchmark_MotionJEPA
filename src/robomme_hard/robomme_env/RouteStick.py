@@ -169,8 +169,9 @@ def _native_decision(cls):
         # 不再从类属性读。键名为 xhard，守卫只放行这一子树取新值，原三档可见部分不变。
         "xhard4": {"segment_count_range": list(cls.config_xhard4["length"])},
         # V6（计划 2.12）：追加 xhard1/2/3 三棵同结构子树，值取各档 config 的 length（xhard 保持首位不变）
+        # v8：xhard4 写字面值（不再用 NEWVALUE_DIFFICULTIES[-1] 指代最难档）
         **{d: {"segment_count_range": list(cls.configs[d]["length"])}
-           for d in NEWVALUE_DIFFICULTIES if d != NEWVALUE_DIFFICULTIES[-1]},
+           for d in NEWVALUE_DIFFICULTIES if d != "xhard4"},
     }
 
 
@@ -182,7 +183,7 @@ def _resolve_sampling_config(cls, override):
     assert_native_decision(decision, decision_default, cls.__name__)
     # V6：V5 快照（已有顶层 xhard 子树）缺 xhard1/2/3 时从源码补齐；V4 及更早的快照不补，
     # 保持 V5「V4 header 在新值档上直接报错、不静默取源码新值」的口径 13。
-    if NEWVALUE_DIFFICULTIES[-1] in decision:
+    if "xhard4" in decision:
         fill_missing_newvalue(decision, decision_default)
     resolved = native
     resolved["parameters"].setdefault("configs", copy.deepcopy(cls.configs))
@@ -234,12 +235,15 @@ class RouteStick(BaseEnv):
     # 均匀抽样均值 30 s；执行段 50·L（+1 初始帧），L=21 时 1050 步，在评估 1301 步预算内（截断点 L≥27）。
     # 抽样点与顺序不变，只改值域；xhard 实际消费的是 decision.xhard.segment_count_range（冻进 header），
     # 这里的 length 是它的默认来源。
+    # V7 定值：段数 10/13/16/19（0928 方案 §3.2.2）
     config_xhard4 = {
-    'length':[17,21],
+    'length':[19,19],
     'backtrack':True,
     }
 
     # V6（计划 2.12）：hard 与 xhard 之间插入三档，布局与游走规则沿用 xhard，只改段数 L；backtrack 恒 True
+    # v8（1001 方案 §1 表 1 / §2.1）：xhard1～3 由定值 10/13/16 改区间 [8,10]/[11,13]/[14,16]，
+    # torch.randint(lo, hi+1) 在区间内均匀抽；xhard4 仍 19（不交付）。
     config_xhard1 = {
     'length':[8,10],
     'backtrack':True,

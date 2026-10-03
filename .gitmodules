@@ -1,0 +1,8 @@
+[submodule "third_party/mme-vla"]
+	path = third_party/mme-vla
+	url = https://github.com/hongzefu/robomme_policy_learning_MotionJEPA.git
+	branch = eval-official-v1
+[submodule "third_party/SimpleMemVLA"]
+	path = third_party/SimpleMemVLA
+	url = https://github.com/hongzefu/SimpleMemVLA.git
+	branch = eval-official-v1

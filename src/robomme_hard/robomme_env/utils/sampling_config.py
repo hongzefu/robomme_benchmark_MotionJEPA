@@ -69,13 +69,14 @@ def split_sampling_config(override, native_default, decision_default):
     return decision, native
 
 
-# V6：活动新值键为 xhard1..xhard4；只读 V5 投影也识别旧键 xhard，以便保持旧快照不变。
-from .difficulty import NEWVALUE_DIFFICULTIES
+# V6：活动新值键为 xhard1..xhard4；v8 加 xhard5（只有 SwingXtimes、StopCube 申报）。
+# 只读 V5 投影也识别旧键 xhard，以便保持旧快照不变。
+from .difficulty import ALL_NEWVALUE_TIERS
 
 #: 活动新值族的最难档键。
 XHARD4_KEY = "xhard4"
-#: decision 里所有「新值」子树的键名（任意深度）
-NEWVALUE_KEYS = frozenset(NEWVALUE_DIFFICULTIES)
+#: decision 里所有「新值」子树的键名（任意深度）；v8 起含 xhard5，否则剥不掉 Swing／StopCube 的 xhard5 子树
+NEWVALUE_KEYS = frozenset(ALL_NEWVALUE_TIERS)
 #: V5 冻结快照中的历史新值键；仅用于比较剥离，不作为可用难度档。
 LEGACY_NEWVALUE_KEYS = frozenset({"xhard"})
 _STRIP_NEWVALUE_KEYS = NEWVALUE_KEYS | LEGACY_NEWVALUE_KEYS
@@ -104,7 +105,8 @@ def _xhard_shape(node, prefix="", tier=None):
 
 
 #: xhard1/2/3 是在 xhard4 之后新加的档；缺失时仅从同层 xhard4 配置补齐。
-V6_ADDED_KEYS = frozenset(NEWVALUE_DIFFICULTIES[:-1])
+#: v8 写死三键（原 ``NEWVALUE_DIFFICULTIES[:-1]``），xhard5 不在补齐范围内。
+V6_ADDED_KEYS = frozenset({"xhard1", "xhard2", "xhard3"})
 
 
 def fill_missing_newvalue(decision, decision_default):

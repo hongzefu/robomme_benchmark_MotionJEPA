@@ -23,7 +23,12 @@ REPO_ROOT = find_repo_root(__file__)
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from robomme_hard.robomme_env.utils.xhard import DISTRACTOR_COLORS, corner_push, hsv_floor_rgb  # noqa: E402
+from robomme_hard.robomme_env.utils.xhard import (  # noqa: E402
+    BLOCK_DISTRACTOR_COLORS,
+    DISTRACTOR_COLORS,
+    corner_push,
+    hsv_floor_rgb,
+)
 
 
 def test_zero_bias_is_identity_object() -> None:
@@ -61,6 +66,22 @@ def test_distractor_palette_matches_b2() -> None:
     assert [(c["name"], c["rgba"]) for c in DISTRACTOR_COLORS] == [
         ("yellow", (1, 1, 0, 1)), ("cyan", (0, 1, 1, 1)), ("magenta", (1, 0, 1, 1)),
     ]
+
+
+def test_block_distractor_palette_adds_fourth_color() -> None:
+    """V7（0928 方案 §3.2.2、R11）：PickXtimes／SwingXtimes 的干扰块 1/2/3/4 需要第 4 色，
+    只加在 BLOCK_DISTRACTOR_COLORS；三色池 DISTRACTOR_COLORS 原样（Unmask／Swap 采样器要求逐字相等）。"""
+    assert len(DISTRACTOR_COLORS) == 3
+    assert BLOCK_DISTRACTOR_COLORS[:3] == DISTRACTOR_COLORS
+    assert len(BLOCK_DISTRACTOR_COLORS) == 4
+    fourth = BLOCK_DISTRACTOR_COLORS[3]
+    assert fourth == {"name": "orange", "rgba": (1, 0.5, 0, 1)}
+    names = [c["name"] for c in BLOCK_DISTRACTOR_COLORS]
+    assert len(set(names)) == 4
+    # 第 4 色不得与红／蓝／绿目标色或三色池撞色
+    assert fourth["name"] not in {"red", "blue", "green"}
+    assert fourth["rgba"] not in {(1, 0, 0, 1), (0, 0, 1, 1), (0, 1, 0, 1)}
+    assert fourth["rgba"] not in {c["rgba"] for c in DISTRACTOR_COLORS}
 
 
 def test_hsv_floor_color_gamut() -> None:

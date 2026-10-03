@@ -4,7 +4,7 @@
 
 纯几何与假环境，不起 SAPIEN 场景：
 
-* 配置：``decision.xhard4.distractor`` 沿用外环预设（10 个、V4 环带、cube [5,5]），``distractor_swap`` 配置块与校验；
+* 配置：``decision.xhard4.distractor`` 沿用外环预设的环带与规则（V7 定值 8 个、cube [4,4]；本文件的布局夹具仍用 V5 的 10 个），``distractor_swap`` 配置块与校验；
 * 几何件：向量化可见判据与精确判据逐点一致；H1 守卫与 ``check_multi_swap_sweep`` 的「静止物 × 交换者」判定一致；
   内环预演与 V4 ``predict_swap_sweeps`` 同语义；
 * L20 反例：V4 实跑碰撞局 VUS seed 4500300 的内环布局在 reset 预判第 1 段被拒（bin_2 撞 bin_1）；
@@ -120,7 +120,8 @@ def _plan(lay, recorder=None, swap_cfg=None):
 def test_decision_xhard4保留V5外环预设并使用O4配置(task):
     module, cls = MODULES[task]
     decision, _native = module.native_blocks(cls)
-    assert decision["xhard4"]["distractor"] == {**V5_DISTRACTOR_PRESETS[task], "count": 10, "cube_count_range": [5, 5]}
+    # V7 定值（0928 方案 §3.2.2）：外环 2/4/6/8，xhard4 为 8 个、含 cube [4,4]；其余键沿用 V5 预设
+    assert decision["xhard4"]["distractor"] == {**V5_DISTRACTOR_PRESETS[task], "count": 8, "cube_count_range": [4, 4]}
     assert decision["xhard4"]["distractor"]["ring_max_abs_xy"] == [0.2675, 0.45]
     swap = decision["xhard4"]["distractor_swap"]
     assert swap["enabled"] is True and swap["lane_offset"] == 0.07 and swap["layout_max_attempts"] == 16

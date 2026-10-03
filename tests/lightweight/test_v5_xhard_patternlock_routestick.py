@@ -6,10 +6,10 @@
 ``build_gray_white_target`` 换成桩、``scene`` 换成 MagicMock，直接跑真实的 ``_load_scene``。
 取值点、随机流、任务表与真实 reset 完全同一段代码，只是不建物理场景。
 
-* PatternLock：``config_xhard4.length == [21, 25]``；xhard4 搜索预算 20000 冻进 ``decision.xhard4``；
-  路径含 21～25 个不重复合法节点，节点均属于 5×5 网格；小预算下搜索耗尽抛真 ``SceneGenerationError``，
+* PatternLock：``config_xhard4.length == [21, 21]``（V7 定值 12/15/18/21）；xhard4 搜索预算 20000 冻进 ``decision.xhard4``；
+  路径恰含 21 个不重复合法节点，节点均属于 5×5 网格；小预算下搜索耗尽抛真 ``SceneGenerationError``，
   原三档耗尽仍静默兜底；回放被改坏的规格被复核挡住；V4 形状的 decision 被守卫拒绝。
-* RouteStick：``config_xhard4.length == [17, 21]``；L 范围冻进 ``decision.xhard4.segment_count_range``，
+* RouteStick：``config_xhard4.length == [19, 19]``（V7 定值 10/13/16/19）；L 范围冻进 ``decision.xhard4.segment_count_range``，
   回放按 header（传入的 sampling_config）取值而不是类属性；抽样点与顺序不变；V4 header 被拒。
 
     uv run --no-sync python -m pytest tests/lightweight/test_v5_xhard_patternlock_routestick.py -q
@@ -69,6 +69,14 @@ RS_ORIGINAL_DECISION = {
 # 规划期探针 P3 与 V4 冻结规格里用过的 seed，外加几个新 seed
 PL_SEEDS = [5500900, 5500000, 5500300, 5500600, 7100001]
 
+# V7 定值（0928 方案 §3.2.2；用户 2026-09-29 定 PatternLock 12/15/18/21，不是 24）
+# v8（1001 方案 §1 表 1）：xhard1～3 由 V7 定值（PL 12/15/18、RS 10/13/16）改区间；xhard4 不动（21／19，不交付）。
+# 变量名沿用 V7_*，下方 V6 段的回归测试直接引用。
+PL_V7_LENGTHS = {"xhard1": [9, 12], "xhard2": [13, 15], "xhard3": [16, 18], "xhard4": [21, 21]}
+RS_V7_LENGTHS = {"xhard1": [8, 10], "xhard2": [11, 13], "xhard3": [14, 16], "xhard4": [19, 19]}
+# 包内 v6 规格 header 的 RouteStick xhard4 区间：回放按 header 取值、且区间宽时才能核抽样位置
+RS_V6_XHARD4_RANGE = [17, 21]
+
 
 def _fake_target(**kw):
     p = np.asarray(kw["initial_pose"].p, dtype=float)
@@ -111,14 +119,14 @@ def _is_king_path(nodes, n):
 def test_pl_original_three_and_xhard_config() -> None:
     for difficulty, expected in PL_ORIGINAL_CONFIGS.items():
         assert PL.configs[difficulty] == expected
-    assert PL.config_xhard4 == {"grid": 5, "length": [21, 25]}
+    assert PL.config_xhard4 == {"grid": 5, "length": PL_V7_LENGTHS["xhard4"]}
     assert PL.configs["xhard4"] is PL.config_xhard4
 
 
 def test_pl_decision_and_native() -> None:
     decision, native = PL_MOD.native_blocks(PL)
     assert _strip_xhard(decision) == PL_ORIGINAL_DECISION
-    assert decision["path_length_range"]["xhard4"] == [21, 25]
+    assert decision["path_length_range"]["xhard4"] == PL_V7_LENGTHS["xhard4"]
     assert decision["grid"]["xhard4"] == 5
     assert decision["xhard4"] == {"path_search_max_attempts": 20000}
     # 原三档消费的 native 预算不变
@@ -129,11 +137,11 @@ def test_pl_decision_and_native() -> None:
 
 @pytest.mark.parametrize("seed", PL_SEEDS)
 def test_pl_length_within_final_range(seed) -> None:
-    """xhard4 路径位于 [21,25]，且为合法 8 邻接不重访路径。"""
+    """xhard4 路径恰为 21 个节点（V7 定值），且为合法 8 邻接不重访路径。"""
     env = _load(PL_MOD, PL, seed, "xhard4")
     doc = env._spec.to_dict()
     nodes = doc["actions"]["path_nodes"]
-    assert 21 <= len(nodes) <= 25
+    assert len(nodes) == 21
     assert len(nodes) == len(set(nodes))
     assert set(nodes) <= set(range(25))
     assert _is_king_path(nodes, 5)
@@ -156,7 +164,7 @@ def test_pl_exhaustion_via_native_budget_does_not_affect_xhard() -> None:
     def tweak(env):
         env._sampling["parameters"]["path_selection"]["max_attempts"] = 1
     env = _load(PL_MOD, PL, PL_SEEDS[0], "xhard4", tweak=tweak)
-    assert 21 <= len(env._spec.to_dict()["actions"]["path_nodes"]) <= 25
+    assert len(env._spec.to_dict()["actions"]["path_nodes"]) == 21
 
 
 def test_pl_original_three_exhaustion_stays_silent() -> None:
@@ -205,20 +213,25 @@ def test_pl_v4_decision_rejected() -> None:
 def test_rs_original_three_and_xhard_config() -> None:
     for difficulty, expected in RS_ORIGINAL_CONFIGS.items():
         assert RS.configs[difficulty] == expected
-    assert RS.config_xhard4 == {"length": [17, 21], "backtrack": True}
+    assert RS.config_xhard4 == {"length": RS_V7_LENGTHS["xhard4"], "backtrack": True}
 
 
 def test_rs_decision_freezes_segment_range() -> None:
     decision, _ = RS_MOD.native_blocks(RS)
     assert _strip_xhard(decision) == RS_ORIGINAL_DECISION
-    assert decision["xhard4"] == {"segment_count_range": [17, 21]}
+    assert decision["xhard4"] == {"segment_count_range": RS_V7_LENGTHS["xhard4"]}
 
 
 def test_rs_segment_range_and_draw_position() -> None:
-    """L ∈ [17,21] 且各值都出现；抽样点与顺序不变：theta、4 次障碍色之后的第一次 randint。"""
+    """V7 定值 L 恒为 19；另用 v6 header 的宽区间 [17,21] 回放，核 L 各值都出现且抽样点与顺序不变：
+    theta、4 次障碍色之后的第一次 randint。"""
+    for seed in range(0, 10):
+        assert _load(RS_MOD, RS, seed, "xhard4")._spec.to_dict()["objects"]["L"] == 19
+    sampling = _sampling_with(RS_MOD, RS, lambda d: d["xhard4"].__setitem__("segment_count_range",
+                                                                            list(RS_V6_XHARD4_RANGE)))
     seen = set()
     for seed in range(0, 160):
-        env = _load(RS_MOD, RS, seed, "xhard4")
+        env = _load(RS_MOD, RS, seed, "xhard4", sampling=copy.deepcopy(sampling))
         doc = env._spec.to_dict()
         steps = doc["objects"]["L"]
         assert 17 <= steps <= 21
@@ -239,7 +252,7 @@ def test_rs_segment_range_read_from_header_not_class() -> None:
     sampling = _sampling_with(RS_MOD, RS, lambda d: d["xhard4"].__setitem__("segment_count_range", [21, 21]))
     for seed in (0, 1, 2):
         env = _load(RS_MOD, RS, seed, "xhard4", sampling=sampling)
-        assert env._sampling["parameters"]["configs"]["xhard4"]["length"] == [17, 21]
+        assert env._sampling["parameters"]["configs"]["xhard4"]["length"] == RS_V7_LENGTHS["xhard4"]
         assert env._spec.to_dict()["objects"]["L"] == 21
 
 
@@ -267,12 +280,12 @@ def test_rs_replay_checks_frozen_length() -> None:
 
 # ── V6（计划 2.11 / 2.12）：hard 与 xhard 之间插入 xhard1/2/3 ─────────────────
 
-PL_NEW_LENGTHS = {"xhard1": [9, 12], "xhard2": [13, 16], "xhard3": [17, 20], "xhard4": [21, 25]}
-RS_NEW_LENGTHS = {"xhard1": [8, 10], "xhard2": [11, 13], "xhard3": [14, 16], "xhard4": [17, 21]}
+PL_NEW_LENGTHS = PL_V7_LENGTHS
+RS_NEW_LENGTHS = RS_V7_LENGTHS
 
 
 def test_v6_pl_seven_tiers_config_and_decision() -> None:
-    """7 档齐全；新档 5×5、节点数按计划 2.11；decision 四棵新值子树同结构、预算都是 20000。"""
+    """7 档齐全（v8 不加 xhard5）；新档 5×5、节点数按 v8 区间；decision 四棵新值子树同结构、预算都是 20000。"""
     assert list(PL.configs) == ["hard", "easy", "medium", "xhard4", "xhard1", "xhard2", "xhard3"]
     decision, _ = PL_MOD.native_blocks(PL)
     for tier, length in PL_NEW_LENGTHS.items():
@@ -309,7 +322,7 @@ def test_v6_pl_partial_snapshot_filled() -> None:
         decision["path_length_range"].pop(tier)
     resolved = PL_MOD._resolve_sampling_config(PL, {"decision": decision, "native": native})
     assert resolved["decision"]["xhard1"] == {"path_search_max_attempts": 20000}
-    assert resolved["decision"]["path_length_range"]["xhard3"] == [17, 20]
+    assert resolved["decision"]["path_length_range"]["xhard3"] == PL_V7_LENGTHS["xhard3"]
 
 
 def test_v6_rs_seven_tiers_config_and_decision() -> None:
@@ -359,7 +372,9 @@ def test_v6_rs_partial_snapshot_filled_v4_not() -> None:
     for tier in ("xhard1", "xhard2", "xhard3"):
         decision.pop(tier)
     env = _load(RS_MOD, RS, 3, "xhard2", sampling={"decision": copy.deepcopy(decision), "native": native})
-    assert 11 <= env._spec.to_dict()["objects"]["L"] <= 13
+    # v8：xhard2 由定值 13 改区间 [11, 13]，补齐后的 L 落在源码区间内即可（原写「== 区间下端」只在定值时成立）
+    low, high = RS_V7_LENGTHS["xhard2"]
+    assert low <= env._spec.to_dict()["objects"]["L"] <= high
     decision.pop("xhard4")
     with pytest.raises(ValueError, match="segment_count_range"):
         _load(RS_MOD, RS, 3, "xhard2", sampling={"decision": decision, "native": native})

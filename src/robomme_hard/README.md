@@ -1,8 +1,8 @@
-# robomme_hard：RoboMME 新值四档（xhard1～xhard4）环境包
+# robomme_hard：RoboMME 六档（xhard0～xhard5）环境包
 
 ## ① 一句话与对拍结论
 
-`robomme_hard` 与官方 `robomme` 并列、分层继承：`src/robomme/` 逐字节等于官方 `1fadc0ec`（`UPSTREAM_BYTES=PASS`），本包只放差异——16 个环境类与改过／新增／传递依赖改过模块的 utils、wrapper 复制；依赖闭包干净的官方模块用 shim 借用；`BenchmarkEnvBuilder` 子类化并新增 `dataset="test-hard"`（每任务 80 局，xhard4-only 的 StopCube／InsertPeg／MoveCube 为 20 局）。
+`robomme_hard` 与官方 `robomme` 并列、分层继承：`src/robomme/` 逐字节等于官方 `1fadc0ec`（`UPSTREAM_BYTES=PASS`），本包只放差异——16 个环境类与改过／新增／传递依赖改过模块的 utils、wrapper 复制；依赖闭包干净的官方模块用 shim 借用；`BenchmarkEnvBuilder` 子类化并新增 `dataset="test-hard"`（V9 定稿，12.333 换包：每任务 xhard0 官方 hard 12 局 + 交付格表 `EXPECTED_CELLS`＝`V9_CELLS` 里该任务各档局数，16 任务每任务恰 50 局、43 格共 800 局；用户定义的交付集就是这 800 局，xhard0 不算在内；builder 每任务发 12 + 50 = 62 局、合计 992。v8 的 1262 局包与 v7 的 1292 局包分别由 git 历史（12.332 `b462e358` 之前）与标签 `parity-anchor-v7` 保存）。
 
 三侧对拍（A40@greatlakes，16 worker，判定为「输入绑定、结构与任务成功一致，且动作／状态／图像／帧数差异在标定容差内」，不是字节级）：
 
@@ -15,7 +15,13 @@ PARITY_P_H=PASS tier=xhard compared=165 identity_equal=165 setup_equal=165 schem
 
 O 官方（编排 `d53f21a7` + 环境源码 `1fadc0ec`）、P 修改前（tag `pre-hard-split`）、H 本包（拆包后 HEAD）。原三档 16 任务 × 3 档 × 3 局 = 144，O↔H 全部逐字节相同；xhard 为 xhard1/2/3 各 13 任务 × 3 局 + xhard4 16 任务 × 3 局 = 165，与 S4 交付全部逐字节相同。详见 `docs/validation/newtask-v6/hard-split/stage4.md`。
 
-## ② 四档定稿表（逐字搬自 `docs/plans/0925-newtask-release-v6-plan.md` 第一部分 §三）
+v7（12.237 起）另跑：上面四行以 tag `parity-anchor-v6` 为 P 侧重跑全部 PASS；xhard0 O:H 16 任务 × 12 局 = 192 局 sha 全等（VideoPlaceOrder 2 局两侧都生成失败，单列 `both_fail`）；xhard0 reset 层对拍 `XHARD0_RESET_PARITY=PASS compared=192 det_diff=0`。v7 生成与两次生成对拍见 `docs/validation/newtask-v7/`。
+
+## ② 六档定值表与交付格（v8）
+
+各档取值表见 [`scripts/README.md`](../../scripts/README.md) 第 3 节（V9 取值与 v8 相同，只有 MoveCube xhard4 生成区域改为圆环 r_in 0.24／r_out 0.42、base_dist [0.31, 0.80]；每格局数按 V9 每任务 50 局平分，见该节局数表），源 `docs/plans/1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1 与 `docs/plans/1002-newtask-v9-movecube-region-800-plan.md` 表 2。以下为 v8 交付格的历史要点（V9 局数已变）：新值档扩到 xhard1～xhard5，但只有 SwingXtimes、StopCube 有 xhard5（各档 10 局）；PickXtimes 交付 xhard1～3（17／17／16 局，抓放 6／7／8 次）；VideoUnmask／ButtonUnmask 交付 xhard1～4 各 20 局；BinFill、两个 Swap、VideoPlaceButton、VideoPlaceOrder、PickHighlight、VideoRepick 交付 xhard1～2 各 40 局；RouteStick、PatternLock 交付 xhard1～3（27／27／26 局，段数／节点数为区间）；MoveCube、InsertPeg 只有 xhard4 20 局。各格布局独立抽签（`layout_rule={"mode":"independent"}`，`layout_parent` 全为 null），不再共用母布局。步数上限 xhard0 1300、xhard1～5 一律 1600（`TIER_MAX_STEPS`，＝`V8_EXEC_CAP`；抽样时已过滤执行步超过 1600 的候选）。xhard0 就是官方 hard（配置区间见该表 xhard0 列）；xhard0 桌面实测放置数（官方 test hard 12 局）：VideoUnmask 容器均值 5.42、ButtonUnmask 5.25（最大 6），Swap 两任务容器 4，PickHighlight 总块 6，PickXtimes 桌面块 3，BinFill 总块 10～12。v7（历史）xhard1～4 共用每任务 20 个母布局（xhard4 抽签、低档派生，`layout_parent` 指回母行）；v8 起各档独立抽。PickXtimes／SwingXtimes 第 4 个干扰块用橙色（`utils/xhard.py::BLOCK_DISTRACTOR_COLORS`，不动四个 Unmask／Swap 共用的三色池）。
+
+### ②′ 历史：v6 四档定稿表（逐字搬自 `docs/plans/0925-newtask-release-v6-plan.md` 第一部分 §三；v7 起不再使用）
 
 | 环境 | 梯度维度 | hard | xhard1 | xhard2 | xhard3 | xhard4 | 备注 |
 |---|---|---|---|---|---|---|---|
@@ -32,7 +38,7 @@ O 官方（编排 `d53f21a7` + 环境源码 `1fadc0ec`）、P 修改前（tag `p
 | RouteStick | 段数 L | [4,7] | [8,10] | [11,13] | [14,16] | [17,21] | 执行段 = 50·L |
 | VideoPlaceButton | 放台次数（都放回原位） | 2（放桌面） | 1 块 3 次 | 1 块 4 次 | 2 块 5 次 | 2 块 6 次 | 额外放台 = 放到无关台（原版 `additional_place` 语义），见四.9；xhard3/4 台数 4→5（`config_xhard3/4["targets"]=5`，xhard1/2 仍 4），额外放台按完整序列占用表抽取，before 题答案 = 按钮前最后一次放置的台 |
 | VideoPlaceOrder | 总放台次数（都放回原位） | 1 块 v∈[2,4] | 2 块 (2,3)=5 | 2 块 (3,3)=6 | 2 块 (3,4)=7 | 2 块 (4,4)=8 | 每档总数定值，哪块多访问随机 |
-| MoveCube | 不加档 | 原三档同值 | — | — | — | 圆环 U | 只有 xhard4 |
+| MoveCube | 不加档 | 原三档同值 | — | — | — | 圆环 U（V9：r 0.24–0.42 ∩ 离基座 0.31–0.80） | 只有 xhard4 |
 | InsertPeg / StopCube | 不加档 | 原三档同值 | — | — | — | 原 xhard 改名 | 数值不动 |
 
 
@@ -107,26 +113,26 @@ O 官方（编排 `d53f21a7` + 环境源码 `1fadc0ec`）、P 修改前（tag `p
 
 - **`sampling_config` 两块**：每个环境的 `native_blocks(cls, release=...)` 返回 `decision`（按档位的新值取值）与 `native`（原三档参数与位置），`gym.make(..., sampling_config={"decision","native"})` 显式传入；`utils/sampling_config.py::assert_native_decision` 保证去掉新值键后与原值全等。
 - **`SpecRecorder` 导出与回注**（`utils/episode_spec.py`）：`spec=None` 时导出（每个取值点在原调用点记下）；传 `native_episode_spec` 时回注——原抽样照常发生，但建场景用的值一律取冻结规格，原抽样只作兼容核验记入 `mismatches`；`record()` 只记录不回注的观测值。评估侧用 `env_record_wrapper.spec_binding(env)` 取摘要：回注点（trace `source="spec"`）必须零差，记录点（`source="record"`）浮点差 ≤ `RECORDED_FLOAT_TOL=1e-5` 计 `recorded_drift`（U-13 方案甲）。
-- **jsonl 两段与两个哈希**（`env_record_wrapper/hard_specs.py`，`schema="hard-specs/2"`）：签 `task tier candidate episode seed attempt spec spec_sha256` 由 `identity_sha256` 覆盖；结果 `selected tried initial_selected rollout` 不进身份。`delivery_sha256` 盖排序后的 `(task, tier, candidate, seed, spec_sha256, rollout.h5_sha256)`（只取 `selected` 且 `rollout.status=="ok"`），锁住正式交付集合。
-- **seed 偏移**：`seed = offset(tier) + env_code × 100000 + episode × 100 + attempt`，offset xhard4 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6（`hard_specs.seed_rule_for(tier, "v6")`），与 train／test／val／heldout 及彼此都不重叠。
+- **jsonl 两段与两个哈希**（`env_record_wrapper/hard_specs.py`；包内 v8 为 `schema="hard-specs/4"`，经 `load_specs_v8(root, EXPECTED_CELLS)` 整根校验；v7 的 `hard-specs/3`、v6 的 `hard-specs/2` 仍可读）：签 `task tier candidate episode seed attempt spec spec_sha256`（v7 起另加 `layout_parent`；/4 的 header 另签 `exec_cap` 与逐任务 `delivery_per_cell`）由 `identity_sha256` 覆盖；结果 `selected tried initial_selected rollout` 不进身份。`delivery_sha256` 盖排序后的 `(task, tier, candidate, seed, spec_sha256, rollout.h5_sha256)`（只取 `selected` 且 `rollout.status=="ok"`），锁住正式交付集合。
+- **seed 偏移**：`seed = offset + env_code × 100000 + episode × 100 + attempt`。v8 按档偏移：xhard1 16e6、xhard2 18e6、xhard3 20e6、xhard4 22e6、xhard5 24e6（`hard_specs.seed_rule_for(tier, "v8")`，档与档 seed 两两不交）；v7 四档同一个 offset 14e6（`seed_rule_for(tier, "v7")`）；v6 为 xhard4 6e6、xhard1 8e6、xhard2 10e6、xhard3 12e6。都与 train／test／val／heldout 不重叠。xhard0 用官方 test 原 seed。
+- **分层回注**（只用于 v7，`spec_kind="native-layered/3"`；v8 各档独立抽、全部为 `native-newvalue/2`，不走此路径）：低档规格按白名单 `env_metadata/test-hard/layout_whitelist.json` 的 L／G／N 三表回注——L 表（布局）取母布局值、G 表（梯度）现场按本档取、N 表按嵌套规则派生；`spec_binding` 另报 `layout_hit／layout_drift／layout_overridden`。
 - **注册表与命名空间归属**：16 个环境类 `@register_env("<id>", override=True)`，导入本包即接管 16 个 id（与导入顺序无关）；包 `__init__` 末尾断言 `REGISTERED_ENVS[uid].cls.__module__` 属于本包，并断言 16 个环境模块与 `utils` 包里本包同名可调用对象都属于本包（专挡官方 `subgoal_evaluate_func` 的星号导入回灌）。同进程要官方行为须另开只导入 `robomme` 的进程。
 - **借用闭包规则**：借用资格按传递闭包判，不按单文件字节——shim 目标在官方源码上的依赖闭包不得含任何被本包复制的模块（`BORROWED_DEPS`）。复制文件里的绝对导入 `robomme.<path>`：`<path>` 在 shim 清单内的保持，是复制件的一律改成 `robomme_hard.`（`ABS_IMPORT`）。
 
 ## ⑤ 使用
 
 ```python
-from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, TIER_MAX_STEPS   # 与官方唯一不同的 import
-builder = BenchmarkEnvBuilder(env_id="BinFill", dataset="test-hard", action_space="joint_angle", max_steps=1300)
-for episode in range(builder.get_episode_num()):             # BinFill 80 局：xhard1 二十局 → xhard4 二十局
-    seed, tier = builder.resolve_episode(episode)             # (seed, tier)，与官方二元组同形
-    env = builder.make_env_for_episode(episode, max_steps=TIER_MAX_STEPS[tier])
+from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder   # 与官方唯一不同的 import
+builder = BenchmarkEnvBuilder(env_id="BinFill", dataset="test-hard", action_space="joint_angle", max_steps=1600)  # V9 入口固定 1600
+for episode in range(builder.get_episode_num()):             # BinFill 92 局：xhard0 十二局 → xhard1、xhard2 各四十局
+    env = builder.make_env_for_episode(episode)               # 与官方一样不传 max_steps，六档一律 1600
     obs, info = env.reset()
 ```
 
-- 与官方 `dataset="test"` 的对应：`test` 每任务 50 局、三档混排、步数上限一个数；`test-hard` 每任务 80（或 20）局，按 xhard1→xhard4 排列、档内按 `candidate` 升序，步数上限按档 `TIER_MAX_STEPS = {xhard1: 1500, xhard2: 1700, xhard3: 2000, xhard4: 2600}`（沿用上次评估，便于对比；不逐局传就用构造时的 `max_steps`）。
-- `builder.resolve_identity(episode)` 只读返回 `{episode, tier, candidate, seed, spec_sha256, source_run}`；`spec_binding(env)` 须在 `reset()` 之后调用。
+- 与官方 `dataset="test"` 的对应：`test` 每任务 50 局、三档混排、步数上限一个数；`test-hard` 每任务 62 局（V9：12 + 50，见 ①），xhard0 在前（按官方原 episode 号），再按 xhard1→xhard5 只排该任务交付的档、档内按 `candidate` 升序；步数上限由入口 `evaluation_hard.py` 构造时写死 `max_steps=1600`、逐局不传（六档含 xhard0 一律 1600；官方入口为 1300）；包内常量表 `TIER_MAX_STEPS = {xhard0: 1300, xhard1～xhard5: 1600}` 入口不再引用、只剩 eval-official 评估流水线在用（去留待定，`docs/1002-pending-decisions.md` B5）。上限不从 episode 或规格文件读（规格 header 只签 `exec_cap`＝1600，行里没有 `max_steps`）。`specs_root` 覆盖（或环境变量 `ROBOMME_HARD_SPECS_ROOT`）可指局部 v8／v9 根，只发存在的档；v7 `hard-specs/3` 根在换包后不再被 builder 接受。
+- `builder.resolve_identity(episode)` 只读返回 `{episode, tier, candidate, seed, spec_sha256, source_run}`（xhard0 另带 `source_dataset`、`source_episode`，`candidate` 为空）；`spec_binding(env)` 须在 `reset()` 之后调用。
 - `train`／`test`／`val` 行为同官方；只有四个 Unmask 任务的 `train` 元数据改读本包 `env_metadata/train`（400 条）。`override_metadata_path` 语义同官方。
-- 两阶段生产命令（不随包分发，在仓库 `scripts/injection-dev/` 下，路径直跑）：`freeze_specs.py`（定规则 → 抽签 → 封存，只落一份 jsonl）、`generate_h5.py --mode continue|replay`（只读 jsonl 生成 h5，按状态机回写）。
+- 生产命令（不随包分发，在仓库 `scripts/injection-dev/` 下，路径直跑；详见 `scripts/README.md` 第 4 节）：v8 为每档一次 `freeze_specs.py --tier <档> --seed-profile v8 --cells full`（档内逐任务独立抽，只抽交付格）→ `generate_h5.py --mode continue --specs <规格根> --cells full`（或 `split`／各片 `continue`／`merge` 四席分片）（按 header schema 分派到 v8 驱动，逐格递补、执行步超过 1600 记 `exec_over_cap` 并递补）。v7 的「母布局抽签 → `derive_specs.py` 派生 → 四档同步生成」链路保留但 v8 不调用。
 
 ## ⑥ 红线（0927 计划第二部分 R1～R5、R11）
 

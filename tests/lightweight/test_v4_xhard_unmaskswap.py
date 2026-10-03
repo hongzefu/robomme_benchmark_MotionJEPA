@@ -72,18 +72,19 @@ ORIGINAL_DECISION = {
     "swap_speed_multiplier": 1,
     "distractor": None,
 }
+# V7 定值（0928 方案 §3.2.2）：VUS swap 5/7/9/11、BUS swap 3/5/7/9，pick 2/3/3/3，外环干扰 2/4/6/8
 TIERS = {
     "VideoUnmaskSwap": {
-        "xhard1": {"bin": 4, "swap_min": 4, "swap_max": 5, "pick_min": 2, "pick_max": 2},
-        "xhard2": {"bin": 4, "swap_min": 6, "swap_max": 7, "pick_min": 3, "pick_max": 3},
-        "xhard3": {"bin": 4, "swap_min": 8, "swap_max": 9, "pick_min": 3, "pick_max": 3},
-        "xhard4": {"bin": 4, "swap_min": 10, "swap_max": 12, "pick_min": 3, "pick_max": 3},
+        "xhard1": {"bin": 4, "swap_min": 5, "swap_max": 5, "pick_min": 2, "pick_max": 2},
+        "xhard2": {"bin": 4, "swap_min": 7, "swap_max": 7, "pick_min": 3, "pick_max": 3},
+        "xhard3": {"bin": 4, "swap_min": 9, "swap_max": 9, "pick_min": 3, "pick_max": 3},
+        "xhard4": {"bin": 4, "swap_min": 11, "swap_max": 11, "pick_min": 3, "pick_max": 3},
     },
     "ButtonUnmaskSwap": {
-        "xhard1": {"bin": 4, "swap_min": 4, "swap_max": 4, "pick_min": 2, "pick_max": 2},
+        "xhard1": {"bin": 4, "swap_min": 3, "swap_max": 3, "pick_min": 2, "pick_max": 2},
         "xhard2": {"bin": 4, "swap_min": 5, "swap_max": 5, "pick_min": 3, "pick_max": 3},
-        "xhard3": {"bin": 4, "swap_min": 6, "swap_max": 7, "pick_min": 3, "pick_max": 3},
-        "xhard4": {"bin": 4, "swap_min": 8, "swap_max": 9, "pick_min": 3, "pick_max": 3},
+        "xhard3": {"bin": 4, "swap_min": 7, "swap_max": 7, "pick_min": 3, "pick_max": 3},
+        "xhard4": {"bin": 4, "swap_min": 9, "swap_max": 9, "pick_min": 3, "pick_max": 3},
     },
 }
 
@@ -109,7 +110,10 @@ def test_decision去掉新值后与原值相同(task):
         assert decision["pick_count_range"][tier] == [expected["pick_min"], expected["pick_max"]]
         tier_decision = decision[tier]
         assert tier_decision["swap_speed_multiplier"] == (1.0 if index == 1 else 1.5)
-        assert tier_decision["distractor"] == ux.v6_distractor_cfg(task, 2 + 2 * index)
+        # V7：外环干扰容器 2/4/6/8（含 cube 数恒为一半）
+        assert tier_decision["distractor"] == ux.v6_distractor_cfg(task, 2 * index)
+        assert tier_decision["distractor"]["count"] == 2 * index
+        assert tier_decision["distractor"]["cube_count_range"] == [index, index]
         assert tier_decision["distractor_swap"] == ux.v6_distractor_swap_cfg(task)
         assert tier_decision["swap_plan_v6"] == ux.v6_inner_swap_plan_cfg(task)
         assert "hidden_bin_permutation_size" not in tier_decision["swap_plan_v6"]

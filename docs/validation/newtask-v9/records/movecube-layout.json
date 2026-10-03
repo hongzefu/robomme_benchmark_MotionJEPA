@@ -1,0 +1,35 @@
+{
+ "bad_rows": [],
+ "delivery": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9gen-out/gen/shard-movecube/delivery.json",
+ "episodes": 50,
+ "expected_episodes": 50,
+ "expected_ways": {
+  "0": 17,
+  "1": 17,
+  "2": 16
+ },
+ "header_quota": 50,
+ "in_region": 300,
+ "lines": [
+  "V9_MOVECUBE_LAYOUT=PASS episodes=50 in_region=300 outside_old=300 points=300 expected_episodes=50 region_mismatch=0 bad_rows=0 load_errors=0",
+  "V9_MOVECUBE_WAYS=PASS ways=17/17/16 expected=17/17/16 way_idx=0/1/2 unknown=0 episodes=50"
+ ],
+ "load_error": null,
+ "mismatch_detail": [],
+ "out_detail": [],
+ "outside_old": 300,
+ "points": 300,
+ "region_mismatch": 0,
+ "specs": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/v9gen-out/gen/shard-movecube/specs/xhard4/specs.jsonl",
+ "unknown_ways": 0,
+ "way_order": [
+  0,
+  1,
+  2
+ ],
+ "ways": {
+  "0": 17,
+  "1": 17,
+  "2": 16
+ }
+}
