@@ -1,0 +1,1565 @@
+{
+ "rows": [
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16100000,
+   "spec_sha256": "a89a050996de9119b000c12d0f6fc0e178ba4e93ee08bcd999ae1a1391062fce",
+   "task": "PickXtimes",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16100100,
+   "spec_sha256": "4a06b65dd5f6a877e660e43cb1d2a21027b18b9b47cdc051fc1e9ae8d700936e",
+   "task": "PickXtimes",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16100200,
+   "spec_sha256": "600b9594bb557428e4e03802da7c62c690ba8c47d4144fae4b64a859d1b1d377",
+   "task": "PickXtimes",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 16100300,
+   "spec_sha256": "d123a52c189387208b80c97efc27a64fdd37b7c8714a85ed53bbc45ad190e214",
+   "task": "PickXtimes",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 17,
+   "candidate": 0,
+   "seed": 18100000,
+   "spec_sha256": "a7abba18e3722ce38fad099d3db1e12f0f5fdc100621e3fda142fd92b11f7362",
+   "task": "PickXtimes",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 18,
+   "candidate": 1,
+   "seed": 18100100,
+   "spec_sha256": "5cb64c0118e008350d3a834e9dbc2c14eb75aa9d7718be1e6beeac955720f3e7",
+   "task": "PickXtimes",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 19,
+   "candidate": 2,
+   "seed": 18100200,
+   "spec_sha256": "69bc6d44d2accf133e82b3dfd1aa852b91933916eba9dad4f7ab267a76bbcf07",
+   "task": "PickXtimes",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 20,
+   "candidate": 3,
+   "seed": 18100300,
+   "spec_sha256": "9b5a28479a60687dd91a1f77a8f483b64ffe8c5f346d1a12e04722a534c393cb",
+   "task": "PickXtimes",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 34,
+   "candidate": 0,
+   "seed": 20100000,
+   "spec_sha256": "4110579ba64407a2079acb0961f234ca4d5613bf6fabd365834acf940cae804a",
+   "task": "PickXtimes",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 35,
+   "candidate": 1,
+   "seed": 20100100,
+   "spec_sha256": "0b33086ee29be71b8677d2de77e5055dc3940eafbf7d137bebbd0d0a701fff36",
+   "task": "PickXtimes",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 36,
+   "candidate": 2,
+   "seed": 20100200,
+   "spec_sha256": "7059cb6e9d883682ba4b294f412710b219e176c03e0dbceb3a2f39b90a91dad8",
+   "task": "PickXtimes",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 37,
+   "candidate": 3,
+   "seed": 20100300,
+   "spec_sha256": "424583e05b101bbdc8a486b7d02b640ddd853155ecfa367ac3012e9d84687697",
+   "task": "PickXtimes",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16200000,
+   "spec_sha256": "e84e8cd98cecb80bd373b538db6ce42a7038cdc68777d4e6eb79357f8a21f203",
+   "task": "StopCube",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16200100,
+   "spec_sha256": "7a0f84c766ca2905cc9ea28309a06123bb2777c69cf26eb1a0d09613d8d18922",
+   "task": "StopCube",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16200200,
+   "spec_sha256": "8d3bd8139463e9705661f1b9c1e32e28a9696443293e4bed94417513028b4787",
+   "task": "StopCube",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 10,
+   "candidate": 0,
+   "seed": 18200000,
+   "spec_sha256": "19ebf3b2c490e3aecf4fb33fd3d615ce7024008e9e01c568a342626d5426c7c2",
+   "task": "StopCube",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 11,
+   "candidate": 1,
+   "seed": 18200100,
+   "spec_sha256": "14c54289df7f1112ccc2843d4583a86e8dddd4542dbc9061446184165e66e533",
+   "task": "StopCube",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 12,
+   "candidate": 2,
+   "seed": 18200200,
+   "spec_sha256": "b11588190b4da52941b641f798d66aa7e17aca7ef14f437d1e59ad62181d58d7",
+   "task": "StopCube",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 20,
+   "candidate": 0,
+   "seed": 20200000,
+   "spec_sha256": "4ba628fde77e779b3cd5eeb2ad88affb3caaf57e874b944be217393cafd9cade",
+   "task": "StopCube",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 21,
+   "candidate": 1,
+   "seed": 20200100,
+   "spec_sha256": "3cde041a58ee7fc5018b75a4ce9ffbeb613215d7f7eced41faa73fe669e95a7f",
+   "task": "StopCube",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 0,
+   "seed": 22200000,
+   "spec_sha256": "952fdfc997552f11db11182ea696e19fd8f002e2b236f6f464cfd9dd104ebf43",
+   "task": "StopCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 31,
+   "candidate": 1,
+   "seed": 22200100,
+   "spec_sha256": "9218ce5b68fcebaa11683dfb393956d61f309eb8da0b0e6961f8dd2ba92d64d8",
+   "task": "StopCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 40,
+   "candidate": 0,
+   "seed": 24200000,
+   "spec_sha256": "f1331736c06b19f4f2343068d5ea1474adde61065e5db2a5df7cd8992205d85a",
+   "task": "StopCube",
+   "tier": "xhard5"
+  },
+  {
+   "builder_episode": 41,
+   "candidate": 1,
+   "seed": 24200100,
+   "spec_sha256": "a028a830c59f9b8d75067e42f77d042c76e9f8b8d379e20f216ef99b8e86f543",
+   "task": "StopCube",
+   "tier": "xhard5"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16300000,
+   "spec_sha256": "ed64ad58b00928a9aaa9d59fff57a17e01f48cc2e1d1a499bdbba0070280cef7",
+   "task": "SwingXtimes",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16300100,
+   "spec_sha256": "accee482429ed29fc12fc497c712b41731930bbadaded946c01ca6276d443cb1",
+   "task": "SwingXtimes",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16300200,
+   "spec_sha256": "2a8cf4e38b5eef5cbb56a148b1b0617d9770c5fcfd4de45b73d180edfb1ef03b",
+   "task": "SwingXtimes",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 10,
+   "candidate": 0,
+   "seed": 18300000,
+   "spec_sha256": "eea4798a438242fb942fda07544532fa04afa9870717482ae9da85f8f09ac801",
+   "task": "SwingXtimes",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 11,
+   "candidate": 1,
+   "seed": 18300100,
+   "spec_sha256": "bfc1f5427b482a65d8ea63f42428dd27d40fff36e36eb6e91f170185945210db",
+   "task": "SwingXtimes",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 12,
+   "candidate": 2,
+   "seed": 18300200,
+   "spec_sha256": "bef50cef7c9e2a07f38992bfda0cfa6873f185be4c8bbd636dbc25c310308bf9",
+   "task": "SwingXtimes",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 20,
+   "candidate": 0,
+   "seed": 20300000,
+   "spec_sha256": "121486e7b0c2fa646bd3bdf0e6f80fa55bb28da47459695de5123e821fddfb83",
+   "task": "SwingXtimes",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 21,
+   "candidate": 1,
+   "seed": 20300100,
+   "spec_sha256": "e7cbdd276f52e7a94e257878ed65ee29cd9e022dc0336ae15aca6164f3e94efa",
+   "task": "SwingXtimes",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 0,
+   "seed": 22300000,
+   "spec_sha256": "f24a06f2cafd951ec4186a4660a6458ac2df1a405d7dfc1e334e5a9e6e78fb26",
+   "task": "SwingXtimes",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 31,
+   "candidate": 1,
+   "seed": 22300100,
+   "spec_sha256": "6f815398cc676be332ed9dda2324c1882818339d89b21beccd8c7777828bab66",
+   "task": "SwingXtimes",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 40,
+   "candidate": 0,
+   "seed": 24300001,
+   "spec_sha256": "b76cf457442e1bc78955335355c616e84be9505839b4fe83b196b66cc7688a9e",
+   "task": "SwingXtimes",
+   "tier": "xhard5"
+  },
+  {
+   "builder_episode": 41,
+   "candidate": 1,
+   "seed": 24300100,
+   "spec_sha256": "a70aaa5295f254cde7a518e7ee917bf2ed82729b89c49b62aa33a2c5926cc946",
+   "task": "SwingXtimes",
+   "tier": "xhard5"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16400000,
+   "spec_sha256": "87720fb27858ad618f85f2b4899b3c8e31ddd0eb911789f33ad7b29b0d51a71f",
+   "task": "BinFill",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16400100,
+   "spec_sha256": "9b4696bc5ca485ed30a9d396ec7a3a07123269f8a43b0d570e667dd164ceb766",
+   "task": "BinFill",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16400200,
+   "spec_sha256": "cf4cc9342353fcf30463c413df487e76a93c976634a00ad8da1c1d0568fbd8e4",
+   "task": "BinFill",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 16400300,
+   "spec_sha256": "278d52944ec83cda1bd348da4b318c8cf85bcc5641971cc0344978458301c913",
+   "task": "BinFill",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 4,
+   "seed": 16400400,
+   "spec_sha256": "d19f4fae5d5c8b58eadffc63f806e5be2fcc640d101790a0a46d3565d7763c00",
+   "task": "BinFill",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 6,
+   "seed": 16400600,
+   "spec_sha256": "8bfc20638b65fe20201f7559304f1b8c7810708347f63f0015fccfc2be976670",
+   "task": "BinFill",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 25,
+   "candidate": 1,
+   "seed": 18400100,
+   "spec_sha256": "be6d493a1960f7b851156a54a624e29d90b644a491447e7181cd0b74db2f44c5",
+   "task": "BinFill",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 2,
+   "seed": 18400200,
+   "spec_sha256": "a9013fb77a2b07bd2c3c404a9d0cac97d47f95b131aed55ae33b39119054683d",
+   "task": "BinFill",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 7,
+   "seed": 18400700,
+   "spec_sha256": "f685214e3e4f06f22e5696bb935a87f3bacb26e65e268a641b8c446c542cbc3b",
+   "task": "BinFill",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 9,
+   "seed": 18400900,
+   "spec_sha256": "3643fffd5da7b6fcd2e9a7b58e73c92fb7f702ce88f8854fb8d53e0be38b08a2",
+   "task": "BinFill",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 29,
+   "candidate": 10,
+   "seed": 18401000,
+   "spec_sha256": "1186c135ae53183ce1d10df1110e4fa0fcbce7f9da8df07cd6b4da322f56b72f",
+   "task": "BinFill",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 11,
+   "seed": 18401100,
+   "spec_sha256": "95cc2252d08984a35bde37c3c67ebc3a0c45fe2acc1ba52915a1bbd955b1a394",
+   "task": "BinFill",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16500000,
+   "spec_sha256": "d7f895550cde7d17fe5707d1b142ac832a8a18884558abf357486236e87a2d18",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16500100,
+   "spec_sha256": "dc134c4d1ad5f21d8020e95b4a3c776b276fe5aec75759341c7436e02efe408c",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16500201,
+   "spec_sha256": "ad347582f40ac5e0141e6c72bc076fc4fe4aeb429639189a1e2776eed247c4e7",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 16500300,
+   "spec_sha256": "6f96006825f1e5283edf8c3231213e8a4028ffba1e9064f02bc3ae6948ce9ba6",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 4,
+   "seed": 16500400,
+   "spec_sha256": "1579ab1dde0146a67e6c7074d6ee9edd49a88719a1915dc7156410e1e7277b4d",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 5,
+   "seed": 16500500,
+   "spec_sha256": "4f7b39fa764b28ab51ed48996f20c6e5585b0fb8a2aedda21daf5fff99694da6",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 25,
+   "candidate": 0,
+   "seed": 18500000,
+   "spec_sha256": "3377b4216ba0f5fad36368f204843af3dbb5bde9eb6a9338d4bab6ccf3dff24d",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 1,
+   "seed": 18500100,
+   "spec_sha256": "ae900e1c717147e9ce41c61134fc73d69cb10837ee6518d017a02957843d36cf",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 2,
+   "seed": 18500200,
+   "spec_sha256": "fa3e9d945b779997ea3373e88a52f9da7f9e80ae2481e5cae3a3f7ffe62fa40a",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 3,
+   "seed": 18500300,
+   "spec_sha256": "300d35b1f69aba021a5c2b27919c14fbe4cb0a3ee7f074d67ae55dec060d8ba7",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 29,
+   "candidate": 4,
+   "seed": 18500400,
+   "spec_sha256": "bff1853dbbfe96c9b6a54c01ef9a77066e36ea82e28c1a61515265b6ac75e3c2",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 5,
+   "seed": 18500500,
+   "spec_sha256": "fc50135fb0fcb703d0e964f7b71f83fe969009e8d96f8e97964e944509fb420c",
+   "task": "VideoUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16600000,
+   "spec_sha256": "b2dae2a887c7f616652069219dc69a957f5a1cd610471f237bc3bea70f688d10",
+   "task": "VideoUnmask",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16600100,
+   "spec_sha256": "ef53f4c042d62a09b310322152eb8fdabd42d79b429498546081d283e1305ea0",
+   "task": "VideoUnmask",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16600200,
+   "spec_sha256": "343eba344b4451cd369a8eb7b7f3efefd39b9cef3600efaeb88bbe028226d688",
+   "task": "VideoUnmask",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 13,
+   "candidate": 0,
+   "seed": 18600000,
+   "spec_sha256": "6a1ed9ae1b33e4ea29a5a2e0ff23f4294370954e92a540679b0842ba79e0ff7f",
+   "task": "VideoUnmask",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 14,
+   "candidate": 1,
+   "seed": 18600100,
+   "spec_sha256": "1294f3a0ac23645201219505e5051c26c9d073a9e5ef667bb363e98095ac044c",
+   "task": "VideoUnmask",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 15,
+   "candidate": 2,
+   "seed": 18600200,
+   "spec_sha256": "cf37a330b2e411e1e77be13a66a1cc0bc7161706b5e6a44bf69b148e8e5bba48",
+   "task": "VideoUnmask",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 0,
+   "seed": 20600000,
+   "spec_sha256": "bb4c0117860ef9e26c5b39a78ad00080f3491168c89fa251a539bf9d47fd5566",
+   "task": "VideoUnmask",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 1,
+   "seed": 20600100,
+   "spec_sha256": "4e7866184647d031eb2aacf58885333719e44162ee2e7a5945474d1995185770",
+   "task": "VideoUnmask",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 2,
+   "seed": 20600200,
+   "spec_sha256": "f9c2aed0f18321a949085f900640eac9194de9659d0149ca9482d1d7439118de",
+   "task": "VideoUnmask",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 38,
+   "candidate": 0,
+   "seed": 22600000,
+   "spec_sha256": "e7ed5f98fbe4992907998fd6618d118f71aabac27d890e2aba457fc7f93a045d",
+   "task": "VideoUnmask",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 39,
+   "candidate": 1,
+   "seed": 22600100,
+   "spec_sha256": "afe8723f53bb3dd1b27f8c8464f5bdbb0ae7b0d3b84e8775dab3a0537ae3b21f",
+   "task": "VideoUnmask",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 40,
+   "candidate": 2,
+   "seed": 22600200,
+   "spec_sha256": "8c45bab1bef308737ee3be2b41e81f9fd2f8b2c30100ae43e0265c1efa3223a9",
+   "task": "VideoUnmask",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16700000,
+   "spec_sha256": "97895855af97dc36cc8c5e77ad60c5e3beed3805af5d697604fbbbebb081c482",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16700100,
+   "spec_sha256": "5e2153da9a42020f9eea35168aae16a843b4c93876bdbe06b45b4466106bf079",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16700201,
+   "spec_sha256": "dbb71138184f2c0467389ee7ca92f2409c9fedf4c0c17c0a3fce7b98bf3717a4",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 16700302,
+   "spec_sha256": "8f2d2dc974d4a7ab0676dec792dd9455356099279b71bad29b511c26072e27c7",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 4,
+   "seed": 16700402,
+   "spec_sha256": "25a74e9397adf5f4841354fb26cfb6d637dfd90c9b46521a774ad5689a855468",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 5,
+   "seed": 16700500,
+   "spec_sha256": "424a10c9b6dca61460b4d8e243f07d754037f8386bf194c1e94ab06d75e0006f",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 25,
+   "candidate": 0,
+   "seed": 18700000,
+   "spec_sha256": "d5eed2dd99f5177cf3333fa2406b8de99b8603033629228a611a59db428315f7",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 1,
+   "seed": 18700100,
+   "spec_sha256": "be4a9c40c11b09792634eb8c9502a05f27ff9022ffdfdf052f15d05619d1d2d0",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 2,
+   "seed": 18700201,
+   "spec_sha256": "dae9fb3df4af56c4525c0442f9d445eca5ce5e160808d30a0d93f108c65a7026",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 3,
+   "seed": 18700300,
+   "spec_sha256": "6a05d7922c07d1286a51aa7eeaa77be023e7ddbd26f7562889779498e99bd985",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 29,
+   "candidate": 4,
+   "seed": 18700400,
+   "spec_sha256": "0d3c596a9b5358d9abe0c9f952c6fae2399824a926255f3b08b6c976d4694939",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 5,
+   "seed": 18700501,
+   "spec_sha256": "57a315961ec1ba1c847fabd2879a2660bcd924c2ab7e5fb6faa4b6d020a00377",
+   "task": "ButtonUnmaskSwap",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16800000,
+   "spec_sha256": "a480a3e16eabb88b231b164b68e413added4bc159e55277aa93838b4a78c8811",
+   "task": "ButtonUnmask",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16800100,
+   "spec_sha256": "f2d2da7d76a151639467c8cdab98620a6e7631a25760c0fb8c558c89e605370c",
+   "task": "ButtonUnmask",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16800200,
+   "spec_sha256": "eba34cf57091b00feb0ba58f5aa3148328f26b11d679261d626975a49bbd8fc5",
+   "task": "ButtonUnmask",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 13,
+   "candidate": 0,
+   "seed": 18800000,
+   "spec_sha256": "80650c8f1fbecec1dc52b16b631551cbdee8cb140443e90ecf14a43c28b5945d",
+   "task": "ButtonUnmask",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 14,
+   "candidate": 1,
+   "seed": 18800100,
+   "spec_sha256": "e3033a932023ce6917b8502612ae60aad801d3e1eecaf2539224299eb9d6e178",
+   "task": "ButtonUnmask",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 15,
+   "candidate": 2,
+   "seed": 18800200,
+   "spec_sha256": "a9b020634bcad779f62a512b19a79ab9ecf5bb9cbe20794a9e04e50e83b1f1a9",
+   "task": "ButtonUnmask",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 0,
+   "seed": 20800000,
+   "spec_sha256": "0ca5b07d91b7b75a43fdd1abffedf2826840a3d6d8c136628d045eed20d7b3e6",
+   "task": "ButtonUnmask",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 1,
+   "seed": 20800100,
+   "spec_sha256": "6d4cd7cd6598d7f4a8e08a5ea4862033c5b503d3d78c3204e0d6422a1b3b5690",
+   "task": "ButtonUnmask",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 2,
+   "seed": 20800200,
+   "spec_sha256": "f85b25f904d132177237671d577c47b8feb1744698cf46ca1caff5bdd9dd51a9",
+   "task": "ButtonUnmask",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 38,
+   "candidate": 0,
+   "seed": 22800000,
+   "spec_sha256": "db304ddd710083d33301cdb722ee350de6dd50c077c3afba81152fa0a0b20a7f",
+   "task": "ButtonUnmask",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 39,
+   "candidate": 1,
+   "seed": 22800100,
+   "spec_sha256": "e7f73c07fb59610054181254628b7ac296d7a05e8561c4392f2a0a5db24d29c8",
+   "task": "ButtonUnmask",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 40,
+   "candidate": 2,
+   "seed": 22800200,
+   "spec_sha256": "05967ce739f143bcd26a38270253cc0a80b872390b8bdc63be4bb8f50f72b2c1",
+   "task": "ButtonUnmask",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 16900001,
+   "spec_sha256": "729bf385261bb885c9bf700995b1ab9b65d2cb34cd459a7b33a0454d6f66a997",
+   "task": "VideoRepick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 16900101,
+   "spec_sha256": "1d6ee3930eb007ad46f29c9b67d0756dbccefddd4bb3a85301d7a9b7e09534d9",
+   "task": "VideoRepick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 16900200,
+   "spec_sha256": "a0a89c3c85dc9d94fb86f57f05bc3d46b041ac5e2eb79247e853d54dcf8f600b",
+   "task": "VideoRepick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 16900301,
+   "spec_sha256": "819596fbcec7139f829e2cf84b32c7ff348d4195f7c36af5fb6b2891f32b3eee",
+   "task": "VideoRepick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 4,
+   "seed": 16900401,
+   "spec_sha256": "7e61e9e482f95beafea5afa3de8ad439780b6c3ad5d39f0945b7f25da127b506",
+   "task": "VideoRepick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 5,
+   "seed": 16900501,
+   "spec_sha256": "47ea2f5a655028a1a2a38827e8d23486d3cf0aa961401f40cda3a117f329f521",
+   "task": "VideoRepick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 25,
+   "candidate": 0,
+   "seed": 18900000,
+   "spec_sha256": "a75983d44d798163af14af125923afb046af327befe149ddf59b35be90f05246",
+   "task": "VideoRepick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 1,
+   "seed": 18900109,
+   "spec_sha256": "2adde85146da7e33a56647c99b980a6ec9ac4266e8bd403acfd2ea60197cc71d",
+   "task": "VideoRepick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 2,
+   "seed": 18900200,
+   "spec_sha256": "1edc85c9eee4e2b2b92fc0a85fcb0187575e13b76590175904911a1f73d4f47f",
+   "task": "VideoRepick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 3,
+   "seed": 18900300,
+   "spec_sha256": "c89299340511db2a3651f7bb12ec4d6b87099d8fd2d47202b2a72820f210750a",
+   "task": "VideoRepick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 29,
+   "candidate": 4,
+   "seed": 18900400,
+   "spec_sha256": "574a33ca4f27638b117381f23cf6581ae2bdb730d32aa72878001ff168eb135d",
+   "task": "VideoRepick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 5,
+   "seed": 18900501,
+   "spec_sha256": "5248a197c0cba50edb40121982bdf698edc879e93512d3a21ec36cff0aa1b852",
+   "task": "VideoRepick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 17000000,
+   "spec_sha256": "ff9b54a66738d44ef4638c91c30b770a99a84070b7af6966fcb8bb84117338fc",
+   "task": "VideoPlaceButton",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 17000100,
+   "spec_sha256": "80e9a6d39ae0ef6bd163813ab11cb25ebda610d71d526e178f4c447cd1e304ac",
+   "task": "VideoPlaceButton",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 17000200,
+   "spec_sha256": "6eaaedf6b75b3e0e510d4c6b1450f02b3d834a50e05988ef5690720454ba0b19",
+   "task": "VideoPlaceButton",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 17000300,
+   "spec_sha256": "c5913a57b262d305509332e86cb687c511c6afec31155ef4dd1ca0f91dc3c0e5",
+   "task": "VideoPlaceButton",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 4,
+   "seed": 17000400,
+   "spec_sha256": "823959e7e5c70f8073b45ee17c57b9a02c39612aa6435282fe7ebed7fcadce0d",
+   "task": "VideoPlaceButton",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 5,
+   "seed": 17000500,
+   "spec_sha256": "127068d7ec980f35f139d6e38cd7edb6112bdc669a9526aae6fa1ce75b3702a8",
+   "task": "VideoPlaceButton",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 25,
+   "candidate": 0,
+   "seed": 19000000,
+   "spec_sha256": "45c62337657d61f646e0fef5698ca91dfc30a57a651cc7372070ecb7c2ff03a9",
+   "task": "VideoPlaceButton",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 1,
+   "seed": 19000102,
+   "spec_sha256": "c64ad1cc68506a5c72fa05f172462858b667bed563ee88226331cb2f268ae684",
+   "task": "VideoPlaceButton",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 3,
+   "seed": 19000300,
+   "spec_sha256": "ba129c9c82365f7b4ae6113283ec2d486d17453a8837a9968566f5cb4ce30d2f",
+   "task": "VideoPlaceButton",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 4,
+   "seed": 19000400,
+   "spec_sha256": "327d36108c8116943b7058e96f0d96d20b63e3448f07e4ef2a9c8cefb8e9e703",
+   "task": "VideoPlaceButton",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 29,
+   "candidate": 5,
+   "seed": 19000500,
+   "spec_sha256": "f3e32f46660ec85c91d12ca555ee5a444994334de4b92a068fef4e55f589c2c0",
+   "task": "VideoPlaceButton",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 6,
+   "seed": 19000600,
+   "spec_sha256": "10d58b58e8b1e620b44007bedef54c7f540f22b9bcb03f280da0cde4616502ff",
+   "task": "VideoPlaceButton",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 17100000,
+   "spec_sha256": "32807d8c8ba1e418d0ab223d3052133f2821833f28d5ba2723e19705a2203c6c",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 17100101,
+   "spec_sha256": "f0e807d7e85ecfe9e8a92623699b66983d63fc27b651fe6ec35dfd59d8732602",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 17100200,
+   "spec_sha256": "95c86b67a465cb64e342c2c5ea722c36cdf622b1514d64ce5ad7b5fbe2e2de2d",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 17100301,
+   "spec_sha256": "17d05e00c639acc0bef0e6a5d52ac814f0d685959823a80b234b1050cbc5fc02",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 4,
+   "seed": 17100400,
+   "spec_sha256": "40b0b0a1c49ec31c294571dba6d70ec1a0bb687957277409688c2adbb4fec32b",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 5,
+   "seed": 17100500,
+   "spec_sha256": "bd6c319cd973ba11d266f4a8b7bb5d86e2e110f5a9a2cd5c3b66be2cbc62cab5",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 25,
+   "candidate": 0,
+   "seed": 19100003,
+   "spec_sha256": "d69025722aed65a0bcb2283491a778995748c6e1712573e472afca39901ebcc6",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 1,
+   "seed": 19100101,
+   "spec_sha256": "59ddaed35414c486770691b8df636e01a6cd025cd512830cb236389bf1fcbc05",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 2,
+   "seed": 19100200,
+   "spec_sha256": "ac94c583770fab1aa15d4b5c289b253a30b3df60c1b06c99228f3283584622ad",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 3,
+   "seed": 19100300,
+   "spec_sha256": "af41c705579551773c1ac07c06705fbfaa7588f02400c07892e59ac01507f508",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 29,
+   "candidate": 4,
+   "seed": 19100401,
+   "spec_sha256": "d7b5ca8580975e0f8998a81db4a1733ca720d517609b37b1c4bb034a0fc14f26",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 5,
+   "seed": 19100502,
+   "spec_sha256": "7b9b0cb5c633f18c1b27bd274a4854866aa43446db928233dda1e817f1aab873",
+   "task": "VideoPlaceOrder",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 17200000,
+   "spec_sha256": "0ba344a8b81c492f644a50df54771f91fb79000bc065c1f14ff4baaff7e0e1f4",
+   "task": "PickHighlight",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 17200100,
+   "spec_sha256": "00399e52497e66c41df90e9ac7540207bfda9b0c997a8fe47be90a44ca47d59c",
+   "task": "PickHighlight",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 17200200,
+   "spec_sha256": "fe59bfcadcb257061c1df59abbed2ae8c2b53212862de6aadaa9f367b0045d4c",
+   "task": "PickHighlight",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 17200300,
+   "spec_sha256": "d71ed216ebfbec84b5b4a754dd0b194c082749ec9db28cf31f813d5b48eb29b1",
+   "task": "PickHighlight",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 4,
+   "seed": 17200400,
+   "spec_sha256": "752ec16229b819cf453a09141b65076e943a7efbb6c2ceccb47b8811ef63d8bd",
+   "task": "PickHighlight",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 5,
+   "seed": 17200500,
+   "spec_sha256": "2023d8c176203878801904c3d5f34e889ebe7ea6f4c17856e5b195836e2a5cda",
+   "task": "PickHighlight",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 25,
+   "candidate": 0,
+   "seed": 19200000,
+   "spec_sha256": "6bb61e72274839c3f056a64c3d48bc5495c841d70aabad9e1e39933716fea2e0",
+   "task": "PickHighlight",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 26,
+   "candidate": 1,
+   "seed": 19200100,
+   "spec_sha256": "9928a1fd66a0daead5b0a67e7db33645c091b4d866a7259abfd469a3030ee5f3",
+   "task": "PickHighlight",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 27,
+   "candidate": 2,
+   "seed": 19200200,
+   "spec_sha256": "aaff56c672a947cbc3503dc8931d449b5b493fb37b57885800a4a4913bd8d744",
+   "task": "PickHighlight",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 28,
+   "candidate": 3,
+   "seed": 19200300,
+   "spec_sha256": "3a7eae7f390ffa772833ed0831c75d499cac95dfe56adf39e448d3675dc8a8ac",
+   "task": "PickHighlight",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 29,
+   "candidate": 4,
+   "seed": 19200400,
+   "spec_sha256": "25c02307dbb8e005a60ff67b0f9c81871232d77b142cc7fd67a644a35461f683",
+   "task": "PickHighlight",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 30,
+   "candidate": 5,
+   "seed": 19200500,
+   "spec_sha256": "025a2133a6c68da603416d44dcf69bb8ed8a7af57c852cfca015b6a46a35fa0c",
+   "task": "PickHighlight",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 23300000,
+   "spec_sha256": "4c098970655ae037b0400acf81636528e4d8561208c42273217e00e0265d6116",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 23300100,
+   "spec_sha256": "1b891001b359dd36128e2aa776e625be834b790dda66a06673d05148758b7470",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 4,
+   "seed": 23300400,
+   "spec_sha256": "4f0afd779697c5bbfd722e40754abfaaebf756c4d2519a5c9ddf7a2a5d516575",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 5,
+   "seed": 23300500,
+   "spec_sha256": "3b2d0150cc438e75de4660832a19f8e7306330bb391b737c88c67e74bdb63a20",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 6,
+   "seed": 23300600,
+   "spec_sha256": "6b63d3417ebec3532f94c530ca7afec7b2b0769b62b1ccc5413b7b5bf44cbf65",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 7,
+   "seed": 23300700,
+   "spec_sha256": "cc9546f9a4cc8c309b9d9f4bdae4fee7c27c6a6c410130ea3e4dae475dced818",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 6,
+   "candidate": 8,
+   "seed": 23300800,
+   "spec_sha256": "9a1e54c2ed3c11a225590713f7f7b56b9f054bc43733d475df5ed598f0fc94f4",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 7,
+   "candidate": 10,
+   "seed": 23301000,
+   "spec_sha256": "c67ec8bf96f55a83569d3c9426f85753d728f3cd827792810f62c841c64e8582",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 8,
+   "candidate": 12,
+   "seed": 23301200,
+   "spec_sha256": "6ee44653abf69d98745de20c186191fa8db6d3223c235a55f880c9af694e2ae7",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 9,
+   "candidate": 13,
+   "seed": 23301300,
+   "spec_sha256": "8b8b312ed3b2df2220c919d87c77a924cc4b27ae5c41c883416db35065c0dbed",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 10,
+   "candidate": 14,
+   "seed": 23301400,
+   "spec_sha256": "398f20efa43e3b24972fb896e1e325eb584589bf3b22b18821b5b60f8906a896",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 11,
+   "candidate": 15,
+   "seed": 23301500,
+   "spec_sha256": "c96e91befa5f72c29d38d3953b990ef395903821e539083199f355e02a2c04ee",
+   "task": "InsertPeg",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 23400000,
+   "spec_sha256": "f078175bf1d71c078c9f1fc91de361c8ca1d8a866e6125e8aae3270de5e8ba8f",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 23400100,
+   "spec_sha256": "ba85ac3556249ddc371d86d2b1836157c7748b6428bd0bdbba6c1eb7e6b74acb",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 23400200,
+   "spec_sha256": "af72b7d347cc966933eb0bc92f8c9bc00a7dd1143006b809d66890f219a15949",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 23400300,
+   "spec_sha256": "12d7c126357009fdb55a4da31cb53aa53a454295e6d8908647396a6835f88add",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 4,
+   "candidate": 4,
+   "seed": 23400400,
+   "spec_sha256": "2e73a07e6872f505c997cb64b350e81c7a0881f0d9cb8568aeb95304b794a2af",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 5,
+   "candidate": 5,
+   "seed": 23400500,
+   "spec_sha256": "cb69d502855c7a2dcf6e06f1259e5e0c3ee2a5723ac1d156abcbfba4299228b6",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 6,
+   "candidate": 6,
+   "seed": 23400600,
+   "spec_sha256": "433a84c1fba87cfd3140f1da577c669d0ea0c32755352b7cd9461835cd92bd2a",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 7,
+   "candidate": 7,
+   "seed": 23400700,
+   "spec_sha256": "1335a5e684953aa87a4c43cc8b8f9baa31465066d8b44aedbba1efaa61f60ccb",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 8,
+   "candidate": 8,
+   "seed": 23400800,
+   "spec_sha256": "2f0eceaf652b08a06f81d828e13e6680acb8c51325324a6166555c62db9f0bde",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 9,
+   "candidate": 9,
+   "seed": 23400900,
+   "spec_sha256": "94605bf3521f31020e5af9ab80c28bcd5d26861ed740950eecea4fd5f8e78c49",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 10,
+   "candidate": 10,
+   "seed": 23401000,
+   "spec_sha256": "9e42ab1fcd1f8f1be218ef55a7170c3601b9aee840afe06adbc61962e8a09ef0",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 11,
+   "candidate": 11,
+   "seed": 23401100,
+   "spec_sha256": "85dd62d7c32e79a28fd2a5fdce10f67052acc6a2870573852d8bbdda185ba3a0",
+   "task": "MoveCube",
+   "tier": "xhard4"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 17500000,
+   "spec_sha256": "46af97ddb1f21da7e49bc693da871d0aea0d083f7a49879df9476f4288b35639",
+   "task": "PatternLock",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 17500100,
+   "spec_sha256": "ec124a2b38197d0dda4c42132cb1c8b50baad060d4651410f3465aa18a8a9ff5",
+   "task": "PatternLock",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 17500200,
+   "spec_sha256": "933dfd6b5f5dcfacd8a2fd6e96d480c389d78651116205d06684aef20b052086",
+   "task": "PatternLock",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 17500300,
+   "spec_sha256": "2e0865f2e21001af0fda776d4b0c1768595a67199fa7d2093b80f2988063ea51",
+   "task": "PatternLock",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 17,
+   "candidate": 0,
+   "seed": 19500000,
+   "spec_sha256": "3ac369913d317ffedafa87e9eff9e25646fe6efa3b9c6970ee6f13cbc9f90c0b",
+   "task": "PatternLock",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 18,
+   "candidate": 1,
+   "seed": 19500100,
+   "spec_sha256": "a81e3780b1c17a358216b2c46ddf82a3d40138fcd4f47f618e8459eb6b04d6a1",
+   "task": "PatternLock",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 19,
+   "candidate": 2,
+   "seed": 19500200,
+   "spec_sha256": "962b898030659606cce973638c48f9a85934dafbf7f26a119e6d5fcdfe5ab7bc",
+   "task": "PatternLock",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 20,
+   "candidate": 3,
+   "seed": 19500300,
+   "spec_sha256": "107d700deceab0100e476641d4e2e2106f5fff3f6f0a1189817e4623becf003e",
+   "task": "PatternLock",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 34,
+   "candidate": 0,
+   "seed": 21500000,
+   "spec_sha256": "363aeecb8806bc8deec103456edc3ecfdf8e5340905c2bd3883fdb104e7f9dbf",
+   "task": "PatternLock",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 35,
+   "candidate": 1,
+   "seed": 21500100,
+   "spec_sha256": "1a5d2025a0f95db49322da2b57588d8f12bda83411010e092ce566ffd70fa55b",
+   "task": "PatternLock",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 36,
+   "candidate": 2,
+   "seed": 21500200,
+   "spec_sha256": "76d38560d319d84ea9e166df01c0f48a54e93487c15bbc06dd30af16252a0a5f",
+   "task": "PatternLock",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 37,
+   "candidate": 3,
+   "seed": 21500300,
+   "spec_sha256": "ddda1c5e7213434cdbf8853a2f65b0ca7e283274ede6d7d9285ca7f54adfe184",
+   "task": "PatternLock",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 0,
+   "candidate": 0,
+   "seed": 17600000,
+   "spec_sha256": "01bb3e46753a74f754b9383040e4b260ce6fbceef100744f9937c553595a6065",
+   "task": "RouteStick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 1,
+   "candidate": 1,
+   "seed": 17600100,
+   "spec_sha256": "7d70ba309ca4ace91ff8153da60f0adb1996e2e7df03cc98d3f3ef962cca9e31",
+   "task": "RouteStick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 2,
+   "candidate": 2,
+   "seed": 17600200,
+   "spec_sha256": "54a71368138046169b66fa8138ac65aa91df4083eb59527da0d6be042a8be832",
+   "task": "RouteStick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 3,
+   "candidate": 3,
+   "seed": 17600300,
+   "spec_sha256": "12bdc2d44eb5be4b41ed67cddf2579a445257d42f31c3782243b6ad93e5880fc",
+   "task": "RouteStick",
+   "tier": "xhard1"
+  },
+  {
+   "builder_episode": 17,
+   "candidate": 0,
+   "seed": 19600000,
+   "spec_sha256": "78c9468e4cbd7891b682283079eeff304ea58a0a108367fe3255fd583d5fb256",
+   "task": "RouteStick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 18,
+   "candidate": 1,
+   "seed": 19600100,
+   "spec_sha256": "bb2377d969fbdd6c18335c838623130f7e75f1c5da0837d8e33b17b496b36c1a",
+   "task": "RouteStick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 19,
+   "candidate": 2,
+   "seed": 19600200,
+   "spec_sha256": "1b586f6702008ec970431a57351c147014011548da6c112a33d97cdbf4fc4300",
+   "task": "RouteStick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 20,
+   "candidate": 3,
+   "seed": 19600300,
+   "spec_sha256": "0331fd5273a3e98f489c64df64ea2e968dbf98b33f055fcfc6314f7751cc73d3",
+   "task": "RouteStick",
+   "tier": "xhard2"
+  },
+  {
+   "builder_episode": 34,
+   "candidate": 0,
+   "seed": 21600000,
+   "spec_sha256": "13902f23e270ad43143cba06f696479ca22aabda41560797e81b282e07664805",
+   "task": "RouteStick",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 35,
+   "candidate": 1,
+   "seed": 21600100,
+   "spec_sha256": "61701c4db248735b0d3cb42ece6d1860a5256adb17ae76aa76c6a464cbe61559",
+   "task": "RouteStick",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 36,
+   "candidate": 2,
+   "seed": 21600200,
+   "spec_sha256": "ad128b075278252012d2b122d083c213aab8a7d3ca31ef0d79d90273c4db252b",
+   "task": "RouteStick",
+   "tier": "xhard3"
+  },
+  {
+   "builder_episode": 37,
+   "candidate": 3,
+   "seed": 21600300,
+   "spec_sha256": "777c547abca0b3587db7f9c949bd3eedd6b58983da9aeb8d241353c847506e91",
+   "task": "RouteStick",
+   "tier": "xhard3"
+  }
+ ],
+ "rule": "V9 包内规格交付行（hard_specs.delivered），每任务 12 局按各档交付局数比例最大余数法分配（余数相同档位升序优先），每格取 candidate 升序最小的 N 个；builder_episode 按 XHARD0_IN_TEST_HARD=0 的 test-hard 编号",
+ "schema": "gate-set-v9/1",
+ "sha256": "902ea3624b0bfe4b8790c7473a8e7ec5c3f4a3eb05cb7a2d066690c5fe399757",
+ "source": {
+  "xhard1": {
+   "delivery_sha256": "b4c0ec4fd1d6185a5d1bd2962f33f064e6d7e0f253c8340bbcc71505ca298424",
+   "identity_sha256": "bc34588a73b184bc67c6eab93fece737c25435b27ab3de1b3571742030b04b4b"
+  },
+  "xhard2": {
+   "delivery_sha256": "ea0f28c356e2ee8e2e86ea42240a5d7b3309b61e42576a83a2129ff20eb725d7",
+   "identity_sha256": "9d8580efaf787d64270d6df60c64987886d393c0f52e119601f5dc1f2feb48b2"
+  },
+  "xhard3": {
+   "delivery_sha256": "bfafe57fa3742218c909252f215eb78478c9347d0c83baf345fa4de743b6b9cc",
+   "identity_sha256": "951f290c8c7b6ae150208ad785fcf9de3f3fdd3e37b34b4a9530993d5566ec6f"
+  },
+  "xhard4": {
+   "delivery_sha256": "e24962fc3dece50a5c07c059a7047cfa93f7046e0beb12ac58fe9a1cea78f57e",
+   "identity_sha256": "1ceed1e6165dda5f02619663443f3978751979f2bc8f551d3237d64589aea030"
+  },
+  "xhard5": {
+   "delivery_sha256": "be2ebd439c9d9edb1c8dc4133c7016d3783bf53fa89ef74782b4462aa5864e0d",
+   "identity_sha256": "8ff6b8781f04b5ab58df85b97c159e00b6629a36fdddeb37269215c7568b5a0c"
+  }
+ }
+}
