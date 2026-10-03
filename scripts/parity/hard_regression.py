@@ -62,6 +62,21 @@ def _hard_specs():
     return hard_specs
 
 
+def _xhard0_prefix(hs) -> int:
+    """builder 每任务前置的 xhard0 局数：开关 ``XHARD0_IN_TEST_HARD`` 开为 12、关为 0（旧 hard_specs 无开关时按 12）。"""
+    return getattr(hs, "xhard0_prefix", lambda: hs.XHARD0_PER_TASK)()
+
+
+def _xhard0_in_test_hard(hs) -> bool:
+    return bool(getattr(hs, "XHARD0_IN_TEST_HARD", True))
+
+
+def _require_xhard0_in_test_hard(hs) -> None:
+    """逻辑上必须有 test-hard 里 xhard0 的子命令：开关关闭时明确报错，不许静默错位。"""
+    if not _xhard0_in_test_hard(hs):
+        raise SystemExit("xhard0 已退出 test-hard：需设 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1 再跑本子命令")
+
+
 # ── 记录点路径（静态收集 SpecRecorder.record 的第一个参数）─────────────────────
 
 
@@ -165,12 +180,12 @@ def specs_tiers(specs_root: str | None = None) -> tuple[tuple[str, ...], bool]:
 
 
 def delivery_index(specs_root: str | None = None) -> dict[tuple[str, str, int], dict[str, Any]]:
-    """(task, tier, seed) → {row, builder_episode}；builder 号与 hard_builder 相同：xhard0 12 局在前，
+    """(task, tier, seed) → {row, builder_episode}；builder 号与 hard_builder 相同：xhard0 前置局数（开关开 12、关 0）在前，
     之后档序主序、档内 candidate 升序（v7 方案第二部分 §7.2）。v8 规格按 ``V8_TIERS`` 读五档。"""
     hs = _hs_light()
     tiers, v8 = specs_tiers(specs_root)
     index: dict[tuple[str, str, int], dict[str, Any]] = {}
-    offsets: dict[str, int] = collections.Counter({task: hs.XHARD0_PER_TASK for task in hs.ALL_TASKS})
+    offsets: dict[str, int] = collections.Counter({task: _xhard0_prefix(hs) for task in hs.ALL_TASKS})
     for tier in tiers:
         path = hs.specs_root(specs_root) / tier / "specs.jsonl"
         if v8 and not path.is_file():
@@ -434,7 +449,7 @@ def cmd_reset_replay(args) -> int:
 
 
 def expected_episodes(task: str, hs, cells: dict[tuple[str, str], int] | None = None) -> int:
-    """builder 每任务局数＝xhard0 12 + 交付格表在该任务的局数之和（不写死）。
+    """builder 每任务局数＝xhard0 前置局数（开关开 12、关 0）+ 交付格表在该任务的局数之和（不写死）。
 
     换包后（``TIERS`` 含 xhard5）按 ``cells``（缺省当前 ``EXPECTED_CELLS``；v9 阶段 3b 切换前为 V8_CELLS：
     PickXtimes／SwingXtimes／StopCube 62、MoveCube／InsertPeg 32、其余 92；切换后为 V9_CELLS：每任务 62）；
@@ -442,8 +457,8 @@ def expected_episodes(task: str, hs, cells: dict[tuple[str, str], int] | None = 
     （不再读会在 3b 改值的 ``XHARD4_ONLY``）。"""
     if "xhard5" in hs.TIERS:
         table = cells if cells is not None else hs.EXPECTED_CELLS
-        return hs.XHARD0_PER_TASK + sum(n for (name, _), n in table.items() if name == task)
-    return hs.XHARD0_PER_TASK + sum(20 for tier in hs.V7_TIERS if tier == "xhard4" or task not in hs.V7_XHARD4_ONLY)
+        return _xhard0_prefix(hs) + sum(n for (name, _), n in table.items() if name == task)
+    return _xhard0_prefix(hs) + sum(20 for tier in hs.V7_TIERS if tier == "xhard4" or task not in hs.V7_XHARD4_ONLY)
 
 
 def cmd_eval_smoke(args) -> int:
@@ -566,8 +581,9 @@ def cmd_xhard0_reset_parity(args) -> int:
     """XHARD0_RESET_PARITY（D-16）：同卡两进程——官方侧只导入 robomme（dataset="test"，原 episode 号），
     robomme_hard 侧 dataset="test-hard" episode 0～11。确定性层逐位比：gym.make 实参（除 hard 侧不应有的键）、
     包装链类名序列、演示回放前的底层状态（另起底层环境 reset 取 get_state_dict）、seed、task_goal、多选项；
-    演示层（演示帧数、演示帧、演示后状态）只报告。"""
+    演示层（演示帧数、演示帧、演示后状态）只报告。开关 ``XHARD0_IN_TEST_HARD`` 关闭时 builder 无 xhard0，直接报错。"""
     hs = _hard_specs()
+    _require_xhard0_in_test_hard(hs)
     manifest = json.loads(Path(args.manifest).read_text())
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

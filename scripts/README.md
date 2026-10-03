@@ -6,7 +6,7 @@
 
 ## 1. 入口：`evaluation_hard.py`
 
-`scripts/` 顶层四个入口里，`dataset_replay.py`、`evaluation.py`、`run_example.py` 与官方逐字节相同，用法见仓库根 `readme.md`。新增的只有 `evaluation_hard.py`：跑六档（xhard0～xhard5）的评估入口，与 `evaluation.py` 只差 3 处，其余逐字相同（核查：`diff scripts/evaluation.py scripts/evaluation_hard.py`）。
+`scripts/` 顶层四个入口里，`dataset_replay.py`、`evaluation.py`、`run_example.py` 与官方逐字节相同，用法见仓库根 `readme.md`。新增的只有 `evaluation_hard.py`：跑 V9 五档（xhard1～xhard5）的评估入口，与 `evaluation.py` 只差 3 处，其余逐字相同（核查：`diff scripts/evaluation.py scripts/evaluation_hard.py`）。
 
 ```diff
 - from robomme.env_record_wrapper import BenchmarkEnvBuilder
@@ -20,16 +20,14 @@
 三处差别用人话说：
 
 1. **换包**。新值档的环境代码放在 `robomme_hard` 包里，与官方 `robomme` 并列、互不干扰。它的 builder 是官方 builder 的子类，用法一样，只是多认一个数据集名 `test-hard`。
-2. **换数据集**。官方 `test` 每任务 50 局。`test-hard` 每任务 62 局：先是官方 hard 的 12 局（xhard0，对照用、不计入交付集），再是 V9 交付的 50 局，按 xhard1 到 xhard5 依次排列（每格局数见第 3 节）。16 任务合计 992 局，其中 V9 交付集 16 × 50 = 800 局。`resolve_episode` 和官方一样返回两个值，第二个值在 `test-hard` 下就是档位名（`xhard0`～`xhard5`）。
-3. **步数上限是一个数**。构造 builder 时写死 `max_steps=1600`，每局 `make_env_for_episode(episode)` 与官方一样不传，六档一律 1600、不按档查表。实测第 1601 次 `env.step()` 返回 `truncated=True`（官方 1300 同理对应第 1301 次）。
+2. **换数据集**。官方 `test` 每任务 50 局。`test-hard` 每任务也是 50 局，按 xhard1 到 xhard5 依次排列（每格局数见第 3 节），16 任务合计 800 局。`resolve_episode` 和官方一样返回两个值，第二个值在 `test-hard` 下就是档位名（`xhard1`～`xhard5`）。
+3. **步数上限是一个数**。构造 builder 时写死 `max_steps=1600`，每局 `make_env_for_episode(episode)` 与官方一样不传，五档一律 1600、不按档查表。实测第 1601 次 `env.step()` 返回 `truncated=True`（官方 1300 同理对应第 1301 次）。
 
 ### 每一局的场景从哪里来
 
-xhard0 就是官方 `test` 里 `difficulty="hard"` 的那 12 局，seed 与原 episode 号不变，环境走官方原生 hard 分支现场抽，不读规格文件。
+每局的场景不是评估时随机抽的，而是生成数据时就冻结好、随包发布的。五份文件 `src/robomme_hard/env_metadata/test-hard/xhard1～5/specs.jsonl` 每行记一局：seed、档位、以及场景里每个随机取值点当时抽到的值（放了哪些块、什么颜色、放在哪、演示序列是什么）。
 
-xhard1 到 xhard5 的场景不是评估时随机抽的，而是生成数据时就冻结好、随包发布的。五份文件 `src/robomme_hard/env_metadata/test-hard/xhard1～5/specs.jsonl` 每行记一局：seed、档位、以及场景里每个随机取值点当时抽到的值（放了哪些块、什么颜色、放在哪、演示序列是什么）。
-
-构造 builder 时，它先排本任务的 xhard0 局，再读这五份文件，挑出本任务的正式局，按「xhard1 → xhard5、档内按候选号」排好，这就是 episode 号的顺序。`make_env_for_episode(i)` 做的事与官方相同（`gym.make` 再套 wrapper），只是在 `gym.make` 里多传两个参数：这局所属档位的取值配置（`sampling_config`），和这局冻结的场景规格（`native_episode_spec`）。
+构造 builder 时，它读这五份文件，挑出本任务的正式局，按「xhard1 → xhard5、档内按候选号」排好，这就是 episode 号的顺序。`make_env_for_episode(i)` 做的事与官方相同（`gym.make` 再套 wrapper），只是在 `gym.make` 里多传两个参数：这局所属档位的取值配置（`sampling_config`），和这局冻结的场景规格（`native_episode_spec`）。
 
 环境拿到这两个参数后，建场景时每个随机取值点照常抽一次随机数，但真正用的值是规格里冻结的那个。所以评估时建出的场景与生成数据时是同一局；抽到的值只用来核对随机流有没有漂移，不影响场景。`reset()` 之后可以调 `robomme_hard.env_record_wrapper.spec_binding(env)` 看核对结果，正常应该零差。
 
@@ -55,11 +53,11 @@ xhard1 到 xhard5 的场景不是评估时随机抽的，而是生成数据时�
 uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstream   # 末行 UPSTREAM_GUARD=PASS
 ```
 
-## 3. 六档配置对比与局数
+## 3. 五档配置对比与局数
 
-**配置对比**（一句话版；代码真源为各环境的 `native_blocks` 与包内 header 的 `sampling_config`，源 `docs/plans/1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1）。列格式 xhard0（官方 hard）→ xhard1 → … → xhard5；`[a,b]` 为整数均匀区间；「不交付」= 数值在代码里但不生成；「无」= 该任务没有这个档。
+**配置对比**（一句话版；代码真源为各环境的 `native_blocks` 与包内 header 的 `sampling_config`，源 `docs/plans/1001-newtask-v8-xhard-gradient-plan.md` 第一部分表 1）。列格式 官方 hard（参考列，不在 `test-hard` 里）→ xhard1 → … → xhard5；`[a,b]` 为整数均匀区间；「不交付」= 数值在代码里但不生成；「无」= 该任务没有这个档。
 
-| 环境 | 梯度维度 | xhard0 | xhard1 | xhard2 | xhard3 | xhard4 | xhard5 |
+| 环境 | 梯度维度 | 官方 hard（参考） | xhard1 | xhard2 | xhard3 | xhard4 | xhard5 |
 |---|---|---|---|---|---|---|---|
 | PickXtimes | 抓取次数 / 干扰块 | [4,5] / 0 | 6 / 1 | 7 / 2 | 8 / 3 | 9 / 4，不交付 | 无 |
 | SwingXtimes | 摆动轮数 / 干扰块 | 3 / 0 | 4 / 1 | 5 / 2 | 6 / 3 | 7 / 4 | 8 / 4 |
@@ -78,7 +76,7 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 | MoveCube | 不加档 | 官方 hard | 无 | 无 | 无 | 圆环 U（V9 区域） | 无 |
 | InsertPeg | 不加档 | 官方 hard | 无 | 无 | 无 | 原 xhard 改名，数值不动 | 无 |
 
-**局数**（交付格表 `hard_specs.EXPECTED_CELLS`＝`V9_CELLS`，43 格，每任务恰 50 局；xhard0 另有 16 任务 × 12 局 = 192，不计入 800）：
+**局数**（交付格表 `hard_specs.EXPECTED_CELLS`＝`V9_CELLS`，43 格，每任务恰 50 局）：
 
 | 任务 | xhard1 | xhard2 | xhard3 | xhard4 | xhard5 | 合计 |
 |---|---|---|---|---|---|---|
@@ -89,7 +87,7 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 | MoveCube、InsertPeg | — | — | — | 50 | — | 各 50 |
 | **合计** | 272 | 272 | 92 | 144 | 20 | **800** |
 
-步数上限 1600 只约束执行段，演示段不计入；生成时已过滤执行步超过 1600 的候选，交付集实测最大 1469 步、xhard0 最大 1074 步（`V9_STEP_CAP=PASS max=1469 cap=1600 over=0`）。逐局长度看 V9 站点 `http://sled-vail.eecs.umich.edu:8082/` 的各档总表。
+步数上限 1600 只约束执行段，演示段不计入；生成时已过滤执行步超过 1600 的候选，交付集实测最大 1469 步（`V9_STEP_CAP=PASS max=1469 cap=1600 over=0`）。逐局长度看 V9 站点 `http://sled-vail.eecs.umich.edu:8082/` 的各档总表。官方 hard 的 12 局（代码里叫 xhard0）默认不在 `test-hard` 里；需要对照时设环境变量 `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1`，builder 会把它们前置为每任务的前 12 局（62 局／任务），源码与清单均保留。
 
 # 第二部分　开发者文档
 
@@ -141,7 +139,7 @@ uv run --no-sync python scripts/parity/hard_pull.py --stage <NFS>/stage --dest <
 uv run --no-sync python scripts/parity/hard_parity.py compare --pair H:H2 --tier v9 --manifest <delivery.json>
 # 本机回归（GPU）
 uv run --no-sync python scripts/parity/hard_regression.py reset-replay --out <目录>                                # → V9_RESET_REPLAY
-uv run --no-sync python scripts/parity/hard_regression.py xhard0-reset-parity --src-root <1fadc0ec worktree> --out <目录>  # → XHARD0_RESET_PARITY
+ROBOMME_HARD_XHARD0_IN_TEST_HARD=1 uv run --no-sync python scripts/parity/hard_regression.py xhard0-reset-parity --src-root <1fadc0ec worktree> --out <目录>  # → XHARD0_RESET_PARITY（需开关打开）
 uv run --no-sync python scripts/parity/hard_regression.py eval-smoke --task BinFill --episode 0                    # → HARD_EVAL_SMOKE
 ```
 
@@ -155,7 +153,7 @@ ls -1 scripts/*.py                                                        # 恰�
 git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py  # 录像器零 diff
 uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstream
 diff scripts/evaluation.py scripts/evaluation_hard.py                     # 恰好第 1 节的 3 处
-uv run --no-sync python -m pytest tests/lightweight/test_v9_packaged_800.py -q -s   # V9_PACKAGED / V9_MAX_STEPS / HARD_ENTRY_DIFF
+uv run --no-sync python -m pytest tests/lightweight/test_v9_packaged_800.py -q -s   # 800 局 / 每任务 50 局 / 固定 1600 / 3 行 diff
 timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q
 ```
 

@@ -4,7 +4,7 @@
 
 * ``train`` / ``test`` / ``val``：沿用官方父类的元数据逻辑；只把四个 Unmask 任务的 ``train`` 元数据改读
   ``robomme_hard/env_metadata/train``（400 条，E-12）。
-* ``test-hard``：xhard0 12 局在前，再依次读包内 ``env_metadata/test-hard/<tier>/specs.jsonl``（xhard1→xhard5，
+* ``test-hard``：xhard0 12 局仅在开关 ``hard_specs.XHARD0_IN_TEST_HARD`` 打开时在前（默认关，V9 每任务 50 局），再依次读包内 ``env_metadata/test-hard/<tier>/specs.jsonl``（xhard1→xhard5，
   v8 ``hard-specs/4``，经 ``load_specs_v8`` 整根校验），取本任务 ``selected`` 且 ``rollout.status=="ok"`` 的行，
   档内按 ``candidate`` 升序，拼接编为 episode 0..N-1。每格行数对照交付格表 ``EXPECTED_CELLS``（43 格逐格局数）
   断言：(任务, 档) 必须在表内才可有正式局，表内格恰好等于表值，表外格恰好 0 行（xhard5 只含 SwingXtimes、StopCube）。
@@ -157,7 +157,7 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
         self.dataset = dataset
         if dataset == TEST_HARD:
             # 父类按 dataset="test" 读了官方 test 元数据：先取出 xhard0（hard 子集）再清空（v7 §1.1）
-            xhard0 = _xhard0_entries(env_id, self.metadata_index)
+            xhard0 = _xhard0_entries(env_id, self.metadata_index) if hard_specs.XHARD0_IN_TEST_HARD else []
             self.metadata_index = {}
             root = hard_specs.specs_root(specs_root)
             self._specs_root = None if root == hard_specs.PACKAGED_SPECS_ROOT else root

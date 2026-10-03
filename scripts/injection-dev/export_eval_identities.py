@@ -29,6 +29,12 @@
         --specs-root artifacts/newtask-v9/specs-root --delivery artifacts/newtask-v9/delivery/delivery.local.json \\
         --out artifacts/v9-evaluation/inputs/eval-identities-992.jsonl \\
         --official-out artifacts/v9-evaluation/inputs/eval-official-xhard0-192.jsonl
+
+**xhard0 退出 test-hard**（1002 xhard0-out-of-test-hard 方案）：builder 前置的 xhard0 局数随开关
+``hard_specs.XHARD0_IN_TEST_HARD``（环境变量 ``ROBOMME_HARD_XHARD0_IN_TEST_HARD=1`` 开）——开为每任务 12（共 192），
+关（默认）为 0。关档时总数只剩新值格局数（V9 800 = 0 + 800，默认文件名 ``eval-identities-800.jsonl``），
+xhard0 行须为 0；官方路线清单无行可写，``--official-out`` 跳过写文件并在判定行打 ``official=skipped``（仍可 PASS），
+V9 也不再强制显式给 ``--official-out``。
 """
 
 from __future__ import annotations
@@ -54,21 +60,35 @@ TASK_SECONDS = {
     "VideoUnmaskSwap": 50.5,
 }
 SHARDS = 10
-XHARD0_TOTAL = len(hard_specs.ALL_TASKS) * hard_specs.XHARD0_PER_TASK
+
+
+def _xhard0_prefix() -> int:
+    """builder 每任务前置的 xhard0 局数：开关开 12、关 0（S1 合并前的旧 hard_specs 无开关，按 12）。"""
+    return getattr(hard_specs, "xhard0_prefix", lambda: hard_specs.XHARD0_PER_TASK)()
+
+
+def xhard0_total() -> int:
+    """xhard0 总局数：16 任务 × 前置局数（开关开 192、关 0）；运行时读开关，不在导入时冻结。"""
+    return len(hard_specs.ALL_TASKS) * _xhard0_prefix()
+
+
+#: 导入时刻的 xhard0 总数（兼容旧引用；判据一律走 :func:`xhard0_total`）
+XHARD0_TOTAL = xhard0_total()
 #: 官方路线 xhard0 清单的默认路径（V8 根；V9 必须显式给，审计 10）
 OFFICIAL_OUT_DEFAULT = "artifacts/newtask-v8/eval-official-xhard0-192.jsonl"
 
 
 def expected_total(cells: dict[tuple[str, str], int]) -> int:
-    """格表推出的总局数：xhard0 16 × 12 + 新值格局数之和（V8 1262 = 192 + 1070；V9 992 = 192 + 800）。"""
-    return XHARD0_TOTAL + sum(cells.values())
+    """格表推出的总局数：xhard0 16 × 前置局数 + 新值格局数之和（开关开：V8 1262 = 192 + 1070、V9 992 = 192 + 800；
+    开关关：V8 1070、V9 800）。"""
+    return xhard0_total() + sum(cells.values())
 
 
 def identities_name(cells: dict[tuple[str, str], int]) -> str:
     return f"eval-identities-{expected_total(cells)}.jsonl"
 
 
-#: 包内当前格表（EXPECTED_CELLS）推出的总局数与默认文件名：v9 阶段 3b 切换前 1262，切换后 992
+#: 包内当前格表（EXPECTED_CELLS）与导入时开关推出的总局数与默认文件名（V9：开关开 992、关 800）
 EXPECTED_TOTAL = expected_total(hard_specs.EXPECTED_CELLS)
 IDENTITIES_NAME = identities_name(hard_specs.EXPECTED_CELLS)
 
@@ -84,8 +104,8 @@ def balance(rows: list[dict], shards: int) -> None:
 
 def check_rows(rows: list[dict], official: list[dict], cells: dict[tuple[str, str], int] | None = None,
                delivery_ids: set[tuple[str, str, int]] | None = None) -> tuple[bool, dict]:
-    """总数 = :func:`expected_total`（V8 1262／V9 992）、xhard0 192、逐格局数等于格表（缺省 EXPECTED_CELLS）、
-    round／shard 全空、官方 192；给 ``delivery_ids`` 时新值身份 (task, tier, seed) 须与之逐一相同。"""
+    """总数 = :func:`expected_total`（开关开 V8 1262／V9 992，关 1070／800）、xhard0 = :func:`xhard0_total`（192／0）、逐格局数等于格表（缺省 EXPECTED_CELLS）、
+    round／shard 全空、官方行数 = xhard0 总数；给 ``delivery_ids`` 时新值身份 (task, tier, seed) 须与之逐一相同。"""
     cells = hard_specs.EXPECTED_CELLS if cells is None else cells
     per_cell: dict[tuple[str, str], int] = defaultdict(int)
     for r in rows:
@@ -102,8 +122,9 @@ def check_rows(rows: list[dict], official: list[dict], cells: dict[tuple[str, st
     if delivery_ids is not None:
         new_ids = {(r["task"], r["tier"], int(r["seed"])) for r in rows if r["tier"] != hard_specs.XHARD0}
         facts["delivery_mismatch"] = len(new_ids ^ delivery_ids)
-    ok = (facts["episodes"] == facts["expected"] and facts["xhard0"] == XHARD0_TOTAL and facts["cell_mismatch"] == 0
-          and facts["round_or_shard_set"] == 0 and facts["official"] == XHARD0_TOTAL
+    x0_total = xhard0_total()
+    ok = (facts["episodes"] == facts["expected"] and facts["xhard0"] == x0_total and facts["cell_mismatch"] == 0
+          and facts["round_or_shard_set"] == 0 and facts["official"] == x0_total
           and facts.get("delivery_mismatch", 0) == 0)
     return ok, facts
 
@@ -140,7 +161,7 @@ def main(argv: list[str] | None = None) -> int:
     if version == "v9":
         if args.delivery is None:
             parser.error("V9 格表须给 --delivery（v9 assemble 的 800 行交付清单）")
-        if args.official_out == OFFICIAL_OUT_DEFAULT:
+        if args.official_out == OFFICIAL_OUT_DEFAULT and xhard0_total() > 0:
             parser.error(f"V9 格表须显式给 --official-out（默认值 {OFFICIAL_OUT_DEFAULT} 是 V8 根，不得覆写）")
     out = args.out or f"artifacts/newtask-{version}/{identities_name(cells)}"
     delivery_ids = read_delivery_ids(args.delivery) if args.delivery else None
@@ -163,7 +184,10 @@ def main(argv: list[str] | None = None) -> int:
                 for r in rows if r["tier"] == hard_specs.XHARD0]
     balance(official, SHARDS)
     official.sort(key=lambda r: (r["shard"], hard_specs.ALL_TASKS.index(r["task"]), r["source_episode"]))
-    for path, data in ((out, rows), (args.official_out, official)):
+    # 开关关闭（xhard0 不在 test-hard）时官方路线清单无行：跳过写文件，判定行打 official=skipped
+    skip_official = xhard0_total() == 0
+    writes = [(out, rows)] + ([] if skip_official else [(args.official_out, official)])
+    for path, data in writes:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         Path(path).write_text("".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in data))
     ok, facts = check_rows(rows, official, cells, delivery_ids)
@@ -171,7 +195,7 @@ def main(argv: list[str] | None = None) -> int:
           f"expected={facts['expected']} "
           f"xhard0={facts['xhard0']} cells={facts['cells']} cell_mismatch={facts['cell_mismatch']} "
           + (f"delivery_mismatch={facts['delivery_mismatch']} " if "delivery_mismatch" in facts else "") +
-          f"round_or_shard_set={facts['round_or_shard_set']} official={facts['official']} shards={SHARDS} "
+          f"round_or_shard_set={facts['round_or_shard_set']} official={'skipped' if skip_official else facts['official']} shards={SHARDS} "
           f"tiers={facts['tiers']}")
     return 0 if ok else 1
 

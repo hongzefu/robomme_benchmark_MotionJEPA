@@ -128,6 +128,7 @@
     <input class="search" id="task-search" type="search" placeholder="查找任务…" autocomplete="off" aria-label="搜索任务">
     <button class="task-link outlier-link" id="outlier-link" type="button" hidden><span class="task-index">★</span><span><span class="task-name">超出 xhard0 范围 &gt;15% 合集</span><span class="task-id" id="outlier-count"></span></span></button>
     <button class="task-link outlier-link sem-link" id="semantic-link" type="button" hidden><span class="task-index">≠</span><span><span class="task-name">语义调整合集</span><span class="task-id" id="semantic-count"></span></span></button>
+    <button class="task-link outlier-link oracle-link" id="overall-link" type="button" hidden><span class="task-index">%</span><span><span class="task-name">总体成功率</span><span class="task-id">xhard1～5 · 800 局 · 不分档</span></span></button>
     <button class="task-link outlier-link oracle-link" id="oracle-link" type="button" hidden><span class="task-index">∑</span><span><span class="task-name">各档总表</span><span class="task-id">配置 · oracle 长度 · 成功率</span></span></button>
     <nav class="task-nav" id="task-nav" aria-label="全部任务"></nav>
   </aside>
@@ -138,6 +139,7 @@
     </header>
     <div class="status-panel" id="status-panel" role="status">正在载入…</div>
     <section id="outlier-section" hidden></section>
+    <section id="overall-section" class="oracle-comparison" hidden></section>
     <section id="oracle-section" class="oracle-comparison" hidden></section>
     <section id="semantic-section" hidden></section>
     <section id="task-section" hidden>
@@ -213,6 +215,73 @@
     // 六档并排；每个任务按配置、GT 长度和评估位逐行对齐。
     function renderOracle() {
       renderComparison(el('oracle-section'));
+    }
+
+    // ---- 总体成功率：xhard1～5 全部交付局（不含 xhard0）按策略合计，不分档；逐任务也按同一口径 ----
+    // 数据直接由 catalog.tasks[*].tiers[tier].rates.new 累加（终态 success/fail/timeout/error），分母为该格局数。
+    function overallStats() {
+      const per = [], total = {};
+      policies().forEach(p => { total[p.id] = { success: 0, fail: 0, timeout: 0, error: 0, n: 0 }; });
+      S.cat.tasks.forEach(task => {
+        const row = { id: task.id, name: task.name, byPolicy: {} };
+        policies().forEach(p => { row.byPolicy[p.id] = { success: 0, fail: 0, timeout: 0, error: 0, n: 0 }; });
+        Object.entries(task.tiers).forEach(([tier, cell]) => {
+          if (tier === 'xhard0') return;
+          const n = cell.episodes.length;
+          policies().forEach(p => {
+            const c = ((cell.rates || {}).new || {})[p.id] || {}, r = row.byPolicy[p.id];
+            FINAL.forEach(k => { r[k] += c[k] || 0; });
+            r.n += n;
+          });
+        });
+        policies().forEach(p => { const r = row.byPolicy[p.id], t = total[p.id]; FINAL.forEach(k => { t[k] += r[k]; }); t.n += r.n; });
+        per.push(row);
+      });
+      return { per, total };
+    }
+    function renderOverall() {
+      const box = el('overall-section'); box.textContent = '';
+      const { per, total } = overallStats();
+      const pct = (s, n) => n ? Math.round(1000 * s / n) / 10 + '%' : '—';
+      box.append(node('h2', 'task-title', '总体成功率'));
+      const n0 = total[policies()[0].id].n, perTask = per.map(r => r.byPolicy[policies()[0].id].n), uniform = perTask.every(v => v === perTask[0]);
+      const mul = uniform ? `${per.length} 任务 × ${perTask[0]} 局 = ${n0} 局` : `${per.length} 任务共 ${n0} 局（每任务 ${Math.min(...perTask)}～${Math.max(...perTask)} 局）`;
+      box.append(node('div', 'oracle-subtitle', `交付集 ${mul}（xhard1～5 全部合并，不分档，不含 xhard0 官方 hard 对照）· 新入口 robomme_hard`));
+      const scroll = node('div', 'oracle-scroll'); const table = node('table', 'oracle-table'); table.style.minWidth = '640px';
+      const thead = node('thead'); const hr = node('tr');
+      ['策略', '局数', '成功', '失败', '超时', '错误', '成功率'].forEach(t => hr.append(node('th', '', t))); thead.append(hr); table.append(thead);
+      const tb = node('tbody');
+      policies().forEach((p, i) => {
+        const t = total[p.id], tr = node('tr');
+        const th = node('th', 'oracle-task', p.label); th.scope = 'row'; tr.append(th);
+        [t.n, t.success, t.fail, t.timeout, t.error].forEach(v => tr.append(node('td', '', String(v))));
+        const td = node('td'); td.append(node('span', 'oracle-value', pct(t.success, t.n)));
+        const track = node('div', 'oracle-track' + (i === 1 ? ' oracle-track-alt' : '')); track.setAttribute('aria-hidden', 'true');
+        const bar = node('i'); bar.style.width = (t.n ? 100 * t.success / t.n : 0) + '%'; track.append(bar); td.append(track);
+        td.append(node('span', 'oracle-range', t.success + ' / ' + t.n + ' 局成功')); tr.append(td); tb.append(tr);
+      });
+      table.append(tb); scroll.append(table); box.append(scroll);
+      box.append(node('h2', 'task-title', '逐任务（同样不分档）'));
+      const scroll2 = node('div', 'oracle-scroll'); const t2 = node('table', 'oracle-table'); t2.style.minWidth = '640px';
+      const th2 = node('thead'); const hr2 = node('tr'); hr2.append(node('th', '', '任务'), node('th', '', '局数'));
+      policies().forEach(p => hr2.append(node('th', '', p.label + ' 成功率'))); th2.append(hr2); t2.append(th2);
+      const tb2 = node('tbody');
+      per.forEach(row => {
+        const tr = node('tr'); const th = node('th', 'oracle-task');
+        const a = node('a', '', row.name); a.href = '#task=' + row.id; a.addEventListener('click', ev => { ev.preventDefault(); select(row.id); });
+        th.append(a, node('span', 'oracle-secondary', row.id)); tr.append(th);
+        const n0 = row.byPolicy[policies()[0].id].n; tr.append(node('td', '', String(n0)));
+        policies().forEach((p, i) => {
+          const r = row.byPolicy[p.id], td = node('td');
+          td.append(node('span', 'oracle-value', pct(r.success, r.n)));
+          const track = node('div', 'oracle-track' + (i === 1 ? ' oracle-track-alt' : '')); track.setAttribute('aria-hidden', 'true');
+          const bar = node('i'); bar.style.width = (r.n ? 100 * r.success / r.n : 0) + '%'; track.append(bar); td.append(track);
+          td.append(node('span', 'oracle-range', r.success + ' / ' + r.n + ' 局成功')); tr.append(td);
+        });
+        tb2.append(tr);
+      });
+      t2.append(tb2); scroll2.append(t2); box.append(scroll2);
+      box.append(node('p', 'oracle-legend', '口径：成功率 = 成功局数 / 局数，只计新入口（robomme_hard）终态；各档拆分见「各档总表」，逐局见各任务页。'));
     }
     // 总表与任务页共用同一渲染逻辑；勾选状态分开保存。
     function renderComparison(box, onlyTask = null) {
@@ -358,9 +427,9 @@
     }
     function showView(name) {
       S.task = null; el('task-section').hidden = true;
-      ['outlier', 'oracle', 'semantic'].forEach(v => { el(v + '-section').hidden = v !== name; if (v === name) el(v + '-link').setAttribute('aria-current', 'page'); else el(v + '-link').removeAttribute('aria-current'); });
+      ['outlier', 'overall', 'oracle', 'semantic'].forEach(v => { el(v + '-section').hidden = v !== name; if (v === name) el(v + '-link').setAttribute('aria-current', 'page'); else el(v + '-link').removeAttribute('aria-current'); });
       if (location.hash !== '#view=' + (name === 'outlier' ? 'outliers' : name)) history.replaceState(null, '', '#view=' + (name === 'outlier' ? 'outliers' : name));
-      renderNav(); if (name === 'outlier') renderOutliers(); else if (name === 'semantic') renderSemanticAll(); else renderOracle();
+      renderNav(); if (name === 'outlier') renderOutliers(); else if (name === 'semantic') renderSemanticAll(); else if (name === 'overall') renderOverall(); else renderOracle();
     }
 
     // ---- xhard1～5 相对 xhard0 的 goal／subgoal 语义调整（v8_semantic_diff.py → /api/semantic）----
@@ -810,7 +879,7 @@
     }
 
     function select(task, tier, ep) {
-      el('outlier-section').hidden = true; el('oracle-section').hidden = true; el('semantic-section').hidden = true; el('task-section').hidden = false; el('outlier-link').removeAttribute('aria-current'); el('oracle-link').removeAttribute('aria-current'); el('semantic-link').removeAttribute('aria-current');
+      el('outlier-section').hidden = true; el('overall-section').hidden = true; el('oracle-section').hidden = true; el('semantic-section').hidden = true; el('task-section').hidden = false; el('outlier-link').removeAttribute('aria-current'); el('overall-link').removeAttribute('aria-current'); el('oracle-link').removeAttribute('aria-current'); el('semantic-link').removeAttribute('aria-current');
       S.task = task;
       const t = taskObj();
       S.tier = tier && t.tiers[tier] ? tier : (t.tiers[S.tier] ? S.tier : Object.keys(t.tiers)[0]);
@@ -842,6 +911,9 @@
         if (S.sem && S.sem.tasks) { sml.hidden = false; el('semantic-count').textContent = `${semChanged.length} 格有调整 · 调整前后对照`; }
         sml.addEventListener('click', () => { el('sidebar').classList.remove('is-open'); showView('semantic'); });
         if (location.hash === '#view=semantic' && S.sem && S.sem.tasks) { showView('semantic'); return; }
+        const ovl = el('overall-link'); ovl.hidden = false;
+        ovl.addEventListener('click', () => { el('sidebar').classList.remove('is-open'); showView('overall'); });
+        if (location.hash === '#view=overall') { showView('overall'); return; }
         const orl = el('oracle-link');
         if (S.sg && S.sg.oracle) orl.hidden = false;
         orl.addEventListener('click', () => { el('sidebar').classList.remove('is-open'); showView('oracle'); });
@@ -856,7 +928,7 @@
     }
     el('task-search').addEventListener('input', renderNav);
     el('menu-toggle').addEventListener('click', () => el('sidebar').classList.toggle('is-open'));
-    window.addEventListener('hashchange', () => { if (!S.cat) return; if (location.hash === '#view=outliers') { if (S.sg) showOutliers(); return; } if (location.hash === '#view=oracle') { if (S.sg) showView('oracle'); return; } if (location.hash === '#view=semantic') { if (S.sem) showView('semantic'); return; } const h = readHash(); if (h.task && (h.task !== S.task || h.tier !== S.tier || h.ep !== S.ep)) select(h.task, h.tier, h.ep); });
+    window.addEventListener('hashchange', () => { if (!S.cat) return; if (location.hash === '#view=outliers') { if (S.sg) showOutliers(); return; } if (location.hash === '#view=oracle') { if (S.sg) showView('oracle'); return; } if (location.hash === '#view=overall') { showView('overall'); return; } if (location.hash === '#view=semantic') { if (S.sem) showView('semantic'); return; } const h = readHash(); if (h.task && (h.task !== S.task || h.tier !== S.tier || h.ep !== S.ep)) select(h.task, h.tier, h.ep); });
     load();
   </script>
 </body>
