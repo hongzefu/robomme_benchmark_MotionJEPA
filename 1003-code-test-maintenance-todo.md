@@ -1,14 +1,12 @@
-待办清单与代码测试维护方案（2026-10-03）
+待办清单：代码与短测维护（2026-10-03）
 
-> 本轮只细化本文件，不实施维护、不启动生成或评估。保留并行会话在 12.349 补入的已完成项、资源清理与暂不处理项；资源清理仍由 [资源清理方案](1003-resource-cleanup-plan.md) 单独管理。
+> **范围只有三件纯代码改动**：①步数上限表 `TIER_MAX_STEPS` 的去留（B5）；②清理 V7／V8 旧用例与只服务它们的夹具（C2-3、C2-4、C2-5、C2-8）；③核心短测本身的问题（C1 六个长期失败、C2-1 核心集拆分、C2-6 重复断言、C2-7 收集范围、C2-9 测试缺口）。三件分别在第一节、第二节、第三节写怎么改；第四节写怎样保证改完后生成与评估仍在噪声范围内一致。
 >
-> 用户本轮原话：「细化该方案，我还需要做对拍，就是说改之前改之后，生成和test evaluation需要是一致的。」下文将原维护清单细化为可执行、可审查的前后对拍合同。已有维护事项授权保留；新增对拍工具及实跑规模须在实施前一次定清，本文不是生成、reset、评估或集群启动授权。
+> **不在本方案**：资源清理归 [资源清理方案](1003-resource-cleanup-plan.md)；重复运行噪声的测量与回归闸门归 [噪声基线方案](1003-noise-baseline-plan.md)（正在实施），本方案只消费它的闸门、不另测噪声。本文旧版写入的「生成与 test evaluation 全量 A/B 对拍合同」（`N_V9`／`N_TEST`／`N_COMPAT`、E1／E2／E3、6784 次轨迹预算）已整段撤出。小修 G1（`_freeze.py` 档位预检）、D3（V8 评估脚本收尾与重启计数）、B6（站点常量与身份文件导出跟进）、`export_eval_identities.py` 过时说明文字也不在本方案，仍留在 [未定事项清单](docs/1002-pending-decisions.md) 原条目。
 >
-> 规划代码锚点 `PLAN_BASE=e1be125cde7350223ba6b5c6f13a814e82b81a51`，工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，当前分支 `newtaskRelease-taskV9`。编写期间其他会话提交了 12.349 等文档更新，本文保留其内容，不纳入其他方案的实施。后续另冻结完整 `BEFORE_SHA/AFTER_SHA/HARNESS_SHA`，不拿移动的 HEAD 作基线；提交编号沿用 `<大>.<小>[.<修订>] 中文描述`。
+> 用户本轮原话（2026-10-03）：「这个的代办是这样说错了你看我现在已经有一个噪声的计划并且正在实施我有一个清除data的计划也正在准备实施了你这个项目只需要部署上限的问题和清理V7V8的就用例以及短测内容的问题就是纯代码的改动」「然后写的时候也分开写这三个点分别怎么改。然后如何保证噪声的一致性」。
 >
-> 外部锚点：官方环境 `1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9`，官方生成编排 `d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa`，ManiSkill 声明锁定 `07be6fbc66350ddca200abfb0a11b692f078f7fd`。第三方 gitlink：SimpleMemVLA `c564c17d276d7294200122b286c21901a3bfb99f`、MME-VLA `ecf086c3be7c2223167d9bb2f6ef1f0a6e24353b`；不读取或带入其在途修改，运行前另核安装实物及资产指纹。
-
-事项背景见 [未定事项清单](docs/1002-pending-decisions.md)。交付数据集已冻结：下文 V9 逐格乘式合计 16 任务各 50 局，正式 HDF5 与五份规格全部字节均不得修改。
+> 规划锚点 `PLAN_BASE=194356b84f2d035e9fc51b3394a92e2ad631a10d`，工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-taskV9`；commit 体例 `<大>.<小>[.<修订>] 中文描述`。本文只是待办与方案，实施须用户说「执行」。
 
 # 第一部分（给人看）
 
@@ -16,386 +14,167 @@
 
 - [x] 生成对拍的事实与结论成文：[`docs/1003-generation-parity-reproducibility.md`](docs/1003-generation-parity-reproducibility.md)（12.346）
 - [x] `.gitignore` 忽略 `runs/` 与 mp4、mkv、h5 等媒体文件（12.348）
-- [x] 资源清理方案成文：[`1003-resource-cleanup-plan.md`](1003-resource-cleanup-plan.md)（12.348）
 
-## 一、资源清理（等用户说「执行」）
+## 总览与已定口径
 
-- [ ] 算 V9 交付集 sha 基线
-- [ ] 搬出四样小件（官方 xhard0 h5、V7／V8 对拍逐局记录、权重锁、V8 站点目录）
-- [ ] 停 4 个旧站点（8060、8070、8080、8081）
-- [ ] 删本机 9 个历史目录
-- [ ] 删 NFS 19 个历史目录
-- [ ] 验收（sha 不变、无断链、8082 可用）并写留档
-- [ ] 待定清单 F1、F3、F4、B4 写结案
+一句话：改测试与 pytest 配置让短测变绿、变快、去掉历史包袱；步数上限表推荐原样保留；用「生成与评估代码零 diff」这条静态事实保证不影响噪声一致性，只有当 B5 选了改表才去跑噪声基线方案的回归闸门。
 
-## 二、核心短测（用户已批准可改）
+1. 第二、三节只改 `tests/`、`pyproject.toml` 的 pytest 段、`AGENTS.md`、README 与待定清单；不改 `src/`、`scripts/` 任何文件（第一节选 (b)(c) 时除外）。
+2. 不改 `src/robomme/`（P2）、三个上游入口（P1）、交付规格与 HDF5、旧容差。
+3. B5 推荐 (a)；选 (b)(c) 属评估行为变更，须先等噪声基线冻结、再按第四节报预算跑闸门。
+4. 删旧用例以「契约去向表」为准，不按文件名批删。
+5. 本方案 (a) 路线 reset／轨迹预算为 0；(b)(c) 路线的预算见第四节，需另行一次性授权（P3）。
 
-- [ ] 修掉 6 个长期失败（C1）
-- [ ] 拆出 5 分钟内能跑完的核心集，其余标为慢测（C2-1）
-- [ ] 清理 V7、V8 的旧用例与只服务它们的夹具（C2-3、C2-4）
-- [ ] 改正名不副实的文件名与函数名（C2-5）
-- [ ] 合并重复断言（C2-6）
-- [ ] 收窄 pytest 收集范围，不扫 `third_party/`（C2-7）
-- [ ] 补 xhard0 开关关闭时的两条路径测试（C2-9）
+## 一、步数上限表 `TIER_MAX_STEPS`（B5）怎么改
 
-## 三、步数上限表 `TIER_MAX_STEPS`（用户已批准可改）
+**现状**：公开入口 `scripts/evaluation_hard.py` 已固定 `max_steps=1600`、不查表；包内表 `src/robomme_hard/env_record_wrapper/hard_specs.py::TIER_MAX_STEPS = {xhard0: 1300, xhard1～5: 1600}` 只剩这些使用者：`scripts/eval-official/env_client.py::tier_max_steps`（客户端起环境前核对 `effective_max_steps` 并以 `step_cap` 截断）、`scripts/eval-official/v8_manifest.py`（清单写 `effective_max_steps`）、`scripts/parity/hard_regression.py`（reset-replay、eval-smoke、step-headroom）、`scripts/injection-dev/site/v8_subgoal_lengths.py`（站点出图）。**生成链路不读这张表**（生成用规格 header 的 `exec_cap`＝`V8_EXEC_CAP`＝1600），已核：`scripts/injection-dev/` 下只有站点出图引用它。
 
-- [ ] 定去留：保留、拉平成全 1600，或删表改单常量（B5）
-- [ ] 按结论改代码、测试与 README
-
-## 四、小修（用户已批准可改）
-
-- [ ] 冻结脚本 `_freeze.py` 的档位预检（G1）
-- [ ] V8 评估脚本的收尾逻辑与重启计数（D3）
-- [ ] xhard0 退出 test-hard 后，站点常量 `XHARD0_PER_TASK` 与身份文件导出跟进（B6）
-- [ ] `export_eval_identities.py` 的过时说明文字（C2-9）
-
-## 五、收尾
-
-- [ ] 更新 `AGENTS.md` 里核心短测的命令与口径
-- [ ] 待定清单 A1、A5（生成对拍）等用户说结案
-- [ ] 待定清单其余已办条目写结案
-
-## 暂不处理（用户 2026-10-03 指示）
-
-- 站点相关（B1、F2）
-- MME 评估对拍（A3、A4）
-- 未开工的 Oracle 子目标评估
-- HuggingFace 上传、分支与 worktree 清理
-
-## 六、维护方案总览与已定口径
-
-一句话方案：先冻结维护前代码、身份和输入，采集完整基线，再维护测试与外围工具，最后以同一输入对拍维护后生成与评估，分别报告文件字节、内容、数值和行为是否一致。
-
-1. **资产不变和运行一致分别验收。** 冻结交付 HDF5 不动，并不证明新代码重新生成的结果相同。新生成只写独立对拍目录（第八节）。
-2. **生成与评估分别验收。** 生成 HDF5 相同、reset 相同、成功率相同，都不能代替完整 evaluation 的逐步比较（第九节）。
-3. **覆盖官方 `test`、默认 `test-hard` 与开启 xhard0 的兼容配置。** 三套身份、局号与上限分开记录（第七、九节）。
-4. **确定性字段严格零差异；不替用户放宽噪声判据。** 默认完整 A/B 比较输出严格结论。另一个 [噪声基线方案](1003-noise-baseline-plan.md) 管理重复运行、阈值标定及真实模型噪声；其尚未实施/批准的阈值不是本维护的现成放行依据。未来若采用经确认的冻结噪声合同，单列“噪声范围内”，不能改称“逐字节一致”（第八节）。
-5. **评估默认采用固定动作与完整客户端协议对拍。** 不加载真实模型重新推理；真实模型闭环扩展与噪声方案衔接，另定模型及预算。此默认只证明同输入环境/客户端行为，不证明独立模型重推逐位一致（第九节）。
-6. **B5 推荐保留现表，尚不代用户结案。** 将 xhard0 的流水线上限从 1300 改成 1600 是行为变更，不能混在本次维护等价提交里（第十节）。
-7. **所有结果都有作用范围。** 全量才可写全集一致；抽样只能写样本一致。缺证据写未验证，任何新差异先定位，不自行调整阈值、换候选或挑成功回合。
-
-## 七、维护前后基线与身份全集
-
-### 7.1 固定版本和环境
-
-A 为维护前 `BEFORE_SHA`，B 为最终整合后的 `AFTER_SHA`。原则上 A 承接 `PLAN_BASE`；实施时若基线已变化，先审清新增差异并记录，不能悄悄混入其他功能。两侧使用独立 worktree、各自 uv 环境和输出目录；验证实际导入路径，防止 editable 安装把 A、B 都指回主副本。
-
-公共观察器/比较器单独冻结为 `HARNESS_SHA`，两侧用同一版。输入、身份、动作带、依赖/解释器、GPU设备、驱动、渲染器、CPU/线程配置、worker数和顺序相同。正式生成受现有 A40 守卫约束，同一身份 A/B 在同一席位串行；本机 Ada 的 `--dev-smoke` 只算开发证据，不与历史 A40 混比。
-
-官方 `robomme` 与 `robomme_hard` 会覆盖同名 Gym 注册，两条链必须独立进程。观察器组合持有公开 builder/env，在调用边界读写自己的证据，不替换官方方法、不注入官方替身。现有 `hard_regression.py::_env_install_timers` 会替换方法，不能直接当作只读观察器使用。
-
-### 7.2 生成与新值评估的共同集合
-
-以下乘式记为 `N_V9`，真源是 `src/robomme_hard/env_record_wrapper/hard_specs.py::_v9_cells/V9_CELLS`：
-
-| 任务 | 档位与每格局数 | 小计 |
+| 选项 | 具体改动 | 影响 |
 |---|---|---|
-| PickXtimes、RouteStick、PatternLock | 3 任务 ×（xhard1 17 + xhard2 17 + xhard3 16） | 150 |
-| SwingXtimes、StopCube | 2 任务 × 5 档 × 10 局 | 100 |
-| VideoUnmask、ButtonUnmask | 2 任务 ×（xhard1 13 + xhard2 13 + xhard3 12 + xhard4 12） | 100 |
-| BinFill、VideoUnmaskSwap、ButtonUnmaskSwap、VideoPlaceButton、VideoPlaceOrder、PickHighlight、VideoRepick | 7 任务 × 2 档 × 25 局 | 350 |
-| MoveCube、InsertPeg | 2 任务 × xhard4 × 50 局 | 100 |
+| **(a) 保留（推荐）** | 代码不动；把三个测试里重复的值断言收成一处（归第三节 C2-6）；`src/robomme_hard/README.md`、`docs/1002-pending-decisions.md` 把「去留待定」改为「保留：表只服务 eval-official 流水线与历史评估口径，公开入口固定 1600」 | 零行为变化 |
+| (b) 拉平 1600 | `hard_specs.py` 中 xhard0 值 1300→1600；`test_xhard0_native.py::test_TIER_MAX_STEPS六档且xhard0为1300`（改名＋改值）、`test_v8_specs_schema.py`、`test_v9_packaged_800.py` 的断言；`hard_regression.py` step-headroom 的 xhard0 口径说明；README | eval-official 与 `hard_regression` 的 xhard0 上限变 1600；已跑的 xhard0 16 任务 × 1 档 × 12 局 = 192 局评估记录（1300）与表不再一致 |
+| (c) 删表 | 改成单常量 `EXEC_CAP=1600`，上面四个使用者全部改引用；`__init__.py` 导出同改 | 同 (b)，改动面最大 |
 
-合计 `N_V9=800`、43 格，逐档 `272/272/92/144/20`。五份包内规格的未选候选也冻结，不能只保护选中行。
+推荐 (a) 的理由：它是纯代码、零行为变化，正好落在本方案边界内；(b)(c) 只换来「两处口径统一」，代价是评估流水线行为变化与一轮回归闸门（第四节）。
 
-| 评估配置 | 完整集合乘式 | 路由 |
+- [ ] 用户定 (a)／(b)／(c)
+- [ ] 按结论改（(a) 只改文档与测试去重）
+
+## 二、清理 V7／V8 旧用例与夹具怎么改
+
+**做法分三步：先列表、再迁移、最后删。**
+
+1. **列契约去向表**（交用户过目后才动手删）：对每个候选文件逐条列「旧 nodeid → 它守的契约 → 去向」，去向三选一：迁到哪个现行用例／已被哪个现行用例覆盖（写出 nodeid）／契约已废、直接删。
+2. **候选对象与各自处理**：
+   - `test_v7_*.py` 共 9 个（`binfill_nested`、`candidate_pool`、`freeze_schema`、`layered_recorder`、`outer_arc`、`seed_rule`、`site_catalog`、`tier_values`、`whitelist_semantics`）：测的是 V9 不再调用的 v7 链路（母布局派生、白名单、v7 seed 规则等）。V9 仍用的部分（如 `tier_values` 的取值表、`freeze_schema` 中 /2、/3 的 schema 反例）迁走，其余删除。
+   - 靠 `monkeypatch.setattr(EXPECTED_CELLS, V8_CELLS)` 钉回 V8 数字（1070／1262）才能过的用例：`test_v8_delivery_flow.py::test_四片生成合并聚合43格`、`test_v8_eval_manifest.py` 三条（`test_夹具规模` 等）、`test_v8_regression_cmds.py::test_delivery_set三种格表往返[full]`——改成断言包内 V9（800／992）；若该用例只是 V8 格表的回归、V9 已有同类覆盖，则删。
+   - 名不副实：`tests/_shared/v7_tier_values.py` 改名 `tests/_shared/tier_values.py`（内容不变），三个引用方 `test_v7_tier_values.py`、`test_v8_regression_cmds.py`、`test_sampling_config_split.py` 同步改 import；`test_hard_builder_xhard0.py` 里函数名与断言值对齐。
+   - `tests/_shared/v7_specs_fixture.py`：所有引用方删完后才删。
+   - `tests/fixtures/injection_legacy/*.json`：`grep -r injection_legacy tests scripts src` 无引用才删。
+   - `test_hard_state_machine.py`、`test_v4_xhard_stopcube.py`、`test_v5_xhard_*.py` 里的 v7 字样：逐条核对，只是注释提及就不动。
+3. **保留项**：`tests/fixtures/v7_specs_sample/` 仍被活跃的 `test_v8_regression_cmds.py` 当反例用，保留；名字带 v7／v8 不是删除依据。被删用例里仍有用的负例（空集、重复／漏身份、错签名、错绑定、跨版本数量）必须先迁到现行用例再删。
+
+- [ ] 契约去向表（用户过目）
+- [ ] 迁移仍有用的正反例
+- [ ] 按表删除与改名
+- [ ] 核对 `injection_legacy`、v4／v5 测试里的 v7 字样
+
+## 三、核心短测内容怎么改
+
+**C1 修 6 个长期失败**（只改测试，被测官方源码与 `1fadc0ec` 逐字节相同，不动）：
+
+| 测试 | 改法 |
+|---|---|
+| `test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal` | 断言改成官方真实返回 `[]`，函数名同步改 |
+| `test_TaskGoal.py::test_swingxtimes_multiple` | 文本改为 `back-and-forth`，保留次数／颜色检查 |
+| `test_step_error_handling.py::test_step_error_returns_status_error` | 官方 `DemonstrationWrapper.step` 没有 try：改为调用真实 `step` 断言异常向上传播；若要保留「应捕获」的诉求，标 `xfail(strict=True, reason=官方未实现)` |
+| `test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except` | 子串断言改为匹配官方实际写法 `info.get("status", "unknown")`；裸 try 的检查对 `dataset_replay.py`（上游逐字节）不适用，限定到我们自己的脚本或标 `xfail` |
+| `test_v8_eval_report.py`、`test_v8_eval_video_mover.py` 的 `test_zz_summary_line` | 去掉「整个会话失败数为 0」的耦合，只断言本文件业务报告；会话退出码由 pytest 自己给 |
+
+**C2-1 拆核心集**：`pyproject.toml::tool.pytest.ini_options.markers` 加 `core`；在选定文件顶部 `pytestmark = pytest.mark.core`。候选：`test_v9_packaged_800`、`test_hard_builder_xhard0`、`test_xhard0_native`、`test_v9_*`、`test_upstream_*`、`test_scripts_do_not_import_tests`，以实测 ≤120 s（硬上限 280 s）为准增删。不靠把其余全标 `slow` 凑时间：非 core 用例照旧可用 `-m 'not gpu and not slow'` 全跑（预计约 8 分钟，走 tmux）。
+
+**C2-6 合并重复断言**：`TIER_MAX_STEPS` 六档值只留 `test_xhard0_native.py` 一处；`EXPECTED_CELLS` 合计只留 `test_v9_packaged_800.py` 一处；另外三处删重复行（与 B5 (a) 合做）。
+
+**C2-7 收窄收集**：`pyproject.toml` 加 `testpaths = ["tests"]`，裸 `pytest` 不再扫 `third_party/`（现报 53 个收集错误）。
+
+**C2-9 补测试**：新增 `tests/lightweight/test_xhard0_disabled_paths.py`，覆盖 `hard_regression.py::cmd_xhard0_reset_parity` 关档时的 `SystemExit` 与 `export_eval_identities.py` 关档时 `official=skipped`；用 `pytest.raises`，不吞异常。
+
+**收尾**：`AGENTS.md`「覆盖第 4 条」的核心命令改为 `timeout 280s uv run --no-sync python -m pytest -m 'core and not gpu and not slow' -q`，附实测耗时。
+
+- [ ] C1 六个失败
+- [ ] C2-1 core 标记与实测耗时
+- [ ] C2-6 重复断言
+- [ ] C2-7 testpaths
+- [ ] C2-9 两条新测试
+- [ ] AGENTS.md 核心命令
+
+## 四、怎样保证噪声一致性
+
+目标：改完以后，生成出的 h5 与评估结果相对改前仍落在噪声基线方案定下的噪声带内（理想是完全不变）。分两种情况：
+
+**情况 1：B5 选 (a)，三件事全部只改测试与文档——靠「代码零 diff」静态保证，不用跑任何 reset。**
+
+- 生成与评估在运行时只执行 `src/` 与 `scripts/` 下的代码；`tests/` 不会被生产入口导入（`tests/lightweight/test_scripts_do_not_import_tests.py` 用 AST 钉死这一点，属 core 集）。`pyproject.toml` 只改 `[tool.pytest.ini_options]`，不进依赖解析，`uv.lock` 不变。
+- 所以只要下面三条成立，生成与评估执行的字节就与改前完全相同，噪声分布不可能因本方案改变——这是比「跑一遍落在噪声带内」更强的结论：
+  1. `git diff --quiet <BASE> <HEAD> -- src scripts uv.lock` 退出码 0 → `MAINT_RUNTIME_CODE=PASS changed=0`
+  2. `git diff --name-only <BASE>..<HEAD> -- pyproject.toml` 若非空，`git diff <BASE>..<HEAD> -- pyproject.toml` 的 hunk 全在 `[tool.pytest.ini_options]` 段内 → `MAINT_PYPROJECT=PASS scope=pytest-only`
+  3. `UPSTREAM_GUARD=PASS`（官方源码逐字节）
+- 这正对应噪声基线方案第五节「任何代码改动：核心短测 + `UPSTREAM_GUARD`，预算 0」那一行；不触发 `RESET_GATE`／`GEN_NOISE_GATE`／`EVAL_NOISE_GATE`。
+
+**情况 2：B5 选 (b) 或 (c)——动了 `hard_specs.py` 与评估客户端，必须跑噪声闸门，且要等噪声基线先冻结。**
+
+- 按噪声基线方案第五节对号：动到规格模块 → `RESET_GATE`（G9 + D0 九层摘要一遍，与冻结摘要比，九层全等）；动到评估客户端 → `EVAL_NOISE_GATE`（两模型在 G9 与 D0 上各评一遍）。生成链路不读这张表，不跑 `GEN_NOISE_GATE`，但用上面的 `git diff` 证明 `scripts/injection-dev/` 生成部分零改动。
+- 预算（按噪声基线方案第五节，P5 乘式）：reset 闸门 `(16 任务 × 12 局 + 16 任务 × 1 档 × 12 局) = 384` 次探针、reset `384 × 2 + 43 格 × 1 = 811` 次；评估闸门 `2 模型 × (192 + 192) = 768` 条轨迹、reset 上限 1536 次。超 P3 阈值，回归无长期授权（噪声方案裁决 4），须先一次性报批。
+- ⚠ 判读要分开：G9 是 xhard1～5，上限本来就是 1600，(b) 下应与基线一样落在噪声带内，按闸门原判据 PASS／FAIL；D0 是 xhard0，(b) **有意**把上限从 1300 放到 1600——原先在 1300 步被截断的局现在能多走，成功率可能上升、步数分布必然变。所以 D0 的 `EVAL_NOISE_GATE` 不能当「一致」证据，只能作为「预期变化」单列报告（逐局列出步数 >1300 的局及终态迁移），由用户裁决是否接受；不为让它 PASS 改阈值。
+- 次序：噪声基线 `NOISE_BASELINE=PASS` 之前不做 (b)(c)；否则没有冻结参照可比。
+
+## 验收
+
+| 查什么 | 怎么查 | 判定行 |
 |---|---|---|
-| 官方 test | `N_TEST=16任务 ×（easy 26 + medium 12 + hard 12）=800` | 官方包和 test 元数据 |
-| 默认 test-hard | `N_V9`，按上表乘式合计 800 | xhard0 开关关闭 |
-| 兼容 test-hard | `N_COMPAT=N_V9 + 16任务 × xhard0 × 12局=992` | `ROBOMME_HARD_XHARD0_IN_TEST_HARD=1` |
+| 运行时代码零改动（情况 1） | `git diff --quiet <BASE> <HEAD> -- src scripts uv.lock` | `MAINT_RUNTIME_CODE=PASS changed=0` |
+| pyproject 只改 pytest 段 | 看 `pyproject.toml` diff 的 hunk 位置 | `MAINT_PYPROJECT=PASS scope=pytest-only` |
+| 官方源码未动 | `uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstream` | `UPSTREAM_GUARD=PASS` |
+| 录像器冻结 | `git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py` | 退出码 0 |
+| 6 个长期失败消失 | 定向跑 C1 四个文件 | `MAINT_C1=PASS failed=0` |
+| 核心集非空且够快 | `timeout 280s uv run --no-sync python -m pytest -m 'core and not gpu and not slow' -q --durations=20` | `MAINT_CORE=PASS collected=<n> wall_s=<实测>` |
+| 收集不扫 third_party | `uv run --no-sync python -m pytest --collect-only -q` | `MAINT_COLLECT=PASS errors=0` |
+| 删用例不丢契约 | 去向表每行有去向；迁移后的正反例通过 | `MAINT_TEST_COVERAGE=PASS` |
+| 噪声闸门（仅情况 2） | 噪声基线方案 `check-reset`／`check-eval` | `RESET_GATE=PASS`；G9 `EVAL_NOISE_GATE=PASS`；D0 单列预期变化报告 |
 
-官方 hard 原 episode 是 `3,7,11,15,19,23,27,31,35,39,43,47`，不是 hard builder 中的 `0…11`；兼容模式下新值 builder episode 相对默认整体加 12。不能把官方 test 全集误算为 xhard0 的子集。
+## 子代理分工与合并（简述）
 
-连接键至少包含 `(配置,dataset,task,tier/difficulty,seed,candidate,source_episode,spec_sha256)`，不适用字段显式 null，另存两侧实际 builder episode。不能只凭 `(task,seed)`、文件排序或局号连接。冻结输入清单逐项记录规格/官方元数据/交付清单/动作与协议证据的哈希，正式 HDF5 记录路径、真实目标、字节数与全量 SHA256；不只相信规格里写的旧摘要。
-
-## 八、生成对拍：从准备输入到完整 HDF5
-
-### 8.1 现有能力与缺口
-
-可复用链路为 `generate_h5.py --mode replay` → `_rollout.py::load_identities/run_replay/run_batch` → `train_split_runner.py` → `train_split_worker.py::run_one` → 任务/规划器 → `RobommeRecordWrapper`。每侧从自己的入口启动，同一冻结身份，不递补、不回写规格，输出分到 `before/gen` 与 `after/gen`。
-
-现有 `hard_parity.py::classify_terminal/cmd_compare` 把 H:H2 的左侧 HDF5 绑定到交付 manifest，不能直接把维护前新采集 A 冒充交付 H。拟新增维护比较器，只复用经核对的只读读取函数；旧容差、5%线和历史 H:H2 结果不变。
-
-另有两个不能误用的通过信号：
-
-- `run_replay` 的 `REPLAY_SET=PASS` 只证明身份调度齐，`summary.failed>0` 时入口仍可能退出 0；验收必须读取逐局结果和完整产物。
-- `pair_metrics` 只比较部分 setup、动作/状态/RGB，并按共同帧计算；不能证明全部属性、语言、子目标、waypoint 和尾部记录一致。新比较器必须遍历所有 group/dataset/attribute。
-
-### 8.2 分层判据
-
-| 层 | 必须检查 | 通过说明什么 |
-|---|---|---|
-| 冻结资产 | 前后五份规格全部字节、交付清单与正式HDF5哈希相同；缺失/重复/额外身份均0 | 没动交付数据 |
-| 生成准备 | seed/attempt/spec、sampling配置、候选、任务顺序、配额、worker kwargs相同；合法schema冻结输出相同 | 维护未改生成输入或选择 |
-| 回注与完整内容 | 规格绑定覆盖且无未消费/未归因差异；setup、全字段dtype/shape/值、完整帧序、事件/子目标、成功字段与终态相同 | 生成语义和记录内容一致 |
-| 容器字节 | 整文件SHA256相同 | HDF5逐字节一致，与内容一致单列 |
-
-数组默认 `atol=0,rtol=0`，同时报告字节差、数值差、NaN/Inf位置；不同dtype、正负零字节差不可隐藏。图像同时记录存储值与解码像素；MP4编码字节不作为物理行为等价判据。帧数先比较，不截成共同前缀；失败产物也保留。
-
-允许规范化的仅为事先列出的运行路径、时间、PID、版本provenance等确切输出键。不能忽略整个 header/setup/info；冻结规格中原有provenance仍是输入，不随意剔除。内容全等而容器字节不同，只能写“内容一致、容器字节不同”。
-
-### 8.3 已知分叉与噪声方案的衔接
-
-现行留档记载 `N_V9` 的历史 H:H2 中 782 局字节一致、17 局轨迹分叉、1 局二次生成失败；这是已有记录，本轮未复跑。根因未完整诊断，不能把这18个身份当豁免名单。
-
-本轮 A/B 有差异，严格等价就保持 FAIL，报告首个字段/步、原值、最大差与终态。噪声方案将来若完成，只有身份集合、参考对象、环境指纹、统计分母、模型/worker条件均匹配且阈值已冻结，才能另给 `MAINT_NOISE_GATE` 结论；样本G9上的阈值不能直接套全量 `N_V9`，相对交付H的阈值也不能不经转换套A:B。缺合同就标未验证，不能改旧容差来取得PASS。
-
-A:A/B:B诊断默认额度0；需要时纳入一次预算，不覆盖最初A/B结果。即使同版也分叉，也不等于当前改动已经证明等价。
-
-## 九、test evaluation：完整运行与客户端协议分别对拍
-
-### 9.1 E1：固定同一动作的真实环境
-
-官方 test、默认 test-hard、兼容 test-hard 各走两侧真实公开 builder 的 `make_env_for_episode→reset→step→close`。每身份使用预先冻结的同一动作带，跑至各自真实终态或该入口原有上限，不能只测前30/50步。
-
-动作带可来自已有完整、身份绑定的动作证据，或预先用独立随机源生成；清单记录来源、动作空间、dtype、维度、每行内容及最大可消费长度。不能在运行中重置环境全局随机流。动作带耗尽但环境未终止属于证据不完整，不伪装成timeout。固定动作只验证该动作序列下的行为，不声称覆盖所有可能策略。
-
-reset保存全部演示帧、状态、初始观测、task_goal及顺序，不只留最后一帧。逐步比较实际动作、完整观测、reward、terminated、truncated、info.status、执行步和终止原因。A先终止时B继续到自己的终态并保留尾部；不能截齐长度掩盖差异。
-
-### 9.2 E2：固定观测和服务返回的完整客户端逻辑
-
-用两侧真实 `mme_client.py/smvla_client.py` 执行循环，回放同一份观测和策略原始动作块；比较预处理、reset/add_buffer/infer请求、消息顺序、动作块、dtype转换、逐行执行、消费数及终止截断。模拟对象只提供外部输入，不手写一份“正确客户端”来测试自己。本层不加载模型、不触发真实环境reset。
-
-完整E2证据清单为 `2种客户端 × (N_TEST + N_V9 + N_COMPAT)=5184` 份身份绑定trace，每份分别在A/B重放，合计10368次离线重放，真实环境reset为0。每份trace必须有来源、输入/动作块哈希、完整时序及终态；缺任一必选trace即 `MAINT_EVAL_CLIENT=NOT_VERIFIED`，不能只跑几个分支夹具后汇总全量PASS。S0先查已有录制能否覆盖；缺真实记录时不能在此零预算下偷偷启动模型或额外评估。若用户只选客户端分支合同验证，则E2及最终汇总必须改写为该有限范围，不能保留完整协议对拍的称谓。
-
-覆盖非空demo、无demo、块中途终止、块跨上限、obs=None、异常返回、timeout、连续身份与重启接续。真实记录缺分支时用明确标注的合成夹具补合同测试，不冒充真实闭环记录。
-
-现有 `policy_replay.py::cmd_build_inputs` 计算 `exec_equal` 却未将其纳入 `ok`；不能直接拿 `BUILD_INPUTS=PASS` 充当执行动作一致。新门禁检查维度、顺序、数量、终态、完整证据。缺线上wire证据只能给离线协议结论；`payload_equal` 也不能推出真实模型动作相同。
-
-### 9.3 上限按各入口原语义保留
-
-| 入口 | 当前语义 | 维护对拍 |
-|---|---|---|
-| `scripts/evaluation.py` | builder构造1300、逐局不传 | 官方test的A/B保持相同 |
-| `scripts/evaluation_hard.py` | builder构造1600、逐局不传 | 默认/兼容两模式分别A/B比较 |
-| `env_client.py::SeatRunner.run_one/EnvSession.step` | 清单effective_max_steps与表核对，新值1600；现有官方路径按原配置 | E2检查块边界与严格cap，cap+1不能进入受该守卫管理的环境 |
-
-builder/wrapper还存在 `max_steps+2`、演示和初始化步，客户端有各自动作块计数。分别记录 requested_max_steps、wrapper上限、demo/init步、客户端调用数和实际执行步，不把它们强行统一。不同入口本来存在的上限差另列，不算维护A/B差异。
-
-`hard_regression.py::cmd_eval_smoke` 当前仍逐局查表，不等于公开 `evaluation_hard.py`；`reset-replay` 只验回注；旧 `env-digest` 短前缀也不能证明完整评估。
-
-### 9.4 E3：真实模型闭环扩展
-
-默认本轮不启动，模型选择与预算另定并与噪声基线方案衔接。若执行，两侧真实模型独立推理，锁定权重/tokenizer/配置/seed/缓存及重启方式，逐身份比较成功→失败、失败→成功、error、timeout与步数差，并记录首次观测→payload→模型输入→原始动作→执行动作分叉。总成功率相同不够。
-
-所有结果含attempt_id/accepted_attempt_id。普通task_success=0是有效结果，不重试挑成功。E3未执行时明确 `MAINT_EVAL_MODEL=NOT_VERIFIED`，不能因E1/E2通过宣称模型闭环一致。
-
-## 十、逐项维护怎样保证不改正常行为
-
-| 事项与锚点 | 具体修改 | 正常保证／允许改变 |
-|---|---|---|
-| C1：`test_TaskGoal.py` | 未知环境断言改为真实的[]；文本改为back-and-forth，保留次数/颜色等检查 | 不改官方源码 |
-| C1：`test_step_error_handling.py` | 调用真实DemonstrationWrapper.step测试异常传播；纠正脚本子串断言；修复mock依赖泄漏 | 不用手写FakeDemoWrapper自证，不广泛xfail掩盖失败 |
-| C1连带：两个`test_zz_summary_line` | 移除“整个pytest会话失败数=0”耦合，测试各自业务报告；会话退出码由外部汇总 | 不靠执行顺序隐藏前面失败 |
-| C2：测试/夹具/命名/重复断言 | 建旧nodeid→契约→新nodeid/处置表，先迁移活跃正反例再删冗余 | 名字带v7/v8不是删除依据；条件测试仍显式可跑 |
-| C2：`pyproject.toml` | testpaths限定tests；增加core标记，实测拆核心和扩展集 | 核心目标≤120秒、硬上限280秒；不能全标slow来凑通过 |
-| G1：`_freeze.py::freeze` | /2、/3用自身合法tiers，/4保持五档 | 合法输入输出/签名不变；非法xhard5更早明确拒绝，旧代码最终也拒绝 |
-| B6：导出→manifest→站点 | 显式身份模式与偏移；默认800、历史992分别校验 | 修复新导出800被固定要求992的消费者拒绝；旧文件不原地改写 |
-| D3：运行器/manifest | 持久重启计数、总收尾期限、半写文件发布、cleanup判定与说明 | 正常观测/动作/结果不变；恢复/错误路径改变逐项列夹具 |
-| B5 | 推荐保留TIER_MAX_STEPS原值和调用 | 拉平或删表另立行为变更，不混入零语义差异验收 |
-
-原清单部分信息已过时：`test_hard_builder_xhard0.py::test_逐任务局数常量_开关两档合计` 已完成改名及两模式覆盖；`test_v7_*.py` 当前9个文件；`tests/fixtures/v7_specs_sample/` 仍被活跃 `test_v8_regression_cmds.py` 当反例使用。不得按“8个、只服务旧用例”批量删除。
-
-G1非法输入提前拒绝、B6模式兼容和D3故障恢复是预先声明的纠错，不要求错误路径与旧bug相同；合法输入上的生成和评估仍严格比较。缺少解释的新差异不能归进“小修”。
-
-## 十一、链路、验收和阶段顺序
-
-```text
-维护前 A
-冻结规格/元数据 [JSON；全文件SHA/字节数固定，不改数]
- ├─ A生成准备 → A任务/规划器 → A RecordWrapper → 完整HDF5
- └─ A公开builder → reset完整demo+初始帧 → A客户端 → env.step → 终态
-                          E1固定动作；E2固定观测与服务返回，各自验收
-维护后 B
-相同输入 [SHA必须与A一致，不改数]
- ├─ B生成准备 → B任务/规划器 → B RecordWrapper → 独立HDF5 → 全字段比A
- └─ B公开builder → reset完整demo+初始帧 → B客户端 → env.step → 逐步比A
-```
-
-各跳记录原始shape/dtype/nbytes与“是否改数”；客户端resize、状态拼接、动作转换尤其单独记录。双RGB按实际 `uint8[H,W,3]` 记每帧 `6HW` 字节；8维动作float32为32字节、float64为64字节，不能先cast再掩盖差异。实际尺寸/帧数由采集确认，不预设224/512。无训练，可训练参数变化为0。
-
-以下判定行均是拟实现合同，不是本轮运行结果：
-
-| 查什么 | 怎么查 | 通过说明什么／判定行 |
-|---|---|---|
-| 基线及导入 | 完整SHA、实际路径、依赖/设备/输入/工具指纹 | 归因前提成立：`MAINT_BASELINE=PASS` |
-| 冻结交付 | 前后全量哈希相同 | 资产不变：`MAINT_FROZEN=PASS changed=0` |
-| 身份完整 | 三配置逐键连接，缺/多/重复为0 | 同一批对象：`MAINT_IDENTITIES=PASS` |
-| 生成准备与内容 | 合法输入、绑定、全字段/完整序列零差 | `MAINT_GEN_PREP=PASS`、`MAINT_GEN_CONTENT=PASS`；整文件另列`MAINT_GEN_BYTES` |
-| 完整固定动作环境 | E1全demo/观测/动作/终态对拍 | `MAINT_EVAL_ENV=PASS scope=test,test-hard,test-hard-compat` |
-| 客户端与边界 | E2真实循环、消息/动作/错误/上限夹具 | `MAINT_EVAL_CLIENT=PASS` |
-| 生命周期 | 预算、半写、信号、重启、同步故障夹具 | `MAINT_LIFECYCLE=PASS` |
-| 测试覆盖与时间 | nodeid映射、核心非空、退出码/实际计时 | `MAINT_TEST_COVERAGE=PASS`、`MAINT_CORE=PASS wall_s=实测值` |
-| 汇总 | 必选项全部覆盖，无未解释语义差异 | `MAINT_ACCEPT=PASS scope=fixed-input` |
-
-任何失败、缺证据、录像降级/截断均不得汇总PASS；缺证据记NOT_VERIFIED并非零退出。内容一致而容器字节不同，只有事先确认的精确元信息白名单才能支持内容层通过，并保留字节层FAIL。噪声闸门另列，绝不把“容差内”重标为“全等”。
-
-### 子代理分工与合并（简述）
-
-主会话冻结公共合同、基线、预算和最终整合；测试、规格预检、身份清单、站点消费、生命周期、对拍工具分独立worktree。先交付公共工具并冻结，再采A；维护后采B。各文件一个负责人，整合前审边界与定向测试，整合后复核接口和资产哈希。子代理不暂存/提交/push，主会话只接收授权文件。
-
-| 阶段 | 内容 | 判据 |
-|---|---|---|
-| S0 | 冻结版本/输入/预算/环境、一次确认scope与B5等待定项 | 预算和资源清单获准，受保护覆盖无越界 |
-| S1 | 实现公共对拍合同及负例，固定HARNESS_SHA | 漏行/错值/尾帧/终态反例均拒绝 |
-| S2 | 每条链先单任务单局smoke，再采完整A | 身份齐全、基线证据完整，失败如实记录 |
-| S3 | 按清单维护、定向测试、审查整合，固定AFTER_SHA | 测试映射和G1/B6/D3合同通过 |
-| S4 | 同环境同输入采B、离线逐项比较 | 各具名判据给真实结果；不放宽 |
-| S5 | 资产复核、核心耗时、留档与逐项结案 | 必选项全过才称维护等价完成 |
-
-### 实测结果（后续实施填写）
-
-本轮没有执行维护代码、pytest、生成、reset、evaluation或模型推理。历史782/17/1不能写作本轮结果。未来在此追加A/B/工具SHA、实际预算、判定行、证据路径、耗时与未解决差异，不改写原判据。
+拆三块：M2 修 C1 六个失败并补 C2-9 两条测试；M1 清 V7／V8 旧用例与夹具（含 `tier_values` 改名）；主会话自己做 B5、重复断言合并（与 B5 同在那几个文件里）、`pyproject.toml`（core 标记、testpaths）、AGENTS／README／待定清单。先合 M2（短测先变绿），再合 M1，最后主会话打 core 标记并实测耗时。每次合并前审改动文件是否越界、定向测试是否通过；合并后跑核心集、`UPSTREAM_GUARD` 与 `MAINT_RUNTIME_CODE`。
 
 # 第二部分（技术细节，供 agent 追踪）
 
-## 〇、前置声明与红线
+## 〇、红线
 
-- R1：本轮只写本文；资源删除、噪声基线实跑、Oracle新模型不属于本次实施授权。
-- R2：冻结 `src/robomme/`、三个官方入口、官方vendor、正式交付规格/HDF5、旧容差及旧H:H2判定。生产观察器不覆写官方方法；测试内mock按规则限定在测试进程并恢复。
-- R3：新增脚本只进已有 `scripts/parity/`；生产代码不import tests。其他代理或用户的在途文件不动。
-- R4：所有Python经uv、显式UV_CACHE_DIR；NFS设UV_LINK_MODE=copy；计算节点只用已安装环境的 `uv run --frozen --no-sync`。各执行副本独立venv，不共用会被更新的环境。
-- R5：各侧/配置/worker独立输出到 `artifacts/maintenance-parity/<run_name>/`；不覆盖输出、不写交付链接目标，不以chmod改变硬链接共享实体。
-- R6：超过5分钟进具名detached tmux，pipefail、行缓冲tee及EXIT_CODE齐全；成功/失败接续先以无仿真夹具验过。没有代理唤醒回执不承诺无人值守。
-- R7：普通任务失败不重试；基础设施重试/诊断默认0；构造隐式reset、smoke、恢复全计账。GPU同席串行，不新增高频全卡监控。
+- R1：不改 `src/robomme/`（P2）、`scripts/` 三个与上游逐字节相同的入口（P1）、交付规格／HDF5、旧容差与历史判定。
+- R2：情况 1 不启动生成、reset、评估、GPU、长任务或集群作业；只跑 `tests/lightweight/` 的 CPU 用例。情况 2 的闸门运行由噪声基线方案的包装执行，预算另批。
+- R3：测试内 mock／patch 限定在测试进程且不落盘；不新增 `scripts/` 顶层文件；不改 `uv.lock`。
+- R4：Python 一律 `uv run --no-sync`；worktree 内按 `CLAUDE.md` 取法 `UV_PROJECT_ENVIRONMENT=<主 .venv> PYTHONPATH=<worktree>/src`，先打印 `robomme_hard.__file__` 核实。
 
 ## 一、逐文件清单
 
-1. **C1/C2**：`test_TaskGoal.py`、`test_step_error_handling.py` 调用真实方法验证；mock用作用域受控fixture。两个 `test_zz_summary_line` 去除全会话耦合。共享 `tests/_shared/v7_tier_values.py` 计划改名 `tier_values.py`，原值不变，全部引用同迁。删除旧测试前提交精确nodeid/夹具路径/契约去向表，不按glob授权批删。
-2. **核心集**：`pyproject.toml::tool.pytest.ini_options` 增testpaths与core标记；`tests/conftest.py` 仅在实际选择机制需要时修改。核心必须包含V9配额/身份、开关、官方锚点、规格签名反例、生成状态机、manifest连接、客户端cap/accepted账本和新比较器反例；耗时较长的信号/视频测试留定向集，D3修改时仍必须跑。
-3. **G1**：`scripts/injection-dev/_freeze.py::freeze` 将/2、/3预检绑定其schema合法tiers，/4继续V8_TIERS；纯函数夹具比合法header/rows/签名，不做额外抽样reset。
-4. **B6/C2-9**：`export_eval_identities.py::main/check_rows` 的docstring/help与实际关档 `official=skipped` 一致；补 `hard_regression.py::cmd_xhard0_reset_parity` 关档SystemExit测试。新测试不得吞异常后写PASS。
-5. **B6/D3清单**：`scripts/eval-official/v8_manifest.py::check_source/build/build_v9/write_outputs` 显式消费身份模式。历史992偏移与目标配置不符时拒绝，或经独立转换输出新文件并保存映射；不得静默减12。新manifest/shard在新暂存目录完整校验后发布，OSError只清理本轮临时文件，已有输出不覆盖。
-6. **B6站点**：`scripts/injection-dev/site/v8_site_catalog.py::expected_identities/build_catalog/validate_catalog` 共享身份模式；不能把常量12直接改0。旧992站点仍能读，新默认800另建catalog；若改交互，补Playwright，不重启既有站。
-7. **D3生命周期**：`run_seat.sh::policy_loop/kill_group/stop_server`、`run_v8_gl.sh::finalize/stop_run_seat/reap_orphans/sync_recordings`。重启计数按run/seat/policy/reason持久化，先计账再重启；与现有AttemptLedger职责分开。父子共享总截止时间，核实真实KillWait和预告信号，不沿用父等25秒/子等60秒的矛盾；同步有期限，未完成保留清单，禁止伪装成功或杀无关进程。`V8_EVAL_CLEANUP` 当前未实现，应新增明确语义或由独立报告核查，不拿 `V8_SEAT_DONE` 代替。
-8. **拟新增对拍**：`scripts/parity/maintenance_parity.py` 管计划、锁、严格比较/报告；`maintenance_capture.py` 管版本隔离和完整E1/E2采集及生成报告接入。公共工具冻结后不随B失败调阈值。
-9. **拟新增测试**：`tests/lightweight/test_maintenance_parity.py` 覆盖错版本/输入、漏行、重复、末帧、dtype/shape、数值/终态篡改、零值键丢失、半写JSON与退出0但failed>0；必须写文件再读回比较。`tests/dataset/test_maintenance_eval_parity.py` 标GPU/环境条件，真实smoke计预算。
-10. **留档与规则**：主会话写运行留档、scripts README、待定条目及AGENTS标记块外核心命令。只对实际通过的条目结案，A1/A5与模型问题不顺手结案。
+1. **C1**：`tests/lightweight/test_TaskGoal.py`、`tests/lightweight/test_step_error_handling.py`；`tests/lightweight/test_v8_eval_report.py`、`tests/lightweight/test_v8_eval_video_mover.py` 的 `test_zz_summary_line`。
+2. **C2-9**：新增 `tests/lightweight/test_xhard0_disabled_paths.py`。
+3. **V7／V8 清理**：`tests/lightweight/test_v7_*.py`（9 个）、`tests/_shared/v7_specs_fixture.py`、`tests/_shared/v7_tier_values.py`→`tier_values.py` 及引用方（`test_v7_tier_values.py`、`test_v8_regression_cmds.py`、`test_sampling_config_split.py`）、`test_v8_delivery_flow.py`、`test_v8_eval_manifest.py`、`test_v8_regression_cmds.py`、`test_hard_builder_xhard0.py`（仅函数改名）、`tests/fixtures/injection_legacy/`（核实无引用后）。`tests/fixtures/v7_specs_sample/` 保留。
+4. **重复断言**：`test_xhard0_native.py`（保留权威 `TIER_MAX_STEPS` 断言）、`test_v8_specs_schema.py`、`test_v9_packaged_800.py`（保留权威 `EXPECTED_CELLS` 合计）、`test_hard_builder_xhard0.py`（删重复合计行）。
+5. **pytest 配置**：`pyproject.toml::tool.pytest.ini_options` 加 `testpaths` 与 `core` 标记；`tests/conftest.py` 不改（打标用文件内 `pytestmark`）。
+6. **B5**：(a) `src/robomme_hard/README.md` 去留表述；(b) 另加 `src/robomme_hard/env_record_wrapper/hard_specs.py::TIER_MAX_STEPS`、`scripts/parity/hard_regression.py` 文档串、相关测试；(c) 另列清单再批。
+7. **文档**：`AGENTS.md`「覆盖第 4 条」；`docs/1002-pending-decisions.md` B5／C1／C2 结案。
 
 ## 二、子代理分配表
 
-以下是后续建议分工，本轮只有只读探索代理。所有写入型代理独立worktree，禁触R2及其他负责人文件，不暂存/提交/push。表内简称文件的完整目录以上节为准；M1的旧测试删除集合必须先展开精确附件，附件未定前不得派删改。
+派发前核对 `worktree.baseRef="head"`、主检出 `git status --short --ignore-submodules=dirty` 为空、记 `BASE`。
 
-| 编号/目标 | 独占可写集合 | 接口依赖与整合顺序 | 验收与环境 | 资源/共享裁决 |
-|---|---|---|---|---|
-| M0主会话 | 本文、pyproject、必要conftest、核心清单、README、AGENTS覆盖项、待定清单、留档 | 公共合同先定，核心收集最终统一 | 本机CPU，diff检查/核心计时/最终报告 | 统一预算、run_name、tmux/job清单 |
-| M1测试维护 | TaskGoal/step_error测试；v7_tier_values迁移与其引用文件；精确获批的旧测试/夹具清单 | 正反例迁移后删旧；不得写M2～M6专属测试 | 各worktree定向pytest，TEST_COVERAGE | CPU；共享test_v8_regression_cmds/test_v8_delivery_flow归M1 |
-| M2规格预检 | _freeze.py、test_v7_freeze_schema.py、test_v8_specs_schema.py | 固定schema输出契约；先于M1最终清理 | 本机CPU，schema正反例 | 不占GPU，不写规格产物 |
-| M3身份/manifest | exporter、v8_manifest、test_v8_eval_manifest、新增test_eval_identity_modes | 持有mode和发布协议；先于M4/M6接入 | 本机CPU，800/992联测及半写故障 | 不起模型；M5不写manifest |
-| M4站点 | v8_site_catalog、test_v8_site_catalog | 依赖M3合同；不能自定义第二套计数 | 本机CPU集合比；必要时Playwright | 不改已有服务；临时端口核空闲后登记 |
-| M5生命周期 | 两个shell运行器、test_eval_official_run_seat、test_v8_eval_orchestration、两个report/video_mover测试 | 持久账本/收尾协议；包含两条会话耦合断言修复 | 本机CPU假服务故障夹具，LIFECYCLE | 仅本轮PID/端口；不占模型GPU |
-| M6对拍 | 两个maintenance脚本/测试、新增test_xhard0_disabled_paths | S1先冻结工具，S3后只采集比较；共用M3身份合同 | CPU负例；获批A40同席串行E1/生成 | 前缀maint-；总账归M0，不自建额度 |
-| M7复核 | 无 | 每块整合前后核写集合、差异与证据 | 只读diff/报告/退出码 | 问题交原负责人，不自行修文件 |
+| 编号 | 目标 | 可写集合 | 禁触 | 依赖／合并顺序 | 验收（worktree 内，CPU） | 资源 |
+|---|---|---|---|---|---|---|
+| M2 | C1 + C2-9 | 第一节 1、2 项 | R1；M1／主会话文件 | 第 1 个合并 | 定向 pytest 四个 C1 文件与新文件，`failed=0` | CPU，≤5 分钟 |
+| M1 | V7／V8 清理与改名 | 第一节 3 项；交回契约去向表 | R1；M2 文件；第一节 4 项中除 `test_hard_builder_xhard0.py` 函数名外的内容 | 第 2 个合并；去向表须用户先过目才派删改 | 受影响文件定向 pytest；`grep -r v7_tier_values tests/` 为空 | CPU，≤5 分钟 |
+| 主会话 | B5、重复断言、pytest 配置、文档 | 第一节 4～7 项 | R1 | 最后；`test_hard_builder_xhard0.py` 在 M1 合入后再动 | 第一部分验收表全部判定行 | CPU |
+| 审查 | 合并前审 | 无（只读，sonnet） | 一切写入 | 每个分支一个审查者 | `PRE_MERGE_REVIEW=PASS` | — |
 
-M1要修改M2/M3专属文件里的导入或core标记时交对应负责人完成。未列的env_client、策略客户端、模型及任务源码保持只读；发现必须修改时列具体函数及必要性处理新增范围，不能代理自扩权。
+共享文件裁决：`test_v8_regression_cmds.py` 归 M1；`test_hard_builder_xhard0.py` 函数改名归 M1、重复断言删除归主会话（M1 合入后）。
 
-## 三、完整对拍预算与开跑前决策
+## 三、闸门总表
 
-**本轮执行额度0。** 下表是完整固定输入验收的提议，未获运行授权；N均引用第一部分第七节的任务×档位×局数乘式。抽样版本须另冻结集合，不能冒称全量完成。
+| 时点 | 判定行 |
+|---|---|
+| 每次合并前 | `PRE_MERGE_REVIEW=PASS`；`git diff --name-only <BASE>..<TIP>` ⊆ 可写集合 |
+| 每次合并后 | 核心集通过；`UPSTREAM_GUARD=PASS`；`MAINT_RUNTIME_CODE=PASS changed=0`（情况 1）；`ls -1 scripts/*.py` 恰为四入口 |
+| 收尾 | 第一部分验收表全部判定行；情况 2 另加噪声闸门 |
 
-| 项 | 轨迹尝试乘式 | 环境reset上限 |
-|---|---|---|
-| G生成 | `2侧 × N_V9=1600` | `1600 × 2=3200` |
-| E1官方test | `2侧 × N_TEST=1600` | `1600 × 2=3200` |
-| E1默认test-hard | `2侧 × N_V9=1600` | `1600 × 2=3200` |
-| E1兼容test-hard | `2侧 × (N_V9+16任务×xhard0×12局)=1984` | `1984 × 2=3968` |
-| E2协议/故障夹具 | 真实环境轨迹0 | 真实环境reset0 |
-| E3、A:A/B:B、基础设施重试、递补 | 默认0 | 默认0 |
+## 四、风险与盲区
 
-合计 `2×[N_V9+N_TEST+N_V9+(N_V9+16×1×12)]=6784` 次轨迹尝试、最多 `13568` 次环境reset。每条链最小smoke `1任务×1档×1局×2侧` 从上述集合取首局，条件完全相同且不重跑时已计入；开发Ada smoke与正式A40不同，若另跑，须额外列入批准预算，不能声称已包含。
+- 删旧用例可能丢负例：靠契约去向表兜底，表外不删。
+- `xfail` 可能掩盖真问题：只用于「官方确实没实现」的两项，`strict=True` 并写原因。
+- 核心集耗时依机器负载浮动，以实测为准。
+- 情况 1 的「零 diff ⇒ 噪声不变」只覆盖本仓库代码；依赖、驱动、节点变化引起的噪声漂移归噪声基线方案管，本方案不声称覆盖。
+- 情况 2 的 D0 评估是有意的行为变化，不能读成「一致」。
+- 噪声基线方案第五节末句写「确定性严格对拍（固定动作环境、客户端协议）按维护方案执行」；本方案已撤出该对拍，那一句需要噪声方案的负责会话改写（本方案不改他人文件）。
 
-每局2次是**固定源码和已查依赖下的静态上界**：`BaseEnv.__init__` 隐式一次 + 生成worker的 `record_env.reset` 或评估的公开 `env.reset` 一次；demo规划和 `solve_strong_reset` 走动作/规划，不额外环境reset。限定joint_angle、每局新建一次环境、无自动恢复/探针/重试；agent/controller自身初始化不另算环境reset。运行节点必须重新核实同一调用链和指纹，否则此预算失效、不得开跑。
+## 五、留档与提交
 
-已查本机ManiSkill `sapien_env.py` SHA256为 `d16b9fdc8b0f17db850903d73f650ee8cf6491e4acffd40db1b004b17e915789`；其registration为 `bbc7ed7c6bd03f8ab394a36a2d08c68b771117ffa1e91cfedbcc5b2e45bf609e`；Gymnasium 0.29.1的registration为 `c19435118cef037e21a3b64b4a53328119a61c49086ad3e6c13f54bbb23e013b`。这些是安装实物指纹，不代表已经验证远端环境或做过运行计数。
-
-预算守卫在启动每局子进程前原子预占最坏2次，失败/进程死/消费未知不退款；A/B/所有worker共享一份总账。指纹约束保证无内部额外reset，不能靠只包外层reset而漏构造，也不通过monkeypatch官方BaseEnv来计数。任何额外校准/连续worker重置/重跑都须先有额度。
-
-S0一次确认：B5处置、E3是否纳入、全量或样本、身份/输入合同、两侧worker数、硬件/地点、job数和规格、run_name、输出目录、全部预算、重试0、期限与停止条件。已有授权沿用，不分阶段重复询问。正式生成按A40及greatlakes规则；本机CPU检查不占GPU。run_name/席位尚未指定，预计耗时和磁盘需求尚未实测，不编造数字；先用可比历史日志估计，获批smoke后更新，估计不构成加跑许可。
-
-## 四、闸门反例与现有工具适用范围
-
-| 闸门 | 必须拒绝的例子 | 处置 |
-|---|---|---|
-| 基线/资产 | 两侧实际导入同路径、依赖/输入不同、交付被改 | 仿真前停止，保留指纹差异 |
-| 身份 | 800按992解释、错12偏移、缺/多/重复、同seed覆盖不同tier | 不调度，输出完整差集 |
-| 生成 | 退出0但failed>0、h5缺失、两侧都失败被标通过、只比较共同帧 | 生成门禁FAIL，保留部分产物 |
-| 内容 | setup/目标改动、dtype转换掩差、任一末帧/属性/终态不同 | 首差定位，旧容差不动 |
-| 客户端 | exec_equal=false仍PASS、cap后继续step、错误/None吞掉 | 客户端FAIL，普通失败不重试 |
-| 生命周期 | supervisor重启清额度、重复accepted、半写被消费、同步超时假成功、误杀他人 | 无GPU故障夹具先阻断 |
-| 汇总 | 零键消失、半行JSON、报告崩溃、未知字段默认0、录像降级 | FAIL/NOT_VERIFIED，独立监督通知 |
-
-`recorder.py::EpisodeRecorder` 有空间不足降级行为；复用时若丢帧或降级必须使完整对拍未通过。所有数值差保留可还原数组/帧，不只保存SHA却承诺计算幅度。关键帧可辅助目视，但不能代替全字段检查。
-
-## 五、执行手册
-
-以下命令是未来实施用，不在本文细化时执行。先检查路径、输出实体与归属；独立执行副本须干净，主副本他人在途内容保留。
-
-现有入口：
-
-```bash
-command -v uv
-test -f uv.lock && test -f pyproject.toml
-export UV_CACHE_DIR="$HOME/.cache/uv"
-git status --short
-git rev-parse HEAD
-uv run --frozen --no-sync python scripts/parity/upstream_guard.py check --require-upstream
-uv run --frozen --no-sync python -m pytest tests/lightweight/test_TaskGoal.py tests/lightweight/test_step_error_handling.py -q
-```
-
-当前旧核心全量历史耗时超过5分钟；若要重跑完整基线，应走tmux留档。维护后拟命令：
-
-```bash
-timeout 280s uv run --frozen --no-sync python -m pytest tests/lightweight/ -m 'core and not gpu and not slow' -q --durations=20
-```
-
-`core` 当前尚未定义，只有实现并检查收集非空、契约覆盖之后才可用；退出124是超时失败。定向功能测试仍按改动范围执行，首次完整计时通过后不无意义重复全跑。
-
-现有生成重放形式（占位参数须替换、只在获批后用）：
-
-```text
-uv run --frozen --no-sync python scripts/injection-dev/generate_h5.py
-  --mode replay --identities <gen-identities.jsonl> --src-root <当前侧worktree>
-  --pkg robomme_hard --output <当前侧独立目录> --workers <获批数量> --gpu <获批设备>
-```
-
-两侧从自己的入口启动；外层验证完整candidate/spec/attempt。`load_identities` 目前只留下task/tier/seed，不能用该缩减集合代替最终身份核验。正式不加dev-smoke；dev-smoke和正式分环境证据，额外次数另计。
-
-拟新增接口，当前文件/参数不存在：
-
-```text
-maintenance_parity.py plan
-  --before-sha --harness-sha --scope --input-lock --out
-  只生成固定身份、模式、输入/判据哈希、预算，不触发仿真。
-maintenance_capture.py generation|evaluation|client
-  --side before|after --code-root --plan --output
-  检查版本/来源/预算后采集；按真实逐局结果汇总。
-maintenance_parity.py compare
-  --plan --after-sha --before --after --out
-  只读比较；任何必选缺证据/差异非零退出。
-maintenance_parity.py report
-  --plan --comparisons --out
-  汇总具名门禁、task_success与首差，不提升INFO为PASS。
-```
-
-S3后绑定AFTER_SHA时身份/输入/判据/预算哈希不变；最终比较拒绝未绑定版本。A/B/汇总各自独立完成信号；接续必须真实序列化报告后验证零计数、正常任务失败、缺文件及检查器崩溃，不只等EXIT_CODE。正式采集期间冻结产品与工具版本。
-
-## 六、风险与盲区
-
-- 历史生成已有分叉，不能承诺全量严格通过；失败如实保留，噪声合同另验，不改数据/候选/容差。
-- 固定动作只覆盖所选动作带；E2离线不证明线上模型；E3未选必须明确模型闭环未验证。
-- 观察器/录像可能影响墙钟敏感路径；两侧工具和记录量相同，不宣称零扰动。若需额外校准，先列预算。
-- 旧测试清理可能丢负例：nodeid映射必须含空集、重复/漏身份、错签名、错绑定、跨版本数量、当前状态机；测试数量相近不是覆盖证据。
-- 本机安装依赖的reset静态上界不能替代运行节点核验；不同设备/驱动/worker条件不能用旧数值基线推导一致。
-- 运行耗时、磁盘需求、真实KillWait与资源尚待S0核实；同步来不及必须保留未完成状态。
-- 核心短测通过不代表生成/评估通过，sample不代表全集，历史结果不代表本次结果。原因解释不能替代验收。
-
-## 七、留档、提交与结案
-
-`artifacts/maintenance-parity/<run_name>/` 保留锁、固定计划、A/B证据、逐身份报告和预算账本；新attempt另目录，原失败不覆盖。`docs/validation/<run_name>/launch.md` 记用户原话、三类SHA、环境、scope、完整命令、预算与tmux/job/端口清单；`result.md` 记判定、差异/成败迁移、首差、耗时与盲区；`records/` 只放轻量实测，不复制脚本/配置/大HDF5/权重。
-
-每块定向测试及审查后由主会话提交，最终AFTER_SHA在B采集期间冻结；运行后的文档提交不冒称被跑版本。只逐路径暂存本轮文件，保留他人暂存和未暂存内容；按现有授权推当前分支既有upstream，拒绝即报告，不强推。
-
-收尾更新AGENTS只改标记块外已实测核心命令；待定清单只结案已通过子项，保留原记录与用户裁决。A1/A5、MME历史问题、资源清理、噪声基线是否完成各有独立依据。
-
-本轮文档交付只执行diff空白检查、两部分结构、链接/符号/文件范围与原事项保留检查，不启动pytest或生成评估；文档检查PASS不表示维护或对拍已完成。
+每块按 `--no-ff` 合入、主会话逐路径暂存；commit body 写用户原话、改动、定向测试与核心集实测、`MAINT_RUNTIME_CODE` 判定行。情况 1 不建 `docs/validation/` 运行档案（无长跑）；情况 2 的闸门运行按噪声基线方案留档。文档本身交付只做 `git diff --check` 与两部分结构自检。
