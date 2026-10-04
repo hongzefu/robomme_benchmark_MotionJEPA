@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # 噪声基线 GL 单遍运行包装（1003-noise-baseline-plan.md 第一部分 3.3，第二部分 §一、§二 S3、§五）。
 #
-# 每一遍（一次生成／一次评估／一次环境摘要）都经本脚本启动，保证「真是新跑」、预算累计不超、资产与环境指纹落盘：
+# 每一遍生成都经本脚本启动，保证「真是新跑」、预算累计不超、资产与环境指纹落盘（噪声工具只留生成这一条线，
+# --kind 只认 gen；评估、环境摘要两类已删，1003 代码测试维护计划「细则 2.5」）：
 #   1. 导出 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONUNBUFFERED=1；
 #   2. noise_run.py preflight：输出根不存在或为空、资产与 tokenizer 全量 sha256 对锁、预算账本登记（fsync）、
 #      环境指纹与来源报告；不过即写 EXIT_CODE= 尾行退出，不执行真实命令、不调 finish；
@@ -10,7 +11,7 @@
 #   5. 最后一行写 EXIT_CODE=<n>（真实命令非零取其值，否则取 finish 的返回码），作为 Monitor 统一完成信号。
 #
 # 用法：
-#   bash scripts/parity/noise_run_gl.sh --pass <名> --kind {gen,eval,digest} --out-root <dir> --log <日志> \
+#   bash scripts/parity/noise_run_gl.sh --pass <名> --kind gen --out-root <dir> --log <日志> \
 #     --provenance-out <json> --budget-ledger <jsonl> --budget-caps <json> --attempts N --resets N --retries N \
 #     [--assets-lock J --asset-dir 名=路径 ...] [--tokenizer P --tokenizer-sha256 H] [--policy-repo 名=路径 ...] \
 #     [--max-steps N] [--server-args S] [--actual-attempts N|unknown] [--actual-resets N|unknown] \
@@ -32,7 +33,7 @@ PASS_NAME="" ; KIND="" ; OUT_ROOT="" ; LOG="" ; PROV=""
 ACT_ATTEMPTS="unknown" ; ACT_RESETS="unknown" ; ACT_RETRIES="unknown"
 PRE_ARGS=() ; CMD=()
 
-usage() { sed -n '2,25p' "${BASH_SOURCE[0]}" >&2; }
+usage() { sed -n '2,26p' "${BASH_SOURCE[0]}" >&2; }
 die2() { echo "NOISE_RUN=FAIL reason=bad_args detail=$1" >&2; echo "EXIT_CODE=2"; exit 2; }
 
 while [[ $# -gt 0 ]]; do
@@ -55,6 +56,7 @@ done
 [[ -n "$PASS_NAME" && -n "$KIND" && -n "$OUT_ROOT" && -n "$LOG" && -n "$PROV" ]] \
   || die2 "缺少必需参数（--pass --kind --out-root --log --provenance-out）"
 [[ "$PASS_NAME" =~ ^[A-Za-z0-9._-]+$ ]] || die2 "--pass 只许字母数字 . _ -"
+[[ "$KIND" == gen ]] || die2 "--kind 只认 gen（评估 eval 与环境摘要 digest 两类已删）"
 [[ ${#CMD[@]} -gt 0 ]] || die2 "缺少 -- 之后的真实命令"
 [[ -x "$PY" ]] || die2 "解释器不可执行：$PY（用环境变量 PY 指定）"
 

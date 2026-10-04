@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
-"""噪声基线的比较器与回归闸门（1003 噪声基线计划第一部分第二、三、六节，第二部分 §一 ``noise_gate.py`` 行、§二 S2 行）。
+"""生成噪声的比较器与逐局回归闸门（1003 噪声基线计划第一部分第二、三节；1003 代码测试维护计划第二部分
+「细则 2.5 噪声工具瘦身」「对拍细则 3.2～3.4」「G 块」）。
 
-纯 CPU；判定逻辑只用标准库与 h5py／numpy（统计量用纯 Python 精确计算，不依赖 scipy）。不复用 ``hard_parity.schema_of``／
-``pair_metrics`` 做判定（计划审查意见 2、3：前者把帧号归一后取集合会漏掉单帧缺字段，后者只比少数字段且全同局不给分叉步）。
-评估取数只读导入 ``scripts/eval-official/v8_report.py`` 的 ``load_policy``／``analyze_attempts``（按账本 ``accepted_attempt_id``）。
+纯 CPU；只用标准库与 h5py。噪声工具只留生成这一条线（用户口径：以后只测生成噪声），评估抽取、reset 摘要、
+统计线与冻结／核验子命令已删（细则 2.5；``run-fresh`` 只认评估抽取格式，随 ``eval-extract`` 一并删——
+``noise_run_gl.sh`` 的 ``RUN_FRESH`` 行由 ``noise_run.py::check_out_root`` 打出，与本文件无关）。
 
-子命令（仓库根运行；每个都打印具名判定行，``*_BASELINE``／``GEN_PAIR`` 只出 INFO）::
+子命令（仓库根运行；每个都打印具名判定行）::
 
-    noise_gate.py gen-compare --ref <侧> --new <侧> --identities <G9 或 D0 清单> --out <jsonl>
-    noise_gate.py eval-extract --format {v8,legacy} --root <运行根或结果 jsonl> --policy <p> --identities <清单> --out <jsonl>
-    noise_gate.py run-fresh --extract <jsonl> --provenance <来源报告 json> --expect 192 [--other <jsonl> ...]
-    noise_gate.py baseline-reset --compare <env-digest-compare json> --set {G9,D0}
-    noise_gate.py baseline-gen --pairs <gen-compare jsonl>... --workers {4,1} --set {G9,D0}
-    noise_gate.py baseline-eval --pairs <a.jsonl>:<b.jsonl>... --policy <p> --set {G9,D0}
-    noise_gate.py freeze --spec <描述各组输入的 json> --out <noise-baseline.json>
-    noise_gate.py verify --path <noise-baseline.json>
-    noise_gate.py check-reset --baseline <json> --set <s> --compare <env-digest-compare json>
-    noise_gate.py check-gen --baseline <json> --set <s> --workers <w> --pair <gen-compare jsonl>
-    noise_gate.py check-eval --baseline <json> --set <s> --policy <p> --ref <基线参照遍 extract> --new <新一遍 extract>
+    noise_gate.py gen-compare --ref <侧> --new <侧> --identities <清单> --out <jsonl>
+    noise_gate.py gen-regress build-ref --runs v9=<a 遍根>,<b 遍根> --runs xhard0=<a 遍根>,<b 遍根> \\
+        --identities-v9 <冻结清单> --identities-xhard0 <冻结清单> --records <比对记录目录> --out <参照 json>
+    noise_gate.py gen-regress check --ref <参照 json> --set {v9,xhard0} --new <新跑根> --out <jsonl> \\
+        [--rerun-identities-out <jsonl>] [--rerun-new <改后第二次根> --rerun-old <旧代码根>] [--local-ref-root <基线 gen 根>]
     noise_gate.py selftest
 
 「侧」（``gen-compare`` 的 ``--ref``／``--new``）可以是：
@@ -33,32 +28,31 @@
 放行这种差异：每帧签名须属于登记的允许集合，分叉后两侧签名不同按内容差异计（第 0 帧仍须全同）；其余字段两侧必须每帧
 签名恒定且相同，某一帧缺字段即结构不同。
 
-``eval-extract --format v8`` 可重复给 ``--root``（G9 的正式评估那一遍：180 局在 V8 运行根、MoveCube 新规格 12 局在 V9
-运行根），各根按自己的账本判后逐身份按规格指纹选根；``--allow-extra`` 放行运行根里的清单外身份（正式评估覆盖全集）。
+``gen-regress``（对拍细则 3.2～3.4）：
 
-``freeze --spec`` 的格式::
-
-    {"conditions": {...固定条件，原样写进冻结文件...},
-     "groups": [
-       {"kind": "gen", "set": "G9", "workers": 4, "pairs": ["<gen-compare jsonl>", ...]},
-       {"kind": "eval", "set": "G9", "policy": "mme", "pairs": [["<a extract>", "<b extract>"], ...],
-        "reference": "<回归时作参照的那一遍 extract，须出现在 pairs 里>"},
-       {"kind": "reset", "set": "G9", "compare": ["<env-digest-compare json>", ...],
-        "reference_rows": "<冻结的九层摘要 rows.jsonl，可省>"}]}
+- ``build-ref`` 从本机噪声基线四遍（每个集合 a、b 两遍）重算每局 h5 的 sha256，与各遍 ``identities.jsonl`` 记录、git 里的
+  ``gen-compare`` 比对记录交叉核对一致后，把每局归入 ``stable``（两遍都成功且 sha 相同）、``known_fail``（两遍都失败且失败
+  占位 h5 sha 相同）、``jitter``（其余）三类，写参照文件（顶层 ``sha256`` 为剔除自身后 canonical JSON 的 sha256）。
+  末行 ``NOISE_REF=PASS|FAIL``；FAIL 时不写文件。``--limit N`` 只取每个集合前 N 个身份作冒烟、``--trust-recorded-sha``
+  不重算 h5 sha，两者的产物都标 ``partial``，
+  ``check`` 与 ``hard_parity.py generate --expect-ref`` 拒收 partial 参照。
+- ``check`` 默认只读新跑各遍 ``identities.jsonl`` 里 ``Mover`` 边生成边写的 sha 与 ``verdict``（不重读 h5），逐局对参照期望：
+  ``match``／``jitter_info``／``flip``；翻转先记 ``flip_pending``，给 ``--local-ref-root`` 时对已回传的翻转局用
+  ``compare_h5`` 对照基线 a 遍 h5，细分为 ``structural``／``diverge``／``gen_fail``。首跑有翻转（≤ 10）即
+  ``GEN_REGRESS=NEED_RERUN``，并按细则 3.4 写重跑清单（不足 4 局用陪跑局补足、行内 ``filler=true``）；给
+  ``--rerun-new``／``--rerun-old`` 时按细则 3.2 四格定性（噪声／回归／环境变了／每次都不同），打印最终判定行，
+  另写逐局报告 ``<out>.episodes.md``。
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.util
 import json
-import math
 import os
-import statistics
 import sys
 import tempfile
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -67,11 +61,7 @@ for _extra in (REPO / "src", REPO):
     if str(_extra) not in sys.path:
         sys.path.insert(0, str(_extra))
 
-V8_REPORT = REPO / "scripts" / "eval-official" / "v8_report.py"
-
-BASELINE_SCHEMA = "noise-baseline/1"
 GEN_SCHEMA = "noise-gen-compare/1"
-EXTRACT_SCHEMA = "noise-eval-extract/1"
 
 #: 生成五类（计划第一部分 3.1），互斥且完备
 GEN_CLASSES = ("byte_equal", "diverge", "gen_fail", "structural", "unknown")
@@ -85,30 +75,10 @@ SOLVER_FAIL_TYPES = ("DatasetGenerationError", "PlannerExhausted")
 POLYMORPHIC_KEYS: dict[str, frozenset] = {
     "action/waypoint_action": frozenset({("float32", (7,)), ("float64", (7,))}),
 }
-#: 评估终态
-TERMINAL = ("success", "fail", "timeout")
-#: 说明发生在 reset 之前的基础设施原因（env_client：环境构建失败、录像器初始化失败，都在 0 步时记）
-PRE_RESET_INFRA = ("env_build", "recorder")
-
-#: 成功局数净损失上限：净损失（成功→失败 减 失败→成功）≤ 4，达到 5 即 FAIL。
-#: 来自用户裁决 1「少 5 局」（2026-10-03，计划第一部分第七节）；G9 与 D0 各自按 192 局计。
-NET_LOSS_MAX = 4
-#: 线的公式常量（计划第一部分 3.4）
-CP_ALPHA = 0.05          # 单侧 95% Clopper–Pearson 上界
-LINE_QUANTILE = 0.99     # Binomial(n, p_U) 的 99% 分位数
-BAND_FACTOR = 1.5        # 步数差均值、中位数的带 = 基线各对绝对值最大值 × 1.5
-FORMULA = ("p_hat = sum(x_i)/(m*n)；p_U = 单侧 95% Clopper–Pearson 上界（N = m*n 次试验、sum(x_i) 次发生；x 全 0 时 "
-           "p_U = 1 - 0.05^(1/N)，x = N 时 p_U = 1）；line = max(Binomial(n, p_U) 的 99% 分位数, max(x_i))；"
-           "步数差均值／中位数带 = 各对绝对值最大值 × 1.5")
-#: 生成组按个数算线的量
-GEN_METRICS = ("diff", "gen_fail")
-#: 评估组按个数算线的量
-EVAL_METRICS = ("status_changed", "s2f", "f2s", "timeout_delta", "steps_diff")
-EVAL_BANDS = ("steps_absdiff_mean", "steps_absdiff_median")
 
 
 class GateError(RuntimeError):
-    """输入不合契约、冻结文件不自洽等，拒跑。"""
+    """输入不合契约、参照文件不自洽等，拒跑。"""
 
 
 # ── 通用小工具 ──────────────────────────────────────────────────────────────
@@ -454,6 +424,22 @@ def compare_h5(left: str | Path, right: str | Path) -> dict[str, Any]:
         return {**out, "verdict": "unknown", "reason": f"open_error:{type(exc).__name__}: {exc}"[:300]}
 
 
+def h5_problem(path: str | Path) -> str | None:
+    """一份「成功」h5 是否合法：零字节、打不开、没有任何顶层键都返回原因，合法返回 None。"""
+    import h5py
+
+    path = Path(path)
+    if path.stat().st_size == 0:
+        return "empty"
+    try:
+        with h5py.File(path, "r") as handle:
+            if not list(handle.keys()):
+                return "no_keys"
+    except Exception as exc:  # noqa: BLE001 打不开一律原因不明
+        return f"open_error:{type(exc).__name__}"
+    return None
+
+
 def classify_pair(ident: dict[str, Any], ref: dict[str, Any] | None, new: dict[str, Any] | None,
                   *, rehash: bool = True) -> dict[str, Any]:
     """一局归入互斥五类之一（计划第一部分 3.1），返回逐局报告行。"""
@@ -488,6 +474,11 @@ def classify_pair(ident: dict[str, Any], ref: dict[str, Any] | None, new: dict[s
     for side, entry in (("ref", ref), ("new", new)):
         if not entry.get("h5") or not Path(entry["h5"]).is_file():
             return done("unknown", f"missing_file_{side}")
+    # F-5：先判两侧都是合法 h5（非空、能打开、至少一个顶层键），再判字节关系——此前两个零字节文件会判 byte_equal
+    for side, entry in (("ref", ref), ("new", new)):
+        problem = h5_problem(entry["h5"])
+        if problem:
+            return done("unknown", f"invalid_h5_{side}:{problem}")
     shas = {}
     for side, entry in (("ref", ref), ("new", new)):
         recorded = entry.get("sha256")
@@ -539,779 +530,606 @@ def gen_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
     return counts
 
 
-# ── 评估：按权威尝试取结果 ──────────────────────────────────────────────────
+# ── gen-regress：逐局期望的参照文件与回归判定（对拍细则 3.2～3.4）────────────
 
 
-def _v8_report():
-    spec = importlib.util.spec_from_file_location("noise_gate_v8_report", V8_REPORT)
-    mod = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(mod)
-    return mod
+REF_SCHEMA = "noise-ref/1"
+REGRESS_SCHEMA = "gen-regress/1"
+#: 参照里每局的三类（细则 3.2 表）
+REF_CLASSES = ("stable", "known_fail", "jitter")
+#: 噪声基线代码锚点与异地副本（细则 3.0）
+REF_ANCHOR = "f8f76fba"
+REF_HF_BUCKET = "HongzeFu/robomme-hard-v9-noise-baseline"
+#: 集合名（与 hard_parity generate 的身份口径一致）
+REF_SETS = ("v9", "xhard0")
+#: Mover 边生成边写的逐局判定
+VERDICTS = ("match", "jitter_info", "flip")
+#: 确认为噪声的翻转上限（细则 3.3 第 2 条）
+NOISE_MAX = {"v9": 2, "xhard0": 1}
+#: 翻转局超过此数不进第二次跑，直接交用户（细则 3.4 预算）
+FLIP_RERUN_MAX = 10
+#: 第二次跑每席并发的 worker 数；翻转局不足时用陪跑局补足到此数（细则 3.4）
+RERUN_MIN = 4
+#: 跑法前提（细则 3.3 第 4 条）
+PRECOND_WORKERS = 4
+PRECOND_GPU = "A40"
+#: 翻转局四格定性（细则 3.2 表）
+FINAL_CLASSES = ("noise", "regression", "env_changed", "unstable")
+FINAL_NAMES = {"noise": "噪声", "regression": "回归", "env_changed": "环境变了", "unstable": "每次都不同"}
+LAUNCH_SCHEMA = "hard-parity-launch/1"
 
 
-def _extract_row(ident: dict[str, Any], **kw: Any) -> dict[str, Any]:
-    row = {"kind": "row", "id": ident["id"], "task": ident["task"], "tier": ident["tier"], "seed": ident["seed"],
-           "spec_sha256": ident.get("spec_sha256"), "source_episode": ident.get("source_episode"),
-           "status": None, "exec_steps": None, "attempt_id": None, "started_at": None,
-           "retried_after_steps": False, "missing": False, "conflict": None, "flags": []}
-    row.update(kw)
-    return row
+def _line_ok(line: dict[str, Any]) -> bool:
+    """一行 identities 是否算「成功」：生成成功且 h5 能打开（Mover 打不开时写 ``h5_error``）。"""
+    return bool(line.get("success")) and not line.get("h5_error")
 
 
-def _extract_v8_root(v8, root: str | Path, policy: str, identities: list[dict[str, Any]]
-                     ) -> tuple[list[dict], dict, set[str]]:
-    """单个运行根的账本口径取数；返回 (逐身份行, meta, 该根全部被接受的键)。"""
-    state = v8.load_policy(Path(root), policy)
-    ana = v8.analyze_attempts(state)
-    ledger = state["ledger"]
-    start_t: dict[str, float] = {}
-    started: dict[str, set[str]] = defaultdict(set)
-    ended: dict[str, dict] = {}
-    accept_lines: Counter = Counter()
-    for lr in ledger:
-        kind, aid, key = lr.get("kind"), lr.get("attempt_id"), str(lr.get("key"))
-        if kind == "attempt_start" and aid:
-            start_t.setdefault(str(aid), lr.get("t"))
-            started[key].add(str(aid))
-        elif kind == "attempt_end" and aid:
-            ended[str(aid)] = lr
-        elif kind == "accept":
-            accept_lines[key] += 1
-    rows_by_key: dict[str, list[dict]] = defaultdict(list)
-    for r in ana["rows"]:
-        rows_by_key[v8.key_of(r)].append(r)
-    conflicts = {c["key"]: c for c in ana["conflicts"]}
-    no_row = {a["key"]: a for a in ana["accept_no_row"]}
-    out: list[dict[str, Any]] = []
-    want_keys = set()
-    for ident in identities:
-        key = f"{ident['task']}_{ident['tier']}_{ident['seed']}"
-        want_keys.add(key)
-        flags: list[str] = []
-        acc = ana["accepted"].get(key)
-        conflict = None
-        if key in conflicts:
-            conflict = conflicts[key]["reason"]
-        elif key in no_row:
-            conflict = "accept_no_row"
-        elif accept_lines[key] > 1:
-            conflict = "duplicate_accept"
-        if acc is not None and conflict is None:
-            for field in ("task", "tier"):
-                if str(acc.get(field)) != str(ident[field]):
-                    conflict = f"{field}_mismatch"
-            if int(acc.get("seed", -1)) != ident["seed"]:
-                conflict = "seed_mismatch"
-            if ident.get("spec_sha256") and acc.get("spec_sha256") != ident["spec_sha256"]:
-                conflict = "spec_sha256_mismatch"
-        accepted_id = str(acc["attempt_id"]) if acc is not None else None
-        # 步后重试：任何未被接受、且执行过步数（或步数不明且不在 reset 之前）的尝试
-        retried = False
-        attempts = {str(r.get("attempt_id")) for r in rows_by_key.get(key, []) if r.get("attempt_id")}
-        attempts |= started.get(key, set())
-        attempts |= {aid for aid, lr in ended.items() if str(lr.get("key")) == key}
-        for aid in sorted(attempts - {accepted_id}):
-            rlist = [r for r in rows_by_key.get(key, []) if str(r.get("attempt_id")) == aid]
-            src = rlist[-1] if rlist else ended.get(aid)
-            if src is None:
-                flags.append(f"orphan_attempt:{aid}")
-                retried = True
-                continue
-            steps = src.get("exec_steps")
-            reason = src.get("infra_reason")
-            if steps is None:
-                if reason not in PRE_RESET_INFRA:
-                    retried = True
-                    flags.append(f"retry_after_unknown_steps:{aid}:{reason}")
-            elif int(steps) > 0:
-                retried = True
-                flags.append(f"retry_after_steps:{aid}:{steps}")
-        for r in ana["late"]:
-            if v8.key_of(r) == key:
-                flags.append(f"late:{r.get('attempt_id')}:{r.get('status')}")
-        kw: dict[str, Any] = {"retried_after_steps": retried, "conflict": conflict, "flags": flags}
-        if acc is None or conflict is not None:
-            kw["missing"] = acc is None and conflict is None
-        else:
-            kw.update(status=acc.get("status"), exec_steps=acc.get("exec_steps"), attempt_id=accepted_id,
-                      started_at=start_t.get(accepted_id))
-        out.append(_extract_row(ident, **kw))
-    meta = {"duplicate": ana["duplicate"], "late": len(ana["late"]), "abandoned": len(ana["abandoned"])}
-    return out, meta, set(ana["accepted"])
+def _short(sha: Any) -> str:
+    return str(sha)[:12] if sha else "-"
 
 
-def extract_v8(root: str | Path | list, policy: str, identities: list[dict[str, Any]]) -> tuple[list[dict], dict]:
-    """V8 账本口径：权威行 = ``analyze_attempts`` 的 ``accepted``；键四元组 (task, tier, seed, spec_sha256)。
-
-    ``root`` 可给多个运行根（如 G9 的正式评估那一遍：180 局在 V8 运行根、MoveCube 新规格 12 局在 V9 运行根）。
-    各根分别按自己的账本判，再逐身份合并：规格指纹不符的根只记 ``ignored_root`` 标记、不参与；剩下恰好一个根有
-    有效权威行就取它；两个以上根都有 → 冲突 ``multiple_roots``；任一根有其他冲突照传；都没有 → 缺失（若有根因规格不符
-    被忽略，则记冲突 ``spec_sha256_mismatch``）。"""
-    v8 = _v8_report()
-    roots = root if isinstance(root, (list, tuple)) else [root]
-    per_root = [_extract_v8_root(v8, one, policy, identities) for one in roots]
-    want_keys = {f"{i['task']}_{i['tier']}_{i['seed']}" for i in identities}
-    out: list[dict[str, Any]] = []
-    for n, ident in enumerate(identities):
-        cands = [(k, rows[n]) for k, (rows, _m, _a) in enumerate(per_root)]
-        flags: list[str] = []
-        valid, other_conflict, spec_ignored = [], None, False
-        for k, row in cands:
-            tag = f"r{k}:" if len(roots) > 1 else ""
-            flags += [tag + f for f in row["flags"]]
-            if row["conflict"] == "spec_sha256_mismatch" and len(roots) > 1:
-                spec_ignored = True
-                flags.append(f"ignored_root:r{k}:spec_sha256_mismatch")
-            elif row["conflict"] is not None:
-                other_conflict = other_conflict or row["conflict"]
-            elif not row["missing"]:
-                valid.append(row)
-        if other_conflict is not None:
-            out.append(_extract_row(ident, conflict=other_conflict, flags=flags,
-                                    retried_after_steps=any(r["retried_after_steps"] for _k, r in cands)))
-        elif len(valid) > 1:
-            out.append(_extract_row(ident, conflict="multiple_roots", flags=flags,
-                                    retried_after_steps=any(r["retried_after_steps"] for r in valid)))
-        elif len(valid) == 1:
-            row = dict(valid[0])
-            row["flags"] = flags
-            out.append(row)
-        elif spec_ignored or (len(roots) == 1 and cands[0][1]["conflict"] == "spec_sha256_mismatch"):
-            out.append(_extract_row(ident, conflict="spec_sha256_mismatch", flags=flags,
-                                    retried_after_steps=any(r["retried_after_steps"] for _k, r in cands)))
-        else:
-            out.append(_extract_row(ident, missing=True, flags=flags,
-                                    retried_after_steps=any(r["retried_after_steps"] for _k, r in cands)))
-    accepted_all = set().union(*(a for _r, _m, a in per_root))
-    extra = sorted(accepted_all - want_keys)
-    meta = {"extra": len(extra), "extra_keys": extra[:20],
-            "duplicate": sum(m["duplicate"] for _r, m, _a in per_root),
-            "late": sum(m["late"] for _r, m, _a in per_root),
-            "abandoned": sum(m["abandoned"] for _r, m, _a in per_root), "run_blocked": 0, "rec_checked": None}
-    return out, meta
+def read_run(root: str | Path) -> tuple[dict[tuple[str, int], dict[str, Any]], list[tuple[str, int]]]:
+    """读一遍的 ``identities.jsonl``：返回 ``(task, seed) -> 行`` 与重复身份列表（重复的保留最后一行）。"""
+    path = Path(root) / "identities.jsonl"
+    if not path.is_file():
+        raise GateError(f"{root}：缺 identities.jsonl")
+    out: dict[tuple[str, int], dict[str, Any]] = {}
+    dup: list[tuple[str, int]] = []
+    for line in read_jsonl(path):
+        key = (str(line["task"]), int(line["seed"]))
+        if key in out:
+            dup.append(key)
+        out[key] = line
+    return out, dup
 
 
-def _rec_name(path: Any) -> str | None:
-    return Path(str(path)).name if path else None
-
-
-def extract_legacy(root: str | Path, policy: str, identities: list[dict[str, Any]]) -> tuple[list[dict], dict]:
-    """旧路线（D0，``run_seat.sh`` 不带 ``--v8``）严格口径，无账本：
-    每身份恰好 1 条非 canary、非 infra、非 run_blocked 行；允许的前置重试只有 ``steps == 0`` 的 infra 行；
-    ``steps`` 为 None 或 > 0 的 infra 行 → retried_after_steps；任何 run_blocked 行 → 整遍无效；
-    ``rec/`` 下没有对应结果行的 ``<key>``／``<key>.aN`` 目录 → orphan_attempt（视同 retried_after_steps）。
-    ``--root`` 给目录时读 ``<root>/<policy>/results.jsonl``，录像目录 ``<root>/<policy>/rec``；给 jsonl 文件时只读该文件、
-    不核录像目录（meta ``rec_checked=false``）。"""
-    root = Path(root)
-    if root.is_file():
-        results, rec_root = root, None
-    else:
-        results = root / policy / "results.jsonl"
-        rec_root = root / policy / "rec"
-        if not results.is_file():
-            raise GateError(f"旧路线结果不存在：{results}")
-    rows = [r for r in read_jsonl(results) if r.get("policy") in (None, policy)]
-    run_blocked = sum(bool(r.get("run_blocked")) for r in rows)
-    by_ident: dict[tuple[str, int], list[dict]] = defaultdict(list)
-    for r in rows:
-        if r.get("canary"):
+def run_launch(root: str | Path) -> dict[str, Any] | None:
+    """一遍的 ``hard_parity generate`` 启动记录（``launch-*.json`` 里 schema 为 ``hard-parity-launch/1`` 的最新一份）。"""
+    best = None
+    for path in sorted(Path(root).glob("launch-*.json")):
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
             continue
-        by_ident[(str(r["task"]), int(r["seed"]))].append(r)
-    rec_names: set[str] = set()
-    for r in rows:
-        name = _rec_name(r.get("rec_dir"))
-        if name:
-            rec_names.add(name)
-    orphans: dict[tuple[str, int], list[str]] = defaultdict(list)
-    if rec_root is not None and rec_root.is_dir():
-        for d in sorted(rec_root.iterdir()):
-            if not d.is_dir() or ".canary" in d.name or d.name in rec_names:
-                continue
-            base = d.name.split(".a")[0]
-            task, _, seed = base.rpartition("_")
-            if task and seed.isdigit():
-                orphans[(task, int(seed))].append(d.name)
-    out: list[dict[str, Any]] = []
-    want = set()
-    for ident in identities:
-        key = (ident["task"], ident["seed"])
-        want.add(key)
-        flags: list[str] = []
-        lst = by_ident.get(key, [])
-        finals = [r for r in lst if not r.get("infra") and not r.get("run_blocked")]
-        infra = [r for r in lst if r.get("infra")]
-        retried = False
-        for r in infra:
-            steps = r.get("steps")
-            if steps is None or int(steps) > 0:
-                retried = True
-                flags.append(f"infra_after_steps:a{r.get('attempt')}:{r.get('infra_reason')}:{steps}")
-        for name in orphans.get(key, []):
-            retried = True
-            flags.append(f"orphan_attempt:{name}")
-        conflict = None
-        if len(finals) > 1:
-            conflict = "multiple_final_rows"
-        elif finals and ident.get("source_episode") is not None and finals[0].get("source_episode") is not None \
-                and int(finals[0]["source_episode"]) != int(ident["source_episode"]):
-            conflict = "source_episode_mismatch"
-        elif finals and not tier_compatible(ident["tier"], (finals[0].get("identity") or {}).get("tier")):
-            conflict = "tier_mismatch"
-        kw: dict[str, Any] = {"retried_after_steps": retried, "conflict": conflict, "flags": flags}
-        if len(finals) == 1 and conflict is None:
-            fr = finals[0]
-            kw.update(status=fr.get("status"), exec_steps=fr.get("steps"),
-                      attempt_id=f"{_rec_name(fr.get('rec_dir')) or ''}#a{fr.get('attempt')}", started_at=None)
-        else:
-            kw["missing"] = not finals
-        out.append(_extract_row(ident, **kw))
-    extra = sorted(f"{t}_{s}" for t, s in set(by_ident) - want)
-    meta = {"extra": len(extra), "extra_keys": extra[:20], "duplicate": 0, "late": 0, "abandoned": 0,
-            "run_blocked": run_blocked, "rec_checked": rec_root is not None and rec_root.is_dir()}
-    return out, meta
+        if isinstance(doc, dict) and doc.get("schema") == LAUNCH_SCHEMA:
+            best = doc
+    return best
 
 
-def extract_summary(rows: list[dict[str, Any]], meta: dict[str, Any]) -> dict[str, int]:
-    return {"n": len(rows), "missing": sum(r["missing"] for r in rows),
-            "conflicts": sum(r["conflict"] is not None for r in rows),
-            "retried_after_steps": sum(bool(r["retried_after_steps"]) for r in rows),
-            "error_final": sum(r["status"] == "error" for r in rows),
-            "extra": meta.get("extra", 0), "run_blocked": meta.get("run_blocked", 0)}
+def _launch_facts(doc: dict[str, Any] | None) -> dict[str, Any]:
+    keys = ("gpu_model", "driver", "workers", "host", "slurm_job", "src_commit", "side", "tier", "rows")
+    return {k: (doc or {}).get(k) for k in keys}
 
 
-def eval_extract(fmt: str, root: str | Path, policy: str, identities: list[dict[str, Any]], *,
-                 allow_extra: bool = False) -> tuple[list[dict[str, Any]], dict[str, Any], bool, str]:
-    """``allow_extra``：运行根里有清单外的身份时不判 FAIL（并入 V8／V9 正式评估那一遍时用，正式评估覆盖全集）。"""
-    roots = root if isinstance(root, (list, tuple)) else [root]
-    if fmt == "v8":
-        rows, meta = extract_v8(roots, policy, identities)
-    elif fmt == "legacy":
-        if len(roots) != 1:
-            raise GateError("legacy 只接受一个 --root")
-        rows, meta = extract_legacy(roots[0], policy, identities)
-    else:
-        raise GateError(f"未知格式 {fmt}")
-    s = extract_summary(rows, meta)
-    ok = s["missing"] == 0 and s["conflicts"] == 0 and (s["extra"] == 0 or allow_extra) and s["run_blocked"] == 0
-    line = (f"EVAL_EXTRACT={'PASS' if ok else 'FAIL'} format={fmt} policy={policy} n={s['n']} missing={s['missing']} "
-            f"conflicts={s['conflicts']} retried_after_steps={s['retried_after_steps']} "
-            f"error_final={s['error_final']} extra={s['extra']} run_blocked={s['run_blocked']}")
-    full_meta = {"kind": "meta", "schema": EXTRACT_SCHEMA, "format": fmt, "policy": policy, "allow_extra": allow_extra,
-                 "root": str(Path(roots[0]).resolve()), "roots": [str(Path(r).resolve()) for r in roots],
-                 **meta, "summary": s}
-    return rows, full_meta, ok, line
+def _rel_hint(path: Path) -> str:
+    path = path.resolve()
+    try:
+        return str(path.relative_to(REPO))
+    except ValueError:
+        return str(path)
 
 
-def read_extract(path: str | Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    lines = read_jsonl(path)
-    meta = next((r for r in lines if r.get("kind") == "meta"), None)
-    if meta is None or meta.get("schema") != EXTRACT_SCHEMA:
-        raise GateError(f"{path}：不是 eval-extract 输出")
-    rows = [r for r in lines if r.get("kind") == "row"]
-    if len({r["id"] for r in rows}) != len(rows):
-        raise GateError(f"{path}：身份重复")
-    return meta, rows
-
-
-# ── 新跑核验 ────────────────────────────────────────────────────────────────
-
-
-#: 来源报告 ``out_root_state`` 的合法取值：S3 ``noise_run.py::check_out_root`` 只写这两个字符串之一（不存在／空目录），
-#: 非空在 preflight 即拒跑。其余任何取值（含缺字段、字典、大小写变体）一律判 RUN_FRESH=FAIL reason=out_root_state。
-OUT_ROOT_STATES = ("absent", "empty_dir")
-
-
-def _root_was_empty(state: Any) -> bool:
-    """来源报告 ``out_root_state`` 是否表明起跑前输出根不存在或为空：严格只认 ``OUT_ROOT_STATES``。"""
-    return isinstance(state, str) and state in OUT_ROOT_STATES
-
-
-def _related(a: Path, b: Path) -> bool:
-    a, b = a.resolve(), b.resolve()
-    return a == b or a in b.parents or b in a.parents
-
-
-def run_fresh(extract: tuple[dict, list[dict]], prov: dict[str, Any], expect: int,
-              others: list[tuple[dict, list[dict]]]) -> tuple[bool, str, list[str]]:
-    meta, rows = extract
-    s = meta.get("summary") or extract_summary(rows, meta)
-    reasons: list[str] = []
-    fmt = meta.get("format")
-    if len(rows) != expect:
-        reasons.append(f"rows={len(rows)}!={expect}")
-    for key in ("missing", "conflicts", "extra", "run_blocked"):
-        if s.get(key) and not (key == "extra" and meta.get("allow_extra")):
-            reasons.append(f"{key}={s[key]}")
-    retried = sum(bool(r["retried_after_steps"]) for r in rows)
-    if retried:
-        reasons.append(f"retried_after_steps={retried}")
-    roots = [Path(r) for r in (meta.get("roots") or [meta["root"]])]
-    if prov.get("out_root") and not all(_related(r, Path(prov["out_root"])) for r in roots):
-        reasons.append("root_not_under_provenance_out_root")
-    mine = {str(r.resolve()) for r in roots}
-    for om, _orows in others:
-        theirs = {str(Path(r).resolve()) for r in (om.get("roots") or [om["root"]])}
-        if mine & theirs:
-            reasons.append(f"root_reused:{sorted(mine & theirs)[0]}")
-    fresh = 0
-    if fmt == "v8":
-        t0 = prov.get("started_at")
-        if t0 is None:
-            reasons.append("provenance_no_started_at")
-        other_ids = {r.get("attempt_id") for _om, orows in others for r in orows if r.get("attempt_id")}
-        reused = 0
-        for r in rows:
-            ok = r.get("attempt_id") and r.get("started_at") is not None and t0 is not None \
-                and float(r["started_at"]) > float(t0)
-            if r.get("attempt_id") in other_ids:
-                reused += 1
-                ok = False
-            fresh += bool(ok)
-        if reused:
-            reasons.append(f"attempt_id_reused={reused}")
-        if not _root_was_empty(prov.get("out_root_state")):
-            reasons.append("out_root_state")
-        ledger_new = fresh == len(rows) and len(rows) > 0
-    elif fmt == "legacy":
-        empty = _root_was_empty(prov.get("out_root_state"))
-        if not empty:
-            reasons.append("out_root_state")
-        if meta.get("rec_checked") is not True:
-            reasons.append("rec_not_checked")
-        ledger_new = empty
-        fresh = sum(1 for r in rows if empty and not r["missing"] and r["conflict"] is None
-                    and not r["retried_after_steps"])
-    else:
-        reasons.append(f"unknown_format:{fmt}")
-        ledger_new = False
-    if fresh != expect:
-        reasons.append(f"fresh={fresh}/{expect}")
-    assets = "PASS" if prov.get("assets_sha") else "FAIL"
-    if assets != "PASS":
-        reasons.append("assets_sha_absent")
-    fp = str(prov.get("fingerprint") or "")[:12] or "-"
-    ok = not reasons
-    line = (f"RUN_FRESH={'PASS' if ok else 'FAIL'} pass={prov.get('pass')} fresh={fresh}/{expect} "
-            f"ledger_new={'yes' if ledger_new else 'no'} assets={assets} fingerprint={fp} "
-            f"retried_after_steps={retried}" + ("" if ok else f" reason={','.join(r.split(':')[0].split('=')[0] for r in reasons)}"))
-    return ok, line, reasons
-
-
-# ── 统计量（纯 Python 精确计算）────────────────────────────────────────────
-
-
-def _log_pmf(k: int, n: int, p: float) -> float:
-    if p <= 0.0:
-        return 0.0 if k == 0 else -math.inf
-    if p >= 1.0:
-        return 0.0 if k == n else -math.inf
-    return math.log(math.comb(n, k)) + k * math.log(p) + (n - k) * math.log1p(-p)
-
-
-def binom_cdf(k: int, n: int, p: float) -> float:
-    if k < 0:
-        return 0.0
-    if k >= n:
-        return 1.0
-    logs = [_log_pmf(i, n, p) for i in range(k + 1)]
-    top = max(logs)
-    if top == -math.inf:
-        return 0.0
-    return min(1.0, math.exp(top) * math.fsum(math.exp(v - top) for v in logs))
-
-
-def cp_upper(x: int, n: int, alpha: float = CP_ALPHA) -> float:
-    """单侧 (1-alpha) Clopper–Pearson 上界：满足 P(X ≤ x | n, p) = alpha 的 p；x=0 用闭式，x=n 为 1。"""
-    if n <= 0:
-        raise GateError("cp_upper：n 须 > 0")
-    if x >= n:
-        return 1.0
-    if x == 0:
-        return 1.0 - alpha ** (1.0 / n)
-    lo, hi = x / n, 1.0
-    for _ in range(200):
-        mid = (lo + hi) / 2
-        if binom_cdf(x, n, mid) > alpha:
-            lo = mid
-        else:
-            hi = mid
-    return (lo + hi) / 2
-
-
-def binom_quantile(q: float, n: int, p: float) -> int:
-    """Binomial(n, p) 的 q 分位数：最小的 k 使 CDF(k) ≥ q（相对容差 1e-12 吸收浮点误差）。"""
-    for k in range(n + 1):
-        if binom_cdf(k, n, p) >= q - 1e-12:
-            return k
-    return n
-
-
-def mcnemar_p(b: int, c: int) -> float:
-    """精确 McNemar（双侧二项检验，Bin(b+c, 0.5)），只报告。"""
-    m = b + c
-    if m == 0:
-        return 1.0
-    k = min(b, c)
-    tail = math.fsum(math.comb(m, i) for i in range(k + 1)) / (2 ** m)
-    return min(1.0, 2 * tail)
-
-
-def noise_line(xs: list[int], n: int) -> dict[str, Any]:
-    """计划第一部分 3.4：合并比例、单侧 95% CP 上界、99% 分位数线（不小于观测最大值）。"""
-    if not xs:
-        raise GateError("noise_line：没有基线对")
-    m = len(xs)
-    total = sum(xs)
-    p_hat = total / (m * n)
-    p_u = cp_upper(total, m * n)
-    q = binom_quantile(LINE_QUANTILE, n, p_u)
-    return {"x": list(xs), "m": m, "n": n, "p_hat": p_hat, "p_upper": p_u, "quantile_line": q,
-            "max_x": max(xs), "line": max(q, max(xs))}
-
-
-# ── 评估：两遍比较 ──────────────────────────────────────────────────────────
-
-
-def eval_pair_metrics(a_rows: list[dict[str, Any]], b_rows: list[dict[str, Any]]) -> dict[str, Any]:
-    """两遍按身份对齐：终态变化（含 fail↔timeout）、成功→失败、失败→成功、净损失、超时局数变化、步数不同局数与
-    逐局步数绝对差的均值／中位数、错误终局数、McNemar p（只报告）。"""
-    a = {r["id"]: r for r in a_rows}
-    b = {r["id"]: r for r in b_rows}
-    if set(a) != set(b):
-        raise GateError(f"两遍身份集合不同：只在前 {len(set(a) - set(b))}，只在后 {len(set(b) - set(a))}")
-    bad = {i for i in a if a[i]["missing"] or a[i]["conflict"] or b[i]["missing"] or b[i]["conflict"]}
-    status_changed = s2f = f2s = steps_diff = 0
-    absdiff: list[float] = []
-    for i in sorted(set(a) - bad):  # 缺失／冲突的身份不参与计数，单列 invalid（冻结与闸门见 invalid>0 即拒）
-        sa, sb = a[i]["status"], b[i]["status"]
-        status_changed += sa != sb
-        s2f += sa == "success" and sb != "success"
-        f2s += sa != "success" and sb == "success"
-        ea, eb = a[i]["exec_steps"], b[i]["exec_steps"]
-        if ea != eb:
-            steps_diff += 1
-        if ea is not None and eb is not None:
-            absdiff.append(abs(float(ea) - float(eb)))
-    t_a = sum(r["status"] == "timeout" for r in a.values())
-    t_b = sum(r["status"] == "timeout" for r in b.values())
-    err = sum(r["status"] == "error" for r in b.values())
-    return {"n": len(a), "status_changed": status_changed, "s2f": s2f, "f2s": f2s, "net": s2f - f2s,
-            "timeout_delta": abs(t_b - t_a), "timeout_a": t_a, "timeout_b": t_b, "steps_diff": steps_diff,
-            "steps_absdiff_mean": statistics.fmean(absdiff) if absdiff else 0.0,
-            "steps_absdiff_median": float(statistics.median(absdiff)) if absdiff else 0.0,
-            "error_final": err, "error_final_a": sum(r["status"] == "error" for r in a.values()),
-            "invalid": len(bad), "mcnemar_p": mcnemar_p(s2f, f2s),
-            "success_a": sum(r["status"] == "success" for r in a.values()),
-            "success_b": sum(r["status"] == "success" for r in b.values())}
-
-
-# ── 九层摘要 ────────────────────────────────────────────────────────────────
-
-
-def reset_summary(compare: dict[str, Any]) -> dict[str, Any]:
-    details = compare.get("details") or []
-    layers = list(compare.get("layer_equal", {}).keys())
-    name_only_ids = sorted({d["id"] for d in details
-                            if any(v.get("name_only") for v in d.get("layers", {}).values())})
-    real_diff_ids = sorted({d["id"] for d in details
-                            if any(not v.get("equal") and not v.get("name_only")
-                                   for v in d.get("layers", {}).values())})
-    return {"compared": int(compare.get("compared", len(details))), "layers": layers,
-            "layer_equal": dict(compare.get("layer_equal", {})), "name_only_ids": name_only_ids,
-            "name_only": sum((compare.get("name_only") or {}).values()), "real_diff_ids": real_diff_ids,
-            "missing": len(compare.get("missing_in_a") or []) + len(compare.get("missing_in_b") or [])}
-
-
-# ── 冻结与核验 ──────────────────────────────────────────────────────────────
-
-
-def _bind(path: str | Path, role: str) -> dict[str, Any]:
-    p = Path(path).resolve()
-    return {"path": str(p), "sha256": sha256_file(p), "lines": line_count(p), "role": role}
-
-
-def _group_name(g: dict[str, Any]) -> str:
-    if g["kind"] == "gen":
-        return f"gen:{g['set']}:w{int(g['workers'])}"
-    if g["kind"] == "eval":
-        return f"eval:{g['set']}:{g['policy']}"
-    if g["kind"] == "reset":
-        return f"reset:{g['set']}"
-    raise GateError(f"未知组类型 {g.get('kind')}")
-
-
-def _compute_group(g: dict[str, Any]) -> dict[str, Any]:
-    """按组定义从输入重算原始个数、线、带（freeze 与 verify 共用）。"""
-    kind = g["kind"]
-    out: dict[str, Any] = {"name": _group_name(g), "kind": kind, "set": g["set"]}
-    if kind == "gen":
-        out["workers"] = int(g["workers"])
-        per_pair = []
-        ids = None
-        for path in g["pairs"]:
-            _meta, rows = read_gen_pairs(path)
-            c = gen_counts(rows)
-            if c["structural"] or c["unknown"]:
-                raise GateError(f"{path}：基线里出现 structural={c['structural']} unknown={c['unknown']}，"
-                                f"这两类必须为 0，不能当噪声冻结（交用户裁决）")
-            cur = sorted(r["id"] for r in rows)
-            if ids is not None and cur != ids:
-                raise GateError(f"{path}：与同组其他对的身份集合不同")
-            ids = cur
-            per_pair.append(c)
-        n = per_pair[0]["n"]
-        out.update(n=n, pairs=per_pair,
-                   lines={m: noise_line([c[m] for c in per_pair], n) for m in GEN_METRICS})
-        out["zero_noise"] = all(c["diff"] == 0 for c in per_pair)
-        out["inputs"] = [_bind(p, "gen_pair") for p in g["pairs"]]
-    elif kind == "eval":
-        out["policy"] = g["policy"]
-        per_pair = []
-        files: list[str] = []
-        for pair in g["pairs"]:
-            pa, pb = pair
-            _ma, ra = read_extract(pa)
-            _mb, rb = read_extract(pb)
-            m = eval_pair_metrics(ra, rb)
-            if m["invalid"]:
-                raise GateError(f"{pa}:{pb}：有 {m['invalid']} 个身份缺失或冲突，不能冻结")
-            per_pair.append(m)
-            for p in (pa, pb):
-                if str(Path(p).resolve()) not in files:
-                    files.append(str(Path(p).resolve()))
-        ref = g.get("reference")
-        if ref is None or str(Path(ref).resolve()) not in files:
-            raise GateError(f"{out['name']}：reference 须给出且是 pairs 里的某一遍")
-        n = per_pair[0]["n"]
-        out.update(n=n, pairs=per_pair, reference=str(Path(ref).resolve()),
-                   lines={m: noise_line([p[m] for p in per_pair], n) for m in EVAL_METRICS},
-                   bands={b: {"max_abs": max(abs(p[b]) for p in per_pair),
-                              "band": max(abs(p[b]) for p in per_pair) * BAND_FACTOR} for b in EVAL_BANDS},
-                   error_final_max=max(p["error_final"] for p in per_pair))
-        out["zero_noise"] = all(p["status_changed"] == 0 and p["steps_diff"] == 0 for p in per_pair)
-        out["inputs"] = [_bind(p, "eval_extract") for p in files]
-    elif kind == "reset":
-        sums = []
-        for path in g["compare"]:
-            sums.append(reset_summary(json.loads(Path(path).read_text(encoding="utf-8"))))
-        out.update(pairs=sums, n=sums[0]["compared"],
-                   name_only_ids=sorted({i for s in sums for i in s["name_only_ids"]}),
-                   real_diff_ids=sorted({i for s in sums for i in s["real_diff_ids"]}))
-        out["inputs"] = [_bind(p, "reset_compare") for p in g["compare"]]
-        if g.get("reference_rows"):
-            out["inputs"].append(_bind(g["reference_rows"], "reset_reference_rows"))
+def ref_index(obj: dict[str, Any], set_name: str | None = None) -> dict[tuple[str, int], dict[str, Any]]:
+    """参照文件的逐局索引 ``(task, seed) -> 局条目``；不给 ``set_name`` 时合并全部集合（Mover 用）。"""
+    out: dict[tuple[str, int], dict[str, Any]] = {}
+    names = [set_name] if set_name else sorted(obj["sets"])
+    for name in names:
+        for entry in obj["sets"][name]["episodes"]:
+            key = (entry["task"], int(entry["seed"]))
+            if key in out:
+                raise GateError(f"参照里身份重复：{key}")
+            out[key] = dict(entry, set=name)
     return out
 
 
-def _spec_of(group: dict[str, Any]) -> dict[str, Any]:
-    """从冻结组还原它的输入定义（verify 用）。"""
-    kind = group["kind"]
-    if kind == "gen":
-        return {"kind": "gen", "set": group["set"], "workers": group["workers"],
-                "pairs": [i["path"] for i in group["inputs"]]}
-    if kind == "eval":
-        return {"kind": "eval", "set": group["set"], "policy": group["policy"], "pairs": group["pair_paths"],
-                "reference": group["reference"]}
-    spec = {"kind": "reset", "set": group["set"],
-            "compare": [i["path"] for i in group["inputs"] if i["role"] == "reset_compare"]}
-    ref = [i["path"] for i in group["inputs"] if i["role"] == "reset_reference_rows"]
-    if ref:
-        spec["reference_rows"] = ref[0]
-    return spec
-
-
-def freeze(spec: dict[str, Any]) -> dict[str, Any]:
-    groups = []
-    names = set()
-    for g in spec["groups"]:
-        frozen = _compute_group(g)
-        if g["kind"] == "eval":
-            frozen["pair_paths"] = [[str(Path(a).resolve()), str(Path(b).resolve())] for a, b in g["pairs"]]
-        if frozen["name"] in names:
-            raise GateError(f"组重复：{frozen['name']}")
-        names.add(frozen["name"])
-        groups.append(frozen)
-    obj = {"schema": BASELINE_SCHEMA, "conditions": spec.get("conditions", {}), "formula": FORMULA,
-           "constants": {"cp_alpha": CP_ALPHA, "line_quantile": LINE_QUANTILE, "band_factor": BAND_FACTOR,
-                         "net_loss_max": NET_LOSS_MAX},
-           "groups": groups}
-    obj["sha256"] = payload_sha256(obj)
-    return obj
-
-
-def _num_eq(a: Any, b: Any) -> bool:
-    if isinstance(a, float) or isinstance(b, float):
-        try:
-            return math.isclose(float(a), float(b), rel_tol=1e-12, abs_tol=1e-15)
-        except (TypeError, ValueError):
-            return False
-    if isinstance(a, dict) and isinstance(b, dict):
-        return set(a) == set(b) and all(_num_eq(a[k], b[k]) for k in a)
-    if isinstance(a, list) and isinstance(b, list):
-        return len(a) == len(b) and all(_num_eq(x, y) for x, y in zip(a, b))
-    return a == b
-
-
-def verify(obj: dict[str, Any]) -> tuple[bool, str, list[str]]:
-    """重算顶层 sha256、各线公式、各输入 sha256 与由输入重算的原始个数。"""
-    reasons: list[str] = []
-    if obj.get("schema") != BASELINE_SCHEMA:
-        reasons.append("schema")
+def load_ref(path: str | Path, *, allow_partial: bool = False) -> dict[str, Any]:
+    """读参照文件：schema、顶层 sha256（剔除自身后 canonical JSON）、每局类别合法；partial 参照默认拒收。"""
+    try:
+        obj = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise GateError(f"{path}：参照文件读不了或不是 JSON：{exc}") from exc
+    if not isinstance(obj, dict) or obj.get("schema") != REF_SCHEMA:
+        raise GateError(f"{path}：schema 应为 {REF_SCHEMA}")
     if obj.get("sha256") != payload_sha256(obj):
-        reasons.append("top_sha256_mismatch")
-    consts = obj.get("constants", {})
-    if consts.get("net_loss_max") != NET_LOSS_MAX or consts.get("band_factor") != BAND_FACTOR \
-            or consts.get("cp_alpha") != CP_ALPHA or consts.get("line_quantile") != LINE_QUANTILE:
-        reasons.append("constants_changed")
-    inputs = 0
-    for g in obj.get("groups", []):
-        name = g.get("name")
-        for metric, ln in (g.get("lines") or {}).items():
-            again = noise_line(ln["x"], ln["n"])
-            if not _num_eq(again, ln):
-                reasons.append(f"{name}:{metric}:line_formula")
-        for band, bd in (g.get("bands") or {}).items():
-            if not _num_eq(bd["band"], bd["max_abs"] * BAND_FACTOR):
-                reasons.append(f"{name}:{band}:band_formula")
-        for item in g.get("inputs", []):
-            inputs += 1
-            p = Path(item["path"])
-            if not p.is_file():
-                reasons.append(f"{name}:input_missing:{p}")
-            elif sha256_file(p) != item["sha256"]:
-                reasons.append(f"{name}:input_sha_mismatch:{p}")
-        if any(r.startswith(f"{name}:input_") for r in reasons):
-            continue
-        try:
-            again = _compute_group(_spec_of(g))
-        except GateError as exc:
-            reasons.append(f"{name}:recompute_error:{exc}")
-            continue
-        for key in ("pairs", "lines", "bands", "n", "zero_noise", "name_only_ids", "real_diff_ids"):
-            if key in g or key in again:
-                if not _num_eq(g.get(key), again.get(key)):
-                    reasons.append(f"{name}:{key}_differs_from_inputs")
-    ok = not reasons
-    fsha = str(obj.get("sha256", ""))[:12]
-    line = (f"NOISE_BASELINE={'PASS' if ok else 'FAIL'} groups={len(obj.get('groups', []))} "
-            f"inputs_bound={inputs} file_sha={fsha}")
-    return ok, line, reasons
-
-
-def load_baseline(path: str | Path) -> dict[str, Any]:
-    obj = json.loads(Path(path).read_text(encoding="utf-8"))
-    ok, line, reasons = verify(obj)
-    print(line, flush=True)
-    if not ok:
-        raise GateError(f"冻结文件核验失败，拒跑：{reasons[:10]}")
+        raise GateError(f"{path}：顶层 sha256 与内容不符（文件 {obj.get('sha256')}，重算 {payload_sha256(obj)}）")
+    if obj.get("partial") and not allow_partial:
+        raise GateError(f"{path}：partial 参照（build-ref --limit 冒烟产物）不得用于判定")
+    for name, block in (obj.get("sets") or {}).items():
+        for entry in block.get("episodes", []):
+            if entry.get("class") not in REF_CLASSES:
+                raise GateError(f"{path}：{name} {entry.get('id')} 类别非法 {entry.get('class')}")
+    ref_index(obj)  # 身份唯一
     return obj
 
 
-def find_group(obj: dict[str, Any], name: str) -> dict[str, Any]:
-    for g in obj["groups"]:
-        if g["name"] == name:
-            return g
-    raise GateError(f"冻结文件里没有组 {name}")
+def expect_verdict(entry: dict[str, Any] | None, ok: bool, sha: Any) -> str:
+    """一局新跑结果对参照期望的判定（``Mover`` 与 ``check`` 共用同一函数）：
+
+    - ``stable``：成功且 sha ∈ 基线两遍 sha → ``match``；
+    - ``known_fail``：失败且失败占位 h5 的 sha ∈ 基线 sha → ``match``；
+    - ``jitter``：不参与判定 → ``jitter_info``；
+    - 其余（含参照里没有这一局、稳定局生成失败）→ ``flip``。"""
+    if entry is None:
+        return "flip"
+    cls = entry.get("class")
+    if cls == "jitter":
+        return "jitter_info"
+    shas = set(entry.get("shas") or [])
+    if cls == "stable" and ok and sha in shas:
+        return "match"
+    if cls == "known_fail" and not ok and sha in shas:
+        return "match"
+    return "flip"
 
 
-# ── 闸门 ────────────────────────────────────────────────────────────────────
+# ── build-ref ──
 
 
-def gate_reset(group: dict[str, Any], compare: dict[str, Any]) -> tuple[bool, str, list[str]]:
+def _rehash_run(set_name: str, root: Path, ids: list[dict[str, Any]], *, full: bool, rehash: bool,
+                reasons: list[str]) -> dict[tuple[str, int], dict[str, Any]]:
+    """核一遍：每个身份恰一行、档位相容、h5 在且重算 sha 与 identities 记录相同；返回 (task, seed) -> {ok, sha, path}。"""
+    lines, dup = read_run(root)
+    for key in dup:
+        reasons.append(f"{set_name}/{root.name}：身份重复 {key}")
+    want = {(i["task"], i["seed"]) for i in ids}
+    if full:
+        extra = sorted(set(lines) - want)
+        if extra:
+            reasons.append(f"{set_name}/{root.name}：identities.jsonl 有清单外身份 {len(extra)} 个，如 {extra[:3]}")
+    out: dict[tuple[str, int], dict[str, Any]] = {}
+    for ident in ids:
+        key = (ident["task"], ident["seed"])
+        line = lines.get(key)
+        if line is None:
+            reasons.append(f"{set_name}/{root.name}：缺身份 {ident['id']}")
+            continue
+        if not tier_compatible(ident["tier"], line.get("tier")):
+            reasons.append(f"{set_name}/{root.name}：{ident['id']} 档位不符 {line.get('tier')}")
+        rel = line.get("path")
+        sha = None
+        if rel:
+            path = root / rel
+            if not path.is_file():
+                reasons.append(f"{set_name}/{root.name}：{ident['id']} 缺 h5 {rel}")
+            else:
+                sha = sha256_file(path) if rehash else line.get("sha256")
+                if line.get("sha256") and line["sha256"] != sha:
+                    reasons.append(f"{set_name}/{root.name}：{ident['id']} 重算 sha {_short(sha)} 与记录 "
+                                   f"{_short(line['sha256'])} 不符")
+        elif _line_ok(line):
+            reasons.append(f"{set_name}/{root.name}：{ident['id']} 成功却无 h5")
+        out[key] = {"ok": _line_ok(line), "sha": sha, "path": rel}
+    return out
+
+
+def _classify_ref(a: dict[str, Any], b: dict[str, Any]) -> str:
+    if a["ok"] and b["ok"] and a["sha"] and a["sha"] == b["sha"]:
+        return "stable"
+    if not a["ok"] and not b["ok"] and a["sha"] and a["sha"] == b["sha"]:
+        return "known_fail"
+    return "jitter"
+
+
+def _cross_check_records(records: Path, sets: dict[str, dict[str, Any]], reasons: list[str]
+                         ) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    """交叉核对 git 里的 ``gen-compare`` 比对记录：记录里有 ``ref_sha256``／``new_sha256`` 的必须与重算值相同；
+    两侧都是同一集合的基线两遍时，``byte_equal`` 必须两遍 sha 相同（反向亦然）；有 a-b 记录覆盖每一局。
+    返回 (记录文件清单, 每集合核对行数)。"""
+    root_map: dict[str, tuple[str, int]] = {}
+    for name, block in sets.items():
+        for k, root in enumerate(block["_roots"]):
+            root_map[str(root.resolve())] = (name, k)
+    files = sorted(records.glob("*.jsonl")) if records.is_dir() else []
+    if not files:
+        reasons.append(f"比对记录目录无 jsonl：{records}")
+    listing: list[dict[str, Any]] = []
+    checked: Counter = Counter()
+    ab_cover: dict[str, set] = {name: set() for name in sets}
+    for path in files:
+        meta, rows = read_gen_pairs(path)
+        sides = {side: root_map.get(str(Path(meta[side]).resolve())) for side in ("ref", "new")}
+        listing.append({"file": path.name, "sha256": sha256_file(path), "rows": len(rows),
+                        "ref": Path(meta["ref"]).name, "new": Path(meta["new"]).name})
+        mapped = {side: m for side, m in sides.items() if m is not None}
+        if not mapped:
+            continue
+        for row in rows:
+            for side, (name, k) in mapped.items():
+                ep = sets[name]["_eps"].get((row["task"], int(row["seed"])))
+                if ep is None:
+                    continue  # 不在本集合（或 --limit 之外）
+                checked[name] += 1
+                run = ep["_runs"][k]
+                rec_sha = row.get(f"{side}_sha256")
+                if rec_sha is not None and rec_sha != run["sha"]:
+                    reasons.append(f"记录 {path.name} {row['id']} {side}_sha256={_short(rec_sha)} 与重算 "
+                                   f"{_short(run['sha'])} 不符")
+                if row["class"] in ("byte_equal", "diverge", "structural", "gen_fail"):
+                    rec_ok = not (row["class"] == "gen_fail" and row.get("fail_side") in (side, "both"))
+                    if rec_ok != run["ok"]:
+                        reasons.append(f"记录 {path.name} {row['id']} {side} 侧成败 {rec_ok} 与 identities {run['ok']} 不符")
+            if len(mapped) == 2 and mapped["ref"][0] == mapped["new"][0] and mapped["ref"][1] != mapped["new"][1]:
+                name = mapped["ref"][0]
+                ep = sets[name]["_eps"].get((row["task"], int(row["seed"])))
+                if ep is None:
+                    continue
+                ab_cover[name].add((row["task"], int(row["seed"])))
+                same = ep["_runs"][0]["sha"] == ep["_runs"][1]["sha"] and ep["_runs"][0]["sha"] is not None
+                both_ok = ep["_runs"][0]["ok"] and ep["_runs"][1]["ok"]
+                if row["class"] == "byte_equal" and not same:
+                    reasons.append(f"记录 {path.name} {row['id']} 判 byte_equal，但两遍重算 sha 不同")
+                if same and both_ok and row["class"] != "byte_equal":
+                    reasons.append(f"记录 {path.name} {row['id']} 判 {row['class']}，但两遍重算 sha 相同")
+    for name, block in sets.items():
+        lost = sorted(set(block["_eps"]) - ab_cover[name])
+        if lost:
+            reasons.append(f"{name}：{len(lost)} 局没有 a-b 两遍比对记录覆盖，如 {lost[:3]}")
+    return listing, dict(checked)
+
+
+def build_ref(runs: dict[str, tuple[Path, Path]], identities: dict[str, Path], records: Path, *,
+              limit: int | None = None, rehash: bool = True) -> tuple[dict[str, Any] | None, bool, str, list[str]]:
+    """生成参照对象。返回 (对象或 None, 是否通过, 判定行, 原因)。"""
     reasons: list[str] = []
-    s = reset_summary(compare)
-    if s["missing"]:
-        reasons.append(f"missing={s['missing']}")
-    if s["compared"] != group["n"]:
-        reasons.append(f"compared={s['compared']}!={group['n']}")
-    allowed = set(group.get("name_only_ids", []))
-    new_name = [i for i in s["name_only_ids"] if i not in allowed]
-    if new_name:
-        reasons.append(f"new_name_only={len(new_name)}")
-    if s["real_diff_ids"]:
-        reasons.append(f"layer_diff={len(s['real_diff_ids'])}")
-    ref = [i for i in group.get("inputs", []) if i["role"] == "reset_reference_rows"]
-    ref_state = "unbound"
-    if ref:
-        shas = set()
-        for side in ("a", "b"):
-            if compare.get(side):
-                rows = Path(compare[side]) / "rows.jsonl"
-                if rows.is_file():
-                    shas.add(sha256_file(rows))
-        ref_state = "bound" if ref[0]["sha256"] in shas else "mismatch"
-        if ref_state == "mismatch":
-            reasons.append("reference_rows_not_used")
+    if set(runs) != set(identities):
+        raise GateError(f"--runs 集合 {sorted(runs)} 与 --identities-* 集合 {sorted(identities)} 不一致")
+    sets: dict[str, dict[str, Any]] = {}
+    for name in sorted(runs):
+        if name not in REF_SETS:
+            raise GateError(f"未知集合 {name}（只认 {REF_SETS}）")
+        roots = tuple(Path(r) for r in runs[name])
+        if len(roots) != 2 or roots[0].resolve() == roots[1].resolve():
+            raise GateError(f"{name}：--runs 须给两个不同的遍根")
+        ids = load_identities(identities[name])
+        full = limit is None
+        if not full:
+            ids = ids[:limit]
+        per_run = [_rehash_run(name, root, ids, full=full, rehash=rehash, reasons=reasons) for root in roots]
+        eps: dict[tuple[str, int], dict[str, Any]] = {}
+        for ident in ids:
+            key = (ident["task"], ident["seed"])
+            if key not in per_run[0] or key not in per_run[1]:
+                continue
+            a, b = per_run[0][key], per_run[1][key]
+            shas = list(dict.fromkeys(s for s in (a["sha"], b["sha"]) if s))
+            eps[key] = {"id": ident["id"], "task": ident["task"], "tier": ident["tier"], "seed": ident["seed"],
+                        "class": _classify_ref(a, b), "shas": shas, "ok_a": a["ok"], "ok_b": b["ok"],
+                        "h5_a": f"{roots[0].name}/{a['path']}" if a["path"] else None,
+                        "h5_b": f"{roots[1].name}/{b['path']}" if b["path"] else None,
+                        "_runs": (a, b)}
+        launches = [_launch_facts(run_launch(r)) for r in roots]
+        sets[name] = {"_roots": roots, "_eps": eps, "_ids": ids, "_launches": launches,
+                      "_identities": Path(identities[name])}
+    listing, checked = _cross_check_records(records, sets, reasons)
+    counts_txt = []
+    obj: dict[str, Any] = {"schema": REF_SCHEMA, "anchor": REF_ANCHOR, "hf_bucket": REF_HF_BUCKET,
+                           "partial": limit is not None or not rehash, "limit": limit, "rehash": rehash, "sets": {},
+                           "records": {"dir": _rel_hint(records), "files": listing},
+                           "jitter_observed": [],
+                           "rule": ("stable：两遍都成功且 h5 sha 相同；known_fail：两遍都失败且失败占位 h5 sha 相同；"
+                                    "jitter：其余。新跑期望见 noise_gate.expect_verdict")}
+    for name, block in sets.items():
+        episodes = [{k: v for k, v in block["_eps"][(i["task"], i["seed"])].items() if not k.startswith("_")}
+                    for i in block["_ids"] if (i["task"], i["seed"]) in block["_eps"]]
+        counts = {c: sum(e["class"] == c for e in episodes) for c in REF_CLASSES}
+        counts_txt.append(f"{name}=" + ",".join(f"{c}:{counts[c]}" for c in REF_CLASSES))
+        obj["sets"][name] = {
+            "runs": [{"name": r.name, "root": _rel_hint(r), **lf} for r, lf in zip(block["_roots"], block["_launches"])],
+            "identities": {"file": _rel_hint(block["_identities"]), "sha256": sha256_file(block["_identities"])},
+            "n": len(episodes), "counts": counts, "records_checked": checked.get(name, 0), "episodes": episodes}
+    obj["sha256"] = payload_sha256(obj)
     ok = not reasons
-    eq = ",".join(f"{k}:{v}" for k, v in s["layer_equal"].items())
-    line = (f"RESET_GATE={'PASS' if ok else 'FAIL'} set={group['set']} compared={s['compared']} layers_equal={eq} "
-            f"name_only={len(s['name_only_ids'])} new_name_only={len(new_name)} layer_diff={len(s['real_diff_ids'])} "
-            f"reference={ref_state}")
-    return ok, line, reasons
+    line = (f"NOISE_REF={'PASS' if ok else 'FAIL'} sets={len(sets)} " + " ".join(counts_txt)
+            + f" records={len(listing)} records_checked={sum(checked.values())} mismatches={len(reasons)}"
+            + f" partial={int(obj['partial'])} sha={obj['sha256'][:12]}")
+    return (obj if ok else None), ok, line, reasons
 
 
-def gate_gen(group: dict[str, Any], rows: list[dict[str, Any]]) -> tuple[bool, str, list[str], dict]:
-    c = gen_counts(rows)
+# ── check ──
+
+
+def _precondition(root: Path, label: str, invalid: list[str]) -> dict[str, Any]:
+    facts = _launch_facts(run_launch(root))
+    if not run_launch(root):
+        invalid.append(f"{label}：缺 hard_parity 启动记录 launch-*.json")
+        return facts
+    if facts["workers"] != PRECOND_WORKERS:
+        invalid.append(f"{label}：workers={facts['workers']}（须为 {PRECOND_WORKERS}）")
+    if PRECOND_GPU not in str(facts["gpu_model"]):
+        invalid.append(f"{label}：GPU={facts['gpu_model']}（须为 {PRECOND_GPU}）")
+    return facts
+
+
+def _observe(line: dict[str, Any] | None, dup: bool) -> dict[str, Any]:
+    """把一行 identities 归成观察值 {ok, sha, unknown}；unknown 非空即「原因不明」。"""
+    if line is None:
+        return {"ok": None, "sha": None, "unknown": "missing", "error_type": None, "verdict_recorded": None}
+    obs = {"ok": _line_ok(line), "sha": line.get("sha256"), "unknown": None, "error_type": line.get("error_type"),
+           "verdict_recorded": line.get("verdict"), "path": line.get("path")}
+    if dup:
+        obs["unknown"] = "duplicate"
+    elif line.get("success") and line.get("h5_error"):
+        obs["unknown"] = f"open_error:{str(line['h5_error'])[:80]}"
+    elif line.get("success") and not line.get("sha256"):
+        obs["unknown"] = "missing_file"
+    elif not line.get("success") and line.get("error_type") not in SOLVER_FAIL_TYPES:
+        obs["unknown"] = f"infra:{line.get('error_type')}"
+    return obs
+
+
+def _same(x: dict[str, Any] | None, y: dict[str, Any] | None) -> bool | None:
+    if not x or not y or x.get("ok") is None or y.get("ok") is None:
+        return None
+    return x["ok"] == y["ok"] and x["sha"] == y["sha"]
+
+
+def _jitter_note(entry: dict[str, Any], obs: dict[str, Any]) -> str:
+    if not obs["ok"]:
+        return "fail"
+    shas = entry.get("shas") or []
+    if entry.get("ok_a") and shas and obs["sha"] == shas[0]:
+        return "same_as_a"
+    if entry.get("ok_b") and obs["sha"] in shas:
+        return "same_as_b"
+    return "other_trajectory"
+
+
+def _subgoal_at(h5: Path, frame: int | None) -> str | None:
+    if frame is None:
+        return None
+    try:
+        import h5py
+
+        with h5py.File(h5, "r") as f:
+            ep = f[sorted(f.keys())[0]]
+            g = ep.get(f"timestep_{frame}")
+            if g is None or "info/simple_subgoal" not in g:
+                return None
+            v = g["info/simple_subgoal"][()]
+            return v.decode("utf-8", "replace") if isinstance(v, bytes) else str(v)
+    except Exception:  # noqa: BLE001 只作报告
+        return None
+
+
+def _local_detail(entry: dict[str, Any], obs: dict[str, Any], new_root: Path, local_ref_root: Path
+                  ) -> dict[str, Any]:
+    """本机细分一局翻转：新跑失败 → gen_fail；新跑 h5 已回传 → compare_h5 对照基线 a 遍（a 遍失败时取 b 遍）。"""
+    if not obs["ok"]:
+        return {"sub": "gen_fail", "sub_reason": obs.get("error_type")}
+    rel = obs.get("path")
+    new_h5 = new_root / rel if rel else None
+    if new_h5 is None or not new_h5.is_file():
+        return {"sub": "flip_pending", "sub_reason": "new_h5_not_local"}
+    if sha256_file(new_h5) != obs["sha"]:
+        return {"sub": "unknown", "sub_reason": "sha_recorded_mismatch_new"}
+    ref_rel = entry.get("h5_a") if entry.get("ok_a") else (entry.get("h5_b") if entry.get("ok_b") else None)
+    if ref_rel is None:
+        return {"sub": "diverge", "sub_reason": "ref_known_fail_now_ok"}
+    ref_h5 = local_ref_root / ref_rel
+    if not ref_h5.is_file():
+        return {"sub": "flip_pending", "sub_reason": "ref_h5_not_local"}
+    got = compare_h5(ref_h5, new_h5)
+    first = got.get("first_divergence")
+    return {"sub": got["verdict"], "sub_reason": got.get("reason"), "first_divergence": first,
+            "subgoal": _subgoal_at(ref_h5, first), "frames_ref": got.get("frames_ref"),
+            "frames_new": got.get("frames_new")}
+
+
+def pick_fillers(episodes: list[dict[str, Any]], rows: dict[tuple[str, int], dict[str, Any]],
+                 flips: list[tuple[str, int]], need: int) -> list[tuple[str, int]]:
+    """陪跑局（细则 3.4）：同集合里首跑已与基线逐字节相同的稳定局，按档位与翻转局档位的距离（同档优先、再相邻档）、
+    再按身份顺序挑 ``need`` 个。"""
+    if need <= 0:
+        return []
+    tiers = list(dict.fromkeys(e["tier"] for e in episodes))
+    flip_tiers = {tiers.index(rows[k]["tier"]) for k in flips}
+    cands = []
+    for order, e in enumerate(episodes):
+        key = (e["task"], int(e["seed"]))
+        r = rows.get(key)
+        if key in flips or r is None or e["class"] != "stable" or r.get("verdict") != "match":
+            continue
+        dist = min(abs(tiers.index(e["tier"]) - t) for t in flip_tiers) if flip_tiers else 0
+        cands.append((dist, order, key))
+    return [key for _d, _o, key in sorted(cands)[:need]]
+
+
+def _final_class(entry: dict[str, Any], first: dict[str, Any], new2: dict[str, Any], old: dict[str, Any]) -> str:
+    """翻转局四格定性（细则 3.2 表）。"""
+    if expect_verdict(entry, bool(new2["ok"]), new2["sha"]) == "match":
+        return "noise"
+    if _same(new2, first):
+        return "regression" if expect_verdict(entry, bool(old["ok"]), old["sha"]) == "match" else "env_changed"
+    return "unstable"
+
+
+def regress_check(ref: dict[str, Any], set_name: str, new_root: str | Path, *,
+                  rerun_new: str | Path | None = None, rerun_old: str | Path | None = None,
+                  local_ref_root: str | Path | None = None) -> dict[str, Any]:
+    """返回 {verdict, line, rows, rerun, counts, invalid, reasons, meta}。"""
+    if set_name not in ref["sets"]:
+        raise GateError(f"参照里没有集合 {set_name}")
+    if (rerun_new is None) != (rerun_old is None):
+        raise GateError("--rerun-new 与 --rerun-old 须同时给")
+    new_root = Path(new_root)
+    block = ref["sets"][set_name]
+    episodes = block["episodes"]
+    index = ref_index(ref, set_name)
+    invalid: list[str] = []
     reasons: list[str] = []
-    if c["n"] != group["n"]:
-        reasons.append(f"n={c['n']}!={group['n']}")
-    if c["structural"]:
-        reasons.append(f"structural={c['structural']}")
-    if c["unknown"]:
-        reasons.append(f"unknown={c['unknown']}")
-    line_diff, line_fail = group["lines"]["diff"]["line"], group["lines"]["gen_fail"]["line"]
-    if c["diff"] > line_diff:
-        reasons.append(f"diff={c['diff']}>{line_diff}")
-    if c["gen_fail"] > line_fail:
-        reasons.append(f"gen_fail={c['gen_fail']}>{line_fail}")
-    per_task: dict[str, int] = Counter(r["task"] for r in rows if r["class"] != "byte_equal")
-    ok = not reasons
-    line = (f"GEN_NOISE_GATE={'PASS' if ok else 'FAIL'} set={group['set']} workers={group['workers']} n={c['n']} "
-            f"byte_equal={c['byte_equal']} diverge={c['diverge']} gen_fail={c['gen_fail']} "
-            f"structural={c['structural']} unknown={c['unknown']} diff={c['diff']}/{line_diff} "
-            f"gen_fail_line={line_fail}")
-    return ok, line, reasons, dict(per_task)
-
-
-def gate_eval(group: dict[str, Any], ref_rows: list[dict[str, Any]], new_rows: list[dict[str, Any]]
-              ) -> tuple[bool, str, list[str], dict]:
-    reasons: list[str] = []
-    m = eval_pair_metrics(ref_rows, new_rows)
-    if m["n"] != group["n"]:
-        reasons.append(f"n={m['n']}!={group['n']}")
-    if m["invalid"]:
-        reasons.append(f"invalid={m['invalid']}")
-    retried = sum(bool(r["retried_after_steps"]) for r in new_rows)
-    if retried:
-        reasons.append(f"retried_after_steps={retried}")
-    if m["error_final"]:
-        reasons.append(f"error_final={m['error_final']}")
-    if group["zero_noise"]:
-        mode = "zero"
-        if m["status_changed"]:
-            reasons.append(f"status_changed={m['status_changed']}>0")
-        if m["steps_diff"]:
-            reasons.append(f"steps_diff={m['steps_diff']}>0")
+    facts = _precondition(new_root, "首跑", invalid)
+    drivers = {r.get("driver") for r in block.get("runs", []) if r.get("driver")}
+    driver_note = None
+    if facts.get("driver") and drivers and facts["driver"] not in drivers:
+        driver_note = f"驱动 {facts['driver']} 与基线 {sorted(drivers)} 不同（只报告）"
+    lines, dup = read_run(new_root)
+    dupset = set(dup)
+    extra = sorted(set(lines) - set(index))
+    if extra:
+        invalid.append(f"首跑有参照外身份 {len(extra)} 个，如 {extra[:3]}")
+    missing = [k for k in index if k not in lines]
+    if missing:
+        invalid.append(f"首跑缺 {len(missing)} 局结果，如 {missing[:3]}")
+    rows: dict[tuple[str, int], dict[str, Any]] = {}
+    lref = Path(local_ref_root) if local_ref_root else None
+    for e in episodes:
+        key = (e["task"], int(e["seed"]))
+        obs = _observe(lines.get(key), key in dupset)
+        row: dict[str, Any] = {"kind": "episode", "id": e["id"], "task": e["task"], "tier": e["tier"],
+                               "seed": e["seed"], "ref_class": e["class"], "first": obs, "verdict": None,
+                               "category": None, "filler": False}
+        if obs["unknown"] == "missing":
+            row["category"] = "missing"
+        elif obs["unknown"]:
+            row["category"] = "unknown"
+            row["reason"] = obs["unknown"]
+        else:
+            verdict = expect_verdict(e, bool(obs["ok"]), obs["sha"])
+            row["verdict"] = verdict
+            if obs["verdict_recorded"] is not None and obs["verdict_recorded"] != verdict:
+                row["category"] = "unknown"
+                row["reason"] = f"verdict_recorded={obs['verdict_recorded']}!={verdict}"
+            elif verdict == "match":
+                row["category"] = "match"
+            elif verdict == "jitter_info":
+                row["category"] = "jitter_info"
+                row["jitter_note"] = _jitter_note(e, obs)
+            else:
+                row["category"] = "flip_pending"
+                if lref is not None:
+                    detail = _local_detail(e, obs, new_root, lref)
+                    row.update({k: v for k, v in detail.items() if k != "sub"})
+                    row["category"] = detail["sub"]
+        rows[key] = row
+    flips = [k for k, r in rows.items() if r["category"] in ("flip_pending", "diverge", "gen_fail")]
+    n_struct = sum(r["category"] == "structural" for r in rows.values())
+    n_unknown = sum(r["category"] == "unknown" for r in rows.values())
+    for k, r in rows.items():
+        if r["category"] in ("structural", "unknown"):
+            reasons.append(f"{r['id']} {r['category']} {r.get('reason') or r.get('sub_reason')}")
+    fillers = pick_fillers(episodes, rows, flips, RERUN_MIN - len(flips)) if 0 < len(flips) <= FLIP_RERUN_MAX else []
+    for key in fillers:
+        rows[key]["filler"] = True
+    rerun = [{"task": rows[k]["task"], "tier": rows[k]["tier"], "seed": rows[k]["seed"],
+              "filler": rows[k]["filler"], "ref_class": rows[k]["ref_class"]} for k in [*flips, *fillers]]
+    final_counts = dict.fromkeys(FINAL_CLASSES, 0)
+    rerun_facts = {}
+    if rerun_new is not None:
+        rn, ro = Path(rerun_new), Path(rerun_old)
+        rerun_facts = {"new": _precondition(rn, "改后第二次", invalid), "old": _precondition(ro, "旧代码", invalid)}
+        hosts = {facts.get("host"), rerun_facts["new"].get("host"), rerun_facts["old"].get("host")}
+        if None not in hosts and len(hosts) != 1:
+            invalid.append(f"第二次跑须与首跑同一节点：{sorted(hosts)}")
+        new2_lines, new2_dup = read_run(rn)
+        old_lines, old_dup = read_run(ro)
+        for key in [*flips, *fillers]:
+            r = rows[key]
+            n2 = _observe(new2_lines.get(key), key in set(new2_dup))
+            od = _observe(old_lines.get(key), key in set(old_dup))
+            r["new2"], r["old"] = n2, od
+            if n2["unknown"] == "missing" or od["unknown"] == "missing":
+                invalid.append(f"第二次跑缺 {r['id']}")
+                continue
+            if n2["unknown"] or od["unknown"]:
+                if not r["filler"]:
+                    r["category"] = "unknown"
+                    r["reason"] = f"rerun:{n2['unknown'] or od['unknown']}"
+                    reasons.append(f"{r['id']} unknown {r['reason']}")
+                continue
+            entry = index[key]
+            if r["filler"]:
+                r["filler_new2_match"] = expect_verdict(entry, bool(n2["ok"]), n2["sha"]) == "match"
+                r["filler_old_match"] = expect_verdict(entry, bool(od["ok"]), od["sha"]) == "match"
+                continue
+            r["final"] = _final_class(entry, r["first"], n2, od)
+            final_counts[r["final"]] += 1
+        n_unknown = sum(r["category"] == "unknown" for r in rows.values())
+    counts = Counter(r["category"] for r in rows.values())
+    n_flip = len(flips)
+    if invalid:
+        verdict = "INVALID"
+    elif n_unknown or n_struct:
+        verdict = "FAIL"
+    elif n_flip == 0:
+        verdict = "PASS"
+    elif n_flip > FLIP_RERUN_MAX:
+        verdict = "FAIL"
+        reasons.append(f"翻转 {n_flip} 局超过 {FLIP_RERUN_MAX}，不进第二次跑，交用户")
+    elif rerun_new is None:
+        verdict = "NEED_RERUN"
     else:
-        mode = "noise"
-        for metric in EVAL_METRICS:
-            lim = group["lines"][metric]["line"]
-            if m[metric] > lim:
-                reasons.append(f"{metric}={m[metric]}>{lim}")
-        if m["net"] > NET_LOSS_MAX:
-            reasons.append(f"net_loss={m['net']}>{NET_LOSS_MAX}")
-        for band in EVAL_BANDS:
-            lim = group["bands"][band]["band"]
-            if m[band] > lim + 1e-12:
-                reasons.append(f"{band}={m[band]:.4g}>{lim:.4g}")
-    ok = not reasons
-    line = (f"EVAL_NOISE_GATE={'PASS' if ok else 'FAIL'} policy={group['policy']} set={group['set']} mode={mode} "
-            f"n={m['n']} status_changed={m['status_changed']} s2f={m['s2f']} f2s={m['f2s']} net={m['net']} "
-            f"timeout_delta={m['timeout_delta']} steps_diff={m['steps_diff']} "
-            f"steps_absdiff_mean={m['steps_absdiff_mean']:.4g} steps_absdiff_median={m['steps_absdiff_median']:.4g} "
-            f"error_final={m['error_final']} mcnemar_p={m['mcnemar_p']:.4g}")
-    return ok, line, reasons, m
+        bad = final_counts["regression"] + final_counts["env_changed"] + final_counts["unstable"]
+        over = final_counts["noise"] > NOISE_MAX[set_name]
+        if over:
+            reasons.append(f"确认为噪声的翻转 {final_counts['noise']} 局超过上限 {NOISE_MAX[set_name]}，逐局明细交用户")
+        verdict = "FAIL" if bad or over else "PASS"
+    head = f"GEN_REGRESS={verdict}"
+    if verdict == "NEED_RERUN":
+        head += f" flip={n_flip}"
+    line = (f"{head} set={set_name} n={len(episodes)} match={counts.get('match', 0)} "
+            f"jitter={counts.get('jitter_info', 0)} flip={n_flip} structural={n_struct} unknown={n_unknown} "
+            f"missing={counts.get('missing', 0)} invalid={len(invalid)}")
+    if fillers or rerun_new is not None:
+        line += f" rerun_rows={len(rerun)} filler={len(fillers)}"
+    if rerun_new is not None:
+        line += " " + " ".join(f"{c}={final_counts[c]}" for c in FINAL_CLASSES)
+        line += f" noise_max={NOISE_MAX[set_name]}"
+    meta = {"kind": "meta", "schema": REGRESS_SCHEMA, "set": set_name, "ref_sha256": ref["sha256"],
+            "new": str(new_root.resolve()), "rerun_new": str(Path(rerun_new).resolve()) if rerun_new else None,
+            "rerun_old": str(Path(rerun_old).resolve()) if rerun_old else None,
+            "local_ref_root": str(lref.resolve()) if lref else None, "launch": facts, "rerun_launch": rerun_facts,
+            "driver_note": driver_note, "counts": dict(counts), "final_counts": final_counts, "invalid": invalid,
+            "reasons": reasons, "line": line}
+    return {"verdict": verdict, "line": line, "rows": rows, "rerun": rerun, "meta": meta, "invalid": invalid,
+            "reasons": reasons, "driver_note": driver_note}
+
+
+def _md_obs(obs: dict[str, Any] | None) -> str:
+    if not obs or obs.get("ok") is None:
+        return "—"
+    return f"`{_short(obs['sha'])}` {'成功' if obs['ok'] else '失败'}"
+
+
+def _md_same(x: Any, y: Any) -> str:
+    s = _same(x, y)
+    return "—" if s is None else ("同" if s else "异")
+
+
+def episodes_markdown(result: dict[str, Any], ref_path: str) -> str:
+    """逐局报告（细则 3.2「逐局报告」）：只列出问题的局（含陪跑）与已知抖动局。"""
+    meta = result["meta"]
+    out = [f"# gen-regress 逐局报告：{meta['set']}", "",
+           f"- 判定行：`{result['line']}`",
+           f"- 参照：`{ref_path}`（sha256 `{meta['ref_sha256'][:12]}`）",
+           f"- 首跑：`{meta['new']}`；改后第二次：`{meta['rerun_new'] or '—'}`；旧代码：`{meta['rerun_old'] or '—'}`"]
+    if result.get("driver_note"):
+        out.append(f"- {result['driver_note']}")
+    for item in result["invalid"]:
+        out.append(f"- 本遍无效：{item}")
+    out += ["", "| 任务 | 档 | seed | 参照类 | 陪跑 | 第一次 | 改后第二次 | 旧代码 | 一=二 | 一=旧 | 二=旧 | 分叉步 | 子目标 | 定性 |",
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    shown = [r for r in result["rows"].values()
+             if r["category"] not in ("match", "missing") or r["filler"]]
+    for r in shown:
+        if r["filler"]:
+            verdict = "陪跑（只报告）" + ("" if "filler_new2_match" not in r else
+                                       f"：改后{'同' if r['filler_new2_match'] else '异'}基线、"
+                                       f"旧码{'同' if r['filler_old_match'] else '异'}基线")
+        elif r["category"] == "jitter_info":
+            verdict = f"已知抖动（只报告：{r.get('jitter_note')}）"
+        elif r.get("final"):
+            verdict = FINAL_NAMES[r["final"]]
+        else:
+            verdict = r["category"] + (f"（{r.get('reason') or r.get('sub_reason')}）"
+                                       if r.get("reason") or r.get("sub_reason") else "")
+        out.append(f"| {r['task']} | {r['tier']} | {r['seed']} | {r['ref_class']} | {'是' if r['filler'] else ''} | "
+                   f"{_md_obs(r['first'])} | {_md_obs(r.get('new2'))} | {_md_obs(r.get('old'))} | "
+                   f"{_md_same(r['first'], r.get('new2'))} | {_md_same(r['first'], r.get('old'))} | "
+                   f"{_md_same(r.get('new2'), r.get('old'))} | {r.get('first_divergence', '—') if r.get('first_divergence') is not None else '—'} | "
+                   f"{r.get('subgoal') or '—'} | {verdict} |")
+    if not shown:
+        out.append("| （无出问题的局，也无已知抖动局） |||||||||||||| ")
+    return "\n".join(out) + "\n"
 
 
 # ── selftest：内存夹具 ──────────────────────────────────────────────────────
@@ -1377,76 +1195,78 @@ def _fx_idents(n: int, tier: str = "xhard1", task: str = "T") -> list[dict[str, 
     return [{"id": id_str(task, tier, s), "task": task, "tier": tier, "seed": s} for s in range(n)]
 
 
-def _fx_extract(statuses: list[str], steps: list[int | None], *, root: str = "/x", ids: list[dict] | None = None,
-                aid_prefix: str = "a", started: float = 100.0) -> tuple[dict, list[dict]]:
-    ids = ids or _fx_idents(len(statuses))
-    rows = [_extract_row(i, status=s, exec_steps=k, attempt_id=f"{aid_prefix}{n}", started_at=started + n)
-            for n, (i, s, k) in enumerate(zip(ids, statuses, steps))]
-    meta = {"kind": "meta", "schema": EXTRACT_SCHEMA, "format": "v8", "policy": "p", "root": root, "extra": 0,
-            "run_blocked": 0, "rec_checked": None}
-    meta["summary"] = extract_summary(rows, meta)
-    return meta, rows
+def _fx_run(root: Path, items: list[dict[str, Any]], *, workers: int = 4, gpu: str = "NVIDIA A40",
+            host: str = "n1", driver: str = "595.71.05") -> Path:
+    """gen-regress 用的「一遍」夹具：identities.jsonl（每项 {task, tier, seed, ok, sha?, h5?, error_type?, h5_error?,
+    verdict?}）与 hard_parity 启动记录。给 ``h5`` 时 ``path`` 相对根、sha 按文件算。"""
+    root.mkdir(parents=True, exist_ok=True)
+    lines = []
+    for it in items:
+        line = {"task": it["task"], "tier": it.get("tier", "xhard1"), "seed": it["seed"], "success": it.get("ok", True),
+                "error_type": it.get("error_type", None if it.get("ok", True) else "DatasetGenerationError"),
+                "path": None, "sha256": it.get("sha")}
+        if it.get("h5"):
+            line["path"] = os.path.relpath(it["h5"], root)
+            line["sha256"] = sha256_file(it["h5"])
+        elif it.get("sha"):
+            line["path"] = f"episodes/{it['task']}_{it['seed']}/hdf5_files/x.h5"
+        for k in ("h5_error", "verdict"):
+            if k in it:
+                line[k] = it[k]
+        lines.append(line)
+    write_jsonl(root / "identities.jsonl", lines)
+    (root / "launch-1.json").write_text(json.dumps({"schema": LAUNCH_SCHEMA, "workers": workers, "gpu_model": gpu,
+                                                    "driver": driver, "host": host}), encoding="utf-8")
+    return root
 
 
-def _fx_write_extract(path: Path, ext: tuple[dict, list[dict]]) -> Path:
-    return write_jsonl(path, [ext[0], *ext[1]])
+def _fx_placeholder(path: Path) -> Path:
+    """失败局的占位文件（仿录像器失败时留下的 800 字节小文件：每次失败字节相同）。"""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"FAILED-PLACEHOLDER\n" * 8)
+    return path
 
 
-def _fx_v8_stage(stage: Path, policy: str, entries: list[dict[str, Any]]) -> Path:
-    """V8 运行根夹具：``s01/<policy>/results.jsonl`` 与账本。entries 每项 {key, task, tier, seed, attempts:[{id,
-    status, exec_steps, infra, infra_reason, accept, late, t}]}。"""
-    sd = stage / "s01" / policy
-    sd.mkdir(parents=True, exist_ok=True)
-    res, led = [], []
-    for e in entries:
-        for a in e["attempts"]:
-            led.append({"kind": "attempt_start", "key": e["key"], "attempt_id": a["id"], "attempt_no": 1,
-                        "retry": False, "t": a.get("t", 1000.0)})
-            row = {"v8": True, "key": e["key"], "task": e["task"], "tier": e["tier"], "seed": e["seed"],
-                   "spec_sha256": e.get("spec"), "status": a["status"], "exec_steps": a.get("exec_steps"),
-                   "attempt_id": a["id"], "infra": a.get("infra", False), "infra_reason": a.get("infra_reason"),
-                   "canary": False, "policy": policy}
-            if not a.get("no_row"):
-                res.append(row)
-            led.append({"kind": "attempt_end", "key": e["key"], "attempt_id": a["id"], "status": a["status"],
-                        "infra": a.get("infra", False), "exec_steps": a.get("exec_steps"), "late": a.get("late", False)})
-            if a.get("accept"):
-                led.append({"kind": "accept", "key": e["key"], "attempt_id": a["id"], "accepted_attempt_id": a["id"],
-                            "status": a["status"]})
-    write_jsonl(sd / "results.jsonl", res)
-    write_jsonl(sd / f"{policy}.ledger.jsonl", led)
-    return stage
+def _fx_baseline(tmp: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    """六局的小基线：seed 0～3 稳定，seed 4 确定性失败，seed 5 抖动（a 成功、b 失败）；返回 (参照对象, 夹具信息)。"""
+    ids = [{"task": "T", "tier": "xhard1" if s < 3 else "xhard2", "seed": s} for s in range(6)]
+    ident_path = write_jsonl(tmp / "ids.jsonl", ids)
+    runs = {}
+    for name in ("a", "b"):
+        items = []
+        for i in ids:
+            s = i["seed"]
+            if s == 4 or (s == 5 and name == "b"):
+                items.append(dict(i, ok=False, h5=_fx_placeholder(tmp / name / f"e{s}" / "hdf5_files" / "x.h5")))
+            else:
+                items.append(dict(i, h5=_fx_h5(tmp / name / f"e{s}" / "hdf5_files" / "x.h5", seed=s)))
+        runs[name] = _fx_run(tmp / name, items)
+    rec = tmp / "records"
+    rows, counts = gen_compare(runs["a"], runs["b"], load_identities(ident_path))
+    write_jsonl(rec / "ab.jsonl", [{"kind": "meta", "schema": GEN_SCHEMA, "ref": str(runs["a"]), "new": str(runs["b"]),
+                                    "n": len(rows), "counts": counts}, *rows])
+    obj, ok, line, why = build_ref({"v9": (runs["a"], runs["b"])}, {"v9": ident_path}, rec)
+    info = {"ids": ids, "ident_path": ident_path, "runs": runs, "records": rec, "line": line, "ok": ok, "why": why}
+    return obj, info
 
 
-def _noisy_eval_baseline(tmp: Path, n: int = 192) -> tuple[dict[str, Any], Path]:
-    """带噪声的评估基线：参照遍 + 两遍，各约 10 局成败互翻、若干步数差。返回 (冻结对象, 参照 extract 路径)。"""
-    ids = _fx_idents(n, task="E")
-    base = ["success" if i % 3 == 0 else "fail" for i in range(n)]
-    steps = [100 + (i % 7) for i in range(n)]
-    ref = _fx_write_extract(tmp / "ref.jsonl", _fx_extract(base, steps, ids=ids, root="/r0"))
-    paths = []
-    for k, (flip, dstep) in enumerate(((10, 3), (12, 5))):
-        st = list(base)
-        sp = list(steps)
-        succ = [i for i in range(n) if base[i] == "success"]
-        fail = [i for i in range(n) if base[i] == "fail"]
-        for i in succ[:flip]:
-            st[i] = "fail"
-        for i in fail[:flip - 1]:
-            st[i] = "success"
-        for i in range(0, 2 * dstep, 2):
-            sp[i] += dstep
-        paths.append(_fx_write_extract(tmp / f"b{k}.jsonl", _fx_extract(st, sp, ids=ids, root=f"/r{k + 1}",
-                                                                        aid_prefix=f"p{k}")))
-    spec = {"conditions": {"gpu": "fixture"},
-            "groups": [{"kind": "eval", "set": "G9", "policy": "p",
-                        "pairs": [[str(ref), str(paths[0])], [str(ref), str(paths[1])], [str(paths[0]), str(paths[1])]],
-                        "reference": str(ref)}]}
-    return freeze(spec), ref
+def _fx_new(tmp: Path, name: str, ref: dict[str, Any], overrides: dict[int, dict[str, Any]] | None = None,
+            only: Iterable[int] | None = None, **launch: Any) -> Path:
+    """按参照造一遍新跑：默认每局与基线 a 遍相同（稳定局成功同 sha，确定性失败局失败同 sha）；``overrides`` 按 seed 改。"""
+    items = []
+    for e in ref["sets"]["v9"]["episodes"]:
+        if only is not None and e["seed"] not in set(only):
+            continue
+        base = {"task": e["task"], "tier": e["tier"], "seed": e["seed"], "ok": e["ok_a"], "sha": e["shas"][0]}
+        if not e["ok_a"]:
+            base["h5_error"] = "IndexError: list index out of range"
+        base.update((overrides or {}).get(e["seed"], {}))
+        items.append(base)
+    return _fx_run(tmp / name, items, **launch)
 
 
 def selftest(verbose: bool = True) -> tuple[bool, str, list[tuple[str, bool]]]:
-    """同代码一对须 PASS；计划第一部分第六节的反例（另加旧路线墙钟超时后重试）须逐个 FAIL。"""
+    """同代码一对须通过（gen-compare 无结构不同；gen-regress 全部 match 判 PASS）；反例须逐个被抓到。"""
     results: list[tuple[str, bool, str]] = []  # (名字, 是否符合预期, 说明)
 
     def expect(name: str, want_pass: bool, got_pass: bool, note: str = "") -> None:
@@ -1454,11 +1274,14 @@ def selftest(verbose: bool = True) -> tuple[bool, str, list[tuple[str, bool]]]:
         if verbose:
             print(f"# selftest {name}: 预期={'PASS' if want_pass else 'FAIL'} 实得={'PASS' if got_pass else 'FAIL'} {note}")
 
+    def no_struct(rows: list[dict[str, Any]]) -> bool:
+        return not any(r["class"] in ("structural", "unknown") for r in rows)
+
     with tempfile.TemporaryDirectory(prefix="noise-gate-selftest-") as tmpd:
         tmp = Path(tmpd)
-        # ── 生成：同代码一对（含全等局、一个正常分叉局）与基线 ──
+        # ── gen-compare：同代码一对（含全等局、一个正常分叉局）──
         ids = _fx_idents(6)
-        ref_e, same_e, bad_e = {}, {}, {}
+        ref_e, same_e = {}, {}
         for i in ids:
             s = i["seed"]
             # seed 5 是正常分叉局：第 2 帧起分叉，白名单字段 waypoint_action 的 NaN 占位帧也随之不同（不得判结构不同）
@@ -1470,146 +1293,135 @@ def selftest(verbose: bool = True) -> tuple[bool, str, list[tuple[str, bool]]]:
         ref_root = _fx_side(tmp / "ref", ref_e)
         same_root = _fx_side(tmp / "same", same_e)
         rows, counts = gen_compare(ref_root, same_root, ids)
-        gen_meta = {"kind": "meta", "schema": GEN_SCHEMA, "ref": str(ref_root), "new": str(same_root), "n": len(rows)}
-        p1 = write_jsonl(tmp / "gen1.jsonl", [gen_meta, *rows])
-        p2 = write_jsonl(tmp / "gen2.jsonl", [gen_meta, *rows])
-        gbase = freeze({"groups": [{"kind": "gen", "set": "G9", "workers": 4, "pairs": [str(p1), str(p2)]}]})
-        ggroup = find_group(gbase, "gen:G9:w4")
-        ok, line, _r, _t = gate_gen(ggroup, rows)
-        byte_eq = counts["byte_equal"] == 5 and counts["diverge"] == 1
-        expect("same_code_gen", True, ok and byte_eq, line)
-        # 全等局不得被分叉步规则拒绝（全同局 first_divergence 为 null、归 byte_equal）
+        expect("same_code_gen", True, no_struct(rows) and counts["byte_equal"] == 5 and counts["diverge"] == 1,
+               str(counts))
         eq_rows = [r for r in rows if r["class"] == "byte_equal"]
         expect("全等局不被分叉步规则拒绝", True, bool(eq_rows) and all(r["first_divergence"] is None for r in eq_rows))
-        # 反例：初帧缺一个字段
-        bad_e = dict(same_e)
-        bad_e[("T", 0)] = {"h5": _fx_h5(tmp / "bad1" / "e0.h5", seed=0, drop=(0, "obs/front_depth"))}
-        rows_b, _c = gen_compare(ref_root, _fx_side(tmp / "bad1", bad_e), ids)
-        ok, line, _r, _t = gate_gen(ggroup, rows_b)
-        expect("初帧缺一个字段", False, ok, line)
-        # 加强：中间某一帧缺一个字段（schema_of 归一后取集合会漏掉）
-        bad_e = dict(same_e)
-        bad_e[("T", 1)] = {"h5": _fx_h5(tmp / "bad2" / "e1.h5", seed=1, drop=(2, "obs/front_depth"))}
-        rows_b, _c = gen_compare(ref_root, _fx_side(tmp / "bad2", bad_e), ids)
-        ok, line, _r, _t = gate_gen(ggroup, rows_b)
-        expect("中间帧缺一个字段", False, ok, line)
-        # 反例：setup 改一个值
-        bad_e = dict(same_e)
-        bad_e[("T", 2)] = {"h5": _fx_h5(tmp / "bad3" / "e2.h5", seed=2, setup_seed=999)}
-        rows_b, _c = gen_compare(ref_root, _fx_side(tmp / "bad3", bad_e), ids)
-        ok, line, _r, _t = gate_gen(ggroup, rows_b)
-        expect("setup 改一个值", False, ok, line)
-        # 反例：白名单多态字段出现集合外签名（int64）
-        bad_e = dict(same_e)
-        bad_e[("T", 5)] = {"h5": _fx_h5(tmp / "bad4" / "e5.h5", seed=5, diverge_at=2, waypoint_frames=(1,),
-                                        waypoint_nan_frames=(0, 2), waypoint_int_frames=(3,))}
-        rows_b, _c = gen_compare(ref_root, _fx_side(tmp / "bad4", bad_e), ids)
-        ok, line, _r, _t = gate_gen(ggroup, rows_b)
-        expect("白名单字段集合外签名", False, ok, line)
+        for name, sub, entry in (
+                ("初帧缺一个字段", "bad1", (0, {"seed": 0, "drop": (0, "obs/front_depth")})),
+                ("中间帧缺一个字段", "bad2", (1, {"seed": 1, "drop": (2, "obs/front_depth")})),
+                ("setup 改一个值", "bad3", (2, {"seed": 2, "setup_seed": 999})),
+                ("白名单字段集合外签名", "bad4", (5, {"seed": 5, "diverge_at": 2, "waypoint_frames": (1,),
+                                                    "waypoint_nan_frames": (0, 2), "waypoint_int_frames": (3,)}))):
+            bad_e = dict(same_e)
+            seed, kw = entry
+            bad_e[("T", seed)] = {"h5": _fx_h5(tmp / sub / f"e{seed}.h5", **kw)}
+            rows_b, _c = gen_compare(ref_root, _fx_side(tmp / sub, bad_e), ids)
+            expect(name, False, no_struct(rows_b), str(_c))
+        # F-5：两侧都是零字节「成功」文件，不得判 byte_equal
+        e0 = {"h5": str(tmp / "empty" / "a.h5"), "sha256": None, "status": "ok", "error_type": None, "error": None,
+              "tier": "xhard1"}
+        Path(e0["h5"]).parent.mkdir(parents=True, exist_ok=True)
+        Path(e0["h5"]).write_bytes(b"")
+        r = classify_pair(ids[0], e0, dict(e0))
+        expect("两侧空文件（F-5）", False, r["class"] == "byte_equal", f"class={r['class']} reason={r['reason']}")
 
-        # ── 评估 ──
-        ebase, ref_path = _noisy_eval_baseline(tmp)
-        egroup = find_group(ebase, "eval:G9:p")
-        _rm, ref_rows = read_extract(ref_path)
-        # 同代码一对：少量互翻、少量步数差
-        st = [r["status"] for r in ref_rows]
-        sp = [r["exec_steps"] for r in ref_rows]
-        succ = [i for i, s in enumerate(st) if s == "success"]
-        fail = [i for i, s in enumerate(st) if s == "fail"]
-        st2 = list(st)
-        for i in succ[:3]:
-            st2[i] = "fail"
-        for i in fail[:3]:
-            st2[i] = "success"
-        sp2 = list(sp)
-        sp2[0] += 2
-        same = _fx_extract(st2, sp2, ids=_fx_idents(192, task="E"), root="/new")
-        ok, line, _r, _m = gate_eval(egroup, ref_rows, same[1])
-        expect("same_code_eval", True, ok, line)
-        # 反例：失败全部改成超时而成功数不变
-        st3 = ["timeout" if s == "fail" else s for s in st]
-        ok, line, _r, _m = gate_eval(egroup, ref_rows, _fx_extract(st3, sp, ids=_fx_idents(192, task="E"))[1])
-        expect("失败全改超时成功数不变", False, ok, line)
-        # 反例：终态不变但步数从 100 变 1600
-        ok, line, _r, _m = gate_eval(egroup, ref_rows,
-                                     _fx_extract(st, [1600] * len(st), ids=_fx_idents(192, task="E"))[1])
-        expect("步数 100 变 1600", False, ok, line)
-        # 反例：成功→失败 12、失败→成功 4（各自不超线，只有净损失 8 超）
-        st4 = list(st)
-        for i in succ[:12]:
-            st4[i] = "fail"
-        for i in fail[:4]:
-            st4[i] = "success"
-        ok, line, why, _m = gate_eval(egroup, ref_rows, _fx_extract(st4, sp, ids=_fx_idents(192, task="E"))[1])
-        expect("s2f=12 f2s=4", False, ok, f"{line} reasons={why}")
-        # 反例：迟到成功覆盖已接受失败（账本口径取被接受的失败；5 局即净损失 5 → FAIL；按「最后一条」取数会漏放）
-        eids = _fx_idents(192, task="E")
-        entries = []
-        for n, i in enumerate(eids):
-            key = f"{i['task']}_{i['tier']}_{i['seed']}"
-            if n in succ[:5]:
-                attempts = [{"id": f"x{n}", "status": "fail", "exec_steps": sp[n], "accept": True, "t": 2000.0},
-                            {"id": f"y{n}", "status": "success", "exec_steps": sp[n], "late": True, "t": 2100.0}]
+        # ── gen-regress build-ref ──
+        bdir = tmp / "base"
+        ref, info = _fx_baseline(bdir)
+        cnt = (ref or {}).get("sets", {}).get("v9", {}).get("counts")
+        expect("same_code_build_ref", True,
+               info["ok"] and cnt == {"stable": 4, "known_fail": 1, "jitter": 1}, info["line"])
+        if ref is None:
+            for why in info["why"][:5]:
+                print(f"# selftest build_ref: {why}")
+            return False, "GATE_SELFTEST=FAIL same_code=FAIL cases_fail=0/0 reason=build_ref", \
+                [(n, ok) for n, ok, _ in results]
+        # 反例：比对记录把一局写成 byte_equal 但两遍 sha 不同（篡改记录里的 new_sha256）
+        bad_rec = tmp / "bad-records"
+        meta, prow = read_gen_pairs(info["records"] / "ab.jsonl")
+        prow = [dict(p) for p in prow]
+        prow[0]["new_sha256"] = "0" * 64
+        write_jsonl(bad_rec / "ab.jsonl", [meta, *prow])
+        _o, ok, line, _w = build_ref({"v9": (info["runs"]["a"], info["runs"]["b"])}, {"v9": info["ident_path"]}, bad_rec)
+        expect("比对记录 sha 与重算不符", False, ok, line)
+        # 反例：改参照里一局的类别而不重算 sha256
+        rp = tmp / "ref-good.json"
+        rp.write_text(json.dumps(ref), encoding="utf-8")
+        tampered = json.loads(rp.read_text(encoding="utf-8"))
+        tampered["sets"]["v9"]["episodes"][0]["class"] = "jitter"
+        tp = tmp / "ref-bad.json"
+        tp.write_text(json.dumps(tampered), encoding="utf-8")
+        try:
+            load_ref(tp)
+            got = True
+        except GateError:
+            got = False
+        expect("改参照不改 sha256", False, got)
+        ref = load_ref(rp)
+
+        # ── gen-regress check ──
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-same", ref))
+        expect("same_code_regress", True, res["verdict"] == "PASS", res["line"])
+        # 抖动局任意结果都只报告
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-jit", ref, {5: {"ok": False, "sha": "f" * 64}}))
+        expect("same_code_jitter_only_info", True, res["verdict"] == "PASS", res["line"])
+        flip = {0: {"sha": "1" * 64}}
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-flip", ref, flip))
+        fillers = [x for x in res["rerun"] if x["filler"]]
+        expect("稳定局翻转须重跑", False, res["verdict"] == "PASS",
+               f"{res['line']} rerun={len(res['rerun'])} filler={len(fillers)}")
+        expect("same_code_filler_fill_to_4", True, len(res["rerun"]) == 4 and len(fillers) == 3
+               and [x["seed"] for x in fillers] == [1, 2, 3])
+        # 四格定性
+        only = [0, 1, 2, 3]
+        cases = {"noise": ({0: {}}, {0: {"sha": "2" * 64}}, "PASS"),
+                 "regression": ({0: {"sha": "1" * 64}}, {0: {}}, "FAIL"),
+                 "env_changed": ({0: {"sha": "1" * 64}}, {0: {"sha": "3" * 64}}, "FAIL"),
+                 "unstable": ({0: {"sha": "4" * 64}}, {0: {}}, "FAIL")}
+        for name, (n2, od, want) in cases.items():
+            res = regress_check(ref, "v9", tmp / "n-flip",
+                                rerun_new=_fx_new(tmp, f"r2-{name}", ref, n2, only=only),
+                                rerun_old=_fx_new(tmp, f"ro-{name}", ref, od, only=only))
+            row = res["rows"][("T", 0)]
+            good = res["verdict"] == want and row.get("final") == name
+            label = f"四格定性 {FINAL_NAMES[name]}"
+            if want == "PASS":
+                expect(f"same_code_{label}", True, good, res["line"])
             else:
-                attempts = [{"id": f"x{n}", "status": st[n], "exec_steps": sp[n], "accept": True, "t": 2000.0}]
-            entries.append({"key": key, "task": i["task"], "tier": i["tier"], "seed": i["seed"], "attempts": attempts})
-        stage = _fx_v8_stage(tmp / "late-stage", "p", entries)
-        late_rows, _meta = extract_v8(stage, "p", eids)
-        took_accepted = all(late_rows[n]["status"] == "fail" for n in succ[:5])
-        ok, line, _r, _m = gate_eval(egroup, ref_rows, late_rows)
-        expect("迟到成功覆盖已接受失败", False, ok or not took_accepted, line)
-        # 反例：第二遍复用第一遍的输出根（同一运行根、同一批 attempt_id）；用一个干净的运行根，排除迟到行的干扰
-        clean = [dict(e, attempts=e["attempts"][:1]) for e in entries]
-        stage = _fx_v8_stage(tmp / "clean-stage", "p", clean)
-        first = extract_v8(stage, "p", eids)
-        prov1 = {"pass": "pass1", "started_at": 1500.0, "out_root": str(stage), "assets_sha": "abc",
-                 "fingerprint": "f" * 64, "out_root_state": "empty_dir"}
-        m1 = {"kind": "meta", "schema": EXTRACT_SCHEMA, "format": "v8", "root": str(stage.resolve()), **first[1]}
-        ok1, line1, _r = run_fresh((m1, first[0]), prov1, 192, [])
-        expect("same_code_first_pass_fresh", True, ok1, line1)
-        prov = {"pass": "pass2", "started_at": 1500.0, "out_root": str(stage), "assets_sha": "abc",
-                "fingerprint": "f" * 64, "out_root_state": "absent"}
-        ok, line, _r = run_fresh((m1, first[0]), prov, 192, [(m1, first[0])])
-        expect("第二遍复用第一遍的输出根", False, ok, line)
-        # 反例：来源报告 out_root_state 为 S3 不会写出的取值（只认 absent／empty_dir）
-        ok, line, _r = run_fresh((m1, first[0]), dict(prov1, out_root_state="empty"), 192, [])
-        expect("out_root_state 未知取值", False, ok, line)
-        # 反例：改动冻结文件里一条线而不改 sha256
-        tampered = json.loads(json.dumps(ebase))
-        tampered["groups"][0]["lines"]["s2f"]["line"] += 5
-        ok, line, _r = verify(tampered)
-        expect("改冻结线不改 sha256", False, ok, line)
-        # 加强：旧路线墙钟超时后重试成功须判 retried_after_steps
-        lroot = tmp / "legacy"
-        (lroot / "p" / "rec" / "T_0").mkdir(parents=True)
-        (lroot / "p" / "rec" / "T_0.a2").mkdir(parents=True)
-        write_jsonl(lroot / "p" / "results.jsonl", [
-            {"task": "T", "seed": 0, "policy": "p", "attempt": 1, "status": "error", "infra": True,
-             "infra_reason": "episode_wall", "steps": None, "canary": False, "rec_dir": "/tmp/x/rec/T_0"},
-            {"task": "T", "seed": 0, "policy": "p", "attempt": 2, "status": "success", "infra": False,
-             "steps": 300, "canary": False, "rec_dir": "/tmp/x/rec/T_0.a2"}])
-        lid = [{"id": id_str("T", "xhard0", 0), "task": "T", "tier": "xhard0", "seed": 0}]
-        lrows, lmeta = extract_legacy(lroot, "p", lid)
-        lm = {"kind": "meta", "schema": EXTRACT_SCHEMA, "format": "legacy", "root": str(lroot.resolve()), **lmeta}
-        ok, line, _r = run_fresh((lm, lrows), {"pass": "d0", "out_root": str(lroot), "out_root_state": "empty_dir",
-                                               "assets_sha": "abc", "fingerprint": "f" * 64}, 1, [])
-        expect("旧路线墙钟超时后重试成功", False, ok or not lrows[0]["retried_after_steps"], line)
+                expect(label, False, not good, res["line"])
+        # 噪声超上限：三局翻转第二次都回到基线（v9 上限 2）
+        many = {0: {"sha": "1" * 64}, 1: {"sha": "1" * 64}, 2: {"sha": "1" * 64}}
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-3flip", ref, many),
+                            rerun_new=_fx_new(tmp, "r2-3", ref, only=[0, 1, 2, 3]),
+                            rerun_old=_fx_new(tmp, "ro-3", ref, only=[0, 1, 2, 3]))
+        expect("噪声翻转超上限", False, res["verdict"] == "PASS", res["line"])
+        # 确定性失败局变成功、稳定局生成失败，都算翻转
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-kf", ref, {4: {"ok": True, "sha": "5" * 64, "h5_error": None}}))
+        expect("确定性失败局变成功", False, res["verdict"] == "PASS", res["line"])
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-gf", ref, {1: {"ok": False, "sha": ref["sets"]["v9"]["episodes"][4]["shas"][0]}}))
+        expect("稳定局生成失败", False, res["verdict"] == "PASS", res["line"])
+        # 原因不明：成功却打不开；Mover 写的 verdict 与重算不符
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-open", ref, {2: {"h5_error": "OSError: x"}}))
+        expect("成功局打不开", False, res["verdict"] != "FAIL", res["line"])
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-vd", ref, {3: {"verdict": "flip"}}))
+        expect("Mover verdict 与重算不符", False, res["verdict"] != "FAIL", res["line"])
+        # 跑法前提：workers 不是 4、缺局
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-w1", ref, workers=1))
+        expect("workers=1 判本遍无效", False, res["verdict"] != "INVALID", res["line"])
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-miss", ref, only=[0, 1, 2, 3, 4]))
+        expect("缺局判本遍无效", False, res["verdict"] != "INVALID", res["line"])
+        # 本机细分：翻转局 h5 已回传时用 compare_h5 对照基线 a 遍
+        lroot = bdir
+        h_div = _fx_h5(tmp / "n-loc" / "e0" / "hdf5_files" / "x.h5", seed=0, diverge_at=2)
+        h_str = _fx_h5(tmp / "n-loc" / "e1" / "hdf5_files" / "x.h5", seed=1, drop=(1, "obs/front_depth"))
+        res = regress_check(ref, "v9", _fx_new(tmp, "n-loc", ref, {0: {"h5": h_div}, 1: {"h5": h_str}}),
+                            local_ref_root=lroot)
+        r0, r1 = res["rows"][("T", 0)], res["rows"][("T", 1)]
+        expect("same_code_local_diverge", True, r0["category"] == "diverge" and r0.get("first_divergence") == 2,
+               f"{r0['category']} {r0.get('first_divergence')}")
+        expect("本机细分结构不同", False, not (r1["category"] == "structural" and res["verdict"] == "FAIL"), res["line"])
 
     same_ok = all(ok for name, ok, _ in results if name.startswith("same_code") or name.startswith("全等局"))
-    cases = [(name, ok) for name, ok, _ in results if not (name.startswith("same_code") or name.startswith("全等局"))]
-    passed = same_ok and all(ok for _n, ok in cases)
-    good = sum(ok for _n, ok in cases)
+    cases_ = [(name, ok) for name, ok, _ in results if not (name.startswith("same_code") or name.startswith("全等局"))]
+    passed = same_ok and all(ok for _n, ok in cases_)
+    good = sum(ok for _n, ok in cases_)
     line = (f"GATE_SELFTEST={'PASS' if passed else 'FAIL'} same_code={'PASS' if same_ok else 'FAIL'} "
-            f"cases_fail={good}/{len(cases)}")
+            f"cases_fail={good}/{len(cases_)}")
     return passed, line, [(n, ok) for n, ok, _ in results]
 
 
 # ── CLI ─────────────────────────────────────────────────────────────────────
-
-
-def _print_per_task(title: str, table: dict[str, Any]) -> None:
-    for task in sorted(table):
-        print(f"# {title} {task}: {table[task]}")
 
 
 def cmd_gen_compare(args) -> int:
@@ -1627,137 +1439,69 @@ def cmd_gen_compare(args) -> int:
     return 0
 
 
-def cmd_eval_extract(args) -> int:
-    identities = load_identities(args.identities)
-    rows, meta, ok, line = eval_extract(args.format, args.root, args.policy, identities, allow_extra=args.allow_extra)
-    meta["identities"] = str(Path(args.identities).resolve())
-    write_jsonl(args.out, [meta, *rows])
-    for r in rows:
-        if r["missing"] or r["conflict"] or r["retried_after_steps"]:
-            print(f"# {r['id']} missing={r['missing']} conflict={r['conflict']} flags={r['flags'][:4]}")
-    print(line, flush=True)
-    return 0 if ok else 1
+def _parse_runs(items: list[str]) -> dict[str, tuple[Path, Path]]:
+    out: dict[str, tuple[Path, Path]] = {}
+    for item in items:
+        name, sep, value = item.partition("=")
+        parts = [p for p in value.split(",") if p]
+        if not sep or len(parts) != 2:
+            raise GateError(f"--runs 须为 <集合>=<a 遍根>,<b 遍根>：{item}")
+        if name in out:
+            raise GateError(f"--runs 集合重复：{name}")
+        out[name] = (Path(parts[0]), Path(parts[1]))
+    return out
 
 
-def cmd_run_fresh(args) -> int:
-    ext = read_extract(args.extract)
-    prov = json.loads(Path(args.provenance).read_text(encoding="utf-8"))
-    others = [read_extract(p) for p in args.other or []]
-    ok, line, reasons = run_fresh(ext, prov, args.expect, others)
-    for r in reasons:
+def cmd_build_ref(args) -> int:
+    runs = _parse_runs(args.runs)
+    identities = {name: Path(p) for name, p in (("v9", args.identities_v9), ("xhard0", args.identities_xhard0))
+                  if p is not None}
+    out = Path(args.out)
+    if out.exists():
+        raise GateError(f"{out} 已存在：参照文件生成后只读（红线 R2），不覆盖")
+    obj, ok, line, reasons = build_ref(runs, identities, Path(args.records), limit=args.limit,
+                                       rehash=not args.trust_recorded_sha)
+    for r in reasons[:50]:
         print(f"# {r}")
+    if ok and obj is not None:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(obj, sort_keys=True, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        for name, block in obj["sets"].items():
+            for e in block["episodes"]:
+                if e["class"] != "stable":
+                    print(f"# {name} {e['class']} {e['id']} ok_a={e['ok_a']} ok_b={e['ok_b']} "
+                          f"shas={[s[:12] for s in e['shas']]}")
     print(line, flush=True)
     return 0 if ok else 1
 
 
-def cmd_baseline_reset(args) -> int:
-    s = reset_summary(json.loads(Path(args.compare).read_text(encoding="utf-8")))
-    eq = ",".join(f"{k}:{v}" for k, v in s["layer_equal"].items())
-    print(f"RESET_BASELINE=INFO set={args.set} pairs=1 compared={s['compared']} layers_equal={eq} "
-          f"name_only={len(s['name_only_ids'])} layer_diff={len(s['real_diff_ids'])} missing={s['missing']}", flush=True)
-    return 0
-
-
-def cmd_baseline_gen(args) -> int:
-    per_pair = []
-    nonbyte: Counter = Counter()
-    per_task: dict[str, list[int]] = defaultdict(lambda: [0] * len(args.pairs))
-    n = None
-    for k, path in enumerate(args.pairs):
-        _meta, rows = read_gen_pairs(path)
-        per_pair.append(gen_counts(rows))
-        n = len(rows) if n is None else n
-        for r in rows:
-            if r["class"] != "byte_equal":
-                nonbyte[r["id"]] += 1
-                per_task[r["task"]][k] += 1
-    total = {c: sum(p[c] for p in per_pair) for c in GEN_CLASSES}
-    overlap = sum(1 for v in nonbyte.values() if v >= 2)
-    _print_per_task("逐任务非逐字节相同局数（按对）", dict(per_task))
-    print(f"GEN_BASELINE=INFO set={args.set} workers={args.workers} pairs={len(per_pair)} n={n} classes="
-          + ",".join(f"{c}:{total[c]}" for c in GEN_CLASSES) + f" same_identity_overlap={overlap}", flush=True)
-    return 0
-
-
-def cmd_baseline_eval(args) -> int:
-    ms = []
-    for spec in args.pairs:
-        a, _, b = spec.partition(":")
-        if not b:
-            raise GateError(f"--pairs 项须为 a.jsonl:b.jsonl：{spec}")
-        ms.append(eval_pair_metrics(read_extract(a)[1], read_extract(b)[1]))
-
-    def j(key, fmt="{}"):
-        return ",".join(fmt.format(m[key]) for m in ms)
-    print(f"EVAL_BASELINE=INFO policy={args.policy} set={args.set} pairs={len(ms)} status_changed={j('status_changed')} "
-          f"s2f={j('s2f')} f2s={j('f2s')} net={j('net')} timeout_delta={j('timeout_delta')} "
-          f"steps_diff={j('steps_diff')} steps_absdiff_mean={j('steps_absdiff_mean', '{:.4g}')} "
-          f"steps_absdiff_median={j('steps_absdiff_median', '{:.4g}')} error_final={j('error_final')} "
-          f"mcnemar_p={j('mcnemar_p', '{:.4g}')}", flush=True)
-    return 0
-
-
-def cmd_freeze(args) -> int:
-    spec = json.loads(Path(args.spec).read_text(encoding="utf-8"))
-    try:
-        obj = freeze(spec)
-    except GateError as exc:
-        print(f"# {exc}")
-        print("NOISE_BASELINE=FAIL groups=0 inputs_bound=0 file_sha=-", flush=True)
-        return 1
-    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.out).write_text(json.dumps(obj, sort_keys=True, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    for g in obj["groups"]:
-        lines = ",".join(f"{k}:{v['line']}" for k, v in (g.get("lines") or {}).items())
-        print(f"# {g['name']} n={g.get('n')} zero_noise={g.get('zero_noise')} lines={lines}")
-    ok, line, reasons = verify(obj)
-    for r in reasons:
-        print(f"# {r}")
-    print(line, flush=True)
-    return 0 if ok else 1
-
-
-def cmd_verify(args) -> int:
-    obj = json.loads(Path(args.path).read_text(encoding="utf-8"))
-    ok, line, reasons = verify(obj)
-    for r in reasons:
-        print(f"# {r}")
-    print(line, flush=True)
-    return 0 if ok else 1
-
-
-def cmd_check_reset(args) -> int:
-    obj = load_baseline(args.baseline)
-    ok, line, reasons = gate_reset(find_group(obj, f"reset:{args.set}"),
-                                   json.loads(Path(args.compare).read_text(encoding="utf-8")))
-    for r in reasons:
-        print(f"# {r}")
-    print(line, flush=True)
-    return 0 if ok else 1
-
-
-def cmd_check_gen(args) -> int:
-    obj = load_baseline(args.baseline)
-    _meta, rows = read_gen_pairs(args.pair)
-    ok, line, reasons, per_task = gate_gen(find_group(obj, f"gen:{args.set}:w{args.workers}"), rows)
-    _print_per_task("逐任务非逐字节相同局数（只定位、不判定）", per_task)
-    for r in reasons:
-        print(f"# {r}")
-    print(line, flush=True)
-    return 0 if ok else 1
-
-
-def cmd_check_eval(args) -> int:
-    obj = load_baseline(args.baseline)
-    group = find_group(obj, f"eval:{args.set}:{args.policy}")
-    if str(Path(args.ref).resolve()) != group["reference"] or sha256_file(args.ref) != next(
-            i["sha256"] for i in group["inputs"] if i["path"] == group["reference"]):
-        raise GateError(f"--ref 须是冻结文件登记的参照遍：{group['reference']}")
-    ok, line, reasons, _m = gate_eval(group, read_extract(args.ref)[1], read_extract(args.new)[1])
-    for r in reasons:
-        print(f"# {r}")
-    print(line, flush=True)
-    return 0 if ok else 1
+def cmd_check(args) -> int:
+    ref = load_ref(args.ref)
+    res = regress_check(ref, args.set, args.new, rerun_new=args.rerun_new, rerun_old=args.rerun_old,
+                        local_ref_root=args.local_ref_root)
+    out = Path(args.out)
+    write_jsonl(out, [res["meta"], *res["rows"].values()])
+    md = out.with_name(out.name + ".episodes.md") if out.suffix != ".jsonl" else \
+        out.with_name(out.name[: -len(".jsonl")] + ".episodes.md")
+    md.write_text(episodes_markdown(res, str(args.ref)), encoding="utf-8")
+    if res["verdict"] == "NEED_RERUN" and args.rerun_identities_out:
+        write_jsonl(args.rerun_identities_out, res["rerun"])
+        print(f"# 重跑清单 {args.rerun_identities_out}：{len(res['rerun'])} 行（陪跑 "
+              f"{sum(r['filler'] for r in res['rerun'])}）", flush=True)
+    for item in res["invalid"]:
+        print(f"# 本遍无效：{item}")
+    for item in res["reasons"][:30]:
+        print(f"# {item}")
+    if res.get("driver_note"):
+        print(f"# {res['driver_note']}")
+    for r in res["rows"].values():
+        if r["category"] not in ("match",) or r["filler"]:
+            tag = "FILLER" if r["filler"] else r["category"]
+            print(f"# {tag} {r['id']} first={_short(r['first'].get('sha'))} "
+                  f"final={r.get('final') or '-'} sub={r.get('sub_reason') or r.get('reason') or '-'}")
+    print(f"# 逐局报告 {md}", flush=True)
+    print(res["line"], flush=True)
+    return {"PASS": 0, "NEED_RERUN": 3, "INVALID": 4}.get(res["verdict"], 1)
 
 
 def cmd_selftest(args) -> int:
@@ -1767,7 +1511,7 @@ def cmd_selftest(args) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(description="噪声基线比较器与回归闸门")
+    ap = argparse.ArgumentParser(description="生成噪声比较器与逐局回归闸门")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("gen-compare", help="两侧生成 h5 逐局五类归类")
     p.add_argument("--ref", required=True)
@@ -1776,60 +1520,32 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--out", required=True)
     p.add_argument("--trust-recorded-sha", action="store_true", help="不重算文件 sha256，直接用侧记录的值（快、弱）")
     p.set_defaults(func=cmd_gen_compare)
-    p = sub.add_parser("eval-extract", help="按权威尝试取评估结果")
-    p.add_argument("--format", choices=("v8", "legacy"), required=True)
-    p.add_argument("--root", required=True, action="append", help="v8 可重复给多个运行根（合并后按账本判）")
-    p.add_argument("--policy", required=True)
-    p.add_argument("--identities", required=True)
-    p.add_argument("--out", required=True)
-    p.add_argument("--allow-extra", action="store_true", help="运行根有清单外身份时不判 FAIL（并入正式评估那一遍）")
-    p.set_defaults(func=cmd_eval_extract)
-    p = sub.add_parser("run-fresh", help="核对一遍是真的新跑")
-    p.add_argument("--extract", required=True)
-    p.add_argument("--provenance", required=True)
-    p.add_argument("--expect", type=int, default=192)
-    p.add_argument("--other", action="append")
-    p.set_defaults(func=cmd_run_fresh)
-    p = sub.add_parser("baseline-reset")
-    p.add_argument("--compare", required=True)
-    p.add_argument("--set", choices=("G9", "D0"), required=True)
-    p.set_defaults(func=cmd_baseline_reset)
-    p = sub.add_parser("baseline-gen")
-    p.add_argument("--pairs", nargs="+", required=True)
-    p.add_argument("--workers", type=int, choices=(4, 1), required=True)
-    p.add_argument("--set", choices=("G9", "D0"), required=True)
-    p.set_defaults(func=cmd_baseline_gen)
-    p = sub.add_parser("baseline-eval")
-    p.add_argument("--pairs", nargs="+", required=True)
-    p.add_argument("--policy", required=True)
-    p.add_argument("--set", choices=("G9", "D0"), required=True)
-    p.set_defaults(func=cmd_baseline_eval)
-    p = sub.add_parser("freeze")
-    p.add_argument("--spec", required=True)
-    p.add_argument("--out", required=True)
-    p.set_defaults(func=cmd_freeze)
-    p = sub.add_parser("verify")
-    p.add_argument("--path", required=True)
-    p.set_defaults(func=cmd_verify)
-    p = sub.add_parser("check-reset")
-    p.add_argument("--baseline", required=True)
-    p.add_argument("--set", choices=("G9", "D0"), required=True)
-    p.add_argument("--compare", required=True)
-    p.set_defaults(func=cmd_check_reset)
-    p = sub.add_parser("check-gen")
-    p.add_argument("--baseline", required=True)
-    p.add_argument("--set", choices=("G9", "D0"), required=True)
-    p.add_argument("--workers", type=int, choices=(4, 1), default=4)
-    p.add_argument("--pair", required=True)
-    p.set_defaults(func=cmd_check_gen)
-    p = sub.add_parser("check-eval")
-    p.add_argument("--baseline", required=True)
-    p.add_argument("--set", choices=("G9", "D0"), required=True)
-    p.add_argument("--policy", required=True)
+
+    gr = sub.add_parser("gen-regress", help="逐局期望的参照文件与回归判定（对拍细则 3.2～3.4）")
+    grs = gr.add_subparsers(dest="regress_cmd", required=True)
+    p = grs.add_parser("build-ref", help="从噪声基线四遍重算 sha、交叉核对比对记录、写参照文件（NOISE_REF）")
+    p.add_argument("--runs", action="append", required=True, metavar="集合=a 遍根,b 遍根",
+                   help="可重复；集合为 v9 或 xhard0")
+    p.add_argument("--identities-v9", default=None, help="V9 身份清单（如 scripts/configs/gate-set-v9-129.json）")
+    p.add_argument("--identities-xhard0", default=None, help="xhard0 身份清单（如 scripts/configs/gate-set-xhard0-48.json）")
+    p.add_argument("--records", required=True, help="gen-compare 比对记录目录（docs/validation/.../records/compare）")
+    p.add_argument("--out", required=True, help="参照文件（已存在即拒，不覆盖）")
+    p.add_argument("--limit", type=int, default=None, help="冒烟：每个集合只取前 N 个身份，产物标 partial、不得用于判定")
+    p.add_argument("--trust-recorded-sha", action="store_true", help="不重算 h5 sha256（只用于冒烟，产物标 partial）")
+    p.set_defaults(func=cmd_build_ref)
+    p = grs.add_parser("check", help="新跑对参照逐局判定（GEN_REGRESS）")
     p.add_argument("--ref", required=True)
-    p.add_argument("--new", required=True)
-    p.set_defaults(func=cmd_check_eval)
-    p = sub.add_parser("selftest")
+    p.add_argument("--set", choices=REF_SETS, required=True)
+    p.add_argument("--new", required=True, help="首跑输出根（含 identities.jsonl 与 launch-*.json）")
+    p.add_argument("--out", required=True, help="逐局 jsonl；同目录另写 <out 去掉 .jsonl>.episodes.md")
+    p.add_argument("--rerun-identities-out", default=None, help="NEED_RERUN 时写重跑清单（含陪跑局，filler=true）")
+    p.add_argument("--rerun-new", default=None, help="改后代码第二次跑的输出根")
+    p.add_argument("--rerun-old", default=None, help="旧代码（f8f76fba）同一节点那一次的输出根")
+    p.add_argument("--local-ref-root", default=None,
+                   help="本机噪声基线 gen 根（artifacts/noise-baseline/gen）：对已回传的翻转局细分类别")
+    p.set_defaults(func=cmd_check)
+
+    p = sub.add_parser("selftest", help="自检：同代码须通过、反例须逐个被抓到（GATE_SELFTEST）")
     p.set_defaults(func=cmd_selftest)
     return ap
 
@@ -1840,9 +1556,9 @@ def main(argv: list[str] | None = None) -> int:
         return args.func(args)
     except GateError as exc:
         print(f"# 拒跑：{exc}", flush=True)
-        name = {"check-reset": "RESET_GATE", "check-gen": "GEN_NOISE_GATE", "check-eval": "EVAL_NOISE_GATE",
-                "run-fresh": "RUN_FRESH", "eval-extract": "EVAL_EXTRACT", "verify": "NOISE_BASELINE",
-                "selftest": "GATE_SELFTEST"}.get(args.cmd)
+        name = {"selftest": "GATE_SELFTEST"}.get(args.cmd)
+        if args.cmd == "gen-regress":
+            name = "NOISE_REF" if args.regress_cmd == "build-ref" else "GEN_REGRESS"
         if name:
             print(f"{name}=FAIL reason=refused", flush=True)
         return 2

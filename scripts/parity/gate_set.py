@@ -357,18 +357,23 @@ def check(path: str | Path, specs_root: str | Path | None = None) -> tuple[bool,
     path = Path(path)
     fresh = build_payload(specs_root)
     rows = fresh["rows"]
+    # F-7：冻结文件读不到、为空或解析失败一律 FAIL（此前零字节文件会跳过全部文件侧核对而判 PASS）
+    readable = True
     try:
         frozen_bytes = path.read_bytes()
     except OSError as exc:
         frozen_bytes = b""
+        readable = False
         reasons.append(f"读不到冻结文件：{exc}")
-    if frozen_bytes and frozen_bytes != dumps_payload(fresh).encode("utf-8"):
-        reasons.append("冻结文件与重算结果字节不同")
-    if frozen_bytes:
+    if readable and not frozen_bytes.strip():
+        reasons.append("冻结文件为空")
+    elif frozen_bytes:
+        if frozen_bytes != dumps_payload(fresh).encode("utf-8"):
+            reasons.append("冻结文件与重算结果字节不同")
         try:
             load_gate_set(path)
-        except (GateSetError, ValueError) as exc:
-            reasons.append(str(exc))
+        except (GateSetError, ValueError, AttributeError, KeyError, TypeError) as exc:
+            reasons.append(f"冻结文件解析失败：{type(exc).__name__}: {exc}")
     hs = _hs()
     index = _delivery_index(_specs_root(hs, specs_root))
     delivered_cells = {(t, tier) for (t, tier, _s) in index}
