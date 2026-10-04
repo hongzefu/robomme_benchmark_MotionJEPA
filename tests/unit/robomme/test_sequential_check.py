@@ -11,6 +11,7 @@ import pytest
 import torch
 
 from robomme.robomme_env.utils import subgoal_evaluate_func as sef
+from tests.unit.robomme import official_thresholds as T
 
 
 def _env(**kw):
@@ -130,15 +131,15 @@ def _actor(x, y, z=0.0):
 
 
 def test_stopped_onto_latches_first_stop_step():
-    env = _env(cube_half_size=0.02, elapsed_steps=30)
+    env = _env(cube_half_size=T.CUBE_HALF, elapsed_steps=30)
     target = _actor(0, 0)
-    assert sef.is_obj_stopped_onto(env, _actor(0.06, 0), target, stop=True) is True   # 3 × 0.02，含等号
+    assert sef.is_obj_stopped_onto(env, _actor(T.STOP_ONTO_XY, 0), target, stop=True) is True   # 含等号
     assert env.stop_timestep == 30
     env.elapsed_steps = 40
     assert sef.is_obj_stopped_onto(env, _actor(0, 0), target, stop=True) is True
     assert env.stop_timestep == 30  # 不改写
-    assert sef.is_obj_stopped_onto(_env(cube_half_size=0.02), _actor(0.061, 0), target, stop=True) is False
-    assert sef.is_obj_stopped_onto(_env(cube_half_size=0.02), _actor(0, 0), target, stop=False) is False
+    assert sef.is_obj_stopped_onto(_env(cube_half_size=T.CUBE_HALF), _actor(T.STOP_ONTO_XY + T.EPS, 0), target, stop=True) is False
+    assert sef.is_obj_stopped_onto(_env(cube_half_size=T.CUBE_HALF), _actor(0, 0), target, stop=False) is False
 
 
 @pytest.mark.parametrize("dx, dy, label8, label4", [
@@ -166,7 +167,7 @@ class _Btn:
         return torch.tensor([[-self.depth]])
 
 
-@pytest.mark.parametrize("depth, pressed", [(0.0051, True), (0.005, False), (0.0, False)])
+@pytest.mark.parametrize("depth, pressed", [(T.BUTTON_DEPTH + T.EPS, True), (T.BUTTON_DEPTH, False), (0.0, False)])
 def test_button_depth_strict(depth, pressed):
     env = _env(button=object())
     assert bool(sef.is_button_pressed(env, _Btn(depth))) is pressed
@@ -174,7 +175,7 @@ def test_button_depth_strict(depth, pressed):
 
 def test_pressed_buttons_removed_from_list():
     env = _env(button=object())
-    a, b, c = _Btn(0.01), _Btn(0.0), _Btn(0.01)
+    a, b, c = _Btn(2 * T.BUTTON_DEPTH), _Btn(0.0), _Btn(2 * T.BUTTON_DEPTH)
     lst = [a, b, c]
     assert sef.is_any_button_pressed_removelist(env, lst) is True and lst == [b]
     assert sef.is_any_button_pressed_removelist(env, lst) is False

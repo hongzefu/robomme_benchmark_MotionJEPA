@@ -10,7 +10,6 @@
 from __future__ import annotations
 
 import importlib
-import math
 
 import numpy as np
 import pytest
@@ -20,12 +19,11 @@ from robomme.env_record_wrapper.DemonstrationWrapper import DemonstrationWrapper
 from robomme.robomme_env.utils import planner_denseStep
 
 from _official_fakes import FakeTaskEnv, as_made
+from tests.unit.robomme import official_thresholds as T
 
 # 包的 __init__ 用同名类覆盖了子模块属性，按模块路径取模块本身
 dw_module = importlib.import_module("robomme.env_record_wrapper.DemonstrationWrapper")
 
-# 独立期望：Panda home 位关节角 + 夹爪张开（官方 reset_panda 注释「action 1 corresponds to qpos 0.04 0.04 == open」）
-HOME_ACTION = [0, 0, 0, -math.pi / 2, 0, math.pi / 2, math.pi / 4, 1.0]
 
 
 def make(env_id="PickXtimes", outcomes=(), max_steps=100, demo_batch=None, demonstration=False, **flags):
@@ -120,7 +118,7 @@ def test_action_too_short_raises(env_id, n_in):
 
 def test_reset_initial_action_home_or_swing():
     _, inner, *_ = make("PickXtimes")
-    np.testing.assert_allclose(inner.actions[0], HOME_ACTION)
+    np.testing.assert_allclose(inner.actions[0], T.HOME_ACTION)
     _, inner, *_ = make("RouteStick")
     np.testing.assert_allclose(inner.actions[0], np.full(7, 0.5))  # swing_qpos 的前 7 维
 

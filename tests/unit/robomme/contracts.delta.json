@@ -1,5 +1,23 @@
 [
   {
+    "id": "T3-PIN-official-thresholds",
+    "domain": "C05",
+    "source": "tests/unit/robomme/official_thresholds.py",
+    "symbol": "钉值文件：官方判定阈值、时间窗口、StopCube 手算算例、离线世界摆放高度、gym.make 固定参数、home 位动作",
+    "oracle": "R8 允许的钉值文件；每个常量注明官方源码 文件::函数 锚点（官方 commit 1fadc0ec）；T3 其余测试文件不写这些数值，边界一律写成 阈值 ± EPS",
+    "positive": "tests/unit/robomme 与 tests/unit/common 下所有用到官方阈值的用例都从此处 import",
+    "negative": "git grep 官方阈值字面值（排除本文件与 mutants.json）在 tests/unit/robomme 下零命中",
+    "boundaries": "数值改动必须同时核对锚点处的官方源码；钉值本身的正确性由引用它的行为用例（阈值两侧各一条）与植入自检共同保证",
+    "nodeids": [
+      "tests/unit/robomme/test_sequential_check.py::test_button_depth_strict",
+      "tests/unit/robomme/tasks/test_official_pickxtimes.py::test_drop_distance_boundary",
+      "tests/unit/robomme/tasks/test_official_stopcube.py::test_stop_on_the_nth_visit_succeeds_and_persists"
+    ],
+    "resource": "cpu",
+    "mutants": ["T3-M01", "T3-M03", "T3-M04"],
+    "status": "verified"
+  },
+  {
     "id": "T3-C02-builder",
     "domain": "C02",
     "source": "src/robomme/env_record_wrapper/episode_config_resolver.py",
@@ -45,10 +63,10 @@
     "domain": "C05",
     "source": "src/robomme/robomme_env/{BinFill,PickXtimes,SwingXtimes,VideoRepick,VideoUnmask,ButtonUnmask,VideoUnmaskSwap,ButtonUnmaskSwap,VideoPlaceButton,VideoPlaceOrder,PickHighlight,StopCube,InsertPeg,MoveCube,PatternLock,RouteStick}.py",
     "symbol": "各任务 __init__／_load_scene／_initialize_episode／evaluate／step（真实方法；只替换建物体的 builder、高亮、渲染材质与 BaseEnv.__init__/step）",
-    "oracle": "目标语言 + 手写事件序列：抓起／放下／按钮深度／tcp 位置／时钟由测试显式摆放；N、颜色、序数从本局实例读并与目标语言交叉核对；几何阈值手算（0.05、0.03、0.048、0.15、0.005 等）",
+    "oracle": "目标语言 + 手写事件序列：抓起／放下／按钮深度／tcp 位置／时钟由测试显式摆放；N、颜色、序数从本局实例读并与目标语言交叉核对；判定阈值、时间窗口与手算算例统一取自钉值文件 tests/unit/robomme/official_thresholds.py（每个常量注明官方锚点）",
     "positive": "16 任务 × 原生三档（easy/medium/hard）各一条完整成功序列；演示段能真实驱动的（VideoUnmask/VideoUnmaskSwap/VideoRepick/VideoPlaceButton/VideoPlaceOrder/InsertPeg/PatternLock/RouteStick）走真实演示→在线切换",
     "negative": "真值表每任务的错误项：N−1/N+1、错对象、错色、提前按、持物按钮、反序、原位置代替身份、空间序代替时间序、before/after 互换、换 peg／换端／反向、错方式、跳节点／仅后缀、方向判反、直线穿过、未悬停、过期、停在前一次到达",
-    "boundaries": "阈值等号（放下 0.049/0.051、摆动 0.029/0.031 与 z 0.119/0.121、容器 0.151/0.15、按钮 0.0051/0.005、推到 0.047/0.049、插入 0.049/0.051、方向近零回退）；失败锁存；重建后状态清零",
+    "boundaries": "阈值两侧 ± EPS（放下 DROP_ONTO_XY、摆动 SWING_ENTER_XY／SWING_ENTER_Z、容器 BIN_PICKUP_Z、推到 PUSH_ONTO_XY、插入 INSERT_XY、方向近零 DIRECTION_NEAR_ZERO）；StopCube 到达步与停止窗口用 STOPCUBE_CASES 的手算算例；失败锁存；重建后状态清零",
     "nodeids": [
       "tests/unit/robomme/tasks/test_official_binfill.py",
       "tests/unit/robomme/tasks/test_official_pickxtimes.py",

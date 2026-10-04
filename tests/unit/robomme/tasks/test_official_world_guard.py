@@ -2,6 +2,7 @@
 上下文外依旧生效（只比对象身份，不真的调用被禁入口，以免记违规账）。"""
 from __future__ import annotations
 
+import pytest
 from mani_skill.envs.sapien_env import BaseEnv
 
 import _official_world as ow
@@ -20,6 +21,45 @@ def test_patches_are_restored():
     assert BaseEnv.__init__ is init and BaseEnv.step is step
     for name, value in before.items():
         assert getattr(mod, name) is value, name
+
+
+def _snapshot(mod):
+    snap = {name: getattr(mod, name) for name in ow.MODULE_PATCHES if hasattr(mod, name)}
+    snap["sapien"] = mod.sapien
+    return snap, BaseEnv.__init__, BaseEnv.step
+
+
+def _assert_restored(mod, snap):
+    names, init, step = snap
+    assert BaseEnv.__init__ is init and BaseEnv.step is step
+    for name, value in names.items():
+        assert getattr(mod, name) is value, name
+
+
+def test_exception_inside_context_still_restores():
+    mod = ow.task_module("PickXtimes")
+    snap = _snapshot(mod)
+    with pytest.raises(RuntimeError, match="用例里的异常"):
+        with OfficialWorld("PickXtimes") as world:
+            world.make("easy", seed=0)
+            raise RuntimeError("用例里的异常")
+    _assert_restored(mod, snap)
+
+
+def test_failure_while_entering_rolls_back():
+    class _Flaky(OfficialWorld):
+        def _swap(self, obj, name, value):
+            if obj is BaseEnv:  # 模块级替换都装上之后、替换 BaseEnv 时出错
+                raise RuntimeError("装到一半")
+            super()._swap(obj, name, value)
+
+    mod = ow.task_module("PickXtimes")
+    snap = _snapshot(mod)
+    world = _Flaky("PickXtimes")
+    with pytest.raises(RuntimeError, match="装到一半"):
+        world.__enter__()
+    _assert_restored(mod, snap)
+    assert world._saved == []
 
 
 def test_guard_still_blocks_real_init_outside_world():

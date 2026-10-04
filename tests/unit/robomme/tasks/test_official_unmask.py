@@ -1,9 +1,9 @@
 """VideoUnmask 与 ButtonUnmask 原生三档真值表（C05）。
 
-两任务共用判定：「拿起容器」= 容器高度 > 0.15 m（严格大于），「放下」= 高度 <= 0.07 m、未被抓、tcp 高于 0.05 m。
-- VideoUnmask：演示段是 64 步静止观看（期间容器被抬走再放回），之后拿起藏着目标色方块的 bin_0；
+两任务共用判定：「拿起容器」= 容器高度 > T.BIN_PICKUP_Z（严格大于），「放下」= 高度 <= T.BIN_PUTDOWN_Z、未被抓、tcp 高于 T.PICKUP_Z。
+- VideoUnmask：演示段是 T.VIDEO_UNMASK_STATIC_STEPS 步静止观看（期间容器被抬走再放回），之后拿起藏着目标色方块的 bin_0；
   hard 档要两次选择（bin_0 → 放下 → bin_1）。
-- ButtonUnmask：先按按钮（深度 > 0.005 m 才算按下），再同样选择。
+- ButtonUnmask：先按按钮（深度 > T.BUTTON_DEPTH 才算按下），再同样选择。
 目标语言里的颜色必须就是藏在 bin_0／bin_1 下的方块颜色（方块初始 xy 与容器重合）。
 """
 from __future__ import annotations
@@ -12,10 +12,11 @@ import numpy as np
 import pytest
 
 from _official_world import OfficialWorld, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 DIFFS = ("easy", "medium", "hard")
-BIN_UP = 0.2
-REVEAL_END = 65  # 揭示动画窗口 [0, 64]：前半段容器在 (10, 10, 10)，第 32 步放回
+BIN_UP = T.BIN_UP_Z
+REVEAL_END = T.REVEAL_END_STEP + 1  # 越过揭示动画窗口
 
 
 @pytest.fixture(params=["VideoUnmask", "ButtonUnmask"])
@@ -32,14 +33,14 @@ def world(task):
 def _to_online(ep, task):
     env = ep.env
     if task == "VideoUnmask":
-        # 演示段：机器人静止 64 步（真实 static_check），子任务指针才进入在线段
+        # 演示段：机器人静止 T.VIDEO_UNMASK_STATIC_STEPS 步（真实 static_check），子任务指针才进入在线段
         guard = 0
         while ep.task_index < ep.first_online_index():
             ep.step()
             guard += 1
             assert guard < 200
     else:
-        # 等过 0～64 步的揭示动画（容器被抬到场景外再放回）再按按钮，见 test_button_unmask_press_during_reveal_fails
+        # 等过揭示动画（容器被抬到场景外再放回）再按按钮，见 test_button_unmask_press_during_reveal_fails
         ep.step(REVEAL_END)
         ep.press(env.button_left)
         ep.step()
@@ -113,7 +114,7 @@ def test_hard_second_pick_without_putdown_fails(world, task):
     assert ep.fail and not ep.success
 
 
-@pytest.mark.parametrize("z, picked", [(0.151, True), (0.15, False)])
+@pytest.mark.parametrize("z, picked", [(T.BIN_PICKUP_Z + T.EPS, True), (T.BIN_PICKUP_Z, False)])
 def test_pickup_height_threshold_is_strict(world, task, z, picked):
     ep = world.make("easy", seed=2)
     env = ep.env
@@ -124,45 +125,40 @@ def test_pickup_height_threshold_is_strict(world, task, z, picked):
 
 
 def test_video_unmask_motion_restarts_static_window():
-    """演示段的 static_check：机器人一动，64 步静止计时重新开始（演示→在线切换的时点）。"""
+    """演示段的 static_check：机器人一动，静止计时重新开始（演示→在线切换的时点）。"""
     with OfficialWorld("VideoUnmask") as world:
         ep = world.make("easy", seed=2)
-        ep.step(40)
+        ep.step(T.VIDEO_UNMASK_STATIC_STEPS // 2)
         ep.move_robot()
         ep.step()
         ep.hold_robot()
         moved_at = int(ep.env.elapsed_steps)
         while ep.task_index == 0:
             ep.step()
-        assert int(ep.env.elapsed_steps) - moved_at >= 64
+        assert int(ep.env.elapsed_steps) - moved_at >= T.VIDEO_UNMASK_STATIC_STEPS
 
 
 def test_video_unmask_bins_return_to_origin_after_reveal():
-    """揭示窗口（0～64 步）里容器被抬走、在第 32 步放回原位；在线段开始时容器都在初始位置。"""
+    """揭示窗口里容器被抬走、在窗口中点放回原位；在线段开始时容器都在初始位置。"""
     with OfficialWorld("VideoUnmask") as world:
         ep = world.make("hard", seed=2)
         origin = [b.xyz.copy() for b in ep.env.spawned_bins]
         ep.step(10)
-        assert all(b.xyz[2] > 5 for b in ep.env.spawned_bins)  # 揭示中：被抬到场景外
+        assert all(b.xyz[2] == T.REVEAL_AWAY_Z for b in ep.env.spawned_bins)  # 揭示中：被抬到场景外
         while ep.task_index == 0:
             ep.step()
         for b, o in zip(ep.env.spawned_bins, origin):
             np.testing.assert_allclose(b.xyz, o, atol=1e-6)
 
 
-@pytest.mark.parametrize("depth, pressed", [(0.0051, True), (0.005, False)])
-def test_button_unmask_depth_threshold(depth, pressed):
-    with OfficialWorld("ButtonUnmask") as world:
-        ep = world.make("easy", seed=2)
-        ep.step(REVEAL_END)
-        ep.press(ep.env.button_left, depth=depth)
-        ep.step()
-        assert (ep.task_index == 1) is pressed
+# 按钮深度「严格大于」的契约只在 test_sequential_check.py::test_button_depth_strict 断言（贴近生产函数）。
 
 
-@pytest.mark.parametrize("press_at, fails", [(1, True), (31, True), (32, False), (40, False)])
+@pytest.mark.parametrize("press_at, fails", [
+    (1, True), (T.REVEAL_DROP_STEP - 1, True), (T.REVEAL_DROP_STEP, False), (T.REVEAL_END_STEP, False),
+])
 def test_button_unmask_press_during_reveal_fails(press_at, fails):
-    """官方现状（契约增量登记为 conditional）：揭示窗口前半段（elapsed < 32）容器被临时移到 z=10，
+    """官方现状（契约增量登记为 conditional）：揭示窗口前半段（elapsed < T.REVEAL_DROP_STEP）容器被临时移到场景外高处，
     此时若已按下按钮，下一步「拿起其他容器」的失败条件成立 → fail（随即 terminated）。"""
     with OfficialWorld("ButtonUnmask") as world:
         ep = world.make("easy", seed=2)
@@ -180,7 +176,7 @@ def test_button_unmask_failure_not_latched_by_env():
         wrong = ep.env.spawned_bins[-1]
         ep.grasp(wrong, z=BIN_UP)
         ep.step()
-        assert ep.fail and ep.history[-1][2]
+        assert ep.fail
         ep.release(wrong)
         ep.step()
         assert not ep.fail

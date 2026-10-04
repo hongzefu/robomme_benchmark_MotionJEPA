@@ -12,6 +12,7 @@ import numpy as np
 import pytest
 
 from _official_world import OfficialWorld, find_seed, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 DIFFS = ("easy", "medium", "hard")
 ORDINALS = {1: "first", 2: "second", 3: "third", 4: "fourth"}
@@ -120,7 +121,7 @@ def test_vpb_hard_swap_follows_identity():
             env = ep.env
             origin = env.target_target.xyz[:2].copy()
             drive_demo(ep)
-            assert np.linalg.norm(env.target_target.xyz[:2] - origin) > 0.05
+            assert np.linalg.norm(env.target_target.xyz[:2] - origin) > T.DROP_ONTO_XY  # 原位置已不在它的放置半径内
             ep.grasp(env.target_cube)
             ep.step()
             if put_on_original:

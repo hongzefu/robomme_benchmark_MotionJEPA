@@ -4,8 +4,7 @@
     "target": "src/robomme/robomme_env/utils/subgoal_evaluate_func.py::is_button_pressed",
     "inject": "进程内替换为 depth >= 0.005（严格大于改成大于等于）；同时替换 subgoal_evaluate_func 与 16 个任务模块命名空间里的同名引用（任务模块经 from .utils import * 持有引用）",
     "expect_fail": [
-      "tests/unit/robomme/test_sequential_check.py::test_button_depth_strict[0.005-False]",
-      "tests/unit/robomme/tasks/test_official_unmask.py::test_button_unmask_depth_threshold[0.005-False]"
+      "tests/unit/robomme/test_sequential_check.py::test_button_depth_strict"
     ],
     "verified": true
   },

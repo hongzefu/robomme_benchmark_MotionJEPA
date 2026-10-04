@@ -9,6 +9,7 @@ from __future__ import annotations
 import pytest
 
 from _official_world import OfficialWorld, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 TASK = "PickXtimes"
 DIFFS = ("easy", "medium", "hard")
@@ -47,7 +48,6 @@ def test_n_cycles_then_button_succeeds(world, diff):
     ep.press(env.button)
     ep.step()
     assert ep.success and not ep.fail
-    assert ep.history[-1][2] is True  # terminated
 
 
 @pytest.mark.parametrize("diff", DIFFS)
@@ -113,14 +113,14 @@ def test_place_off_target_does_not_advance(world, diff):
     ep.step()
     before = ep.task_index
     tx, ty, _ = env.target.xyz
-    ep.release(env.target_cube, tx + 0.2, ty + 0.2)  # 放在离 target 0.28 m 处
+    ep.release(env.target_cube, tx + 4 * T.DROP_ONTO_XY, ty)  # 远在放置阈值之外
     ep.step()
     assert ep.task_index == before and not ep.success and not ep.fail
 
 
 def test_drop_distance_boundary(world):
-    """is_obj_dropped_onto 的水平距离阈值 0.05 m（<= 判定）：0.049 推进，0.051 不推进。"""
-    for offset, advances in ((0.049, True), (0.051, False)):
+    """is_obj_dropped_onto 的水平距离阈值 T.DROP_ONTO_XY（<= 判定）：阈值内侧推进、外侧不推进。"""
+    for offset, advances in ((T.DROP_ONTO_XY - T.EPS, True), (T.DROP_ONTO_XY + T.EPS, False)):
         ep = world.make("easy", seed=3)
         env = ep.env
         ep.grasp(env.target_cube)

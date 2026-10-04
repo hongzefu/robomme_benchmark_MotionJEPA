@@ -4,7 +4,7 @@
 → 复位检查；hard 档无交换。期望：
 - 在线段 N 次「拾起同一块 → 放下」后按按钮 → 成功；演示里那一次不计入 N；
 - 拿起别的方块（包括交换后占着它原位置的那一块）→ 失败；
-- 拾放子任务期间按钮：在计时窗口 [50, 500] 步内按下 → 失败；窗口前（< 50 步）按下不判失败（官方现状）。
+- 拾放子任务期间按钮：在计时窗口 T.REPICK_BUTTON_WINDOW 内按下 → 失败；窗口开始前按下不判失败（官方现状）。
 """
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ import numpy as np
 import pytest
 
 from _official_world import OfficialWorld, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 TASK = "VideoRepick"
 DIFFS = ("easy", "medium", "hard")
@@ -104,13 +105,13 @@ def test_demo_pick_not_counted(world, diff):
     start = int(env.elapsed_steps)
     for _ in range(env.num_repeats - 1):
         _cycle(ep, env.target_cube_1)
-    ep.step(max(0, 60 - (int(env.elapsed_steps) - start)))
+    ep.step(max(0, T.REPICK_BUTTON_WINDOW[0] + 10 - (int(env.elapsed_steps) - start)))
     ep.press(env.button_left)
     ep.step()
     assert ep.fail and not ep.success
 
 
-@pytest.mark.parametrize("wait, fails", [(10, False), (60, True)])
+@pytest.mark.parametrize("wait, fails", [(T.REPICK_BUTTON_WINDOW[0] - 10, False), (T.REPICK_BUTTON_WINDOW[0] + 10, True)])
 def test_button_timewindow_during_repick(world, wait, fails):
     ep = world.make("hard", seed=6)
     env = ep.env

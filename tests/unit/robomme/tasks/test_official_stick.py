@@ -15,10 +15,11 @@ import pytest
 import torch
 
 from _official_world import OfficialWorld, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 DIFFS = ("easy", "medium", "hard")
-TOUCH_Z = 0.05
-HIGH_Z = 0.3
+TOUCH_Z = T.STICK_TOUCH_Z
+HIGH_Z = T.STICK_HIGH_Z
 
 
 def _touch(ep, target):
@@ -127,7 +128,7 @@ def _detour(ep, prev, curr, sign, steps=3):
     line = c - p
     normal = np.array([-line[1], line[0]]) / np.linalg.norm(line)
     for i in range(1, steps + 1):
-        q = p + line * i / (steps + 1) + sign * 0.08 * normal
+        q = p + line * i / (steps + 1) + sign * T.DETOUR_OFFSET * normal
         ep.tcp_to(q[0], q[1], HIGH_Z)
         ep.step()
     _touch(ep, curr)

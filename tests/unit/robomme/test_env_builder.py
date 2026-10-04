@@ -14,6 +14,7 @@ from robomme.env_record_wrapper import episode_config_resolver as ecr
 from robomme.env_record_wrapper.episode_config_resolver import BenchmarkEnvBuilder
 
 from _official_fakes import GymMakeSpy, find_wrapper, wrapper_chain
+from tests.unit.robomme import official_thresholds as T
 
 ACTION_SPACES = ("joint_angle", "ee_pose", "waypoint", "multi_choice")
 SPLITS = ("train", "val", "test")
@@ -67,7 +68,7 @@ def test_accepts_official_splits(split):
 
 def test_task_list_matches_metadata_files_and_is_a_copy():
     tasks = BenchmarkEnvBuilder.get_task_list()
-    assert len(tasks) == len(set(tasks)) == 16
+    assert len(tasks) == len(set(tasks))  # 个数由下面与三个 split 元数据文件名集合相等来钉
     for split in SPLITS:
         assert set(tasks) == _metadata_tasks(split), split
     tasks.append("Injected")
@@ -134,8 +135,7 @@ def test_make_env_kwargs_and_chain(tmp_path, gym_spy, space):
     env = BenchmarkEnvBuilder("PickXtimes", action_space=space, override_metadata_path=root).make_env_for_episode(4)
     env_id, kwargs = gym_spy.calls[-1]
     assert env_id == "PickXtimes"
-    assert kwargs == {"obs_mode": "rgb+depth+segmentation", "control_mode": "pd_joint_pos",
-                      "render_mode": "rgb_array", "reward_mode": "dense", "seed": 123, "difficulty": "medium"}
+    assert kwargs == {**T.GYM_MAKE_FIXED_KWARGS, "seed": 123, "difficulty": "medium"}
     assert wrapper_chain(env) == CHAINS[space]
     assert env.unwrapped.use_demonstrationwrapper is True
     if space == "ee_pose":

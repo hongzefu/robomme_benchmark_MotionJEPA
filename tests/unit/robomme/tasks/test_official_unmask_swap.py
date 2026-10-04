@@ -12,9 +12,10 @@ import numpy as np
 import pytest
 
 from _official_world import OfficialWorld, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 DIFFS = ("easy", "medium", "hard")
-BIN_UP = 0.2
+BIN_UP = T.BIN_UP_Z
 
 
 def _xy(a):
@@ -161,7 +162,7 @@ def bus():
         yield w
 
 
-REVEAL_END = 65
+REVEAL_END = T.REVEAL_END_STEP + 1  # 越过揭示动画窗口
 
 
 def _press_both(ep, env, order=("button_left", "button_right")):

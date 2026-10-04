@@ -9,8 +9,14 @@
   ``BaseEnv.step`` 同一次序的最小版本：elapsed_steps 加一 → ``evaluate()`` → terminated = success | fail；
 - 机器人换成 ``FakeAgent``：tcp 位置、关节 qpos/qvel、当前抓着谁，全部由测试显式摆放。
 
-所有替换都只在 ``OfficialWorld`` 上下文内生效、退出即还原，不改任何文件（R9：受保护的 src/robomme 只做进程内、
-可恢复的替换）。资源守卫对 ``BaseEnv.__init__`` 的拦截在退出上下文后恢复原样（见 ``test_official_world_guard``）。
+所有替换都只在 ``OfficialWorld`` 上下文内生效、退出即还原（进入中途抛异常也会回滚已替换项），不改任何文件
+（R9：受保护的 src/robomme 只做进程内、可恢复的替换）。
+
+关于资源守卫：上下文内 ``BaseEnv.__init__``（守卫装的拦截函数）被临时换成惰性桩。这样做安全的前提是：
+① 任务实例的 ``scene`` 是 ``FakeScene``，任务模块里所有会碰真实场景的 builder 都已换成替身；
+② 任务模块的 ``sapien`` 名字换成只透出 ``Pose`` 与占位 ``RenderMaterial`` 的代理，渲染系统不会被初始化；
+③ 退出上下文后拦截函数原样恢复（见 ``test_official_world_guard``）。不满足这三条时不得复用本上下文。
+摆放高度与判定阈值统一取自钉值文件 ``tests/unit/robomme/official_thresholds.py``。
 """
 from __future__ import annotations
 
@@ -25,6 +31,7 @@ from mani_skill.utils.structs.pose import Pose
 
 from robomme.robomme_env.utils import object_generation as og
 from robomme.robomme_env.utils import reset_panda
+from tests.unit.robomme import official_thresholds as T
 
 STICK_TASKS = ("PatternLock", "RouteStick")
 # 机器人基座位置（真实 Panda 在 TableSceneBuilder 里放在 x=-0.615）；只用于 InsertPeg 判「近端／远端」
@@ -133,7 +140,7 @@ class FakeRobot:
 class FakeAgent:
     def __init__(self, stick: bool):
         self.robot = FakeRobot(stick)
-        self.tcp = FakeActor("tcp", (0.0, 0.0, 0.2))
+        self.tcp = FakeActor("tcp", (0.0, 0.0, T.CARRY_HIGH_Z))
         self.held = None
 
     def reset(self, qpos):
@@ -202,66 +209,55 @@ def _center_of(value, default=(0.0, 0.0)):
     return float(arr[0]), float(arr[1])
 
 
-def fake_build_button(self, center_xy=(0.15, 0.10), base_half=(0.025, 0.025, 0.005), cap_radius=0.015,
-                      cap_half_len=0.006, travel=None, stiffness=800.0, damping=40.0, scale=None, generator=None,
-                      name="button", randomize=True, randomize_range=(0.1, 0.4)):
-    scale = float(scale if scale is not None else 1.0)
-    base_half = [b * scale for b in base_half]
+def fake_build_button(self, center_xy, *, generator=None, name="button", randomize=True, randomize_range=(0.1, 0.4),
+                      **_ignored):
+    """按钮替身。官方任务调用时总会显式给 center_xy；randomize_range 的默认值同官方 build_button 签名。"""
     cx, cy = float(center_xy[0]), float(center_xy[1])
     if randomize:  # 与真实 build_button 消耗同样的随机数，保持后续抽样流位置不变
         off = torch.rand(2, generator=generator) - 0.5
         cx += float(off[0]) * float(randomize_range[0])
         cy += float(off[1]) * float(randomize_range[1])
-    button = FakeButton(name, (cx, cy, base_half[2]))
+    button = FakeButton(name, (cx, cy, 0.0))
     self.button = button
     self.button_joint = None
-    self.button_travel = 0.1 * scale
     if not hasattr(self, "cap_links"):
         self.cap_links = {}
-    self.cap_links[name] = [FakeActor(f"{name}_cap", (cx, cy, base_half[2] * 2))]
+    self.cap_links[name] = [FakeActor(f"{name}_cap", (cx, cy, 0.0))]
     self.cap_link = self.cap_links[name]
     placed = getattr(self, "_fake_placed", [])
     placed.append((cx, cy))
     self._fake_placed = placed
-    return og.create_button_obb(center_xy=(cx, cy), half_size=max(base_half[0], base_half[1]) * 1.5)
+    return og.create_button_obb(center_xy=(cx, cy))
 
 
-def fake_spawn_random_cube(self, region_center=(0, 0), region_half_size=0.1, half_size=0.01, color=(1, 0, 0, 1),
-                           name_prefix="cube_extra", min_gap=0.005, max_trials=256, avoid=None, random_yaw=True,
-                           include_existing=True, include_goal=True, generator=None):
+def fake_spawn_random_cube(self, *, region_center=(0, 0), half_size, name_prefix="cube_extra", **_ignored):
     x, y = _free_xy(self, _center_of(region_center))
     return FakeActor(name_prefix, (x, y, float(half_size)), half=half_size)
 
 
-def fake_spawn_random_target(self, avoid=None, include_existing=True, include_goal=True, region_center=(0, 0),
-                             region_half_size=0.1, radius=0.02, thickness=0.005, min_gap=0.005, name_prefix="target",
-                             generator=None, target_style=None, **_ignored):
+def fake_spawn_random_target(self, *, region_center=(0, 0), name_prefix="target", **_ignored):
     x, y = _free_xy(self, _center_of(region_center))
-    return FakeActor(name_prefix, (x, y, float(thickness) / 2))
+    return FakeActor(name_prefix, (x, y, 0.0))
 
 
-def fake_spawn_random_bin(self, avoid=None, region_center=(-0.1, 0), region_half_size=0.3, min_gap=0.05,
-                          name_prefix="bin", max_trials=256, generator=None):
+def fake_spawn_random_bin(self, *, region_center=(0, 0), name_prefix="bin", **_ignored):
     x, y = _free_xy(self, _center_of(region_center))
-    return FakeActor(name_prefix, (x, y, 0.02))
+    return FakeActor(name_prefix, (x, y, T.TABLE_Z))
 
 
-def fake_spawn_fixed_cube(self, position, half_size=None, color=(1, 0, 0, 1), name_prefix="fixed_cube", yaw=0.0,
-                          dynamic=False):
+def fake_spawn_fixed_cube(self, position, half_size=None, name_prefix="fixed_cube", **_ignored):
     hs = float(half_size if half_size is not None else self.cube_half_size)
     p = list(np.asarray(position, dtype=np.float64).reshape(-1))
     z = p[2] if len(p) > 2 else hs
     return FakeActor(name_prefix, (p[0], p[1], z), half=hs)
 
 
-def fake_build_board_with_hole(self, *, board_side=0.01, hole_side=0.06, thickness=0.02, position=None,
-                               rotation_quat=None, name="board_with_hole", **_ignored):
+def fake_build_board_with_hole(self, *, position, name="board_with_hole", **_ignored):
     p = list(position) + [0.0] * (3 - len(position))
     return FakeActor(name, p[:3])
 
 
-def fake_build_disk_target(scene, radius, thickness, name, body_type="dynamic", add_collision=True, scene_idxs=None,
-                           initial_pose=None):
+def fake_build_disk_target(scene, *, name, initial_pose=None, **_ignored):
     pose = initial_pose if initial_pose is not None else sapien.Pose()
     return FakeActor(name, pose.p, pose.q)
 
@@ -272,7 +268,7 @@ def fake_build_peg(self, length, radius, initial_pose=None, name="peg", head_col
     return peg, peg.head, peg.tail
 
 
-def fake_build_box_with_hole(self, inner_radius, outer_radius, depth, center=(0, 0)):
+def fake_build_box_with_hole(self, center=(0, 0), **_ignored):
     return FakeActor("box_with_hole", (float(center[0]), float(center[1]), 0.0))
 
 
@@ -338,19 +334,26 @@ class OfficialWorld:
         setattr(obj, name, value)
 
     def __enter__(self):
-        for name, value in MODULE_PATCHES.items():
-            if hasattr(self.module, name):
-                self._swap(self.module, name, value)
-        proxy = SimpleNamespace(Pose=sapien.Pose, render=SimpleNamespace(RenderMaterial=_FakeMaterial))
-        self._swap(self.module, "sapien", proxy)
-        self._swap(BaseEnv, "__init__", _inert_base_init)
-        self._swap(BaseEnv, "step", _fake_base_step)
+        try:
+            for name, value in MODULE_PATCHES.items():
+                if hasattr(self.module, name):
+                    self._swap(self.module, name, value)
+            proxy = SimpleNamespace(Pose=sapien.Pose, render=SimpleNamespace(RenderMaterial=_FakeMaterial))
+            self._swap(self.module, "sapien", proxy)
+            self._swap(BaseEnv, "__init__", _inert_base_init)
+            self._swap(BaseEnv, "step", _fake_base_step)
+        except BaseException:
+            self._restore()  # 装到一半失败：回滚已替换项再重抛
+            raise
         return self
 
-    def __exit__(self, *exc):
+    def _restore(self):
         for obj, name, value in reversed(self._saved):
             setattr(obj, name, value)
         self._saved.clear()
+
+    def __exit__(self, *exc):
+        self._restore()
         return False
 
     def make(self, difficulty: str, seed: int = 0, **kwargs) -> "Episode":
@@ -375,8 +378,8 @@ class OfficialWorld:
 class Episode:
     """一局离线环境 + 摆放世界的动作原语。所有判定都来自真实的 ``env.step`` → ``evaluate``。"""
 
-    LIFT_Z = 0.10   # 抓起后物体高度（> 0.05 才算 pickup）
-    TABLE_Z = 0.02  # 放下后物体高度（<= 0.035 才算 dropped）
+    LIFT_Z = T.LIFT_Z     # 抓起后物体高度（> T.PICKUP_Z）
+    TABLE_Z = T.TABLE_Z   # 放下后物体高度（<= T.DROPPED_Z）
 
     def __init__(self, env):
         self.env = env
@@ -442,8 +445,8 @@ class Episode:
         obj.move_to(x, y, z)
         self.tcp_to(x, y, z)
 
-    def release(self, obj, x=None, y=None, z: float | None = None, tcp_z: float = 0.15):
-        """松手放下：不再抓着，物体落到桌面高度，tcp 抬到 tcp_z（> 0.05）。"""
+    def release(self, obj, x=None, y=None, z: float | None = None, tcp_z: float = T.TCP_UP_Z):
+        """松手放下：不再抓着，物体落到桌面高度，tcp 抬到 tcp_z（> T.PICKUP_Z）。"""
         z = self.TABLE_Z if z is None else z
         if self.agent.held is obj:
             self.agent.held = None
@@ -456,7 +459,7 @@ class Episode:
         self.carry(obj, tx, ty)
         self.release(obj, tx, ty)
 
-    def press(self, button, depth: float = 0.01):
+    def press(self, button, depth: float = 2 * T.BUTTON_DEPTH):
         button.depth = depth
 
     def unpress(self, button):
@@ -469,7 +472,7 @@ class Episode:
 
     def open_gripper(self):
         q = self.agent.robot.qpos.clone()
-        q[0, -2:] = 0.04
+        q[0, -2:] = 2 * T.GRIPPER_OPEN
         self.agent.robot.qpos = q
 
     def set_qpos(self, qpos):

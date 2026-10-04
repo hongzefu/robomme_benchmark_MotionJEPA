@@ -1,8 +1,8 @@
 """InsertPeg 原生三档真值表（C05、C07 几何）。
 
 几何判据（手算摆位）：
-- 「按演示的那一端拿起」：抓取端高度 > 0.1 m，且 tcp 离抓取端比离插入端近（严格 <）；
-- 「从演示的那一侧插入」：插入端到盒子 < 0.05 m、比抓取端更近，且 (tcp_y − box_y)·direction < 0；
+- 「按演示的那一端拿起」：抓取端高度 > T.PEG_PICKUP_Z，且 tcp 离抓取端比离插入端近（严格 <）；
+- 「从演示的那一侧插入」：插入端到盒子 < T.INSERT_XY、比抓取端更近，且 (tcp_y − box_y)·direction < 0；
   |tcp_y − box_y| < 1e−3 时改用抓取端 y 判侧；
 - 换 peg、换端、插错端、反向插入 → 失败。演示段（拿起 → 插入 → 复位 → 静止 100 步）也用这些摆位真实驱动，
   复位那一步用真实 step 里的 reset_in_proecess 分支把三根 peg 放回初始位姿。三档在官方实现里共用同一逻辑。
@@ -12,10 +12,11 @@ from __future__ import annotations
 import pytest
 
 from _official_world import OfficialWorld, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 TASK = "InsertPeg"
 DIFFS = ("easy", "medium", "hard")
-LIFT = 0.15
+LIFT = T.PEG_LIFT_Z
 
 
 @pytest.fixture
@@ -35,11 +36,11 @@ def _lift_by(ep, grab, other):
 
 
 def _insert(ep, insert_end, grab_end, side_sign, gap=0.0):
-    """插入端放到盒子中心（偏 gap），抓取端在 y 方向 side_sign 一侧 0.05 m，tcp 跟着抓取端。"""
+    """插入端放到盒子中心（偏 gap），抓取端在 y 方向 side_sign 一侧 T.PEG_END_OFFSET，tcp 跟着抓取端。"""
     bx, by, bz = ep.env.box.xyz
     insert_end.move_to(bx + gap, by, bz)
-    grab_end.move_to(bx, by + side_sign * 0.05, bz)
-    ep.tcp_to(bx, by + side_sign * 0.05, bz + 0.05)
+    grab_end.move_to(bx, by + side_sign * T.PEG_END_OFFSET, bz)
+    ep.tcp_to(bx, by + side_sign * T.PEG_END_OFFSET, bz + T.PEG_END_OFFSET)
 
 
 def _correct_side(env):
@@ -132,7 +133,7 @@ def test_equidistant_tcp_does_not_count_as_grasp(world):
     assert ep.task_index == ep.first_online_index() and not ep.fail
 
 
-@pytest.mark.parametrize("gap, inserted", [(0.049, True), (0.051, False)])
+@pytest.mark.parametrize("gap, inserted", [(T.INSERT_XY - T.EPS, True), (T.INSERT_XY + T.EPS, False)])
 def test_insert_distance_threshold(world, gap, inserted):
     ep, env = _online(world)
     _lift_by(ep, env.grasp_target, env.insert_target)
@@ -150,7 +151,7 @@ def test_direction_near_zero_falls_back_to_grip_end(world, grip_side_ok):
     side = _correct_side(env) if grip_side_ok else -_correct_side(env)
     _insert(ep, env.insert_target, env.grasp_target, side)
     bx, by, bz = env.box.xyz
-    ep.tcp_to(bx + 0.05, by + 0.0005, bz)  # |tcp_y − box_y| < 1e−3
+    ep.tcp_to(bx + T.PEG_END_OFFSET, by + T.DIRECTION_NEAR_ZERO / 2, bz)  # |tcp_y − box_y| < 阈值
     ep.step()
     assert ep.success is grip_side_ok and ep.fail is (not grip_side_ok)
 
@@ -160,7 +161,7 @@ def test_reset_branch_restores_peg_poses(world):
     env = ep.env
     init = [p.xyz.copy() for p in env.pegs]
     for p in env.pegs:
-        p.set_pose(((0.3, 0.3, 0.3), (1, 0, 0, 0)))
+        p.set_pose(((T.CARRY_HIGH_Z,) * 3, (1, 0, 0, 0)))  # 任意远离初始位姿的位置
     env.reset_in_proecess = True
     ep.step()
     for p, x in zip(env.pegs, init):

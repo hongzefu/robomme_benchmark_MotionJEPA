@@ -1,8 +1,8 @@
 """SwingXtimes 原生三档真值表（C05）：拾起 → 右→左 往返 N 轮 → 放下 → 按钮。
 
 判定要点（期望由任务定义与手写事件序列得出）：
-- 「到达目标上方」= 水平距离 <= 0.03 m 且高度 < 0.12 m；
-- 每次「进入」右／左目标各记一次摆动，停留不重复计（离开阈值 0.04 m／0.3 m 的迟滞）；摆动总数 > 2N 即失败；
+- 「到达目标上方」= 水平距离 <= T.SWING_ENTER_XY 且高度 < T.SWING_ENTER_Z；
+- 每次「进入」右／左目标各记一次摆动，停留不重复计（离开阈值 T.SWING_EXIT_XY 的迟滞）；摆动总数 > 2N 即失败；
 - 左右反序不推进子任务；按钮前未放下、或拾干扰块 → 失败。
 """
 from __future__ import annotations
@@ -10,10 +10,11 @@ from __future__ import annotations
 import pytest
 
 from _official_world import OfficialWorld, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 TASK = "SwingXtimes"
 DIFFS = ("easy", "medium", "hard")
-SWING_Z = 0.10
+SWING_Z = T.LIFT_Z  # < T.SWING_ENTER_Z
 
 
 @pytest.fixture
@@ -29,7 +30,7 @@ def _over(ep, env, target, dx=0.0, z=SWING_Z):
 
 
 def _away(ep, env):
-    ep.carry(env.target_cube, 0.05, 0.0, 0.2)
+    ep.carry(env.target_cube, 0.0, 0.0, T.CARRY_HIGH_Z)
     ep.step()
 
 
@@ -41,7 +42,7 @@ def _full_rounds(ep, env, rounds):
 
 def _finish(ep, env):
     _away(ep, env)
-    ep.release(env.target_cube, 0.05, 0.0)
+    ep.release(env.target_cube, 0.0, 0.0)
     ep.step()
     ep.press(env.button)
     ep.step()
@@ -90,8 +91,8 @@ def test_dwelling_counts_once(world, diff):
     for _ in range(5):
         _over(ep, env, env.target_right)
     assert env.swing_count == 1
-    # 在离开阈值内（0.035 m < 0.04 m）晃动仍算停留
-    _over(ep, env, env.target_right, dx=0.035)
+    # 超出进入阈值、仍在离开阈值内晃动：仍算停留
+    _over(ep, env, env.target_right, dx=T.SWING_EXIT_XY - T.EPS)
     assert env.swing_count == 1
     # 真正离开再回来：再计一次
     _away(ep, env)
@@ -100,8 +101,8 @@ def test_dwelling_counts_once(world, diff):
 
 
 @pytest.mark.parametrize("dx, z, advances", [
-    (0.029, SWING_Z, True), (0.031, SWING_Z, False),
-    (0.0, 0.119, True), (0.0, 0.121, False),
+    (T.SWING_ENTER_XY - T.EPS, SWING_Z, True), (T.SWING_ENTER_XY + T.EPS, SWING_Z, False),
+    (0.0, T.SWING_ENTER_Z - T.EPS, True), (0.0, T.SWING_ENTER_Z + T.EPS, False),
 ])
 def test_swing_thresholds(world, dx, z, advances):
     ep = world.make("easy", seed=5)

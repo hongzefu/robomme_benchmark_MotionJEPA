@@ -1,10 +1,10 @@
 """MoveCube 原生三档真值表（C05）：按演示的方式把方块移到目标——peg 钩推、夹爪推、抓起放下三选一。
 
 期望（三种方式各自的在线段）：
-- gripper_push：夹爪张开（两指 > 0.02）状态下把方块推到目标（水平距离 <= 0.048 m = 2.4 × 方块半边长 0.02 m）→ 成功；
+- gripper_push：夹爪张开（两指 > T.GRIPPER_OPEN）状态下把方块推到目标（水平距离 <= T.PUSH_ONTO_XY）→ 成功；
   拿起方块或拿起 peg → 失败；
 - peg_push：先拿起 peg（任一端），再把方块钩到目标且夹爪张开 → 成功；拿 peg 之前方块已到目标 → 失败；
-- grasp_putdown：拿起方块再放到目标（0.05 m 内）→ 成功；不拿起直接推到目标 → 失败。
+- grasp_putdown：拿起方块再放到目标（T.DROP_ONTO_XY 内）→ 成功；不拿起直接推到目标 → 失败。
 演示结束后由真实 step 的 reset_in_proecess 分支把方块与目标换到第二套位姿（演示数据不污染在线段）。
 """
 from __future__ import annotations
@@ -13,10 +13,10 @@ import numpy as np
 import pytest
 
 from _official_world import OfficialWorld, find_seed
+from tests.unit.robomme import official_thresholds as T
 
 TASK = "MoveCube"
 DIFFS = ("easy", "medium", "hard")
-PUSH_THRESHOLD = 0.048  # 2 × 1.2 × cube_half_size（panda 方块半边长 0.02 m）
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def _online(world, diff, way):
     seed = find_seed(TASK, diff, lambda e: e.way == way)
     ep = world.make(diff, seed=seed)
     env = ep.env
-    assert env.cube_half_size == pytest.approx(0.02)
+    assert env.cube_half_size == pytest.approx(T.CUBE_HALF)  # 钉值 PUSH_ONTO_XY 的前提
     ep.skip_demo()
     env.reset_in_proecess = True  # solve_strong_reset 期间：真实 step 把方块/目标换到第二套位姿
     ep.step()
@@ -43,7 +43,7 @@ def _online(world, diff, way):
 def _push_to(ep, env, dx=0.0):
     gx, gy, _ = env.goal_site.xyz
     env.cube.move_to(gx + dx, gy, env.cube_half_size)
-    ep.tcp_to(gx + dx - 0.04, gy, 0.03)
+    ep.tcp_to(gx + dx - 2 * T.CUBE_HALF, gy, T.TABLE_Z)
 
 
 @pytest.mark.parametrize("diff", DIFFS)
@@ -58,7 +58,7 @@ def test_gripper_push(world, diff):
     assert ep.success and not ep.fail
 
 
-@pytest.mark.parametrize("dx, ok", [(PUSH_THRESHOLD - 0.001, True), (PUSH_THRESHOLD + 0.001, False)])
+@pytest.mark.parametrize("dx, ok", [(T.PUSH_ONTO_XY - T.EPS, True), (T.PUSH_ONTO_XY + T.EPS, False)])
 def test_push_distance_threshold(world, dx, ok):
     ep, env = _online(world, "easy", "gripper_push")
     _push_to(ep, env, dx=dx)

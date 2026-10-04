@@ -9,12 +9,13 @@ import numpy as np
 import pytest
 
 from _official_world import OfficialWorld, goal_text
+from tests.unit.robomme import official_thresholds as T
 
 TASK = "BinFill"
 DIFFS = ("easy", "medium", "hard")
 WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}
 # 越过 dynamic 抬起动画窗口（最长 idx*100 步），让替身位置只由测试摆放
-ONLINE_START = 2000
+ONLINE_START = T.BINFILL_ONLINE_START
 
 
 @pytest.fixture
@@ -79,7 +80,7 @@ def test_cube_put_into_bin_is_removed_from_scene(world, diff):
     color, _ = env.binfill_language_sequence[0]
     cube = _cubes(env, color)[0]
     _put_into_bin(ep, env, cube)
-    np.testing.assert_allclose(cube.xyz, [10.0, 10.0, 0.0], atol=1e-6)
+    np.testing.assert_allclose(cube.xyz, T.BINFILL_REMOVED_XYZ, atol=1e-6)
     ep.step(3)  # 已移出的方块不再重复计数
     assert sum([env.red_cubes_in_bin, env.blue_cubes_in_bin, env.green_cubes_in_bin]) == 1
 
@@ -166,13 +167,13 @@ def test_drop_outside_bin_does_not_count(world):
     ep.grasp(cube)
     ep.step()
     bx, by, _ = env.board_with_hole.xyz
-    ep.release(cube, bx + 0.06, by)  # 水平 0.06 m > 0.05 m
+    ep.release(cube, bx + T.DROP_ONTO_XY + T.EPS, by)  # 刚出放置阈值
     ep.step()
     assert sum([env.red_cubes_in_bin, env.blue_cubes_in_bin, env.green_cubes_in_bin]) == 0
 
 
 def test_drop_with_closed_gripper_does_not_count(world):
-    """check_block_away_gripper：夹爪未张开（两指 <= 0.02）时不计入箱子。"""
+    """check_block_away_gripper：夹爪未张开（两指 <= T.GRIPPER_OPEN）时不计入箱子。"""
     ep = _start(world, "easy")
     env = ep.env
     color, _ = env.binfill_language_sequence[0]
