@@ -240,6 +240,8 @@ class BenchmarkEnvBuilder(_OfficialBuilder):
                 "spec_sha256": row["spec_sha256"],
                 "source_run": (row.get("rollout") or {}).get("source_run"),
             }
+            if "layout_parent" in row:
+                identity["layout_parent"] = row["layout_parent"]
         if self._specs_root is not None:
             identity["specs_root"] = str(self._specs_root)
         return identity

@@ -532,8 +532,9 @@ V9_SHARD_TASKS: dict[str, tuple[str, ...]] = {"shard1": ("MoveCube",)}
 V9_SMOKE_CELLS: dict[tuple[str, str], int] = {("MoveCube", "xhard4"): 1, ("InsertPeg", "xhard4"): 1}
 assert all(task in hard_specs.ALL_TASKS for tasks in V9_SHARD_TASKS.values() for task in tasks)
 assert all(0 < n <= hard_specs.V9_CELLS[k] for k, n in V9_SMOKE_CELLS.items())
-#: ``--cells`` 的 v9 具名格表：``v9shard1``（V9_SHARD_TASKS 的片，局数取 V9_CELLS）、``v9smoke``
-V9_CELL_NAMES = ("v9smoke", *(f"v9{name}" for name in V9_SHARD_TASKS))
+#: ``--cells`` 的 v9 具名格表：``v9``（V9_CELLS 完整 43 格 800，freeze_specs／generate_h5 的缺省）、
+#: ``v9shard1``（V9_SHARD_TASKS 的片，局数取 V9_CELLS）、``v9smoke``
+V9_CELL_NAMES = ("v9", "v9smoke", *(f"v9{name}" for name in V9_SHARD_TASKS))
 #: 逐格与全局计数键（全部显式写出，零值也写）
 V8_CELL_COUNT_KEYS = ("expected", "candidates", "tried", "delivered", "failed", "exec_over_cap", "backfills",
                       "infra_retries", "spares_left", "pending", "bad_h5")
@@ -569,13 +570,15 @@ def check_cells(cells: dict[tuple[str, str], int],
 
 
 def resolve_cells(spec: str | Path) -> dict[tuple[str, str], int]:
-    """``--cells``：``v9shard1``（V9 MoveCube 一片，局数取 V9_CELLS）／``v9smoke``（V9 冒烟 2 格）／
+    """``--cells``：``v9``（V9_CELLS 完整 43 格 800）／``v9shard1``（V9 MoveCube 一片，局数取 V9_CELLS）／``v9smoke``（V9 冒烟 2 格）／
     格表 JSON 路径（``{"Task@tier": 局数}`` 或 ``{"cells": [{"task", "tier", "count"}]}``）。
     V8 专用的 ``full``（V8 1070 局表）与 ``smoke``（V8 2b 冒烟 7 格）已于维护计划阶段 1b（W4）删除。"""
     text = str(spec)
     if text in ("full", "smoke"):
         raise RolloutError(f"--cells {text} 只服务 V8（1070 局表／2b 冒烟），已删除；请显式给 "
                            f"{'／'.join(V9_CELL_NAMES)} 或格表 JSON 路径")
+    if text == "v9":
+        return check_cells(dict(hard_specs.V9_CELLS), hard_specs.V9_CELLS)
     if text == "v9smoke":
         return check_cells(dict(V9_SMOKE_CELLS), hard_specs.V9_CELLS)
     if text.startswith("v9") and text[2:] in V9_SHARD_TASKS:
