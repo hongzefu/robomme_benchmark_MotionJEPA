@@ -9,18 +9,14 @@ v8：1001-newtask-v8-xhard-gradient-plan.md 第一部分 §2.3、§3，第二部
   对数为 0 → ``V8_LAYOUT_INDEPENDENT``。
 * ``tier-values``（纯 CPU，v8）：14 个有取值维度的任务逐格逐局取值等于表 1（RouteStick／PatternLock 落在区间内，
   另打印逐格长度直方图）→ ``V8_TIER_VALUES``。
-* ``step-headroom``（纯 CPU）：v8 交付 h5 非演示步全部 ≤ 1600、抽样阶段超限过滤数、xhard0 按 1300 单独查 →
-  ``V8_STEP_CAP``；v7 交付清单（或 ``--v7``）沿用旧判据 → ``V7_STEP_HEADROOM``。
-* ``layout-shared``（静态，**只适用 v7，v8 不跑**）：派生档与 xhard4 母布局共用 → ``V7_LAYOUT_SHARED``。
-* ``prefix-geometry``（静态，**只适用 v7，v8 不跑**）：派生行位置类注入值是母值或前缀、几何约束与 xhard4 相同 →
-  ``V7_PREFIX_GEOMETRY``。
+* ``step-headroom``（纯 CPU）：v8／v9 交付 h5 非演示步全部 ≤ 1600、抽样阶段超限过滤数、xhard0 按 1300 单独查 →
+  ``V8_STEP_CAP``；只接受 ``v8-delivery/1`` 交付清单。
 * ``reset-replay``（GPU）：每格 candidate 最小的正式局经评估链 ``make_env_for_episode`` + reset，``spec_binding()``
-  零差；v8 规格（/4，43 格）→ ``V8_RESET_REPLAY``，v7 规格（55 格）→ ``V7_RESET_REPLAY``（换包前用 ``--specs-root``）。
+  零差；/4 规格（43 格）→ ``V8_RESET_REPLAY``；非 /4 规格根直接拒收。
 * ``eval-smoke``（GPU，1 任务 × 1 档 × 1 局）：合作者入口可用；xhard0 局须为导出模式；每任务局数按交付格表推出
   （v8：PickXtimes／SwingXtimes／StopCube 62、MoveCube／InsertPeg 32、其余 92）→ ``HARD_EVAL_SMOKE``。
 * ``xhard0-reset-parity``（GPU）：官方 robomme 与 robomme_hard 两进程各 reset 192 局，确定性层逐位比 →
   ``XHARD0_RESET_PARITY``；演示层只报告 ``XHARD0_DEMO_DIFF=INFO``。
-* ``xhard0-eval-parity``（纯 CPU）：两策略官方路线与 v7 xhard0 终态对照，只报告 → ``XHARD0_EVAL_PARITY=INFO``。
 * ``env-digest``（GPU，v7.5eval）：身份逐层摘要 + 原始数组 + 测速 → ``ENV_DIGEST_DONE``、``ENV_SPEED=INFO``。
 * ``env-digest-compare``（纯 CPU，v7.5eval）：两格逐层对拍，只报告 → ``ENV_DIGEST_PARITY``。
 
@@ -33,7 +29,9 @@ v9（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.3）：判定�
   ``MoveCube._in_region_u`` 判在规格 region 的 U 内、数落在旧 V8 区域外的点 → ``V9_MOVECUBE_LAYOUT``；按
   ``_freeze._movecube_way`` 数三种运动方式 = ``V9_MOVECUBE_QUOTA_BY_WAY`` → ``V9_MOVECUBE_WAYS``。
 
-旧的 ``s4-subset`` 与 S4 映射表随 v6 规格一起退役（git 历史可取回）。
+旧的 ``s4-subset`` 与 S4 映射表随 v6 规格一起退役；v7 专用的 ``layout-shared``、``prefix-geometry``、
+``xhard0-eval-parity``、``step-headroom --v7`` 与 reset-replay／eval-smoke 的 v7 口径于 1003 维护计划细则 2.3
+删除（git 历史可取回）。
 """
 
 from __future__ import annotations
@@ -200,136 +198,11 @@ def delivery_index(specs_root: str | None = None) -> dict[tuple[str, str, int], 
     return index
 
 
-# ── V7 静态闸门：母布局共用、前缀几何 ─────────────────────────────────────────
-
-
-def _whitelist(path: Path | None = None) -> dict[str, dict[str, list[str]]]:
-    path = path or (_hard_specs().PACKAGED_SPECS_ROOT / "layout_whitelist.json")
-    return json.loads(Path(path).read_text())["tasks"]
-
-
-def _get(tree: dict[str, Any], path: str):
-    node = tree
-    for part in path.split("."):
-        if not isinstance(node, dict) or part not in node:
-            raise KeyError(path)
-        node = node[part]
-    return node
-
-
-def cmd_layout_shared(args) -> int:
-    """**只适用 v7，v8 不跑**（v8 各档布局独立抽，见 ``delivery-set`` 的 ``V8_LAYOUT_INDEPENDENT``）。
-
-    V7_LAYOUT_SHARED（静态）：派生行 layout_parent 摘要等于 xhard4 同候选；每个 L 点的使用值等于母值
-    （``[:n]`` 为前缀），N 点逐色不超过母值；非通配的 L 模式在每个派生行都必须出现（反向核对 missing_l）；四档 seed 相同。"""
-    hs = _hard_specs()
-    from robomme_hard.robomme_env.utils.episode_spec import PREFIX_SUFFIX, classify_path
-
-    loaded = hs.load_specs_v7(args.specs_root, check_fingerprint=False)
-    whitelist = _whitelist()
-    mothers = {(r["task"], int(r["candidate"])): r for r in loaded["xhard4"][1]}
-    rows = parent_mismatch = seed_mismatch = value_mismatch = missing_l = 0
-    problems: list[str] = []
-    tasks: set[str] = set()
-    for tier in ("xhard1", "xhard2", "xhard3"):
-        for row in loaded[tier][1]:
-            rows += 1
-            tasks.add(row["task"])
-            mother = mothers.get((row["task"], int(row["candidate"])))
-            if mother is None or mother["spec_sha256"] != row["layout_parent"]["spec_sha256"]:
-                parent_mismatch += 1
-                problems.append(f"parent:{row['task']}/{tier}/{row['candidate']}")
-                continue
-            seed_mismatch += int(int(mother["seed"]) != int(row["seed"]))
-            spec, table = row["spec"], whitelist[row["task"]]
-            hit = set(spec.get("layout_paths_hit") or ())
-            for pattern in table["L"]:
-                if "*" not in pattern and pattern.removesuffix(PREFIX_SUFFIX) not in hit:
-                    missing_l += 1
-                    problems.append(f"missing_l:{row['task']}/{tier}/{row['candidate']}:{pattern}")
-            for path in sorted(hit):
-                cls, pattern = classify_path(table, path)
-                used, parent_value = _get(spec, path), _get(mother["spec"], path)
-                if cls == "L":
-                    ok = used == (parent_value[: len(used)] if pattern.endswith(PREFIX_SUFFIX) else parent_value)
-                elif pattern == "objects.distractors.bins.*":  # N（D-19）：外环容器取自母布局外环（弧，逐个不重复）
-                    family = list(_get(mother["spec"], "objects.distractors.bins").values())
-                    siblings = [_get(spec, p) for p in hit if p.startswith("objects.distractors.bins.")]
-                    ok = used in family and siblings.count(used) == 1
-                else:  # N（D-15）：BinFill 嵌套派生，逐项不超过母值
-                    ok = len(used) == len(parent_value) and all(int(u) <= int(p) for u, p in zip(used, parent_value))
-                if not ok:
-                    value_mismatch += 1
-                    problems.append(f"value:{row['task']}/{tier}/{row['candidate']}:{path}")
-    ok = parent_mismatch == seed_mismatch == value_mismatch == missing_l == 0 and rows > 0
-    print(f"V7_LAYOUT_SHARED={'PASS' if ok else 'FAIL'} tasks={len(tasks)} rows={rows} parent_mismatch={parent_mismatch} "
-          f"seed_mismatch={seed_mismatch} value_mismatch={value_mismatch} missing_l={missing_l}"
-          + ("" if ok else f" detail={problems[:6]}"), flush=True)
-    return 0 if ok else 1
-
-
-#: 与摆放合法性有关的 decision 键（区域、最小中心距、间隙、环带、OBB 规则）：派生档必须与 xhard4 逐字相同
-GEOMETRY_KEY_HINTS = ("region", "min_center", "min_gap", "ring", "gap_factor", "obb", "margin", "half_size")
-
-
-def _geometry_leaves(tree: Any, prefix: str = "") -> dict[str, Any]:
-    out: dict[str, Any] = {}
-    if isinstance(tree, dict):
-        for key, value in tree.items():
-            out.update(_geometry_leaves(value, f"{prefix}.{key}" if prefix else str(key)))
-    elif any(h in prefix.split(".")[-1] for h in GEOMETRY_KEY_HINTS):
-        out[prefix] = tree
-    return out
-
-
-def cmd_prefix_geometry(args) -> int:
-    """**只适用 v7，v8 不跑**（v8 不派生、无母布局前缀）。
-
-    V7_PREFIX_GEOMETRY（静态，不依赖环境复核）：派生行的每个位置类注入值（坐标、槽位、路径节点）都是母布局
-    同名点的原值或前缀，且该任务在派生档与 xhard4 的几何约束（区域、最小中心距、间隙、环带）逐字相同。
-    依序放置只对已放对象查成对距离／OBB，母布局在同一约束下合法 ⇒ 其子集（前缀）在派生档下合法（v7 §7.3.2）。"""
-    hs = _hard_specs()
-    loaded = hs.load_specs_v7(args.specs_root, check_fingerprint=False)
-    mothers = {(r["task"], int(r["candidate"])): r for r in loaded["xhard4"][1]}
-    rows = violations = 0
-    problems: list[str] = []
-    for tier in ("xhard1", "xhard2", "xhard3"):
-        header = loaded[tier][0]
-        for task in {r["task"] for r in loaded[tier][1]}:
-            block = header["sampling_config"][task]["decision"]
-            mine = _geometry_leaves(block.get(tier, {}))
-            top = _geometry_leaves(block.get("xhard4", {}))
-            diff = sorted(k for k in set(mine) | set(top) if mine.get(k) != top.get(k))
-            if diff:
-                violations += 1
-                problems.append(f"geometry:{task}/{tier}:{diff[:3]}")
-        for row in loaded[tier][1]:
-            rows += 1
-            mother = mothers[(row["task"], int(row["candidate"]))]["spec"]
-            for path in row["spec"].get("layout_paths_hit") or ():
-                if not any(seg in path for seg in ("layout.", "path_nodes", "actions.nodes", "slots", "distractors.bins")):
-                    continue
-                used, parent_value = _get(row["spec"], path), _get(mother, path)
-                if path.startswith("objects.distractors.bins."):
-                    # D-19：外环弧取自母布局外环集合（位置、朝向逐字不变）
-                    if used not in list(_get(mother, "objects.distractors.bins").values()):
-                        violations += 1
-                        problems.append(f"position:{row['task']}/{tier}/{row['candidate']}:{path}")
-                    continue
-                if used != parent_value and not (isinstance(used, list) and parent_value[: len(used)] == used):
-                    violations += 1
-                    problems.append(f"position:{row['task']}/{tier}/{row['candidate']}:{path}")
-    ok = violations == 0 and rows > 0
-    print(f"V7_PREFIX_GEOMETRY={'PASS' if ok else 'FAIL'} rows={rows} violations={violations}"
-          + ("" if ok else f" detail={problems[:6]}"), flush=True)
-    return 0 if ok else 1
-
-
 # ── reset-replay / eval-smoke（GPU）────────────────────────────────────────
 
 
 def _replay_targets(specs_root: str | None) -> list[dict[str, Any]]:
-    """每格 candidate 最小的正式局 → builder episode 号（v7 13×3 + 16 = 55 格；v8／v9 43 格），带该行 ``spec_sha256``。"""
+    """每格 candidate 最小的正式局 → builder episode 号（v8／v9 43 格），带该行 ``spec_sha256``。"""
     tiers, _ = specs_tiers(specs_root)
     first: dict[tuple[str, str], dict[str, Any]] = {}
     for (task, tier, seed), hit in delivery_index(specs_root).items():
@@ -357,11 +230,11 @@ def _replay_out_path(out: str) -> Path:
 
 def specs_version(specs_root: str | None) -> tuple[str, dict[tuple[str, str], int] | None]:
     """规格根（显式 > ``ROBOMME_HARD_SPECS_ROOT`` > 包内）的版本与完整交付格表：/4 根按 header 的逐任务配额推出
-    （``hard_parity.root_cell_table``：完整 V9 根恰等于 V9_CELLS → v9），非 /4 根为 ``("v7", None)``。"""
+    （``hard_parity.root_cell_table``：完整 V9 根恰等于 V9_CELLS → v9）。非 /4 根（v7 口径已删）直接报错。"""
     hs = _hs_light()
     _, v8 = specs_tiers(specs_root)
     if not v8:
-        return "v7", None
+        raise SystemExit(f"规格根不是 {hs.SCHEMA_V8}（v7 口径已于 1003 维护计划删除）：{hs.specs_root(specs_root)}")
     found = _hp().root_cell_table(hs.specs_root(specs_root), hs)
     return found if found is not None else (_hp().expected_version(hs), hs.EXPECTED_CELLS)
 
@@ -386,7 +259,7 @@ def replay_verdict(targets: list[dict[str, Any]], rows: list[dict[str, Any]], *,
     cells_ok = not v4 or limited or (table is not None and len(targets) == len(table))
     ok = len(rows) == len(targets) and errors == 0 and injected == drift == unused == hit_bad == 0 \
         and replay == len(targets) and cells_ok and (not v4 or spec_bound == len(targets))
-    shape = "13x3+16" if len(targets) == 55 and not v4 else f"cells{len(targets)}"
+    shape = f"cells{len(targets)}"
     line = (f"{version.upper()}_RESET_REPLAY={'PASS' if ok else 'FAIL'} shape={shape} resets={len(rows)} replay={replay} "
             f"injected_mismatch={injected} layout_drift={drift} spec_bound={spec_bound} unused={unused} "
             f"layout_hit_bad={hit_bad} errors={errors}")
@@ -394,7 +267,7 @@ def replay_verdict(targets: list[dict[str, Any]], rows: list[dict[str, Any]], *,
 
 
 def cmd_reset_replay(args) -> int:
-    """V9_RESET_REPLAY（v9 /4 规格，格表按 header 推出为 V9_CELLS）／V8_RESET_REPLAY（v8 /4）／V7_RESET_REPLAY（v7）：
+    """V9_RESET_REPLAY（v9 /4 规格，格表按 header 推出为 V9_CELLS）／V8_RESET_REPLAY（v8 /4）：
     每格 1 局经评估链 make_env_for_episode + reset，spec_binding 须 injected_mismatch==0、layout_drift==0、unused==0，
     绑定规格的 spec_sha256 等于目标行（spec_bound），派生局 layout_hit == layout_paths_hit 条数。
 
@@ -451,14 +324,10 @@ def cmd_reset_replay(args) -> int:
 def expected_episodes(task: str, hs, cells: dict[tuple[str, str], int] | None = None) -> int:
     """builder 每任务局数＝xhard0 前置局数（开关开 12、关 0）+ 交付格表在该任务的局数之和（不写死）。
 
-    换包后（``TIERS`` 含 xhard5）按 ``cells``（缺省当前 ``EXPECTED_CELLS``；v9 阶段 3b 切换前为 V8_CELLS：
-    PickXtimes／SwingXtimes／StopCube 62、MoveCube／InsertPeg 32、其余 92；切换后为 V9_CELLS：每任务 62）；
-    换包前包内仍是 v7 规格（R10），按冻结的 ``V7_TIERS``／``V7_XHARD4_ONLY`` 推出 92／32
-    （不再读会在 3b 改值的 ``XHARD4_ONLY``）。"""
-    if "xhard5" in hs.TIERS:
-        table = cells if cells is not None else hs.EXPECTED_CELLS
-        return _xhard0_prefix(hs) + sum(n for (name, _), n in table.items() if name == task)
-    return _xhard0_prefix(hs) + sum(20 for tier in hs.V7_TIERS if tier == "xhard4" or task not in hs.V7_XHARD4_ONLY)
+    按 ``cells``（缺省当前 ``EXPECTED_CELLS``；V8_CELLS：PickXtimes／SwingXtimes／StopCube 62、MoveCube／InsertPeg 32、
+    其余 92；V9_CELLS：每任务 62）。v7 规格的 92／32 口径已删。"""
+    table = cells if cells is not None else hs.EXPECTED_CELLS
+    return _xhard0_prefix(hs) + sum(n for (name, _), n in table.items() if name == task)
 
 
 def cmd_eval_smoke(args) -> int:
@@ -507,7 +376,7 @@ def cmd_eval_smoke(args) -> int:
     return 0 if ok else 1
 
 
-# ── xhard0：reset 层对拍（判定）与策略层对照（只报告）──────────────────────────
+# ── xhard0：reset 层对拍（判定）──────────────────────────────────────────────
 
 
 _PROBE = r'''
@@ -640,70 +509,6 @@ def _xhard0_reset_verdict(rows: list[dict[str, Any]], per_task: int) -> int:
           f"max_frame_diff={max((abs(r['demo_frames'][0] - r['demo_frames'][1]) for r in rows), default=0)} "
           f"demo_equal={sum(r['demo_equal'] for r in rows)} post_equal={sum(r['post_equal'] for r in rows)}")
     return 0 if ok else 1
-
-
-#: 两策略的逐局结果文件名：SimpleMemVLA 官方路线 episodes-shard*of10.jsonl、v7 路线 results-r<轮>-shard*of10.jsonl；
-#: MME-VLA 两路线都是 episodes.jsonl
-_RESULT_GLOBS = {"simplememvla": ("episodes-shard*.jsonl", "results-r*-shard*.jsonl", "results-shard*.jsonl"),
-                 "mmevla": ("episodes.jsonl",)}
-_FINAL_STATUS = ("success", "fail", "timeout")
-
-
-def _final_records(paths: list[Path], policy: str) -> list[dict[str, Any]]:
-    """逐局终态记录：``paths`` 可以是文件或目录（目录按策略的文件名递归找）。同一局多行时取最后一个终态行，
-    没有终态行的取最后一行（如 error）。局以 (task, seed 或 episode 号) 区分。"""
-    files: list[Path] = []
-    for path in paths:
-        if path.is_dir():
-            for pattern in _RESULT_GLOBS[policy]:
-                files.extend(sorted(path.rglob(pattern)))
-        else:
-            files.append(path)
-    out: dict[tuple, dict[str, Any]] = {}
-    for file in files:
-        for text in file.read_text().splitlines():
-            if not text.strip():
-                continue
-            r = json.loads(text)
-            if r.get("status") is None:
-                continue
-            ident = r.get("identity") or {}
-            key = (r.get("task") or r.get("env_id"), ident.get("seed", r.get("seed")),
-                   r.get("episode", r.get("source_episode")))
-            if key in out and out[key]["status"] in _FINAL_STATUS and r["status"] not in _FINAL_STATUS:
-                continue
-            out[key] = r
-    return list(out.values())
-
-
-def cmd_xhard0_eval_parity(args) -> int:
-    """XHARD0_EVAL_PARITY（只报告，D-16）：官方路线与 v7 评估的 xhard0 局按 (task, seed) 对齐，列终态与步数差异；
-    官方记录不带 seed 时经清单由原 episode 号映射。缺失或多余是数据完整性问题，报错。"""
-    manifest = json.loads(Path(args.manifest).read_text())
-    seed_of = {(r["task"], r["episode"]): r["seed"] for r in manifest["rows"]}
-    official = {}
-    for r in _final_records([Path(p) for p in args.official], args.policy):
-        task = r.get("task") or r.get("env_id")
-        seed = r.get("seed")
-        if seed is None:
-            seed = seed_of.get((task, int(r.get("source_episode", r.get("episode", -1)))))
-        if seed is not None and (task, int(seed)) in {(t, s) for (t, _e), s in seed_of.items()}:
-            official[(task, int(seed))] = r
-    hard = {}
-    for r in _final_records([Path(p) for p in args.hard], args.policy):
-        ident = r.get("identity") or {}
-        if (ident.get("tier") or r.get("tier")) == "xhard0":
-            hard[(r["task"], int(ident.get("seed", r.get("seed"))))] = r
-    if set(official) != set(hard) or len(official) != 192:
-        raise SystemExit(f"xhard0 对齐失败：官方 {len(official)}、v7 {len(hard)}，差集 {len(set(official) ^ set(hard))}")
-    diffs = [{"task": k[0], "seed": k[1], "official": [official[k]["status"], official[k].get("steps")],
-              "hard": [hard[k]["status"], hard[k].get("steps")]} for k in sorted(official)
-             if official[k]["status"] != hard[k]["status"] or official[k].get("steps") != hard[k].get("steps")]
-    Path(args.out).write_text("".join(json.dumps(d, ensure_ascii=False) + "\n" for d in diffs))
-    status_diff = sum(d["official"][0] != d["hard"][0] for d in diffs)
-    steps_diff = sum(d["official"][1] != d["hard"][1] for d in diffs)
-    print(f"XHARD0_EVAL_PARITY=INFO policy={args.policy} compared={len(official)} status_diff={status_diff} steps_diff={steps_diff}")
-    return 0
 
 
 # ── V8 守卫（1001 方案第一部分 §3 验收表、第二部分 §2.3 闸门总表）：只读、纯 CPU ───────────────────────
@@ -1345,59 +1150,13 @@ def hs_count_keys() -> tuple[str, ...]:
 
 
 def cmd_step_headroom(args) -> int:
-    """按交付清单形态分派：``v8-delivery/1`` → v8 判据 ``V8_STEP_CAP``；``v7-delivery/1``、无 schema 或 ``--v7``
-    → v7 旧判据 ``V7_STEP_HEADROOM``（90% + B4 ×1.25，保留供 v7 留档复核）。"""
+    """只接受 ``v8-delivery/1`` 交付清单（v8／v9）→ ``V8_STEP_CAP``／``V9_STEP_CAP``；v7 旧判据已删。"""
     hp = _hp()
     delivery = hp.read_delivery(Path(args.delivery))
     schema = delivery["schema"]
-    if args.v7 or schema in (None, "v7-delivery/1"):
-        return _step_headroom_v7(args)
     if schema != hp.V8_DELIVERY_SCHEMA:
-        raise SystemExit(f"未知交付清单 schema {schema!r}（v8 为 {hp.V8_DELIVERY_SCHEMA}；v7 旧判据用 --v7）")
+        raise SystemExit(f"未知交付清单 schema {schema!r}（须为 {hp.V8_DELIVERY_SCHEMA}；v7 旧判据已删）")
     return _step_headroom_v8(args, delivery)
-
-
-def _step_headroom_v7(args) -> int:
-    """v7 旧判据（只供 v7 交付清单复核）。V7_STEP_HEADROOM（§1.8、B4）：交付清单逐局 h5 执行步数 = 总帧 − ``info/is_video_demo`` 帧，按格与
-    ``TIER_MAX_STEPS`` 的 90% 比；超 90% 的档给出 B4 上调值（该档实测最大执行步数 × 1.25 向上取整到百）。"""
-    import h5py
-
-    hs = _hard_specs()
-    delivery = Path(args.delivery)
-    rows = json.loads(delivery.read_text())["rows"]
-    per_cell: dict[tuple[str, str], list[int]] = collections.defaultdict(list)
-    lengths: dict[tuple[str, str], list[tuple[int, int]]] = collections.defaultdict(list)
-    for row in rows:
-        path = delivery.parent / row["path"]
-        with h5py.File(path, "r") as handle:
-            episode = handle[list(handle.keys())[0]]
-            steps = [k for k in episode if k.startswith("timestep_")]
-            demo = sum(bool(episode[k]["info/is_video_demo"][()]) for k in steps)
-        per_cell[(row["task"], row["tier"])].append(len(steps) - demo)
-        lengths[(row["task"], row["tier"])].append((demo, len(steps) - demo))
-    over, worst = [], {}
-    for (task, tier), values in sorted(per_cell.items()):
-        cap = hs.TIER_MAX_STEPS[tier]
-        worst[tier] = max(worst.get(tier, 0), max(values))
-        if max(values) > 0.9 * cap:
-            over.append({"task": task, "tier": tier, "max_exec": max(values), "cap": cap})
-    proposal = {}
-    for tier in {o["tier"] for o in over}:
-        proposal[tier] = int(math.ceil(worst[tier] * 1.25 / 100.0) * 100)
-    report = {"cells": len(per_cell), "worst_by_tier": worst, "over_90pct": over, "b4_proposal": proposal,
-              "per_cell_max": {f"{t}/{d}": max(v) for (t, d), v in per_cell.items()},
-              # README 第 3 节 episode 长度表：每格 演示段 / 执行段 / 全部 的均值（四舍五入到整数）
-              "per_cell_mean": {f"{t}/{d}": {"demo": round(sum(a for a, _ in v) / len(v)),
-                                             "exec": round(sum(b for _, b in v) / len(v)),
-                                             "total": round(sum(a + b for a, b in v) / len(v)), "n": len(v)}
-                                for (t, d), v in lengths.items()}}
-    if args.out:
-        Path(args.out).write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n")
-    label = "INFO" if args.info else ("PASS" if not over else "FAIL")
-    print(f"V7_STEP_HEADROOM={label} cells={len(per_cell)} over_90pct={len(over)} "
-          f"worst={ {t: f'{w}/{hs.TIER_MAX_STEPS[t]}' for t, w in sorted(worst.items())} }"
-          + (f" b4_proposal={proposal}" if proposal else ""))
-    return 0 if label != "FAIL" else 1
 
 
 # ── v7.5eval 环境检测（env-digest / env-digest-compare）───────────────────────
@@ -2425,7 +2184,7 @@ def build_parser() -> argparse.ArgumentParser:
     tv.add_argument("--selected", action="store_true", help="取 selected 行（生成前核对抽签），默认取交付行")
     tv.add_argument("--out", default=None, help="可选：逐格明细与直方图写成 JSON")
     tv.set_defaults(func=cmd_tier_values)
-    rr = sub.add_parser("reset-replay", help="每格 1 局经评估链 reset 回注（GPU；V7／V8／V9_RESET_REPLAY 按规格根推）",
+    rr = sub.add_parser("reset-replay", help="每格 1 局经评估链 reset 回注（GPU；V8／V9_RESET_REPLAY 按规格根推）",
                         description=cmd_reset_replay.__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     rr.add_argument("--out", required=True,
                     help="必填：结果 jsonl 文件路径（不得是目录；v9 用 artifacts/newtask-v9/gates/reset-replay.jsonl）；"
@@ -2433,14 +2192,8 @@ def build_parser() -> argparse.ArgumentParser:
     rr.add_argument("--limit", type=int, default=0)
     rr.add_argument("--specs-root", default=None,
                     help="规格根（换包前经 ROBOMME_HARD_SPECS_ROOT 读）；/4 根按 header 配额推格表：V9 → V9_RESET_REPLAY、"
-                         "V8 → V8_RESET_REPLAY，否则 v7")
+                         "V8 → V8_RESET_REPLAY；非 /4 根拒收")
     rr.set_defaults(func=cmd_reset_replay)
-    ls = sub.add_parser("layout-shared", help="只适用 v7，v8 不跑（V7_LAYOUT_SHARED）")
-    ls.add_argument("--specs-root", required=True)
-    ls.set_defaults(func=cmd_layout_shared)
-    pg = sub.add_parser("prefix-geometry", help="只适用 v7，v8 不跑（V7_PREFIX_GEOMETRY）")
-    pg.add_argument("--specs-root", required=True)
-    pg.set_defaults(func=cmd_prefix_geometry)
     ev = sub.add_parser("eval-smoke")
     ev.add_argument("--task", default="BinFill")
     ev.add_argument("--episode", type=int, default=0)
@@ -2456,13 +2209,6 @@ def build_parser() -> argparse.ArgumentParser:
     x0.add_argument("--merge-with", default=None, help="与上一轮 jsonl 合并：本轮重跑的任务整段替换，其余沿用")
     x0.add_argument("--report-name", default="xhard0-reset-parity.jsonl")
     x0.set_defaults(func=cmd_xhard0_reset_parity)
-    xe = sub.add_parser("xhard0-eval-parity")
-    xe.add_argument("--official", nargs="+", required=True, help="官方路线结果文件或目录（可多个）")
-    xe.add_argument("--hard", nargs="+", required=True, help="v7 路线结果文件或目录（可多个；只取 tier=xhard0 的局）")
-    xe.add_argument("--policy", required=True, choices=("simplememvla", "mmevla"))
-    xe.add_argument("--manifest", default=str(REPO / "scripts" / "configs" / "newtask-v7" / "xhard0_manifest.json"))
-    xe.add_argument("--out", required=True)
-    xe.set_defaults(func=cmd_xhard0_eval_parity)
     mc = sub.add_parser("movecube-layout", help="v9：MoveCube xhard4 两段三物体落点在新区域 U 内、运动方式 17/17/16"
                                                 "（V9_MOVECUBE_LAYOUT／V9_MOVECUBE_WAYS；纯 CPU，不 reset）",
                         description=cmd_movecube_layout.__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -2489,9 +2235,7 @@ def build_parser() -> argparse.ArgumentParser:
                     help="v8：xhard0 h5 来源（hard_parity 一侧目录或 identities.jsonl），按 1300 单独查；正式闸门必须带")
     sh.add_argument("--skip-xhard0", action="store_true",
                     help="v8：显式不查 xhard0（只供局部核对；判定行打 V8_STEP_CAP=INFO … xhard0_max=skipped，不出 PASS）")
-    sh.add_argument("--v7", action="store_true", help="强制走 v7 旧判据 V7_STEP_HEADROOM（90%% + B4 ×1.25）")
     sh.add_argument("--out", default=None)
-    sh.add_argument("--info", action="store_true", help="仅 v7：冒烟外推只报告（阶段 3），不判 PASS/FAIL")
     sh.set_defaults(func=cmd_step_headroom)
     ed = sub.add_parser("env-digest", help="v7.5eval 环境检测：逐层摘要 + 原始数组 + 测速（GPU）")
     ed.add_argument("--cell", required=True, help="条件名（输出子目录）")

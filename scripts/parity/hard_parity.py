@@ -22,16 +22,8 @@ worktree，官方 ``_worker``）；H 修改后（拆包后 HEAD，``--force-mirr
 
 ``generate`` 默认断言 GPU 型号为 A40；``--dev-smoke`` 放行本机 Ada（开发冒烟，``NATIVE_SMOKE``）。
 
-v8 二次生成对拍（1001 方案第一部分 §3「二次生成对拍」、第二部分 §2.2 第 7、9、11 条）::
-
-    # gen1 交付登记成 H 侧（读 _rollout 聚合步写的 delivery.json，schema v8-delivery/1）
-    uv run --no-sync python scripts/parity/hard_parity.py import-delivery --delivery <gen1>/delivery.json --tier v8
-    # H2＝同一交付集再生成一遍（GL A40）
-    uv run --frozen --no-sync python scripts/parity/hard_parity.py generate --side H2 --tier v8 \
-        --manifest <gen1>/delivery.json --specs-root artifacts/newtask-v8/specs-root --src-root <...> --out <...>
-    # 比对：先核分母「冻结交付集 = delivery.json = H = H2」，再逐身份按五个互斥终态计数
-    uv run --no-sync python scripts/parity/hard_parity.py compare --pair H:H2 --tier v8 \
-        --manifest <gen1>/delivery.json --specs-root artifacts/newtask-v8/specs-root
+v8 二次生成对拍（``--tier v8``）与 v6 四档回归（``--tier xhard``）已于 1003 维护计划细则 2.3 删除（git 历史可取回）；
+v9 沿用 v8 的交付清单格式（schema ``v8-delivery/1``）、分母核对与五终态。
 
 v9 二次生成对拍（1002 方案 §2.3 ``PARITY_H_H2 tier=v9``、§2.4.2 第 6 步）：只比新生成的 80 局（MoveCube 50 +
 InsertPeg 30），``--identities`` 给 assemble 的 800 行清单（只取 ``source == "v9-new"``）或任意身份 jsonl；默认目录
@@ -84,18 +76,16 @@ HF = ["uvx", "--from", "huggingface_hub==1.8.0", "--with", "click", "hf"]
 #: H2＝v8 正式局的第二次生成（gen2），与 H（gen1）比对 PARITY_H_H2
 SIDES = ("O", "P", "H", "H2")
 PAIRS = ("O:P", "P:H", "O:H", "H:H2")
-#: native＝原三档 144；xhard＝v6 四档回归 165；xhard0＝官方 test 的 hard 192；v8＝v8 正式局 1070（43 格）；
-#: v9＝v9 正式局 800（43 格，V9_CELLS）——对拍只比新生成的 80 局（compare --identities）
-TIERS = ("native", "xhard", "xhard0", "v8", "v9")
+#: native＝原三档 144；xhard0＝官方 test 的 hard 192；v9＝v9 正式局 800（43 格，V9_CELLS）——对拍只比新生成的
+#: 80 局（compare --identities）。v6 四档 ``xhard`` 与 v8 正式局 ``v8`` 已删（1003 维护计划细则 2.3）
+TIERS = ("native", "xhard0", "v9")
 #: 走 /4 规格根 + 交付清单（v8-delivery/1）的档：分母核对与五终态、只生成 H2
-DELIVERY_TIERS = ("v8", "v9")
+DELIVERY_TIERS = ("v9",)
 TIER_NAMES = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
 XHARD0_PER_TASK = 12
 XHARD0_EPISODES = tuple(range(3, 48, 4))
-#: v8 形状＝逐格表（hard_specs.V8_CELLS）按档求和 411／411／128／100／20，共 43 格（测试核对与 V8_CELLS 一致）；
 #: v9 形状＝V9_CELLS 按档求和 272／272／92／144／20
-SHAPES = {"native": "16x3x3", "xhard": "13x3x3+16x3", "xhard0": "16x1x12", "v8": "cells43:411+411+128+100+20",
-          "v9": "cells43:272+272+92+144+20"}
+SHAPES = {"native": "16x3x3", "xhard0": "16x1x12", "v9": "cells43:272+272+92+144+20"}
 #: v8 交付清单（S2-B ``_rollout`` 聚合步写）的 schema 与必须显式写出（含零值）的计数键（§2.2 第 7 条）
 V8_DELIVERY_SCHEMA = "v8-delivery/1"
 DELIVERY_COUNT_KEYS = ("exec_over_cap", "backfills", "infra_retries", "failed")
@@ -160,17 +150,6 @@ def native_rows(manifest: Path) -> list[dict[str, Any]]:
     if len(rows) != int(payload["rows_total"]):
         raise ParityError("清单行数与 rows_total 不符")
     return [{"task": r["task"], "tier": r["difficulty"], "episode": int(r["episode"]), "seed": int(r["seed"])} for r in rows]
-
-
-def xhard_rows(manifest: Path) -> list[dict[str, Any]]:
-    """v6 xhard 身份：S4 交付 JSON（``successes``）、身份列表，或某侧的 ``identities.jsonl``；档名键接受 difficulty 或 tier。"""
-    if manifest.suffix == ".jsonl":
-        items = [json.loads(t) for t in manifest.read_text().splitlines() if t.strip()]
-    else:
-        payload = json.loads(manifest.read_text())
-        items = payload.get("successes", payload.get("rows", payload)) if isinstance(payload, dict) else payload
-    return [{"task": s["task"], "tier": s.get("difficulty", s.get("tier")), "episode": int(s["episode"]),
-             "seed": int(s["seed"])} for s in items]
 
 
 _HARD_SPECS_LIGHT = None
@@ -260,7 +239,7 @@ def rows_for(tier: str, manifest: Path) -> list[dict[str, Any]]:
         return native_rows(manifest)
     if tier in DELIVERY_TIERS:
         return v8_rows(manifest)
-    return xhard_rows(manifest)
+    raise ParityError(f"未知档 {tier!r}（只支持 {TIERS}）")
 
 
 #: 2b 冒烟 7 格（v8 方案第一部分 §3「最小冒烟」）：每格 1 局
@@ -635,19 +614,24 @@ def xhard0_subset_rows(rows: list[dict[str, Any]], subset: set[tuple[str, str, i
 
 
 def cmd_generate(args) -> int:
+    if args.expect_ref is not None:
+        # 参照校验（schema／顶层 sha／partial 拒收）提前到建输出目录、写 launch 之前：参照坏时不留任何文件。
+        # Mover 构造时仍按原逻辑再读一次参照（语义不变）
+        try:
+            Mover._load_noise_gate().load_ref(args.expect_ref)
+        except Exception as exc:  # noqa: BLE001 GateError 与读文件错误一律转成前置失败
+            raise ParityError(f"--expect-ref 参照不可用：{type(exc).__name__}: {exc}") from exc
     facts = gpu_facts()
     if not args.dev_smoke and "A40" not in facts["gpu_model"]:
         raise ParityError(f"正式 generate 只许在 A40 上跑：当前 {facts}")
     rows = rows_for(args.tier, args.manifest)
-    if args.tier == "xhard" and args.side != "H":
-        raise ParityError("xhard 只生成 H 侧（P 侧复用 parity-anchor-v6 登记的缓存）")
     if args.tier in DELIVERY_TIERS and args.side not in ("H2",):
         raise ParityError(f"{args.tier} 经 hard_parity 只生成 H2（gen2）；gen1 由 generate_h5 --mode continue 出，再 import-delivery 登记为 H")
     if args.identities is not None:
         if args.tier == "xhard0":
             rows = xhard0_subset_rows(rows, read_identity_subset(args.identities))
         elif args.tier not in DELIVERY_TIERS:
-            raise ParityError("--identities 只用于 --tier v8／v9／xhard0")
+            raise ParityError("--identities 只用于 --tier v9／xhard0")
         else:
             subset = read_identity_subset(args.identities)
             stray = sorted(subset - {ident(r) for r in rows})
@@ -1103,7 +1087,7 @@ def _classify_over(record: dict[str, Any]) -> str:
 
 
 def compare_cells(args) -> tuple[dict[tuple[str, str], int], dict[tuple[str, str], int]]:
-    """``--tier v8／v9`` 的 ``(格表, 作配额上限的完整格表)``：``--cells`` 缺省按档取 ``v8full``／``v9full``
+    """``--tier v9`` 的 ``(格表, 作配额上限的完整格表)``：``--cells`` 缺省取 ``v9full``
     （不随 EXPECTED_CELLS 漂移）；给了格表时必须能被该档的完整表覆盖，否则报错（档与格表不得混用）。"""
     hs = hard_specs_light()
     table = hs.CELL_TABLES[args.tier]
@@ -1189,7 +1173,7 @@ def cmd_compare(args) -> int:
     if args.tier in DELIVERY_TIERS and args.specs_root is None:
         raise ParityError(f"--tier {args.tier} 须给 --specs-root（冻结交付集取自 /4 规格根的 delivered 行，用于分母核对）")
     if args.identities is not None and args.tier not in DELIVERY_TIERS:
-        raise ParityError("--identities 只用于 --tier v8／v9")
+        raise ParityError("--identities 只用于 --tier v9")
     h5_root = args.h5_root if args.h5_root is not None else default_h5_root(args.tier)
     compare_root = args.compare_root if args.compare_root is not None else default_compare_root(args.tier)
     rows = rows_for(args.tier, args.manifest)
@@ -1528,10 +1512,9 @@ def build_parser() -> argparse.ArgumentParser:
     gen.add_argument("--smoke", type=int, default=0, help="只跑前 N 局（SHARD_SMOKE）")
     gen.add_argument("--dev-smoke", action="store_true", help="放行非 A40（本机开发冒烟 NATIVE_SMOKE）")
     gen.add_argument("--specs-root", type=Path, default=None,
-                     help="--tier v8／v9：五档 /4 规格根（含 xhard{1..5}/specs.jsonl，如 artifacts/newtask-v8/specs-root、"
-                          "artifacts/newtask-v9/specs-root）")
+                     help="--tier v9：五档 /4 规格根（含 xhard{1..5}/specs.jsonl，如 artifacts/newtask-v9/specs-root）")
     gen.add_argument("--identities", type=Path, default=None,
-                     help="--tier v8／v9：只重放该" + IDENTITIES_HELP + "；子集须 ⊆ --manifest。--tier xhard0："
+                     help="--tier v9：只重放该" + IDENTITIES_HELP + "；子集须 ⊆ --manifest。--tier xhard0："
                           "身份 tier 须为 xhard0，只生成子集，运行器仍拿完整 --manifest 核对")
     gen.add_argument("--resume", action="store_true")
     gen.add_argument("--expect-ref", type=Path, default=None,
@@ -1558,15 +1541,14 @@ def build_parser() -> argparse.ArgumentParser:
     cmp_.add_argument("--pair", choices=PAIRS, required=True)
     cmp_.add_argument("--tier", choices=TIERS, required=True)
     cmp_.add_argument("--manifest", type=Path, required=True,
-                      help="身份清单；--tier v8／v9 时为交付清单 delivery.json（v8-delivery/1；v9 用 assemble 的 800 行清单）")
+                      help="身份清单；--tier v9 时为交付清单（v8-delivery/1 格式，assemble 的 800 行清单）")
     cmp_.add_argument("--specs-root", type=Path, default=None,
-                      help="--tier v8／v9 必填：冻结 /4 规格根，其 delivered 行即冻结交付集（分母核对：冻结集 = delivery.json = H = H2）")
+                      help="--tier v9 必填：冻结 /4 规格根，其 delivered 行即冻结交付集（分母核对：冻结集 = delivery.json = H = H2）")
     cmp_.add_argument("--cells", default=None,
-                      help="--tier v8／v9：格表，缺省按档取 v8full（V8_CELLS 43 格 1070）／v9full（V9_CELLS 43 格 800）；"
-                           "另可 full（当前 EXPECTED_CELLS）｜smoke（v8 2b 冒烟 7 格）｜v9smoke｜v9shard1｜JSON 文件或内联 JSON"
-                           "（须为该档完整表的子表）")
+                      help="--tier v9：格表，缺省 v9full（V9_CELLS 43 格 800）；"
+                           "另可 full（当前 EXPECTED_CELLS）｜v9smoke｜v9shard1｜JSON 文件或内联 JSON（须为 V9_CELLS 的子表）")
     cmp_.add_argument("--identities", type=Path, default=None,
-                      help="--tier v8／v9：只比" + IDENTITIES_HELP + "；分母与 expected 改为子集大小（判定行尾加 identities=）")
+                      help="--tier v9：只比" + IDENTITIES_HELP + "；分母与 expected 改为子集大小（判定行尾加 identities=）")
     cmp_.add_argument("--left", type=Path, default=None)
     cmp_.add_argument("--right", type=Path, default=None)
     cmp_.add_argument("--p-anchor", default=None, help="P 侧锚点 tag（从 docs/validation/parity-anchors.json 取目录并先核验）")
@@ -1583,7 +1565,7 @@ def build_parser() -> argparse.ArgumentParser:
     anc.add_argument("action", choices=("register", "check"))
     anc.add_argument("--tag", required=True)
     anc.add_argument("--commit", default=None, help="register：tag 指向的完整 commit sha")
-    anc.add_argument("--segments", default=None, help="register：档:目录名,…（目录相对 --h5-root），如 native:P-native,xhard:P-xhard")
+    anc.add_argument("--segments", default=None, help="register：档:目录名,…（目录相对 --h5-root），如 native:P-native")
     anc.add_argument("--source-side", default="H", help="register：产物当年作为哪一侧生成（parity-anchor-v6 两段都是 H）")
     anc.add_argument("--equivalence", default=None, help="register：等价核验判定行原文（tag commit ≠ 生成 commit 时）")
     anc.add_argument("--bucket-prefix", type=json.loads, default=None, help="register：{档: bucket 段名} JSON")
@@ -1592,10 +1574,10 @@ def build_parser() -> argparse.ArgumentParser:
     anc.set_defaults(func=cmd_anchor)
     dlv = sub.add_parser("import-delivery", help="gen1 的 delivery.json 与逐局 h5 登记成 H 侧 identities.jsonl")
     dlv.add_argument("--delivery", type=Path, required=True)
-    dlv.add_argument("--tier", default="v8", choices=DELIVERY_TIERS)
+    dlv.add_argument("--tier", default="v9", choices=DELIVERY_TIERS)
     dlv.add_argument("--identities", type=Path, default=None, help="只登记该" + IDENTITIES_HELP)
     dlv.add_argument("--h5-root", type=Path, default=None,
-                     help="缺省 v9 → artifacts/newtask-v9/parity/h5，v8 → artifacts/newtask-v8/parity/h5（写 <h5-root>/H-<tier>）")
+                     help="缺省 artifacts/newtask-v9/parity/h5（写 <h5-root>/H-<tier>）")
     dlv.set_defaults(func=cmd_import_delivery)
     bind = sub.add_parser("binding", help="ENV_PACKAGE_BINDING：三侧 native identities 的包归属")
     bind.add_argument("--h5-root", type=Path, default=LOCAL_H5_ROOT)
