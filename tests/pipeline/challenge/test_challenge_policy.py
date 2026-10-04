@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from challenge_interface.policy import DummyPolicy, Policy
+from challenge_interface.scripts.phase1_eval import EXPECTED_ACTION_SHAPES
 
 
 def _obs(n_frames: int, first: bool) -> dict:
@@ -29,8 +30,9 @@ def test_dummy_policy_is_a_policy_and_outputs_joint_angle_chunk():
     out = p.infer(_obs(3, first=True))
     assert set(out) == {"actions"}
     actions = out["actions"]
-    # 示例策略固定块长 10、关节角 8 维（7 关节 + 夹爪）。
-    assert actions.shape == (10, 8)
+    # 块长读 DummyPolicy 的实际属性，每步动作形状读评估端的生产常量（关节角空间）。
+    assert actions.shape == (p.chunk_size, *EXPECTED_ACTION_SHAPES["joint_angle"])
+    assert p.chunk_size > 0
     # 夹爪维不加噪声，必须恰好是 1.0。
     assert np.all(actions[:, -1] == 1.0)
     assert np.all(np.isfinite(actions))

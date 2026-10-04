@@ -19,6 +19,8 @@ import pytest
 import websockets
 
 from challenge_interface.client import PolicyClient
+from challenge_interface.policy import DummyPolicy
+from challenge_interface.scripts.phase1_eval import EXPECTED_ACTION_SHAPES
 
 from challenge_support import LOOPBACK, free_port
 
@@ -79,7 +81,7 @@ def test_subprocess_server_roundtrip_then_death_is_detected():
         assert c.get_server_metadata() == {"pid": "child"}
         assert c.reset() == {"reset_finished": True}
         out = c.infer({"is_first_step": True, "front_rgb_list": [np.zeros((2, 2, 3), np.uint8)] * 3})
-        assert out["actions"].shape == (10, 8)
+        assert out["actions"].shape == (DummyPolicy().chunk_size, *EXPECTED_ACTION_SHAPES["joint_angle"])
         # 杀掉服务进程：客户端下一次推理必须在有限时间内报连接关闭。
         proc.send_signal(signal.SIGKILL)
         proc.wait(5)
@@ -118,6 +120,7 @@ def test_deploy_entry_serves_websocket():
         _wait_port(port, proc)
         c = PolicyClient(host=LOOPBACK, port=port)
         assert c.reset() == {"reset_finished": True}
-        assert c.infer({"is_first_step": True, "front_rgb_list": [0]})["actions"].shape == (10, 8)
+        shape = c.infer({"is_first_step": True, "front_rgb_list": [0]})["actions"].shape
+        assert shape == (DummyPolicy().chunk_size, *EXPECTED_ACTION_SHAPES["joint_angle"])
     finally:
         _stop(proc)

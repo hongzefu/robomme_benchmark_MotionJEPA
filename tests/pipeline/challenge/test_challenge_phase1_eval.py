@@ -106,9 +106,11 @@ def make_builder_cls(scripts: dict):
 
 
 class FakeClient:
-    def __init__(self, chunk: int = 3, dim: int = 8, reset_replies=None):
+    def __init__(self, chunk: int = 3, dim: int | None = None, reset_replies=None):
         """reset_replies：依次返回的 reset 回复列表，用完后重复最后一个；默认恒为确认。"""
-        self.chunk, self.dim = chunk, dim
+        # 缺省维度取关节角空间的生产常量。
+        self.chunk = chunk
+        self.dim = dim if dim is not None else p.EXPECTED_ACTION_SHAPES["joint_angle"][0]
         self.reset_replies = reset_replies if reset_replies is not None else [{"reset_finished": True}]
         self.reset_calls = 0
         self.infer_inputs: list[dict] = []
@@ -185,7 +187,7 @@ def test_run_episode_streams_observations_and_consumes_chunks(no_video):
     assert second["is_first_step"] is False
     assert [int(f[0, 0, 0]) for f in second["front_rgb_list"]] == [1, 2, 3]
     (env,) = B.envs
-    assert len(env.actions) == 5 and all(a.shape == (8,) for a in env.actions)
+    assert len(env.actions) == 5 and all(a.shape == p.EXPECTED_ACTION_SHAPES["joint_angle"] for a in env.actions)
     assert len(frames) == 7 and frames[0].shape == (4, 8, 3)
     assert env.closed is True
 
@@ -211,10 +213,10 @@ def test_run_episode_passes_depth_and_camera_flags(no_video, flag):
 
 
 def test_run_episode_rejects_wrong_action_shape(no_video):
-    # ee_pose 每步应为 7 维；策略回 8 维必须当场报错，不得送进环境。
+    # 策略回的维度比 ee_pose 要求多 1，必须当场报错，不得送进环境。
     B = make_builder_cls({("TaskA", 0): {"status": "success", "steps": 3}})
     with pytest.raises(AssertionError):
-        _run_episode(FakeClient(chunk=2, dim=8), B, action_space="ee_pose")
+        _run_episode(FakeClient(chunk=2, dim=p.EXPECTED_ACTION_SHAPES["ee_pose"][0] + 1), B, action_space="ee_pose")
     assert B.envs[0].actions == []
 
 
@@ -320,7 +322,9 @@ def test_main_metrics_fixed_denominator(monkeypatch, tmp_path, no_video):
         "TaskA": {"0": "success", "1": "fail"},
         "TaskB": {"0": "timeout", "1": "success"},
     }
-    assert all(b["dataset"] == "test" and b["max_steps"] == 1500 for b in B.builders)
+    # max_steps 的期望取自真实 parse_args 在同一 argv 下的结果，常量字面值由 tests/contract 负责。
+    expected_max_steps = p.parse_args().max_steps
+    assert all(b["dataset"] == "test" and b["max_steps"] == expected_max_steps for b in B.builders)
     assert len(no_video) == 4 and all(n > 0 for _, n in no_video)
     assert all(env.closed for env in B.envs)
 
@@ -375,7 +379,7 @@ def test_known_defect_D1_main_metrics_count_success_substrings(monkeypatch, tmp_
 def test_main_end_to_end_over_real_websocket(monkeypatch, tmp_path, no_video, ws_server):
     """真实 PolicyServer(DummyPolicy) + 真实 PolicyClient 走回环，环境用替身。
 
-    手算：DummyPolicy 块长 10；每局 12 步终止 → 每局推理 2 次；状态表给出 3 成功 / 4。
+    手算：每局 12 步终止，动作形状按生产常量 EXPECTED_ACTION_SHAPES；状态表给出 3 成功 / 4。
     """
     h = ws_server(DummyPolicy())
     statuses = {("TaskA", 0): "success", ("TaskA", 1): "fail", ("TaskB", 0): "success", ("TaskB", 1): "success"}
@@ -389,6 +393,6 @@ def test_main_end_to_end_over_real_websocket(monkeypatch, tmp_path, no_video, ws
     p.main()
     metrics = json.loads((tmp_path / "challenge_results" / "t1" / "metrics.json").read_text())
     assert metrics["overall"] == {"avg_success": 0.75, "total_success": 3, "total_episodes": 4}
-    assert all(len(env.actions) == 12 and env.actions[0].shape == (8,) for env in B.envs)
+    assert all(len(env.actions) == 12 and env.actions[0].shape == p.EXPECTED_ACTION_SHAPES["joint_angle"] for env in B.envs)
     # DummyPolicy 的夹爪维恒为 1.0，经网络往返后不变。
     assert all(float(a[-1]) == 1.0 for env in B.envs for a in env.actions)

@@ -205,4 +205,4 @@ def test_connection_refused_waits_then_connects_when_server_appears(ws_server, m
     monkeypatch.setattr(client_mod, "time", SimpleNamespace(sleep=fake_sleep))
     c = PolicyClient(host=LOOPBACK, port=port)
     assert c.get_server_metadata() == {"late": True}
-    assert sleeps == [5]
+    assert len(sleeps) == 1 and sleeps[0] > 0

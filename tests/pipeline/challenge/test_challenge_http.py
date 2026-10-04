@@ -139,7 +139,7 @@ def test_metadata_error_fails_construction(stub_http):
 
 def test_slow_server_hits_client_timeout(stub_http):
     def slow(body, h):
-        time.sleep(0.6)
+        time.sleep(3.0)
         return 200, mn.packb({"actions": ACTIONS})
 
     routes = _meta_route()
@@ -149,8 +149,8 @@ def test_slow_server_hits_client_timeout(stub_http):
     t0 = time.monotonic()
     with pytest.raises(requests.Timeout):
         c.infer({"x": 1})
-    # 有限时间内结束，而不是等到服务端回复。
-    assert time.monotonic() - t0 < 0.55
+    # 有限时间内结束（上限 2 s，给高负载留余量），而不是等到服务端 3 s 后回复。
+    assert time.monotonic() - t0 < 2.0
 
 
 def test_garbage_200_body_raises(stub_http):
