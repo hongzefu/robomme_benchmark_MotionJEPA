@@ -108,26 +108,39 @@ class World:
 
     # ── 构建 ────────────────────────────────────────────────────────────
     @classmethod
-    def from_env(cls, env, *, demo: bool = False):
+    def from_env(cls, env):
         """对已跑过 ``_load_scene`` 的 env 跑两次真实 ``_initialize_episode``：评估链里 ``gym.make`` 时
         BaseEnv 自带一次 reset（含 reconfigure → ``_load_scene``），评估再 reset 一次，所以初始化恰好两次
         （包内规格的 ``initializations.0``／``.1`` 两段即由此而来）。"""
         world = cls(env)
+        # 与评估链一致：DemonstrationWrapper 在构造时置 use_demonstrationwrapper=True，演示结束后
+        # demonstration_record_traj=False（执行段每次 evaluate 都更新当前子目标）；演示段由测试用 demo_phase() 切换
+        env.use_demonstrationwrapper = True
+        env.demonstration_record_traj = False
         for _ in range(2):
             env._initialize_episode(torch.arange(1), {})
-        env.use_demonstrationwrapper = demo
-        env.demonstration_record_traj = False
+            # BaseEnv.reset 在初始化之后取一次 info（get_info → evaluate），任务类的 step 依赖它设下的状态
+            env.evaluate()
         return world
 
     @classmethod
-    def build(cls, task: str, tier: str, k: int = 0, *, demo: bool = False, spec=None):
+    def build(cls, task: str, tier: str, k: int = 0, *, spec=None):
         """包内第 k 个正式局的规格回放建场（与评估链同参数），再跑两次真实 ``_initialize_episode``。"""
         header, rows = O.delivered_rows(task, tier, k + 1)
         row = rows[k]
         env = O.make_offline(task, seed=row["seed"], difficulty=tier,
                              sampling_config=header["sampling_config"][task],
                              spec=row["spec"] if spec is None else spec)
-        return cls.from_env(env, demo=demo)
+        return cls.from_env(env)
+
+    @contextlib.contextmanager
+    def demo_phase(self):
+        """演示段：与 DemonstrationWrapper 执行演示任务时相同，置 demonstration_record_traj=True，结束后复原。"""
+        self.env.demonstration_record_traj = True
+        try:
+            yield self
+        finally:
+            self.env.demonstration_record_traj = False
 
     # ── 原语 ────────────────────────────────────────────────────────────
     @staticmethod

@@ -300,6 +300,7 @@ class FakeLinkBuilder(_ShapeRecorder):
         self.joint_name = name
 
     def set_joint_properties(self, type=None, limits=None, pose_in_parent=None, pose_in_child=None, **k):
+        self.joint_type = type
         self.pose_in_parent = _as_sapien_pose(pose_in_parent)
         self.pose_in_child = _as_sapien_pose(pose_in_child)
 
@@ -324,6 +325,8 @@ class FakeArticulation:
             self.links.append(link)
             if lb.joint_name is not None:
                 self.joints.append(joint)
+        # 自由度 = 非固定关节数（按钮的移动副 1 个；杆的两段是固定关节，0 个）
+        self.dof = sum(1 for lb in link_builders if lb.joint_name is not None and getattr(lb, "joint_type", None) != "fixed")
         self._fake_qpos = [0.0] * len(self.joints)
 
     @property
