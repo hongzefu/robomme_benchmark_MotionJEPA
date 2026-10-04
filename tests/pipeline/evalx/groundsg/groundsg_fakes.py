@@ -1,7 +1,7 @@
 """GroundSG（S3）测试的公共替身：假环境、两种 builder、假 MME 服务与连接、不加载权重的 swift 替身、两侧驱动。
 
 设计口径：
-- 官方源码只读引用 ``SGEVAL_THIRD_PARTY``（worktree 里子模块目录为空）；缺官方源码即失败，不跳过。
+- 官方源码只读引用 ``SGEVAL_THIRD_PARTY``，未设时取当前检出的 ``third_party``（worktree 里子模块目录为空，须显式指向主检出）；缺官方源码即失败，不跳过。
 - 生产模块一律经 ``tests._support.loaders.load_script`` 按路径加载，不往 sys.modules 注入替身。
 - 假环境的下一帧由「执行的动作字节 + 步号」确定性生成，假服务的动作块由「本局 reset 之后收到的全部请求指纹」
   确定性生成：两侧任何一个请求或动作不同，后面的帧、请求、动作都会随之不同（差异可观测，等式非平凡）。
@@ -19,7 +19,7 @@ from typing import Any
 
 import numpy as np
 
-from tests._support.loaders import load_script
+from tests._support.loaders import REPO, load_script
 
 #: 假帧形状 H×W：宽度取真实相机的 256，使官方叠字录像的文字区行数与真实运行同为固定高度（窄帧会让每个词各占一行、
 #: 帧高随文字变化，官方 mimsave 报「All images in a movie should have same size」）；高度取 8 以省内存
@@ -35,8 +35,8 @@ DATASET = "test-hard0"
 
 
 def official_dir() -> Path:
-    tp = os.environ.get(THIRD_PARTY_ENV)
-    assert tp, f"必须设 {THIRD_PARTY_ENV}=<主检出>/third_party（只读引用官方源码）"
+    # 未设时取当前检出的 third_party（主检出日常门禁走此路）；worktree 里子模块为空，须显式指向主检出，否则下面断言失败（不 skip）。
+    tp = os.environ.get(THIRD_PARTY_ENV) or str(REPO / "third_party")
     d = Path(tp) / "mme-vla" / "examples" / "robomme"
     assert (d / "eval.py").is_file(), f"官方源码不在 {d}"
     return d
