@@ -1,0 +1,7 @@
+{
+ "_note": "2026-10-03 用户：「全面减少现在的规模把V9xhard0每个任务每个难度都只有3集」「所有的事情都不要评3遍都只做两遍」「不要测试单Worker」「去掉所有评估的噪声测试把生成测试完就收尾」。只测生成：2 遍 × (V9 43 格 × 3 = 129 + xhard0 16 × 3 = 48) = 354 + 冒烟 2 + 基础设施重试 20；每条 reset 上限 3。评估与环境摘要不跑，上限为 0。",
+ "gen":    {"attempts": 376, "resets": 1128, "retries": 20},
+ "eval":   {"attempts": 0, "resets": 0, "retries": 0},
+ "digest": {"attempts": 0, "resets": 0, "retries": 0},
+ "total":  {"attempts": 376, "resets": 1128, "retries": 20}
+}
