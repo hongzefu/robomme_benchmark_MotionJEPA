@@ -1,7 +1,7 @@
 """S5 Astra 测试的公共替身：规划、监视、VLA、环境全部替身，零外联。
 
-Astra 上游源码只读引用主检出 ``$SGEVAL_THIRD_PARTY/Astra-on-RoboMME``（worktree 里子模块为空）；
-环境变量缺失或源码不在时直接失败（不 skip）。所读上游文件逐个打印 sha256。
+Astra 上游源码只读引用 ``$SGEVAL_THIRD_PARTY/Astra-on-RoboMME``，未设时取当前检出的 ``third_party``（worktree 里子模块为空，
+须显式指向主检出）；源码不在时直接失败（不 skip）。所读上游文件逐个打印 sha256。
 """
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from tests._support.loaders import load_script
+from tests._support.loaders import REPO, load_script
 
 ASTRA_MODULES = ("runner", "core", "api_client", "release_utils", "input_contract", "train_entry")
 #: 上游 runner.episode 默认的单局规划次数上限
@@ -24,8 +24,9 @@ MAX_PLANNER_CALLS = 24
 
 
 def third_party() -> Path:
-    value = os.environ.get("SGEVAL_THIRD_PARTY")
-    assert value, "必须设置 SGEVAL_THIRD_PARTY=<主检出>/third_party（只读引用 Astra 上游源码）"
+    # 未设 SGEVAL_THIRD_PARTY 时取当前检出的 third_party（主检出日常门禁即走此路）；worktree 里子模块为空，
+    # 须显式设为主检出路径，否则下面的断言直接失败（不 skip）。
+    value = os.environ.get("SGEVAL_THIRD_PARTY") or str(REPO / "third_party")
     root = Path(value) / "Astra-on-RoboMME"
     assert (root / "examples" / "champ" / "runner.py").is_file(), f"Astra 上游源码不在 {root}"
     return root

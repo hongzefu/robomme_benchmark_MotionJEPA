@@ -75,7 +75,7 @@ git -C "$REPO" diff HEAD > "$RUN/local-changes.patch"
 git -C "$REPO" submodule status > "$RUN/submodules.txt" || true
 git -C "$ASTRA" rev-parse HEAD > "$RUN/astra-commit.txt" || true
 cd "$ASTRA"
-# The VLA process does not need the planner API credential.
+# VLA 进程不需要规划接口的密钥（照抄上游 run.sh 同位置注释，译为中文）。
 env -u OPENAI_API_KEY CUDA_VISIBLE_DEVICES="$VLA_GPU" "$VLA_PYTHON" scripts/serve_policy.py \
   --port="$PORT" --seed=42 policy:checkpoint --policy.config=mme_vla_suite \
   --policy.dir="$VLA_CHECKPOINT" > "$RUN/vla.log" 2>&1 &
