@@ -1,0 +1,429 @@
+[
+  {
+    "id": "C15.01",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_gate.py",
+      "scripts/parity/train_split_parity.py",
+      "scripts/parity/hard_parity.py"
+    ],
+    "symbol": "noise_gate.classify_pair/compare_h5、train_split_parity.compare_h5_pair、hard_parity.pair_metrics/classify_terminal",
+    "oracle": "同一批微型 h5 变体（每个只改一处）手写期望：谁能看见、谁看不见、分叉步",
+    "positive": "相同字节三者都判相同；某数据集从第 k 帧起分叉三者分叉步都为 k",
+    "negative": "根／组属性、两侧新增同名字段只在该字段不同、中间帧缺字段、dtype、帧号不连续、第 0 帧、setup、空文件与非 h5（F-5）",
+    "boundaries": "hard_parity 对属性、新增字段、单帧缺非读取字段不可见（现状记录）；train 比较器对两个空文件判 sha_equal（只判相同不判合法）",
+    "nodeids": [
+      "tests/pipeline/parity/test_h5_comparators.py::test_相同字节_三者都判相同",
+      "tests/pipeline/parity/test_h5_comparators.py::test_属性变化_noise与train看得见_hard看不见",
+      "tests/pipeline/parity/test_h5_comparators.py::test_属性同键不同值_train按值报",
+      "tests/pipeline/parity/test_h5_comparators.py::test_两侧都新增同一字段且只在该字段不同",
+      "tests/pipeline/parity/test_h5_comparators.py::test_中间帧缺一个字段",
+      "tests/pipeline/parity/test_h5_comparators.py::test_dtype改变",
+      "tests/pipeline/parity/test_h5_comparators.py::test_帧号不连续",
+      "tests/pipeline/parity/test_h5_comparators.py::test_某一数据集从某帧起分叉_三者都抓到且分叉步一致",
+      "tests/pipeline/parity/test_h5_comparators.py::test_第0帧内容不同",
+      "tests/pipeline/parity/test_h5_comparators.py::test_setup取值不同",
+      "tests/pipeline/parity/test_h5_comparators.py::test_只多一帧",
+      "tests/pipeline/parity/test_h5_comparators.py::test_F5_空文件或非h5_两份字节相同也不判byte_equal",
+      "tests/pipeline/parity/test_h5_comparators.py::test_无顶层键的h5不合法",
+      "tests/pipeline/parity/test_h5_comparators.py::test_NaN按位相同不算差异",
+      "tests/pipeline/parity/test_h5_comparators.py::test_五终态_正例与每条结构不同路径"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "M15a",
+      "T6-F5",
+      "T6-F8"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": "C15.02",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_gate.py"
+    ],
+    "symbol": "noise_gate.gen_compare/load_side/load_identities/read_gen_pairs（gen-compare）",
+    "oracle": "手写五类期望表；身份清单四种格式的手写规范化结果",
+    "positive": "五类各至少一局、计数之和等于身份数；交付清单侧、results 侧、xhard0 的 hard 别名",
+    "negative": "重复行（含遗漏身份用重复行补齐）、档位冲突、h5 打不开、dtype 改变、帧号不连续、记录 sha 不符、缺文件、内容全同字节不同、交换身份、冻结文件清空",
+    "boundaries": "白名单多态字段只放行 waypoint 两种签名；第 0 帧签名必须相同",
+    "nodeids": [
+      "tests/pipeline/parity/test_gen_compare.py::test_五类各至少一例_互斥且完备",
+      "tests/pipeline/parity/test_gen_compare.py::test_参照侧失败_两侧都失败",
+      "tests/pipeline/parity/test_gen_compare.py::test_侧里身份重复_遗漏身份用重复行补齐",
+      "tests/pipeline/parity/test_gen_compare.py::test_档位冲突",
+      "tests/pipeline/parity/test_gen_compare.py::test_xhard0身份接受官方难度名hard_其余档不接受",
+      "tests/pipeline/parity/test_gen_compare.py::test_h5打不开",
+      "tests/pipeline/parity/test_gen_compare.py::test_dtype改变与帧号不连续判结构不同",
+      "tests/pipeline/parity/test_gen_compare.py::test_记录sha与文件不符_缺文件",
+      "tests/pipeline/parity/test_gen_compare.py::test_内容全同但字节不同判原因不明",
+      "tests/pipeline/parity/test_gen_compare.py::test_交换两个身份的产物_总数不变也不判相同",
+      "tests/pipeline/parity/test_gen_compare.py::test_白名单只登记waypoint一个字段且只允许两种签名",
+      "tests/pipeline/parity/test_gen_compare.py::test_白名单字段的放行与拒绝",
+      "tests/pipeline/parity/test_gen_compare.py::test_交付清单侧与results侧",
+      "tests/pipeline/parity/test_gen_compare.py::test_身份清单四种格式_重复与空文件拒收",
+      "tests/pipeline/parity/test_gen_compare.py::test_冻结检查集被清空_不得读成空清单",
+      "tests/pipeline/parity/test_gen_compare.py::test_cli_gen_compare_写meta与逐局行_读回校验"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "M15b",
+      "M15c"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": "C15.03",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_gate.py",
+      "scripts/configs/noise-ref-20261003.json"
+    ],
+    "symbol": "noise_gate.expect_verdict/build_ref/load_ref（gen-regress build-ref）",
+    "oracle": "基线布局表（稳定／确定性失败／抖动）手写；canonical sha 按契约独立重算",
+    "positive": "三类归属、shas、ok_a／ok_b、h5_a／h5_b、identities sha 与文件一致",
+    "negative": "记录 sha 不符、记录判不同但两遍相同、记录判相同但两遍不同、漏记录、identities sha 不符、重复、缺局、清单外、成功无 h5、输出已存在、两遍同根；篡改不重签、重签后类别非法、跨集合身份重复、schema 错",
+    "boundaries": "--limit 与 --trust-recorded-sha 产物标 partial，load_ref／check 一律拒收",
+    "nodeids": [
+      "tests/pipeline/parity/test_gen_regress.py::test_expect_verdict真值表",
+      "tests/pipeline/parity/test_gen_regress.py::test_expect_verdict_参照外身份判翻转",
+      "tests/pipeline/parity/test_gen_regress.py::test_build_ref_三类归属与参照自洽",
+      "tests/pipeline/parity/test_gen_regress.py::test_build_ref_输出已存在拒写",
+      "tests/pipeline/parity/test_gen_regress.py::test_build_ref_partial产物_判定方一律拒收",
+      "tests/pipeline/parity/test_gen_regress.py::test_build_ref_交叉核对反例_FAIL且不写文件",
+      "tests/pipeline/parity/test_gen_regress.py::test_build_ref_两遍同根或集合不一致即拒",
+      "tests/pipeline/parity/test_gen_regress.py::test_参照篡改_不重签与重签后语义非法都拒"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "M10"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": "C15.04",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_gate.py"
+    ],
+    "symbol": "noise_gate.regress_check 首跑（GEN_REGRESS PASS／NEED_RERUN／INVALID／FAIL）",
+    "oracle": "布局表推出的 match／jitter／flip 计数；陪跑局顺序手写（同档优先、相邻档按身份顺序）",
+    "positive": "全部复现基线 PASS 判定行逐字相等；抖动局三种结果只报告",
+    "negative": "稳定局失败或字节不同、确定性失败局变成功或占位不同、交换身份；非 A40、workers 不符、缺启动记录、缺局、参照外身份 → INVALID；重复、基础设施失败、成功无 sha、h5_error、Mover 记录 verdict 与重算不一致 → FAIL",
+    "boundaries": "翻转数恰为 FLIP_RERUN_MAX 进第二次跑、多一局直接 FAIL；陪跑局只取首跑 match 的稳定局",
+    "nodeids": [
+      "tests/pipeline/parity/test_gen_regress.py::test_首跑全部复现基线_PASS",
+      "tests/pipeline/parity/test_gen_regress.py::test_已知抖动局只报告不判定",
+      "tests/pipeline/parity/test_gen_regress.py::test_确定性失败局不符期望即翻转",
+      "tests/pipeline/parity/test_gen_regress.py::test_稳定局失败或字节不同即翻转_并按同档优先挑陪跑局",
+      "tests/pipeline/parity/test_gen_regress.py::test_陪跑局只取首跑已与基线相同的稳定局",
+      "tests/pipeline/parity/test_gen_regress.py::test_交换两个身份的产物_总数不变也判翻转",
+      "tests/pipeline/parity/test_gen_regress.py::test_翻转数等于上限仍进第二次跑_超过上限直接FAIL",
+      "tests/pipeline/parity/test_gen_regress.py::test_跑法前提不满足_本遍无效INVALID",
+      "tests/pipeline/parity/test_gen_regress.py::test_原因不明一局即FAIL_不进第二次跑",
+      "tests/pipeline/parity/test_gen_regress.py::test_遗漏身份用重复行补齐_既缺局又重复",
+      "tests/pipeline/parity/test_gen_regress.py::test_陪跑局重跑原因不明不影响判定_翻转局原因不明FAIL",
+      "tests/pipeline/parity/test_gen_regress.py::test_逐局报告列齐_只列问题局陪跑局与抖动局",
+      "tests/pipeline/parity/test_gen_regress.py::test_本机细分_分叉步与子目标_结构不同直接FAIL",
+      "tests/pipeline/parity/test_gen_regress.py::test_本机细分_翻转局h5未回传仍记待定",
+      "tests/pipeline/parity/test_gen_regress.py::test_cli_check_退出码与产物"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "M15c",
+      "T6-G3",
+      "T6-G5"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": "C15.05",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_gate.py"
+    ],
+    "symbol": "noise_gate.regress_check 第二次跑四格定性、episodes_markdown",
+    "oracle": "细则 3.2 四格表手写成参数化用例；逐局报告列名按细则 3.2 手写",
+    "positive": "噪声（改后回到基线）在上限内 PASS；确定性失败局回到同一失败判噪声",
+    "negative": "回归、环境变了、每次都不同 → FAIL；噪声超上限一局 → FAIL；翻转局重跑原因不明 → FAIL；换节点或缺局 → INVALID",
+    "boundaries": "噪声上限 v9／xhard0 各自在上限处 PASS、超一局 FAIL；陪跑局异基线只报告不计数",
+    "nodeids": [
+      "tests/pipeline/parity/test_gen_regress.py::test_四格定性",
+      "tests/pipeline/parity/test_gen_regress.py::test_确定性失败局翻转后第二次回到同一失败_判噪声",
+      "tests/pipeline/parity/test_gen_regress.py::test_确认为噪声的翻转_上限处PASS_超一局FAIL",
+      "tests/pipeline/parity/test_gen_regress.py::test_陪跑局不参与判定_只报告",
+      "tests/pipeline/parity/test_gen_regress.py::test_陪跑局重跑原因不明不影响判定_翻转局原因不明FAIL",
+      "tests/pipeline/parity/test_gen_regress.py::test_第二次跑换节点或缺局_本遍无效",
+      "tests/pipeline/parity/test_gen_regress.py::test_逐局报告列齐_只列问题局陪跑局与抖动局"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "T6-G1",
+      "T6-G2",
+      "T6-G4"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": "C15.06",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/hard_parity.py",
+      "scripts/parity/noise_run.py",
+      "scripts/parity/hard_pull.py"
+    ],
+    "symbol": "hard_parity.Mover.handle（--expect-ref）→ noise_run.cmd_ship --finalize → hard_pull.main（--identities）；cmd_generate 参照前置校验",
+    "oracle": "五局手写期望：match／jitter_info／flip／known_fail match／参照外 flip；SHIPPED 与 identities sha 一致",
+    "positive": "match 删节点大文件不复制；flip 追加 flips.jsonl 并打印 EPISODE_FLIP；ship matched=2 PASS；pull 只拉翻转局、空清单只拉报告、不给清单拉全部",
+    "negative": "非 match 局缺 SHIPPED、节点残留大文件 → NOISE_SHIP=FAIL；拉回字节被改 → PULL_SEGMENT=FAIL；partial／篡改／缺失参照 → generate 建目录前拒跑",
+    "boundaries": "不给 --expect-ref 时行无 verdict、每局都复制；旧格式段判定行不带 matched=；同一局重复出现在 partial 里只处理一次",
+    "nodeids": [
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_Mover_expect_ref_逐局判定与搬运",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_Mover_不给expect_ref时行为不变",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_ship_finalize_认match局为按设计不复制",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_ship_负例_非match局缺SHIPPED_节点残留",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_pull_只拉翻转清单内的局",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_pull_空清单只拉报告",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_pull_清单内但未复制的局只计数",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_pull_不给清单拉全部已复制局",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_pull_旧格式段行为不变",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_pull_拉回字节被改即FAIL",
+      "tests/pipeline/parity/test_mover_ship_pull.py::test_generate_expect_ref参照不可用_建目录前拒跑"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "T6-MV",
+      "T6-SH"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": "C15.07",
+    "domain": "C15",
+    "source": [
+      "scripts/configs/noise-ref-20261003.json",
+      "scripts/configs/gate-set-v9-129.json",
+      "scripts/configs/gate-set-xhard0-48.json"
+    ],
+    "symbol": "真实参照文件（只读）",
+    "oracle": "canonical sha 契约独立重算；身份集合与 gate-set 冻结清单逐行相同；计数由逐局类别重数（不写字面值）",
+    "positive": "load_ref 通过、非 partial、集合恰为 v9／xhard0、identities 文件 sha 与参照记录一致",
+    "negative": "（只读用例，负例由 C15.03 合成参照覆盖）",
+    "boundaries": "每类的 sha 个数与成败自洽；各遍 workers 与 GPU 满足跑法前提",
+    "nodeids": [
+      "tests/pipeline/parity/test_gen_regress.py::test_真实参照文件_自洽且身份集合等于冻结检查集"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C15.08",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/hard_regression.py"
+    ],
+    "symbol": "hard_regression.cmd_xhard0_reset_parity/_xhard0_reset_verdict",
+    "oracle": "手写探针结果（替身 _run_probe），逐字段改一处",
+    "positive": "两侧逐位相同 PASS；仅改名记 name_only",
+    "negative": "seed／make_kwargs／包装链／task_goal／choices／演示前状态任一不同、官方难度名不是 hard、局数多或少 → FAIL",
+    "boundaries": "演示层差异只报告；合并上一轮时本轮任务整段替换；同键互换取值被判 name_only（现状记录、已报告风险）",
+    "nodeids": [
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_两侧逐位相同_PASS",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_确定性层任一字段不同即FAIL",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_官方侧难度名不是hard也算不一致",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_演示前状态只是实体改名_记name_only不计差异",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_现状记录_同键互换取值也被当成仅改名",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_演示层差异只报告",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_局数不齐即FAIL_合并上一轮补齐后PASS",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_判定函数_局数多一局也FAIL"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C15.09",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/hard_regression.py"
+    ],
+    "symbol": "hard_regression.cmd_env_digest_compare/_env_rows/cmd_env_digest（续跑拒绝）",
+    "oracle": "原始数组手算的最大绝对差与逐帧 MAD",
+    "positive": "全同、仅改名",
+    "negative": "同键互换值（真差异）、演示帧差、状态值差、键集合差、行数不齐、错行与半行、常驻模式续跑拒绝",
+    "boundaries": "量不出来（形状不符、npz 缺失）记 n/a 并计 unmeasured，不填 0",
+    "nodeids": [
+      "tests/pipeline/parity/test_env_digest.py::test_all_equal",
+      "tests/pipeline/parity/test_env_digest.py::test_rename_only",
+      "tests/pipeline/parity/test_env_digest.py::test_demo_frame_diff",
+      "tests/pipeline/parity/test_env_digest.py::test_demo_frame_count_diff",
+      "tests/pipeline/parity/test_env_digest.py::test_reset_init_frame_uses_image_path",
+      "tests/pipeline/parity/test_env_digest.py::test_same_keys_swapped_values_is_real_diff",
+      "tests/pipeline/parity/test_env_digest.py::test_unmeasured_shape_mismatch_and_npz_missing",
+      "tests/pipeline/parity/test_env_digest.py::test_resident_resume_refused",
+      "tests/pipeline/parity/test_env_digest.py::test_state_value_diff",
+      "tests/pipeline/parity/test_env_digest.py::test_key_set_diff",
+      "tests/pipeline/parity/test_env_digest.py::test_row_count_mismatch",
+      "tests/pipeline/parity/test_env_digest.py::test_error_and_half_rows_ignored"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C15.10",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_run.py"
+    ],
+    "symbol": "noise_run.cmd_preflight/cmd_finish/reserve_budget/check_assets/list_asset_files",
+    "oracle": "本用例自定的小预算上限手算；fingerprint／env_fingerprint 按 docstring 契约独立重算；真实 find 对照过滤规则",
+    "positive": "输出根不存在或为空可跑；恰好到线可跑；资产与 tokenizer 相同 PASS",
+    "negative": "输出根非空或是文件 RUN_FRESH=FAIL 且不占预算；超 kind 或 total 上限、同名 pass、账本损坏、缺上限 BUDGET=FAIL；资产缺／多／改字节／不在锁 → 不占预算；finish 实际数超登记按实际计费；重复 finish、pass 不符、实际数非法",
+    "boundaries": "账本历史 eval／digest 行计入 total；--kind 只认 gen；nvidia-smi 不可用字段为 null",
+    "nodeids": [
+      "tests/pipeline/parity/test_noise_run.py::test_输出根不存在或为空目录可跑",
+      "tests/pipeline/parity/test_noise_run.py::test_输出根非空或是文件即拒_且不占预算",
+      "tests/pipeline/parity/test_noise_run.py::test_kind只认gen",
+      "tests/pipeline/parity/test_noise_run.py::test_预算按kind与total累加_恰好到线可跑_超一即拒",
+      "tests/pipeline/parity/test_noise_run.py::test_账本历史eval与digest行计入total",
+      "tests/pipeline/parity/test_noise_run.py::test_同名pass拒",
+      "tests/pipeline/parity/test_noise_run.py::test_finish实际数大于登记时按实际计费",
+      "tests/pipeline/parity/test_noise_run.py::test_账本fsync_损坏_缺上限",
+      "tests/pipeline/parity/test_noise_run.py::test_资产相同PASS_排除顶层cache与DS_Store",
+      "tests/pipeline/parity/test_noise_run.py::test_资产不符即FAIL且不占预算",
+      "tests/pipeline/parity/test_noise_run.py::test_tokenizer单独核sha",
+      "tests/pipeline/parity/test_noise_run.py::test_资产过滤规则与真实find一致",
+      "tests/pipeline/parity/test_noise_run.py::test_来源报告指纹可重算_finish后不变_重复finish拒",
+      "tests/pipeline/parity/test_noise_run.py::test_nvidia_smi不可用时为null_来源报告已存在即拒",
+      "tests/pipeline/parity/test_noise_run.py::test_finish实际数非法即拒"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C16.01",
+    "domain": "C16",
+    "source": [
+      "scripts/parity/noise_run_gl.sh"
+    ],
+    "symbol": "noise_run_gl.sh（preflight → 真实命令 → finish → EXIT_CODE=）",
+    "oracle": "真 bash 子进程 + 假真实命令（true／false／sleep）",
+    "positive": "退出码进 EXIT_CODE= 尾行与账本 finish 行；线程环境变量已导出",
+    "negative": "preflight 不过不执行真实命令、不写 finish；--kind 非 gen、缺真实命令即拒",
+    "boundaries": "TERM 中断：收掉真实命令、仍写 finish 与 EXIT_CODE=143",
+    "nodeids": [
+      "tests/pipeline/parity/test_noise_run_shell.py::test_端到端写EXIT_CODE与finish行",
+      "tests/pipeline/parity/test_noise_run_shell.py::test_真实命令输出进日志且线程变量已导出",
+      "tests/pipeline/parity/test_noise_run_shell.py::test_preflight不过不执行真实命令且不写finish",
+      "tests/pipeline/parity/test_noise_run_shell.py::test_kind只认gen且缺真实命令即拒",
+      "tests/pipeline/parity/test_noise_run_shell.py::test_TERM中断时收掉真实命令_照写finish与EXIT_CODE",
+      "tests/pipeline/parity/test_noise_run_shell.py::test_bash语法检查"
+    ],
+    "resource": "cpu-subprocess(slow)",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C15.11",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/train_split_parity.py"
+    ],
+    "symbol": "train_split_parity.recovery_mode/_validate_records/cross_check_identity/select_subset/_parse_paths/_parse_shard",
+    "oracle": "官方 EpisodeJob.recovery_mode 规则手写表；子集挑选结果手写",
+    "positive": "合法 metadata 通过；清单与官方逐条相同 mismatch=0",
+    "negative": "metadata 结构 11 种拒绝；换 seed、换顺序、重复补齐、少一条均计 mismatch；子集不足即拒；路径与分片参数非法即拒",
+    "boundaries": "难度序 easy→medium→hard、各自保持官方原顺序",
+    "nodeids": [
+      "tests/pipeline/parity/test_train_split.py::test_recovery_mode手写表",
+      "tests/pipeline/parity/test_train_split.py::test_官方metadata结构逐条拒绝",
+      "tests/pipeline/parity/test_train_split.py::test_清单与官方逐条双向比较",
+      "tests/pipeline/parity/test_train_split.py::test_子集按官方原顺序取前per_cell条_不足即拒",
+      "tests/pipeline/parity/test_train_split.py::test_参数校验"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C15.12",
+    "domain": "C15",
+    "source": [
+      "scripts/configs/hard-parity-tolerances.json",
+      "scripts/parity/hard_parity.py"
+    ],
+    "symbol": "hard_parity.calibrate/load_tolerances（容差文件自洽）",
+    "oracle": "文件记录的 raw_max 重新喂真实 calibrate，四个阈值逐个相等",
+    "positive": "load_tolerances 与文件一致",
+    "negative": "缺文件拒跑；原始最大值超合理性上界不通过",
+    "boundaries": "打不开的校准对不参与",
+    "nodeids": [
+      "tests/pipeline/parity/test_parity_configs.py::test_容差文件由原始最大值重算可得",
+      "tests/pipeline/parity/test_parity_configs.py::test_load_tolerances与文件一致_缺文件即拒",
+      "tests/pipeline/parity/test_parity_configs.py::test_calibrate_超合理性上界即不通过"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C15.13",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/hard_parity.py",
+      "src/robomme_hard/env_metadata/test-hard/xhard5/specs.jsonl"
+    ],
+    "symbol": "hard_parity.cmd_compare（CLI main）/_v8_denominator/classify_terminal：v9（含 --identities 子集）、native、xhard0",
+    "oracle": "冻结交付集按「selected 且 rollout.status == ok」从拷贝的 xhard5 规格独立读出；各方计数手算",
+    "positive": "v9 四方一致 PASS（分母、五终态、判定行逐字段）；子集口径只比清单内身份；native／xhard0 两侧一致 PASS",
+    "negative": "空子集清单拒跑；空交付清单 missing=全部；交付／左／右各缺一 missing=1；冻结集缺一（子集含清单外身份）missing=1 extra=1；全集口径一侧多出 extra=1；交付或一侧重复 duplicate=1；gen1 sha 与交付不符判结构不同；native 空清单、重复行、一侧缺局 FAIL",
+    "boundaries": "子集口径下清单外行只记 outside_subset（交付清单先按子集筛过记 0）；--identities 只用于 v9",
+    "nodeids": [
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_四方一致_PASS_分母与五终态",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_子集口径_只比清单内身份",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_空子集清单即拒",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_空交付清单不得因0等于0判PASS",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_交付清单或任一侧缺一局",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_冻结集缺一局_子集清单含清单外身份",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_全集口径下一侧多出清单外身份",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_重复行",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_gen1的sha与交付清单不符判结构不同",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_native与xhard0_两侧一致PASS",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_native负例_空清单_重复行_一侧缺局",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_identities只用于v9"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "T6-D1",
+      "T6-D2",
+      "T6-D3"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": "C15.14",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_gate.py",
+      "scripts/parity/gate_set.py"
+    ],
+    "symbol": "noise_gate.NOISE_MAX/FLIP_RERUN_MAX/RERUN_MIN/PRECOND_WORKERS/PRECOND_GPU、payload_sha256／canonical_json",
+    "oracle": "钉值文件 tests/pipeline/parity/parity_pins.py（对拍细则 3.3／3.4 用户口径）；canonical sha 固定向量预先算好写死",
+    "positive": "五个闸门常量与钉值相等；noise_gate 与 gate_set 的 payload_sha256 对固定向量给出同一 digest",
+    "negative": "改任一口径常量即失败；内容改一字 digest 变",
+    "boundaries": "顶层 sha256 键的取值不参与 digest",
+    "nodeids": [
+      "tests/pipeline/parity/test_parity_pins.py::test_gen_regress闸门常量与钉值相等",
+      "tests/pipeline/parity/test_parity_pins.py::test_canonical_sha固定向量_noise_gate与gate_set同口径"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "T6-P1"
+    ],
+    "status": "verified"
+  }
+]
