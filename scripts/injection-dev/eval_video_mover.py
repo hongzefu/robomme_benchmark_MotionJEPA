@@ -30,6 +30,22 @@ PASS 要求 videos + error_final_no_video = expected。常驻模式 --stop-file 
 ``--once-max-wait`` 秒的目录放弃（打印 reason=unstable／move_failed），进程照常退出。
 帧数优先用 ``ffprobe -count_frames``，没有 ffprobe 时用 ``imageio-ffmpeg`` 自带 ffmpeg 全解码计帧，都没有则判 decode_fail
 （``reason=no_decoder``）。读得出的帧数按 (路径, 大小, mtime) 缓存在 ``<dest>/decode-cache.jsonl``。末行 ``EXIT_CODE=``（FAIL 为 1）。
+
+``--layout sgeval``（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.6；缺省 ``--layout v8`` 时上面的行为一字不变）::
+
+    python scripts/injection-dev/eval_video_mover.py --layout sgeval --stage <NFS 媒体根> \\
+        --dest artifacts/sg-evaluation/<run>/videos [--min-free-gib 50] [--once] [--stop-file F] [--interval S]
+
+``--stage`` 指 ``run_eval_gl.sh``／``run_official_hard.sh`` 的 ``--media-root``（缺省 ``<运行根>/media``），其下为输出键
+``<policy>[-<variant>]/<dataset>/<side>/<key>.a<attempt>[.dupN]/``（side 取 orig／new；点开头的目录如 ``.incoming`` 不碰）。
+每局目录由席位脚本原子发布，里面是单个 ``*.mp4``（已转码）、``trace.jsonl``、``summary.json``／``transcode.json`` 等小文件；
+多于一个 mp4 的目录不搬（打印 ``MOVER_SKIP reason=multi_mp4``）。目录 ``--stable-sec`` 秒无变化后：整目录
+``rsync -a`` 到 ``<dest>/.incoming/<随机>/`` → 逐文件两端 sha256 相同 → 原子改名到 ``<dest>/<同一输出键>/``（已存在且内容
+相同视为已搬；内容不同落 ``.dupN``）→ 只删核对过的 NFS 源文件 → 往 ``<dest>/moved.jsonl`` 追加一行（``mode: "sgeval"``）。
+停止条件：sha256 不一致（只删临时目录、保留 NFS 源）或本机盘（``--dest`` 所在）剩余低于 ``--min-free-gib`` 时立刻停止
+搬运，打印 ``MOVER_STOP reason=sha_mismatch|low_disk …``，退出码 1。``--once`` 搬到无待搬目录后打印
+``SGEVAL_MOVE=PASS|FAIL moved= left= skipped= bytes= stopped=0|1``（PASS 要求 left、skipped、stopped 都为 0）；常驻模式每
+``--interval`` 秒打印 ``VMOVE mode=sgeval moved= pending= bytes= stage_bytes=``，``--stop-file`` 出现且无待搬时退出。
 """
 from __future__ import annotations
 
@@ -455,10 +471,172 @@ def v8_main(args) -> int:
     return rc
 
 
+# ------------------------------------------------------------------ sgeval 布局
+
+SGEVAL_SIDES = ("orig", "new")
+
+
+def sgeval_dirs(stage: Path) -> list[tuple[str, Path]]:
+    """媒体根下全部每局目录 (输出键, 路径)：<label>/<dataset>/<side>/<目录名>/；任何一层点开头的跳过。"""
+    out = []
+    if not stage.is_dir():
+        return out
+    for d in sorted(stage.glob("*/*/*/*")):
+        rel = d.relative_to(stage)
+        if not d.is_dir() or any(part.startswith(".") for part in rel.parts) or rel.parts[2] not in SGEVAL_SIDES:
+            continue
+        out.append((str(rel), d))
+    return out
+
+
+def free_gib(path: Path) -> float:
+    p = path
+    while not p.exists():
+        p = p.parent
+    return shutil.disk_usage(p).free / (1 << 30)
+
+
+def sgeval_move_dir(rel: str, src: Path, dest: Path, moved_log: Path) -> tuple[str, int]:
+    """rsync 整目录 → 逐文件 sha256 → 原子改名到 <dest>/<rel> → 只删核对过的源文件 → 记 moved.jsonl。
+    返回 (结果, 字节数)；结果 ∈ moved / same / rsync_fail / sha_mismatch / empty。sha 不符只删临时目录、源不动。"""
+    incoming = dest / ".incoming" / uuid.uuid4().hex
+    incoming.parent.mkdir(parents=True, exist_ok=True)
+    proc = subprocess.run(["rsync", "-a", "--exclude=.nfs*", f"{src}/", f"{incoming}/"], capture_output=True, text=True)
+    if proc.returncode != 0:
+        print(f"# rsync 失败 {src}: {proc.stderr.strip()[:300]}", flush=True)
+        shutil.rmtree(incoming, ignore_errors=True)
+        return "rsync_fail", 0
+    files: dict[str, str] = {}
+    nbytes = 0
+    for f in tree_files(src):
+        r = str(f.relative_to(src))
+        digest = sha256(f)
+        tgt = incoming / r
+        if not tgt.is_file() or sha256(tgt) != digest:
+            print(f"# sha256 不一致，保留 NFS 源、只删临时目录 {src} 文件 {r}", flush=True)
+            shutil.rmtree(incoming, ignore_errors=True)
+            return "sha_mismatch", 0
+        files[r] = digest
+        nbytes += f.stat().st_size
+    if not files:
+        shutil.rmtree(incoming, ignore_errors=True)
+        return "empty", 0
+    out = dest / rel
+    out.parent.mkdir(parents=True, exist_ok=True)
+    final, result = out, "moved"
+    if out.exists():
+        if dir_digests(out) == files:  # 上次已拷到本机、删源前中断：内容相同，不再落第二份
+            shutil.rmtree(incoming, ignore_errors=True)
+            result = "same"
+        else:
+            n = 1
+            while Path(f"{out}.dup{n}").exists():
+                n += 1
+            final = Path(f"{out}.dup{n}")
+            print(f"# 本机已有内容不同的 {out}，新版本落 {final.name}", flush=True)
+            os.rename(incoming, final)
+    else:
+        os.rename(incoming, final)
+    for r in files:
+        (src / r).unlink(missing_ok=True)
+    for d in sorted((p for p in src.rglob("*") if p.is_dir()), key=lambda p: len(p.parts), reverse=True):
+        try:
+            d.rmdir()
+        except OSError:
+            pass
+    src_left = False
+    try:
+        src.rmdir()
+    except OSError:
+        src_left = True
+    parts = Path(rel).parts
+    with moved_log.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps({"mode": "sgeval", "key": rel, "label": parts[0], "dataset": parts[1], "side": parts[2],
+                                 "episode": parts[3], "src": str(src), "dest": str(final), "files": files,
+                                 "bytes": nbytes, "src_left": src_left, "result": result,
+                                 "at": time.strftime("%Y-%m-%dT%H:%M:%S%z")}, ensure_ascii=False) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    return "moved", nbytes
+
+
+def sgeval_main(args) -> int:
+    stage, dest = Path(args.stage).resolve(), Path(args.dest)
+    dest.mkdir(parents=True, exist_ok=True)
+    moved_log = dest / "moved.jsonl"
+    seen: dict[str, tuple[tuple | None, float]] = {}
+    skipped: set[str] = set()
+    moved_n = moved_bytes = 0
+    stop_reason = None
+    last_report = 0.0
+    while stop_reason is None:
+        pending = 0
+        for rel, src in sgeval_dirs(stage):
+            if not src.is_dir() or not tree_files(src):
+                continue
+            mp4s = [p for p in src.glob("*.mp4")]
+            if len(mp4s) > 1:
+                if rel not in skipped:
+                    skipped.add(rel)
+                    print(f"MOVER_SKIP reason=multi_mp4 dir={rel} mp4={len(mp4s)}", flush=True)
+                continue
+            snap = dir_snapshot(src)
+            now = time.time()
+            prev = seen.get(rel)
+            if snap is None or prev is None or prev[0] != snap:
+                seen[rel] = (snap, now)
+                pending += 1
+                continue
+            if now - prev[1] < args.stable_sec:
+                pending += 1
+                continue
+            free = free_gib(dest)
+            if free < args.min_free_gib:
+                stop_reason = f"low_disk free_gib={free:.1f} min_free_gib={args.min_free_gib:g} dest={dest}"
+                break
+            result, nbytes = sgeval_move_dir(rel, src, dest, moved_log)
+            seen.pop(rel, None)
+            if result == "moved":
+                moved_n += 1
+                moved_bytes += nbytes
+            elif result == "sha_mismatch":
+                stop_reason = f"sha_mismatch dir={rel}"
+                break
+            elif result == "rsync_fail":
+                pending += 1
+        if stop_reason is not None:
+            break
+        now = time.time()
+        stop = bool(args.stop_file and Path(args.stop_file).exists() and pending == 0)
+        if args.once or stop or now - last_report >= args.interval:
+            stage_bytes = sum(f.stat().st_size for _, d in sgeval_dirs(stage) for f in tree_files(d))
+            print(f"VMOVE mode=sgeval moved={moved_n} pending={pending} bytes={moved_bytes} stage_bytes={stage_bytes}",
+                  flush=True)
+            last_report = now
+        if (args.once and pending == 0) or stop:
+            break
+        time.sleep(max(0.05, min(args.stable_sec, args.interval)))
+    if stop_reason is not None:
+        print(f"MOVER_STOP reason={stop_reason}（停止搬运，NFS 源保留）", flush=True)
+    left = sum(1 for _, d in sgeval_dirs(stage) if tree_files(d))
+    rc = 0
+    if args.once or stop_reason is not None:
+        ok = stop_reason is None and left == 0 and not skipped
+        print(f"SGEVAL_MOVE={'PASS' if ok else 'FAIL'} moved={moved_n} left={left} skipped={len(skipped)} "
+              f"bytes={moved_bytes} stopped={int(stop_reason is not None)}", flush=True)
+        rc = 0 if ok else 1
+    print(f"EXIT_CODE={rc}", flush=True)
+    return rc
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--mode", default="v8", choices=("v8",),
                     help="v8（缺省且唯一）：整目录搬 V8／V9 评估录像，见 v8_main")
+    ap.add_argument("--layout", default="v8", choices=("v8", "sgeval"),
+                    help="v8（缺省）：运行根 sNN/<policy>/rec/ 布局；sgeval：媒体根下 <label>/<dataset>/<side>/<key>.a<n>/，见 sgeval_main")
+    ap.add_argument("--min-free-gib", type=float, default=50.0,
+                    help="sgeval：--dest 所在盘剩余低于该值即停止搬运（MOVER_STOP reason=low_disk）")
     ap.add_argument("--policies", default="smvla,mme", help="v8 模式：要搬的模型（运行根下 sNN/<policy>/）")
     ap.add_argument("--decode-workers", type=int, default=4, help="v8 --once 解码核对并行数")
     ap.add_argument("--once-max-wait", type=float, default=300.0,
@@ -470,6 +648,8 @@ def main() -> int:
     ap.add_argument("--once", action="store_true")
     ap.add_argument("--stop-file", default=None)
     args = ap.parse_args()
+    if args.layout == "sgeval":
+        return sgeval_main(args)
     return v8_main(args)
 
 
