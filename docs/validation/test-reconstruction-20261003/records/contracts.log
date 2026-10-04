@@ -1,0 +1,35 @@
+........................................................................ [ 37%]
+........................................................................ [ 75%]
+................................................                         [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+.venv/lib/python3.11/site-packages/sapien/__init__.py:18
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/sapien/__init__.py:18: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py:225: 16 warnings
+  /data/hongzefu/robomme_benchmark_MotionJEPANewTask/.venv/lib/python3.11/site-packages/mani_skill/utils/registration.py:225: DeprecationWarning: The 'warn' method is deprecated, use 'warning' instead
+    logger.warn(f"Override registered env {uid}")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 15 durations =============================
+0.49s call     tests/lightweight/test_v8_eval_report.py::test_v9报告合并复用
+0.37s call     tests/lightweight/test_hard_builder_xhard0.py::test_交付格表外的格有正式局即拒绝
+0.36s call     tests/lightweight/test_hard_builder_xhard0.py::test_specs_root环境变量与packaged_specs_path
+0.35s call     tests/lightweight/test_v9_packaged_800.py::test_builder默认每任务50局_按档单调
+0.34s call     tests/lightweight/test_hard_builder_xhard0.py::test_specs_root参数_身份带规格根[xhard0\u5173]
+0.29s call     tests/lightweight/test_v8_eval_report.py::test_v9_moved记录缺失即FAIL
+0.29s call     tests/lightweight/test_v8_eval_report.py::test_v9视频缺失与sha不符
+0.28s call     tests/lightweight/test_v8_eval_report.py::test_v9_partial按严格口径判FAIL
+0.23s call     tests/lightweight/test_hard_builder_xhard0.py::test_specs_root参数_身份带规格根[xhard0\u5f00]
+0.20s call     tests/lightweight/test_noise_gate.py::test_selftest
+0.15s setup    tests/lightweight/test_v9_packaged_800.py::test_包内正式局恰好800且每任务50
+0.14s call     tests/lightweight/test_v8_eval_report.py::test_partial_progress
+0.13s call     tests/lightweight/test_noise_gate.py::test_freeze_verify_sha绑定与篡改检出
+0.12s call     tests/lightweight/test_v8_eval_report.py::test_missing_media_and_extra_identity
+0.11s call     tests/lightweight/test_v8_eval_report.py::test_error_final_accept_and_ledger_only_attempt
+192 passed, 18 warnings in 9.12s
+CPU_CONTRACT_EXIT=0

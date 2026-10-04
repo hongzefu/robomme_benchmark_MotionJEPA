@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="31" time="1.014" timestamp="2026-10-03T23:04:26.335340-04:00" hostname="sled-vail"><testcase classname="tests.lightweight.test_TaskGoal" name="test_unknown_env_returns_single_goal_when_equal" time="0.000"><failure message="AssertionError: assert [] == ['']&#10;  &#10;  Right contains one more item: ''&#10;  Use -v to get more diff">def test_unknown_env_returns_single_goal_when_equal():
+        """Unknown env_id goes to the default empty-string branch; when two goals are equal it returns a single-element list."""
+        s = _make_self()
+        result = _call("UnknownEnv", s)
+&gt;       assert result == [""]
+E       AssertionError: assert [] == ['']
+E
+E         Right contains one more item: ''
+E         Use -v to get more diff
+
+tests/lightweight/test_TaskGoal.py:65: AssertionError</failure></testcase><testcase classname="tests.lightweight.test_TaskGoal" name="test_movecube_still_returns_two_goals" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_binfill_one_color" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_binfill_two_colors" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_binfill_three_colors" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_pickxtimes_once" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_pickxtimes_multiple" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_swingxtimes_once" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_swingxtimes_multiple" time="0.000"><failure message="AssertionError: assert 'repeating this back and forth motion five times' in 'pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop'">def test_swingxtimes_multiple():
+        """Branch behavior test case."""
+        s = _make_self(unwrapped_attrs=dict(num_repeats=5, target_color_name="red"))
+        result = _call("SwingXtimes", s)
+&gt;       assert "repeating this back and forth motion five times" in result[0]
+E       AssertionError: assert 'repeating this back and forth motion five times' in 'pick up the red cube, move it to the top of the right-side target, then move it to the top of the left-side target, repeating this back-and-forth motion five times, finally press the button to stop'
+
+tests/lightweight/test_TaskGoal.py:159: AssertionError</failure></testcase><testcase classname="tests.lightweight.test_TaskGoal" name="test_videounmask_pick_one" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_videounmask_pick_two" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_videounmaskswap_pick_one" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_videounmaskswap_pick_two" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_buttonunmask_pick_one" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_buttonunmask_pick_two" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_buttonunmaskswap_pick_one" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_buttonunmaskswap_pick_two" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_videoplacebutton" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_videoplaceorder" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_pickhighlight" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_videorepick_once" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_videorepick_multiple" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_stopcube" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_insertpeg" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_movecube" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_patternlock" time="0.000" /><testcase classname="tests.lightweight.test_TaskGoal" name="test_routestick" time="0.000" /><testcase classname="tests.lightweight.test_step_error_handling" name="test_step_error_returns_status_error" time="0.005"><failure message="AssertionError: DemonstrationWrapper.step() should contain a try/except block&#10;assert False">def test_step_error_returns_status_error() -&gt; None:
+        """
+        Construct a minimal Mock environment to make super().step() inside _step_batch() throw an exception,
+        verifying that DemonstrationWrapper.step() does not propagate upwards, but returns "error" via info["status"].
+        """
+        source = _load_step_source()
+        tree = ast.parse(source, filename=str(_demo_wrapper_path()))
+
+        # Find step() method, verify try/except structure exists
+        step_method = None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name == "DemonstrationWrapper":
+                for item in node.body:
+                    if isinstance(item, ast.FunctionDef) and item.name == "step":
+                        step_method = item
+                        break
+                break
+
+        assert step_method is not None, "DemonstrationWrapper.step method not found"
+
+        # Verify that the step method body contains try/except
+        has_try = any(isinstance(n, ast.Try) for n in ast.walk(step_method))
+&gt;       assert has_try, "DemonstrationWrapper.step() should contain a try/except block"
+E       AssertionError: DemonstrationWrapper.step() should contain a try/except block
+E       assert False
+
+tests/lightweight/test_step_error_handling.py:76: AssertionError</failure></testcase><testcase classname="tests.lightweight.test_step_error_handling" name="test_step_error_runtime_behavior" time="0.000" /><testcase classname="tests.lightweight.test_step_error_handling" name="test_step_normal_returns_ongoing_status" time="0.935" /><testcase classname="tests.lightweight.test_step_error_handling" name="test_scripts_use_status_check_not_bare_try_except" time="0.004"><failure message="AssertionError: dataset_replay.py: Should have info.get('status') or status==&quot;error&quot; check&#10;assert False">def test_scripts_use_status_check_not_bare_try_except() -&gt; None:
+        """
+        Parse run_example.py and dataset_replay.py, verify:
+        1. There is an info.get("status") or status == "error" check in the script
+        2. env.step(action) calls are no longer directly wrapped by try/except Exception
+        """
+        scripts = ["run_example.py", "dataset_replay.py"]
+
+        for script_name in scripts:
+            script_path = _script_path(script_name)
+            source = script_path.read_text(encoding="utf-8")
+            tree = ast.parse(source, filename=str(script_path))
+
+            # ---- Check 1: Contains status related checks ----
+            has_status_check = (
+                'info.get("status")' in source
+                or "status == \"error\"" in source
+                or "status==" in source.replace(" ", "")
+            )
+&gt;           assert has_status_check, (
+                f"{script_name}: Should have info.get('status') or status==\"error\" check"
+            )
+E           AssertionError: dataset_replay.py: Should have info.get('status') or status=="error" check
+E           assert False
+
+tests/lightweight/test_step_error_handling.py:231: AssertionError</failure></testcase></testsuite></testsuites>

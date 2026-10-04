@@ -1,0 +1,16 @@
+.............................                                            [100%]
+============================= slowest 12 durations =============================
+0.50s call     tests/lightweight/test_scripts_do_not_import_tests.py::test_scripts_下没有任何模块导入_tests
+0.02s call     tests/lightweight/test_h5_parity_compare.py::test_timestep_count_difference_is_recorded_not_truncated
+0.01s call     tests/lightweight/test_h5_parity_compare.py::test_attributes_are_compared
+0.01s call     tests/lightweight/test_h5_parity_compare.py::test_float_bit_difference_is_caught_without_tolerance
+0.01s call     tests/lightweight/test_h5_parity_compare.py::test_object_string_dataset_difference_is_caught
+0.01s call     tests/lightweight/test_h5_parity_compare.py::test_extra_and_missing_paths_are_counted
+0.01s call     tests/lightweight/test_h5_parity_compare.py::test_dtype_change_is_caught
+0.01s call     tests/lightweight/test_env_digest_compare.py::test_all_equal
+0.01s call     tests/lightweight/test_env_digest_compare.py::test_unmeasured_shape_mismatch_and_npz_missing
+0.01s call     tests/lightweight/test_env_digest_compare.py::test_demo_frame_diff
+0.01s call     tests/lightweight/test_env_digest_compare.py::test_row_count_mismatch
+0.01s call     tests/lightweight/test_h5_parity_compare.py::test_identical_files_short_circuit_on_sha
+29 passed in 0.82s
+CPU_SMOKE_EXIT=0

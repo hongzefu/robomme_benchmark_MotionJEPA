@@ -1,0 +1,46 @@
+{
+  "base": "86e5a015b7ba3a85c2c03cc50f5de482b9476c1d",
+  "empty_h5_comparison": {
+    "kind": "pair",
+    "id": "BinFill|xhard1|16400000",
+    "task": "BinFill",
+    "tier": "xhard1",
+    "seed": 16400000,
+    "class": "byte_equal",
+    "reason": null,
+    "fail_side": null,
+    "first_divergence": null,
+    "action_max": null,
+    "state_max": null,
+    "image_max": null,
+    "frames_ref": null,
+    "frames_new": null,
+    "frames_diff": null,
+    "ref_h5": "artifacts/test-reconstruction-20261003-01/counterexamples/a.h5",
+    "new_h5": "artifacts/test-reconstruction-20261003-01/counterexamples/b.h5",
+    "ref_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "new_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "schema_type_cases": [
+    {
+      "field": "candidate",
+      "original": 1,
+      "injected": true,
+      "outcome": "accepted"
+    },
+    {
+      "field": "attempt",
+      "original": 0,
+      "injected": 0.5,
+      "outcome": "accepted"
+    },
+    {
+      "field": "seed",
+      "original": 24200000,
+      "injected": 24200000.0,
+      "outcome": "accepted"
+    }
+  ],
+  "gpu_envs_created": 0,
+  "reset_calls": 0
+}

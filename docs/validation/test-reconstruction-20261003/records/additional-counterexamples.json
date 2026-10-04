@@ -1,0 +1,21 @@
+{
+  "empty_gate": {
+    "accepted": true,
+    "line": "GATE_SET=PASS cells=43 per_cell=3 total=129 in_delivery=129 sha=5a869f0a69be"
+  },
+  "root_attribute": {
+    "left": "artifacts/test-reconstruction-20261003-01/counterexamples/root-left.h5",
+    "right": "artifacts/test-reconstruction-20261003-01/counterexamples/root-right.h5",
+    "sha_equal": 0,
+    "field_mismatch": 0,
+    "missing_left": [],
+    "missing_right": [],
+    "mismatches": [],
+    "timestep_count": {
+      "left": 2,
+      "right": 2
+    },
+    "left_sha256": "a29d01b24e76e0ab966d0cb802a57c2dafa8ade0b28cc6f0ad93a7c26fc3ad16",
+    "right_sha256": "a8da7b7a2e8e395f8d8aab8c10b3820e229d9852115b82e0bc298012315e1e6f"
+  }
+}

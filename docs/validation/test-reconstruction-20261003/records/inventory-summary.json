@@ -1,0 +1,22 @@
+{
+  "base": "86e5a015b7ba3a85c2c03cc50f5de482b9476c1d",
+  "test_files": 109,
+  "test_functions": 1106,
+  "empty_pytest_files": [
+    "tests/lightweight/test_record_info_is_completed.py",
+    "tests/lightweight/test_record_waypoint_pending_flow.py",
+    "tests/lightweight/test_waypoint_dense_dedup.py"
+  ],
+  "python_files_by_root": {
+    "src/robomme": 54,
+    "src/robomme_hard": 62,
+    "scripts": 71,
+    "tests": 116,
+    "challenge_interface": 9
+  },
+  "tools_present": {
+    "pytest": true,
+    "coverage": false,
+    "pytest_cov": false
+  }
+}
