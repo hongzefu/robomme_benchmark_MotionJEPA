@@ -474,9 +474,12 @@ def cmd_xhard0_reset_parity(args) -> int:
                 "choices": o["choices"] == h["choices"],
             }
             bad = [k for k, v in fields.items() if not v]
-            # 演示前状态逐名不等、但每类 actor 的状态值集合相等 ⇒ 只是命名不同（如 robomme_hard BUS 的 F3 左右按钮改名），
-            # 场景逐位相同：单列 name_only，不计 det_diff（v7 方案 D-16 的实现细节，写进留档）
-            name_only = bad == ["pre_demo_state"] and _name_agnostic(o["pre_demo_state"]) == _name_agnostic(h["pre_demo_state"])
+            # 演示前状态确有实体改名（键集合不同）、且每类 actor 的状态值集合相等 ⇒ 只是命名不同（如 robomme_hard BUS
+            # 的 F3 左右按钮改名），场景逐位相同：单列 name_only，不计 det_diff（v7 方案 D-16 的实现细节，写进留档）。
+            # 键集合相同而取值不同（如两个同形 actor 互换位姿）是真差异，与 env-digest-compare 的判法一致；
+            # 唯一例外是 XHARD0_DECLARED_RENAMES 里逐名声明的对调，须按映射改名后逐键相等
+            name_only = bad == ["pre_demo_state"] and _pre_state_name_only(
+                o["pre_demo_state"], h["pre_demo_state"], XHARD0_DECLARED_RENAMES.get(task))
             rows.append({"task": task, "source_episode": o["episode"], "hard_episode": h["episode"],
                          "det_bad": [] if name_only else bad, "name_only": name_only,
                          "demo_frames": [o["demo_frames"], h["demo_frames"]],
@@ -488,7 +491,7 @@ def cmd_xhard0_reset_parity(args) -> int:
     if args.merge_with:
         rows += [r for r in map(json.loads, Path(args.merge_with).read_text().splitlines()) if r["task"] not in tasks]
     (out / args.report_name).write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
-    return _xhard0_reset_verdict(rows, hs.XHARD0_PER_TASK)
+    return _xhard0_reset_verdict(rows, hs.XHARD0_PER_TASK, n_tasks=len(hs.ALL_TASKS))
 
 
 def _name_agnostic(state: Any) -> Any:
@@ -498,12 +501,49 @@ def _name_agnostic(state: Any) -> Any:
     return state
 
 
-def _xhard0_reset_verdict(rows: list[dict[str, Any]], per_task: int) -> int:
+#: 已声明的实体改名：任务 → 分区 → {官方侧名: robomme_hard 侧名}。ButtonUnmaskSwap 的 F3 把左右按钮名对调
+#: （官方 buttons[0]（y=-0.1）名 button_left，robomme_hard 名 button_right），两侧键集合相同、取值互换，
+#: 只能靠逐名声明认定为改名；未声明的同键互换一律计真差异
+XHARD0_DECLARED_RENAMES: dict[str, dict[str, dict[str, str]]] = {
+    "ButtonUnmaskSwap": {"articulations": {"button_left": "button_right", "button_right": "button_left"}},
+}
+
+
+def _apply_renames(state: Any, renames: dict[str, dict[str, str]] | None) -> Any:
+    """按声明映射给官方侧状态摘要的实体改名（只动映射里点名的分区与实体）。"""
+    if not renames or not (isinstance(state, dict) and all(isinstance(v, dict) for v in state.values())):
+        return state
+    return {section: {renames.get(section, {}).get(name, name): value for name, value in items.items()}
+            for section, items in state.items()}
+
+
+def _state_names(state: Any) -> Any:
+    """状态摘要的键集合（分区 → 实体名集合）；非「分区 → 实体 → 值」形态时原样返回。"""
+    if isinstance(state, dict) and all(isinstance(v, dict) for v in state.values()):
+        return {section: sorted(items) for section, items in state.items()}
+    return state
+
+
+def _pre_state_name_only(a: Any, b: Any, renames: dict[str, dict[str, str]] | None = None) -> bool:
+    """两侧演示前状态「只是实体改名」，满足其一即可：
+    ① 给了声明映射 ``renames`` 且官方侧 ``a`` 按映射改名后与 ``b`` 逐键相等；
+    ② 键集合确实不同（存在改名），且去名后各分区取值的有序多重集相同。
+    键集合相同且无声明映射可解释时，任何取值差异都是真差异（同形 actor 互换位姿不得被当成改名）。"""
+    if renames and _apply_renames(a, renames) == b:
+        return True
+    return _state_names(a) != _state_names(b) and _name_agnostic(a) == _name_agnostic(b)
+
+
+def _xhard0_reset_verdict(rows: list[dict[str, Any]], per_task: int, n_tasks: int | None = None) -> int:
+    """期望局数 = 任务清单长度 × 每任务局数；任务清单取 hard_specs.ALL_TASKS（调用方未给时现取），不写死 16。"""
+    if n_tasks is None:
+        n_tasks = len(_hard_specs().ALL_TASKS)
     det = [r for r in rows if r["det_bad"]]
     first = f"{det[0]['task']}/ep{det[0]['source_episode']}:{det[0]['det_bad']}" if det else "-"
     name_only = [r for r in rows if r.get("name_only")]
-    ok = not det and len(rows) == 16 * per_task
-    print(f"XHARD0_RESET_PARITY={'PASS' if ok else 'FAIL'} shape=16x1x12 compared={len(rows)} det_diff={len(det)} "
+    ok = not det and len(rows) == n_tasks * per_task
+    print(f"XHARD0_RESET_PARITY={'PASS' if ok else 'FAIL'} shape={n_tasks}x1x{per_task} compared={len(rows)} "
+          f"det_diff={len(det)} "
           f"name_only={len(name_only)} first_det_diff={first}"
           + (f" name_only_tasks={sorted({r['task'] for r in name_only})}" if name_only else ""))
     print(f"XHARD0_DEMO_DIFF=INFO frames_equal={sum(r['demo_frames'][0] == r['demo_frames'][1] for r in rows)} "

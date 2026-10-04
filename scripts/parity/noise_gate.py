@@ -1017,9 +1017,14 @@ def regress_check(ref: dict[str, Any], set_name: str, new_root: str | Path, *,
     if rerun_new is not None:
         rn, ro = Path(rerun_new), Path(rerun_old)
         rerun_facts = {"new": _precondition(rn, "改后第二次", invalid), "old": _precondition(ro, "旧代码", invalid)}
-        hosts = {facts.get("host"), rerun_facts["new"].get("host"), rerun_facts["old"].get("host")}
-        if None not in hosts and len(hosts) != 1:
-            invalid.append(f"第二次跑须与首跑同一节点：{sorted(hosts)}")
+        # 同一节点只能在三份启动记录都写了 host 时核对；缺 host 即无法核对，判 INVALID，不静默放过
+        host_of = {"首跑": facts.get("host"), "改后第二次": rerun_facts["new"].get("host"),
+                   "旧代码": rerun_facts["old"].get("host")}
+        lacking = [label for label, h in host_of.items() if not h]
+        if lacking:
+            invalid.append(f"missing_host：{'、'.join(lacking)} 启动记录缺 host，无法核对第二次跑与首跑同一节点")
+        elif len(set(host_of.values())) != 1:
+            invalid.append(f"第二次跑须与首跑同一节点：{sorted(set(host_of.values()))}")
         new2_lines, new2_dup = read_run(rn)
         old_lines, old_dup = read_run(ro)
         for key in [*flips, *fillers]:
