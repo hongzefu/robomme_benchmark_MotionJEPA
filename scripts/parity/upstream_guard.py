@@ -3,8 +3,13 @@
 子命令：
 - ``build``：从 git 对象生成 ``src/robomme_hard/UPSTREAM.json``（双锚点、官方逐文件 sha256、shim 清单、vendor 清单、自校验哈希）。
 - ``check``（默认）：输出判定行
-  ``UPSTREAM_BYTES`` / ``VENDOR_SAME`` / ``SHIMS`` / ``ABS_IMPORT`` / ``BORROWED_DEPS``，末行 ``UPSTREAM_GUARD=PASS|FAIL``。
-  ``src/robomme`` 尚未回退（阶段 3 之前）时 ``UPSTREAM_BYTES=PENDING``，不计作失败；``--require-upstream`` 时按 FAIL 计。
+  ``UPSTREAM_BYTES`` / ``ENTRY_SCRIPTS`` / ``VENDOR_SAME`` / ``SHIMS`` / ``ABS_IMPORT`` / ``BORROWED_DEPS``，
+  末行 ``UPSTREAM_GUARD=PASS|FAIL``。
+  ``UPSTREAM_BYTES`` 默认严格：``src/robomme`` 与官方 ``src_commit`` 有任何字节差即 FAIL。逃生阀 ``--allow-pending``
+  把它降为 ``UPSTREAM_BYTES=PENDING``、不计作失败，并向 stderr 打醒目警告（只供临时排障，不得用于验收）。
+  ``--require-upstream`` 保留为兼容旁路（现即默认行为，加不加结果相同），与 ``--allow-pending`` 互斥。
+  ``ENTRY_SCRIPTS``：三个上游入口 ``scripts/{dataset_replay,evaluation,run_example}.py`` 与
+  ``git show <src_commit>:scripts/<名>.py`` 逐字节相同，任一不同或缺失即 FAIL（不受 ``--allow-pending`` 影响）。
 - ``manifest-md``：输出 README ③ 复制／借用／子类／新增逐文件表。
 
 纯 CPU、秒级；只读 git 对象与工作区文件，不导入 robomme。
@@ -30,6 +35,8 @@ SRC_TREE = "3006988fed0a708e7dcba906fb663f2475dc8d34"
 ORCH_COMMIT = "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa"
 ORCH_TREE = "1d4c13697f0c5fbd7a8b05e01c196c984a07406c"
 UPSTREAM_URL = "https://github.com/RoboMME/robomme_benchmark"
+#: 与上游逐字节相同、不得改动的三个顶层入口（AGENTS.md P1）
+ENTRY_SCRIPTS = ("dataset_replay.py", "evaluation.py", "run_example.py")
 VENDOR_FILES = (
     "generate_dataset.py",
     "validate_generated_dataset_contract.py",
@@ -206,7 +213,8 @@ def shim_set(manifest: dict) -> set[str]:
 # ── 各道检查 ─────────────────────────────────────────────────────────────
 
 
-def check_upstream_bytes(manifest: dict, require: bool) -> bool:
+def check_upstream_bytes(manifest: dict, allow_pending: bool = False) -> bool:
+    """``src/robomme`` 逐文件 sha256 对官方清单。默认严格：任何差异即 FAIL；``allow_pending`` 时记 PENDING 放行并警告。"""
     want = manifest["robomme_files"]
     have = {}
     for p in (REPO / "src" / "robomme").rglob("*"):
@@ -220,10 +228,36 @@ def check_upstream_bytes(manifest: dict, require: bool) -> bool:
         print(f"UPSTREAM_BYTES=PASS src_commit={manifest['src_commit'][:8]} files={len(want)} diff=0 "
               f"shims={len(manifest['shims'])}")
         return True
-    status = "FAIL" if require else "PENDING"
+    status = "PENDING" if allow_pending else "FAIL"
+    if allow_pending:
+        bar = "!" * 72
+        print(f"{bar}\n!! 警告：--allow-pending 已开启，src/robomme 与官方 {manifest['src_commit'][:8]} 存在 {diff} 处"
+              f"字节差异，本次按 PENDING 放行。\n!! 这只是临时排障逃生阀，结果不得作为验收证据。\n{bar}",
+              file=sys.stderr, flush=True)
     print(f"UPSTREAM_BYTES={status} src_commit={manifest['src_commit'][:8]} files={len(want)} diff={diff} "
-          f"changed={len(changed)} extra={len(extra)} missing={len(missing)}")
-    return not require
+          f"changed={len(changed)} extra={len(extra)} missing={len(missing)}"
+          + ("" if allow_pending else f" detail={(changed + extra + missing)[:10]}"), flush=True)
+    return allow_pending
+
+
+def check_entry_scripts(manifest: dict) -> bool:
+    """三个上游入口与 ``git show <src_commit>:scripts/<名>`` 逐字节相同（缺文件或上游无此文件都算不同）。"""
+    bad = []
+    for name in ENTRY_SCRIPTS:
+        path = REPO / "scripts" / name
+        try:
+            want = _git_bytes("show", f"{manifest['src_commit']}:scripts/{name}")
+        except subprocess.CalledProcessError:
+            bad.append(f"{name}:upstream_missing")
+            continue
+        if not path.is_file():
+            bad.append(f"{name}:missing")
+        elif path.read_bytes() != want:
+            bad.append(f"{name}:changed")
+    ok = not bad
+    print(f"ENTRY_SCRIPTS={'PASS' if ok else 'FAIL'} src_commit={manifest['src_commit'][:8]} "
+          f"files={len(ENTRY_SCRIPTS)} diff={len(bad)}" + (f" bad={bad}" if bad else ""))
+    return ok
 
 
 def check_vendor(manifest: dict) -> bool:
@@ -347,7 +381,11 @@ def manifest_md(manifest: dict) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("command", nargs="?", default="check", choices=("check", "build", "manifest-md"))
-    parser.add_argument("--require-upstream", action="store_true", help="UPSTREAM_BYTES 不等时按 FAIL 计（阶段 3 之后）")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--require-upstream", action="store_true",
+                      help="兼容旁路：UPSTREAM_BYTES 不等时按 FAIL 计（现为默认行为，加不加结果相同）")
+    mode.add_argument("--allow-pending", action="store_true",
+                      help="逃生阀：UPSTREAM_BYTES 不等时记 PENDING 放行并打醒目警告；只供临时排障，不得用于验收")
     parser.add_argument("--net", action="store_true", help="网络可达时 git fetch 官方锚点复核 tree")
     args = parser.parse_args()
     if args.command == "build":
@@ -359,7 +397,8 @@ def main() -> int:
         manifest_md(manifest)
         return 0
     results = [
-        check_upstream_bytes(manifest, args.require_upstream),
+        check_upstream_bytes(manifest, allow_pending=args.allow_pending),
+        check_entry_scripts(manifest),
         check_vendor(manifest),
         check_shims(manifest),
         check_abs_import(manifest),
