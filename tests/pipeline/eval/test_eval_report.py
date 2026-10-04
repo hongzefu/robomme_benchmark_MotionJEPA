@@ -25,48 +25,7 @@ def _ident(i: int, task: str = "TaskA", tier: str = "xhard1") -> dict:
             "key": f"{task}_{tier}_{seed}"}
 
 
-class Stage:
-    """按生产布局手写一个席位的结果行、账本行与录像目录。"""
-
-    def __init__(self, root: Path, policy: str = POL, seat: str = "s00"):
-        self.root, self.policy = Path(root), policy
-        self.dir = self.root / seat / policy
-        self.dir.mkdir(parents=True, exist_ok=True)
-
-    def _append(self, name: str, row: dict):
-        with open(self.dir / name, "a", encoding="utf-8") as fh:
-            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
-
-    def result(self, ident: dict, aid: str, no: int, status: str, *, infra: bool = False, media: bool = True,
-               **kw) -> dict:
-        row = {"v8": True, "key": ident["key"], "task": ident["task"], "tier": ident["tier"], "seed": ident["seed"],
-               "candidate": ident["candidate"], "spec_sha256": ident["spec_sha256"],
-               "identity": {k: ident[k] for k in ("tier", "seed", "candidate", "spec_sha256")},
-               "policy": self.policy, "attempt_id": aid, "attempt_no": no, "status": status,
-               "task_success": status == "success", "infra": infra, "exec_steps": 5,
-               "rec_dir": str(self.dir / "rec" / f"{ident['key']}.a{no}"), "recorder_verify": "PASS"}
-        row.update(kw)
-        self._append("results.jsonl", row)
-        if media:
-            d = self.dir / "rec" / f"{ident['key']}.a{no}"
-            d.mkdir(parents=True, exist_ok=True)
-            for f in ("front.mkv", "wrist.mkv", "summary.json"):
-                (d / f).write_text("x", encoding="utf-8")
-        return row
-
-    def ledger(self, kind: str, ident_or_key, aid: str, **kw):
-        key = ident_or_key if isinstance(ident_or_key, str) else ident_or_key["key"]
-        row = {"kind": kind, "key": key, "attempt_id": aid, "policy": self.policy, **kw}
-        if kind == "accept":
-            row.setdefault("accepted_attempt_id", aid)
-        self._append(f"{self.policy}.ledger.jsonl", row)
-
-    def accepted(self, ident: dict, aid: str, status: str, no: int = 1, **kw) -> dict:
-        self.ledger("attempt_start", ident, aid, attempt_no=no)
-        row = self.result(ident, aid, no, status, **kw)
-        self.ledger("attempt_end", ident, aid, attempt_no=no, status=status)
-        self.ledger("accept", ident, aid, status=status)
-        return row
+Stage = F.Stage
 
 
 def _report(tmp_path, capsys, idents, *extra, manifest_extra=None):

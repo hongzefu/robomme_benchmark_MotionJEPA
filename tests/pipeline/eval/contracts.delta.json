@@ -398,6 +398,28 @@
     "status": "planned"
   },
   {
+    "id": "C13-16",
+    "domain": "C13",
+    "source": [
+      "scripts/injection-dev/eval_video_mover.py",
+      "scripts/eval-official/eval_report.py"
+    ],
+    "symbol": "eval_video_mover v8_main --once（v8_move_dir、v8_verify、v8_verdict）+ eval_report.verify_new_videos / v9_lines",
+    "oracle": "ffmpeg 现做的 3／4／5 帧 ffv1 微型视频，逐文件 sha 手算；运行根按生产布局手写",
+    "positive": "整目录经 .incoming 原子搬到 <dest>/<policy>/<tier>/<task>/<目录名>/，逐文件 sha 一致、源删除、moved.jsonl 记逐文件 sha；V8_EVAL_VIDEOS=PASS、V9_EVAL_VIDEOS=PASS videos=2",
+    "negative": "少一路视频 → missing、坏视频 → decode_fail（搬运脚本与报告两处一致判 FAIL）；搬后文件被替换 → sha_mismatch；搬运记录缺失 → moved_record_absent",
+    "boundaries": "同内容重搬不落第二份；不同内容落 .dup1、原件逐字节不动",
+    "nodeids": [
+      "tests/pipeline/eval/test_eval_video_mover.py::test_positive_atomic_move_and_report",
+      "tests/pipeline/eval/test_eval_video_mover.py::test_rerun_same_content_no_dup_and_different_content_goes_to_dup1",
+      "tests/pipeline/eval/test_eval_video_mover.py::test_missing_and_broken_media",
+      "tests/pipeline/eval/test_eval_video_mover.py::test_report_catches_tamper_and_absent_move_record"
+    ],
+    "resource": "cpu-ffmpeg-subprocess（slow）",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
     "id": "C16-01",
     "domain": "C16",
     "source": [
@@ -407,7 +429,7 @@
     "oracle": "真 bash + 假引擎（seat_fake_engine.py）+ 空输出 nvidia-smi；每次启动／信号写事件日志",
     "positive": "正常收尾 EXIT_CODE=0、SEAT_DONE done=2、server 被 TERM；首推理放宽 600 只给 server 新起后的第一个客户端，客户端单独重起传 0",
     "negative": "端口被占顺延 +2；server 未就绪先死不起客户端；客户端反复 75 用尽重启预算 → INFRA_EXHAUSTED rc=4；server 中途反复死 → 重起预算用尽 rc=4、客户端全被收；客户端 5／3 不重启；SMVLA_PY 未设、V8 跑 mme 缺 tokenizer 参数 → RUN_BLOCKED rc=3；参数错误 rc=2",
-    "boundaries": "TERM：客户端与 server 进程组全部结束，EXIT_CODE=143；server 忽略 TERM 时等满宽限再 KILL（约 60 s）",
+    "boundaries": "TERM：客户端与 server 进程组全部结束，EXIT_CODE=143；server 忽略 TERM 时等满宽限再 KILL（约 60 s）。测试侧兜底：每个用例 teardown 按记录的 pid 与 .v8-pgids 按进程组收残留，并用「SIGKILL 掉脚本整组、生产收尾失效」的用例证明兜底有效",
     "nodeids": [
       "tests/pipeline/eval/test_seat_scripts.py::test_normal_run_and_first_extra_only_on_fresh_server",
       "tests/pipeline/eval/test_seat_scripts.py::test_port_busy_moves_to_next_pair",
@@ -419,7 +441,8 @@
       "tests/pipeline/eval/test_seat_scripts.py::test_term_cleans_up_server_and_client",
       "tests/pipeline/eval/test_seat_scripts.py::test_smvla_py_unset_blocks",
       "tests/pipeline/eval/test_seat_scripts.py::test_mme_v8_requires_tokenizer_args",
-      "tests/pipeline/eval/test_seat_scripts.py::test_bad_args_exit_2"
+      "tests/pipeline/eval/test_seat_scripts.py::test_bad_args_exit_2",
+      "tests/pipeline/eval/test_seat_scripts.py::test_teardown_reaps_orphans_when_production_cleanup_is_bypassed"
     ],
     "resource": "cpu-subprocess-bash（slow）",
     "mutants": [],

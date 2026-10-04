@@ -77,8 +77,12 @@ esac
     env.update(PATH=f"{bin_dir}:{env['PATH']}", BENCH_PY=str(fakepy), SMVLA_PY=str(fakepy), SMVLA_CKPT=str(ckpt),
                SEAT_POLL_S="0.2", SEAT_READY_POLL_S="0.1", FAKE_LOG=str(tmp_path / "fake.jsonl"),
                FAKE_STATE=str(tmp_path / "client-count"), FAKE_SERVER_MODE="ok", FAKE_CLIENT_CODES="0")
-    return {"tmp": tmp_path, "fakepy": fakepy, "env": env, "shard": shard, "idents": idents, "ckpt": ckpt,
-            "idx": _free_seat_idx()}
+    yield {"tmp": tmp_path, "fakepy": fakepy, "env": env, "shard": shard, "idents": idents, "ckpt": ckpt,
+           "idx": _free_seat_idx()}
+    # 测试侧兜底：无论生产收尾是否生效，本用例起过的假进程一律收干净
+    _reap(tmp_path)
+    left = [pid for pid in _recorded_pids(tmp_path) if _alive(pid) and _is_ours(pid)]
+    assert left == [], f"teardown 后仍有存活进程 {left}"
 
 
 def _seat_cmd(rig, *extra, out=None, policies="smvla", v8=True):
@@ -91,9 +95,74 @@ def _seat_cmd(rig, *extra, out=None, policies="smvla", v8=True):
     return cmd + list(extra)
 
 
+def _killpg(pid: int, sig=signal.SIGKILL) -> None:
+    """按进程组发信号；绝不对 pytest 自己所在的进程组发（那时退回只发给该进程）。"""
+    try:
+        pg = os.getpgid(pid)
+    except ProcessLookupError:
+        return
+    try:
+        if pg != os.getpgid(0):
+            os.killpg(pg, sig)
+        else:
+            os.kill(pid, sig)
+    except ProcessLookupError:
+        pass
+
+
 def _run(cmd, env, timeout=90):
-    p = subprocess.run(cmd, env=env, capture_output=True, text=True, timeout=timeout)
-    return p.returncode, p.stdout
+    """bash 本身起在新会话里；超时或异常时按 pgid 杀整组。"""
+    p = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                         start_new_session=True)
+    try:
+        out, _ = p.communicate(timeout=timeout)
+    except BaseException:
+        _killpg(p.pid)
+        p.communicate()
+        raise
+    return p.returncode, out
+
+
+def _popen(cmd, env):
+    return subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                            start_new_session=True)
+
+
+def _recorded_pids(tmp: Path) -> list[int]:
+    """本用例记下的全部 pid：假引擎每次启动的事件行，加 run_seat.sh 写的 ``.v8-pgids``（setsid 进程组首进程）。"""
+    pids = {int(r["pid"]) for r in F.read_jsonl(tmp / "fake.jsonl") if r.get("event") == "start"}
+    for f in tmp.rglob(".v8-pgids"):
+        for line in f.read_text(encoding="utf-8", errors="replace").splitlines():
+            parts = line.split()
+            if len(parts) == 2 and parts[1].isdigit():
+                pids.add(int(parts[1]))
+    return sorted(pids)
+
+
+def _is_ours(pid: int) -> bool:
+    """防 PID 复用误杀：只认命令行确属假引擎或本测试起的席位脚本的进程。"""
+    try:
+        cmd = Path(f"/proc/{pid}/cmdline").read_bytes().replace(b"\0", b" ").decode(errors="replace")
+    except OSError:
+        return False
+    return any(x in cmd for x in ("seat_fake_engine", "run_seat.sh", "run_eval_gl.sh"))
+
+
+def _reap(tmp: Path, grace: float = 3.0) -> list[int]:
+    """对仍存活的已记录进程按进程组 SIGTERM，等至多 grace 秒，仍在的 SIGKILL 并再等至多 5 秒。返回动过手的 pid。"""
+    live = [pid for pid in _recorded_pids(tmp) if _alive(pid) and _is_ours(pid)]
+    for pid in live:
+        _killpg(pid, signal.SIGTERM)
+    t0 = time.time()
+    while time.time() - t0 < grace and any(_alive(p) for p in live):
+        time.sleep(0.05)
+    for pid in live:
+        if _alive(pid):
+            _killpg(pid, signal.SIGKILL)
+    t0 = time.time()
+    while time.time() - t0 < 5 and any(_alive(p) for p in live):
+        time.sleep(0.05)
+    return live
 
 
 def _events(rig, role=None, event=None):
@@ -205,7 +274,7 @@ def test_term_cleans_up_server_and_client(rig, server_mode):
     """TERM：收掉客户端与 server 的进程组；server 忽略 TERM 时等满宽限后 KILL（这一档约 60 s）。"""
     rig["env"].update(FAKE_SERVER_MODE=server_mode, FAKE_CLIENT_CODES="-1")
     log = rig["tmp"] / "out" / "seat-T.log"
-    p = subprocess.Popen(_seat_cmd(rig), env=rig["env"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    p = _popen(_seat_cmd(rig), rig["env"])
     try:
         _wait_line(log, "CLIENT_START policy=smvla")
         time.sleep(0.5)
@@ -213,7 +282,8 @@ def test_term_cleans_up_server_and_client(rig, server_mode):
         out, _ = p.communicate(timeout=120)
     finally:
         if p.poll() is None:
-            p.kill()
+            _killpg(p.pid)
+            p.wait()
     assert p.returncode == 143 and out.rstrip().splitlines()[-1] == "EXIT_CODE=143"
     for r in _events(rig, None, "start"):
         assert not _alive(r["pid"]), r
@@ -254,7 +324,8 @@ def gl_repo(rig):
     for rel in (".venv/bin/python", "artifacts/v8-two/venvs/smvla-env/bin/python"):
         (repo / rel).parent.mkdir(parents=True)
         (repo / rel).symlink_to(rig["fakepy"])
-    return repo
+    yield repo
+    _reap(rig["tmp"])  # run_eval_gl 的 .v8-pgids 落在运行根里，同样由 _recorded_pids 收集
 
 
 def _gl_cmd(rig, repo, stage, seat):
@@ -292,8 +363,7 @@ def test_gl_term_finalizes_once(rig, gl_repo):
     seat = f"{rig['idx']:02d}"
     stage = rig["tmp"] / "stage"
     rig["env"]["FAKE_CLIENT_CODES"] = "-1"
-    p = subprocess.Popen(_gl_cmd(rig, gl_repo, stage, seat), env=rig["env"], stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT, text=True)
+    p = _popen(_gl_cmd(rig, gl_repo, stage, seat), rig["env"])
     try:
         _wait_line(stage / f"s{seat}" / "smvla" / f"seat-{seat}.log", "CLIENT_START policy=smvla")
         time.sleep(0.5)
@@ -301,7 +371,8 @@ def test_gl_term_finalizes_once(rig, gl_repo):
         out, _ = p.communicate(timeout=120)
     finally:
         if p.poll() is None:
-            p.kill()
+            _killpg(p.pid)
+            p.wait()
     assert p.returncode == 143
     assert out.count("V8_SEAT_DONE") == 1 and f"V8_SEAT_DONE seat={seat} outcome=aborted rc=143" in out
     assert out.rstrip().splitlines()[-1] == "EXIT_CODE=143"
@@ -313,3 +384,27 @@ def test_gl_rejects_no_record(rig, gl_repo):
     cmd = _gl_cmd(rig, gl_repo, rig["tmp"] / "stage", "01") + ["--no-record"]
     rc, out = _run(cmd, rig["env"])
     assert rc == 2 and "V8_SEAT_DONE seat=01 outcome=fail rc=2 reason=bad_args" in out
+
+
+# ---------------------------------------------------------------- 测试侧兜底本身
+
+
+def test_teardown_reaps_orphans_when_production_cleanup_is_bypassed(rig):
+    """故意让生产清理失效：server 忽略 TERM、客户端常驻，测试侧直接 SIGKILL 掉 run_seat.sh 整个进程组（trap 与
+    cleanup 都来不及跑）。setsid 起的 server／客户端成为孤儿仍存活；兜底函数必须把它们收干净。"""
+    rig["env"].update(FAKE_SERVER_MODE="ignore_term", FAKE_CLIENT_CODES="-1")
+    p = _popen(_seat_cmd(rig), rig["env"])
+    try:
+        _wait_line(rig["tmp"] / "out" / "seat-T.log", "CLIENT_START policy=smvla")
+        _killpg(p.pid, signal.SIGKILL)
+        p.wait(timeout=10)
+    finally:
+        if p.poll() is None:
+            _killpg(p.pid)
+            p.wait()
+    orphans = [r["pid"] for r in _events(rig, None, "start")]
+    assert len(orphans) == 2 and all(_alive(x) for x in orphans)  # 生产收尾确实没生效
+    assert set(_recorded_pids(rig["tmp"])) >= set(orphans)
+    reaped = _reap(rig["tmp"])
+    assert set(reaped) >= set(orphans)
+    assert [x for x in orphans if _alive(x)] == []
