@@ -7,7 +7,7 @@
 #      SMVLA_PY=<repo>/artifacts/v8-two/venvs/smvla-env/bin/python；mmesg／pp 客户端用 SGEVAL_CLIENT_PY（环境变量，
 #      缺省 <repo>/artifacts/sg-evaluation/venvs/client-env/bin/python），pp 服务用 PP_PY（环境变量，缺省
 #      <repo>/third_party/PonderPounce/.venv/bin/python）；VK_ICD_FILENAMES 按候选 ICD 文件逐个探测；
-#      --cpus 取本进程 sched_getaffinity；--gpu 0；端口按 run_seat.sh 既有规则（seat-idx = 席号 NN）。
+#      --cpus 取本进程 sched_getaffinity；--gpu 缺省 0（GL 占位 job 内只见本席一张卡；本机多卡并行时显式给物理卡号）；端口按 run_seat.sh 既有规则（seat-idx = 席号 NN）。
 #   2. 起跑打印并核对 --dataset 与 --max-steps 的配对（test-hard0↔1300 且不带 --strict-cap，test-hard↔1600 且必须带
 #      --strict-cap），不符 RUN_BLOCKED reason=step_cap_pairing；mmesg 的变体配对同 run_seat.sh。
 #   3. 按策略顺序（同卡绝不同时驻留）各调一次 run_seat.sh：持久状态（results.jsonl、<label>.ledger.jsonl、
@@ -37,7 +37,7 @@
 #     --policies smvla,mme,mmesg,pp [--mme-variant V] [--qwenvl-groundsg-adapter D] \
 #     [--mme-ckpt D] [--mmesg-ckpt D] [--smvla-ckpt D] [--pp-ckpt D] [--openpi-data-home D --tokenizer-sha256 H] \
 #     --reset-budget N --infra-retry-budget N [--cond C] [--media-root D] [--limit N] \
-#     [--episode-wall S] [--episode-wall-smvla S] [--episode-wall-mme S] [--sync-interval S] [--local-root DIR]
+#     [--episode-wall S] [--episode-wall-smvla S] [--episode-wall-mme S] [--sync-interval S] [--local-root DIR] [--gpu N]
 # 退出码：0 全部策略 rc=0 且录像同步 PASS；中断 130/143（HUP 129）；其余失败取首个非零策略 rc（录像同步 FAIL 且策略全 0
 #   时为 7）；参数错误 2；执行环境缺失（解释器、shard 等）与配对核对不过 3。
 # 不嵌入任何 JobID，不含 /data 默认路径。
@@ -53,7 +53,7 @@ source "$HERE/run_seat.sh"
 
 RUN_NAME="" ; SEAT="" ; REPO="" ; STAGE="" ; SHARD="" ; POLICIES="smvla,mme"
 MME_CKPT="" ; MMESG_CKPT="" ; SMVLA_CKPT="" ; PP_CKPT="" ; OPENPI_HOME="" ; TOKENIZER_SHA="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET=""
-LIMIT="0" ; WALL_SMVLA="" ; WALL_MME="" ; WALL_ALL="" ; SYNC_INTERVAL=120 ; LOCAL_ROOT="" ; COND="V8" ; MEDIA_ROOT=""
+GPU="0" ; LIMIT="0" ; WALL_SMVLA="" ; WALL_MME="" ; WALL_ALL="" ; SYNC_INTERVAL=120 ; LOCAL_ROOT="" ; COND="V8" ; MEDIA_ROOT=""
 DATASET="" ; MAX_STEPS="" ; STRICT_CAP=0 ; MME_VARIANT="" ; QWENVL_ADAPTER=""
 
 usage() { sed -n '2,42p' "${BASH_SOURCE[0]}" >&2; }
@@ -92,6 +92,7 @@ while [[ $# -gt 0 ]]; do
     --episode-wall-mme) WALL_MME="$2"; shift 2;;
     --sync-interval) SYNC_INTERVAL="$2"; shift 2;;
     --local-root) LOCAL_ROOT="$2"; shift 2;;
+    --gpu) GPU="$2"; shift 2;;
     --no-record) die2 "run_eval_gl.sh 禁止 --no-record（全部视频保留）";;
     -h|--help) usage; exit 0;;
     *) usage; die2 "未知参数 $1";;
@@ -357,7 +358,7 @@ for i in "${!POLS[@]}"; do
   lab="${LABELS[$i]}"
   mkdir -p "$SEAT_STAGE/$lab" "$REC_LOCAL/$lab" "$TRACE_LOCAL/$lab"
   : > "$SEAT_STAGE/.v8-pgids"
-  args=(--seat "$SEAT" --seat-idx "$SEAT_IDX" --gpu 0 --cpus "$CPUS" --cond "$COND" --out "$SEAT_STAGE"
+  args=(--seat "$SEAT" --seat-idx "$SEAT_IDX" --gpu "$GPU" --cpus "$CPUS" --cond "$COND" --out "$SEAT_STAGE"
         --policies "$pol" --identities "$SHARD" --limit "$LIMIT" --never-degrade
         --dataset "$DATASET" --max-steps "$MAX_STEPS"
         --ledger-dir "$SEAT_STAGE/$lab" --reset-budget "$RESET_BUDGET" --infra-retry-budget "$INFRA_RETRY_BUDGET"

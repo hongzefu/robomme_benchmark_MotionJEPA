@@ -14,7 +14,7 @@
 #     --policy {mmesg,pp} [--mme-variant V] [--qwenvl-groundsg-adapter D] \
 #     [--mmesg-ckpt D --openpi-data-home D --tokenizer-sha256 H] [--pp-ckpt D] \
 #     --reset-budget N --infra-retry-budget N --orig-infra-retry-budget N \
-#     [--cond C] [--media-root D] [--local-root D] [--limit N] [--episode-wall S] [--sync-interval S] [--release-wait S]
+#     [--cond C] [--media-root D] [--local-root D] [--limit N] [--episode-wall S] [--sync-interval S] [--release-wait S] [--gpu N]
 #   数据集与步数在本脚本里固定为 test-hard0／1300（不带 --strict-cap），起跑先过 step_cap_pairing。
 # 判定行：PAIR_SEAT_DONE seat=NN policy=<label> orig_rc=… new_rc=… rc=… outcome=pass|fail|aborted；末行 EXIT_CODE=。
 # 退出码：两侧都 0 为 0；任一侧为 4／5／信号时取它（显存未释放记 4）；否则取首个非零的一侧 rc；中断 130/143（HUP 129）。
@@ -60,6 +60,7 @@ while [[ $# -gt 0 ]]; do
     --episode-wall) P_WALL="$2"; shift 2;;
     --sync-interval) P_SYNC="$2"; shift 2;;
     --release-wait) RELEASE_WAIT="$2"; shift 2;;
+    --gpu) P_GPU="$2"; shift 2;;
     *) pair_die2 "未知参数 $1";;
   esac
 done
@@ -83,6 +84,8 @@ common=(--run-name "$RUN_NAME" --seat "$SEAT" --repo "$REPO" --stage "$STAGE" --
 [[ "$P_LIMIT" != "0" ]] && common+=(--limit "$P_LIMIT")
 [[ -n "$P_WALL" ]] && common+=(--episode-wall "$P_WALL")
 [[ -n "$P_SYNC" ]] && common+=(--sync-interval "$P_SYNC")
+# 卡号缺省 0（GL 占位 job 内只见一张卡）；本机多卡并行时显式给物理卡号，两侧同卡
+common+=(--gpu "${P_GPU:-0}")
 model=()
 if [[ "$POLICY" == "mmesg" ]]; then
   model=(--mme-variant "$MME_VARIANT" --mmesg-ckpt "$MMESG_CKPT" --openpi-data-home "$OPENPI_HOME" --tokenizer-sha256 "$TOKENIZER_SHA")
