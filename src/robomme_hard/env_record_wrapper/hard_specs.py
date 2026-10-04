@@ -29,9 +29,9 @@ from typing import Any
 #: 现行唯一规格格式（v8 方案第二部分 §2.2 第 2 条，R6）：header 带 ``layout_rule``、``exec_cap``，
 #: ``delivery_per_cell``、``select_rule``、``per_env`` 为逐任务字典；行带 ``layout_parent``（恒为 null）。
 #: 旧格式 /2（V5～V6 单档）与 /3（V7 母布局派生）的读写校验已于维护计划阶段 1b（W4）删除。
-SCHEMA_V8 = "hard-specs/4"
-#: 新值档（不含 xhard0）。v8 阶段 3b 换包起为五档 xhard1～xhard5，与 ``V8_TIERS`` 相同（下方断言）。
-#: EXPECTED_CELLS、packaged_specs_path、builder 等依赖它。
+SCHEMA = "hard-specs/4"
+#: 新值档（不含 xhard0）。v8 阶段 3b 换包起为五档 xhard1～xhard5（原 ``V8_TIERS`` 同值，已并入本常量）。
+#: EXPECTED_CELLS、packaged_specs_path、builder、/4 校验与规格根读取等依赖它。
 TIERS = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
 #: builder 档序：xhard0（官方 test 的 hard 子集，原生分支、不回注）在最前，其后新值五档（共六项）。
 XHARD0 = "xhard0"
@@ -53,7 +53,7 @@ XHARD0_EPISODES = tuple(range(3, 48, 4))
 #: 仍以它为期望难度（V9／xhard0 生成的 jobs 均带 seed_rule 或走官方元数据分支，不经该缺省），故保留常量。
 DIFFICULTY = "xhard"
 #: 评估步数上限按档（只约束执行段，演示段不计）。xhard0 取 1300，与官方 scripts/evaluation.py 的默认步数相同（v7 方案 §7.4）。
-#: v8 阶段 3b 起 xhard1～xhard5 一律 1600（＝``V8_EXEC_CAP``，下方断言；v8 方案第一部分表 1 末行）：抽样时已过滤
+#: v8 阶段 3b 起 xhard1～xhard5 一律 1600（＝``EXEC_CAP``，下方断言；v8 方案第一部分表 1 末行）：抽样时已过滤
 #: 执行步超过 1600 的候选并递补，交付集按构造不超。历史值：v7 为 1500／2400／2900／3800（B4 上调，
 #: 判定行 V7_STEP_HEADROOM 见 docs/validation/newtask-v7/），v6 为 1500／1700／2000／2600。
 TIER_MAX_STEPS = {"xhard0": 1300, "xhard1": 1600, "xhard2": 1600, "xhard3": 1600, "xhard4": 1600, "xhard5": 1600}
@@ -89,11 +89,9 @@ ALL_TASKS = (
 #: 只在 xhard4 交付的任务（v8 阶段 3b 起：StopCube 拆成五档定值后离开，只剩 InsertPeg、MoveCube）
 XHARD4_ONLY = ("InsertPeg", "MoveCube")
 
-# ── V8 常量（v8 方案阶段 2 新增；阶段 3b 起 TIERS／BUILDER_TIERS／EXPECTED_CELLS／TIER_MAX_STEPS 切到这里，R10）──
-#: v8 新值五档（不含 xhard0）
-V8_TIERS = ("xhard1", "xhard2", "xhard3", "xhard4", "xhard5")
-#: v8 抽样与交付的执行步上限：执行步（不含演示帧）> 1600 的候选记 exec_over_cap 并递补；/4 header ``exec_cap`` 必须等于它
-V8_EXEC_CAP = 1600
+# ── 执行步上限（v8 方案阶段 2 新增，V9 沿用；维护计划 R 块去掉名字里的 V8 前缀）──
+#: 抽样与交付的执行步上限：执行步（不含演示帧）> 1600 的候选记 exec_over_cap 并递补；/4 header ``exec_cap`` 必须等于它
+EXEC_CAP = 1600
 
 
 def _v9_cells() -> dict[tuple[str, str], int]:
@@ -122,19 +120,18 @@ def _v9_cells() -> dict[tuple[str, str], int]:
 V9_CELLS: dict[tuple[str, str], int] = _v9_cells()
 V9_PER_TASK = 50
 assert len(V9_CELLS) == 43 and sum(V9_CELLS.values()) == 800, "V9_CELLS 须为表 2 的 43 格、合计 800"
-assert all(task in ALL_TASKS and tier in V8_TIERS for task, tier in V9_CELLS), "V9_CELLS 含未知任务或档位"
+assert all(task in ALL_TASKS and tier in TIERS for task, tier in V9_CELLS), "V9_CELLS 含未知任务或档位"
 assert all(sum(n for (t, _), n in V9_CELLS.items() if t == task) == V9_PER_TASK for task in ALL_TASKS), \
     "V9_CELLS 每任务须恰为 50 局"
 #: 交付格表 {(task, tier): 正式交付局数}（builder 按它断言每格行数，表外格恰好 0 行、表内格恰好等于表值）。
 #: v9 阶段 3b 换包（env_metadata/test-hard/ 换为 V9 规格）与本行切到 V9_CELLS 在同一提交完成（v9 方案 R7），表与包始终一致。
 EXPECTED_CELLS: dict[tuple[str, str], int] = V9_CELLS
 #: 已登记的完整交付格表（按版本）。``resolve_cell_table`` 按顺序 EXPECTED_CELLS → 本表各项找第一张能覆盖
-#: 给定子表的表，作为单文件配额上限（``_validate_specs_v8``）与 ``load_specs_v8`` 的格配额上限。
+#: 给定子表的表，作为单文件配额上限（``_validate_specs``）与 ``load_specs_root`` 的格配额上限。
 #: V8 的 1070 局表已于维护计划阶段 1b（W4）删除，只剩 v9。
 CELL_TABLES: dict[str, dict[tuple[str, str], int]] = {"v9": V9_CELLS}
-assert TIERS == V8_TIERS, "阶段 3b 起全局 TIERS 须等于 V8_TIERS"
-assert all(TIER_MAX_STEPS[tier] == V8_EXEC_CAP for tier in TIERS) and tuple(TIER_MAX_STEPS) == BUILDER_TIERS, \
-    "TIER_MAX_STEPS 须为 xhard0 + 五档、五档均等于 V8_EXEC_CAP"
+assert all(TIER_MAX_STEPS[tier] == EXEC_CAP for tier in TIERS) and tuple(TIER_MAX_STEPS) == BUILDER_TIERS, \
+    "TIER_MAX_STEPS 须为 xhard0 + 五档、五档均等于 EXEC_CAP"
 
 
 def xhard4_only_tasks(cells: dict[tuple[str, str], int]) -> set[str]:
@@ -163,7 +160,7 @@ def resolve_cell_table(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str
 def header_cell_table(header: dict[str, Any]) -> dict[tuple[str, str], int] | None:
     """/4 header 自带的逐任务配额 → ``resolve_cell_table`` 取配额上限格表（供不知道格表的单文件读取方用，如
     ``_rollout`` 回写复核）；非 /4 或配额形态不对返回 None（交给 ``validate_specs`` 报具体错）。"""
-    if not isinstance(header, dict) or header.get("schema") != SCHEMA_V8:
+    if not isinstance(header, dict) or header.get("schema") != SCHEMA:
         return None
     quota = header.get("delivery_per_cell")
     if not isinstance(quota, dict):
@@ -185,11 +182,11 @@ ROLLOUT_STATUSES = ("ok", "failed")
 #: /4 = 基础键 + header ``layout_rule``、``exec_cap``、``delivery_per_cell`` + 行 ``layout_parent``
 #: （逐任务配额与执行步上限进签，改了不重签必失败）。/2、/3 的键表已随旧格式删除。
 IDENTITY_KEYS_BY_SCHEMA = {
-    SCHEMA_V8: (IDENTITY_HEADER_KEYS + ("layout_rule", "exec_cap", "delivery_per_cell"),
+    SCHEMA: (IDENTITY_HEADER_KEYS + ("layout_rule", "exec_cap", "delivery_per_cell"),
                 IDENTITY_ROW_KEYS + ("layout_parent",)),
 }
 #: /4 唯一合法的布局规则：各档布局独立抽，不派生
-V8_LAYOUT_RULE = {"mode": "independent"}
+LAYOUT_RULE = {"mode": "independent"}
 
 
 def _schema_keys(schema: str) -> tuple[tuple[str, ...], tuple[str, ...], set[str], set[str]]:
@@ -341,13 +338,13 @@ def _is_int(value: Any) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
-def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]],
+def _validate_specs(header: dict[str, Any], rows: list[dict[str, Any]],
                        expected_cells: dict[tuple[str, str], int] | None = None) -> None:
     """``hard-specs/4`` 单文件校验（v8 方案第二部分 §2.2 第 2 条）。``expected_cells`` 是作配额上限的完整交付格表，
     缺省 ``EXPECTED_CELLS``（v9 方案 §2.1：格表参数贯通 load_specs → validate_specs → 本函数）：
 
-    * header：字段集合；``difficulty ∈ V8_TIERS``；runtime；``seed_rule == seed_rule_for(tier, "v8")``；
-      ``exec_cap == V8_EXEC_CAP``；``layout_rule == {"mode": "independent"}``；``tasks`` 不重复且每个 (task, tier)
+    * header：字段集合；``difficulty ∈ TIERS``；runtime；``seed_rule == seed_rule_for(tier, "v8")``；
+      ``exec_cap == EXEC_CAP``；``layout_rule == {"mode": "independent"}``；``tasks`` 不重复且每个 (task, tier)
       都在格表里；``select_rule`` 为 ``{task: [不重复非负整数]}``、``per_env`` 为 ``{task: 候选数（非负整数）}``、
       ``delivery_per_cell`` 为 ``{task: 正整数}``，三者键集合都等于 ``tasks``；逐任务配额自洽：
       ``delivery_per_cell[task] ≤ 格表[(task, tier)]``、``len(select_rule[task]) == delivery_per_cell[task]``、
@@ -359,19 +356,19 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]],
     * 两个身份散列（签含 exec_cap、delivery_per_cell、seed_rule，改任一项不重签即失败）。
     """
     table = EXPECTED_CELLS if expected_cells is None else expected_cells
-    _, _, header_required, row_required = _schema_keys(SCHEMA_V8)
+    _, _, header_required, row_required = _schema_keys(SCHEMA)
     _exact_keys(header, header_required, "specs header", HEADER_OPTIONAL)
     if header["record"] != "header":
-        raise SpecsError(f"specs 版本不符：{SCHEMA_V8}")
+        raise SpecsError(f"specs 版本不符：{SCHEMA}")
     tier = header["difficulty"]
-    if tier not in V8_TIERS or header["runtime"] != RUNTIME:
+    if tier not in TIERS or header["runtime"] != RUNTIME:
         raise SpecsError(f"hard-specs/4 档位或 runtime 不符：{tier!r}")
     if header["seed_rule"] != seed_rule_for(tier, "v8"):
         raise SpecsError(f"hard-specs/4 只接受 v8 按档 seed 规则（{tier}）")
-    if not _is_int(header["exec_cap"]) or header["exec_cap"] != V8_EXEC_CAP:
-        raise SpecsError(f"hard-specs/4 的 exec_cap 必须为 {V8_EXEC_CAP}：{header['exec_cap']!r}")
-    if header["layout_rule"] != V8_LAYOUT_RULE:
-        raise SpecsError(f"hard-specs/4 的 layout_rule 必须为 {V8_LAYOUT_RULE}：{header['layout_rule']!r}")
+    if not _is_int(header["exec_cap"]) or header["exec_cap"] != EXEC_CAP:
+        raise SpecsError(f"hard-specs/4 的 exec_cap 必须为 {EXEC_CAP}：{header['exec_cap']!r}")
+    if header["layout_rule"] != LAYOUT_RULE:
+        raise SpecsError(f"hard-specs/4 的 layout_rule 必须为 {LAYOUT_RULE}：{header['layout_rule']!r}")
     tasks = header["tasks"]
     if not isinstance(tasks, list) or len(set(tasks)) != len(tasks):
         raise SpecsError(f"hard-specs/4 的 tasks 必须是不重复列表：{tasks!r}")
@@ -451,12 +448,12 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]],
 
 def validate_specs(header: dict[str, Any], rows: list[dict[str, Any]], *,
                    expected_cells: dict[tuple[str, str], int] | None = None) -> None:
-    """封套校验：只认 ``hard-specs/4``，走 ``_validate_specs_v8``（``expected_cells`` 作配额上限，缺省
+    """封套校验：只认 ``hard-specs/4``，走 ``_validate_specs``（``expected_cells`` 作配额上限，缺省
     ``EXPECTED_CELLS``）；其余 schema（含已删除的 /2、/3）一律以「specs 版本不符」拒绝。"""
     schema = header.get("schema")
-    if schema != SCHEMA_V8:
+    if schema != SCHEMA:
         raise SpecsError(f"specs 版本不符：{schema}")
-    _validate_specs_v8(header, rows, EXPECTED_CELLS if expected_cells is None else expected_cells)
+    _validate_specs(header, rows, EXPECTED_CELLS if expected_cells is None else expected_cells)
 
 
 def load_specs(path: str | Path, *, expected_cells: dict[tuple[str, str], int] | None = None,
@@ -482,7 +479,7 @@ def load_specs(path: str | Path, *, expected_cells: dict[tuple[str, str], int] |
     return copy.deepcopy(header), copy.deepcopy(rows)
 
 
-def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], *,
+def load_specs_root(root: str | Path, expected_cells: dict[tuple[str, str], int], *,
                   cell_table: dict[tuple[str, str], int] | None = None,
                   check_fingerprint: bool = True) -> dict[str, tuple[dict[str, Any], list[dict[str, Any]]]]:
     """读 v8／v9 规格根（``<root>/<tier>/specs.jsonl``，``hard-specs/4``），只校验调用方给定的格表。
@@ -502,7 +499,7 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
       ``V8_DELIVERY_SET`` 负责；
     * 同任务跨档 seed 两两不交（比全部规格行，不只 selected）。
 
-    返回 ``{tier: (header, rows)}``：键只含涉及的档位、按 ``V8_TIERS`` 顺序；
+    返回 ``{tier: (header, rows)}``：键只含涉及的档位、按 ``TIERS`` 顺序；
     rows 为该档全部规格行（调用方按 ``selected`` 或 ``delivered`` 取）。任一不符抛 ``SpecsError``。
     """
     if not isinstance(expected_cells, dict) or not expected_cells:
@@ -518,7 +515,7 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
     if over:
         raise SpecsError(f"expected_cells 的局数超过表 2 格配额：{over}")
     out: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
-    for tier in V8_TIERS:
+    for tier in TIERS:
         want = {task for task, t in expected_cells if t == tier}
         if not want:
             continue
@@ -526,8 +523,8 @@ def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], 
         if not path.is_file():
             raise SpecsError(f"v8 规格根缺少 {path}")
         header, rows = load_specs(path, expected_cells=table, check_fingerprint=check_fingerprint)
-        if header["schema"] != SCHEMA_V8 or header["difficulty"] != tier:
-            raise SpecsError(f"{path}：schema 须为 {SCHEMA_V8}、档位须为 {tier}"
+        if header["schema"] != SCHEMA or header["difficulty"] != tier:
+            raise SpecsError(f"{path}：schema 须为 {SCHEMA}、档位须为 {tier}"
                              f"（实为 {header['schema']}／{header['difficulty']}）")
         got_tasks = set(header["tasks"])
         if got_tasks != want:

@@ -432,7 +432,7 @@
       renderNav(); if (name === 'outlier') renderOutliers(); else if (name === 'semantic') renderSemanticAll(); else if (name === 'overall') renderOverall(); else renderOracle();
     }
 
-    // ---- xhard1～5 相对 xhard0 的 goal／subgoal 语义调整（v8_semantic_diff.py → /api/semantic）----
+    // ---- xhard1～5 相对 xhard0 的 goal／subgoal 语义调整（semantic_diff.py → /api/semantic）----
     const semCell = (task, tier) => (((S.sem || {}).tasks || {})[task] || {}).tiers?.[tier];
     const semEp = (task, tier, idx) => ((((S.sem || {}).episodes || {})[task] || {})[tier] || {})[String(idx)];
     // 任务页不再显示语义调整面板（用户 2026-10-02「不要写在这里了」）：调整前后对照只在「语义调整合集」页；容器保留并隐藏
@@ -671,7 +671,7 @@
       box.append(subgoalEpisode(ep));
     }
 
-    // ---- 逐段 subgoal 帧数（v8_subgoal_lengths.py）----
+    // ---- 逐段 subgoal 帧数（subgoal_lengths.py）----
     const VERDICT_CLS = { '不一致': 'v-diff', '新增': 'v-new', '基准': 'v-base' };
     const fmtCell = c => c ? `${c.median}（${c.min}～${c.max}，${c.n} 段）` : '—';
     function sgRow(tpl, kind) {
@@ -902,7 +902,7 @@
         try { const r3 = await fetch('/api/semantic', { cache: 'no-store' }); S.sem = r3.ok ? await r3.json() : null; } catch (e) { S.sem = null; }
         el('status-panel').hidden = true; el('task-section').hidden = false;
         renderNotes();
-        if (!S.sg || !S.sg.schema) el('notes').prepend(node('p', 'sg-missing', '逐段数据缺失：subgoals.json 未生成或为空（v8_subgoal_lengths.py），总表与逐段表无内容。'));
+        if (!S.sg || !S.sg.schema) el('notes').prepend(node('p', 'sg-missing', '逐段数据缺失：subgoals.json 未生成或为空（subgoal_lengths.py），总表与逐段表无内容。'));
         const ol = el('outlier-link');
         if (S.sg && S.sg.episodes) { ol.hidden = false; el('outlier-count').textContent = `${outliers().length} 段`; }
         ol.addEventListener('click', () => { el('sidebar').classList.remove('is-open'); showOutliers(); });

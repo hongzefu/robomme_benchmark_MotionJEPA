@@ -32,7 +32,8 @@
    冻结根的新行保持 ``selected=false``（合并时 ``selected``／``tried``／``rollout`` 一律取自片）。
    所有引用该档冻结 identity 的片（``<shard>`` 的同级目录 ``*/shard.json`` 里 ``sources[tier].identity_sha256``
    等于旧 identity 的全部片，含本片）把 ``sources[tier]`` 改为新的 identity／文件 sha，并追加 ``appends`` 记录——
-   否则 ``merge_v8`` 的「来源 identity = 冻结根」会拒绝其它片。
+   使各片 ``shard.json`` 记录的来源与冻结根保持一致（当初的 V8 四席合并依赖这一条，该合并已于维护计划 W2 删除，
+   现只为来源记录自洽）。
    写前每份被改文件先复制为 ``<文件>.pre-append-<时间戳>``（``open("x")`` 排他新建）；写用同目录临时文件 +
    ``os.replace``；写后逐份 ``load_specs`` 重读校验、片根 ``load_v8_root``、各片来源 identity 与冻结根一致、
    新旧行身份逐字一致。任一步失败：全部按备份恢复，打印 ``APPEND_CANDIDATES=FAIL``，退出码 1。
@@ -147,7 +148,7 @@ def find_shards(shard_dir: Path, tier: str, identity: str) -> tuple[list[Path], 
 def plan_append(frozen_root: Path, shard_dir: Path, task: str, tier: str, extra: int) -> dict[str, Any]:
     """只读核对 + 计划（``--dry-run`` 与实跑共用）。"""
     # 格集合按 V9_CELLS 判（与已删除的 V8 1070 局表格集合相同，只有局数不同）
-    if tier not in H.V8_TIERS or (task, tier) not in H.V9_CELLS:
+    if tier not in H.TIERS or (task, tier) not in H.V9_CELLS:
         raise AppendError(f"{task}@{tier} 不是 v8 交付格")
     if extra <= 0:
         raise AppendError(f"--extra 须为正整数：{extra}")
@@ -163,8 +164,8 @@ def plan_append(frozen_root: Path, shard_dir: Path, task: str, tier: str, extra:
     f_header, f_rows, f_lines = read_specs_raw(frozen_path)
     s_header, s_rows, s_lines = read_specs_raw(shard_path)
     for name, header in (("冻结根", f_header), ("片规格", s_header)):
-        if header["schema"] != H.SCHEMA_V8 or header["difficulty"] != tier:
-            raise AppendError(f"{name} 须为 {H.SCHEMA_V8} 且档位 {tier}")
+        if header["schema"] != H.SCHEMA or header["difficulty"] != tier:
+            raise AppendError(f"{name} 须为 {H.SCHEMA} 且档位 {tier}")
         if task not in header["tasks"]:
             raise AppendError(f"{name} 的 {tier} 不含任务 {task}")
         if header["seed_rule"] != H.seed_rule_for(tier, "v8"):
@@ -184,7 +185,7 @@ def plan_append(frozen_root: Path, shard_dir: Path, task: str, tier: str, extra:
     if f_header["delivery_per_cell"][task] != s_header["delivery_per_cell"][task]:
         raise AppendError(f"delivery_per_cell[{task}] 冻结根与片不符")
     per_env = int(f_header["per_env"][task])
-    _, row_keys, _, _ = H._schema_keys(H.SCHEMA_V8)
+    _, row_keys, _, _ = H._schema_keys(H.SCHEMA)
     f_task = sorted((r for r in f_rows if r["task"] == task), key=lambda r: r["candidate"])
     s_task = sorted((r for r in s_rows if r["task"] == task), key=lambda r: r["candidate"])
     if [r["episode"] for r in f_task] != list(range(per_env)):
@@ -204,7 +205,7 @@ def plan_append(frozen_root: Path, shard_dir: Path, task: str, tier: str, extra:
     deficit = quota - selected
     # 同任务别档的 seed（冻结根里有的档都读；只读 seed 不做全量校验）
     other_seeds: set[int] = set()
-    for other in H.V8_TIERS:
+    for other in H.TIERS:
         path = Path(frozen_root) / other / "specs.jsonl"
         if other == tier or not path.is_file():
             continue
@@ -274,8 +275,8 @@ def draw_extra(frozen_header: dict[str, Any], task: str, tier: str, start: int, 
     候选号 29～39 仍是未试备用）跳过这两道，其余核对照旧。"""
     if H is None:
         bootstrap()
-    if frozen_header.get("schema") != H.SCHEMA_V8 or frozen_header.get("difficulty") != tier:
-        raise AppendError(f"冻结 header 须为 {H.SCHEMA_V8} 且档位 {tier}")
+    if frozen_header.get("schema") != H.SCHEMA or frozen_header.get("difficulty") != tier:
+        raise AppendError(f"冻结 header 须为 {H.SCHEMA} 且档位 {tier}")
     if task not in frozen_header["tasks"]:
         raise AppendError(f"冻结 header 的 {tier} 不含任务 {task}")
     if frozen_header["seed_rule"] != H.seed_rule_for(tier, "v8"):
@@ -386,7 +387,7 @@ def verify_written(plan: dict[str, Any], result: dict[str, Any]) -> None:
         src = json.loads((shard / SHARD_META).read_text(encoding="utf-8"))["sources"][tier]
         if src != {"identity_sha256": f_header["identity_sha256"], "file_sha256": file_sha}:
             raise AppendError(f"{shard / SHARD_META} 的 {tier} 来源未更新到新冻结根")
-    _, row_keys, _, _ = H._schema_keys(H.SCHEMA_V8)
+    _, row_keys, _, _ = H._schema_keys(H.SCHEMA)
     frozen_by = {(r["task"], r["candidate"]): r for r in f_rows}
     for r in s_rows:
         f = frozen_by.get((r["task"], r["candidate"]))

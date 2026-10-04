@@ -9,7 +9,7 @@ schema 由调用方显式传入，且只接受 ``hard-specs/4``（``/2`` 单档�
 
 * ``hard-specs/4``（v8／v9）：每档一次冻结、档内逐任务独立抽；``select`` 为 ``{task: 索引元组}``（逐格配额 = 元组长度），
   header 的 ``select_rule``／``per_env``／``delivery_per_cell`` 都是逐任务字典，``layout_rule`` 固定 independent、
-  ``exec_cap`` 固定 ``V8_EXEC_CAP``，行 ``layout_parent`` 为 null。
+  ``exec_cap`` 固定 ``EXEC_CAP``，行 ``layout_parent`` 为 null。
 """
 
 from __future__ import annotations
@@ -36,7 +36,7 @@ V8_DEFAULT_CANDIDATES: dict[tuple[str, str], int] = {
     ("MoveCube", "xhard4"): 32,
     ("BinFill", "xhard1"): 57, ("BinFill", "xhard2"): 57,
     ("PickXtimes", "xhard1"): 22, ("PickXtimes", "xhard2"): 22, ("PickXtimes", "xhard3"): 21,
-    **{(task, tier): 13 for task in ("SwingXtimes", "StopCube") for tier in hard_specs.V8_TIERS},
+    **{(task, tier): 13 for task in ("SwingXtimes", "StopCube") for tier in hard_specs.TIERS},
     **{(task, tier): 26 for task in ("VideoUnmask", "ButtonUnmask")
        for tier in ("xhard1", "xhard2", "xhard3", "xhard4")},
     **{(task, tier): 52 for task in ("VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoPlaceButton", "VideoPlaceOrder",
@@ -45,9 +45,9 @@ V8_DEFAULT_CANDIDATES: dict[tuple[str, str], int] = {
        for tier, n in zip(("xhard1", "xhard2", "xhard3"), (36, 36, 34))},
 }
 # V8 1070 局格表已于维护计划阶段 1b（W4）删除；候选表改与 V9_CELLS 的 43 格一一对应
-# （两表格集合相同），并核档位都在 V8_TIERS 内、候选数为正整数
+# （两表格集合相同），并核档位都在 TIERS 内、候选数为正整数
 assert set(V8_DEFAULT_CANDIDATES) == set(hard_specs.V9_CELLS), "v8 候选表须与 V9_CELLS 的 43 格一一对应"
-assert all(tier in hard_specs.V8_TIERS for _, tier in V8_DEFAULT_CANDIDATES), "v8 候选表含未知档位"
+assert all(tier in hard_specs.TIERS for _, tier in V8_DEFAULT_CANDIDATES), "v8 候选表含未知档位"
 assert all(isinstance(n, int) and n > 0 for n in V8_DEFAULT_CANDIDATES.values()), "v8 候选数须为正整数"
 assert sum(V8_DEFAULT_CANDIDATES.values()) == 1425, "v8 候选合计须为 1425（§2.2 第 6 条）"
 
@@ -123,7 +123,7 @@ def candidates_by_way(ok_rows: list[dict[str, Any]]) -> dict[int | None, list[in
 def stratified_select(task: str, difficulty: str, ok_rows: list[dict[str, Any]], select,
                       quota: int | None = None, quota_by_way: dict[int, int] | None = None) -> list[int]:
     """选正式局。``quota``（逐格配额，v8）缺省为 ``len(select)``，此时与原实现逐字同义；
-    MoveCube 在新值档（v7 ``TIERS`` 或 v8 ``V8_TIERS``）按运动方式分层：每种 way 取编号最小的候选，
+    MoveCube 在新值档（``TIERS``）按运动方式分层：每种 way 取编号最小的候选，
     不足先按 ``select`` 再按候选编号补齐到配额。
 
     ``quota_by_way``（v9 MoveCube，``{0:17, 1:17, 2:16}``）给出时改走逐方式配额：每种方式在自己的候选里按
@@ -134,7 +134,7 @@ def stratified_select(task: str, difficulty: str, ok_rows: list[dict[str, Any]],
     quota = len(select) if quota is None else int(quota)
     episodes = [r["episode"] for r in ok_rows]
     default = [e for e in episodes if e in select][:quota]
-    if task != "MoveCube" or (difficulty not in hard_specs.TIERS and difficulty not in hard_specs.V8_TIERS):
+    if task != "MoveCube" or difficulty not in hard_specs.TIERS:
         return default
     by_way: dict[int, list[int]] = {}
     for row in ok_rows:
@@ -232,8 +232,8 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select,
     """纯函数：抽签行 → ``(header, rows)``。``schema`` 必须显式给出且只能是 ``hard-specs/4``。
 
     ``header_parts`` 必含 ``difficulty tasks seed_rule sampling_config recovery_rule identity_source run_id draw_stats
-    provenance``，不得带 ``layout_rule``（``/4`` 的 ``layout_rule`` 固定为 ``V8_LAYOUT_RULE``、``exec_cap`` 固定为
-    ``V8_EXEC_CAP``，由本函数写入）。
+    provenance``，不得带 ``layout_rule``（``/4`` 的 ``layout_rule`` 固定为 ``LAYOUT_RULE``、``exec_cap`` 固定为
+    ``EXEC_CAP``，由本函数写入）。
 
     ``/4``：``select`` 为 ``{task: 索引元组}``（也接受全局元组，按每任务同一组索引展开），逐格配额 = 元组长度；
     某任务成功候选选不满配额即拒绝；header ``select_rule[task]`` 写实际选中的 episode 列表（MoveCube 分层后
@@ -245,13 +245,13 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select,
     逐方式候选数），并把两者写进 ``draw_stats.freeze_per_env[task]``（不进签）；某方式候选不足即抛错。
     ``expected_cells``：封签后校验用的配额上限格表，缺省按本档逐任务配额 ``resolve_cell_table`` 取
     （V9 配额落 V9_CELLS）。"""
-    if schema != hard_specs.SCHEMA_V8:
-        raise SpecsError(f"未知 schema {schema!r}，只支持 {hard_specs.SCHEMA_V8}")
+    if schema != hard_specs.SCHEMA:
+        raise SpecsError(f"未知 schema {schema!r}，只支持 {hard_specs.SCHEMA}")
     difficulty, seed_rule = header_parts["difficulty"], header_parts["seed_rule"]
     if "layout_rule" in header_parts:
         raise SpecsError(f"{schema} 不接受调用方给的 layout_rule（固定 independent）")
-    # 按 V8_TIERS，不经全局 TIERS 拒绝 xhard5
-    if difficulty not in hard_specs.V8_TIERS:
+    # 按 TIERS（五档，含 xhard5）校验档位
+    if difficulty not in hard_specs.TIERS:
         raise SpecsError(f"未知档位 {difficulty}（{schema}）")
     tasks = list(header_parts["tasks"])
     select_by = {task: tuple(select[task] if isinstance(select, dict) else select) for task in tasks}
@@ -307,8 +307,8 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select,
     header = {
         "record": "header",
         "schema": schema,
-        "layout_rule": dict(hard_specs.V8_LAYOUT_RULE),
-        "exec_cap": hard_specs.V8_EXEC_CAP,
+        "layout_rule": dict(hard_specs.LAYOUT_RULE),
+        "exec_cap": hard_specs.EXEC_CAP,
         "difficulty": difficulty,
         "tasks": tasks,
         "per_env": header_per_env,

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""robomme_hard 回归工具（v7：0928-newtask-v7-xhard0-shared-layout-plan.md 第二部分 §1.5、§7.6；
-v8：1001-newtask-v8-xhard-gradient-plan.md 第一部分 §2.3、§3，第二部分 §2.3 闸门总表）。
+"""robomme_hard 回归工具（现行口径 V9：1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.3；各闸门沿用
+v8 的 1001-newtask-v8-xhard-gradient-plan.md 第一部分 §2.3、§3，第二部分 §2.3 闸门总表；xhard0 reset 层对拍源自
+v7 的 0928 方案第二部分 §1.5）。
 
 子命令：
 
@@ -157,29 +158,29 @@ def _hs_light():
 
 
 def specs_tiers(specs_root: str | None = None) -> tuple[tuple[str, ...], bool]:
-    """规格根（显式 > ``ROBOMME_HARD_SPECS_ROOT`` > 包内）的档序与是否 v8：``V8_TIERS`` 下任一存在的档文件 header
-    为 ``hard-specs/4`` 即按 ``V8_TIERS`` 读五档（v8 方案第二部分 §2.2 第 9 条「delivery_index 按 V8_TIERS 读」；
-    只含 xhard5 等部分档的局部根也判 v8），否则按 ``TIERS``。首行读不出的文件跳过。"""
+    """规格根（显式 > ``ROBOMME_HARD_SPECS_ROOT`` > 包内）的档序与是否 /4：``TIERS`` 下任一存在的档文件 header
+    为 ``hard-specs/4`` 即按 ``TIERS`` 读五档（v8 方案第二部分 §2.2 第 9 条「delivery_index 按 TIERS 读」；
+    只含 xhard5 等部分档的局部根也判 v8）。档序恒为 ``TIERS``（原 V8_TIERS 已并入）。首行读不出的文件跳过。"""
     hs = _hs_light()
     root = hs.specs_root(specs_root)
     v8 = False
-    for tier in hs.V8_TIERS:
+    for tier in hs.TIERS:
         path = root / tier / "specs.jsonl"
         if not path.is_file():
             continue
         try:
             with path.open(encoding="utf-8") as stream:
-                v8 = json.loads(stream.readline()).get("schema") == hs.SCHEMA_V8
+                v8 = json.loads(stream.readline()).get("schema") == hs.SCHEMA
         except (OSError, ValueError, AttributeError):
             continue
         if v8:
             break
-    return (hs.V8_TIERS if v8 else hs.TIERS), v8
+    return hs.TIERS, v8
 
 
 def delivery_index(specs_root: str | None = None) -> dict[tuple[str, str, int], dict[str, Any]]:
     """(task, tier, seed) → {row, builder_episode}；builder 号与 hard_builder 相同：xhard0 前置局数（开关开 12、关 0）在前，
-    之后档序主序、档内 candidate 升序（v7 方案第二部分 §7.2）。v8 规格按 ``V8_TIERS`` 读五档。"""
+    之后档序主序、档内 candidate 升序（v7 方案第二部分 §7.2）。v8 规格按 ``TIERS`` 读五档。"""
     hs = _hs_light()
     tiers, v8 = specs_tiers(specs_root)
     index: dict[tuple[str, str, int], dict[str, Any]] = {}
@@ -234,7 +235,7 @@ def specs_version(specs_root: str | None) -> tuple[str, dict[tuple[str, str], in
     hs = _hs_light()
     _, v8 = specs_tiers(specs_root)
     if not v8:
-        raise SystemExit(f"规格根不是 {hs.SCHEMA_V8}（v7 口径已于 1003 维护计划删除）：{hs.specs_root(specs_root)}")
+        raise SystemExit(f"规格根不是 {hs.SCHEMA}（v7 口径已于 1003 维护计划删除）：{hs.specs_root(specs_root)}")
     found = _hp().root_cell_table(hs.specs_root(specs_root), hs)
     return found if found is not None else (_hp().expected_version(hs), hs.EXPECTED_CELLS)
 
@@ -608,13 +609,13 @@ def layout_overlap(items: list[tuple[str, dict[str, Any], bool]]) -> dict[str, A
 
 
 def _read_v8_root(specs_root: str | Path, cells: dict[tuple[str, str], int]) -> tuple[dict[str, tuple], list[str], list[str]]:
-    """格表涉及各档的 /4 文件原样读出（不校验，校验另走 ``load_specs_v8``），使校验失败时计数仍可产出。
+    """格表涉及各档的 /4 文件原样读出（不校验，校验另走 ``load_specs_root``），使校验失败时计数仍可产出。
     返回 ``(files, missing, bad)``：缺文件记 ``missing``；空文件、坏 JSON、首行不是 header 记 ``bad``（不抛异常）。"""
     hs = _hs_light()
     files: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
     missing: list[str] = []
     bad: list[str] = []
-    for tier in hs.V8_TIERS:
+    for tier in hs.TIERS:
         if not any(t == tier for _, t in cells):
             continue
         path = Path(specs_root) / tier / "specs.jsonl"
@@ -674,15 +675,15 @@ def cmd_delivery_set(args) -> int:
       ``new=<v9-new 行数> reused=<v8-reuse 行数>``（两者之和须等于 total）；重复身份、缺键、``source`` 值不合法或
       只有部分行带 ``source`` 计 ``delivery_bad_rows``；不给 ``--delivery`` 则不打这两项。
 
-    * 交付形态：先过 ``load_specs_v8(root, cells)`` 全部校验（失败计 ``load_errors``），再逐格数 ``delivered``
+    * 交付形态：先过 ``load_specs_root(root, cells)`` 全部校验（失败计 ``load_errors``），再逐格数 ``delivered``
       （selected 且 rollout ok），与格表**相等**比较（不是 ≤）；格表外有交付行、selected 而未成功、交付行执行步超
-      ``V8_EXEC_CAP`` 都判 FAIL。另报 /4 结果段里的 ``failed``／``exec_over_cap``／``backfills``（全部显式写零）。
+      ``EXEC_CAP`` 都判 FAIL。另报 /4 结果段里的 ``failed``／``exec_over_cap``／``backfills``（全部显式写零）。
     * seed 按档隔离：同任务不同档的 seed 集合（全部规格行，不只交付行）两两求交，``shared`` 为交集元素总数。
     * 布局独立：header ``layout_rule == {"mode": "independent"}``（``mode_bad``）、行 ``layout_parent`` 全空
       （``parent_non_null``），**并且**同任务跨档交付行逐叶子比较（:func:`layout_overlap`：剔除恒定叶子后任一浮点
       位置叶子逐位相等，或 PatternLock 路径有 ≥ 9 节点的共同前缀）的对数 ``layout_equal_pairs`` 为 0；只查前两项是
       同义反复（冻结器自己写的标志）。跨档任务的交付行剔除后没有任何可比叶子记 ``no_position``，同样判 FAIL。
-    * 健壮性：缺档文件计 ``missing_files``；空文件、坏 JSON、缺键的行与 ``load_specs_v8`` 抛出的异常（如某格备用候选
+    * 健壮性：缺档文件计 ``missing_files``；空文件、坏 JSON、缺键的行与 ``load_specs_root`` 抛出的异常（如某格备用候选
       耗尽、selected 少于期望）一律计入 ``load_errors``，照常逐格计数并打印三行判定，不崩溃。
     * 计数口径：``failed``／``exec_over_cap``／``backfills`` 取自 /4 行的结果段；``infra_retries`` 不落在规格行里，
       只由 S2-B ``_rollout`` 聚合步的 ``V8_DELIVERY_SET`` 行与 ``delivery.json`` 给出，本命令不报。
@@ -692,7 +693,7 @@ def cmd_delivery_set(args) -> int:
     prefix = version.upper()
     load_error = None
     try:
-        hs.load_specs_v8(args.specs_root, cells, cell_table=hs.CELL_TABLES[version], check_fingerprint=False)
+        hs.load_specs_root(args.specs_root, cells, cell_table=hs.CELL_TABLES[version], check_fingerprint=False)
     except Exception as exc:  # noqa: BLE001 校验失败如实计入判定，不中断计数
         load_error = f"{type(exc).__name__}: {exc}"
     files, missing_files, bad_files = _read_v8_root(args.specs_root, cells)
@@ -723,7 +724,7 @@ def cmd_delivery_set(args) -> int:
                 delivered_ids.append((row["task"], tier, seed))
                 counts["backfills"] += int(not row.get("initial_selected"))
                 exec_steps = rollout.get("exec_steps")
-                counts["delivered_over_cap"] += int(_is_number(exec_steps) and exec_steps > hs.V8_EXEC_CAP)
+                counts["delivered_over_cap"] += int(_is_number(exec_steps) and exec_steps > hs.EXEC_CAP)
             elif row.get("selected"):
                 counts["selected_not_ok"] += 1
     cell_mismatch = [f"{t}/{tier}:{delivered.get((t, tier), 0)}/{n}" for (t, tier), n in sorted(cells.items())
@@ -761,7 +762,7 @@ def cmd_delivery_set(args) -> int:
     tier_pairs = shared = 0
     shared_detail: list[str] = []
     for task in sorted(seeds):
-        names = sorted(seeds[task], key=hs.V8_TIERS.index)
+        names = sorted(seeds[task], key=hs.TIERS.index)
         for i, a in enumerate(names):
             for b in names[i + 1:]:
                 tier_pairs += 1
@@ -772,7 +773,7 @@ def cmd_delivery_set(args) -> int:
     ok_seed = shared == 0 and bool(seeds) and not missing_files and not bad_files and not bad_rows
     seed_line = (f"{prefix}_SEED_DISJOINT={'PASS' if ok_seed else 'FAIL'} tasks={len(seeds)} tier_pairs={tier_pairs} "
                  f"shared={shared}" + ("" if ok_seed else f" detail={shared_detail[:6]}"))
-    mode_bad = sum(header.get("layout_rule") != hs.V8_LAYOUT_RULE for header, _ in files.values())
+    mode_bad = sum(header.get("layout_rule") != hs.LAYOUT_RULE for header, _ in files.values())
     layout_equal_pairs = no_position = 0
     equal_detail: list[str] = []
     per_task_pairs: dict[str, int] = {}
@@ -927,7 +928,7 @@ def cmd_tier_values(args) -> int:
     detail: list[str] = []
     histograms: dict[str, dict[str, int]] = {}
     per_cell: dict[str, Any] = {}
-    for (task, tier) in sorted(valued, key=lambda k: (hs.ALL_TASKS.index(k[0]), hs.V8_TIERS.index(k[1]))):
+    for (task, tier) in sorted(valued, key=lambda k: (hs.ALL_TASKS.index(k[0]), hs.TIERS.index(k[1]))):
         want = V8_TIER_TABLE[task][tier]
         rows = sorted(by_cell.get((task, tier), []), key=lambda r: int(r["candidate"]))
         hist: collections.Counter = collections.Counter()
@@ -997,7 +998,7 @@ def pool_scan(paths: list[str | Path]) -> tuple[set[tuple], list[str]]:
     （``<档>/specs.jsonl``）。空文件、坏 JSON 不抛异常，逐文件计入返回的错误清单（调用方记 ``pool_load_errors``）。"""
     found: set[tuple] = set()
     errors: list[str] = []
-    tiers = set(_hs_light().V8_TIERS)
+    tiers = set(_hs_light().TIERS)
 
     def take(record: Any, tier_hint: str | None = None) -> None:
         if not isinstance(record, dict):
@@ -1050,8 +1051,8 @@ def _xhard0_h5s(source: str | Path) -> tuple[list[Path], int]:
 
 def delivery_version(delivery: dict[str, Any]) -> str:
     """交付清单（``read_delivery`` 归一后）→ 版本：行带 ``source`` 字段（v9 assemble 的 800 行清单）即 v9；否则按逐格
-    行数 ``hard_parity.cells_version``（MoveCube／InsertPeg xhard4 50 局的 v9 分片清单只能被 V9_CELLS 覆盖 → v9，
-    V8 子表与完整 V8 → v8）；没有行时取当前 EXPECTED 版本。"""
+    行数 ``hard_parity.cells_version``（登记的完整格表只剩 V9_CELLS，能被它覆盖的子表一律 → v9；V8 的 1070 局表已于
+    维护计划阶段 1b 删除，原先判为 v8 的 V8 子表现在同样判 v9）；没有行时取当前 EXPECTED 版本。"""
     hp, hs = _hp(), _hs_light()
     raw = delivery.get("raw") or {}
     raw_rows = (raw.get("rows") or raw.get("delivered") or []) if isinstance(raw, dict) else []
@@ -1062,7 +1063,7 @@ def delivery_version(delivery: dict[str, Any]) -> str:
 
 
 def _step_headroom_v8(args, delivery: dict[str, Any]) -> int:
-    """{V8|V9}_STEP_CAP（判定行前缀按 :func:`delivery_version`）（1001 方案第一部分 §3「步数上限」）：交付 h5 的非演示步全部 ≤ ``V8_EXEC_CAP``（1600）；
+    """{V8|V9}_STEP_CAP（判定行前缀按 :func:`delivery_version`）（1001 方案第一部分 §3「步数上限」）：交付 h5 的非演示步全部 ≤ ``EXEC_CAP``（1600）；
     ``filtered`` = 候选池里抽样阶段因 exec_over_cap 被丢弃并递补的候选数（与 delivery.json 的 ``exec_over_cap``
     不一致即 FAIL）；xhard0 按 ``TIER_MAX_STEPS["xhard0"]``（1300）单独查。交付行自带 ``exec_steps`` 时与 h5 实测比对。
 
@@ -1072,7 +1073,7 @@ def _step_headroom_v8(args, delivery: dict[str, Any]) -> int:
     ``infra_retries`` 只由 S2-B 聚合行与 delivery.json 给出（规格行里没有），本命令只核其存在。候选池里的空文件、
     坏 JSON 计 ``pool_load_errors`` 判 FAIL，判定行照常打印。"""
     hs = _hs_light()
-    cap, x0cap = hs.V8_EXEC_CAP, hs.TIER_MAX_STEPS["xhard0"]
+    cap, x0cap = hs.EXEC_CAP, hs.TIER_MAX_STEPS["xhard0"]
     if not args.pool:
         raise SystemExit("v8 step-headroom 须给 --pool <候选池目录或结果文件>（计 filtered=）")
     if not args.xhard0 and not args.skip_xhard0:
@@ -2202,7 +2203,7 @@ def build_parser() -> argparse.ArgumentParser:
     ev.set_defaults(func=cmd_eval_smoke)
     x0 = sub.add_parser("xhard0-reset-parity")
     x0.add_argument("--src-root", required=True, help="官方 1fadc0ec worktree（只导入其 robomme）")
-    x0.add_argument("--manifest", default=str(REPO / "scripts" / "configs" / "newtask-v7" / "xhard0_manifest.json"))
+    x0.add_argument("--manifest", default=str(REPO / "scripts" / "configs" / "xhard0" / "xhard0_manifest.json"))
     x0.add_argument("--gpu", default="0")
     x0.add_argument("--tasks", default=None)
     x0.add_argument("--out", required=True)

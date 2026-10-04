@@ -10,13 +10,13 @@
     uv run --no-sync python scripts/injection-dev/generate_h5.py --mode continue \\
         --specs <gen1>/shard-movecube/specs --cells v9shard1 --output <gen1>/shard-movecube --workers 4 --gpu 0
     # 只重算聚合（规格根 + 各片账本目录）；整树搬迁后（GL NFS → 本机 /data）用 --rebase 换 h5／mp4 前缀并逐个核 sha256
-    uv run --no-sync python scripts/injection-dev/generate_h5.py --mode aggregate --specs <规格根> --cells full \\
+    uv run --no-sync python scripts/injection-dev/generate_h5.py --mode aggregate --specs <规格根> --cells v9 \\
         --shards <账本目录,...> --rebase <旧前缀>=<新前缀> --output <目录> [--out <新 delivery.json 路径>]
     # 对拍专用：按身份清单只读重放，不递补、不回写（--specs 给 /4 规格根或单文件，缺省读包内）
     uv run --no-sync python scripts/injection-dev/generate_h5.py --mode replay \\
         --identities <gen1 的 delivery.json 或 jsonl> --specs <规格根> --output <输出目录>
 
-- ``--cells``：``full``（V8 表 2 的 43 格）、``smoke``（V8 2b 冒烟 7 格各 1 局）、``v9shard1``、``v9smoke``
+- ``--cells``：``v9``（V9_CELLS 43 格 800，continue／aggregate 缺省；split 必填）、``v9shard1``、``v9smoke``
   或格表 JSON 路径（``{"Task@tier": 局数}``）。规格根的任务集合与逐格配额必须与格表相等。
 - 退出码：continue／aggregate 认 ``V8_DELIVERY_SET=PASS``；其余按原口径。
 - 维护计划 W2 起删除：单文件 ``/2`` continue（及其 ``--redo``／``--tasks``／``--self-check``）、``/3`` v7 规格根的
@@ -128,13 +128,13 @@ def main() -> int:
             raise SystemExit("replay 模式必须给 --identities")
         specs_paths = None
         if specs_dir is not None:
-            if root_schema != hard_specs.SCHEMA_V8:
-                raise SystemExit(f"{specs_dir} 的 schema 为 {root_schema}，replay 的规格根只支持 {hard_specs.SCHEMA_V8}")
-            # 规格根按 V8_TIERS 读（含 xhard5）；给了 --cells 就按格表校验，否则逐档单文件校验
+            if root_schema != hard_specs.SCHEMA:
+                raise SystemExit(f"{specs_dir} 的 schema 为 {root_schema}，replay 的规格根只支持 {hard_specs.SCHEMA}")
+            # 规格根按 TIERS 读（含 xhard5）；给了 --cells 就按格表校验，否则逐档单文件校验
             if args.cells:
                 tiers = list(_rollout.load_v8_root(specs_dir, _rollout.resolve_cells(args.cells)))
             else:
-                tiers = [t for t in hard_specs.V8_TIERS if (specs_dir / t / "specs.jsonl").is_file()]
+                tiers = [t for t in hard_specs.TIERS if (specs_dir / t / "specs.jsonl").is_file()]
                 for tier in tiers:
                     _rollout.load_specs_any(specs_dir / tier / "specs.jsonl", check_fingerprint=False)
             specs_paths = {tier: specs_dir / tier / "specs.jsonl" for tier in tiers}
@@ -149,8 +149,8 @@ def main() -> int:
         return 0
     if not args.specs:
         raise SystemExit("continue 模式必须给 --specs")
-    if specs_dir is None or root_schema != hard_specs.SCHEMA_V8:
-        raise SystemExit(f"continue 只接受 {hard_specs.SCHEMA_V8} 规格根（<root>/<tier>/specs.jsonl）配 --cells："
+    if specs_dir is None or root_schema != hard_specs.SCHEMA:
+        raise SystemExit(f"continue 只接受 {hard_specs.SCHEMA} 规格根（<root>/<tier>/specs.jsonl）配 --cells："
                          f"{args.specs}（schema={root_schema}）")
     # gen1：按格表逐档逐格跑，执行步超限过滤与同格递补，收尾写 delivery.json（V8_DELIVERY_SET）
     cells_label = str(args.cells or "v9")

@@ -2,7 +2,7 @@
 """V9 双模型评估执行清单（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.1、§2.2 第 7 条；字段契约沿用
 1001-v8-post-evaluation-gl-plan.md 的 C1）。
 
-    python scripts/eval-official/v8_manifest.py --identities <eval-identities-992.jsonl> \
+    python scripts/eval-official/eval_manifest.py --identities <eval-identities-992.jsonl> \
         --delivery <newtask-v9/delivery/delivery.local.json> \
         --exclude-evaluated <V8 manifest.json> --shards 10 --out-dir <dir>
 
@@ -221,7 +221,7 @@ def check_exec(rows: list[dict], hs, cells: dict | None = None) -> dict:
                       and all(c in "0123456789abcdef" for c in r["spec_sha256"])) for r in rows)
     keys = [r["key"] for r in rows]
     dup = len(keys) - len(set(keys))
-    cap_bad = sum(r["effective_max_steps"] != hs.V8_EXEC_CAP for r in rows)
+    cap_bad = sum(r["effective_max_steps"] != hs.EXEC_CAP for r in rows)
     cell_mismatch = sum(per_cell.get(k, 0) != n for k, n in cells.items()) + sum(k not in cells for k in per_cell)
     total = sum(cells.values())
     if len(rows) != total or xhard0 or no_sha or dup or cap_bad or cell_mismatch or len(per_cell) != len(cells):

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """逐局站点目录（v8 方案第一部分 §2.2 站点行、第二部分 §2.2 第 9 条、§2.8 第 16 条；V9 复用）。
 
-目录形态 ``tasks[].tiers[tier].episodes[]``，页面 ``v8_site.html``。维护计划 W2 起删除 V8 单次评估运行分支
+目录形态 ``tasks[].tiers[tier].episodes[]``，页面 ``site.html``。维护计划 W2 起删除 V8 单次评估运行分支
 （``--eval-run``／``--xhard0-eval``）：评估位只走 V9 复用口径（``--eval-reuse``／``--reused``／``--eval-new``），不给评估
 来源时全部记「未评估」。数据来源：
 
 - **新值局**（xhard1～5，43 格 1070 局）：身份与配置取 v8 规格根（``<specs-root>/<tier>/specs.jsonl``，
-  ``hard-specs/4``，经 ``hard_specs.load_specs_v8`` 校验），h5 与执行步取生成产物 ``delivery.json``
+  ``hard-specs/4``，经 ``hard_specs.load_specs_root`` 校验），h5 与执行步取生成产物 ``delivery.json``
   （schema ``v8-delivery/1``）。生成视频在 h5 所在 episode 目录的 ``videos/`` 下（与 v7 gen1 同一约定），
   或在 ``--gen-videos`` 给出的目录下按 ``<tier>/<task>_episode_<episode>/videos`` 查找；
   取文件名不以 ``FAILED``／``success_NO_OBJECT`` 开头、且含 ``_seed<seed>_`` 的那一个 mp4，必须恰好 1 个。
@@ -25,7 +25,7 @@
 - **V9 评估复用**（v9 方案第一部分 §1 第 7 条、第二部分 §2.4.2 第 8 步、§2.5 R-3）：``--eval-reuse <V8 site-eval 目录>``
   ``--reused <reused.json>`` ``[--eval-new <V9 评估运行目录>]`` 三者一起用（评估侧策略 ``smvla``／``mme`` → 页面
   ``simplememvla``／``mmevla``）：
-  - 复用集合**只认** ``reused.json``（S1-F ``v8_manifest.py --exclude-evaluated`` 产出，schema ``v9-eval-reused/1``）；
+  - 复用集合**只认** ``reused.json``（S1-F ``eval_manifest.py --exclude-evaluated`` 产出，schema ``v9-eval-reused/1``）；
     V8 ``site-eval/catalog.json`` 没有 ``spec_sha256``，不单独当复用依据。逐行核：``reused.json`` 的 ``v8_manifest``
     文件 sha256 等于 ``v8_manifest_sha256``，该行 ``v8_key`` 在 V8 manifest 里存在且四元组 (task, tier, seed,
     ``spec_sha256``) 逐键相等，再与本次规格行的四元组逐键相等；然后用 ``v8_key`` 在 V8 site-eval 里定位记录（其
@@ -38,7 +38,7 @@
   - xhard0 评估（V8 阶段 3′ 两路线）按 (task, seed) 原样取自 V8 site-eval（规格、视频都没变，``eval_x0_reused``）。
   - 有置空局（``eval_empty > 0``）时判定 FAIL、不写产物（``--allow-eval-empty`` 时照写，供排查）。
   - 每局写 ``eval_origin``（``reused``／``new``／``empty``），目录 ``eval.mode = "v9-reuse"``、``eval.reuse`` 记三类计数，
-    供浏览器检查器出 ``V9_SITE`` 行；页面模板与 V8 完全相同（不改 ``v8_site.html``／``v8_site.py``）。
+    供浏览器检查器出 ``V9_SITE`` 行；页面模板与 V8 完全相同（不改 ``site.html``／``site_app.py``）。
 
 输出 ``catalog.json``（schema ``v8-site-catalog/1``）与 ``media-private.json``（媒体 ID → 绝对路径白名单），
 都以 ``open("x")`` 写入、拒绝覆盖。末行打印
@@ -48,14 +48,14 @@ media=<n> problems=<n>``；V9 复用模式另在行尾追加 ``eval_reused=<n> e
 reuse_sha_mismatch=<n> reuse_identity_mismatch=<n> reuse_missing=<n> new_sha_mismatch=<n>``。
 
     # V9（阶段 4c）：800 + 192 = 992 局，720 复用 V8 评估 + 80 新评
-    uv run --no-sync python scripts/injection-dev/site/v8_site_catalog.py --cells v9 \\
+    uv run --no-sync python scripts/injection-dev/site/site_catalog.py --cells v9 \\
       --specs-root artifacts/newtask-v9/specs-root --delivery artifacts/newtask-v9/delivery/delivery.local.json \\
       --identities artifacts/v9-evaluation/inputs/eval-identities-992.jsonl \\
       --xhard0-gen artifacts/newtask-v7/site-media/xhard0-gen \\
       --eval-reuse artifacts/newtask-v8/site-eval --reused artifacts/v9-evaluation/<run_name>/manifest/reused.json \\
       --eval-new artifacts/v9-evaluation/<run_name> --out artifacts/newtask-v9/site
 
-本模块只用标准库（``DIMS``／``TABLE1``／路径解析供 ``v8_subgoal_lengths.py`` 与浏览器检查器复用）；
+本模块只用标准库（``DIMS``／``TABLE1``／路径解析供 ``subgoal_lengths.py`` 与浏览器检查器复用）；
 ``hard_specs`` 按文件路径加载（它只依赖标准库），不导入 ``robomme_hard`` 包。
 """
 from __future__ import annotations
@@ -573,8 +573,8 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
     cells_want = load_cells(src.get("cells_json"), src.get("cells") or "v9")
     expected = expected_identities(cells_want)
 
-    # 规格（/4，load_specs_v8 校验格表、selected 行数、跨档 seed 不交）
-    specs = H.load_specs_v8(src["specs_root"], cells_want, check_fingerprint=False)
+    # 规格（/4，load_specs_root 校验格表、selected 行数、跨档 seed 不交）
+    specs = H.load_specs_root(src["specs_root"], cells_want, check_fingerprint=False)
     spec_rows: dict[tuple, dict] = {}
     exec_cap: dict[str, int] = {}
     for tier, (header, rows) in specs.items():

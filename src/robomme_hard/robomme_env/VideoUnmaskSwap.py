@@ -666,10 +666,8 @@ class VideoUnmaskSwap(BaseEnv):
         self.target_bin_2_cube_color = color_names[target_indices[1].item()]
         # swap_indices must include target_indices, then select 1 from remaining indices
         remaining_indices = [i for i in range(len(self.spawned_bins)) if i not in target_indices.tolist()]
-        # ⚠ 原随机分支必须保持为 third_idx 的**第一个**赋值语句：
-        # tests/lightweight/test_episode_action_sampling.py 用
-        # generate_dataset_newseed._assignment_value 抽「第一个同名赋值」来对拍历史表达式，
-        # 把注入分支写在前面会让它抽到引用 spec_initiators 的那条，测试直接 NameError。
+        # ⚠ 原随机分支保持为 third_idx 的**第一个**赋值语句：当初的旧测试按「第一个同名赋值」
+        # 抽表达式对拍历史版本（旧测试已删除），保持这一顺序便于与历史源码逐行对照。
         if spec is None and remaining_indices:
             third_idx = self._spec.value(
                 "objects.swap_initiator_third",

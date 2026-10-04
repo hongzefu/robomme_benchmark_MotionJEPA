@@ -40,7 +40,7 @@
 | `src/robomme/**` | 零差异（102 文件）。受 P2 保护，改动须用户逐个批准 |
 | `src/robomme_hard/**` | 全部新增：16 个环境类与改过的 utils／wrapper 为复制，依赖闭包干净的官方模块为借用 shim，`hard_builder.py` 子类化官方 builder 并新增 `dataset="test-hard"`，`hard_specs.py`／`utils/episode_spec.py` 等新增。逐文件表见 [`src/robomme_hard/README.md`](../src/robomme_hard/README.md) |
 | `scripts/` | 官方三入口零差异；新增 `evaluation_hard.py`、`injection-dev/`、`parity/`、`eval-official/`、`configs/` |
-| `tests/` | 新增轻量测试，改 `conftest.py` |
+| `tests/` | 新增分层测试（`tests/static/`、`tests/contract/` 等，1003 维护计划重写；旧 `tests/lightweight/`、`tests/dataset/` 已删除），改 `conftest.py`；说明见 `tests/README.md` |
 | `pyproject.toml` | 加依赖 `pebble`；wheel 加 `src/robomme_hard`；加 pytest marker |
 | `.gitignore` | 追加 `/artifacts/*` |
 | `readme.md` | 「Data Generation」节仍指向已删的 `generate_dataset_newseed.py`，陈旧 |
@@ -93,13 +93,13 @@ uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstrea
 
 ## 4. V9 生成链路（`injection-dev/`）
 
-**高层**：V9 = **720 局复用 V8 + 80 局新生成**，以 `v9_subset_specs.py` 为中心：
-1. **derive**：14 个子集任务从 V8 交付行按候选号升序取前 N 局（N 按表 2 平分，每任务 50），加 InsertPeg 的 V8 交付 20 局，重签写子集根（→ `V9_DERIVE=PASS cells=42 subset=700 insertpeg=20 total=720`）。
+**高层**：V9 = **720 局复用 V8 + 80 局新生成**，以 `v9_subset_specs.py` 为中心。下面 1、3、6 步当时用的 `derive`／`extend`／`verify` 三个子命令依赖 V8 的 1070 局格表，已于 1003 维护计划阶段 1b（W4）删除（git 历史 `4c645af7` 可取回），判定行保留作记录；现存子命令只有 `assemble`、`link`：
+1. **derive**（已删）：14 个子集任务从 V8 交付行按候选号升序取前 N 局（N 按表 2 平分，每任务 50），加 InsertPeg 的 V8 交付 20 局，重签写子集根（→ `V9_DERIVE=PASS cells=42 subset=700 insertpeg=20 total=720`）。
 2. **MoveCube 整任务重抽**（新区域）：`freeze_specs.py --tier xhard4 --seed-profile v8 --cells v9shard1 --candidates-per-env MoveCube=80` 冻结 80 候选，`generate_h5.py --mode split/continue` 生成，逐方式硬配额 17／17／16、同方式递补（→ `V9_MOVECUBE_WAYS=PASS ways=17/17/16`）。
-3. **InsertPeg extend**：`v9_subset_specs.py extend --task InsertPeg --tier xhard4 --quota 50 --append 35` 导入 V8 该格 40 行与已试终态、配额 20→50、经 `append_candidates.draw_extra` 追加候选，写可 `--mode continue --resume` 的片根（→ `V9_INSERTPEG_EXTEND=PASS imported_ok=20 appended=35 quota=50`）。
+3. **InsertPeg extend**（已删）：导入 V8 该格 40 行与已试终态、配额 20→50、经 `append_candidates.draw_extra` 追加 35 个候选，写可 `--mode continue --resume` 的片根（→ `V9_INSERTPEG_EXTEND=PASS imported_ok=20 appended=35 quota=50`）。
 4. **assemble**：子集根 + MoveCube 片根 + InsertPeg 片根合成五档规格与 800 行 `v8-delivery/1` 清单，每行带 `source`（→ `V9_ASSEMBLE=PASS rows=800 reused=720 new=80 cells=43`）。
 5. **link**：按身份建硬链接交付树 `artifacts/newtask-v9/delivery/episodes/`，不复制、不覆盖（→ `V9_LINK=PASS rows=800 files=1600 linked=1600`）。
-6. **verify**：720 复用局规格／h5／mp4 与 V8 逐字节相同（→ `V9_SUBSET=PASS reused=720 spec_equal=720 h5_equal=720 video_equal=720`）。
+6. **verify**（已删）：720 复用局规格／h5／mp4 与 V8 逐字节相同（→ `V9_SUBSET=PASS reused=720 spec_equal=720 h5_equal=720 video_equal=720`）。
 
 规格 `schema="hard-specs/4"`：每行分「签」（`task tier candidate episode seed attempt spec spec_sha256 layout_parent`，由 `identity_sha256` 覆盖，不可改）与「结果」（`selected tried initial_selected rollout`，可回写；`rollout` 带 `exec_steps`）；`delivery_sha256` 锁正式交付集合；header 另签 `exec_cap`（＝1600）与逐任务 `delivery_per_cell`。新值档不开 fail recover。真正起环境的是 `parity/train_split_runner.py` → `train_split_worker.run_one`（`gym.make(..., sampling_config=, native_episode_spec=)`），环境包由 `ROBOMME_ENV_PACKAGE` 决定（默认 `robomme_hard`）。回写只改 `selected`／`tried`／`rollout`，回写前整份 sha 必须与读入时相同；基础设施失败每身份最多重跑 1 次，任务失败不重试。预算红线（P3）：单 worker reset 总尝试 > 10 或多 worker 合计 > 50 须事先一次性授权，`--dry-run` 打印的数就是要报的数。
 
@@ -108,15 +108,15 @@ V9 实跑命令、席位、tmux 清单与实耗见 `docs/validation/newtask-v9/l
 **静态闸门**（纯 CPU）：
 
 ```bash
-uv run --no-sync python scripts/parity/hard_regression.py delivery-set --specs-root <根> --cells full  # → V9_DELIVERY_SET / V9_SEED_DISJOINT / V9_LAYOUT_INDEPENDENT
-uv run --no-sync python scripts/parity/hard_regression.py tier-values --specs-root <根> --cells full   # → V8_TIER_VALUES（行名沿用 v8，表按 EXPECTED_CELLS）
+uv run --no-sync python scripts/parity/hard_regression.py delivery-set --specs-root <根> --cells v9    # → V9_DELIVERY_SET / V9_SEED_DISJOINT / V9_LAYOUT_INDEPENDENT
+uv run --no-sync python scripts/parity/hard_regression.py tier-values --specs-root <根> --cells v9     # → V8_TIER_VALUES（行名沿用 v8，表按 V9_CELLS）
 uv run --no-sync python scripts/parity/hard_regression.py step-headroom --delivery <delivery.json> --pool <生成根> --xhard0 <xhard0 侧目录> --out <报告.json>  # → V9_STEP_CAP
 uv run --no-sync python scripts/parity/hard_regression.py movecube-layout --specs-root <根>              # → V9_MOVECUBE_LAYOUT / V9_MOVECUBE_WAYS
 ```
 
-**历史（V9 不调用，代码保留）**：v7 的「母布局抽签 → `derive_specs.py` 派生 → 四档同步生成」链路与 `layout-shared`／`prefix-geometry` 守卫、`layout_whitelist.json`；v8 的四席分片（`generate_h5.py --mode split/continue/merge --cells shard1～4`）与 `v8_continue_after_gen.py` 全链路续跑。xhard0 不走生成链路：身份清单 `configs/newtask-v7/xhard0_manifest.json` 由 `hard_parity.py export-xhard0-manifest` 从官方 test 元数据导出（16 任务 × 12 局 = 192）。
+**已删除的历史链路**（1003 维护计划阶段 1a／1b，git 历史可取回）：v7 的「母布局抽签 → 派生低档 → 四档同步生成」链路及其静态守卫与白名单文件；v8 的四席分片合并（`generate_h5.py --mode merge`）、V8 1070 局格表与 gen1 全链路续跑。现行 `generate_h5.py` 只有 `split`／`continue`／`aggregate`／`replay` 四种模式；`site_build.py` 只保留建站路径。xhard0 不走生成链路：身份清单 `configs/xhard0/xhard0_manifest.json` 由 `hard_parity.py export-xhard0-manifest` 从官方 test 元数据导出（16 任务 × 12 局 = 192）。
 
-**站点与出图**（`injection-dev/site/`，只读、不起环境）：V9 逐局对照站由 `v8_site.py`（名字沿用、口径为 V9）起在 8082，目录 `artifacts/newtask-v9/site/`（`v8_site_catalog.py --cells v9` 生成 `catalog.json`，`v8_subgoal_lengths.py`、`v8_semantic_diff.py` 生成 `subgoals.json`、`semantic.json`，媒体映射 `media-private.json`）；复检 `v8_oracle_browser_check.py --port 8082`（→ `V8_ORACLE_BROWSER=PASS cells=59`）。`v9_movecube_region_fig.py` 出 MoveCube 区域配图到 `docs/validation/newtask-v9/figures/`。
+**站点与出图**（`injection-dev/site/`，只读、不起环境）：V9 逐局对照站由 `site_build.py --site-only --cells v9` 一键建站（命令见其文件头），或由 `site_app.py` 单独起在 8082，目录 `artifacts/newtask-v9/site/`（`site_catalog.py --cells v9` 生成 `catalog.json`，`subgoal_lengths.py`、`semantic_diff.py` 生成 `subgoals.json`、`semantic.json`，媒体映射 `media-private.json`）；复检 `oracle_browser_check.py --port 8082`（→ `V8_ORACLE_BROWSER=PASS cells=59`）。`v9_movecube_region_fig.py` 出 MoveCube 区域配图到 `docs/validation/newtask-v9/figures/`。
 
 ## 5. 对拍与回归（`parity/`）
 
@@ -144,7 +144,7 @@ uv run --no-sync python scripts/parity/hard_regression.py eval-smoke --task BinF
 ```
 
 - `train_split_*.py` 是 S0 原始 train 基线设施；`train_split_runner.py` 同时是第 4 节的运行器，启动时核对 `configs/newtask-v3/subset_manifest.json::records_sha256`（官方 train 元数据 16 份的散列）。细表见 [`parity/README.md`](parity/README.md)。
-- `eval-official/`：双模型（SimpleMemVLA、MME-VLA）评估客户端与席位脚本，V9 评估命令见 `docs/validation/v9-two-policy-gl10-20261002-01/launch.md`（`v8_manifest.py --exclude-evaluated` 生成 V9 新 80 局清单、`run_v8_gl.sh` 单席入口、`v8_report.py` 汇总）；800 局总表 SimpleMemVLA 178/800、MME-VLA 39/800。
+- `eval-official/`：双模型（SimpleMemVLA、MME-VLA）评估客户端与席位脚本，V9 评估命令见 `docs/validation/v9-two-policy-gl10-20261002-01/launch.md`（`eval_manifest.py --exclude-evaluated` 生成 V9 新 80 局清单、`run_eval_gl.sh` 单席入口、`eval_report.py` 汇总）；800 局总表 SimpleMemVLA 178/800、MME-VLA 39/800。
 
 ## 6. 核查清单
 
@@ -153,8 +153,34 @@ ls -1 scripts/*.py                                                        # 恰�
 git diff --quiet HEAD -- src/robomme/env_record_wrapper/RecordWrapper.py  # 录像器零 diff
 uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstream
 diff scripts/evaluation.py scripts/evaluation_hard.py                     # 恰好第 1 节的 3 处
-uv run --no-sync python -m pytest tests/lightweight/test_v9_packaged_800.py -q -s   # 800 局 / 每任务 50 局 / 固定 1600 / 3 行 diff
-timeout 280s uv run --no-sync python -m pytest tests/lightweight/ -m 'not gpu and not slow' -q
+timeout 280s uv run --no-sync python -m pytest -m 'not slow' -q                  # 日常门禁（纯 CPU，1003 维护计划新测试）
 ```
 
 实跑一律先「单任务 × 单档 × 单局 × 单 worker」冒烟；超过 5 分钟进 detached tmux 并监听日志；结果写 `docs/validation/`，过程写 commit body。
+
+## 7. 新旧名对照（1003 维护计划 R 块改名）
+
+名字带 v7／v8、但实际是 V9 现行的文件与常量，于 1003 维护计划 R 块改为中性名；行为不变。`docs/validation/**`、`docs/plans/**` 等历史留档里的旧命令不回改，按本表换名即可复现。格式名（`hard-specs/4`、`v8-delivery/1`、`v8-shard/1`、`v9-eval-reused/1`）、`reused.json` 的 `v8_manifest`／`v8_key` 键、`V8_*` 判定行前缀与环境变量名均未改。
+
+| 旧名 | 新名 |
+|---|---|
+| `scripts/eval-official/run_v8_gl.sh` | `scripts/eval-official/run_eval_gl.sh`（席位日志名随之由 `run_v8_gl-s<NN>.log` 改为 `run_eval_gl-s<NN>.log`） |
+| `scripts/eval-official/v8_manifest.py` | `scripts/eval-official/eval_manifest.py` |
+| `scripts/eval-official/v8_report.py` | `scripts/eval-official/eval_report.py` |
+| `scripts/injection-dev/v8_continue_after_gen.py` | `scripts/injection-dev/site_build.py` |
+| `scripts/injection-dev/site/v8_site.py` | `scripts/injection-dev/site/site_app.py`（不叫 `site.py`：同目录脚本运行时会遮蔽标准库 `site` 模块） |
+| `scripts/injection-dev/site/v8_site.html` | `scripts/injection-dev/site/site.html` |
+| `scripts/injection-dev/site/v8_site_catalog.py` | `scripts/injection-dev/site/site_catalog.py` |
+| `scripts/injection-dev/site/v8_subgoal_lengths.py` | `scripts/injection-dev/site/subgoal_lengths.py` |
+| `scripts/injection-dev/site/v8_semantic_diff.py` | `scripts/injection-dev/site/semantic_diff.py` |
+| `scripts/injection-dev/site/v8_eval_transcode.py` | `scripts/injection-dev/site/eval_transcode.py` |
+| `scripts/injection-dev/site/v8_site_browser_check.py` | `scripts/injection-dev/site/site_browser_check.py` |
+| `scripts/injection-dev/site/v8_oracle_browser_check.py` | `scripts/injection-dev/site/oracle_browser_check.py` |
+| `scripts/injection-dev/site/v7_render_xhard0.py` | `scripts/injection-dev/site/render_xhard0.py` |
+| `scripts/configs/newtask-v7/xhard0_manifest.json` | `scripts/configs/xhard0/xhard0_manifest.json`（内容逐字节不变） |
+| `hard_specs.SCHEMA_V8` | `hard_specs.SCHEMA` |
+| `hard_specs.V8_EXEC_CAP` | `hard_specs.EXEC_CAP` |
+| `hard_specs.V8_LAYOUT_RULE` | `hard_specs.LAYOUT_RULE` |
+| `hard_specs.V8_TIERS` | 并入 `hard_specs.TIERS`（两者同值 xhard1～xhard5） |
+| `hard_specs._validate_specs_v8` | `hard_specs._validate_specs` |
+| `hard_specs.load_specs_v8` | `hard_specs.load_specs_root`（规格根整根校验；单文件读取仍是 `load_specs`） |

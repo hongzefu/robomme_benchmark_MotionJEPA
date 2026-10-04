@@ -140,7 +140,7 @@ def official_args(ckpt: str) -> argparse.Namespace:
 def make_closures(buffer_factory, normalize_state, batched):
     """逐行照抄上游 c564c17 robomme_sim/eval_success.py::run_group 第 180–190 行的两个局部闭包。
 
-    单测 tests/lightweight/test_eval_official_smvla_client.py 用 ast 从上游文件取出原文比对。
+    与上游原文的逐行一致可用 ast 从上游文件取出该段比对（原单测已随旧测试删除）。
     """
     import torch
 

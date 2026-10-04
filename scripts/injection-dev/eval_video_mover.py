@@ -21,11 +21,11 @@ sha 不符：只删临时目录、保留 NFS 源，计 sha_mismatch（常驻模�
 ``--once``：搬到无待稳定目录后（单个目录持续不稳超过 ``--once-max-wait`` 秒即放弃、留在运行根计入 stage_left），再把
 ``<stage>/sNN/<policy>/rec/`` 下没有结果行的孤儿目录整目录搬到 ``<dest>/<policy>/_orphan/<sNN>/<目录名>/``，然后全量对账，打印
 ``V8_EVAL_VIDEOS=PASS|FAIL policies= expected= videos= missing= decode_fail= sha_mismatch= error_attempt_videos= stage_left= orphan_videos= error_final_no_video=``：
-expected = 每模型账本 accepted 终态数之和（权威终态口径复用 ``scripts/eval-official/v8_report.py``）；videos = 本机已有且
+expected = 每模型账本 accepted 终态数之和（权威终态口径复用 ``scripts/eval-official/eval_report.py``）；videos = 本机已有且
 front.mkv、wrist.mkv 都能读出帧数（>0）的终态录像目录数；error_attempt_videos = 本机已有的非权威尝试（错误／重试／迟到）目录数；
 stage_left = 对账后运行根里仍有可搬文件的录像目录数（rsync 失败、sha 不符、持续不稳、孤儿搬不走都在这里体现，>0 即 FAIL）；
 orphan_videos = 本次搬进 ``_orphan`` 的目录数（搬前先打印 ``ORPHAN_CANDIDATE``；--once 应在全部席位结束后跑）；
-error_final_no_video = 非 infra 错误终局无录像但结果行写明原因的数（不计 missing，与 v8_report 同一判定），
+error_final_no_video = 非 infra 错误终局无录像但结果行写明原因的数（不计 missing，与 eval_report 同一判定），
 PASS 要求 videos + error_final_no_video = expected。常驻模式 --stop-file 出现后，持续不稳或持续搬运失败超过
 ``--once-max-wait`` 秒的目录放弃（打印 reason=unstable／move_failed），进程照常退出。
 帧数优先用 ``ffprobe -count_frames``，没有 ffprobe 时用 ``imageio-ffmpeg`` 自带 ffmpeg 全解码计帧，都没有则判 decode_fail
@@ -62,12 +62,12 @@ V8_MEDIA = ("front.mkv", "wrist.mkv")
 _REPORT_MOD = None
 
 
-def v8_report_mod():
-    """复用 scripts/eval-official/v8_report.py 的读入与权威终态口径（accepted_attempt_id），两处不各写一套。"""
+def eval_report_mod():
+    """复用 scripts/eval-official/eval_report.py 的读入与权威终态口径（accepted_attempt_id），两处不各写一套。"""
     global _REPORT_MOD
     if _REPORT_MOD is None:
-        path = Path(__file__).resolve().parents[1] / "eval-official" / "v8_report.py"
-        spec = importlib.util.spec_from_file_location("v8_report_for_mover", path)
+        path = Path(__file__).resolve().parents[1] / "eval-official" / "eval_report.py"
+        spec = importlib.util.spec_from_file_location("eval_report_for_mover", path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         _REPORT_MOD = mod
@@ -107,7 +107,7 @@ def dir_snapshot(root: Path) -> tuple | None:
 
 def v8_attempt_dirs(stage: Path, policies: list[str]) -> list[dict]:
     """结果行已写出的全部 V8 尝试（含 error／infra／迟到），每个录像目录一项。"""
-    rm = v8_report_mod()
+    rm = eval_report_mod()
     out, seen = [], set()
     for pol in policies:
         st = rm.load_policy(stage, pol)
@@ -290,8 +290,8 @@ def v8_verify(stage: Path, dest: Path, policies: list[str], workers: int) -> tup
     """本机对账：返回 (expected, videos, missing, decode_fail, error_attempt_videos, error_final_no_video, problems)。
 
     非 infra 错误终局无录像：结果行写明原因 → error_final_no_video（不计 missing）；无原因 → missing。
-    判定与 v8_report 的 error_final_without_video_and_reason 共用 ``error_final_video_class``。"""
-    rm = v8_report_mod()
+    判定与 eval_report 的 error_final_without_video_and_reason 共用 ``error_final_video_class``。"""
+    rm = eval_report_mod()
     decoder = pick_decoder()
     if decoder[0] != "ffprobe":
         print(f"# 解码器：{decoder[0]} {decoder[1] or ''}（未找到 ffprobe）", flush=True)

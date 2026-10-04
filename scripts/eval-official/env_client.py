@@ -19,7 +19,7 @@
 已记录，由 run_seat.sh 重起）。
 
 V8 模式（``--v8``；1001-v8-post-evaluation-gl-plan.md 第一部分 §1 第 4 条、§3，契约 C2）：身份清单为
-``v8_manifest.py`` 产出的分片 JSON；身份逐键核对 tier／seed／candidate／spec_sha256 与有效上限
+``eval_manifest.py`` 产出的分片 JSON；身份逐键核对 tier／seed／candidate／spec_sha256 与有效上限
 ``hard_specs.TIER_MAX_STEPS[tier]``；``EnvSession.step`` 在已执行 ``step_cap`` 步后不再进入环境、抛
 ``StepCapReached``，``run_one`` 一律收为 ``status=timeout``；``EnvSession.build``／``reset`` 每次实际调用前向持久账本
 （``--ledger``，JSONL + fsync）领一次 reset 额度，耗尽抛 ``ResetBudgetExhausted`` → 退出码 5；infra 重试额度与每身份
@@ -64,7 +64,7 @@ DEFAULT_SHUFFLE_SEED = 20260930
 TERMINAL_STATUSES = ("success", "fail", "timeout")
 #: V8 每身份至多尝试次数（首试 + 1 次基础设施重试）
 V8_MAX_ATTEMPTS = 2
-#: V8 执行身份行（v8_manifest.py shard-NN.json 的元素）必须恰有的字段
+#: V8 执行身份行（eval_manifest.py shard-NN.json 的元素）必须恰有的字段
 V8_IDENTITY_KEYS = ("task", "tier", "seed", "candidate", "builder_episode", "source_episode", "spec_sha256",
                     "effective_max_steps", "key")
 
@@ -1013,7 +1013,7 @@ class SeatRunner:
 def load_identities(args) -> list[dict]:
     """读身份清单 JSON 数组，按 ``--only`` 过滤、``--order`` 排序、``--limit`` 截断。
 
-    V8：每行须为 ``v8_manifest.py`` 的执行身份行（字段齐全、nullable 严格、key 自洽、key 不重复），不符即运行阻塞。"""
+    V8：每行须为 ``eval_manifest.py`` 的执行身份行（字段齐全、nullable 严格、key 自洽、key 不重复），不符即运行阻塞。"""
     v8 = bool(getattr(args, "v8", False))
     rows = json.loads(Path(args.identities).read_text(encoding="utf-8"))
     if v8:
@@ -1098,7 +1098,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--baseline", action="store_true")
     p.add_argument("--rec-root", default=None, help="录像目录根（默认 <out>/rec）；V8 录像目录名 <key>.a<attempt_no>")
     v8 = p.add_argument_group("V8 模式（契约 C2；不带 --v8 时以下参数不生效、一切同旧版）")
-    v8.add_argument("--v8", action="store_true", help="V8 模式：--identities 为 v8_manifest.py 的 shard-NN.json")
+    v8.add_argument("--v8", action="store_true", help="V8 模式：--identities 为 eval_manifest.py 的 shard-NN.json")
     v8.add_argument("--ledger", default=None, help="持久尝试账本 JSONL（追加写、fsync），V8 必填")
     v8.add_argument("--reset-budget", type=int, default=None, help="本账本可领的底层 reset 额度（build 与 reset 各算一次）")
     v8.add_argument("--infra-retry-budget", type=int, default=None,

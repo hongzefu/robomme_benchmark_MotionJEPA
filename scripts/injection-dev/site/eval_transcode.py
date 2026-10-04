@@ -15,7 +15,7 @@
 展开帧数的 mp4 直接跳过（可续跑）。逐局写 ``<run-dir>/site-media/manifest.jsonl``，结束打印
 ``V8_EVAL_TRANSCODE=PASS|FAIL episodes=<n> frame_mismatch=<n> stream_len_mismatch=<n> failed=<n>`` 与 ``EXIT_CODE=``。
 
-    uv run --no-sync python scripts/injection-dev/site/v8_eval_transcode.py \\
+    uv run --no-sync python scripts/injection-dev/site/eval_transcode.py \\
         --run-dir artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01 --workers 24
 """
 from __future__ import annotations

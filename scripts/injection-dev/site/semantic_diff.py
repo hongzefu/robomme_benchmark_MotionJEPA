@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """v8 站点：xhard1～5 相对 xhard0 的 task goal／subgoal 语义调整（用户 2026-10-02「Go和SubGo有哪些语义上的调整」，标注在网页上）。
 
-只读 ``<site-dir>/subgoals.json``（``v8_subgoal_lengths.py`` 从真实 h5 逐局提取的 task goal 措辞与逐段 subgoal），写
+只读 ``<site-dir>/subgoals.json``（``subgoal_lengths.py`` 从真实 h5 逐局提取的 task goal 措辞与逐段 subgoal），写
 ``<site-dir>/semantic.json``（schema ``v8-semantic/1``），由站点 ``/api/semantic`` 提供给页面。
 
 判定口径（只比句式，不比参数）：
@@ -21,7 +21,7 @@
 ``example``（xhard0 第 1 局与该档一局——优先含新增 subgoal 的局——的 task goal 与整条 subgoal 序列，新句式／新类型标出）。
 末行打印 ``V8_SEMANTIC=PASS|FAIL tasks=<n> cells=<n> changed=<n> param_only=<n> note_missing=<n>``。
 
-    uv run --no-sync python scripts/injection-dev/site/v8_semantic_diff.py --site-dir artifacts/newtask-v8/site-eval
+    uv run --no-sync python scripts/injection-dev/site/semantic_diff.py --site-dir artifacts/newtask-v8/site-eval
 """
 from __future__ import annotations
 

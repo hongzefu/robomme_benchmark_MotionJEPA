@@ -372,7 +372,7 @@ SAME_WAY_BACKFILL_TASKS = frozenset({"MoveCube"})
 
 def same_way_tasks_for(header: dict[str, Any]) -> frozenset[str]:
     """/4 规格（新值档）里同方式递补的任务；/2、/3 一律空集（v7 及更早的递补规则逐字不变）。"""
-    if header.get("schema") != hard_specs.SCHEMA_V8 or header.get("difficulty") not in hard_specs.V8_TIERS:
+    if header.get("schema") != hard_specs.SCHEMA or header.get("difficulty") not in hard_specs.TIERS:
         return frozenset()
     return frozenset(SAME_WAY_BACKFILL_TASKS & set(header.get("tasks") or ()))
 
@@ -450,7 +450,7 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
     try:
         file_sha = file_sha256(specs)
         header, rows = load_specs_any(specs)
-        exec_cap = int(header["exec_cap"]) if header["schema"] == hard_specs.SCHEMA_V8 else None
+        exec_cap = int(header["exec_cap"]) if header["schema"] == hard_specs.SCHEMA else None
         same_way = same_way_tasks_for(header) if same_way_tasks is None else frozenset(same_way_tasks)
         if resume:
             unknown = unknown_identities(output)
@@ -542,8 +542,8 @@ V8_TOTAL_COUNT_KEYS = V8_CELL_COUNT_KEYS + ("exhausted_cells", "pending_cells", 
 
 
 def order_cells(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
-    """格表按 (V8_TIERS 档序, ALL_TASKS 任务序) 排序（输出与合并的确定性）。"""
-    return {key: int(cells[key]) for key in sorted(cells, key=lambda k: (hard_specs.V8_TIERS.index(k[1]),
+    """格表按 (TIERS 档序, ALL_TASKS 任务序) 排序（输出与合并的确定性）。"""
+    return {key: int(cells[key]) for key in sorted(cells, key=lambda k: (hard_specs.TIERS.index(k[1]),
                                                                          hard_specs.ALL_TASKS.index(k[0])))}
 
 
@@ -606,7 +606,7 @@ def cells_json(cells: dict[tuple[str, str], int]) -> dict[str, int]:
 
 
 def cell_tiers(cells: dict[tuple[str, str], int]) -> list[str]:
-    return [tier for tier in hard_specs.V8_TIERS if any(t == tier for _, t in cells)]
+    return [tier for tier in hard_specs.TIERS if any(t == tier for _, t in cells)]
 
 
 def compact_range(values) -> str:
@@ -619,7 +619,7 @@ def compact_range(values) -> str:
 def detect_root_schema(root: Path) -> str | None:
     """规格根的 schema：``<root>/<tier>/specs.jsonl`` 首行 header 的 schema；各档必须一致，否则拒绝。无文件返回 None。"""
     schemas = {}
-    for tier in hard_specs.V8_TIERS:
+    for tier in hard_specs.TIERS:
         path = Path(root) / tier / "specs.jsonl"
         if path.is_file():
             with path.open(encoding="utf-8") as stream:
@@ -646,7 +646,7 @@ def _seed_disjoint(loaded: dict[str, tuple]) -> None:
 
 def load_v8_root(root: Path, cells: dict[tuple[str, str], int]) -> dict[str, tuple[dict[str, Any], list[dict[str, Any]]]]:
     """按格表读 v8 规格根：逐档 ``load_specs``（/4 校验）+ 档名、任务集合、逐格 ``delivery_per_cell`` 与格表相等、
-    跨档 seed 不交。全部行都未试过（刚冻结／刚切片）时另走 ``hard_specs.load_specs_v8`` 全量契约（含每格 selected
+    跨档 seed 不交。全部行都未试过（刚冻结／刚切片）时另走 ``hard_specs.load_specs_root`` 全量契约（含每格 selected
     数 == 格表）；跑过之后某格备用耗尽会让 selected 少于配额，这时只按单文件校验读，逐格成败交给聚合判定。"""
     cells = check_cells(cells)
     table = cell_table(cells)
@@ -656,8 +656,8 @@ def load_v8_root(root: Path, cells: dict[tuple[str, str], int]) -> dict[str, tup
         if not path.is_file():
             raise RolloutError(f"v8 规格根缺少 {path}")
         header, rows = hard_specs.load_specs(path, expected_cells=table, check_fingerprint=False)
-        if header["schema"] != hard_specs.SCHEMA_V8 or header["difficulty"] != tier:
-            raise RolloutError(f"{path}：须为 {hard_specs.SCHEMA_V8} 且档位 {tier}（实为 {header['schema']}／"
+        if header["schema"] != hard_specs.SCHEMA or header["difficulty"] != tier:
+            raise RolloutError(f"{path}：须为 {hard_specs.SCHEMA} 且档位 {tier}（实为 {header['schema']}／"
                                f"{header['difficulty']}）")
         want = {task for task, t in cells if t == tier}
         if set(header["tasks"]) != want:
@@ -670,7 +670,7 @@ def load_v8_root(root: Path, cells: dict[tuple[str, str], int]) -> dict[str, tup
         out[tier] = (header, rows)
     _seed_disjoint(out)
     if not any(row["tried"] for _, rows in out.values() for row in rows):
-        hard_specs.load_specs_v8(root, cells, cell_table=table, check_fingerprint=False)
+        hard_specs.load_specs_root(root, cells, cell_table=table, check_fingerprint=False)
     return out
 
 
@@ -834,7 +834,7 @@ def aggregate_v8(specs_root: Path, cells: dict[tuple[str, str], int], ledger_dir
             + ("" if ok else f" problems={';'.join(problems[:12])}" + (";..." if len(problems) > 12 else "")))
     report = {
         "schema": V8_DELIVERY_SCHEMA, "specs_root": str(specs_root), "cells_source": cells_label,
-        "cells_table": cells_json(cells), "code_baseline": code_baseline, "exec_cap": hard_specs.V8_EXEC_CAP,
+        "cells_table": cells_json(cells), "code_baseline": code_baseline, "exec_cap": hard_specs.EXEC_CAP,
         "ledgers": ledgers, "rebase": [list(p) for p in (rebase or [])], "tasks": n_tasks, "cell_count": len(cells),
         "counts": totals, "cells": cell_out, "rows": rows_out, "bad_rows": bad_rows,
         "exec_over_cap_rows": over_rows, "problems": problems, "line": line,
@@ -914,8 +914,8 @@ def split_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_out: Pa
     for tier in cell_tiers(cells):
         path = Path(frozen_root) / tier / "specs.jsonl"
         header, rows = hard_specs.load_specs(path, expected_cells=table, check_fingerprint=False)
-        if header["schema"] != hard_specs.SCHEMA_V8 or header["difficulty"] != tier:
-            raise RolloutError(f"{path} 不是 {tier} 的 {hard_specs.SCHEMA_V8}")
+        if header["schema"] != hard_specs.SCHEMA or header["difficulty"] != tier:
+            raise RolloutError(f"{path} 不是 {tier} 的 {hard_specs.SCHEMA}")
         if any(r["tried"] for r in rows):
             raise RolloutError(f"{path} 已跑过（有 tried 行），只能从未跑过的冻结根切片")
         want = [task for task in header["tasks"] if (task, tier) in cells]

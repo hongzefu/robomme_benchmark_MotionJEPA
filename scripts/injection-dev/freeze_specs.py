@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """第一阶段入口：定规则 → 抽签 → 封存，只落一份 jsonl（0927 计划第一部分 §5.1；v8 方案第二部分 §2.2 第 5、6 条）。
 
-    # v8（默认且唯一的 profile；按档 seed 偏移，每档一次冻结、档内逐任务独立抽，只抽该档的交付格，封 hard-specs/4）
+    # v8 seed 规则（默认且唯一的 profile，V9 沿用；按档 seed 偏移，每档一次冻结、档内逐任务独立抽，只抽该档的交付格，封 hard-specs/4）
     uv run --no-sync python scripts/injection-dev/freeze_specs.py \\
-      --tier xhard1 --seed-profile v8 --cells full --workers 4 --gpus 0 \\
-      --out artifacts/newtask-v8/specs-frozen/xhard1/specs.jsonl
-    # v8 冒烟（7 格各 1 局，候选数默认等于局数）
+      --tier xhard1 --seed-profile v8 --cells v9 --workers 4 --gpus 0 \\
+      --out <冻结根>/xhard1/specs.jsonl
+    # V9 冒烟（MoveCube／InsertPeg xhard4 各 1 局，候选数默认等于局数）
     uv run --no-sync python scripts/injection-dev/freeze_specs.py \\
-      --tier xhard1 --seed-profile v8 --cells smoke --out artifacts/newtask-v8/smoke/specs/xhard1/specs.jsonl
+      --tier xhard4 --seed-profile v8 --cells v9smoke --out <冒烟根>/xhard4/specs.jsonl
 
 - ①定规则：``_extract.build_sampling``（``--pkg`` 默认 robomme_hard）；②抽签：``_draw.draw_task``（只 reset）；
   ③封存：``_freeze.freeze(schema=...)`` → ``--out``（排他发布，唯一落盘文件）。
-- 格表 ``--cells``：``full``（V8 表 2 的 43 格）、``smoke``（V8 2b 冒烟 7 格各 1 局）、``v9shard1``、``v9smoke``
+- 格表 ``--cells``：``v9``（缺省，V9_CELLS 43 格 800）、``v9shard1``、``v9smoke``
   或格表 JSON 路径（``{"Task@tier": 局数, ...}``）；本档的任务集合与逐格配额都取自格表。
 - v8 逐任务参数：``--candidates-per-env TASK=N,...``（也接受全局整数）；``--select TASK=a..b,...``（也接受全局
   写法；默认每任务 ``0..配额-1``）；``--task-max-reset-attempts TASK[@TIER]=N,...``（优先于 ``--max-reset-attempts``；
@@ -45,7 +45,7 @@ from robomme_hard.env_record_wrapper.hard_specs import SpecsError  # noqa: E402
 
 RECOVERY_RULE = {"rule": "V4 全部不开 fail recover（用户 2026-09-22）"}
 #: --tier 合法值：v8 五档（不经全局 TIERS 拒绝 xhard5）
-TIER_CHOICES = tuple(hard_specs.V8_TIERS)
+TIER_CHOICES = tuple(hard_specs.TIERS)
 
 
 def _snapshot(root: Path, since: float) -> set[str]:
@@ -173,8 +173,8 @@ def main() -> int:
     args = parser.parse_args()
 
     out = Path(args.out)
-    if args.tier not in hard_specs.V8_TIERS:
-        raise SystemExit(f"v8 只认档位 {hard_specs.V8_TIERS}")
+    if args.tier not in hard_specs.TIERS:
+        raise SystemExit(f"v8 只认档位 {hard_specs.TIERS}")
     cells = _rollout.resolve_cells(args.cells)
     plan = plan_v8(args.tier, cells, args.tasks, args.candidates_per_env, args.select, args.max_reset_attempts,
                    args.task_max_reset_attempts)
@@ -209,7 +209,7 @@ def main() -> int:
                        "hard_fingerprint": hard_specs.hard_fingerprint(), "env_package": args.pkg,
                        "frozen_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")},
     }
-    header, spec_rows = _freeze.freeze(rows, parts, plan["select"], plan["candidates"], schema=hard_specs.SCHEMA_V8)
+    header, spec_rows = _freeze.freeze(rows, parts, plan["select"], plan["candidates"], schema=hard_specs.SCHEMA)
     _freeze.write_jsonl_exclusive(out, [header, *spec_rows])
     print(f"FREEZE_DONE rows={len(spec_rows)} selected={sum(r['selected'] for r in spec_rows)} "
           f"reset_attempted={stats['attempted']} identity={header['identity_sha256'][:12]} out={out}", flush=True)

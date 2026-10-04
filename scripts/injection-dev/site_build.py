@@ -9,9 +9,9 @@
 步骤（按序；``--cmd STEP=…`` 可替换任一步的命令，测试用假命令替换浏览器检查器等）：
 
 1. ``identities``：``--identities`` 给出的现成身份清单（必填，如 4b 导出的 ``eval-identities-992.jsonl``）。
-2. ``catalog``：``site/v8_site_catalog.py`` → ``V8_SITE_CATALOG=PASS``。
-3. ``subgoals``：``site/v8_subgoal_lengths.py`` → ``V8_SUBGOALS=PASS``。
-4. ``serve``：起服务前探端口占用（``--port 0`` 由系统分配）；``site/v8_site.py`` 打出 ``V8_SITE_READY`` 视为就绪。
+2. ``catalog``：``site/site_catalog.py`` → ``V8_SITE_CATALOG=PASS``。
+3. ``subgoals``：``site/subgoal_lengths.py`` → ``V8_SUBGOALS=PASS``。
+4. ``serve``：起服务前探端口占用（``--port 0`` 由系统分配）；``site/site_app.py`` 打出 ``V8_SITE_READY`` 视为就绪。
 5. ``site_check``／``oracle_check``：两个浏览器检查器 → ``V8_SITE=PASS``、``V8_ORACLE_BROWSER=PASS``。
 6. ``stop_serve``：finally 中收掉服务进程组（SIGTERM → 5 秒 → SIGKILL）；SIGTERM／SIGHUP／SIGINT 同样走 finally。
 
@@ -39,7 +39,7 @@
 
 V9 阶段 4c（评估完成后只建站）::
 
-    uv run --no-sync python scripts/injection-dev/v8_continue_after_gen.py --site-only --cells v9 \\
+    uv run --no-sync python scripts/injection-dev/site_build.py --site-only --cells v9 \\
       --delivery artifacts/newtask-v9/delivery/delivery.local.json --specs-root artifacts/newtask-v9/specs-root \\
       --identities artifacts/v9-evaluation/inputs/eval-identities-992.jsonl \\
       --work-dir artifacts/newtask-v9/continue-site --site-dir artifacts/newtask-v9/site --port 8082 \\
@@ -85,17 +85,17 @@ EXPECT = {
 READY_RE = re.compile(r"^V8_SITE_READY\b.*\bport=(\d+)")
 #: 缺省命令模板：``{名}`` 逐 token 替换；``@cells_json_args``／``@eval_args``／``@v9_expect_args`` 展开为多个 token
 DEFAULT_CMDS = {
-    "catalog": ["{python}", "{site}/v8_site_catalog.py", "--specs-root", "{specs_root}", "--delivery", "{delivery}",
+    "catalog": ["{python}", "{site}/site_catalog.py", "--specs-root", "{specs_root}", "--delivery", "{delivery}",
                 "--identities", "{identities}", "--xhard0-gen", "{xhard0_gen}", "--path-base", "{path_base}",
                 "@cells_json_args", "@eval_args", "--out", "{site_dir}"],
-    "subgoals": ["{python}", "{site}/v8_subgoal_lengths.py", "--site-dir", "{site_dir}", "--specs-root", "{specs_root}",
+    "subgoals": ["{python}", "{site}/subgoal_lengths.py", "--site-dir", "{site_dir}", "--specs-root", "{specs_root}",
                  "--delivery", "{delivery}", "--xhard0-gen", "{xhard0_gen}", "--path-base", "{path_base}",
                  "--workers", "{workers}"],
-    "serve": ["{python}", "-u", "{site}/v8_site.py", "--host", "{host}", "--port", "{port}", "--site-dir", "{site_dir}",
+    "serve": ["{python}", "-u", "{site}/site_app.py", "--host", "{host}", "--port", "{port}", "--site-dir", "{site_dir}",
               "--media-root", "{media_root}"],
-    "site_check": ["uv", "run", "--no-project", "--with", "playwright", "python", "{site}/v8_site_browser_check.py",
+    "site_check": ["uv", "run", "--no-project", "--with", "playwright", "python", "{site}/site_browser_check.py",
                    "--base", "{base}", "--shots", "{shots}/site"],
-    "oracle_check": ["uv", "run", "--no-project", "--with", "playwright", "python", "{site}/v8_oracle_browser_check.py",
+    "oracle_check": ["uv", "run", "--no-project", "--with", "playwright", "python", "{site}/oracle_browser_check.py",
                      "--base", "{base}", "--port", "{port_actual}", "--shots", "{shots}/oracle", "--delivery", "{delivery}",
                      "--expect-cells", "{expect_cells}", "@v9_expect_args"],
 }
@@ -166,9 +166,9 @@ def verdict_of(line: str) -> str:
 
 
 def load_catalog_module():
-    spec = importlib.util.spec_from_file_location("v8_site_catalog_c", SITE / "v8_site_catalog.py")
+    spec = importlib.util.spec_from_file_location("site_catalog_c", SITE / "site_catalog.py")
     module = importlib.util.module_from_spec(spec)
-    sys.modules["v8_site_catalog_c"] = module
+    sys.modules["site_catalog_c"] = module
     spec.loader.exec_module(module)
     return module
 

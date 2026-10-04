@@ -99,7 +99,7 @@ V5_RING_GAP_M = 0.015
 V5_RING_BAND_WIDTH_M = 1.0 / math.sqrt(V5_INNER_DENSITY_PER_M2)
 
 #: 四个环境的 V5 xhard 干扰配置（统一键）。环境文件的 ``XHARD_DISTRACTOR`` 应直接深拷贝这里的值，
-#: 数量与环带由 ``tests/lightweight/test_v5_unmask_distractor_sampler.py`` 按计划 2.2 的公式锁定。
+#: 数量与环带按 V5 计划 2.2 的公式确定。
 V5_DISTRACTOR_PRESETS: dict[str, dict[str, Any]] = {
     # 2.3：贴身环带 [0.2 + g + 0.0275, 0.2 + g + W − 0.0275]，N = floor(50·0.3027 + 0.5) = 15，含 cube [7,8]
     "VideoUnmask": {

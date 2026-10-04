@@ -1,10 +1,10 @@
 """V8 双模型评估汇总（1001-v8-post-evaluation-gl-plan.md 第一部分 §1 第 5、7 条、§4；契约 C4 第一段）。纯 CPU、只用标准库。
 
-    python scripts/eval-official/v8_report.py --manifest <manifest.json> --stage <运行根> \
+    python scripts/eval-official/eval_report.py --manifest <manifest.json> --stage <运行根> \
         --policies smvla,mme --out <dir> [--videos <本机视频根>] [--partial] [--expect-total 1070] [--cap 1600]
 
 输入（契约 C1～C3）：
-- ``--manifest``：``v8_manifest.py`` 产出的 ``manifest.json``（``rows`` 为执行身份行，``key = f"{task}_{tier}_{seed}"``）；
+- ``--manifest``：``eval_manifest.py`` 产出的 ``manifest.json``（``rows`` 为执行身份行，``key = f"{task}_{tier}_{seed}"``）；
   分片归属取行内 ``shard`` 字段，没有就读同目录 ``shard-NN.json``。
 - ``--stage``：运行根，逐席 ``sNN/<policy>/results.jsonl`` 与账本 ``sNN/<policy>/<policy>.ledger.jsonl``
   （也兼容 ``sNN/<policy>.ledger.jsonl``）；录像目录 ``sNN/<policy>/rec/<key>.a<n>/``。
@@ -30,11 +30,11 @@
 
 V9 合并复用（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.1、§2.2 第 7 条、§2.4.2 第 7 步）：
 
-    python scripts/eval-official/v8_report.py --manifest <V9 run>/manifest/manifest.json --stage <V9 运行根> \
+    python scripts/eval-official/eval_report.py --manifest <V9 run>/manifest/manifest.json --stage <V9 运行根> \
         --videos <V9 本机视频根> --out <dir> \
         --reuse <V8 结果目录> --reuse-manifest <V8 manifest.json>
 
-- ``--manifest`` 是 ``v8_manifest.py --exclude-evaluated`` 的新评清单（默认核对 80 行）；复用集合**只认**同目录
+- ``--manifest`` 是 ``eval_manifest.py --exclude-evaluated`` 的新评清单（默认核对 80 行）；复用集合**只认**同目录
   ``reused.json``（sha256 须等于 manifest ``reused.sha256``，``v8_manifest_sha256`` 须等于 ``--reuse-manifest`` 现算值）。
 - ``--reuse``：V8 运行根（含 ``sNN/<policy>/``）；给的是 V8 结果目录（如
   ``artifacts/v8-evaluation/<R>``）时自动取其下 ``nfs-records/run``。只读，不重算、不改写 V8 任何文件。
