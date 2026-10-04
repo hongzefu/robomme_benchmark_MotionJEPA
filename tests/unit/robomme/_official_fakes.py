@@ -34,6 +34,16 @@ def make_obs(step_idx: int = 0):
     }
 
 
+class Named:
+    """只有名字的可哈希替身 actor（无位姿）。"""
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return f"<Named {self.name}>"
+
+
 class FakeTaskEnv(gym.Env):
     """脚本化的任务环境。outcomes: 每次 step 的 (success, fail) ；用完后一直 (False, False)。"""
 
@@ -63,9 +73,9 @@ class FakeTaskEnv(gym.Env):
         self.num_repeats = 2
         self.target_color_name = "red"
         # vqa_options 需要的字段（PickXtimes）
-        self.all_cubes = [SimpleNamespace(name="cube_red_0")]
-        self.target = SimpleNamespace(name="target")
-        self.button = SimpleNamespace(name="button")
+        self.all_cubes = [Named("cube_red_0")]
+        self.target = Named("target")
+        self.button = Named("button")
         self.swing_qpos = torch.full((1, 7), 0.5)
 
     def reset(self, *, seed=None, options=None):
@@ -86,15 +96,21 @@ class FakeTaskEnv(gym.Env):
         self.closed = True
 
 
+def as_made(inner):
+    """像 gym.make 一样在任务外面套一层 OrderEnforcing（真实链里任务外还有 TimeLimit，这里不需要截断）。
+    DemonstrationWrapper 把 ``self.env``（即这一层）交给 task_goal，后者再取 ``.env.unwrapped``。"""
+    return gym.wrappers.OrderEnforcing(inner)
+
+
 class GymMakeSpy:
-    """顶替 gym.make：记录 (env_id, kwargs)，返回 FakeTaskEnv。"""
+    """顶替 gym.make：记录 (env_id, kwargs)，返回套了 OrderEnforcing 的 FakeTaskEnv。"""
 
     def __init__(self):
         self.calls = []
 
     def __call__(self, env_id, **kwargs):
         self.calls.append((env_id, dict(kwargs)))
-        return FakeTaskEnv(env_id=env_id, **kwargs)
+        return as_made(FakeTaskEnv(env_id=env_id, **kwargs))
 
     def namespace(self):
         return SimpleNamespace(make=self)

@@ -20,10 +20,10 @@ ACTION_SPACES = ("joint_angle", "ee_pose", "waypoint", "multi_choice")
 SPLITS = ("train", "val", "test")
 # 独立期望：四种动作空间的包装链（外 → 内），来源：官方 doc/env_format.md 的动作空间说明与 README 动作类型
 CHAINS = {
-    "joint_angle": ["FailAwareWrapper", "DemonstrationWrapper", "FakeTaskEnv"],
-    "ee_pose": ["FailAwareWrapper", "EndeffectorDemonstrationWrapper", "DemonstrationWrapper", "FakeTaskEnv"],
-    "waypoint": ["FailAwareWrapper", "MultiStepDemonstrationWrapper", "DemonstrationWrapper", "FakeTaskEnv"],
-    "multi_choice": ["FailAwareWrapper", "OraclePlannerDemonstrationWrapper", "DemonstrationWrapper", "FakeTaskEnv"],
+    "joint_angle": ["FailAwareWrapper", "DemonstrationWrapper", "OrderEnforcing", "FakeTaskEnv"],
+    "ee_pose": ["FailAwareWrapper", "EndeffectorDemonstrationWrapper", "DemonstrationWrapper", "OrderEnforcing", "FakeTaskEnv"],
+    "waypoint": ["FailAwareWrapper", "MultiStepDemonstrationWrapper", "DemonstrationWrapper", "OrderEnforcing", "FakeTaskEnv"],
+    "multi_choice": ["FailAwareWrapper", "OraclePlannerDemonstrationWrapper", "DemonstrationWrapper", "OrderEnforcing", "FakeTaskEnv"],
 }
 FLAGS = (
     "include_maniskill_obs", "include_front_depth", "include_wrist_depth", "include_front_camera_extrinsic",
