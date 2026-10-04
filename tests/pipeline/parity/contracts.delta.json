@@ -535,5 +535,27 @@
     "resource": "cpu",
     "mutants": [],
     "status": "verified"
+  },
+  {
+    "id": "C15.18",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_gate.py",
+      "scripts/configs/noise-ref-20261003.json"
+    ],
+    "symbol": "noise_gate._observed_jitter／ref_index／mark_jitter／cmd_mark_jitter／regress_check（late_jitter）／_jitter_note（same_as_observed）",
+    "oracle": "模块小基线参照的副本；新跑行按参照手造，稳定局换成固定伪 sha；判定行按布局手数",
+    "positive": "mark-jitter 只追加 jitter_observed、sets 逐字节不变、顶层 sha256 重算并自洽、打印 NOISE_REF_MARK=PASS；登记后该局期望改为 jitter（baseline_class 保留 stable），原本 NEED_RERUN 的首跑改判 PASS 且 jitter 计数加一；新 sha 在 shas_seen → same_as_observed，否则 other_trajectory；生成时按旧参照记成 flip 的行事后登记不判 unknown",
+    "negative": "重复登记 → 拒；集合里没有的身份 → 拒；登记条目缺字段、档不符、身份不存在、shas_seen 为空，重签后 load_ref 仍拒；未登记的稳定局记录 flip 却现判 match → 仍 unknown、整体 FAIL",
+    "boundaries": "登记由用户裁决触发（原话写入 decision）；逐局基线数据不改（红线 R2 只放开 jitter_observed 追加）",
+    "nodeids": [
+      "tests/pipeline/parity/test_gen_regress.py::test_登记环境敏感局_基线逐局数据不动_翻转改判只报告",
+      "tests/pipeline/parity/test_gen_regress.py::test_登记前已在生成时记为翻转的局_事后登记不判原因不明",
+      "tests/pipeline/parity/test_gen_regress.py::test_登记反例_重复登记与参照外身份都拒",
+      "tests/pipeline/parity/test_gen_regress.py::test_登记条目被改坏_重签后仍拒"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
   }
 ]

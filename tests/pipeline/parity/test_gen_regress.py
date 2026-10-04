@@ -630,3 +630,93 @@ def test_真实参照文件_自洽且身份集合等于冻结检查集(ng):
         for run in block["runs"]:
             assert run["workers"] == ng.PRECOND_WORKERS and ng.PRECOND_GPU in run["gpu_model"]
     assert path.read_bytes() == raw  # 只读
+
+
+# ══ jitter_observed：用户确认的环境敏感局登记（mark-jitter）══════════════════════════════
+
+
+def _marked_copy(ng, base, tmp_path, seed, shas_seen):
+    """把模块基线参照复制一份，经 CLI 把 v9 的一局登记为环境敏感局；返回 (原参照对象, 新参照路径)。"""
+    ref = tmp_path / "ref-marked.json"
+    ref.write_text(base["ref"].read_text(encoding="utf-8"), encoding="utf-8")
+    before = ng.load_ref(ref)
+    e = entry(base, "v9", seed)
+    argv = ["gen-regress", "mark-jitter", "--ref", str(ref), "--set", "v9", "--task", e["task"],
+            "--seed", str(seed), "--reason", "测试：同节点新旧代码同为新 sha", "--decision", "测试裁决"]
+    for s in shas_seen:
+        argv += ["--sha", s]
+    assert ng.main(argv) == 0
+    return before, ref
+
+
+def test_登记环境敏感局_基线逐局数据不动_翻转改判只报告(ng, base, tmp_path, capsys):
+    seed = seeds_of(base, "v9", "stable")[-1]
+    flip_line = {seed: {"sha256": FAKE["y"]}}
+    first = F.write_run(tmp_path / "first", F.first_run_lines(base["ref"], "v9", overrides=flip_line),
+                        **valid_launch(ng))
+    # 登记前：稳定局字节不同 → 翻转、要第二次跑
+    assert ng.regress_check(ng.load_ref(base["ref"]), "v9", first)["verdict"] == "NEED_RERUN"
+
+    before, ref = _marked_copy(ng, base, tmp_path, seed, [FAKE["y"]])
+    after = ng.load_ref(ref)
+    out = capsys.readouterr().out
+    assert f"NOISE_REF_MARK=PASS set=v9 id={entry(base, 'v9', seed)['task']}|{seed} observed=1 sets_unchanged=1" in out
+    assert after["sets"] == before["sets"]                       # 逐局基线数据一个字节不动
+    assert after["sha256"] != before["sha256"] and after["sha256"] == canonical_sha(after)
+    idx = ng.ref_index(after, "v9")[(entry(base, "v9", seed)["task"], seed)]
+    assert (idx["class"], idx["baseline_class"], idx["jitter_observed"]) == ("jitter", "stable", True)
+
+    res = ng.regress_check(after, "v9", first)
+    row = next(r for r in res["rows"].values() if r["seed"] == seed)
+    n, jit = len(layout_of(base, "v9")), len(seeds_of(base, "v9", "jitter")) + 1
+    assert res["line"] == (f"GEN_REGRESS=PASS set=v9 n={n} match={n - jit} jitter={jit} flip=0 "
+                           "structural=0 unknown=0 missing=0 invalid=0")
+    assert (row["category"], row["jitter_note"], row["baseline_class"]) == ("jitter_info", "same_as_observed", "stable")
+
+    # 登记后又出现第三种字节：照样只报告，但标成另一条轨迹
+    other = F.write_run(tmp_path / "other", F.first_run_lines(base["ref"], "v9", overrides={seed: {"sha256": FAKE["z"]}}),
+                        **valid_launch(ng))
+    row = next(r for r in ng.regress_check(after, "v9", other)["rows"].values() if r["seed"] == seed)
+    assert (row["category"], row["jitter_note"]) == ("jitter_info", "other_trajectory")
+
+
+def test_登记前已在生成时记为翻转的局_事后登记不判原因不明(ng, base, tmp_path):
+    """生成时 Mover 按旧参照把这一局记成 flip；登记后重判，记录与现判不同只因登记在后，归抖动而非 unknown。"""
+    seed = seeds_of(base, "v9", "stable")[-1]
+    _before, ref = _marked_copy(ng, base, tmp_path, seed, [FAKE["y"]])
+    lines = F.first_run_lines(base["ref"], "v9", overrides={seed: {"sha256": FAKE["y"], "verdict": "flip"}})
+    res = ng.regress_check(ng.load_ref(ref), "v9", F.write_run(tmp_path / "first", lines, **valid_launch(ng)))
+    row = next(r for r in res["rows"].values() if r["seed"] == seed)
+    assert res["verdict"] == "PASS" and row["category"] == "jitter_info"
+    # 反例：未登记的稳定局，记录 flip 却现判 match → 仍是原因不明
+    other = seeds_of(base, "v9", "stable")[0]
+    lines = F.first_run_lines(base["ref"], "v9", overrides={other: {"verdict": "flip"}})
+    res = ng.regress_check(ng.load_ref(ref), "v9", F.write_run(tmp_path / "first2", lines, **valid_launch(ng)))
+    assert res["verdict"] == "FAIL" and next(r for r in res["rows"].values() if r["seed"] == other)["category"] == "unknown"
+
+
+def test_登记反例_重复登记与参照外身份都拒(ng, base, tmp_path):
+    seed = seeds_of(base, "v9", "stable")[-1]
+    _before, ref = _marked_copy(ng, base, tmp_path, seed, [FAKE["y"]])
+    obj = ng.load_ref(ref)
+    with pytest.raises(ng.GateError, match="已登记"):
+        ng.mark_jitter(obj, set_name="v9", task=entry(base, "v9", seed)["task"], seed=seed, shas_seen=[FAKE["z"]],
+                       reason="r", decision="d")
+    other = seeds_of(base, "v9", "stable")[0]          # 未登记、但不在 xhard0 集合里
+    with pytest.raises(ng.GateError, match="没有"):
+        ng.mark_jitter(obj, set_name="xhard0", task=entry(base, "v9", other)["task"], seed=other,
+                       shas_seen=[FAKE["z"]], reason="r", decision="d")
+
+
+@pytest.mark.parametrize("mutate,needle", [
+    (lambda item: item.pop("decision"), "缺字段"),
+    (lambda item: item.update(tier="xhard9"), "找不到同档"),
+    (lambda item: item.update(seed=item["seed"] + 987654), "找不到同档"),
+    (lambda item: item.update(shas_seen=[]), "非空列表"),
+])
+def test_登记条目被改坏_重签后仍拒(ng, base, tmp_path, mutate, needle):
+    seed = seeds_of(base, "v9", "stable")[-1]
+    _before, ref = _marked_copy(ng, base, tmp_path, seed, [FAKE["y"]])
+    _resign(ref, lambda o: mutate(o["jitter_observed"][0]))
+    with pytest.raises(ng.GateError, match=needle):
+        ng.load_ref(ref)

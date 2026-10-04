@@ -105,6 +105,7 @@ GEN_PAIR=INFO ref=O-xhard0-bucket new=x0-b n=48 byte_equal=46 diverge=0 gen_fail
    - **稳定局**（V9 128、xhard0 46）：新跑 sha ∈ 基线两遍 sha；
    - **确定性失败局**（xhard0 VideoPlaceOrder seed 610701、611101）：新跑也失败且失败产物 sha 相同；
    - **已知抖动局**（V9 BinFill xhard1 seed 16400000）：只报告，不判定。
+   - **环境敏感局**（参照的 `jitter_observed`，用户确认后用 `noise_gate.py gen-regress mark-jitter` 追加，逐局基线数据不动）：按已知抖动局处理，只报告。现登记 1 局：V9 MoveCube xhard4 seed 23400200（2026-10-04 维护后对拍中新旧代码同节点逐字节相同、与基线自第 376 步分叉，用户「登记为环境敏感局。」）；登记后参照顶层 sha 为 `90c0ea527dd7`。
 2. **跑什么**：GL A40、每遍 `--workers 4`，用改后代码把 V9 `43 格 × 3 局 = 129`、xhard0 `16 任务 × 1 档 × 3 局 = 48` 各生成一遍（第七节命令），`generate --expect-ref <参照>` 边生成边判定（match 的局在节点上删掉、不回传；翻转局写 `flips.jsonl` 并打印 `EPISODE_FLIP`）。跑之前把局数与预算报给用户获准（P3）。
 3. **首跑判定**：`noise_gate.py gen-regress check --ref <参照> --set {v9,xhard0} --new <首跑根> --out <jsonl> --rerun-identities-out <jsonl>`。无翻转直接 `GEN_REGRESS=PASS`；有翻转（≤10 局）输出 `GEN_REGRESS=NEED_RERUN` 与重跑清单（不足 4 局按同档优先补陪跑局，`filler=true`，陪跑只报告）；翻转 >10 局直接 FAIL 交用户。
 4. **第二次跑与四格定性**：在**同一节点**上用改后代码与旧代码（噪声基线锚点 `f8f76fba`）各跑一次重跑清单，再 `gen-regress check … --rerun-new <根> --rerun-old <根>`：

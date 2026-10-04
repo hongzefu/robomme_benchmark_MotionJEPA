@@ -609,8 +609,35 @@ def _rel_hint(path: Path) -> str:
         return str(path)
 
 
+JITTER_OBSERVED_KEYS = ("set", "task", "tier", "seed", "shas_seen", "reason", "decision")
+
+
+def _observed_jitter(obj: dict[str, Any]) -> dict[tuple[str, int], dict[str, Any]]:
+    """``jitter_observed``：经用户确认、在基线之后才观察到的环境敏感局（对拍细则 3.3「噪声」格与环境变了的裁决）。
+    逐条核对字段齐全、指向参照里同集合同档的已有一局、不重复；返回 ``(task, seed) -> 登记条目``。"""
+    out: dict[tuple[str, int], dict[str, Any]] = {}
+    for item in obj.get("jitter_observed") or []:
+        if not isinstance(item, dict) or any(k not in item for k in JITTER_OBSERVED_KEYS):
+            raise GateError(f"jitter_observed 条目缺字段（须含 {JITTER_OBSERVED_KEYS}）：{item}")
+        key = (item["task"], int(item["seed"]))
+        if key in out:
+            raise GateError(f"jitter_observed 身份重复：{key}")
+        block = (obj.get("sets") or {}).get(item["set"])
+        hit = [e for e in (block or {}).get("episodes", []) if (e["task"], int(e["seed"])) == key]
+        if len(hit) != 1 or hit[0].get("tier") != item["tier"]:
+            raise GateError(f"jitter_observed 条目 {key} 在集合 {item['set']} 里找不到同档的局")
+        if not isinstance(item["shas_seen"], list) or not item["shas_seen"]:
+            raise GateError(f"jitter_observed 条目 {key} 的 shas_seen 须为非空列表")
+        out[key] = item
+    return out
+
+
 def ref_index(obj: dict[str, Any], set_name: str | None = None) -> dict[tuple[str, int], dict[str, Any]]:
-    """参照文件的逐局索引 ``(task, seed) -> 局条目``；不给 ``set_name`` 时合并全部集合（Mover 用）。"""
+    """参照文件的逐局索引 ``(task, seed) -> 局条目``；不给 ``set_name`` 时合并全部集合（Mover 用）。
+
+    ``jitter_observed`` 登记过的局按 ``jitter`` 期望判定（不参与判定，只报告），基线归类保留在
+    ``baseline_class``；逐局基线数据本身不改。"""
+    observed = _observed_jitter(obj)
     out: dict[tuple[str, int], dict[str, Any]] = {}
     names = [set_name] if set_name else sorted(obj["sets"])
     for name in names:
@@ -619,7 +646,28 @@ def ref_index(obj: dict[str, Any], set_name: str | None = None) -> dict[tuple[st
             if key in out:
                 raise GateError(f"参照里身份重复：{key}")
             out[key] = dict(entry, set=name)
+            if key in observed and observed[key]["set"] == name:
+                out[key].update(baseline_class=entry["class"], **{"class": "jitter"}, jitter_observed=True,
+                                shas_seen=list(observed[key]["shas_seen"]))
     return out
+
+
+def mark_jitter(obj: dict[str, Any], *, set_name: str, task: str, seed: int, shas_seen: list[str],
+                reason: str, decision: str) -> dict[str, Any]:
+    """在 ``jitter_observed`` 末尾追加一局并重算顶层 sha256；逐局基线数据（``sets``）一个字节不动。
+    该局须在参照里、且尚未登记；返回新参照对象（不写盘）。"""
+    if (task, int(seed)) in _observed_jitter(obj):
+        raise GateError(f"{task}|{seed} 已登记在 jitter_observed")
+    hit = [e for e in obj["sets"].get(set_name, {}).get("episodes", []) if (e["task"], int(e["seed"])) == (task, int(seed))]
+    if len(hit) != 1:
+        raise GateError(f"参照集合 {set_name} 里没有 {task}|{seed}")
+    new = json.loads(json.dumps(obj))
+    new["jitter_observed"] = [*(obj.get("jitter_observed") or []),
+                              {"set": set_name, "task": task, "tier": hit[0]["tier"], "seed": int(seed),
+                               "shas_seen": list(shas_seen), "reason": reason, "decision": decision}]
+    new["sha256"] = payload_sha256(new)
+    _observed_jitter(new)
+    return new
 
 
 def load_ref(path: str | Path, *, allow_partial: bool = False) -> dict[str, Any]:
@@ -871,6 +919,8 @@ def _jitter_note(entry: dict[str, Any], obs: dict[str, Any]) -> str:
         return "same_as_a"
     if entry.get("ok_b") and obs["sha"] in shas:
         return "same_as_b"
+    if obs["sha"] in (entry.get("shas_seen") or []):
+        return "same_as_observed"
     return "other_trajectory"
 
 
@@ -953,8 +1003,9 @@ def regress_check(ref: dict[str, Any], set_name: str, new_root: str | Path, *,
         raise GateError("--rerun-new 与 --rerun-old 须同时给")
     new_root = Path(new_root)
     block = ref["sets"][set_name]
-    episodes = block["episodes"]
     index = ref_index(ref, set_name)
+    # 逐局期望一律取 ref_index 的条目（含 jitter_observed 登记后的 jitter 期望），不直接读基线归类。
+    episodes = [index[(x["task"], int(x["seed"]))] for x in block["episodes"]]
     invalid: list[str] = []
     reasons: list[str] = []
     facts = _precondition(new_root, "首跑", invalid)
@@ -977,6 +1028,7 @@ def regress_check(ref: dict[str, Any], set_name: str, new_root: str | Path, *,
         obs = _observe(lines.get(key), key in dupset)
         row: dict[str, Any] = {"kind": "episode", "id": e["id"], "task": e["task"], "tier": e["tier"],
                                "seed": e["seed"], "ref_class": e["class"], "first": obs, "verdict": None,
+                               **({"baseline_class": e["baseline_class"]} if e.get("jitter_observed") else {}),
                                "category": None, "filler": False}
         if obs["unknown"] == "missing":
             row["category"] = "missing"
@@ -986,7 +1038,8 @@ def regress_check(ref: dict[str, Any], set_name: str, new_root: str | Path, *,
         else:
             verdict = expect_verdict(e, bool(obs["ok"]), obs["sha"])
             row["verdict"] = verdict
-            if obs["verdict_recorded"] is not None and obs["verdict_recorded"] != verdict:
+            late_jitter = bool(e.get("jitter_observed")) and verdict == "jitter_info"
+            if obs["verdict_recorded"] is not None and obs["verdict_recorded"] != verdict and not late_jitter:
                 row["category"] = "unknown"
                 row["reason"] = f"verdict_recorded={obs['verdict_recorded']}!={verdict}"
             elif verdict == "match":
@@ -1509,6 +1562,21 @@ def cmd_check(args) -> int:
     return {"PASS": 0, "NEED_RERUN": 3, "INVALID": 4}.get(res["verdict"], 1)
 
 
+def cmd_mark_jitter(args) -> int:
+    ref_path = Path(args.ref)
+    obj = load_ref(ref_path)
+    new = mark_jitter(obj, set_name=args.set, task=args.task, seed=args.seed, shas_seen=args.sha,
+                      reason=args.reason, decision=args.decision)
+    ref_path.write_text(json.dumps(new, sort_keys=True, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    load_ref(ref_path)
+    sets_same = canonical_json(new["sets"]) == canonical_json(obj["sets"])
+    ok = sets_same
+    print(f"NOISE_REF_MARK={'PASS' if ok else 'FAIL'} set={args.set} id={args.task}|{args.seed} "
+          f"observed={len(new['jitter_observed'])} sets_unchanged={int(sets_same)} "
+          f"sha={obj['sha256'][:12]}->{new['sha256'][:12]}", flush=True)
+    return 0 if ok else 1
+
+
 def cmd_selftest(args) -> int:
     ok, line, _cases = selftest(verbose=True)
     print(line, flush=True)
@@ -1549,6 +1617,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--local-ref-root", default=None,
                    help="本机噪声基线 gen 根（artifacts/noise-baseline/gen）：对已回传的翻转局细分类别")
     p.set_defaults(func=cmd_check)
+    p = grs.add_parser("mark-jitter",
+                       help="把一局登记为环境敏感局（写参照的 jitter_observed，须用户确认；逐局基线数据不动）")
+    p.add_argument("--ref", required=True)
+    p.add_argument("--set", choices=REF_SETS, required=True)
+    p.add_argument("--task", required=True)
+    p.add_argument("--seed", type=int, required=True)
+    p.add_argument("--sha", action="append", required=True, help="基线之后观察到的 h5 sha256（可重复）")
+    p.add_argument("--reason", required=True, help="登记原因（证据摘要）")
+    p.add_argument("--decision", required=True, help="用户裁决原话")
+    p.set_defaults(func=cmd_mark_jitter)
 
     p = sub.add_parser("selftest", help="自检：同代码须通过、反例须逐个被抓到（GATE_SELFTEST）")
     p.set_defaults(func=cmd_selftest)

@@ -4,7 +4,7 @@
 
 ## ① 一句话结论与判定速览
 
-清理与测试重构后的代码在 GL A40 上重新生成同一批局，与噪声基线逐局比 sha：**xhard0 全部一致（PASS）；V9 没有代码回归，但有 1 局被闸门定性为「环境变了」，按闸门判 FAIL，交用户裁决。**
+清理与测试重构后的代码在 GL A40 上重新生成同一批局，与噪声基线逐局比 sha：**xhard0 全部一致（PASS）；V9 没有代码回归，但有 1 局被闸门定性为「环境变了」，按闸门判 FAIL，交用户裁决。** 用户 2026-10-04 裁决「登记为环境敏感局。」后，该局写入参照 `jitter_observed`，重判 **V9 `GEN_REGRESS=PASS`**（见⑪末尾）。
 
 | 集合 | 局数 | 判定行 |
 |---|---|---|
@@ -81,6 +81,7 @@ GL 侧脚本（逐字归档于 `records/*.sh.txt`）：`launch.sh <JobID> <new|o
 - 能下的结论：本次清理与测试重构**没有造成可检出的生成回归**——177 局中 175 局与噪声基线逐字节相同（V9 127 + xhard0 48），1 局为已知抖动局，剩下 1 局在同一节点上新旧代码产物逐字节相同（证明差异与代码改动无关）。
 - 闸门字面结论：`GEN_REGRESS=FAIL`（V9，`env_changed=1`），需要用户裁决，可选：(a) 接受为环境差异、把该局登记为环境敏感局（写进参照的 `jitter_observed` 需用户确认）；(b) 换节点或另找时间重跑该局观察；(c) 维持 FAIL 并调查节点差异。
 - 限制：只在 A40 成立；PASS／FAIL 都只覆盖这 177 局，不证明全部 800 局逐字节等价。
+- **用户裁决（2026-10-04）**：「登记为环境敏感局。」即选 (a)。`noise_gate.py gen-regress mark-jitter` 写参照（`NOISE_REF_MARK=PASS set=v9 id=MoveCube|23400200 observed=1 sets_unchanged=1 sha=5119e2ac71ca->90c0ea527dd7`），用新参照对首跑 rg-v9r 重判：`GEN_REGRESS=PASS set=v9 n=129 match=127 jitter=2 flip=0 structural=0 unknown=0 missing=0 invalid=0`；xhard0 重判不变 `GEN_REGRESS=PASS set=xhard0 n=48 match=48 …`。记录 `records/rg-v9r.rejudge.*`、`records/rg-x0.rejudge.jsonl`。
 - GL 占位作业 63167696、63167697 已按清单 `scancel`；NFS 暂存 `maint-regress/` 与 `robomme_benchmark-maint` 检出保留，待裁决后清理（「PASS 后删新跑产物」的预批不适用于 FAIL）。
 
 ## ⑫ 归档文件清单（`records/`）

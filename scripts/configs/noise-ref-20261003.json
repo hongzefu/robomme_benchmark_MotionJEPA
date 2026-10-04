@@ -1,7 +1,19 @@
 {
  "anchor": "f8f76fba",
  "hf_bucket": "HongzeFu/robomme-hard-v9-noise-baseline",
- "jitter_observed": [],
+ "jitter_observed": [
+  {
+   "decision": "登记为环境敏感局。（用户 2026-10-04）",
+   "reason": "2026-10-04 维护后对拍：gl1525 上改后代码两次、旧代码 f8f76fba 一次均为 6b85dd3239e0（三次逐字节相同），与基线 aa414cf9f8dc 自第 376 步分叉（Hook the cube to the target with the peg），闸门定性 env_changed；两侧均成功",
+   "seed": 23400200,
+   "set": "v9",
+   "shas_seen": [
+    "6b85dd3239e0159f4f3c5ad8a46696d63eefff57c979882637c3d831ba2a32e8"
+   ],
+   "task": "MoveCube",
+   "tier": "xhard4"
+  }
+ ],
  "limit": null,
  "partial": false,
  "records": {
@@ -2621,5 +2633,5 @@
    ]
   }
  },
- "sha256": "5119e2ac71ca8eac651000ce6f693dceba1231f8deb0f032381f025da7a0541a"
+ "sha256": "90c0ea527dd7a1cc6a01be153298f612cf52140b34d068d0935985656ccd2e41"
 }
