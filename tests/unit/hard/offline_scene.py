@@ -21,6 +21,7 @@ from __future__ import annotations
 import contextlib
 import copy
 import importlib
+from types import SimpleNamespace
 from typing import Any
 
 import numpy as np
@@ -444,6 +445,55 @@ def fake_get_actor_obb(actor, to_world_frame=True, vis=False):
     return mesh.bounding_box_oriented
 
 
+TCP_UP_Z = 0.25  # TCP 初始高度（远离桌面与全部判定阈值）
+
+
+def _pose_at(xyz, q=(1.0, 0.0, 0.0, 0.0)) -> Pose:
+    return Pose.create_from_pq(torch.tensor([list(map(float, xyz))], dtype=torch.float32),
+                               torch.tensor([list(map(float, q))], dtype=torch.float32))
+
+
+#: 机械臂基座位姿（ManiSkill TableSceneBuilder.initialize 把 Panda 放在 x=-0.615 处；InsertPeg 读它定朝向）
+ROBOT_BASE_XYZ = (-0.615, 0.0, 0.0)
+
+
+class FakeRobot:
+    def __init__(self):
+        self.pose = _pose_at(ROBOT_BASE_XYZ)
+        self.qpos = torch.zeros((1, 9), dtype=torch.float32)
+        self.qvel = torch.zeros((1, 9), dtype=torch.float32)
+
+    def get_qpos(self):
+        return self.qpos
+
+    def get_qvel(self):
+        return self.qvel
+
+    def set_qpos(self, qpos):
+        self.qpos = torch.as_tensor(qpos, dtype=torch.float32).reshape(1, -1)
+
+    def set_qvel(self, qvel):
+        self.qvel = torch.as_tensor(qvel, dtype=torch.float32).reshape(1, -1)
+
+
+class FakeAgent:
+    def __init__(self):
+        self.robot = FakeRobot()
+        self.tcp = SimpleNamespace(pose=_pose_at((0.0, 0.0, TCP_UP_Z)))
+        self.held = None
+
+    @property
+    def tcp_pose(self):
+        return self.tcp.pose
+
+    def reset(self, qpos=None):
+        if qpos is not None:
+            self.robot.set_qpos(qpos)
+
+    def is_grasping(self, obj, *a, **k):
+        return torch.tensor([obj is self.held])
+
+
 class FakeRenderMaterial:
     """``sapien.render.RenderMaterial`` 替身：真实构造器要起渲染上下文（实测每次约 0.6 s），布局取值不读材质。"""
 
@@ -475,6 +525,8 @@ def _fake_base_init(self, *args, **kwargs):
     self.robot_uids = kwargs.get("robot_uids")
     self._fake_base_kwargs = dict(kwargs)
     self.scene = FakeScene()
+    # 真实 BaseEnv 在 _load_scene 之前先 _load_agent；原三档有的任务在建场时就读 agent（如 PickHighlight 的按钮失败判据）
+    self.agent = FakeAgent()
 
 
 def _modules_with(name: str):

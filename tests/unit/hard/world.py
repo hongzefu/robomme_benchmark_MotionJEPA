@@ -10,68 +10,21 @@
 from __future__ import annotations
 
 import contextlib
-from types import SimpleNamespace
 
 import numpy as np
 import sapien
 import torch
 
 from mani_skill.envs.sapien_env import BaseEnv
-from mani_skill.utils.structs.pose import Pose
 
 from robomme_hard.robomme_env.utils import reset_panda
 
 from . import offline_scene as O
+# 机械臂替身定义在离线场景里：真实 BaseEnv 先 _load_agent 再 _load_scene，建场时就要有 agent
+from .offline_scene import TCP_UP_Z, FakeAgent, _pose_at
 
 TABLE_Z = 0.02  # 方块落桌时的中心高度量级（只用作「放下」时的 z，判定阈值取自生产谓词本身）
-LIFT_Z = 0.12  # 抬起后的高度：高于 is_obj_pickup 的 0.05 与 is_bin_pickup 的 0.15 之下由调用方另给
-TCP_UP_Z = 0.25
-
-
-def _pose_at(xyz, q=(1.0, 0.0, 0.0, 0.0)) -> Pose:
-    return Pose.create_from_pq(torch.tensor([list(map(float, xyz))], dtype=torch.float32),
-                               torch.tensor([list(map(float, q))], dtype=torch.float32))
-
-
-#: 机械臂基座位姿（ManiSkill TableSceneBuilder.initialize 把 Panda 放在 x=-0.615 处；InsertPeg 读它定朝向）
-ROBOT_BASE_XYZ = (-0.615, 0.0, 0.0)
-
-
-class FakeRobot:
-    def __init__(self):
-        self.pose = _pose_at(ROBOT_BASE_XYZ)
-        self.qpos = torch.zeros((1, 9), dtype=torch.float32)
-        self.qvel = torch.zeros((1, 9), dtype=torch.float32)
-
-    def get_qpos(self):
-        return self.qpos
-
-    def get_qvel(self):
-        return self.qvel
-
-    def set_qpos(self, qpos):
-        self.qpos = torch.as_tensor(qpos, dtype=torch.float32).reshape(1, -1)
-
-    def set_qvel(self, qvel):
-        self.qvel = torch.as_tensor(qvel, dtype=torch.float32).reshape(1, -1)
-
-
-class FakeAgent:
-    def __init__(self):
-        self.robot = FakeRobot()
-        self.tcp = SimpleNamespace(pose=_pose_at((0.0, 0.0, TCP_UP_Z)))
-        self.held = None
-
-    @property
-    def tcp_pose(self):
-        return self.tcp.pose
-
-    def reset(self, qpos=None):
-        if qpos is not None:
-            self.robot.set_qpos(qpos)
-
-    def is_grasping(self, obj, *a, **k):
-        return torch.tensor([obj is self.held])
+LIFT_Z = 0.12  # 抬起后的高度：高于 is_obj_pickup 的 0.05、低于 is_bin_pickup 的 0.15（容器另给高度）
 
 
 def _fake_base_step(self, action=None):
@@ -101,7 +54,7 @@ class World:
 
     def __init__(self, env):
         self.env = env
-        self.agent = FakeAgent()
+        self.agent = env.agent if isinstance(getattr(env, "agent", None), FakeAgent) else FakeAgent()
         env.agent = self.agent
         env._elapsed_steps = torch.tensor([0], dtype=torch.int32)
         self.agent.reset(reset_panda.get_reset_panda_param("qpos"))
