@@ -1,0 +1,32 @@
+[
+ {
+  "id": "M01",
+  "target": "src/robomme/robomme_env/BinFill.py",
+  "method": "进程内替换：pathlib.Path.read_bytes／read_text 读到该文件时把中间 1 字节异或 0x01，不落盘（受保护目录）",
+  "expect_fail": [
+   "tests/static/test_upstream_bytes.py::test_real_repo_upstream_bytes_pass",
+   "tests/static/test_upstream_bytes.py::test_main_check_strict_by_default"
+  ],
+  "self_check": "2026-10-04 本机实测：恰好上列 2 个失败，其余 73 过"
+ },
+ {
+  "id": "M02",
+  "target": "scripts/evaluation.py",
+  "method": "进程内替换：读到该文件时末尾追加一行 \"# mutant extra line\"，不落盘（上游入口）",
+  "expect_fail": [
+   "tests/static/test_upstream_bytes.py::test_real_repo_entry_scripts_pass",
+   "tests/static/test_upstream_bytes.py::test_main_check_strict_by_default",
+   "tests/static/test_entry_scripts.py::test_evaluation_hard_diff_is_exactly_three_single_line_hunks"
+  ],
+  "self_check": "2026-10-04 本机实测：恰好上列 3 个失败，其余 72 过"
+ },
+ {
+  "id": "M03",
+  "target": "src/robomme_hard/env_record_wrapper/RecordWrapper.py",
+  "method": "进程内替换：读到该文件时 fail_safe_limit = 5000 改回 2000，不落盘",
+  "expect_fail": [
+   "tests/static/test_copies_vs_upstream.py::test_copy_differs_from_official_exactly_by_whitelist[env_record_wrapper/RecordWrapper.py]"
+  ],
+  "self_check": "2026-10-04 本机实测：恰好上列 1 个失败，其余 74 过"
+ }
+]
