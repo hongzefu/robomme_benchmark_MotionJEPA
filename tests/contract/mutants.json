@@ -13,7 +13,7 @@
   ],
   "observed_fail": [
    "tests/contract/test_builder_800.py::test_builder_800_every_episode",
-   "tests/contract/test_builder_800.py::test_builder_kwargs_are_not_aliased_to_builder_state",
+   "tests/contract/test_builder_800.py::test_known_defect_builder_kwargs_aliased_to_builder_state",
    "tests/contract/test_builder_800.py::test_builder_992_with_xhard0_switch",
    "tests/contract/test_gate_set.py::test_tampered_frozen_value_fails",
    "tests/contract/test_gate_set.py::test_resigned_but_swapped_rows_fail_check",
@@ -76,7 +76,7 @@
   ],
   "observed_fail": [
    "tests/contract/test_builder_800.py::test_builder_800_every_episode",
-   "tests/contract/test_builder_800.py::test_builder_kwargs_are_not_aliased_to_builder_state",
+   "tests/contract/test_builder_800.py::test_known_defect_builder_kwargs_aliased_to_builder_state",
    "tests/contract/test_builder_800.py::test_builder_992_with_xhard0_switch",
    "tests/contract/test_gate_set.py::test_tampered_frozen_value_fails",
    "tests/contract/test_gate_set.py::test_resigned_but_swapped_rows_fail_check",
@@ -115,7 +115,7 @@
   ],
   "observed_fail": [
    "tests/contract/test_builder_800.py::test_builder_800_every_episode",
-   "tests/contract/test_builder_800.py::test_builder_kwargs_are_not_aliased_to_builder_state",
+   "tests/contract/test_builder_800.py::test_known_defect_builder_kwargs_aliased_to_builder_state",
    "tests/contract/test_builder_800.py::test_builder_992_with_xhard0_switch",
    "tests/contract/test_constants.py::test_v9_cells_exact",
    "tests/contract/test_constants.py::test_v9_cell_count_per_task_and_total",

@@ -169,7 +169,7 @@
   "boundaries": "局部根里没有的任务 0 局；train/test/val 走官方元数据不带回注参数",
   "nodeids": [
    "tests/contract/test_builder_800.py::test_builder_800_every_episode",
-   "tests/contract/test_builder_800.py::test_builder_kwargs_are_not_aliased_to_builder_state",
+   "tests/contract/test_builder_800.py::test_known_defect_builder_kwargs_aliased_to_builder_state",
    "tests/contract/test_builder_800.py::test_builder_992_with_xhard0_switch",
    "tests/contract/test_builder_800.py::test_xhard0_switch_rejects_broken_official_subset",
    "tests/contract/test_builder_800.py::test_specs_root_override_param_and_env",

@@ -137,9 +137,11 @@ def _poison(obj) -> int:
     return changed
 
 
-def test_builder_kwargs_are_not_aliased_to_builder_state(recorder):
-    """第一次构建交给 gym.make 的 sampling_config／native_episode_spec 被调用方原地改坏后，
-    第二次构建拿到的仍与独立读出的规格值相等——builder 每次交出去的是副本，不与自身状态共用对象。"""
+def test_known_defect_builder_kwargs_aliased_to_builder_state(recorder):
+    """锁定现状（已知缺陷，登记 docs/1002-pending-decisions.md D5，2026-10-04 主会话裁决本轮不修）：
+    make_env_for_episode 把 builder 内部 lru_cache 里的 sampling_config 与 row["spec"] 原对象直接交给 gym.make，
+    调用方原地改动第一次拿到的 kwargs 会污染第二次构建（规格侧环境内 SpecRecorder 会 deepcopy，sampling_config 无此保护）。
+    正确行为应当是：每次交出副本，第二次拿到的仍等于独立读出的规格值。修复时把本用例的断言反转为 `again == expected`。"""
     builder = builder_cls()(env_id="StopCube", dataset="test-hard")
     tier, header, row = expected_rows()["StopCube"][0]
     expected = newvalue_kwargs(tier, header, row, "StopCube")
@@ -151,20 +153,16 @@ def test_builder_kwargs_are_not_aliased_to_builder_state(recorder):
             assert _poison(first[key]) > 1
         assert first["sampling_config"] != expected["sampling_config"]
         _, again = capture(builder, 0, recorder)
-        aliased = any("__poisoned__" in again[key] for key in keys)
+        # 必须在复原之前判断：共用时 again 与 first 是同一对象，finally 的原地复原会把它一起洗掉
+        aliased = {key: "__poisoned__" in again[key] for key in keys}
     finally:
         # 规格读取有进程级缓存（hard_builder 的 lru_cache）：共用对象时改坏的是缓存本身，必须原地复原，
         # 否则同进程后面的用例会读到 -999（顶层对象身份不变，内容换回独立读出的副本）
         for key in keys:
             first[key].clear()
             first[key].update(json.loads(json.dumps(expected[key])))
-    if aliased:
-        # 现状（BASE 394e227f 实测）：make_env_for_episode 把 builder 内部的原对象直接交给 gym.make，调用方原地改动会
-        # 污染下一局；环境侧 SpecRecorder 对规格做了 deepcopy，sampling_config 无此保护。修法属生产代码
-        # （hard_builder 交出副本），不在测试块可写范围，留主会话裁决；生产侧改好后本分支不再进入、下面的断言生效。
-        pytest.skip("未验证：hard_builder 交给 gym.make 的 sampling_config／native_episode_spec 与 builder 状态共用对象")
-    assert again == expected
-    assert "__poisoned__" not in again["sampling_config"] and "__poisoned__" not in again["native_episode_spec"]
+    # 现状：两项都共用（改坏的标记出现在第二次构建的 kwargs 里）；任何一项被修成交出副本，本断言即失败，提醒同步反转。
+    assert aliased == {"sampling_config": True, "native_episode_spec": True}
 
 
 def test_builder_992_with_xhard0_switch(recorder, monkeypatch):

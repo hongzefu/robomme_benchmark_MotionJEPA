@@ -28,6 +28,7 @@
 | D2 | V7.5 预算超额事后追认 | 09-30 V7.5 | 追认 |
 | D3 | V8 评估各轮审查遗留的小问题 | 10-02 V8 评估 | 视需要小修 |
 | D4 | 挑战接口 `challenge_interface/scripts/phase1_eval.py` 四处缺陷（成功判定按子串、reset 等待不重询、异常不 close、IK 失败空观测崩溃） | 10-04 测试重构 T8a | 先不修（用户 10-04），测试锁定现状 |
+| D5 | `hard_builder.make_env_for_episode` 交给 gym.make 的 sampling_config／native_episode_spec 与 builder 缓存共用对象 | 10-04 测试重构 P | 本轮不修（对拍进行中），测试锁定现状 |
 | E1 | 「shared 步骤结束会把卡重置为独占」未写入规则 | 09-30 V7.5 | 写入正本与 `docs/greatlakes.md` |
 | F1 | 本机 5 个站点服务的去留 | 09-28 起 | 只留 8081、8082 |
 | F2 | 8081／8082 站紫色「语义调整」小标签留不留 | 10-02 V8 站点 | 由用户定 |
@@ -364,6 +365,14 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 现状：测试以 `known_defect_D<n>` 命名的用例锁定上述现状行为，契约清单对应条目（C14-10、C14-12、C14-13）记 `blocked` 并注明「用户 2026-10-04 裁决不修」。以后决定修时，改生产代码并把这些用例的断言反转即可。
 
 **裁决**：2026-10-04「都不修」「先不休把这个作为之后的代定项。」
+
+### D5 hard_builder 交出的 kwargs 与 builder 缓存共用对象（2026-10-04 测试重构收尾块 P 发现，本轮不修）
+
+- 现象：`src/robomme_hard/env_record_wrapper/hard_builder.py::make_env_for_episode` 把 `lru_cache`（`_root_specs`）里的 `header["sampling_config"][task]` 与 `row["spec"]` 原对象直接作为 `sampling_config`、`native_episode_spec` 交给 `gym.make`。调用方（或环境）原地改动这两个对象，会污染同进程后续构建的同一局。规格侧环境内 `SpecRecorder` 会 deepcopy，有保护；`sampling_config` 没有。
+- 影响面：生成与评估都是「每进程按身份构建」，现有产物未见受影响的证据；风险在于未来若有代码原地改 `sampling_config`，会造成同一 worker 内跨局串扰、且难以察觉。
+- 修法：`make_env_for_episode` 交出 `copy.deepcopy(...)`。改 `src/robomme_hard` 属生成路径，修后需重跑第三步 GL 对拍（43 格 × 3 局 + 16 任务 × 1 档 × 3 局 = 177）确认生成字节不变。
+- 现状：`tests/contract/test_builder_800.py::test_known_defect_builder_kwargs_aliased_to_builder_state` 锁定共用现状（改坏缓存后原地复原，不影响其他用例）；修复时反转断言。
+- 裁决：2026-10-04 主会话按用户「不要再问我了尽可能一口气做到底」自行裁决本轮不修——GL 对拍正以当前生成代码运行，改动会使第三步结论不再对应最终代码。待用户早上决定是否修与是否随之重跑对拍。
 
 ## E 类：规则
 
