@@ -20,6 +20,26 @@ def test_golden_covers_all_tasks_tiers_and_seeds():
                                      for s in NG.SEEDS}
 
 
+def test_golden_errors_raised_in_production_code():
+    """金标准里的异常条目必须注明抛出点模块且在 ``robomme_hard`` 内——替身（``tests.*``）自身的错误不能被钉成契约。"""
+    errors = {k: v for k, v in GOLD["digests"].items() if v.startswith("error:")}
+    for k, v in errors.items():
+        name, sep, module = v[len("error:"):].partition("@")
+        assert sep and name, (k, v)
+        assert module.startswith("robomme_hard."), (k, v)
+    # 现状只有 VPO medium／hard 种子 101 两条（V4 H2 / K2：原三档布局失败表现为 TypeError）
+    assert set(errors) == {"VideoPlaceOrder/medium/101", "VideoPlaceOrder/hard/101"}
+
+
+def test_raise_site_module_distinguishes_test_double():
+    """负例：测试模块里抛出的异常，抛出点记为测试模块名，不会被误记成 ``robomme_hard``。"""
+    try:
+        raise TypeError("替身错误")
+    except TypeError as exc:
+        assert NG.raise_site_module(exc) == __name__
+        assert not NG.raise_site_module(exc).startswith("robomme_hard.")
+
+
 def test_digest_depends_on_seed():
     """负例：摘要对种子敏感——同任务同档两个种子的摘要不相同（异常局除外），否则金标准抓不住布局变化。"""
     d = GOLD["digests"]

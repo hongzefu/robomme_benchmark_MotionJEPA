@@ -48,27 +48,35 @@ def test_place_onto_kth_visit_succeeds(world, tier, k):
     assert _place(w, answer) == {"success": True, "fail": False}
 
 
+#: 选格（T12 实测，xhard1／xhard2 各前 8 个正式局）：首／末次冒充在第 0 局即可构造（8/8 局都可）；
+#: 「答案台交换前位置上现在的台」只在部分局存在（xhard1 第 1、2、4、7 局，xhard2 第 0～6 局），
+#: 原先固定取 xhard1 第 0 局时该分支不成立、断言空转。下面按档钉确定能触发的局，并把触发条件写成前置断言：
+#: 包内规格若变动使条件不再成立，用例响亮失败而不是静默空转。
+ORDINAL_K = {"xhard1": 0, "xhard2": 0}
+OLD_POS_K = {"xhard1": 1, "xhard2": 0}
+
+
 @pytest.mark.parametrize("tier", TIERS)
 def test_other_ordinal_fails(world, tier):
-    w = world(tier)
+    w = world(tier, ORDINAL_K[tier])
     log = DD.run_demo(w)
     visits = _visits(w, log)
     answer = visits[w.env.which_in_subset - 1]
     decoy = next((t for t in (visits[0], visits[-1]) if t is not answer), None)
-    if decoy is None:
-        pytest.skip("未验证：本局首末两次都落在答案台上，序数冒充无从构造")
+    assert decoy is not None, "选格失效：本局首末两次都落在答案台上，序数冒充无从构造，须重选 ORDINAL_K"
     assert _place(w, decoy) == {"success": False, "fail": True}
 
 
-@pytest.mark.parametrize("tier", TIERS[:1])
+@pytest.mark.parametrize("tier", TIERS)
 def test_answer_old_position_and_wrong_cube_fail(world, tier):
-    w = world(tier)
+    w = world(tier, OLD_POS_K[tier])
     pre = {t.name: w.xyz(t)[:2].copy() for t in w.env.targets}
     log = DD.run_demo(w)
     answer = _visits(w, log)[w.env.which_in_subset - 1]
     impostor = bin_at(w, pre[answer.name], w.env.targets)
-    if impostor is not None and impostor is not answer:
-        assert _place(w, impostor) == {"success": False, "fail": True}
+    assert impostor is not None and impostor is not answer, \
+        "选格失效：答案台交换前的位置上现在没有别的台，须重选 OLD_POS_K"
+    assert _place(w, impostor) == {"success": False, "fail": True}
     w = World.build(TASK, tier)
     DD.run_demo(w)
     w.grasp(w.env.non_target_cubes[0])
