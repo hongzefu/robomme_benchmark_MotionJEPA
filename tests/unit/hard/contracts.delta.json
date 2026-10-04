@@ -754,7 +754,8 @@
    "tests/unit/hard/tasks/test_videoplacebutton.py::test_place_onto_answer_target_succeeds[1-xhard2]",
    "tests/unit/hard/tasks/test_videoplacebutton.py::test_before_after_swapped_fails[xhard1]",
    "tests/unit/hard/tasks/test_videoplacebutton.py::test_before_after_swapped_fails[xhard2]",
-   "tests/unit/hard/tasks/test_videoplacebutton.py::test_answer_old_position_and_wrong_cube_fail[xhard1]"
+   "tests/unit/hard/tasks/test_videoplacebutton.py::test_answer_old_position_and_wrong_cube_fail[xhard1]",
+   "tests/unit/hard/tasks/test_videoplacebutton.py::test_answer_old_position_and_wrong_cube_fail[xhard2]"
   ],
   "resource": "cpu",
   "mutants": [
@@ -778,7 +779,8 @@
    "tests/unit/hard/tasks/test_videoplaceorder.py::test_place_onto_kth_visit_succeeds[1-xhard2]",
    "tests/unit/hard/tasks/test_videoplaceorder.py::test_other_ordinal_fails[xhard1]",
    "tests/unit/hard/tasks/test_videoplaceorder.py::test_other_ordinal_fails[xhard2]",
-   "tests/unit/hard/tasks/test_videoplaceorder.py::test_answer_old_position_and_wrong_cube_fail[xhard1]"
+   "tests/unit/hard/tasks/test_videoplaceorder.py::test_answer_old_position_and_wrong_cube_fail[xhard1]",
+   "tests/unit/hard/tasks/test_videoplaceorder.py::test_answer_old_position_and_wrong_cube_fail[xhard2]"
   ],
   "resource": "cpu",
   "mutants": [],
@@ -792,7 +794,7 @@
   "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
   "positive": "交换后按身份把同一方块拾放 N 次再按按钮成功",
   "negative": "少一次就按按钮、抓目标交换前位置上的方块失败",
-  "boundaries": "演示中那次拾放不计入执行段次数",
+  "boundaries": "演示中那次拾放不计入执行段次数；原位置陷阱按档钉选能触发的局（OLD_POS_K，离线探针各档前 8 局选定），触发条件为前置断言，不 skip",
   "nodeids": [
    "tests/unit/hard/tasks/test_videorepick.py::test_repick_same_identity_n_times_succeeds[xhard1]",
    "tests/unit/hard/tasks/test_videorepick.py::test_repick_same_identity_n_times_succeeds[xhard2]",
@@ -841,11 +843,12 @@
   "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
   "positive": "多次交换后按身份抓藏着目标色方块的容器成功",
   "negative": "抓目标交换前位置上的容器、抬干扰容器失败",
-  "boundaries": "交换结束前抓对容器不推进",
+  "boundaries": "交换结束前抓对容器不推进；原位置陷阱按档钉选能触发的局（OLD_POS_K，离线探针各档前 8 局选定），触发条件为前置断言，不 skip",
   "nodeids": [
    "tests/unit/hard/tasks/test_videounmaskswap.py::test_follow_identity_through_swaps_succeeds[xhard1]",
    "tests/unit/hard/tasks/test_videounmaskswap.py::test_follow_identity_through_swaps_succeeds[xhard2]",
    "tests/unit/hard/tasks/test_videounmaskswap.py::test_original_position_is_a_trap[xhard1]",
+   "tests/unit/hard/tasks/test_videounmaskswap.py::test_original_position_is_a_trap[xhard2]",
    "tests/unit/hard/tasks/test_videounmaskswap.py::test_distractor_container_after_swaps_fails[xhard1]",
    "tests/unit/hard/tasks/test_videounmaskswap.py::test_picking_before_swaps_finish_does_not_advance[xhard1]"
   ],

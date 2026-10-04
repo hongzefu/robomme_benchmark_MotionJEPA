@@ -20,7 +20,7 @@ TIERS = O.tiers_of(TASK)
 @pytest.fixture
 def world():
     with cpu_world():
-        yield lambda tier: World.build(TASK, tier)
+        yield lambda tier, k=0: World.build(TASK, tier, k)
 
 
 @pytest.mark.parametrize("tier", TIERS)
@@ -33,15 +33,22 @@ def test_follow_identity_through_swaps_succeeds(world, tier):
     assert S.pick_sequence(w, bins) == {"success": True, "fail": False}
 
 
-@pytest.mark.parametrize("tier", TIERS[:1])
+#: 选格（T13 离线探针，xhard1／xhard2 各前 8 个正式局）：「目标方块交换前位置上现在是另一个容器」
+#: 在 xhard1 第 0、1、2、4、7 局成立，xhard2 第 1、3、4、5、7 局成立；原先只参数化 xhard1 第 0 局，
+#: xhard2 从未覆盖（其第 0 局不成立）。按档钉能触发的局，触发条件写成前置断言：包内规格若变动使条件
+#: 不再成立，用例响亮失败而不是静默 skip。
+OLD_POS_K = {"xhard1": 0, "xhard2": 1}
+
+
+@pytest.mark.parametrize("tier", TIERS)
 def test_original_position_is_a_trap(world, tier):
-    w = world(tier)
+    w = world(tier, OLD_POS_K[tier])
     origin = S.run_through_swaps(w)
     target = D.colour_cubes(w.env)[0]
     right = S.bins_in_order(w)[0]
     impostor = S.bin_at(w, origin[target.name], w.env.spawned_bins)
-    if impostor is None or impostor is right:
-        pytest.skip("未验证：本局目标容器交换后回到原位或原位空着，原位置陷阱不成立")
+    assert impostor is not None and impostor is not right, \
+        "选格失效：目标方块交换前的位置上现在没有别的容器，须重选 OLD_POS_K"
     D.lift(w, impostor)
     assert w.tick() == {"success": False, "fail": True}
 
