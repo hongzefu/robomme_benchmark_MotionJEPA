@@ -9,8 +9,8 @@
         --official-out artifacts/newtask-v8/eval-official-xhard0-192.jsonl [--specs-root <v8 规格根>]
 
 - 经 ``robomme_hard`` 的 ``BenchmarkEnvBuilder(task, "test-hard")`` 逐任务列出全部局：总数由表 2 推出
-  1262 = 16 任务 × 1 档 × 12 局（xhard0）+ 43 格逐格局数之和 1070（``hard_specs.V8_CELLS``）；逐格局数也按
-  ``V8_CELLS`` 核对。builder 读包内规格（阶段 3b 换包后即 v8）；``--specs-root`` 经 ``ROBOMME_HARD_SPECS_ROOT`` 覆盖。
+  1262 = 16 任务 × 1 档 × 12 局（xhard0）+ 43 格逐格局数之和 1070（V8 格表，已于维护计划阶段 1b 删除）；逐格局数也按
+  该表核对。builder 读包内规格（阶段 3b 换包后即 v8）；``--specs-root`` 经 ``ROBOMME_HARD_SPECS_ROOT`` 覆盖。
 - v8 不评估新局（用户 2026-10-01，第一部分引言 ⑥）：``round``／``shard`` 字段保留、一律置空（null）。
 - 官方路线对照：xhard0 的 192 局（官方 test 的原 episode 号）仍按 ``TASK_SECONDS`` 贪心均衡切 10 片（3′ xhard0 评估用）。
 - 行格式：``{task, episode, tier, seed, candidate, source_episode, round, shard}``；官方行 ``{task, source_episode, seed, shard}``。

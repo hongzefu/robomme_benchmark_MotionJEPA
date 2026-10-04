@@ -378,8 +378,8 @@ def same_way_tasks_for(header: dict[str, Any]) -> frozenset[str]:
 
 
 def load_specs_any(path: Path, *, check_fingerprint: bool = False):
-    """单文件读取：/4 文件的配额上限格表按 header 自带的逐任务配额推出（``hard_specs.header_cell_table``），
-    V8 文件落 V8_CELLS、V9 文件（MoveCube／InsertPeg 50）落 V9_CELLS，不受 ``EXPECTED_CELLS`` 是否已切换影响。"""
+    """单文件读取：/4 文件的配额上限格表按 header 自带的逐任务配额推出（``hard_specs.header_cell_table``，
+    V9 文件落 V9_CELLS）。"""
     with Path(path).open(encoding="utf-8") as stream:
         first = stream.readline()
     try:
@@ -525,11 +525,6 @@ V8_DELIVERY_SCHEMA = "v8-delivery/1"
 V8_SHARD_SCHEMA = "v8-shard/1"
 LEDGER_NAME = "results.jsonl"
 SHARD_META = "shard.json"
-#: 2b 冒烟 7 格（v8 方案 §2.4.2 顺序第 2 条）：每格 1 局 → ``V8_DELIVERY_SET=PASS tasks=6 cells=7 total=7``
-V8_SMOKE_CELLS: dict[tuple[str, str], int] = {
-    ("StopCube", "xhard1"): 1, ("StopCube", "xhard5"): 1, ("SwingXtimes", "xhard5"): 1, ("VideoUnmask", "xhard1"): 1,
-    ("RouteStick", "xhard2"): 1, ("PatternLock", "xhard3"): 1, ("PickXtimes", "xhard3"): 1,
-}
 #: v9 生成分片（v9 方案 §2.12、§2.4.2 第 4 条）：只有 MoveCube 一片走 freeze → split → continue；InsertPeg 不走 split，
 #: 由 ``v9_subset_specs.py extend`` 直接产出片根；其余 14 任务是 V8 子集、不生成。``--cells v9shard1`` 取 V9_CELLS 的局数。
 V9_SHARD_TASKS: dict[str, tuple[str, ...]] = {"shard1": ("MoveCube",)}
@@ -537,8 +532,9 @@ V9_SHARD_TASKS: dict[str, tuple[str, ...]] = {"shard1": ("MoveCube",)}
 V9_SMOKE_CELLS: dict[tuple[str, str], int] = {("MoveCube", "xhard4"): 1, ("InsertPeg", "xhard4"): 1}
 assert all(task in hard_specs.ALL_TASKS for tasks in V9_SHARD_TASKS.values() for task in tasks)
 assert all(0 < n <= hard_specs.V9_CELLS[k] for k, n in V9_SMOKE_CELLS.items())
-#: ``--cells`` 的 v9 具名格表：``v9shard1``（V9_SHARD_TASKS 的片，局数取 V9_CELLS）、``v9smoke``
-V9_CELL_NAMES = ("v9smoke", *(f"v9{name}" for name in V9_SHARD_TASKS))
+#: ``--cells`` 的 v9 具名格表：``v9``（V9_CELLS 完整 43 格 800，freeze_specs／generate_h5 的缺省）、
+#: ``v9shard1``（V9_SHARD_TASKS 的片，局数取 V9_CELLS）、``v9smoke``
+V9_CELL_NAMES = ("v9", "v9smoke", *(f"v9{name}" for name in V9_SHARD_TASKS))
 #: 逐格与全局计数键（全部显式写出，零值也写）
 V8_CELL_COUNT_KEYS = ("expected", "candidates", "tried", "delivered", "failed", "exec_over_cap", "backfills",
                       "infra_retries", "spares_left", "pending", "bad_h5")
@@ -552,20 +548,20 @@ def order_cells(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]
 
 
 def cell_table(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
-    """格表 → 作配额上限的完整交付格表（``hard_specs.resolve_cell_table``：EXPECTED_CELLS → V8 → V9 第一张覆盖的表）。"""
+    """格表 → 作配额上限的完整交付格表（``hard_specs.resolve_cell_table``：EXPECTED_CELLS → CELL_TABLES 第一张覆盖的表）。"""
     return hard_specs.resolve_cell_table(cells)
 
 
 def check_cells(cells: dict[tuple[str, str], int],
                 table: dict[tuple[str, str], int] | None = None) -> dict[tuple[str, str], int]:
-    """格表核对：键必须在交付格表里、局数 1..表值。``table`` 缺省按 ``cell_table(cells)`` 取（V8 子表落 V8_CELLS，
-    MoveCube／InsertPeg 50 这类 V9 子表落 V9_CELLS），显式给出时只按它核。"""
+    """格表核对：键必须在交付格表里、局数 1..表值。``table`` 缺省按 ``cell_table(cells)`` 取（V9 子表落 V9_CELLS），
+    显式给出时只按它核。"""
     if not isinstance(cells, dict) or not cells:
         raise RolloutError("格表必须是非空 {(task, tier): 局数}")
     table = cell_table(cells) if table is None else table
     stray = sorted(k for k in cells if k not in table)
     if stray:
-        raise RolloutError(f"格表含 V8_CELLS／V9_CELLS 之外的格（不交付的格不抽、不生成）：{stray}")
+        raise RolloutError(f"格表含 V9_CELLS 之外的格（不交付的格不抽、不生成）：{stray}")
     bad = {k: n for k, n in cells.items() if not isinstance(n, int) or isinstance(n, bool) or not
            0 < n <= table[k]}
     if bad:
@@ -574,13 +570,15 @@ def check_cells(cells: dict[tuple[str, str], int],
 
 
 def resolve_cells(spec: str | Path) -> dict[tuple[str, str], int]:
-    """``--cells``：``full``（V8 表 2 的 43 格）／``smoke``（V8 2b 冒烟 7 格）／``v9shard1``（V9 MoveCube 一片，局数取 V9_CELLS）／``v9smoke``（V9 冒烟 2 格）／
-    格表 JSON 路径（``{"Task@tier": 局数}`` 或 ``{"cells": [{"task", "tier", "count"}]}``）。"""
+    """``--cells``：``v9``（V9_CELLS 完整 43 格 800）／``v9shard1``（V9 MoveCube 一片，局数取 V9_CELLS）／``v9smoke``（V9 冒烟 2 格）／
+    格表 JSON 路径（``{"Task@tier": 局数}`` 或 ``{"cells": [{"task", "tier", "count"}]}``）。
+    V8 专用的 ``full``（V8 1070 局表）与 ``smoke``（V8 2b 冒烟 7 格）已于维护计划阶段 1b（W4）删除。"""
     text = str(spec)
-    if text == "full":
-        return check_cells(dict(hard_specs.V8_CELLS))
-    if text == "smoke":
-        return check_cells(dict(V8_SMOKE_CELLS))
+    if text in ("full", "smoke"):
+        raise RolloutError(f"--cells {text} 只服务 V8（1070 局表／2b 冒烟），已删除；请显式给 "
+                           f"{'／'.join(V9_CELL_NAMES)} 或格表 JSON 路径")
+    if text == "v9":
+        return check_cells(dict(hard_specs.V9_CELLS), hard_specs.V9_CELLS)
     if text == "v9smoke":
         return check_cells(dict(V9_SMOKE_CELLS), hard_specs.V9_CELLS)
     if text.startswith("v9") and text[2:] in V9_SHARD_TASKS:
@@ -588,7 +586,7 @@ def resolve_cells(spec: str | Path) -> dict[tuple[str, str], int]:
                            hard_specs.V9_CELLS)
     path = Path(text)
     if not path.is_file():
-        raise RolloutError(f"--cells 须为 full／smoke／{'／'.join(V9_CELL_NAMES)} 或格表 JSON 路径：{text!r}")
+        raise RolloutError(f"--cells 须为 {'／'.join(V9_CELL_NAMES)} 或格表 JSON 路径：{text!r}")
     data = json.loads(path.read_text(encoding="utf-8"))
     cells: dict[tuple[str, str], int] = {}
     items = data["cells"] if isinstance(data, dict) and "cells" in data else data

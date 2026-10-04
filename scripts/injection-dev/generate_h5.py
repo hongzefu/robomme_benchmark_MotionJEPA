@@ -74,8 +74,8 @@ def main() -> int:
                         help="continue：/4 规格根；split：/4 冻结根；aggregate：/4 规格根；"
                              "replay：/4 规格根或单文件，缺省读包内")
     parser.add_argument("--cells", default=None,
-                        help="格表：full／smoke／v9shard1／v9smoke／格表 JSON 路径（continue／split／aggregate；"
-                             "continue 缺省 full，split 必填）")
+                        help="格表：v9／v9shard1／v9smoke／格表 JSON 路径（continue／split／aggregate；"
+                             "continue／aggregate 缺省 v9，split 必填；V8 专用的 full／smoke 已删除）")
     parser.add_argument("--shards", default=None, help="aggregate：逗号分隔的分片输出目录（各含 specs/、shard.json、results.jsonl）")
     parser.add_argument("--rebase", action="append", default=[], metavar="OLD=NEW",
                         help="aggregate：整树搬迁后把规格里记录的 h5／mp4 路径前缀 OLD 换成 NEW（可重复；"
@@ -104,9 +104,9 @@ def main() -> int:
     if args.mode == "aggregate":
         if not args.specs:
             raise SystemExit("aggregate 模式必须给 --specs（v8 规格根）")
-        report = _rollout.aggregate_v8(Path(args.specs), _rollout.resolve_cells(args.cells or "full"),
+        report = _rollout.aggregate_v8(Path(args.specs), _rollout.resolve_cells(args.cells or "v9"),
                                        _shard_dirs(args.shards), Path(args.out) if args.out else output / "delivery.json",
-                                       cells_label=str(args.cells or "full"), code_baseline=_git_head(src_root),
+                                       cells_label=str(args.cells or "v9"), code_baseline=_git_head(src_root),
                                        rebase=_rollout.parse_rebase(args.rebase))
         print(report["line"], flush=True)
         return 0 if report["line"].startswith("V8_DELIVERY_SET=PASS") else 1
@@ -153,7 +153,7 @@ def main() -> int:
         raise SystemExit(f"continue 只接受 {hard_specs.SCHEMA_V8} 规格根（<root>/<tier>/specs.jsonl）配 --cells："
                          f"{args.specs}（schema={root_schema}）")
     # gen1：按格表逐档逐格跑，执行步超限过滤与同格递补，收尾写 delivery.json（V8_DELIVERY_SET）
-    cells_label = str(args.cells or "full")
+    cells_label = str(args.cells or "v9")
     summary = _rollout.run_continue_v8(specs_dir, _rollout.resolve_cells(cells_label), output, src_root=src_root,
                                        workers=args.workers, gpu=args.gpu, pkg=args.pkg,
                                        code_baseline=facts["src_commit"], resume=args.resume,

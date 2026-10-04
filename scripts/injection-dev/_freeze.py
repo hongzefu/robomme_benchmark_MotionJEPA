@@ -44,14 +44,17 @@ V8_DEFAULT_CANDIDATES: dict[tuple[str, str], int] = {
     **{(task, tier): n for task in ("RouteStick", "PatternLock")
        for tier, n in zip(("xhard1", "xhard2", "xhard3"), (36, 36, 34))},
 }
-assert set(V8_DEFAULT_CANDIDATES) == set(hard_specs.V8_CELLS), "v8 候选表须与 V8_CELLS 的 43 格一一对应"
+# V8 1070 局格表已于维护计划阶段 1b（W4）删除；候选表改与 V9_CELLS 的 43 格一一对应
+# （两表格集合相同），并核档位都在 V8_TIERS 内、候选数为正整数
+assert set(V8_DEFAULT_CANDIDATES) == set(hard_specs.V9_CELLS), "v8 候选表须与 V9_CELLS 的 43 格一一对应"
+assert all(tier in hard_specs.V8_TIERS for _, tier in V8_DEFAULT_CANDIDATES), "v8 候选表含未知档位"
+assert all(isinstance(n, int) and n > 0 for n in V8_DEFAULT_CANDIDATES.values()), "v8 候选数须为正整数"
 assert sum(V8_DEFAULT_CANDIDATES.values()) == 1425, "v8 候选合计须为 1425（§2.2 第 6 条）"
-assert all(V8_DEFAULT_CANDIDATES[k] > hard_specs.V8_CELLS[k] for k in V8_DEFAULT_CANDIDATES), "每格候选数须大于局数"
 
 #: v9 候选表（v9 方案第二部分 §2.2 第 3 条）：只列 V9 重新抽签的格；MoveCube xhard4 交付 50、候选 80
 #: （按失败率 35% 留量：80 × 0.65 = 52 ≥ 50）。InsertPeg 走 ``v9_subset_specs.py extend``（V8 未试 11 个 + 追加 35 个），
-#: 不经本表；其余 14 任务从 V8 交付行取子集，不抽签。``v8_default_candidates`` 不读本表：格局数 ≠ V8 表值时
-#: 候选数默认等于局数，V9 抽签必须显式 ``--candidates-per-env MoveCube=80``（``--dry-run`` 的 FREEZE_CELL 行可核对）。
+#: 不经本表；其余 14 任务从 V8 交付行取子集，不抽签。``v8_default_candidates`` 不读本表：候选数默认等于局数，
+#: V9 抽签必须显式 ``--candidates-per-env MoveCube=80``（``--dry-run`` 的 FREEZE_CELL 行可核对）。
 V9_CANDIDATES: dict[tuple[str, str], int] = {("MoveCube", "xhard4"): 80}
 assert all(V9_CANDIDATES[k] > hard_specs.V9_CELLS[k] for k in V9_CANDIDATES), "v9 每格候选数须大于局数"
 #: v9 MoveCube xhard4 逐运动方式配额（v9 方案第二部分 §2.2 第 4 条，审计 8）：way 0/1/2 = 17/17/16，合计 = 格局数 50
@@ -92,9 +95,11 @@ def v8_reset_cap(task: str, candidates: int) -> int:
 
 
 def v8_default_candidates(cells: dict[tuple[str, str], int]) -> dict[tuple[str, str], int]:
-    """格表 → 默认候选数：局数等于表 2 的格取候选表（§2.2 第 6 条）；局数小于表 2 的格（冒烟每格 1 局等）
-    候选数默认等于局数（不备用；冒烟预算「7 格 × 1 局」）。"""
-    return {key: (V8_DEFAULT_CANDIDATES[key] if n == hard_specs.V8_CELLS[key] else int(n)) for key, n in cells.items()}
+    """格表 → 默认候选数：候选数默认等于局数（不备用），需要备用候选时显式给 ``--candidates-per-env``。
+
+    原口径「局数恰等于 V8 表 2 值的格取 ``V8_DEFAULT_CANDIDATES``」随 V8 1070 局表于维护计划
+    阶段 1b（W4）删除；V9 抽签本就显式给候选数（``V9_CANDIDATES``），不受影响。"""
+    return {key: int(n) for key, n in cells.items()}
 
 
 def _movecube_way(spec: dict[str, Any]) -> int | None:
@@ -239,7 +244,7 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select,
     MoveCube xhard4 配额 50 才启用 17／17／16，V7／V8 不受影响）。启用时打印 ``FREEZE_WAYS`` 一行（逐方式配额与
     逐方式候选数），并把两者写进 ``draw_stats.freeze_per_env[task]``（不进签）；某方式候选不足即抛错。
     ``expected_cells``：封签后校验用的配额上限格表，缺省按本档逐任务配额 ``resolve_cell_table`` 取
-    （V8 配额落 V8_CELLS，V9 的 MoveCube 50 落 V9_CELLS）。"""
+    （V9 配额落 V9_CELLS）。"""
     if schema != hard_specs.SCHEMA_V8:
         raise SpecsError(f"未知 schema {schema!r}，只支持 {hard_specs.SCHEMA_V8}")
     difficulty, seed_rule = header_parts["difficulty"], header_parts["seed_rule"]

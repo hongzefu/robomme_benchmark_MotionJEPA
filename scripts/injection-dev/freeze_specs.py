@@ -157,7 +157,8 @@ def main() -> int:
                         help="default（每任务 0..配额-1）、全局写法（逗号索引或 a..b）或 TASK=a..b,...")
     parser.add_argument("--seed-profile", default="v8", choices=("v8",),
                         help="v8（默认且唯一）：按档 seed 偏移、各档布局独立抽（hard-specs/4）")
-    parser.add_argument("--cells", default="full", help="格表：full／smoke（V8）；v9shard1／v9smoke（V9）；或格表 JSON 路径")
+    parser.add_argument("--cells", default="v9", help="格表：v9（缺省，V9_CELLS 43 格 800）／v9shard1／v9smoke；或格表 JSON 路径"
+                        "（V8 专用的 full／smoke 已删除）")
     parser.add_argument("--max-reset-attempts", type=int, default=None,
                         help="每任务 reset 总预算（缺省每格 ⌈候选数 ÷ 接受率 × 1.5⌉）")
     parser.add_argument("--task-max-reset-attempts", default=None, help="TASK[@TIER]=N,...（优先于 --max-reset-attempts）")

@@ -188,7 +188,7 @@ def delivery_index(specs_root: str | None = None) -> dict[tuple[str, str, int], 
         path = hs.specs_root(specs_root) / tier / "specs.jsonl"
         if v8 and not path.is_file():
             continue  # v8 局部根（冒烟／分片）只含部分档；完整性由 reset-replay 的 43 格判据与 delivery-set 负责
-        # 配额上限格表按 header 推出（V8 文件 → V8_CELLS，V9 文件 → V9_CELLS），不受 EXPECTED_CELLS 是否已切换影响
+        # 配额上限格表按 header 推出（V9 文件 → V9_CELLS）
         _, rows = _hp().load_specs_any(path, hs)
         for task in hs.ALL_TASKS:
             chosen = sorted((r for r in rows if r["task"] == task and hs.delivered(r)), key=lambda r: r["candidate"])
@@ -324,8 +324,8 @@ def cmd_reset_replay(args) -> int:
 def expected_episodes(task: str, hs, cells: dict[tuple[str, str], int] | None = None) -> int:
     """builder 每任务局数＝xhard0 前置局数（开关开 12、关 0）+ 交付格表在该任务的局数之和（不写死）。
 
-    按 ``cells``（缺省当前 ``EXPECTED_CELLS``；V8_CELLS：PickXtimes／SwingXtimes／StopCube 62、MoveCube／InsertPeg 32、
-    其余 92；V9_CELLS：每任务 62）。v7 规格的 92／32 口径已删。"""
+    按 ``cells``（缺省当前 ``EXPECTED_CELLS``；V9_CELLS：每任务 50 + xhard0 前置局数）。v7 规格的 92／32 口径与
+    V8 1070 局表的口径已删。"""
     table = cells if cells is not None else hs.EXPECTED_CELLS
     return _xhard0_prefix(hs) + sum(n for (name, _), n in table.items() if name == task)
 
@@ -367,7 +367,7 @@ def cmd_eval_smoke(args) -> int:
         mode_ok = binding.get("mode") == "export" and binding.get("spec_kind") == "native-parity/1"
     else:
         mode_ok = binding.get("mode") == "replay"
-    # 局数按 builder 实际读的规格根推格表（v9 根 → V9_CELLS 每任务 62；v8 根 → V8_CELLS），不受 EXPECTED_CELLS 是否已切换影响
+    # 局数按 builder 实际读的规格根推格表（v9 根 → V9_CELLS）
     expected = expected_episodes(args.task, hs, specs_version(args.specs_root)[1])
     ok = mode_ok and binding.get("injected_mismatch") == 0 and status != "error" and num == expected
     print(f"HARD_EVAL_SMOKE={'PASS' if ok else 'FAIL'} task={args.task} episode={args.episode} tier={tier} seed={seed} "
@@ -666,8 +666,8 @@ def _delivery_sources(path: str | Path) -> tuple[set[tuple[str, str, int]], dict
 
 def cmd_delivery_set(args) -> int:
     """{V8|V9}_DELIVERY_SET／_SEED_DISJOINT／_LAYOUT_INDEPENDENT（只读）。判定行前缀按格表版本：``--cells`` 解析为
-    V9 表（``v9full``／``v9``／``v9smoke``／``v9shard1``，或 3b 切换后的 ``full``，或只能被 V9_CELLS 覆盖的 JSON）
-    打 ``V9_*``，否则 ``V8_*``；校验的配额上限格表随之取 V9_CELLS／V8_CELLS。
+    V9 表（``v9full``／``v9``／``v9smoke``／``v9shard1``，或 3b 切换后的 ``full``，或能被 V9_CELLS 覆盖的 JSON）
+    打 ``V9_*``；校验的配额上限格表随之取 V9_CELLS（V8 1070 局表已于维护计划阶段 1b 删除）。
 
     * ``--delivery``（v9 阶段 3b 必给 assemble 的 800 行清单）：清单身份 (task, tier, seed) 必须与规格根的交付行逐一
       相同（对称差计 ``delivery_mismatch``），行带 ``source``（``v8-reuse|v9-new``）时判定行在 total 后打
@@ -2158,11 +2158,11 @@ def cmd_movecube_layout(args) -> int:
     return 0 if ok_layout and ok_ways else 1
 
 
-_CELLS_HELP = ("格表（判定行前缀随格表版本 V8_／V9_）：full（默认＝当前 hard_specs.EXPECTED_CELLS：v9 阶段 3b 切换前是 "
-               "V8 的 43 格 1070，切换后是 V9 的 43 格 800；切换前核 V9 根必须显式写 v9full）｜v8full（V8_CELLS 43 格 1070）"
-               "｜smoke（v8 2b 冒烟 7 格各 1 局）｜v9full 或 v9（V9_CELLS 43 格 800）｜v9smoke（MoveCube／InsertPeg xhard4 各 1 局）"
+_CELLS_HELP = ("格表（判定行前缀随格表版本 V9_）：full（默认＝当前 hard_specs.EXPECTED_CELLS，即 V9 的 43 格 800）"
+               "｜v9full 或 v9（V9_CELLS 43 格 800）｜v9smoke（MoveCube／InsertPeg xhard4 各 1 局）"
                "｜v9shard1（V9 MoveCube 一片）｜JSON 文件路径或内联 JSON（分片子集，形如 {\"PickXtimes/xhard1\": 17}、"
-               "{\"MoveCube@xhard4\": 50} 或 [[task, tier, n], ...]；只能被 V9_CELLS 覆盖的子表判 v9，其余判 v8）")
+               "{\"MoveCube@xhard4\": 50} 或 [[task, tier, n], ...]；须能被 V9_CELLS 覆盖）。"
+               "V8 专用的 v8full／smoke 已删除")
 
 
 def build_parser() -> argparse.ArgumentParser:

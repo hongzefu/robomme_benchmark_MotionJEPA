@@ -9,7 +9,7 @@
   档内按 ``candidate`` 升序，拼接编为 episode 0..N-1。每格行数对照交付格表 ``EXPECTED_CELLS``（43 格逐格局数）
   断言：(任务, 档) 必须在表内才可有正式局，表内格恰好等于表值，表外格恰好 0 行（xhard5 只含 SwingXtimes、StopCube）。
   规格根覆盖（冒烟／分片等局部根）只读存在的档文件，按各档 header 的 ``delivery_per_cell`` 自洽校验，且须是表的子集。
-  换包（v8 阶段 3b）后不再读 v7 ``hard-specs/3`` 规格；v7 由标签 ``parity-anchor-v7`` 复现（R10）。
+  只读 ``hard-specs/4``（旧格式 /2、/3 的读写校验已删除）。
 * ``make_env_for_episode`` 整段覆写：runtime 四项、seed、difficulty 照抄官方拼法；test-hard 时在 ``gym.make`` 前加
   ``sampling_config`` 与 ``native_episode_spec``（回注）；包装链与官方逐项相同，但 wrapper 一律绝对导入
   ``robomme_hard`` 的类（``DemonstrationWrapper``、``OraclePlannerDemonstrationWrapper`` 是复制件，其余是借用）。
@@ -53,8 +53,7 @@ def _override_cells(root: str) -> Dict[tuple, int]:
         with path.open(encoding="utf-8") as stream:
             header = json.loads(stream.readline())
         if header.get("schema") != hard_specs.SCHEMA_V8:
-            raise hard_specs.SpecsError(f"{path}：builder 只读 {hard_specs.SCHEMA_V8}（实为 {header.get('schema')}）；"
-                                        "v7 规格请检出标签 parity-anchor-v7 复现")
+            raise hard_specs.SpecsError(f"{path}：builder 只读 {hard_specs.SCHEMA_V8}（实为 {header.get('schema')}）")
         for task in header["tasks"]:
             cells[(task, tier)] = int(header["delivery_per_cell"][task])
     if not cells:
@@ -65,9 +64,9 @@ def _override_cells(root: str) -> Dict[tuple, int]:
 @functools.lru_cache(maxsize=None)
 def _root_specs(root: str):
     """每个规格根（包内或覆盖）只读一次：``load_specs_v8`` 整根校验（逐档 /4 封套、格表、每格 selected 数、
-    跨档 seed 不交）。包内根的格表必须恰为 ``EXPECTED_CELLS``（配额上限也取它，不写死 V8／V9 的局数；v9 阶段 3b
-    切换 ``EXPECTED_CELLS`` 后自动跟随）；覆盖根按 ``_override_cells``，配额上限由 ``load_specs_v8`` 按
-    ``resolve_cell_table`` 取（先 ``EXPECTED_CELLS``，覆盖不了再看 V8／V9 表）。
+    跨档 seed 不交）。包内根的格表必须恰为 ``EXPECTED_CELLS``（配额上限也取它，不写死局数）；覆盖根按
+    ``_override_cells``，配额上限由 ``load_specs_v8`` 按 ``resolve_cell_table`` 取（先 ``EXPECTED_CELLS``，
+    覆盖不了再看 ``CELL_TABLES``）。
     返回 ``({tier: (header, rows)}, cells)``，只读使用，不得修改。"""
     if Path(root) == hard_specs.PACKAGED_SPECS_ROOT:
         cells = dict(hard_specs.EXPECTED_CELLS)
