@@ -21,7 +21,7 @@ POL = "mme"
 def _ident(i: int, task: str = "TaskA", tier: str = "xhard1") -> dict:
     seed = 7_000_000 + i
     return {"task": task, "tier": tier, "seed": seed, "candidate": i, "builder_episode": i, "source_episode": None,
-            "spec_sha256": hashlib.sha256(f"{task}{tier}{seed}".encode()).hexdigest(), "effective_max_steps": 10,
+            "spec_sha256": hashlib.sha256(f"{task}{tier}{seed}".encode()).hexdigest(),
             "key": f"{task}_{tier}_{seed}"}
 
 
@@ -187,7 +187,7 @@ def test_manifest_header_negatives(tmp_path, capsys):
 
 def test_exec_over_cap(tmp_path, capsys):
     a = _ident(0)
-    cap = F.hard_specs().EXEC_CAP
+    cap = 1600  # test-hard 启动约定的上限（手写）
     Stage(tmp_path / "stage").accepted(a, "a1", "timeout", exec_steps=cap + 1)
     _, lines, _ = _report(tmp_path, capsys, [a], "--cap", str(cap))
     rp = F.verdict(lines, "V8_EVAL_REPORT")
@@ -231,7 +231,6 @@ def _packaged_identities() -> list[dict]:
             if hs.delivered(r):
                 out.append({"task": r["task"], "tier": r["tier"], "seed": r["seed"], "candidate": r["candidate"],
                             "builder_episode": r["episode"], "source_episode": None, "spec_sha256": r["spec_sha256"],
-                            "effective_max_steps": hs.TIER_MAX_STEPS[r["tier"]],
                             "key": f"{r['task']}_{r['tier']}_{r['seed']}"})
     return out
 
@@ -321,3 +320,121 @@ def test_reuse_args_must_come_together(tmp_path):
     er = F.eval_report()
     with pytest.raises(SystemExit):
         er.main(["--manifest", "m", "--stage", "s", "--out", str(tmp_path), "--reuse", "x"])
+
+
+# ---------------------------------------------------------------- 带 --dataset：逐模型判定行（1003 评估计划 1.2）
+
+
+def _hard0(i: int, task: str = "TaskA") -> dict:
+    seed = 9_000_000 + i
+    return {"task": task, "tier": "xhard0", "seed": seed, "candidate": None, "builder_episode": i,
+            "source_episode": 3 + 4 * i, "spec_sha256": None, "key": f"{task}_xhard0_{seed}"}
+
+
+def _lines_of(lines: list[str], name: str, policy: str) -> dict[str, str]:
+    return F.verdict([x for x in lines if f" policy={policy} " in x + " "], name)
+
+
+def _videos(root: Path, dirname: str, dataset: str, idents, names=("ep.mp4", "summary.json")):
+    for ident in idents:
+        d = root / dirname / dataset / "new" / f"{ident['key']}.a1"
+        d.mkdir(parents=True, exist_ok=True)
+        for n in names:
+            (d / n).write_text("x", encoding="utf-8")
+
+
+def _ds_report(tmp_path, capsys, idents, dataset, policies, *extra, total=None):
+    manifest = F.write_manifest(tmp_path / "m" / "manifest.json", idents, dataset=dataset)
+    return F.run_report(capsys, manifest, tmp_path / "stage", policies, tmp_path / "out", "--dataset", dataset,
+                        "--expect-total", str(len(idents) if total is None else total), *extra)
+
+
+def test_dataset_hard0_lines_pass_without_spec_and_skip_cap(tmp_path, capsys, monkeypatch):
+    """test-hard0：身份必备字段不含 spec_sha256；官方循环第 1301 步不算越限（exec_over_cap=skip）；视频 mp4 读得出帧即过。"""
+    er = F.eval_report()
+    monkeypatch.setattr(er, "count_media_frames", lambda path, videos: 5)
+    a, b = _hard0(0), _hard0(1)
+    st = Stage(tmp_path / "stage")
+    st.accepted(a, "a1", "timeout", exec_steps=1301, dataset="test-hard0")
+    st.accepted(b, "b1", "success", exec_steps=40, dataset="test-hard0")
+    _videos(tmp_path / "videos", "mme", "test-hard0", [a, b])
+    rc, lines, rep = _ds_report(tmp_path, capsys, [a, b], "test-hard0", ["mme"], "--videos", str(tmp_path / "videos"))
+    cov, rp, vid = (_lines_of(lines, n, "mme") for n in ("EVAL_COVERAGE", "EVAL_REPORT", "EVAL_VIDEOS"))
+    assert cov == {"": "PASS", "dataset": "test-hard0", "policy": "mme", "expected": "2", "missing": "0", "extra": "0",
+                   "duplicate": "0", "conflicting_terminal": "0", "error_final": "0"}
+    assert rp[""] == "PASS" and rp["exec_over_cap"] == "skip" and rp["count_mismatch"] == "0"
+    assert vid[""] == "PASS" and vid["expected"] == "2" and vid["videos"] == "2" and vid["decode_fail"] == "0"
+    assert rc == 0 and rep["cap"] is None and rep["dataset"] == "test-hard0"
+
+
+def test_dataset_hard0_requires_source_episode_and_decodable_video(tmp_path, capsys, monkeypatch):
+    er = F.eval_report()
+    monkeypatch.setattr(er, "count_media_frames", lambda path, videos: None)  # 解码失败
+    a = _hard0(0)
+    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="test-hard0", source_episode=None)
+    _videos(tmp_path / "videos", "mme", "test-hard0", [a])
+    rc, lines, rep = _ds_report(tmp_path, capsys, [a], "test-hard0", ["mme"], "--videos", str(tmp_path / "videos"))
+    rp, vid = _lines_of(lines, "EVAL_REPORT", "mme"), _lines_of(lines, "EVAL_VIDEOS", "mme")
+    assert rp[""] == "FAIL" and any("source_episode" in x for x in rep["count_mismatch_detail"])
+    assert vid[""] == "FAIL" and vid["decode_fail"] == "1" and rc == 1
+
+
+def test_dataset_test_hard_keeps_cap_and_spec(tmp_path, capsys):
+    a = _ident(0)
+    Stage(tmp_path / "stage").accepted(a, "a1", "timeout", exec_steps=1601, dataset="test-hard", spec_sha256=None,
+                                       identity={"tier": a["tier"], "seed": a["seed"], "candidate": a["candidate"]})
+    _, lines, rep = _ds_report(tmp_path, capsys, [a], "test-hard", ["mme"])
+    rp = _lines_of(lines, "EVAL_REPORT", "mme")
+    assert rp[""] == "FAIL" and rp["exec_over_cap"] == "1"
+    assert any("spec_sha256" in x for x in rep["count_mismatch_detail"])
+    vid = _lines_of(lines, "EVAL_VIDEOS", "mme")  # 未给 --videos：照实 FAIL
+    assert vid[""] == "FAIL" and vid["videos_root"] == "absent" and vid["missing"] == "1"
+
+
+def test_dataset_crossed_rows_are_counted(tmp_path, capsys):
+    """结果行的 dataset 与 --dataset 不符（两个数据集串了）→ dataset_crossed、count_mismatch、EVAL_REPORT=FAIL。"""
+    a = _hard0(0)
+    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="test-hard")
+    _, lines, rep = _ds_report(tmp_path, capsys, [a], "test-hard0", ["mme"])
+    rp = _lines_of(lines, "EVAL_REPORT", "mme")
+    assert rp[""] == "FAIL" and rp["dataset_crossed"] == "1"
+    # 清单本身声明的数据集与 --dataset 不符也计入
+    _, lines, rep = _ds_report(tmp_path, capsys, [a], "test-hard", ["mme"])
+    assert any("manifest" in x for x in rep["count_mismatch_detail"])
+
+
+def test_dataset_policy_variants_are_separate(tmp_path, capsys, monkeypatch):
+    """--policies 接受 <policy>[:<variant>]：目录 sNN/<policy>-<variant>/，结果行按 policy_variant 过滤，两个变体互不串。"""
+    er = F.eval_report()
+    monkeypatch.setattr(er, "count_media_frames", lambda path, videos: 5)
+    a, b = _hard0(0), _hard0(1)
+    for var, status in (("ground-sg-oracle", "success"), ("ground-sg-qwenvl", "fail")):
+        st = Stage(tmp_path / "stage", "mmesg", dirname=f"mmesg-{var}")
+        for ident in (a, b):
+            st.accepted(ident, f"{var}-{ident['key']}", status, dataset="test-hard0", policy_variant=var)
+        _videos(tmp_path / "videos", f"mmesg-{var}", "test-hard0", [a, b])
+    # 混进 oracle 目录的另一变体结果行被过滤掉，不算 extra／duplicate
+    Stage(tmp_path / "stage", "mmesg", dirname="mmesg-ground-sg-oracle").result(
+        a, "stray", 2, "fail", dataset="test-hard0", policy_variant="ground-sg-qwenvl")
+    specs = ["mmesg:ground-sg-oracle", "mmesg:ground-sg-qwenvl"]
+    rc, lines, rep = _ds_report(tmp_path, capsys, [a, b], "test-hard0", specs, "--videos", str(tmp_path / "videos"))
+    assert rep["per_policy"]["mmesg:ground-sg-oracle"]["outcomes"]["success"] == 2
+    assert rep["per_policy"]["mmesg:ground-sg-qwenvl"]["outcomes"]["fail"] == 2
+    for spec in specs:
+        for name in ("EVAL_COVERAGE", "EVAL_REPORT", "EVAL_VIDEOS"):
+            assert _lines_of(lines, name, spec)[""] == "PASS", (spec, name)
+    assert rc == 0
+
+
+def test_dataset_partial_always_fails(tmp_path, capsys):
+    a, b = _hard0(0), _hard0(1)
+    Stage(tmp_path / "stage").accepted(a, "a1", "success", dataset="test-hard0")
+    rc, lines, _ = _ds_report(tmp_path, capsys, [a, b], "test-hard0", ["mme"], "--partial")
+    cov = _lines_of(lines, "EVAL_COVERAGE", "mme")
+    assert cov[""] == "FAIL" and cov["partial"] == "1" and cov["missing"] == "1" and rc == 1
+
+
+def test_dataset_requires_expect_total(tmp_path):
+    er = F.eval_report()
+    with pytest.raises(SystemExit):
+        er.main(["--manifest", "m", "--stage", "s", "--out", str(tmp_path), "--dataset", "test-hard0"])

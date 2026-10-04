@@ -125,14 +125,54 @@ def test_recover_dangling_from_result_row(tmp_path, monkeypatch):
     assert [r["accepted_attempt_id"] for r in rows if r["kind"] == "accept"] == ["x1"]
 
 
-def test_resume_skips_accepted_and_full(tmp_path, monkeypatch):
-    """重启后：已 accept 的身份、已用满 2 次的身份都跳过，不再建环境。"""
+def test_resume_skips_accepted_and_full(tmp_path, monkeypatch, capsys):
+    """重启后：已 accept 的身份、已用满 2 次的身份都跳过，不再建环境。b 两次 infra 用满仍无 accept：两次运行都
+    读回账本得 missing=1，打印 RUN_INCOMPLETE、退出码 6（不只看是否跑完）。"""
     (t1, tier1), (t2, tier2) = F.v9_cells_sorted()[:2]
     a, b = F.packaged_identity(t1, tier1, 0), F.packaged_identity(t2, tier2, 0)
     world = F.World({(b["task"], b["builder_episode"]): [F.Plan(raise_at=1, raise_exc=lambda: RuntimeError("svulkan2"))]})
     server = F.FakePolicyServer()
-    assert F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, server), world), [a, b]) == 0
+    assert F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, server), world), [a, b]) == 6
     n_envs = len(world.envs)
     assert n_envs == 3  # a 一次成功；b 两次 infra
-    assert F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, server), world), [a, b]) == 0
+    assert F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, server), world), [a, b]) == 6
     assert len(world.envs) == n_envs
+    out = capsys.readouterr().out
+    assert out.count("RUN_INCOMPLETE") == 2 and f"missing=1 first={b['key']}" in out
+
+
+def test_all_accepted_returns_zero(tmp_path, monkeypatch):
+    task, tier = F.v9_cells_sorted()[0]
+    a = F.packaged_identity(task, tier, 0)
+    world = F.World()
+    assert F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world), [a]) == 0
+
+
+@pytest.mark.parametrize("status,infra,recovered", [("fail", False, True), ("error", False, True),
+                                                    ("error", True, False)],
+                         ids=["fail", "ordinary_error", "infra_error"])
+def test_crash_window_final_end_without_accept_gets_accept(tmp_path, monkeypatch, capsys, status, infra, recovered):
+    """attempt_end 已写、accept 未写时进程死掉：恢复时对「最后一次 attempt_end 是最终结局」的身份补写 accept
+    （recovered=true），不再建环境；最后一次是 infra 错误的不补，照常重试一次。"""
+    task, tier = F.v9_cells_sorted()[0]
+    a = F.packaged_identity(task, tier, 0)
+    out = tmp_path / "s00" / "mme"
+    led = F.env_client().AttemptLedger(out / "mme.ledger.jsonl", seat="s00", policy="mme")
+    led.start(100, 10)
+    led.attempt_start(key=a["key"], attempt_id="x1", attempt_no=1, retry=False)
+    # 只写 attempt_end，不写 accept（模拟两行之间崩溃）
+    led.append({"kind": "attempt_end", "key": a["key"], "attempt_id": "x1", "attempt_no": 1, "status": status,
+                "infra": infra, "cap_hit": False, "exec_steps": 3, "budget_exhausted": False, "late": False})
+    world = F.World()
+    rc = F.run_rows(F.make_runner(tmp_path, "mme", F.mme_policy(monkeypatch, F.FakePolicyServer()), world), [a])
+    assert rc == 0
+    rows = F.read_jsonl(out / "mme.ledger.jsonl")
+    acc = [r for r in rows if r["kind"] == "accept"]
+    assert len(acc) == 1
+    if recovered:
+        assert acc[0]["accepted_attempt_id"] == "x1" and acc[0]["recovered"] is True and acc[0]["status"] == status
+        assert world.envs == []
+        assert f"LEDGER_RECOVER_ACCEPT key={a['key']} attempt_id=x1" in capsys.readouterr().out
+    else:
+        assert acc[0]["accepted_attempt_id"] != "x1" and "recovered" not in acc[0]
+        assert len(world.envs) == 1

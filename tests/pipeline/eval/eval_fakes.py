@@ -29,6 +29,10 @@ import numpy as np
 from tests._support.loaders import REPO, load_script
 
 HW = 4  # 假帧边长（像素）；形状不参与被测逻辑
+#: 启动约定的步数上限（1003 评估计划 1.2），按约定手写，不读被测代码：test-hard 为 1600 且带 --strict-cap，
+#: test-hard0 为 1300、不带 --strict-cap
+V9_MAX_STEPS = 1600
+HARD0_MAX_STEPS = 1300
 N_RESET_FRAMES = 3  # 假环境 reset 返回的帧数（2 帧演示 + 1 帧初始）
 CHUNK_ROWS = 20  # 假 server 每次推理回的动作行数（多于执行段，用来核「只执行前若干行」）
 
@@ -66,11 +70,11 @@ def hard_specs():
     return hs
 
 
-def real_builder(task: str, max_steps: int | None = None):
+def real_builder(task: str, max_steps: int | None = None, dataset: str = "test-hard"):
     from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
 
     kw = {} if max_steps is None else {"max_steps": int(max_steps)}
-    return BenchmarkEnvBuilder(env_id=task, dataset="test-hard", action_space="joint_angle", **kw)
+    return BenchmarkEnvBuilder(env_id=task, dataset=dataset, action_space="joint_angle", **kw)
 
 
 # ---------------------------------------------------------------- 观测与假环境
@@ -162,11 +166,11 @@ class World:
 
 
 class HybridBuilder:
-    """真实 builder 的身份解析 + CPU 假环境（不构建仿真场景）。"""
+    """真实 builder 的身份解析 + CPU 假环境（不构建仿真场景）。``dataset`` 原样交给真实 builder。"""
 
-    def __init__(self, task: str, max_steps: int | None, world: World):
-        self.task, self.max_steps, self.world = task, max_steps, world
-        self.real = real_builder(task, max_steps)
+    def __init__(self, task: str, max_steps: int | None, world: World, dataset: str = "test-hard"):
+        self.task, self.max_steps, self.world, self.dataset = task, max_steps, world, dataset
+        self.real = real_builder(task, max_steps, dataset)
         world.builders.append(self)
 
     def resolve_identity(self, ep):
@@ -363,7 +367,8 @@ def policy_module(name: str, monkeypatch, server: FakePolicyServer):
 
 
 def tier_cap(tier: str) -> int:
-    return int(hard_specs().TIER_MAX_STEPS[tier])
+    """该档按启动约定的步数上限（手写常量）：xhard0 走 test-hard0 的 1300，其余档走 test-hard 的 1600。"""
+    return HARD0_MAX_STEPS if tier == "xhard0" else V9_MAX_STEPS
 
 
 @functools.lru_cache(maxsize=None)
@@ -379,7 +384,21 @@ def packaged_identity(task: str, tier: str, k: int = 0) -> dict:
     ep, ident = hits[k]
     return {"task": task, "tier": tier, "seed": int(ident["seed"]), "candidate": ident["candidate"],
             "builder_episode": ep, "source_episode": None, "spec_sha256": ident["spec_sha256"],
-            "effective_max_steps": tier_cap(tier), "key": f"{task}_{tier}_{int(ident['seed'])}"}
+            "key": f"{task}_{tier}_{int(ident['seed'])}"}
+
+
+@functools.lru_cache(maxsize=None)
+def _resolved_hard0(task: str) -> tuple[tuple[int, dict], ...]:
+    b = real_builder(task, dataset="test-hard0")
+    return tuple((ep, b.resolve_identity(ep)) for ep in range(b.get_episode_num()))
+
+
+def hard0_identity(task: str, k: int = 0) -> dict:
+    """test-hard0 里第 k 局的执行身份行（字段契约同 C1；candidate／spec_sha256 为 null，key 按契约手写）。"""
+    ep, ident = _resolved_hard0(task)[k]
+    return {"task": task, "tier": "xhard0", "seed": int(ident["seed"]), "candidate": None, "builder_episode": ep,
+            "source_episode": int(ident["source_episode"]), "spec_sha256": None,
+            "key": f"{task}_xhard0_{int(ident['seed'])}"}
 
 
 def v9_cells_sorted() -> list[tuple[str, str]]:
@@ -390,34 +409,40 @@ def v9_cells_sorted() -> list[tuple[str, str]]:
 
 
 def seat_args(out: Path, policy: str, *, ledger: Path, reset_budget: int = 100, infra_retry_budget: int = 10,
-              seat: str = "s00", rec_root: str | None = None, **kw) -> argparse.Namespace:
+              seat: str = "s00", rec_root: str | None = None, dataset: str = "test-hard", **kw) -> argparse.Namespace:
+    """默认按 test-hard 的启动约定（--max-steps 1600 --strict-cap）；dataset="test-hard0" 时默认 1300、不带 strict-cap。"""
+    hard0 = dataset == "test-hard0"
     d = dict(policy=policy, identities=None, cond="T", seat=seat, host="127.0.0.1", port=1, out=str(out),
-             order="forward", shuffle_seed=0, only=None, limit=0, max_steps=env_client().MAX_STEPS,
-             episode_wall_s=0.0, first_extra_s=0.0, infra_retries=0, no_record=False, never_degrade=True,
-             baseline=False, v8=True, ledger=str(ledger), reset_budget=reset_budget,
+             order="forward", shuffle_seed=0, only=None, limit=0, dataset=dataset,
+             max_steps=HARD0_MAX_STEPS if hard0 else V9_MAX_STEPS, strict_cap=not hard0, mme_variant=None,
+             qwenvl_groundsg_adapter=None, trace_root=None,
+             episode_wall_s=0.0, first_extra_s=0.0, no_record=False, never_degrade=True,
+             baseline=False, ledger=str(ledger), reset_budget=reset_budget,
              infra_retry_budget=infra_retry_budget, rec_root=rec_root, budget_raise_reason=None)
     d.update(kw)
     return argparse.Namespace(**d)
 
 
-def make_runner(stage: Path, policy: str, policy_mod, world: World, *, seat_dir: str = "s00", **kw):
-    """运行根布局与生产一致：``<stage>/sNN/<policy>/results.jsonl``、账本 ``<policy>.ledger.jsonl``、录像 ``rec/``。"""
+def make_runner(stage: Path, policy: str, policy_mod, world: World, *, seat_dir: str = "s00",
+                policy_dir: str | None = None, **kw):
+    """运行根布局与生产一致：``<stage>/sNN/<policy>[-<variant>]/results.jsonl``、账本 ``<policy>.ledger.jsonl``、
+    录像 ``rec/``。builder 工厂取三参形式 ``(task, dataset, max_steps)``。"""
     ec = env_client()
-    out = Path(stage) / seat_dir / policy
+    out = Path(stage) / seat_dir / (policy_dir or policy)
     args = seat_args(out, policy, ledger=out / f"{policy}.ledger.jsonl", **kw)
     return ec.SeatRunner(args, policy_mod=policy_mod,
                          recorder_factory=lambda d, m: FakeRecorder(d, m, world),
-                         builder_factory=lambda task, ms: HybridBuilder(task, ms, world),
+                         builder_factory=lambda task, dataset, ms: HybridBuilder(task, ms, world, dataset),
                          proc_info={"gpu_name": "fake", "gpu_uuid": "fake", "git_commit": "0" * 40,
                                     "git_dirty": False, "init_timing": {}})
 
 
 def run_rows(runner, rows: list[dict]) -> int:
+    """返回生产退出码：run_identities 的返回值（0／6），或 SystemExit 的码（3 阻塞、5 额度耗尽）。"""
     try:
-        runner.run_identities(rows)
-    except SystemExit as e:  # 生产以 SystemExit 表达退出码（3 阻塞、5 额度耗尽）
+        return int(runner.run_identities(rows))
+    except SystemExit as e:
         return int(e.code)
-    return 0
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -470,9 +495,9 @@ def verdict(lines: list[str], name: str) -> dict[str, str]:
 class Stage:
     """按生产布局手写一个席位的结果行、账本行与录像目录。"""
 
-    def __init__(self, root: Path, policy: str = "mme", seat: str = "s00"):
+    def __init__(self, root: Path, policy: str = "mme", seat: str = "s00", dirname: str | None = None):
         self.root, self.policy = Path(root), policy
-        self.dir = self.root / seat / policy
+        self.dir = self.root / seat / (dirname or policy)
         self.dir.mkdir(parents=True, exist_ok=True)
 
     def _append(self, name: str, row: dict):
@@ -483,6 +508,7 @@ class Stage:
                **kw) -> dict:
         row = {"v8": True, "key": ident["key"], "task": ident["task"], "tier": ident["tier"], "seed": ident["seed"],
                "candidate": ident["candidate"], "spec_sha256": ident["spec_sha256"],
+               "source_episode": ident.get("source_episode"),
                "identity": {k: ident[k] for k in ("tier", "seed", "candidate", "spec_sha256")},
                "policy": self.policy, "attempt_id": aid, "attempt_no": no, "status": status,
                "task_success": status == "success", "infra": infra, "exec_steps": 5,

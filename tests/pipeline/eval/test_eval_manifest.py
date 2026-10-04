@@ -88,10 +88,9 @@ def test_export_feeds_manifest(tmp_path, monkeypatch, inputs, on):
     keys = [r["key"] for p in parts for r in p]
     assert len(keys) == len(set(keys)) == len(rule) and len(parts) == em.DEFAULT_SHARDS
     # 每一行都是合法执行身份；builder_episode 由真实 builder 解析回同一身份（开关同口径）
-    tm = hs.TIER_MAX_STEPS
     builders = {}
     for r in manifest["rows"]:
-        assert F.env_client().validate_v8_identity(r, tm) is None
+        assert F.env_client().validate_v8_identity(r, "test-hard") is None
         b = builders.setdefault(r["task"], F.real_builder(r["task"]))
         got = b.resolve_identity(r["builder_episode"])
         assert (got["tier"], got["seed"], got["candidate"], got["spec_sha256"]) == \
@@ -157,15 +156,15 @@ def test_join_delivery_missing_duplicate_extra(inputs):
         em.join_delivery(src, dict(deliv, schema="x"), hs)
 
 
-def test_check_exec_rejects_cap_and_sha_and_dup(inputs):
+def test_check_exec_rejects_sha_and_dup_and_xhard0(inputs):
     em = F.eval_manifest()
     hs = em.load_hard_specs()
     deliv = {"schema": em.DELIVERY_SCHEMA, "rows": inputs["rows"]}
     rows = em.join_delivery(_src_rows(inputs["rows"]), deliv, hs)
     cells = dict(hs.V9_CELLS)
     assert em.check_exec(rows, hs, cells)["total"] == len(rows)
-    for bad in ([dict(rows[0], effective_max_steps=rows[0]["effective_max_steps"] + 1)] + rows[1:],
-                [dict(rows[0], spec_sha256="Z" * 64)] + rows[1:],
+    assert all("effective_max_steps" not in r for r in rows)  # 步数上限不进身份行
+    for bad in ([dict(rows[0], spec_sha256="Z" * 64)] + rows[1:],
                 [rows[0], dict(rows[1], key=rows[0]["key"])] + rows[2:],
                 [dict(rows[0], tier=hs.XHARD0)] + rows[1:]):
         with pytest.raises(em.ManifestError):
@@ -242,3 +241,40 @@ def test_main_fail_line_and_no_outputs(tmp_path, capsys, inputs):
     assert rc == 1
     assert F.verdict(capsys.readouterr().out.splitlines(), "V9_EVAL_SHARDS")[""] == "FAIL"
     assert not (out / "manifest.json").exists()
+
+
+def test_main_v9_full_mode(tmp_path, monkeypatch, capsys, inputs):
+    """--mode v9-full：不剔除已评身份，800 局全量切片；不写 reused.json；判定行 EVAL_SHARDS（期望值按 V9 交付手写）。"""
+    em = F.eval_manifest()
+    _switch(monkeypatch, export_on=False, manifest_on=False)
+    ident_path, _ = _export(tmp_path, inputs["delivery"], "full")
+    out = tmp_path / "full"
+    capsys.readouterr()
+    rc = em.main(["--mode", "v9-full", "--identities", str(ident_path), "--delivery", str(inputs["delivery"]),
+                  "--out-dir", str(out)])
+    lines = capsys.readouterr().out.splitlines()
+    assert rc == 0
+    v = F.verdict(lines, "EVAL_SHARDS")
+    assert v == {"": "PASS", "mode": "v9-full", "total": "800", "cells": "43", "missing": "0", "extra": "0",
+                 "duplicate": "0", "xhard0": "0"}
+    manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["mode"] == "v9-full" and manifest["total"] == 800 and len(manifest["rows"]) == 800
+    assert not (out / em.REUSED_FILE).exists()
+    shards = [json.loads((out / f"shard-{i:02d}.json").read_text(encoding="utf-8")) for i in range(em.DEFAULT_SHARDS)]
+    keys = [r["key"] for p in shards for r in p]
+    assert len(keys) == len(set(keys)) == 800
+    assert all(set(r) == set(em.SHARD_ROW_KEYS) for p in shards for r in p)
+
+
+@pytest.mark.parametrize("argv", [["--mode", "v9-full", "--out-dir", "o"],
+                                  ["--out-dir", "o", "--identities", "i", "--delivery", "d"],
+                                  ["--mode", "hard0", "--out-dir", "o", "--identities", "i"],
+                                  ["--mode", "v9-full", "--out-dir", "o", "--identities", "i", "--delivery", "d",
+                                   "--pair-shards"]],
+                         ids=["full_missing_inputs", "default_v9_new_needs_exclude", "hard0_rejects_identities",
+                              "pair_shards_only_hard0"])
+def test_main_mode_argument_rules(argv):
+    """默认模式仍是 v9-new（缺 --exclude-evaluated 即参数错误）；各模式的必填与互斥参数。"""
+    with pytest.raises(SystemExit) as ei:
+        F.eval_manifest().main(argv)
+    assert ei.value.code == 2

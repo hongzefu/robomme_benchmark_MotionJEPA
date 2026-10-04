@@ -30,13 +30,25 @@ shard-NN.json 与 reused.json，不留半成品）：
 - ``<out-dir>/manifest.json``：``{schema, source_sha256, delivery_sha256, xhard0_dropped, total, cells, shards, rows,
   reused}``，``reused = {path, sha256, count, v8_manifest, v8_manifest_sha256}``；
 - ``<out-dir>/shard-NN.json``：执行身份行数组，每行
-  ``{task, tier, seed, candidate, builder_episode, source_episode, spec_sha256, effective_max_steps, key}``，
+  ``{task, tier, seed, candidate, builder_episode, source_episode, spec_sha256, key}``（步数上限不进身份行），
   ``key = f"{task}_{tier}_{seed}"``；
 - ``<out-dir>/reused.json``：复用集合（schema ``v9-eval-reused/1``，rows 按 (task, tier, seed) 排序，``v8_key`` 取
   V8 manifest 行的 ``key`` 原值）。
 
 末行 ``V9_EVAL_SHARDS=PASS shards=10 total=80 cells=2 reused=720 reused_sha256=<前 12 位> missing=0 extra=0 duplicate=0 xhard0=0``。
 只用标准库，``hard_specs`` 按文件路径加载（不 import robomme_hard 包，不触发 sapien）。
+
+``--mode``（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.2）：
+
+- ``v9-new``（默认）：上述五步，行为与判定行不变。
+- ``v9-full``：``--identities`` + ``--delivery``，只做第 1～4 步、不剔除已评身份，全部执行行（800 局）切片；末行
+  ``EVAL_SHARDS=PASS mode=v9-full total=800 cells=43 missing=0 extra=0 duplicate=0 xhard0=0``。
+- ``hard0``：不读交付清单，直接由 ``BenchmarkEnvBuilder(task, dataset="test-hard0")`` 枚举 16 任务、每任务前
+  ``--per-task N``（默认 12）局（此模式会 import robomme_hard）；行键同 ``SHARD_ROW_KEYS``、``spec_sha256=None``、
+  ``candidate=None``、``key=<task>_xhard0_<seed>``；末行 ``EVAL_SHARDS=PASS mode=hard0 total=<16×N> xhard0=<16×N> ...``。
+  ``--pair-shards``：原侧与新侧共用同一份 ``shard-NN.json``（同一身份两侧同分片、分片内同序）。
+
+``xhard0==0`` 的要求只在 V9 两种模式（``check_exec``）里保留。
 """
 from __future__ import annotations
 
@@ -60,9 +72,11 @@ REUSED_FILE = "reused.json"
 V9_NEW_RULE = {("MoveCube", "xhard4"): 0, ("InsertPeg", "xhard4"): 29}
 DELIVERY_SCHEMA = "v8-delivery/1"
 SOURCE_KEYS = ("task", "episode", "tier", "seed", "candidate", "source_episode", "round", "shard")
-SHARD_ROW_KEYS = ("task", "tier", "seed", "candidate", "builder_episode", "source_episode", "spec_sha256",
-                  "effective_max_steps", "key")
+#: 执行身份行字段；与 env_client.V8_IDENTITY_KEYS 同步（步数上限不进身份行，由入口按数据集给 --max-steps）
+SHARD_ROW_KEYS = ("task", "tier", "seed", "candidate", "builder_episode", "source_episode", "spec_sha256", "key")
 DEFAULT_SHARDS = 10
+#: hard0 模式每任务默认取前 12 局（test-hard0 每任务恰 12 局）
+DEFAULT_PER_TASK = 12
 
 #: 每任务平均单局用时（秒），复制自 ``scripts/injection-dev/export_eval_identities.py::TASK_SECONDS``
 #: （该脚本 import ``_common`` 改 sys.path，不便跨目录 import；数值逐字相同，测试核对两者一致）。
@@ -197,10 +211,9 @@ def join_delivery(new_rows: list[dict], delivery: dict, hs) -> list[dict]:
             continue
         used.add(jk)
         sha = hits[0].get("spec_sha256")
-        tier = r["tier"]
-        out.append({"task": r["task"], "tier": tier, "seed": int(r["seed"]), "candidate": int(r["candidate"]),
+        out.append({"task": r["task"], "tier": r["tier"], "seed": int(r["seed"]), "candidate": int(r["candidate"]),
                     "builder_episode": int(r["episode"]), "source_episode": r["source_episode"], "spec_sha256": sha,
-                    "effective_max_steps": int(hs.TIER_MAX_STEPS[tier]), "key": v8_key(r)})
+                    "key": v8_key(r)})
     extra = [k for k in index if k not in used]
     if missing or duplicate or extra:
         raise ManifestError("join", f"连接交付行失败 missing={missing[:5]} duplicate={duplicate[:5]} extra={extra[:5]}",
@@ -212,6 +225,7 @@ def join_delivery(new_rows: list[dict], delivery: dict, hs) -> list[dict]:
 
 
 def check_exec(rows: list[dict], hs, cells: dict | None = None) -> dict:
+    """V9 两种模式（v9-new／v9-full）的执行清单核对：格数、行数与格表相等，xhard0=0、指纹齐全、key 唯一。"""
     cells = hs.EXPECTED_CELLS if cells is None else cells
     per_cell: dict[tuple[str, str], int] = defaultdict(int)
     for r in rows:
@@ -221,12 +235,11 @@ def check_exec(rows: list[dict], hs, cells: dict | None = None) -> dict:
                       and all(c in "0123456789abcdef" for c in r["spec_sha256"])) for r in rows)
     keys = [r["key"] for r in rows]
     dup = len(keys) - len(set(keys))
-    cap_bad = sum(r["effective_max_steps"] != hs.EXEC_CAP for r in rows)
     cell_mismatch = sum(per_cell.get(k, 0) != n for k, n in cells.items()) + sum(k not in cells for k in per_cell)
     total = sum(cells.values())
-    if len(rows) != total or xhard0 or no_sha or dup or cap_bad or cell_mismatch or len(per_cell) != len(cells):
+    if len(rows) != total or xhard0 or no_sha or dup or cell_mismatch or len(per_cell) != len(cells):
         raise ManifestError("exec", f"执行清单不符 rows={len(rows)} expected={total} xhard0={xhard0} no_sha={no_sha} "
-                                    f"dup_key={dup} cap_bad={cap_bad} cell_mismatch={cell_mismatch}",
+                                    f"dup_key={dup} cell_mismatch={cell_mismatch}",
                             total=len(rows), xhard0=xhard0, duplicate=dup, cells=len(per_cell))
     return {"total": len(rows), "cells": len(per_cell), "xhard0": xhard0}
 
@@ -332,9 +345,8 @@ def dump_json(doc) -> str:
     return json.dumps(doc, ensure_ascii=False, indent=1, sort_keys=True) + "\n"
 
 
-def build_v9(identities: Path, delivery_path: Path, shards: int,
-             v8_manifest: Path) -> tuple[dict, list[list[dict]], str]:
-    """V9：源集 → 筛新值 → 补指纹 → 核格表 → 剔除已评 → 只切新评行。返回 (manifest, parts, reused.json 文本)。"""
+def v9_exec_rows(identities: Path, delivery_path: Path) -> tuple[Any, dict, list[dict], int]:
+    """V9 两种模式共用的第 1～4 步：源集 → 筛新值 → 补指纹 → 核格表。返回 (hs, 格表, 执行行, 丢弃的 xhard0 数)。"""
     hs = load_hard_specs()
     delivery = json.loads(Path(delivery_path).read_text(encoding="utf-8"))
     cells_table = delivery_cells(delivery, hs)
@@ -343,6 +355,13 @@ def build_v9(identities: Path, delivery_path: Path, shards: int,
     new_all, dropped = filter_new(src, hs)                 # 第 2 步
     rows = join_delivery(new_all, delivery, hs)            # 第 3 步
     check_exec(rows, hs, cells_table)                      # 第 4 步
+    return hs, cells_table, rows, dropped
+
+
+def build_v9(identities: Path, delivery_path: Path, shards: int,
+             v8_manifest: Path) -> tuple[dict, list[list[dict]], str]:
+    """V9：源集 → 筛新值 → 补指纹 → 核格表 → 剔除已评 → 只切新评行。返回 (manifest, parts, reused.json 文本)。"""
+    _, cells_table, rows, dropped = v9_exec_rows(identities, delivery_path)
     reused, new = split_evaluated(rows, load_v8_manifest(v8_manifest))  # 第 5 步
     if shards < 1:
         raise ManifestError("shards", f"shards={shards}")
@@ -371,6 +390,108 @@ def build_v9(identities: Path, delivery_path: Path, shards: int,
                    "v8_manifest_sha256": file_sha256(v8_manifest)},
     }
     return manifest, parts, reused_text
+
+
+def split_shards(rows: list[dict], shards: int) -> list[list[dict]]:
+    """按历史耗时均衡切片并核对两两不交、并集等于全集。"""
+    if shards < 1:
+        raise ManifestError("shards", f"shards={shards}")
+    parts = balance(rows, shards)
+    chk = check_shards(parts, rows)
+    if any(chk.values()):
+        raise ManifestError("shards", f"分片不符 {chk}", **chk)
+    return parts
+
+
+def build_v9_full(identities: Path, delivery_path: Path, shards: int) -> tuple[dict, list[list[dict]]]:
+    """V9 全量：第 1～4 步之后不剔除已评身份，全部执行行（V9 即 43 格 800 局）切片。返回 (manifest, parts)。"""
+    _, cells_table, rows, dropped = v9_exec_rows(identities, delivery_path)
+    parts = split_shards(rows, shards)
+    order = {k: i for i, k in enumerate(cells_table)}
+    cells: dict[str, int] = defaultdict(int)
+    for r in rows:
+        cells[cell_name(r["task"], r["tier"])] += 1
+    manifest_rows = [dict(r, shard=f"{i:02d}") for i, p in enumerate(parts) for r in p]
+    manifest_rows.sort(key=lambda r: (order[(r["task"], r["tier"])], r["builder_episode"]))
+    manifest = {
+        "schema": SCHEMA, "mode": "v9-full", "dataset": "test-hard",
+        "source_sha256": file_sha256(identities), "delivery_sha256": file_sha256(delivery_path),
+        "xhard0_dropped": dropped, "total": len(rows),
+        "cells": {cell_name(*k): cells[cell_name(*k)] for k in cells_table if cells.get(cell_name(*k))},
+        "shards": {f"{i:02d}": len(p) for i, p in enumerate(parts)}, "rows": manifest_rows,
+    }
+    return manifest, parts
+
+
+def hard0_builder(task: str):
+    """test-hard0 的真实 builder（只读官方 test 元数据的 hard 子集，不建仿真场景）。"""
+    from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
+
+    return BenchmarkEnvBuilder(task, dataset="test-hard0")
+
+
+def check_hard0(rows: list[dict], hs, per_task: int) -> dict:
+    """hard0 执行清单核对：16 任务 × 每任务 N 行，全为 xhard0、candidate／spec_sha256 为 null、source_episode 为整数，
+    key 与 (task, source_episode) 都唯一。"""
+    per: dict[str, int] = defaultdict(int)
+    bad = []
+    for r in rows:
+        per[r["task"]] += 1
+        if r["tier"] != hs.XHARD0 or r["candidate"] is not None or r["spec_sha256"] is not None \
+                or not _is_int(r["source_episode"]) or not _is_int(r["seed"]) or r["key"] != v8_key(r):
+            bad.append(r["key"])
+    keys = [r["key"] for r in rows]
+    srcs = [(r["task"], r["source_episode"]) for r in rows]
+    dup = (len(keys) - len(set(keys))) + (len(srcs) - len(set(srcs)))
+    xhard0 = sum(r["tier"] == hs.XHARD0 for r in rows)
+    total = len(hs.ALL_TASKS) * per_task
+    cell_mismatch = sum(per.get(t, 0) != per_task for t in hs.ALL_TASKS) + sum(t not in hs.ALL_TASKS for t in per)
+    if len(rows) != total or bad or dup or cell_mismatch or xhard0 != len(rows):
+        raise ManifestError("hard0", f"hard0 清单不符 rows={len(rows)} expected={total} bad={bad[:5]} dup={dup} "
+                                     f"cell_mismatch={cell_mismatch}",
+                            total=len(rows), xhard0=xhard0, duplicate=dup, cells=len(per))
+    return {"total": len(rows), "xhard0": xhard0, "cells": len(per)}
+
+
+def build_hard0(per_task: int, shards: int, *, pair_shards: bool = False,
+                builder_factory=None) -> tuple[dict, list[list[dict]]]:
+    """hard0：直接由 ``BenchmarkEnvBuilder(task, dataset="test-hard0")`` 枚举（不读交付清单），每任务取前 N 局。
+
+    行键同 ``SHARD_ROW_KEYS``：``spec_sha256=None``、``candidate=None``、``key=<task>_xhard0_<seed>``。
+    ``pair_shards``：原侧（官方入口）与新侧（本仓库客户端）共用同一份 ``shard-NN.json``，同一身份两侧落在同一分片、
+    分片内按 (task, builder_episode) 正序（两侧调用序列相同），manifest 记 ``paired_sides``。"""
+    hs = load_hard_specs()
+    if per_task < 1 or per_task > hs.XHARD0_PER_TASK:
+        raise ManifestError("hard0", f"--per-task={per_task} 须在 1..{hs.XHARD0_PER_TASK}")
+    make = builder_factory or hard0_builder
+    rows: list[dict] = []
+    for task in hs.ALL_TASKS:
+        b = make(task)
+        n = int(b.get_episode_num())
+        if per_task > n:
+            raise ManifestError("hard0", f"{task} test-hard0 只有 {n} 局，不够 --per-task={per_task}",
+                                total=len(rows))
+        for ep in range(per_task):
+            ident = b.resolve_identity(ep)
+            row = {"task": task, "tier": ident["tier"], "seed": int(ident["seed"]), "candidate": ident.get("candidate"),
+                   "builder_episode": ep, "source_episode": ident.get("source_episode"),
+                   "spec_sha256": ident.get("spec_sha256")}
+            row["key"] = v8_key(row)
+            rows.append(row)
+    check_hard0(rows, hs, per_task)
+    parts = split_shards(rows, shards)
+    manifest_rows = [dict(r, shard=f"{i:02d}") for i, p in enumerate(parts) for r in p]
+    order = {t: i for i, t in enumerate(hs.ALL_TASKS)}
+    manifest_rows.sort(key=lambda r: (order[r["task"]], r["builder_episode"]))
+    manifest = {
+        "schema": SCHEMA, "mode": "hard0", "dataset": "test-hard0", "per_task": per_task, "total": len(rows),
+        "cells": {cell_name(t, hs.XHARD0): per_task for t in hs.ALL_TASKS},
+        "shards": {f"{i:02d}": len(p) for i, p in enumerate(parts)}, "rows": manifest_rows,
+        "pair_shards": bool(pair_shards),
+    }
+    if pair_shards:
+        manifest["paired_sides"] = ["orig", "new"]
+    return manifest, parts
 
 
 def output_paths(out_dir: Path, shards: int, reused: bool = False) -> list[Path]:
@@ -418,30 +539,87 @@ def verify_outputs(out_dir: Path, manifest: dict, shards: int, reused_text: str 
     return chk
 
 
+MODES = ("v9-new", "v9-full", "hard0")
+
+
+def _write_and_verify(out_dir: Path, manifest: dict, parts: list[list[dict]], shards: int,
+                      reused_text: str | None) -> None:
+    """写产物并读回核对；不过则删掉本次写出的产物并抛 ManifestError。"""
+    write_outputs(out_dir, manifest, parts, reused_text)
+    try:
+        chk = verify_outputs(out_dir, manifest, shards, reused_text)
+    except (OSError, ValueError, KeyError) as e:
+        chk = {"verify_error": f"{type(e).__name__}: {e}"}
+    if any(chk.values()):
+        removed = remove_outputs(out_dir, shards, reused_text is not None)
+        raise ManifestError("verify", f"读回核对不符 {chk}，已删本次产物 {removed} 个",
+                            **{k: v for k, v in chk.items() if isinstance(v, int)})
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--identities", required=True, help="export_eval_identities.py 的身份 JSONL（V9 992 行）")
-    ap.add_argument("--delivery", required=True, help="交付清单 delivery.local.json（schema v8-delivery/1）")
+    ap.add_argument("--mode", default="v9-new", choices=list(MODES),
+                    help="v9-new（默认，剔除 V8 已评、只切新评行）／v9-full（V9 全量 800 局）／hard0（test-hard0 xhard0 局）")
+    ap.add_argument("--identities", default=None, help="V9 两模式：export_eval_identities.py 的身份 JSONL（V9 992 行）")
+    ap.add_argument("--delivery", default=None, help="V9 两模式：交付清单 delivery.local.json（schema v8-delivery/1）")
     ap.add_argument("--shards", type=int, default=DEFAULT_SHARDS)
     ap.add_argument("--out-dir", required=True)
-    ap.add_argument("--exclude-evaluated", required=True, metavar="V8_MANIFEST",
-                    help="按四元组 (task, tier, seed, spec_sha256) 剔除 V8 manifest 已评身份，只切新评行，"
+    ap.add_argument("--exclude-evaluated", default=None, metavar="V8_MANIFEST",
+                    help="v9-new 必填：按四元组 (task, tier, seed, spec_sha256) 剔除 V8 manifest 已评身份，只切新评行，"
                          "复用集合写 <out-dir>/reused.json")
+    ap.add_argument("--per-task", type=int, default=DEFAULT_PER_TASK, help="hard0：每任务取前 N 局（默认 12）")
+    ap.add_argument("--pair-shards", action="store_true",
+                    help="hard0：原侧与新侧共用同一份 shard-NN.json（同一身份两侧同分片、同序）")
     args = ap.parse_args(argv)
+    if args.mode in ("v9-new", "v9-full"):
+        need = [("--identities", args.identities), ("--delivery", args.delivery)]
+        if args.mode == "v9-new":
+            need.append(("--exclude-evaluated", args.exclude_evaluated))
+        miss = [n for n, v in need if v is None]
+        if miss:
+            ap.error(f"--mode {args.mode} 必须给 {' '.join(miss)}")
+        if args.pair_shards:
+            ap.error("--pair-shards 只用于 --mode hard0")
+    elif args.identities or args.delivery or args.exclude_evaluated:
+        ap.error("--mode hard0 由 builder 直接枚举，不接受 --identities／--delivery／--exclude-evaluated")
     out_dir = Path(args.out_dir)
+    if args.mode == "v9-new":
+        return main_v9_new(args, out_dir)
+    tag = "EVAL_SHARDS"
+    try:
+        if args.mode == "v9-full":
+            manifest, parts = build_v9_full(Path(args.identities), Path(args.delivery), args.shards)
+        else:
+            manifest, parts = build_hard0(args.per_task, args.shards, pair_shards=args.pair_shards)
+        _write_and_verify(out_dir, manifest, parts, args.shards, None)
+    except ManifestError as e:
+        c = e.counts
+        print(f"{tag}=FAIL mode={args.mode} total={c.get('total', 'NA')} cells={c.get('cells', 'NA')} "
+              f"missing={c.get('missing', 0)} extra={c.get('extra', 0)} duplicate={c.get('duplicate', 0)} "
+              f"xhard0={c.get('xhard0', 'NA')} stage={e.stage} detail={e.detail}", flush=True)
+        return 1
+    for name, n in manifest["shards"].items():
+        est = sum(TASK_SECONDS[r["task"]] for r in parts[int(name)])
+        print(f"SHARD {name} rows={n} est_s={est:.0f}", flush=True)
+    xhard0 = sum(r["tier"] == "xhard0" for r in manifest["rows"])
+    if args.mode == "v9-full":
+        print(f"{tag}=PASS mode=v9-full total={manifest['total']} cells={len(manifest['cells'])} missing=0 extra=0 "
+              f"duplicate=0 xhard0={xhard0}", flush=True)
+    else:
+        if args.pair_shards:
+            print(f"PAIR_SHARDS sides=orig,new shards={args.shards} files=shard-NN.json", flush=True)
+        print(f"{tag}=PASS mode=hard0 total={manifest['total']} xhard0={xhard0} per_task={args.per_task} "
+              f"cells={len(manifest['cells'])} missing=0 extra=0 duplicate=0", flush=True)
+    return 0
+
+
+def main_v9_new(args, out_dir: Path) -> int:
+    """默认模式（行为与改动前相同）：剔除 V8 已评、只切新评行，判定行 V9_EVAL_SHARDS。"""
     tag = "V9_EVAL_SHARDS"
     try:
         manifest, parts, reused_text = build_v9(Path(args.identities), Path(args.delivery), args.shards,
                                                 Path(args.exclude_evaluated))
-        write_outputs(out_dir, manifest, parts, reused_text)
-        try:
-            chk = verify_outputs(out_dir, manifest, args.shards, reused_text)
-        except (OSError, ValueError, KeyError) as e:
-            chk = {"verify_error": f"{type(e).__name__}: {e}"}
-        if any(chk.values()):
-            removed = remove_outputs(out_dir, args.shards, True)
-            raise ManifestError("verify", f"读回核对不符 {chk}，已删本次产物 {removed} 个",
-                                **{k: v for k, v in chk.items() if isinstance(v, int)})
+        _write_and_verify(out_dir, manifest, parts, args.shards, reused_text)
     except ManifestError as e:
         c = e.counts
         print(f"{tag}=FAIL shards={args.shards} total={c.get('total', 'NA')} cells={c.get('cells', 'NA')} "

@@ -3,27 +3,34 @@
 
 两部分：
 
-1. ``EnvSession``：身份 → ``BenchmarkEnvBuilder(dataset="test-hard").make_env_for_episode`` → reset/step。
+1. ``EnvSession``：身份 → ``BenchmarkEnvBuilder(dataset=<--dataset>).make_env_for_episode`` → reset/step。
    * ``reset()`` 原样返回 ``(obs, info)``；reset 期间录制器只入队（``set_phase("reset")``），返回后切 ``"run"``；
    * ``step(action)`` 把 action **原样**交给 ``env.step``，并记录实际交出去的数组（``exec_action``）与返回的当前帧、
      状态、终态字段；``env.step`` 抛出的异常原样上抛（由策略客户端按旧官方语义处理）；
    * 逐段计时：环境构建、reset、逐步 env 时间、录制开销、close。
 2. ``run`` 子命令：常驻客户端进程。import 与 Vulkan 设备只建一次，逐身份建 EnvSession + EpisodeRecorder，调用
-   策略模块（``mme_client`` / ``smvla_client``）的 ``run_episode(session, identity, conn_info, recorder) -> dict``，
-   结果写 ``<out>/results.jsonl``（合同格式），进度心跳写 ``<out>/progress.json``。
+   策略模块（``<policy>_client``：mme／smvla／mmesg／pp）的
+   ``run_episode(session, identity, conn_info, recorder) -> dict``，结果写 ``<out>/results.jsonl``（合同格式），
+   进度心跳写 ``<out>/progress.json``。
 
-身份核对：``builder.resolve_identity(builder_episode)`` 的 seed、source_episode、tier 必须等于身份清单，否则
+数据集与步数（1003-oracle-subgoal-groundsg-eval-plan.md 第二部分 1.2）：``--dataset {test-hard,test-hard0}`` 与
+``--max-steps`` 都必填、无默认值；步数上限不再按档查表，一律取 ``--max-steps``。启动约定：test-hard →
+``--max-steps 1600 --strict-cap``；test-hard0 → ``--max-steps 1300``、不带 ``--strict-cap``。``--strict-cap`` 打开时
+``EnvSession.step`` 在已执行 ``max_steps`` 步后不再进入环境、抛 ``StepCapReached``，``run_one`` 收为 ``status=timeout``
+（``cap_hit=true``）；不带时步数由策略客户端自己的循环决定（官方循环可执行第 ``max_steps+1`` 步）。
+
+身份清单一律是 ``eval_manifest.py`` 产出的分片 JSON（``shard-NN.json``），身份模式由 ``--dataset`` 决定：
+test-hard 逐键严格核对 tier／seed／candidate／spec_sha256（spec_sha256 为 64 位串）；test-hard0 要求
+tier=="xhard0"、candidate 与 spec_sha256 为 null、source_episode 为整数且与 builder 解析结果相等。不符即
 「运行阻塞」（写一条 ``run_blocked`` 记录、打印 ``RUN_BLOCKED``、退出码 3）。
 
-退出码：0 全部完成；3 运行阻塞；5 reset 额度耗尽（V8，run_seat.sh 不得重启）；75 单局墙钟超时（基础设施超时，
-已记录，由 run_seat.sh 重起）。
+持久账本（``--ledger``，JSONL + fsync；契约 C2）两个数据集都启用，与身份模式、``--strict-cap`` 解耦：
+``EnvSession.build``／``reset`` 每次实际调用前领一次 reset 额度，耗尽抛 ``ResetBudgetExhausted`` → 退出码 5；infra
+重试额度与每身份至多 2 次尝试都从账本统计，进程重启不刷新；第一次终态写 ``accept``，之后的终态记 ``late``；
+「attempt_end 已写、accept 未写」的崩溃窗口在恢复时补写 ``accept``。
 
-V8 模式（``--v8``；1001-v8-post-evaluation-gl-plan.md 第一部分 §1 第 4 条、§3，契约 C2）：身份清单为
-``eval_manifest.py`` 产出的分片 JSON；身份逐键核对 tier／seed／candidate／spec_sha256 与有效上限
-``hard_specs.TIER_MAX_STEPS[tier]``；``EnvSession.step`` 在已执行 ``step_cap`` 步后不再进入环境、抛
-``StepCapReached``，``run_one`` 一律收为 ``status=timeout``；``EnvSession.build``／``reset`` 每次实际调用前向持久账本
-（``--ledger``，JSONL + fsync）领一次 reset 额度，耗尽抛 ``ResetBudgetExhausted`` → 退出码 5；infra 重试额度与每身份
-至多 2 次尝试都从账本统计，进程重启不刷新；第一次终态写 ``accept``，之后的终态记 ``late``。不带 ``--v8`` 时一切同旧版。
+退出码：0 全部完成；3 运行阻塞；5 reset 额度耗尽（run_seat.sh 不得重启）；6 跑完仍有身份无权威终态（infra
+重试额度或每身份 2 次尝试用尽，打印 ``RUN_INCOMPLETE``）；75 单局墙钟超时（基础设施超时，已记录，由 run_seat.sh 重起）。
 
 本目录只挂在 ``sys.path`` 末尾（防止同目录模块遮蔽标准库），同目录模块按文件路径加载。
 """
@@ -55,25 +62,25 @@ for _extra in (REPO / "src",):
     if str(_extra) not in sys.path:
         sys.path.insert(0, str(_extra))
 
-MAX_STEPS = 1300
 XHARD0 = "xhard0"
+#: 两个评估数据集：新值档（V9）与官方 test 的 hard 子集（xhard0）
+TEST_HARD = "test-hard"
+TEST_HARD0 = "test-hard0"
+DATASETS = (TEST_HARD, TEST_HARD0)
+#: 策略模块名（按 load_sibling(f"{policy}_client") 加载）
+POLICIES = ("mme", "smvla", "mmesg", "pp")
+#: mmesg（GroundSG）两个子目标来源变体
+MME_VARIANTS = ("ground-sg-oracle", "ground-sg-qwenvl")
 EXIT_BLOCKED = 3
 EXIT_BUDGET = 5
+EXIT_INCOMPLETE = 6
 EXIT_WALL = 75
 DEFAULT_SHUFFLE_SEED = 20260930
 TERMINAL_STATUSES = ("success", "fail", "timeout")
 #: V8 每身份至多尝试次数（首试 + 1 次基础设施重试）
 V8_MAX_ATTEMPTS = 2
-#: V8 执行身份行（eval_manifest.py shard-NN.json 的元素）必须恰有的字段
-V8_IDENTITY_KEYS = ("task", "tier", "seed", "candidate", "builder_episode", "source_episode", "spec_sha256",
-                    "effective_max_steps", "key")
-
-
-def tier_max_steps() -> dict:
-    """V8 有效上限表：与 builder 同一份 ``hard_specs.TIER_MAX_STEPS``。"""
-    from robomme_hard.env_record_wrapper import hard_specs
-
-    return dict(hard_specs.TIER_MAX_STEPS)
+#: 执行身份行（eval_manifest.py shard-NN.json 的元素）必须恰有的字段；与 eval_manifest.SHARD_ROW_KEYS 同步
+V8_IDENTITY_KEYS = ("task", "tier", "seed", "candidate", "builder_episode", "source_episode", "spec_sha256", "key")
 
 
 def dumps(obj: Any) -> str:
@@ -124,7 +131,7 @@ class RecorderError(RuntimeError):
 
 
 class StepCapReached(RuntimeError):
-    """V8：执行段已满 ``step_cap`` 步仍未成功，第 ``step_cap+1`` 次 ``step`` 不进入环境（run_one 收为 timeout）。"""
+    """``--strict-cap``：执行段已满 ``step_cap`` 步仍未成功，第 ``step_cap+1`` 次 ``step`` 不进入环境（run_one 收为 timeout）。"""
 
 
 class ResetBudgetExhausted(RuntimeError):
@@ -178,14 +185,19 @@ class NullRecorder:
 class EnvSession:
     """一局环境。``builder`` 可由常驻进程按任务缓存后传入（与旧官方「每任务一个 EnvRunner」一致）。"""
 
-    def __init__(self, task: str, builder_episode: int, *, max_steps: int = MAX_STEPS, recorder=None, builder=None,
+    def __init__(self, task: str, builder_episode: int, *, max_steps: int | None = None, recorder=None, builder=None,
                  progress_cb: Callable[[int], None] | None = None, progress_every: int = 16,
-                 step_cap: int | None = None, claim_reset: Callable[[str], None] | None = None):
+                 step_cap: int | None = None, claim_reset: Callable[[str], None] | None = None,
+                 dataset: str = TEST_HARD):
         self.task = task
         self.builder_episode = int(builder_episode)
-        self.max_steps = int(max_steps)
-        # V8：step_cap=None 时不截断（旧模式）；claim_reset(what) 在每次实际 build／reset 前调用，额度耗尽抛
-        # ResetBudgetExhausted（旧模式 None，不领额度）
+        # max_steps 只在需要自建 builder 时用（构造参数）；不再逐局传给 make_env_for_episode
+        self.max_steps = None if max_steps is None else int(max_steps)
+        if dataset not in DATASETS:
+            raise ValueError(f"dataset={dataset!r} 不是 {DATASETS} 之一")
+        self.dataset = dataset
+        # step_cap=None 时不截断（不带 --strict-cap）；claim_reset(what) 在每次实际 build／reset 前调用，额度耗尽抛
+        # ResetBudgetExhausted（None 时不领额度，单测用）
         self.step_cap = None if step_cap is None else int(step_cap)
         self.claim_reset = claim_reset
         self.cap_hit = False
@@ -208,8 +220,10 @@ class EnvSession:
         if self._builder is None:
             from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
 
+            if self.max_steps is None:
+                raise ValueError("EnvSession 自建 builder 必须给 max_steps（步数上限由入口按数据集给出）")
             t0 = time.perf_counter()
-            self._builder = BenchmarkEnvBuilder(env_id=self.task, dataset="test-hard", action_space="joint_angle",
+            self._builder = BenchmarkEnvBuilder(env_id=self.task, dataset=self.dataset, action_space="joint_angle",
                                                 max_steps=self.max_steps)
             self.timing["builder_init_s"] = time.perf_counter() - t0
         return self._builder
@@ -228,13 +242,14 @@ class EnvSession:
         self.reset_calls += 1
 
     def build(self) -> None:
-        """``make_env_for_episode(builder_episode, max_steps=1300)``（DemonstrationWrapper 内部 +2，与官方相同）。"""
+        """``make_env_for_episode(builder_episode)``：不逐局传步数，由 builder 构造参数 ``max_steps`` 决定
+        （DemonstrationWrapper 内部 +2，与官方相同）。"""
         if self.env is not None:
             return
         self._claim("build")
         self._rec.set_phase("reset")
         t0 = time.perf_counter()
-        self.env = self.builder.make_env_for_episode(self.builder_episode, max_steps=self.max_steps)
+        self.env = self.builder.make_env_for_episode(self.builder_episode)
         self.timing["env_build_s"] = time.perf_counter() - t0
 
     def reset(self):
@@ -271,7 +286,7 @@ class EnvSession:
     def step(self, action):
         """action 原样交给 ``env.step``；记录交出去的数组与返回的当前帧、状态、终态。
 
-        V8（``step_cap`` 非空）：已执行 ``step_cap`` 步后再调用即不进入环境，置 ``cap_hit`` 并抛 ``StepCapReached``；
+        ``--strict-cap``（``step_cap`` 非空）：已执行 ``step_cap`` 步后再调用即不进入环境，置 ``cap_hit`` 并抛 ``StepCapReached``；
         第 ``step_cap`` 步及之前环境报的终态照常返回。"""
         import numpy as np
 
@@ -415,18 +430,28 @@ def v8_key(row: dict) -> str:
 
 
 def key_of(row: dict) -> str:
-    """旧模式 ``<task>_<seed>``；V8 身份行与结果行带 ``key``（= ``<task>_<tier>_<seed>``），直接用它。"""
+    """身份行与结果行带 ``key``（= ``<task>_<tier>_<seed>``）时直接用它，否则按契约现算。"""
     if row.get("key"):
         return str(row["key"])
-    return f"{row['task']}_{int(row['seed'])}"
+    return v8_key(row)
 
 
 def _is_int(v: Any) -> bool:
     return isinstance(v, int) and not isinstance(v, bool)
 
 
-def validate_v8_identity(row: dict, tier_max: dict | None = None) -> str | None:
-    """V8 执行身份行的结构核对（字段齐全、nullable 严格、key 与有效上限自洽）；不符返回说明。"""
+def _same_int_or_null(a: Any, b: Any) -> bool:
+    """两边同为 null，或同为（非 bool 的）整数且相等。"""
+    return (a is None and b is None) or (_is_int(a) and _is_int(b) and a == b)
+
+
+def validate_v8_identity(row: dict, dataset: str = TEST_HARD) -> str | None:
+    """执行身份行的结构核对（字段齐全、nullable 严格、key 自洽）；不符返回说明。身份模式由 ``dataset`` 决定：
+
+    * test-hard：spec_sha256 为 64 位串，candidate 为整数或 null；
+    * test-hard0：tier=="xhard0"、candidate 与 spec_sha256 为 null、source_episode 为整数。"""
+    if dataset not in DATASETS:
+        return f"dataset={dataset!r}"
     bad = []
     missing = [k for k in V8_IDENTITY_KEYS if k not in row]
     if missing:
@@ -437,52 +462,57 @@ def validate_v8_identity(row: dict, tier_max: dict | None = None) -> str | None:
         bad.append(f"candidate={row['candidate']!r}")
     if row["source_episode"] is not None and not _is_int(row["source_episode"]):
         bad.append(f"source_episode={row['source_episode']!r}")
-    if not isinstance(row["spec_sha256"], str) or len(row["spec_sha256"]) != 64:
+    if dataset == TEST_HARD0:
+        if row["tier"] != XHARD0:
+            bad.append(f"tier={row['tier']!r} 不是 {XHARD0}")
+        if row["candidate"] is not None:
+            bad.append(f"candidate={row['candidate']!r} 须为 null")
+        if row["spec_sha256"] is not None:
+            bad.append(f"spec_sha256={row['spec_sha256']!r} 须为 null")
+        if not _is_int(row["source_episode"]):
+            bad.append(f"source_episode={row['source_episode']!r} 须为整数")
+    elif not isinstance(row["spec_sha256"], str) or len(row["spec_sha256"]) != 64:
         bad.append(f"spec_sha256={row['spec_sha256']!r}")
     if not bad and row["key"] != v8_key(row):
         bad.append(f"key={row['key']} want={v8_key(row)}")
-    if tier_max is not None and row.get("effective_max_steps") != tier_max.get(row["tier"]):
-        bad.append(f"effective_max_steps={row.get('effective_max_steps')} tier_max={tier_max.get(row['tier'])}")
     return "; ".join(bad) or None
 
 
-def check_identity(resolved: dict, want: dict, *, v8: bool = False, tier_max: dict | None = None) -> str | None:
+def check_identity(resolved: dict, want: dict, *, dataset: str = TEST_HARD) -> str | None:
     """builder 解析出的身份必须与清单一致；不一致返回说明（运行阻塞）。
 
-    旧模式：tier 必须是 xhard0，seed、source_episode 相等。V8：tier／seed／candidate／spec_sha256 逐键严格相等
-    （candidate 可空，两边同为 null 或同一整数），且身份行的 ``effective_max_steps`` 等于 ``TIER_MAX_STEPS[tier]``。"""
+    test-hard：tier／seed／candidate／spec_sha256 逐键严格相等（candidate 可空，两边同为 null 或同一整数）。
+    test-hard0：两边 tier 都是 xhard0，seed 相等，candidate 与 spec_sha256 两边都为 null，source_episode 两边同为
+    整数且相等。"""
     bad = []
-    if v8:
-        if resolved.get("tier") != want.get("tier"):
-            bad.append(f"tier builder={resolved.get('tier')} want={want.get('tier')}")
-        for k in ("seed", "candidate"):
+    if resolved.get("tier") != want.get("tier"):
+        bad.append(f"tier builder={resolved.get('tier')} want={want.get('tier')}")
+    if dataset == TEST_HARD0:
+        if want.get("tier") != XHARD0:
+            bad.append(f"tier want={want.get('tier')} 不是 {XHARD0}")
+        for k in ("seed", "source_episode"):
             rv, wv = resolved.get(k), want.get(k)
-            if not ((rv is None and wv is None) or (_is_int(rv) and _is_int(wv) and rv == wv)):
+            if not (_is_int(rv) and _is_int(wv) and rv == wv):
                 bad.append(f"{k} builder={rv!r} want={wv!r}")
-        if not (isinstance(want.get("spec_sha256"), str) and resolved.get("spec_sha256") == want.get("spec_sha256")):
-            bad.append(f"spec_sha256 builder={resolved.get('spec_sha256')} want={want.get('spec_sha256')}")
-        tm = (tier_max or {}).get(want.get("tier"))
-        if tm is None or want.get("effective_max_steps") != tm:
-            bad.append(f"effective_max_steps={want.get('effective_max_steps')} tier_max={tm}")
+        for k in ("candidate", "spec_sha256"):
+            if resolved.get(k) is not None or want.get(k) is not None:
+                bad.append(f"{k} builder={resolved.get(k)!r} want={want.get(k)!r} 须都为 null")
         return "; ".join(bad) or None
-    if resolved.get("tier") != XHARD0:
-        bad.append(f"tier={resolved.get('tier')}")
-    if int(resolved.get("seed", -1)) != int(want["seed"]):
-        bad.append(f"seed builder={resolved.get('seed')} want={want['seed']}")
-    if int(resolved.get("source_episode", -1)) != int(want["source_episode"]):
-        bad.append(f"source_episode builder={resolved.get('source_episode')} want={want['source_episode']}")
+    for k in ("seed", "candidate"):
+        rv, wv = resolved.get(k), want.get(k)
+        if not _same_int_or_null(rv, wv):
+            bad.append(f"{k} builder={rv!r} want={wv!r}")
+    if not (isinstance(want.get("spec_sha256"), str) and resolved.get("spec_sha256") == want.get("spec_sha256")):
+        bad.append(f"spec_sha256 builder={resolved.get('spec_sha256')} want={want.get('spec_sha256')}")
     return "; ".join(bad) or None
 
 
-def order_identities(rows: list[dict], order: str, shuffle_seed: int, *, v8: bool = False) -> list[dict]:
+def order_identities(rows: list[dict], order: str, shuffle_seed: int) -> list[dict]:
     rows = list(rows)
     if order == "reverse":
         rows.reverse()
-    elif order == "shuffle":
-        if v8:  # 新值局 source_episode 为空：按 (task, tier, seed) 定序后再打乱
-            rows.sort(key=lambda r: (r["task"], r["tier"], int(r["seed"])))
-        else:
-            rows.sort(key=lambda r: (r["task"], int(r["source_episode"])))
+    elif order == "shuffle":  # 新值局 source_episode 为空：按 (task, tier, seed) 定序后再打乱
+        rows.sort(key=lambda r: (r["task"], r["tier"], int(r["seed"])))
         random.Random(shuffle_seed).shuffle(rows)
     return rows
 
@@ -613,6 +643,27 @@ class AttemptLedger:
         """有 attempt_start、无 attempt_end 的尝试（进程被杀等）。"""
         return [r for rows in self.starts.values() for r in rows if r["attempt_id"] not in self.ended]
 
+    def final_without_accept(self) -> list[dict]:
+        """崩溃窗口：最后一次未作废尝试的 attempt_end 已是最终结局、该身份却没有 accept（attempt_end 写完、accept
+        写之前进程死掉）。返回这些 attempt_end 行。"""
+        out = []
+        for key, rows in self.starts.items():
+            if key in self.accepted:
+                continue
+            live = [r for r in rows if not self._void(r["attempt_id"])]
+            if not live:
+                continue
+            end = self.ended.get(live[-1]["attempt_id"])
+            if end and self.is_final(end):
+                out.append(end)
+        return out
+
+    def recover_accept(self, end: dict) -> dict:
+        """为崩溃窗口里的身份补写 accept（指向最后一次、即第一次最终结局的尝试），带 ``recovered=true``。"""
+        return self.append({"kind": "accept", "key": end["key"], "attempt_id": end["attempt_id"],
+                            "attempt_no": end.get("attempt_no"), "accepted_attempt_id": end["attempt_id"],
+                            "status": end.get("status"), "recovered": True})
+
     # 写入
     def claim_reset(self, *, key: str, attempt_id: str, attempt_no: int, what: str, canary: bool = False) -> None:
         with self._lock:
@@ -659,11 +710,59 @@ class AttemptLedger:
 # ── 常驻客户端 ──────────────────────────────────────────────────────────────
 
 
+def policy_variant_of(args) -> str | None:
+    """结果行的 ``policy_variant``：mmesg 取 ``--mme-variant``，其余策略为 null。"""
+    return getattr(args, "mme_variant", None) if args.policy == "mmesg" else None
+
+
+def check_run_args(args, *, need_identities: bool = False) -> str | None:
+    """``run`` 的参数组合核对；不符返回说明（cmd_run 打印 RUN_BLOCKED reason=args 并以 3 退出）。"""
+    bad = []
+    if getattr(args, "dataset", None) not in DATASETS:
+        bad.append(f"--dataset 必须是 {'／'.join(DATASETS)} 之一（现为 {getattr(args, 'dataset', None)!r}）")
+    ms = getattr(args, "max_steps", None)
+    if not _is_int(ms) or ms <= 0:
+        bad.append(f"--max-steps 必须是正整数（现为 {ms!r}）")
+    miss = [n for n, v in (("--ledger", getattr(args, "ledger", None)),
+                           ("--reset-budget", getattr(args, "reset_budget", None)),
+                           ("--infra-retry-budget", getattr(args, "infra_retry_budget", None)),
+                           *((("--identities", getattr(args, "identities", None)),) if need_identities else ()))
+            if v is None]
+    if miss:
+        bad.append(f"必须给 {' '.join(miss)}")
+    variant = getattr(args, "mme_variant", None)
+    adapter = getattr(args, "qwenvl_groundsg_adapter", None)
+    if args.policy == "mmesg":
+        if variant not in MME_VARIANTS:
+            bad.append(f"--policy mmesg 必须给 --mme-variant {'／'.join(MME_VARIANTS)}")
+    elif variant is not None:
+        bad.append("--mme-variant 只能与 --policy mmesg 同用")
+    if variant == "ground-sg-qwenvl" and not adapter:
+        bad.append("--mme-variant ground-sg-qwenvl 必须给 --qwenvl-groundsg-adapter")
+    if adapter and variant != "ground-sg-qwenvl":
+        bad.append("--qwenvl-groundsg-adapter 只能与 --mme-variant ground-sg-qwenvl 同用")
+    return "; ".join(bad) or None
+
+
 class SeatRunner:
-    """一个席位上一个策略的常驻客户端。``policy_mod`` / ``recorder_factory`` / ``builder_factory`` 可注入（单测）。"""
+    """一个席位上一个策略的常驻客户端。``policy_mod`` / ``recorder_factory`` / ``builder_factory`` 可注入（单测）。
+
+    * ``builder_factory`` 按形参个数调用：3 个 → ``(task, dataset, max_steps)``；2 个 → ``(task, max_steps)``；
+      1 个 → ``(task)``。不注入时建 ``BenchmarkEnvBuilder(env_id=task, dataset=--dataset, action_space="joint_angle",
+      max_steps=--max-steps)``，按 ``(task, dataset)`` 缓存。
+    * ``policy_context``：整席只建一次的进程内对象（不进任何 JSON），经 ``conn_info["policy_context"]`` 交给策略。
+      策略模块定义了 ``make_policy_context(seat_info: dict)`` 就在第一局前调用一次、取其返回值，否则为空 dict（策略
+      可自行往里缓存）；定义了 ``close_policy_context(ctx)`` 就在席位收尾（``close()``）时调用一次。
+    """
 
     def __init__(self, args, *, policy_mod=None, recorder_factory=None, builder_factory=None, proc_info=None):
         self.args = args
+        bad = check_run_args(args)
+        if bad:
+            raise ValueError(bad)
+        self.dataset = args.dataset
+        self.max_steps = int(args.max_steps)
+        self.strict_cap = bool(getattr(args, "strict_cap", False))
         self.out = Path(args.out)
         self.out.mkdir(parents=True, exist_ok=True)
         self.results_path = self.out / "results.jsonl"
@@ -671,7 +770,7 @@ class SeatRunner:
         self.policy_mod = policy_mod
         self.recorder_factory = recorder_factory
         self.builder_factory = builder_factory
-        self.builders: dict[str, Any] = {}
+        self.builders: dict[tuple[str, str], Any] = {}
         self.proc_info = proc_info or {}
         self.episodes_done = 0
         self._lock = threading.Lock()
@@ -679,129 +778,143 @@ class SeatRunner:
         self._built_once = False
         rec_root = getattr(args, "rec_root", None)
         self.rec_root = Path(rec_root) if rec_root else self.out / "rec"
-        self.v8 = bool(getattr(args, "v8", False))
-        self.ledger: AttemptLedger | None = None
-        self.tier_max: dict | None = None
-        if self.v8:
-            if not getattr(args, "ledger", None):
-                raise ValueError("V8 模式必须给 --ledger")
-            if getattr(args, "reset_budget", None) is None or getattr(args, "infra_retry_budget", None) is None:
-                raise ValueError("V8 模式必须给 --reset-budget 与 --infra-retry-budget")
-            self.tier_max = tier_max_steps()
-            self.ledger = AttemptLedger(args.ledger, seat=args.seat, policy=args.policy)
-            self.ledger.start(args.reset_budget, args.infra_retry_budget,
-                              reason=getattr(args, "budget_raise_reason", None) or "cli_reset_budget")
+        trace_root = getattr(args, "trace_root", None)
+        self.trace_root = Path(trace_root) if trace_root else None
+        self._policy_context: Any = None
+        self._policy_context_ready = False
+        self.ledger = AttemptLedger(args.ledger, seat=args.seat, policy=args.policy)
+        self.ledger.start(args.reset_budget, args.infra_retry_budget,
+                          reason=getattr(args, "budget_raise_reason", None) or "cli_reset_budget")
 
     # 进度心跳：原子替换写 progress.json
     def progress(self, step: int = 0, **extra) -> None:
         cur = self._current or {}
         doc = {"pid": os.getpid(), "host": socket.gethostname(), "seat": self.args.seat, "policy": self.args.policy,
-               "cond": self.args.cond, "key": cur.get("key"), "step": step, "t": time.time(),
+               "cond": self.args.cond, "dataset": self.dataset, "key": cur.get("key"), "step": step, "t": time.time(),
                "episodes_done": self.episodes_done, **extra}
         tmp = self.progress_path.with_suffix(".json.tmp")
         tmp.write_text(dumps(doc), encoding="utf-8")
         os.replace(tmp, self.progress_path)
 
-    def builder_for(self, task: str, max_steps: int | None = None):
-        """按 (task, 有效上限) 缓存 builder，避免跨档沿用旧上限。旧模式上限即 ``--max-steps``。"""
-        ms = int(self.args.max_steps if max_steps is None else max_steps)
-        ck = (task, ms)
+    def builder_for(self, task: str):
+        """按 (task, dataset) 缓存 builder；步数上限取 ``--max-steps``（不再按档查表）。"""
+        ck = (task, self.dataset)
         if ck not in self.builders:
             if self.builder_factory is not None:
                 try:
                     n_params = len(inspect.signature(self.builder_factory).parameters)
                 except (TypeError, ValueError):
                     n_params = 1
-                self.builders[ck] = self.builder_factory(task, ms) if (self.v8 and n_params >= 2) \
-                    else self.builder_factory(task)
+                if n_params >= 3:
+                    self.builders[ck] = self.builder_factory(task, self.dataset, self.max_steps)
+                elif n_params == 2:
+                    self.builders[ck] = self.builder_factory(task, self.max_steps)
+                else:
+                    self.builders[ck] = self.builder_factory(task)
             else:
                 from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
 
-                self.builders[ck] = BenchmarkEnvBuilder(env_id=task, dataset="test-hard", action_space="joint_angle",
-                                                        max_steps=ms)
+                self.builders[ck] = BenchmarkEnvBuilder(env_id=task, dataset=self.dataset, action_space="joint_angle",
+                                                        max_steps=self.max_steps)
         return self.builders[ck]
 
-    def policy_kwargs(self, effective_max_steps: int) -> dict:
-        """V8：策略 ``run_episode`` 签名里有 ``max_steps``／``reset_retries`` 关键字（smvla）就显式传
-        ``max_steps=有效上限``、``reset_retries=0``；没有（mme，只读 conn_info）就不传。旧模式一律不传。"""
-        if not self.v8:
-            return {}
+    def policy_kwargs(self, max_steps: int) -> dict:
+        """策略 ``run_episode`` 签名里有 ``max_steps``／``reset_retries`` 关键字（smvla）就显式传
+        ``max_steps=--max-steps``、``reset_retries=0``；没有（mme 等只读 conn_info）就不传。"""
         try:
             params = inspect.signature(self.policy_mod.run_episode).parameters
         except (TypeError, ValueError):
             return {}
         kw: dict[str, Any] = {}
         if "max_steps" in params:
-            kw["max_steps"] = int(effective_max_steps)
+            kw["max_steps"] = int(max_steps)
         if "reset_retries" in params:
             kw["reset_retries"] = 0
         return kw
 
+    def seat_info(self) -> dict:
+        """交给 ``make_policy_context`` 的席位信息（只读）。"""
+        a = self.args
+        return {"policy": a.policy, "seat": a.seat, "host": a.host, "port": a.port, "dataset": self.dataset,
+                "max_steps": self.max_steps, "strict_cap": self.strict_cap,
+                "mme_variant": getattr(a, "mme_variant", None),
+                "qwenvl_groundSG_adapter_path": getattr(a, "qwenvl_groundsg_adapter", None),
+                "trace_root": str(self.trace_root) if self.trace_root else None, "out": str(self.out)}
+
+    def policy_context(self) -> Any:
+        """整席只建一次的策略上下文（进程内对象）。"""
+        if not self._policy_context_ready:
+            make = getattr(self.policy_mod, "make_policy_context", None)
+            self._policy_context = make(self.seat_info()) if callable(make) else {}
+            self._policy_context_ready = True
+        return self._policy_context
+
+    def close(self) -> None:
+        """席位收尾：策略定义了 ``close_policy_context`` 就调一次（上下文从未建过则不调）。"""
+        if self._policy_context_ready:
+            fn = getattr(self.policy_mod, "close_policy_context", None)
+            if callable(fn):
+                fn(self._policy_context)
+            self._policy_context_ready = False
+            self._policy_context = None
+
     def base_record(self, ident: dict, *, attempt: int) -> dict:
-        # 结果行保留 canary 字段（恒为 False），下游读结果的工具按该键过滤，格式不变
-        if self.v8:
-            ident_full = {"tier": ident["tier"], "seed": int(ident["seed"]), "candidate": ident["candidate"],
-                          "spec_sha256": ident["spec_sha256"], "builder_episode": int(ident["builder_episode"])}
-            return {"v8": True, "key": key_of(ident), "task": ident["task"], "tier": ident["tier"],
-                    "seed": int(ident["seed"]), "candidate": ident["candidate"], "spec_sha256": ident["spec_sha256"],
-                    "source_episode": ident.get("source_episode"), "identity": ident_full,
-                    "builder_episode": int(ident["builder_episode"]), "policy": self.args.policy,
-                    "cond": self.args.cond, "seat": self.args.seat, "host": socket.gethostname(), "attempt": attempt,
-                    "attempt_no": attempt, "canary": False,
-                    "gpu_name": self.proc_info.get("gpu_name"), "gpu_uuid": self.proc_info.get("gpu_uuid"),
-                    "git_commit": self.proc_info.get("git_commit"), "git_dirty": self.proc_info.get("git_dirty"),
-                    "max_steps": ident.get("effective_max_steps"),
-                    "effective_max_steps": ident.get("effective_max_steps")}
-        return {"task": ident["task"], "source_episode": int(ident["source_episode"]), "seed": int(ident["seed"]),
-                "identity": {"tier": XHARD0, "seed": int(ident["seed"]), "source_episode": int(ident["source_episode"])},
-                "builder_episode": int(ident["builder_episode"]), "policy": self.args.policy, "cond": self.args.cond,
-                "seat": self.args.seat, "host": socket.gethostname(), "attempt": attempt, "canary": False,
+        # 结果行保留 v8=True（下游 eval_report／搬运脚本按它识别本格式）与 canary 字段（恒为 False）；
+        # max_steps 与 effective_max_steps 下游站点仍在读，值都取 --max-steps
+        ident_full = {"tier": ident["tier"], "seed": int(ident["seed"]), "candidate": ident["candidate"],
+                      "spec_sha256": ident["spec_sha256"], "builder_episode": int(ident["builder_episode"]),
+                      "source_episode": ident.get("source_episode")}
+        return {"v8": True, "key": key_of(ident), "task": ident["task"], "tier": ident["tier"],
+                "seed": int(ident["seed"]), "candidate": ident["candidate"], "spec_sha256": ident["spec_sha256"],
+                "source_episode": ident.get("source_episode"), "identity": ident_full,
+                "builder_episode": int(ident["builder_episode"]), "dataset": self.dataset,
+                "policy": self.args.policy, "policy_variant": policy_variant_of(self.args),
+                "strict_cap": self.strict_cap, "cond": self.args.cond, "seat": self.args.seat,
+                "host": socket.gethostname(), "attempt": attempt, "attempt_no": attempt, "canary": False,
                 "gpu_name": self.proc_info.get("gpu_name"), "gpu_uuid": self.proc_info.get("gpu_uuid"),
                 "git_commit": self.proc_info.get("git_commit"), "git_dirty": self.proc_info.get("git_dirty"),
-                "max_steps": self.args.max_steps}
+                "max_steps": self.max_steps, "effective_max_steps": self.max_steps}
+
+    def _check(self, ident: dict) -> tuple[str | None, dict | None, Any]:
+        """身份核对：结构 → builder 解析 → 逐键比对。返回 (不符说明, 解析结果, builder)。"""
+        bad = validate_v8_identity(ident, self.dataset)
+        if bad is not None:
+            return bad, None, None
+        builder = self.builder_for(ident["task"])
+        try:
+            resolved = builder.resolve_identity(int(ident["builder_episode"]))
+        except Exception as e:  # noqa: BLE001 局号越界等（如把别的数据集的分片喂进来）
+            return f"resolve_identity: {type(e).__name__}: {e}"[:800], None, builder
+        return check_identity(resolved, ident, dataset=self.dataset), resolved, builder
 
     def run_one(self, ident: dict, *, attempt: int = 1, retry: bool = False) -> dict:
-        v8 = self.v8
         key = key_of(ident)
-        if v8:
-            rec_dir = self.rec_root / f"{key}.a{attempt}"
-            eff = ident.get("effective_max_steps")
-        else:
-            suffix = f".a{attempt}" if attempt > 1 else ""
-            rec_dir = self.rec_root / f"{key}{suffix}"
-            eff = self.args.max_steps
+        tag = f"{key}.a{attempt}"
+        rec_dir = self.rec_root / tag
+        eff = self.max_steps
         record = self.base_record(ident, attempt=attempt)
         record["rec_dir"] = str(rec_dir)
         attempt_id = uuid.uuid4().hex
-        if v8:
-            record.update(attempt_id=attempt_id, exec_steps=0, client_steps=None, chunks=None, hard_bound=None,
-                          cap_hit=False, demo_frames=None, reset_calls=0, late=False)
+        record.update(attempt_id=attempt_id, exec_steps=0, client_steps=None, chunks=None, hard_bound=None,
+                      cap_hit=False, demo_frames=None, reset_calls=0, late=False)
         self._current = {"key": key, "t0": time.time()}
         self.progress(0, phase="start")
-        if v8:
-            bad = validate_v8_identity(ident, self.tier_max)
-            builder = self.builder_for(ident["task"], int(eff)) if bad is None else None
-        else:
-            bad, builder = None, self.builder_for(ident["task"])
-        resolved = builder.resolve_identity(int(ident["builder_episode"])) if builder is not None else None
-        if bad is None:
-            bad = check_identity(resolved, ident, v8=v8, tier_max=self.tier_max)
+        bad, resolved, builder = self._check(ident)
         if bad:
             record.update(status="error", task_success=False, steps=0, error=f"IDENTITY_MISMATCH {bad}",
                           run_blocked=True, infra=False, resolved_identity=resolved)
             append_result(self.results_path, record)
-            print(f"RUN_BLOCKED reason=identity key={key} detail={bad}", flush=True)
+            print(f"RUN_BLOCKED reason=identity key={key} dataset={self.dataset} detail={bad}", flush=True)
             raise SystemExit(EXIT_BLOCKED)
-        claim_reset = None
-        if v8:
-            if self.ledger.reset_left() <= 0:  # 开局前就没有额度：不开尝试、不写结果，直接停
-                self._budget_stop(key)
-            self.ledger.attempt_start(key=key, attempt_id=attempt_id, attempt_no=attempt, retry=retry,
-                                      task=ident["task"], tier=ident["tier"],
-                                      builder_episode=int(ident["builder_episode"]))
+        policy_context = self.policy_context()
+        if self.ledger.reset_left() <= 0:  # 开局前就没有额度：不开尝试、不写结果，直接停
+            self._budget_stop(key)
+        self.ledger.attempt_start(key=key, attempt_id=attempt_id, attempt_no=attempt, retry=retry,
+                                  task=ident["task"], tier=ident["tier"], dataset=self.dataset,
+                                  builder_episode=int(ident["builder_episode"]))
 
-            def claim_reset(what, _k=key, _a=attempt_id, _n=attempt):
-                self.ledger.claim_reset(key=_k, attempt_id=_a, attempt_no=_n, what=what)
+        def claim_reset(what, _k=key, _a=attempt_id, _n=attempt):
+            self.ledger.claim_reset(key=_k, attempt_id=_a, attempt_no=_n, what=what)
         meta = dict(record, resolved_identity=resolved, env=self.proc_info.get("env"),
                     never_degrade=bool(self.args.never_degrade), baseline=bool(self.args.baseline))
         try:
@@ -810,18 +923,23 @@ class SeatRunner:
             record.update(status="error", task_success=False, steps=0, infra=True, infra_reason="recorder",
                           error=f"RecorderError: init: {type(e).__name__}: {e}"[:800])
             self._finish(record)
-            if v8:
-                self._print_done_v8(record)
-            else:
-                print(f"EPISODE_DONE policy={self.args.policy} key={key} status=error infra=True reason=recorder_init",
-                      flush=True)
+            self._print_done(record)
             return record
-        session = EnvSession(ident["task"], int(ident["builder_episode"]), max_steps=int(eff),
-                             recorder=recorder, builder=builder, progress_cb=lambda s: self.progress(s),
-                             step_cap=int(eff) if v8 else None, claim_reset=claim_reset)
-        conn_info = {"host": self.args.host, "port": self.args.port, "max_steps": int(eff),
-                     "policy": self.args.policy, "seat": self.args.seat}
-        policy_kw = self.policy_kwargs(int(eff))
+        session = EnvSession(ident["task"], int(ident["builder_episode"]), max_steps=eff, recorder=recorder,
+                             builder=builder, progress_cb=lambda s: self.progress(s),
+                             step_cap=eff if self.strict_cap else None, claim_reset=claim_reset,
+                             dataset=self.dataset)
+        # conn_info：除 policy_context（进程内对象）外都是可序列化的标量；trace_dir 为本局轨迹目录（不预先建，
+        # 由写轨迹的一方建），未给 --trace-root 时为 null
+        trace_dir = self.trace_root / tag if self.trace_root is not None else None
+        conn_info = {"host": self.args.host, "port": self.args.port, "max_steps": eff, "policy": self.args.policy,
+                     "seat": self.args.seat, "dataset": self.dataset, "strict_cap": self.strict_cap,
+                     "mme_variant": getattr(self.args, "mme_variant", None),
+                     "qwenvl_groundSG_adapter_path": getattr(self.args, "qwenvl_groundsg_adapter", None),
+                     "trace_root": str(self.trace_root) if self.trace_root is not None else None,
+                     "trace_dir": str(trace_dir) if trace_dir is not None else None,
+                     "episode_tag": tag, "rec_dir": str(rec_dir), "policy_context": policy_context}
+        policy_kw = self.policy_kwargs(eff)
         limit = self.args.episode_wall_s + (self.args.first_extra_s if self.episodes_done == 0 else 0)
         # first_extra_s 只给「server 刚（重）起后的第一局」：由 run_seat.sh 在 server 新起时传 600，客户端单独重起时传 0
         state = {"finished": False, "session": session}
@@ -854,7 +972,7 @@ class SeatRunner:
         wall = time.perf_counter() - t0
         try:
             rsum = recorder.close({"status": res.get("status"), "steps": res.get("steps"),
-                                   **({"exec_steps": session.steps, "cap_hit": session.cap_hit} if v8 else {})})
+                                   "exec_steps": session.steps, "cap_hit": session.cap_hit})
         except Exception as e:  # noqa: BLE001 收尾失败（如磁盘满）= 基础设施故障
             rsum = {"RECORDER_VERIFY": "ERROR", "error": f"{type(e).__name__}: {e}"[:800]}
             res.update(infra=True, infra_reason="recorder_close")
@@ -865,12 +983,25 @@ class SeatRunner:
         if self.episodes_done == 0:
             timing["process_init"] = self.proc_info.get("init_timing")
         record.update(res)
-        if v8:
-            # 执行段步数以环境侧计数为准；客户端自报另记。额度耗尽与步数到顶的分类覆盖客户端的记法。
-            record.update(exec_steps=session.steps, client_steps=res.get("steps"), cap_hit=session.cap_hit,
-                          chunks=res.get("decisions") if "hard_bound" in res else None,
-                          hard_bound=res.get("hard_bound"), demo_frames=session.timing.get("demo_frames"),
-                          reset_calls=session.reset_calls, effective_max_steps=int(eff))
+        self._classify(record, session, res)
+        record["task_success"] = record.get("status") == "success"
+        record["timing"] = timing
+        record["recorder_verify"] = (rsum or {}).get("RECORDER_VERIFY")
+        self._finish(record)
+        self.episodes_done += 1
+        self.progress(record.get("steps", 0), phase="done")
+        self._print_done(record)
+        if record.get("budget_exhausted"):
+            self._budget_stop(key)
+        return record
+
+    def _classify(self, record: dict, session: EnvSession, res: dict) -> None:
+        """执行段步数以环境侧计数为准；客户端自报另记。额度耗尽与步数到顶（仅 --strict-cap）的分类覆盖客户端的记法。"""
+        record.update(exec_steps=session.steps, client_steps=res.get("steps"), cap_hit=session.cap_hit,
+                      chunks=res.get("decisions") if "hard_bound" in res else None,
+                      hard_bound=res.get("hard_bound"), demo_frames=session.timing.get("demo_frames"),
+                      reset_calls=session.reset_calls, effective_max_steps=self.max_steps)
+        if session.budget_exhausted or session.cap_hit:
             if session.budget_exhausted:
                 record.update(status="error", infra=False, infra_reason=None, budget_exhausted=True,
                               client_error=res.get("error"),
@@ -879,35 +1010,18 @@ class SeatRunner:
             elif session.cap_hit:
                 record.update(status="timeout", infra=False, infra_reason=None, client_status=res.get("status"),
                               client_error=res.get("error"),
-                              error=f"STEP_CAP exec_steps={session.steps} cap={int(eff)} 未成功，按 timeout 计")
-        record["task_success"] = record.get("status") == "success"
-        record["timing"] = timing
-        record["recorder_verify"] = (rsum or {}).get("RECORDER_VERIFY")
-        self._finish(record)
-        self.episodes_done += 1
-        self.progress(record.get("steps", 0), phase="done")
-        if v8:
-            self._print_done_v8(record)
-            if record.get("budget_exhausted"):
-                self._budget_stop(key)
-        else:
-            print(f"EPISODE_DONE policy={self.args.policy} key={key} status={record['status']} "
-                  f"steps={record.get('steps')} wall_s={wall:.1f} infra={record.get('infra')} "
-                  f"recorder={record['recorder_verify']}", flush=True)
-        return record
+                              error=f"STEP_CAP exec_steps={session.steps} cap={self.max_steps} 未成功，按 timeout 计")
 
     def _finish(self, record: dict) -> None:
-        """写结果行；V8 再写账本 attempt_end（终态且首个 → accept）。late 先算好写进结果行。"""
-        if self.v8:
-            record["late"] = self.ledger.is_late(record)
+        """写结果行，再写账本 attempt_end（终态且首个 → accept）。late 先算好写进结果行。"""
+        record["late"] = self.ledger.is_late(record)
         append_result(self.results_path, record)
-        if self.v8:
-            self.ledger.attempt_end(record)
+        self.ledger.attempt_end(record)
 
-    def _print_done_v8(self, record: dict) -> None:
-        print(f"EPISODE_DONE policy={self.args.policy} key={record['key']} status={record['status']} "
-              f"exec_steps={record.get('exec_steps')} cap_hit={record.get('cap_hit')} infra={record.get('infra')} "
-              f"attempt_no={record.get('attempt_no')}", flush=True)
+    def _print_done(self, record: dict) -> None:
+        print(f"EPISODE_DONE policy={self.args.policy} dataset={self.dataset} key={record['key']} "
+              f"status={record['status']} exec_steps={record.get('exec_steps')} cap_hit={record.get('cap_hit')} "
+              f"infra={record.get('infra')} attempt_no={record.get('attempt_no')}", flush=True)
 
     def _budget_stop(self, key: str) -> None:
         print(f"RESET_BUDGET_EXHAUSTED policy={self.args.policy} seat={self.args.seat} key={key} "
@@ -918,44 +1032,23 @@ class SeatRunner:
         with self._lock:
             if state["finished"]:
                 return
+            # 取 session 实际值；拿不到写 null（不写 0）
+            sess = state.get("session")
             rec = dict(record, status="error", task_success=False, steps=None, infra=True, infra_reason="episode_wall",
-                       error=f"INFRA_TIMEOUT episode_wall>{limit:.0f}s")
-            if self.v8:  # 取 session 实际值；拿不到写 null（不写 0）
-                sess = state.get("session")
-                rec.update(exec_steps=getattr(sess, "steps", None), reset_calls=getattr(sess, "reset_calls", None),
-                           cap_hit=getattr(sess, "cap_hit", None),
-                           demo_frames=(getattr(sess, "timing", None) or {}).get("demo_frames"))
-                self._finish(rec)
-            else:
-                append_result(self.results_path, rec)
+                       error=f"INFRA_TIMEOUT episode_wall>{limit:.0f}s",
+                       exec_steps=getattr(sess, "steps", None), reset_calls=getattr(sess, "reset_calls", None),
+                       cap_hit=getattr(sess, "cap_hit", None),
+                       demo_frames=(getattr(sess, "timing", None) or {}).get("demo_frames"))
+            self._finish(rec)
             print(f"INFRA_TIMEOUT key={key_of(record)} limit_s={limit:.0f}", flush=True)
             sys.stdout.flush()
             os._exit(EXIT_WALL)
 
     # ── 身份清单来源 ────────────────────────────────────────────────────────
     def run_identities(self, rows: list[dict]) -> int:
-        if self.v8:
-            return self.run_identities_v8(rows)
-        prev = read_results(self.results_path)
-        done = {key_of(r) for r in prev if not r.get("infra") and not r.get("canary") and not r.get("run_blocked")}
-        attempts: dict[str, int] = {}
-        for r in prev:
-            if not r.get("canary"):
-                attempts[key_of(r)] = attempts.get(key_of(r), 0) + 1
-        todo = [r for r in rows if key_of(r) not in done]
-        print(f"RUN_PLAN policy={self.args.policy} total={len(rows)} resume_skip={len(rows) - len(todo)} todo={len(todo)}",
-              flush=True)
-        retry_left = self.args.infra_retries
-        pending = list(todo)
-        while pending:
-            ident = pending.pop(0)
-            k = key_of(ident)
-            attempts[k] = attempts.get(k, 0) + 1
-            rec = self.run_one(ident, attempt=attempts[k])
-            if rec.get("infra") and retry_left > 0:
-                retry_left -= 1
-                pending.append(ident)
-        return 0
+        """跑一份身份清单；返回退出码（0 全部有权威终态；6 仍有身份无 accept）。"""
+        self.policy_context()  # 整席只建一次，先于第一局
+        return self.run_identities_v8(rows)
 
     def recover_dangling(self) -> int:
         """账本里有 attempt_start 无 attempt_end 的尝试（进程被杀、写账本前崩溃）：结果行里找得到同 attempt_id 的
@@ -972,11 +1065,23 @@ class SeatRunner:
             n += 1
         return n
 
+    def recover_crash_window(self) -> int:
+        """「attempt_end 已写、accept 未写」时崩溃：最后一次未作废尝试已是最终结局而无 accept 的身份补写 accept。"""
+        n = 0
+        for end in self.ledger.final_without_accept():
+            self.ledger.recover_accept(end)
+            print(f"LEDGER_RECOVER_ACCEPT key={end['key']} attempt_id={end['attempt_id']} status={end.get('status')}",
+                  flush=True)
+            n += 1
+        return n
+
     def run_identities_v8(self, rows: list[dict]) -> int:
-        """V8：已有 accept 的身份跳过；已用满 2 次尝试的跳过；最后一次未作废尝试已是最终结局（含非 infra 错误，
-        即使账本缺 accept）的跳过、不占 infra 额度；只有最后一次为 infra 错误的才按 infra 重试额度重跑。"""
+        """已有 accept 的身份跳过；已用满 2 次尝试的跳过；最后一次未作废尝试已是最终结局（含非 infra 错误；账本缺
+        accept 的先由 recover_crash_window 补写）的跳过、不占 infra 额度；只有最后一次为 infra 错误的才按 infra
+        重试额度重跑。跑完读回账本：仍无 accept 的身份计 missing，>0 打印 RUN_INCOMPLETE 并返回 6。"""
         led = self.ledger
         self.recover_dangling()
+        self.recover_crash_window()
         pending: list[dict] = []
         skip_acc = skip_full = skip_budget = 0
         for ident in rows:
@@ -987,9 +1092,9 @@ class SeatRunner:
                 skip_full += 1
             else:
                 pending.append(ident)
-        print(f"RUN_PLAN policy={self.args.policy} total={len(rows)} resume_skip={skip_acc + skip_full} "
-              f"accepted={skip_acc} attempts_full={skip_full} todo={len(pending)} reset_left={led.reset_left()} "
-              f"infra_retry_left={led.infra_retries_left()}", flush=True)
+        print(f"RUN_PLAN policy={self.args.policy} dataset={self.dataset} total={len(rows)} "
+              f"resume_skip={skip_acc + skip_full} accepted={skip_acc} attempts_full={skip_full} todo={len(pending)} "
+              f"reset_left={led.reset_left()} infra_retry_left={led.infra_retries_left()}", flush=True)
         while pending:
             ident = pending.pop(0)
             k = key_of(ident)
@@ -1007,44 +1112,37 @@ class SeatRunner:
                 pending.insert(0, ident)  # 原身份立即重试一次（额度在下一轮判断）
         if skip_budget:
             print(f"RUN_PARTIAL policy={self.args.policy} infra_retry_skipped={skip_budget}", flush=True)
+        # 席位收尾读回账本真实缺失数（不只看是否跑完）：重试耗尽或 2 次用满仍无 accept 的身份
+        missing = sorted({key_of(r) for r in rows} - set(led.accepted))
+        if missing:
+            print(f"RUN_INCOMPLETE policy={self.args.policy} seat={self.args.seat} dataset={self.dataset} "
+                  f"total={len(rows)} missing={len(missing)} first={','.join(missing[:5])}", flush=True)
+            return EXIT_INCOMPLETE
         return 0
 
 
 def load_identities(args) -> list[dict]:
-    """读身份清单 JSON 数组，按 ``--only`` 过滤、``--order`` 排序、``--limit`` 截断。
-
-    V8：每行须为 ``eval_manifest.py`` 的执行身份行（字段齐全、nullable 严格、key 自洽、key 不重复），不符即运行阻塞。"""
-    v8 = bool(getattr(args, "v8", False))
+    """读身份清单 JSON 数组（``eval_manifest.py`` 的 shard-NN.json），按 ``--only`` 过滤、``--order`` 排序、
+    ``--limit`` 截断。每行须为该数据集的执行身份行（字段齐全、nullable 严格、key 自洽、key 不重复），不符即运行阻塞。"""
     rows = json.loads(Path(args.identities).read_text(encoding="utf-8"))
-    if v8:
-        bad = [(i, b) for i, r in enumerate(rows) for b in [validate_v8_identity(r)] if b]
-        keys = [key_of(r) for r in rows]
-        dup = len(keys) - len(set(keys))
-        if bad or dup:
-            print(f"RUN_BLOCKED reason=identities n_bad={len(bad)} dup_keys={dup} first={bad[:3]}", flush=True)
-            raise SystemExit(EXIT_BLOCKED)
+    bad = [(i, b) for i, r in enumerate(rows) for b in [validate_v8_identity(r, args.dataset)] if b]
+    keys = [key_of(r) for r in rows]
+    dup = len(keys) - len(set(keys))
+    if bad or dup:
+        print(f"RUN_BLOCKED reason=identities dataset={args.dataset} n_bad={len(bad)} dup_keys={dup} "
+              f"first={bad[:3]}", flush=True)
+        raise SystemExit(EXIT_BLOCKED)
     if args.only:
         want = set(args.only.split(","))
         rows = [r for r in rows if key_of(r) in want]
-    rows = order_identities(rows, args.order, args.shuffle_seed, v8=v8)
+    rows = order_identities(rows, args.order, args.shuffle_seed)
     if args.limit:
         rows = rows[: args.limit]
     return rows
 
 
-def check_v8_args(args) -> str | None:
-    if not getattr(args, "v8", False):
-        return None
-    miss = [n for n, v in (("--ledger", args.ledger), ("--reset-budget", args.reset_budget),
-                           ("--infra-retry-budget", args.infra_retry_budget), ("--identities", args.identities))
-            if v is None]
-    if miss:
-        return f"V8 模式必须给 {' '.join(miss)}"
-    return None
-
-
 def cmd_run(args) -> int:
-    bad = check_v8_args(args)
+    bad = check_run_args(args, need_identities=True)
     if bad:
         print(f"RUN_BLOCKED reason=args detail={bad}", flush=True)
         return EXIT_BLOCKED
@@ -1059,26 +1157,40 @@ def cmd_run(args) -> int:
         def recorder_factory(rec_dir, meta):
             return recorder_mod.EpisodeRecorder(rec_dir, meta)
     init["process_ready_s"] = time.perf_counter() - t_proc
-    print(f"CLIENT_READY policy={args.policy} seat={args.seat} cond={args.cond} host={socket.gethostname()} "
-          f"gpu={proc.get('gpu_name')} sapien={proc['env']['sapien']} torch={proc['env']['torch']} "
-          f"robomme_hard={proc['env']['robomme_hard_file']} git={proc['git_commit'][:12]} dirty={proc['git_dirty']} "
-          f"init_s={init['process_ready_s']:.1f}", flush=True)
+    print(f"CLIENT_READY policy={args.policy} variant={policy_variant_of(args)} seat={args.seat} cond={args.cond} "
+          f"dataset={args.dataset} max_steps={args.max_steps} strict_cap={int(bool(args.strict_cap))} "
+          f"host={socket.gethostname()} gpu={proc.get('gpu_name')} sapien={proc['env']['sapien']} "
+          f"torch={proc['env']['torch']} robomme_hard={proc['env']['robomme_hard_file']} "
+          f"git={proc['git_commit'][:12]} dirty={proc['git_dirty']} init_s={init['process_ready_s']:.1f}", flush=True)
     Path(args.out).mkdir(parents=True, exist_ok=True)
     (Path(args.out) / f"process-{os.getpid()}.json").write_text(dumps(proc), encoding="utf-8")
     runner = SeatRunner(args, policy_mod=policy_mod, recorder_factory=recorder_factory, proc_info=proc)
-    rc = runner.run_identities(load_identities(args))
+    try:
+        rc = runner.run_identities(load_identities(args))
+    finally:
+        runner.close()
     runner.progress(0, phase="finished")
-    print(f"全部完成 policy={args.policy} seat={args.seat} episodes={runner.episodes_done}", flush=True)
+    print(f"全部完成 policy={args.policy} seat={args.seat} dataset={args.dataset} episodes={runner.episodes_done} "
+          f"rc={rc}", flush=True)
     return rc
 
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(description="v7.5eval 新接口环境侧常驻客户端")
+    ap = argparse.ArgumentParser(description="评估环境侧常驻客户端（test-hard／test-hard0）")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("run")
-    p.add_argument("--policy", required=True, choices=["mme", "smvla"])
-    p.add_argument("--identities", required=True,
-                   help="身份清单 json（list of {task, source_episode, seed, builder_episode}；V8 为 shard-NN.json）")
+    p.add_argument("--policy", required=True, choices=list(POLICIES),
+                   help="策略模块按 load_sibling(f'{policy}_client') 加载")
+    p.add_argument("--identities", required=True, help="身份清单：eval_manifest.py 产出的 shard-NN.json")
+    p.add_argument("--dataset", required=True, choices=list(DATASETS),
+                   help="身份模式与 builder 数据集；test-hard 配 --max-steps 1600 --strict-cap，test-hard0 配 --max-steps 1300")
+    p.add_argument("--max-steps", type=int, required=True, help="步数上限（无默认值，由入口按数据集给出）")
+    p.add_argument("--strict-cap", action="store_true",
+                   help="执行满 --max-steps 步仍未成功即停（第 max_steps+1 步不进环境，记 timeout、cap_hit=true）")
+    p.add_argument("--mme-variant", default=None, choices=list(MME_VARIANTS), help="--policy mmesg 必填：子目标来源")
+    p.add_argument("--qwenvl-groundsg-adapter", default=None,
+                   help="--mme-variant ground-sg-qwenvl 必填：QwenVL 子目标预测器的 adapter 目录")
+    p.add_argument("--trace-root", default=None, help="每局轨迹根目录；本局目录为 <trace-root>/<key>.a<attempt>")
     p.add_argument("--cond", required=True, help="条件代号，如 E1／N")
     p.add_argument("--seat", required=True)
     p.add_argument("--host", default="127.0.0.1")
@@ -1086,25 +1198,22 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--out", required=True)
     p.add_argument("--order", default="forward", choices=["forward", "reverse", "shuffle"])
     p.add_argument("--shuffle-seed", type=int, default=DEFAULT_SHUFFLE_SEED)
-    p.add_argument("--only", default=None, help="只跑这些 <task>_<seed>（逗号分隔）")
+    p.add_argument("--only", default=None, help="只跑这些 <task>_<tier>_<seed>（逗号分隔）")
     p.add_argument("--limit", type=int, default=0)
-    p.add_argument("--max-steps", type=int, default=MAX_STEPS)
     p.add_argument("--episode-wall-s", type=float, default=0.0, help="单局墙钟上限（0=不限）；超时记基础设施超时并退出 75")
     p.add_argument("--first-extra-s", type=float, default=600.0,
                    help="本进程第一局额外放宽（首次推理编译）；run_seat.sh 只在 server 新（重）起后传 600，否则传 0")
-    p.add_argument("--infra-retries", type=int, default=2, help="identities 模式下基础设施失败的重试局数上限")
     p.add_argument("--no-record", action="store_true")
     p.add_argument("--never-degrade", action="store_true")
     p.add_argument("--baseline", action="store_true")
-    p.add_argument("--rec-root", default=None, help="录像目录根（默认 <out>/rec）；V8 录像目录名 <key>.a<attempt_no>")
-    v8 = p.add_argument_group("V8 模式（契约 C2；不带 --v8 时以下参数不生效、一切同旧版）")
-    v8.add_argument("--v8", action="store_true", help="V8 模式：--identities 为 eval_manifest.py 的 shard-NN.json")
-    v8.add_argument("--ledger", default=None, help="持久尝试账本 JSONL（追加写、fsync），V8 必填")
-    v8.add_argument("--reset-budget", type=int, default=None, help="本账本可领的底层 reset 额度（build 与 reset 各算一次）")
-    v8.add_argument("--infra-retry-budget", type=int, default=None,
-                    help="本账本可用的基础设施重试局数（每身份至多重试 1 次）")
-    v8.add_argument("--budget-raise-reason", default=None,
-                    help="--reset-budget 大于账本历史最大值时写进 budget_raise 行与 RESET_BUDGET_RAISE 的原因（默认 cli_reset_budget）")
+    p.add_argument("--rec-root", default=None, help="录像目录根（默认 <out>/rec）；录像目录名 <key>.a<attempt_no>")
+    led = p.add_argument_group("持久账本（契约 C2；两个数据集都必填，缺任一即 RUN_BLOCKED）")
+    led.add_argument("--ledger", default=None, help="持久尝试账本 JSONL（追加写、fsync）")
+    led.add_argument("--reset-budget", type=int, default=None, help="本账本可领的底层 reset 额度（build 与 reset 各算一次）")
+    led.add_argument("--infra-retry-budget", type=int, default=None,
+                     help="本账本可用的基础设施重试局数（每身份至多重试 1 次；额度按模型共享，由主会话切给各席）")
+    led.add_argument("--budget-raise-reason", default=None,
+                     help="--reset-budget 大于账本历史最大值时写进 budget_raise 行与 RESET_BUDGET_RAISE 的原因（默认 cli_reset_budget）")
     p.set_defaults(func=cmd_run)
     return ap
 
