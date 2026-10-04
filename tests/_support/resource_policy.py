@@ -114,7 +114,8 @@ def _patch_safetensors(mod) -> None:
 
 
 def _patch_sapien(mod) -> None:
-    """sapien 本体是 C 扩展，构造器无法可靠替换；只挡渲染系统与场景的 Python 入口（若存在）。"""
+    """sapien 本体是 C 扩展，构造器无法可靠替换；挡场景入口，并把渲染子模块里的材质与渲染系统换成拒绝工厂
+    （真实 RenderMaterial 在 CPU 下会起渲染上下文、实测可段错误；离线世界夹具在自己的上下文内另行替换并还原）。"""
     for name in ("Scene",):
         cls = getattr(mod, name, None)
         if cls is None:
@@ -126,6 +127,24 @@ def _patch_sapien(mod) -> None:
             cls.__init__ = _blocked
         except (TypeError, AttributeError):
             pass
+    render = getattr(mod, "render", None)
+    if render is None or getattr(render, "_resource_policy_patched", False):
+        return
+    for name in ("RenderMaterial", "RenderSystem"):
+        if getattr(render, name, None) is None:
+            continue
+
+        def _blocked_factory(*a, _n=name, **k):
+            violate("native_reset", f"sapien.render.{_n} 构造")
+
+        try:
+            setattr(render, name, _blocked_factory)
+        except (TypeError, AttributeError):
+            pass
+    try:
+        render._resource_policy_patched = True
+    except (TypeError, AttributeError):
+        pass
 
 
 PATCHES = {

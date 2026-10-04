@@ -29,6 +29,7 @@
 | D3 | V8 评估各轮审查遗留的小问题 | 10-02 V8 评估 | 视需要小修 |
 | D4 | 挑战接口 `challenge_interface/scripts/phase1_eval.py` 四处缺陷（成功判定按子串、reset 等待不重询、异常不 close、IK 失败空观测崩溃） | 10-04 测试重构 T8a | 先不修（用户 10-04），测试锁定现状 |
 | D5 | `hard_builder.make_env_for_episode` 交给 gym.make 的 sampling_config／native_episode_spec 与 builder 缓存共用对象 | 10-04 测试重构 P | 本轮不修（对拍进行中），测试锁定现状 |
+| D6 | RouteStick 轨迹缓存在执行段开始时未清空，复位时刻 TCP 点混入第一段绕向判定 | 10-04 测试重构 T4 | 只报告，未改；待定是否修 |
 | E1 | 「shared 步骤结束会把卡重置为独占」未写入规则 | 09-30 V7.5 | 写入正本与 `docs/greatlakes.md` |
 | F1 | 本机 5 个站点服务的去留 | 09-28 起 | 只留 8081、8082 |
 | F2 | 8081／8082 站紫色「语义调整」小标签留不留 | 10-02 V8 站点 | 由用户定 |
@@ -373,6 +374,13 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 修法：`make_env_for_episode` 交出 `copy.deepcopy(...)`。改 `src/robomme_hard` 属生成路径，修后需重跑第三步 GL 对拍（43 格 × 3 局 + 16 任务 × 1 档 × 3 局 = 177）确认生成字节不变。
 - 现状：`tests/contract/test_builder_800.py::test_known_defect_builder_kwargs_aliased_to_builder_state` 锁定共用现状（改坏缓存后原地复原，不影响其他用例）；修复时反转断言。
 - 裁决：2026-10-04 主会话按用户「不要再问我了尽可能一口气做到底」自行裁决本轮不修——GL 对拍正以当前生成代码运行，改动会使第三步结论不再对应最终代码。待用户早上决定是否修与是否随之重跑对拍。
+
+### D6 RouteStick 轨迹缓存在执行段开始时未清空（2026-10-04 测试重构 T4 发现，只报告）
+
+- 现象：`RouteStick` 记录 TCP 平面轨迹的缓存（`_gripper_xy_trace`）在演示结束、执行段开始时没有清空，复位时刻的 TCP 点 (0,0) 会混进第一段绕向判定的平均叉积。CPU 离线复现：演示走完后 `len(env._gripper_xy_trace) == 1`。
+- 影响：实跑中第一段通常有大量轨迹点，混入一个点影响很小；但边界情形（第一段很短、绕向接近零）可能翻转判定。V9 交付与评估未见受影响的证据。
+- 修法候选：执行段开始（演示→在线切换）时清空该缓存。修改属 `src/robomme_hard` 任务环境（生成与评估路径），修后需重跑第三步 GL 对拍确认生成字节不变；若 RouteStick 也在原三档官方代码中有同样写法，官方侧受 Q13 约束不改。
+- 现状：测试未锁定该行为（T4 只在报告中记录）；修与不修由用户定。
 
 ## E 类：规则
 

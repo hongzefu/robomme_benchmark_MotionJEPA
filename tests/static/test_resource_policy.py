@@ -109,3 +109,11 @@ def test_ledger_roundtrip(tmp_path, monkeypatch):
     monkeypatch.setenv(rp.ENV_LEDGER, str(path))
     rp.record("gpu_init", "x")
     assert [json.loads(x)["kind"] for x in path.read_text().splitlines()] == ["gpu_init"]
+
+
+def test_render_material_outside_offline_world_is_refused(private_ledger):
+    import sapien
+
+    with pytest.raises(rp.ResourcePolicyError):
+        sapien.render.RenderMaterial()
+    assert _kinds(private_ledger) == ["native_reset"]
