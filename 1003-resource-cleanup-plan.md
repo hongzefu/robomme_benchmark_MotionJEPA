@@ -95,6 +95,12 @@
 | `newtask-v7/official-1fadc0ec`（2.7 M） | 官方 `1fadc0ec` 的 `src` 只读快照 | V9 闸门 `XHARD0_RESET_PARITY`（`hard_regression.py xhard0-reset-parity --src-root`）要读 |
 | `v7.5eval/assets-lock.json` 与 `preflight/` | 权重锁与建锁脚本 | V9 评估核对权重时用的锁 |
 
+**噪声基线（2026-10-03 补记，本方案执行后新增）**
+
+| 位置 | 内容 | 为什么留 |
+|---|---|---|
+| `noise-baseline/gen/{v9-a,v9-b,x0-a,x0-b}`（170 G，1890 个文件、354 个 h5） | 噪声基线四遍生成（锚点 `f8f76fba`，GL A40 两节点） | 改码后生成对拍的逐局参照（[`1003-code-test-maintenance-todo.md`](1003-code-test-maintenance-todo.md) 第三节）；计划上传私有 bucket `HongzeFu/robomme-hard-v9-noise-baseline` 作异地副本，本机仍保留 |
+
 **xhard0（口径 4）**
 
 | 位置 | 内容 |
