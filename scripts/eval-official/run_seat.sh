@@ -2,13 +2,13 @@
 # v7.5eval 席位执行器（0929-v7.5eval-restructure-plan.md §5、第二部分 R4～R6）。
 #
 # 一个席位（一张 GPU）上按策略顺序（默认先 smvla 后 mme）逐个：起 server → 等就绪 → 起常驻客户端
-# （env_client.py run，金丝雀先跑）→ 看门狗 → 收 server；同一张卡上两个策略的 server 绝不同时驻留。
+# （env_client.py run）→ 看门狗 → 收 server；同一张卡上两个策略的 server 绝不同时驻留。
 #
 # 用法：
-#   run_seat.sh --seat 甲 --seat-idx 1 --gpu 0 --cond N --out <dir> (--queue <dir> | --identities <json>)
-#               [--policies smvla,mme] [--cpus 0-3] [--canary Task:source_episode:seed] [--order forward|reverse|shuffle]
+#   SMVLA_PY=<smvla venv>/bin/python run_seat.sh --seat 甲 --seat-idx 1 --gpu 0 --cond N --out <dir> --identities <json>
+#               [--policies smvla,mme] [--cpus 0-3] [--order forward|reverse|shuffle]
 #               [--mme-ckpt <run>/79999] [--smvla-ckpt <dir>] [--compile-cache on|off] [--det on|off]
-#               [--relay on|off] [--limit N] [--no-record] [--client-per-task] [--never-degrade]
+#               [--relay on|off] [--limit N] [--never-degrade]
 #               [--episode-wall-smvla S] [--episode-wall-mme S]
 # V8 模式（1001-v8-post-evaluation-gl-plan.md、契约 C3；不带 --v8 时一切同旧版）：
 #   run_seat.sh ... --identities <shard-NN.json> --v8 --ledger-dir <dir> --reset-budget N --infra-retry-budget N
@@ -17,13 +17,10 @@
 #   单局墙钟默认 smvla 900 s、mme 1200 s；客户端退出 5（reset 额度耗尽）与 3（阻塞）不重启、照实收尾；
 #   MME server 启动前 OPENPI_DATA_HOME 固定为 --openpi-data-home，核 <dir>/big_vision/paligemma_tokenizer.model 的
 #   sha256：不符打印 RUN_BLOCKED reason=tokenizer_sha 并不启 server，相符打印 TOKENIZER_SHA=PASS sha256=<hex>。
-#   V8 模式不接受 --queue、--canary、--client-per-task、--no-record；setsid 起的进程组记在 <out>/.v8-pgids，
-#   供外层 run_v8_gl.sh 在本脚本异常死亡后回收。
-# --client-per-task（仅 identities 模式，计划 5.1 E1「每任务起新客户端进程、server 常驻」）：server 常驻，
-#   按身份文件里任务首次出现的顺序分组，每组起一个新客户端 ``--only <task>_<seed>,...``（组内按文件顺序），逐组串行；
-#   首次推理放宽仍只给 server 新（重）起后的第一个客户端；看门狗照常；结果都追加进同一个 results.jsonl。
-# 可用环境变量覆盖解释器：BENCH_PY、MME_PY、SMVLA_PY（默认 $REPO/artifacts/v7.5eval/venvs/smvla-env/bin/python）、
-# 缓存根 V75_JAX_CACHE_ROOT。
+#   setsid 起的进程组记在 <out>/.v8-pgids，供外层 run_v8_gl.sh 在本脚本异常死亡后回收。
+# 解释器：BENCH_PY、MME_PY 可用环境变量覆盖（有默认值）；SMVLA_PY 无默认值，跑 smvla 时必须显式传入
+# （旧默认指向的 V7.5 venv 目录已删除；run_v8_gl.sh 会导出它）。缓存根 V75_JAX_CACHE_ROOT。
+# V7.5 的队列认领（--queue）、金丝雀（--canary）、每任务一个客户端（--client-per-task）与 --no-record 已删除。
 #
 # 端口：18000 + 100 × 席号 + 10 × 策略号（smvla=0、mme=1），MME 录制中继 +1；起前 /dev/tcp 探测，被占依次 +2，最多 5 次。
 # 超时：server 就绪 1200 s（等待中 kill -0 查 server 存活）；客户端第一局另放宽 600 s（首次推理编译）；
@@ -35,12 +32,12 @@ set -uo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BENCH_PY="${BENCH_PY:-$REPO/.venv/bin/python}"
 MME_PY="${MME_PY:-$REPO/third_party/mme-vla/.venv/bin/python}"
-SMVLA_PY="${SMVLA_PY:-$REPO/artifacts/v7.5eval/venvs/smvla-env/bin/python}"
+SMVLA_PY="${SMVLA_PY:-}"  # 无默认值：跑 smvla 时必须显式传入
 MME_COMMIT="ecf086c3be7c2223167d9bb2f6ef1f0a6e24353b"
 MME_YAML_EXPECT="perceptual-framesamp-modul.yaml"
 
-SEAT="" ; SEAT_IDX="" ; GPU="" ; COND="" ; OUT="" ; QUEUE="" ; IDENTS="" ; POLICIES="smvla,mme" ; CPUS=""
-CANARY="" ; ORDER="forward" ; CLIENT_PER_TASK=0 ; ONLY_LIST="" ; COMPILE_CACHE="off" ; DET="off" ; RELAY="off" ; LIMIT="0" ; NO_RECORD=""
+SEAT="" ; SEAT_IDX="" ; GPU="" ; COND="" ; OUT="" ; IDENTS="" ; POLICIES="smvla,mme" ; CPUS=""
+ORDER="forward" ; COMPILE_CACHE="off" ; DET="off" ; RELAY="off" ; LIMIT="0"
 NEVER_DEGRADE="" ; WALL_SMVLA="" ; WALL_MME=""
 V8=0 ; LEDGER_DIR="" ; RESET_BUDGET="" ; INFRA_RETRY_BUDGET="" ; REC_ROOT="" ; OPENPI_HOME="" ; TOKENIZER_SHA=""
 TOKENIZER_REL="big_vision/paligemma_tokenizer.model"
@@ -55,11 +52,9 @@ while [[ $# -gt 0 ]]; do
     --gpu) GPU="$2"; shift 2;;
     --cond) COND="$2"; shift 2;;
     --out) OUT="$2"; shift 2;;
-    --queue) QUEUE="$2"; shift 2;;
     --identities) IDENTS="$2"; shift 2;;
     --policies) POLICIES="$2"; shift 2;;
     --cpus) CPUS="$2"; shift 2;;
-    --canary) CANARY="$2"; shift 2;;
     --order) ORDER="$2"; shift 2;;
     --mme-ckpt) MME_CKPT="$2"; shift 2;;
     --smvla-ckpt) SMVLA_CKPT="$2"; shift 2;;
@@ -67,8 +62,6 @@ while [[ $# -gt 0 ]]; do
     --det) DET="$2"; shift 2;;
     --relay) RELAY="$2"; shift 2;;
     --limit) LIMIT="$2"; shift 2;;
-    --no-record) NO_RECORD="--no-record"; shift;;
-    --client-per-task) CLIENT_PER_TASK=1; shift;;
     --noprog-s) NOPROG_S="$2"; shift 2;;
     --never-degrade) NEVER_DEGRADE="--never-degrade"; shift;;
     --episode-wall-smvla) WALL_SMVLA="$2"; shift 2;;
@@ -86,21 +79,14 @@ done
 if [[ -z "$SEAT" || -z "$SEAT_IDX" || -z "$GPU" || -z "$COND" || -z "$OUT" ]]; then
   echo "缺少必需参数（--seat --seat-idx --gpu --cond --out）" >&2; exit 2
 fi
-if (( CLIENT_PER_TASK == 1 )) && [[ -n "$QUEUE" ]]; then
-  echo "--client-per-task 只用于 --identities 模式" >&2; exit 2
-fi
-if [[ -n "$QUEUE" && -n "$IDENTS" ]] || [[ -z "$QUEUE" && -z "$IDENTS" ]]; then
-  echo "--queue 与 --identities 必须二选一" >&2; exit 2
+if [[ -z "$IDENTS" ]]; then
+  echo "缺少必需参数 --identities" >&2; exit 2
 fi
 is_uint() { [[ "$1" =~ ^[0-9]+$ ]]; }
 for _w in "$WALL_SMVLA" "$WALL_MME"; do
   [[ -z "$_w" ]] || is_uint "$_w" || { echo "--episode-wall-smvla／--episode-wall-mme 须为非负整数秒" >&2; exit 2; }
 done
 if (( V8 == 1 )); then
-  [[ -n "$IDENTS" ]] || { echo "--v8 只用于 --identities 模式（执行清单 shard JSON）" >&2; exit 2; }
-  [[ -z "$CANARY" ]] || { echo "--v8 不接受 --canary（金丝雀预算为零）" >&2; exit 2; }
-  (( CLIENT_PER_TASK == 0 )) || { echo "--v8 不接受 --client-per-task" >&2; exit 2; }
-  [[ -z "$NO_RECORD" ]] || { echo "--v8 禁止 --no-record（视频全部保留）" >&2; exit 2; }
   [[ -n "$LEDGER_DIR" ]] || { echo "--v8 必须给 --ledger-dir" >&2; exit 2; }
   is_uint "$RESET_BUDGET" || { echo "--v8 必须给 --reset-budget <非负整数>" >&2; exit 2; }
   is_uint "$INFRA_RETRY_BUDGET" || { echo "--v8 必须给 --infra-retry-budget <非负整数>" >&2; exit 2; }
@@ -115,8 +101,7 @@ if (( V8 == 1 )); then
   [[ -n "$REC_ROOT" ]] && REC_ROOT="$(mkdir -p "$REC_ROOT" && cd "$REC_ROOT" && pwd)"
   [[ -n "$OPENPI_HOME" && -d "$OPENPI_HOME" ]] && OPENPI_HOME="$(cd "$OPENPI_HOME" && pwd)"
 fi
-[[ -n "$IDENTS" ]] && IDENTS="$(cd "$(dirname "$IDENTS")" && pwd)/$(basename "$IDENTS")"
-[[ -n "$QUEUE" ]] && QUEUE="$(mkdir -p "$QUEUE" && cd "$QUEUE" && pwd)"
+IDENTS="$(cd "$(dirname "$IDENTS")" && pwd)/$(basename "$IDENTS")"
 LOG="$OUT/seat-${SEAT}.log"
 
 TASKSET=()
@@ -242,7 +227,7 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志
         CUDA_VISIBLE_DEVICES="$GPU" "${TASKSET[@]}" "$MME_PY" scripts/serve_policy.py --seed=7 --port="$port" \
         policy:checkpoint --policy.config=mme_vla_suite --policy.dir="$MME_CKPT" ) >"$slog" 2>&1 &
   else
-    # 确定性模式：与 run_policy_replay.sh 相同，--det + CUBLAS_WORKSPACE_CONFIG=:4096:8
+    # 确定性模式：--det + CUBLAS_WORKSPACE_CONFIG=:4096:8
     local detarg=()
     [[ "$DET" == "on" ]] && detarg=(--det) && extra=(CUBLAS_WORKSPACE_CONFIG=:4096:8)
     ( cd "$REPO" && exec setsid env "${CLEAN_ENV[@]}" "${NOPROXY_ENV[@]}" "${extra[@]}" PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false \
@@ -301,10 +286,10 @@ restart_server() {  # 起 server 失败时保留 RUN_BLOCKED 的 3，其余记�
 }
 
 write_report() {  # $1 = 策略；$2 = 退出状态；写 <out>/<pol>/seat-report.json 并打印 SEAT_DONE 判定行
-  "$BENCH_PY" - "$OUT/$1" "$1" "$COND" "$SEAT" "$2" "${QUEUE:-}" "$REPO/scripts/eval-official/claim_queue.py" <<'PY'
-import importlib.util, json, sys
+  "$BENCH_PY" - "$OUT/$1" "$1" "$COND" "$SEAT" "$2" <<'PY'
+import json, sys
 from pathlib import Path
-out, pol, cond, seat, rc, queue, qpy = sys.argv[1:8]
+out, pol, cond, seat, rc = sys.argv[1:6]
 rows = []
 p = Path(out) / "results.jsonl"
 if p.exists():
@@ -326,32 +311,21 @@ rep = {"policy": pol, "cond": cond, "seat": seat, "loop_exit_status": int(rc), "
        "queue_check": "NA", "queue": None}
 for k in ("success", "fail", "timeout"):
     rep[k] = sum(1 for r in final if r.get("status") == k and not r.get("infra"))
-if queue:
-    spec = importlib.util.spec_from_file_location("claim_queue", qpy)
-    q = importlib.util.module_from_spec(spec); spec.loader.exec_module(q)
-    st = q.ClaimQueue(Path(queue) / pol).check()
-    rep["queue"] = {k: int(st.get(k, 0)) for k in ("dup", "missing", "requeued", "done", "total", "late",
-                                                   "open_claims", "retries_used", "infra_exhausted")}
-    rep["queue_check"] = "PASS" if st["dup"] == 0 and st["missing"] == 0 else "FAIL"
-    print(q.check_line(st))
+# 队列模式已删除：queue／queue_check 键恒为 None／NA，只为保持 seat-report.json 与 SEAT_DONE 行格式不变
 (Path(out) / "seat-report.json").write_text(json.dumps(rep, sort_keys=True, ensure_ascii=False, indent=1), encoding="utf-8")
 print(f"SEAT_DONE policy={pol} cond={cond} seat={seat} done={rep['done']} errors={rep['errors']} infra={rep['infra']} "
       f"queue_check={rep['queue_check']} loop_exit_status={rc}")
-sys.exit(1 if rep["queue_check"] == "FAIL" else 0)
+sys.exit(0)
 PY
 }
 
-start_client() {  # $1 = 策略；$2 = 客户端连接端口；$3 = 是否带金丝雀
-  local pol="$1" cport="$2" with_canary="$3" wall extra=0
+start_client() {  # $1 = 策略；$2 = 客户端连接端口
+  local pol="$1" cport="$2" wall extra=0
   wall="$(wall_of "$pol")"
   # 首次推理放宽只给 server 新（重）起后的第一个客户端；客户端单独重起（server 已热）不放宽
   (( FRESH_SERVER == 1 )) && extra="$FIRST_EXTRA"
   FRESH_SERVER=0
-  local src=() canary=() pol_env=() v8args=()
-  if [[ -n "$QUEUE" ]]; then src=(--queue "$QUEUE"); else src=(--identities "$IDENTS" --order "$ORDER"); fi
-  # 每任务一个客户端：只跑本组身份，组内保持文件顺序
-  [[ -n "$ONLY_LIST" ]] && src=(--identities "$IDENTS" --order forward --only "$ONLY_LIST")
-  [[ "$with_canary" == 1 && -n "$CANARY" ]] && canary=(--canary "$CANARY")
+  local src=(--identities "$IDENTS" --order "$ORDER") pol_env=() v8args=()
   # smvla 旧官方环境与推理同进程、OMP_NUM_THREADS=1；新接口环境侧照设
   [[ "$pol" == "smvla" ]] && pol_env=(OMP_NUM_THREADS=1)
   if (( V8 == 1 )); then
@@ -363,10 +337,10 @@ start_client() {  # $1 = 策略；$2 = 客户端连接端口；$3 = 是否带金
       PYTHONUNBUFFERED=1 CUDA_VISIBLE_DEVICES="$GPU" V75_DATA_ROOT="${V75_DATA_ROOT:-/data}" "${TASKSET[@]}" \
       "$BENCH_PY" scripts/eval-official/env_client.py run --policy "$pol" "${src[@]}" --cond "$COND" --seat "$SEAT" \
       --port "$cport" --out "$OUT/$pol" --episode-wall-s "$wall" --first-extra-s "$extra" --limit "$LIMIT" \
-      "${canary[@]}" $NO_RECORD $NEVER_DEGRADE "${v8args[@]}" ) >>"$OUT/$pol/client.log" 2>&1 &
+      $NEVER_DEGRADE "${v8args[@]}" ) >>"$OUT/$pol/client.log" 2>&1 &
   CLIENT_PID=$!
   note_pgid client "$CLIENT_PID"
-  echo "CLIENT_START policy=$pol port=$cport pid=$CLIENT_PID canary=${canary[1]:-none} wall_s=$wall first_extra_s=$extra only=${ONLY_LIST:-all}"
+  echo "CLIENT_START policy=$pol port=$cport pid=$CLIENT_PID wall_s=$wall first_extra_s=$extra"
 }
 
 run_policy() {  # $1 = 策略；$2 = 策略号
@@ -377,6 +351,7 @@ run_policy() {  # $1 = 策略；$2 = 策略号
     if (( V8 == 1 )); then tokenizer_gate || return 3; fi
     preflight_mme || return 3
   fi
+  [[ "$pol" == "smvla" && -z "$SMVLA_PY" ]] && { echo "RUN_BLOCKED reason=smvla_py_unset（SMVLA_PY 必须显式传入）"; return 3; }
   [[ "$pol" == "smvla" && ! -x "$SMVLA_PY" ]] && { echo "RUN_BLOCKED reason=smvla_venv_missing $SMVLA_PY"; return 3; }
   base=$((18000 + 100 * SEAT_IDX + 10 * pidx))
   port="$(pick_port "$base")" || { echo "INFRA port_exhausted base=$base"; return 4; }
@@ -390,49 +365,20 @@ run_policy() {  # $1 = 策略；$2 = 策略号
   cport="$port"; [[ "$pol" == "mme" && "$RELAY" == "on" ]] && cport=$((port + 1))
 
   rc=0
-  if (( CLIENT_PER_TASK == 1 )); then
-    local groups g task keys first_group=1
-    # 按任务首次出现顺序分组；每行 "<task>\t<key>,<key>,..."
-    groups="$("$BENCH_PY" - "$IDENTS" <<'PY'
-import json, sys
-rows = json.load(open(sys.argv[1], encoding="utf-8"))
-order, by = [], {}
-for r in rows:
-    t = r["task"]
-    if t not in by:
-        order.append(t); by[t] = []
-    by[t].append(f"{t}_{int(r['seed'])}")
-for t in order:
-    print(f"{t}\t{','.join(by[t])}")
-PY
-)" || { echo "RUN_BLOCKED reason=task_groups"; rc=3; }
-    while IFS=$'\t' read -r task keys; do
-      [[ -z "$task" ]] && continue
-      (( rc != 0 )) && break
-      ONLY_LIST="$keys"
-      echo "TASK_CLIENT policy=$pol task=$task n=$(awk -F, '{print NF}' <<< "$keys")"
-      policy_loop "$pol" "$port" "$cport" "$first_group" || rc=$?
-      first_group=0
-    done <<< "$groups"
-    ONLY_LIST=""
-  else
-    policy_loop "$pol" "$port" "$cport" 1 || rc=$?
-  fi
+  policy_loop "$pol" "$port" "$cport" || rc=$?
   stop_server
-  local qrc=0
-  write_report "$pol" "$rc" || qrc=$?
-  (( rc == 0 && qrc != 0 )) && rc=5  # 队列核对 FAIL（重复或遗漏）：非零退出
+  write_report "$pol" "$rc"
   echo "POLICY_DONE policy=$pol seat=$SEAT rc=$rc"
   return "$rc"
 }
 
-policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口 $4 是否带金丝雀；返回 0 完成 / 3 阻塞 / 4 基础设施用尽
+policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口；返回 0 完成 / 3 阻塞 / 4 基础设施用尽 / 5 额度耗尽（V8）
   local pol="$1" port="$2" cport="$3" rc slog
   # 无进展阈值须大于「单局墙钟 + 首次放宽 + 启动余量」，单局卡死先由客户端墙钟计时器以 75 退出并回收
   local noprog=$(( $(wall_of "$pol") + FIRST_EXTRA + 600 ))
   (( NOPROG_S > noprog )) && noprog=$NOPROG_S
   local client_restarts=0 server_restarts=0 noprog_restarts=0 last
-  start_client "$pol" "$cport" "${4:-1}"
+  start_client "$pol" "$cport"
   while true; do
     if ! kill -0 "$CLIENT_PID" 2>/dev/null; then
       wait "$CLIENT_PID"; rc=$?; CLIENT_PID=""
@@ -443,7 +389,7 @@ policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口 $4 是否带金
       if (( V8 == 1 && rc == 5 )); then echo "RESET_BUDGET_EXHAUSTED policy=$pol seat=$SEAT（客户端退出 5，不重启）"; return 5; fi
       client_restarts=$((client_restarts + 1))
       if (( client_restarts > MAX_CLIENT_RESTARTS )); then echo "INFRA_EXHAUSTED policy=$pol client_restarts=$client_restarts"; return 4; fi
-      start_client "$pol" "$cport" 0
+      start_client "$pol" "$cport"
       continue
     fi
     if [[ -n "$SERVER_PID" ]] && ! kill -0 "$SERVER_PID" 2>/dev/null; then
@@ -454,7 +400,7 @@ policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口 $4 是否带金
       stop_server
       slog="$OUT/$pol/server-$port-$(ts).log"
       restart_server "$pol" "$port" "$slog" || return $?
-      start_client "$pol" "$cport" 0
+      start_client "$pol" "$cport"
       continue
     fi
     last=$(stat -c %Y "$OUT/$pol/progress.json" 2>/dev/null || echo 0)
@@ -468,7 +414,7 @@ policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口 $4 是否带金
       slog="$OUT/$pol/server-$port-$(ts).log"
       restart_server "$pol" "$port" "$slog" || return $?
       touch "$OUT/$pol/progress.json"
-      start_client "$pol" "$cport" 0
+      start_client "$pol" "$cport"
       continue
     fi
     sleep 10 & wait $!  # 后台 sleep + wait：收到 SIGTERM 时 trap 立即生效
