@@ -19,6 +19,18 @@ S7 合入时补全实现与测试，签名与字段名不改。第二档对比�
 - ``end``（恰好一行，最后一行）：``status``、``exec_steps``、``terminal_reason`` 与调用方附加字段。
 
 ``identical_trace`` 的含义只限于上述字段逐项相等（报告里照此写明覆盖范围）。
+
+S7 补充（只加不改）：
+
+- ``canonical_bytes(obj)``：把请求对象（dict／list／数组／标量混合）规范化成确定的字节，供调用方在没有现成
+  序列化字节时传给 ``log_request``；数组按原始 dtype、shape 与 sha256 表示，不先转 float32。
+- ``validate_trace(rows)``：行序与结构自检（header 首行、demo 紧随且唯一、end 末行且唯一、step 从 1 连续、
+  ``end.exec_steps`` 等于最后一步），返回问题列表，空列表即合规。
+- ``find_traces(root)``、``subgoal_sequence(rows)``：供 ``gate2_compare.py`` 使用。
+- ``TraceWriter`` 在 ``close`` 之后再写任何行会抛 ``RuntimeError``（避免收尾后的迟到写入悄悄丢失）。
+- 身份建议字段：``identity`` 里放 ``task``、``source_episode``、``seed``、``tier``、``dataset``，以及 ``attempt``
+  （第几次尝试）；``gate2_compare`` 先按 ``(task, source_episode, seed)`` 配对，同一身份多份轨迹时再按 ``attempt``
+  对上结果行。
 """
 from __future__ import annotations
 
@@ -76,6 +88,8 @@ class TraceWriter:
         self._demo_written = False
 
     def _write(self, row: dict) -> None:
+        if self._closed:
+            raise RuntimeError(f"trace 已收尾，拒绝追加 {row.get('kind')} 行：{self.path}")
         self._fh.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
         self._fh.flush()
 
@@ -139,3 +153,77 @@ def read_trace(path: str | Path) -> list[dict]:
     """读回一局轨迹（供 gate2_compare 与测试使用）。"""
     with Path(path).open(encoding="utf-8") as fh:
         return [json.loads(line) for line in fh if line.strip()]
+
+
+# ── S7 补充：规范化字节、结构自检、检索 ────────────────────────────────────────
+
+
+def _canon(obj: Any) -> Any:
+    """递归规范化：数组 → 原始 dtype/shape/sha256 记录；bytes → sha256；dict 键转字符串（json 再按键排序）。"""
+    if isinstance(obj, np.ndarray) or isinstance(obj, np.generic):
+        rec = array_record(obj)
+        return {"__array__": [rec["dtype"], rec["shape"], rec["sha256"]]}
+    if isinstance(obj, (bytes, bytearray, memoryview)):
+        return {"__bytes__": hashlib.sha256(bytes(obj)).hexdigest()}
+    if isinstance(obj, dict):
+        return {str(k): _canon(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_canon(v) for v in obj]
+    if isinstance(obj, float):
+        # float 用 repr 精确往返，避免 json 实现差异
+        return {"__float__": float.hex(obj)}
+    if obj is None or isinstance(obj, (bool, int, str)):
+        return obj
+    if isinstance(obj, Path):
+        return str(obj)
+    return {"__repr__": repr(obj)}
+
+
+def canonical_bytes(obj: Any) -> bytes:
+    """请求对象的规范化字节：同一内容恒得同一字节；数组按原始 dtype 与 shape 记，不转 float32。"""
+    return json.dumps(_canon(obj), sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+
+def validate_trace(rows: list[dict]) -> list[str]:
+    """结构自检，返回问题列表（空即合规）。"""
+    problems: list[str] = []
+    if not rows:
+        return ["空轨迹"]
+    if rows[0].get("kind") != "header":
+        problems.append("首行不是 header")
+    if rows[0].get("schema") != SCHEMA:
+        problems.append(f"schema 不是 {SCHEMA}")
+    kinds = [r.get("kind") for r in rows]
+    if kinds.count("header") != 1:
+        problems.append(f"header 行数 {kinds.count('header')}")
+    if kinds.count("demo") != 1:
+        problems.append(f"demo 行数 {kinds.count('demo')}")
+    elif len(kinds) < 2 or kinds[1] != "demo":
+        problems.append("demo 不紧随 header")
+    if kinds.count("end") != 1 or kinds[-1] != "end":
+        problems.append("end 不是唯一末行")
+    steps = [int(r["step"]) for r in rows if r.get("kind") == "step"]
+    if steps != list(range(1, len(steps) + 1)):
+        problems.append("step 不是从 1 连续递增")
+    if rows[-1].get("kind") == "end" and int(rows[-1].get("exec_steps", -1)) != (steps[-1] if steps else 0):
+        problems.append("end.exec_steps 与最后一步不符")
+    return problems
+
+
+def find_traces(root: str | Path) -> list[Path]:
+    """递归找 ``trace.jsonl``（排序后返回，结果确定）。"""
+    return sorted(Path(root).rglob("trace.jsonl"))
+
+
+def subgoal_sequence(rows: list[dict]) -> list[str]:
+    """逐步 ``subgoal`` 去掉连续重复与空值后的子任务序列（Astra 模式比较用）。"""
+    seq: list[str] = []
+    for r in rows:
+        if r.get("kind") != "step":
+            continue
+        s = r.get("subgoal")
+        if s is None or s == "":
+            continue
+        if not seq or seq[-1] != s:
+            seq.append(s)
+    return seq
