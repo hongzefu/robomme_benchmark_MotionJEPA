@@ -140,12 +140,12 @@ def _recorded_pids(tmp: Path) -> list[int]:
 
 
 def _is_ours(pid: int) -> bool:
-    """防 PID 复用误杀：只认命令行确属假引擎或本测试起的席位脚本的进程。"""
+    """防 PID 复用误杀：只认命令行确属假引擎、假解释器包装 ``fakepy``（exec 之前的瞬间）或本测试起的席位脚本的进程。"""
     try:
         cmd = Path(f"/proc/{pid}/cmdline").read_bytes().replace(b"\0", b" ").decode(errors="replace")
     except OSError:
         return False
-    return any(x in cmd for x in ("seat_fake_engine", "run_seat.sh", "run_eval_gl.sh"))
+    return any(x in cmd for x in ("seat_fake_engine", "fakepy", "run_seat.sh", "run_eval_gl.sh"))
 
 
 def _reap(tmp: Path, grace: float = 3.0) -> list[int]:
@@ -189,6 +189,18 @@ def _wait_line(path: Path, needle: str, timeout: float = 30.0):
             return
         time.sleep(0.1)
     raise AssertionError(f"{timeout}s 内日志 {path} 没有出现 {needle!r}")
+
+
+def _wait_events(rig, event: str, count: int, timeout: float = 30.0) -> list[dict]:
+    """轮询假引擎事件账本，直到 ``event`` 事件数 ≥ ``count``（有限超时）。日志里出现 CLIENT_START 只说明席位脚本
+    已发起客户端，不保证客户端进程已写下自己的 start 事件；按事件数等才不会在两者之间的窗口里提前动手。"""
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        rows = _events(rig, None, event)
+        if len(rows) >= count:
+            return rows
+        time.sleep(0.05)
+    raise AssertionError(f"{timeout}s 内 {event} 事件不足 {count} 条：{_events(rig, None, event)}")
 
 
 # ---------------------------------------------------------------- run_seat.sh
@@ -396,6 +408,7 @@ def test_teardown_reaps_orphans_when_production_cleanup_is_bypassed(rig):
     p = _popen(_seat_cmd(rig), rig["env"])
     try:
         _wait_line(rig["tmp"] / "out" / "seat-T.log", "CLIENT_START policy=smvla")
+        _wait_events(rig, "start", 2)  # server 与客户端都已起来、各记一条 start，再杀
         _killpg(p.pid, signal.SIGKILL)
         p.wait(timeout=10)
     finally:
