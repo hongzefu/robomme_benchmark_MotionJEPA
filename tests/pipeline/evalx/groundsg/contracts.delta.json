@@ -1,0 +1,76 @@
+[
+  {
+    "id": "C13-GSG-01",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/official_defs.py",
+      "scripts/eval-official/mmesg_client.py",
+      "scripts/eval-official/official_hard_runner.py"
+    ],
+    "symbol": "mmesg_client.run_episode（SessionRunner 委托 EnvSession）与 official_hard_runner.run_identity（官方 EnvRunner 原文 + TapRunner／EnvTap）都调官方 EpisodeEvaluator.eval_each_episode 原文",
+    "oracle": "两侧同一组假环境（下一帧由所执行动作决定）、各自一个同实现的假服务（动作块由本局请求指纹决定，指纹函数手写）、各自一份 swift 替身；手写期望：消息顺序 reset→(add_buffer→infer)×3、首批 3 帧且 exec_start_idx=2、之后每批 16 帧且 exec_start_idx=0、提示词=任务目标、Oracle 子目标取决策时 info 的 grounded_subgoal_online、执行动作=各动作块前 16 行",
+    "positive": "两个变体 × 五种情形（success／fail／timeout／unknown／env 抛异常）：请求（轨迹 request 行、假服务收到的指纹、Qwen 请求）、执行（环境收到的动作字节、轨迹 step 行）、终态（status／步数／error／轨迹 end 行）逐项相同；判定行 OFFICIAL_ADAPTER=PASS variants=2 payload_diff=0 exec_diff=0 terminal_diff=0；slow：两侧经真实 websocket 客户端连回环假服务同样逐项相同（OFFICIAL_ADAPTER_WS=PASS）",
+    "negative": "换一局（source_episode 不同）后请求指纹与首个动作都不同（等式非平凡）；适配器若不逐步同步 info（Oracle 子目标停在 reset 时）则请求与动作逐项不同",
+    "boundaries": "官方循环 count > max_steps 才 timeout：max_steps=1300 时两侧都执行 1301 步、原侧外围帧 3+1301；--strict-cap 下第 max_steps+1 次 step 不进环境，适配入口收住 StepCapReached 记 timeout；官方 unknown → status=error、error=success_flag=unknown、非基础设施，同一上下文下一局照常跑（原侧分片不中止）",
+    "nodeids": [
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_official_adapter_matches_official_loop",
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_comparison_is_not_trivial",
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_oracle_messages_hand_expected",
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_mme_loop_times_out_only_after_count_exceeds_1300",
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_strict_cap_stops_before_env_and_reports_timeout",
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_unknown_is_error_and_does_not_stop_seat",
+      "tests/pipeline/evalx/groundsg/test_groundsg_official_adapter.py::test_trace_location_fallbacks",
+      "tests/pipeline/evalx/groundsg/test_groundsg_websocket.py::test_real_websocket_clients_match"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C13-GSG-02",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/official_defs.py",
+      "scripts/eval-official/mmesg_client.py"
+    ],
+    "symbol": "official_defs.extract_defs / load_groundsg / make_args / build_predictor；mmesg_client.make_policy_context / close_policy_context",
+    "oracle": "官方源码只读引用 SGEVAL_THIRD_PARTY，所读五个文件的 sha256 由测试独立计算并打印；Qwen 引擎为不读权重的替身，记下构造参数",
+    "positive": "extract_defs 只执行点名的顶层定义（import 行与模块级副作用不执行），记整文件 sha256；Oracle 变体不读 qwenvl/api.py、不导入 swift、不取 Gemini／MemER／QwenVL 类；QwenVL 变体只取 QwenVLSubgoalPredictor 与 Qwen3VLModel，引擎构造一次且参数为 Qwen/Qwen3-VL-4B-Instruct、adapters=[adapter]、attn_impl=flash_attention_2，推理配置 max_tokens=128、temperature=0；环境变量 IMAGE_MAX_TOKEN_NUM=256、VIDEO_MAX_TOKEN_NUM=64、FPS_MAX_FRAMES=10，QwenVL 另有 USE_HF=1、HF_HUB_OFFLINE=1、TRANSFORMERS_OFFLINE=1；SeatRunner 两局只调一次 make_policy_context、每局同一上下文、close 一次",
+    "negative": "use_oracle 与 use_qwenvl 同真／同假、或开 gemini／memer 时构造预测器即 AssertionError；QwenVL 缺 adapter、mme_variant 非法即 ValueError；run_episode 收到空上下文、变体或步数与上下文不一致即报错",
+    "boundaries": "点名不存在的定义抛 KeyError；Qwen 临时目录 <trace_dir>/qwen-tmp/<dataset>/<episode_tag>/ 局末删除，ep<id>_QwenVL_log.jsonl 归档到轨迹目录",
+    "nodeids": [
+      "tests/pipeline/evalx/groundsg/test_groundsg_context.py::test_extract_defs_takes_only_named_source",
+      "tests/pipeline/evalx/groundsg/test_groundsg_context.py::test_official_sources_hashes_recorded",
+      "tests/pipeline/evalx/groundsg/test_groundsg_context.py::test_oracle_variant_never_loads_qwen",
+      "tests/pipeline/evalx/groundsg/test_groundsg_context.py::test_qwenvl_variant_loads_only_qwen_classes",
+      "tests/pipeline/evalx/groundsg/test_groundsg_context.py::test_variants_are_mutually_exclusive",
+      "tests/pipeline/evalx/groundsg/test_groundsg_context.py::test_run_episode_rejects_mismatched_context",
+      "tests/pipeline/evalx/groundsg/test_groundsg_context.py::test_policy_context_built_once_per_seat"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C13-GSG-03",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/official_hard_runner.py",
+      "scripts/eval-official/mmesg_client.py"
+    ],
+    "symbol": "official_hard_runner：--check-imports / main 参数与分片核对 / run_identity 原始帧与结果行 / run_shard 服务不可达中止",
+    "oracle": "导入断言在子进程里跑（只加官方 examples/robomme 与仓库 src）；原始帧字节数与首帧内容按假环境手算",
+    "positive": "OFFICIAL_IMPORTS=PASS：robomme 来自仓库 src/robomme/、robomme_hard 未导入、官方模块未被整模块导入，两个变体的官方定义可摘取；判定行 OFFICIAL_HARD_SOURCE=PASS robomme_hard_imported=0；每局目录 <out>/<key>.a<attempt>/ 只含 trace.jsonl 与 frames/（QwenVL 另有归档日志），frames.json 为 pix_fmt=rgb24、order=reset_all_then_per_step_last、demo_frames／init_frames／exec_steps／missing_steps 与各流宽高帧数；官方 builder 构造参数 dataset=test、joint_angle、max_steps 透传、每任务只建一次",
+    "negative": "缺 --variant、QwenVL 缺 adapter、Oracle 带 adapter、分片行 tier 非 xhard0、每局目录已存在：退出码 3 并打印 MMESG_ORIG_BLOCKED；服务不可达：该局 error（infra、mmesg_unreachable）并停止分片",
+    "boundaries": "环境抛异常的那步不出帧、步号记入 missing_steps，帧数 = 3 + exec_steps - len(missing_steps)",
+    "nodeids": [
+      "tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py::test_official_hard_source_imports_only_official_robomme",
+      "tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py::test_cli_rejects_bad_input_with_exit_3",
+      "tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py::test_raw_frames_format_and_missing_steps",
+      "tests/pipeline/evalx/groundsg/test_groundsg_orig_runner.py::test_server_unreachable_aborts_shard"
+    ],
+    "resource": "cpu",
+    "mutants": [],
+    "status": "verified"
+  }
+]
