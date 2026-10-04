@@ -348,7 +348,7 @@ def root_cell_table(specs_root: str | Path, hs=None) -> tuple[str, dict[tuple[st
     的分片根判 v9）。没有任何 /4 文件（v7 根、空根）返回 None；首行读不出的文件跳过。"""
     hs = hs or hard_specs_light()
     cells: dict[tuple[str, str], int] = {}
-    for tier in hs.V8_TIERS:
+    for tier in hs.TIERS:
         path = Path(specs_root) / tier / "specs.jsonl"
         if not path.is_file():
             continue
@@ -357,7 +357,7 @@ def root_cell_table(specs_root: str | Path, hs=None) -> tuple[str, dict[tuple[st
                 header = json.loads(stream.readline())
         except (OSError, ValueError):
             continue
-        if not isinstance(header, dict) or header.get("schema") != hs.SCHEMA_V8:
+        if not isinstance(header, dict) or header.get("schema") != hs.SCHEMA:
             continue
         quota = header.get("delivery_per_cell")
         if isinstance(quota, dict):

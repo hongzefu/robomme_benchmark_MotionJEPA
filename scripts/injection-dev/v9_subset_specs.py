@@ -75,7 +75,7 @@ def specs_dir(root: Path) -> Path:
     """片根（含 ``specs/<tier>/specs.jsonl``）或规格根（含 ``<tier>/specs.jsonl``）→ 规格根。"""
     root = Path(root)
     nested = root / "specs"
-    if any((nested / tier / "specs.jsonl").is_file() for tier in H.V8_TIERS):
+    if any((nested / tier / "specs.jsonl").is_file() for tier in H.TIERS):
         return nested
     return root
 
@@ -89,8 +89,8 @@ def load_tier(root: Path, tier: str, table: dict[tuple[str, str], int] | None = 
         header, rows = _rollout.load_specs_any(path, check_fingerprint=False)
     else:
         header, rows = H.load_specs(path, expected_cells=table, check_fingerprint=False)
-    if header["schema"] != H.SCHEMA_V8 or header["difficulty"] != tier:
-        raise SubsetError(f"{path} 须为 {H.SCHEMA_V8} 且档位 {tier}（实为 {header['schema']}／{header['difficulty']}）")
+    if header["schema"] != H.SCHEMA or header["difficulty"] != tier:
+        raise SubsetError(f"{path} 须为 {H.SCHEMA} 且档位 {tier}（实为 {header['schema']}／{header['difficulty']}）")
     return header, rows
 
 
@@ -218,7 +218,7 @@ def assemble(subset: Path, movecube: Path, insertpeg: Path, v8_delivery: Path, o
         if len(set(digests.values())) != 1:
             problems.append(f"{task}/{tier} sampling_config 来源不一致：{ {k: v[:12] for k, v in digests.items()} }")
     # InsertPeg：V8 行（子集根里的全部行）与 extend 片逐字一致（除 selected）；V8 交付局在片里仍交付且结果段相同
-    _, row_keys, _, _ = H._schema_keys(H.SCHEMA_V8)
+    _, row_keys, _, _ = H._schema_keys(H.SCHEMA)
     i_by = {int(r["candidate"]): r for r in i_rows}
     s_ip = [r for r in s_rows if r["task"] == ip_task]
     v8_reuse_ip = {int(r["candidate"]) for r in s_ip if H.delivered(r)}
@@ -386,7 +386,7 @@ def assemble(subset: Path, movecube: Path, insertpeg: Path, v8_delivery: Path, o
     report = {
         "schema": _rollout.V8_DELIVERY_SCHEMA, "specs_root": str(out_specs), "cells_source": "v9-assemble",
         "cells_table": _rollout.cells_json(cells), "code_baseline": mc_data.get("code_baseline"),
-        "exec_cap": H.V8_EXEC_CAP,
+        "exec_cap": H.EXEC_CAP,
         "ledgers": [*v8_data.get("ledgers", []), *mc_data.get("ledgers", []), *ip_data.get("ledgers", [])],
         "rebase": [], "tasks": n_tasks, "cell_count": len(cells),
         "counts": {**totals, "reused": reused, "new": new},

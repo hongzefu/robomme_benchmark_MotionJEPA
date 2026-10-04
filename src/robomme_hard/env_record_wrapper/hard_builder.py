@@ -52,8 +52,8 @@ def _override_cells(root: str) -> Dict[tuple, int]:
             continue  # 局部根（冒烟／分片）只含部分档；与 hard_regression.delivery_index 的跳过口径相同
         with path.open(encoding="utf-8") as stream:
             header = json.loads(stream.readline())
-        if header.get("schema") != hard_specs.SCHEMA_V8:
-            raise hard_specs.SpecsError(f"{path}：builder 只读 {hard_specs.SCHEMA_V8}（实为 {header.get('schema')}）")
+        if header.get("schema") != hard_specs.SCHEMA:
+            raise hard_specs.SpecsError(f"{path}：builder 只读 {hard_specs.SCHEMA}（实为 {header.get('schema')}）")
         for task in header["tasks"]:
             cells[(task, tier)] = int(header["delivery_per_cell"][task])
     if not cells:

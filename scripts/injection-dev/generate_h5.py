@@ -128,13 +128,13 @@ def main() -> int:
             raise SystemExit("replay 模式必须给 --identities")
         specs_paths = None
         if specs_dir is not None:
-            if root_schema != hard_specs.SCHEMA_V8:
-                raise SystemExit(f"{specs_dir} 的 schema 为 {root_schema}，replay 的规格根只支持 {hard_specs.SCHEMA_V8}")
-            # 规格根按 V8_TIERS 读（含 xhard5）；给了 --cells 就按格表校验，否则逐档单文件校验
+            if root_schema != hard_specs.SCHEMA:
+                raise SystemExit(f"{specs_dir} 的 schema 为 {root_schema}，replay 的规格根只支持 {hard_specs.SCHEMA}")
+            # 规格根按 TIERS 读（含 xhard5）；给了 --cells 就按格表校验，否则逐档单文件校验
             if args.cells:
                 tiers = list(_rollout.load_v8_root(specs_dir, _rollout.resolve_cells(args.cells)))
             else:
-                tiers = [t for t in hard_specs.V8_TIERS if (specs_dir / t / "specs.jsonl").is_file()]
+                tiers = [t for t in hard_specs.TIERS if (specs_dir / t / "specs.jsonl").is_file()]
                 for tier in tiers:
                     _rollout.load_specs_any(specs_dir / tier / "specs.jsonl", check_fingerprint=False)
             specs_paths = {tier: specs_dir / tier / "specs.jsonl" for tier in tiers}
@@ -149,8 +149,8 @@ def main() -> int:
         return 0
     if not args.specs:
         raise SystemExit("continue 模式必须给 --specs")
-    if specs_dir is None or root_schema != hard_specs.SCHEMA_V8:
-        raise SystemExit(f"continue 只接受 {hard_specs.SCHEMA_V8} 规格根（<root>/<tier>/specs.jsonl）配 --cells："
+    if specs_dir is None or root_schema != hard_specs.SCHEMA:
+        raise SystemExit(f"continue 只接受 {hard_specs.SCHEMA} 规格根（<root>/<tier>/specs.jsonl）配 --cells："
                          f"{args.specs}（schema={root_schema}）")
     # gen1：按格表逐档逐格跑，执行步超限过滤与同格递补，收尾写 delivery.json（V8_DELIVERY_SET）
     cells_label = str(args.cells or "v9")
