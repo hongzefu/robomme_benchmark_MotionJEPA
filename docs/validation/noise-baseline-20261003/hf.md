@@ -8,10 +8,10 @@
 
 | 判定 | 来源 |
 |---|---|
-| `HF_VERIFY=FAIL objects=1893 checked=1890 sha_match=1889 size_equal=1889 missing=0 extra=0`（全量，job 63168009） | `records/hf/noise-hfverify_63168009.out.summary.log` |
+| `HF_VERIFY=FAIL objects=1893 checked=1890 sha_match=1889 size_equal=1889 missing=0 extra=0`（全量，job 63168009） | `records/hf/noise-hfverify_63168009.out.summary.txt` |
 | `MISMATCH x0-a/episodes/PickXtimes_episode_11/hdf5_files/PickXtimes_ep11_seed511100.h5 got=b08add8d… want=9397cd92…` | 同上 |
-| `HF_VERIFY=PASS objects=1893 checked=1 sha_match=1 size_equal=1 missing=0 extra=0 partial_only=1`（重传后单对象复核，job 63172806） | `records/hf/noise-hfverify-fix_63172806.out.summary.log` |
-| 冒烟 `HF_VERIFY=PASS objects=603 checked=1 sha_match=1 smoke_limit=1`（job 63167783，私有版阶段） | `records/hf/noise-hfverify-smoke_63167783.out.summary.log` |
+| `HF_VERIFY=PASS objects=1893 checked=1 sha_match=1 size_equal=1 missing=0 extra=0 partial_only=1`（重传后单对象复核，job 63172806） | `records/hf/noise-hfverify-fix_63172806.out.summary.txt` |
+| 冒烟 `HF_VERIFY=PASS objects=603 checked=1 sha_match=1 smoke_limit=1`（job 63167783，私有版阶段） | `records/hf/noise-hfverify-smoke_63167783.out.summary.txt` |
 
 合并口径：1889（全量一致）+ 1（重传复核一致）= 1890 个数据文件全部 sha 一致；三份清单只核存在与字节数（`SHA256SUMS` 本身是比对依据）。
 

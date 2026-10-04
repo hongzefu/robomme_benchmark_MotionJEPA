@@ -1,0 +1,5 @@
+host=gl3031.arc-ts.umich.edu start=2026-10-03T23:58:56-04:00
+LISTED objects=1893 expected=1893
+MISMATCH x0-a/episodes/PickXtimes_episode_11/hdf5_files/PickXtimes_ep11_seed511100.h5 got=b08add8d44db134119a055afb5c6e71cf6ff067f24cb052fb7625edc6543dccb want=9397cd92cfcb58e3bd4a64a71ba9868f3bcd494089f3d435f027bb5b9e7a8a48
+HF_VERIFY=FAIL objects=1893 checked=1890 sha_match=1889 size_equal=1889 missing=0 extra=0
+EXIT_CODE=0

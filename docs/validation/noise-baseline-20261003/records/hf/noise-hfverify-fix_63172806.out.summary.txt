@@ -1,0 +1,4 @@
+host=gl3009.arc-ts.umich.edu start=2026-10-04T02:21:42-04:00
+LISTED objects=1893 expected=1893
+HF_VERIFY=PASS objects=1893 checked=1 sha_match=1 size_equal=1 missing=0 extra=0 partial_only=1 smoke_limit=None
+EXIT_CODE=0
