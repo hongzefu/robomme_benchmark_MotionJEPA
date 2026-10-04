@@ -133,7 +133,9 @@ def read_jsonl(path: Path) -> list[dict]:
 
 def check_source(rows: list[dict], hs, cells: dict | None = None) -> dict:
     cells = hs.EXPECTED_CELLS if cells is None else cells
-    xhard0_expected = len(hs.ALL_TASKS) * hs.XHARD0_PER_TASK
+    # xhard0 行数随开关 XHARD0_IN_TEST_HARD：开为 16 × 12、关为 0（与 export_eval_identities.xhard0_total 同口径）；
+    # 旧写法写死 16 × XHARD0_PER_TASK，开关关（V9 默认）时会把导出器的 800 行源集误判为缺 192 行
+    xhard0_expected = len(hs.ALL_TASKS) * hs.xhard0_prefix()
     total_expected = xhard0_expected + sum(cells.values())
     bad = []
     seen = set()
