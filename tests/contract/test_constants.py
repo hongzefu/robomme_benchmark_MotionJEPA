@@ -111,6 +111,14 @@ GATE_X0_SCHEMA = "gate-set-xhard0/1"
 #: MoveCube xhard4 50 局 × 2 段 × 3 物体 = 300 点；运动方式 0/1/2 配额 17/17/16
 MOVECUBE_POINTS = 300
 MOVECUBE_WAYS = {0: 17, 1: 17, 2: 16}
+#: 规格冻结（``scripts/injection-dev/_freeze.py``）的 V9 口径：MoveCube xhard4 候选 80、逐方式配额同 MOVECUBE_WAYS；
+#: v8 抽签接受率表、未列任务的默认接受率与 reset 安全系数；v8 默认候选表合计
+FREEZE_V9_CANDIDATES = {("MoveCube", "xhard4"): 80}
+FREEZE_V8_DRAW_ACCEPT = {"VideoPlaceButton": 0.46, "VideoPlaceOrder": 0.47, "VideoRepick": 0.54,
+                         "ButtonUnmaskSwap": 0.57, "PickHighlight": 0.65, "SwingXtimes": 0.97}
+FREEZE_V8_DRAW_ACCEPT_DEFAULT = 0.97
+FREEZE_V8_RESET_SAFETY = 1.5
+FREEZE_V8_CANDIDATES_TOTAL = 1425
 #: 官方元数据：每 split 16 个文件、每文件局数
 OFFICIAL_SPLIT_FILES = 16
 OFFICIAL_SPLIT_EPISODES = {"train": 100, "val": 50, "test": 50}
@@ -461,3 +469,44 @@ def test_fail_safe_limit(kind, tmp_path):
     limit = RECORD_FAIL_SAFE_LIMIT[kind]
     assert _failsafe_raises(kind, tmp_path, limit - 1) is False
     assert _failsafe_raises(kind, tmp_path, limit) is True
+
+
+# =============================================================================
+# 规格冻结的 V9 口径（_freeze 模块常量）
+# =============================================================================
+
+
+def test_freeze_v9_constants():
+    """``_freeze`` 的 V9 冻结口径逐项等于钉值：MoveCube xhard4 逐方式配额 17／17／16、候选 80，
+    v8 抽签接受率表、默认接受率 0.97、reset 安全系数 1.5，以及 v8 默认候选表合计 1425。"""
+    fz = load_script("injection-dev/_freeze.py")
+    assert fz.V9_MOVECUBE_QUOTA_BY_WAY == MOVECUBE_WAYS
+    assert fz.V9_CANDIDATES == FREEZE_V9_CANDIDATES
+    assert fz.V8_DRAW_ACCEPT == FREEZE_V8_DRAW_ACCEPT
+    assert fz.V8_DRAW_ACCEPT_DEFAULT == FREEZE_V8_DRAW_ACCEPT_DEFAULT
+    assert fz.V8_RESET_SAFETY == FREEZE_V8_RESET_SAFETY
+    assert sum(fz.V8_DEFAULT_CANDIDATES.values()) == FREEZE_V8_CANDIDATES_TOTAL
+
+
+# =============================================================================
+# 外部夹具接口守卫
+# =============================================================================
+
+
+def test_recording_fakes_interface_used_here():
+    """本文件按路径借用 T5 的录制替身；它的接口一变，上面的录像器探针会以难懂的方式报错。
+    这里先把本文件用到的接口面逐项点名，变更时直接报「T5 夹具接口变更」。"""
+    import dataclasses
+    import inspect
+
+    rf = recording_fakes()
+    needed = ("record_module", "make_wrapper", "drive", "Event")
+    missing = [name for name in needed if not hasattr(rf, name)]
+    assert not missing, f"T5 夹具接口变更：recording_fakes 缺 {missing}"
+    event_fields = {f.name for f in dataclasses.fields(rf.Event)}
+    lost = {"name", "terminated", "success", "elapsed"} - event_fields
+    assert not lost, f"T5 夹具接口变更：Event 缺字段 {sorted(lost)}"
+    params = inspect.signature(rf.make_wrapper).parameters
+    assert "save_video" in params, "T5 夹具接口变更：make_wrapper 不再接受 save_video"
+    for kind in RECORD_KINDS:
+        assert hasattr(rf.record_module(kind), "RobommeRecordWrapper"), f"T5 夹具接口变更：record_module({kind!r})"

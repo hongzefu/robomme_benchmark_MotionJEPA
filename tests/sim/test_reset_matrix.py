@@ -17,7 +17,9 @@
 
 每格断言（逐项对照该扫描的实测记录 ``reset-sweep.jsonl``，59 格全部 ok）：
 - wrapper 链恰为 ``FailAwareWrapper → DemonstrationWrapper → TimeLimitWrapper → OrderEnforcing → <任务类>``，
-  前两层与任务类都是 ``robomme_hard`` 的类；
+  第 0 层 ``FailAwareWrapper`` 经 ``robomme_hard.env_record_wrapper.FailAwareWrapper`` 导入，但那是 shim——
+  模块别名指向官方 ``robomme.env_record_wrapper.FailAwareWrapper``，类对象就是官方类；第 1 层
+  ``DemonstrationWrapper`` 是 ``robomme_hard`` 自有复制件的类；任务类是 ``robomme_hard`` 的类；
 - obs 恰五个键、形状与 dtype 固定，五个列表等长；``gripper_state_list`` 对机械臂任务是 float32，
   对 ``panda_stick`` 两个任务（PatternLock、RouteStick）是 float64 全零（生产代码
   ``DemonstrationWrapper`` 对 stick 环境显式造 ``np.zeros(2, float64)``，实测记录同此）；
@@ -141,8 +143,8 @@ def test_reset_cell(task: str, dataset: str, episode: int, tier: str) -> None:
         # —— wrapper 链 ——
         layers = _chain(env)
         assert [type(x).__name__ for x in layers] == [*CHAIN_NAMES, task]
-        assert type(layers[0]) is FailAwareWrapper
-        assert type(layers[1]) is DemonstrationWrapper
+        assert type(layers[0]) is FailAwareWrapper  # 官方类（robomme_hard 侧只是模块别名）
+        assert type(layers[1]) is DemonstrationWrapper  # robomme_hard 自有复制件
         assert layers[-1] is unwrapped
         assert type(unwrapped).__module__.startswith("robomme_hard."), type(unwrapped).__module__
 

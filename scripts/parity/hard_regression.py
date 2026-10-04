@@ -509,6 +509,19 @@ XHARD0_DECLARED_RENAMES: dict[str, dict[str, dict[str, str]]] = {
 }
 
 
+def _check_renames_bijective(renames: dict[str, dict[str, dict[str, str]]]) -> None:
+    """每个分区的改名映射必须是该分区实体名上的置换（双射、值集合 = 键集合），否则抛 ValueError。"""
+    for task, sections in renames.items():
+        for section, mapping in sections.items():
+            values = list(mapping.values())
+            if len(set(values)) != len(values) or set(values) != set(mapping):
+                raise ValueError(f"XHARD0_DECLARED_RENAMES[{task!r}][{section!r}] 不是置换：{mapping}")
+
+
+# 加载即校验：非置换映射（如两个名改成同一个名、只改一边）会把两个实体并成一个或凭空造名，改名后「逐键相等」失去意义
+_check_renames_bijective(XHARD0_DECLARED_RENAMES)
+
+
 def _apply_renames(state: Any, renames: dict[str, dict[str, str]] | None) -> Any:
     """按声明映射给官方侧状态摘要的实体改名（只动映射里点名的分区与实体）。"""
     if not renames or not (isinstance(state, dict) and all(isinstance(v, dict) for v in state.values())):
