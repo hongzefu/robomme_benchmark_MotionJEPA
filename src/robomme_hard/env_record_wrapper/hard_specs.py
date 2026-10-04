@@ -352,7 +352,8 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]],
       ``delivery_per_cell`` 为 ``{task: 正整数}``，三者键集合都等于 ``tasks``；逐任务配额自洽：
       ``delivery_per_cell[task] ≤ 格表[(task, tier)]``、``len(select_rule[task]) == delivery_per_cell[task]``、
       ``per_env[task] ==`` 本文件该任务行数、``select_rule[task]`` 每个索引 ``< per_env[task]``；内嵌 sampling_config 散列自洽；
-    * 行：字段集合；``layout_parent is None``、``spec.spec_kind == "native-newvalue/2"``；``candidate == episode`` 且
+    * 行：字段集合；``candidate``／``attempt``／``seed`` 为整数且不是布尔（F-6）；``layout_parent is None``、
+      ``spec.spec_kind == "native-newvalue/2"``；``candidate == episode`` 且
       ``0 ≤ episode < env_block // episode_stride``；档位、规格散列、seed 公式、布尔位、rollout.status；
       逐任务 selected 行数 ≤ ``delivery_per_cell[task]``；
     * 两个身份散列（签含 exec_cap、delivery_per_cell、seed_rule，改任一项不重签即失败）。
@@ -408,6 +409,12 @@ def _validate_specs_v8(header: dict[str, Any], rows: list[dict[str, Any]],
     seen, selected_count = set(), {}
     for row in rows:
         _exact_keys(row, row_required, "specs 行")
+        # F-6：candidate／attempt／seed 必须是真整数（排除 bool 与浮点），否则 True==1、int(0.5)==0、
+        # 16000000.0==16000000 会让后面的相等比较与 seed 公式误判通过
+        bad_types = {name: row[name] for name in ("candidate", "attempt", "seed") if not _is_int(row[name])}
+        if bad_types:
+            raise SpecsError(f"hard-specs/4 行 candidate／attempt／seed 必须是整数（不得为布尔或浮点）："
+                             f"{row.get('task')} {bad_types!r}")
         key = (row["task"], int(row["candidate"]))
         if row["record"] != "spec" or key in seen or row["task"] not in tasks:
             raise SpecsError(f"重复或额外的规格行：{key}")
