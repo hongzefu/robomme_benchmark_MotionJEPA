@@ -20,8 +20,9 @@ import pytest
 
 from tests._support.loaders import REPO, load_script
 
-#: 官方锚点（L0 期望）：本仓库 src/robomme 冻结所对齐的上游 commit 前缀。
-UPSTREAM_PREFIX = "1fadc0ec"
+#: 官方锚点（L0 期望）：本仓库 src/robomme 冻结所对齐的上游 commit 完整 40 位 sha
+#: （2026-10-04 由 ``git rev-parse 1fadc0ec`` 与 UPSTREAM.json 的 ``src_commit`` 两边核对一致后写死）。
+UPSTREAM_COMMIT = "1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9"
 ENTRIES = ("dataset_replay.py", "evaluation.py", "run_example.py")
 
 
@@ -46,7 +47,7 @@ def _git(*args: str, cwd: Path = REPO) -> bytes:
 
 def test_manifest_anchor_is_official_commit(guard, real_manifest):
     assert real_manifest["src_commit"] == guard.SRC_COMMIT
-    assert real_manifest["src_commit"].startswith(UPSTREAM_PREFIX)
+    assert real_manifest["src_commit"] == UPSTREAM_COMMIT
     # 清单登记的文件集合 = 官方 commit 下 src/robomme 的文件集合（独立从 git 树取）。
     names = _git("ls-tree", "-r", "-z", "--name-only", real_manifest["src_commit"], "--", "src/robomme")
     official = {x.decode() for x in names.split(b"\0") if x}
@@ -263,14 +264,28 @@ def test_shim_wrong_target_fails(guard, mini, capsys):
 
 
 def test_shim_extra_code_lines_fail(guard, mini, capsys):
-    """shim 体里塞进额外代码必须 FAIL。
-
-    注：守卫判据是「非注释行 > 3」，而现行 shim 恰好 2 行代码，所以只多 1 行时守卫放行（见交回的未解决事项）；
-    这里造多 2 行，钉住守卫现有判据确实生效。shim 多 1 行由 test_copies_vs_upstream 的逐字节形态断言兜住。
-    """
+    """shim 体里塞进两行额外代码必须 FAIL。"""
     with (mini / SHIM).open("a") as fh:
         fh.write("X = 1\nY = 2\n")
     assert guard.check_shims(_manifest(guard)) is False
+
+
+def test_shim_one_extra_code_line_fails(guard, mini, capsys):
+    """shim 只多 1 行代码也必须 FAIL：守卫 12.393 起要求非注释行恰为两行（原判据「> 3 行」会放过这一行）。
+    同时多加一行注释与空行，证明注释、空行不计入、只有代码行触发。"""
+    with (mini / SHIM).open("a") as fh:
+        fh.write("\n# 注释行不算代码\nX = 1\n")
+    assert guard.check_shims(_manifest(guard)) is False
+    out = capsys.readouterr().out
+    assert out.startswith("SHIMS=FAIL") and f"{SHIM}:body" in out
+
+
+def test_shim_comment_and_blank_lines_only_pass(guard, mini, capsys):
+    """对照：只加注释与空行不改变 shim 判定（上一条 FAIL 确由那一行代码引起）。"""
+    with (mini / SHIM).open("a") as fh:
+        fh.write("\n# 只是注释\n\n")
+    assert guard.check_shims(_manifest(guard)) is True
+    assert capsys.readouterr().out.startswith("SHIMS=PASS")
 
 
 def test_shim_missing_fails(guard, mini, capsys):
