@@ -1,0 +1,129 @@
+# sg-eval-gl-20261004-01 起跑档案（launch）
+
+四模型（GroundSG-Oracle、GroundSG-QwenVL、PonderPounce、Astra）接入与三档闸门评估。权威计划：仓库根
+[`1003-oracle-subgoal-groundsg-eval-plan.md`](../../../1003-oracle-subgoal-groundsg-eval-plan.md)。本文件按正本第 12 条两段式的第一段写
+（版本与代码状态、启动与配置还原），跑完另写 `result.md` 与 `records/`。
+
+## ① 目的与授权
+
+- 用户开工令（2026-10-04）：「/data/hongzefu/robomme_benchmark_MotionJEPANewTask/1003-oracle-subgoal-groundsg-eval-plan.md 开始实现 有问题问用户 但不要阻塞」。
+- 实施中追加：「同意加子模块」「如果安全分类器把你必要的权限都拦截了,你需要立刻问用户让用户授权」「push同意」「检查S2合并是不是卡死了」
+  「继续说中文你现在还在说英文不对」。
+- 计划与预算此前已获批（计划文首用户原话 1～34 条）。Astra 局数逐项审批：本机预检 2 局（失败可加到 6 局）、GL 第二档 32 局、V9 连通 1 局；
+  费用合计上限 30 美元。
+
+## ② 版本与代码状态
+
+| 项 | 值 |
+|---|---|
+| 工作副本 | `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`，分支 `newtaskRelease-taskV9` |
+| 开工 BASE | `3ec9b7fd5cd0821fe6baf5a741cdf87623505b6e`（12.431） |
+| 接线合入后、GL 执行副本冻结提交 | `63b2896695fd91868642d0fd0f7c0d6afa330cd3`（12.450） |
+| GL 执行副本 | `/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-sgeval`（`git clone --no-hardlinks` 自本机，检出上行提交） |
+| 本机第一档旧码快照 | `artifacts/sg-evaluation/sg-eval-gl-20261004-01/old-wt`（`git worktree add --detach … 3ec9b7fd`，跑完删除） |
+| `src/robomme` | 相对开工 BASE 零 diff；录像器 `RecordWrapper.py` 零 diff；`scripts/*.py` 仍为 4 个入口 |
+
+接线七块（计划执行模式：worktree 隔离的 opus 写入型子代理、`sub/` 前缀提交、`--no-ff` 合并、合并前只读审查与合并后门禁）：
+
+| 块 | 子代理提交 | 合并提交 | PRE_MERGE_REVIEW |
+|---|---|---|---|
+| S1 test-hard0 与删查表 | `1d3cc143` | 12.434 `c7d48e1e` | PASS files=15 |
+| S2 客户端／清单／报告 | `46c2ccf4` | 12.437 `147c4d62` | PASS files=14 |
+| S3 GroundSG | `77fec450` | 12.445 `52c1a0ca` | PASS files=9 |
+| S4 PonderPounce | `71443592`、`18f17419` | 12.439 `947a2007` | PASS files=6 |
+| S5 Astra | `cc03e064` | 12.441 `d1138b6d` | PASS files=9 |
+| S6 启动脚本与转码 | `1fa445dd` | 12.447 `4e2aa0fe` | PASS files=10 |
+| S7 轨迹／对比／报告／探针 | `d15c88d9` | 12.443 `adc5ad4e` | PASS files=14 |
+
+合并后主会话修补：12.442、12.446（astra／groundsg 测试缺省取当前检出 third_party）、12.449（`run_eval_gl.sh`／`pair_seat.sh` 增 `--gpu`）、
+12.450（`video_check` 不计空的 `.incoming`）。日常门禁（12.448）`2862 passed`，slow（eval＋evalx）`67 passed`。
+
+## ③ 第三方锁定与资产
+
+| 项 | 锁定 |
+|---|---|
+| `third_party/mme-vla` | `ecf086c3be7c2223167d9bb2f6ef1f0a6e24353b` |
+| `third_party/PonderPounce` | `723df35762bb641e1d520e4fa9359b98644adc21`（https://github.com/worv-ai/ponderpounce） |
+| `third_party/Astra-on-RoboMME` | `4c3fd6a8667e7a219e547fe1a533a4b9726fc6db`；嵌套 `third_party/robomme_benchmark` `856bc3a189d4172f3f47dbee4424d585f8d78db3`（R10 豁免，只供 Astra 原侧） |
+| vla-eval | PyPI 0.7.0（PonderPounce `uv.lock`） |
+| PonderPounce 权重 | `worv-ai/ponderpounce-9b-robomme@5691e05614e8e6581d6358959e60561acfa73534` → `$N/sg-eval/ckpt/pp/ponderpounce-9b-robomme`（`PP_FILES=PASS`；逐文件 sha256 `inputs/pp-weights.sha256`） |
+| Qwen3.5-9B 分词器与配置（无权重） | `Qwen/Qwen3.5-9B@c202236235762e1c871ad0ccb60c8ee5ba337b9a` → `$N/hf-cache/hub`（`refs/main` 已补写） |
+| PaliGemma 分词器与配置（无权重） | `google/paligemma-3b-pt-224@35e4f46485b4d07967e7e9935bc3786aad50687c` → `$N/hf-cache/hub`（gated，可读） |
+| Astra 监视器 | `bingaochen/Astra-on-RoboMME-Monitor@18ac28316a8b22c758945546c95f3910fc5dd27b`（Astra `weights.json` 所钉；`ASTRA_MONITOR_SHA256SUMS=PASS`） |
+| 本机拷贝的资产 | GroundSG `symbolic-grounded-subgoal/79999` 与 `history_config.txt`、QwenVL 适配器 `checkpoint-1200`、Qwen3-VL-4B@`ebb281ec70b05090aa6165b016eac8ec08e71b17`、openpi 分词器（sha256 `8986bb4f…`）→ NFS：`ASSETS=PASS files=89 mismatch=0 scope=local-copies` |
+
+`$N` = `/nfs/turbo/coe-chaijy-unreplicated/hongzefu`。`ASSETS=PASS` 只保证字节相同，不保证数值逐位可对拍。
+
+## ④ 环境
+
+| 环境 | 位置 | 判定 |
+|---|---|---|
+| 主环境 | 本机 `.venv`（不动）；GL 副本 `.venv`（`uv sync --frozen --group eval-client`） | — |
+| 客户端扩展（本机） | `artifacts/sg-evaluation/venvs/client-env`（`scripts/eval-official/client-env/uv.lock`） | torch 2.9.1+cu128、sapien 3.0.2、`FLASH_ATTN_KERNEL=PASS maxdiff=0` |
+| 客户端扩展（GL） | `$N/sg-eval/venvs/client-env`（不装 robomme、openpi-client，运行时由 GL 副本 PYTHONPATH 提供） | `GL_CLIENT_ENV=PASS torch=2.9.1+cu128 flash_attn=2.8.3 sapien=3.0.2` |
+| PonderPounce（本机，做法 A） | `artifacts/sg-evaluation/pp-local-env`（官方 lock 导出、只换 `torch 2.14.0+cu126`） | `PP_LOCAL_ENV=PASS torch=2.14.0+cu126 cuda=12.6 transformers=5.13.1` |
+| PonderPounce（GL） | GL 副本 `third_party/PonderPounce/.venv`（`uv sync --frozen`，CUDA 13 构建） | GL smoke 判定 |
+| MME 服务 | `third_party/mme-vla/.venv`（本机已有；GL 副本另建） | — |
+
+## ⑤ 本机预检（计划第二部分四）
+
+`PREFLIGHT_SUMMARY=PASS routes=13 failed=0 stopped_routes=none step_cap_ok=1 video_ok=1 site=sled-vail gpu=RTX6000Ada`
+
+| 路线 | rss 峰值 GB | 显存峰值 MB | 单局 s | 终态 |
+|---|---|---|---|---|
+| GroundSG-Oracle 原侧 xhard0 | 13.2 | 35296 | 48.7 | success |
+| GroundSG-Oracle 新侧 xhard0 | — | 35297 | 46.2 | success |
+| GroundSG-Oracle 新侧 V9 | — | 35301 | 46.4 | fail |
+| GroundSG-QwenVL 原侧 xhard0 | 15.3 | （无效） | 355.9 | fail |
+| GroundSG-QwenVL 新侧 xhard0 | 15.0 | 44180 | 194.5 | fail |
+| GroundSG-QwenVL 新侧 V9 | 16.3 | （无效） | 214.5 | success |
+| PonderPounce 原侧 xhard0 | 28.3 | 27366 | 62.1 | success（exec 262） |
+| PonderPounce 新侧 xhard0 | 29.8 | 27366 | 63.4 | success（exec 262） |
+| PonderPounce 新侧 V9 | 26.9 | 27366 | 83.6 | success |
+| Astra 原侧 xhard0 | — | — | 49.1 | success（291 步，规划 3 次） |
+| Astra 新侧 xhard0 | — | — | 49.4 | success（276 步，规划 3 次） |
+
+- 步数到顶（`cap_probe.py`，VideoUnmask，不加载模型）：
+  `STEP_CAP=PASS dataset=test-hard0 max_steps=1300 builder_cap=1302 loop=mme exec_steps=1301 terminal_reason=loop_count source=run`；
+  `… loop=range exec_steps=1300 terminal_reason=loop_exit source=prefix`；
+  `STEP_CAP=PASS dataset=test-hard max_steps=1600 builder_cap=1602 loop=strict exec_steps=1600 terminal_reason=strict_cap source=run`。
+- 步数接线：xhard0 路线结果行 `max_steps=effective_max_steps=1300`、strict cap 关；V9 路线 1600、`strict_cap=True`。
+- 视频：9 条非 Astra 路线 `VIDEO_SAVED=PASS … frame_mismatch=0 key_mismatch=0`（`--frames-rule demo+exec --frame-offset 1`，即帧数 = demo_frames + 1 + exec_steps）；
+  每局 mp4 约 0.4～0.9 MB；Astra 两侧 `rollout.mp4` 约 0.52 MB。
+- Astra：`ASTRA_NESTED_ROBOMME=PASS files=102 ours=102 set_diff=0 diff=0`；费用 6 次请求 0.5149 美元（单次输入约 8 千 token，远低于 272K 加价线）；
+  单价配置 `inputs/astra-prices.json`（官方：input 10、cached 1、cache write 12.5、output 50 美元／百万 token；非缓存输入保守按 12.5 计）；
+  账本 `astra-local/astra-cost-ledger.json`，GL 运行接续累计。
+- 生成 smoke（新码，`--workers 4 --dev-smoke`）：V9 PickXtimes xhard1 seed 16100000、xhard0 PickXtimes seed 510300 各 1 局，`rc=0`。
+
+预检中的意外与重跑（计入「修复后重跑」额度，每路线 ≤2）：卡号被启动器覆盖致两会话同卡、PonderPounce 三条 OOM（12.449 修复后重跑各 1 局）；
+主会话在 `run_eval_gl.sh` 运行中改文件致 QwenVL 新侧 xhard0 收尾 syntax error 与孤儿同步循环（按精确 PID 停掉后重跑 1 局）；
+Oracle 原侧为显存复测重跑 1 局；Astra 原侧第一次因清单路径写错在任何请求之前退出（未消耗局数）。
+
+## ⑥ 执行方决定（计划写明可自定的事项）
+
+1. GL 上 QwenVL 变体 `SEAT_XLA_MEM_FRACTION=0.65`（A40 约 46 GB：0.75 时预估 43.4 GB 余量过小）；Oracle、PonderPounce 保持 0.75；GL smoke 复核。
+2. 不需两卡 job：三模型显存峰值都在单张 A40 内；单卡席位 4 CPU／64 GB 够用（rss 峰值 ×1.25 最大 37.3 GB）。
+3. PonderPounce 加速内核不装（两侧、全部席位一致）：不装时单局 62～84 s 已足够；预检未另跑「装内核」对照局。
+4. 本机第一档与第二档同时开跑：0 号卡先第一档、后第二档 Oracle→PonderPounce；1 号卡第二档 QwenVL（单局最长，最先开始）。
+
+## ⑦ 启动与配置还原（本机，已起跑）
+
+一次性脚本（跑完逐字归档到 `records/*.sh.txt`）：
+- 预检：`artifacts/sg-evaluation/sg-eval-gl-20261004-01/preflight/preflight_card.sh <物理卡> <路线…>`
+- 本机第一档：`…/local-g1/local_gate1.sh <物理卡>`（旧码 `old-wt` 与新码各生成 V9 129 局 + xhard0 48 局，`noise_gate.py gen-compare` 逐局互比）
+- 本机第二档：`…/local-g2/local_gate2.sh <物理卡> <oracle|qwenvl|pp…>`（`pair_seat.sh`，分片为 hard0 192 局全量，`--reset-budget 202 --infra-retry-budget 10 --orig-infra-retry-budget 10`）
+- Astra 本机冒烟：`…/astra-local/astra_local.sh 1`（新侧）、`…/astra-local/astra_local_orig.sh 1`（原侧）
+
+本轮 tmux 会话清单（只按此清单精确清理）：
+`sgev-assets`、`sgev-download`、`sgev-flashattn`、`sgev-ppenv`、`sgev-ppenv2`、`sgev-glenv`、`sgev-glenv2`、`sgev-glenv3`、`sgev-local-cap-0`、`sgev-local-cap-1`、
+`sgev-local-pre-0`、`sgev-local-pre-1`、`sgev-local-pre-1b`、`sgev-local-pre-1c`、`sgev-local-astra`、`sgev-local-astra-cost`、`sgev-local-astra-orig`、
+`sgev-local-g1g2-0`、`sgev-local-g2-1`、`sgev-glcopy`（多数已自行结束）。
+
+## ⑧ GL 占位 job
+
+清单 `$N/gl-hold-logs/hold-jobs-sgeval-20261004.txt`：单卡 `sgev-hold-00～07` = 63188711、63188712、63188713、63188714、63188715、63188716、63188719、63188720；
+两卡 `sgev-astra-hold` = 63188721。截至本文件写入全部 `PENDING (AssocGrpGRES)`。排到卡即唤醒：主会话后台轮询（宿主任务，110 分钟续挂一次）。
+
+## ⑨ 预算（计划第二部分六，已获批）
+
+合计轨迹 5673、reset 11925；Astra 金额上限 30 美元。已用：预检非 Astra 9 局 + 重跑 5 局、步数到顶 2 局、Astra 2 局（0.51 美元）、生成 smoke 2 局。
