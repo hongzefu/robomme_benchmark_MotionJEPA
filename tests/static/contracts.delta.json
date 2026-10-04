@@ -4,12 +4,13 @@
   "domain": "C18",
   "source": "scripts/parity/upstream_guard.py",
   "symbol": "load_manifest / check_upstream_bytes / main",
-  "oracle": "官方 1fadc0ec 的 git 树（git ls-tree）与 UPSTREAM.json 逐文件 sha256；src/robomme 按 P2 冻结",
-  "positive": "真实仓库 UPSTREAM_BYTES=PASS diff=0；清单文件集合 = git ls-tree 1fadc0ec src/robomme；main check 默认严格末行 UPSTREAM_GUARD=PASS",
+  "oracle": "官方 1fadc0ec 的 git 树与 blob（ls-tree + cat-file --batch，测试侧逐文件比字节，不经清单 sha 中转）；UPSTREAM.json 逐文件 sha256 须等于 sha256(blob)；src/robomme 按 P2 冻结",
+  "positive": "工作区 src/robomme 文件集合与逐文件字节 = 官方 blob，清单 sha = sha256(blob)；守卫 UPSTREAM_BYTES=PASS diff=0；清单文件集合 = git ls-tree 1fadc0ec src/robomme；main check 默认严格末行 UPSTREAM_GUARD=PASS",
   "negative": "tmp 副本改 1 字节、多 1 文件、少 1 文件、清单 sha 改错后重签，均 FAIL；main 严格模式退出 1",
   "boundaries": "--allow-pending 只把字节差降为 PENDING 并向 stderr 打警告；--allow-pending 与 --require-upstream 互斥（退出 2）",
   "nodeids": [
    "tests/static/test_upstream_bytes.py::test_manifest_anchor_is_official_commit",
+   "tests/static/test_upstream_bytes.py::test_src_robomme_bytes_equal_official_blobs_independently",
    "tests/static/test_upstream_bytes.py::test_real_repo_upstream_bytes_pass",
    "tests/static/test_upstream_bytes.py::test_main_check_strict_by_default",
    "tests/static/test_upstream_bytes.py::test_main_flags_mutually_exclusive",
@@ -22,7 +23,7 @@
    "tests/static/test_upstream_bytes.py::test_resigned_wrong_file_hash_fails_bytes"
   ],
   "resource": "cpu",
-  "mutants": ["M01"],
+  "mutants": ["M01", "M04S"],
   "status": "verified"
  },
  {
@@ -32,11 +33,10 @@
   "symbol": "manifest_sha256 / load_manifest",
   "oracle": "剔除 manifest_sha256 后 canonical JSON（sort_keys、紧凑分隔符）的 sha256",
   "positive": "真实清单自签成立；src_commit 为 40 位",
-  "negative": "改任一值不重签 → manifest_tampered；重签但 src_commit 截短 → src_commit_not_40_hex；删一条 shim 后签名不再成立",
+  "negative": "改任一值不重签 → manifest_tampered；重签但 src_commit 截短 → src_commit_not_40_hex",
   "boundaries": "签名只防篡改，不替代逐文件比对（见 test_resigned_wrong_file_hash_fails_bytes）",
   "nodeids": [
    "tests/static/test_copies_vs_upstream.py::test_manifest_self_signature_holds",
-   "tests/static/test_copies_vs_upstream.py::test_manifest_signature_detects_tamper",
    "tests/static/test_upstream_bytes.py::test_manifest_tampered_fails",
    "tests/static/test_upstream_bytes.py::test_manifest_short_commit_fails_even_if_resigned"
   ],
@@ -85,13 +85,14 @@
   "domain": "C01",
   "source": "src/robomme_hard/UPSTREAM.json; scripts/parity/upstream_guard.py",
   "symbol": "shims[] / check_shims",
-  "oracle": "shim 恰好三行（注释指向 UPSTREAM.json、import importlib, sys、sys.modules 别名到目标模块）；目标文件 sha256 与字节数对 git 对象独立复算",
-  "positive": "清单登记的 shim 集合 = 磁盘上形态为 shim 的文件集合；每个 shim 形态与目标成立；守卫 SHIMS=PASS",
+  "oracle": "git 跟踪的 hard 包文件按内容反推三行 shim 形态（注释指向 UPSTREAM.json、import importlib, sys、sys.modules 别名），不用路径公式；目标文件 sha256 与字节数对 git 对象独立复算",
+  "positive": "由内容反推的 {shim 路径: 别名目标} = 清单登记；每个 shim 形态与目标成立；守卫 SHIMS=PASS",
   "negative": "改错别名目标 → body；删 shim → missing；多 2 行代码 → FAIL；测试侧逐行形态断言对多 1 行也会失败",
   "boundaries": "守卫判据是「非注释行 > 3」，现行 shim 2 行代码，只多 1 行时守卫放行（已报主会话，未改生产代码）",
   "nodeids": [
    "tests/static/test_copies_vs_upstream.py::test_shim_registry_equals_shim_files_on_disk",
    "tests/static/test_copies_vs_upstream.py::test_shim_form_and_target",
+   "tests/static/test_copies_vs_upstream.py::test_shim_alias_form_negatives",
    "tests/static/test_upstream_bytes.py::test_shim_wrong_target_fails",
    "tests/static/test_upstream_bytes.py::test_shim_extra_code_lines_fail",
    "tests/static/test_upstream_bytes.py::test_shim_missing_fails"

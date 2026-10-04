@@ -8,6 +8,7 @@ from __future__ import annotations
 import difflib
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -95,33 +96,46 @@ def test_manifest_self_signature_holds():
     assert hashlib.sha256(canonical.encode()).hexdigest() == claimed
 
 
-def test_manifest_signature_detects_tamper():
-    m = _manifest_raw()
-    claimed = m.pop("manifest_sha256")
-    m["shims"] = m["shims"][1:]
-    canonical = json.dumps(m, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
-    assert hashlib.sha256(canonical.encode()).hexdigest() != claimed
-
-
 SHIM_IMPORT = "import importlib, sys"
+SHIM_ALIAS = re.compile(r'^sys\.modules\[__name__\] = importlib\.import_module\("([A-Za-z0-9_.]+)"\)$')
 
 
-def _shim_files() -> set[str]:
-    """hard 包里形态上是 shim 的文件（含 ``sys.modules[__name__] = importlib.import_module``）。"""
-    out = set()
-    for p in HARD.rglob("*.py"):
-        if "__pycache__" in p.parts:
+def _shim_alias(lines: list[str]) -> str | None:
+    """三行 shim 形态（注释、导入、别名）成立时返回别名目标模块，否则 None。"""
+    if len(lines) != 3 or not lines[0].startswith("# 借用：") or lines[1] != SHIM_IMPORT:
+        return None
+    m = SHIM_ALIAS.match(lines[2])
+    return m.group(1) if m else None
+
+
+def _shim_files() -> dict[str, str]:
+    """git 跟踪的 hard 包 .py 文件里，内容是三行 shim 形态的 → {路径: 别名目标模块}（由内容反推，不用路径公式）。"""
+    out = subprocess.run(["git", "ls-files", "-z", "--", "src/robomme_hard"], cwd=REPO, check=True,
+                         capture_output=True).stdout
+    found = {}
+    for rel in (x.decode() for x in out.split(b"\0") if x):
+        if not rel.endswith(".py"):
             continue
-        if "sys.modules[__name__] = importlib.import_module(" in p.read_text(encoding="utf-8"):
-            out.add(str(p.relative_to(REPO)))
-    return out
+        target = _shim_alias((REPO / rel).read_text(encoding="utf-8").splitlines())
+        if target is not None:
+            found[rel] = target
+    return found
+
+
+def test_shim_alias_form_negatives():
+    ok = ["# 借用：x", SHIM_IMPORT, 'sys.modules[__name__] = importlib.import_module("robomme.a")']
+    assert _shim_alias(ok) == "robomme.a"
+    assert _shim_alias(ok + ["X = 1"]) is None
+    assert _shim_alias(ok[1:]) is None
+    assert _shim_alias([ok[0], "import importlib", ok[2]]) is None
 
 
 def test_shim_registry_equals_shim_files_on_disk():
     m = _manifest_raw()
-    registered = [s["shim"] for s in m["shims"]]
-    assert len(registered) == len(set(registered))
-    assert set(registered) == _shim_files()
+    registered = {s["shim"]: s["target_module"] for s in m["shims"]}
+    assert len(registered) == len(m["shims"])
+    # 由文件内容反推的 shim 集合及各自别名目标，与清单登记完全一致。
+    assert _shim_files() == registered
 
 
 @pytest.mark.parametrize("entry", _manifest_raw()["shims"], ids=lambda e: e["target_module"])
@@ -135,12 +149,8 @@ def test_shim_form_and_target(entry):
     rel_manifest = lines[0].rsplit("清单见 ", 1)[1].strip()
     assert (path.parent / rel_manifest).resolve() == MANIFEST.resolve()
     assert lines[1] == SHIM_IMPORT
-    assert lines[2] == f'sys.modules[__name__] = importlib.import_module("{entry["target_module"]}")'
-    # shim 在 hard 包里的位置与目标模块同名同层。
-    mod = entry["target_module"]
-    assert entry["shim"] == "src/robomme_hard/" + mod.split(".", 1)[1].replace(".", "/") + ".py"
-    assert entry["target_file"] == "src/" + mod.replace(".", "/") + ".py"
-    # 目标文件的 sha 与字节数对官方 git 对象独立复算。
+    assert _shim_alias(lines) == entry["target_module"]
+    # 目标文件登记在官方清单里；目标文件的 sha 与字节数对官方 git 对象独立复算。
     blob = _git_show(m["src_commit"], entry["target_file"])
     assert entry["target_sha256"] == hashlib.sha256(blob).hexdigest()
     assert entry["target_bytes"] == len(blob)

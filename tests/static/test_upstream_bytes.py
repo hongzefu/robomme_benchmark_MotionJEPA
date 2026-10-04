@@ -53,6 +53,43 @@ def test_manifest_anchor_is_official_commit(guard, real_manifest):
     assert set(real_manifest["robomme_files"]) == official
 
 
+def _official_blobs(commit: str) -> dict[str, bytes]:
+    """官方 commit 下 src/robomme 每个文件的 blob 字节（一次 ls-tree + 一次 cat-file --batch，不经清单）。"""
+    tree = _git("ls-tree", "-r", "-z", commit, "--", "src/robomme")
+    entries = []
+    for rec in tree.split(b"\0"):
+        if not rec:
+            continue
+        meta, path = rec.split(b"\t", 1)
+        entries.append((path.decode(), meta.split()[2].decode()))
+    out = subprocess.run(["git", "cat-file", "--batch"], cwd=REPO, check=True, capture_output=True,
+                         input="".join(f"{sha}\n" for _, sha in entries).encode()).stdout
+    blobs, pos = {}, 0
+    for path, sha in entries:
+        nl = out.index(b"\n", pos)
+        got_sha, kind, size = out[pos:nl].split()
+        assert got_sha.decode() == sha and kind == b"blob"
+        start = nl + 1
+        blobs[path] = out[start:start + int(size)]
+        pos = start + int(size) + 1  # blob 后跟一个换行
+    return blobs
+
+
+def test_src_robomme_bytes_equal_official_blobs_independently(real_manifest):
+    """独立证明：工作区 src/robomme 每个文件逐字节等于官方 git blob，不经 UPSTREAM.json 的 sha 中转；
+    同时核清单登记的 sha 就是该 blob 的 sha256、工作区没有多余文件。"""
+    blobs = _official_blobs(real_manifest["src_commit"])
+    assert set(real_manifest["robomme_files"]) == set(blobs)
+    have = {str(p.relative_to(REPO)) for p in (REPO / "src" / "robomme").rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts and not p.name.endswith(".pyc")}
+    assert have == set(blobs)
+    bad = [rel for rel, blob in blobs.items() if (REPO / rel).read_bytes() != blob]
+    assert bad == []
+    wrong_sha = [rel for rel, blob in blobs.items()
+                 if real_manifest["robomme_files"][rel] != hashlib.sha256(blob).hexdigest()]
+    assert wrong_sha == []
+
+
 def test_real_repo_upstream_bytes_pass(guard, real_manifest, capsys):
     assert guard.check_upstream_bytes(real_manifest) is True
     out = capsys.readouterr().out
