@@ -1,0 +1,22 @@
+{
+  "schema": "hard-parity-side/1",
+  "side": "P",
+  "tier": "xhard",
+  "prefix": "P-ca32e9b-s4",
+  "src_commit": null,
+  "orchestration_commit": "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa",
+  "tag": "pre-hard-split",
+  "code_baseline": "ca32e9b7058ac1744be55cc6841c3ec66814a184",
+  "gpu_model": "NVIDIA A40",
+  "driver": "gl1517/gl1510 当日探针佐证；gl1526 批 78 局 unknown",
+  "versions": null,
+  "job_ids": [],
+  "nodes": [],
+  "workers": 16,
+  "manifest": null,
+  "subset_manifest_sha256": null,
+  "objects": 165,
+  "generated_at": null,
+  "published_at": "2026-09-28T13:55:56+00:00",
+  "notes": "阶段 4 三侧对拍；A40@greatlakes；16 worker"
+}

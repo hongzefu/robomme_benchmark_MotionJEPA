@@ -419,6 +419,7 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 用户 2026-09-24 定的规则是「收尾只保留最终产物」：对拍 h5（如 `artifacts/newtask-v7/parity` 180 G）与冒烟产物属可删。但 A1、A2 未定前，V9、V7 的对拍 h5 是证据，建议裁决后再删。8070 站依赖 V7 的 gen1 与 eval-videos。
 - **裁决**：2026-10-02 用户「历史的产物也要清理……只需要保留最新版本 V9 的生成的 H5 文件和评估的文件，需要上传 HuggingFace」；清单（`newtask-v6`、`newtask-v7`、`newtask-v8`、`v7.5eval`、`v8-evaluation`、`branch-alignment`、`v8-probe`、`eval-reload-20260929`、`train-parity`）已认可，`newtask-v9/parity` 23 G 保留，HF 上传下轮单独做。执行在阶段 B。
 - **执行（2026-10-03）**：按 `1003-resource-cleanup-plan.md` 终版（V9 及其来源、xhard0、全部比对记录原地保留）本机移走 2190 条后删除；HF 只删 `_probe/bucket-probe.txt`。V9 交付集与评估在本机仍是唯一副本（执行留档 `docs/validation/newtask-v9/cleanup-20261003.md`）。
+- **HF 上传（2026-10-03 晚）**：按 `1003-hf-v9-publish-plan.md`，V9 交付集（`16 任务 × 50 局 = 800` 局的 h5、mp4 与索引，外加三份清单，共 1604 个对象）已上传到公开 bucket `HongzeFu/robomme-hard-v9`，逐对象读回 sha 全等；旧 bucket `HongzeFu/robomme-hard-parity` 已整删，其他 16 个 bucket 不变（执行留档 `docs/validation/newtask-v9/hf-20261003.md`）。V9 评估录像与报告仍只在本机。
 
 ### F5 09-28 拆包（hard-split）会话遗留（已基本清理）
 

@@ -1,0 +1,32 @@
+{
+  "schema": "hard-parity-side/1",
+  "side": "O",
+  "tier": "native",
+  "prefix": "O-1fadc0e-a40",
+  "src_commit": "1fadc0ec50316b60ddcfd8e82ac62ef2b70c18f9",
+  "orchestration_commit": "d53f21a7947d2d8daf6e3e8bad9f59b4f89a77fa",
+  "tag": null,
+  "code_baseline": null,
+  "gpu_model": "NVIDIA A40",
+  "driver": "595.71.05",
+  "versions": {
+    "python": "3.11.14",
+    "mani_skill": "3.0.0b21",
+    "sapien": "3.0.2",
+    "torch": "2.9.1",
+    "cuda": "12.8"
+  },
+  "job_ids": [
+    "62126060"
+  ],
+  "nodes": [
+    "gl1517.arc-ts.umich.edu"
+  ],
+  "workers": 16,
+  "manifest": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-hs-gl/scripts/configs/newtask-v3/subset_manifest.json",
+  "subset_manifest_sha256": "035d3405126d0e4aad3ba026e4d08392d8d269091300bf38c04cd2a372a6b9cd",
+  "objects": 144,
+  "generated_at": "2026-09-28T05:33:40+00:00",
+  "published_at": "2026-09-28T12:48:12+00:00",
+  "notes": "阶段 4 三侧对拍；A40@greatlakes；16 worker"
+}
