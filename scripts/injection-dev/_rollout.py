@@ -212,7 +212,12 @@ def run_batch(batch: list[dict[str, Any]], header: dict[str, Any], out_dir: Path
             "h5": str(h5[0]) if h5 else None, "round": round_index, "role": row.get("_role", "selected"),
         }
         if record["ok"] and h5:
-            record.update(h5_facts(h5[0]))
+            try:
+                record.update(h5_facts(h5[0]))
+            except FileNotFoundError:
+                # hard_parity generate 的搬运线程（Mover）可能在列目录与打开之间把 h5 搬走或按 match 删掉；
+                # 与「列目录时已被搬走」同等处理（h5 记 None、不回读事实），不让整批生成崩溃。
+                record["h5"] = None
         out.append(record)
     print(f"ROUND {header['difficulty']}/{round_index} jobs={len(batch)} ok={sum(r['ok'] for r in out)} "
           f"infra={sum(is_infra(r) for r in out)} wall_s={time.time() - started:.0f}", flush=True)
