@@ -184,7 +184,11 @@ def _recording(key: str) -> None:
 
         old = os.environ.get("CUDA_VISIBLE_DEVICES")
         mod = load_script("dataset_replay.py")
-        os.environ["CUDA_VISIBLE_DEVICES"] = old or ""
+        # 入口脚本导入时会写 CUDA_VISIBLE_DEVICES；原先没设就删掉，设过就还原
+        if old is None:
+            os.environ.pop("CUDA_VISIBLE_DEVICES", None)
+        else:
+            os.environ["CUDA_VISIBLE_DEVICES"] = old
         orig = mod._build_action_sequence
 
         def bas(ep, mode, _o=orig):
@@ -307,11 +311,16 @@ def _unit_robomme(key: str) -> None:
 # ───────────────────────────── 包装器块（tests/unit/wrappers）：按源码替换后重定义方法 ─────────────────────────────
 
 
+def _func_source(module_name, owner, attr) -> str:
+    mod = importlib.import_module(module_name)
+    target = getattr(mod, owner) if owner else mod
+    return textwrap.dedent(inspect.getsource(getattr(target, attr)))
+
+
 def _mutate_func(module_name, owner, attr, repl) -> None:
     mod = importlib.import_module(module_name)
     target = getattr(mod, owner) if owner else mod
-    func = getattr(target, attr)
-    src = textwrap.dedent(inspect.getsource(func))
+    src = _func_source(module_name, owner, attr)
     for old, new in repl:
         assert src.count(old) == 1, (attr, old, src.count(old))
         src = src.replace(old, new)
@@ -334,32 +343,137 @@ _DW = "robomme.env_record_wrapper.DemonstrationWrapper"
 _SWAP_CONCAT = ("concat_step_batches([demo_batch, init_batch])", "concat_step_batches([init_batch, demo_batch])")
 _ANY_EXC = ("except screw_failure_exc as exc:", "except Exception as exc:")
 
+#: 键 → (模块, 类或 None, 方法名, [(old, new), ...])
 _WRAPPERS = {
-    "T10-W1": lambda: _mutate_func("robomme.env_record_wrapper.EndeffectorDemonstrationWrapper",
-                                   "EndeffectorDemonstrationWrapper", "step",
-                                   [("ik_solutions[0][:7]", "ik_solutions[-1][:7]")]),
-    "T10-W2": lambda: _mutate_func("robomme.env_record_wrapper.MultiStepDemonstrationWrapper",
-                                   "MultiStepDemonstrationWrapper", "step",
-                                   [("waypoint_q = rpy_xyz_to_quat_wxyz_torch(rpy_t).numpy()",
-                                     "waypoint_q = np.array([1.0, 0.0, 0.0, 0.0])")]),
-    "T10-W3": lambda: _mutate_func(_DW, "DemonstrationWrapper", "reset", [_SUPER_RESET, _SWAP_CONCAT]),
-    "T10-W4": lambda: _mutate_func(_DW, "DemonstrationWrapper", "get_demonstration_trajectory",
-                                   [("self.unwrapped.demonstration_record_traj = False", "pass")]),
-    "T10-W5": lambda: _mutate_func(_DW, "DemonstrationWrapper", "__init__",
-                                   [_SUPER_INIT, ("self._demo_rrt_max_attempts = 3", "self._demo_rrt_max_attempts = 2")]),
-    "T10-W6": lambda: _mutate_func("robomme.env_record_wrapper.OraclePlannerDemonstrationWrapper",
-                                   "OraclePlannerDemonstrationWrapper", "_wrap_planner_with_screw_then_rrt_retry",
-                                   [_ANY_EXC]),
-    "T10-W7": lambda: _mutate_func("robomme.robomme_env.utils.planner_denseStep", None, "close_gripper",
-                                   [("lambda: planner.close_gripper()", "lambda: planner.open_gripper()")]),
-    "T10-W8": lambda: _mutate_func(_DW, "DemonstrationWrapper", "_step_batch",
-                                   [_SUPER_STEP, ("if self.current_task_demonstration == False:", "if True:")]),
-    "T10-W9": lambda: _mutate_func("robomme_hard.env_record_wrapper.DemonstrationWrapper", "DemonstrationWrapper",
-                                   "reset", [_SUPER_RESET, _SWAP_CONCAT]),
-    "T10-W10": lambda: _mutate_func("robomme_hard.env_record_wrapper.OraclePlannerDemonstrationWrapper",
-                                    "OraclePlannerDemonstrationWrapper", "_wrap_planner_with_screw_then_rrt_retry",
-                                    [_ANY_EXC]),
+    "T10-W1": ("robomme.env_record_wrapper.EndeffectorDemonstrationWrapper", "EndeffectorDemonstrationWrapper", "step",
+               [("ik_solutions[0][:7]", "ik_solutions[-1][:7]")]),
+    "T10-W2": ("robomme.env_record_wrapper.MultiStepDemonstrationWrapper", "MultiStepDemonstrationWrapper", "step",
+               [("waypoint_q = rpy_xyz_to_quat_wxyz_torch(rpy_t).numpy()",
+                 "waypoint_q = np.array([1.0, 0.0, 0.0, 0.0])")]),
+    "T10-W3": (_DW, "DemonstrationWrapper", "reset", [_SUPER_RESET, _SWAP_CONCAT]),
+    "T10-W4": (_DW, "DemonstrationWrapper", "get_demonstration_trajectory",
+               [("self.unwrapped.demonstration_record_traj = False", "pass")]),
+    "T10-W5": (_DW, "DemonstrationWrapper", "__init__",
+               [_SUPER_INIT, ("self._demo_rrt_max_attempts = 3", "self._demo_rrt_max_attempts = 2")]),
+    "T10-W6": ("robomme.env_record_wrapper.OraclePlannerDemonstrationWrapper", "OraclePlannerDemonstrationWrapper",
+               "_wrap_planner_with_screw_then_rrt_retry", [_ANY_EXC]),
+    "T10-W7": ("robomme.robomme_env.utils.planner_denseStep", None, "close_gripper",
+               [("lambda: planner.close_gripper()", "lambda: planner.open_gripper()")]),
+    "T10-W8": (_DW, "DemonstrationWrapper", "_step_batch",
+               [_SUPER_STEP, ("if self.current_task_demonstration == False:", "if True:")]),
+    "T10-W9": ("robomme_hard.env_record_wrapper.DemonstrationWrapper", "DemonstrationWrapper", "reset",
+               [_SUPER_RESET, _SWAP_CONCAT]),
+    "T10-W10": ("robomme_hard.env_record_wrapper.OraclePlannerDemonstrationWrapper", "OraclePlannerDemonstrationWrapper",
+                "_wrap_planner_with_screw_then_rrt_retry", [_ANY_EXC]),
 }
+
+
+# ───────────────────────────── 植入前预校验：植入点必须存在且（片段型）恰好命中 1 次 ─────────────────────────────
+
+
+def _count_reason(where: str, text, frag) -> str | None:
+    n = text.count(frag)
+    return None if n == 1 else f"{where} 植入片段命中 {n} 次：{frag!r}"
+
+
+def _missing(obj, *attrs) -> str | None:
+    lacking = [a for a in attrs if not hasattr(obj, a)]
+    return f"{getattr(obj, '__name__', obj)} 缺属性 {lacking}" if lacking else None
+
+
+def _first(*reasons) -> str | None:
+    return next((r for r in reasons if r), None)
+
+
+def _precheck(root: pathlib.Path, block: str, key: str) -> str | None:
+    """返回 None 表示可以植入；否则返回不能植入的原因（不改任何东西）。"""
+    if block == "static":
+        binfill = root / "src/robomme/robomme_env/BinFill.py"
+        if key in ("M01", "M04S") and (not binfill.is_file() or binfill.stat().st_size == 0):
+            return f"{binfill} 不存在或为空"
+        if key == "M02":
+            p = root / "scripts/evaluation.py"
+            return None if p.is_file() else f"{p} 不存在"
+        if key == "M03":
+            p = root / "src/robomme_hard/env_record_wrapper/RecordWrapper.py"
+            return _count_reason(str(p), p.read_bytes(), b"fail_safe_limit = 5000") if p.is_file() else f"{p} 不存在"
+        if key == "M04S":
+            import json
+
+            m = json.loads((root / "src/robomme_hard/UPSTREAM.json").read_bytes())
+            if "manifest_sha256" not in m or "src/robomme/robomme_env/BinFill.py" not in m.get("robomme_files", {}):
+                return "UPSTREAM.json 缺 manifest_sha256 或 BinFill.py 条目"
+        return None
+    if block == "contract":
+        from robomme_hard.env_record_wrapper import hard_builder, hard_specs as hs
+
+        if key == "M07":
+            return None if ("PickXtimes", "xhard1") in hs.V9_CELLS else "V9_CELLS 缺 (PickXtimes, xhard1)"
+        if key == "M08":
+            return None if "xhard1" in hs.TIER_MAX_STEPS else "TIER_MAX_STEPS 缺 xhard1"
+        return _missing(hard_builder, "_test_hard_entries")
+    if block == "pipeline/recording":
+        if key == "M14a":
+            import h5py
+
+            srcs = [inspect.getsource(m) for m in _rec_mods()]
+            return _first(_missing(h5py.Group, "create_dataset"),
+                          *(None if "is_subgoal_boundary" in s else "RecordWrapper 源码里没有 is_subgoal_boundary"
+                            for s in srcs))
+        if key == "T5-K1":
+            from robomme.env_record_wrapper.episode_dataset_resolver import EpisodeDatasetResolver as R
+
+            return _first(_missing(R, "_build_indexes"),
+                          None if "_timestep_indexes" in inspect.getsource(R) else "解析器没有 _timestep_indexes")
+        if key == "T5-K4":
+            text = (root / "scripts/dataset_replay.py").read_text(encoding="utf-8")
+            return _count_reason("scripts/dataset_replay.py", text, "def _build_action_sequence(")
+        if key in ("T5-K7", "T5-K8"):
+            attr = "_augment_obs_and_info" if key == "T5-K7" else "_filter_no_record_from_step_batch"
+            return _first(*(_missing(importlib.import_module(f"{p}.env_record_wrapper.DemonstrationWrapper")
+                                     .DemonstrationWrapper, attr) for p in ("robomme", "robomme_hard")))
+        attr = {"M14b": "close", "M14c": "close", "T5-K2": "_video_should_record",
+                "T5-K3": "_video_prepare_step_frames", "T5-K5": "step", "T5-K6": "_video_flush_episode_files"}[key]
+        reason = _first(*(_missing(m.RobommeRecordWrapper, attr) for m in _rec_mods()))
+        if reason is None and key == "T5-K6":
+            for m in _rec_mods():
+                params = list(inspect.signature(m.RobommeRecordWrapper._video_flush_episode_files).parameters)
+                if params != ["self", "success", "video_prefix", "filename_suffix"]:
+                    return f"_video_flush_episode_files 签名变了：{params}"
+        return reason
+    if block == "unit/robomme":
+        sef = importlib.import_module("robomme.robomme_env.utils.subgoal_evaluate_func")
+        if key == "T3-M01":
+            return _first(_missing(sef, "get_button_depth", "is_button_pressed"),
+                          _count_reason("is_button_pressed", inspect.getsource(sef.is_button_pressed), "if depth > 0.005:"))
+        if key == "T3-M03":
+            return _first(_missing(sef, "is_obj_dropped", "is_obj_dropped_onto"),
+                          _count_reason("is_obj_dropped_onto", inspect.getsource(sef.is_obj_dropped_onto),
+                                        "distance_threshold = 0.05"))
+        if key == "T3-M05":
+            return _first(*(_missing(importlib.import_module(f"robomme.robomme_env.{t}"), "swap_flat_two_lane")
+                            for t in ("VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoRepick", "VideoPlaceButton",
+                                      "VideoPlaceOrder")))
+        if key == "T3-M06":
+            return _missing(importlib.import_module("robomme.env_record_wrapper.DemonstrationWrapper").DemonstrationWrapper,
+                            "_filter_no_record_from_step_batch")
+        if key == "T3-M07":
+            return _missing(importlib.import_module("robomme.env_record_wrapper.episode_config_resolver"),
+                            "get_episode_metadata")
+        if key == "T3-M08":
+            return _missing(importlib.import_module("robomme.robomme_env.RouteStick").RouteStick, "direction_fail")
+        if key == "T3-M09":
+            return _missing(importlib.import_module("robomme.env_record_wrapper.FailAwareWrapper").FailAwareWrapper,
+                            "step")
+        attr = {"T3-M02": "_coerce_failure_result", "T3-M04": "correct_timestep",
+                "T3-M10": "sequential_task_check"}[key]
+        return _missing(sef, attr)
+    if block == "unit/wrappers":
+        mod, owner, attr, repl = _WRAPPERS[key]
+        src = _func_source(mod, owner, attr)
+        return _first(*(_count_reason(f"{mod}.{owner}.{attr}", src, old) for old, _ in repl))
+    return f"未知块 {block}"
+
 
 # 每块的植入时机沿用该块作者自检时的钩子：静态／契约／录制在 pytest_configure，官方单元与包装器在 pytest_sessionstart。
 CONFIGURE_BLOCKS = {"static", "contract", "pipeline/recording"}
@@ -376,26 +490,51 @@ SUPPORTED = (
 )
 
 
+def _write_status(applied: bool, reason: str | None) -> None:
+    """把植入是否真正生效写到 MUT_STATUS_FILE；执行器只有读到 applied=true 才会把失败计为抓到。"""
+    path = os.environ.get("MUT_STATUS_FILE")
+    if path:
+        import json
+
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump({"key": KEY, "applied": applied, "reason": reason}, fh, ensure_ascii=False)
+
+
 def _apply(config) -> None:
     block, _, key = KEY.partition(":")
-    if block == "static":
-        _install_read_patch(pathlib.Path(str(config.rootpath)), key)
-    elif block == "contract":
-        _contract(key)
-    elif block == "pipeline/recording":
-        _recording(key)
-    elif block == "unit/robomme":
-        _unit_robomme(key)
-    elif block == "unit/wrappers":
-        _WRAPPERS[key]()
-    else:
-        raise KeyError(KEY)
+    try:
+        reason = _precheck(pathlib.Path(str(config.rootpath)), block, key)
+    except Exception as exc:  # 预校验自身出错同样视为不能植入
+        reason = f"预校验异常 {type(exc).__name__}: {exc}"
+    if reason:
+        # 不植入、不中断会话：用例照原版跑，执行器据状态文件记为 not_applied
+        _write_status(False, reason)
+        print(f"MUT_INPROC_NOT_APPLIED={KEY} {reason}", flush=True)
+        return
+    try:
+        if block == "static":
+            _install_read_patch(pathlib.Path(str(config.rootpath)), key)
+        elif block == "contract":
+            _contract(key)
+        elif block == "pipeline/recording":
+            _recording(key)
+        elif block == "unit/robomme":
+            _unit_robomme(key)
+        elif block == "unit/wrappers":
+            _mutate_func(*_WRAPPERS[key])
+        else:
+            raise KeyError(KEY)
+    except Exception as exc:
+        _write_status(False, f"植入异常 {type(exc).__name__}: {exc}")
+        raise
+    _write_status(True, None)
     print(f"MUT_INPROC_APPLIED={KEY}", flush=True)
 
 
 def pytest_configure(config):
     if KEY:
         if KEY not in SUPPORTED:
+            _write_status(False, f"未知植入 {KEY}")
             raise SystemExit(f"未知植入 {KEY}")
         if KEY.partition(":")[0] in CONFIGURE_BLOCKS:
             _apply(config)

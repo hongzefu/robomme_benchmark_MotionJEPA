@@ -1,22 +1,26 @@
 """植入（变异）执行器：读取全部 ``tests/**/mutants.json``，逐项植入语义错误，核对指定用例因之失败。
 
-三类（详见同目录 README.md）：
-- A 文本替换／数据改写：在 tmp 隔离副本里落盘改源码（每个 old 恰好命中 1 次），受保护的 ``src/robomme`` 与
-  三个上游入口一律拒绝落盘（红线 R9）；
-- B 进程内插件：``tests/unit/hard/mutants_plugin.py``（T4_MUTANT）或 ``plugins/mut_inproc.py``（MUT_INPROC），
-  不落盘，在仓库本身运行（只读，``PYTHONDONTWRITEBYTECODE=1``、关 cacheprovider）；
-- C 仅描述、无法机检：只报告，计入 not_executable，不计入 seeded。
+归类（详见同目录 README.md）：
+- A 文本替换／数据改写：在 tmp 隔离副本里落盘改源码（每个 old 恰好命中 1 次，否则记 not_applied），受保护的
+  ``src/robomme`` 与三个上游入口一律拒绝落盘（红线 R9，记 no_recipe）；
+- B 进程内插件：``tests/unit/hard/mutants_plugin.py``（T4_MUTANT，配 ``plugins/t4_status.py``）或
+  ``plugins/mut_inproc.py``（MUT_INPROC），不落盘，在仓库本身运行（只读）；插件在植入前预校验植入点、把是否生效写进
+  MUT_STATUS_FILE，未生效记 not_applied；
+- C 用户裁决例外：mutants.json 里没有 expect_fail 且带 decision 的条目，计入 not_executable 并放行；
+- NR 缺配方：找不到可执行做法（或无 expect_fail 又无裁决），记 no_recipe。
 
 每项先确认原版在同环境下 expect_fail 用例全过（基线），再植入重跑：至少一个 expect_fail 用例（参数化按前缀匹配实例）
-在 setup／call 阶段失败、且异常类型不是导入／语法错误、所在文件无收集错误，才算抓到。
+在 setup／call 阶段失败，异常类型不是导入／语法错误，异常栈顶不在植入设施（``tests/mutation/``、
+``tests/unit/hard/mutants_plugin.py``）里，所在文件也无收集错误，才算抓到。
 
-判定行：``TEST_MUTATION=PASS|FAIL seeded=<n> caught=<n> survived=<n> not_executable=<n> baseline_fail=<n>``；
-通过条件 survived=0 且 baseline_fail=0（且 seeded>0）。逐项记录写 ``artifacts/maint-regress/mutation/last_run*.jsonl``。
+判定行：``TEST_MUTATION=PASS|FAIL seeded= caught= survived= not_executable= not_applied= no_recipe= baseline_fail=
+repo_changed=``；通过条件 survived、baseline_fail、not_applied、no_recipe 都为 0，运行前后 git status 不变，且 seeded>0。
+逐项记录写 ``artifacts/maint-regress/mutation/last_run*.jsonl``（同名 ``.meta.json`` 记仓库是否被改动）。
 
 用法：
   UV_PROJECT_ENVIRONMENT=<主检出>/.venv uv run --no-sync python tests/mutation/run_mutants.py [--jobs 4]
-      [--only <块或块:编号>...] [--tag <批次名>] [--list]
-  … run_mutants.py --merge     # 合并各批次 last_run.<tag>.jsonl，写 last_run.jsonl 并打印总判定行
+      [--only <块前缀或块:编号>...] [--tag <批次名>] [--list]
+  … run_mutants.py --merge --tag <批次前缀>   # 只合并 last_run.<前缀>*.jsonl，写 last_run.jsonl 并打印总判定行
 """
 from __future__ import annotations
 
@@ -49,6 +53,9 @@ PROTECTED_PREFIX = "src/robomme/"
 UPSTREAM_ENTRIES = {"scripts/dataset_replay.py", "scripts/evaluation.py", "scripts/run_example.py"}
 #: 这些异常类型导致的失败不算抓到。
 NOT_SEMANTIC = {"ImportError", "ModuleNotFoundError", "SyntaxError", "IndentationError"}
+#: 异常栈顶落在这些植入设施文件里的失败是插件自身出错，不算抓到。
+PLUGIN_FILES_PREFIX = ("tests/mutation/",)
+PLUGIN_FILES = {"tests/unit/hard/mutants_plugin.py"}
 PYTEST_TIMEOUT = 280
 T4_PLUGIN_DIR = "tests/unit/hard"
 
@@ -76,10 +83,15 @@ def normalize(source: str, block: str, e: dict) -> dict:
     mid = e.get("id")
     key = f"{block}:{mid}"
     expect = list(e.get("expect_fail", e.get("expected_failing")) or [])
+    # 类别：A／B 可执行；C 只给「无 expect_fail 且有用户裁决」的例外（放行）；NR 为缺配方（判 FAIL）
     it = {"source": source, "block": block, "id": mid, "key": key, "target": e.get("target"), "expect_fail": expect,
-          "category": "C", "reason": None, "recipe": None}
+          "category": "NR", "reason": None, "recipe": None}
     if not expect:
-        it["reason"] = "无 expect_fail 用例" + (f"（{e['decision']}）" if e.get("decision") else "")
+        if e.get("decision"):
+            it["category"] = "C"
+            it["reason"] = f"无 expect_fail 用例（用户裁决例外：{e['decision']}）"
+        else:
+            it["reason"] = "无 expect_fail 用例且没有用户裁决"
         return it
     method = e.get("method") or e.get("inject") or ""
     if e.get("patch"):
@@ -88,9 +100,11 @@ def normalize(source: str, block: str, e: dict) -> dict:
         recipe = RECIPES[key]
     elif "T4_MUTANT=" in method and "mutants_plugin" in method:
         name = re.search(r"T4_MUTANT=([A-Za-z0-9_]+)", method).group(1)
-        recipe = {"kind": "plugin", "plugin": "mutants_plugin", "pythonpath": T4_PLUGIN_DIR, "env": {"T4_MUTANT": name}}
+        # t4_status 在 mutants_plugin 之前把替换改成「恰好命中 1 次」并写植入状态
+        recipe = {"kind": "plugin", "plugin": ["mutants_plugin", "tests.mutation.plugins.t4_status"],
+                  "pythonpath": T4_PLUGIN_DIR, "env": {"T4_MUTANT": name}}
     elif key in mut_inproc.SUPPORTED:
-        recipe = {"kind": "plugin", "plugin": "tests.mutation.plugins.mut_inproc", "pythonpath": None,
+        recipe = {"kind": "plugin", "plugin": ["tests.mutation.plugins.mut_inproc"], "pythonpath": None,
                   "env": {"MUT_INPROC": key}}
     else:
         it["reason"] = "只有文字描述，执行器无对应配方"
@@ -125,9 +139,10 @@ def run_pytest(root: Path, nodeids: list[str], plugins: list[str], extra_path: l
     """在 root 下跑指定用例，返回结果记录插件写出的 JSON（另附 rc 与输出尾部）。"""
     fd, out_file = tempfile.mkstemp(suffix=".json", dir=scratch)
     os.close(fd)
+    status_file = str(Path(out_file).with_suffix(".status.json"))
     pp = [str(root / "src"), str(root)] + [str(root / p) for p in extra_path]
     env = dict(os.environ, UV_PROJECT_ENVIRONMENT=_venv(), PYTHONPATH=":".join(pp), PYTHONDONTWRITEBYTECODE="1",
-               MUT_OUTCOME_FILE=out_file, **env_extra)
+               MUT_OUTCOME_FILE=out_file, MUT_STATUS_FILE=status_file, **env_extra)
     for k in ("MUT_INPROC", "T4_MUTANT"):
         if k not in env_extra:
             env.pop(k, None)
@@ -146,22 +161,27 @@ def run_pytest(root: Path, nodeids: list[str], plugins: list[str], extra_path: l
     except (OSError, json.JSONDecodeError):
         data = {}
     Path(out_file).unlink(missing_ok=True)
-    data.update(rc=rc, tail=tail, seconds=round(time.monotonic() - t0, 1))
+    try:  # 进程内插件写的植入状态；没有该文件即 None
+        status = json.loads(Path(status_file).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        status = None
+    Path(status_file).unlink(missing_ok=True)
+    data.update(rc=rc, tail=tail, seconds=round(time.monotonic() - t0, 1), status=status)
     return data
 
 
-def _final(rec: dict) -> tuple[str, str | None]:
-    """把一个用例各阶段合成最终结局：(passed|failed|skipped, 失败阶段的异常类型)。"""
+def _final(rec: dict) -> tuple[str, str | None, str | None]:
+    """把一个用例各阶段合成最终结局：(passed|failed|skipped, 失败阶段的异常类型, 异常栈顶文件)。"""
     ph = rec.get("phases", {})
     for when in ("setup", "call", "teardown"):
         p = ph.get(when)
         if p and p["outcome"] == "failed":
-            return "failed", p.get("exc")
+            return "failed", p.get("exc"), p.get("top_file")
     if any(p["outcome"] == "skipped" for p in ph.values()):
-        return "skipped", None
+        return "skipped", None, None
     if ph.get("call", {}).get("outcome") == "passed":
-        return "passed", None
-    return "unknown", None
+        return "passed", None, None
+    return "unknown", None, None
 
 
 def _matches(nodeid: str, want: str) -> bool:
@@ -187,7 +207,7 @@ def baseline_ok(j: dict) -> tuple[bool, list[str]]:
     for want, inst in j["per"].items():
         if not inst:
             bad.append(f"{want} 未收集到")
-        bad += [f"{nid} {out}" for nid, out, _ in inst if out != "passed"]
+        bad += [f"{nid} {out}" for nid, out, _, _ in inst if out != "passed"]
     return not bad, bad
 
 
@@ -197,11 +217,15 @@ def caught_by(j: dict) -> tuple[list[str], list[str]]:
         return [], [f"收集错误 {[c['nodeid'] for c in j['collect_errors']]}"]
     hit, excluded = [], []
     for inst in j["per"].values():
-        for nid, out, exc in inst:
+        for nid, out, exc, top in inst:
             if out != "failed":
                 continue
             if exc in NOT_SEMANTIC:
                 excluded.append(f"{nid} {exc}")
+            elif top is None:
+                excluded.append(f"{nid} {exc} 栈顶文件不明")
+            elif top.startswith(PLUGIN_FILES_PREFIX) or top in PLUGIN_FILES:
+                excluded.append(f"{nid} {exc} 栈顶在植入设施 {top}")
             else:
                 hit.append(nid)
     return hit, excluded
@@ -269,7 +293,7 @@ def restore(root: Path, backup: dict[str, bytes]) -> None:
 def _plugins_for(recipe: dict | None) -> tuple[list[str], list[str]]:
     if recipe is None or recipe["kind"] != "plugin":
         return [], []
-    return [recipe["plugin"]], [recipe["pythonpath"]] if recipe.get("pythonpath") else []
+    return list(recipe["plugin"]), [recipe["pythonpath"]] if recipe.get("pythonpath") else []
 
 
 def _group_sig(it: dict) -> tuple:
@@ -330,11 +354,18 @@ def run_one(it: dict, copies: "queue.Queue[Path]", scratch: Path, log) -> None:
     else:
         plugins, extra = _plugins_for(recipe)
         data = run_pytest(REPO, it["expect_fail"], plugins, extra, dict(recipe["env"]), scratch)
+        st = data.get("status")
+        if not st or not st.get("applied"):
+            reason = (st or {}).get("reason") or "插件未写植入状态（插件或会话异常）"
+            it.update(mutant="not_applied", caught=False, reason=f"进程内植入未生效：{reason}",
+                      mutant_rc=data["rc"], mutant_tail=data["tail"][-1500:])
+            log(f"{it['key']} 植入未生效：{reason}")
+            return
     j = judge(data, it["expect_fail"])
     hit, excluded = caught_by(j)
     it.update(mutant="applied", caught=bool(hit), failed_tests=hit, excluded_failures=excluded,
               mutant_rc=data["rc"], mutant_seconds=data["seconds"],
-              mutant_outcomes={w: [[n, o, e] for n, o, e in inst] for w, inst in j["per"].items()})
+              mutant_outcomes={w: [[n, o, e, t] for n, o, e, t in inst] for w, inst in j["per"].items()})
     if not hit:
         it["mutant_tail"] = data["tail"][-1500:]
     log(f"{it['key']} {'CAUGHT' if hit else 'SURVIVED'} 失败={len(hit)} 用时={data['seconds']}s rc={data['rc']}")
@@ -344,16 +375,32 @@ def _files_of(recipe: dict) -> list[str]:
     return sorted({p["file"] for p in recipe.get("patch", [])} | set(recipe.get("files", [])))
 
 
-def summarize(rows: list[dict]) -> str:
-    seeded = [r for r in rows if r["category"] in ("A", "B") and r.get("baseline") == "pass"
-              and r.get("mutant") == "applied"]
-    caught = sum(1 for r in seeded if r["caught"])
-    survived = len(seeded) - caught
-    not_exec = sum(1 for r in rows if r["category"] == "C" or r.get("mutant") == "not_applied")
-    base_fail = sum(1 for r in rows if r["category"] in ("A", "B") and r.get("baseline") == "fail")
-    ok = survived == 0 and base_fail == 0 and len(seeded) > 0
-    return (f"TEST_MUTATION={'PASS' if ok else 'FAIL'} seeded={len(seeded)} caught={caught} survived={survived} "
-            f"not_executable={not_exec} baseline_fail={base_fail}")
+def counts(rows: list[dict]) -> dict:
+    c = {"seeded": 0, "caught": 0, "survived": 0, "not_executable": 0, "not_applied": 0, "no_recipe": 0,
+         "baseline_fail": 0}
+    for r in rows:
+        if r["category"] == "C":
+            c["not_executable"] += 1
+        elif r["category"] == "NR":
+            c["no_recipe"] += 1
+        elif r.get("baseline") == "fail":
+            c["baseline_fail"] += 1
+        elif r.get("mutant") == "not_applied":
+            c["not_applied"] += 1
+        elif r.get("mutant") == "applied":
+            c["seeded"] += 1
+            c["caught" if r["caught"] else "survived"] += 1
+    return c
+
+
+def summarize(rows: list[dict], repo_changed: bool) -> str:
+    """判定行。not_executable 只放行用户裁决例外；not_applied、no_recipe、仓库被改动任一出现即 FAIL。"""
+    c = counts(rows)
+    ok = (c["survived"] == 0 and c["baseline_fail"] == 0 and c["not_applied"] == 0 and c["no_recipe"] == 0
+          and not repo_changed and c["seeded"] > 0)
+    return (f"TEST_MUTATION={'PASS' if ok else 'FAIL'} seeded={c['seeded']} caught={c['caught']} "
+            f"survived={c['survived']} not_executable={c['not_executable']} not_applied={c['not_applied']} "
+            f"no_recipe={c['no_recipe']} baseline_fail={c['baseline_fail']} repo_changed={int(repo_changed)}")
 
 
 def _row_for_file(it: dict) -> dict:
@@ -366,20 +413,11 @@ def _row_for_file(it: dict) -> dict:
 
 
 def table(rows: list[dict]) -> str:
-    by: dict[str, dict] = {}
-    for r in rows:
-        b = by.setdefault(r["block"], {"seeded": 0, "caught": 0, "survived": 0, "not_executable": 0, "baseline_fail": 0})
-        if r["category"] == "C" or r.get("mutant") == "not_applied":
-            b["not_executable"] += 1
-        elif r.get("baseline") == "fail":
-            b["baseline_fail"] += 1
-        elif r.get("mutant") == "applied":
-            b["seeded"] += 1
-            b["caught" if r["caught"] else "survived"] += 1
-    lines = ["块 | seeded | caught | survived | not_executable | baseline_fail"]
-    for k in sorted(by):
-        v = by[k]
-        lines.append(f"{k} | {v['seeded']} | {v['caught']} | {v['survived']} | {v['not_executable']} | {v['baseline_fail']}")
+    cols = ["seeded", "caught", "survived", "not_executable", "not_applied", "no_recipe", "baseline_fail"]
+    lines = ["块 | " + " | ".join(cols)]
+    for blk in sorted({r["block"] for r in rows}):
+        c = counts([r for r in rows if r["block"] == blk])
+        lines.append(f"{blk} | " + " | ".join(str(c[x]) for x in cols))
     return "\n".join(lines)
 
 
@@ -390,29 +428,12 @@ def main(argv=None) -> int:
     ap.add_argument("--jobs", type=int, default=4, help="并发 pytest 进程数（A 类每个并发一份隔离副本）")
     ap.add_argument("--tag", default=None, help="批次名；给出时写 last_run.<tag>.jsonl，否则写 last_run.jsonl")
     ap.add_argument("--list", action="store_true", help="只打印归一结果，不运行")
-    ap.add_argument("--merge", action="store_true", help="合并 last_run.*.jsonl 为 last_run.jsonl 并打印总判定行")
+    ap.add_argument("--merge", action="store_true",
+                    help="把 last_run.<tag>*.jsonl（须给 --tag 作前缀）合并为 last_run.jsonl 并打印总判定行")
     args = ap.parse_args(argv)
 
     if args.merge:
-        rows = []
-        for p in sorted(OUT_DIR.glob("last_run.*.jsonl")):
-            rows += [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines() if x.strip()]
-        keys = [r["key"] for r in rows]
-        dup = sorted({k for k in keys if keys.count(k) > 1})
-        if dup:
-            raise SystemExit(f"批次之间条目重复：{dup}")
-        total = {it["key"] for it in load_items()}
-        missing = sorted(total - set(keys))
-        (OUT_DIR / "last_run.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows),
-                                                encoding="utf-8")
-        print(table(rows))
-        if missing:
-            print(f"批次未覆盖的条目：{missing}")
-            print(summarize(rows).replace("TEST_MUTATION=PASS", "TEST_MUTATION=FAIL") + f" uncovered={len(missing)}")
-            return 1
-        line = summarize(rows)
-        print(line)
-        return 0 if "=PASS" in line else 1
+        return merge(args.tag)
 
     items = load_items()
     keys = [it["key"] for it in items]
@@ -441,7 +462,7 @@ def main(argv=None) -> int:
             for c in ex.map(lambda i: make_copy(work / f"copy{i}"), range(n_copies)):
                 copies.put(c)
         copy0 = copies.queue[0]
-        log(f"隔离副本 {n_copies} 份就绪（{work}），可执行 {len(runnable)} 项、仅描述 {len(items) - len(runnable)} 项")
+        log(f"隔离副本 {n_copies} 份就绪（{work}），可执行 {len(runnable)} 项、其余 {len(items) - len(runnable)} 项")
         run_baselines(runnable, copy0, scratch, log)
         todo = [it for it in runnable if it["baseline"] == "pass"]
         for it in runnable:
@@ -452,33 +473,83 @@ def main(argv=None) -> int:
     finally:
         shutil.rmtree(work, ignore_errors=True)
     git_after = _git_status()
-    if git_after != git_before:
-        print(f"警告：运行前后仓库 git status 不同\n前：{git_before}\n后：{git_after}")
+    repo_changed = git_before is None or git_after != git_before
+    if repo_changed:
+        print(f"运行前后仓库 git status 不同或取不到（判 FAIL）\n前：{git_before}\n后：{git_after}")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    name = f"last_run.{args.tag}.jsonl" if args.tag else "last_run.jsonl"
-    (OUT_DIR / name).write_text("".join(json.dumps(_row_for_file(it), ensure_ascii=False) + "\n" for it in items),
-                                encoding="utf-8")
+    stem = f"last_run.{args.tag}" if args.tag else "last_run"
+    (OUT_DIR / f"{stem}.jsonl").write_text(
+        "".join(json.dumps(_row_for_file(it), ensure_ascii=False) + "\n" for it in items), encoding="utf-8")
+    (OUT_DIR / f"{stem}.meta.json").write_text(json.dumps(
+        {"repo_changed": repo_changed, "git_before": git_before, "git_after": git_after,
+         "only": args.only, "seconds": round(time.monotonic() - t_start, 1)}, ensure_ascii=False), encoding="utf-8")
     print(table(items))
-    for it in items:
-        if it["category"] == "C" or it.get("mutant") == "not_applied":
-            print(f"NOT_EXECUTABLE {it['key']}：{it.get('reason')}")
-        elif it.get("baseline") == "fail":
-            print(f"BASELINE_FAIL {it['key']}：{it['baseline_problems'][:3]}")
-        elif not it.get("caught"):
-            print(f"SURVIVED {it['key']}：{it.get('excluded_failures')}")
-    line = summarize(items)
-    print(f"记录：{OUT_DIR / name}")
+    report_lines(items)
+    line = summarize(items, repo_changed)
+    print(f"记录：{OUT_DIR / (stem + '.jsonl')}（用时 {time.monotonic() - t_start:.1f}s）")
     print(line)
     return 0 if "=PASS" in line else 1
 
 
-def _git_status() -> str:
+def report_lines(items: list[dict]) -> None:
+    for it in items:
+        if it["category"] == "C":
+            print(f"NOT_EXECUTABLE {it['key']}：{it.get('reason')}")
+        elif it["category"] == "NR":
+            print(f"NO_RECIPE {it['key']}：{it.get('reason')}")
+        elif it.get("baseline") == "fail":
+            print(f"BASELINE_FAIL {it['key']}：{it['baseline_problems'][:3]}")
+        elif it.get("mutant") == "not_applied":
+            print(f"NOT_APPLIED {it['key']}：{it.get('reason')}")
+        elif not it.get("caught"):
+            print(f"SURVIVED {it['key']}：{it.get('excluded_failures')}")
+
+
+def merge(tag: str | None) -> int:
+    """只合并本批次前缀 last_run.<tag>*.jsonl；缺项、重复或任一批次仓库被改动都判 FAIL。"""
+    if not tag:
+        raise SystemExit("--merge 须给 --tag <批次前缀>")
+    files = sorted(OUT_DIR.glob(f"last_run.{tag}*.jsonl"))
+    if not files:
+        raise SystemExit(f"没有 last_run.{tag}*.jsonl")
+    rows, repo_changed = [], False
+    for p in files:
+        rows += [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines() if x.strip()]
+        meta = p.with_name(p.name[: -len(".jsonl")] + ".meta.json")
+        try:
+            repo_changed |= bool(json.loads(meta.read_text(encoding="utf-8"))["repo_changed"])
+        except (OSError, json.JSONDecodeError, KeyError):
+            repo_changed = True  # 缺元数据按未知处理
+            print(f"缺批次元数据 {meta.name}，按仓库可能被改动处理")
+    keys = [r["key"] for r in rows]
+    dup = sorted({k for k in keys if keys.count(k) > 1})
+    if dup:
+        raise SystemExit(f"批次之间条目重复：{dup}")
+    missing = sorted({it["key"] for it in load_items()} - set(keys))
+    (OUT_DIR / "last_run.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows),
+                                            encoding="utf-8")
+    (OUT_DIR / "last_run.meta.json").write_text(json.dumps(
+        {"repo_changed": repo_changed, "merged": [p.name for p in files]}, ensure_ascii=False), encoding="utf-8")
+    print(f"合并：{[p.name for p in files]}")
+    print(table(rows))
+    report_lines(rows)
+    line = summarize(rows, repo_changed)
+    if missing:
+        print(f"批次未覆盖的条目：{missing}")
+        line = line.replace("TEST_MUTATION=PASS", "TEST_MUTATION=FAIL") + f" uncovered={len(missing)}"
+    print(line)
+    return 0 if "=PASS" in line else 1
+
+
+def _git_status() -> str | None:
+    """仓库 git status（排除只追加的子代理统计文件）；取不到返回 None。"""
     try:
-        return subprocess.run(["git", "status", "--porcelain", "--ignore-submodules=dirty"], cwd=REPO,
-                              capture_output=True, text=True).stdout
+        proc = subprocess.run(["git", "status", "--porcelain", "--ignore-submodules=dirty", "--", ".",
+                               ":!docs/subagent-stats"], cwd=REPO, capture_output=True, text=True)
     except OSError:
-        return ""
+        return None
+    return proc.stdout if proc.returncode == 0 else None
 
 
 if __name__ == "__main__":
