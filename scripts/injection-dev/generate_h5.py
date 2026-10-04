@@ -10,13 +10,13 @@
     uv run --no-sync python scripts/injection-dev/generate_h5.py --mode continue \\
         --specs <gen1>/shard-movecube/specs --cells v9shard1 --output <gen1>/shard-movecube --workers 4 --gpu 0
     # 只重算聚合（规格根 + 各片账本目录）；整树搬迁后（GL NFS → 本机 /data）用 --rebase 换 h5／mp4 前缀并逐个核 sha256
-    uv run --no-sync python scripts/injection-dev/generate_h5.py --mode aggregate --specs <规格根> --cells full \\
+    uv run --no-sync python scripts/injection-dev/generate_h5.py --mode aggregate --specs <规格根> --cells v9 \\
         --shards <账本目录,...> --rebase <旧前缀>=<新前缀> --output <目录> [--out <新 delivery.json 路径>]
     # 对拍专用：按身份清单只读重放，不递补、不回写（--specs 给 /4 规格根或单文件，缺省读包内）
     uv run --no-sync python scripts/injection-dev/generate_h5.py --mode replay \\
         --identities <gen1 的 delivery.json 或 jsonl> --specs <规格根> --output <输出目录>
 
-- ``--cells``：``full``（V8 表 2 的 43 格）、``smoke``（V8 2b 冒烟 7 格各 1 局）、``v9shard1``、``v9smoke``
+- ``--cells``：``v9``（V9_CELLS 43 格 800，continue／aggregate 缺省；split 必填）、``v9shard1``、``v9smoke``
   或格表 JSON 路径（``{"Task@tier": 局数}``）。规格根的任务集合与逐格配额必须与格表相等。
 - 退出码：continue／aggregate 认 ``V8_DELIVERY_SET=PASS``；其余按原口径。
 - 维护计划 W2 起删除：单文件 ``/2`` continue（及其 ``--redo``／``--tasks``／``--self-check``）、``/3`` v7 规格根的

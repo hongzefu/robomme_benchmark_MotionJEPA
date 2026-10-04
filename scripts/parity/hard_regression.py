@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""robomme_hard 回归工具（v7：0928-newtask-v7-xhard0-shared-layout-plan.md 第二部分 §1.5、§7.6；
-v8：1001-newtask-v8-xhard-gradient-plan.md 第一部分 §2.3、§3，第二部分 §2.3 闸门总表）。
+"""robomme_hard 回归工具（现行口径 V9：1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.3；各闸门沿用
+v8 的 1001-newtask-v8-xhard-gradient-plan.md 第一部分 §2.3、§3，第二部分 §2.3 闸门总表；xhard0 reset 层对拍源自
+v7 的 0928 方案第二部分 §1.5）。
 
 子命令：
 
@@ -1050,8 +1051,8 @@ def _xhard0_h5s(source: str | Path) -> tuple[list[Path], int]:
 
 def delivery_version(delivery: dict[str, Any]) -> str:
     """交付清单（``read_delivery`` 归一后）→ 版本：行带 ``source`` 字段（v9 assemble 的 800 行清单）即 v9；否则按逐格
-    行数 ``hard_parity.cells_version``（MoveCube／InsertPeg xhard4 50 局的 v9 分片清单只能被 V9_CELLS 覆盖 → v9，
-    V8 子表与完整 V8 → v8）；没有行时取当前 EXPECTED 版本。"""
+    行数 ``hard_parity.cells_version``（登记的完整格表只剩 V9_CELLS，能被它覆盖的子表一律 → v9；V8 的 1070 局表已于
+    维护计划阶段 1b 删除，原先判为 v8 的 V8 子表现在同样判 v9）；没有行时取当前 EXPECTED 版本。"""
     hp, hs = _hp(), _hs_light()
     raw = delivery.get("raw") or {}
     raw_rows = (raw.get("rows") or raw.get("delivered") or []) if isinstance(raw, dict) else []

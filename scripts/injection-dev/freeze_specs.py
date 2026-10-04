@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """第一阶段入口：定规则 → 抽签 → 封存，只落一份 jsonl（0927 计划第一部分 §5.1；v8 方案第二部分 §2.2 第 5、6 条）。
 
-    # v8（默认且唯一的 profile；按档 seed 偏移，每档一次冻结、档内逐任务独立抽，只抽该档的交付格，封 hard-specs/4）
+    # v8 seed 规则（默认且唯一的 profile，V9 沿用；按档 seed 偏移，每档一次冻结、档内逐任务独立抽，只抽该档的交付格，封 hard-specs/4）
     uv run --no-sync python scripts/injection-dev/freeze_specs.py \\
-      --tier xhard1 --seed-profile v8 --cells full --workers 4 --gpus 0 \\
-      --out artifacts/newtask-v8/specs-frozen/xhard1/specs.jsonl
-    # v8 冒烟（7 格各 1 局，候选数默认等于局数）
+      --tier xhard1 --seed-profile v8 --cells v9 --workers 4 --gpus 0 \\
+      --out <冻结根>/xhard1/specs.jsonl
+    # V9 冒烟（MoveCube／InsertPeg xhard4 各 1 局，候选数默认等于局数）
     uv run --no-sync python scripts/injection-dev/freeze_specs.py \\
-      --tier xhard1 --seed-profile v8 --cells smoke --out artifacts/newtask-v8/smoke/specs/xhard1/specs.jsonl
+      --tier xhard4 --seed-profile v8 --cells v9smoke --out <冒烟根>/xhard4/specs.jsonl
 
 - ①定规则：``_extract.build_sampling``（``--pkg`` 默认 robomme_hard）；②抽签：``_draw.draw_task``（只 reset）；
   ③封存：``_freeze.freeze(schema=...)`` → ``--out``（排他发布，唯一落盘文件）。
-- 格表 ``--cells``：``full``（V8 表 2 的 43 格）、``smoke``（V8 2b 冒烟 7 格各 1 局）、``v9shard1``、``v9smoke``
+- 格表 ``--cells``：``v9``（缺省，V9_CELLS 43 格 800）、``v9shard1``、``v9smoke``
   或格表 JSON 路径（``{"Task@tier": 局数, ...}``）；本档的任务集合与逐格配额都取自格表。
 - v8 逐任务参数：``--candidates-per-env TASK=N,...``（也接受全局整数）；``--select TASK=a..b,...``（也接受全局
   写法；默认每任务 ``0..配额-1``）；``--task-max-reset-attempts TASK[@TIER]=N,...``（优先于 ``--max-reset-attempts``；

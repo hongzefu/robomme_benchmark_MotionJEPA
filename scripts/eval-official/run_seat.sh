@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# v7.5eval 席位执行器（0929-v7.5eval-restructure-plan.md §5、第二部分 R4～R6）。
+# 评估席位执行器（V9 评估经 run_eval_gl.sh 调用；最初为 v7.5eval 编写，0929-v7.5eval-restructure-plan.md §5、第二部分 R4～R6）。
 #
 # 一个席位（一张 GPU）上按策略顺序（默认先 smvla 后 mme）逐个：起 server → 等就绪 → 起常驻客户端
 # （env_client.py run）→ 看门狗 → 收 server；同一张卡上两个策略的 server 绝不同时驻留。

@@ -609,7 +609,7 @@ def spawn_random_cube(
 
     if fixed_xy is not None:
         # 位姿已由外部规格定死：不做拒绝采样，也不做几何判定——几何可行性已在冻结前
-        # 由 tests/_shared/injection_specs 用同一套 OBB 判据筛过（STATIC_GEOMETRY）。
+        # 用同一套 OBB 判据筛过（STATIC_GEOMETRY；当时的旧测试设施已随旧测试一并删除）。
         if center_rules is not None:
             _assert_center_rules_hold(center_rules, float(fixed_xy[0]), float(fixed_xy[1]),
                                       "spawn_random_cube", spec_path)

@@ -1,24 +1,18 @@
 #!/usr/bin/env python3
-"""v8／v9 逐身份清单导出（v8 方案第二部分 §2.2 第 9 条；v9 见 1002 方案 §2.4.2 第 7 步；原 v7 版见 0928 方案第一部分 §5 第 3 条）。
+"""V9 逐身份清单导出（v9 见 1002 方案 §2.4.2 第 7 步；格式沿用 v8 方案第二部分 §2.2 第 9 条，原 v7 版见 0928 方案第一部分 §5 第 3 条）。
 
-**须在阶段 3b 换包后运行**：builder 按包内 ``TIERS``／``EXPECTED_CELLS`` 读规格，换包前它们仍是 v7 值，
-即使 ``--specs-root`` 指向 v8 根也会因缺 xhard5、格表不符而失败或数不出 1262。
-
-    uv run --no-sync python scripts/injection-dev/export_eval_identities.py \\
-        --out artifacts/newtask-v8/eval-identities-1262.jsonl \\
-        --official-out artifacts/newtask-v8/eval-official-xhard0-192.jsonl [--specs-root <v8 规格根>]
-
-- 经 ``robomme_hard`` 的 ``BenchmarkEnvBuilder(task, "test-hard")`` 逐任务列出全部局：总数由表 2 推出
-  1262 = 16 任务 × 1 档 × 12 局（xhard0）+ 43 格逐格局数之和 1070（V8 格表，已于维护计划阶段 1b 删除）；逐格局数也按
-  该表核对。builder 读包内规格（阶段 3b 换包后即 v8）；``--specs-root`` 经 ``ROBOMME_HARD_SPECS_ROOT`` 覆盖。
-- v8 不评估新局（用户 2026-10-01，第一部分引言 ⑥）：``round``／``shard`` 字段保留、一律置空（null）。
+- 经 ``robomme_hard`` 的 ``BenchmarkEnvBuilder(task, "test-hard")`` 逐任务列出全部局：总数与逐格局数由格表推出并核对
+  （包内 ``EXPECTED_CELLS``＝V9_CELLS，43 格 800；开关打开时另加 xhard0 16 任务 × 1 档 × 12 局 = 192）。
+  builder 读包内规格；``--specs-root`` 经 ``ROBOMME_HARD_SPECS_ROOT`` 覆盖。V8 的 1070 局格表与对应的 1262 局清单
+  已于维护计划阶段 1b 删除（git 历史可取回）。
+- ``round``／``shard`` 字段保留、一律置空（null）。
 - 官方路线对照：xhard0 的 192 局（官方 test 的原 episode 号）仍按 ``TASK_SECONDS`` 贪心均衡切 10 片（3′ xhard0 评估用）。
 - 行格式：``{task, episode, tier, seed, candidate, source_episode, round, shard}``；官方行 ``{task, source_episode, seed, shard}``。
 
 **v9**（1002 方案）：总数与逐格局数改由格表推出——格表取 ``--specs-root`` 各档 header 的逐任务配额
 （``hard_parity.root_cell_table``：完整 V9 根恰为 V9_CELLS），不给 ``--specs-root`` 时取包内 ``EXPECTED_CELLS``
 （v9 阶段 3b 切换后即 V9）。V9：992 = 192 + 800，默认文件名 ``eval-identities-992.jsonl``，默认目录
-``artifacts/newtask-v9/``；V8 仍 1262 与 ``artifacts/newtask-v8/``。V9 运行时：
+``artifacts/newtask-v9/``。V9 运行时：
 
 * ``--delivery`` 必给（v9 assemble 的 800 行 ``delivery.local.json``）：builder 列出的 800 个新值身份
   (task, tier, seed) 须与清单逐一相同（``delivery_mismatch``）；
@@ -79,8 +73,8 @@ OFFICIAL_OUT_DEFAULT = "artifacts/newtask-v8/eval-official-xhard0-192.jsonl"
 
 
 def expected_total(cells: dict[tuple[str, str], int]) -> int:
-    """格表推出的总局数：xhard0 16 × 前置局数 + 新值格局数之和（开关开：V8 1262 = 192 + 1070、V9 992 = 192 + 800；
-    开关关：V8 1070、V9 800）。"""
+    """格表推出的总局数：xhard0 16 × 前置局数 + 新值格局数之和（开关开：V9 992 = 192 + 800；
+    开关关：V9 800）。"""
     return xhard0_total() + sum(cells.values())
 
 
@@ -104,7 +98,7 @@ def balance(rows: list[dict], shards: int) -> None:
 
 def check_rows(rows: list[dict], official: list[dict], cells: dict[tuple[str, str], int] | None = None,
                delivery_ids: set[tuple[str, str, int]] | None = None) -> tuple[bool, dict]:
-    """总数 = :func:`expected_total`（开关开 V8 1262／V9 992，关 1070／800）、xhard0 = :func:`xhard0_total`（192／0）、逐格局数等于格表（缺省 EXPECTED_CELLS）、
+    """总数 = :func:`expected_total`（开关开 V9 992，关 800）、xhard0 = :func:`xhard0_total`（192／0）、逐格局数等于格表（缺省 EXPECTED_CELLS）、
     round／shard 全空、官方行数 = xhard0 总数；给 ``delivery_ids`` 时新值身份 (task, tier, seed) 须与之逐一相同。"""
     cells = hard_specs.EXPECTED_CELLS if cells is None else cells
     per_cell: dict[tuple[str, str], int] = defaultdict(int)
@@ -147,7 +141,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--out", default=None,
                         help="逐身份清单输出；缺省 artifacts/newtask-<版本>/eval-identities-<总数>.jsonl"
-                             "（V8 → newtask-v8/eval-identities-1262.jsonl，V9 → newtask-v9/eval-identities-992.jsonl）")
+                             "（V9 → newtask-v9/eval-identities-992.jsonl，开关关时 eval-identities-800.jsonl）")
     parser.add_argument("--official-out", default=OFFICIAL_OUT_DEFAULT,
                         help=f"官方路线 xhard0 192 局清单输出；默认 {OFFICIAL_OUT_DEFAULT} 是 V8 根——"
                              "V9 必须显式给（如 artifacts/v9-evaluation/inputs/eval-official-xhard0-192.jsonl），"

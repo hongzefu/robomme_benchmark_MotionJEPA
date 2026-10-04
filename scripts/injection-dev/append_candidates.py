@@ -32,7 +32,8 @@
    冻结根的新行保持 ``selected=false``（合并时 ``selected``／``tried``／``rollout`` 一律取自片）。
    所有引用该档冻结 identity 的片（``<shard>`` 的同级目录 ``*/shard.json`` 里 ``sources[tier].identity_sha256``
    等于旧 identity 的全部片，含本片）把 ``sources[tier]`` 改为新的 identity／文件 sha，并追加 ``appends`` 记录——
-   否则 ``merge_v8`` 的「来源 identity = 冻结根」会拒绝其它片。
+   使各片 ``shard.json`` 记录的来源与冻结根保持一致（当初的 V8 四席合并依赖这一条，该合并已于维护计划 W2 删除，
+   现只为来源记录自洽）。
    写前每份被改文件先复制为 ``<文件>.pre-append-<时间戳>``（``open("x")`` 排他新建）；写用同目录临时文件 +
    ``os.replace``；写后逐份 ``load_specs`` 重读校验、片根 ``load_v8_root``、各片来源 identity 与冻结根一致、
    新旧行身份逐字一致。任一步失败：全部按备份恢复，打印 ``APPEND_CANDIDATES=FAIL``，退出码 1。
