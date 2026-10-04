@@ -269,6 +269,9 @@ def check_vendor(manifest: dict) -> bool:
     return ok
 
 
+SHIM_IMPORT_LINE = "import importlib, sys"
+
+
 def check_shims(manifest: dict) -> bool:
     bad = []
     for entry in manifest["shims"]:
@@ -278,7 +281,8 @@ def check_shims(manifest: dict) -> bool:
             continue
         lines = [ln for ln in path.read_text().splitlines() if ln.strip() and not ln.strip().startswith("#")]
         expected = f'sys.modules[__name__] = importlib.import_module("{entry["target_module"]}")'
-        if len(lines) > 3 or expected not in lines:
+        # shim 非注释部分必须恰好是这两行；多一行任何代码都判 FAIL（原判据「> 3 行」会放过多 1 行）。
+        if lines != [SHIM_IMPORT_LINE, expected]:
             bad.append(f"{entry['shim']}:body")
     ok = not bad
     print(f"SHIMS={'PASS' if ok else 'FAIL'} shims={len(manifest['shims'])}" + (f" bad={bad}" if bad else ""))
