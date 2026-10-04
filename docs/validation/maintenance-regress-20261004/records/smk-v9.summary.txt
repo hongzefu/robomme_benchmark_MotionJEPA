@@ -1,0 +1,11 @@
+NOISE_RUN_START pass=smk-v9 kind=gen out_root=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/gen/smk-v9 host=gl1525.arc-ts.umich.edu job=63167696 2026-10-04T01:37:54-04:00
+RUN_FRESH=PASS out_root=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/gen/smk-v9 state=absent
+BUDGET=PASS pass=smk-v9 kind=gen attempts=1 gen_attempts_after=1/199 resets=3 gen_resets_after=3/597 retries=0 gen_retries_after=0/0 total_attempts_after=1/199 total_resets_after=3/597 total_retries_after=0/0
+PROVENANCE path=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/prov/smk-v9.json env_fingerprint=0889e29b23ef commit=062e646d0ce89113c1ced0fa90c9a5ebcec7d747 git_dirty=False gpu_model=NVIDIA A40 driver=595.71.05 host=gl1525.arc-ts.umich.edu slurm_job_id=63167696
+NOISE_PREFLIGHT=PASS pass=smk-v9 kind=gen assets=SKIP fingerprint=413896031f53
+GENERATE_START side=H2 tier=v9 rows=1 gpu=NVIDIA A40 driver=595.71.05 workers=4
+EPISODE_DONE side=H2 xhard1/PickXtimes/0 success=1 sha=7a260f975890 verdict=match
+GENERATE=PASS side=H2 tier=v9 rows=1 recorded=1 success=1 runner_exit=0 gpu=NVIDIA A40 mover_errors=0
+NOISE_FINISH=PASS pass=smk-v9 exit_code=0 attempts=unknown resets=unknown retries=unknown overrun=0
+NOISE_RUN_DONE pass=smk-v9 cmd_rc=0 finish_rc=0 interrupted=0 2026-10-04T01:39:04-04:00
+EXIT_CODE=0

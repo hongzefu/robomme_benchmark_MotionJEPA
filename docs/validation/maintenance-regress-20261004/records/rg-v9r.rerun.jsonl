@@ -1,0 +1,4 @@
+{"filler": false, "ref_class": "stable", "seed": 23400200, "task": "MoveCube", "tier": "xhard4"}
+{"filler": true, "ref_class": "stable", "seed": 22200000, "task": "StopCube", "tier": "xhard4"}
+{"filler": true, "ref_class": "stable", "seed": 22200100, "task": "StopCube", "tier": "xhard4"}
+{"filler": true, "ref_class": "stable", "seed": 22200200, "task": "StopCube", "tier": "xhard4"}

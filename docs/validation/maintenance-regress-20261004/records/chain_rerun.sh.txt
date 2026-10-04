@@ -1,0 +1,13 @@
+#!/bin/bash
+# 第二次跑（同一席位、同一节点，串行）：改后代码 rg-v9-new2 → 旧代码 f8f76fba rg-v9-old2；
+# 重跑清单 = 1 个翻转局（MoveCube xhard4 seed 23400200）+ 3 个陪跑局（StopCube xhard4，filler），每遍 4 局、--workers 4。
+JOB=$1; M=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress
+step() {  # <side> <遍名> <集合> <identities>
+  bash $M/scripts/launch.sh $JOB "$1" "$2" "$3" "$4"
+  rc=$(grep -o 'EXIT_CODE=[0-9]*' $M/logs/$2.launch.log | tail -1 | cut -d= -f2)
+  echo "CHAIN_STEP pass=$2 rc=$rc $(date -Is)" | tee -a $M/logs/chain3.log
+  [ "$rc" = 0 ] || { echo "CHAIN_STOP pass=$2 rc=$rc" | tee -a $M/logs/chain3.log; echo "EXIT_CODE=1" >> $M/logs/chain3.log; exit 1; }
+}
+step new rg-v9-new2 V9 $M/regress/rg-v9r.rerun.jsonl
+step old rg-v9-old2 V9 $M/regress/rg-v9r.rerun.jsonl
+echo "CHAIN_DONE $(date -Is)" | tee -a $M/logs/chain3.log; echo "EXIT_CODE=0" >> $M/logs/chain3.log

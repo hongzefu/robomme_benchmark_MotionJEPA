@@ -1,0 +1,23 @@
+{
+ "_note": "1003-code-test-maintenance-todo.md 第三步对拍预算（用户 2026-10-03 确认）：冒烟 V9 PickXtimes xhard1 seed 16100000 × 1 + xhard0 PickXtimes seed 510300 × 1 = 2；首跑 V9 43 格 × 3 局 + xhard0 16 任务 × 1 档 × 3 局 = 177；第二次跑（改后 + 旧代码，含陪跑）≤ 20；合计 ≤ 199 条轨迹、reset ≤ 597；基础设施重试 0。 ｜2026-10-04 追加：rg-v9 因生成器回读 h5 与搬运线程竞态在第 84 局崩溃（12.403 修复），按用户预批「FAIL 后修完按同预算再跑一轮（≤199 轨迹、reset ≤597）」启用第二份额度，合计上限 398 条、reset 1194、重试 0。",
+ "gen": {
+  "attempts": 398,
+  "resets": 1194,
+  "retries": 0
+ },
+ "eval": {
+  "attempts": 0,
+  "resets": 0,
+  "retries": 0
+ },
+ "digest": {
+  "attempts": 0,
+  "resets": 0,
+  "retries": 0
+ },
+ "total": {
+  "attempts": 398,
+  "resets": 1194,
+  "retries": 0
+ }
+}

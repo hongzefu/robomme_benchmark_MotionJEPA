@@ -1,0 +1,15 @@
+NOISE_RUN_START pass=rg-v9-new2 kind=gen out_root=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/gen/rg-v9-new2 host=gl1525.arc-ts.umich.edu job=63167696 2026-10-04T02:51:44-04:00
+RUN_FRESH=PASS out_root=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/gen/rg-v9-new2 state=absent
+BUDGET=PASS pass=rg-v9-new2 kind=gen attempts=4 gen_attempts_after=312/398 resets=12 gen_resets_after=936/1194 retries=0 gen_retries_after=0/0 total_attempts_after=312/398 total_resets_after=936/1194 total_retries_after=0/0
+PROVENANCE path=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/prov/rg-v9-new2.json env_fingerprint=1cabdb390fa9 commit=a43110c26dafb2c4b64b5d2f6d8e7cff775da476 git_dirty=False gpu_model=NVIDIA A40 driver=595.71.05 host=gl1525.arc-ts.umich.edu slurm_job_id=63167696
+NOISE_PREFLIGHT=PASS pass=rg-v9-new2 kind=gen assets=SKIP fingerprint=a2fba499e2ea
+GENERATE_START side=H2 tier=v9 rows=4 gpu=NVIDIA A40 driver=595.71.05 workers=4
+EPISODE_DONE side=H2 xhard4/StopCube/1 success=1 sha=dd1bae03cd98 verdict=match
+EPISODE_DONE side=H2 xhard4/StopCube/0 success=1 sha=d4b7aaab77c2 verdict=match
+EPISODE_FLIP xhard4/MoveCube/23400200
+EPISODE_DONE side=H2 xhard4/MoveCube/2 success=1 sha=6b85dd3239e0 verdict=flip
+EPISODE_DONE side=H2 xhard4/StopCube/2 success=1 sha=732002d8cfe1 verdict=match
+GENERATE=PASS side=H2 tier=v9 rows=4 recorded=4 success=4 runner_exit=0 gpu=NVIDIA A40 mover_errors=0
+NOISE_FINISH=PASS pass=rg-v9-new2 exit_code=0 attempts=unknown resets=unknown retries=unknown overrun=0
+NOISE_RUN_DONE pass=rg-v9-new2 cmd_rc=0 finish_rc=0 interrupted=0 2026-10-04T02:52:48-04:00
+EXIT_CODE=0

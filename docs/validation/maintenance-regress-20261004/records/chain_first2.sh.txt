@@ -1,0 +1,12 @@
+#!/bin/bash
+# 修复竞态后的首跑串行链：V9 43 格 × 3 局 = 129（rg-v9r）→ xhard0 16 任务 × 1 档 × 3 局 = 48（rg-x0）；任一步 EXIT_CODE≠0 即停。
+JOB=$1; M=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress
+step() {
+  bash $M/scripts/launch.sh $JOB new "$1" "$2" "$3"
+  rc=$(grep -o 'EXIT_CODE=[0-9]*' $M/logs/$1.launch.log | tail -1 | cut -d= -f2)
+  echo "CHAIN_STEP pass=$1 rc=$rc $(date -Is)" | tee -a $M/logs/chain2.log
+  [ "$rc" = 0 ] || { echo "CHAIN_STOP pass=$1 rc=$rc" | tee -a $M/logs/chain2.log; echo "EXIT_CODE=1" >> $M/logs/chain2.log; exit 1; }
+}
+step rg-v9r V9 $M/inputs/v9-129-generate.jsonl
+step rg-x0 X0 $M/inputs/x0-48-generate.jsonl
+echo "CHAIN_DONE $(date -Is)" | tee -a $M/logs/chain2.log; echo "EXIT_CODE=0" >> $M/logs/chain2.log

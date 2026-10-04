@@ -30,6 +30,7 @@
 | D4 | 挑战接口 `challenge_interface/scripts/phase1_eval.py` 四处缺陷（成功判定按子串、reset 等待不重询、异常不 close、IK 失败空观测崩溃） | 10-04 测试重构 T8a | 先不修（用户 10-04），测试锁定现状 |
 | D5 | `hard_builder.make_env_for_episode` 交给 gym.make 的 sampling_config／native_episode_spec 与 builder 缓存共用对象 | 10-04 测试重构 P | 本轮不修（对拍进行中），测试锁定现状 |
 | D6 | RouteStick 轨迹缓存在执行段开始时未清空，复位时刻 TCP 点混入第一段绕向判定 | 10-04 测试重构 T4 | 只报告，未改；待定是否修 |
+| D7 | 维护后生成对拍 V9 `GEN_REGRESS=FAIL env_changed=1`（MoveCube xhard4 seed 23400200，新旧代码同节点逐字节相同、与噪声基线不同） | 10-04 第三步对拍 | 待用户裁决：接受为环境差异／换节点重跑／调查 |
 | E1 | 「shared 步骤结束会把卡重置为独占」未写入规则 | 09-30 V7.5 | 写入正本与 `docs/greatlakes.md` |
 | F1 | 本机 5 个站点服务的去留 | 09-28 起 | 只留 8081、8082 |
 | F2 | 8081／8082 站紫色「语义调整」小标签留不留 | 10-02 V8 站点 | 由用户定 |
@@ -381,6 +382,14 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 影响：实跑中第一段通常有大量轨迹点，混入一个点影响很小；但边界情形（第一段很短、绕向接近零）可能翻转判定。V9 交付与评估未见受影响的证据。
 - 修法候选：执行段开始（演示→在线切换）时清空该缓存。修改属 `src/robomme_hard` 任务环境（生成与评估路径），修后需重跑第三步 GL 对拍确认生成字节不变；若 RouteStick 也在原三档官方代码中有同样写法，官方侧受 Q13 约束不改。
 - 现状：测试未锁定该行为（T4 只在报告中记录）；修与不修由用户定。
+
+### D7 维护后生成对拍 V9 判 FAIL：1 局「环境变了」（2026-10-04）
+
+- 判定：`GEN_REGRESS=FAIL set=v9 n=129 match=127 jitter=1 flip=1 structural=0 unknown=0 regression=0 env_changed=1 unstable=0`；xhard0 `GEN_REGRESS=PASS n=48 match=48`。详见 `docs/validation/maintenance-regress-20261004/README.md`。
+- 唯一翻转局 MoveCube xhard4 seed 23400200：首跑、改后第二次、旧代码 `f8f76fba` 第二次三次在 gl1525 上逐字节相同（`6b85dd3239e0`，均成功），与噪声基线（gl1525／gl1527 两遍彼此相同）自第 376 步分叉，子目标「Hook the cube to the target with the peg」。该局在噪声基线里已有「两遍彼此相同但与交付 h5 不同」的前科。
+- 含义：差异与本次代码改动无关（旧代码同节点同样产出）；按闸门四格表定义为「环境变了」，交用户。
+- 可选：(a) 接受为环境差异，把该局写进参照 `jitter_observed`（需用户确认）后 V9 判 PASS；(b) 换节点或另找时间重跑该局（预算：每次 2 条）；(c) 维持 FAIL 并调查节点差异。
+- 现状：GL 占位作业已释放；NFS 暂存与 maint 检出保留待裁决。
 
 ## E 类：规则
 

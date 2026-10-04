@@ -1,0 +1,16 @@
+{
+  "schema": "generate-h5-launch/1",
+  "mode": "replay",
+  "specs": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/inputs/specs-root",
+  "identities": "/tmp/mreg-rg-v9/_identities.jsonl",
+  "cells": null,
+  "workers": 4,
+  "gpu": "0",
+  "pkg": "robomme_hard",
+  "dev_smoke": false,
+  "gpu_model": "NVIDIA A40",
+  "driver": "595.71.05",
+  "src_commit": "062e646d0ce89113c1ced0fa90c9a5ebcec7d747",
+  "host": "gl1525.arc-ts.umich.edu",
+  "slurm_job": "63167696"
+}

@@ -1,0 +1,92 @@
+{
+ "actual_attempts": null,
+ "actual_resets": null,
+ "actual_retries": null,
+ "assets_lock": null,
+ "assets_lock_sha256": null,
+ "assets_sha": {},
+ "assets_verdict": "SKIP",
+ "budget": {
+  "caps": {
+   "gen": {
+    "attempts": 199,
+    "resets": 597,
+    "retries": 0
+   },
+   "total": {
+    "attempts": 199,
+    "resets": 597,
+    "retries": 0
+   }
+  },
+  "ledger": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/budget-ledger.jsonl",
+  "reserved": {
+   "attempts": 1,
+   "resets": 3,
+   "retries": 0
+  },
+  "reserved_at": 1791092355.8024511,
+  "totals_after": {
+   "gen": {
+    "attempts": 2,
+    "resets": 6,
+    "retries": 0
+   },
+   "total": {
+    "attempts": 2,
+    "resets": 6,
+    "retries": 0
+   }
+  },
+  "totals_before": {
+   "gen": {
+    "attempts": 1,
+    "resets": 3,
+    "retries": 0
+   },
+   "total": {
+    "attempts": 1,
+    "resets": 3,
+    "retries": 0
+   }
+  }
+ },
+ "commit": "062e646d0ce89113c1ced0fa90c9a5ebcec7d747",
+ "driver": "595.71.05",
+ "env_fingerprint": "0889e29b23ef1909575d7841e7fe6e94f629cb64a4e3548375f66c5949b46caa",
+ "exit_code": 0,
+ "fingerprint": "3571b86c0fa831a363c51540f538d4800bf120b2e78eb0616726ebe8342c0464",
+ "finished_at": 1791092405.433795,
+ "finished_at_iso": "2026-10-04T01:40:05-04:00",
+ "git_dirty": false,
+ "git_dirty_lines": 0,
+ "gpu_model": "NVIDIA A40",
+ "gpu_uuid": "GPU-b5b6de18-3394-dec1-f547-62aa36ca930a",
+ "gpus": [
+  {
+   "driver": "595.71.05",
+   "name": "NVIDIA A40",
+   "uuid": "GPU-b5b6de18-3394-dec1-f547-62aa36ca930a"
+  }
+ ],
+ "host": "gl1525.arc-ts.umich.edu",
+ "kind": "gen",
+ "max_steps": null,
+ "out_root": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/gen/smk-x0",
+ "out_root_state": "absent",
+ "pass": "smk-x0",
+ "policy_commits": {},
+ "policy_dirty": {},
+ "python": "3.11.14",
+ "python_executable": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-noise/.venv/bin/python",
+ "real_command": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-noise/.venv/bin/python /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-maint/scripts/parity/hard_parity.py generate --side H --tier xhard0 --manifest /nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/inputs/xhard0_manifest.json --identities /nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/inputs/x0-generate-smoke1.jsonl --src-root /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-maint --workers 4 --gpu 0 --out /tmp/mreg-smk-x0 --stage /nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/gen/smk-x0 --expect-ref /nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-maint/scripts/configs/noise-ref-20261003.json ",
+ "repo": "/nfs/turbo/coe-chaijy-unreplicated/hongzefu/robomme_benchmark-maint",
+ "schema": "noise-run-provenance/1",
+ "server_args": null,
+ "slurm_job_id": "63167696",
+ "slurm_step_id": "1",
+ "started_at": 1791092355.499291,
+ "started_at_iso": "2026-10-04T01:39:15-04:00",
+ "tokenizer": null,
+ "tokenizer_sha256": null
+}

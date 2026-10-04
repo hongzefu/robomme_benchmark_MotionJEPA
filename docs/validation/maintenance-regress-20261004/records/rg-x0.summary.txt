@@ -1,0 +1,58 @@
+NOISE_RUN_START pass=rg-x0 kind=gen out_root=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/gen/rg-x0 host=gl1525.arc-ts.umich.edu job=63167696 2026-10-04T02:41:20-04:00
+RUN_FRESH=PASS out_root=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/gen/rg-x0 state=absent
+BUDGET=PASS pass=rg-x0 kind=gen attempts=48 gen_attempts_after=308/398 resets=144 gen_resets_after=924/1194 retries=0 gen_retries_after=0/0 total_attempts_after=308/398 total_resets_after=924/1194 total_retries_after=0/0
+PROVENANCE path=/nfs/turbo/coe-chaijy-unreplicated/hongzefu/maint-regress/prov/rg-x0.json env_fingerprint=1cabdb390fa9 commit=a43110c26dafb2c4b64b5d2f6d8e7cff775da476 git_dirty=False gpu_model=NVIDIA A40 driver=595.71.05 host=gl1525.arc-ts.umich.edu slurm_job_id=63167696
+NOISE_PREFLIGHT=PASS pass=rg-x0 kind=gen assets=SKIP fingerprint=16f57eff1090
+GENERATE_START side=H tier=xhard0 rows=48 gpu=NVIDIA A40 driver=595.71.05 workers=4
+EPISODE_DONE side=H hard/StopCube/3 success=1 sha=d347e78e9ded verdict=match
+EPISODE_DONE side=H hard/StopCube/7 success=1 sha=0d5a602bd5d1 verdict=match
+EPISODE_DONE side=H hard/StopCube/11 success=1 sha=d99e4424cd2a verdict=match
+EPISODE_DONE side=H hard/PickXtimes/7 success=1 sha=caf5b55eaeeb verdict=match
+EPISODE_DONE side=H hard/PickXtimes/3 success=1 sha=cd2fb305dabb verdict=match
+EPISODE_DONE side=H hard/PickXtimes/11 success=1 sha=9397cd92cfcb verdict=match
+EPISODE_DONE side=H hard/SwingXtimes/3 success=1 sha=82918a0e8d39 verdict=match
+EPISODE_DONE side=H hard/SwingXtimes/7 success=1 sha=6492ef914e31 verdict=match
+EPISODE_DONE side=H hard/SwingXtimes/11 success=1 sha=f7e693f88795 verdict=match
+EPISODE_DONE side=H hard/VideoUnmaskSwap/3 success=1 sha=fa910c90c950 verdict=match
+EPISODE_DONE side=H hard/BinFill/3 success=1 sha=607ec5b895e4 verdict=match
+EPISODE_DONE side=H hard/VideoUnmaskSwap/7 success=1 sha=8d3e2ffa0ff1 verdict=match
+EPISODE_DONE side=H hard/VideoUnmaskSwap/11 success=1 sha=e8eb708ff239 verdict=match
+EPISODE_DONE side=H hard/BinFill/11 success=1 sha=ebe434d1117d verdict=match
+EPISODE_DONE side=H hard/BinFill/7 success=1 sha=ec0a0c0b7c6b verdict=match
+EPISODE_DONE side=H hard/VideoUnmask/7 success=1 sha=675e4e141604 verdict=match
+EPISODE_DONE side=H hard/VideoUnmask/3 success=1 sha=aaebe94fd277 verdict=match
+EPISODE_DONE side=H hard/VideoUnmask/11 success=1 sha=6d341c178cfd verdict=match
+EPISODE_DONE side=H hard/ButtonUnmaskSwap/3 success=1 sha=84ea3464feea verdict=match
+EPISODE_DONE side=H hard/ButtonUnmaskSwap/7 success=1 sha=1e67422d9425 verdict=match
+EPISODE_DONE side=H hard/ButtonUnmaskSwap/11 success=1 sha=475ab0febfbd verdict=match
+EPISODE_DONE side=H hard/ButtonUnmask/3 success=1 sha=43eb76c37c59 verdict=match
+EPISODE_DONE side=H hard/ButtonUnmask/7 success=1 sha=071b5f474b90 verdict=match
+EPISODE_DONE side=H hard/ButtonUnmask/11 success=1 sha=974eac6acc26 verdict=match
+EPISODE_DONE side=H hard/VideoRepick/3 success=1 sha=9f6814cb2cae verdict=match
+EPISODE_DONE side=H hard/VideoRepick/11 success=1 sha=a59f7adcb270 verdict=match
+EPISODE_DONE side=H hard/VideoRepick/7 success=1 sha=6408b31961d7 verdict=match
+EPISODE_DONE side=H hard/VideoPlaceButton/3 success=1 sha=f7ddcd657f9e verdict=match
+EPISODE_DONE side=H hard/VideoPlaceButton/7 success=1 sha=cd7a68a76e6f verdict=match
+EPISODE_DONE side=H hard/VideoPlaceButton/11 success=1 sha=609f67780980 verdict=match
+EPISODE_DONE side=H hard/VideoPlaceOrder/3 success=1 sha=68662ca9b079 verdict=match
+EPISODE_DONE side=H hard/VideoPlaceOrder/7 success=0 sha=26c4d449632e verdict=match
+EPISODE_DONE side=H hard/PickHighlight/3 success=1 sha=ad91756c0388 verdict=match
+EPISODE_DONE side=H hard/VideoPlaceOrder/11 success=0 sha=26c4d449632e verdict=match
+EPISODE_DONE side=H hard/InsertPeg/3 success=1 sha=94b9f7ff119a verdict=match
+EPISODE_DONE side=H hard/PickHighlight/7 success=1 sha=7fda93a7434c verdict=match
+EPISODE_DONE side=H hard/PickHighlight/11 success=1 sha=b4be55149e81 verdict=match
+EPISODE_DONE side=H hard/InsertPeg/7 success=1 sha=7ed374117dbb verdict=match
+EPISODE_DONE side=H hard/MoveCube/7 success=1 sha=03ff2b1e4ad4 verdict=match
+EPISODE_DONE side=H hard/InsertPeg/11 success=1 sha=4ac97e7c32a8 verdict=match
+EPISODE_DONE side=H hard/MoveCube/3 success=1 sha=03a115eadf2c verdict=match
+EPISODE_DONE side=H hard/MoveCube/11 success=1 sha=e829032cb71d verdict=match
+EPISODE_DONE side=H hard/PatternLock/7 success=1 sha=511d28502f9a verdict=match
+EPISODE_DONE side=H hard/PatternLock/11 success=1 sha=1052c4d7bda0 verdict=match
+EPISODE_DONE side=H hard/PatternLock/3 success=1 sha=5d48b4dcf915 verdict=match
+EPISODE_DONE side=H hard/RouteStick/3 success=1 sha=6c81f2fca4b5 verdict=match
+EPISODE_DONE side=H hard/RouteStick/7 success=1 sha=ba1683fdce87 verdict=match
+EPISODE_DONE side=H hard/RouteStick/11 success=1 sha=432f8cca0349 verdict=match
+GENERATE=PASS side=H tier=xhard0 rows=48 recorded=48 success=46 runner_exit=1 gpu=NVIDIA A40 mover_errors=0
+NOISE_FINISH=PASS pass=rg-x0 exit_code=0 attempts=unknown resets=unknown retries=unknown overrun=0
+NOISE_RUN_DONE pass=rg-x0 cmd_rc=0 finish_rc=0 interrupted=0 2026-10-04T02:49:59-04:00
+EXIT_CODE=0
