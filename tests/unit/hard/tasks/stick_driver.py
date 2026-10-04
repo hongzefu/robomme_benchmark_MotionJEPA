@@ -1,5 +1,22 @@
 """PatternLock／RouteStick（握杆机器人）真值表的公共演示段：按任务表演示项把 TCP 依次移到演示路径上的落点，
-复位、再回到起点姿态（生产 ``solve_swingonto(record_swing_qpos=True)`` 与 ``solve_strong_reset`` 的效果）。"""
+复位、再回到起点姿态（生产 ``solve_swingonto(record_swing_qpos=True)`` 与 ``solve_strong_reset`` 的效果）。
+
+与生产求解器的耦合点（本驱动不跑运动规划器，而是直接写环境属性来模拟两个求解器的副作用）：
+
+* ``env.swing_qpos``：生产由 ``utils/subgoal_planner_func.py::solve_swingonto`` 在 ``record_swing_qpos=True`` 时
+  把 TCP 移到第一个落点上方（z=0.07）并合爪后写 ``env.swing_qpos = env.agent.robot.qpos``（引用，非拷贝）；
+  本驱动在第一个 NO RECORD 项里先 ``touch`` 第一个落点，再把关节角置为一组人为选的、不同于复位的姿态
+  ``stick_reset_qpos() + 0.25`` 并写 ``env.swing_qpos = qpos.clone()``。任务表里 ``reset_check(target_qpos=self.swing_qpos)``
+  与 ``solve_strong_reset(action=self.swing_qpos)`` 都读这个属性，所以驱动依赖「属性名 ``swing_qpos`` 不变、
+  复位判据按关节角比对」这两点；起点姿态的具体数值不是生产值。
+* ``env.after_demo``：生产由 ``solve_strong_reset`` 在其 ``timestep`` 次 ``env.step`` 循环里每步置
+  ``env.unwrapped.after_demo = True``（同时置／复原 ``reset_in_proecess``）；任务 ``evaluate`` 只在
+  ``after_demo`` 为真时把触碰到的落点记入 ``achieved_list``。本驱动只在强复位那一项里置一次 ``after_demo = True``，
+  不 step 30 次、不碰 ``reset_in_proecess``；因此「演示段触碰不计入、强复位之后的触碰才计入」这一时序是驱动按
+  生产语义手写的，生产若改了置位时机或属性名，本驱动不会跟着变。
+* 由此得到的真值表只验证任务 ``evaluate`` 的判定逻辑在上述副作用下是否正确，不验证两个求解器本身
+  （求解器在真仿真里的行为不在 L2 单元层覆盖）。
+"""
 from __future__ import annotations
 
 import torch

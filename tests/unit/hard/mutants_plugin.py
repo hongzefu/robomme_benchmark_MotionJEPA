@@ -1,6 +1,6 @@
 """T4 植入自检插件：按环境变量 T4_MUTANT 在测试进程内（不落盘）改坏一处生产逻辑。
 
-用法：PYTHONPATH 加上本目录，pytest -p t4_mutplug，T4_MUTANT=<名字>。
+用法：PYTHONPATH 加上本目录，pytest -p mutants_plugin，T4_MUTANT=<名字>。
 """
 from __future__ import annotations
 

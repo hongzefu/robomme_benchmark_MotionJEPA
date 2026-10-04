@@ -1,5 +1,5 @@
 {
- "base_commit": "93014f27",
+ "base_commit": "6db45911",
  "digests": {
   "BinFill/easy/101": "21c6f51cf09c46256462826fd4260bcd9dbea0679f305823505d9e26c5238c20",
   "BinFill/easy/202": "f9e820a18d39ee479ddf3c1b5d88404f54eb8461bfbd1b62b45018a688c789d1",
@@ -75,9 +75,9 @@
   "VideoPlaceButton/medium/202": "d29044fd76e28a01d7242516dc3d3b7cd5812d1714951d3d97b2543ee4a2be4c",
   "VideoPlaceOrder/easy/101": "4dc31d497f38ec3016380a03a64ee0d275048e8d9f5a115370e48ec6b4cac678",
   "VideoPlaceOrder/easy/202": "5c88bd15877bfa90994152a685643c42aa63095ce366a085e7ee7331a3ef5813",
-  "VideoPlaceOrder/hard/101": "error:TypeError",
+  "VideoPlaceOrder/hard/101": "error:TypeError@robomme_hard.robomme_env.VideoPlaceOrder",
   "VideoPlaceOrder/hard/202": "2b019829e05d70c8e3051b43ec33706b1dab1aef38d8cc8ff2603ea42caee3c9",
-  "VideoPlaceOrder/medium/101": "error:TypeError",
+  "VideoPlaceOrder/medium/101": "error:TypeError@robomme_hard.robomme_env.VideoPlaceOrder",
   "VideoPlaceOrder/medium/202": "8658cdfc48fab4d5cdb6fc2b22fb52103d8023975266f1c2032c9b46a1ce0f7d",
   "VideoRepick/easy/101": "edeb30bf91bc1835e164f7fb9b2670159ad29fbfb533a97ae27de1a3c1d3ddde",
   "VideoRepick/easy/202": "dcf59cf08ce733fcb7d18fb23afef2172aa8cc0c8d1e6add8380f0ab783fbf8b",
@@ -98,6 +98,7 @@
   "VideoUnmaskSwap/medium/101": "8d3a0da63e4c5714d44592ec24d5c1d78b776ea97c8c9f1c51e9622a6fc56769",
   "VideoUnmaskSwap/medium/202": "f6b5b3de83c731efe4fa10a226c49b2d060c3966cfdb573f048a8e96898a5d3e"
  },
+ "first_base_commit": "93014f27",
  "seeds": [
   101,
   202

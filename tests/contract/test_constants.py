@@ -74,6 +74,8 @@ XHARD0_SWITCH_ENV = "ROBOMME_HARD_XHARD0_IN_TEST_HARD"
 #: 执行步上限；xhard1～5 的评估步数上限（xhard0 待定，不钉）
 EXEC_CAP = 1600
 NEW_TIER_MAX_STEPS = 1600
+#: 规格回放时记录点（``source="record"``）GPU 生成与 CPU 离线的浮点容差：≤ 此值计 recorded_drift（U-13 方案甲）
+RECORDED_FLOAT_TOL = 1e-5
 #: 只在 xhard4 交付的任务
 XHARD4_ONLY = ("InsertPeg", "MoveCube")
 #: 按档 seed 偏移与 seed 公式参数
@@ -230,6 +232,13 @@ def test_tier_max_steps_new_tiers_1600_xhard0_unpinned():
     assert tuple(hs.TIER_MAX_STEPS) == (XHARD0, *NEW_TIERS)
     assert {tier: hs.TIER_MAX_STEPS[tier] for tier in NEW_TIERS} == {tier: NEW_TIER_MAX_STEPS for tier in NEW_TIERS}
     assert hs.EXEC_CAP == EXEC_CAP
+
+
+def test_recorded_float_tol():
+    """``hard_specs.RECORDED_FLOAT_TOL`` 与钉值相同（判定器边界行为另由 ``tests/unit/hard/test_episode_spec.py`` 覆盖）。"""
+    hs = hard_specs()
+    assert hs.RECORDED_FLOAT_TOL == RECORDED_FLOAT_TOL
+    assert isinstance(hs.RECORDED_FLOAT_TOL, float)
 
 
 def test_xhard4_only():
