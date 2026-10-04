@@ -980,8 +980,8 @@
       "symbol": "SeatRunner.run_identities_v8 / run_one → mme_client.run_episode / smvla_client.run_episode → eval_report.main",
       "oracle": "手写七行期望表（成功、失败、上限超时、step 非基础设施异常、step 基础设施异常重试、server 断连、reset 额度耗尽）：每行写明结局、attempt_start／accept 行数、废弃尝试数、两行判定 PASS 与否、客户端退出码",
       "positive": "success／fail／timeout／error 终局各被唯一接受，分母 1、对应结局计 1；基础设施异常后同身份立即重试且第二次被接受",
-      "negative": "server 断连两次后无 accept → missing=1、V8_EVAL_COVERAGE=FAIL；额度耗尽 → 尝试作废、退出码 5、missing=1",
-      "boundaries": "上限超时：环境恰执行 TIER_MAX_STEPS[tier] 步、第 cap+1 次 step 不进环境、exec_over_cap=0；额度 1 时只 build 领到额度、reset 不进环境",
+      "negative": "server 断连两次后无 accept → missing=1、V8_EVAL_COVERAGE=FAIL、客户端读回账本打印 RUN_INCOMPLETE、退出码 6；额度耗尽 → 尝试作废、退出码 5、missing=1",
+      "boundaries": "上限超时（test-hard 启动约定 --max-steps 1600 --strict-cap，手写 1600）：环境恰执行 1600 步、第 1601 次 step 不进环境、exec_over_cap=0；额度 1 时只 build 领到额度、reset 不进环境",
       "nodeids": [
         "tests/pipeline/eval/test_seat_runner_e2e.py::test_seat_runner_to_report",
         "tests/pipeline/eval/test_seat_runner_e2e.py::test_cap_timeout_never_steps_past_cap",
@@ -997,6 +997,7 @@
         "M16c",
         "M17a",
         "M17b",
+        "S2-D5",
         "T8b-K1"
       ],
       "status": "verified",
@@ -1036,22 +1037,28 @@
       "domain": "C13",
       "source": [
         "scripts/eval-official/env_client.py",
-        "src/robomme_hard/env_record_wrapper/hard_specs.py"
+        "scripts/eval-official/eval_manifest.py"
       ],
-      "symbol": "env_client.tier_max_steps / SeatRunner.builder_for / policy_kwargs / EnvSession(step_cap)",
-      "oracle": "有效上限取 hard_specs.TIER_MAX_STEPS[tier]（读模块，不写字面值）；xhard1～5 各档参数化",
-      "positive": "builder、make_env_for_episode、conn_info、EnvSession.step_cap 都等于该档上限；smvla 另收 max_steps=上限、reset_retries=0，mme 不收关键字",
-      "negative": "身份行 effective_max_steps 比上限少 1、seed／candidate／spec_sha256／tier 任一与真实 builder 解析不符 → RUN_BLOCKED（退出码 3）、写 run_blocked 行、不建环境",
-      "boundaries": "xhard0 的取值不下断言（Q16），见 C13-03x",
+      "symbol": "SeatRunner.builder_for / policy_kwargs / run_one（conn_info、step_cap）/ validate_v8_identity / check_identity（按 --dataset 的身份模式）/ eval_manifest.SHARD_ROW_KEYS",
+      "oracle": "步数上限一律取 --max-steps（按档查表已删），期望按启动约定手写：test-hard 1600 且 --strict-cap、test-hard0 1300 不带 --strict-cap；身份模式由 --dataset 决定",
+      "positive": "builder 按 (task, dataset) 建、构造参数即 --max-steps，make_env_for_episode 不逐局传步数；conn_info.max_steps／dataset／strict_cap 与之相等；step_cap 只在 --strict-cap 时等于上限；smvla 另收 max_steps=上限、reset_retries=0，mme 不收关键字；结果行 max_steps＝effective_max_steps＝上限并带 dataset、strict_cap、policy_variant；清单行键与客户端身份行键同一份、不含 effective_max_steps",
+      "negative": "test-hard：seed／candidate／spec_sha256／tier 任一与真实 builder 解析不符 → RUN_BLOCKED（退出码 3）、写 run_blocked 行、不建环境；test-hard0：seed／source_episode 不符或 candidate／spec_sha256 非 null 同样阻塞；结构核对拒绝缺字段、浮点／bool 整数、指纹长度不对、key 不自洽，以及把另一数据集的行喂进来",
+      "boundaries": "candidate 两侧须同为 null 或同一整数（True≠1）",
       "nodeids": [
-        "tests/pipeline/eval/test_identity_contract.py::test_effective_cap_reaches_builder_env_and_policy",
+        "tests/pipeline/eval/test_identity_contract.py::test_max_steps_reaches_builder_conn_and_policy",
         "tests/pipeline/eval/test_identity_contract.py::test_identity_mismatch_blocks_run",
+        "tests/pipeline/eval/test_identity_contract.py::test_hard0_identity_mismatch_blocks_run",
         "tests/pipeline/eval/test_identity_contract.py::test_validate_identity_row_structure",
+        "tests/pipeline/eval/test_identity_contract.py::test_validate_hard0_identity_row_structure",
         "tests/pipeline/eval/test_identity_contract.py::test_check_identity_requires_exact_int_candidate",
-        "tests/pipeline/eval/test_identity_contract.py::test_manifest_join_writes_tier_cap_and_contract_key"
+        "tests/pipeline/eval/test_identity_contract.py::test_check_identity_hard0_mode",
+        "tests/pipeline/eval/test_identity_contract.py::test_manifest_join_writes_contract_key_without_step_cap"
       ],
       "resource": "cpu",
-      "mutants": [],
+      "mutants": [
+        "S2-D1",
+        "S2-D2"
+      ],
       "status": "verified",
       "merged_from": [
         "tests/pipeline/eval/contracts.delta.json"
@@ -1061,22 +1068,25 @@
       "id": "C13-03x",
       "domain": "C13",
       "source": [
-        "src/robomme_hard/env_record_wrapper/hard_specs.py",
-        "scripts/evaluation_hard.py"
+        "scripts/eval-official/env_client.py"
       ],
-      "symbol": "TIER_MAX_STEPS['xhard0'] 与入口 max_steps",
-      "oracle": "待用户裁定（计划 Q16）",
-      "positive": "不断言",
-      "negative": "不断言",
-      "boundaries": "xhard0 取值表里 1300、入口 1600 两处不一致，待定",
-      "nodeids": [],
+      "symbol": "test-hard0 的步数口径（原 Q16：按档查表 TIER_MAX_STEPS['xhard0'] 与入口 max_steps 不一致，查表已删）",
+      "oracle": "1003 评估计划 1.1／1.2 了结 Q16：test-hard0 由入口给 --max-steps 1300、不带 --strict-cap（手写）",
+      "positive": "不带 --strict-cap 时环境侧不截断：mme 官方循环 count>max_steps 才停，真实执行第 1301 步、记 timeout、cap_hit=false；结果行 exec_steps／cap_hit／demo_frames／reset_calls 四字段齐全",
+      "negative": "step_cap 若恒等于上限（--strict-cap 失效）则第 1301 步被截断，用例失败（植入 S2-D2）",
+      "boundaries": "StepCapReached／cap_hit 只在 --strict-cap 时生效",
+      "nodeids": [
+        "tests/pipeline/eval/test_dataset_routing.py::test_hard0_without_strict_cap_lets_official_loop_run_step_1301",
+        "tests/pipeline/eval/test_dataset_routing.py::test_hard0_result_row_has_exec_fields"
+      ],
       "resource": "cpu",
-      "mutants": [],
-      "status": "conditional",
+      "mutants": [
+        "S2-D2"
+      ],
+      "status": "verified",
       "merged_from": [
         "tests/pipeline/eval/contracts.delta.json"
-      ],
-      "note": "计划 Q16 未裁决：xhard0 步数上限表内 1300、入口 1600 两处不一致，不下断言。"
+      ]
     },
     {
       "id": "C13-04",
@@ -1109,8 +1119,8 @@
       ],
       "symbol": "AttemptLedger",
       "oracle": "手写事件序列推出 reset 额度、作废尝试、infra 重试数、最终结局判定表、唯一 accept 与 late",
-      "positive": "重新打开账本计数不刷新；第一条最终结局被 accept，之后的终态记 late；悬空尝试按结果行补 attempt_end/accept",
-      "negative": "额度用尽抛 ResetBudgetExhausted 且不写行；infra 错误、额度耗尽、运行阻塞、ongoing 都不是最终结局；无结果行的悬空尝试记 infra 错误不 accept",
+      "positive": "重新打开账本计数不刷新；第一条最终结局被 accept，之后的终态记 late；悬空尝试按结果行补 attempt_end/accept；「attempt_end 已写、accept 未写」的崩溃窗口在恢复时补写 accept（recovered=true）且不再建环境；全部有 accept 时退出码 0",
+      "negative": "额度用尽抛 ResetBudgetExhausted 且不写行；infra 错误、额度耗尽、运行阻塞、ongoing 都不是最终结局；无结果行的悬空尝试记 infra 错误不 accept；崩溃窗口里最后一次为 infra 错误的不补 accept、照常重试；用满 2 次仍无 accept → RUN_INCOMPLETE、退出码 6",
       "boundaries": "作废尝试不计 2 次上限与 infra 额度；命令行额度只在大于历史最大值时记 budget_raise",
       "nodeids": [
         "tests/pipeline/eval/test_attempt_ledger.py::test_reset_budget_counts_claims_and_survives_reopen",
@@ -1120,11 +1130,15 @@
         "tests/pipeline/eval/test_attempt_ledger.py::test_void_attempts_do_not_count",
         "tests/pipeline/eval/test_attempt_ledger.py::test_last_end_final_and_dangling",
         "tests/pipeline/eval/test_attempt_ledger.py::test_recover_dangling_from_result_row",
-        "tests/pipeline/eval/test_attempt_ledger.py::test_resume_skips_accepted_and_full"
+        "tests/pipeline/eval/test_attempt_ledger.py::test_resume_skips_accepted_and_full",
+        "tests/pipeline/eval/test_attempt_ledger.py::test_all_accepted_returns_zero",
+        "tests/pipeline/eval/test_attempt_ledger.py::test_crash_window_final_end_without_accept_gets_accept"
       ],
       "resource": "cpu",
       "mutants": [
-        "M16b"
+        "M16b",
+        "S2-D3",
+        "S2-D5"
       ],
       "status": "verified",
       "merged_from": [
@@ -1139,8 +1153,8 @@
       ],
       "symbol": "EnvSession.build/reset/step/close",
       "oracle": "手写假环境与假 builder 的行为",
-      "positive": "reset 原样返回环境输出、录制阶段 reset→run；step 原样交出动作（dtype 不变）并记 exec_action；第 cap 步成功照常返回",
-      "negative": "step_cap 用满后第 cap+1 次抛 StepCapReached 且不进环境；额度被拒时 reset 不进环境、budget_exhausted=True；录制器异常转 RecorderError；环境异常原样上抛且计步",
+      "positive": "reset 原样返回环境输出、录制阶段 reset→run；build 不逐局传步数（make_env_for_episode 只收局号）；step 原样交出动作（dtype 不变）并记 exec_action；第 cap 步成功照常返回；自建 builder 时按 dataset 与 max_steps 建（默认 test-hard）",
+      "negative": "step_cap 用满后第 cap+1 次抛 StepCapReached 且不进环境；额度被拒时 reset 不进环境、budget_exhausted=True；录制器异常转 RecorderError；环境异常原样上抛且计步；自建 builder 缺 max_steps 或 dataset 非法即 ValueError",
       "boundaries": "obs=None 的 step 只记 obs_none；close 可重复",
       "nodeids": [
         "tests/pipeline/eval/test_env_session.py::test_reset_returns_env_output_unchanged_and_switches_phase",
@@ -1151,7 +1165,8 @@
         "tests/pipeline/eval/test_env_session.py::test_claim_reset_order_and_budget_flag",
         "tests/pipeline/eval/test_env_session.py::test_recorder_failure_becomes_recorder_error",
         "tests/pipeline/eval/test_env_session.py::test_obs_none_step_is_recorded_without_frames",
-        "tests/pipeline/eval/test_env_session.py::test_close_is_safe_and_releases_env"
+        "tests/pipeline/eval/test_env_session.py::test_close_is_safe_and_releases_env",
+        "tests/pipeline/eval/test_env_session.py::test_own_builder_uses_dataset_and_max_steps"
       ],
       "resource": "cpu",
       "mutants": [],
@@ -1204,16 +1219,18 @@
       "source": [
         "scripts/eval-official/env_client.py"
       ],
-      "symbol": "run_identities_v8（普通失败不重试）/ load_identities / check_v8_args",
+      "symbol": "run_identities_v8（普通失败不重试）/ load_identities / check_run_args / build_parser",
       "oracle": "每身份尝试数手写",
-      "positive": "干净身份清单按 --only 过滤",
-      "negative": "fail 与非 infra error 只尝试一次、一条 accept；身份行缺 spec_sha256、key 重复、seed 为浮点 → RUN_BLOCKED 退出 3；--v8 缺必填参数 → RUN_BLOCKED",
+      "positive": "干净身份清单按 --only 过滤；mme／smvla／pp／mmesg 两个变体的合法参数组合都通过、默认不带 --strict-cap",
+      "negative": "fail 与非 infra error 只尝试一次、一条 accept；身份行缺 spec_sha256、key 重复、seed 为浮点 → RUN_BLOCKED 退出 3；--dataset／--max-steps 缺任一 → 参数错误退出 2；缺账本三参、mmesg 缺 --mme-variant、qwenvl 缺 adapter、变体或 adapter 用错策略、--max-steps 非正 → RUN_BLOCKED reason=args 退出 3",
       "boundaries": "—",
       "nodeids": [
         "tests/pipeline/eval/test_policy_clients.py::test_ordinary_failure_is_not_retried",
         "tests/pipeline/eval/test_policy_clients.py::test_load_identities_blocks_on_bad_rows",
         "tests/pipeline/eval/test_policy_clients.py::test_load_identities_accepts_clean_rows_and_only_filter",
-        "tests/pipeline/eval/test_policy_clients.py::test_v8_args_required"
+        "tests/pipeline/eval/test_policy_clients.py::test_dataset_and_max_steps_have_no_default",
+        "tests/pipeline/eval/test_policy_clients.py::test_run_args_blocked",
+        "tests/pipeline/eval/test_policy_clients.py::test_run_args_accept_all_four_policies"
       ],
       "resource": "cpu",
       "mutants": [
@@ -1232,22 +1249,24 @@
         "scripts/eval-official/eval_manifest.py",
         "scripts/injection-dev/export_eval_identities.py"
       ],
-      "symbol": "eval_manifest.build_v9 / check_source(F-2) / join_delivery / check_exec / split_evaluated / main",
+      "symbol": "eval_manifest.build_v9 / build_v9_full / check_source(F-2) / join_delivery / check_exec / split_evaluated / main（--mode v9-new|v9-full）",
       "oracle": "交付清单取包内规格正式局；身份清单由真实 export_eval_identities.main 导出；已评集合 = 规则外交付行",
-      "positive": "开关关／开两种：xhard0 行数 = 16 × 前置局数，新评行恰为规则行、复用恰为其余，分片不交、每行经真实 builder 解析回同一身份；main 打 V9_EVAL_SHARDS=PASS 并读回核对全 0",
-      "negative": "导出与建清单开关不一致在第 1 步被拒；源集少行／多键／重复／新值行字段错；交付 missing／duplicate／extra／schema；执行清单上限、指纹、key 重复、混入 xhard0；规则内被复用或规则外未命中；V8 manifest 重复与 schema；格表不符；篡改分片被读回核对发现；空身份清单 FAIL 且不留产物",
+      "positive": "开关关／开两种：xhard0 行数 = 16 × 前置局数，新评行恰为规则行、复用恰为其余，分片不交、每行经真实 builder 解析回同一身份；main 打 V9_EVAL_SHARDS=PASS 并读回核对全 0；--mode v9-full 打 EVAL_SHARDS=PASS mode=v9-full total=800 cells=43（手写）、不写 reused.json",
+      "negative": "导出与建清单开关不一致在第 1 步被拒；源集少行／多键／重复／新值行字段错；交付 missing／duplicate／extra／schema；执行清单指纹、key 重复、混入 xhard0；规则内被复用或规则外未命中；V8 manifest 重复与 schema；格表不符；篡改分片被读回核对发现；空身份清单 FAIL 且不留产物；默认模式仍为 v9-new（缺 --exclude-evaluated 即参数错误）、hard0 不收交付输入、--pair-shards 只用于 hard0",
       "boundaries": "开关读运行时模块属性（monkeypatch 属性，不注入 sys.modules）",
       "nodeids": [
         "tests/pipeline/eval/test_eval_manifest.py::test_export_feeds_manifest",
         "tests/pipeline/eval/test_eval_manifest.py::test_switch_mismatch_rejected_at_source_step",
         "tests/pipeline/eval/test_eval_manifest.py::test_check_source_rejects_bad_rows",
         "tests/pipeline/eval/test_eval_manifest.py::test_join_delivery_missing_duplicate_extra",
-        "tests/pipeline/eval/test_eval_manifest.py::test_check_exec_rejects_cap_and_sha_and_dup",
+        "tests/pipeline/eval/test_eval_manifest.py::test_check_exec_rejects_sha_and_dup_and_xhard0",
         "tests/pipeline/eval/test_eval_manifest.py::test_split_evaluated_requires_exact_rule",
         "tests/pipeline/eval/test_eval_manifest.py::test_load_v8_manifest_rejects_duplicates_and_schema",
         "tests/pipeline/eval/test_eval_manifest.py::test_delivery_cells_must_match_registered_table",
         "tests/pipeline/eval/test_eval_manifest.py::test_main_writes_and_reads_back",
-        "tests/pipeline/eval/test_eval_manifest.py::test_main_fail_line_and_no_outputs"
+        "tests/pipeline/eval/test_eval_manifest.py::test_main_fail_line_and_no_outputs",
+        "tests/pipeline/eval/test_eval_manifest.py::test_main_v9_full_mode",
+        "tests/pipeline/eval/test_eval_manifest.py::test_main_mode_argument_rules"
       ],
       "resource": "cpu",
       "mutants": [
@@ -6013,6 +6032,68 @@
       "status": "verified",
       "merged_from": [
         "tests/contract/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-18",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/eval_report.py"
+      ],
+      "symbol": "eval_report.main_dataset / build_report(dataset=) / verify_dataset_videos / dataset_lines / parse_policy_spec",
+      "oracle": "按生产格式手写的结果行、账本行、本机视频目录；视频帧数用进程内替身（count_media_frames）",
+      "positive": "--dataset test-hard0：身份必备字段为 tier／seed／source_episode（不含 spec_sha256）、exec_steps=1301 不算越限（exec_over_cap=skip）、EVAL_COVERAGE／EVAL_REPORT／EVAL_VIDEOS 三行 PASS；<policy>:<variant> 走 sNN/<policy>-<variant>/、按 policy_variant 过滤，两个变体各自 PASS",
+      "negative": "test-hard0 缺 source_episode → count_mismatch；视频解码失败 → decode_fail=1；test-hard 越 1600 → exec_over_cap=1、缺 spec_sha256 → count_mismatch；未给 --videos → EVAL_VIDEOS=FAIL videos_root=absent；结果行或清单数据集与 --dataset 不符 → dataset_crossed、EVAL_REPORT=FAIL；--partial 三行一律 FAIL 带 partial=1；缺 --expect-total 即参数错误",
+      "boundaries": "不带 --dataset 时 V8／V9 判定行与口径不变",
+      "nodeids": [
+        "tests/pipeline/eval/test_eval_report.py::test_dataset_hard0_lines_pass_without_spec_and_skip_cap",
+        "tests/pipeline/eval/test_eval_report.py::test_dataset_hard0_requires_source_episode_and_decodable_video",
+        "tests/pipeline/eval/test_eval_report.py::test_dataset_test_hard_keeps_cap_and_spec",
+        "tests/pipeline/eval/test_eval_report.py::test_dataset_crossed_rows_are_counted",
+        "tests/pipeline/eval/test_eval_report.py::test_dataset_policy_variants_are_separate",
+        "tests/pipeline/eval/test_eval_report.py::test_dataset_partial_always_fails",
+        "tests/pipeline/eval/test_eval_report.py::test_dataset_requires_expect_total"
+      ],
+      "resource": "cpu",
+      "mutants": [
+        "S2-D4",
+        "S2-D6"
+      ],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/eval/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C13-19",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/env_client.py",
+        "scripts/eval-official/eval_manifest.py",
+        "scripts/eval-official/eval_report.py"
+      ],
+      "symbol": "数据集路由（DATASET_ROUTING）：SeatRunner／load_identities／eval_report 三处不串；eval_manifest.build_hard0 / check_hard0 / main --mode hard0 --pair-shards；SeatRunner.policy_context / close / conn_info",
+      "oracle": "hard0 清单 16 任务 × 12 局 = 192（手写），每行经真实 builder(dataset=\"test-hard0\") 解析回同一身份；步数上限手写 1300／1600；mmesg／pp 策略模块用替身",
+      "positive": "EVAL_SHARDS=PASS mode=hard0 total=192 xhard0=192、分片内正序、两侧共用 shard-NN.json；各数据集 builder、上限、结果行 dataset 都对；test-hard0 结果行 exec_steps／cap_hit／demo_frames／reset_calls 齐全；make_policy_context 整席只调一次、每局同一对象，close 调一次 close_policy_context；conn_info 带 dataset、mme_variant、qwenvl_groundSG_adapter_path、trace_dir（<trace-root>/<key>.a<attempt>）、episode_tag；结果行与录制器元数据不含 policy_context；没有 make_policy_context 时为整席共享 dict",
+      "negative": "把 xhard0 身份喂给 --dataset test-hard、把 V9 身份喂给 --dataset test-hard0：run_one 与 load_identities 都运行阻塞（3）、不建环境；hard0 运行根按 test-hard 汇总被抓（dataset_crossed=1）；--per-task 0／13、builder 解析出非 xhard0 → ManifestError(stage=hard0)",
+      "boundaries": "默认不变：客户端 --dataset／--max-steps 无默认值（缺即退出 2）；清单默认 v9-new；汇总不带 --dataset 仍出 V8 两行；EnvSession 默认 test-hard；判定行 DATASET_ROUTING=PASS crossed=0 default_changed=0",
+      "nodeids": [
+        "tests/pipeline/eval/test_dataset_routing.py::test_hard0_manifest_192_rows_paired_shards",
+        "tests/pipeline/eval/test_dataset_routing.py::test_hard0_per_task_and_rejections",
+        "tests/pipeline/eval/test_dataset_routing.py::test_hard0_result_row_has_exec_fields",
+        "tests/pipeline/eval/test_dataset_routing.py::test_hard0_without_strict_cap_lets_official_loop_run_step_1301",
+        "tests/pipeline/eval/test_dataset_routing.py::test_dataset_routing",
+        "tests/pipeline/eval/test_dataset_routing.py::test_policy_context_built_once_and_conn_info",
+        "tests/pipeline/eval/test_dataset_routing.py::test_policy_context_defaults_to_shared_dict"
+      ],
+      "resource": "cpu",
+      "mutants": [
+        "S2-D2",
+        "S2-D4"
+      ],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/eval/contracts.delta.json"
       ]
     }
   ],

@@ -187,16 +187,9 @@ def test_hard0_rejects_broken_official_subset(monkeypatch, spec_reads, how):
 
 # ── 按档步数查表已删除：全仓不再引用 ─────────────────────────────────────────
 
-#: S2（评估客户端、清单、报告）负责清理、本子任务不可写的文件。S2 合入后这些文件不再引用查表，
-#: 主会话随 S2 合并把本名单清空（届时扫描范围即为 src/、scripts/、tests/ 全部 .py）。
-S2_PENDING = frozenset({
-    "scripts/eval-official/env_client.py",
-    "scripts/eval-official/eval_manifest.py",
-    "tests/pipeline/eval/eval_fakes.py",
-    "tests/pipeline/eval/test_eval_manifest.py",
-    "tests/pipeline/eval/test_eval_report.py",
-    "tests/pipeline/eval/test_identity_contract.py",
-})
+#: 过渡期豁免名单。S2（评估客户端、清单、报告）已于 12.437 合入并清掉全部查表引用，名单随之清空；
+#: 扫描范围即为 src/、scripts/、tests/ 下全部 .py。保留空集合只为让历史提交可读，不得再往里加文件。
+S2_PENDING: frozenset[str] = frozenset()
 _LOOKUP_NAME = "TIER_MAX_STEPS"
 
 
