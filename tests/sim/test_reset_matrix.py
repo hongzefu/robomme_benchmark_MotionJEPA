@@ -121,7 +121,8 @@ def _expected_obs_spec(unwrapped) -> dict:
 )
 def test_reset_cell(task: str, dataset: str, episode: int, tier: str) -> None:
     builder = BenchmarkEnvBuilder(
-        env_id=task, dataset=dataset, action_space="joint_angle", max_steps=hard_specs.TIER_MAX_STEPS[tier]
+        env_id=task, dataset=dataset, action_space="joint_angle",
+        max_steps=1300 if tier == hard_specs.XHARD0 else 1600,  # xhard0 取官方默认 1300，新值档取 EXEC_CAP 1600
     )
     if tier == hard_specs.XHARD0:
         expected_seed, expected_difficulty = builder.resolve_episode(episode)

@@ -52,11 +52,6 @@ XHARD0_EPISODES = tuple(range(3, 48, 4))
 #: 历史 V4/V5 单档名。seed 规则 v5 已删除；``scripts/parity/train_split_runner.py`` 在 jobs 不带 seed_rule 时
 #: 仍以它为期望难度（V9／xhard0 生成的 jobs 均带 seed_rule 或走官方元数据分支，不经该缺省），故保留常量。
 DIFFICULTY = "xhard"
-#: 评估步数上限按档（只约束执行段，演示段不计）。xhard0 取 1300，与官方 scripts/evaluation.py 的默认步数相同（v7 方案 §7.4）。
-#: v8 阶段 3b 起 xhard1～xhard5 一律 1600（＝``EXEC_CAP``，下方断言；v8 方案第一部分表 1 末行）：抽样时已过滤
-#: 执行步超过 1600 的候选并递补，交付集按构造不超。历史值：v7 为 1500／2400／2900／3800（B4 上调，
-#: 判定行 V7_STEP_HEADROOM 见 docs/validation/newtask-v7/），v6 为 1500／1700／2000／2600。
-TIER_MAX_STEPS = {"xhard0": 1300, "xhard1": 1600, "xhard2": 1600, "xhard3": 1600, "xhard4": 1600, "xhard5": 1600}
 #: 回注绑定：只记录不回注的观测值（SpecRecorder.record）允许的浮点差（用户 U-13 方案甲，红线 R22，不做参数）。
 RECORDED_FLOAT_TOL = 1e-5
 
@@ -130,8 +125,6 @@ EXPECTED_CELLS: dict[tuple[str, str], int] = V9_CELLS
 #: 给定子表的表，作为单文件配额上限（``_validate_specs``）与 ``load_specs_root`` 的格配额上限。
 #: V8 的 1070 局表已于维护计划阶段 1b（W4）删除，只剩 v9。
 CELL_TABLES: dict[str, dict[tuple[str, str], int]] = {"v9": V9_CELLS}
-assert all(TIER_MAX_STEPS[tier] == EXEC_CAP for tier in TIERS) and tuple(TIER_MAX_STEPS) == BUILDER_TIERS, \
-    "TIER_MAX_STEPS 须为 xhard0 + 五档、五档均等于 EXEC_CAP"
 
 
 def xhard4_only_tasks(cells: dict[tuple[str, str], int]) -> set[str]:

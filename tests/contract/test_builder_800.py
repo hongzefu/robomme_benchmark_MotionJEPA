@@ -8,7 +8,7 @@ rollout ok）按 candidate 升序拼接成 episode 0..49（hard_builder 模块�
   （header 该任务）+ native_episode_spec（该行 spec），恰好这些键；
 - 开关开：每任务前置 12 局 xhard0，seed 逐条等于官方 test 元数据 hard 子集（按原 episode 升序）、difficulty
   传 ``"hard"``、无回注参数，合计 16 × 62 = 992；
-- 规格根覆盖（参数与环境变量）与拒绝路径。
+- 规格根覆盖（参数与环境变量）与拒绝路径（含 ``dataset="test-hard0"`` 的接受与拒绝；其逐局参数见 ``test_builder_hard0.py``）。
 """
 from __future__ import annotations
 
@@ -246,6 +246,17 @@ def test_rejections(tmp_path):
         cls(env_id="StopCube", dataset="test-hard", action_space="torque")
     with pytest.raises(ValueError):
         cls(env_id="NotATask", dataset="test-hard")
+    # test-hard0：接受（每任务恰 12 局 xhard0）；拼写变体、规格根、元数据覆盖、未知任务一律拒绝
+    assert cls(env_id="StopCube", dataset="test-hard0").get_episode_num() == XHARD0_PER_TASK
+    for wrong in ("test_hard0", "test-hard1", "xhard0", "Test-Hard0"):
+        with pytest.raises(ValueError):
+            cls(env_id="StopCube", dataset=wrong)
+    with pytest.raises(ValueError):
+        cls(env_id="StopCube", dataset="test-hard0", specs_root=ROOT)
+    with pytest.raises(ValueError):
+        cls(env_id="StopCube", dataset="test-hard0", override_metadata_path=tmp_path)
+    with pytest.raises(ValueError):
+        cls(env_id="NotATask", dataset="test-hard0")
     empty = tmp_path / "empty"
     empty.mkdir()
     with pytest.raises(hard_specs.SpecsError):

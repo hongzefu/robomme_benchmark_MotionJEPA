@@ -6,8 +6,8 @@
 几类读不到模块级常量的值（挑战接口的重试间隔、录像器的函数局部阈值）用最小行为探针测出数值后再与钉值比，
 探针方法写在各用例的 docstring 里。
 
-xhard0 的步数上限待定（Q16）：``TIER_MAX_STEPS["xhard0"]`` 的取值不下断言（契约清单记 conditional），
-只断言键集合与 xhard1～5 的 1600。
+按档步数查表 ``TIER_MAX_STEPS`` 已删除（1003 评估计划 1.1，原 Q16 随之了结）：评估步数上限由入口按数据集传
+``max_steps``（``test-hard`` 1600、``test-hard0`` 1300），本文件只钉生成侧的 ``EXEC_CAP``，并断言查表不再存在。
 """
 from __future__ import annotations
 
@@ -71,9 +71,8 @@ XHARD0_EPISODES = (3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47)
 TOTAL_WITH_XHARD0 = 992
 PER_TASK_WITH_XHARD0 = 62
 XHARD0_SWITCH_ENV = "ROBOMME_HARD_XHARD0_IN_TEST_HARD"
-#: 执行步上限；xhard1～5 的评估步数上限（xhard0 待定，不钉）
+#: 执行步上限（生成侧抽样与交付的上限）
 EXEC_CAP = 1600
-NEW_TIER_MAX_STEPS = 1600
 #: 规格回放时记录点（``source="record"``）GPU 生成与 CPU 离线的浮点容差：≤ 此值计 recorded_drift（U-13 方案甲）
 RECORDED_FLOAT_TOL = 1e-5
 #: 只在 xhard4 交付的任务
@@ -226,12 +225,13 @@ def test_xhard0_constants():
     assert tuple(hs.BUILDER_TIERS) == (XHARD0, *NEW_TIERS)
 
 
-def test_tier_max_steps_new_tiers_1600_xhard0_unpinned():
-    """xhard1～5 一律 1600；xhard0 的值待定（Q16），只要求键存在。"""
+def test_exec_cap_and_no_tier_table():
+    """``EXEC_CAP`` 等于钉值 1600；按档步数查表 ``TIER_MAX_STEPS`` 已删除，模块与包都不再导出它。"""
     hs = hard_specs()
-    assert tuple(hs.TIER_MAX_STEPS) == (XHARD0, *NEW_TIERS)
-    assert {tier: hs.TIER_MAX_STEPS[tier] for tier in NEW_TIERS} == {tier: NEW_TIER_MAX_STEPS for tier in NEW_TIERS}
     assert hs.EXEC_CAP == EXEC_CAP
+    assert not hasattr(hs, "TIER_MAX_STEPS")
+    package = importlib.import_module("robomme_hard.env_record_wrapper")
+    assert not hasattr(package, "TIER_MAX_STEPS")
 
 
 def test_recorded_float_tol():
