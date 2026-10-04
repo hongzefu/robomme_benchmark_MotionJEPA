@@ -30,8 +30,8 @@ v8（v8 方案第二部分 §2.2 第 7 条，``hard-specs/4``）：
   状态、基础设施重试计数跨重启保留（每身份 ≤ 1 次）；
 * ``run_continue_v8``：按格表逐档调用 ``run_continue``，收尾 ``aggregate_v8`` 写 ``delivery.json``（``v8-delivery/1``）
   并打印 ``V8_DELIVERY_SET``；
-* 4 个生成席分片：``split_v8``（冻结根 → 每片自己的 ``<片输出>/specs`` 规格根、锁、账本）→ 各片 ``run_continue_v8``
-  → ``merge_v8``（全部片齐后确定性合并回五份规格，签必须与冻结根逐档相同）→ 聚合核全部格。
+* 生成分片：``split_v8``（冻结根 → 每片自己的 ``<片输出>/specs`` 规格根、锁、账本）→ 各片 ``run_continue_v8``
+  → ``aggregate_v8`` 按片账本核全部格（V8 的四席分片表与 ``merge_v8`` 已于维护计划 W2 删除）。
 """
 
 from __future__ import annotations
@@ -518,191 +518,7 @@ def run_continue(specs: Path, output: Path, *, src_root: Path, workers: int, gpu
         lock.release()
 
 
-# ── continue 模式（v7）：四档共用母布局的候选池 ─────────────────────────────────
-
-
-#: v7 冻结四档与 xhard4 独有任务（v8 方案阶段 1 常量）：阶段 3b 把全局 TIERS／XHARD4_ONLY 切到 v8 后，
-#: v7 候选池与 v7 夹具的行为不随之改变
-V7_TIERS = hard_specs.V7_TIERS
-POOL_NAME = "v7-candidate-pool.json"
-V7_BACKFILL_CAP = 10  # 每格同步递补上限（0928 方案第二部分 §2）
-
-
-def _task_tiers(task: str) -> tuple[str, ...]:
-    return ("xhard4",) if task in hard_specs.V7_XHARD4_ONLY else V7_TIERS
-
-
-def initial_pool(loaded: dict[str, tuple], per_cell: int) -> dict[str, Any]:
-    """候选池（每个 ``(task, candidate)`` 的唯一真源）：``derive_ok``＝本任务各档规格齐全；
-    初选＝xhard4 的 ``initial_selected`` ∩ ``derive_ok``，不足按候选号升序补齐到 ``per_cell``。"""
-    header4, rows4 = loaded["xhard4"]
-    pool: dict[str, Any] = {"schema": "v7-candidate-pool/1", "per_cell": per_cell, "tasks": {}}
-    for task in header4["tasks"]:
-        tiers = _task_tiers(task)
-        present = {tier: {int(r["candidate"]) for r in loaded[tier][1] if r["task"] == task} for tier in tiers}
-        candidates = sorted(set.intersection(*present.values()))
-        initial = sorted(int(r["candidate"]) for r in rows4 if r["task"] == task and r["initial_selected"])
-        chosen = [c for c in initial if c in candidates][:per_cell]
-        for c in candidates:
-            if len(chosen) >= per_cell:
-                break
-            if c not in chosen:
-                chosen.append(c)
-        pool["tasks"][task] = {
-            "tiers": list(tiers), "derive_ok": candidates,
-            "state": {str(c): {"status": "selected" if c in chosen else "spare", "tiers": {}} for c in candidates},
-            "backfills": 0, "sync_dropped": [],
-        }
-    return pool
-
-
-def _selected(pool_task: dict[str, Any]) -> list[int]:
-    return sorted(int(c) for c, s in pool_task["state"].items() if s["status"] == "selected")
-
-
-def sync_drop_and_backfill(pool: dict[str, Any], task: str, candidate: int, reason: str) -> int | None:
-    """某档某候选失败 → 该候选在本任务所有档一起退选；按候选号递补下一个 derive_ok 且各档都未试过的候选。"""
-    entry = pool["tasks"][task]
-    state = entry["state"][str(candidate)]
-    if state["status"] != "selected":
-        return None
-    state["status"] = "dropped"
-    entry["sync_dropped"].append({"candidate": candidate, "reason": reason})
-    if entry["backfills"] >= V7_BACKFILL_CAP:
-        return None
-    for c in entry["derive_ok"]:
-        s = entry["state"][str(c)]
-        if s["status"] == "spare" and not s["tiers"]:
-            s["status"] = "selected"
-            entry["backfills"] += 1
-            return c
-    return None
-
-
-def write_pool(path: Path, pool: dict[str, Any]) -> None:
-    fd, name = tempfile.mkstemp(prefix=".pool-", dir=path.parent)
-    with os.fdopen(fd, "w", encoding="utf-8") as stream:
-        json.dump(pool, stream, ensure_ascii=False, indent=1, sort_keys=True)
-    os.replace(name, path)
-
-
-def delivery_rows(pool: dict[str, Any], loaded: dict[str, tuple], output: Path) -> tuple[list[dict[str, Any]], str]:
-    """交付清单 + V7_DELIVERY_SET 判定行：每任务各档交付的候选集合相同、每格恰好 per_cell 局。"""
-    per_cell = int(pool["per_cell"])
-    rows_out, problems, equal = [], [], 0
-    for task, entry in pool["tasks"].items():
-        delivered = [c for c in _selected(entry)
-                     if all(entry["state"][str(c)]["tiers"].get(t, {}).get("status") == "ok" for t in entry["tiers"])]
-        sets = {t: sorted(delivered) for t in entry["tiers"]}
-        equal += int(len(entry["tiers"]) == 4 and len({tuple(v) for v in sets.values()}) == 1)
-        if len(delivered) != per_cell:
-            problems.append(f"{task} 交付 {len(delivered)}/{per_cell}")
-        for tier in entry["tiers"]:
-            by_c = {int(r["candidate"]): r for r in loaded[tier][1] if r["task"] == task}
-            for c in delivered:
-                row, st = by_c[c], entry["state"][str(c)]["tiers"][tier]
-                rows_out.append({"task": task, "tier": tier, "candidate": c, "seed": int(row["seed"]),
-                                 "episode": int(row["episode"]), "spec_sha256": row["spec_sha256"],
-                                 "h5_sha256": st["h5_sha256"], "frames": st.get("frames"),
-                                 "path": os.path.relpath(st["h5_path"], output), "env_module": st.get("env_module"),
-                                 "recovery_mode": None, "binding": st.get("binding")})
-    cells = sum(len(e["tiers"]) for e in pool["tasks"].values())
-    ok = not problems and equal == sum(len(e["tiers"]) == 4 for e in pool["tasks"].values())
-    line = (f"V7_DELIVERY_SET={'PASS' if ok else 'FAIL'} cells={cells} per_cell={per_cell} tier_set_equal={equal}"
-            + ("" if ok else f" problems={problems[:5]}"))
-    return rows_out, line
-
-
-def run_continue_v7(specs_root: Path, output: Path, *, src_root: Path, workers: int, gpu: str, pkg: str,
-                    code_baseline: str, resume: bool = False, max_infra_retries: int = 1,
-                    batch_runner=None) -> dict[str, Any]:
-    """v7 gen1：候选池单写者（目录锁），四档同步作废与递补；收尾回写四档规格的结果段并写 ``delivery.json``。"""
-    specs_root = Path(specs_root)
-    lock = SpecsLock(specs_root / POOL_NAME)
-    lock.acquire()
-    try:
-        files = {tier: specs_root / tier / "specs.jsonl" for tier in V7_TIERS}
-        file_sha = {tier: file_sha256(path) for tier, path in files.items()}
-        loaded = hard_specs.load_specs_v7(specs_root, check_fingerprint=False)
-        per_cell = int(loaded["xhard4"][0]["delivery_per_cell"])
-        pool_path = specs_root / POOL_NAME
-        if resume and pool_path.exists():
-            pool = json.loads(pool_path.read_text())
-            unknown = unknown_identities(output)
-            if unknown:
-                raise RolloutError(f"恢复歧义：以下身份有 h5 但无 partial 记录，标 UNKNOWN 交用户：{unknown}")
-        else:
-            if pool_path.exists():
-                raise RolloutError(f"{pool_path} 已存在；续跑用 --resume")
-            if _has_run_traces(output):
-                raise RolloutError(f"{output} 已有运行痕迹（episodes/ 或 _rounds/）；续跑用 --resume")
-            pool = initial_pool(loaded, per_cell)
-            write_pool(pool_path, pool)
-        output.mkdir(parents=True, exist_ok=True)
-        rows_by = {tier: {(r["task"], int(r["candidate"])): r for r in loaded[tier][1]} for tier in V7_TIERS}
-        runner = batch_runner or (lambda batch, header, idx: run_batch(
-            batch, header, output, idx, src_root=src_root, workers=workers, gpu=gpu, pkg=pkg, resume=resume))
-        infra: dict[tuple[str, str, int], int] = {}
-        attempted = round_index = 0
-        while True:
-            pending = {tier: [] for tier in V7_TIERS}
-            for task, entry in pool["tasks"].items():
-                for c in _selected(entry):
-                    for tier in entry["tiers"]:
-                        if tier not in entry["state"][str(c)]["tiers"]:
-                            pending[tier].append(dict(rows_by[tier][(task, c)], _role="selected"))
-            if not any(pending.values()):
-                break
-            for tier in V7_TIERS:
-                # 同一轮里前面档位失败已同步退选的候选，后面档位不再跑（不浪费轨迹预算）
-                batch = [r for r in pending[tier]
-                         if pool["tasks"][r["task"]]["state"][str(int(r["candidate"]))]["status"] == "selected"]
-                if not batch:
-                    continue
-                results = runner(batch, loaded[tier][0], round_index)
-                attempted += len(results)
-                for record in results:
-                    task, c = record["task"], int(record["candidate"])
-                    key = (task, tier, c)
-                    entry = pool["tasks"][task]
-                    if is_infra(record) and infra.get(key, 0) < max_infra_retries:
-                        infra[key] = infra.get(key, 0) + 1
-                        continue  # 基础设施失败每身份最多重跑 1 次：不记档状态，下一轮再跑
-                    block = rollout_block(record, pkg, code_baseline, output)
-                    block["binding"] = record.get("spec_binding")
-                    entry["state"][str(c)]["tiers"][tier] = block
-                    if not record["ok"] and entry["state"][str(c)]["status"] == "selected":
-                        sync_drop_and_backfill(pool, task, c, f"{tier}:{record.get('error_type')}")
-            write_pool(pool_path, pool)
-            round_index += 1
-        # 回写四档规格的结果段（selected／tried／rollout）；身份段不变
-        for tier in V7_TIERS:
-            header, rows = loaded[tier]
-            for row in rows:
-                entry = pool["tasks"].get(row["task"])
-                st = None if entry is None else entry["state"].get(str(int(row["candidate"])))
-                tier_state = None if st is None else st["tiers"].get(tier)
-                row["tried"] = tier_state is not None
-                row["rollout"] = None if tier_state is None else {k: v for k, v in tier_state.items() if k != "binding"}
-                row["selected"] = bool(st and st["status"] == "selected" and tier_state and tier_state["status"] == "ok"
-                                       and all(st["tiers"].get(t, {}).get("status") == "ok" for t in entry["tiers"]))
-            write_back(files[tier], header, rows, file_sha[tier])
-        rows_out, line = delivery_rows(pool, loaded, output)
-        (output / "delivery.json").write_text(json.dumps(
-            {"schema": "v7-delivery/1", "specs_root": str(specs_root), "code_baseline": code_baseline, "rows": rows_out},
-            ensure_ascii=False, indent=1) + "\n")
-        print(line, flush=True)
-        summary = {"attempted": attempted, "rounds": round_index, "infra_retries": sum(infra.values()),
-                   "delivered": len(rows_out),
-                   "sync_dropped": sum(len(e["sync_dropped"]) for e in pool["tasks"].values()),
-                   "backfills": sum(e["backfills"] for e in pool["tasks"].values()), "delivery_set": line}
-        (output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
-        return summary
-    finally:
-        lock.release()
-
-
-# ── continue 模式（v8）：逐格配额、执行步上限、分片、合并与聚合 ─────────────────────
+# ── continue 模式（v8）：逐格配额、执行步上限、分片与聚合 ─────────────────────
 
 
 V8_DELIVERY_SCHEMA = "v8-delivery/1"
@@ -714,17 +530,6 @@ V8_SMOKE_CELLS: dict[tuple[str, str], int] = {
     ("StopCube", "xhard1"): 1, ("StopCube", "xhard5"): 1, ("SwingXtimes", "xhard5"): 1, ("VideoUnmask", "xhard1"): 1,
     ("RouteStick", "xhard2"): 1, ("PatternLock", "xhard3"): 1, ("PickXtimes", "xhard3"): 1,
 }
-#: 4 个生成席的按任务切片（每片自己的 --output、规格根、锁与账本）。按「任务 v8 局数 × v6 评估实测单局用时」
-#: （export_eval_identities.TASK_SECONDS，生成用时的代理）做最长处理时间优先的贪心均衡后钉死：
-#: 加权负载（单 worker 折算）约 7.8／7.5／7.8／7.7 小时；格数 5／6／13／19，局数 180／240／310／340（合计 43 格、1070 局）。
-V8_SHARD_TASKS: dict[str, tuple[str, ...]] = {
-    "shard1": ("VideoPlaceButton", "PickHighlight", "MoveCube"),
-    "shard2": ("BinFill", "VideoUnmaskSwap", "VideoPlaceOrder"),
-    "shard3": ("PickXtimes", "ButtonUnmask", "VideoRepick", "InsertPeg", "RouteStick"),
-    "shard4": ("StopCube", "SwingXtimes", "VideoUnmask", "ButtonUnmaskSwap", "PatternLock"),
-}
-_shard_all = [task for tasks in V8_SHARD_TASKS.values() for task in tasks]
-assert sorted(_shard_all) == sorted(hard_specs.ALL_TASKS), "四片须恰好覆盖 16 任务且互不重叠"
 #: v9 生成分片（v9 方案 §2.12、§2.4.2 第 4 条）：只有 MoveCube 一片走 freeze → split → continue；InsertPeg 不走 split，
 #: 由 ``v9_subset_specs.py extend`` 直接产出片根；其余 14 任务是 V8 子集、不生成。``--cells v9shard1`` 取 V9_CELLS 的局数。
 V9_SHARD_TASKS: dict[str, tuple[str, ...]] = {"shard1": ("MoveCube",)}
@@ -769,16 +574,13 @@ def check_cells(cells: dict[tuple[str, str], int],
 
 
 def resolve_cells(spec: str | Path) -> dict[tuple[str, str], int]:
-    """``--cells``：``full``（V8 表 2 的 43 格）／``smoke``（V8 2b 冒烟 7 格）／``shard1``～``shard4``（V8 按任务切的
-    四片，局数取 V8 表 2）／``v9shard1``（V9 MoveCube 一片，局数取 V9_CELLS）／``v9smoke``（V9 冒烟 2 格）／
+    """``--cells``：``full``（V8 表 2 的 43 格）／``smoke``（V8 2b 冒烟 7 格）／``v9shard1``（V9 MoveCube 一片，局数取 V9_CELLS）／``v9smoke``（V9 冒烟 2 格）／
     格表 JSON 路径（``{"Task@tier": 局数}`` 或 ``{"cells": [{"task", "tier", "count"}]}``）。"""
     text = str(spec)
     if text == "full":
         return check_cells(dict(hard_specs.V8_CELLS))
     if text == "smoke":
         return check_cells(dict(V8_SMOKE_CELLS))
-    if text in V8_SHARD_TASKS:
-        return check_cells({k: n for k, n in hard_specs.V8_CELLS.items() if k[0] in V8_SHARD_TASKS[text]})
     if text == "v9smoke":
         return check_cells(dict(V9_SMOKE_CELLS), hard_specs.V9_CELLS)
     if text.startswith("v9") and text[2:] in V9_SHARD_TASKS:
@@ -786,7 +588,7 @@ def resolve_cells(spec: str | Path) -> dict[tuple[str, str], int]:
                            hard_specs.V9_CELLS)
     path = Path(text)
     if not path.is_file():
-        raise RolloutError(f"--cells 须为 full／smoke／shard1..4／{'／'.join(V9_CELL_NAMES)} 或格表 JSON 路径：{text!r}")
+        raise RolloutError(f"--cells 须为 full／smoke／{'／'.join(V9_CELL_NAMES)} 或格表 JSON 路径：{text!r}")
     data = json.loads(path.read_text(encoding="utf-8"))
     cells: dict[tuple[str, str], int] = {}
     items = data["cells"] if isinstance(data, dict) and "cells" in data else data
@@ -819,7 +621,7 @@ def compact_range(values) -> str:
 def detect_root_schema(root: Path) -> str | None:
     """规格根的 schema：``<root>/<tier>/specs.jsonl`` 首行 header 的 schema；各档必须一致，否则拒绝。无文件返回 None。"""
     schemas = {}
-    for tier in dict.fromkeys((*hard_specs.V7_TIERS, *hard_specs.V8_TIERS)):
+    for tier in hard_specs.V8_TIERS:
         path = Path(root) / tier / "specs.jsonl"
         if path.is_file():
             with path.open(encoding="utf-8") as stream:
@@ -1149,91 +951,6 @@ def split_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_out: Pa
     return meta
 
 
-def merge_v8(frozen_root: Path, cells: dict[tuple[str, str], int], shard_outs: list[Path], merged_root: Path,
-             out_dir: Path, *, cells_label: str = "full", code_baseline: str | None = None,
-             rebase: list[tuple[str, str]] | None = None) -> dict[str, Any]:
-    """合并（全部片齐后）：各片格表两两不交、并集 == 格表；每片来源 identity 等于冻结根当前档；各片已跑完
-    （无 selected 未跑行）；逐行身份键与冻结根逐字相同。合并文件 = 冻结根 header + 冻结根行（结果段
-    ``selected``／``tried``／``rollout`` 取自所属片），只重算 ``delivery_sha256``，``identity_sha256`` 必须与冻结根
-    逐档相同；写到 ``merged_root``（排他），再 ``aggregate_v8`` 核全部格写 ``<out_dir>/delivery.json``。"""
-    from _freeze import write_jsonl_exclusive  # noqa: PLC0415
-
-    cells = check_cells(cells)
-    table = cell_table(cells)
-    # N3：写盘前先查全部目标（五档合并规格 + delivery.json）都不存在；存在即 FAIL 判定行、一个文件都不写
-    targets = [Path(merged_root) / tier / "specs.jsonl" for tier in cell_tiers(cells)] + [Path(out_dir) / "delivery.json"]
-    existing = [str(p) for p in targets if p.exists()]
-    if existing:
-        line = f"V8_MERGE=FAIL reason=targets_exist existing={len(existing)} first={existing[0]}"
-        print(line, flush=True)
-        return {"line": line, "existing": existing}
-    owner: dict[tuple[str, str], Path] = {}
-    metas = {}
-    for shard in map(Path, shard_outs):
-        meta = json.loads((shard / SHARD_META).read_text(encoding="utf-8"))
-        if meta.get("schema") != V8_SHARD_SCHEMA:
-            raise RolloutError(f"{shard / SHARD_META} 不是 {V8_SHARD_SCHEMA}")
-        metas[shard] = meta
-        for key in resolve_cells_from_json(meta["cells"]):
-            if key in owner:
-                raise RolloutError(f"格 {key} 同时属于 {owner[key]} 与 {shard}")
-            owner[key] = shard
-    if set(owner) != set(cells):
-        raise RolloutError(f"分片未齐：缺 {sorted(set(cells) - set(owner))}，多出 {sorted(set(owner) - set(cells))}")
-    for (task, tier), shard in owner.items():
-        if resolve_cells_from_json(metas[shard]["cells"])[(task, tier)] != cells[(task, tier)]:
-            raise RolloutError(f"{task}/{tier} 分片局数与格表不符")
-    merged = {}
-    for tier in cell_tiers(cells):
-        path = Path(frozen_root) / tier / "specs.jsonl"
-        header, rows = hard_specs.load_specs(path, expected_cells=table, check_fingerprint=False)
-        if any(r["tried"] for r in rows):
-            raise RolloutError(f"{path} 已跑过；合并只认未跑过的冻结根")
-        if set(header["tasks"]) != {task for task, t in cells if t == tier}:
-            raise RolloutError(f"{path} 的任务集合与格表在 {tier} 的任务不符")
-        _, row_keys, _, _ = hard_specs._schema_keys(hard_specs.SCHEMA_V8)
-        shard_rows: dict[tuple[str, int], dict[str, Any]] = {}
-        for shard in sorted({owner[(task, tier)] for task in header["tasks"]}, key=str):
-            src = metas[shard]["sources"].get(tier) or {}
-            if src.get("identity_sha256") != header["identity_sha256"]:
-                raise RolloutError(f"{shard} 的 {tier} 来源 identity 与冻结根不符")
-            sh_header, sh_rows = hard_specs.load_specs(shard / "specs" / tier / "specs.jsonl", expected_cells=table,
-                                                       check_fingerprint=False)
-            for task in sh_header["tasks"]:
-                if sh_header["sampling_config"][task] != header["sampling_config"][task]:
-                    raise RolloutError(f"{shard} 的 {task}/{tier} sampling_config 与冻结根不符")
-            pending = [(r["task"], r["candidate"]) for r in sh_rows if r["selected"] and r["rollout"] is None]
-            if pending:
-                raise RolloutError(f"{shard} 的 {tier} 尚未跑完（selected 未跑 {len(pending)} 行）：{pending[:5]}")
-            for r in sh_rows:
-                shard_rows[(r["task"], int(r["candidate"]))] = r
-        out_rows = []
-        for row in rows:
-            key = (row["task"], int(row["candidate"]))
-            got = shard_rows.get(key)
-            if got is None or any(got[k] != row[k] for k in row_keys) or got["spec"] != row["spec"]:
-                raise RolloutError(f"{tier} 行 {key} 在分片里缺失或身份不符")
-            new = copy.deepcopy(row)
-            new.update(selected=got["selected"], tried=got["tried"], rollout=copy.deepcopy(got["rollout"]))
-            out_rows.append(new)
-        if len(shard_rows) != len(rows):
-            raise RolloutError(f"{tier} 分片行数 {len(shard_rows)} ≠ 冻结根 {len(rows)}")
-        new_header = copy.deepcopy(header)
-        new_header["delivery_sha256"] = hard_specs.delivery_sha256(out_rows)
-        if hard_specs.identity_sha256(new_header, out_rows) != header["identity_sha256"]:
-            raise RolloutError(f"{tier} 合并后 identity_sha256 与冻结根不符")
-        hard_specs.validate_specs(new_header, out_rows, expected_cells=table)
-        merged[tier] = (new_header, out_rows)
-    for tier, (header, rows) in merged.items():
-        write_jsonl_exclusive(Path(merged_root) / tier / "specs.jsonl", [header, *rows])
-    report = aggregate_v8(Path(merged_root), cells, list(map(Path, shard_outs)), Path(out_dir) / "delivery.json",
-                          cells_label=cells_label, code_baseline=code_baseline, rebase=rebase)
-    print(f"V8_MERGE=PASS shards={len(metas)} tiers={len(merged)} cells={len(cells)} merged_root={merged_root}",
-          flush=True)
-    print(report["line"], flush=True)
-    return report
-
-
 def resolve_cells_from_json(data: dict[str, int]) -> dict[tuple[str, str], int]:
     cells = {}
     for key, n in data.items():
@@ -1246,12 +963,12 @@ def resolve_cells_from_json(data: dict[str, int]) -> dict[tuple[str, str], int]:
 
 
 def load_identities(path: Path) -> list[dict[str, Any]]:
-    """身份清单：S4 ``final-delivery.json``（取 ``successes``）、gen1 的 ``delivery.json``（v7／v8，取 ``rows``）
+    """身份清单：S4 ``final-delivery.json``（取 ``successes``）、gen1 的 ``delivery.json``（v8-delivery/1，取 ``rows``）
     或每行 ``{task, tier|difficulty, seed}`` 的 jsonl。"""
     text = Path(path).read_text(encoding="utf-8")
     if Path(path).suffix == ".json":
         items = json.loads(text)
-        if isinstance(items, dict) and items.get("schema") in ("v7-delivery/1", V8_DELIVERY_SCHEMA):
+        if isinstance(items, dict) and items.get("schema") == V8_DELIVERY_SCHEMA:
             items = items["rows"]  # gen1 的 delivery.json：交付行即身份清单
         elif isinstance(items, dict):
             items = items.get("successes", items)
@@ -1270,7 +987,7 @@ def run_replay(identities: list[dict[str, Any]], output: Path, *, src_root: Path
     output.mkdir(parents=True, exist_ok=True)
     scheduled: set[tuple[str, str, int]] = set()
     results: list[dict[str, Any]] = []
-    # 缺省读包内规格（档位跟随包内 TIERS）；显式给了规格路径（v7 根四档、v8 根含 xhard5——阶段 3b 换包前它不在
+    # 缺省读包内规格（档位跟随包内 TIERS）；显式给了规格路径（/4 规格根含 xhard5——阶段 3b 换包前它不在
     # 全局 TIERS 里）就只按给定档位读，不再混读包内其他档
     specs_paths = dict(specs_paths or {})
     tiers = tuple(specs_paths) if specs_paths else hard_specs.TIERS
