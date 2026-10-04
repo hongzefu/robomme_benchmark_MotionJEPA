@@ -5970,6 +5970,23 @@
       "merged_from": [
         "tests/pipeline/parity/contracts.delta.json"
       ]
+    },
+    {
+      "id": "C13-SG-TRACE",
+      "domain": "C13",
+      "source": [
+        "scripts/eval-official/trace_writer.py"
+      ],
+      "symbol": "TraceWriter / image_sha256 / array_record / bytes_record / read_trace（每局 trace.jsonl）",
+      "oracle": "计划 1.7 字段约定；夹具手写数组与画面",
+      "positive": "header→demo→request/response/step→end 行序；数组按原始 dtype/shape 哈希",
+      "negative": "动作改 1 bit、画面哈希改变时 gate2_compare 判分叉",
+      "boundaries": "只覆盖 trace 字段，不覆盖视频字节",
+      "nodeids": [],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "planned",
+      "note": "主会话先提交接口桩（计划 1.8），S7 合入时补用例转 verified。"
     }
   ],
   "files": {
@@ -6723,6 +6740,9 @@
     ],
     "scripts/parity/official/SOURCE.json": [
       "C18-VENDOR"
+    ],
+    "scripts/eval-official/trace_writer.py": [
+      "C13-SG-TRACE"
     ]
   },
   "exempt": {
@@ -6781,6 +6801,14 @@
     "scripts/parity/comparator_fixtures.py": {
       "category": "一次性对拍／留档脚本",
       "reason": "G5 比较器自带夹具（train_split_comparison 的自检），不在 V9 链路。"
+    },
+    "scripts/eval-official/client-env/pyproject.toml": {
+      "category": "外部子环境依赖声明",
+      "reason": "四模型评估客户端扩展环境的独立 uv 子项目（第 3 条冲突依赖隔离：ms-swift 要求 pillow<12），只声明依赖、无本仓库逻辑；见 1003-oracle-subgoal-groundsg-eval-plan.md 1.8。"
+    },
+    "scripts/eval-official/client-env/uv.lock": {
+      "category": "外部子环境依赖声明",
+      "reason": "上条子项目的锁文件，由 uv 生成。"
     }
   },
   "optional_keys": [
