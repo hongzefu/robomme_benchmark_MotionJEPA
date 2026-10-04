@@ -105,7 +105,7 @@
     ],
     "symbol": "subgoal_lengths.read_episode/label/main",
     "oracle": "手写逐帧 subgoal 序列的微型 h5",
-    "positive": "连续相同文字合为一段；模板抹颜色后同模板第二次起记「后续」；执行步 = 帧 − 演示帧；oracle 逐格均值／上限（新值档取 header exec_cap、xhard0 取 TIER_MAX_STEPS）；xhard0 新旧入口逐段相同",
+    "positive": "连续相同文字合为一段；模板抹颜色后同模板第二次起记「后续」；执行步 = 帧 − 演示帧；oracle 逐格均值／上限（新值档取 header exec_cap、xhard0 取本地常量 XHARD0_STEP_CAP=1300）；xhard0 新旧入口逐段相同",
     "negative": "delivery 执行步与 h5 不符 → exec_mismatch=1 FAIL 不写 subgoals.json",
     "boundaries": "空 h5（官方生成失败）记 0 帧",
     "nodeids": [

@@ -126,18 +126,6 @@
   "self_check": "2026-10-04 本机实测：原版隔离副本 tests/contract 非 slow 207 passed, 4 deselected；植入后 8 failed, 199 passed, 4 deselected，expect_fail 全部在失败之列"
  },
  {
-  "id": "M08",
-  "target": "src/robomme_hard/env_record_wrapper/hard_specs.py",
-  "method": "进程内（pytest 插件，不落盘）：TIER_MAX_STEPS['xhard1'] = 1500（源码里改会被导入期 assert 拦住）",
-  "expect_fail": [
-   "tests/contract/test_constants.py::test_tier_max_steps_new_tiers_1600_xhard0_unpinned"
-  ],
-  "observed_fail": [
-   "tests/contract/test_constants.py::test_tier_max_steps_new_tiers_1600_xhard0_unpinned"
-  ],
-  "self_check": "2026-10-04 本机实测：原版隔离副本 tests/contract 非 slow 207 passed, 4 deselected；植入后 1 failed, 206 passed, 4 deselected，expect_fail 全部在失败之列"
- },
- {
   "id": "M09",
   "target": "src/robomme_hard/env_record_wrapper/hard_builder.py",
   "method": "隔离副本：删去 _hard_env_kwargs 返回字典里的 \"native_episode_spec\" 一行",

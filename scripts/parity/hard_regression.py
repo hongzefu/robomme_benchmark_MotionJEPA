@@ -157,6 +157,18 @@ def _hs_light():
     return _hp().hard_specs_light()
 
 
+#: xhard0 的执行步上限（与官方 scripts/evaluation.py 的默认步数相同）。按档的步数查表已从 hard_specs 删除，
+#: 评估入口按数据集传 max_steps；本工具在 dataset="test-hard" 下混跑 xhard0 与新值档，故在模块内按档取值。
+XHARD0_STEP_CAP = 1300
+
+
+def _cap_for(tier: str) -> int:
+    """对拍工具内部的逐局步数上限：xhard0 取 ``XHARD0_STEP_CAP``（1300），新值档取 ``hard_specs.EXEC_CAP``（1600）。
+
+    逐局传给 ``make_env_for_episode(max_steps=…)``：不传就退回 builder 的单一值，混档下会错配其中一类局。"""
+    return XHARD0_STEP_CAP if tier == "xhard0" else _hs_light().EXEC_CAP
+
+
 def specs_tiers(specs_root: str | None = None) -> tuple[tuple[str, ...], bool]:
     """规格根（显式 > ``ROBOMME_HARD_SPECS_ROOT`` > 包内）的档序与是否 /4：``TIERS`` 下任一存在的档文件 header
     为 ``hard-specs/4`` 即按 ``TIERS`` 读五档（v8 方案第二部分 §2.2 第 9 条「delivery_index 按 TIERS 读」；
@@ -279,7 +291,7 @@ def cmd_reset_replay(args) -> int:
     out_path = _replay_out_path(args.out)
     if args.specs_root:
         os.environ[_hard_specs().SPECS_ROOT_ENV] = str(Path(args.specs_root).resolve())
-    from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, TIER_MAX_STEPS, spec_binding
+    from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, spec_binding
 
     targets = _replay_targets(args.specs_root)
     if args.limit:
@@ -301,7 +313,7 @@ def cmd_reset_replay(args) -> int:
             identity = builder.resolve_identity(target["builder_episode"])
             assert identity["seed"] == target["seed"] and identity["tier"] == target["tier"], identity
             assert identity.get("spec_sha256") == target["spec_sha256"], (identity, target["spec_sha256"])
-            env = builder.make_env_for_episode(target["builder_episode"], max_steps=TIER_MAX_STEPS[target["tier"]])
+            env = builder.make_env_for_episode(target["builder_episode"], max_steps=_cap_for(target["tier"]))
             obs, info = env.reset()
             record.update({"binding": spec_binding(env), "identity": identity, "ok": True,
                            "demo_frames": len(obs.get("front_rgb_list", [])) - 1 if isinstance(obs, dict) else None})
@@ -332,7 +344,8 @@ def expected_episodes(task: str, hs, cells: dict[tuple[str, str], int] | None = 
 
 
 def cmd_eval_smoke(args) -> int:
-    """合作者入口：与 scripts/evaluation_hard.py 同样的构建与 max_steps 传法，只跑 1 任务 × 1 档 × 1 局。
+    """合作者入口：与 scripts/evaluation_hard.py 同样的构建，只跑 1 任务 × 1 档 × 1 局；逐局 max_steps 按 :func:`_cap_for`
+    取（xhard0 1300、新值档 1600）。
     xhard0 局须为导出模式（原生 hard 分支）、回注局须为 replay 且 injected_mismatch==0。"""
     import os
 
@@ -340,13 +353,13 @@ def cmd_eval_smoke(args) -> int:
 
     if args.specs_root:
         os.environ[_hard_specs().SPECS_ROOT_ENV] = str(Path(args.specs_root).resolve())
-    from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, TIER_MAX_STEPS, spec_binding
+    from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder, spec_binding
 
     hs = _hard_specs()
     builder = BenchmarkEnvBuilder(env_id=args.task, dataset="test-hard", action_space="joint_angle", max_steps=1300)
     num = builder.get_episode_num()
     seed, tier = builder.resolve_episode(args.episode)
-    env = builder.make_env_for_episode(args.episode, max_steps=TIER_MAX_STEPS[tier])
+    env = builder.make_env_for_episode(args.episode, max_steps=_cap_for(tier))
     obs, info = env.reset()
     binding = spec_binding(env)
     base = np.array([0.0, 0.0, 0.0, -np.pi / 2, 0.0, np.pi / 2, np.pi / 4, 1.0], dtype=np.float32)
@@ -372,7 +385,7 @@ def cmd_eval_smoke(args) -> int:
     expected = expected_episodes(args.task, hs, specs_version(args.specs_root)[1])
     ok = mode_ok and binding.get("injected_mismatch") == 0 and status != "error" and num == expected
     print(f"HARD_EVAL_SMOKE={'PASS' if ok else 'FAIL'} task={args.task} episode={args.episode} tier={tier} seed={seed} "
-          f"episodes={num} max_steps={TIER_MAX_STEPS[tier]} mode={binding.get('mode')} status={status} steps={steps} "
+          f"episodes={num} max_steps={_cap_for(tier)} mode={binding.get('mode')} status={status} steps={steps} "
           f"injected_mismatch={binding.get('injected_mismatch')} goal={str(info.get('task_goal'))[:60] if info else None}")
     return 0 if ok else 1
 
@@ -1118,7 +1131,7 @@ def delivery_version(delivery: dict[str, Any]) -> str:
 def _step_headroom_v8(args, delivery: dict[str, Any]) -> int:
     """{V8|V9}_STEP_CAP（判定行前缀按 :func:`delivery_version`）（1001 方案第一部分 §3「步数上限」）：交付 h5 的非演示步全部 ≤ ``EXEC_CAP``（1600）；
     ``filtered`` = 候选池里抽样阶段因 exec_over_cap 被丢弃并递补的候选数（与 delivery.json 的 ``exec_over_cap``
-    不一致即 FAIL）；xhard0 按 ``TIER_MAX_STEPS["xhard0"]``（1300）单独查。交付行自带 ``exec_steps`` 时与 h5 实测比对。
+    不一致即 FAIL）；xhard0 按模块常量 ``XHARD0_STEP_CAP``（1300）单独查。交付行自带 ``exec_steps`` 时与 h5 实测比对。
 
     正式闸门（阶段 3）必须带 ``--xhard0``；``--skip-xhard0`` 只供局部核对，判定行改打 ``V8_STEP_CAP=INFO …
     xhard0_max=skipped``，永不出 PASS。delivery.json 的四个全局计数键（``exec_over_cap``／``backfills``／
@@ -1126,7 +1139,7 @@ def _step_headroom_v8(args, delivery: dict[str, Any]) -> int:
     ``infra_retries`` 只由 S2-B 聚合行与 delivery.json 给出（规格行里没有），本命令只核其存在。候选池里的空文件、
     坏 JSON 计 ``pool_load_errors`` 判 FAIL，判定行照常打印。"""
     hs = _hs_light()
-    cap, x0cap = hs.EXEC_CAP, hs.TIER_MAX_STEPS["xhard0"]
+    cap, x0cap = hs.EXEC_CAP, XHARD0_STEP_CAP
     if not args.pool:
         raise SystemExit("v8 step-headroom 须给 --pool <候选池目录或结果文件>（计 filtered=）")
     if not args.xhard0 and not args.skip_xhard0:
@@ -1470,7 +1483,6 @@ def _env_digest_one(ident: dict[str, Any], builder, hub: _EnvTimerHub, fixed_ste
     import gymnasium as gym
     import numpy as np
 
-    from robomme_hard.env_record_wrapper import TIER_MAX_STEPS
     from robomme_hard.robomme_env.utils.vqa_options import get_vqa_options
 
     task = ident["task"]
@@ -1501,7 +1513,7 @@ def _env_digest_one(ident: dict[str, Any], builder, hub: _EnvTimerHub, fixed_ste
     gym.make = make_spy
     started = time.perf_counter()
     try:
-        env = builder.make_env_for_episode(int(ident["builder_episode"]), max_steps=TIER_MAX_STEPS[tier])
+        env = builder.make_env_for_episode(int(ident["builder_episode"]), max_steps=_cap_for(tier))
     finally:
         gym.make = orig_make
     timing["make_env_s"] = round(time.perf_counter() - started, 6)

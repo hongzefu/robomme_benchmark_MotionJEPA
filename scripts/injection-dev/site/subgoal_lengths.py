@@ -11,7 +11,7 @@
 - **oracle 步数**：执行步 = 帧数 − ``info/is_video_demo`` 帧数；逐格给均值／最小～最大／局数；
   xhard1～5 逐局与 ``delivery.json`` 的 ``exec_steps`` 相等（不等即 FAIL）。
 - **执行步上限**：xhard1～5 取 v8 规格 header ``exec_cap``（``hard-specs/4``），xhard0 取
-  ``hard_specs.TIER_MAX_STEPS["xhard0"]``；不读 ``eval.*.max_steps``（v8 评估置空）。
+  本地常量 ``XHARD0_STEP_CAP``（1300，与官方 scripts/evaluation.py 的默认步数相同）；不读 ``eval.*.max_steps``（v8 评估置空）。
 - **逐局 task goal**：``setup/task_goal`` 全部措辞与 ``setup/difficulty``；配置在目录里（规格逐局抽值），本文件不重复。
 
 输出 ``<site-dir>/subgoals.json``（schema ``v8-subgoals/1``，``open("x")`` 写入、拒绝覆盖），由
@@ -94,10 +94,13 @@ def med(xs):
     return statistics.median(xs) if xs else None
 
 
+#: xhard0 的执行步上限（按档步数查表已从 hard_specs 删除，评估入口按数据集传 max_steps）
+XHARD0_STEP_CAP = 1300
+
+
 def tier_caps(specs_root: Path, tiers) -> dict[str, int | None]:
-    """xhard1～5：规格 header 的 ``exec_cap``；xhard0：``TIER_MAX_STEPS["xhard0"]``。"""
-    H = C.load_hard_specs()
-    caps: dict[str, int | None] = {"xhard0": H.TIER_MAX_STEPS["xhard0"]}
+    """xhard1～5：规格 header 的 ``exec_cap``；xhard0：本地常量 ``XHARD0_STEP_CAP``（1300）。"""
+    caps: dict[str, int | None] = {"xhard0": XHARD0_STEP_CAP}
     for tier in tiers:
         if tier == "xhard0":
             continue

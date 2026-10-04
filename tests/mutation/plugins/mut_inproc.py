@@ -94,8 +94,6 @@ def _contract(key: str) -> None:
 
     if key == "M07":
         hs.V9_CELLS[("PickXtimes", "xhard1")] += 1  # EXPECTED_CELLS／CELL_TABLES["v9"] 是同一对象
-    elif key == "M08":
-        hs.TIER_MAX_STEPS["xhard1"] = 1500
     elif key == "M10":
         orig = hard_builder._test_hard_entries
 
@@ -409,8 +407,6 @@ def _precheck(root: pathlib.Path, block: str, key: str) -> str | None:
 
         if key == "M07":
             return None if ("PickXtimes", "xhard1") in hs.V9_CELLS else "V9_CELLS 缺 (PickXtimes, xhard1)"
-        if key == "M08":
-            return None if "xhard1" in hs.TIER_MAX_STEPS else "TIER_MAX_STEPS 缺 xhard1"
         return _missing(hard_builder, "_test_hard_entries")
     if block == "pipeline/recording":
         if key == "M14a":
@@ -482,7 +478,7 @@ SESSIONSTART_BLOCKS = {"unit/robomme", "unit/wrappers"}
 #: 本插件能执行的全部键（执行器据此把 mutants.json 的条目归到 B 类）。
 SUPPORTED = (
     {f"static:{k}" for k in ("M01", "M02", "M03", "M04S")}
-    | {f"contract:{k}" for k in ("M07", "M08", "M10")}
+    | {f"contract:{k}" for k in ("M07", "M10")}
     | {f"pipeline/recording:{k}" for k in ("M14a", "M14b", "M14c", "T5-K1", "T5-K2", "T5-K3", "T5-K4", "T5-K5",
                                           "T5-K6", "T5-K7", "T5-K8")}
     | {f"unit/robomme:T3-M{i:02d}" for i in range(1, 11)}

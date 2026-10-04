@@ -23,6 +23,8 @@ SMALL = {("StopCube", "xhard1"): H.V9_CELLS[("StopCube", "xhard1")],
          ("MoveCube", "xhard4"): H.V9_CELLS[("MoveCube", "xhard4")]}
 N_X0 = len(H.ALL_TASKS) * H.XHARD0_PER_TASK
 EXEC = len(SUBGOALS) - DEMO
+#: xhard0 的执行步上限（手写钉值；按档步数查表已从 hard_specs 删除）
+XHARD0_STEP_CAP = 1300
 
 
 def _argv(src: dict, out: Path, *extra) -> list[str]:
@@ -228,7 +230,7 @@ def test_subgoal_lengths_end_to_end(small, tmp_path, capsys):
     stop = sg["oracle"]["StopCube"]["xhard1"]
     assert (stop["n"], stop["mean"], stop["min"], stop["max"]) == (SMALL[("StopCube", "xhard1")], EXEC, EXEC, EXEC)
     assert (stop["demo_min"], stop["total_max"], stop["max_steps"]) == (DEMO, len(SUBGOALS), H.EXEC_CAP)
-    assert sg["oracle"]["BinFill"]["xhard0"]["max_steps"] == H.TIER_MAX_STEPS["xhard0"]
+    assert sg["oracle"]["BinFill"]["xhard0"]["max_steps"] == XHARD0_STEP_CAP
     ep = sg["episodes"]["StopCube"]["xhard1"]["1"]["new"]
     assert [(s["text"], s["frames"], s["kind"]) for s in ep] == [
         ("pick up the red cube", 3, "首次"), ("press the button", 2, "首次"), ("pick up the blue cube", 2, "后续")]
