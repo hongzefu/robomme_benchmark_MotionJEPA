@@ -5,8 +5,11 @@
   ``tests/contract/benchmark_contracts.json`` 的 ``files``（所属契约 id 列表）或 ``exempt``（豁免类别与理由）之一，
   ``files`` 里的契约 id 都必须存在于 ``entries``，不得登记已不存在的文件。以 ``/`` 结尾的键是整目录登记
   （``src/robomme/`` 冻结官方包，由 C18 上游字节守卫整体覆盖），要求该目录下确有 git 跟踪文件。
-- 用例全集 = 子进程 ``pytest --collect-only -q tests`` 的实际收集结果（实测约 7 s，比解析 ``def`` 名准：
-  能看到参数化、条件跳过模块与 slow 用例）；``tests/sim`` 不带 ``--allow-sim-reset`` 不收集，那里的条目都是 planned。
+- 用例全集 = 两个子进程的实际收集结果之并（比解析 ``def`` 名准：能看到参数化、条件跳过模块与 slow 用例）：
+  ``pytest --collect-only -q tests``（实测约 7 s；资源守卫在这里跳过 ``tests/sim``）与
+  ``pytest --collect-only -q --allow-sim-reset tests/sim``（只收集、不 reset，L4 仿真冒烟条目的 nodeid 由此核对）。
+- 契约 id 撞号：同一 id 出现在多份 ``contracts.delta.json`` 且两边 source 涉及的文件名不相交，视为两份不同契约，
+  报冲突（总表合并时不拼接，见总表 ``merge_rule``）。
 
 两条判定行：
 - ``TEST_INVENTORY=PASS|FAIL unclassified=<n> stale=<n> exempt=<n>``
@@ -17,13 +20,14 @@
 
 **判定行与本测试通过条件的区分**：``pending`` 不为 0 时 ``TEST_CONTRACTS`` 判定行照实写 FAIL 并列出 planned 条目——
 它是给验收表（``pending=0``）看的缺口报告；但本元测试作为日常门禁只要求 ``missing=0``、``unclassified=0``、
-``stale=0`` 与结构合法（状态取值、verified 有 nodeids、blocked／conditional 有说明），不因 pending 失败。
+``stale=0`` 与结构合法（状态取值、verified 有 nodeids、blocked／conditional 有说明、增量无撞号），不因 pending 失败。
 """
 from __future__ import annotations
 
 import copy
 import json
 import os
+import re
 import subprocess
 import sys
 from collections import Counter
@@ -53,21 +57,57 @@ def base_nodeid(nodeid: str) -> str:
     return nodeid.split("[", 1)[0]
 
 
-def collect_nodeids() -> set[str]:
-    """子进程收集全部用例（不加 -m，slow 也在内），返回去参数化后的 nodeid 集合。
+def _collect(*args: str) -> set[str]:
+    """一个子进程只做收集（``--collect-only`` 不执行用例，tests/sim 也不会 reset），返回去参数化后的 nodeid 集合。
 
     子进程是独立的 pytest 会话、会自己装资源守卫：去掉父会话的守卫环境变量，免得 sitecustomize 先装一遍、
     pytest_configure 再装一遍而重复打补丁（实测递归溢出）。
     """
     env = {k: v for k, v in os.environ.items() if k not in (ENV_MODE, ENV_LEDGER)}
     proc = subprocess.run(
-        [sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", "tests"],
+        [sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", *args],
         cwd=REPO, capture_output=True, text=True, timeout=120, env=env,
     )
-    assert proc.returncode == 0, f"收集失败（exit={proc.returncode}）：\n{proc.stdout[-3000:]}\n{proc.stderr[-3000:]}"
+    assert proc.returncode == 0, f"收集失败 {args}（exit={proc.returncode}）：\n{proc.stdout[-3000:]}\n{proc.stderr[-3000:]}"
     ids = {base_nodeid(line.strip()) for line in proc.stdout.splitlines() if line.startswith("tests/") and "::" in line}
-    assert ids, "收集结果为空"
+    assert ids, f"收集结果为空：{args}"
     return ids
+
+
+def collect_nodeids() -> set[str]:
+    """全部用例（不加 -m，slow 也在内）∪ tests/sim（带 --allow-sim-reset 只收集）。"""
+    return _collect("tests") | _collect("--allow-sim-reset", "tests/sim")
+
+
+_FILE_TOKEN = re.compile(r"[\w.-]+\.(?:py|jsonl|json|sh|html|toml)\b")
+
+
+def source_files(source) -> set[str]:
+    """source（字符串或列表）里出现的文件名集合，只取基名；用于判断两条同 id 条目是不是同一份契约。"""
+    items = source if isinstance(source, list) else [source]
+    return {m.group(0) for x in items for m in _FILE_TOKEN.finditer(str(x))}
+
+
+def delta_conflicts(deltas: dict[str, list[dict]]) -> list[tuple[str, str, str]]:
+    """同 id 跨增量且 source 文件名不相交 → (id, 增量 A, 增量 B)。"""
+    seen: dict[str, list[tuple[str, set[str]]]] = {}
+    out = []
+    for path, entries in sorted(deltas.items()):
+        for e in entries:
+            files = source_files(e.get("source", ""))
+            for other_path, other_files in seen.get(e["id"], []):
+                if other_path != path and not (files & other_files):
+                    out.append((e["id"], other_path, path))
+            seen.setdefault(e["id"], []).append((path, files))
+    return sorted(out)
+
+
+def load_deltas() -> dict[str, list[dict]]:
+    out = {}
+    for p in sorted((REPO / "tests").rglob("contracts.delta.json")):
+        out[str(p.relative_to(REPO))] = json.loads(p.read_text(encoding="utf-8"))
+    assert out, "找不到任何 contracts.delta.json"
+    return out
 
 
 def nodeid_found(nodeid: str, collected: set[str], prefixes: set[str]) -> bool:
@@ -109,7 +149,7 @@ def check_inventory(total: dict, tracked: set[str]) -> dict:
                 unknown=unknown, empty=empty, bad_exempt=bad_exempt)
 
 
-def check_contracts(total: dict, collected: set[str]) -> dict:
+def check_contracts(total: dict, collected: set[str], deltas: dict[str, list[dict]] | None = None) -> dict:
     entries = total.get("entries", [])
     keys = total["entry_keys"]
     domains = {d["id"] for d in total["domains"]}
@@ -125,7 +165,8 @@ def check_contracts(total: dict, collected: set[str]) -> dict:
     missing = sorted((e["id"], n) for e in entries if e.get("status") != "planned"
                      for n in e.get("nodeids", []) if not nodeid_found(n, collected, prefixes))
     pending = sorted(e["id"] for e in entries if e.get("status") == "planned")
-    structural_ok = not (dup or missing_keys or bad_status or bad_domain or verified_empty or undocumented)
+    conflicts = delta_conflicts(deltas or {})
+    structural_ok = not (dup or missing_keys or bad_status or bad_domain or verified_empty or undocumented or conflicts)
     gate_ok = structural_ok and not missing
     line_ok = gate_ok and not pending
     line = (f"TEST_CONTRACTS={'PASS' if line_ok else 'FAIL'} entries={len(entries)} "
@@ -133,7 +174,7 @@ def check_contracts(total: dict, collected: set[str]) -> dict:
             f"planned={counts['planned']} missing={len(missing)} pending={len(pending)}")
     return dict(ok=gate_ok, line_ok=line_ok, line=line, dup=dup, missing_keys=missing_keys, bad_status=bad_status,
                 bad_domain=bad_domain, verified_empty=verified_empty, undocumented=undocumented,
-                missing=missing, pending=pending)
+                conflicts=conflicts, missing=missing, pending=pending)
 
 
 # ---------------------------------------------------------------- 夹具
@@ -156,6 +197,11 @@ def collected() -> set[str]:
     return collect_nodeids()
 
 
+@pytest.fixture(scope="module")
+def deltas() -> dict[str, list[dict]]:
+    return load_deltas()
+
+
 # ---------------------------------------------------------------- 正例：真实总表
 
 
@@ -165,13 +211,19 @@ def test_inventory_every_tracked_file_classified(total, tracked):
     assert r["ok"], {k: r[k] for k in ("unclassified", "stale", "both", "unknown", "empty", "bad_exempt")}
 
 
-def test_contracts_nodeids_collected(total, collected):
-    r = check_contracts(total, collected)
+def test_contracts_nodeids_collected(total, collected, deltas):
+    r = check_contracts(total, collected, deltas)
     print(r["line"])
     if r["pending"]:
         print("planned（覆盖缺口，只报告不判门禁）：" + ", ".join(r["pending"]))
     assert r["ok"], {k: r[k] for k in ("dup", "missing_keys", "bad_status", "bad_domain",
-                                       "verified_empty", "undocumented", "missing")}
+                                       "verified_empty", "undocumented", "conflicts", "missing")}
+
+
+def test_sim_nodeids_collected_without_reset(collected):
+    """L4 条目的 nodeid 来自 --allow-sim-reset 的纯收集子进程；只收集，不触发 reset。"""
+    assert "tests/sim/test_reset_matrix.py::test_reset_cell" in collected
+    assert "tests/sim/test_official_one_reset.py::test_official_reset_and_unreachable_ee_step" in collected
 
 
 def test_src_robomme_registered_as_directory(total):
@@ -246,3 +298,27 @@ def test_pending_only_fails_line_not_gate(total, collected):
     r = check_contracts(only, collected)
     assert r["pending"] == ["T11-合成缺口"]
     assert r["ok"] and not r["line_ok"] and r["line"].startswith("TEST_CONTRACTS=FAIL ")
+
+
+def test_negative_bad_exempt_and_both_fail(total, tracked, tmp_path):
+    bad = _tmp_copy(total, tmp_path)
+    no_reason = next(iter(bad["exempt"]))
+    bad["exempt"][no_reason] = {"category": "说明文档"}
+    in_files = next(k for k in bad["files"] if not k.endswith("/"))
+    bad["exempt"][in_files] = {"category": "说明文档", "reason": "同时登记在 files"}
+    r = check_inventory(bad, tracked)
+    assert not r["ok"]
+    assert r["bad_exempt"] == [no_reason] and r["both"] == [in_files]
+
+
+def test_negative_delta_id_collision_fails(total, collected):
+    """同 id 跨块且 source 不相交（两份不同契约撞号）必须报冲突；source 相交的同 id 只是同一契约的补充。"""
+    fake = {
+        "tests/a/contracts.delta.json": [{"id": "C16.99", "source": ["scripts/injection-dev/site_build.py"]}],
+        "tests/b/contracts.delta.json": [{"id": "C16.99", "source": "scripts/parity/noise_run_gl.sh"}],
+        "tests/c/contracts.delta.json": [{"id": "C08.98", "source": ["src/robomme/x/A.py", "src/robomme/x/B.py"]}],
+        "tests/d/contracts.delta.json": [{"id": "C08.98", "source": "src/robomme/x/B.py、src/robomme/x/C.py"}],
+    }
+    assert delta_conflicts(fake) == [("C16.99", "tests/a/contracts.delta.json", "tests/b/contracts.delta.json")]
+    r = check_contracts(total, collected, fake)
+    assert not r["ok"] and r["conflicts"]

@@ -560,7 +560,9 @@
       "id": "C14-CHALLENGE-CONSTANTS",
       "domain": "C14",
       "source": [
-        "challenge_interface/scripts/phase1_eval.py、challenge_interface/policy.py、challenge_interface/client.py"
+        "challenge_interface/scripts/phase1_eval.py",
+        "challenge_interface/policy.py",
+        "challenge_interface/client.py"
       ],
       "symbol": "parse_args(--max_steps) / EXPECTED_ACTION_SHAPES / DummyPolicy.chunk_size / PolicyClient._wait_for_server",
       "oracle": "钉值 1500、(8,)/(7,)/(7,)、块长 10、重试间隔 5 s",
@@ -583,7 +585,8 @@
       "id": "C10-RECORD-CONSTANTS",
       "domain": "C10",
       "source": [
-        "src/robomme/env_record_wrapper/RecordWrapper.py、src/robomme_hard/env_record_wrapper/RecordWrapper.py"
+        "src/robomme/env_record_wrapper/RecordWrapper.py",
+        "src/robomme_hard/env_record_wrapper/RecordWrapper.py"
       ],
       "symbol": "RobommeRecordWrapper._add_text_to_frame / _joint_action_to_ee_pose_dict / step(gripper_close, fail_safe_limit)",
       "oracle": "钉值 0.03、行高 20、留白 10、最小高 50、负指令开度 0.04、fail_safe_limit 官方 2000 / hard 5000；函数局部值用行为探针测出（文字区高度反推、FK 替身记录 qpos、两点探针 nextafter/恰等、elapsed 上限−1/上限）",
@@ -685,7 +688,8 @@
       "id": "C14-04",
       "domain": "C14",
       "source": [
-        "challenge_interface/server.py, challenge_interface/client.py"
+        "challenge_interface/server.py",
+        "challenge_interface/client.py"
       ],
       "symbol": "PolicyServer.run/_handler/_health_check, PolicyClient.__init__/infer/reset/get_server_metadata",
       "oracle": "真实 PolicyServer 跑在 127.0.0.1 回环；/healthz 回 OK；握手首帧为元数据（缺省 {}）；infer 两向数组逐元素与 dtype 不变；reset 只调 policy.reset 并回 {reset_finished: True}，不进 infer",
@@ -711,7 +715,8 @@
       "id": "C14-05",
       "domain": "C14",
       "source": [
-        "challenge_interface/server.py, challenge_interface/client.py"
+        "challenge_interface/server.py",
+        "challenge_interface/client.py"
       ],
       "symbol": "PolicyServer._handler 异常分支, PolicyClient._wait_for_server/infer/reset",
       "oracle": "策略抛错 → 文本 traceback 帧 + 1011 关闭，客户端报 RuntimeError，同连接再用报 ConnectionClosed，服务仍接新连接；非法请求（坏字节、非 dict）同样 1011 且不触达策略；双向断连有界报错；客户端遇文本帧报 RuntimeError、坏字节报 ValueError；连接被拒按一次正时长 sleep 重试后连上；api_key 只在给出时发 Authorization",
@@ -742,7 +747,8 @@
       "id": "C14-06",
       "domain": "C14",
       "source": [
-        "challenge_interface/server.py, challenge_interface/client.py"
+        "challenge_interface/server.py",
+        "challenge_interface/client.py"
       ],
       "symbol": "PolicyServer.serve_forever（子进程）",
       "oracle": "子进程 PolicyServer(DummyPolicy) 握手、reset、infer 块形状读 DummyPolicy.chunk_size 与 EXPECTED_ACTION_SHAPES；SIGKILL 服务进程后客户端下一次 infer 在 10 s 内报 ConnectionClosed/OSError，不挂住",
@@ -790,7 +796,8 @@
       "id": "C14-08",
       "domain": "C14",
       "source": [
-        "challenge_interface/server_http.py, challenge_interface/scripts/deploy.py"
+        "challenge_interface/server_http.py",
+        "challenge_interface/scripts/deploy.py"
       ],
       "symbol": "PolicyHTTPServer 路由 /healthz /metadata /reset /infer, deploy.main",
       "oracle": "真实 Flask 应用经 werkzeug 回环服务 + 真实 PolicyHTTPClient 端到端；策略异常 500 带 traceback；空体 400；坏体 500 且不触达策略；deploy 入口子进程起 websocket 服务",
@@ -959,7 +966,8 @@
       "status": "planned",
       "merged_from": [
         "tests/pipeline/challenge/contracts.delta.json"
-      ]
+      ],
+      "note": "覆盖缺口：WebSocket 客户端 PolicyClient.infer／reset 无应用层超时（见待定清单 D4），服务端挂住时只靠 ping_timeout 断开，尚无用例。"
     },
     {
       "id": "C13-01",
@@ -1407,7 +1415,8 @@
       "status": "planned",
       "merged_from": [
         "tests/pipeline/eval/contracts.delta.json"
-      ]
+      ],
+      "note": "覆盖缺口：mme_client.make_recording_client（真实 openpi 客户端子类）、relay、transport_check 尚无用例；贯通用例用协议替身代替。"
     },
     {
       "id": "C13-16",
@@ -1910,14 +1919,13 @@
       "id": "C16.01",
       "domain": "C16",
       "source": [
-        "scripts/injection-dev/site_build.py",
-        "scripts/parity/noise_run_gl.sh"
+        "scripts/injection-dev/site_build.py"
       ],
-      "symbol": "site_build.main/Runner.run/run_child/serve/stop_serve（--site-only --cells v9） ‖ noise_run_gl.sh（preflight → 真实命令 → finish → EXIT_CODE=）",
-      "oracle": "各步换成真子进程假命令，执行记入计数文件（不看脚本自报 PASS） ‖ 真 bash 子进程 + 假真实命令（true／false／sleep）",
-      "positive": "七步按序 PASS；总表检查器收到期望格数 = V9_CELLS 格数 + 16 个 xhard0 格；报告与事件日志末行一致；服务进程组收尾 ‖ 退出码进 EXIT_CODE= 尾行与账本 finish 行；线程环境变量已导出",
-      "negative": "判定行 FAIL、退出码非零、判定行缺失各自停在该步且后续不跑；站点目录非空且无可复用记录 FAIL 不覆盖；端口占用 FAIL；V9 复用模式缺 V9_SITE 行 FAIL、参数不全预检退出 2；V8 格表名已删除 ‖ preflight 不过不执行真实命令、不写 finish；--kind 非 gen、缺真实命令即拒",
-      "boundaries": "V9 复用模式透传 --expect-reused／--expect-new ‖ TERM 中断：收掉真实命令、仍写 finish 与 EXIT_CODE=143",
+      "symbol": "site_build.main/Runner.run/run_child/serve/stop_serve（--site-only --cells v9）",
+      "oracle": "各步换成真子进程假命令，执行记入计数文件（不看脚本自报 PASS）",
+      "positive": "七步按序 PASS；总表检查器收到期望格数 = V9_CELLS 格数 + 16 个 xhard0 格；报告与事件日志末行一致；服务进程组收尾",
+      "negative": "判定行 FAIL、退出码非零、判定行缺失各自停在该步且后续不跑；站点目录非空且无可复用记录 FAIL 不覆盖；端口占用 FAIL；V9 复用模式缺 V9_SITE 行 FAIL、参数不全预检退出 2；V8 格表名已删除",
+      "boundaries": "V9 复用模式透传 --expect-reused／--expect-new",
       "nodeids": [
         "tests/pipeline/gen/test_site_build.py::test_site_only_pipeline_runs_steps_in_order",
         "tests/pipeline/gen/test_site_build.py::test_failed_step_stops_pipeline",
@@ -1925,22 +1933,14 @@
         "tests/pipeline/gen/test_site_build.py::test_port_busy_fails_serve",
         "tests/pipeline/gen/test_site_build.py::test_v9_eval_mode_requires_v9_site_line",
         "tests/pipeline/gen/test_site_build.py::test_v9_eval_mode_preflight",
-        "tests/pipeline/gen/test_site_build.py::test_removed_v8_cells_rejected",
-        "tests/pipeline/parity/test_noise_run_shell.py::test_端到端写EXIT_CODE与finish行",
-        "tests/pipeline/parity/test_noise_run_shell.py::test_真实命令输出进日志且线程变量已导出",
-        "tests/pipeline/parity/test_noise_run_shell.py::test_preflight不过不执行真实命令且不写finish",
-        "tests/pipeline/parity/test_noise_run_shell.py::test_kind只认gen且缺真实命令即拒",
-        "tests/pipeline/parity/test_noise_run_shell.py::test_TERM中断时收掉真实命令_照写finish与EXIT_CODE",
-        "tests/pipeline/parity/test_noise_run_shell.py::test_bash语法检查"
+        "tests/pipeline/gen/test_site_build.py::test_removed_v8_cells_rejected"
       ],
-      "resource": "cpu ‖ cpu-subprocess(slow)",
+      "resource": "cpu",
       "mutants": [],
       "status": "verified",
       "merged_from": [
-        "tests/pipeline/gen/contracts.delta.json",
-        "tests/pipeline/parity/contracts.delta.json"
-      ],
-      "merge_note": "两块各自登记了同一 id，状态同为 verified，文字字段以 ‖ 拼接、nodeids 取并集。"
+        "tests/pipeline/gen/contracts.delta.json"
+      ]
     },
     {
       "id": "C16.02",
@@ -2312,6 +2312,32 @@
         "tests/pipeline/parity/test_noise_run.py::test_finish实际数非法即拒"
       ],
       "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/pipeline/parity/contracts.delta.json"
+      ]
+    },
+    {
+      "id": "C16.03",
+      "domain": "C16",
+      "source": [
+        "scripts/parity/noise_run_gl.sh"
+      ],
+      "symbol": "noise_run_gl.sh（preflight → 真实命令 → finish → EXIT_CODE=）",
+      "oracle": "真 bash 子进程 + 假真实命令（true／false／sleep）",
+      "positive": "退出码进 EXIT_CODE= 尾行与账本 finish 行；线程环境变量已导出",
+      "negative": "preflight 不过不执行真实命令、不写 finish；--kind 非 gen、缺真实命令即拒",
+      "boundaries": "TERM 中断：收掉真实命令、仍写 finish 与 EXIT_CODE=143",
+      "nodeids": [
+        "tests/pipeline/parity/test_noise_run_shell.py::test_端到端写EXIT_CODE与finish行",
+        "tests/pipeline/parity/test_noise_run_shell.py::test_真实命令输出进日志且线程变量已导出",
+        "tests/pipeline/parity/test_noise_run_shell.py::test_preflight不过不执行真实命令且不写finish",
+        "tests/pipeline/parity/test_noise_run_shell.py::test_kind只认gen且缺真实命令即拒",
+        "tests/pipeline/parity/test_noise_run_shell.py::test_TERM中断时收掉真实命令_照写finish与EXIT_CODE",
+        "tests/pipeline/parity/test_noise_run_shell.py::test_bash语法检查"
+      ],
+      "resource": "cpu-subprocess(slow)",
       "mutants": [],
       "status": "verified",
       "merged_from": [
@@ -3295,10 +3321,11 @@
       ],
       "resource": "gpu",
       "mutants": [],
-      "status": "planned",
+      "status": "verified",
       "merged_from": [
         "tests/sim/contracts.delta.json"
-      ]
+      ],
+      "note": "主会话 2026-10-04 在主检出 HEAD 90025b2b 实跑 `CUDA_VISIBLE_DEVICES=1 uv run --no-sync python -m pytest tests/sim --allow-sim-reset -q`：60 passed in 243.31s（59 + 1 = 60 次 reset），TEST_SIM=PASS cells=59 official=1 failed=0"
     },
     {
       "id": "C04.L4-01",
@@ -3319,10 +3346,11 @@
       "mutants": [
         "M09"
       ],
-      "status": "planned",
+      "status": "verified",
       "merged_from": [
         "tests/sim/contracts.delta.json"
-      ]
+      ],
+      "note": "主会话 2026-10-04 在主检出 HEAD 90025b2b 实跑 `CUDA_VISIBLE_DEVICES=1 uv run --no-sync python -m pytest tests/sim --allow-sim-reset -q`：60 passed in 243.31s（59 + 1 = 60 次 reset），TEST_SIM=PASS cells=59 official=1 failed=0"
     },
     {
       "id": "C09.L4-01",
@@ -3340,10 +3368,11 @@
       ],
       "resource": "gpu",
       "mutants": [],
-      "status": "planned",
+      "status": "verified",
       "merged_from": [
         "tests/sim/contracts.delta.json"
-      ]
+      ],
+      "note": "主会话 2026-10-04 在主检出 HEAD 90025b2b 实跑 `CUDA_VISIBLE_DEVICES=1 uv run --no-sync python -m pytest tests/sim --allow-sim-reset -q`：60 passed in 243.31s（59 + 1 = 60 次 reset），TEST_SIM=PASS cells=59 official=1 failed=0"
     },
     {
       "id": "C08.L4-01",
@@ -3363,10 +3392,11 @@
       ],
       "resource": "gpu",
       "mutants": [],
-      "status": "planned",
+      "status": "verified",
       "merged_from": [
         "tests/sim/contracts.delta.json"
-      ]
+      ],
+      "note": "主会话 2026-10-04 在主检出 HEAD 90025b2b 实跑 `CUDA_VISIBLE_DEVICES=1 uv run --no-sync python -m pytest tests/sim --allow-sim-reset -q`：60 passed in 243.31s（59 + 1 = 60 次 reset），TEST_SIM=PASS cells=59 official=1 failed=0"
     },
     {
       "id": "C18-UPSTREAM-BYTES",
@@ -3478,7 +3508,8 @@
       "id": "C01-SHIMS",
       "domain": "C01",
       "source": [
-        "src/robomme_hard/UPSTREAM.json; scripts/parity/upstream_guard.py"
+        "src/robomme_hard/UPSTREAM.json",
+        "scripts/parity/upstream_guard.py"
       ],
       "symbol": "shims[] / check_shims",
       "oracle": "git 跟踪的 hard 包文件按内容反推三行 shim 形态（注释指向 UPSTREAM.json、import importlib, sys、sys.modules 别名），不用路径公式；目标文件 sha256 与字节数对 git 对象独立复算",
@@ -4172,7 +4203,8 @@
       "id": "C05-HARD-TRUTH-BinFill",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/BinFill.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/BinFill.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "BinFill.evaluate / BinFill.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4202,7 +4234,8 @@
       "id": "C05-HARD-TRUTH-ButtonUnmask",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/ButtonUnmask.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/ButtonUnmask.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "ButtonUnmask.evaluate / ButtonUnmask.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4232,7 +4265,8 @@
       "id": "C05-HARD-TRUTH-ButtonUnmaskSwap",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/ButtonUnmaskSwap.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/ButtonUnmaskSwap.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "ButtonUnmaskSwap.evaluate / ButtonUnmaskSwap.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4256,7 +4290,8 @@
       "id": "C05-HARD-TRUTH-InsertPeg",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/InsertPeg.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/InsertPeg.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "InsertPeg.evaluate / InsertPeg.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4282,7 +4317,8 @@
       "id": "C05-HARD-TRUTH-MoveCube",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/MoveCube.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/MoveCube.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "MoveCube.evaluate / MoveCube.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4308,7 +4344,8 @@
       "id": "C05-HARD-TRUTH-PatternLock",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/PatternLock.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/PatternLock.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "PatternLock.evaluate / PatternLock.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4336,7 +4373,8 @@
       "id": "C05-HARD-TRUTH-RouteStick",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/RouteStick.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/RouteStick.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "RouteStick.evaluate / RouteStick.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4364,7 +4402,8 @@
       "id": "C05-HARD-TRUTH-StopCube",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/StopCube.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/StopCube.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "StopCube.evaluate / StopCube.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4397,7 +4436,8 @@
       "id": "C05-HARD-TRUTH-SwingXtimes",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/SwingXtimes.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/SwingXtimes.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "SwingXtimes.evaluate / SwingXtimes.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4439,7 +4479,8 @@
       "id": "C05-HARD-TRUTH-PickXtimes",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/PickXtimes.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/PickXtimes.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "PickXtimes.evaluate / PickXtimes.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4480,7 +4521,8 @@
       "id": "C05-HARD-TRUTH-PickHighlight",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/PickHighlight.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/PickHighlight.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "PickHighlight.evaluate / PickHighlight.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4510,7 +4552,8 @@
       "id": "C05-HARD-TRUTH-VideoPlaceButton",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/VideoPlaceButton.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/VideoPlaceButton.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "VideoPlaceButton.evaluate / VideoPlaceButton.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4539,7 +4582,8 @@
       "id": "C05-HARD-TRUTH-VideoPlaceOrder",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/VideoPlaceOrder.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/VideoPlaceOrder.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "VideoPlaceOrder.evaluate / VideoPlaceOrder.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4566,7 +4610,8 @@
       "id": "C05-HARD-TRUTH-VideoRepick",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/VideoRepick.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/VideoRepick.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "VideoRepick.evaluate / VideoRepick.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4591,7 +4636,8 @@
       "id": "C05-HARD-TRUTH-VideoUnmask",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/VideoUnmask.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/VideoUnmask.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "VideoUnmask.evaluate / VideoUnmask.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4625,7 +4671,8 @@
       "id": "C05-HARD-TRUTH-VideoUnmaskSwap",
       "domain": "C05",
       "source": [
-        "src/robomme_hard/robomme_env/VideoUnmaskSwap.py、src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
+        "src/robomme_hard/robomme_env/VideoUnmaskSwap.py",
+        "src/robomme_hard/robomme_env/utils/subgoal_evaluate_func.py"
       ],
       "symbol": "VideoUnmaskSwap.evaluate / VideoUnmaskSwap.step / task_list；sequential_task_check",
       "oracle": "手写事件序列（CPU 世界替身：夹持、TCP、关节、按钮关节、时钟）＋包内正式局的本局取值；答案类任务由测试记录的事件或俯视几何独立推出",
@@ -4707,7 +4754,8 @@
       "id": "C04-HARD-SPEC-RECORDER",
       "domain": "C04",
       "source": [
-        "src/robomme_hard/robomme_env/utils/episode_spec.py、src/robomme_hard/env_record_wrapper/hard_specs.py"
+        "src/robomme_hard/robomme_env/utils/episode_spec.py",
+        "src/robomme_hard/env_record_wrapper/hard_specs.py"
       ],
       "symbol": "SpecRecorder / spec_kind_for / spec_binding（非分层路径）",
       "oracle": "手写小规格",
@@ -4911,7 +4959,8 @@
       "id": "C04-HARD-SWAP-PLANNING",
       "domain": "C04",
       "source": [
-        "src/robomme_hard/robomme_env/utils/swap_uniform.py、src/robomme_hard/robomme_env/utils/unmask_swap_xhard.py"
+        "src/robomme_hard/robomme_env/utils/swap_uniform.py",
+        "src/robomme_hard/robomme_env/utils/unmask_swap_xhard.py"
       ],
       "symbol": "plan_balanced_swaps / verify_swap_sequence / balanced_pair_groups / plan_inner_swaps_v6 / plan_distractor_swaps_balanced 等",
       "oracle": "手写小图（完全图、路径图、单边图）与包内正式局的真实内环窗口",
@@ -5320,7 +5369,8 @@
       "status": "planned",
       "merged_from": [
         "tests/unit/robomme/contracts.delta.json"
-      ]
+      ],
+      "note": "覆盖缺口：_DEFAULT_TASK_LIST 的确切顺序按 R8 只许在 test_constants.py 钉字面值，该处尚未补顺序断言；现有用例只核集合、无重复与副本。"
     },
     {
       "id": "T3-C05-native-truth-table",
@@ -5419,7 +5469,8 @@
       "id": "T3-C07-goal-and-options",
       "domain": "C07",
       "source": [
-        "src/robomme/robomme_env/utils/task_goal.py；src/robomme/robomme_env/utils/vqa_options.py"
+        "src/robomme/robomme_env/utils/task_goal.py",
+        "src/robomme/robomme_env/utils/vqa_options.py"
       ],
       "symbol": "get_language_goal；get_vqa_options 与 OPTION_BUILDERS",
       "oracle": "目标语言与选项动作文本的手写表；离线世界里真实任务实例的物体列表",
@@ -5441,7 +5492,9 @@
       "id": "T3-C07-projection-choice",
       "domain": "C07",
       "source": [
-        "src/robomme/robomme_env/utils/choice_action_mapping.py；src/robomme/robomme_env/utils/oracle_action_matcher.py；src/robomme/env_record_wrapper/OraclePlannerDemonstrationWrapper.py"
+        "src/robomme/robomme_env/utils/choice_action_mapping.py",
+        "src/robomme/robomme_env/utils/oracle_action_matcher.py",
+        "src/robomme/env_record_wrapper/OraclePlannerDemonstrationWrapper.py"
       ],
       "symbol": "project_world_to_pixel；select_target_with_pixel；select_target_with_position；find_exact_label_option_index；map_action_text_to_option_label；OraclePlannerDemonstrationWrapper._resolve_command／step",
       "oracle": "手算针孔投影（K=[[100,0,50],[0,100,40],[0,0,1]]）、手摆候选点",
@@ -5462,7 +5515,8 @@
       "id": "T3-C08-include-switches",
       "domain": "C08",
       "source": [
-        "src/robomme/env_record_wrapper/DemonstrationWrapper.py；src/robomme/env_record_wrapper/episode_config_resolver.py"
+        "src/robomme/env_record_wrapper/DemonstrationWrapper.py",
+        "src/robomme/env_record_wrapper/episode_config_resolver.py"
       ],
       "symbol": "DemonstrationWrapper._augment_obs_and_info；make_env_for_episode 的 include_* 透传与 multi_choice 强制前视内外参",
       "oracle": "替身观测（已知像素、深度、内外参数值）手算输出键、形状、dtype 与数值",
@@ -5531,7 +5585,9 @@
       "id": "T3-C09-fail-paths",
       "domain": "C09",
       "source": [
-        "src/robomme/env_record_wrapper/FailAwareWrapper.py；EndeffectorDemonstrationWrapper.py；MultiStepDemonstrationWrapper.py"
+        "src/robomme/env_record_wrapper/FailAwareWrapper.py",
+        "src/robomme/env_record_wrapper/EndeffectorDemonstrationWrapper.py",
+        "src/robomme/env_record_wrapper/MultiStepDemonstrationWrapper.py"
       ],
       "symbol": "FailAwareWrapper.step；EndeffectorDemonstrationWrapper.step；MultiStepDemonstrationWrapper.step／reset／close",
       "oracle": "规划器替身（IK 状态、screw／RRT* 返回脚本）；手算 rpy→四元数",
@@ -5659,7 +5715,8 @@
       "id": "T3-OBS-buttonunmask-reveal-press",
       "domain": "C05",
       "source": [
-        "src/robomme/robomme_env/ButtonUnmask.py；ButtonUnmaskSwap.py"
+        "src/robomme/robomme_env/ButtonUnmask.py",
+        "src/robomme/robomme_env/ButtonUnmaskSwap.py"
       ],
       "symbol": "step 前 64 步的 lift_and_drop_objects_back_to_original 把所有容器临时移到 (10,10,10)",
       "oracle": "CPU 方法级实测：elapsed < 32 时已按下按钮，下一步「拿起其他容器」失败条件成立 → fail（随即 terminated）；ButtonUnmask.evaluate 不锁存失败",
@@ -6451,7 +6508,7 @@
       "C15.10"
     ],
     "scripts/parity/noise_run_gl.sh": [
-      "C16.01"
+      "C16.03"
     ],
     "scripts/parity/train_split_parity.py": [
       "C15.01",
@@ -6529,12 +6586,12 @@
       "reason": "V9 计划 MoveCube 区域示意图（matplotlib 出图），不在生产链路。"
     },
     "scripts/injection-dev/site/render_xhard0.py": {
-      "category": "一次性出图／留档脚本",
-      "reason": "v7 对照站点从 xhard0 h5 离线合成演示视频的一次性脚本，不在 V9 生产链路。"
+      "category": "需 GPU 的产物渲染脚本",
+      "reason": "V9 站 xhard0 视频的渲染脚本（需 GPU 渲染，产物已在 v7 渲染、V9 以 0 次渲染复用）；读取侧格式（manifest-{H,O}.jsonl）由 tests/pipeline/site/test_site_catalog.py 覆盖，写入侧不在 CPU 门禁内测"
     },
     "scripts/parity/__init__.py": {
       "category": "包标记与路径设置 shim",
-      "reason": "只把本目录加入 sys.path，供 from scripts.parity import ... 使用。"
+      "reason": "仅包标记与说明 docstring。"
     },
     "scripts/parity/train_split_audit.py": {
       "category": "一次性对拍／留档脚本",
@@ -6556,7 +6613,7 @@
     "merged_from",
     "merge_note"
   ],
-  "merge_rule": "entries 由各测试块 contracts.delta.json 规整合入（增量文件保留作来源记录）：统一 entry_keys、source 统一为列表；同一 id 出现在多个增量时取更强状态（verified > conditional > blocked > planned）的条目为主体，nodeids／mutants／source 取并集，merged_from 记来源；blocked／conditional 必有 note 说明。",
+  "merge_rule": "entries 由各测试块 contracts.delta.json 规整合入（增量文件保留作来源记录）：统一 entry_keys、source 统一为列表；同一 id 出现在多个增量时取更强状态（verified > conditional > blocked > planned）的条目为主体，nodeids／mutants／source 取并集，merged_from 记来源；同 id 跨块且 source 不相交时视为两份不同契约撞号，报冲突、不拼接；多路径 source 字符串在每段都是单个路径时拆成列表；blocked／conditional 必有 note 说明。",
   "files_rule": "files：git 跟踪的 src/robomme_hard、scripts、challenge_interface 下每个现行文件 → 所属契约 id 列表；以 / 结尾的键是整目录登记（src/robomme/ 冻结官方包）。file_notes 写归属理由；exempt 写豁免类别与理由。由 tests/static/test_inventory.py 机检。",
   "file_notes": {
     "src/robomme/": "冻结的官方包（P2），由上游字节守卫整体覆盖：102 个文件与官方 1fadc0ec 逐字节相同；行为契约见各 T3-* 与 C08～C11 条目。",
