@@ -4,7 +4,7 @@
 >
 > 用户原话（2026-10-03，按时间）：「你这个项目只需要部署上限的问题和清理V7V8的就用例以及短测内容的问题就是纯代码的改动」「然后写的时候也分开写这三个点分别怎么改。然后如何保证噪声的一致性」「完全彻底重构这个计划只保留我说的这些部分。」「TMMAXTEP这个问题我没有看懂。然后这个清理B7V8指的是所有代码库里面全部清理了不要只清理测试然后核心短测内容怎么改我也没看懂就是你要详细的说可以彻底重构所有的test」
 >
-> 锚点 `PLAN_BASE=9a765cc4`，分支 `newtaskRelease-taskV9`。事实来源：2026-10-03 三份只读盘点（包内代码、scripts、tests），未跑任何测试。实施须用户说「执行」；文末「待你决定」四项先定。
+> 锚点 `PLAN_BASE=9a765cc4`，分支 `newtaskRelease-taskV9`。事实来源：2026-10-03 三份只读盘点（包内代码、scripts、tests），未跑任何测试。实施须用户说「执行」；四项决定已定（见第一部分末「用户决定」）。
 
 # 第一部分（给人看）
 
@@ -79,7 +79,7 @@
 | `scripts/eval-official/v75-lanes/` | 整个目录（`gl/` 25 个 .sh、`local/` 25 个 .sh、README） | V7.5 评估当时的一次性车道脚本，无代码、无测试引用；V8／V9 评估都是重写的席位脚本 |
 | `scripts/eval-official/` | `orchestrate.py`、`watchdog.sh` | V7.5 通用编排器，只被 v75-lanes 调用 |
 | 同上 | `claim_queue.py` | V7.5 NFS 认领队列；先删 `env_client.py`、`run_seat.sh` 的 `--queue` 分支 |
-| 同上（待你决定 Q2） | `official_observer/`（8 个文件）、`policy_replay.py`、`run_policy_replay.sh`、`step6_summary.py`、`compare.py` | V7.5 的 xhard0「官方路线」旁路录制、开环回放与第 6 步汇总；它们依赖的三份官方检出与 `artifacts/v7.5eval/` 已在资源清理中删掉，现在已经跑不起来 |
+| 同上（用户决定 Q2：删） | `official_observer/`（8 个文件）、`policy_replay.py`、`run_policy_replay.sh`、`step6_summary.py`、`compare.py` | V7.5 的 xhard0「官方路线」旁路录制、开环回放与第 6 步汇总；它们依赖的三份官方检出与 `artifacts/v7.5eval/` 已在资源清理中删掉，现在已经跑不起来 |
 | `scripts/injection-dev/` | `derive_specs.py` | V7 母布局派生（产 `/3` 规格），V9 每档独立冻结不用它 |
 | 同上 | `_report.py` | 生产代码零引用，只有一个测试导入 |
 | 同上 | `v8_watchdog.py` | V8 gen1 接续脚本的看门狗，V9 留档无使用记录 |
@@ -196,7 +196,7 @@
 - 时机：噪声基线 `NOISE_BASELINE=PASS`、线冻结进 `scripts/configs/noise-baseline.json` 之后；全部清理、改名、测试重构合并之后只跑一次。
 - 内容：`noise_gate.py check-gen`，两批固定检查集各重新生成一遍——V9 的 43 格 × 3 局 = 129、xhard0 的 16 任务 × 1 档 × 3 局 = 48，共 129 + 48 = 177 条轨迹；GL A40、4 worker，与基线同条件。
 - 判据（`GEN_NOISE_GATE`）：structural 与 unknown 两类必须为 0；diverge + gen_fail ≤ 冻结的线；gen_fail ≤ 冻结的线。
-- 预算：轨迹 177 条，reset 上限按每条 3 次计 177 × 3 = 531 次；超 P3 阈值，须事先授权（「待你决定」Q4）。
+- 预算：轨迹 177 条，reset 上限按每条 3 次计 177 × 3 = 531 次；超 P3 阈值，已获授权（用户决定 Q4）。
 - FAIL 时：不改线、不改判据，按分任务个数定位到哪块改动，回退或修该块后重跑，重跑另报预算。
 
 **评估侧**：按用户决定只测生成噪声，评估侧不跑真实模型。评估代码只删了 `--queue`／`--canary` 这类 V9 不传的开关分支，由第 2、3 层保证；`--v8` 主路径不改。
@@ -223,7 +223,7 @@
 
 | 阶段 | 内容 | 判据 |
 |---|---|---|
-| 0 | 定「待你决定」四项；跑一次现状全量测试取逐文件耗时（`--durations=0`，CPU，tmux，约 8 分钟） | 决定落档；耗时表落 `artifacts/maintenance/` |
+| 0 | 四项决定已定；跑一次现状全量测试取逐文件耗时（`--durations=0`，CPU，tmux，约 8 分钟） | 决定落档；耗时表落 `artifacts/maintenance/` |
 | 1 | W1～W3 并行：scripts 三块删除与删分支（不碰噪声工具与改名） | 各块定向测试通过，`PRE_MERGE_REVIEW=PASS` |
 | 2 | W4：`src/robomme_hard` 删 V7 常量与 layered 机制（依赖阶段 1 先删掉调用方） | 同上，`MAINT_SPECS=PASS` |
 | 3 | T1、T2：测试重构（新目录、合并、6 个失败、对照表） | `MAINT_CORE`、`MAINT_PIPELINE`、`MAINT_TEST_COVERAGE` |
@@ -235,14 +235,14 @@
 
 拆成七块，按文件切开、互不重叠：W1 管 `scripts/eval-official/`，W2 管 `scripts/injection-dev/`，W3 管 `scripts/parity/` 里 `hard_regression.py` 与 `hard_parity.py` 的历史分支，W4 管 `src/robomme_hard/`；T1 管单元与契约测试，T2 管流水线与 GPU 测试；R 做改名。W1～W3 先并行，各自顺带删掉只测自己被删代码的测试文件；W4 等它们合入后再做（它删的常量 W1～W3 的文件还在用）；T1、T2 在全部代码清理合入后做；R 最后做，且要等噪声基线测完。每次合并前一个只读审查子代理核对改动是否越出该块的文件清单、被删分支是否 V9 走不到；合并后主会话跑日常门禁、`UPSTREAM_GUARD`、`MAINT_SPECS`。
 
-## 待你决定
+## 用户决定（2026-10-03，经 AskUserQuestion 选定）
 
-| 编号 | 问题 | 推荐 |
+| 编号 | 问题 | 用户选择 |
 |---|---|---|
-| Q1 | 步数上限表选 (a)／(b)／(c)（第 1.5 节） | (a) 保留 |
-| Q2 | V7.5 xhard0「官方路线」复核工具（`official_observer/`、`policy_replay.py`、`run_policy_replay.sh`、`step6_summary.py`、`compare.py`、`hard_regression.py xhard0-eval-parity`）删不删。它们依赖的官方检出与 `artifacts/v7.5eval/` 已被资源清理删掉，现在跑不起来；资源清理时你说过「xhard0 也都要保留」，指的是产物，这里问的是代码 | 删（git 历史可取回） |
-| Q3 | 名字带 v8 的现行文件和常量是否改名（第 2.4 节） | 改，放在噪声基线测完之后 |
-| Q4 | 第四节第 4 层的生成噪声闸门实跑授权：177 条轨迹（V9 43 格 × 3 局 + xhard0 16 任务 × 1 档 × 3 局）、reset 上限 531 次、GL A40 一个占位席 | 授权 |
+| Q1 | 步数上限表 `TIER_MAX_STEPS`（第 1.5 节） | **保留表**：代码不动，xhard0 在流水线里继续 1300；README 写清与公开入口固定 1600 的关系；三处重复断言收成一处 |
+| Q2 | V7.5 xhard0「官方路线」复核工具（`official_observer/`、`policy_replay.py`、`run_policy_replay.sh`、`step6_summary.py`、`compare.py`、`hard_regression.py xhard0-eval-parity`） | **删除**（git 历史可取回） |
+| Q3 | 名字带 v8 的现行文件和常量改中性名（第 2.4 节） | **改，等噪声基线测完再改**；格式名、键名、`V8_*` 判定行前缀不改 |
+| Q4 | 生成噪声闸门实跑：V9 43 格 × 3 局 + xhard0 16 任务 × 1 档 × 3 局 = 177 条轨迹，reset 上限 531 次，GL A40 一个占位席，噪声基线冻结之后跑 | **授权**（失败后重跑另报预算） |
 
 # 第二部分（技术细节，供 agent 追踪）
 
