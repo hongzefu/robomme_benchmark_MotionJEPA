@@ -432,16 +432,20 @@
       "scripts/injection-dev/eval_video_mover.py",
       "scripts/eval-official/eval_report.py"
     ],
-    "symbol": "eval_video_mover v8_main --once（v8_move_dir、v8_verify、v8_verdict）+ eval_report.verify_new_videos / v9_lines",
-    "oracle": "ffmpeg 现做的 3／4／5 帧 ffv1 微型视频，逐文件 sha 手算；运行根按生产布局手写",
-    "positive": "整目录经 .incoming 原子搬到 <dest>/<policy>/<tier>/<task>/<目录名>/，逐文件 sha 一致、源删除、moved.jsonl 记逐文件 sha；V8_EVAL_VIDEOS=PASS、V9_EVAL_VIDEOS=PASS videos=2",
-    "negative": "少一路视频 → missing、坏视频 → decode_fail（搬运脚本与报告两处一致判 FAIL）；搬后文件被替换 → sha_mismatch；搬运记录缺失 → moved_record_absent",
-    "boundaries": "同内容重搬不落第二份；不同内容落 .dup1、原件逐字节不动",
+    "symbol": "eval_video_mover v8_main --once（v8_move_dir、v8_verify、v8_verdict）+ eval_report.verify_new_videos / v9_lines；--layout sgeval（sgeval_main、sgeval_dirs、sgeval_move_dir、free_gib）",
+    "oracle": "ffmpeg 现做的 3／4／5 帧 ffv1 微型视频，逐文件 sha 手算；运行根按生产布局手写；sgeval 媒体根按 run_eval_gl.sh／run_official_hard.sh 的发布布局手写，传输损坏用 rsync 替身（拷贝后往目的端追加一字节）",
+    "positive": "整目录经 .incoming 原子搬到 <dest>/<policy>/<tier>/<task>/<目录名>/，逐文件 sha 一致、源删除、moved.jsonl 记逐文件 sha；V8_EVAL_VIDEOS=PASS、V9_EVAL_VIDEOS=PASS videos=2；sgeval：按输出键 <label>/<dataset>/<side>/<key>.a<n>/ 搬到 <dest> 同一键下，两端逐文件 sha256 相同才删 NFS 源，SGEVAL_MOVE=PASS moved=3 left=0",
+    "negative": "少一路视频 → missing、坏视频 → decode_fail（搬运脚本与报告两处一致判 FAIL）；搬后文件被替换 → sha_mismatch；搬运记录缺失 → moved_record_absent；sgeval：本机盘剩余低于 --min-free-gib → MOVER_STOP reason=low_disk、sha 不一致 → MOVER_STOP reason=sha_mismatch，两者都保留 NFS 源、退出 1；多 mp4 目录 MOVER_SKIP 不搬",
+    "boundaries": "同内容重搬不落第二份；不同内容落 .dup1、原件逐字节不动；sgeval 发布中的 .incoming 不碰；缺省 --layout v8 行为不变",
     "nodeids": [
       "tests/pipeline/eval/test_eval_video_mover.py::test_positive_atomic_move_and_report",
       "tests/pipeline/eval/test_eval_video_mover.py::test_rerun_same_content_no_dup_and_different_content_goes_to_dup1",
       "tests/pipeline/eval/test_eval_video_mover.py::test_missing_and_broken_media",
-      "tests/pipeline/eval/test_eval_video_mover.py::test_report_catches_tamper_and_absent_move_record"
+      "tests/pipeline/eval/test_eval_video_mover.py::test_report_catches_tamper_and_absent_move_record",
+      "tests/pipeline/eval/test_eval_video_mover.py::test_sgeval_moves_by_output_key_with_sha_and_deletes_source",
+      "tests/pipeline/eval/test_eval_video_mover.py::test_sgeval_low_disk_stops_and_keeps_source",
+      "tests/pipeline/eval/test_eval_video_mover.py::test_sgeval_sha_mismatch_stops_and_keeps_source",
+      "tests/pipeline/eval/test_eval_video_mover.py::test_sgeval_multi_mp4_is_skipped"
     ],
     "resource": "cpu-ffmpeg-subprocess（slow）",
     "mutants": [],
@@ -483,10 +487,10 @@
     "source": [
       "scripts/eval-official/run_seat.sh"
     ],
-    "symbol": "run_seat.sh（pick_port、start_server、policy_loop、cleanup、write_report、tokenizer_gate）",
-    "oracle": "真 bash + 假引擎（seat_fake_engine.py）+ 空输出 nvidia-smi；每次启动／信号写事件日志",
-    "positive": "正常收尾 EXIT_CODE=0、SEAT_DONE done=2、server 被 TERM；首推理放宽 600 只给 server 新起后的第一个客户端，客户端单独重起传 0",
-    "negative": "端口被占顺延 +2；server 未就绪先死不起客户端；客户端反复 75 用尽重启预算 → INFRA_EXHAUSTED rc=4；server 中途反复死 → 重起预算用尽 rc=4、客户端全被收；客户端 5／3 不重启；SMVLA_PY 未设、V8 跑 mme 缺 tokenizer 参数 → RUN_BLOCKED rc=3；参数错误 rc=2",
+    "symbol": "run_seat.sh（pick_port、start_server、server_ready／http_health、policy_loop、cleanup、write_report、tokenizer_gate、preflight_pp、step_cap_pairing、variant_pairing、note_epoch／epoch_annotate、build_client_cmd、build_server_cmd）",
+    "oracle": "真 bash + 假引擎（seat_fake_engine.py：server 对每个连接回 HTTP 200，客户端按录像器格式写 ffv1 微型录像）+ 空输出 nvidia-smi；每次启动／信号写事件日志（含 argv）",
+    "positive": "正常收尾 EXIT_CODE=0、STEP_CAP_PAIRING=PASS、SEAT_DONE done=2、server 被 TERM；首推理放宽 600 只给 server 新起后的第一个客户端，客户端单独重起传 0；客户端带 --dataset／--max-steps／--strict-cap、不带 --v8；每次 server 就绪在 server-epochs.tsv 记一个 epoch，results.epochs.jsonl 逐行补 server_epoch；pp 路线 /health 200 才就绪、服务 argv 带 --args.seed 0 与 checkpoint、客户端 test-hard0／1300 不带 strict-cap",
+    "negative": "端口被占顺延 +2；server 未就绪先死不起客户端；客户端反复 75 用尽重启预算 → INFRA_EXHAUSTED rc=4；server 中途反复死 → 重起预算用尽 rc=4、客户端全被收、每次就绪各记一个 epoch；客户端 5／3／6 都不重启客户端与服务；SMVLA_PY 未设、mme／mmesg 缺 tokenizer 参数 → RUN_BLOCKED rc=3；--dataset↔--max-steps 配错（含 strict-cap 配错、未知数据集）→ RUN_BLOCKED reason=step_cap_pairing rc=3 且不起任何进程；mmesg 缺变体、QwenVL 缺 adapter、非 mmesg 给变体 → RUN_BLOCKED reason=variant_pairing；参数错误（含已删除的 --v8、缺账本参数）rc=2",
     "boundaries": "TERM：客户端与 server 进程组全部结束，EXIT_CODE=143；server 忽略 TERM 时等满宽限再 KILL（约 60 s）。测试侧兜底：每个用例 teardown 按记录的 pid 与 .v8-pgids 按进程组收残留，并用「SIGKILL 掉脚本整组、生产收尾失效」的用例证明兜底有效",
     "nodeids": [
       "tests/pipeline/eval/test_seat_scripts.py::test_normal_run_and_first_extra_only_on_fresh_server",
@@ -494,12 +498,16 @@
       "tests/pipeline/eval/test_seat_scripts.py::test_server_dies_before_ready",
       "tests/pipeline/eval/test_seat_scripts.py::test_client_infra_exit_restarts_without_first_extra",
       "tests/pipeline/eval/test_seat_scripts.py::test_client_restart_budget_exhausted",
-      "tests/pipeline/eval/test_seat_scripts.py::test_budget_and_blocked_are_not_restarted",
+      "tests/pipeline/eval/test_seat_scripts.py::test_budget_blocked_and_incomplete_are_not_restarted",
       "tests/pipeline/eval/test_seat_scripts.py::test_server_death_restart_budget",
       "tests/pipeline/eval/test_seat_scripts.py::test_term_cleans_up_server_and_client",
       "tests/pipeline/eval/test_seat_scripts.py::test_smvla_py_unset_blocks",
-      "tests/pipeline/eval/test_seat_scripts.py::test_mme_v8_requires_tokenizer_args",
+      "tests/pipeline/eval/test_seat_scripts.py::test_mme_and_mmesg_require_tokenizer_args",
+      "tests/pipeline/eval/test_seat_scripts.py::test_step_cap_pairing_blocks_before_any_process",
+      "tests/pipeline/eval/test_seat_scripts.py::test_variant_pairing_blocks",
       "tests/pipeline/eval/test_seat_scripts.py::test_bad_args_exit_2",
+      "tests/pipeline/eval/test_seat_scripts.py::test_missing_ledger_args_exit_2",
+      "tests/pipeline/eval/test_seat_scripts.py::test_pp_route_health_ready_and_epochs",
       "tests/pipeline/eval/test_seat_scripts.py::test_teardown_reaps_orphans_when_production_cleanup_is_bypassed"
     ],
     "resource": "cpu-subprocess-bash（slow）",
@@ -512,17 +520,60 @@
     "source": [
       "scripts/eval-official/run_eval_gl.sh"
     ],
-    "symbol": "run_eval_gl.sh（sync_one_dir 原子发布、finalize、on_signal、die2）",
-    "oracle": "最小 repo（两个真实脚本 + 假解释器）+ 假引擎写录像目录",
-    "positive": "录像经 .incoming 原子发布、字节一致、节点副本删除，SEAT_REC_SYNC=PASS n=2 left=0、V8_SEAT_DONE outcome=pass",
-    "negative": "同一运行根再跑：同名目录不覆盖、发布为 .dup1；--no-record 被拒 rc=2 并写 V8_SEAT_DONE outcome=fail",
-    "boundaries": "TERM：V8_SEAT_DONE 只写一次 outcome=aborted rc=143、EXIT_CODE=143、假进程全部结束",
+    "symbol": "run_eval_gl.sh（sync_recordings、finalize、on_signal、die2）+ run_seat.sh 库函数 finish_episode_dir／transcode_episode_dir／publish_dir",
+    "oracle": "最小 repo（四个真实脚本 + 假解释器）+ 假引擎按录像器格式写录像目录（ffv1 16×16，4 条帧记录 3 帧编码）与轨迹；真 ffmpeg 转码、ffprobe 数帧",
+    "positive": "每局并入轨迹 → 就地转码为单个 episode.mp4（4 帧，含重复帧展开）→ 删 *.mkv 与 .spool → 经 .incoming 原子发布到 <stage>/media/<label>/<dataset>/new/<key>.a<n>/；节点录像与轨迹副本删除；SEAT_REC_SYNC=PASS n=2 left=0 transcoded=2 frame_mismatch=0 transcode_fail=0、V8_SEAT_DONE outcome=pass；results.epochs.jsonl 带 server_epoch",
+    "negative": "同一运行根再跑：同名目录不覆盖、发布为 .dup1；--no-record 被拒 rc=2 并写 V8_SEAT_DONE outcome=fail；--dataset test-hard0 配 --max-steps 1600 → RUN_BLOCKED reason=step_cap_pairing、V8_SEAT_DONE outcome=fail rc=3、不起任何进程",
+    "boundaries": "TERM：V8_SEAT_DONE 只写一次 outcome=aborted rc=143、EXIT_CODE=143、假进程全部结束；周期同步收到 TERM 时做完手上一局再退出",
     "nodeids": [
-      "tests/pipeline/eval/test_seat_scripts.py::test_gl_publishes_recordings_atomically_and_rerun_does_not_overwrite",
+      "tests/pipeline/eval/test_seat_scripts.py::test_gl_transcodes_publishes_by_output_key_and_rerun_does_not_overwrite",
+      "tests/pipeline/eval/test_seat_scripts.py::test_gl_step_cap_pairing_blocks",
       "tests/pipeline/eval/test_seat_scripts.py::test_gl_term_finalizes_once",
       "tests/pipeline/eval/test_seat_scripts.py::test_gl_rejects_no_record"
     ],
-    "resource": "cpu-subprocess-bash（slow）",
+    "resource": "cpu-subprocess-bash-ffmpeg（slow）",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C16-03",
+    "domain": "C16",
+    "source": [
+      "scripts/eval-official/run_official_hard.sh",
+      "scripts/eval-official/pair_seat.sh"
+    ],
+    "symbol": "run_official_hard.sh（plan_round、orig_loop、build_runner_cmd、sync_orig、official_finalize）；pair_seat.sh（run_side、wait_side_released、pair_done）",
+    "oracle": "最小 repo + 假引擎：pp 服务回 HTTP 200，原侧驱动替身按 pp_official_runner.py 的布局写 frames/{front,wrist}.rgb24（3 帧 16×16）、frames.json、trace.jsonl 与结果行，FAKE_RUNNER_INFRA_ONCE 让第 1 次尝试的最后一个身份记 infra；事件日志带时间戳",
+    "positive": "原侧分轮：第 1 轮 --attempt 1 全部身份，infra 身份在重启服务（旧服务 TERM 早于重发）后以 --attempt 2 --only <该身份> 重跑；results.epochs.jsonl 的 server_epoch 依次为 1、1、2；三局都转码为 3 帧 episode.mp4、删 *.rgb24、保留 frames.json 与 trace.jsonl，发布到 media/pp/test-hard0/orig/<key>.a<n>/；OFFICIAL_SEAT_DONE outcome=pass rc=0；pair_seat.sh 先原侧后新侧，两次 SIDE_RELEASED，原侧服务 TERM 早于新侧服务启动，新侧客户端 test-hard0／1300 不带 strict-cap，两侧输出键齐全，PAIR_SEAT_DONE rc=0",
+    "negative": "--infra-retry-budget 0：infra 身份不重跑，RUN_INCOMPLETE side=orig missing=1、rc=6",
+    "boundaries": "驱动只跑一次（第 2 轮只含需重试的身份）；守卫函数全部来自 run_seat.sh（见 C16-04）",
+    "nodeids": [
+      "tests/pipeline/eval/test_seat_scripts.py::test_official_pp_retries_after_server_restart_and_publishes",
+      "tests/pipeline/eval/test_seat_scripts.py::test_official_retry_budget_zero_leaves_missing",
+      "tests/pipeline/eval/test_seat_scripts.py::test_pair_seat_runs_orig_then_new_on_released_gpu"
+    ],
+    "resource": "cpu-subprocess-bash-ffmpeg（slow）",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C16-04",
+    "domain": "C16",
+    "source": [
+      "scripts/eval-official/run_seat.sh",
+      "scripts/eval-official/run_eval_gl.sh",
+      "scripts/eval-official/run_official_hard.sh",
+      "scripts/eval-official/pair_seat.sh"
+    ],
+    "symbol": "EVAL_WIRING：build_client_cmd／build_server_cmd／build_runner_cmd 的逐路线 argv、step_cap_pairing、variant_pairing、三个启动器 source run_seat.sh 的守卫",
+    "oracle": "source 真实脚本（被 source 时只定义函数），逐路线打印 argv；期望值手写（test-hard↔1600 + --strict-cap、test-hard0↔1300；策略号 smvla 0／mme 1／mmesg 2／pp 3；history_config 期望手写）",
+    "positive": "新侧 8 条路线、原侧 3 条路线透传参数全对：--dataset／--max-steps／--strict-cap、--mme-variant 只在 mmesg、adapter 只在 QwenVL、out／ledger／rec-root／trace-root 落在 <label>（mmesg-<variant>）下、mmesg／pp 用客户端扩展环境、mmesg 客户端与驱动带 USE_HF=1；服务 argv（serve_policy.py --seed=7 --policy.dir、ponderpounce.eval.robomme_server --args.seed 0）；判定行 EVAL_WIRING=PASS routes=11 dataset_mismatch=0 variant_mismatch=0",
+    "negative": "7 组数据集／步数错配（含缺失、未知数据集、strict-cap 配错）与 7 组变体错配（缺变体、QwenVL 缺 adapter 或目录不存在、Oracle 给 adapter、未知变体、非 mmesg 给变体或 adapter）全部 RUN_BLOCKED 返回 3",
+    "boundaries": "run_official_hard.sh／pair_seat.sh／run_eval_gl.sh 不另定义 port_busy、pick_port、noprog_limit、idle_s、start_server、kill_group、publish_dir、transcode_episode_dir；run_seat.sh 代码里不再出现 --v8、被 source 时不运行",
+    "nodeids": [
+      "tests/pipeline/eval/test_eval_wiring.py::test_eval_wiring"
+    ],
+    "resource": "cpu-subprocess-bash",
     "mutants": [],
     "status": "verified"
   },

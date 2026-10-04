@@ -5,11 +5,16 @@
 几帧 ffv1 视频。覆盖：正例（原子搬运、逐文件 sha 一致、源删除、moved.jsonl 记录）、重复／覆盖（同内容再搬不落第二份，
 不同内容落 ``.dup1`` 且原件不动）、缺件（少一路视频 → missing、坏视频 → decode_fail、搬后篡改 → sha_mismatch、
 无搬运记录 → moved_record_absent）。缺 ffmpeg 时整文件记「未验证」。
+
+``--layout sgeval``：按输出键 ``<label>/<dataset>/<side>/<key>.a<n>/`` 整目录搬、两端逐文件 sha256 相同才删 NFS 源；
+本机盘剩余低于阈值（``low_disk``）、rsync 替身制造的 sha 不一致（``sha_mismatch``）都打 ``MOVER_STOP`` 并保留源；
+多 mp4 目录跳过；发布中的 ``.incoming`` 不碰；缺省布局行为不变。
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -167,3 +172,95 @@ def test_report_catches_tamper_and_absent_move_record(tmp_path, media):
                    encoding="utf-8")  # b 的搬运记录丢失
     vv = _video_line(manifest, stage, dest, 2)
     assert vv[""] == "FAIL" and vv["sha_mismatch"] == "1" and vv["moved_record_absent"] == "1" and vv["videos"] == "0"
+
+
+# ---------------------------------------------------------------- --layout sgeval（1003 计划 1.6）
+
+SG_KEYS = ("mmesg-ground-sg-oracle/test-hard0/orig/PickXtimes_xhard0_510300.a1",
+           "mmesg-ground-sg-oracle/test-hard0/new/PickXtimes_xhard0_510300.a1",
+           "pp/test-hard/new/PickXtimes_xhard1_16100000.a2")
+
+
+def _sg_stage(tmp_path: Path, keys=SG_KEYS, mp4s: int = 1) -> Path:
+    """按 run_eval_gl.sh／run_official_hard.sh 的发布布局手写媒体根；另放一个发布中的 .incoming 目录（不得碰）。"""
+    stage = tmp_path / "media"
+    for k in keys:
+        d = stage / k
+        d.mkdir(parents=True)
+        for i in range(mp4s):
+            (d / ("episode.mp4" if i == 0 else f"extra{i}.mp4")).write_bytes(f"mp4-{k}-{i}".encode())
+        (d / "trace.jsonl").write_text(json.dumps({"kind": "header", "key": k}) + "\n", encoding="utf-8")
+        (d / "summary.json").write_text('{"RECORDER_VERIFY": "PASS"}', encoding="utf-8")
+    inc = stage / "pp" / "test-hard" / "new" / ".incoming" / "half"
+    inc.mkdir(parents=True)
+    (inc / "episode.mp4").write_bytes(b"partial")
+    return stage
+
+
+def _sg_mover(stage: Path, dest: Path, *extra: str, env=None) -> tuple[int, str]:
+    p = subprocess.run([sys.executable, str(MOVER), "--layout", "sgeval", "--stage", str(stage), "--dest", str(dest),
+                        "--once", "--stable-sec", "0", "--interval", "0", *extra], capture_output=True, text=True,
+                       timeout=180, env=env)
+    return p.returncode, p.stdout
+
+
+def test_sgeval_moves_by_output_key_with_sha_and_deletes_source(tmp_path):
+    stage = _sg_stage(tmp_path)
+    want = {k: {f.name: _sha(f) for f in (stage / k).iterdir()} for k in SG_KEYS}
+    dest = tmp_path / "videos"
+    rc, out = _sg_mover(stage, dest, "--min-free-gib", "0")
+    assert rc == 0, out
+    v = F.verdict(out.splitlines(), "SGEVAL_MOVE")
+    assert v[""] == "PASS" and v["moved"] == "3" and v["left"] == "0" and v["stopped"] == "0"
+    moved = F.read_jsonl(dest / "moved.jsonl")
+    assert sorted(r["key"] for r in moved) == sorted(SG_KEYS) and {r["mode"] for r in moved} == {"sgeval"}
+    for k in SG_KEYS:
+        assert {f.name: _sha(f) for f in (dest / k).iterdir()} == want[k]  # 两端逐文件 sha256 相同
+        assert not (stage / k).exists()  # 核对过才删源
+        assert next(r for r in moved if r["key"] == k)["files"] == want[k]
+    assert (stage / "pp" / "test-hard" / "new" / ".incoming" / "half" / "episode.mp4").is_file()  # 发布中的不碰
+    # 默认布局不受影响：同一媒体根用缺省（v8）布局扫不到任何结果行，不搬不删
+    stage2 = _sg_stage(tmp_path / "again")
+    p = subprocess.run([sys.executable, str(MOVER), "--stage", str(stage2), "--dest", str(tmp_path / "v8dest"),
+                        "--policies", POL, "--once", "--stable-sec", "0", "--interval", "0"],
+                       capture_output=True, text=True, timeout=180)
+    assert "V8_EVAL_VIDEOS=FAIL" in p.stdout and all((stage2 / k / "episode.mp4").is_file() for k in SG_KEYS)
+
+
+def test_sgeval_low_disk_stops_and_keeps_source(tmp_path):
+    stage = _sg_stage(tmp_path)
+    dest = tmp_path / "videos"
+    rc, out = _sg_mover(stage, dest, "--min-free-gib", "1e9")
+    assert rc == 1
+    assert "MOVER_STOP reason=low_disk" in out
+    v = F.verdict(out.splitlines(), "SGEVAL_MOVE")
+    assert v[""] == "FAIL" and v["moved"] == "0" and v["stopped"] == "1" and v["left"] == "3"
+    assert all((stage / k / "episode.mp4").is_file() for k in SG_KEYS)
+
+
+def test_sgeval_sha_mismatch_stops_and_keeps_source(tmp_path):
+    """rsync 替身：照常拷贝后往目的端 trace.jsonl 追加一个字节，模拟传输损坏。"""
+    real = shutil.which("rsync")
+    bindir = tmp_path / "bin"
+    bindir.mkdir()
+    fake = bindir / "rsync"
+    fake.write_text(f'#!/usr/bin/env bash\n"{real}" "$@" || exit $?\ndst="${{@: -1}}"\n'
+                    f'printf x >> "${{dst%/}}/trace.jsonl"\n', encoding="utf-8")
+    fake.chmod(0o755)
+    env = dict(os.environ, PATH=f"{bindir}:{os.environ['PATH']}")
+    stage = _sg_stage(tmp_path, keys=SG_KEYS[:1])
+    dest = tmp_path / "videos"
+    rc, out = _sg_mover(stage, dest, "--min-free-gib", "0", env=env)
+    assert rc == 1, out
+    assert f"MOVER_STOP reason=sha_mismatch dir={SG_KEYS[0]}" in out
+    assert (stage / SG_KEYS[0] / "trace.jsonl").is_file() and not (dest / SG_KEYS[0]).exists()
+    assert not any((dest / ".incoming").iterdir())  # 临时目录已删
+
+
+def test_sgeval_multi_mp4_is_skipped(tmp_path):
+    stage = _sg_stage(tmp_path, keys=SG_KEYS[:1], mp4s=2)
+    rc, out = _sg_mover(stage, tmp_path / "videos", "--min-free-gib", "0")
+    assert rc == 1 and f"MOVER_SKIP reason=multi_mp4 dir={SG_KEYS[0]}" in out
+    v = F.verdict(out.splitlines(), "SGEVAL_MOVE")
+    assert v[""] == "FAIL" and v["skipped"] == "1" and v["left"] == "1"
+    assert (stage / SG_KEYS[0] / "episode.mp4").is_file()
