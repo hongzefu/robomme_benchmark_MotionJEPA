@@ -35,6 +35,8 @@
 > 30. 「就算已经排到卡了本机的第一第二档也要做」——第 27 条里「还是没有卡」的条件取消：本机的第二档、第一档无条件做。执行方对第 27、29 条的理解：GL 仍做全流程（第一档占一席、各席第二档接第三档），本机这一遍是额外的。
 > 31. 「那就在本机先做第一档。旧代码和新代码的生成。然后给一个粗信号然后再做第二档全量的所有除了Astra。gl还是这三档不要不动。越早拍到越早开始」——覆盖第 28、29 条里本机的先后顺序：本机先第一档（旧、新代码各生成一遍），后第二档。此前执行方已说明：本机新代码对 A40 基线比没有意义（判定工具前提是 A40，差异分不清是代码还是显卡），所以本机第一档改为同机旧码对新码。
 > 32. 「本机的动作也不要有任何阻塞」
+> 33. 「第二档你所有的model都要跑!!!!!」；执行方说明本机驱动不够、给出三条路后，用户定「按A做，本机不含Astra」——本机另建一个只换 CUDA 构建的环境跑 PonderPounce。
+> 34. 「现在的SubAgent只能只负责改代码吗?是否可以让SubAgent也负责启动长任务，启动长任务的SubAgent也需要使用Opus。」「放开运行子代理 同步agentmetarules」（已写入正本 `CLAUDE.md`「运行型子代理」，`5697d96`）
 >
 > 沿用的更早决定：「不要下载」已被第 9、13 条对 PonderPounce 权重与 Astra 的放行覆盖，其余资产一律用本机已有副本；「我只关心怎么去改现在的这个 repo，让它和官方的这个 evaluation 是对齐的」仍是接线原则——不改任何第三方模型实现。
 
@@ -92,7 +94,7 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 - 确认步数上限：xhard0 是 1300、V9 是 1600。既核对每条路线从启动命令到 builder、到发给模型的数值，也各用 1 局不加载模型的空动作跑到顶，看实际停在第几步。
 - 确认每条路线（含原侧）每局都存下了压缩视频，能完整解码，帧数与步数对得上。
 - 某条路线报错：修好后重跑，每条路线最多另跑 2 局；用完仍不过就停这条线并记入决策项，其余路线照常上集群。
-- PonderPounce 的官方环境要求显卡驱动不低于 580，本机是 570：先在本机试能否加载，不能就把它的预检改在 GL 节点上做，局数不变。
+- PonderPounce 的官方环境要求显卡驱动不低于 580，本机是 570：本机用只换 CUDA 构建的环境做预检；GL 上的官方环境另在 GL 节点跑 1 局确认能加载。
 - 内存超出已申请席位的规格：只对放不下的那个模型另交更大的 job，其余席位照用。显存超过单张 A40：该模型改用单独的两卡 job。
 
 **第 2.5 步：本机先跑第一档，再跑第二档（无条件做）**
@@ -100,7 +102,7 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 - 时点：本机预检做完就开始，不看 GL 有没有排到卡；GL 排到卡后两边各跑各的，互不等待。
 - 先第一档：在本机用旧代码和新代码各生成一遍 V9 每格 3 局（129 局）和 xhard0 每任务 3 局（48 局），两遍逐局互相比。不拿 GL 的噪声基线比：那份基线是 A40 上做的，本机显卡不同，差异分不清是代码还是显卡。
 - 这只是粗信号：本机没有自己的噪声基线，偶发抖动的局分不清是噪声还是回归；两遍完全一致可以放心，有差异的局只列出来，等 GL 的第一档定性。
-- 后第二档：GroundSG 两组在 xhard0 上跑原侧和新侧，各 192 局，两张卡各跑一个模型。PonderPounce 的官方环境要求驱动不低于 580、本机是 570，开工后先试能否加载，能就照跑 192 局两侧，不能就本机跳过、只在 GL 做。Astra 不跑。
+- 后第二档：GroundSG 两组在 xhard0 上跑原侧和新侧，各 192 局，两张卡各跑一个模型。PonderPounce 也跑，原侧和新侧各 192 局，排在先空出的那张卡后面：它的官方环境要求驱动不低于 580、本机是 570，所以本机单建一个环境，torch 版本号不变，只把 CUDA 13 构建换成 CUDA 12 构建，两侧都用这个环境；GL 上照旧用官方环境。Astra 不跑。
 - 本机这两档同样不阻塞任何事（原话第 32 条）：第一档有差异不拦本机第二档；本机任何结论都不拦 GL，GL 也不等本机。某条线在本机起不来就跳过、记入决策项，下一条照跑。
 - 本机的结果单独成表，标「本机结果」；不替代 GL 的第一、二档，也不影响成绩标注。
 
@@ -166,7 +168,7 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 
 ## 六、子代理分工与合并（简述）
 
-代码按文件切成七块交给写入型子代理，各自在独立 worktree 里改：数据集与删查表、评估客户端与清单、GroundSG 适配、PonderPounce 接入、Astra 接入、启动脚本与转码、对比与报告。前两块都要动步数查表，单独合第一块会让日常测试变红，所以两块各自在 worktree 里写完、审完，然后连着合入、合完两块再跑一次日常门禁并推送；中间三块并行，最后合启动脚本和报告。其余每次合并前由主会话复跑该块测试并派一个只读审查，合并后跑日常门禁再推送。子模块、新环境的依赖声明、契约总表、两份 README、本机预检和全部集群运行由主会话自己做。
+代码按文件切成七块交给写入型子代理，各自在独立 worktree 里改：数据集与删查表、评估客户端与清单、GroundSG 适配、PonderPounce 接入、Astra 接入、启动脚本与转码、对比与报告。前两块都要动步数查表，单独合第一块会让日常测试变红，所以两块各自在 worktree 里写完、审完，然后连着合入、合完两块再跑一次日常门禁并推送；中间三块并行，最后合启动脚本和报告。其余每次合并前由主会话复跑该块测试并派一个只读审查，合并后跑日常门禁再推送。子模块、新环境的依赖声明、契约总表、两份 README 由主会话自己做。长任务（本机预检、本机两档、GL 各席的链）的启动交给运行型子代理：每个只负责把一条写死的命令起起来、确认起跑成功、交回会话名和日志路径；盯盘、预算、Astra 的每一局、占位 job 和清理都留在主会话。
 
 ## 七、已由用户定下、执行方自行处理的事
 
@@ -182,7 +184,7 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 |---|---|---|
 | 1 | 第一块单独合入会让日常测试变红 | 第一、二块连着合入，合完两块再跑门禁 |
 | 2 | 已提交的 9 个占位 job | 保留排队；开工前卡先到则空转，不自动开工 |
-| 3 | PonderPounce 本机驱动不够 | 预检改在 GL 节点做，不换驱动、不换 torch |
+| 3 | PonderPounce 本机驱动不够 | 本机单建环境：torch 版本不变，只换成 CUDA 12 构建，原侧新侧都用它；GL 用官方环境，不换驱动、不换 torch |
 | 4 | Astra 原侧要用它自带的那份官方环境代码 | 允许检出，只供 Astra 原侧；起跑前与本仓库 `src/robomme` 逐文件比对，差异为 0 才跑 |
 | 5 | Qwen3.5-9B 与 PaliGemma 的分词器要下载 | 放行，钉死 40 位版本号 |
 | 6 | Astra 的费用上限 | 只设金额：预检与正式运行合计 30 美元 |
@@ -330,7 +332,7 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 | 新 `scripts/eval-official/pp_official_runner.py` | 原侧。独立进程，只导入官方 `robomme`（同 1.3 的断言）；`RoboMMEBenchmark.configure_render("gpu")` → `RoboMMEBenchmark(tasks=[task], action_space="joint_angle", max_steps=1300)` → 对分片里每个 `source_episode` 调 `SyncEpisodeRunner().run_episode(bench, {**t, "episode_idx": ep}, conn, max_steps=1300, recorder=<固定 sid 的记录器>)`；外围自己处理 `TimeoutError`、`ConnectionClosed`、`RuntimeError` 并 `reconnect`；`SyncEpisodeRunner` 在不带录制库时不出视频，本驱动在外围委托包住 `bench.reset`／`bench.step`，把每步的 `front_rgb_list[-1]` 与腕部画面交给 `trace_writer` 记哈希并写成压缩视频 |
 | 固定 `sid` | xhard0：`<task>|<source_episode>|<seed>`；V9：`<task>|<tier>|<seed>`。两侧各起自己的服务进程，同一 `sid` 在一个进程内只用一次，保证 `n=0`；基础设施重试一律「先由席位脚本重启服务，再重发同一 `sid`」，驱动自己的 `reconnect` 只用于同一局内的断线、不重发 `EPISODE_START`。所有服务显式传 `--args.seed 0` 并记入 `launch.md` |
 | 两卡的含义 | 服务本体单卡放得下、加上仿真渲染才不够：把仿真与客户端进程放到第二张卡。模型本体单卡就放不下：没有切分能力，按第一部分第七节停线 |
-| 预检地点 | 本机驱动 `570.211.01` 低于 CUDA 13 构建要求的 580。开工后先在本机服务环境里跑 `torch.cuda.is_available()` 与一次空前向：通过则预检与本机第二档照跑；不通过则本机全部跳过，预检的 4 局在 GL 节点做（先拿到的那个单卡席位），判读规则与本机预检相同。判定行 `PP_LOCAL=OK|SKIP reason=…` |
+| 预检地点 | 本机驱动 `570.211.01` 低于 CUDA 13 构建要求的 580。本机按用户选定的做法 A：另建 `artifacts/sg-evaluation/pp-local-env/`（`UV_PROJECT_ENVIRONMENT` 指向它，不动 `third_party/PonderPounce/.venv` 与其 `uv.lock`），依赖照官方 `uv.lock` 解析，只把 torch 及其 CUDA 运行库换成**同一 torch 版本号**的 CUDA 12 构建；装好后打印 `torch.__version__`、`torch.version.cuda` 并跑 `torch.cuda.is_available()` 与一次空前向，判定行 `PP_LOCAL_ENV=PASS torch=<版本> cuda=12.x`。该 torch 版本没有 CUDA 12 构建、或空前向失败：本机 PonderPounce 停线并记入决策项（不升驱动、不改模型代码），GL 不受影响。本机的预检 4 局与第二档原侧、新侧都用这个环境；报告里标明「本机 PonderPounce 为 CUDA 12 构建」。GL 用官方环境，另在先拿到的单卡席位上跑 1 局 smoke 确认官方构建能加载（计入 GL smoke） |
 | 步数 | xhard0 两侧都是恰好 1300 个动作（它的官方行为）；V9 `--max-steps 1600 --strict-cap` |
 | 渲染 | 两侧都用 GPU 渲染，与本仓库其他模型一致；与论文的 CPU 渲染设置不同，报告里写明成绩不能直接对照论文数字 |
 | 加速内核 | 预检时装与不装各测 1 局耗时（不装的那一局计入预检局数）；采用哪种由耗时决定，两侧与全部席位一致，并记入留档 |
@@ -413,7 +415,8 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 | 派 S3～S5 之前的准备 | 两个新子模块入库、`client-env` 建好。worktree 里子模块目录为空，S3～S5 的测试用环境变量 `SGEVAL_THIRD_PARTY=<主检出>/third_party` 只读引用官方源码，并打印所读文件的 sha256；`vla_eval`、`swift`、OpenAI 客户端一律用替身。测试里禁止用 `importorskip`／`skip` 绕过缺依赖，缺了就失败 |
 | 判定行由谁打印 | 分配表里每个判定行（`HARD0_INTERFACE`、`STEP_LOOKUP`、`DATASET_ROUTING`、`OFFICIAL_ADAPTER` 等）由该块新增的一个同名测试在通过时 `print`，主会话复跑验收时用 `-s` 取原文 |
 | `scripts/README.md`、`src/robomme_hard/README.md`、`AGENTS.md` 中对 `evaluation_hard.py` 的过期描述、`docs/1002-pending-decisions.md` 的 B5 | 文档 |
-| 资产拷贝与核对、本机预检、全部 GL 运行、留档 | 资源与预算归主会话 |
+| 资产拷贝与核对、留档、全部监听、预算账本、Astra 的每一局、占位 job 的提交与取消、tmux 清理 | 资源与预算归主会话 |
+| 本机预检、本机两档、GL 各席链的**启动** | 交运行型子代理（见第二节末的运行型子任务表）；主会话收回句柄后自己挂监听 |
 
 ## 二、子代理分配表
 
@@ -432,6 +435,21 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 **S1 与 S2 的合并**（用户放行第 1 项）：两块照常各自在 worktree 里写、各自过合并前审查。S1 审查通过后先 `--no-ff` 合入本地工作分支，只跑 S1 的验收路径，**不推送**；随后从这个 HEAD 派 S2（worktree 基于当前 HEAD，S2 看得到 S1 的改动）。S2 审查通过后 `--no-ff` 合入，然后才跑日常门禁并出一条覆盖两次合并的 `POST_MERGE_REVIEW`，PASS 后一次推送。S1 合入到 S2 合入之间本地分支处于「日常门禁已知为红」的状态，期间不推送、不做别的提交（总表同步提交除外）；这是正本第 11 条「立即 push」在本计划内的一次性例外。S2 的可写集合不含 `tests/pipeline/eval/test_seat_scripts.py`、`seat_fake_engine.py`、`test_eval_video_mover.py`（归 S6）。
 
 共享文件裁决：`env_client.py` 只归 S2；两个现有启动器只归 S6；`trace_writer.py` 归 S7，S3～S5 先按 1.7 的字段约定写调用，S7 合入后由主会话核对；各块新增的契约条目写在自己目录的 `contracts.delta.json`，由主会话并入总表。每块合并按 `CLAUDE.md`「计划执行模式」做合并前审查与合并后审查。
+
+**运行型子任务**（`CLAUDE.md`「运行型子代理」；`model: "opus"`，不加 worktree 隔离；只启动、验证起跑、交回句柄；不改文件、不提交或取消作业、不清理 tmux）
+
+| 编号 | 启动什么（命令原文在开工后由主会话按第四、五节填入派发提示，子代理不得改参数） | 位置 | 会话名／资源 | 起跑成功的判据 | 交回 |
+|---|---|---|---|---|---|
+| R1 | 本机预检的非 Astra 路线（每张卡一条串行脚本） | 本机主检出 | tmux `sgev-local-pre-<卡号>`；本机两张卡 | 第一条路线的 `PREFLIGHT=` 行出现，或 15 分钟内无报错且进程存活 | 会话名、日志路径、首批判定行 |
+| R2 | 本机第一档（旧码、新码两遍生成） | 本机主检出 | tmux `sgev-local-g1`；一张卡 | 旧码遍第一局结果行出现 | 同上 |
+| R3 | 本机第二档（每张卡一条 `pair_seat.sh` 链） | 本机主检出 | tmux `sgev-local-g2-<卡号>` | 该链 1 局 smoke 的结果行与 `VIDEO_SAVED=PASS` | 同上 |
+| R4 | GL 某席的链（`seat_chain.sh`，经登录节点 tmux 内 `srun --jobid=<该席 JobID>`） | GL 执行副本 | 登录节点 tmux `sgev-seat-<NN>`；该席的占位 job | `SEAT` 起跑横幅、`--dataset`／`--max-steps` 配对核对通过、1 局 smoke 结果行 | 会话名、JobID、节点、日志路径、首批判定行 |
+| R5 | GL 第一档那一席的生成两遍 | GL 执行副本 | 登录节点 tmux `sgev-gate1` | `IMPORT_CHECK=PASS` 与第一局结果行 | 同上 |
+
+- Astra 的任何运行（本机预检冒烟、GL 第二档、V9 连通）**不交子代理**，由主会话亲自启动：局数逐局审批、花费有上限。
+- 同一决策点可并行派多个运行型子代理（如同时排到的多个席位各派一个 R4）；同一席、同一张本机卡只派一个。
+- 子代理发现命令要改才能跑通：停下交回，由主会话改脚本并提交后重派；执行副本 HEAD 冻结期间的改动按第五节「通用」处理。
+- 被「排到卡即唤醒」叫醒后，主会话按上表派 R4／R5，收回句柄后挂监听并登记 `launch.md`。
 
 ## 三、资产与环境
 
@@ -456,7 +474,7 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 | 生成 smoke | V9 `PickXtimes` xhard1 seed 16100000、xhard0 `PickXtimes` seed 510300，各 1 局 | 与正式遍相同的 `--workers 4` 命令形态（每次只有 1 个身份） |
 | GroundSG + Oracle | 原侧 xhard0 1 局、新侧 xhard0 1 局、新侧 V9 1 局 | 3 局 |
 | GroundSG + QwenVL | 同上 | 3 局 |
-| PonderPounce | 同上，另加「不装加速内核」1 局 | 4 局；本机 `PP_LOCAL=SKIP` 时改在 GL 节点做 |
+| PonderPounce | 同上，另加「不装加速内核」1 局 | 4 局；本机用 `pp-local-env`（CUDA 12 构建），`PP_LOCAL_ENV` 不过则本机停线 |
 | Astra | 原侧 1 局、新侧 1 局；失败可追加，合计 ≤6 局 | 已批；本机只做这一项冒烟，花费计入 30 美元 |
 | 修复后重跑 | 每条非 Astra 路线最多另跑 2 局 | 用完仍不过即停该路线、记入决策项，其余照常 |
 | 步数到顶 | `cap_probe.py`：`test-hard0` 1300 一局、`test-hard` 1600 一局 | 2 局，不加载模型 |
@@ -473,7 +491,7 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 **本机第一档与第二档**（预检后无条件做，先第一档；全程不阻塞）
 
 1. 第一档（粗信号）：旧代码取开工前的 `BASE`（`git worktree add --detach artifacts/sg-evaluation/<run>/old-wt <BASE>`，借主 `.venv`、`PYTHONPATH=<old-wt>/src`，起跑打印 `robomme_hard.__file__`），新代码取接线全部合入后的 HEAD。两侧各跑一遍 `hard_parity.py generate`（V9 `--side H2 --tier v9` 129 局、xhard0 `--side H --tier xhard0` 48 局，`--workers 4`，同一张卡、先旧后新）。对比用逐局 h5 摘要直接互比，不调用 `noise_gate.py gen-regress check`（它的前提是 A40）。判定行 `LOCAL_GEN_DIFF=INFO set=… compared=<n> identical=<n> differ=<n>`；`differ>0` 只列清单，等 GL 第一档定性。跑完删 `old-wt`。
-2. 第二档：`eval_manifest.py --mode hard0 --shards 2 --pair-shards`；两张卡各一条 `pair_seat.sh` 链，GroundSG-Oracle 与 GroundSG-QwenVL 各占一张；`PP_LOCAL=OK` 时 PonderPounce 排在先空出的那张卡后面。输出落 `artifacts/sg-evaluation/<run>/local/`，判定行 `GATE2=INFO site=local …`。Astra 不跑。
+2. 第二档：`eval_manifest.py --mode hard0 --shards 2 --pair-shards`；两张卡各一条 `pair_seat.sh` 链，GroundSG-Oracle 与 GroundSG-QwenVL 各占一张；PonderPounce（`pp-local-env`）排在先空出的那张卡后面，原侧、新侧各 192 局；`PP_LOCAL_ENV` 不过则跳过并记入决策项。输出落 `artifacts/sg-evaluation/<run>/local/`，判定行 `GATE2=INFO site=local …`。Astra 不跑。
 3. 本机长任务进 tmux（前缀 `sgev-local-`），各挂一个监听；本机这两档与 GL 的运行互不等待，结论都只进「本机结果」一节。
 
 ## 五、闸门与运行手册
@@ -551,7 +569,7 @@ sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=
 | 预检修复后重跑 | 非 Astra 路线 13 条（生成 2、GroundSG 6、PonderPounce 3、步数到顶 2）× ≤2 局 | 26 | 78 |
 | 本机第一档（旧码对新码） | 2 代码侧 ×（V9 43 格 × 3 局 + xhard0 16 任务 × 3 局） | 354 | 1062 |
 | 本机第二档 GroundSG | 2 模型 × 2 侧 × 16 任务 × 1 档 × 12 局 | 768 | 1536 |
-| 本机第二档 PonderPounce（本机能加载才跑） | 1 模型 × 2 侧 × 16 任务 × 1 档 × 12 局 | 384 | 768 |
+| 本机第二档 PonderPounce（CUDA 12 构建的本机环境） | 1 模型 × 2 侧 × 16 任务 × 1 档 × 12 局 | 384 | 768 |
 | GL smoke（非 Astra） | 3 模型 × 3 路线 × 1 局 | 9 | 18 |
 | GL 第二档 | 3 模型 × 2 侧 × 16 任务 × 1 档 × 12 局 | 1152 | 2304 |
 | GL 第三档 | 3 模型 × 800 局（乘式见第一部分） | 2400 | 4800 |
@@ -565,7 +583,7 @@ sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=
 
 ## 七、风险与盲区
 
-- **PonderPounce 的 CUDA 13 构建**：本机驱动 `570.211.01` 低于其要求的 580，本机大概率加载不了（届时本机跳过）；GL 驱动上能否加载未验证；**PaliGemma 分词器**需要访问许可；**显存**（官方称单服务至少 32 GB）与同卡仿真渲染能否共存于 A40 未验证。三项都在预检第一步暴露。
+- **PonderPounce 的 CUDA 13 构建**：本机驱动 `570.211.01` 低于其要求的 580，本机改用同版本 torch 的 CUDA 12 构建，这个构建是否存在、能否跑通未验证；GL 驱动上能否加载未验证；**PaliGemma 分词器**需要访问许可；**显存**（官方称单服务至少 32 GB）与同卡仿真渲染能否共存于 A40 未验证。三项都在预检第一步暴露。
 - **`flash-attn` 编译**在本机与 GL 节点架构上未验证；QwenVL 与 Astra 监视器都硬依赖它。
 - **GL 计算节点到 OpenAI 的连通性**未验证（登录节点已通）；Astra 起跑前在节点上先查一次。
 - **Astra 每局的规划次数**没有实测，估计每局 2～10 次、上限 24 次；记忆页多的任务请求体很大，接口对图像数量的限制未知。
