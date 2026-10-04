@@ -1107,8 +1107,19 @@ def _first_diff_index(left, right) -> int | None:
     return int(diff[0] // itemsize)
 
 
+def _attr_mismatches(name: str, left_attrs: dict, right_attrs: dict) -> list[dict[str, object]]:
+    """一个对象（根组、组或数据集）的属性比较：键集合不同记一条 attr_keys，键同则逐键比原始字节记 attr_value。"""
+    if set(left_attrs) != set(right_attrs):
+        return [{"path": name, "kind": "attr_keys"}]
+    return [{"path": f"{name}@{key}", "kind": "attr_value"}
+            for key in sorted(left_attrs) if _attr_bytes(left_attrs[key]) != _attr_bytes(right_attrs[key])]
+
+
 def compare_h5_pair(left: Path, right: Path) -> dict[str, object]:
-    """两层比较：先整文件 SHA-256，不同再用 h5py 递归逐字段比原始字节。"""
+    """两层比较：先整文件 SHA-256，不同再用 h5py 递归逐字段比原始字节。
+
+    属性比较覆盖根组（路径记 ``/``，``visititems`` 不访问根）与所有组、数据集；属性不同与字段不同同口径计入
+    ``field_mismatch``。"""
     import h5py
 
     result: dict[str, object] = {
@@ -1151,17 +1162,14 @@ def compare_h5_pair(left: Path, right: Path) -> dict[str, object]:
         if left_steps != right_steps:
             result["field_mismatch"] = int(result["field_mismatch"]) + 1
 
-        mismatches: list[dict[str, object]] = []
+        # 根组属性单独比：visititems 不访问根，旧版只比到子组／数据集
+        mismatches: list[dict[str, object]] = _attr_mismatches("/", dict(lf.attrs), dict(rf.attrs))
         for name in sorted(set(left_paths) & set(right_paths)):
             left_obj, right_obj = lf[name], rf[name]
-            left_attrs = dict(left_obj.attrs)
-            right_attrs = dict(right_obj.attrs)
-            if set(left_attrs) != set(right_attrs):
-                mismatches.append({"path": name, "kind": "attr_keys"})
-                continue
-            for key in sorted(left_attrs):
-                if _attr_bytes(left_attrs[key]) != _attr_bytes(right_attrs[key]):
-                    mismatches.append({"path": f"{name}@{key}", "kind": "attr_value"})
+            attr_diff = _attr_mismatches(name, dict(left_obj.attrs), dict(right_obj.attrs))
+            mismatches += attr_diff
+            if attr_diff and attr_diff[0]["kind"] == "attr_keys":
+                continue  # 与旧版一致：属性键集合不同即不再比该对象的值
             if left_paths[name] == "dataset":
                 if left_obj.dtype != right_obj.dtype or left_obj.shape != right_obj.shape:
                     mismatches.append(

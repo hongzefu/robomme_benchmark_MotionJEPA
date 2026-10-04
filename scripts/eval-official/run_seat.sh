@@ -27,6 +27,8 @@
 #       单局墙钟 smvla 600 s、mme 900 s → 基础设施超时（客户端退出 75，本脚本重起客户端）；
 #       progress.json 20 min 不更新 → 杀掉 server 与客户端重起一次；server 中途死亡 → 重起（最多 2 次）。
 # 日志：<out>/seat-<seat>.log，末行 EXIT_CODE=<rc>。
+# 轮询间隔：看门狗主循环读环境变量 SEAT_POLL_S（默认 10 s），等 server 就绪读 SEAT_READY_POLL_S（默认 2 s）；
+#       不设时与旧版写死的 10 s／2 s 完全相同，只供测试缩短等待。
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -44,6 +46,7 @@ TOKENIZER_REL="big_vision/paligemma_tokenizer.model"
 MME_CKPT="${MME_CKPT:-/data/hongzefu/robomme_policy_learning_MotionJEPA/v1-store/models/official-mme-vla/perceptual-framesamp-modul/79999}"
 SMVLA_CKPT="${SMVLA_CKPT:-/nfs/turbo/coe-chaijy-unreplicated/hongzefu/SimpleMemVLA/checkpoints/simplememvla_robomme}"
 READY_TIMEOUT=1200 ; FIRST_EXTRA=600 ; NOPROG_S=1200 ; MAX_CLIENT_RESTARTS=8 ; MAX_SERVER_RESTARTS=2
+SEAT_POLL_S="${SEAT_POLL_S:-10}" ; SEAT_READY_POLL_S="${SEAT_READY_POLL_S:-2}"  # 轮询间隔（秒），默认同旧版
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -247,7 +250,7 @@ start_server() {  # $1 = 策略；$2 = 端口；$3 = 日志
     if (( $(ts) - t0 > READY_TIMEOUT )); then
       echo "SERVER_READY_TIMEOUT policy=$pol port=$port limit_s=$READY_TIMEOUT"; stop_server; return 1
     fi
-    sleep 2 & wait $!
+    sleep "$SEAT_READY_POLL_S" & wait $!
   done
   echo "SERVER_READY policy=$pol port=$port ready_s=$(( $(ts) - t0 ))"
   FRESH_SERVER=1  # 下一个客户端的第一局享受首次推理放宽
@@ -417,7 +420,7 @@ policy_loop() {  # $1 策略 $2 server 端口 $3 客户端端口；返回 0 完�
       start_client "$pol" "$cport"
       continue
     fi
-    sleep 10 & wait $!  # 后台 sleep + wait：收到 SIGTERM 时 trap 立即生效
+    sleep "$SEAT_POLL_S" & wait $!  # 后台 sleep + wait：收到 SIGTERM 时 trap 立即生效
   done
   return 0
 }
