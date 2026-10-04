@@ -36,7 +36,7 @@ def test_reset_returns_env_output_unchanged_and_switches_phase():
     for k in want:
         assert all(np.array_equal(x, y) for x, y in zip(obs[k], want[k]))
     assert info["task_goal"][0] == "goal-T-5" and s.task_goal == "goal-T-5"
-    assert b.calls == [(5, 37)]  # build 一次，max_steps 原样交给 builder
+    assert b.calls == [(5, None)]  # build 一次；步数不逐局传，由 builder 构造参数决定
     assert rec.phases == ["reset", "reset", "run"]  # build、reset 期间只入队，reset 返回后切 run
     assert rec.frames == {"front": F.N_RESET_FRAMES, "wrist": F.N_RESET_FRAMES}
     assert s.timing["demo_frames"] == F.N_RESET_FRAMES - 1
@@ -131,3 +131,17 @@ def test_close_is_safe_and_releases_env():
     assert b.env.closed is True and s.env is None
     assert s.timing["step_n"] == 1
     s.close()  # 再次 close 不抛
+
+
+def test_own_builder_uses_dataset_and_max_steps():
+    """不注入 builder 时按 dataset 与 max_steps 自建真实 builder（只解析身份，不建场景）；缺 max_steps 即拒绝。"""
+    ec = F.env_client()
+    s = ec.EnvSession("PickXtimes", 0, max_steps=1300, dataset="test-hard0")
+    assert s.builder.dataset == "test-hard0"
+    assert s.identity()["tier"] == "xhard0"
+    s9 = ec.EnvSession("PickXtimes", 0, max_steps=1600)  # 默认 test-hard（V9 不变）
+    assert s9.builder.dataset == "test-hard"
+    with pytest.raises(ValueError, match="max_steps"):
+        _ = ec.EnvSession("PickXtimes", 0, dataset="test-hard0").builder
+    with pytest.raises(ValueError):
+        ec.EnvSession("PickXtimes", 0, max_steps=1300, dataset="test")

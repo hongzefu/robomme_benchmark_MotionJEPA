@@ -257,9 +257,46 @@ def test_load_identities_accepts_clean_rows_and_only_filter(tmp_path):
     assert [r["key"] for r in ec.load_identities(args)] == [b["key"]]
 
 
-def test_v8_args_required(capsys):
+_BASE = ["run", "--identities", "x.json", "--cond", "c", "--seat", "s", "--port", "1", "--out", "o"]
+_LEDGER = ["--ledger", "l.jsonl", "--reset-budget", "10", "--infra-retry-budget", "1"]
+
+
+@pytest.mark.parametrize("drop", ["--dataset", "--max-steps"])
+def test_dataset_and_max_steps_have_no_default(drop):
+    """--dataset 与 --max-steps 都必填、无默认值：缺任一即参数错误（argparse 退出 2）。"""
     ec = F.env_client()
-    args = ec.build_parser().parse_args(["run", "--policy", "mme", "--identities", "x.json", "--cond", "c",
-                                         "--seat", "s", "--port", "1", "--out", "o", "--v8"])
-    assert ec.cmd_run(args) == ec.EXIT_BLOCKED
-    assert "RUN_BLOCKED reason=args" in capsys.readouterr().out
+    argv = _BASE + ["--policy", "mme", "--dataset", "test-hard0", "--max-steps", "1300"] + _LEDGER
+    i = argv.index(drop)
+    with pytest.raises(SystemExit) as ei:
+        ec.build_parser().parse_args(argv[:i] + argv[i + 2:])
+    assert ei.value.code == 2
+
+
+@pytest.mark.parametrize("extra,why", [
+    (["--policy", "mme", "--dataset", "test-hard", "--max-steps", "1600"], "必须给 --ledger"),
+    (["--policy", "mmesg", "--dataset", "test-hard0", "--max-steps", "1300", *_LEDGER], "--mme-variant"),
+    (["--policy", "mmesg", "--dataset", "test-hard0", "--max-steps", "1300", "--mme-variant", "ground-sg-qwenvl",
+      *_LEDGER], "--qwenvl-groundsg-adapter"),
+    (["--policy", "mme", "--dataset", "test-hard0", "--max-steps", "1300", "--mme-variant", "ground-sg-oracle",
+      *_LEDGER], "只能与 --policy mmesg"),
+    (["--policy", "mmesg", "--dataset", "test-hard0", "--max-steps", "1300", "--mme-variant", "ground-sg-oracle",
+      "--qwenvl-groundsg-adapter", "a", *_LEDGER], "只能与 --mme-variant ground-sg-qwenvl"),
+    (["--policy", "pp", "--dataset", "test-hard0", "--max-steps", "0", *_LEDGER], "--max-steps 必须是正整数"),
+], ids=["no_ledger", "mmesg_no_variant", "qwenvl_no_adapter", "variant_on_mme", "adapter_on_oracle", "zero_steps"])
+def test_run_args_blocked(capsys, extra, why):
+    ec = F.env_client()
+    args = ec.build_parser().parse_args(_BASE + extra)
+    assert ec.cmd_run(args) == 3
+    out = capsys.readouterr().out
+    assert "RUN_BLOCKED reason=args" in out and why in out
+
+
+def test_run_args_accept_all_four_policies():
+    ec = F.env_client()
+    for pol, extra in (("mme", []), ("smvla", []), ("pp", []),
+                       ("mmesg", ["--mme-variant", "ground-sg-oracle"]),
+                       ("mmesg", ["--mme-variant", "ground-sg-qwenvl", "--qwenvl-groundsg-adapter", "/x"])):
+        args = ec.build_parser().parse_args(_BASE + ["--policy", pol, "--dataset", "test-hard0", "--max-steps",
+                                                     "1300", *_LEDGER, *extra])
+        assert ec.check_run_args(args, need_identities=True) is None, pol
+        assert args.strict_cap is False

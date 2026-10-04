@@ -27,7 +27,8 @@ def _ik():
 
 # 期望表：plans 为同一身份逐次尝试的环境行为；outcome 为报告里该身份的结局；
 # attempts／accepts 为账本 attempt_start／accept 行数；abandoned 为报告单列的废弃尝试数；
-# cov／rep 为两行判定的 PASS 与否；exit 为客户端退出码（SystemExit 码）。
+# cov／rep 为两行判定的 PASS 与否；exit 为客户端退出码（run_identities 返回值或 SystemExit 码：6 = 跑完仍有身份
+# 无权威终态，5 = reset 额度耗尽）。
 SCENARIOS = {
     "success": dict(plans=[F.Plan(success_at=3)], outcome="success", attempts=1, accepts=1, abandoned=0,
                     cov=True, rep=True, exit=0),
@@ -40,7 +41,7 @@ SCENARIOS = {
     "step_infra_retry": dict(plans=[F.Plan(raise_at=2, raise_exc=_svulkan), F.Plan(success_at=3)],
                              outcome="success", attempts=2, accepts=1, abandoned=1, cov=True, rep=True, exit=0),
     "server_disconnect": dict(plans=[F.Plan(success_at=3)], server="infer_disconnect", outcome="missing",
-                              attempts=2, accepts=0, abandoned=2, cov=False, rep=True, exit=0),
+                              attempts=2, accepts=0, abandoned=2, cov=False, rep=True, exit=6),
     "reset_budget": dict(plans=[F.Plan(success_at=3)], reset_budget=1, outcome="missing", attempts=1, accepts=0,
                          abandoned=1, cov=False, rep=True, exit=5),
 }
@@ -109,15 +110,18 @@ def test_seat_runner_to_report(tmp_path, monkeypatch, capsys, policy, name):
 
 @pytest.mark.parametrize("policy", POLICIES)
 def test_cap_timeout_never_steps_past_cap(tmp_path, monkeypatch, capsys, policy):
-    """上限超时：环境恰好执行 TIER_MAX_STEPS[tier] 步，第 cap+1 次 step 不进入环境；按 timeout 计、不算基础设施。"""
+    """test-hard（--max-steps 1600 --strict-cap）上限超时：环境恰好执行 1600 步，第 1601 次 step 不进入环境；
+    按 timeout 计、不算基础设施。"""
     r = _run_scenario(tmp_path, monkeypatch, capsys, policy, "cap_timeout")
-    cap = F.tier_cap(r["ident"]["tier"])
+    cap = 1600
     (env,) = r["world"].envs
     assert env.n == cap
     (row,) = r["results"]
     assert row["status"] == "timeout" and row["cap_hit"] is True and row["infra"] is False
-    assert row["exec_steps"] == cap and row["effective_max_steps"] == cap
-    assert r["world"].make_calls[0][2] == cap  # make_env_for_episode 拿到的就是该档上限
+    assert row["exec_steps"] == cap and row["max_steps"] == row["effective_max_steps"] == cap
+    assert row["dataset"] == "test-hard" and row["strict_cap"] is True
+    assert r["world"].builders[0].max_steps == cap  # builder 构造参数即 --max-steps
+    assert r["world"].make_calls[0][2] is None  # make_env_for_episode 不再逐局传步数
 
 
 @pytest.mark.parametrize("policy", POLICIES)
