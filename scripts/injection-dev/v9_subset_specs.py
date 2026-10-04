@@ -200,9 +200,12 @@ def fail(prefix: str, problems: list[str], extra: str = "") -> int:
 
 def subset_cells(target: dict[tuple[str, str], int] | None = None,
                  source: dict[tuple[str, str], int] | None = None) -> dict[tuple[str, str], int]:
-    """derive 的目标格表：V9 表去掉整任务重抽的 MoveCube；InsertPeg 取 V8 交付局数（20）。"""
+    """derive 的目标格表：V9 表去掉整任务重抽的 MoveCube；InsertPeg 取 V8 交付局数（20）。
+    ``source``（V8 格表）缺省值原为 V8 1070 局表，该表已删除，现须显式传入。"""
     target = dict(H.V9_CELLS if target is None else target)
-    source = dict(H.V8_CELLS if source is None else source)
+    if source is None:
+        raise SubsetError("subset_cells：V8 1070 局格表已于维护计划阶段 1b（W4）删除，须显式传入 V8 格表（source）")
+    source = dict(source)
     out = {k: n for k, n in target.items() if k[0] not in NEW_TASKS}
     for key in list(out):
         if key[0] in EXTEND_TASKS:
@@ -213,8 +216,11 @@ def subset_cells(target: dict[tuple[str, str], int] | None = None,
 def derive(v8_root: Path, v8_delivery: Path, out: Path, *, source_cells: dict[tuple[str, str], int] | None = None,
            target_cells: dict[tuple[str, str], int] | None = None,
            cell_table: dict[tuple[str, str], int] | None = None) -> dict[str, Any]:
-    """V8 规格根 + gen1 交付清单 → 子集规格根（只写 ``out``）。返回 {line, picks, problems, ...}。"""
-    source_cells = _rollout.order_cells(dict(H.V8_CELLS if source_cells is None else source_cells))
+    """V8 规格根 + gen1 交付清单 → 子集规格根（只写 ``out``）。返回 {line, picks, problems, ...}。
+    ``source_cells``（V8 格表）缺省值原为 V8 1070 局表，该表已删除，现须显式传入。"""
+    if source_cells is None:
+        raise SubsetError("derive：V8 1070 局格表已于维护计划阶段 1b（W4）删除，须显式传入 V8 格表（source_cells）")
+    source_cells = _rollout.order_cells(dict(source_cells))
     target_cells = subset_cells(target_cells, source_cells) if target_cells is None else _rollout.order_cells(target_cells)
     table = H.V9_CELLS if cell_table is None else cell_table
     stray = sorted(k for k in target_cells if k not in source_cells)
@@ -863,7 +869,9 @@ def verify(v8_root: Path, v8_delivery: Path, v9_root: Path, v9_delivery: Path, v
     """复用局逐字节核对：规格行（除 selected 外逐字段）、h5（清单 sha 相等 + 交付树文件与 V8 文件同 inode；
     ``rehash_h5`` 另重算）、mp4（交付树文件与 V8 主视频同 inode 且重算 sha 等于清单 ``video_sha256``）；
     每格复用局 = V8 交付行候选号最小的 min(N_v9, N_v8) 个。"""
-    v8_cells = _rollout.order_cells(dict(H.V8_CELLS if v8_cells is None else v8_cells))
+    if v8_cells is None:
+        raise SubsetError("verify：V8 1070 局格表已于维护计划阶段 1b（W4）删除，须显式传入 V8 格表（v8_cells）")
+    v8_cells = _rollout.order_cells(dict(v8_cells))
     v9_cells = _rollout.order_cells(dict(H.V9_CELLS if v9_cells is None else v9_cells))
     v8 = H.load_specs_v8(v8_root, v8_cells, cell_table=H.resolve_cell_table(v8_cells), check_fingerprint=False)
     v9 = H.load_specs_v8(v9_root, v9_cells, cell_table=H.V9_CELLS, check_fingerprint=False)

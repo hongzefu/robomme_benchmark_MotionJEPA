@@ -242,16 +242,12 @@ def rows_for(tier: str, manifest: Path) -> list[dict[str, Any]]:
     raise ParityError(f"未知档 {tier!r}（只支持 {TIERS}）")
 
 
-#: 2b 冒烟 7 格（v8 方案第一部分 §3「最小冒烟」）：每格 1 局
-V8_SMOKE_CELLS = {("StopCube", "xhard1"): 1, ("StopCube", "xhard5"): 1, ("SwingXtimes", "xhard5"): 1,
-                  ("VideoUnmask", "xhard1"): 1, ("RouteStick", "xhard2"): 1, ("PatternLock", "xhard3"): 1,
-                  ("PickXtimes", "xhard3"): 1}
 #: v9 具名格表（与 ``scripts/injection-dev/_rollout.py`` 的 ``V9_SMOKE_CELLS``／``V9_SHARD_TASKS`` 同值，测试逐项核对；
 #: 本模块只用标准库、不导入 robomme_hard 包，故不 import _rollout）
 V9_SMOKE_CELLS = {("MoveCube", "xhard4"): 1, ("InsertPeg", "xhard4"): 1}
 V9_SHARD_TASKS = {"shard1": ("MoveCube",)}
-#: ``--cells`` 具名格表；``full`` 另跟随当前 ``hard_specs.EXPECTED_CELLS``（v9 阶段 3b 切换后即 V9）
-CELL_NAMES_V8 = ("v8full", "smoke")
+#: ``--cells`` 具名格表；``full`` 另跟随当前 ``hard_specs.EXPECTED_CELLS``（v9 阶段 3b 切换后即 V9）。
+#: V8 专用的 ``v8full``（V8 1070 局表）与 ``smoke``（V8 2b 冒烟 7 格）已于维护计划阶段 1b（W4）删除。
 CELL_NAMES_V9 = ("v9full", "v9", "v9smoke", *(f"v9{name}" for name in V9_SHARD_TASKS))
 
 
@@ -261,7 +257,7 @@ def _fits(cells: dict[tuple[str, str], int], table: dict[tuple[str, str], int]) 
 
 
 def table_version(table: dict[tuple[str, str], int], hs=None) -> str:
-    """完整交付格表 → 版本名（``hard_specs.CELL_TABLES`` 的键，``v8``／``v9``）；按值比较。"""
+    """完整交付格表 → 版本名（``hard_specs.CELL_TABLES`` 的键，现只有 ``v9``）；按值比较。"""
     hs = hs or hard_specs_light()
     for name, known in hs.CELL_TABLES.items():
         if known == table:
@@ -276,13 +272,13 @@ def expected_version(hs=None) -> str:
 
 
 def cells_version(cells: dict[tuple[str, str], int], hs=None) -> str:
-    """（子）格表 → 版本：与某张完整表逐格相等即该版本；否则能被 V8_CELLS 覆盖判 v8（与 EXPECTED_CELLS 是否已切换
-    无关，结果确定），只有 V9_CELLS 能覆盖（如 MoveCube／InsertPeg 50）判 v9；都不覆盖时取当前 EXPECTED 版本。"""
+    """（子）格表 → 版本：与某张完整表逐格相等即该版本；否则能被 V9_CELLS 覆盖判 v9；都不覆盖时取当前 EXPECTED 版本。
+    （原先先判 V8 1070 局表覆盖为 v8；V8 表已于维护计划阶段 1b 删除。）"""
     hs = hs or hard_specs_light()
     for name, table in hs.CELL_TABLES.items():
         if cells == table:
             return name
-    for name in ("v8", "v9"):
+    for name in ("v9",):
         if _fits(cells, hs.CELL_TABLES[name]):
             return name
     return expected_version(hs)
@@ -291,21 +287,17 @@ def cells_version(cells: dict[tuple[str, str], int], hs=None) -> str:
 def parse_cells_versioned(spec: str | None, hs=None) -> tuple[dict[tuple[str, str], int], str]:
     """``--cells`` → ``(格表, 版本)``。名字：
 
-    * ``full``：当前 ``hard_specs.EXPECTED_CELLS``（v9 阶段 3b 切换前 = V8_CELLS 1070，切换后 = V9_CELLS 800）；
-    * ``v8full``：V8_CELLS（43 格 1070）；``smoke``：v8 2b 冒烟 7 格各 1 局；
+    * ``full``：当前 ``hard_specs.EXPECTED_CELLS``（v9 阶段 3b 切换后 = V9_CELLS 800）；
     * ``v9full``／``v9``：V9_CELLS（43 格 800）；``v9smoke``：MoveCube／InsertPeg 的 xhard4 各 1 局；
       ``v9shard1``：V9 MoveCube 一片（局数取 V9_CELLS）；
     * JSON（文件路径或内联文本）：``{"<task>/<tier>": n}``、``{"<task>@<tier>": n}``、``{task: {tier: n}}``、
       ``[[task, tier, n], ...]``、``[{"task", "tier", "n"|"count"}, ...]`` 或 ``{"cells": [...]}``；整张子表必须能被
-      V8_CELLS 或 V9_CELLS 之一覆盖（键在表内、局数为不超过表值的正整数），版本见 :func:`cells_version`。"""
+      V9_CELLS 覆盖（键在表内、局数为不超过表值的正整数），版本见 :func:`cells_version`。
+    V8 专用的 ``v8full``／``smoke`` 已删除。"""
     hs = hs or hard_specs_light()
     spec = spec or "full"
     if spec == "full":
         return dict(hs.EXPECTED_CELLS), expected_version(hs)
-    if spec == "v8full":
-        return dict(hs.V8_CELLS), "v8"
-    if spec == "smoke":
-        return dict(V8_SMOKE_CELLS), "v8"
     if spec in ("v9full", "v9"):
         return dict(hs.V9_CELLS), "v9"
     if spec == "v9smoke":
@@ -316,7 +308,7 @@ def parse_cells_versioned(spec: str | None, hs=None) -> tuple[dict[tuple[str, st
     try:
         payload = json.loads(text)
     except ValueError as exc:
-        raise ParityError(f"--cells 须为 full／{'／'.join(CELL_NAMES_V8 + CELL_NAMES_V9)} 或格表 JSON：{spec!r}") from exc
+        raise ParityError(f"--cells 须为 full／{'／'.join(CELL_NAMES_V9)} 或格表 JSON：{spec!r}") from exc
     if isinstance(payload, dict) and isinstance(payload.get("cells"), list):
         payload = payload["cells"]
     cells: dict[tuple[str, str], int] = {}
@@ -336,13 +328,12 @@ def parse_cells_versioned(spec: str | None, hs=None) -> tuple[dict[tuple[str, st
             else:
                 task, tier, n = item
                 cells[(task, tier)] = n
-    if not any(_fits(cells, hs.CELL_TABLES[name]) for name in ("v8", "v9")):
-        union = set(hs.V8_CELLS) | set(hs.V9_CELLS)
+    if not _fits(cells, hs.CELL_TABLES["v9"]):
         bad = {k: v for k, v in cells.items()
-               if k not in union or not isinstance(v, int) or isinstance(v, bool)
-               or not 0 < v <= max(hs.V8_CELLS.get(k, 0), hs.V9_CELLS.get(k, 0))}
-        raise ParityError("格表非法（须为 V8_CELLS 或 V9_CELLS 之一的非空子集、局数为不超过该表的正整数）："
-                          f"{bad or ('空' if not cells else '跨表混用')}")
+               if k not in hs.V9_CELLS or not isinstance(v, int) or isinstance(v, bool)
+               or not 0 < v <= hs.V9_CELLS[k]}
+        raise ParityError("格表非法（须为 V9_CELLS 的非空子集、局数为不超过该表的正整数）："
+                          f"{bad or '空'}")
     return cells, cells_version(cells, hs)
 
 
@@ -380,8 +371,7 @@ def root_cell_table(specs_root: str | Path, hs=None) -> tuple[str, dict[tuple[st
 
 def load_specs_any(path: str | Path, hs=None, *, check_fingerprint: bool = False):
     """单文件读取（同 ``_rollout.load_specs_any``）：/4 文件的配额上限格表按 header 自带的逐任务配额推出
-    （``hard_specs.header_cell_table``：V8 文件落 V8_CELLS、MoveCube／InsertPeg 50 的 V9 文件落 V9_CELLS），
-    不受 ``EXPECTED_CELLS`` 是否已切换影响；/2、/3 文件照旧。"""
+    （``hard_specs.header_cell_table``：V9 文件落 V9_CELLS）；/2、/3 文件已不再支持。"""
     hs = hs or hard_specs_light()
     with Path(path).open(encoding="utf-8") as stream:
         first = stream.readline()

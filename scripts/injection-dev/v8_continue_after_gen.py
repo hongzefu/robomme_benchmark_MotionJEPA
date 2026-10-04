@@ -15,9 +15,9 @@
 5. ``site_check``／``oracle_check``：两个浏览器检查器 → ``V8_SITE=PASS``、``V8_ORACLE_BROWSER=PASS``。
 6. ``stop_serve``：finally 中收掉服务进程组（SIGTERM → 5 秒 → SIGKILL）；SIGTERM／SIGHUP／SIGINT 同样走 finally。
 
-**格表**（v9 方案 §2.1 S1-E）：``--cells full``／``v8``（缺省，``V8_CELLS``）｜``v9``（``V9_CELLS``）｜
-``{"Task/tier": n}`` JSON 文件。期望格数由格表推出；非 V8 完整表时写 ``<work-dir>/cells.json`` 传给 catalog
-（``--cells-json``）。
+**格表**（v9 方案 §2.1 S1-E）：``--cells v9``（缺省，``V9_CELLS``）｜``{"Task/tier": n}`` JSON 文件。
+期望格数由格表推出；格表一律写 ``<work-dir>/cells.json`` 传给 catalog（``--cells-json``）。V8 专用的
+``full``／``v8``（V8 1070 局表）已于维护计划阶段 1b（W4）删除。
 
 **V9 建站**：``--site-dir`` 指向 V9 独立目录（如 ``artifacts/newtask-v9/site``，已有本轮产物时按 progress 指纹复用，
 非空且无可复用记录即 FAIL，不覆盖）；``--eval-reuse <V8 site-eval 目录>`` ``--reused <reused.json>``
@@ -173,12 +173,11 @@ def load_catalog_module():
     return module
 
 
-def parse_cells_arg(spec: str, full: dict[tuple[str, str], int],
-                    v9: dict[tuple[str, str], int] | None = None) -> dict[tuple[str, str], int]:
-    """``full``／``v8``（V8 完整格表）、``v9``（V9 完整格表）或 JSON 文件（``{"Task/tier": n}``，与 catalog
-    ``--cells-json`` 同形态）。"""
+def parse_cells_arg(spec: str, v9: dict[tuple[str, str], int] | None = None) -> dict[tuple[str, str], int]:
+    """``v9``（V9 完整格表）或 JSON 文件（``{"Task/tier": n}``，与 catalog ``--cells-json`` 同形态）。
+    V8 专用的 ``full``／``v8`` 已删除，给出即报错。"""
     if spec in ("full", "v8"):
-        return dict(full)
+        raise SystemExit(f"--cells {spec} 只服务 V8（1070 局表），已删除；请用 v9 或 JSON 文件")
     if spec == "v9":
         if v9 is None:
             raise SystemExit("--cells v9 需要 V9_CELLS")
@@ -553,17 +552,17 @@ def cells_help() -> str:
         H = load_catalog_module().load_hard_specs()
         n_x0 = len(H.ALL_TASKS) * 12
         desc = [f"{name}（{len(t)} 格 {sum(t.values())} 局 + xhard0 {n_x0} = {sum(t.values()) + n_x0}）"
-                for name, t in (("full／v8", H.V8_CELLS), ("v9", H.V9_CELLS))]
+                for name, t in (("v9", H.V9_CELLS),)]
     except Exception:  # 帮助文字不因格表加载失败而报错
-        desc = ["full／v8（V8_CELLS）", "v9（V9_CELLS）"]
-    return "｜".join(desc) + "｜{\"Task/tier\": n} JSON 文件；缺省 full（V8）"
+        desc = ["v9（V9_CELLS）"]
+    return "｜".join(desc) + "｜{\"Task/tier\": n} JSON 文件；缺省 v9（V8 专用的 full／v8 已删除）"
 
 
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--delivery", required=True, help="交付清单 delivery.json（V9 为 assemble 写出的清单；只读行数并透传 catalog）")
     ap.add_argument("--specs-root", required=True, help="/4 规格根（透传 catalog／subgoals）")
-    ap.add_argument("--cells", default="full", help=cells_help())
+    ap.add_argument("--cells", default="v9", help=cells_help())
     ap.add_argument("--work-dir", required=True, help="进度、日志、报告目录（同一次建站复用同一目录）")
     ap.add_argument("--site-dir", required=True,
                     help="站点输出目录（V8 artifacts/newtask-v8/site、V9 artifacts/newtask-v9/site；首次须不存在或为空，"
@@ -618,7 +617,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     C = load_catalog_module()
     H = C.load_hard_specs()
-    cells = parse_cells_arg(args.cells, dict(H.V8_CELLS), dict(H.V9_CELLS))
+    cells = parse_cells_arg(args.cells, dict(H.V9_CELLS))
     # V9 透传参数（复用 + 新评）：参数不全或 reused.json 不可读在 refuse 定义后拒绝
     v9_eval = bool(args.eval_reuse or args.reused or args.eval_new)
     preflight = None
@@ -647,7 +646,6 @@ def main(argv: list[str] | None = None) -> int:
             raise SystemExit(f"--step-timeout 须为 STEP=SECONDS，STEP ∈ {sorted(timeouts)}：{item!r}")
         timeouts[step] = float(sec)
     runner = Runner(args)
-    full = cells == dict(H.V8_CELLS)
     def refuse(step: str) -> int:
         """拒绝执行（参数／报告身份冲突）：退出码 2。"""
         runner.step, runner.status = step, "aborted"
@@ -656,20 +654,19 @@ def main(argv: list[str] | None = None) -> int:
     if preflight is not None:
         print(f"V8_CONTINUE=FAIL step=preflight reason={preflight}", flush=True)
         return refuse("preflight")
-    cells_json = None
-    if not full:
-        cells_json = work / "cells.json"
-        text = json.dumps({f"{t}/{tier}": n for (t, tier), n in sorted(cells.items())}, ensure_ascii=False)
-        if not cells_json.exists():
-            cells_json.write_text(text, encoding="utf-8")
-        elif cells_json.read_text(encoding="utf-8") != text:
-            print(f"V8_CONTINUE=FAIL step=preflight reason=cells_json_differs:{cells_json}", flush=True)
-            return refuse("preflight")
+    # 原「V8 完整表时传 full、不写 cells.json」分支随 V8 表删除；格表一律写 cells.json（--cells v9 时与删除前相同）
+    cells_json = work / "cells.json"
+    text = json.dumps({f"{t}/{tier}": n for (t, tier), n in sorted(cells.items())}, ensure_ascii=False)
+    if not cells_json.exists():
+        cells_json.write_text(text, encoding="utf-8")
+    elif cells_json.read_text(encoding="utf-8") != text:
+        print(f"V8_CONTINUE=FAIL step=preflight reason=cells_json_differs:{cells_json}", flush=True)
+        return refuse("preflight")
     runner.fingerprint = fingerprint_of(args, cells, {k: shlex.join(v) for k, v in overrides.items()})
     runner.vars = {
         "python": sys.executable, "site": str(SITE), "repo": str(REPO_ROOT),
         "delivery": str(args.delivery), "specs_root": str(args.specs_root),
-        "cells": "full" if full else str(cells_json), "cells_json": None if full else str(cells_json),
+        "cells": str(cells_json), "cells_json": str(cells_json),
         "cells_table": cells, "xhard0_gen": str(args.xhard0_gen), "path_base": str(args.path_base), "site_dir": str(args.site_dir),
         "media_root": str(args.media_root), "workers": str(args.workers), "host": args.host, "port": str(args.port),
         "shots": str(args.shots or work / "shots"), "work_dir": str(work), "base": "",

@@ -13,7 +13,7 @@
 逐格覆盖目录里全部 (任务, 档)（完整根 43 新值格 + 16 xhard0 格 = 59）。只核「各档总表」页（任务页对比表已按用户要求撤下，只断言其隐藏）；截图写 ``--shots``。
 末行打印 ``V8_ORACLE_BROWSER=PASS|FAIL cells=<n> missing=<n>``（另附 mismatch、page_errors）。**判定行按前缀匹配**：
 ``V8_ORACLE_BROWSER=PASS cells=59 missing=0`` 之后可能追加键。任何中断都记入 problems 并照打判定行（FAIL）。
-``--expect-cells`` 缺省由目录推出：目录新值格等于完整格表（``V8_CELLS``／``V9_CELLS``，两者格集合相同）时为
+``--expect-cells`` 缺省由目录推出：目录新值格等于完整格表（``V9_CELLS``）时为
 ``len(格表) + 16``（= 59），子表时为目录新值格数 + 16（xhard0 每任务一格）。
 
 **端口**：``--port`` 给出时替换 ``--base`` 里的端口（主机不变；V9 独立站缺省 8082，V8 正式站 8081 不动）。
@@ -276,7 +276,7 @@ def main() -> int:
         try:
             H = C.load_hard_specs()
             new_cells = {(t["id"], tier) for t in catalog["tasks"] for tier in t["tiers"] if tier != "xhard0"}
-            tables = [table for table in (H.V8_CELLS, H.V9_CELLS) if new_cells == set(table)]
+            tables = [table for table in (H.V9_CELLS,) if new_cells == set(table)]
             expect = (len(tables[0]) if tables else len(new_cells)) + len(C.NAMES)
         except Exception as exc:
             problems.append(f"无法推出期望格数：{type(exc).__name__}: {exc}")

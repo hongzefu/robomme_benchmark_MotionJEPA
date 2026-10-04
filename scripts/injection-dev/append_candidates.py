@@ -146,7 +146,8 @@ def find_shards(shard_dir: Path, tier: str, identity: str) -> tuple[list[Path], 
 
 def plan_append(frozen_root: Path, shard_dir: Path, task: str, tier: str, extra: int) -> dict[str, Any]:
     """只读核对 + 计划（``--dry-run`` 与实跑共用）。"""
-    if tier not in H.V8_TIERS or (task, tier) not in H.V8_CELLS:
+    # 格集合按 V9_CELLS 判（与已删除的 V8 1070 局表格集合相同，只有局数不同）
+    if tier not in H.V8_TIERS or (task, tier) not in H.V9_CELLS:
         raise AppendError(f"{task}@{tier} 不是 v8 交付格")
     if extra <= 0:
         raise AppendError(f"--extra 须为正整数：{extra}")

@@ -105,7 +105,8 @@ V9_DEFAULT_SOURCES = {
     "delivery": REPO_ROOT / "artifacts/newtask-v9/delivery/delivery.local.json",
     "identities": REPO_ROOT / "artifacts/v9-evaluation/inputs/eval-identities-992.jsonl",
 }
-CELL_VERSIONS = ("v8", "v9")
+#: V8 的 1070 局表（``v8``）已于维护计划阶段 1b（W4）随 V8 1070 局表删除，只剩 v9
+CELL_VERSIONS = ("v9",)
 REUSED_SCHEMA = "v9-eval-reused/1"
 SITE_CATALOG_SCHEMA = "v8-site-catalog/1"
 #: V9 复用模式的逐局计数键（判定行尾追加，零值也写）
@@ -296,18 +297,18 @@ def load_hard_specs():
     return module
 
 
-def full_cells(version: str = "v8") -> dict[tuple[str, str], int]:
-    """完整交付格表：``v8`` → ``V8_CELLS``（43 格 1070），``v9`` → ``V9_CELLS``（43 格 800）。不读 ``EXPECTED_CELLS``。"""
+def full_cells(version: str = "v9") -> dict[tuple[str, str], int]:
+    """完整交付格表：``v9`` → ``V9_CELLS``（43 格 800）。不读 ``EXPECTED_CELLS``。"""
     H = load_hard_specs()
     if version not in CELL_VERSIONS:
         raise ValueError(f"--cells 只接受 {CELL_VERSIONS}：{version!r}")
-    return dict(H.V8_CELLS if version == "v8" else H.V9_CELLS)
+    return dict(H.V9_CELLS)
 
 
-def load_cells(cells_json, version: str = "v8") -> dict[tuple[str, str], int]:
-    """交付格表：``--cells-json`` 给 {"Task/tier": n} 子表（冒烟／合成夹具）时用它；否则按 ``--cells v8|v9`` 取完整表。"""
+def load_cells(cells_json, version: str = "v9") -> dict[tuple[str, str], int]:
+    """交付格表：``--cells-json`` 给 {"Task/tier": n} 子表（冒烟／合成夹具）时用它；否则按 ``--cells v9`` 取完整表。"""
     if cells_json is None:
-        return full_cells(version or "v8")
+        return full_cells(version or "v9")
     raw = json.loads(Path(cells_json).read_text(encoding="utf-8"))
     return {tuple(key.split("/")): int(n) for key, n in raw.items()}
 
@@ -569,7 +570,7 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
     problems: list[str] = []
     counts = Counter()
     path_base = Path(src.get("path_base") or REPO_ROOT)
-    cells_want = load_cells(src.get("cells_json"), src.get("cells") or "v8")
+    cells_want = load_cells(src.get("cells_json"), src.get("cells") or "v9")
     expected = expected_identities(cells_want)
 
     # 规格（/4，load_specs_v8 校验格表、selected 行数、跨档 seed 不交）
@@ -817,8 +818,8 @@ def verdict_line(stats: dict, ok: bool) -> str:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--cells", choices=CELL_VERSIONS, default="v8",
-                    help="完整交付格表：v8（V8_CELLS，缺省，V8 行为不变）｜v9（V9_CELLS）；--cells-json 给子表时优先")
+    ap.add_argument("--cells", choices=CELL_VERSIONS, default="v9",
+                    help="完整交付格表：v9（V9_CELLS，缺省且唯一；V8 的 1070 局表已删除）；--cells-json 给子表时优先")
     ap.add_argument("--allow-eval-empty", action="store_true",
                     help="V9 复用模式下有评估置空局时仍写产物（判定仍为 FAIL，供排查）")
     for name, default in DEFAULT_SOURCES.items():
