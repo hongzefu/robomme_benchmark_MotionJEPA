@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """v8 站点的浏览器交互检查（v8 方案第一部分 §3「站点与 v7 布局一致」）：Playwright + headless Chromium，连测试实例。
 
-由 ``v7_site_browser_check.py`` 改写。2026-10-02 起评估结果接入（用户「把所有的结果放在8081端口」）：xhard1～5 为
+由 V7 站点浏览器检查器（已删除，git 历史可取回）改写。2026-10-02 起评估结果接入（用户「把所有的结果放在8081端口」）：xhard1～5 为
 V8 双模型评估、xhard0 为阶段 3′ 两路线评估，评估断言由「全部未评估」改为逐局与目录一致。逐格（目录里全部 (任务, 档)，
 完整根 59 格）按 hash 直达第 1 局，核对：
 
@@ -13,14 +13,14 @@ V8 双模型评估、xhard0 为阶段 3′ 两路线评估，评估断言由「�
 - **成败筛选**：两者都成／分歧／两者都未成／翻转按钮计数与目录推算一致，「未评估」为 0；实点三个成败筛选确认可见局号
   与计数一致（不一致计入 ``eval_mismatch``）；
 - **评估媒体**：每格第 1 局有评估视频的栏实际播放（``currentTime > 0.2``，计 ``eval_played``）；
-- **语义调整**（``/api/semantic``，``v8_semantic_diff.py``）：任务页语义面板已撤下（只断言隐藏），第 1 局 goal／subgoal 的
+- **语义调整**（``/api/semantic``，``semantic_diff.py``）：任务页语义面板已撤下（只断言隐藏），第 1 局 goal／subgoal 的
   「语义调整」标签数与逐局标记一致；「语义调整合集」页的卡片恰为 ``semantic.json`` 中有调整的格，每张都有调整前／后对照表
   （不一致计 ``semantic_mismatch``）；
 - **逐段数据**：``/api/subgoals`` 必须是 ``v8-subgoals/1``（缺失或空对象即 FAIL），每局（含 xhard0 旧入口）都有逐段记录，
   第 1 局页面的逐段表行数、task goal 条数与数据一致（``subgoal_missing``）；
 - **任务页对比表已撤下**：用户 2026-10-01 要求任务页不再显示各档对比总表，``#matrix`` 保留为隐藏的空容器（区块数不变）；
-  同一张表只在「各档总表」页显示，由 ``v8_oracle_browser_check.py`` 逐格核对；
-- **配置**：逐局配置（``li[data-dim]``）逐维与表 1 一致（``v8_site_catalog.TABLE1``，定值相等、区间落在内），
+  同一张表只在「各档总表」页显示，由 ``oracle_browser_check.py`` 逐格核对；
+- **配置**：逐局配置（``li[data-dim]``）逐维与表 1 一致（``site_catalog.TABLE1``，定值相等、区间落在内），
   维度集合与表 1 相同（``config_mismatch``）；
 - **xhard5 与生成视频**：SwingXtimes／StopCube 的 xhard5 页签可用，每格第 1 局的生成视频元数据可读并实际播放
   （``currentTime > 0.2``）；「同步播放」让 xhard0 本局全部视频（两段生成＋MME-VLA 两入口评估）前进；
@@ -32,7 +32,7 @@ config_mismatch=0``（另附 cells、played、page_errors）。接续脚本只�
 实点筛选、xhard5 页签、同步播放、移动端几段的锚点按目录里实际存在的格选取（首选格缺了换同类格），
 一类都没有则跳过并计入 problems，所以子表目录不含 xhard5 时会判 FAIL 并写明原因。
 
-    uv run --no-project --with playwright python scripts/injection-dev/site/v8_site_browser_check.py \\
+    uv run --no-project --with playwright python scripts/injection-dev/site/site_browser_check.py \\
       --base http://127.0.0.1:8081 --shots artifacts/newtask-v8/site-checks
 """
 from __future__ import annotations
@@ -46,7 +46,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 HERE = Path(__file__).resolve().parent
-_spec = importlib.util.spec_from_file_location("v8_site_catalog", HERE / "v8_site_catalog.py")
+_spec = importlib.util.spec_from_file_location("site_catalog", HERE / "site_catalog.py")
 C = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(C)
 
@@ -149,7 +149,7 @@ def main() -> int:
             if n["sections"] != len(SECTIONS):
                 problems.append(f"缺少区块：{sorted(set(SECTIONS) - set(present))}")
             # 任务页不再显示各档对比总表（用户 2026-10-01）：#matrix 保留为空并隐藏；该表只在「各档总表」页，
-            # 由 v8_oracle_browser_check.py 逐格核对配置、长度与评估位
+            # 由 oracle_browser_check.py 逐格核对配置、长度与评估位
             if not page.evaluate("() => { const m = document.getElementById('matrix'); return m && m.hidden && !m.children.length; }"):
                 problems.append("任务页 #matrix 未隐藏或仍有内容")
 
@@ -232,7 +232,7 @@ def main() -> int:
                         if (segs and rows != segs + 1) or goals != max(1, len(rec.get("goal", []))):
                             n["subgoal_missing"] += 1
                             problems.append(f"{key} 第 1 局逐段表 {rows - 1}/{segs} 行或 goal {goals} 条不符")
-                    # 配置（逐局；各档总表的配置格由 v8_oracle_browser_check.py 核对）
+                    # 配置（逐局；各档总表的配置格由 oracle_browser_check.py 核对）
                     if tier != "xhard0":
                         want_dims = set(C.TABLE1.get(task["id"], {}))
                         lis = page.evaluate("() => [...document.querySelectorAll('#episode .cfg-sem li[data-dim]')]"

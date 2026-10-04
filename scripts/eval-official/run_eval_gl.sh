@@ -21,7 +21,7 @@
 #   主脚本忽略 PIPE，保证收尾三行在 tee 存活时写出（日志文件里一定有）。
 #
 # 用法（一席一行）：
-#   bash <repo>/scripts/eval-official/run_v8_gl.sh --run-name R --seat NN --repo <NFS 执行副本> --stage <NFS 运行根> \
+#   bash <repo>/scripts/eval-official/run_eval_gl.sh --run-name R --seat NN --repo <NFS 执行副本> --stage <NFS 运行根> \
 #     --shard <shard-NN.json> --policies smvla,mme --mme-ckpt D --smvla-ckpt D --openpi-data-home D \
 #     --tokenizer-sha256 H --reset-budget N --infra-retry-budget N [--limit N] \
 #     [--episode-wall-smvla S] [--episode-wall-mme S] [--sync-interval S] [--local-root DIR]
@@ -61,7 +61,7 @@ while [[ $# -gt 0 ]]; do
     --episode-wall-mme) WALL_MME="$2"; shift 2;;
     --sync-interval) SYNC_INTERVAL="$2"; shift 2;;
     --local-root) LOCAL_ROOT="$2"; shift 2;;
-    --no-record) die2 "run_v8_gl.sh 禁止 --no-record（全部视频保留）";;
+    --no-record) die2 "run_eval_gl.sh 禁止 --no-record（全部视频保留）";;
     -h|--help) usage; exit 0;;
     *) usage; die2 "未知参数 $1";;
   esac
@@ -291,7 +291,7 @@ if ! mkdir -p "$SEAT_STAGE" "$REC_LOCAL"; then
 fi
 TALLY="$LOCAL_ROOT/rec-sync-tally.txt"  # 周期 + 收尾同步的累计计数（每成功一个目录一行「1 <字节数>」）
 : > "$TALLY"
-SEAT_LOG="$SEAT_STAGE/run_v8_gl-s$SEAT.log"
+SEAT_LOG="$SEAT_STAGE/run_eval_gl-s$SEAT.log"
 # tee 忽略 TERM/INT/HUP/PIPE 并以 -p 运行：slurmstepd 发给全组的信号不能先杀掉日志管道
 exec > >(trap '' TERM INT HUP PIPE; exec tee -p -a "$SEAT_LOG") 2>&1
 

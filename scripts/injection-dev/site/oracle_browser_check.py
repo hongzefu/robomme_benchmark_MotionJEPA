@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """v8 各档总表页的浏览器检查（v8 方案第一部分 §3「各档总表页」）：不播放视频、不修改服务端。
 
-由 ``v7_oracle_browser_check.py`` 改写：
+由 V7 各档总表页检查器（已删除，git 历史可取回）改写：
 
-- 数据一律来自 ``/api/subgoals``（``v8_subgoal_lengths.py`` 从 v8 规格与真实 h5 统计）与 ``/api/catalog``；
+- 数据一律来自 ``/api/subgoals``（``subgoal_lengths.py`` 从 v8 规格与真实 h5 统计）与 ``/api/catalog``；
   ``subgoals.json`` 缺失时服务端返回 ``{}``，本检查器据此判 FAIL，不允许页面静默缺内容；
 - 成功率格（2026-10-02 起评估接入）：按目录每格 ``rates.new``（xhard0 另有 ``rates.old``）推算「百分比」与「成功 / 局数」，与页面逐格一致；执行步上限（原任务页表格行，已撤下，不再核对）等于 ``subgoals.json`` 的 ``max_steps``
   （规格 ``exec_cap``／xhard0 1300）；
-- 配置格逐维与表 1 一致（``v8_site_catalog.TABLE1``），不对照任何计划表格；去掉 v7 的 PatternLock 定值断言；
+- 配置格逐维与表 1 一致（``site_catalog.TABLE1``），不对照任何计划表格；去掉 v7 的 PatternLock 定值断言；
 - 可选 ``--delivery``：逐格执行步均值／最小／最大与 ``delivery.json`` 的 ``exec_steps`` 再核一遍（与交付 h5 一致）。
 
 逐格覆盖目录里全部 (任务, 档)（完整根 43 新值格 + 16 xhard0 格 = 59）。只核「各档总表」页（任务页对比表已按用户要求撤下，只断言其隐藏）；截图写 ``--shots``。
@@ -24,12 +24,12 @@
 ``V8_ORACLE_BROWSER`` 行之后）。PASS 要求总表检查通过、``eval_empty == 0``、复用 + 新评 = 新值局总数、计数与目录
 ``eval.reuse.counts`` 一致，给了 ``--expect-reused``／``--expect-new`` 时还要相等。V8 目录（无 ``eval.mode``）只打印原判定行。
 
-    uv run --no-project --with playwright python scripts/injection-dev/site/v8_oracle_browser_check.py \\
+    uv run --no-project --with playwright python scripts/injection-dev/site/oracle_browser_check.py \\
       --base http://127.0.0.1:8081 --shots artifacts/newtask-v8/site-checks/oracle \\
       --delivery artifacts/newtask-v8/gen1/delivery.json
 
     # V9（阶段 4c）
-    uv run --no-project --with playwright python scripts/injection-dev/site/v8_oracle_browser_check.py \\
+    uv run --no-project --with playwright python scripts/injection-dev/site/oracle_browser_check.py \\
       --port 8082 --shots artifacts/newtask-v9/site-checks/oracle \\
       --delivery artifacts/newtask-v9/delivery/delivery.local.json --expect-reused 720 --expect-new 80
 """
@@ -47,7 +47,7 @@ from urllib.parse import urlsplit, urlunsplit
 # playwright 只在 main() 里导入：纯函数（V9 计数、端口替换）可在没有 playwright 的环境里单测
 
 HERE = Path(__file__).resolve().parent
-_spec = importlib.util.spec_from_file_location("v8_site_catalog", HERE / "v8_site_catalog.py")
+_spec = importlib.util.spec_from_file_location("site_catalog", HERE / "site_catalog.py")
 C = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(C)
 
@@ -121,7 +121,7 @@ def install_cfg_check(page, table1: dict) -> None:
 
 
 def delivery_exec(path: Path) -> dict:
-    """``delivery.json`` 逐格执行步统计（与 v8_subgoal_lengths 同口径）。"""
+    """``delivery.json`` 逐格执行步统计（与 subgoal_lengths 同口径）。"""
     data = C.load_delivery(path)
     by_cell: dict = defaultdict(list)
     for row in data["rows"]:

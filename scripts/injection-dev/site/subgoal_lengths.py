@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """v8 站点的逐段 subgoal 帧数与 oracle 步数统计（只读 h5 与 v8 规格，不读评估记录、不读任何计划表格）。
 
-由 ``v7_subgoal_lengths.py`` 改写（v8 方案第一部分 §2.2）：
+由 ``subgoal_lengths.py`` 改写（v8 方案第一部分 §2.2）：
 
-- **h5 来源**：与 ``v8_site_catalog.py`` 同一套 ``(tier, task, seed)`` 键。xhard1～5 取 ``delivery.json``
+- **h5 来源**：与 ``site_catalog.py`` 同一套 ``(tier, task, seed)`` 键。xhard1～5 取 ``delivery.json``
   （schema ``v8-delivery/1``）逐局的 h5 路径；xhard0 取 ``xhard0-gen/manifest-{H,O}.jsonl`` 的 ``h5`` 字段
   （新入口 H / 官方旧入口 O）。
 - **段**：逐帧读 ``timestep_<k>/info/simple_subgoal``，文字连续相同的帧算一段；模板把序数词、颜色、数字抹成占位符，
@@ -18,7 +18,7 @@
 ``site_server.py`` 的 ``/api/subgoals`` 提供给页面。末行打印
 ``V8_SUBGOALS=PASS|FAIL h5=<n> cells=<n> missing=<n> exec_mismatch=<n> xhard0_same=<a>/<b> goals=<n>``。
 
-    uv run --no-sync python scripts/injection-dev/site/v8_subgoal_lengths.py --site-dir artifacts/newtask-v8/site \\
+    uv run --no-sync python scripts/injection-dev/site/subgoal_lengths.py --site-dir artifacts/newtask-v8/site \\
       --specs-root artifacts/newtask-v8/specs-root --delivery artifacts/newtask-v8/gen1/delivery.json \\
       --xhard0-gen artifacts/newtask-v7/site-media/xhard0-gen
 """
@@ -36,7 +36,7 @@ from pathlib import Path
 import h5py
 
 HERE = Path(__file__).resolve().parent
-_spec = importlib.util.spec_from_file_location("v8_site_catalog", HERE / "v8_site_catalog.py")
+_spec = importlib.util.spec_from_file_location("site_catalog", HERE / "site_catalog.py")
 C = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(C)
 

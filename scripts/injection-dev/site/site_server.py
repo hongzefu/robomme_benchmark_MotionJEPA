@@ -146,7 +146,7 @@ class MediaHandler(BaseHTTPRequestHandler):
                     self.wfile.write(payload)
                 return
             if path == '/api/subgoals':
-                # 逐段 subgoal 帧数（scripts/injection-dev/site/v7_subgoal_lengths.py 生成）；缺文件时返回空表，页面照常显示
+                # 逐段 subgoal 帧数（scripts/injection-dev/site/subgoal_lengths.py 生成）；缺文件时返回空表，页面照常显示
                 sg = files.site_dir / 'subgoals.json'
                 payload = sg.read_bytes() if sg.exists() else b'{}'
                 self._headers(200, 'application/json; charset=utf-8', len(payload), Cache_Control='no-cache')
@@ -154,7 +154,7 @@ class MediaHandler(BaseHTTPRequestHandler):
                     self.wfile.write(payload)
                 return
             if path == '/api/semantic':
-                # xhard1～5 相对 xhard0 的 goal／subgoal 语义调整（scripts/injection-dev/site/v8_semantic_diff.py 生成）；缺文件时返回空表
+                # xhard1～5 相对 xhard0 的 goal／subgoal 语义调整（scripts/injection-dev/site/semantic_diff.py 生成）；缺文件时返回空表
                 sem = files.site_dir / 'semantic.json'
                 payload = sem.read_bytes() if sem.exists() else b'{}'
                 self._headers(200, 'application/json; charset=utf-8', len(payload), Cache_Control='no-cache')

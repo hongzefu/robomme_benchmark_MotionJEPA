@@ -2,11 +2,11 @@
 """v8 逐局站点服务（v8 方案第一部分 §2.2 站点行）：与 v7 站点布局逐一一致，评估板块原位保留、内容置空。
 
 服务端完全复用同目录 ``site_server.py`` 的 ``create_server``（媒体白名单、单段 Range、``/api/catalog``、
-``/api/subgoals``），显式传页面 ``v8_site.html``；目录由 ``v8_site_catalog.py`` 生成，逐段数据由
-``v8_subgoal_lengths.py`` 生成。``--media-root`` 是白名单根（站点目录与全部 mp4 必须在它之下），缺省为仓库
+``/api/subgoals``），显式传页面 ``site.html``；目录由 ``site_catalog.py`` 生成，逐段数据由
+``subgoal_lengths.py`` 生成。``--media-root`` 是白名单根（站点目录与全部 mp4 必须在它之下），缺省为仓库
 ``artifacts/``；合成目录检查时传合成根。
 
-    uv run --no-sync python scripts/injection-dev/site/v8_site.py --port 8080 --site-dir artifacts/newtask-v8/site
+    uv run --no-sync python scripts/injection-dev/site/site_app.py --port 8080 --site-dir artifacts/newtask-v8/site
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ _spec.loader.exec_module(site_server)
 
 DEFAULT_SITE_DIR = site_server.REPO_ROOT / "artifacts/newtask-v8/site"
 DEFAULT_MEDIA_ROOT = site_server.REPO_ROOT / "artifacts"
-HTML_PATH = HERE / "v8_site.html"
+HTML_PATH = HERE / "site.html"
 
 
 def create_server(host: str, port: int, site_dir: Path, media_root: Path = DEFAULT_MEDIA_ROOT):

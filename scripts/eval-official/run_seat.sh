@@ -17,9 +17,9 @@
 #   单局墙钟默认 smvla 900 s、mme 1200 s；客户端退出 5（reset 额度耗尽）与 3（阻塞）不重启、照实收尾；
 #   MME server 启动前 OPENPI_DATA_HOME 固定为 --openpi-data-home，核 <dir>/big_vision/paligemma_tokenizer.model 的
 #   sha256：不符打印 RUN_BLOCKED reason=tokenizer_sha 并不启 server，相符打印 TOKENIZER_SHA=PASS sha256=<hex>。
-#   setsid 起的进程组记在 <out>/.v8-pgids，供外层 run_v8_gl.sh 在本脚本异常死亡后回收。
+#   setsid 起的进程组记在 <out>/.v8-pgids，供外层 run_eval_gl.sh 在本脚本异常死亡后回收。
 # 解释器：BENCH_PY、MME_PY 可用环境变量覆盖（有默认值）；SMVLA_PY 无默认值，跑 smvla 时必须显式传入
-# （旧默认指向的 V7.5 venv 目录已删除；run_v8_gl.sh 会导出它）。缓存根 V75_JAX_CACHE_ROOT。
+# （旧默认指向的 V7.5 venv 目录已删除；run_eval_gl.sh 会导出它）。缓存根 V75_JAX_CACHE_ROOT。
 # V7.5 的队列认领（--queue）、金丝雀（--canary）、每任务一个客户端（--client-per-task）与 --no-record 已删除。
 #
 # 端口：18000 + 100 × 席号 + 10 × 策略号（smvla=0、mme=1），MME 录制中继 +1；起前 /dev/tcp 探测，被占依次 +2，最多 5 次。

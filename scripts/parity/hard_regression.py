@@ -2202,7 +2202,7 @@ def build_parser() -> argparse.ArgumentParser:
     ev.set_defaults(func=cmd_eval_smoke)
     x0 = sub.add_parser("xhard0-reset-parity")
     x0.add_argument("--src-root", required=True, help="官方 1fadc0ec worktree（只导入其 robomme）")
-    x0.add_argument("--manifest", default=str(REPO / "scripts" / "configs" / "newtask-v7" / "xhard0_manifest.json"))
+    x0.add_argument("--manifest", default=str(REPO / "scripts" / "configs" / "xhard0" / "xhard0_manifest.json"))
     x0.add_argument("--gpu", default="0")
     x0.add_argument("--tasks", default=None)
     x0.add_argument("--out", required=True)

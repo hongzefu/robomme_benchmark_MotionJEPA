@@ -79,7 +79,7 @@ def _xhard0_entries(env_id: str, metadata_index: Dict) -> List[Dict[str, Any]]:
     """xhard0＝官方 test 元数据里本任务 ``difficulty=="hard"`` 的全部记录，按原 episode 升序（v7 方案第二部分 §1.1）。
 
     seed 逐条照抄元数据、运行难度传 ``"hard"``，无 ``sampling_config``、无规格（走官方原生 hard 分支）。
-    与 ``scripts/configs/newtask-v7/xhard0_manifest.json`` 的逐条核对在 XHARD0_IDENTITY 闸门里做（本包不反向依赖 scripts/）。
+    与 ``scripts/configs/xhard0/xhard0_manifest.json`` 的逐条核对在 XHARD0_IDENTITY 闸门里做（本包不反向依赖 scripts/）。
     """
     hard = sorted(
         (record for (task, _ep), record in metadata_index.items() if task == env_id and record.get("difficulty") == "hard"),

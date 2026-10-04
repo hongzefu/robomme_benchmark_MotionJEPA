@@ -114,9 +114,9 @@ uv run --no-sync python scripts/parity/hard_regression.py step-headroom --delive
 uv run --no-sync python scripts/parity/hard_regression.py movecube-layout --specs-root <根>              # → V9_MOVECUBE_LAYOUT / V9_MOVECUBE_WAYS
 ```
 
-**历史（V9 不调用，代码保留）**：v7 的「母布局抽签 → `derive_specs.py` 派生 → 四档同步生成」链路与 `layout-shared`／`prefix-geometry` 守卫、`layout_whitelist.json`；v8 的四席分片（`generate_h5.py --mode split/continue/merge --cells shard1～4`）与 `v8_continue_after_gen.py` 全链路续跑。xhard0 不走生成链路：身份清单 `configs/newtask-v7/xhard0_manifest.json` 由 `hard_parity.py export-xhard0-manifest` 从官方 test 元数据导出（16 任务 × 12 局 = 192）。
+**历史（V9 不调用，代码保留）**：v7 的「母布局抽签 → `derive_specs.py` 派生 → 四档同步生成」链路与 `layout-shared`／`prefix-geometry` 守卫、`layout_whitelist.json`；v8 的四席分片（`generate_h5.py --mode split/continue/merge --cells shard1～4`）与 `site_build.py` 全链路续跑。xhard0 不走生成链路：身份清单 `configs/xhard0/xhard0_manifest.json` 由 `hard_parity.py export-xhard0-manifest` 从官方 test 元数据导出（16 任务 × 12 局 = 192）。
 
-**站点与出图**（`injection-dev/site/`，只读、不起环境）：V9 逐局对照站由 `v8_site.py`（名字沿用、口径为 V9）起在 8082，目录 `artifacts/newtask-v9/site/`（`v8_site_catalog.py --cells v9` 生成 `catalog.json`，`v8_subgoal_lengths.py`、`v8_semantic_diff.py` 生成 `subgoals.json`、`semantic.json`，媒体映射 `media-private.json`）；复检 `v8_oracle_browser_check.py --port 8082`（→ `V8_ORACLE_BROWSER=PASS cells=59`）。`v9_movecube_region_fig.py` 出 MoveCube 区域配图到 `docs/validation/newtask-v9/figures/`。
+**站点与出图**（`injection-dev/site/`，只读、不起环境）：V9 逐局对照站由 `site_app.py`（名字沿用、口径为 V9）起在 8082，目录 `artifacts/newtask-v9/site/`（`site_catalog.py --cells v9` 生成 `catalog.json`，`subgoal_lengths.py`、`semantic_diff.py` 生成 `subgoals.json`、`semantic.json`，媒体映射 `media-private.json`）；复检 `oracle_browser_check.py --port 8082`（→ `V8_ORACLE_BROWSER=PASS cells=59`）。`v9_movecube_region_fig.py` 出 MoveCube 区域配图到 `docs/validation/newtask-v9/figures/`。
 
 ## 5. 对拍与回归（`parity/`）
 
@@ -144,7 +144,7 @@ uv run --no-sync python scripts/parity/hard_regression.py eval-smoke --task BinF
 ```
 
 - `train_split_*.py` 是 S0 原始 train 基线设施；`train_split_runner.py` 同时是第 4 节的运行器，启动时核对 `configs/newtask-v3/subset_manifest.json::records_sha256`（官方 train 元数据 16 份的散列）。细表见 [`parity/README.md`](parity/README.md)。
-- `eval-official/`：双模型（SimpleMemVLA、MME-VLA）评估客户端与席位脚本，V9 评估命令见 `docs/validation/v9-two-policy-gl10-20261002-01/launch.md`（`v8_manifest.py --exclude-evaluated` 生成 V9 新 80 局清单、`run_v8_gl.sh` 单席入口、`v8_report.py` 汇总）；800 局总表 SimpleMemVLA 178/800、MME-VLA 39/800。
+- `eval-official/`：双模型（SimpleMemVLA、MME-VLA）评估客户端与席位脚本，V9 评估命令见 `docs/validation/v9-two-policy-gl10-20261002-01/launch.md`（`eval_manifest.py --exclude-evaluated` 生成 V9 新 80 局清单、`run_eval_gl.sh` 单席入口、`eval_report.py` 汇总）；800 局总表 SimpleMemVLA 178/800、MME-VLA 39/800。
 
 ## 6. 核查清单
 

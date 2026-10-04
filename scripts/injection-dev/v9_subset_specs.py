@@ -47,7 +47,7 @@ EXTEND_TASKS = ("InsertPeg",)
 SOURCE_REUSE = "v8-reuse"
 SOURCE_NEW = "v9-new"
 #: 交付清单行必有的键（与 V8 ``gen1/delivery.local.json`` 行、``_rollout.aggregate_v8`` 的 row_out 同键；``video`` 可选，
-#: assemble 一律补齐）。站点目录 ``v8_site_catalog.py``、subgoals、step-headroom 都按这些键读。
+#: assemble 一律补齐）。站点目录 ``site_catalog.py``、subgoals、step-headroom 都按这些键读。
 DELIVERY_ROW_KEYS = ("task", "tier", "candidate", "seed", "episode", "spec_sha256", "h5_sha256", "frames",
                      "exec_steps", "h5", "path", "env_module", "recovery_mode", "initial_selected", "role")
 

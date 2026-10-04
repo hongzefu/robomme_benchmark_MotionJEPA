@@ -69,7 +69,7 @@ V9_LOCAL_H5_ROOT = ROOT / "artifacts" / "newtask-v9" / "parity" / "h5"
 V9_COMPARE_ROOT = ROOT / "artifacts" / "newtask-v9" / "parity" / "compare"
 ANCHORS = ROOT / "docs" / "validation" / "parity-anchors.json"
 #: xhard0 清单 v8 不变（xhard0 即官方 hard，§2.5「不动」）
-XHARD0_MANIFEST = ROOT / "scripts" / "configs" / "newtask-v7" / "xhard0_manifest.json"
+XHARD0_MANIFEST = ROOT / "scripts" / "configs" / "xhard0" / "xhard0_manifest.json"
 HARD_SPECS_FILE = ROOT / "src" / "robomme_hard" / "env_record_wrapper" / "hard_specs.py"
 BUCKET = "HongzeFu/robomme-hard-parity"
 HF = ["uvx", "--from", "huggingface_hub==1.8.0", "--with", "click", "hf"]

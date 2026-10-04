@@ -14,7 +14,7 @@ xhard0 新旧两个入口只留下 h5、没有 mp4：
 （task／seed／h5 相对路径／h5 sha256／帧数／mp4），结束打印
 ``XHARD0_RENDER=PASS|FAIL sides=<n> episodes=<每侧局数>x<n> frame_mismatch=<n>`` 与 ``EXIT_CODE=``。
 
-    uv run --no-sync python scripts/injection-dev/site/v7_render_xhard0.py --side O --side H --workers 8
+    uv run --no-sync python scripts/injection-dev/site/render_xhard0.py --side O --side H --workers 8
 """
 from __future__ import annotations
 

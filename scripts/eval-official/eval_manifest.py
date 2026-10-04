@@ -2,7 +2,7 @@
 """V9 双模型评估执行清单（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.1、§2.2 第 7 条；字段契约沿用
 1001-v8-post-evaluation-gl-plan.md 的 C1）。
 
-    python scripts/eval-official/v8_manifest.py --identities <eval-identities-992.jsonl> \
+    python scripts/eval-official/eval_manifest.py --identities <eval-identities-992.jsonl> \
         --delivery <newtask-v9/delivery/delivery.local.json> \
         --exclude-evaluated <V8 manifest.json> --shards 10 --out-dir <dir>
 

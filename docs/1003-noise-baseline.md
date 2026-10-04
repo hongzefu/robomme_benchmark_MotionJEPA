@@ -129,7 +129,7 @@ srun --jobid=<占位作业> --overlap --exact --ntasks=1 --cpus-per-task=4 --gpu
   <克隆>/.venv/bin/python <克隆>/scripts/parity/hard_parity.py generate --side H2 --tier v9 \
     --manifest delivery.local.json --identities v9-129-generate.jsonl --specs-root <V9 规格根> \
     --src-root <克隆> --workers 4 --gpu 0 --out /tmp/<遍名> --stage <NFS>/gen/<遍名>
-# xhard0：另设 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1，--side H --tier xhard0 --manifest scripts/configs/newtask-v7/xhard0_manifest.json --identities x0-48-generate.jsonl（不给 --specs-root）
+# xhard0：另设 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1，--side H --tier xhard0 --manifest scripts/configs/xhard0/xhard0_manifest.json --identities x0-48-generate.jsonl（不给 --specs-root）
 # 身份清单：uv run --no-sync python scripts/parity/gate_set.py export --set {v9,xhard0} --kind generate --out <文件>
 # 收尾（辅助步骤不带 --gpu_cmode=shared）：srun --jobid=<占位作业> --overlap --ntasks=1 <克隆>/.venv/bin/python <克隆>/scripts/parity/noise_run.py ship --src /tmp/<遍名> --stage <NFS>/gen/<遍名> --finalize
 # 本机拉回：uv run --no-sync python scripts/parity/hard_pull.py --stage <NFS>/gen --dest artifacts/<目录> --segments <遍名,...>
