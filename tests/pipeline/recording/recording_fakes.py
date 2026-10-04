@@ -71,8 +71,13 @@ CHOICE_TARGET_XYZ = (0.1, 0.2, 1.0)
 CHOICE_POINT_YX = [34, 33]
 
 
+# 替身环境的两指读数只有两档（替身输入，不是被测常量）：张开与闭合。
+FINGER_OPEN = 0.04
+FINGER_CLOSED = 0.0
+
+
 def finger_of(gripper_cmd: float) -> float:
-    return 0.04 if gripper_cmd > 0 else 0.0
+    return FINGER_OPEN if gripper_cmd > 0 else FINGER_CLOSED
 
 
 @dataclass

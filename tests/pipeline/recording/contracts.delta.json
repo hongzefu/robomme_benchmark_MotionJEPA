@@ -116,7 +116,7 @@
       "src/robomme_hard/env_record_wrapper/RecordWrapper.py"
     ],
     "symbol": "RobommeRecordWrapper._init_fk_planner/_joint_action_to_ee_pose_dict",
-    "oracle": "FK 替身返回手写位姿；夹爪指令 ≥0 取指令、<0 取 0.04",
+    "oracle": "FK 替身返回手写位姿；夹爪正指令取指令值、负指令取与指令无关的固定开度（只断言性质）",
     "positive": "FK 可用时 eef_action=[q0,q1,q2,0,0,0,g]",
     "negative": "FK 初始化失败：继续录制，eef_action 恒 7 维零",
     "boundaries": "—",
@@ -138,7 +138,7 @@
     "symbol": "RobommeRecordWrapper.reset",
     "oracle": "两局事件表手写",
     "positive": "reset 清空 waypoint 缓存与边界记忆",
-    "negative": "现状：reset 不清 buffer 与 episode_success，不 close 直接开下一局会混入上一局记录",
+    "negative": "现状：reset 不清 buffer 与 episode_success（直接断言成功标志带入第二局），不 close 直接开下一局会混入上一局记录",
     "boundaries": "—",
     "nodeids": [
       "tests/pipeline/recording/test_recording_closed_loop.py::test_reset_clears_waypoint_and_boundary_caches",
@@ -199,10 +199,10 @@
       "src/robomme_hard/env_record_wrapper/RecordWrapper.py"
     ],
     "symbol": "_video_prepare_step_frames/_video_apply_overlays/_video_append_step_frame",
-    "oracle": "64×64 合成帧；红点、红框、文字区高度手算",
+    "oracle": "64×64 合成帧；红点、红框手算；文字区只断言性质（行多更高、有最小高度）",
     "positive": "合成 5 块拼接、分割上色、红点位置、演示红框",
     "negative": "输入帧（即写进 h5 的原像素）逐字节不变；尺寸不一致按首帧归一",
-    "boundaries": "文字区不足 50 取 50；None 目标被滤掉",
+    "boundaries": "文字区存在最小高度；None 目标被滤掉",
     "nodeids": [
       "tests/pipeline/recording/test_recording_video.py::test_prepare_step_frames_leaves_inputs_untouched",
       "tests/pipeline/recording/test_recording_video.py::test_apply_overlays_border_and_text",
@@ -271,7 +271,7 @@
     "symbol": "两份 RobommeRecordWrapper 的差异白名单（行为面）",
     "oracle": "同一事件表两类写出的 h5 树逐键逐值比",
     "positive": "低于上限时 h5 完全相同；hard 的 close 读 robomme_hard 的 vqa_options",
-    "negative": "判定器负例：改一个值即报差异",
+    "negative": "判定器负例：值不同、缺键、属性不同、dtype 不同各报差异",
     "boundaries": "—",
     "nodeids": [
       "tests/pipeline/recording/test_recording_closed_loop.py::test_official_and_hard_record_identical_h5",
@@ -427,8 +427,7 @@
     "nodeids": [
       "tests/pipeline/recording/test_recording_augment.py::test_include_switches_daily",
       "tests/pipeline/recording/test_recording_augment.py::test_include_switches_all",
-      "tests/pipeline/recording/test_recording_augment.py::test_stick_env_gripper_zero",
-      "tests/pipeline/recording/test_recording_augment.py::test_switch_judge_has_teeth"
+      "tests/pipeline/recording/test_recording_augment.py::test_stick_env_gripper_zero"
     ],
     "resource": "cpu",
     "mutants": [

@@ -157,8 +157,8 @@ def test_stick_env_gripper_zero(demo_mod, env_id):
     assert new_obs["gripper_state_list"].dtype == np.float64
 
 
-def test_switch_judge_has_teeth():
-    """负例：日常 18 组互不重复，且确实覆盖每个开关的单开与单关。"""
+def test_switch_fixture_self_check():
+    """夹具自检（不是生产判定器的负例）：日常 18 组互不重复、覆盖每个开关的单开与单关；全组合恰 2^8 组。"""
     combos = _combos_daily()
     assert len(set(combos)) == len(combos) == 2 + 2 * len(SWITCHES)
     assert len(set(_combos_all())) == 2 ** len(SWITCHES)

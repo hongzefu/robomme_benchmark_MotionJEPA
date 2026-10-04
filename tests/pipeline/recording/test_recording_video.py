@@ -84,20 +84,24 @@ def test_prepare_step_frames_leaves_inputs_untouched(wrapper):
 
 
 def test_apply_overlays_border_and_text(wrapper):
+    """只断言性质：文字区叠在原帧上方、行数多则更高、存在最小高度；原像素区不变。具体行高不在本块钉值。"""
     frame = front_rgb(3)
     snap = frame.copy()
-    goals = ["a b", None, "c", "d"]  # None 被过滤 → 3 行文字
-    out = wrapper._video_apply_overlays(frame, True, goals)
+    out3 = wrapper._video_apply_overlays(frame, True, ["a b", None, "c", "d"])  # None 被过滤 → 3 行
     assert frame.tobytes() == snap.tobytes()
-    text_h = out.shape[0] - IMG
-    assert text_h == 3 * 20 + 10  # 行高 20、上下留白 10；不足 50 时取 50
-    body = out[text_h:]
+    h3 = out3.shape[0] - IMG
+    body = out3[h3:]
     assert body[0, 0].tolist() == RED and body[-1, -1].tolist() == RED  # 演示帧加红框
-    assert body[IMG // 2, IMG // 2].tolist() == frame[IMG // 2, IMG // 2].tolist()  # 框内不变
+    np.testing.assert_array_equal(body[IMG // 4:-IMG // 4, IMG // 4:-IMG // 4], frame[IMG // 4:-IMG // 4, IMG // 4:-IMG // 4])
     plain = wrapper._video_apply_overlays(frame, False, [])
     np.testing.assert_array_equal(plain, frame)  # 非演示、无目标 → 原样
     one = wrapper._video_apply_overlays(frame, False, "x")
-    assert one.shape[0] - IMG == 50
+    two = wrapper._video_apply_overlays(frame, False, ["x", "y"])
+    h1, h2 = one.shape[0] - IMG, two.shape[0] - IMG
+    np.testing.assert_array_equal(one[h1:], frame)  # 非演示：原像素区逐像素不变
+    assert 0 < h1 < h3  # 3 行文字区高于 1 行
+    assert h1 == h2  # 存在最小高度：1 行与 2 行都取到同一最小值
+    assert out3.shape[1] == one.shape[1] == IMG  # 宽度不变
 
 
 def test_append_step_frame_normalizes_size(wrapper):

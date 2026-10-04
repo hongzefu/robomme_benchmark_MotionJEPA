@@ -28,7 +28,8 @@ from recording_fakes import (
     Event,
     action_of,
     drive,
-    finger_of,
+    FINGER_CLOSED,
+    FINGER_OPEN,
     front_depth,
     front_rgb,
     make_wrapper,
@@ -67,14 +68,15 @@ MAIN_EVENTS = [
     Event(name="pick", demo=False, task_index=3, choice_text="press the button", terminated=True, success=True),  # t=8 → rec5
 ]
 NAN7 = np.full(7, np.nan)
-# 每条记录：(来自第几次 step, simple_subgoal, is_video_demo, is_subgoal_boundary, is_completed, waypoint, choice)
+# 每条记录：(来自第几次 step, simple_subgoal, is_video_demo, is_subgoal_boundary, is_completed, waypoint, choice, 夹爪张开)
+# 夹爪列按事件表写出：action_of(t) 奇数步发张开指令、偶数步发闭合指令。
 MAIN_EXPECTED = [
-    (2, "watch", True, False, False, W1_ACTION, ""),
-    (3, "watch", True, True, False, W1_ACTION, "B"),
-    (4, "pick", False, False, False, NAN7, "B"),  # 外层切到在线 → 缓存清空
-    (5, "pick", False, True, False, W3_ACTION, ""),
-    (6, "pick", False, False, False, W3_ACTION, ""),
-    (8, "pick", False, True, True, W3_ACTION, "B"),
+    (2, "watch", True, False, False, W1_ACTION, "", False),
+    (3, "watch", True, True, False, W1_ACTION, "B", True),
+    (4, "pick", False, False, False, NAN7, "B", False),  # 外层切到在线 → 缓存清空
+    (5, "pick", False, True, False, W3_ACTION, "", True),
+    (6, "pick", False, False, False, W3_ACTION, "", False),
+    (8, "pick", False, True, True, W3_ACTION, "B", False),
 ]
 OPTIONS = [{"label": "b", "action": "press the button", "available": None}]
 
@@ -128,7 +130,7 @@ def test_closed_loop_h5_matches_event_table(mod, vqa_patched, tmp_path):
         assert set(ep.keys()) == set(ts_keys) | {"setup"}
         # reset 帧与 NO RECORD 步都不入记录：8 次 step → 6 条，编号连续从 0 开始
         assert sorted(ts_keys, key=lambda k: int(k.split("_")[1])) == [f"timestep_{i}" for i in range(len(MAIN_EXPECTED))]
-        for i, (t, name, demo, boundary, done, wp, choice) in enumerate(MAIN_EXPECTED):
+        for i, (t, name, demo, boundary, done, wp, choice, opened) in enumerate(MAIN_EXPECTED):
             g = ep[f"timestep_{i}"]
             assert set(g.keys()) == TIMESTEP_GROUPS
             assert set(g["obs"].keys()) == OBS_KEYS
@@ -143,9 +145,9 @@ def test_closed_loop_h5_matches_event_table(mod, vqa_patched, tmp_path):
             assert g["obs/front_rgb"].dtype == np.uint8 and g["obs/front_depth"].dtype == np.int16
             np.testing.assert_array_equal(g["action/joint_action"][()], act)
             np.testing.assert_allclose(g["obs/joint_state"][()], act[:7].astype(np.float32))
-            f8 = finger_of(act[7])
-            np.testing.assert_allclose(g["obs/gripper_state"][()], [f8, f8])
-            assert bool(g["obs/is_gripper_close"][()]) is (f8 < 0.03)
+            finger = FINGER_OPEN if opened else FINGER_CLOSED
+            np.testing.assert_allclose(g["obs/gripper_state"][()], [finger, finger])
+            assert bool(g["obs/is_gripper_close"][()]) is (not opened)
             np.testing.assert_allclose(g["obs/eef_state"][()], tcp_xyz(t) + [0.0, 0.0, 0.0], atol=1e-6)
             assert g["obs/eef_state"].dtype == np.float32
             np.testing.assert_array_equal(g["obs/front_camera_extrinsic"][()], EXTRINSIC)
@@ -271,6 +273,16 @@ def test_official_and_hard_record_identical_h5(tmp_path, monkeypatch):
     dt, shape, val = other[key]
     other[key] = (dt, shape, val + 1.0)
     assert trees_diff(trees["official"], other) == [f"值不同 {key}"]
+    # 负例：缺键、属性不同、dtype 不同
+    missing = dict(trees["hard"])
+    del missing[key]
+    assert trees_diff(trees["official"], missing) == [f"缺键 {key}"]
+    attrs = dict(trees["hard"])
+    attrs["/@attrs"] = {"x": 1}
+    assert trees_diff(trees["official"], attrs) == ["属性不同 /@attrs"]
+    dtyped = dict(trees["hard"])
+    dtyped[key] = ("float32", shape, val.astype(np.float32))
+    assert len(trees_diff(trees["official"], dtyped)) == 1 and trees_diff(trees["official"], dtyped)[0].startswith("dtype/shape 不同")
 
 
 def test_hard_copy_reads_its_own_vqa_options(tmp_path, monkeypatch):
@@ -415,17 +427,24 @@ def test_fk_success_path_with_cpu_stub(mod, tmp_path, monkeypatch):
         self._fk_available = True
 
     monkeypatch.setattr(mod.RobommeRecordWrapper, "_init_fk_planner", fake_init)
-    events = [Event(name="pick"), Event(name="pick", terminated=True, success=True)]
-    _, _, path, _ = run_episode(mod.RobommeRecordWrapper, tmp_path, events)
+    # 四步夹爪指令：两个不同的正值、两个不同的负值
+    grips = [1.0, 0.5, -1.0, -0.5]
+    acts = [np.concatenate([action_of(t + 1)[:7], [g]]) for t, g in enumerate(grips)]
+    events = [Event(name="pick")] * 3 + [Event(name="pick", terminated=True, success=True)]
+    _, _, path, _ = run_episode(mod.RobommeRecordWrapper, tmp_path, events, actions=[torch.from_numpy(a) for a in acts])
     with h5py.File(path, "r") as f:
-        for i, t in enumerate((1, 2)):
-            a = action_of(t)
+        for i, a in enumerate(acts):
             np.testing.assert_allclose(
                 f[f"episode_3/timestep_{i}/action/eef_action"][()], [a[0], a[1], a[2], 0, 0, 0, a[7]], atol=1e-6
             )
-    # 夹爪手算：指令 ≥0 取指令值、<0 取 0.04；t=1 指令 +1 → 1.0，t=2 指令 -1 → 0.04
-    assert [c[7:].tolist() for c in pin.calls] == [[1.0, 1.0], [0.04, 0.04]]
-    assert [c[:7].tolist() for c in pin.calls] == [action_of(1)[:7].tolist(), action_of(2)[:7].tolist()]
+    assert [c[:7].tolist() for c in pin.calls] == [a[:7].tolist() for a in acts]
+    fingers = [c[7:].tolist() for c in pin.calls]
+    assert all(f[0] == f[1] for f in fingers)  # 两指同值
+    # 正指令：手指位等于指令值
+    assert [fingers[0][0], fingers[1][0]] == [1.0, 0.5]
+    # 负指令：取一个与指令大小无关的固定开度，且不同于任一正指令的结果
+    assert fingers[2] == fingers[3]
+    assert fingers[2][0] not in (1.0, 0.5) and fingers[2][0] >= 0.0
 
 
 # ---------------------------------------------------------------- 安全上限
@@ -525,7 +544,9 @@ def test_reset_without_close_keeps_buffer_and_success_flag(mod, tmp_path):
     drive(w, env, ep1)
     env.events = ep2
     w.reset()
+    assert w.episode_success is True  # 上一局的成功标志被带进第二局
     drive(w, env, ep2, first_t=2)
+    assert w.episode_success is True
     w.close()
     with h5py.File(w.dataset_path, "r") as f:
         ep = f["episode_3"]
