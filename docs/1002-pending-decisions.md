@@ -27,6 +27,7 @@
 | D1 | PickXtimes、StopCube、PickHighlight 两模型全 0 成功，未诊断 | 10-02 V8 评估 | 视需要立项诊断 |
 | D2 | V7.5 预算超额事后追认 | 09-30 V7.5 | 追认 |
 | D3 | V8 评估各轮审查遗留的小问题 | 10-02 V8 评估 | 视需要小修 |
+| D4 | 挑战接口 `challenge_interface/scripts/phase1_eval.py` 四处缺陷（成功判定按子串、reset 等待不重询、异常不 close、IK 失败空观测崩溃） | 10-04 测试重构 T8a | 先不修（用户 10-04），测试锁定现状 |
 | E1 | 「shared 步骤结束会把卡重置为独占」未写入规则 | 09-30 V7.5 | 写入正本与 `docs/greatlakes.md` |
 | F1 | 本机 5 个站点服务的去留 | 09-28 起 | 只留 8081、8082 |
 | F2 | 8081／8082 站紫色「语义调整」小标签留不留 | 10-02 V8 站点 | 由用户定 |
@@ -349,6 +350,20 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 - 证据：12.309～12.312 各合并提交 body 中的审查 findings。待定：是否开一个小修计划。
 
 ---
+
+### D4 挑战接口 phase1_eval.py 四处缺陷（2026-10-04 测试重构 T8a 发现，先不修）
+
+来源：维护计划第二步 T8a 写挑战接口测试（`tests/pipeline/challenge/`）时实测发现；T8a 在隔离副本里按下列修法改后 81 个非慢用例全过，说明缺陷可修、测试本身无误。
+
+- **D4-1 成功判定按子串**：`_is_success` 写作 `s == "success" or ("success" in s and "fail" not in s)`，`unsuccessful`、`not_success`、`success_pending`、`partial_success` 都计为成功，成功率可能虚高。修法：`return s == "success"`（只会让成功数变少）。
+- **D4-2 reset 等待永不重询**：`run_episode` 中 `while not resp.get("reset_finished"): time.sleep(0.1)` 从不重新调用 `client.reset()`，服务端首次回复未就绪即永久空转。修法：循环内重询并设次数上限，超限报错。
+- **D4-3 异常时不 close**：单局抛异常时 `env.close()` 不执行（无 try/finally）。
+- **D4-4 IK 失败崩溃**：`EndeffectorDemonstrationWrapper` IK 失败返回空观测 `{}` 加 `status=error`，`phase1_eval` 取 `obs["front_rgb_list"]` 报 KeyError，整个评估中止，而不是把该局记为 error。
+- 另记（未立用例）：WebSocket 客户端 `PolicyClient.infer`／`reset` 无应用层超时，服务端挂住时只能等 `ping_timeout=100` s；`deploy.py` 顶层导入 `server_http`，缺 flask 时 websocket 模式也起不来。
+
+现状：测试以 `known_defect_D<n>` 命名的用例锁定上述现状行为，契约清单对应条目（C14-10、C14-12、C14-13）记 `blocked` 并注明「用户 2026-10-04 裁决不修」。以后决定修时，改生产代码并把这些用例的断言反转即可。
+
+**裁决**：2026-10-04「都不修」「先不休把这个作为之后的代定项。」
 
 ## E 类：规则
 
