@@ -294,6 +294,9 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 
 ---
 
+
+**结案**：2026-10-04 维护计划第二步把旧测试（tests/lightweight、tests/dataset）整体删除（用户「旧测试完全放弃。不作为基准」），按契约重写；这 4 + 2 个长期失败随旧测试一并作废，其中「EndeffectorDemonstrationWrapper IK 失败显式返回 status=error」按官方行为写进新测试（tests/unit/robomme/test_fail_paths.py）。
+
 ### C2 核心短测整体未维护（2026-10-02 新增，待定）
 
 用户原话：「现在的短测问题非常多，没有维护过。把所有短测维护问题也写入待定。」「不要再每次都跑核心短测了，时间太长了。」以下为 2026-10-02 只读盘点（`tests/lightweight/` 98 个 `.py`，`pytest --collect-only` 1874 条）得到的问题清单，全部待定、本轮不改：
@@ -310,6 +313,9 @@ XHARD0_EVAL_PARITY=INFO policy=simplememvla compared=192 status_diff=0 steps_dif
 9. **12.341 新增的小缺口**（S2 审查 findings）：`hard_regression.py::cmd_xhard0_reset_parity` 关档时的 `SystemExit`、`export_eval_identities.py` 关档时 `official=skipped` 路径没有测试覆盖；`export_eval_identities.py` docstring／`--official-out` help 仍有「192 局」「V9 必须显式给」旧叙述。
 
 **建议处置顺序**：先定 1（拆核心集、改 AGENTS.md 第 4 条覆盖项的命令），再清 2（修或删 6 个失败），3～5 随「旧代码去留」（用户 2026-10-02 已定本轮「代码不改了」）一并决定，6～8 顺手。全部待用户裁决。
+
+
+**结案**：2026-10-04 新测试按六层结构重建，日常门禁 `pytest -m 'not slow'` 实测约 2600 用例、120 s（硬上限 280 s 内），慢测试约 3 分钟，仿真冒烟 60 次 reset 约 4 分钟；口径写入 AGENTS.md「覆盖第 4 条」。
 
 ## D 类：评估结果与预算
 

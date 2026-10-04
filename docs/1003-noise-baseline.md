@@ -95,7 +95,37 @@ GEN_PAIR=INFO ref=O-xhard0-bucket new=x0-b n=48 byte_equal=46 diverge=0 gen_fail
 
 结论：跨节点重复时，xhard0 能成功的 46 局零噪声；V9 129 局里只有 1 局会抖。与永久参照相比翻转最多 2/129（1.6%），远低于 10%。
 
-## 六、判据：翻转少于 10%（用户 2026-10-03 定）
+## 六、判据：逐局 sha + 翻转重跑确认（2026-10-03 用户选定，2026-10-04 首次实用）
+
+用户原话：「给我你现在的噪声闸门我用户订的是10不一致你能不能订一个更加准确的闸门。」四格定性表与预算经 AskUserQuestion 确认（计划 `1003-code-test-maintenance-todo.md` 对拍细则 3.2～3.4）。旧的「翻转少于 10%」判据原文保留在本节末尾，作为历史记录。
+
+以后改了代码（只测生成噪声，第一节），按下面判：
+
+1. **参照**：`scripts/configs/noise-ref-20261003.json`（由 `noise_gate.py gen-regress build-ref` 从本轮四遍 h5 重算生成，`NOISE_REF=PASS v9=stable:128,known_fail:0,jitter:1 xhard0=stable:46,known_fail:2,jitter:0 records_checked=708 mismatches=0 partial=0`）。每局一类期望：
+   - **稳定局**（V9 128、xhard0 46）：新跑 sha ∈ 基线两遍 sha；
+   - **确定性失败局**（xhard0 VideoPlaceOrder seed 610701、611101）：新跑也失败且失败产物 sha 相同；
+   - **已知抖动局**（V9 BinFill xhard1 seed 16400000）：只报告，不判定。
+2. **跑什么**：GL A40、每遍 `--workers 4`，用改后代码把 V9 `43 格 × 3 局 = 129`、xhard0 `16 任务 × 1 档 × 3 局 = 48` 各生成一遍（第七节命令），`generate --expect-ref <参照>` 边生成边判定（match 的局在节点上删掉、不回传；翻转局写 `flips.jsonl` 并打印 `EPISODE_FLIP`）。跑之前把局数与预算报给用户获准（P3）。
+3. **首跑判定**：`noise_gate.py gen-regress check --ref <参照> --set {v9,xhard0} --new <首跑根> --out <jsonl> --rerun-identities-out <jsonl>`。无翻转直接 `GEN_REGRESS=PASS`；有翻转（≤10 局）输出 `GEN_REGRESS=NEED_RERUN` 与重跑清单（不足 4 局按同档优先补陪跑局，`filler=true`，陪跑只报告）；翻转 >10 局直接 FAIL 交用户。
+4. **第二次跑与四格定性**：在**同一节点**上用改后代码与旧代码（噪声基线锚点 `f8f76fba`）各跑一次重跑清单，再 `gen-regress check … --rerun-new <根> --rerun-old <根>`：
+
+   | 改后代码第二次 | 旧代码这一次 | 定性 |
+   |---|---|---|
+   | 回到基线 | 不看 | 噪声 |
+   | 与第一次相同、不同于基线 | 回到基线 | 回归（代码改坏了） |
+   | 与第一次相同、不同于基线 | 也不同于基线 | 环境变了，交用户 |
+   | 与第一次也不同 | — | 每次都不同，交用户 |
+
+5. **通过条件**（两集合各自）：回归、环境变了、每次都不同都为 0；确认为噪声的翻转 V9 ≤ 2、xhard0 ≤ 1；结构不同与原因不明为 0（一局即 FAIL）。
+6. **跑法前提**（不满足判 INVALID、重跑）：GL A40、`--workers 4`、每局都有结果、启动记录含 host（缺 host 判 INVALID，12.407）、第二次跑与首跑同节点、`RUN_FRESH=PASS`、`BUDGET=PASS`。
+7. 不通过时把逐局明细（`<out>.episodes.md`；本机 `--local-ref-root artifacts/noise-baseline/gen` 可细分 structural／diverge／gen_fail 并给分叉步）交用户裁决，不改参照、不改判据。第三次跑默认不跑。
+
+**首次实用（维护计划第三步，2026-10-04）**：xhard0 `GEN_REGRESS=PASS n=48 match=48`；V9 `GEN_REGRESS=FAIL … match=127 jitter=1 flip=1 regression=0 env_changed=1`——唯一翻转局 MoveCube xhard4 seed 23400200 在 gl1525 上改后与旧代码逐字节相同、与基线不同（第 376 步分叉），待用户裁决（`docs/1002-pending-decisions.md` D7；留档 `docs/validation/maintenance-regress-20261004/README.md`）。
+
+**限制**：只在 GL A40 上成立；PASS 只说明这 177 局没有检出超出噪声的变化，不证明全部 800 局逐字节等价。
+
+### 历史判据（2026-10-03，已被上文取代）
+
 
 用户原话：「现在这样的有限翻转可以接受。就是只要翻转少于百分之10我觉得都然后你把这个写入docs」。
 
@@ -128,15 +158,23 @@ srun --jobid=<占位作业> --overlap --exact --ntasks=1 --cpus-per-task=4 --gpu
     --attempts 129 --resets 387 --retries 0 -- \
   <克隆>/.venv/bin/python <克隆>/scripts/parity/hard_parity.py generate --side H2 --tier v9 \
     --manifest delivery.local.json --identities v9-129-generate.jsonl --specs-root <V9 规格根> \
-    --src-root <克隆> --workers 4 --gpu 0 --out /tmp/<遍名> --stage <NFS>/gen/<遍名>
+    --src-root <克隆> --workers 4 --gpu 0 --out /tmp/<遍名> --stage <NFS>/gen/<遍名> \
+    --expect-ref <克隆>/scripts/configs/noise-ref-20261003.json   # 边生成边判定（改后代码；旧代码 f8f76fba 无此参数）
 # xhard0：另设 ROBOMME_HARD_XHARD0_IN_TEST_HARD=1，--side H --tier xhard0 --manifest scripts/configs/xhard0/xhard0_manifest.json --identities x0-48-generate.jsonl（不给 --specs-root）
 # 身份清单：uv run --no-sync python scripts/parity/gate_set.py export --set {v9,xhard0} --kind generate --out <文件>
 # 收尾（辅助步骤不带 --gpu_cmode=shared）：srun --jobid=<占位作业> --overlap --ntasks=1 <克隆>/.venv/bin/python <克隆>/scripts/parity/noise_run.py ship --src /tmp/<遍名> --stage <NFS>/gen/<遍名> --finalize
-# 本机拉回：uv run --no-sync python scripts/parity/hard_pull.py --stage <NFS>/gen --dest artifacts/<目录> --segments <遍名,...>
-# 比较：uv run --no-sync python scripts/parity/noise_gate.py gen-compare --ref <参照> --new artifacts/<目录>/<遍名> --identities scripts/configs/gate-set-v9-129.json --out <jsonl>
+# 首跑判定（读 NFS 暂存的 identities.jsonl，秒级）：
+#   uv run --no-sync python scripts/parity/noise_gate.py gen-regress check --ref scripts/configs/noise-ref-20261003.json \
+#     --set v9 --new <NFS>/gen/<首跑> --out <jsonl> --rerun-identities-out <重跑清单>
+# NEED_RERUN 时同一席位串行：改后代码与旧代码各跑一遍重跑清单（--identities <重跑清单>），再
+#   gen-regress check … --rerun-new <NFS>/gen/<改后第二次> --rerun-old <NFS>/gen/<旧代码>
+# 只回传翻转局：uv run --no-sync python scripts/parity/hard_pull.py --stage <NFS>/gen --dest artifacts/<目录> \
+#     --segments <首跑,改后第二次,旧代码> --identities <flips.jsonl>（空清单只拉报告）
+# 本机细分（分叉步）：gen-regress check … --local-ref-root artifacts/noise-baseline/gen
+# 与 V9 交付 h5 的附带比较（只报告）：noise_gate.py gen-compare --ref <参照> --new <根> --identities scripts/configs/gate-set-v9-129.json --out <jsonl>
 ```
 
-本轮的 GL 侧脚本（`launch.sh`、`pass.sh`）与逐字命令留档在 `docs/validation/noise-baseline-20261003/README.md`。
+本轮的 GL 侧脚本（`launch.sh`、`pass.sh`）与逐字命令留档在 `docs/validation/noise-baseline-20261003/README.md`；按新闸门的首次实用（含改后／旧代码两份检出的单遍脚本、串行链、第二次跑）留档在 `docs/validation/maintenance-regress-20261004/README.md`。
 
 ## 八、实施记录
 
