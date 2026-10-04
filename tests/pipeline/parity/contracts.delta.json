@@ -318,7 +318,7 @@
     "status": "verified"
   },
   {
-    "id": "C16.01",
+    "id": "C16.03",
     "domain": "C16",
     "source": [
       "scripts/parity/noise_run_gl.sh"
