@@ -2,15 +2,10 @@
   {
     "id": "M19",
     "target": "challenge_interface/scripts/phase1_eval.py::_is_success",
-    "method": "把含 success 字样的错误状态计成功——即当前生产实现 `s == \"success\" or (\"success\" in s and \"fail\" not in s)`。反向自检：隔离副本里改成 `s == \"success\"` 后下列用例全部通过",
-    "expected_failing": [
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_is_success_rejects_statuses_merely_containing_success[unsuccessful]",
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_is_success_rejects_statuses_merely_containing_success[not_success]",
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_is_success_rejects_statuses_merely_containing_success[success_pending]",
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_is_success_rejects_statuses_merely_containing_success[partial_success]",
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_main_metrics_do_not_count_success_substring_statuses"
-    ],
-    "result": "生产即植入态：5 个用例在当前生产上失败；修复副本上全部通过"
+    "method": "把含 success 字样的错误状态计成功——即当前生产实现 `s == \"success\" or (\"success\" in s and \"fail\" not in s)`",
+    "expected_failing": [],
+    "result": "生产代码现状即植入态，用户裁决不修，不计入抓获统计。现状由 test_known_defect_D1_is_success_counts_success_substrings 与 test_known_defect_D1_main_metrics_count_success_substrings 锁定；反向自检（修复副本上精确匹配用例通过）见 T8a 首个 commit body",
+    "decision": "用户 2026-10-04 裁决不修"
   },
   {
     "id": "M19b",

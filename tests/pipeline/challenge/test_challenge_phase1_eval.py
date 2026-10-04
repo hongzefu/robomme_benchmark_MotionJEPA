@@ -7,6 +7,10 @@
 成功判定口径（计划 C14）：只有状态恰为 ``success`` 才计成功，``unsuccessful``／``not_success``／
 ``success_pending`` 等含 success 字样的状态不得计成功；分母固定为「任务数 × 每任务局数」，
 失败、异常、超时都在分母里。
+
+生产现状与上述口径不符的四处（D1 子串计成功、D2 reset 等待不重新询问、D3 异常不关环境、
+D4 空观测 error 终态抛 KeyError）经用户 2026-10-04 裁决不修，以 ``test_known_defect_D<n>_*``
+用例锁定现状（契约 C14-10／12／13 记 blocked）；现状一旦改变这些用例即失败，届时同步改契约。
 """
 from __future__ import annotations
 
@@ -154,9 +158,13 @@ def test_is_success_accepts_exact_success():
 
 
 @pytest.mark.parametrize("status", ["unsuccessful", "not_success", "success_pending", "partial_success"])
-def test_is_success_rejects_statuses_merely_containing_success(status):
-    """M19：含 success 字样但不是 success 的状态不得计成功（精确匹配）。"""
-    assert p._is_success(status) is False, f"状态 {status!r} 被计成功"
+def test_known_defect_D1_is_success_counts_success_substrings(status):
+    """已知缺陷 D1（锁定现状）：``_is_success`` 按子串判定，含 success 且不含 fail 的状态都计成功。
+
+    正确行为应当是：只有状态恰为 ``success`` 才计成功（精确匹配），这四种状态都不计。
+    用户 2026-10-04 裁决不修；本用例锁定现状，现状一旦改变即失败，提醒同步更新契约 C14-10。
+    """
+    assert p._is_success(status) is True
 
 
 # ---------------------------------------------------------------- 单局协议
@@ -210,61 +218,85 @@ def test_run_episode_rejects_wrong_action_shape(no_video):
     assert B.envs[0].actions == []
 
 
-class _Spin(Exception):
-    pass
+def test_known_defect_D2_reset_wait_never_repolls(no_video, monkeypatch):
+    """已知缺陷 D2（锁定现状）：reset 回复缺 ``reset_finished`` 时，``run_episode`` 只调用一次
+    ``client.reset()``，之后在 ``while`` 里反复 sleep 而不更新回复，永远等不到确认。
 
+    正确行为应当是：等待期间重新询问 reset，并在有限次后报错且不开局。
+    用户 2026-10-04 裁决不修。观察方式：在线程里跑本局，phase1_eval 看到的 sleep 换成计数器；
+    观察到至少 20 次等待后令计数器抛出停止信号，让线程有限结束（全程有超时，不会挂死）。
+    """
+    import threading
 
-def _spin_guard(monkeypatch, budget: int = 10000) -> list:
-    """把 phase1_eval 看到的 time.sleep 换成计数器（不真睡）；超过 budget 次判为空转。"""
+    class _Stop(Exception):
+        pass
+
     sleeps: list = []
+    stop = threading.Event()
+    enough = threading.Event()
 
     def fake_sleep(sec):
         sleeps.append(sec)
-        if len(sleeps) >= budget:
-            raise _Spin
+        if len(sleeps) >= 20:
+            enough.set()
+        if stop.is_set() or len(sleeps) >= 100000:
+            raise _Stop
+        if enough.is_set():
+            stop.wait(0.01)
 
     monkeypatch.setattr(p, "time", SimpleNamespace(sleep=fake_sleep, time=lambda: 0.0))
-    return sleeps
-
-
-def test_reset_wait_repolls_until_acknowledged(no_video, monkeypatch):
-    """reset 第一次回复缺 ``reset_finished``、第二次才确认：等待应重新询问并继续本局。"""
-    sleeps = _spin_guard(monkeypatch)
     B = make_builder_cls({("TaskA", 0): {"status": "success", "steps": 1}})
+    # 第二次起回复确认：若实现会重新询问，就会在第二次拿到确认并开局。
     c = FakeClient(chunk=1, reset_replies=[{}, {"reset_finished": True}])
+    result: dict = {}
+
+    def _target():
+        try:
+            result["value"] = _run_episode(c, B)
+        except _Stop:
+            result["stopped"] = True
+        except BaseException as e:  # noqa: BLE001
+            result["error"] = e
+
+    t = threading.Thread(target=_target, daemon=True)
+    t.start()
     try:
-        outcome, _, _ = _run_episode(c, B)
-    except _Spin:
-        pytest.fail(f"reset 等待空转 {len(sleeps)} 次、只询问了 {c.reset_calls} 次 reset，不会重新询问")
-    assert outcome == "success"
-    assert c.reset_calls == 2
+        assert enough.wait(5), "5 s 内未观察到 reset 等待"
+        # 观察窗口内：仍在等待、只问过一次 reset、尚未开局。
+        assert t.is_alive()
+        assert c.reset_calls == 1
+        assert B.envs == []
+    finally:
+        stop.set()
+        t.join(5)
+    assert not t.is_alive(), "停止信号发出后线程未在 5 s 内结束"
+    assert result == {"stopped": True}
+    assert c.reset_calls == 1
 
 
-def test_reset_wait_ends_in_finite_time_when_never_acknowledged(no_video, monkeypatch):
-    """服务端始终不确认 reset：等待必须有限结束并报错，且不得开始本局。"""
-    sleeps = _spin_guard(monkeypatch)
-    B = make_builder_cls({("TaskA", 0): {"status": "success", "steps": 1}})
-    c = FakeClient(chunk=1, reset_replies=[{}])
-    with pytest.raises(Exception) as ei:
-        _run_episode(c, B)
-    assert not isinstance(ei.value, _Spin), f"reset 等待空转 {len(sleeps)} 次仍未结束"
-    assert B.envs == []
+def test_known_defect_D3_env_not_closed_when_episode_raises(no_video):
+    """已知缺陷 D3（锁定现状）：单局中途抛异常（仿真故障）时 ``run_episode`` 没有 try/finally，
+    ``env.close()`` 不会被调用。
 
-
-def test_env_closed_when_episode_raises(no_video):
-    """单局异常（仿真故障）时环境仍须关闭。"""
+    正确行为应当是：无论正常结束还是异常退出，环境都要关闭。用户 2026-10-04 裁决不修。
+    """
     B = make_builder_cls({("TaskA", 0): {"status": "success", "steps": 5, "raise_at": 2}})
     with pytest.raises(RuntimeError, match="替身环境故障"):
         _run_episode(FakeClient(chunk=3), B)
-    assert B.envs[0].closed is True, "异常退出后环境未关闭"
+    assert B.envs[0].closed is False
 
 
-def test_error_status_with_empty_obs_is_an_outcome_not_a_crash(no_video):
-    """IK 失败返回空观测 + status=error 时，该局应以 error 结果收尾（计入分母、不计成功），而不是让评估崩溃。"""
+def test_known_defect_D4_error_status_empty_obs_raises_keyerror(no_video):
+    """已知缺陷 D4（锁定现状）：IK 失败时环境返回空观测 ``{}`` + ``status=error``，``run_episode``
+    随即取 ``obs["front_rgb_list"]`` 抛 KeyError，整个评估中止。
+
+    正确行为应当是：该局以 ``error`` 结果收尾、计入分母、不计成功，并关闭环境。
+    用户 2026-10-04 裁决不修。
+    """
     B = make_builder_cls({("TaskA", 0): {"status": "error", "steps": 2, "error_obs": True}})
-    outcome, _, _ = _run_episode(FakeClient(chunk=3), B)
-    assert outcome == "error"
-    assert B.envs[0].closed is True
+    with pytest.raises(KeyError, match="front_rgb_list"):
+        _run_episode(FakeClient(chunk=3), B)
+    assert B.envs[0].closed is False
 
 
 # ---------------------------------------------------------------- 全流程分母
@@ -324,8 +356,12 @@ def test_main_crash_writes_no_metrics_and_resume_keeps_denominator(monkeypatch, 
     assert metrics["overall"] == {"avg_success": 0.75, "total_success": 3, "total_episodes": 4}
 
 
-def test_main_metrics_do_not_count_success_substring_statuses(monkeypatch, tmp_path, no_video):
-    """M19 全流程版：四局状态里只有 1 局恰为 success。"""
+def test_known_defect_D1_main_metrics_count_success_substrings(monkeypatch, tmp_path, no_video):
+    """已知缺陷 D1 全流程版（锁定现状）：四局状态里只有 1 局恰为 success，但主评估指标把
+    ``unsuccessful``／``not_success``／``success_pending`` 也计入成功，得 4/4。
+
+    正确行为应当是 1/4（分母 4 不变）。用户 2026-10-04 裁决不修。
+    """
     scripts = {
         ("TaskA", 0): {"status": "unsuccessful", "steps": 1},
         ("TaskA", 1): {"status": "success", "steps": 1},
@@ -333,8 +369,7 @@ def test_main_metrics_do_not_count_success_substring_statuses(monkeypatch, tmp_p
         ("TaskB", 1): {"status": "success_pending", "steps": 1},
     }
     metrics, _ = _run_main(monkeypatch, tmp_path, make_builder_cls(scripts), FakeClient(chunk=1))
-    assert metrics["overall"]["total_success"] == 1
-    assert metrics["overall"]["total_episodes"] == 4
+    assert metrics["overall"] == {"avg_success": 1.0, "total_success": 4, "total_episodes": 4}
 
 
 def test_main_end_to_end_over_real_websocket(monkeypatch, tmp_path, no_video, ws_server):

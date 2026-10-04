@@ -17,7 +17,9 @@
       "tests/pipeline/challenge/test_challenge_codec.py::test_streaming_packer_matches_packb_bytes"
     ],
     "resource": "cpu",
-    "mutants": ["M19c"],
+    "mutants": [
+      "M19c"
+    ],
     "status": "verified"
   },
   {
@@ -72,7 +74,9 @@
       "tests/pipeline/challenge/test_challenge_websocket.py::test_reset_calls_policy_reset_only_and_acknowledges"
     ],
     "resource": "cpu-loopback",
-    "mutants": ["M19d"],
+    "mutants": [
+      "M19d"
+    ],
     "status": "verified"
   },
   {
@@ -96,7 +100,9 @@
       "tests/pipeline/challenge/test_challenge_websocket.py::test_connection_refused_waits_then_connects_when_server_appears"
     ],
     "resource": "cpu-loopback",
-    "mutants": ["M19f"],
+    "mutants": [
+      "M19f"
+    ],
     "status": "verified"
   },
   {
@@ -172,7 +178,9 @@
       "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_run_episode_rejects_wrong_action_shape"
     ],
     "resource": "cpu",
-    "mutants": ["M19g"],
+    "mutants": [
+      "M19g"
+    ],
     "status": "verified"
   },
   {
@@ -180,19 +188,24 @@
     "domain": "C14",
     "source": "challenge_interface/scripts/phase1_eval.py",
     "symbol": "_is_success / main 的 success_count",
-    "oracle": "只有状态恰为 success 计成功；fail/failed/timeout/ongoing/error/unknown/空/None/success_fail 不计；unsuccessful/not_success/success_pending/partial_success 也不计（精确匹配）。当前生产违反后一半（子串判定，缺陷 D1），对应 5 个用例失败",
+    "oracle": "只有状态恰为 success 计成功；fail/failed/timeout/ongoing/error/unknown/空/None/success_fail 不计（现状满足）。含 success 子串的状态现状被计成功，以 known_defect_D1 用例锁定现状",
     "positive": "success",
     "negative": "全部非 success 状态；植入 M19b（全计成功）",
     "boundaries": "含 success 子串且不含 fail 的状态",
     "nodeids": [
       "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_is_success_accepts_exact_success",
       "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_is_success_rejects_non_success_statuses",
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_is_success_rejects_statuses_merely_containing_success",
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_main_metrics_do_not_count_success_substring_statuses"
+      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_known_defect_D1_is_success_counts_success_substrings",
+      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_known_defect_D1_main_metrics_count_success_substrings"
     ],
     "resource": "cpu",
-    "mutants": ["M19", "M19b"],
-    "status": "planned"
+    "mutants": [
+      "M19",
+      "M19b"
+    ],
+    "status": "blocked",
+    "defect": "D1 现状：_is_success 写法为 s == 'success' or ('success' in s and 'fail' not in s)，unsuccessful／not_success／success_pending／partial_success 被计成功，主评估指标同样计入（四局一成功得 4/4）。正确行为：只有状态恰为 success 才计成功（应得 1/4）。",
+    "decision": "用户 2026-10-04 裁决不修"
   },
   {
     "id": "C14-11",
@@ -210,7 +223,9 @@
       "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_main_end_to_end_over_real_websocket"
     ],
     "resource": "cpu-loopback",
-    "mutants": ["M19e"],
+    "mutants": [
+      "M19e"
+    ],
     "status": "verified"
   },
   {
@@ -218,34 +233,37 @@
     "domain": "C14",
     "source": "challenge_interface/scripts/phase1_eval.py",
     "symbol": "run_episode 的 reset 等待循环",
-    "oracle": "reset 回复缺 reset_finished 时必须重新询问（第二次确认即继续）或在有限次后报错且不开局。当前生产只问一次、resp 不更新，永远空转（缺陷 D2），2 个用例失败",
+    "oracle": "reset 回复缺 reset_finished 时现状只调用一次 client.reset() 并永远空转；线程内观察至少 20 次等待后以停止信号有限结束，锁定现状",
     "positive": "第二次确认",
     "negative": "始终不确认",
     "boundaries": "sleep 替换为计数器，1 万次判空转",
     "nodeids": [
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_reset_wait_repolls_until_acknowledged",
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_reset_wait_ends_in_finite_time_when_never_acknowledged"
+      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_known_defect_D2_reset_wait_never_repolls"
     ],
     "resource": "cpu",
     "mutants": [],
-    "status": "planned"
+    "status": "blocked",
+    "defect": "D2 现状：run_episode 的 while not resp.get('reset_finished') 循环只 sleep 不更新 resp，reset 只问一次，未确认时永远等待。正确行为：等待期间重新询问 reset，有限次后报错且不开局。",
+    "decision": "用户 2026-10-04 裁决不修"
   },
   {
     "id": "C14-13",
     "domain": "C14",
     "source": "challenge_interface/scripts/phase1_eval.py",
     "symbol": "run_episode 的异常清理与 error 终态",
-    "oracle": "单局抛错时 env.close() 仍须执行（缺陷 D3）；IK 失败返回空观测 + status=error 时以 error 收尾、计入分母、不计成功，而不是 KeyError 崩溃（缺陷 D4）。当前生产两条都违反，2 个用例失败",
+    "oracle": "现状：单局抛异常时 env.close() 未调用；IK 失败空观测 + status=error 时抛 KeyError('front_rgb_list')；以 known_defect_D3／D4 用例锁定现状",
     "positive": "无（两条都是异常路径）",
     "negative": "仿真故障、空观测 error 终态",
     "boundaries": "空观测形态取自 EndeffectorDemonstrationWrapper 的 IK 失败返回",
     "nodeids": [
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_env_closed_when_episode_raises",
-      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_error_status_with_empty_obs_is_an_outcome_not_a_crash"
+      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_known_defect_D3_env_not_closed_when_episode_raises",
+      "tests/pipeline/challenge/test_challenge_phase1_eval.py::test_known_defect_D4_error_status_empty_obs_raises_keyerror"
     ],
     "resource": "cpu",
     "mutants": [],
-    "status": "planned"
+    "status": "blocked",
+    "defect": "D3 现状：run_episode 无 try/finally，单局异常时环境不关闭；正确行为：异常退出也关闭环境。D4 现状：EndeffectorDemonstrationWrapper IK 失败返回空观测 {}，phase1_eval 取 obs['front_rgb_list'] 抛 KeyError 使评估中止；正确行为：该局以 error 收尾、计入分母、不计成功并关闭环境。",
+    "decision": "用户 2026-10-04 裁决不修"
   },
   {
     "id": "C14-14",
