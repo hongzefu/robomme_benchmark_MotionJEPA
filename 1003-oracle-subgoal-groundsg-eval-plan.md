@@ -317,7 +317,7 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 - 模型以 vla-eval 的模型服务形式运行：`python -m ponderpounce.eval.robomme_server --args.checkpoint_path <目录> --port <端口>`；`GET /health` 返回 200 即权重已加载。
 - 协议（`vla_eval.protocol`、`vla_eval.connection.Connection`，0.7.0 与 HEAD 一致）：msgpack 二进制帧；`HELLO` 握手 → 每局 `EPISODE_START`（无应答）→ 循环 `OBSERVATION`／`ACTION` → `EPISODE_END`。图像默认 PNG 无损。
 - 驱动顺序（`vla_eval.runners.sync_runner.SyncEpisodeRunner.run_episode`）：`reset` → 首条观测（带 `video_history`、`task_description`）→ `for step in range(max_steps)`：发观测、收动作、`step`、已结束则 `break`（最后一帧不再发送）→ `EPISODE_END`。上限是恰好 `max_steps` 个动作。
-- 观测键（`benchmark.py::RoboMMEBenchmark.make_obs`）：`images.agentview`、`images.wrist`、`states`（7 关节 + 1 夹爪，float32）、`task_description`；首条另带 `video_history = front_rgb_list[:-1]`。返回 `{"actions": float32 (1, D)}`，环境取前 8 维。
+- 观测键（`benchmark.py::RoboMMEBenchmark.make_obs`）：`images.agentview`、`images.wrist`、`states`（7 关节 + 1 夹爪，float32）、`task_description`；首条另带 `video_history = front_rgb_list[:-1]`。返回 `{"actions": float32 (1, D)}`；vla-eval 的 `benchmark.py::step` 只展平、不截断，取前 8 维发生在环境侧（`src/robomme` 的 `DemonstrationWrapper` 与 `episode_dataset_resolver`）。2026-10-04 子模块入库后核实。
 - 服务类 `PonderPounceRoboMMEServer` 的文档串为 "one GPU, one process"，整模型放一个设备，两张卡不能把模型切开；默认 `seed: int = 0`；启动时读 checkpoint 目录里的 `norm_stats.json`。
 - 噪声种子 `crc32(f"{seed}:{sid}:{n}")`：`sid` 取 `EPISODE_START` 里的 `recording.sid`，缺省是每次启动随机的 uuid；`n` 是该 `sid` 在服务进程内的累计局数。官方默认下每次运行噪声都不同。
 - 官方评估用 Docker 加 CPU 软件渲染；vla-eval 支持不走 Docker 的进程内运行，`RoboMMEBenchmark.configure_render("gpu")` 不改任何环境变量。
@@ -332,7 +332,7 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 | 新 `scripts/eval-official/pp_official_runner.py` | 原侧。独立进程，只导入官方 `robomme`（同 1.3 的断言）；`RoboMMEBenchmark.configure_render("gpu")` → `RoboMMEBenchmark(tasks=[task], action_space="joint_angle", max_steps=1300)` → 对分片里每个 `source_episode` 调 `SyncEpisodeRunner().run_episode(bench, {**t, "episode_idx": ep}, conn, max_steps=1300, recorder=<固定 sid 的记录器>)`；外围自己处理 `TimeoutError`、`ConnectionClosed`、`RuntimeError` 并 `reconnect`；`SyncEpisodeRunner` 在不带录制库时不出视频，本驱动在外围委托包住 `bench.reset`／`bench.step`，把每步的 `front_rgb_list[-1]` 与腕部画面交给 `trace_writer` 记哈希并写成压缩视频 |
 | 固定 `sid` | xhard0：`<task>|<source_episode>|<seed>`；V9：`<task>|<tier>|<seed>`。两侧各起自己的服务进程，同一 `sid` 在一个进程内只用一次，保证 `n=0`；基础设施重试一律「先由席位脚本重启服务，再重发同一 `sid`」，驱动自己的 `reconnect` 只用于同一局内的断线、不重发 `EPISODE_START`。所有服务显式传 `--args.seed 0` 并记入 `launch.md` |
 | 两卡的含义 | 服务本体单卡放得下、加上仿真渲染才不够：把仿真与客户端进程放到第二张卡。模型本体单卡就放不下：没有切分能力，按第一部分第七节停线 |
-| 预检地点 | 本机驱动 `570.211.01` 低于 CUDA 13 构建要求的 580。本机按用户选定的做法 A：另建 `artifacts/sg-evaluation/pp-local-env/`（`UV_PROJECT_ENVIRONMENT` 指向它，不动 `third_party/PonderPounce/.venv` 与其 `uv.lock`），依赖照官方 `uv.lock` 解析，只把 torch 及其 CUDA 运行库换成**同一 torch 版本号**的 CUDA 12 构建；装好后打印 `torch.__version__`、`torch.version.cuda` 并跑 `torch.cuda.is_available()` 与一次空前向，判定行 `PP_LOCAL_ENV=PASS torch=<版本> cuda=12.x`。该 torch 版本没有 CUDA 12 构建、或空前向失败：本机 PonderPounce 停线并记入决策项（不升驱动、不改模型代码），GL 不受影响。本机的预检 4 局与第二档原侧、新侧都用这个环境；报告里标明「本机 PonderPounce 为 CUDA 12 构建」。GL 用官方环境，另在先拿到的单卡席位上跑 1 局 smoke 确认官方构建能加载（计入 GL smoke） |
+| 预检地点 | 本机驱动 `570.211.01` 低于 CUDA 13 构建要求的 580（上游 README 只写「CUDA 13 构建需要相应驱动」，580 是按 NVIDIA 的 CUDA 13 兼容表推断）。2026-10-04 实测 PyTorch 官方索引有 `torch-2.14.0+cu126`（无 cu128／cu129），本机用它。本机按用户选定的做法 A：另建 `artifacts/sg-evaluation/pp-local-env/`（`UV_PROJECT_ENVIRONMENT` 指向它，不动 `third_party/PonderPounce/.venv` 与其 `uv.lock`），依赖照官方 `uv.lock` 解析，只把 torch 及其 CUDA 运行库换成**同一 torch 版本号**的 CUDA 12 构建；装好后打印 `torch.__version__`、`torch.version.cuda` 并跑 `torch.cuda.is_available()` 与一次空前向，判定行 `PP_LOCAL_ENV=PASS torch=<版本> cuda=12.x`。该 torch 版本没有 CUDA 12 构建、或空前向失败：本机 PonderPounce 停线并记入决策项（不升驱动、不改模型代码），GL 不受影响。本机的预检 4 局与第二档原侧、新侧都用这个环境；报告里标明「本机 PonderPounce 为 CUDA 12 构建」。GL 用官方环境，另在先拿到的单卡席位上跑 1 局 smoke 确认官方构建能加载（计入 GL smoke） |
 | 步数 | xhard0 两侧都是恰好 1300 个动作（它的官方行为）；V9 `--max-steps 1600 --strict-cap` |
 | 渲染 | 两侧都用 GPU 渲染，与本仓库其他模型一致；与论文的 CPU 渲染设置不同，报告里写明成绩不能直接对照论文数字 |
 | 加速内核 | 预检时装与不装各测 1 局耗时（不装的那一局计入预检局数）；采用哪种由耗时决定，两侧与全部席位一致，并记入留档 |
@@ -343,12 +343,12 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 
 **官方行为（已核实，`examples/champ/`）**
 
-- `run.sh <cases.json> <新目录>`：要求 `VLA_PYTHON`、`SIM_PYTHON`、`VLA_CHECKPOINT`、`MONITOR_BASE`、`MONITOR_ADAPTER`、`OPENAI_API_KEY`；`VLA_GPU` 与 `MONITOR_GPU` 相同即 `exit 2`；`PYTHONPATH` 被覆盖为指向它自己子模块的 `src`；VLA 以 `--seed=42` 启动且拿不到密钥；输出目录已存在即拒绝。
+- `run.sh <cases.json> <新目录>`：要求 `VLA_PYTHON`、`SIM_PYTHON`、`VLA_CHECKPOINT`、`MONITOR_BASE`、`MONITOR_ADAPTER`、`OPENAI_API_KEY`；`VLA_GPU` 与 `MONITOR_GPU` 相同即 `exit 2`；`PYTHONPATH` 被覆盖为四段：`examples/champ:src:packages/openpi-client/src:third_party/robomme_benchmark/src`（均在它自己的子模块内）；VLA 以 `--seed=42` 启动且拿不到密钥；输出目录已存在即拒绝。
 - `prepare_cases.py --dataset test --episodes 3` 产出 16 任务 × 第 3 局的清单；`validate_cases` 只接受 `test`／`val`、局号 0～49。
 - `runner.py::episode(args, task, ep, builder, monitor, planner, client)` 是模块级函数，builder 由参数传入；只用到 `builder.make_env_for_episode`、`builder.resolve_episode`、环境的 `reset`／`step`／`close`、四个 `*_list` 观测键与 `info` 的 `task_goal`、`status`、`error_message`。循环 `while t < max_steps`，恰好 1300 步。
 - 每次规划请求：`gpt-6-astra`、`reasoning.effort=medium`、`max_output_tokens=2048`、`store=False`、高细节图像；两次请求至少间隔 20 秒；只对 429 重试；出现规划服务错误会停掉整个分片。每局规划次数上限 24。
-- 监视器：`PtEngine(base, adapters=[adapter], torch_dtype=bfloat16, attn_impl='flash_attention_2')`，`temperature=0`。
-- 每局产物：`identity.json`、`decisions.jsonl`、`actions.npy`、`result.json`、`rollout.mp4`（imageio 压缩视频）、`monitor_inputs/`、`planner_calls/`。
+- 监视器：`PtEngine(base, adapters=[adapter], model_type='qwen3_vl', torch_dtype=bfloat16, attn_impl='flash_attention_2', device_map={'':0}, max_batch_size=1)`，`RequestConfig(max_tokens=8, temperature=0)`。
+- 产物分两类：逐局目录 `<output>/<task>/ep<NNN>/` 下 `identity.json`、`decisions.jsonl`、`actions.npy`、`result.json`、`rollout.mp4`（imageio 压缩视频）、`monitor_inputs/`，`ButtonUnmaskSwap` 另有 `review_protocol.json`；`planner_calls/`（`--spool`）是整个分片共用的一个目录，按请求 uuid 分子目录，`request.json` 里的 `episode` 字段可回溯归属。
 - 它的 `src/`、`scripts/`、`packages/` 与本仓库 MME 子模块 `ecf086c3` 逐文件相同，动作模型就是 GroundSG 用的 `symbolic-grounded-subgoal/79999`。
 
 **本仓库的处理**
@@ -356,7 +356,7 @@ S1 合入后、S2 合入前，`scripts/eval-official/{env_client,eval_manifest}.
 | 项目 | 做法 |
 |---|---|
 | 源码 | 子模块 `third_party/Astra-on-RoboMME` @ `4c3fd6a8…`；它嵌套的 `third_party/robomme_benchmark`（`856bc3a`）只在这个子模块内初始化，供原侧使用（R10 的豁免与 `ASTRA_NESTED_ROBOMME` 比对） |
-| `main()` 里新驱动必须复刻的行为 | 子模块入库后先读 `runner.py::main` 列出清单并写进 `launch.md`；已知至少三项：连续出错即停整个分片（规划类失败不计入连续数）、输出目录必须新建、每局前查 `STOP.json`。`ResponsesClient` 自带的两项不会因绕开 `main()` 丢失：`_send` 每次发送前查输出路径上名为 `group_0`／`group_1` 的目录里的 `STOP.json`；`api_started.json` 存在而无 `response.json` 时拒绝自动重发。所以新侧输出目录保留 `group_0/` 这一层 |
+| `main()` 里新驱动必须复刻的行为 | 2026-10-04 子模块入库后核实的完整六项，写进 `launch.md` 并逐项实现：①`validate_checkpoints` 校验 VLA 与监视器文件哈希；②`--output` 与 `--spool` 都 `mkdir(exist_ok=False)`；③每局前查 `<output>/../../STOP.json`；④`status=='error'` 且非规划类失败计入错误数，累计 3 次停整个分片；⑤错误信息以 `Planner API`、`Pilot planner-call`、`Planner bridge failed` 开头的，单次即停（与④是两条独立规则）；⑥正常结束写 `PILOT_FINISHED.json`。`ResponsesClient` 自带的两项不会因绕开 `main()` 丢失：`_send` 每次发送前查输出路径上名为 `group_0`／`group_1` 的目录里的 `STOP.json`；`api_started.json` 存在而无 `response.json` 时拒绝自动重发。所以新侧输出目录保留 `group_0/` 这一层 |
 | 费用上限 | 累计花费 = 两侧全部 `planner_calls/*/response.json` 的 `usage` × 单价（含监视器之外的复审请求、429 重发成功后的那一次；单价开工后查 OpenAI 官方价目并记入 `launch.md`）。一个常驻的 `astra_cost_guard.py`（归 S5）每 10 秒汇总一次，写 `ASTRA_COST usd=<累计> calls=<n>`；累计加上「一次请求的最坏花费」（已见最大输入量 + 2048 输出）超过 30 美元时，在当前 `group_*/` 下写 `STOP.json`（Astra 自带的停机口），判定行 `ASTRA_COST=STOP usd=… cap=30`。本机预检与 GL 运行共用同一份累计（预检的账本拷到 GL）。到线后 Astra 剩余局不跑，记入决策项 |
 | 出错处置 | 规划服务出错、花费到线、`api_started.json` 结果未知：停 Astra 当前侧及之后的全部局，另一侧已跑完的保留，不重跑。仿真或 VLA 服务故障：该局记 error，不重跑（重试额度 0），继续下一局；连续 3 局则停。正常 fail／timeout：继续。原侧停了，新侧仍按已批局数跑（反之亦然），除非原因是花费到线 |
 | 原侧 | 原样运行它的 `run.sh`：`prepare_cases.py --dataset test --episodes 3` → `VLA_GPU=0 MONITOR_GPU=1 PORT=<端口> bash examples/champ/run.sh <cases> <新目录>` |
