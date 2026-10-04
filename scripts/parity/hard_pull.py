@@ -18,6 +18,11 @@ NFS 上只存在途的局；段结束确认目录下无大文件后 ``rmdir`` �
 ``launch-*.json`` 等）照常拉回。清单内某局在该段 identities 里没有、或在但没有 ``SHIPPED``（如 ``verdict=match``
 按设计未复制）时只计数 ``absent``／``not_shipped``，不判失败——同一份清单会跨首跑与重跑多个段使用。
 不传 ``--identities`` 时行为不变。
+
+``generate --expect-ref`` 写出的段（identities 行带 ``verdict``）：``verdict == "match"`` 的局按设计不复制（节点上已删），
+段末核对不要求其文件，计入 ``matched=``（判定行尾追加，只在段内有带 verdict 的行时出现）；其余行照旧要求 h5 在本机且
+sha 相等。``--identities`` 允许空清单（零翻转时用）：不拉任何局，只拉段顶层小文件与报告并做段末核对。
+行里没有 ``verdict`` 的旧格式段，行为与原先完全相同。
 """
 
 from __future__ import annotations
@@ -56,12 +61,11 @@ def pull_episode(src: Path, dst: Path) -> tuple[bool, str]:
 
 
 def read_identity_keys(path: Path) -> set[tuple[str, int]]:
-    """``--identities`` 清单：jsonl 每行 ``{task, seed, ...}``，返回 (task, seed) 集合；空清单即报错。"""
-    keys = {(str(r["task"]), int(r["seed"])) for r in
+    """``--identities`` 清单：jsonl 每行 ``{task, seed, ...}``，返回 (task, seed) 集合。
+
+    空清单合法（``--expect-ref`` 零翻转时）：不拉任何局，只拉段顶层小文件与报告。"""
+    return {(str(r["task"]), int(r["seed"])) for r in
             (json.loads(t) for t in path.read_text(encoding="utf-8").splitlines() if t.strip())}
-    if not keys:
-        raise SystemExit(f"--identities 清单为空：{path}")
-    return keys
 
 
 def selected_episodes(stage: Path, keys: set[tuple[str, int]]) -> tuple[list[Path], dict[str, int]]:
@@ -95,9 +99,12 @@ def finish_segment(stage: Path, dest: Path, only: list[Path] | None = None, stat
     lines = [json.loads(t) for t in (dest / "identities.jsonl").read_text().splitlines() if t.strip()] \
         if (dest / "identities.jsonl").exists() else []
     bad = 0
+    # generate --expect-ref 的 match 局按设计没有复制到暂存：不要求文件，单独计数
+    has_verdict = any("verdict" in line for line in lines)
+    matched = sum(1 for line in lines if line.get("verdict") == "match")
     if only is None:
         for line in lines:
-            if line.get("path"):
+            if line.get("path") and line.get("verdict") != "match":
                 local = dest / line["path"]
                 bad += int(not local.is_file() or sha256_file(local) != line["sha256"])
         leftovers = [p for p in stage.rglob("*") if p.is_file() and p.suffix in (".h5", ".mp4")]
@@ -106,12 +113,14 @@ def finish_segment(stage: Path, dest: Path, only: list[Path] | None = None, stat
         chosen = {str(ep.relative_to(stage)) for ep in only}
         for line in lines:
             rel = line.get("path")
-            if rel and str(Path(rel).parent.parent) in chosen:
+            if rel and line.get("verdict") != "match" and str(Path(rel).parent.parent) in chosen:
                 local = dest / rel
                 bad += int(not local.is_file() or sha256_file(local) != line["sha256"])
         leftovers = [p for ep in only for p in ep.rglob("*") if p.is_file() and p.suffix in (".h5", ".mp4")]
     ok = bad == 0 and not leftovers and bool(lines)
     extra = "" if stats is None else " " + " ".join(f"{k}={v}" for k, v in stats.items())
+    if has_verdict:
+        extra += f" matched={matched}"
     print(f"PULL_SEGMENT={'PASS' if ok else 'FAIL'} segment={stage.name} identities={len(lines)} "
           f"h5={sum(1 for l in lines if l.get('path'))} sha_bad={bad} nfs_leftover_media={len(leftovers)}{extra}",
           flush=True)
@@ -125,7 +134,8 @@ def main() -> int:
     parser.add_argument("--segments", required=True)
     parser.add_argument("--interval", type=float, default=20)
     parser.add_argument("--identities", type=Path, default=None,
-                        help="只拉清单内的局（jsonl，每行 {task, seed}；按 (task, seed) 匹配）；不传时行为不变")
+                        help="只拉清单内的局（jsonl，每行 {task, seed}；按 (task, seed) 匹配；可为空清单＝只拉报告）；"
+                             "不传时行为不变")
     args = parser.parse_args()
     segments = [s for s in args.segments.split(",") if s]
     keys = read_identity_keys(args.identities) if args.identities is not None else None
