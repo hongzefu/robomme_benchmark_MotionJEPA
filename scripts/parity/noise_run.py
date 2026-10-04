@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """噪声基线 GL 单遍运行包装的 Python 逻辑（1003-noise-baseline-plan.md 第一部分 3.3，第二部分 §一、§二 S3、§四、§五）。
 
-每一遍（一次生成／一次评估／一次环境摘要）都经 ``scripts/parity/noise_run_gl.sh`` 启动，壳脚本依次调本文件的
-``preflight`` → 真实命令 → ``finish``。四个子命令：
+每一遍生成都经 ``scripts/parity/noise_run_gl.sh`` 启动，壳脚本依次调本文件的 ``preflight`` → 真实命令 → ``finish``。
+噪声工具只留生成这一条线（1003 代码测试维护计划「细则 2.5」：评估分片 ``eval-shard`` 已删，``--kind`` 只认 ``gen``；
+账本里历史的 ``eval``／``digest`` 行仍照常累计）。三个子命令：
 
 ``preflight``  起跑前检查，任一不过即非零退出、不执行真实命令：
 
@@ -32,20 +33,15 @@
 ``finished_at``、``finished_at_iso``、``exit_code``、``actual_attempts``、``actual_resets``、``actual_retries``。
 实际数超过登记数时打印 ``BUDGET=FAIL reason=actual_exceeds_reserved`` 并以 6 退出（记录照写）。
 
-``eval-shard``  从 ``scripts/eval-official/v8_manifest.py`` 产出的执行清单分片（JSON 数组，每行恰为
-``SHARD_ROW_KEYS`` 九个字段，``key = f"{task}_{tier}_{seed}"``；分片文件不带自身 sha 或计数字段）里筛出 key 在
-集合内的行，按与 ``v8_manifest.write_outputs`` 相同的序列化写成新分片（行按 task、tier、builder_episode 排序），
-供 ``run_v8_gl.sh --shard`` 与 ``env_client.py --v8 --identities`` 直接使用。集合里有、源分片里没有即
-``EVAL_SHARD=FAIL``；源分片之间 key 重复、行字段不符也 FAIL。末行 ``EVAL_SHARD=PASS rows=<n> missing=0 sha256=<前12位>``。
-
 ``ship``  ``hard_parity.py generate --stage`` 已经逐局把 h5／mp4 复制到暂存目录、核 h5 sha、写 ``SHIPPED`` 并删节点
 大文件；本子命令只做完整性核对：节点输出根 ``identities.jsonl`` 里每条有 ``path`` 的局在暂存目录都有 ``SHIPPED``，
 其中 h5 的 sha 与 identities 行相等，未被 ``hard_pull.py`` 拉走（无 ``PULLED``）的局逐文件重算 sha 与 ``SHIPPED``
-相等，节点上不残留 h5／mp4。``--finalize`` 时核对通过后把节点输出根的小文件（非 h5／mp4）复制到暂存目录并写
+相等，节点上不残留 h5／mp4。带 ``--expect-ref`` 生成时 ``Mover`` 对 ``verdict=match`` 的局（与噪声基线逐字节相同）
+按设计不复制、直接删节点大文件，这类局不要求 ``SHIPPED``，计入 ``matched``（对拍细则 3.4）。``--finalize`` 时核对通过后把节点输出根的小文件（非 h5／mp4）复制到暂存目录并写
 ``SEGMENT_DONE``（与 v6 stage4 runbook 的 ``rsync --exclude`` + ``touch`` 等价），节点目录不删、由调用方显式删。
-末行 ``NOISE_SHIP=PASS|FAIL episodes= shipped= pulled= sha_bad= missing= node_leftover_media=``。
+末行 ``NOISE_SHIP=PASS|FAIL episodes= shipped= matched= pulled= sha_bad= missing= node_leftover_media=``。
 
-只用标准库；``v8_manifest`` 按文件路径加载（它本身只依赖标准库）。
+只用标准库。
 """
 
 from __future__ import annotations
@@ -53,7 +49,6 @@ from __future__ import annotations
 import argparse
 import fcntl
 import hashlib
-import importlib.util
 import json
 import os
 import platform
@@ -67,9 +62,11 @@ from pathlib import Path
 from typing import Any
 
 REPO = Path(__file__).resolve().parents[2]
-V8_MANIFEST_PATH = REPO / "scripts" / "eval-official" / "v8_manifest.py"
 
-KINDS = ("gen", "eval", "digest")
+#: preflight 只接受生成遍（细则 2.5）
+KINDS = ("gen",)
+#: 账本里可能出现的历史 kind（噪声基线阶段登记过评估与环境摘要遍），累计预算时照常计入
+LEDGER_KINDS = ("gen", "eval", "digest")
 BUDGET_FIELDS = ("attempts", "resets", "retries")
 #: finish 追加进来源报告的键；fingerprint 计算时剔除，保证 finish 前后 fingerprint 一致
 FINISH_KEYS = ("finished_at", "finished_at_iso", "exit_code", "actual_attempts", "actual_resets", "actual_retries")
@@ -301,10 +298,11 @@ def charged_by_pass(rows: list[dict]) -> dict[str, dict[str, Any]]:
 
 
 def totals(charged: dict[str, dict[str, Any]]) -> dict[str, dict[str, int]]:
-    tot = {k: dict.fromkeys(BUDGET_FIELDS, 0) for k in (*KINDS, "total")}
+    tot = {k: dict.fromkeys(BUDGET_FIELDS, 0) for k in (*LEDGER_KINDS, "total")}
     for c in charged.values():
+        bucket = tot.setdefault(c["kind"], dict.fromkeys(BUDGET_FIELDS, 0))
         for f in BUDGET_FIELDS:
-            tot[c["kind"]][f] += c[f]
+            bucket[f] += c[f]
             tot["total"][f] += c[f]
     return tot
 
@@ -511,93 +509,6 @@ def cmd_finish(args) -> int:
     return 0
 
 
-# ── eval-shard ────────────────────────────────────────────────────────────────
-
-
-def load_v8_manifest():
-    name = "_noise_run_v8_manifest"
-    if name in sys.modules:
-        return sys.modules[name]
-    spec = importlib.util.spec_from_file_location(name, V8_MANIFEST_PATH)
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def shard_row_problem(row: Any, vm) -> str | None:
-    """与 ``env_client.validate_v8_identity`` 同口径的结构核对（不含按档上限，那一项运行时由客户端核）。"""
-    if not isinstance(row, dict) or set(row) != set(vm.SHARD_ROW_KEYS):
-        return f"keys={sorted(row) if isinstance(row, dict) else type(row).__name__}"
-    for k in ("seed", "builder_episode", "effective_max_steps"):
-        if not vm._is_int(row[k]):
-            return f"{k}={row[k]!r}"
-    for k in ("candidate", "source_episode"):
-        if row[k] is not None and not vm._is_int(row[k]):
-            return f"{k}={row[k]!r}"
-    if not isinstance(row["spec_sha256"], str) or len(row["spec_sha256"]) != 64:
-        return f"spec_sha256={row['spec_sha256']!r}"
-    if row["key"] != vm.v8_key(row):
-        return f"key={row['key']} want={vm.v8_key(row)}"
-    return None
-
-
-def load_keys(path: Path) -> list[str]:
-    doc = json.loads(path.read_text(encoding="utf-8"))
-    if isinstance(doc, dict):
-        doc = doc.get("keys")
-    if not isinstance(doc, list) or not all(isinstance(k, str) for k in doc):
-        raise RunError(f"EVAL_SHARD=FAIL reason=bad_keys_file path={path}（须为字符串数组，或含 keys 数组的对象）",
-                       EXIT_USAGE)
-    dup = len(doc) - len(set(doc))
-    if dup:
-        raise RunError(f"EVAL_SHARD=FAIL reason=duplicate_keys n={dup}", EXIT_USAGE)
-    return doc
-
-
-def dump_shard(rows: list[dict], vm) -> str:
-    doc = [{k: r[k] for k in vm.SHARD_ROW_KEYS} for r in rows]
-    return json.dumps(doc, ensure_ascii=False, indent=1, sort_keys=True) + "\n"
-
-
-def cmd_eval_shard(args) -> int:
-    vm = load_v8_manifest()
-    out = Path(args.out)
-    if out.exists():
-        raise RunError(f"EVAL_SHARD=FAIL reason=out_exists path={out}", EXIT_FRESH)
-    keys = load_keys(Path(args.keys))
-    index: dict[str, dict] = {}
-    bad, dup = [], []
-    for src in args.source_shard:
-        doc = json.loads(Path(src).read_text(encoding="utf-8"))
-        if not isinstance(doc, list):
-            raise RunError(f"EVAL_SHARD=FAIL reason=source_not_array path={src}", EXIT_USAGE)
-        for i, row in enumerate(doc):
-            problem = shard_row_problem(row, vm)
-            if problem:
-                bad.append(f"{Path(src).name}#{i}: {problem}")
-                continue
-            if row["key"] in index:
-                dup.append(row["key"])
-            index[row["key"]] = row
-    if bad or dup:
-        raise RunError(f"EVAL_SHARD=FAIL reason=bad_source bad={len(bad)} duplicate={len(dup)} "
-                       f"first={(bad + dup)[:3]}", EXIT_USAGE)
-    missing = [k for k in keys if k not in index]
-    if missing:
-        raise RunError(f"EVAL_SHARD=FAIL rows=0 missing={len(missing)} first={missing[:5]}", EXIT_USAGE)
-    rows = sorted((index[k] for k in keys), key=lambda r: (r["task"], r["tier"], r["builder_episode"]))
-    text = dump_shard(rows, vm)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(text, encoding="utf-8")
-    back = json.loads(out.read_text(encoding="utf-8"))
-    if back != json.loads(text) or {r["key"] for r in back} != set(keys) or any(shard_row_problem(r, vm) for r in back):
-        out.unlink()
-        raise RunError("EVAL_SHARD=FAIL reason=readback_mismatch（已删本次产物）", EXIT_USAGE)
-    print(f"EVAL_SHARD=PASS rows={len(back)} missing=0 sha256={sha256_file(out)[:12]} out={out}", flush=True)
-    return 0
-
-
 # ── ship ──────────────────────────────────────────────────────────────────────
 
 
@@ -607,9 +518,12 @@ def cmd_ship(args) -> int:
     lines = [json.loads(t) for t in ident.read_text(encoding="utf-8").splitlines() if t.strip()] \
         if ident.is_file() else []
     episodes = [ln for ln in lines if ln.get("path")]
-    shipped = pulled = sha_bad = missing = 0
+    shipped = pulled = sha_bad = missing = matched = 0
     notes: list[str] = []
     for ln in episodes:
+        if ln.get("verdict") == "match":
+            matched += 1  # --expect-ref：与噪声基线逐字节相同，按设计不复制（Mover 已删节点大文件）
+            continue
         rel_h5 = Path(ln["path"])
         ep_rel = rel_h5.parent.parent  # <局目录>/hdf5_files/<名>.h5
         ep_stage = stage / ep_rel
@@ -652,7 +566,7 @@ def cmd_ship(args) -> int:
     for note in notes[:10]:
         print(f"# {note}", flush=True)
     print(f"NOISE_SHIP={'PASS' if ok else 'FAIL'} episodes={len(episodes)} identities={len(lines)} shipped={shipped} "
-          f"pulled={pulled} sha_bad={sha_bad} missing={missing} node_leftover_media={len(leftovers)} "
+          f"matched={matched} pulled={pulled} sha_bad={sha_bad} missing={missing} node_leftover_media={len(leftovers)} "
           f"finalized={finalized}", flush=True)
     return 0 if ok else 1
 
@@ -692,12 +606,6 @@ def build_parser() -> argparse.ArgumentParser:
     fi.add_argument("--actual-resets", required=True, help="整数或 unknown")
     fi.add_argument("--actual-retries", default="unknown", help="整数或 unknown（默认 unknown）")
     fi.set_defaults(func=cmd_finish)
-
-    es = sub.add_parser("eval-shard", help="从 v8_manifest 分片里按身份键筛出新分片")
-    es.add_argument("--source-shard", nargs="+", required=True)
-    es.add_argument("--keys", required=True)
-    es.add_argument("--out", required=True)
-    es.set_defaults(func=cmd_eval_shard)
 
     sh = sub.add_parser("ship", help="核对 hard_parity generate --stage 的逐局暂存是否完整")
     sh.add_argument("--src", required=True, help="节点本地输出根（hard_parity generate --out）")

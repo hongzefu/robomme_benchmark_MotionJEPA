@@ -466,15 +466,74 @@ def ident(row: dict[str, Any]) -> tuple[str, str, int]:
 
 
 class Mover(threading.Thread):
-    """盯各轮 ``results.partial.jsonl``：新完成的局算 sha256，写 identities 行；给了暂存目录就复制过去、核 sha、删本地副本。"""
+    """盯各轮 ``results.partial.jsonl``：新完成的局算 sha256，写 identities 行；给了暂存目录就复制过去、核 sha、删本地副本。
 
-    def __init__(self, out: Path, stage: Path | None, side: str, tier: str, runner_meta: dict[str, Any]):
+    ``expect_ref``（``generate --expect-ref``，对拍细则 3.4「边生成边判定」）：算出 sha 后立刻查噪声基线参照
+    （``noise_gate.py gen-regress build-ref`` 的产物）里这一局的期望，在同一行 identities 写 ``verdict``：
+
+    - ``match``：与基线逐字节相同（确定性失败局为失败且占位 sha 相同）→ 删本地 h5／mp4，不调 ``_ship``；
+    - ``jitter_info``：已知抖动局 → 照常 ``_ship``；
+    - ``flip``：期望不符（含参照里没有这一局）→ 照常 ``_ship``，追加一行 ``flips.jsonl``（``{task, tier, seed}``，可直接作
+      ``generate --identities``），打印 ``EPISODE_FLIP <tier>/<task>/<seed>``。
+
+    判定函数与 ``gen-regress check`` 共用 ``noise_gate.expect_verdict``。不给 ``expect_ref`` 时代码路径与原先相同。"""
+
+    def __init__(self, out: Path, stage: Path | None, side: str, tier: str, runner_meta: dict[str, Any],
+                 expect_ref: Path | None = None):
         super().__init__(daemon=True)
         self.out, self.stage, self.side, self.tier, self.meta = out, stage, side, tier, runner_meta
         self.seen: set[tuple[str, int, str]] = set()
         self.stop_flag = threading.Event()
         self.errors: list[str] = []
         self.identities = out / "identities.jsonl"
+        self.flips = out / "flips.jsonl"
+        self.expect: dict[tuple[str, int], dict[str, Any]] | None = None
+        self._verdict = None
+        if expect_ref is not None:
+            noise_gate = self._load_noise_gate()
+            self.expect = noise_gate.ref_index(noise_gate.load_ref(expect_ref))
+            self._verdict = noise_gate.expect_verdict
+
+    @staticmethod
+    def _load_noise_gate():
+        """按文件路径加载 ``scripts/parity/noise_gate.py``（模块顶层只依赖标准库）。"""
+        import importlib.util
+
+        name = "_hard_parity_noise_gate"
+        if name in sys.modules:
+            return sys.modules[name]
+        spec = importlib.util.spec_from_file_location(name, ROOT / "scripts" / "parity" / "noise_gate.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[name] = mod
+        assert spec.loader is not None
+        spec.loader.exec_module(mod)
+        return mod
+
+    def _judge(self, line: dict[str, Any]) -> str:
+        """对参照判定一局并写进 line（``verdict``、``ref_class``）。"""
+        entry = self.expect.get((line["task"], int(line["seed"])))
+        ok = bool(line["success"]) and not line.get("h5_error")
+        verdict = self._verdict(entry, ok, line["sha256"])
+        line["verdict"] = verdict
+        line["ref_class"] = entry.get("class") if entry else None
+        if entry is None:
+            line["verdict_note"] = "not_in_ref"
+        return verdict
+
+    def _drop_media(self, wdir: Path) -> None:
+        """``match`` 局：本机与 HF 上已有同字节，节点 /tmp 的 h5／mp4 直接删、不复制。"""
+        for path in sorted((p for p in wdir.rglob("*") if p.is_file() and p.suffix in (".h5", ".mp4")), reverse=True):
+            path.unlink()
+
+    def _record_flip(self, line: dict[str, Any]) -> None:
+        entry = self.expect.get((line["task"], int(line["seed"])))
+        tier = entry["tier"] if entry else line["tier"]
+        with self.flips.open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps({"task": line["task"], "tier": tier, "seed": int(line["seed"])},
+                                    ensure_ascii=False, sort_keys=True) + "\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        print(f"EPISODE_FLIP {tier}/{line['task']}/{line['seed']}", flush=True)
 
     def _worker_dir(self, record: dict[str, Any]) -> Path:
         tier = str(record.get("difficulty"))
@@ -510,14 +569,22 @@ class Mover(threading.Thread):
             rel = wdir.relative_to(self.out)
             line["path"] = str(rel / "hdf5_files" / h5.name)
             line["media"] = [str(p.relative_to(self.out)) for p in sorted(wdir.rglob("*.mp4"))]
-            if self.stage is not None:
+            verdict = self._judge(line) if self.expect is not None else None
+            if verdict == "match":
+                self._drop_media(wdir)
+            elif self.stage is not None:
                 self._ship(wdir, rel)
+        elif self.expect is not None:
+            self._judge(line)
+        if self.expect is not None and line.get("verdict") == "flip":
+            self._record_flip(line)
         with self.identities.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(line, ensure_ascii=False, sort_keys=True) + "\n")
             stream.flush()
             os.fsync(stream.fileno())
         print(f"EPISODE_DONE side={self.side} {line['tier']}/{line['task']}/{line['episode']} "
-              f"success={int(line['success'])} sha={str(line['sha256'])[:12]}", flush=True)
+              f"success={int(line['success'])} sha={str(line['sha256'])[:12]}"
+              + (f" verdict={line['verdict']}" if "verdict" in line else ""), flush=True)
 
     def _ship(self, wdir: Path, rel: Path) -> None:
         dest = self.stage / rel
@@ -652,7 +719,7 @@ def cmd_generate(args) -> int:
     (out / f"launch-{int(time.time())}.json").write_text(json.dumps(launch, ensure_ascii=False, indent=2))
     print(f"GENERATE_START side={args.side} tier={args.tier} rows={len(rows)} gpu={facts['gpu_model']} "
           f"driver={facts['driver']} workers={args.workers}", flush=True)
-    mover = Mover(out, args.stage, args.side, args.tier, meta)
+    mover = Mover(out, args.stage, args.side, args.tier, meta, expect_ref=args.expect_ref)
     mover.start()
     with (out / "generate.log").open("a", encoding="utf-8") as log:
         proc = subprocess.run(command, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
@@ -1467,6 +1534,10 @@ def build_parser() -> argparse.ArgumentParser:
                      help="--tier v8／v9：只重放该" + IDENTITIES_HELP + "；子集须 ⊆ --manifest。--tier xhard0："
                           "身份 tier 须为 xhard0，只生成子集，运行器仍拿完整 --manifest 核对")
     gen.add_argument("--resume", action="store_true")
+    gen.add_argument("--expect-ref", type=Path, default=None,
+                     help="噪声基线参照文件（noise_gate.py gen-regress build-ref 产物，如 scripts/configs/noise-ref-20261003.json）："
+                          "每局算出 sha 后当场判 match／jitter_info／flip 写进 identities 的 verdict；match 删本地大文件不复制，"
+                          "flip 照常复制并追加 flips.jsonl、打印 EPISODE_FLIP。不给时行为不变")
     gen.set_defaults(func=cmd_generate)
     pub = sub.add_parser("publish")
     pub.add_argument("--side", choices=SIDES, required=True)
