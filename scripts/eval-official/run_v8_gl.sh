@@ -3,7 +3,7 @@
 #
 # 已在占位 job 的 srun 步骤里（由主会话在 GL 登录节点 tmux `ev-v8-<R>-sNN` 内发起），本脚本：
 #   1. 固定解释器：BENCH_PY=<repo>/.venv/bin/python、MME_PY=<repo>/third_party/mme-vla/.venv/bin/python、
-#      SMVLA_PY=<repo>/artifacts/v8-two/venvs/smvla-env/bin/python；VK_ICD_FILENAMES 取法同 v75-lanes/gl/seat_run.sh；
+#      SMVLA_PY=<repo>/artifacts/v8-two/venvs/smvla-env/bin/python；VK_ICD_FILENAMES 按候选 ICD 文件逐个探测（见下方 export 处）；
 #      --cpus 取本进程 sched_getaffinity；--gpu 0；端口按 run_seat.sh 既有规则（seat-idx = 席号 NN）。
 #   2. 按策略顺序（默认先 smvla 后 mme，同卡绝不同时驻留）各调一次 run_seat.sh --v8：
 #      持久状态（results.jsonl、<policy>.ledger.jsonl、progress.json、client.log、seat 日志）直接写 NFS

@@ -1,46 +1,41 @@
 #!/usr/bin/env python3
-"""V8 双模型评估执行清单（1001-v8-post-evaluation-gl-plan.md 第一部分 §3、第二部分 §2；接口契约 C1）。
-
-    python scripts/eval-official/v8_manifest.py --identities <eval-identities-1262.jsonl> \\
-        --delivery <gen1/delivery.local.json> --shards 10 --out-dir <dir>
-
-四步，任何一步不过即打印 ``V8_EVAL_SHARDS=FAIL ...`` 并以非零退出（四步不过不写产物；写出后读回核对不过则删掉
-本次写出的 manifest.json 与 shard-NN.json，不留半成品）：
-
-1. 核源集：``export_eval_identities.py`` 的 1262 行（xhard0 16×12=192 + 新值 43 格 1070），逐格对
-   ``hard_specs.EXPECTED_CELLS``；xhard0 行 candidate=null、source_episode 为整数，新值行 candidate 为整数、
-   source_episode=null；(task, episode) 唯一。
-2. 筛五档新值 1070 行，xhard0 在这一步丢弃并计数。
-3. 按 ``(task, tier, seed, candidate)`` 连 gen1 交付行补 ``spec_sha256``——**不用交付行的 episode**
-   （那是格内序号，不是 builder episode）；连不上（missing）或一对多（duplicate）即停；交付行未被用到记 extra。
-4. 核执行清单：43 格、1070 行、xhard0=0、指纹齐全、``key`` 唯一。
-
-然后按任务历史耗时（``TASK_SECONDS``，档位无关）做最长处理时间优先的贪心均衡切片，两模型用同一分片；
-核对分片两两不交、并集等于执行清单后写：
-
-- ``<out-dir>/manifest.json``：``{schema, source_sha256, delivery_sha256, xhard0_dropped, total, cells, shards, rows}``；
-- ``<out-dir>/shard-NN.json``：执行身份行数组，每行
-  ``{task, tier, seed, candidate, builder_episode, source_episode, spec_sha256, effective_max_steps, key}``，
-  ``key = f"{task}_{tier}_{seed}"``。
-
-末行 ``V8_EVAL_SHARDS=PASS shards=10 missing=0 extra=0 duplicate=0 total=1070 cells=43 xhard0=0``。
-
-V9 剔除已评身份（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.1、§2.2 第 7 条）：
+"""V9 双模型评估执行清单（1002-newtask-v9-movecube-region-800-plan.md 第二部分 §2.1、§2.2 第 7 条；字段契约沿用
+1001-v8-post-evaluation-gl-plan.md 的 C1）。
 
     python scripts/eval-official/v8_manifest.py --identities <eval-identities-992.jsonl> \
         --delivery <newtask-v9/delivery/delivery.local.json> \
         --exclude-evaluated <V8 manifest.json> --shards 10 --out-dir <dir>
 
+V8 1070 局的构建分支（不带 ``--exclude-evaluated``）已删除；``--exclude-evaluated`` 现为必填。V8 manifest 只作为
+已评身份的对账输入读取（``load_v8_manifest``）。
+
 格表不取 ``EXPECTED_CELLS``，而由 ``--delivery`` 逐格计数推出，且必须与 ``hard_specs`` 登记的某张完整交付格表
-（``EXPECTED_CELLS``／``CELL_TABLES``）逐格相等（V9 即 43 格 800 局）。第 1～4 步同上（源集、筛新值、连交付补
-``spec_sha256``、核 43 格 800 行）；**第 5 步**再按四元组 ``(task, tier, seed, spec_sha256)`` 与 V8 manifest ``rows``
-比对：命中即复用（V9 MoveCube 与 V8 同 seed 不同布局，靠 ``spec_sha256`` 区分，不命中），不命中即新评。新评集合必须
-恰为 ``V9_NEW_RULE``（MoveCube xhard4 全格 + InsertPeg xhard4 候选号 ≥ 29），否则 FAIL。复用集合写
-``<out-dir>/reused.json``（schema ``v9-eval-reused/1``，rows 按 (task, tier, seed) 排序，``v8_key`` 取 V8 manifest
-行的 ``key`` 原值）；``--shards`` 只切新评行；manifest 与 shard JSON 字段同 V8，manifest 只多一个 ``reused`` 键
-（``{path, sha256, count, v8_manifest, v8_manifest_sha256}``）。末行
-``V9_EVAL_SHARDS=PASS shards=10 total=80 cells=2 reused=720 reused_sha256=<前 12 位> missing=0 extra=0 duplicate=0 xhard0=0``。
-不传 ``--exclude-evaluated`` 时一切同 V8。
+（``EXPECTED_CELLS``／``CELL_TABLES``）逐格相等（V9 即 43 格 800 局）。五步，任何一步不过即打印
+``V9_EVAL_SHARDS=FAIL ...`` 并以非零退出（不过不写产物；写出后读回核对不过则删掉本次写出的 manifest.json、
+shard-NN.json 与 reused.json，不留半成品）：
+
+1. 核源集：``export_eval_identities.py`` 的身份行（xhard0 + 新值），逐格对格表；xhard0 行 candidate=null、
+   source_episode 为整数，新值行 candidate 为整数、source_episode=null；(task, episode) 唯一。
+2. 筛新值行，xhard0 在这一步丢弃并计数。
+3. 按 ``(task, tier, seed, candidate)`` 连交付行补 ``spec_sha256``——**不用交付行的 episode**
+   （那是格内序号，不是 builder episode）；连不上（missing）或一对多（duplicate）即停；交付行未被用到记 extra。
+4. 核执行清单：格数、行数与格表相等，xhard0=0、指纹齐全、``key`` 唯一。
+5. 按四元组 ``(task, tier, seed, spec_sha256)`` 与 V8 manifest ``rows`` 比对：命中即复用（V9 MoveCube 与 V8 同 seed
+   不同布局，靠 ``spec_sha256`` 区分，不命中），不命中即新评。新评集合必须恰为 ``V9_NEW_RULE``（MoveCube xhard4
+   全格 + InsertPeg xhard4 候选号 ≥ 29），否则 FAIL。
+
+然后按任务历史耗时（``TASK_SECONDS``，档位无关）对新评行做最长处理时间优先的贪心均衡切片，两模型用同一分片；
+核对分片两两不交、并集等于新评集合后写：
+
+- ``<out-dir>/manifest.json``：``{schema, source_sha256, delivery_sha256, xhard0_dropped, total, cells, shards, rows,
+  reused}``，``reused = {path, sha256, count, v8_manifest, v8_manifest_sha256}``；
+- ``<out-dir>/shard-NN.json``：执行身份行数组，每行
+  ``{task, tier, seed, candidate, builder_episode, source_episode, spec_sha256, effective_max_steps, key}``，
+  ``key = f"{task}_{tier}_{seed}"``；
+- ``<out-dir>/reused.json``：复用集合（schema ``v9-eval-reused/1``，rows 按 (task, tier, seed) 排序，``v8_key`` 取
+  V8 manifest 行的 ``key`` 原值）。
+
+末行 ``V9_EVAL_SHARDS=PASS shards=10 total=80 cells=2 reused=720 reused_sha256=<前 12 位> missing=0 extra=0 duplicate=0 xhard0=0``。
 只用标准库，``hard_specs`` 按文件路径加载（不 import robomme_hard 包，不触发 sapien）。
 """
 from __future__ import annotations
@@ -260,42 +255,6 @@ def check_shards(parts: list[list[dict]], rows: list[dict]) -> dict:
             "duplicate": sum(n - 1 for n in seen.values() if n > 1)}
 
 
-def build(identities: Path, delivery_path: Path, shards: int) -> tuple[dict, list[list[dict]]]:
-    hs = load_hard_specs()
-    src = read_jsonl(identities)
-    check_source(src, hs)
-    new, dropped = filter_new(src, hs)
-    delivery = json.loads(Path(delivery_path).read_text(encoding="utf-8"))
-    rows = join_delivery(new, delivery, hs)
-    facts = check_exec(rows, hs)
-    if shards < 1:
-        raise ManifestError("shards", f"shards={shards}")
-    parts = balance(rows, shards)
-    chk = check_shards(parts, rows)
-    if any(chk.values()):
-        raise ManifestError("shards", f"分片不符 {chk}", **chk)
-    cells: dict[str, int] = defaultdict(int)
-    for r in rows:
-        cells[cell_name(r["task"], r["tier"])] += 1
-    order = {k: i for i, k in enumerate(hs.EXPECTED_CELLS)}
-    manifest_rows = []
-    for i, p in enumerate(parts):
-        for r in p:
-            manifest_rows.append(dict(r, shard=f"{i:02d}"))
-    manifest_rows.sort(key=lambda r: (order[(r["task"], r["tier"])], r["builder_episode"]))
-    manifest = {
-        "schema": SCHEMA,
-        "source_sha256": file_sha256(identities),
-        "delivery_sha256": file_sha256(delivery_path),
-        "xhard0_dropped": dropped,
-        "total": facts["total"],
-        "cells": {cell_name(*k): cells[cell_name(*k)] for k in hs.EXPECTED_CELLS},
-        "shards": {f"{i:02d}": len(p) for i, p in enumerate(parts)},
-        "rows": manifest_rows,
-    }
-    return manifest, parts
-
-
 # ── V9：剔除已评身份（第 5 步）───────────────────────────────────────────────
 
 
@@ -459,58 +418,44 @@ def verify_outputs(out_dir: Path, manifest: dict, shards: int, reused_text: str 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--identities", required=True, help="export_eval_identities.py 的身份 JSONL（V8 1262 行／V9 992 行）")
+    ap.add_argument("--identities", required=True, help="export_eval_identities.py 的身份 JSONL（V9 992 行）")
     ap.add_argument("--delivery", required=True, help="交付清单 delivery.local.json（schema v8-delivery/1）")
     ap.add_argument("--shards", type=int, default=DEFAULT_SHARDS)
     ap.add_argument("--out-dir", required=True)
-    ap.add_argument("--exclude-evaluated", default=None, metavar="V8_MANIFEST",
-                    help="V9：按四元组 (task, tier, seed, spec_sha256) 剔除 V8 manifest 已评身份，只切新评行，"
+    ap.add_argument("--exclude-evaluated", required=True, metavar="V8_MANIFEST",
+                    help="按四元组 (task, tier, seed, spec_sha256) 剔除 V8 manifest 已评身份，只切新评行，"
                          "复用集合写 <out-dir>/reused.json")
     args = ap.parse_args(argv)
     out_dir = Path(args.out_dir)
-    v9 = args.exclude_evaluated is not None
-    tag = "V9_EVAL_SHARDS" if v9 else "V8_EVAL_SHARDS"
-    reused_text = None
+    tag = "V9_EVAL_SHARDS"
     try:
-        if v9:
-            manifest, parts, reused_text = build_v9(Path(args.identities), Path(args.delivery), args.shards,
-                                                    Path(args.exclude_evaluated))
-        else:
-            manifest, parts = build(Path(args.identities), Path(args.delivery), args.shards)
+        manifest, parts, reused_text = build_v9(Path(args.identities), Path(args.delivery), args.shards,
+                                                Path(args.exclude_evaluated))
         write_outputs(out_dir, manifest, parts, reused_text)
         try:
             chk = verify_outputs(out_dir, manifest, args.shards, reused_text)
         except (OSError, ValueError, KeyError) as e:
             chk = {"verify_error": f"{type(e).__name__}: {e}"}
         if any(chk.values()):
-            removed = remove_outputs(out_dir, args.shards, v9)
+            removed = remove_outputs(out_dir, args.shards, True)
             raise ManifestError("verify", f"读回核对不符 {chk}，已删本次产物 {removed} 个",
                                 **{k: v for k, v in chk.items() if isinstance(v, int)})
     except ManifestError as e:
         c = e.counts
-        if v9:
-            print(f"{tag}=FAIL shards={args.shards} total={c.get('total', 'NA')} cells={c.get('cells', 'NA')} "
-                  f"reused={c.get('reused', 'NA')} missing={c.get('missing', 0)} extra={c.get('extra', 0)} "
-                  f"duplicate={c.get('duplicate', 0)} xhard0={c.get('xhard0', 'NA')} stage={e.stage} "
-                  f"detail={e.detail}", flush=True)
-            return 1
-        print(f"V8_EVAL_SHARDS=FAIL shards={args.shards} missing={c.get('missing', 0)} extra={c.get('extra', 0)} "
-              f"duplicate={c.get('duplicate', 0)} total={c.get('total', 'NA')} cells={c.get('cells', 'NA')} "
-              f"xhard0={c.get('xhard0', 'NA')} stage={e.stage} detail={e.detail}", flush=True)
+        print(f"{tag}=FAIL shards={args.shards} total={c.get('total', 'NA')} cells={c.get('cells', 'NA')} "
+              f"reused={c.get('reused', 'NA')} missing={c.get('missing', 0)} extra={c.get('extra', 0)} "
+              f"duplicate={c.get('duplicate', 0)} xhard0={c.get('xhard0', 'NA')} stage={e.stage} "
+              f"detail={e.detail}", flush=True)
         return 1
     for name, n in manifest["shards"].items():
         est = sum(TASK_SECONDS[r["task"]] for r in parts[int(name)])
         print(f"SHARD {name} rows={n} est_s={est:.0f}", flush=True)
-    if v9:
-        meta = manifest["reused"]
-        print(f"REUSED path={out_dir / REUSED_FILE} sha256={meta['sha256']} count={meta['count']} "
-              f"v8_manifest_sha256={meta['v8_manifest_sha256']}", flush=True)
-        print(f"{tag}=PASS shards={args.shards} total={manifest['total']} cells={len(manifest['cells'])} "
-              f"reused={meta['count']} reused_sha256={meta['sha256'][:12]} missing=0 extra=0 duplicate=0 xhard0=0",
-              flush=True)
-        return 0
-    print(f"V8_EVAL_SHARDS=PASS shards={args.shards} missing=0 extra=0 duplicate=0 total={manifest['total']} "
-          f"cells={len(manifest['cells'])} xhard0=0", flush=True)
+    meta = manifest["reused"]
+    print(f"REUSED path={out_dir / REUSED_FILE} sha256={meta['sha256']} count={meta['count']} "
+          f"v8_manifest_sha256={meta['v8_manifest_sha256']}", flush=True)
+    print(f"{tag}=PASS shards={args.shards} total={manifest['total']} cells={len(manifest['cells'])} "
+          f"reused={meta['count']} reused_sha256={meta['sha256'][:12]} missing=0 extra=0 duplicate=0 xhard0=0",
+          flush=True)
     return 0
 
 

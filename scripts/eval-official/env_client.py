@@ -16,7 +16,7 @@
 「运行阻塞」（写一条 ``run_blocked`` 记录、打印 ``RUN_BLOCKED``、退出码 3）。
 
 退出码：0 全部完成；3 运行阻塞；5 reset 额度耗尽（V8，run_seat.sh 不得重启）；75 单局墙钟超时（基础设施超时，
-已记录并回收认领，由 run_seat.sh 重起）。
+已记录，由 run_seat.sh 重起）。
 
 V8 模式（``--v8``；1001-v8-post-evaluation-gl-plan.md 第一部分 §1 第 4 条、§3，契约 C2）：身份清单为
 ``v8_manifest.py`` 产出的分片 JSON；身份逐键核对 tier／seed／candidate／spec_sha256 与有效上限
@@ -446,26 +446,6 @@ def validate_v8_identity(row: dict, tier_max: dict | None = None) -> str | None:
     return "; ".join(bad) or None
 
 
-def parse_canary(spec: str, *, v8: bool = False) -> dict:
-    """``Task:source_episode:seed`` 或 JSON 对象。builder_episode = (source_episode-3)//4（官方 test 里 hard 局）。
-
-    V8：只接受 JSON 执行身份行（新值局不走官方 episode 推导公式）；缺 ``key`` 时按 ``<task>_<tier>_<seed>`` 补。"""
-    if v8:
-        if not spec.strip().startswith("{"):
-            raise ValueError("V8 金丝雀须为 JSON 执行身份行（task/tier/seed/candidate/builder_episode/spec_sha256/...）")
-        row = json.loads(spec)
-        row.setdefault("source_episode", None)
-        row.setdefault("key", v8_key(row))
-        return row
-    if spec.strip().startswith("{"):
-        row = json.loads(spec)
-    else:
-        task, se, seed = spec.split(":")
-        row = {"task": task, "source_episode": int(se), "seed": int(seed)}
-    row.setdefault("builder_episode", (int(row["source_episode"]) - 3) // 4)
-    return row
-
-
 def check_identity(resolved: dict, want: dict, *, v8: bool = False, tier_max: dict | None = None) -> str | None:
     """builder 解析出的身份必须与清单一致；不一致返回说明（运行阻塞）。
 
@@ -541,7 +521,7 @@ class AttemptLedger:
     ``budget | budget_raise | attempt_start | reset_claim | attempt_end | accept``。
     全部计数从账本内容推出（进程重启读回，不刷新）：
 
-    * reset 额度：``reset_claim`` 行数（含金丝雀）对 ``--reset-budget``；
+    * reset 额度：``reset_claim`` 行数（历史账本里的金丝雀行同样计入）对 ``--reset-budget``；
     * 作废尝试：``attempt_end.budget_exhausted=true`` 的尝试没有执行段（额度在 build／reset 前就被拒），不计入每身份
       2 次上限、也不计入 infra 重试额度；
     * infra 重试：``attempt_start.retry=true`` 且未作废的尝试数，对 ``--infra-retry-budget``；
@@ -694,7 +674,6 @@ class SeatRunner:
         self.builders: dict[str, Any] = {}
         self.proc_info = proc_info or {}
         self.episodes_done = 0
-        self.queue = None
         self._lock = threading.Lock()
         self._current: dict | None = None
         self._built_once = False
@@ -708,14 +687,12 @@ class SeatRunner:
                 raise ValueError("V8 模式必须给 --ledger")
             if getattr(args, "reset_budget", None) is None or getattr(args, "infra_retry_budget", None) is None:
                 raise ValueError("V8 模式必须给 --reset-budget 与 --infra-retry-budget")
-            if getattr(args, "queue", None):
-                raise ValueError("V8 模式不支持 --queue（用 --identities 分片）")
             self.tier_max = tier_max_steps()
             self.ledger = AttemptLedger(args.ledger, seat=args.seat, policy=args.policy)
             self.ledger.start(args.reset_budget, args.infra_retry_budget,
                               reason=getattr(args, "budget_raise_reason", None) or "cli_reset_budget")
 
-    # 进度心跳：原子替换写 progress.json；同时刷新队列认领的 mtime
+    # 进度心跳：原子替换写 progress.json
     def progress(self, step: int = 0, **extra) -> None:
         cur = self._current or {}
         doc = {"pid": os.getpid(), "host": socket.gethostname(), "seat": self.args.seat, "policy": self.args.policy,
@@ -724,8 +701,6 @@ class SeatRunner:
         tmp = self.progress_path.with_suffix(".json.tmp")
         tmp.write_text(dumps(doc), encoding="utf-8")
         os.replace(tmp, self.progress_path)
-        if self.queue is not None and cur.get("claim") is not None:
-            self.queue.heartbeat(cur["claim"])
 
     def builder_for(self, task: str, max_steps: int | None = None):
         """按 (task, 有效上限) 缓存 builder，避免跨档沿用旧上限。旧模式上限即 ``--max-steps``。"""
@@ -762,7 +737,8 @@ class SeatRunner:
             kw["reset_retries"] = 0
         return kw
 
-    def base_record(self, ident: dict, *, attempt: int, canary: bool) -> dict:
+    def base_record(self, ident: dict, *, attempt: int) -> dict:
+        # 结果行保留 canary 字段（恒为 False），下游读结果的工具按该键过滤，格式不变
         if self.v8:
             ident_full = {"tier": ident["tier"], "seed": int(ident["seed"]), "candidate": ident["candidate"],
                           "spec_sha256": ident["spec_sha256"], "builder_episode": int(ident["builder_episode"])}
@@ -771,7 +747,7 @@ class SeatRunner:
                     "source_episode": ident.get("source_episode"), "identity": ident_full,
                     "builder_episode": int(ident["builder_episode"]), "policy": self.args.policy,
                     "cond": self.args.cond, "seat": self.args.seat, "host": socket.gethostname(), "attempt": attempt,
-                    "attempt_no": attempt, "canary": canary,
+                    "attempt_no": attempt, "canary": False,
                     "gpu_name": self.proc_info.get("gpu_name"), "gpu_uuid": self.proc_info.get("gpu_uuid"),
                     "git_commit": self.proc_info.get("git_commit"), "git_dirty": self.proc_info.get("git_dirty"),
                     "max_steps": ident.get("effective_max_steps"),
@@ -779,30 +755,28 @@ class SeatRunner:
         return {"task": ident["task"], "source_episode": int(ident["source_episode"]), "seed": int(ident["seed"]),
                 "identity": {"tier": XHARD0, "seed": int(ident["seed"]), "source_episode": int(ident["source_episode"])},
                 "builder_episode": int(ident["builder_episode"]), "policy": self.args.policy, "cond": self.args.cond,
-                "seat": self.args.seat, "host": socket.gethostname(), "attempt": attempt, "canary": canary,
+                "seat": self.args.seat, "host": socket.gethostname(), "attempt": attempt, "canary": False,
                 "gpu_name": self.proc_info.get("gpu_name"), "gpu_uuid": self.proc_info.get("gpu_uuid"),
                 "git_commit": self.proc_info.get("git_commit"), "git_dirty": self.proc_info.get("git_dirty"),
                 "max_steps": self.args.max_steps}
 
-    def run_one(self, ident: dict, *, attempt: int = 1, canary: bool = False, claim=None, retry: bool = False) -> dict:
+    def run_one(self, ident: dict, *, attempt: int = 1, retry: bool = False) -> dict:
         v8 = self.v8
         key = key_of(ident)
         if v8:
-            rec_dir = self.rec_root / (f"{key}.canary.a{attempt}" if canary else f"{key}.a{attempt}")
+            rec_dir = self.rec_root / f"{key}.a{attempt}"
             eff = ident.get("effective_max_steps")
         else:
-            suffix = (".canary" if canary else "") + (f".a{attempt}" if attempt > 1 else "")
+            suffix = f".a{attempt}" if attempt > 1 else ""
             rec_dir = self.rec_root / f"{key}{suffix}"
             eff = self.args.max_steps
-        record = self.base_record(ident, attempt=attempt, canary=canary)
+        record = self.base_record(ident, attempt=attempt)
         record["rec_dir"] = str(rec_dir)
         attempt_id = uuid.uuid4().hex
         if v8:
             record.update(attempt_id=attempt_id, exec_steps=0, client_steps=None, chunks=None, hard_bound=None,
                           cap_hit=False, demo_frames=None, reset_calls=0, late=False)
-        if claim is not None:
-            record["claim_token"] = claim.token
-        self._current = {"key": key, "claim": claim, "t0": time.time()}
+        self._current = {"key": key, "t0": time.time()}
         self.progress(0, phase="start")
         if v8:
             bad = validate_v8_identity(ident, self.tier_max)
@@ -822,13 +796,12 @@ class SeatRunner:
         if v8:
             if self.ledger.reset_left() <= 0:  # 开局前就没有额度：不开尝试、不写结果，直接停
                 self._budget_stop(key)
-            if not canary:
-                self.ledger.attempt_start(key=key, attempt_id=attempt_id, attempt_no=attempt, retry=retry,
-                                          task=ident["task"], tier=ident["tier"],
-                                          builder_episode=int(ident["builder_episode"]))
+            self.ledger.attempt_start(key=key, attempt_id=attempt_id, attempt_no=attempt, retry=retry,
+                                      task=ident["task"], tier=ident["tier"],
+                                      builder_episode=int(ident["builder_episode"]))
 
-            def claim_reset(what, _k=key, _a=attempt_id, _n=attempt, _c=canary):
-                self.ledger.claim_reset(key=_k, attempt_id=_a, attempt_no=_n, what=what, canary=_c)
+            def claim_reset(what, _k=key, _a=attempt_id, _n=attempt):
+                self.ledger.claim_reset(key=_k, attempt_id=_a, attempt_no=_n, what=what)
         meta = dict(record, resolved_identity=resolved, env=self.proc_info.get("env"),
                     never_degrade=bool(self.args.never_degrade), baseline=bool(self.args.baseline))
         try:
@@ -836,7 +809,7 @@ class SeatRunner:
         except Exception as e:  # noqa: BLE001 录制器建不起来（如磁盘满）= 基础设施故障
             record.update(status="error", task_success=False, steps=0, infra=True, infra_reason="recorder",
                           error=f"RecorderError: init: {type(e).__name__}: {e}"[:800])
-            self._finish(record, canary)
+            self._finish(record)
             if v8:
                 self._print_done_v8(record)
             else:
@@ -851,10 +824,10 @@ class SeatRunner:
         policy_kw = self.policy_kwargs(int(eff))
         limit = self.args.episode_wall_s + (self.args.first_extra_s if self.episodes_done == 0 else 0)
         # first_extra_s 只给「server 刚（重）起后的第一局」：由 run_seat.sh 在 server 新起时传 600，客户端单独重起时传 0
-        state = {"finished": False, "canary": canary, "session": session}
+        state = {"finished": False, "session": session}
         timer = None
         if limit > 0:
-            timer = threading.Timer(limit, self._on_wall_timeout, args=(record, claim, limit, state))
+            timer = threading.Timer(limit, self._on_wall_timeout, args=(record, limit, state))
             timer.daemon = True
             timer.start()
         t0 = time.perf_counter()
@@ -910,7 +883,7 @@ class SeatRunner:
         record["task_success"] = record.get("status") == "success"
         record["timing"] = timing
         record["recorder_verify"] = (rsum or {}).get("RECORDER_VERIFY")
-        self._finish(record, canary)
+        self._finish(record)
         self.episodes_done += 1
         self.progress(record.get("steps", 0), phase="done")
         if v8:
@@ -919,16 +892,16 @@ class SeatRunner:
                 self._budget_stop(key)
         else:
             print(f"EPISODE_DONE policy={self.args.policy} key={key} status={record['status']} "
-                  f"steps={record.get('steps')} wall_s={wall:.1f} infra={record.get('infra')} canary={canary} "
+                  f"steps={record.get('steps')} wall_s={wall:.1f} infra={record.get('infra')} "
                   f"recorder={record['recorder_verify']}", flush=True)
         return record
 
-    def _finish(self, record: dict, canary: bool) -> None:
-        """写结果行；V8 正式尝试再写账本 attempt_end（终态且首个 → accept）。late 先算好写进结果行。"""
-        if self.v8 and not canary:
+    def _finish(self, record: dict) -> None:
+        """写结果行；V8 再写账本 attempt_end（终态且首个 → accept）。late 先算好写进结果行。"""
+        if self.v8:
             record["late"] = self.ledger.is_late(record)
         append_result(self.results_path, record)
-        if self.v8 and not canary:
+        if self.v8:
             self.ledger.attempt_end(record)
 
     def _print_done_v8(self, record: dict) -> None:
@@ -941,16 +914,7 @@ class SeatRunner:
               f"claims={self.ledger.reset_claims} budget={self.ledger.reset_budget}", flush=True)
         raise SystemExit(EXIT_BUDGET)
 
-    @staticmethod
-    def _claim_heartbeat(q, claim, stop: threading.Event, every_s: float = 60.0) -> None:
-        """持有认领期间每 60 s 刷新认领 mtime（长局、首次编译期间也不被当成死席位回收）；进程死了线程随之消失。"""
-        while not stop.wait(every_s):
-            try:
-                q.heartbeat(claim)
-            except Exception:  # noqa: BLE001
-                pass
-
-    def _on_wall_timeout(self, record: dict, claim, limit: float, state: dict) -> None:
+    def _on_wall_timeout(self, record: dict, limit: float, state: dict) -> None:
         with self._lock:
             if state["finished"]:
                 return
@@ -961,16 +925,14 @@ class SeatRunner:
                 rec.update(exec_steps=getattr(sess, "steps", None), reset_calls=getattr(sess, "reset_calls", None),
                            cap_hit=getattr(sess, "cap_hit", None),
                            demo_frames=(getattr(sess, "timing", None) or {}).get("demo_frames"))
-                self._finish(rec, bool(state.get("canary")))
+                self._finish(rec)
             else:
                 append_result(self.results_path, rec)
-            if self.queue is not None and claim is not None:
-                self.queue.fail_infra(claim, rec)
             print(f"INFRA_TIMEOUT key={key_of(record)} limit_s={limit:.0f}", flush=True)
             sys.stdout.flush()
             os._exit(EXIT_WALL)
 
-    # ── 两种来源 ────────────────────────────────────────────────────────
+    # ── 身份清单来源 ────────────────────────────────────────────────────────
     def run_identities(self, rows: list[dict]) -> int:
         if self.v8:
             return self.run_identities_v8(rows)
@@ -1047,45 +1009,6 @@ class SeatRunner:
             print(f"RUN_PARTIAL policy={self.args.policy} infra_retry_skipped={skip_budget}", flush=True)
         return 0
 
-    def run_queue(self, q) -> int:
-        self.queue = q
-        rec = q.recover_seat(self.args.seat, self.results_path)
-        if rec["acked"] or rec["failed"]:
-            print(f"QUEUE_RECOVER seat={self.args.seat} acked={len(rec['acked'])} failed={len(rec['failed'])}", flush=True)
-        n = 0
-        while True:
-            claim = q.claim_next(self.args.seat)
-            if claim is None:
-                # 没有可认领的：全部有终态才退出；否则回收死席位的无进展认领，等 30 s 再试
-                if q.all_terminal():
-                    break
-                reaped = q.reap_stale(self.args.reap_threshold_s)
-                if reaped:
-                    print(f"QUEUE_REAP seat={self.args.seat} keys={','.join(reaped)}", flush=True)
-                    continue
-                self.progress(0, phase="waiting_open_claims")
-                time.sleep(self.args.poll_s)
-                continue
-            ident = q.identity(claim.key)
-            hb_stop = threading.Event()
-            hb = threading.Thread(target=self._claim_heartbeat, args=(q, claim, hb_stop), daemon=True)
-            hb.start()
-            try:
-                record = self.run_one(ident, attempt=int(claim["attempt"]), claim=claim)
-            finally:
-                hb_stop.set()
-            if record.get("infra"):
-                outcome = q.fail_infra(claim, record)
-                print(f"QUEUE_INFRA key={claim.key} outcome={outcome}", flush=True)
-            else:
-                ok = q.complete(claim, record)
-                if not ok:
-                    print(f"QUEUE_LATE key={claim.key} token={claim.token}", flush=True)
-            n += 1
-            if self.args.limit and n >= self.args.limit:
-                break
-        return 0
-
 
 def load_identities(args) -> list[dict]:
     """读身份清单 JSON 数组，按 ``--only`` 过滤、``--order`` 排序、``--limit`` 截断。
@@ -1117,8 +1040,6 @@ def check_v8_args(args) -> str | None:
             if v is None]
     if miss:
         return f"V8 模式必须给 {' '.join(miss)}"
-    if args.queue:
-        return "V8 模式不支持 --queue"
     return None
 
 
@@ -1145,13 +1066,7 @@ def cmd_run(args) -> int:
     Path(args.out).mkdir(parents=True, exist_ok=True)
     (Path(args.out) / f"process-{os.getpid()}.json").write_text(dumps(proc), encoding="utf-8")
     runner = SeatRunner(args, policy_mod=policy_mod, recorder_factory=recorder_factory, proc_info=proc)
-    if args.canary:
-        runner.run_one(parse_canary(args.canary, v8=runner.v8), canary=True)
-    if args.queue:
-        qmod = load_sibling("claim_queue")
-        rc = runner.run_queue(qmod.ClaimQueue(Path(args.queue) / args.policy))
-    else:
-        rc = runner.run_identities(load_identities(args))
+    rc = runner.run_identities(load_identities(args))
     runner.progress(0, phase="finished")
     print(f"全部完成 policy={args.policy} seat={args.seat} episodes={runner.episodes_done}", flush=True)
     return rc
@@ -1162,9 +1077,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("run")
     p.add_argument("--policy", required=True, choices=["mme", "smvla"])
-    src = p.add_mutually_exclusive_group(required=True)
-    src.add_argument("--identities", help="身份清单 json（list of {task, source_episode, seed, builder_episode}）")
-    src.add_argument("--queue", help="队列根目录（其下 <policy>/）")
+    p.add_argument("--identities", required=True,
+                   help="身份清单 json（list of {task, source_episode, seed, builder_episode}；V8 为 shard-NN.json）")
     p.add_argument("--cond", required=True, help="条件代号，如 E1／N")
     p.add_argument("--seat", required=True)
     p.add_argument("--host", default="127.0.0.1")
@@ -1172,15 +1086,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--out", required=True)
     p.add_argument("--order", default="forward", choices=["forward", "reverse", "shuffle"])
     p.add_argument("--shuffle-seed", type=int, default=DEFAULT_SHUFFLE_SEED)
-    p.add_argument("--canary", default=None, help="Task:source_episode:seed，先跑 1 局金丝雀（只记录不拦截）")
     p.add_argument("--only", default=None, help="只跑这些 <task>_<seed>（逗号分隔）")
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--max-steps", type=int, default=MAX_STEPS)
     p.add_argument("--episode-wall-s", type=float, default=0.0, help="单局墙钟上限（0=不限）；超时记基础设施超时并退出 75")
     p.add_argument("--first-extra-s", type=float, default=600.0,
                    help="本进程第一局额外放宽（首次推理编译）；run_seat.sh 只在 server 新（重）起后传 600，否则传 0")
-    p.add_argument("--reap-threshold-s", type=float, default=1200.0, help="队列模式：认领无进展多久算死席位")
-    p.add_argument("--poll-s", type=float, default=30.0, help="队列模式：等待别席未完成认领时的轮询间隔")
     p.add_argument("--infra-retries", type=int, default=2, help="identities 模式下基础设施失败的重试局数上限")
     p.add_argument("--no-record", action="store_true")
     p.add_argument("--never-degrade", action="store_true")
