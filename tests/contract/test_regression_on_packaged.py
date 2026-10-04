@@ -259,3 +259,36 @@ def test_step_headroom_negatives(hr, capsys, tmp_path, monkeypatch):
     # --skip-xhard0 只给 INFO，不出 PASS
     rc, lines = run(hr, ["step-headroom", "--delivery", str(delivery), "--pool", str(ROOT), "--skip-xhard0"], capsys)
     assert rc == 0 and lines["V9_STEP_CAP"].startswith("V9_STEP_CAP=INFO")
+
+
+def test_step_headroom_fails_when_h5_steps_disagree_with_delivery(hr, capsys, tmp_path, monkeypatch):
+    """负例：清单不动、h5 替身给出的执行步比清单 ``exec_steps`` 少 1（仍在上限内）→ ``exec_steps_mismatch=1`` 判 FAIL。"""
+    delivery, steps = packaged_delivery(tmp_path)
+    x0 = xhard0_source(tmp_path, steps)
+    first = str(tmp_path / json.loads(delivery.read_text())["rows"][0]["path"])
+    demo, exec_steps = steps[first]
+    patch_steps(hr, monkeypatch, dict(steps, **{first: (demo, exec_steps - 1)}))
+    rc, lines = run(hr, ["step-headroom", "--delivery", str(delivery), "--pool", str(ROOT), "--xhard0", str(x0)],
+                    capsys)
+    f = fields(lines["V9_STEP_CAP"])
+    assert rc == 1 and lines["V9_STEP_CAP"].startswith("V9_STEP_CAP=FAIL")
+    assert f["exec_steps_mismatch"] == "1" and f["missing_h5"] == "0" and f["over"] == "0"
+
+
+def test_step_headroom_counts_unreadable_h5_as_missing(hr, capsys, tmp_path, monkeypatch):
+    """负例：读某一局 h5 时替身抛异常（缺文件、打不开）→ 该局不计入、``missing_h5=1`` 判 FAIL。"""
+    delivery, steps = packaged_delivery(tmp_path)
+    x0 = xhard0_source(tmp_path, steps)
+    first = str(tmp_path / json.loads(delivery.read_text())["rows"][0]["path"])
+
+    def fake(path):
+        if str(path) == first:
+            raise OSError(f"打不开 {path}")
+        return steps[str(path)]
+
+    monkeypatch.setattr(hr, "_h5_steps", fake)
+    rc, lines = run(hr, ["step-headroom", "--delivery", str(delivery), "--pool", str(ROOT), "--xhard0", str(x0)],
+                    capsys)
+    f = fields(lines["V9_STEP_CAP"])
+    assert rc == 1 and lines["V9_STEP_CAP"].startswith("V9_STEP_CAP=FAIL")
+    assert f["missing_h5"] == "1" and f["exec_steps_mismatch"] == "0"
