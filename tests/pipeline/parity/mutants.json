@@ -243,6 +243,78 @@
    "contracts": [
     "C15.06"
    ]
+  },
+  {
+   "id": "T6-D1",
+   "target": "scripts/parity/hard_parity.py::_v8_denominator",
+   "method": "分母不再计重复（duplicate 恒为 0）",
+   "patch": [
+    {
+     "file": "scripts/parity/hard_parity.py",
+     "old": "\"dup_keys\": dup_keys, \"duplicate\": duplicate,",
+     "new": "\"dup_keys\": dup_keys, \"duplicate\": 0,"
+    }
+   ],
+   "expect_fail": [
+    "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_重复行"
+   ],
+   "contracts": [
+    "C15.13"
+   ]
+  },
+  {
+   "id": "T6-D2",
+   "target": "scripts/parity/hard_parity.py::_v8_denominator",
+   "method": "子集口径下清单外身份不再计 missing（冻结集缺一局只剩 extra）",
+   "patch": [
+    {
+     "file": "scripts/parity/hard_parity.py",
+     "old": "            + (len(sets[\"identities\"] - sets[\"frozen\"]) if subset is not None else 0),",
+     "new": "            + 0,"
+    }
+   ],
+   "expect_fail": [
+    "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_冻结集缺一局_子集清单含清单外身份"
+   ],
+   "contracts": [
+    "C15.13"
+   ]
+  },
+  {
+   "id": "T6-D3",
+   "target": "scripts/parity/hard_parity.py::cmd_compare",
+   "method": "去掉「compared > 0」：空清单 0 = 0 判 PASS",
+   "patch": [
+    {
+     "file": "scripts/parity/hard_parity.py",
+     "old": "judged = n > 0 and manifest_dup == 0",
+     "new": "judged = manifest_dup == 0"
+    }
+   ],
+   "expect_fail": [
+    "tests/pipeline/parity/test_hard_parity_compare.py::test_native负例_空清单_重复行_一侧缺局"
+   ],
+   "contracts": [
+    "C15.13"
+   ]
+  },
+  {
+   "id": "T6-P1",
+   "target": "scripts/parity/noise_gate.py::NOISE_MAX",
+   "method": "改口径：V9 噪声上限 2 → 3",
+   "patch": [
+    {
+     "file": "scripts/parity/noise_gate.py",
+     "old": "NOISE_MAX = {\"v9\": 2, \"xhard0\": 1}",
+     "new": "NOISE_MAX = {\"v9\": 3, \"xhard0\": 1}"
+    }
+   ],
+   "expect_fail": [
+    "tests/pipeline/parity/test_parity_pins.py::test_gen_regress闸门常量与钉值相等"
+   ],
+   "contracts": [
+    "C15.14"
+   ]
   }
  ]
 }

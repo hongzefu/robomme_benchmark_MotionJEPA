@@ -369,5 +369,61 @@
     "resource": "cpu",
     "mutants": [],
     "status": "verified"
+  },
+  {
+    "id": "C15.13",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/hard_parity.py",
+      "src/robomme_hard/env_metadata/test-hard/xhard5/specs.jsonl"
+    ],
+    "symbol": "hard_parity.cmd_compare（CLI main）/_v8_denominator/classify_terminal：v9（含 --identities 子集）、native、xhard0",
+    "oracle": "冻结交付集按「selected 且 rollout.status == ok」从拷贝的 xhard5 规格独立读出；各方计数手算",
+    "positive": "v9 四方一致 PASS（分母、五终态、判定行逐字段）；子集口径只比清单内身份；native／xhard0 两侧一致 PASS",
+    "negative": "空子集清单拒跑；空交付清单 missing=全部；交付／左／右各缺一 missing=1；冻结集缺一（子集含清单外身份）missing=1 extra=1；全集口径一侧多出 extra=1；交付或一侧重复 duplicate=1；gen1 sha 与交付不符判结构不同；native 空清单、重复行、一侧缺局 FAIL",
+    "boundaries": "子集口径下清单外行只记 outside_subset（交付清单先按子集筛过记 0）；--identities 只用于 v9",
+    "nodeids": [
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_四方一致_PASS_分母与五终态",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_子集口径_只比清单内身份",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_空子集清单即拒",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_空交付清单不得因0等于0判PASS",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_交付清单或任一侧缺一局",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_冻结集缺一局_子集清单含清单外身份",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_全集口径下一侧多出清单外身份",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_重复行",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_v9_gen1的sha与交付清单不符判结构不同",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_native与xhard0_两侧一致PASS",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_native负例_空清单_重复行_一侧缺局",
+      "tests/pipeline/parity/test_hard_parity_compare.py::test_identities只用于v9"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "T6-D1",
+      "T6-D2",
+      "T6-D3"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": "C15.14",
+    "domain": "C15",
+    "source": [
+      "scripts/parity/noise_gate.py",
+      "scripts/parity/gate_set.py"
+    ],
+    "symbol": "noise_gate.NOISE_MAX/FLIP_RERUN_MAX/RERUN_MIN/PRECOND_WORKERS/PRECOND_GPU、payload_sha256／canonical_json",
+    "oracle": "钉值文件 tests/pipeline/parity/parity_pins.py（对拍细则 3.3／3.4 用户口径）；canonical sha 固定向量预先算好写死",
+    "positive": "五个闸门常量与钉值相等；noise_gate 与 gate_set 的 payload_sha256 对固定向量给出同一 digest",
+    "negative": "改任一口径常量即失败；内容改一字 digest 变",
+    "boundaries": "顶层 sha256 键的取值不参与 digest",
+    "nodeids": [
+      "tests/pipeline/parity/test_parity_pins.py::test_gen_regress闸门常量与钉值相等",
+      "tests/pipeline/parity/test_parity_pins.py::test_canonical_sha固定向量_noise_gate与gate_set同口径"
+    ],
+    "resource": "cpu",
+    "mutants": [
+      "T6-P1"
+    ],
+    "status": "verified"
   }
 ]
