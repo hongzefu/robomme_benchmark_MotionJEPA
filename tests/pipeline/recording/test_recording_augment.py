@@ -16,6 +16,7 @@ import torch
 
 from recording_fakes import (
     EXTRINSIC,
+    FINGER_OPEN,
     IMG,
     INTRINSIC,
     WRIST_EXTRINSIC,
@@ -104,7 +105,7 @@ def _check(demo_mod, flags, monkeypatch):
         "front_rgb_list": (front_rgb(1), np.uint8),
         "wrist_rgb_list": (wrist_rgb(1), np.uint8),
         "joint_state_list": (a[:7].astype(np.float32), np.float32),
-        "gripper_state_list": (np.array([0.04, 0.04], dtype=np.float32), np.float32),  # action_of(3) 夹爪 +1 → 张开
+        "gripper_state_list": (np.array([FINGER_OPEN, FINGER_OPEN], dtype=np.float32), np.float32),  # action_of(3) 夹爪 +1 → 替身张开档
         "front_depth_list": (front_depth(1), np.int16),
         "wrist_depth_list": (wrist_depth(1), np.int16),
         "front_camera_extrinsic_list": (EXTRINSIC, np.float32),
