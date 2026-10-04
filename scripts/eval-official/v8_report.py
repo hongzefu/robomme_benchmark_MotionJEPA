@@ -805,9 +805,25 @@ def _rate_table(entries: list[tuple[str, str, str]], key_fn) -> dict[str, dict]:
 
 
 def build_reuse(rep: dict, manifest_path: Path, reuse_dir: Path, reuse_manifest: Path, policies: list[str],
-                *, expect_reused: int) -> dict:
-    """读 reused.json（唯一复用依据）→ 对齐 V8 manifest → 取 V8 账本 accepted 终态 → 800 局总表。只读 V8。"""
+                *, expect_reused: int, hs=None) -> dict:
+    """读 reused.json（唯一复用依据）→ 对齐 V8 manifest → 取 V8 账本 accepted 终态 → 800 局总表。只读 V8。
+
+    800 局总表另与交付格表 ``hard_specs.V9_CELLS`` 逐格比分母（每个模型各比一次）：缺格、多格或某格局数不等都记
+    count_mismatch。``hs`` 缺省时按文件路径加载 ``src/robomme_hard/env_record_wrapper/hard_specs.py``（只依赖标准库，
+    不 import robomme_hard 包、不触发 sapien）。"""
     mismatch: list[str] = []
+    if hs is None:
+        import importlib.util
+
+        name = "_v8_report_hard_specs"
+        hs = sys.modules.get(name)
+        if hs is None:
+            hs_path = Path(__file__).resolve().parents[2] / "src" / "robomme_hard" / "env_record_wrapper" / "hard_specs.py"
+            spec = importlib.util.spec_from_file_location(name, hs_path)
+            hs = importlib.util.module_from_spec(spec)
+            sys.modules[name] = hs
+            spec.loader.exec_module(hs)
+    want_cells = {f"{t}@{tier}": int(n) for (t, tier), n in hs.V9_CELLS.items()}
     doc = json.loads(manifest_path.read_text(encoding="utf-8"))
     _, new_rows, _ = load_manifest(manifest_path)
     meta = doc.get("reused") or {}
@@ -888,6 +904,11 @@ def build_reuse(rep: dict, manifest_path: Path, reuse_dir: Path, reuse_manifest:
             "tiers": _rate_table(allv, lambda _t, tier: tier),
             "cells": _rate_table(allv, lambda t, tier: f"{t}@{tier}"),
         }
+        # 800 局总表逐格对 V9_CELLS：只核「新评 + 复用」总数挡不住格间此消彼长
+        have_cells = {k: v["denominator"] for k, v in totals[pol]["cells"].items()}
+        for cell in sorted(set(want_cells) | set(have_cells)):
+            if have_cells.get(cell, 0) != want_cells.get(cell, 0):
+                mismatch.append(f"{pol} 总表格 {cell} 局数={have_cells.get(cell, 0)} != V9_CELLS={want_cells.get(cell, 0)}")
     out.update({"new": len(new_rows), "reused": len(rrows), "total": len(new_rows) + len(rrows),
                 "count_mismatch_detail": mismatch, "totals": totals})
     return out
