@@ -1115,41 +1115,6 @@ def plan_distractor_swaps_balanced(
     return plan
 
 
-def _choose_outer_arc(recorder, dcfg, windows, buttons_xy, scfg, chs, extra_reject) -> None:
-    """D-19（v7 派生，Swap 两任务）：低档外环用母布局外环按角度排序后的一段连续弧（k 个相邻容器），
-    依次试 n 个起点，取第一段「每个容器都过本档内环扫掠护栏、且整段外环交换在本档内环节奏与按钮约束下可规划」的弧。
-
-    背景：外环只剩 2 个时只有一对可换，按放置序取前 2 个常常一东一西、交换路线横穿桌面扫过按钮（阶段 1／3 实测
-    BUS xhard1 全部 ``btn`` 拒绝）。弧里的容器是母布局原位置原朝向的子集，布局共用的本意不变。结果写进
-    ``recorder.nest_context``，由 N 规则 :func:`nest_outer_arc` 注入；可行弧不存在时退化为第一段，派生照常失败。"""
-    import math
-
-    from .unmask_distractor_sampler import parse_distractor_cfg
-
-    parent = recorder.parent_value("objects.distractors.bins")
-    if not isinstance(parent, dict) or not parent:
-        return
-    k = parse_distractor_cfg(dcfg).count
-    n = len(parent)
-    bins = [tuple(float(v) for v in parent[str(i)]) for i in range(n)]
-    order = sorted(range(n), key=lambda i: math.atan2(bins[i][1], bins[i][0]))
-    chosen, tried = None, []
-    for start in range(n):
-        arc = [order[(start + j) % n] for j in range(k)]
-        if any(extra_reject(j, *bins[i], []) for j, i in enumerate(arc)):
-            tried.append("guard")
-            continue
-        layout = DistractorLayout(bins=[bins[i] for i in arc], cube_count=0, cube_bins=[], color_order=[0, 1, 2])
-        plan = plan_distractor_swaps_balanced(layout, windows, torch.Generator().manual_seed(0), cfg=scfg,
-                                              cube_half_size=chs, buttons_xy=buttons_xy, stats={})
-        if plan.ok:
-            chosen = arc
-            break
-        tried.append(f"w{plan.fail_window}")
-    recorder.nest_context["objects.distractors.bins"] = chosen or [order[j % n] for j in range(k)]
-    recorder.nest_context["outer_arc_tried"] = tried
-
-
 def _plan_swap_distractors_balanced(*, windows, guard_windows, obstacles, buttons_xy, generator, recorder, dcfg, scfg,
                                     chs, timing, stats, difficulty):
     """:func:`plan_swap_distractors` 的 V6 分支：放置 + H1（G 全部可行槽对）→ 每次放置后独立流追加
@@ -1183,9 +1148,6 @@ def _plan_swap_distractors_balanced(*, windows, guard_windows, obstacles, button
         attempt_reasons.append(dict(plan.reasons))
         return (True, (perm, seed, plan)) if plan.ok else (False, f"window_{plan.fail_window}")
 
-    if getattr(recorder, "mode", None) == "derive":
-        # D-19：派生时先在母布局外环里选一段可行的连续弧（只读母值与本档几何，不消耗环境随机流）
-        _choose_outer_arc(recorder, dcfg, windows, buttons_xy, scfg, chs, extra_reject)
     layout, payload = resample_distractor_layout(
         dcfg, obstacles=obstacles, generator=generator, cube_half_size=chs, recorder=recorder,
         accept=accept, max_attempts=scfg.layout_max_attempts, extra_reject=extra_reject,
@@ -1196,10 +1158,8 @@ def _plan_swap_distractors_balanced(*, windows, guard_windows, obstacles, button
     seed_v = int(recorder.value("objects.distractors.swap_plan_seed", int(seed),
                                 decision_key=f"{difficulty}.distractor_swap.initiator_rule"))
     public, replanned = plan_for(layout, perm_v, seed_v)
-    # V7 分层（derive／layered 回注）：外环位置取母布局，与 accept 时规划所用的本档重抽布局不同 ⇒
-    # 一律采用在实际（注入后）布局上重新规划的结果并复核（0928 方案第二部分 §1.8）
-    if getattr(recorder, "layered", False) or (perm_v, seed_v) != (list(perm), int(seed)):
-        # 非分层时只在回放可能发生：冻结的重排 / 种子与重抽不同 ⇒ 用冻结值重新规划并复核（N17）
+    if (perm_v, seed_v) != (list(perm), int(seed)):
+        # 只在回放可能发生：冻结的重排 / 种子与重抽不同 ⇒ 用冻结值重新规划并复核（N17）
         plan = replanned
         if not plan.ok:
             raise SceneGenerationError(f"回放复核：冻结的外环重排 / 种子在第 {plan.fail_window} 窗不可行"

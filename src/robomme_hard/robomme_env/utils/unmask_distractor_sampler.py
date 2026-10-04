@@ -491,8 +491,8 @@ def commit_distractor_layout(
                                                   decision_key=f"{decision_prefix}.color_rule")]
     final = DistractorLayout(bins=bins, cube_count=cube_count, cube_bins=cube_bins, color_order=color_order,
                              trials=list(layout.trials))
-    # V7 分层：母布局注入后要按本档的障碍与额外规则（如本档内环扫掠）复核，derive 模式也做（§1.8、§7.3.2）
-    if getattr(recorder, "replaying", False) or getattr(recorder, "layered", False):
+    # 回注时冻结布局要按本档的障碍与额外规则（如本档内环扫掠）复核
+    if getattr(recorder, "replaying", False):
         problems = verify_distractor_layout(final, c, obstacles=obstacles, cube_half_size=cube_half_size,
                                             extra_reject=extra_reject)
         if problems:
@@ -552,10 +552,7 @@ def resample_distractor_layout(
         final = commit_distractor_layout(layout, cfg=cfg, recorder=recorder, obstacles=obstacles,
                                          cube_half_size=cube_half_size, spec_prefix=spec_prefix,
                                          decision_prefix=decision_prefix, extra_reject=extra_reject)
-        # V7 分层（derive／layered 回注）：外环位置与 color_order 取母值，与本档重抽结果必然不同；
-        # 改由 SpecRecorder 逐点核「本档抽到值 == layout_drawn」（layout_drift），调用方须在 final 上重新规划（§1.8）
-        layered = bool(getattr(recorder, "layered", False))
-        if require_replay_match and not layered and getattr(recorder, "replaying", False) \
+        if require_replay_match and getattr(recorder, "replaying", False) \
                 and not final.same_geometry(layout):
             raise SceneGenerationError("回放的冻结干扰布局与本次重抽被接受的布局不一致，规划结果无法对应冻结布局")
         return final, payload

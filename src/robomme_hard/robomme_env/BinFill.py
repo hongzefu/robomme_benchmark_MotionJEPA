@@ -696,12 +696,6 @@ class BinFill(BaseEnv):
                                              decision_key=f"configs.{self.difficulty}.spawn_cubes")
             target_numbers = self._spec.value("objects.target_numbers", target_numbers,
                                               decision_key=f"configs.{self.difficulty}.put_in_numbers")
-            if getattr(self._spec, "layered", False):
-                # V7 分层（D-15）：投入数由母档嵌套派生，必须真正决定本局投几块；
-                # 非分层（原三档、v6、xhard4）不走这里，行为逐字不变（R12）
-                self.red_cubes_target_number = target_numbers[0]
-                self.blue_cubes_target_number = target_numbers[1]
-                self.green_cubes_target_number = target_numbers[2]
         self.red_cubes_spawn_number = spawn_numbers[0]
         self.blue_cubes_spawn_number = spawn_numbers[1]
         self.green_cubes_spawn_number = spawn_numbers[2]
