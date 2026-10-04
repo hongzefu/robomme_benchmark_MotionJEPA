@@ -1,0 +1,12 @@
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/lightweight/test_TaskGoal.py::test_unknown_env_returns_single_goal_when_equal
+FAILED tests/lightweight/test_TaskGoal.py::test_swingxtimes_multiple - Assert...
+FAILED tests/lightweight/test_step_error_handling.py::test_step_error_returns_status_error
+FAILED tests/lightweight/test_step_error_handling.py::test_scripts_use_status_check_not_bare_try_except
+FAILED tests/lightweight/test_v8_eval_report.py::test_zz_summary_line - Asser...
+FAILED tests/lightweight/test_v8_eval_video_mover.py::test_zz_summary_line - ...
+6 failed, 1885 passed, 3 skipped, 80 deselected, 24 warnings in 611.47s (0:10:11)
+PYTEST_EXIT=1
+Wrote JSON report to artifacts/test-coverage-1003/coverage.json
+EXIT_CODE=0
