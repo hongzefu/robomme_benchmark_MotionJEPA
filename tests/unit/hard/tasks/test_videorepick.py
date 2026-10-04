@@ -20,7 +20,7 @@ OK = {"success": False, "fail": False}
 @pytest.fixture
 def world():
     with cpu_world():
-        yield lambda tier: World.build(TASK, tier)
+        yield lambda tier, k=0: World.build(TASK, tier, k)
 
 
 def _demo_and_swaps(w):
@@ -69,12 +69,18 @@ def test_one_short_then_button_fails(world, tier):
     assert w.step()["fail"] is True
 
 
+#: 选格（T13 离线探针，xhard1／xhard2 各前 8 个正式局）：「目标交换前位置上现在是另一个方块」
+#: 在 xhard1 第 0、2、5 局成立，xhard2 第 0、1、2、5、6 局成立；第 0 局两档都成立（原 skip 实际未触发），
+#: 仍按档显式钉格并把触发条件写成前置断言，包内规格若变动使条件不再成立则响亮失败而不是静默 skip。
+OLD_POS_K = {"xhard1": 0, "xhard2": 0}
+
+
 @pytest.mark.parametrize("tier", TIERS)
 def test_original_position_cube_is_a_trap(world, tier):
-    w = world(tier)
+    w = world(tier, OLD_POS_K[tier])
     origin = _demo_and_swaps(w)
     impostor = bin_at(w, origin, w.env.spawned_cubes)
-    if impostor is None or impostor is w.env.target_cube_1:
-        pytest.skip("未验证：本局交换后原位置空着或仍是目标，位置陷阱不成立")
+    assert impostor is not None and impostor is not w.env.target_cube_1, \
+        "选格失效：目标交换前的位置上现在没有别的方块，须重选 OLD_POS_K"
     w.grasp(impostor)
     assert w.step() == {"success": False, "fail": True}
