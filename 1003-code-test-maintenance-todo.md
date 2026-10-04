@@ -2,9 +2,9 @@
 
 > **权威性**：本文是唯一现行计划。第四版把三份文件合成一份：本文第三版（清理与噪声闸门）、`docs/plans/1003-test-redesign-plan.md`（Claude 的测试重设计，12.379）、`docs/plans/1003-benchmark-tests-refactor-plan.md`（Codex 的测试重构，12.380）；后两份已删除，原文用 `git show 63f34817:<路径>` 取。
 >
-> 代码锚点 `PLAN_BASE=86e5a015`（12.377；其后到 12.380 的提交只有文档），分支 `newtaskRelease-taskV9`，工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。官方包锚点 `1fadc0ec`，噪声基线锚点 `f8f76fba`。**只规划不实施**：实施须用户说「执行」，且第九节的未定事项要先裁决。
+> 代码锚点 `PLAN_BASE=86e5a015`（12.377；其后到 12.380 的提交只有文档），分支 `newtaskRelease-taskV9`，工作副本 `/data/hongzefu/robomme_benchmark_MotionJEPANewTask`。官方包锚点 `1fadc0ec`，噪声基线锚点 `f8f76fba`。**只规划不实施**：实施须用户说「执行」。原未定事项 U1～U6 已于 2026-10-03 裁决并写入第九节（Q12～Q17），只剩 xhard0 步数口径待定，不阻塞。
 >
-> 定下本版结构的用户原话（2026-10-03；全部 16 条原话见第二部分第十节）：
+> 定下本版结构的用户原话（2026-10-03；全部 17 条原话见第二部分第十节）：
 > - 「所有的都改到这里面就是我要v7v8的清理再做test的重构然后最后做对拍」
 > - 「旧测试完全放弃。不作为基准」
 > - 「参考Codex的意见一起整合成一份计划。告诉我还有什么没有定下来。」
@@ -49,7 +49,7 @@
 
 ### 这一步同时做的两件事
 
-- **生产小修（F 块）**：盘点与反例暴露了 8 处非受保护代码的问题，例如 `upstream_guard.py::check_upstream_bytes` 不加 `--require-upstream` 时放行字节差异且不守三个入口、`noise_gate::classify_pair` 把两个空 h5 判成 `byte_equal`、`hard_specs::validate_specs` 接受布尔和浮点的 seed。建议在这一步修掉（未定事项 U1），否则第二步会给一份已知有问题的代码写测试。
+- **生产小修（F 块）**：盘点与反例暴露了 8 处非受保护代码的问题，例如 `upstream_guard.py::check_upstream_bytes` 不加 `--require-upstream` 时放行字节差异且不守三个入口、`noise_gate::classify_pair` 把两个空 h5 判成 `byte_equal`、`hard_specs::validate_specs` 接受布尔和浮点的 seed。用户已定在这一步修掉（Q12），否则第二步会给一份已知有问题的代码写测试。
 - **对拍工具（G 块）**：`noise_gate.py` 新增 `gen-regress`，`hard_parity.py generate` 新增 `--expect-ref`（边生成边比 sha），`hard_pull.py` 新增 `--identities`（只回传翻转局），并生成参照文件 `scripts/configs/noise-ref-20261003.json`。它们是代码改动，所以放在清理这一步做；真正上 GL 跑在第三步。
 
 ### 没有旧测试，这一步怎么验收
@@ -96,7 +96,7 @@
 | L0 静态与上游 | `tests/static/` | 官方代码与入口被动过吗？hard 包的复制件与官方只差白名单吗？每个源码文件都有契约归属吗？ | 是 |
 | L1 契约 | `tests/contract/` | 交付的 800 局身份、规格、常量是否正确且没变？ | 是 |
 | L2 单元 | `tests/unit/` | 每个纯逻辑模块、16 个任务各档的取值、布局、成功失败判定是否正确？ | 是 |
-| L3 流水线 | `tests/pipeline/` | 录制读回、对拍、生成、评估、挑战接口、站点六条链路的记账与判定是否正确？ | 是（起 bash、ffmpeg、浏览器的标 `slow`，不进） |
+| L3 流水线 | `tests/pipeline/` | 录制读回、对拍、生成、评估、挑战接口、站点六条链路的记账与判定是否正确？ | 是（起 bash、ffmpeg 的标 `slow`，不进） |
 | L4 仿真冒烟 | `tests/sim/` | 真仿真里每任务每档能否建出来，观测形状与规格回注是否正确？ | 否，有 GPU 时跑，约 3 分钟 |
 | L5 生成一致性 | 第三步对拍 | 改代码后生成结果变没变？ | 否，GL |
 
@@ -170,7 +170,7 @@
 | 一 | 参照文件可信 | `gen-regress build-ref` 重算四遍 h5 sha 并与 git 记录对照 | 每局期望来自真实文件 | `NOISE_REF=PASS v9=129 stable=128 jitter=1 xhard0=48 stable=46 fail=2 mismatch=0` |
 | 二 | 每个源码文件有归属、每条契约真被执行 | 契约清单元测试 | 「覆盖所有部分」可机检 | `TEST_INVENTORY=PASS unclassified=0`；`TEST_CONTRACTS=PASS missing=0 pending=0` |
 | 二 | 日常门禁 | runbook 的日常命令 | 关键 CPU 契约全过且在预算内 | `TEST_CORE=PASS failed=0 wall_s=<实测>` |
-| 二 | 慢测试 | runbook 的慢测试命令 | bash、ffmpeg、websocket、浏览器、wheel 通过；缺工具的项单列 | `TEST_SLOW=PASS failed=0 not_verified=<清单>` |
+| 二 | 慢测试 | runbook 的慢测试命令 | bash、ffmpeg、websocket、wheel 通过；缺工具的项单列 | `TEST_SLOW=PASS failed=0 not_verified=<清单>` |
 | 二 | 门禁没偷跑仿真 | 资源守卫事件账本 | 日常门禁是纯 CPU | `TEST_RESOURCE=PASS native_reset=0 gpu_init=0 violations=0` |
 | 二 | 16 任务行为 | 真值表用例 | 成功失败判定被独立期望核对 | `TEST_TASKS_CPU=PASS tasks=16 missing=0` |
 | 二 | 比较器不误接受坏输入 | 六个反例加扩展 | 空文件、类型错误、属性变化被拒 | `PARITY_VALIDITY=PASS false_accept=0` |
@@ -187,6 +187,7 @@
 | 阶段 | 内容 | 判据 |
 |---|---|---|
 | 0 | 清理前快照：59 格 reset、行覆盖率、逐文件耗时（**已完成**） | `RESET_SWEEP=PASS cells=59 ok=59` |
+| 0b | 主会话：清理 `.claude/worktrees/` 下 5 个旧子代理 worktree 及其分支（Q15；做法见第二部分第四节） | `git worktree list` 删前删后差集恰为这 5 个；主检出 `git status --short` 无新增改动 |
 | 1a | 清理并行批：G（对拍工具与参照文件）、W1（`eval-official`）、W2（`injection-dev`）、F（生产小修） | 导入与 `--help` 冒烟；`UPSTREAM_GUARD`、`MAINT_SPECS`；`NOISE_REF`；每块 `PRE_MERGE_REVIEW=PASS` |
 | 1b | 清理串行：W3（`parity` 历史分支，等 G）→ W4（`src/robomme_hard`，等 W1～W3）→ R（改名） | 同上，加 `MAINT_DEAD_BRANCH`、`MAINT_NO_LEGACY`、`MAINT_SCOPE` |
 | 1c | 主会话：清理后 59 格 reset 与快照比 | `RESET_SNAPSHOT=PASS` |
@@ -207,7 +208,7 @@
 
 公共件（`tests/_support/`、`tests/conftest.py`、契约清单总表、`pyproject.toml`）、旧测试删除、统一测、仿真冒烟实跑、HF 上传、GL 对拍、文档都归主会话，避免多人写同一文件。
 
-每块合并前派一个只读审查子代理：清理块审「改动没越出文件清单、删掉的分支 V9 走不到」；测试块审「真调生产方法、期望独立、有负例、没有字面常量」。每块合并后主会话跑当时能跑的检查（清理阶段是冒烟与两条守卫，测试阶段是已合入的新测试），通过即 push。全部子代理用 opus。
+每块合并前派一个只读审查子代理：清理块审「改动没越出文件清单、删掉的分支 V9 走不到」；测试块审「真调生产方法、期望独立、有负例、没有字面常量」。每块合并后主会话跑当时能跑的检查（清理阶段是冒烟与两条守卫，测试阶段是已合入的新测试），通过即 push。由 Claude Code 按 `CLAUDE.md`「计划执行模式」执行（worktree 隔离、`sub/` 前缀提交），全部子代理用 opus。
 
 ## 九、已定与未定
 
@@ -226,17 +227,16 @@
 | Q9 | 三件事的顺序 | 先清理，再测试重构，最后对拍，写在这一个文件里 |
 | Q10 | 旧测试 | 完全放弃，不作基准 |
 | Q11 | 子代理模型 | 全部 opus |
+| Q12 | 8 处非受保护生产代码问题（原 U1） | 修，放在第一步（F 块；清单见第二部分清理细则末尾）。其中评估清单 xhard0 期望数那一条只读到写死、未实跑，先写复现用例，复现不了就不改 |
+| Q13 | 受保护官方代码里的问题（原 U2） | 不改。测试锁定官方现状，登记为语义问题：`evaluation.py` 的 error 分支没给 `outcome` 赋值、`run_example._validate_episode_index(-1)` 与文档矛盾、PickHighlight 失败回调与语言冲突（候选，未实证） |
+| Q14 | 测试做多深（原 U3） | 做 wheel 仓库外安装测试；做 8 个观测开关 × 4 种动作空间 = 1024 组合的全组合测试（放慢测试档）。真实浏览器交互测试不做，站点前端只测到路由与数据字段，交互登记为「未验证」 |
+| Q15 | 谁执行与旧 worktree（原 U4） | Claude Code 执行；`.claude/worktrees/` 下 5 个旧子代理 worktree 清理掉、不合并 |
+| Q16 | xhard0 步数口径（原 U5） | **待定**。入口对所有档写死 1600，`TIER_MAX_STEPS["xhard0"]` 是 1300；新测试对 xhard0 的上限取值不下断言，契约清单记 `conditional`，等待定清单 B5 |
+| Q17 | 改名让历史命令无法原样复现（原 U6） | 不管；`scripts/README.md` 出新旧名对照表即可 |
 
-### 未定（实施前请裁决）
+### 未定
 
-| 编号 | 问题 | 选项与代价 | 建议 |
-|---|---|---|---|
-| U1 | 8 处非受保护生产代码问题是否在第一步修（F 块）。清单：①`upstream_guard` 默认放行字节差异、不守三个入口；②`v8_manifest.check_source` 的 xhard0 期望数不读开关；③`v8_report.build_reuse` 不对照 `V9_CELLS`；④`run_seat.sh` 轮询写死 `sleep 10`；⑤空 h5 判 `byte_equal`；⑥规格校验接受布尔／浮点的 candidate、attempt、seed；⑦零字节冻结文件判 PASS；⑧`compare_h5_pair` 漏根属性 | 修：约 8 处小改，都不涉及 `src/robomme/`；⑥改的是规格校验器，要先确认五份现有规格在更严的校验下仍通过。不修：对应契约记 `blocked`，第二步如实报 FAIL，「所有关键都正确」达不到 | 修。⑤～⑧有反例实证，①③读源码属实；②只读到写死、未实跑，先写复现用例，复现不了就不改 |
-| U2 | 受保护官方代码里的问题怎么办：`evaluation.py` 的 error 分支没给 `outcome` 赋值；`run_example._validate_episode_index(-1)` 与文档矛盾；PickHighlight 失败回调与语言冲突（候选，未实证） | 只记录：测试锁定官方现状，登记为语义问题，源码不动。要修：破坏与官方逐字节相同，需按 P2 逐条批准 | 只记录，不修 |
-| U3 | 测试做多深。三项可选的重活：(a) 真实浏览器交互测试，要装 Chromium；(b) wheel 仓库外安装测试；(c) 8 个观测开关 × 4 种动作空间共 1024 组合的全组合测试 | 做：慢测试档变长，(a) 要下载浏览器。不做：站点前端只测到路由和数据字段，安装交付与全组合记「未验证」 | (b)(c) 做；(a) 做成条件项，有浏览器才跑，没有就记未验证 |
-| U4 | 谁来执行，以及现有 worktree 怎么办。`.claude/worktrees/` 下有 5 个子代理 worktree，其中两个已有提交 `sub/TA`、`sub/TC`，做的是「把旧测试搬进新目录」，与 Q10 冲突 | 甲：Claude Code 执行，那 5 个 worktree 作废不合并。乙：Codex 执行。丙：沿用已有成果，与「旧测试完全放弃」矛盾 | 甲或乙由你定；那 5 个 worktree 不是本计划登记的，要你下令我才清理 |
-| U5 | xhard0 步数口径矛盾：入口对所有档写死 1600，`TIER_MAX_STEPS["xhard0"]` 是 1300。测试钉哪个 | 各在一处钉住现状并标注「口径冲突，待 B5」；或等 B5 定了再写 | 先各钉现状并标注，不阻塞本计划 |
-| U6 | 清理与改名会让 `docs/validation/**` 里的历史命令无法原样复现 | 用 `scripts/README.md` 的新旧名对照表说明；或不改名 | 改名并出对照表（Q3 已定改名，此处只确认接受这个代价） |
+只剩 Q16（xhard0 步数口径），不阻塞本计划的任何一步。
 
 # 第二部分（技术细节，供 agent 追踪）
 
@@ -253,7 +253,7 @@
 - R7：本机 `artifacts/noise-baseline/gen` 只读，上传与比对都不改它。
 - R8：新测试不得用 AST／字符串扫描代替行为验证（L0 的逐字节与 diff 白名单除外）；不得复刻被测公式；不得注入 `sys.modules`；不得依赖用例顺序；常量字面值只许出现在 `tests/contract/test_constants.py` 与钉值文件。
 - R9：受保护的 `src/robomme/` 与三个上游入口，植入验证只做 tests 进程内可恢复、不落盘的改动；非受保护源码的植入在隔离副本里做，不改主检出。
-- R10：`.claude/worktrees/` 下不属于本计划分配表的 worktree 一律不动（未定事项 U4）。
+- R10：`.claude/worktrees/` 下的 5 个旧 worktree 按阶段 0b 清理（Q15）；除此之外，不属于本计划分配表的 worktree 一律不动。
 
 ## 一、清理细则
 
@@ -339,7 +339,7 @@
 - `scripts/parity/noise_run_gl.sh`：删 `--kind eval|digest` 分支。
 - 以上每一项先由审查子代理核实「只有评估／统计在用」才删。`run-fresh` 如果在 gen 路径上也读评估抽取结果，就把那部分改成只认 gen 输出，而不是整个删掉。
 
-### F 块：生产小修清单（未定事项 U1 同意后才做）
+### F 块：生产小修清单（Q12 已定：修）
 
 | 编号 | 文件::锚点 | 改什么 | 关闭态（不改时） |
 |---|---|---|---|
@@ -356,6 +356,8 @@ F-1～F-4、F-8 的文件 R 块要改名或 W 块要动，F 块须在 R 之前�
 
 ## 二、测试细则
 
+> xhard0 的步数上限待定（Q16）：下文凡涉及 `TIER_MAX_STEPS` 与入口 `max_steps` 的断言，xhard1～5 的 1600 照常断言；xhard0 的取值（表里 1300、入口 1600）不下断言，契约清单记 `conditional`。入口 diff 测试只断言 `evaluation_hard.py` 与 `evaluation.py` 恰好差 3 个单行 hunk 及其位置，不断言 `max_steps` 的数值。
+>
 > 下文沿用清理前的文件名（`v8_manifest.py`、`v8_report.py`、`load_specs_v8` 等）；新测试实际针对改名后的名字写，对照见细则 2.4。凡写「以其为蓝本」「取代某旧文件」处，旧文件只作参考，不迁移。
 
 ### 细则 4.3 契约清单：把「所有部分」变成可检查的矩阵
@@ -385,7 +387,7 @@ F-1～F-4、F-8 的文件 R 块要改名或 W 块要动，F 块须在 R 之前�
 
 对上表的三处裁决（与用户已定口径冲突处，以此为准）：
 - C08 的 8 个 `include_*` 开关：日常门禁跑 18 组（全关、全开、8 项单开、8 项单关）加明确交互；四种动作空间 × 256 全组合放慢测试。
-- C17 的真实浏览器交互放慢测试（Playwright 临时环境，本机缺浏览器时该项记「未验证」，不计 PASS）；日常门禁只测不依赖浏览器的最小面（路由、Range、白名单、catalog 字段）。
+- C17 的真实浏览器交互不做（Q14）：只测不依赖浏览器的最小面（路由、Range、白名单、catalog 字段、html 引用的路由与字段 ⊆ 服务端实际提供的），前端交互在契约清单里登记为「未验证」。
 - C05 的真值表是 CPU 方法调用，不是 reset 或 rollout；真实仿真只在细则 4.5.5的冒烟层出现。
 
 #### 16 个任务的最小行为真值表
@@ -419,7 +421,7 @@ F-1～F-4、F-8 的文件 R 块要改名或 W 块要动，F 块须在 R 之前�
 | L1 契约 | `tests/contract/` | 交付的 800 局身份、规格、常量是否正确且没变？ | 读真实包内规格逐行核对；常量唯一断言处 | 是 |
 | L2 单元 | `tests/unit/robomme/`、`tests/unit/hard/`、`tests/unit/common/` | 每个纯逻辑模块、每个任务的取值／布局／成功失败判定是否正确？ | 纯函数；CPU 替身 actor／robot／时钟调真实 `evaluate`／`step`；离线场景跑真实 `_load_scene` | 是 |
 | L3 流水线 | `tests/pipeline/{recording,parity,gen,eval,challenge,site}/` | 录制读回、对拍、生成、评估、挑战接口、站点各链路的记账与判定是否正确？ | 真实组件小闭环；假 runner、假环境、假策略、微型 h5 | 是 |
-| L3 慢 | 同上目录里标 `slow` 的用例、`tests/process/` | 真进程监督、bash 席位脚本、ffmpeg、websocket、浏览器 | 真子进程 + 假引擎 | 否 |
+| L3 慢 | 同上目录里标 `slow` 的用例、`tests/process/` | 真进程监督、bash 席位脚本、ffmpeg、websocket、wheel 安装、1024 全组合 | 真子进程 + 假引擎 | 否 |
 | L4 仿真冒烟 | `tests/sim/` | 真仿真里每任务 × 每档能否建出来、观测与规格回注是否正确？ | 每格一次 `make` + `reset`，不 step | 否（有 GPU 时跑） |
 | L5 生成一致性 | 不在 pytest 内 | 改代码后生成结果变没变？ | 对拍细则的 `gen-regress`（GL A40） | 否 |
 
@@ -504,7 +506,7 @@ F-1～F-4、F-8 的文件 R 块要改名或 W 块要动，F 块须在 R 之前�
 
 ### 细则 4.6 CPU 资源守卫
 
-`tests/_support/resource_policy.py` 作为 pytest 插件在收集前加载（`pyproject.toml` 的 `addopts` 里 `-p tests._support.resource_policy`）：默认档拒绝真实 scene／GPU 初始化、真实引擎 reset、模型权重读取与外网；CPU 替身的 `reset／step` 允许；子进程继承同一档。`tests/sim/` 只有显式选择该目录并带 `--allow-sim-reset` 才收集（只按 marker 过滤不够，pytest 会先导入模块）。守卫本身要有反证用例：故意调用被禁入口必须先被拒、且原生调用没有发生。必验套件选空、收集出错、关键用例被 skip、未登记的 xfail 都算失败；缺 ffmpeg／浏览器的条件项记「未验证」，不计 PASS。守卫是测试执行约束，不宣称能挡住任意绕过。
+`tests/_support/resource_policy.py` 作为 pytest 插件在收集前加载（`pyproject.toml` 的 `addopts` 里 `-p tests._support.resource_policy`）：默认档拒绝真实 scene／GPU 初始化、真实引擎 reset、模型权重读取与外网；CPU 替身的 `reset／step` 允许；子进程继承同一档。`tests/sim/` 只有显式选择该目录并带 `--allow-sim-reset` 才收集（只按 marker 过滤不够，pytest 会先导入模块）。守卫本身要有反证用例：故意调用被禁入口必须先被拒、且原生调用没有发生。必验套件选空、收集出错、关键用例被 skip、未登记的 xfail 都算失败；缺 ffmpeg 的条件项记「未验证」，不计 PASS。守卫是测试执行约束，不宣称能挡住任意绕过。
 
 ### 细则 4.7 旧测试处置
 
@@ -667,7 +669,19 @@ F-1～F-4、F-8 的文件 R 块要改名或 W 块要动，F 块须在 R 之前�
 
 ## 四、子代理分配表
 
-派发前核对：`worktree.baseRef="head"`；主检出 `git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'` 为空；`git check-ignore -q .claude/worktrees/probe`；记 `BASE`；`git worktree list` 存档，既有 worktree 一律不动（R10）。全部子代理 `model: "opus"`（含审查）。Codex 执行时按 `AGENTS.md` 第 26 条：同一张表，子代理不提交，「合并顺序」读作整合顺序。
+派发前核对：`worktree.baseRef="head"`；主检出 `git status --short --ignore-submodules=dirty -- . ':!docs/subagent-stats'` 为空；`git check-ignore -q .claude/worktrees/probe`；记 `BASE`；`git worktree list` 存档，阶段 0b 清理之后既有的 worktree 一律不动（R10）。由 Claude Code 执行（Q15），全部子代理 `model: "opus"`（含审查）。
+
+**阶段 0b：清理 5 个旧 worktree（主会话，每条 git 单独执行）**。对象是 2026-10-03 另一会话按旧方案派出的子代理，登记如下；其中两个分支带未合并提交，按用户「清理」的裁决丢弃，sha 记在这里以便从 reflog 取回。
+
+| worktree | 分支 | tip | 相对 `86e5a015` 的提交 |
+|---|---|---|---|
+| `.claude/worktrees/agent-a5b486d14a4879912` | `worktree-agent-a5b486d14a4879912` | `201e2ddb` | 1 个（`sub/TA`：官方包测试重组） |
+| `.claude/worktrees/agent-a813d7ac8b643b1f5` | `worktree-agent-a813d7ac8b643b1f5` | `2eb14c07` | 1 个（`sub/TC`：契约与对拍测试搬目录） |
+| `.claude/worktrees/agent-ab3e875d0581c5c95` | `worktree-agent-ab3e875d0581c5c95` | `86e5a015` | 0 |
+| `.claude/worktrees/agent-ae0b2c65c02600987` | `worktree-agent-ae0b2c65c02600987` | `86e5a015` | 0 |
+| `.claude/worktrees/agent-af004b519cb7413d0` | `worktree-agent-af004b519cb7413d0` | `86e5a015` | 0 |
+
+步骤：①确认没有会话还在用它们（worktree 内无在跑进程；锁住的四个先看 `git worktree list --porcelain` 的 lock 原因），仍在用则停下交用户；②`git worktree list` 存档；③逐个 `git worktree unlock <路径>`（已锁的）→ 核对目录里没有实体产物（`artifacts/`、大文件）→ `git worktree remove <路径>`，有未跟踪文件时才加 `--force`；④三个零提交分支逐个 `git branch -d`；两个带 `sub/` 提交的分支逐个 `git branch -D`（丢弃依据 Q15，执行前再次核对 tip 与上表一致）；⑤`git worktree list` 删后对比，差集恰为这 5 个。
 
 **第一步（清理，改生产代码；验收都在 worktree 内、CPU）**
 
@@ -676,7 +690,7 @@ F-1～F-4、F-8 的文件 R 块要改名或 W 块要动，F 块须在 R 之前�
 | G | 对拍工具 + 参照文件 + 噪声工具瘦身（含 F-5、F-7） | `scripts/parity/noise_gate.py`、`noise_run.py`、`noise_run_gl.sh`、`gate_set.py`（只 F-7）、`hard_pull.py`（加 `--identities`）、`hard_parity.py` 的 `Mover` 类与 `generate` 参数段（加 `--expect-ref`）、`scripts/configs/noise-ref-20261003.json`（新） | `artifacts/noise-baseline/`（只读）、他块文件、`tests/` | 1a 并行，第 1 个合并 | `python noise_gate.py --help`、`selftest` 通过；`gen-regress build-ref` 打印 `NOISE_REF=PASS …`（读主检出的基线目录，绝对路径只读） |
 | W1 | `eval-official` 清理 | `scripts/eval-official/` 下细则 2.2、2.3 所列（不含改名） | 噪声工具、他块文件、`tests/` | 1a 并行 | 存活脚本逐个 `--help`／`bash -n`；`python -c` 按路径加载每个存活 `.py` |
 | W2 | `injection-dev` 清理（含 `generate_h5.py` 的 `/2` 分支） | `scripts/injection-dev/` 下细则 2.2、2.3 所列 | 同上 | 1a 并行 | 同上；`v8_continue_after_gen.py --site-only --cells v9 --help` |
-| F | 生产小修 F-1～F-4、F-8（U1 同意才派） | `scripts/parity/upstream_guard.py`、`train_split_parity.py`（只 `compare_h5_pair`）、`scripts/eval-official/v8_manifest.py`（只 `check_source`）、`v8_report.py`（只 `build_reuse`）、`run_seat.sh`（只轮询间隔） | 其余一切 | 1a，**等 W1 合入后派**（与 W1 共用三个 eval 文件，同一文件不并行写） | `upstream_guard.py check` 末行 `UPSTREAM_GUARD=PASS`；每项附一段最小复现脚本的前后输出 |
+| F | 生产小修 F-1～F-4、F-8（Q12） | `scripts/parity/upstream_guard.py`、`train_split_parity.py`（只 `compare_h5_pair`）、`scripts/eval-official/v8_manifest.py`（只 `check_source`）、`v8_report.py`（只 `build_reuse`）、`run_seat.sh`（只轮询间隔） | 其余一切 | 1a，**等 W1 合入后派**（与 W1 共用三个 eval 文件，同一文件不并行写） | `upstream_guard.py check` 末行 `UPSTREAM_GUARD=PASS`；每项附一段最小复现脚本的前后输出 |
 | W3 | `parity` 历史分支 | `scripts/parity/hard_regression.py`、`hard_parity.py` 中细则 2.3 所列分支 | `env-digest` 三件套、`delivery_index`、`generate --tier v9|xhard0`、噪声工具、`tests/` | 1b，等 G 合入 | 存活子命令逐个 `--help` |
 | W4 | 包内 V7 清理（含 F-6） | `src/robomme_hard/` 中细则 2.2、2.3 所列 | 交付规格五份、`TIER_MAX_STEPS`、`tests/` | 1b，等 W1～W3 合入 | `python -c "import robomme_hard"`；五份规格 `load_specs_v8` 通过；`MAINT_SPECS=PASS changed=0` |
 | R | 改名 | 细则 2.4 所列文件及全部引用点（噪声工具路径常量、`site/*` 的 importlib 字符串、`docs/1003-noise-baseline.md` 第七节路径） | 格式名、键名、判定行前缀、`tests/` | 1b，最后 | 全部存活脚本 `--help`；`MAINT_NO_LEGACY=PASS` |
@@ -769,7 +783,7 @@ T1～T9 无先后依赖，合并顺序按完成先后；每块各自的具名植
 ```bash
 # 日常门禁
 timeout 280s uv run --no-sync python -m pytest tests/static tests/contract tests/unit tests/pipeline -m 'not slow' -q --durations=20
-# 慢测试（bash、ffmpeg、websocket、浏览器、wheel）
+# 慢测试（bash、ffmpeg、websocket、wheel、1024 全组合）
 uv run --no-sync python -m pytest tests/static tests/contract tests/unit tests/pipeline -m 'slow' -q
 # 仿真冒烟与清理后快照（先 nvidia-smi 选空闲卡）
 CUDA_VISIBLE_DEVICES=1 uv run --no-sync python -m pytest tests/sim --allow-sim-reset -q
@@ -830,7 +844,7 @@ Monitor 过滤词：`EPISODE_FLIP|NOISE_RUN_START|EXIT_CODE=|RUN_FRESH=|BUDGET=|
 | 钉了规格文件 sha 后，合法的规格更新要同步改钉值 | 钉值文件单独一份，更新规格的 commit 必须同时改它 |
 | 门禁 120 s 目标达不到 | 2c 实测后把最慢用例降为 `slow`，不删断言；硬上限 280 s |
 | `tests/sim/` 与他人评估进程抢卡 | 只在主会话串行跑，先看 `nvidia-smi`；实测约 3 分钟 |
-| 浏览器、ffmpeg、第三方子模块缺失导致整域 skip | 条件项记「未验证」，不计 PASS；必验集合被 skip 即 FAIL |
+| ffmpeg、第三方子模块缺失导致整域 skip | 条件项记「未验证」，不计 PASS；必验集合被 skip 即 FAIL |
 
 ## 九、盲区诚实清单
 
@@ -843,8 +857,9 @@ Monitor 过滤词：`EPISODE_FLIP|NOISE_RUN_START|EXIT_CODE=|RUN_FRESH=|BUDGET=|
 - 仿真冒烟只 reset 不 step：环境的 step 逻辑、子目标推进、规划器、真实物理接触，在 CPU 上只有纯函数与替身驱动的部分被测；整局行为靠对拍的 177 局与已封存的 800 局交付，不靠 pytest。
 - 清理是否改坏评估流水线、站点、挑战接口，没有独立参照（它们不经过生成也不在 reset 里），只靠审查与新测试。
 - 行覆盖率不计子进程里执行的脚本；现状数字对靠子进程测的文件偏低，重测时进程内调用增多，上升里有一部分是口径效应。
-- 六份盘点是静态阅读；F-2 是否真会失败未实跑；U2 的 PickHighlight 冲突是候选、未实证；SwingXtimes `too_many_swings`、StopCube xhard5 运行路径、`mani_skill` 在纯 CPU 下导入 wrapper 是否可行，实施时遇到再定。
+- 六份盘点是静态阅读；F-2 是否真会失败未实跑；Q13 里的 PickHighlight 冲突是候选、未实证；SwingXtimes `too_many_swings`、StopCube xhard5 运行路径、`mani_skill` 在纯 CPU 下导入 wrapper 是否可行，实施时遇到再定。
 - 除仿真冒烟（实测 162.6 s）外，测试耗时都是估计。
+- 站点前端的真实浏览器交互不测（Q14）；xhard0 步数上限的取值不被任何测试钉住（Q16 待定）。
 - 官方字节相同不能证明官方算法正确；全部植入被抓到也不是数学意义上的完全正确证明。能承诺的是：全部现行责任完成登记，CPU 可验证的关键契约有独立的正反例与边界证据，条件项、生产失败和未验证范围单列。
 
 ## 十、留档、commit 纪律与用户原话全表
@@ -872,3 +887,4 @@ Monitor 过滤词：`EPISODE_FLIP|NOISE_RUN_START|EXIT_CODE=|RUN_FRESH=|BUDGET=|
 14. 「参考Codex的意见一起整合成一份计划。告诉我还有什么没有定下来。」
 15. 「你把第一部分彻底重写一下现在太乱了」「所有的都改到这里面就是我要v7v8的清理再做test的重构然后最后做对拍」
 16. 「改完了commit之后告诉我还有什么没定下来。」
+17. 「1修 2 不改 3 bc 4 claude执行 清理 5待定 6不管」「先修改计划 不直接执行」
