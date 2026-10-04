@@ -41,9 +41,12 @@ server = [
 packages = ["src/robomme", "src/robomme_hard"]
 
 [tool.pytest.ini_options]
+# 新测试结构（1003-code-test-maintenance-todo.md 第二步）：日常门禁 = L0～L3 的非 slow 部分；
+# tests/sim 不在 testpaths，只能显式选择并带 --allow-sim-reset 运行。
+testpaths = ["tests/static", "tests/contract", "tests/unit", "tests/pipeline"]
+addopts = "-p tests._support.resource_policy"
+xfail_strict = true
 markers = [
-    "slow: slow-running tests",
-    "gpu: tests requiring GPU/display/headless rendering stack",
-    "dataset: tests that generate/use temporary datasets",
-    "lightweight: tests that do not require generated dataset",
+    "slow: 起 bash／ffmpeg／websocket／wheel 安装或 1024 全组合等慢用例，不进日常门禁",
+    "sim: 真实仿真 reset，只在 tests/sim 中使用",
 ]

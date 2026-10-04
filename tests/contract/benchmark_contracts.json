@@ -1,0 +1,113 @@
+{
+  "schema": "benchmark-contracts/1",
+  "note": "契约清单总表（计划细则 4.3）。只归主会话维护；各测试块交增量 JSON，由主会话合入。status 取 planned／verified／blocked／conditional，没有执行证据不得填 verified。",
+  "entry_keys": [
+    "id",
+    "domain",
+    "source",
+    "symbol",
+    "oracle",
+    "positive",
+    "negative",
+    "boundaries",
+    "nodeids",
+    "resource",
+    "mutants",
+    "status"
+  ],
+  "domains": [
+    {
+      "id": "C01",
+      "scope": "两包 __init__、注册表、shim",
+      "owner": "T1/T2"
+    },
+    {
+      "id": "C02",
+      "scope": "两个 BenchmarkEnvBuilder、episode_config_resolver",
+      "owner": "T2/T3"
+    },
+    {
+      "id": "C03",
+      "scope": "hard_specs、seed_layout、resolve_identity",
+      "owner": "T2"
+    },
+    {
+      "id": "C04",
+      "scope": "sampling_config、各任务 native_blocks、SpecRecorder/spec_binding",
+      "owner": "T2/T4"
+    },
+    {
+      "id": "C05",
+      "scope": "16 原生与 hard 任务 evaluate/step、任务列表",
+      "owner": "T3/T4"
+    },
+    {
+      "id": "C06",
+      "scope": "sequential_task_check、失败强制转换、计时与场景运动",
+      "owner": "T3/T4"
+    },
+    {
+      "id": "C07",
+      "scope": "task_goal、动作匹配、投影、route/adjacent、OBB/SAT",
+      "owner": "T3/T4"
+    },
+    {
+      "id": "C08",
+      "scope": "四 action wrapper、_augment_obs_and_info",
+      "owner": "T3/T5"
+    },
+    {
+      "id": "C09",
+      "scope": "DemonstrationWrapper、planner_denseStep",
+      "owner": "T3/T5"
+    },
+    {
+      "id": "C10",
+      "scope": "RobommeRecordWrapper.step/close/reset 及 _video_*",
+      "owner": "T5"
+    },
+    {
+      "id": "C11",
+      "scope": "EpisodeDatasetResolver、dataset_replay",
+      "owner": "T5"
+    },
+    {
+      "id": "C12",
+      "scope": "_draw/_extract/_freeze/_rollout、追加与子集",
+      "owner": "T7"
+    },
+    {
+      "id": "C13",
+      "scope": "评估 client/server、SeatRunner、recorder、manifest/report、两个 evaluation 入口",
+      "owner": "T8"
+    },
+    {
+      "id": "C14",
+      "scope": "challenge_interface",
+      "owner": "T8"
+    },
+    {
+      "id": "C15",
+      "scope": "train/hard 比较器、gate_set/noise_gate/hard_regression",
+      "owner": "T6"
+    },
+    {
+      "id": "C16",
+      "scope": "席位与接续 shell、锁、watchdog",
+      "owner": "T7/T8"
+    },
+    {
+      "id": "C17",
+      "scope": "site catalog/subgoal/semantic/transcode、HTTP、HTML",
+      "owner": "T7"
+    },
+    {
+      "id": "C18",
+      "scope": "pyproject、wheel、UPSTREAM、四入口、当前文档",
+      "owner": "T1"
+    }
+  ],
+  "entries": [],
+  "files": {},
+  "exempt": {}
+}
