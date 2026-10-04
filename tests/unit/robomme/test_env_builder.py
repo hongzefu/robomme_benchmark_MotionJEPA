@@ -5,7 +5,6 @@ gym.make 换成记录参数的替身（只换 episode_config_resolver 模块里�
 """
 from __future__ import annotations
 
-import itertools
 import json
 from pathlib import Path
 
@@ -193,15 +192,7 @@ def test_include_flags_passed_through_18(tmp_path, gym_spy, space, combo):
     assert {f: getattr(demo, f) for f in FLAGS} == _expected_flags(space, flags)
 
 
-@pytest.mark.slow
-@pytest.mark.parametrize("space", ACTION_SPACES)
-def test_include_flags_passed_through_all_256(tmp_path, gym_spy, space):
-    for bits in itertools.product((False, True), repeat=len(FLAGS)):
-        flags = dict(zip(FLAGS, bits))
-        env = BenchmarkEnvBuilder("PickXtimes", action_space=space,
-                                  override_metadata_path=tmp_path).make_env_for_episode(0, **flags)
-        demo = find_wrapper(env, "DemonstrationWrapper")
-        assert {f: getattr(demo, f) for f in FLAGS} == _expected_flags(space, flags), bits
+# 四种动作空间 × 256 全组合（含输出键核对）在 test_obs_switches.py::test_switches_all_256_through_builder（slow）
 
 
 def test_override_metadata_path_wins_over_dataset(tmp_path):
