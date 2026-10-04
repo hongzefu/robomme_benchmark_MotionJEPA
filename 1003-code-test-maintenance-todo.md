@@ -43,10 +43,15 @@
 **做法**（用户选定「四遍全传，新私有 bucket」）：
 - 新建私有 bucket `HongzeFu/robomme-hard-v9-noise-baseline`。用 `hf buckets sync` 把 `artifacts/noise-baseline/gen/{v9-a,v9-b,x0-a,x0-b}` 整目录传上去（h5、mp4、`results.jsonl`、`summary.json`、`launch-*.json`、`generate.log` 原样上传）。两个冒烟遍 `smk-*` 不传。
 - 另传三份清单：
-  - `SHA256SUMS`：1890 行，本机逐文件计算；
+  - `SHA256SUMS`：1890 行。h5 与 mp4 的 sha 不在本机重算，直接取生成时节点上逐局算出、暂存与拉回时都复核过的 `SHIPPED` 记录（每个局目录一份）；只有 json、log 等 MB 级小文件在本机计算；
   - `identities.jsonl`：`129 × 2 + 48 × 2 = 354` 行，每行写遍名、task、tier、seed、h5 相对路径、sha256、成功或失败；
   - `manifest.json`：写锚点 `f8f76fba`、四遍各自的节点与作业号（gl1525／63153922、gl1527／63153924、gl1525／63153923、gl1527／63153925）、驱动 595.71.05、对应的 git 记录路径。
-- 传完逐对象读回，核对大小与 sha256。公开的 `robomme-hard-v9` 保持只有交付集，不动。
+- **校验不在本机做**（用户 2026-10-03 原话「上传HUGingFace的文件需要校验。但是校验不要在本机进行你可以生成一个在greatlake上的纯CPUJ0B来实现。以后都要这么做写进AgentMetarule」，已写进正本 `463eba2`：第 15 条，以及 `greatlakes.md`「HF 上传校验 job」）：
+  - 传完后在 greatlakes 提交一个纯 CPU job：`standard` 分区、chaijy2、4 CPU／8G／12 h，直接 `sbatch`，跑完即退；
+  - job 内逐个对象从 HF 流式读回，边下边算 sha256，不落盘；与 `SHA256SUMS` 逐行比对，并核对对象数与字节数；
+  - 先用 1 个小对象冒烟，再跑全量；
+  - token 只经环境变量传入（`--export=ALL`），GL 侧没有 token 来源时先问用户。
+- 公开的 `robomme-hard-v9` 保持只有交付集，不动。
 - 本机 `artifacts/noise-baseline/gen` 保留，比对时直接读本机文件，HF 是异地副本。[`1003-resource-cleanup-plan.md`](1003-resource-cleanup-plan.md) 第二节已补一行把它列为保留项。
 - 预计约 15 分钟（上次 V9 上传实测约 208 MB/s）。不占 GPU，不做任何生成。
 
@@ -279,7 +284,7 @@
 
 | 查什么 | 怎么查 | 过了说明什么 | 判定行 |
 |---|---|---|---|
-| 基线已上 HF | 逐对象读回，比大小与 sha256 | 参照有了异地副本，xhard0 参照不再只剩本机 | `NOISE_HF_UPLOAD=PASS objects=1893 size_equal=1893 missing=0 extra=0`；`NOISE_HF_READBACK=PASS sha_match=1890` |
+| 基线已上 HF | GL standard 纯 CPU job 逐对象流式读回，比大小与 sha256（本机不读回） | 参照有了异地副本，xhard0 参照不再只剩本机 | `NOISE_HF_UPLOAD=PASS objects=1893 size_equal=1893 missing=0 extra=0`；`HF_VERIFY=PASS objects=1893 sha_match=1893 size_equal=1893 missing=0 extra=0` |
 | 参照文件可信 | `gen-regress build-ref` 重算四遍 h5 sha，再与 git 比对记录逐局对照 | 参照里每局期望都来自真实文件且与已提交记录一致 | `NOISE_REF=PASS v9=129 stable=128 jitter=1 xhard0=48 stable=46 fail=2 mismatch=0` |
 | 改动不越界 | `git diff --name-only <BASE>..<HEAD>` 逐个文件归入第二节清单 | 没有清单外的改动 | `MAINT_SCOPE=PASS files=<n>` |
 | 官方源码与入口未动 | `uv run --no-sync python scripts/parity/upstream_guard.py check --require-upstream` | P1、P2 守住 | `UPSTREAM_GUARD=PASS` |
@@ -298,7 +303,7 @@
 | 阶段 | 内容 | 判据 |
 |---|---|---|
 | 0 | 跑一次现状全量测试，取逐文件耗时（`--durations=0`，CPU，tmux，约 8 分钟） | 耗时表落到 `artifacts/maintenance/` |
-| 1 | H：噪声基线上传 HF（主会话自做，可与阶段 2 并行） | `NOISE_HF_UPLOAD`、`NOISE_HF_READBACK` |
+| 1 | H：噪声基线上传 HF（主会话自做，可与阶段 2 并行） | `NOISE_HF_UPLOAD`、`HF_VERIFY`（GL 纯 CPU job） |
 | 2 | G：`gen-regress` 闸门与参照文件、噪声工具瘦身 | `NOISE_REF=PASS`，`tests/parity` 的 noise 用例通过，`PRE_MERGE_REVIEW=PASS` |
 | 3 | W1～W3 并行：scripts 三块的删除与删分支 | 各块定向测试通过，`PRE_MERGE_REVIEW=PASS` |
 | 4 | W4：`src/robomme_hard` 删 V7 常量与 layered 机制（要等阶段 3 先删掉调用方） | 同上，并要求 `MAINT_SPECS=PASS` |
@@ -375,10 +380,14 @@
 - 测试：`tests/lightweight/test_noise_gate.py` 加合成夹具六情形，阶段 6 由 T2 移到 `tests/parity/`。
 
 **H 块（主会话）**：
-- 一次性脚本放 scratchpad，生成三份清单。
+- 一次性脚本放 scratchpad，生成三份清单；`SHA256SUMS` 的 h5／mp4 行由各局 `SHIPPED` 拼出，并核对 `SHIPPED` 里 h5 的 sha 与 `identities.jsonl` 一致。
 - `hf buckets create` 建私有 bucket。参数先用 `/home/hongzefu/.local/bin/hf buckets create --help` 核实，并用绝对路径的 hf 1.8.0（venv 里的旧版没有 `buckets`）。
 - 逐遍 `hf buckets sync artifacts/noise-baseline/gen/<遍> hf://buckets/HongzeFu/robomme-hard-v9-noise-baseline/<遍>`，三份清单用 `hf buckets cp`。
-- 读回：`hf buckets list … -R` 比较大小与对象数，再逐对象下载到 scratchpad、核对 sha 后删掉。
+- 读回校验：在 GL 跑校验脚本 `<NFS>/hfverify/verify.py`（一次性脚本，不进仓库）。它用 `huggingface_hub` 列出 bucket 对象，逐个对象分块流式读取并算 sha256，与 `SHA256SUMS` 比对，末行打印 `HF_VERIFY=`。
+  - 提交命令：`sbatch --account=chaijy2 --partition=standard --nodes=1 --ntasks-per-node=1 --cpus-per-task=4 --mem=8G --time=12:00:00 --job-name=noise-hfverify --output=<NFS>/hfverify/%x_%j.out --export=ALL <NFS>/hfverify/run.sh`；
+  - 先提交只校验 1 个小对象的冒烟 job，再提交全量；
+  - JobID 记入本会话清单；
+  - 结束后把判定行拷进留档，并删除 NFS 上的 `hfverify/` 目录（逐个列名删除）。
 - 对象数 = 1890 + 3 = 1893。
 
 **主会话文档**：
@@ -412,7 +421,7 @@
 
 | 时点 | 判定行 |
 |---|---|
-| 阶段 1 后 | `NOISE_HF_UPLOAD=PASS`、`NOISE_HF_READBACK=PASS` |
+| 阶段 1 后 | `NOISE_HF_UPLOAD=PASS`、`HF_VERIFY=PASS`（GL 纯 CPU job） |
 | 每块合并前 | `PRE_MERGE_REVIEW=PASS`；`git diff --name-only <BASE>..<TIP>` ⊆ 可写集合 |
 | 每块合并后 | 现日常命令通过（阶段 6 前用旧命令，6 个已知失败照旧）；`UPSTREAM_GUARD=PASS`；`MAINT_SPECS=PASS`；`ls -1 scripts/*.py` 恰好四个入口；`POST_MERGE_REVIEW=PASS` |
 | G 合并后 | `NOISE_REF=PASS` |
