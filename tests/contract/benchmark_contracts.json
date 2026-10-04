@@ -114,17 +114,17 @@
       "source": [
         "src/robomme_hard/env_record_wrapper/hard_specs.py"
       ],
-      "symbol": "V9_CELLS / EXPECTED_CELLS / CELL_TABLES / V9_PER_TASK / XHARD0_IN_TEST_HARD / xhard0_prefix / XHARD0 / XHARD0_PER_TASK / XHARD0_EPISODES / TIERS / BUILDER_TIERS / TIER_MAX_STEPS(xhard1～5) / EXEC_CAP / XHARD4_ONLY / xhard4_only_tasks / TIER_SEED_OFFSETS / seed_rule_for / seed_for / MAX_ATTEMPTS / RUNTIME / SCHEMA / LAYOUT_RULE / ALL_TASKS",
+      "symbol": "V9_CELLS / EXPECTED_CELLS / CELL_TABLES / V9_PER_TASK / XHARD0_IN_TEST_HARD / xhard0_prefix / XHARD0 / XHARD0_PER_TASK / XHARD0_EPISODES / TIERS / BUILDER_TIERS / EXEC_CAP / XHARD4_ONLY / xhard4_only_tasks / TIER_SEED_OFFSETS / seed_rule_for / seed_for / MAX_ATTEMPTS / RUNTIME / SCHEMA / LAYOUT_RULE / ALL_TASKS",
       "oracle": "tests/contract/test_constants.py 顶部手写钉值（43 格逐格表、16 任务 × 50 = 800、开关开 800 + 16 × 12 = 992、按档 seed 偏移与手算 seed 样例、16 任务名单）；开关值由按路径另执行一份 hard_specs 观察",
       "positive": "生产对象逐项等于钉值；4 个手算 seed 样例相等；官方/hard 两个 builder、seed_layout 的任务名单同序",
-      "negative": "seed_rule_for 未登记规则族／xhard0 拒绝；attempt 越界、未知任务拒绝；植入 M07（V9_CELLS 某格 +1）、M08（TIER_MAX_STEPS[xhard1]=1500）各自使断言失败",
-      "boundaries": "开关未设、设 0、设 1 三种；attempt = MAX_ATTEMPTS 与 -1；xhard0 的步数上限不下断言（见 C03-TIER-MAX-STEPS-XHARD0）",
+      "negative": "seed_rule_for 未登记规则族／xhard0 拒绝；attempt 越界、未知任务拒绝；植入 M07（V9_CELLS 某格 +1）使断言失败",
+      "boundaries": "开关未设、设 0、设 1 三种；attempt = MAX_ATTEMPTS 与 -1；按档步数查表已删除，只钉 EXEC_CAP（查表已删的断言见 C03-TIER-MAX-STEPS-XHARD0）",
       "nodeids": [
         "tests/contract/test_constants.py::test_v9_cells_exact",
         "tests/contract/test_constants.py::test_v9_cell_count_per_task_and_total",
         "tests/contract/test_constants.py::test_xhard0_switch_default_off_and_prefix",
         "tests/contract/test_constants.py::test_xhard0_constants",
-        "tests/contract/test_constants.py::test_tier_max_steps_new_tiers_1600_xhard0_unpinned",
+        "tests/contract/test_constants.py::test_exec_cap_and_no_tier_table",
         "tests/contract/test_constants.py::test_xhard4_only",
         "tests/contract/test_constants.py::test_seed_offsets_and_rule",
         "tests/contract/test_constants.py::test_seed_examples_hand_computed[PickXtimes-xhard1-3-2-16100302]",
@@ -137,8 +137,7 @@
       ],
       "resource": "cpu",
       "mutants": [
-        "M07",
-        "M08"
+        "M07"
       ],
       "status": "verified",
       "merged_from": [
@@ -151,21 +150,21 @@
       "source": [
         "src/robomme_hard/env_record_wrapper/hard_specs.py"
       ],
-      "symbol": "TIER_MAX_STEPS['xhard0']",
-      "oracle": "待定（计划 Q16：表里 1300、入口 evaluation_hard.py 为 1600，取值未裁决）",
-      "positive": "只断言键存在（tuple(TIER_MAX_STEPS) == (xhard0, xhard1..5)）",
-      "negative": "无（取值未定，不下断言）",
-      "boundaries": "Q16 裁决后补钉值与负例",
+      "symbol": "TIER_MAX_STEPS（已删除）；xhard0 步数上限改由评估入口按数据集传 max_steps（test-hard0 → 1300、test-hard → 1600）",
+      "oracle": "1003 评估计划 1.1（原 Q16 随查表删除了结）：hard_specs 与 robomme_hard.env_record_wrapper 均无 TIER_MAX_STEPS；src/、scripts/、tests/ 下 .py 按 tokenize 数 NAME 记号，引用数为 0（S2 待清理名单除外，S2 合入后清空名单）",
+      "positive": "hasattr(hard_specs, 'TIER_MAX_STEPS') 与包级再导出均为假；EXEC_CAP == 1600；全仓引用数 0，打印 STEP_LOOKUP=PASS tier_max_steps_refs=0",
+      "negative": "任一扫描范围内文件重新以标识符引用 TIER_MAX_STEPS 即失败并列出文件与次数（字符串、注释里的文字不计）",
+      "boundaries": "对拍工具 hard_regression 在 test-hard 混档下的逐局上限由模块内 _cap_for(tier) 给出（XHARD0_STEP_CAP=1300、其余 EXEC_CAP），不属评估链路查表",
       "nodeids": [
-        "tests/contract/test_constants.py::test_tier_max_steps_new_tiers_1600_xhard0_unpinned"
+        "tests/contract/test_constants.py::test_exec_cap_and_no_tier_table",
+        "tests/contract/test_builder_hard0.py::test_no_tier_max_steps_refs"
       ],
       "resource": "cpu",
       "mutants": [],
-      "status": "conditional",
+      "status": "verified",
       "merged_from": [
         "tests/contract/contracts.delta.json"
-      ],
-      "note": "计划 Q16 未裁决：TIER_MAX_STEPS['xhard0'] 表内 1300 与入口 evaluation_hard.py 的 1600 不一致；用例只断言键存在，裁决后补钉值与负例。"
+      ]
     },
     {
       "id": "C01-REGISTRY-IDS",
@@ -3343,7 +3342,7 @@
       ],
       "symbol": "subgoal_lengths.read_episode/label/main",
       "oracle": "手写逐帧 subgoal 序列的微型 h5",
-      "positive": "连续相同文字合为一段；模板抹颜色后同模板第二次起记「后续」；执行步 = 帧 − 演示帧；oracle 逐格均值／上限（新值档取 header exec_cap、xhard0 取 TIER_MAX_STEPS）；xhard0 新旧入口逐段相同",
+      "positive": "连续相同文字合为一段；模板抹颜色后同模板第二次起记「后续」；执行步 = 帧 − 演示帧；oracle 逐格均值／上限（新值档取 header exec_cap、xhard0 取本地常量 XHARD0_STEP_CAP=1300）；xhard0 新旧入口逐段相同",
       "negative": "delivery 执行步与 h5 不符 → exec_mismatch=1 FAIL 不写 subgoals.json",
       "boundaries": "空 h5（官方生成失败）记 0 帧",
       "nodeids": [
@@ -3777,10 +3776,10 @@
         "scripts/evaluation_hard.py"
       ],
       "symbol": "BenchmarkEnvBuilder(max_steps=...)",
-      "oracle": "待 Q16 定稿",
+      "oracle": "按档步数查表 TIER_MAX_STEPS 已删除（1003 评估计划 1.1，原 Q16 了结）：步数上限由入口按数据集给出，test-hard 为 1600、test-hard0 为 1300；evaluation_hard.py 保持 dataset=\"test-hard\"、max_steps=1600 不改，xhard0 的用法是把这两个实参改成 \"test-hard0\"、1300",
       "positive": "",
       "negative": "",
-      "boundaries": "xhard0 的取值未定，本块只断言形态",
+      "boundaries": "本块只断言形态（见 C18-EVAL-HARD-DIFF），不读查表、不钉数值",
       "nodeids": [],
       "resource": "cpu",
       "mutants": [],
@@ -3815,7 +3814,8 @@
       "id": "C18-NO-TESTS-IMPORT",
       "domain": "C18",
       "source": [
-        "scripts/**/*.py; challenge_interface/**/*.py"
+        "scripts/**/*.py",
+        "challenge_interface/**/*.py"
       ],
       "symbol": "import 语句（AST）",
       "oracle": "不得出现 tests／tests.* 的 import、from-import、import_module、__import__ 字面值",
@@ -5987,6 +5987,33 @@
       "mutants": [],
       "status": "planned",
       "note": "主会话先提交接口桩（计划 1.8），S7 合入时补用例转 verified。"
+    },
+    {
+      "id": "C03-TEST-HARD0",
+      "domain": "C03",
+      "source": [
+        "src/robomme_hard/env_record_wrapper/hard_builder.py"
+      ],
+      "symbol": "TEST_HARD0 / _ALLOWED_DATASETS / BenchmarkEnvBuilder(dataset=\"test-hard0\") / _xhard0_entries / resolve_identity / make_env_for_episode",
+      "oracle": "test_constants 手写钉值（16 任务、每任务 12 局、原 episode 3,7,…,47、runtime 四项）+ 标准库 json 直接读官方 test 元数据的 hard 子集；手算 16 × 12 = 192",
+      "positive": "16 任务逐局 gym.make 参数恰为 runtime 四项 + 官方 seed + difficulty=\"hard\"；resolve_identity 字段集合与取值（source_dataset=test、source_episode 为原 episode、无 candidate／spec_sha256／specs_root）；开关 XHARD0_IN_TEST_HARD 开或关结果相同；规格读取入口打桩为调用即失败、调用 0 次；打印 HARD0_INTERFACE=PASS tasks=16 per_task=12 total=192 specs_reads=0",
+      "negative": "官方 hard 子集少一局、多一局、seed 重复均在构造时 ValueError；specs_root（任意路径，含包内根）、override_metadata_path、未知任务被拒；拼写变体 test_hard0／test-hard1／xhard0 被拒",
+      "boundaries": "规格根环境变量指向不存在目录时 test-hard0 照常构造；episode 12 越界 KeyError",
+      "nodeids": [
+        "tests/contract/test_builder_hard0.py::test_hard0_every_episode[switch-off]",
+        "tests/contract/test_builder_hard0.py::test_hard0_every_episode[switch-on]",
+        "tests/contract/test_builder_hard0.py::test_hard0_rejects_specs_root",
+        "tests/contract/test_builder_hard0.py::test_hard0_rejects_broken_official_subset[drop]",
+        "tests/contract/test_builder_hard0.py::test_hard0_rejects_broken_official_subset[extra]",
+        "tests/contract/test_builder_hard0.py::test_hard0_rejects_broken_official_subset[dup_seed]",
+        "tests/contract/test_builder_800.py::test_rejections"
+      ],
+      "resource": "cpu",
+      "mutants": [],
+      "status": "verified",
+      "merged_from": [
+        "tests/contract/contracts.delta.json"
+      ]
     }
   ],
   "files": {
