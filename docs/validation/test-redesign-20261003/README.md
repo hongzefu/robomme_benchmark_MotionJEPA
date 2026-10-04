@@ -1,6 +1,6 @@
 # 测试套件重设计：现状实测留档（2026-10-03）
 
-对应计划：[`docs/plans/1003-test-redesign-plan.md`](../../plans/1003-test-redesign-plan.md)。本目录只放实测原始记录，结论与解读在计划第一部分第一节。
+对应计划：[`1003-code-test-maintenance-todo.md`](../../../1003-code-test-maintenance-todo.md)（第四版；原 `docs/plans/1003-test-redesign-plan.md` 已并入，原文 `git show 63f34817:docs/plans/1003-test-redesign-plan.md`）。本目录只放实测原始记录，结论与解读在计划第一部分第四节；扫描脚本见 [`records/reset_sweep.py`](records/reset_sweep.py)。
 
 ## 运行环境与代码状态
 

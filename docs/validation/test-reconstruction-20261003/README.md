@@ -1,6 +1,6 @@
 测试重构设计的现状验证（2026-10-03）
 
-本轮确认现有测试覆盖不完整，且有六个CPU可复现的漏检。这里是计划依据，不是重构完成报告。方案见 [测试重构计划](../../plans/1003-benchmark-tests-refactor-plan.md)，原维护文档见 [第四节](../../../1003-code-test-maintenance-todo.md)。
+本轮确认现有测试覆盖不完整，且有六个CPU可复现的漏检。这里是计划依据，不是重构完成报告。方案见 [测试重构计划](../../../1003-code-test-maintenance-todo.md)，原维护文档见 [第四节](../../../1003-code-test-maintenance-todo.md)。
 
 ## 固定对象、范围与环境
 
