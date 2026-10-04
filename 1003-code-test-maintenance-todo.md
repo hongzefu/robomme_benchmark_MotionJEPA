@@ -198,7 +198,7 @@
   - 改后代码另建一个 NFS 检出 `robomme_benchmark-maint`，切到合并后的 HEAD，不建 venv。运行时借用 noise 克隆的 `.venv`，加 `PYTHONPATH=<maint 检出>/src`（editable 指向的是 noise 克隆的 src，所以必须先打印 `robomme_hard.__file__`，确认指向 maint 检出）。前提是 `uv.lock` 零 diff，否则停下另报。
 - **预算**（P3／P5，用户选定方案时一并授权，见第二部分预算表）：
   - 首跑 `43 格 × 3 局 + 16 任务 × 1 档 × 3 局 = 177` 条；
-  - 第二次跑：每个出问题的局 2 条（改后 1 + 旧代码 1），上限 20 条；出问题的局超过 10 个就不进第二次，直接交用户；
+  - 第二次跑：每个出问题的局 2 条（改后 1 + 旧代码 1）。出问题的局不足 4 个时用陪跑局凑满（见下条），总数为 `2 × max(出问题局数, 4)`，上限 20 条。出问题的局超过 10 个就不进第二次，直接交用户；
   - 合计 197 条，reset 上限按每条 3 次计 `197 × 3 = 591`。
   - 冒烟：V9、xhard0 各 1 局，共 2 条、reset 6（AGENTS 第 4 条）。
   - 总上限 199 条、reset 597，用户 2026-10-03 已确认。
@@ -213,6 +213,11 @@
   - **收尾判定很快**：`gen-regress check` 读 `identities.jsonl` 里已经写好的 sha 与 verdict 汇总出判定行，不重读 h5，在 GL 登录节点或占位作业里秒级完成。`noise_run.py ship --finalize` 相应改成认 `verdict=match` 的局「按设计不复制」，不算 missing。
   - **只回传翻转局**：`hard_pull.py --identities <flips.jsonl>` 只拉这些局（首跑和重跑的 h5、mp4），以及各遍的 `results.jsonl`、`identities.jsonl`、`summary.json`、来源报告。到本机后与 a 遍 h5 跑 `compare_h5`，区分「结构不同」和「走了另一条轨迹」，并给出分叉步。没有翻转时只拉报告，约几 MB。NFS 上本来就只有翻转局，判定落档后逐目录列名删除。
   - **不会漏判**：结构不同只需要对翻转局判。sha 相同的局与基线逐字节相同，结构必然相同。
+- **第二次跑的 worker 与负载**（用户 2026-10-03「同意这个补法」）：
+  - 沿用第一次跑的同一席位、同一节点，`--workers 4`；先跑改后代码那一遍，再跑旧代码那一遍。两遍不同时跑，避免 8 个进程挤在 4 个 CPU 上。
+  - 每席 4 worker 是闸门前提：基线就是在每席 4 worker 下测的。RRT* 有 1 秒墙钟预算，同席位并发的 worker 数会改变每局能分到的算力，从而改变轨迹。
+  - **陪跑局凑满并发**：出问题的局少于 4 个时，实际干活的 worker 会少于 4 个，CPU 负载比基线轻，可能把「噪声」和「回归」判反。因此从同一集合、同一档里，按身份顺序挑第一次跑已经与基线逐字节相同的稳定局补足 4 个；同档不够时从相邻档补。两遍（改后、旧代码）用同一组陪跑局。陪跑局的结果只报告、不判定：陪跑局再跑出与基线不同，只在报告里标注，作为这台节点当时负载状况的旁证。
+  - 陪跑局计入第二次跑的 20 条上限，总预算不增加。
 - **FAIL 时**：不改参照、不改判据。按翻转局所属任务定位到是哪块改动导致，回退或修好那一块后重跑。重跑预算另报。
 
 ## 四、测试彻底重构
@@ -359,6 +364,7 @@
   - 失败局的 sha 从 800 字节占位 h5 直接计算（记录里失败侧 sha 为 None）。
 - `gen-regress check --ref scripts/configs/noise-ref-20261003.json --set {v9,xhard0} --new <新跑根> [--rerun <重跑根> ...] --out <jsonl> --rerun-identities-out <jsonl>`
   - 首跑时不给 `--rerun`。有翻转就输出 `GEN_REGRESS=NEED_RERUN flip=<n>`，并把翻转局写成 `hard_parity.py generate --identities` 可直接用的格式；
+  - 翻转局不足 4 个时，`--rerun-identities-out` 自动按第 3.4 节补陪跑局（行内 `filler=true`），判定只取非陪跑行；
   - 给 `--rerun-new <改后第二次根> --rerun-old <旧代码根>` 时，按第 3.2 节四格定性，打印最终判定行，并输出逐局报告 `<out>.episodes.md`（第 3.2 节「逐局报告」各列）；
   - 默认读各遍 `identities.jsonl` 里由 `Mover` 边生成边写的 sha 与 `verdict`（不重读 h5），在 GL 上秒级出判定行；翻转局类别先写 `flip_pending`；
   - `--local-ref-root artifacts/noise-baseline/gen`（只在本机给）：对已回传的翻转局复用 `compare_h5` 对照 a 遍 h5，把 `flip_pending` 细分为 `structural`／`diverge`／`gen_fail`；
@@ -420,7 +426,7 @@
 |---|---|---|---|
 | 冒烟（已确认） | V9 PickXtimes xhard1 seed 16100000 × 1 + xhard0 PickXtimes seed 510300 × 1 | 2 | 6 |
 | 首跑 | V9 43 格 × 3 局 + xhard0 16 任务 × 1 档 × 3 局 | 129 + 48 = 177 | 531 |
-| 第二次跑 | 每个出问题的局 ×（改后 1 + 旧代码 1），合计上限 | ≤ 20 | ≤ 60 |
+| 第二次跑 | max(出问题局数, 4) 局（不足 4 局时用陪跑局凑满）×（改后 1 + 旧代码 1），合计上限 | ≤ 20 | ≤ 60 |
 | 合计 | — | ≤ 199 | ≤ 597 |
 
 基础设施重试默认 0（节点故障时另报）。翻转局超过 10 个时，不进入重跑，直接交用户（此时通过条件 2 已经不可能满足）。其余阶段 0 条。
@@ -446,7 +452,7 @@ done
 srun --jobid=<占位作业> --overlap --ntasks=1 <克隆>/.venv/bin/python <克隆>/scripts/parity/noise_gate.py gen-regress check \
   --ref <克隆>/scripts/configs/noise-ref-20261003.json --set v9 --new <NFS>/gen/rg-v9 \
   --out <NFS>/regress/rg-v9.regress.jsonl --rerun-identities-out <NFS>/regress/rg-v9.rerun.jsonl
-# 若 NEED_RERUN：rerun.jsonl（= flips.jsonl）作 --identities，在同一席位同一节点依次生成
+# 若 NEED_RERUN：rerun.jsonl（= flips.jsonl；不足 4 局时 gen-regress 按第 3.4 节补陪跑局并标 filler=true）作 --identities，在同一席位、同一节点依次生成（--workers 4）
 #   rg-v9-new2：改后代码（maint 检出，借 noise 克隆 .venv + PYTHONPATH=<maint>/src，带 --expect-ref）
 #   rg-v9-old2：旧代码（noise 克隆 f8f76fba 原样，不带 --expect-ref）
 # 再 gen-regress check … --rerun-new <NFS>/gen/rg-v9-new2 --rerun-old <NFS>/gen/rg-v9-old2 汇总
