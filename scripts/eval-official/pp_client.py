@@ -36,7 +36,8 @@ PonderPounce 的噪声种子是 ``crc32(f"{seed}:{sid}:{n}")``，两侧各起自
 用本模块同一批辅助函数写轨迹，两侧字段口径一致。
 
 ``conn_info`` 读取的键：``host``（缺省 127.0.0.1）、``port``（必需）、``max_steps``（必需）、``dataset``（可选，
-``test-hard0`` 时要求 ``tier == "xhard0"``）、``trace_path``／``trace_dir``（可选，见 ``resolve_trace_path``）、
+``test-hard0`` 时要求 ``tier == "xhard0"``）、``trace_path``／``trace_dir``（可选；``trace_dir`` 为每局目录，
+见 ``resolve_trace_path``）、
 ``pp_max_reconnects``（可选，缺省 1）。
 
 导入期只依赖标准库与 numpy；``vla_eval``（客户端扩展环境 client-env 内）、``anyio``、``msgpack``、``websockets``
@@ -304,15 +305,14 @@ class TracedConnection:
 
 
 def resolve_trace_path(identity: dict, conn_info: dict, recorder: Any) -> Path | None:
-    """轨迹文件位置：``conn_info["trace_path"]``；否则 ``conn_info["trace_dir"]/<局目录名>/trace.jsonl``
-    （局目录名取录像器目录名 ``<key>.a<attempt>``，没有录像器目录时取 ``key``）；否则录像器目录下 ``trace.jsonl``；
-    都没有则不写轨迹。"""
+    """轨迹文件位置：``conn_info["trace_path"]``；否则 ``conn_info["trace_dir"]``（env_client 给的**每局目录**
+    ``<trace-root>/<key>.a<attempt>``，SeatRunner 不预先建，由 TraceWriter 建父目录；未给 ``--trace-root`` 时为
+    None）下的 ``trace.jsonl``；否则录像器目录下 ``trace.jsonl``；都没有则不写轨迹。"""
     if conn_info.get("trace_path"):
         return Path(conn_info["trace_path"])
-    rec_dir = getattr(recorder, "out_dir", None)
     if conn_info.get("trace_dir"):
-        name = Path(rec_dir).name if rec_dir else str(identity.get("key") or identity["task"])
-        return Path(conn_info["trace_dir"]) / name / "trace.jsonl"
+        return Path(conn_info["trace_dir"]) / "trace.jsonl"
+    rec_dir = getattr(recorder, "out_dir", None)
     if rec_dir:
         return Path(rec_dir) / "trace.jsonl"
     return None

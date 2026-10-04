@@ -220,11 +220,19 @@ def test_trace_path_resolution(tmp_path):
     class Rec:
         out_dir = tmp_path / "rec" / "K.a2"
 
-    assert pp.resolve_trace_path(XH, {"trace_path": "/x/t.jsonl"}, Rec()) == Path("/x/t.jsonl")
-    assert pp.resolve_trace_path(XH, {"trace_dir": str(tmp_path / "tr")}, Rec()) == tmp_path / "tr" / "K.a2" / "trace.jsonl"
-    assert pp.resolve_trace_path(XH, {"trace_dir": str(tmp_path / "tr")}, None) == tmp_path / "tr" / XH["key"] / "trace.jsonl"
+    ep_dir = tmp_path / "tr" / f"{XH['key']}.a2"  # env_client 给的每局目录，不再套一层
+    assert pp.resolve_trace_path(XH, {"trace_path": "/x/t.jsonl", "trace_dir": str(ep_dir)}, Rec()) == Path("/x/t.jsonl")
+    assert pp.resolve_trace_path(XH, {"trace_dir": str(ep_dir)}, Rec()) == ep_dir / "trace.jsonl"
+    assert pp.resolve_trace_path(XH, {"trace_dir": str(ep_dir)}, None) == ep_dir / "trace.jsonl"
+    assert pp.resolve_trace_path(XH, {"trace_dir": None}, Rec()) == Rec.out_dir / "trace.jsonl"
     assert pp.resolve_trace_path(XH, {}, Rec()) == Rec.out_dir / "trace.jsonl"
-    assert pp.resolve_trace_path(XH, {}, None) is None
+    assert pp.resolve_trace_path(XH, {"trace_dir": None}, None) is None
+    # 端到端：每局目录事先不存在，由写轨迹时建好父目录；目录下只有 trace.jsonl
+    assert not ep_dir.exists()
+    run_new(FakeEnv(TASK, SRC, done_at=2), max_steps=10,
+            conn_info_extra={"trace_dir": str(ep_dir), "episode_tag": ep_dir.name})
+    assert sorted(p.name for p in ep_dir.iterdir()) == ["trace.jsonl"]
+    assert tw.read_trace(ep_dir / "trace.jsonl")[-1]["exec_steps"] == 2
 
 
 def test_module_import_does_not_require_vla_eval():
