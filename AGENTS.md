@@ -31,7 +31,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 **冲突即停**（正本第 0 条）：判定输出与上表不符（主机名不是 `sled-vail`、NFS 不存在、出现第二套 GPU 等），一律停下把原始输出交用户裁决，不得自行套用。本仓库目前只有这一个环境列；出现其他机器时先补判据表再开工。
 
-<!-- AGENTMETARULES:BEGIN common-agents src=20702bc7c6fa02d4b3cc6e1bb1f0064be90df18b blob=956e237c72f428c3babb0b52ead3bb0806d1a5e0 -->
+<!-- AGENTMETARULES:BEGIN common-agents src=463eba236e1c5752e6f7491a7231f032dbffdf59 blob=a66fbe294b883c3fe7cc97343dff1295c68dbb9a -->
 
 ## 强制规则（最高优先级）
 
@@ -216,6 +216,10 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 15. **原始数据与外部资产：来源可核、身份钉死、大下载先问。**
     - **数据路径按实际环境核实**：不猜测已有副本、数据规模或同步状态；输入需先核实来源，输出需核实实际目录。原始数据的来源与暂存按环境分叉，在项目 `AGENTS.md` 声明：为集群作业暂存的副本属**临时暂存**，必须与原件逐文件 sha256 核对同源，并在全流程验收通过后删除；原件永久保留区不动。本机没有原件时从公开/私有数据源获取，落点在工作盘下，逐文件记 sha256 入 `<STORE_ROOT>` 的 input manifest。**获取前先与用户确认落点与口径，不得自行开始几百 GB 的下载。** 留档里同时记 sha256 前缀 + 字节数，异地即可用「前缀 + 字节数双命中」判同源并传递结论。
     - **判定「有没有远端归档」必须同时查 HF 的 repo 与 Storage Buckets**（2026-09-26 MotionJEPA 清理盘点实测踩中）：model / dataset repo（`/api/models|datasets?author=…`、`hf download`）与 bucket（`hf buckets list <owner>`、`hf buckets list <owner>/<bucket> -R`）是两套互不可见的存储；只查 repo API 会把已整库归档在 bucket 里的 ckpt 与数据集（当次漏看约 620 GB）误报成「不在 HF、删了不可恢复」，据此的保留 / 删除清单整份失真。凡给出「远端有 / 没有备份」「删了能否恢复」的结论，必须附两类查询的原始输出；本地资产旁若有 `bucket-tree.json`、`download-list.txt` 一类清单，即是 bucket 归档的线索，先顺着它核实。比对同源用 bucket 内 `SHA256SUMS*` 与本地 sha256，不用 `xetHash` 代替 sha256。
+    - **上传到 HF 的文件必须读回校验，且校验不在本机做**（2026-10-03 用户原话「上传HUGingFace的文件需要校验。但是校验不要在本机进行你可以生成一个在greatlake上的纯CPUJ0B来实现。以后都要这么做写进AgentMetarule」）：
+      - 有集群访问的环境：上传后在 greatlakes 起一个纯 CPU job（`standard` 分区、直接 `sbatch` 跑完即退），逐对象流式读回、比对 sha256、字节数与对象数，末行判定行 `HF_VERIFY=PASS|FAIL`；规格、凭据与例外边界以 [`greatlakes.md`](greatlakes.md)「HF 上传校验 job」为准。
+      - 无集群访问的环境：在本机校验，并在汇报里写明原因。
+      - 未经校验 PASS 的上传，不得写成「已备份」，也不得据此删除本地副本。
     - **外部大二进制依赖（权重、tokenizer、VAE 等）的身份保证三反模式**，一个都不能犯：①只查「文件在不在」（`[[ -f ]]` 后直接加载）；②真锚点只写在文档或命令行里、没有任何代码读它；③自证循环——现场哈希那份即将被使用的文件再把结果当「期望值」，只能证明多卡用同一份字节，挡不住「这份文件本身就是错的」。
     - **资产锁四条设计点**：进 git 的 manifest 每条记**落点 + 指纹 + 来源**；表自己防篡改（顶层 sha256 是剔掉该键后 canonical JSON 的哈希，改任一值不改它即 fail-loud）；两个档位——`cheap`（字节数 + 首尾各 1 MiB 的 blake2b，放进每次起跑的前置）与 `full`（逐文件全量 sha256），并显式声明 cheap 挡不住「保持长度改中间字节」；**`revision` 必须是 40 位 commit sha，禁 `main` 或移动分支**（第三方依赖同理：锁定到 40 位 commit，禁止退回 PyPI 官方包或移动分支）。逃生阀默认关、跳过时打醒目警告，真正要堵的洞不给逃生阀。末行统一判定行 `ASSETS=PASS|FAIL`。
     - **边界要写明**：资产锁保证输入字节同一，**不保证输出数值逐位同一**（跨架构实测有差），禁止把 `ASSETS=PASS` 读成「数值可逐位对拍」；服务端统计（如 `usedStorage`）异步滞后且对等长篡改失明，不采信。
@@ -360,7 +364,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 | `<COMMIT_SUBJECT_STYLE>` | commit subject 体例 | 第 11 条 |
 | `<PLAN_EXEMPLAR>` | 计划密度标杆文档 | 第 2 条 |
 
-<!-- AGENTMETARULES:END common-agents src=20702bc7c6fa02d4b3cc6e1bb1f0064be90df18b blob=956e237c72f428c3babb0b52ead3bb0806d1a5e0 -->
+<!-- AGENTMETARULES:END common-agents src=463eba236e1c5752e6f7491a7231f032dbffdf59 blob=a66fbe294b883c3fe7cc97343dff1295c68dbb9a -->
 
 ## 项目专属规则
 
@@ -432,7 +436,7 @@ command -v micromamba >/dev/null && echo "micromamba: 有" || echo "micromamba: 
 
 ## 规则来源与未采用清单
 
-- 通用规则 = 上方标记块，当前正本 commit `20702bc`，与标记行 `src=` 一致（2026-10-03 同步子代理超时统计——超过 15 分钟的 Claude Code 子代理由 SubagentStop hook 按项目（`docs/subagent-stats/over-15min.jsonl`）与全局各落一份，第 11、19 条补该统计文件的例外；2026-10-02 同步子代理模型口径——改代码的写入型子代理用 opus，探索、审查、合并等其余子代理一律 sonnet，并带入第 23 条网页链接写完整域名；2026-10-01 同步「计划执行模式」——执行已批准计划时改代码交给 worktree 隔离的写入型子代理、`sub/` 前缀 commit、`--no-ff` 合并与两次审查，第 2 条加子代理分配表、第 11 条加 `sub/` 例外；2026-09-27 同步第 2 条「两部分结构硬性格式」加强；2026-09-26 同步高频GPU查询教训；此前本文件的强制规则 1–13 是 2026-08-18 自 MotionJEPA 移植、2026-09-09 拆分后的旧版）。
+- 通用规则 = 上方标记块，当前正本 commit `463eba2`，与标记行 `src=` 一致（2026-10-03 同步「上传 HF 的文件必须读回校验，校验在 greatlakes 纯 CPU job 里做」——第 15 条加子项，`greatlakes.md` 新增「HF 上传校验 job」一节：standard 分区、直接 sbatch 跑完即退，是只用 spgpu 与一律占位 job 两条的唯一长期例外；2026-10-03 同步子代理超时统计——超过 15 分钟的 Claude Code 子代理由 SubagentStop hook 按项目（`docs/subagent-stats/over-15min.jsonl`）与全局各落一份，第 11、19 条补该统计文件的例外；2026-10-02 同步子代理模型口径——改代码的写入型子代理用 opus，探索、审查、合并等其余子代理一律 sonnet，并带入第 23 条网页链接写完整域名；2026-10-01 同步「计划执行模式」——执行已批准计划时改代码交给 worktree 隔离的写入型子代理、`sub/` 前缀 commit、`--no-ff` 合并与两次审查，第 2 条加子代理分配表、第 11 条加 `sub/` 例外；2026-09-27 同步第 2 条「两部分结构硬性格式」加强；2026-09-26 同步高频GPU查询教训；此前本文件的强制规则 1–13 是 2026-08-18 自 MotionJEPA 移植、2026-09-09 拆分后的旧版）。
 - 未采用的正本条目及原因：第 10 条（训练超参落点）、第 12 条（训练 / 评估留档）、第 18 条（训练链路一致性）——本仓库无训练链路；第 13 条（数据集构建 Beta 体例）——本仓库生成留档走 `docs/validation/`，不打 Beta commit；第 24 条（submodule / vendoring）——本仓库以 `scripts/parity/` 的隔离官方源码树（`--official-root`）与 AST 钉死 `scripts/` 不依赖 `tests/` 为准。
 - 旧条号对照（`docs/ledger/` 历史账本沿用旧号）：旧 1 → 正本第 1 条；旧 2 → 第 3 条；旧 3 → 第 4 条（覆盖）；旧 4 → 第 7 条；旧 5 → 第 9 条；旧 6 → 第 5 条；旧 7 → 第 11 条（覆盖）；旧 8 → 第 14 条（覆盖）；旧 9 → 第 20 条；旧 10 → 第 2 条；旧 11 → P2 / 第 21 条；旧 12 → P1；旧 13 → 第 26 条；旧 14（2026-09-26 Codex 会话新增的 reset 对拍 / rollout 生成限制）→ P3。
 - Claude Code 独有机制见同目录 `CLAUDE.md`（标记块 `common-claude`）；集群规约见 `greatlakes.md`（标记块 `common-greatlakes`）与 `docs/greatlakes.md`（本仓库实测记录）。两份文件冲突时以本文件为准。
