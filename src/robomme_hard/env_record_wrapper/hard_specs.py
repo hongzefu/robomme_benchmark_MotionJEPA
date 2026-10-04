@@ -127,7 +127,7 @@ assert all(sum(n for (t, _), n in V9_CELLS.items() if t == task) == V9_PER_TASK 
 #: v9 阶段 3b 换包（env_metadata/test-hard/ 换为 V9 规格）与本行切到 V9_CELLS 在同一提交完成（v9 方案 R7），表与包始终一致。
 EXPECTED_CELLS: dict[tuple[str, str], int] = V9_CELLS
 #: 已登记的完整交付格表（按版本）。``resolve_cell_table`` 按顺序 EXPECTED_CELLS → 本表各项找第一张能覆盖
-#: 给定子表的表，作为单文件配额上限（``_validate_specs``）与 ``load_specs_v8`` 的格配额上限。
+#: 给定子表的表，作为单文件配额上限（``_validate_specs``）与 ``load_specs_root`` 的格配额上限。
 #: V8 的 1070 局表已于维护计划阶段 1b（W4）删除，只剩 v9。
 CELL_TABLES: dict[str, dict[tuple[str, str], int]] = {"v9": V9_CELLS}
 assert all(TIER_MAX_STEPS[tier] == EXEC_CAP for tier in TIERS) and tuple(TIER_MAX_STEPS) == BUILDER_TIERS, \
@@ -479,7 +479,7 @@ def load_specs(path: str | Path, *, expected_cells: dict[tuple[str, str], int] |
     return copy.deepcopy(header), copy.deepcopy(rows)
 
 
-def load_specs_v8(root: str | Path, expected_cells: dict[tuple[str, str], int], *,
+def load_specs_root(root: str | Path, expected_cells: dict[tuple[str, str], int], *,
                   cell_table: dict[tuple[str, str], int] | None = None,
                   check_fingerprint: bool = True) -> dict[str, tuple[dict[str, Any], list[dict[str, Any]]]]:
     """读 v8／v9 规格根（``<root>/<tier>/specs.jsonl``，``hard-specs/4``），只校验调用方给定的格表。

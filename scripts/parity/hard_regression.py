@@ -609,7 +609,7 @@ def layout_overlap(items: list[tuple[str, dict[str, Any], bool]]) -> dict[str, A
 
 
 def _read_v8_root(specs_root: str | Path, cells: dict[tuple[str, str], int]) -> tuple[dict[str, tuple], list[str], list[str]]:
-    """格表涉及各档的 /4 文件原样读出（不校验，校验另走 ``load_specs_v8``），使校验失败时计数仍可产出。
+    """格表涉及各档的 /4 文件原样读出（不校验，校验另走 ``load_specs_root``），使校验失败时计数仍可产出。
     返回 ``(files, missing, bad)``：缺文件记 ``missing``；空文件、坏 JSON、首行不是 header 记 ``bad``（不抛异常）。"""
     hs = _hs_light()
     files: dict[str, tuple[dict[str, Any], list[dict[str, Any]]]] = {}
@@ -675,7 +675,7 @@ def cmd_delivery_set(args) -> int:
       ``new=<v9-new 行数> reused=<v8-reuse 行数>``（两者之和须等于 total）；重复身份、缺键、``source`` 值不合法或
       只有部分行带 ``source`` 计 ``delivery_bad_rows``；不给 ``--delivery`` 则不打这两项。
 
-    * 交付形态：先过 ``load_specs_v8(root, cells)`` 全部校验（失败计 ``load_errors``），再逐格数 ``delivered``
+    * 交付形态：先过 ``load_specs_root(root, cells)`` 全部校验（失败计 ``load_errors``），再逐格数 ``delivered``
       （selected 且 rollout ok），与格表**相等**比较（不是 ≤）；格表外有交付行、selected 而未成功、交付行执行步超
       ``EXEC_CAP`` 都判 FAIL。另报 /4 结果段里的 ``failed``／``exec_over_cap``／``backfills``（全部显式写零）。
     * seed 按档隔离：同任务不同档的 seed 集合（全部规格行，不只交付行）两两求交，``shared`` 为交集元素总数。
@@ -683,7 +683,7 @@ def cmd_delivery_set(args) -> int:
       （``parent_non_null``），**并且**同任务跨档交付行逐叶子比较（:func:`layout_overlap`：剔除恒定叶子后任一浮点
       位置叶子逐位相等，或 PatternLock 路径有 ≥ 9 节点的共同前缀）的对数 ``layout_equal_pairs`` 为 0；只查前两项是
       同义反复（冻结器自己写的标志）。跨档任务的交付行剔除后没有任何可比叶子记 ``no_position``，同样判 FAIL。
-    * 健壮性：缺档文件计 ``missing_files``；空文件、坏 JSON、缺键的行与 ``load_specs_v8`` 抛出的异常（如某格备用候选
+    * 健壮性：缺档文件计 ``missing_files``；空文件、坏 JSON、缺键的行与 ``load_specs_root`` 抛出的异常（如某格备用候选
       耗尽、selected 少于期望）一律计入 ``load_errors``，照常逐格计数并打印三行判定，不崩溃。
     * 计数口径：``failed``／``exec_over_cap``／``backfills`` 取自 /4 行的结果段；``infra_retries`` 不落在规格行里，
       只由 S2-B ``_rollout`` 聚合步的 ``V8_DELIVERY_SET`` 行与 ``delivery.json`` 给出，本命令不报。
@@ -693,7 +693,7 @@ def cmd_delivery_set(args) -> int:
     prefix = version.upper()
     load_error = None
     try:
-        hs.load_specs_v8(args.specs_root, cells, cell_table=hs.CELL_TABLES[version], check_fingerprint=False)
+        hs.load_specs_root(args.specs_root, cells, cell_table=hs.CELL_TABLES[version], check_fingerprint=False)
     except Exception as exc:  # noqa: BLE001 校验失败如实计入判定，不中断计数
         load_error = f"{type(exc).__name__}: {exc}"
     files, missing_files, bad_files = _read_v8_root(args.specs_root, cells)

@@ -646,7 +646,7 @@ def _seed_disjoint(loaded: dict[str, tuple]) -> None:
 
 def load_v8_root(root: Path, cells: dict[tuple[str, str], int]) -> dict[str, tuple[dict[str, Any], list[dict[str, Any]]]]:
     """按格表读 v8 规格根：逐档 ``load_specs``（/4 校验）+ 档名、任务集合、逐格 ``delivery_per_cell`` 与格表相等、
-    跨档 seed 不交。全部行都未试过（刚冻结／刚切片）时另走 ``hard_specs.load_specs_v8`` 全量契约（含每格 selected
+    跨档 seed 不交。全部行都未试过（刚冻结／刚切片）时另走 ``hard_specs.load_specs_root`` 全量契约（含每格 selected
     数 == 格表）；跑过之后某格备用耗尽会让 selected 少于配额，这时只按单文件校验读，逐格成败交给聚合判定。"""
     cells = check_cells(cells)
     table = cell_table(cells)
@@ -670,7 +670,7 @@ def load_v8_root(root: Path, cells: dict[tuple[str, str], int]) -> dict[str, tup
         out[tier] = (header, rows)
     _seed_disjoint(out)
     if not any(row["tried"] for _, rows in out.values() for row in rows):
-        hard_specs.load_specs_v8(root, cells, cell_table=table, check_fingerprint=False)
+        hard_specs.load_specs_root(root, cells, cell_table=table, check_fingerprint=False)
     return out
 
 

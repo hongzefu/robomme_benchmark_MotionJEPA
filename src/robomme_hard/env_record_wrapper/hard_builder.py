@@ -5,7 +5,7 @@
 * ``train`` / ``test`` / ``val``：沿用官方父类的元数据逻辑；只把四个 Unmask 任务的 ``train`` 元数据改读
   ``robomme_hard/env_metadata/train``（400 条，E-12）。
 * ``test-hard``：xhard0 12 局仅在开关 ``hard_specs.XHARD0_IN_TEST_HARD`` 打开时在前（默认关，V9 每任务 50 局），再依次读包内 ``env_metadata/test-hard/<tier>/specs.jsonl``（xhard1→xhard5，
-  v8 ``hard-specs/4``，经 ``load_specs_v8`` 整根校验），取本任务 ``selected`` 且 ``rollout.status=="ok"`` 的行，
+  v8 ``hard-specs/4``，经 ``load_specs_root`` 整根校验），取本任务 ``selected`` 且 ``rollout.status=="ok"`` 的行，
   档内按 ``candidate`` 升序，拼接编为 episode 0..N-1。每格行数对照交付格表 ``EXPECTED_CELLS``（43 格逐格局数）
   断言：(任务, 档) 必须在表内才可有正式局，表内格恰好等于表值，表外格恰好 0 行（xhard5 只含 SwingXtimes、StopCube）。
   规格根覆盖（冒烟／分片等局部根）只读存在的档文件，按各档 header 的 ``delivery_per_cell`` 自洽校验，且须是表的子集。
@@ -63,16 +63,16 @@ def _override_cells(root: str) -> Dict[tuple, int]:
 
 @functools.lru_cache(maxsize=None)
 def _root_specs(root: str):
-    """每个规格根（包内或覆盖）只读一次：``load_specs_v8`` 整根校验（逐档 /4 封套、格表、每格 selected 数、
+    """每个规格根（包内或覆盖）只读一次：``load_specs_root`` 整根校验（逐档 /4 封套、格表、每格 selected 数、
     跨档 seed 不交）。包内根的格表必须恰为 ``EXPECTED_CELLS``（配额上限也取它，不写死局数）；覆盖根按
-    ``_override_cells``，配额上限由 ``load_specs_v8`` 按 ``resolve_cell_table`` 取（先 ``EXPECTED_CELLS``，
+    ``_override_cells``，配额上限由 ``load_specs_root`` 按 ``resolve_cell_table`` 取（先 ``EXPECTED_CELLS``，
     覆盖不了再看 ``CELL_TABLES``）。
     返回 ``({tier: (header, rows)}, cells)``，只读使用，不得修改。"""
     if Path(root) == hard_specs.PACKAGED_SPECS_ROOT:
         cells = dict(hard_specs.EXPECTED_CELLS)
-        return hard_specs.load_specs_v8(Path(root), cells, cell_table=hard_specs.EXPECTED_CELLS), cells
+        return hard_specs.load_specs_root(Path(root), cells, cell_table=hard_specs.EXPECTED_CELLS), cells
     cells = _override_cells(root)
-    return hard_specs.load_specs_v8(Path(root), cells), cells
+    return hard_specs.load_specs_root(Path(root), cells), cells
 
 
 def _xhard0_entries(env_id: str, metadata_index: Dict) -> List[Dict[str, Any]]:

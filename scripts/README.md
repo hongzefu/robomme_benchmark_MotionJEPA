@@ -183,3 +183,4 @@ timeout 280s uv run --no-sync python -m pytest -m 'not slow' -q                 
 | `hard_specs.V8_LAYOUT_RULE` | `hard_specs.LAYOUT_RULE` |
 | `hard_specs.V8_TIERS` | 并入 `hard_specs.TIERS`（两者同值 xhard1～xhard5） |
 | `hard_specs._validate_specs_v8` | `hard_specs._validate_specs` |
+| `hard_specs.load_specs_v8` | `hard_specs.load_specs_root`（规格根整根校验；单文件读取仍是 `load_specs`） |

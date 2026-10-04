@@ -278,7 +278,7 @@ def assemble(subset: Path, movecube: Path, insertpeg: Path, v8_delivery: Path, o
         dst.parent.mkdir(parents=True, exist_ok=True)
         with open(src, "rb") as a, open(dst, "xb") as b:
             b.write(a.read())
-    loaded = H.load_specs_v8(out_specs, dict(cells), cell_table=H.V9_CELLS, check_fingerprint=False)
+    loaded = H.load_specs_root(out_specs, dict(cells), cell_table=H.V9_CELLS, check_fingerprint=False)
     # 交付清单
     v8_data, v8_index = load_delivery(v8_delivery)
     mc_data, mc_index = load_delivery(mc_delivery)

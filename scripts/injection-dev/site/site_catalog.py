@@ -6,7 +6,7 @@
 来源时全部记「未评估」。数据来源：
 
 - **新值局**（xhard1～5，43 格 1070 局）：身份与配置取 v8 规格根（``<specs-root>/<tier>/specs.jsonl``，
-  ``hard-specs/4``，经 ``hard_specs.load_specs_v8`` 校验），h5 与执行步取生成产物 ``delivery.json``
+  ``hard-specs/4``，经 ``hard_specs.load_specs_root`` 校验），h5 与执行步取生成产物 ``delivery.json``
   （schema ``v8-delivery/1``）。生成视频在 h5 所在 episode 目录的 ``videos/`` 下（与 v7 gen1 同一约定），
   或在 ``--gen-videos`` 给出的目录下按 ``<tier>/<task>_episode_<episode>/videos`` 查找；
   取文件名不以 ``FAILED``／``success_NO_OBJECT`` 开头、且含 ``_seed<seed>_`` 的那一个 mp4，必须恰好 1 个。
@@ -573,8 +573,8 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
     cells_want = load_cells(src.get("cells_json"), src.get("cells") or "v9")
     expected = expected_identities(cells_want)
 
-    # 规格（/4，load_specs_v8 校验格表、selected 行数、跨档 seed 不交）
-    specs = H.load_specs_v8(src["specs_root"], cells_want, check_fingerprint=False)
+    # 规格（/4，load_specs_root 校验格表、selected 行数、跨档 seed 不交）
+    specs = H.load_specs_root(src["specs_root"], cells_want, check_fingerprint=False)
     spec_rows: dict[tuple, dict] = {}
     exec_cap: dict[str, int] = {}
     for tier, (header, rows) in specs.items():

@@ -415,11 +415,11 @@ def default_compare_root(tier: str) -> Path:
 
 def frozen_delivery(specs_root: Path, cells: dict[tuple[str, str], int],
                     cell_table: dict[tuple[str, str], int] | None = None) -> list[dict[str, Any]]:
-    """冻结交付集：/4 规格根里 ``delivered``（selected 且 rollout ok）的行；先过 ``load_specs_v8`` 全部校验。
+    """冻结交付集：/4 规格根里 ``delivered``（selected 且 rollout ok）的行；先过 ``load_specs_root`` 全部校验。
     ``cell_table``：作配额上限的完整格表（v9 传 V9_CELLS）；缺省由 ``hard_specs.resolve_cell_table`` 推出。"""
     hs = hard_specs_light()
     try:
-        loaded = hs.load_specs_v8(specs_root, cells, cell_table=cell_table, check_fingerprint=False)
+        loaded = hs.load_specs_root(specs_root, cells, cell_table=cell_table, check_fingerprint=False)
     except Exception as exc:  # noqa: BLE001 冻结根本身不合法即停（第⑤类之上的前置错误）
         raise ParityError(f"冻结规格根校验失败：{type(exc).__name__}: {exc}") from exc
     return [{"task": r["task"], "tier": tier, "episode": int(r["episode"]), "seed": int(r["seed"]),
