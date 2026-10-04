@@ -1,0 +1,98 @@
+{
+  "anchor": "f8f76fbabc27d0b95ea9acbd57288e49411c7fb4",
+  "bucket": "HongzeFu/robomme-hard-v9-noise-baseline",
+  "doc": "docs/1003-noise-baseline.md",
+  "episodes": "(43 格 × 3 局) × 2 遍 + (16 任务 × 1 档 × 3 局) × 2 遍 = 258 + 96 = 354",
+  "files": 1890,
+  "git_records": "docs/validation/noise-baseline-20261003/records/compare",
+  "launches": {
+    "v9-a": [
+      {
+        "driver": "595.71.05",
+        "file": "launch-1791071877.json",
+        "gpu_model": "NVIDIA A40",
+        "host": "gl1525.arc-ts.umich.edu",
+        "rows": 129,
+        "slurm_job": "63153922",
+        "src_commit": "f8f76fbabc27d0b95ea9acbd57288e49411c7fb4",
+        "started_at": "2026-10-03T23:57:57+00:00",
+        "tier": "v9",
+        "workers": 4
+      },
+      {
+        "driver": "595.71.05",
+        "file": "launch-1791071894.json",
+        "gpu_model": "NVIDIA A40",
+        "host": "gl1525.arc-ts.umich.edu",
+        "rows": null,
+        "slurm_job": "63153922",
+        "src_commit": "f8f76fbabc27d0b95ea9acbd57288e49411c7fb4",
+        "started_at": null,
+        "tier": null,
+        "workers": 4
+      }
+    ],
+    "v9-b": [
+      {
+        "driver": "595.71.05",
+        "file": "launch-1791071890.json",
+        "gpu_model": "NVIDIA A40",
+        "host": "gl1527.arc-ts.umich.edu",
+        "rows": 129,
+        "slurm_job": "63153924",
+        "src_commit": "f8f76fbabc27d0b95ea9acbd57288e49411c7fb4",
+        "started_at": "2026-10-03T23:58:10+00:00",
+        "tier": "v9",
+        "workers": 4
+      },
+      {
+        "driver": "595.71.05",
+        "file": "launch-1791071896.json",
+        "gpu_model": "NVIDIA A40",
+        "host": "gl1527.arc-ts.umich.edu",
+        "rows": null,
+        "slurm_job": "63153924",
+        "src_commit": "f8f76fbabc27d0b95ea9acbd57288e49411c7fb4",
+        "started_at": null,
+        "tier": null,
+        "workers": 4
+      }
+    ],
+    "x0-a": [
+      {
+        "driver": "595.71.05",
+        "file": "launch-1791071877.json",
+        "gpu_model": "NVIDIA A40",
+        "host": "gl1525.arc-ts.umich.edu",
+        "rows": 48,
+        "slurm_job": "63153923",
+        "src_commit": "f8f76fbabc27d0b95ea9acbd57288e49411c7fb4",
+        "started_at": "2026-10-03T23:57:57+00:00",
+        "tier": "xhard0",
+        "workers": 4
+      }
+    ],
+    "x0-b": [
+      {
+        "driver": "595.71.05",
+        "file": "launch-1791071877.json",
+        "gpu_model": "NVIDIA A40",
+        "host": "gl1527.arc-ts.umich.edu",
+        "rows": 48,
+        "slurm_job": "63153925",
+        "src_commit": "f8f76fbabc27d0b95ea9acbd57288e49411c7fb4",
+        "started_at": "2026-10-03T23:57:57+00:00",
+        "tier": "xhard0",
+        "workers": 4
+      }
+    ]
+  },
+  "objects_with_manifests": 1893,
+  "passes": [
+    "v9-a",
+    "v9-b",
+    "x0-a",
+    "x0-b"
+  ],
+  "schema": "noise-baseline-hf/1"
+}
