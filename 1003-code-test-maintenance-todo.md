@@ -1,6 +1,6 @@
 代码与测试维护计划（2026-10-03）
 
-> 三件事：①讲清并处理步数上限表 `TIER_MAX_STEPS`；②**全代码库**清理只服务 V7／V7.5／V8 历史的代码（不只测试）；③**彻底重构全部测试**。另写改完后如何保证生成结果仍在噪声范围内一致。
+> 三件事：①步数上限口径定死（1600／1300 统一移交 Oracle 计划）；②**全代码库**清理只服务 V7／V7.5／V8 历史的代码（不只测试）；③**彻底重构全部测试**。另写改完后如何保证生成结果仍在噪声范围内一致。
 >
 > 用户原话（2026-10-03，按时间）：「你这个项目只需要部署上限的问题和清理V7V8的就用例以及短测内容的问题就是纯代码的改动」「然后写的时候也分开写这三个点分别怎么改。然后如何保证噪声的一致性」「完全彻底重构这个计划只保留我说的这些部分。」「TMMAXTEP这个问题我没有看懂。然后这个清理B7V8指的是所有代码库里面全部清理了不要只清理测试然后核心短测内容怎么改我也没看懂就是你要详细的说可以彻底重构所有的test」
 >
@@ -18,49 +18,24 @@
 4. **只测生成噪声**：沿用噪声基线方案的用户决定「之后改代码也只测生成的噪声就可以」。
 5. 局数一律写乘式（P5）。
 
-## 一、步数上限表 `TIER_MAX_STEPS`：到底是什么问题
+## 一、步数上限：口径已定死，1600／1300 的统一移交 Oracle 计划
 
-### 1.1 「步数上限」是什么
+**定死的口径（唯一做法，不再有其他选项）**：评估一局最多走多少步，只在入口创建 builder 的那一行显式传入，不按难度档查表、不从 episode 或规格里读。现在 `scripts/evaluation_hard.py` 就是这样写的：
 
-评估时，策略每一步给一个动作、环境走一步。为了不让一局无限跑下去，环境有一个上限：执行段走满 N 步还没成功，就判这局 timeout（失败）。演示段的步数不计入。N 就是 `max_steps`。
+```python
+env_builder = BenchmarkEnvBuilder(
+    env_id=task,
+    dataset="test-hard",
+    action_space="joint_angle",
+    max_steps=1600,  # V9: fixed 1600 for every episode (no per-tier lookup).
+)
+```
 
-### 1.2 现在有两套写法，数值不一样
+官方 `scripts/evaluation.py` 在同一位置写 `max_steps=1300`。这个数往下的传递：builder 存为 `max_steps + 2`（官方 `episode_config_resolver.py` 与 `hard_builder.py` 同写法）；`DemonstrationWrapper._step_batch` 只对非演示段的步计数，计满即 `truncated`；加 2 是抵掉 reset 时演示结束后包装器自己走的一两步，使策略实际可走约 1600 步（据代码推断，未逐步核实）。
 
-**写法一：公开评估入口直接写死一个数。**
-- 官方 `scripts/evaluation.py`（与上游逐字节相同，不能改）：`max_steps=1300`。
-- 我们的 `scripts/evaluation_hard.py`：12.339 起构造 builder 时写死 `max_steps=1600`，每局不再单独传。用户当时原话：「max_steps 应该是一个固定的数值……不需要再从 episode 里面读」「可以，全部 1600」。
+**1600 与 1300 的统一不在本计划做**，由 [`1003-oracle-subgoal-groundsg-eval-plan.md`](1003-oracle-subgoal-groundsg-eval-plan.md) 统一确定：`evaluation_hard.py` 增加 `--dataset`，`test-hard`（V9 新值档 xhard1～5）传 1600，`test-hard0`（xhard0，即官方 hard 档）传 **1300**；评估流水线 `eval-official/env_client.py` 同步按数据集取值（该计划第一部分 2.2 节、第二部分「逐文件接线」）。用户原话（2026-10-03）：「把这个选项固定下来不要再有别的选项了」「把这个1600步、1300步的问题改为在…1003-oracle-subgoal-groundsg-eval-plan.md这里会进行统一的确定就是会变成XHD0变成1300步」。
 
-**写法二：包里一张按难度档查的表。**
-- `src/robomme_hard/env_record_wrapper/hard_specs.py::TIER_MAX_STEPS = {xhard0: 1300, xhard1: 1600, …, xhard5: 1600}`。
-- xhard0 就是官方的 hard 档，所以沿用官方 1300；xhard1～5 是新值档，抽样时已经把执行步超过 1600 的候选过滤掉，所以给 1600。
-
-### 1.3 谁还在用这张表
-
-公开入口已经不用它了，但以下地方仍然逐局查它：
-
-| 使用者 | 怎么用 |
-|---|---|
-| `scripts/eval-official/v8_manifest.py` | 生成评估清单时，每局写一个字段 `effective_max_steps = TIER_MAX_STEPS[tier]` |
-| `scripts/eval-official/env_client.py::tier_max_steps`、`EnvSession.step` | 起环境前核对清单里的 `effective_max_steps` 与表相等；跑的时候走满这么多步后，第 N+1 步不再进环境，记 timeout |
-| `scripts/parity/hard_regression.py` | `reset-replay`、`eval-smoke`、`step-headroom` 三个子命令与 `env-digest` 内部按表取上限 |
-| `scripts/injection-dev/site/v8_subgoal_lengths.py` | 站点出图时 xhard0 的上限取表值 |
-| 3 个测试 | `test_xhard0_native.py`、`test_v8_specs_schema.py`、`test_v9_packaged_800.py` 各把表值断言一遍 |
-
-已经跑完的评估就是按这张表跑的：V9 两模型 800 局评估执行段严格 1600 步（`docs/validation/v9-two-policy-gl10-20261002-01/launch.md`）；xhard0 的 16 任务 × 1 档 × 12 局 = 192 局评估按 1300 步。生成链路不读这张表（生成用规格 header 里的 `exec_cap`＝1600）。
-
-### 1.4 所以问题是什么
-
-不是 bug，是**两处口径并存**：公开入口说「全部 1600」，评估流水线说「xhard0 1300、其余 1600」。xhard1～5 两边都是 1600，没有冲突；唯一不一致的是 xhard0：用公开入口跑是 1600，用评估流水线跑是 1300。这件事 10-02 记成待定 B5。
-
-### 1.5 三个选项
-
-| 选项 | 改什么 | 结果 |
-|---|---|---|
-| **(a) 保留表（推荐）** | 代码不动；README 写明「公开入口固定 1600；表只服务评估流水线，xhard0 1300 是为了和官方 hard 档、和已跑的 192 局评估同口径」；三处重复断言收成一处 | 零行为变化；已有评估记录都能原样复现 |
-| (b) 表拉平成全 1600 | `hard_specs.py` 一行，三个测试，`env_client` 校验 | 流水线的 xhard0 变 1600；和已跑的 192 局（1300）不再同口径，以后 xhard0 评估结果不能和历史直接比 |
-| (c) 删表，改单常量 1600 | 包代码与上表全部使用者 | 同 (b)，改动最多 |
-
-推荐 (a)：xhard0 用 1300 是有意的（和官方同档对齐），拉平只换来「看起来统一」，代价是 xhard0 评估与历史断代。
+**本计划因此对步数上限不做任何代码改动**：不动 `evaluation_hard.py` 的这一行，不动 `hard_specs.py::TIER_MAX_STEPS` 及其使用者（`v8_manifest.py`、`env_client.py`、`hard_regression.py`、`site/v8_subgoal_lengths.py`），这些归 Oracle 计划处理；第 2.4 节的改名也不碰 `TIER_MAX_STEPS`。唯一相关的是第三节测试重构把三处重复的 `TIER_MAX_STEPS` 断言（`test_xhard0_native.py`、`test_v8_specs_schema.py`、`test_v9_packaged_800.py`）收成 `tests/contract/` 里一处，断言的值保持现状。
 
 ## 二、全代码库清理 V7／V8
 
@@ -91,7 +66,7 @@
 
 | 文件 | 删掉 | 保留 |
 |---|---|---|
-| `src/robomme_hard/env_record_wrapper/hard_specs.py` | `SCHEMA`(/2)、`SCHEMA_V7`(/3)、`SCHEMAS`、`V7_TIERS`、`V7_XHARD4_ONLY`、`V7_SEED_OFFSET`、`load_specs_v7`、`_check_layout_parent`、`validate_specs` 的 /2 /3 分支、`IDENTITY_KEYS_BY_SCHEMA` 的 /2 /3 项、`seed_rule_for`／`SEED_PROFILES` 的 v5／v7 项；`V8_CELLS`／`_v8_cells`（先把 `_v9_cells` 里对它的循环与集合断言改成直接用档位表）及 `CELL_TABLES["v8"]` | `/4` 读写校验、V9 格表、seed 偏移、`TIER_MAX_STEPS`（按 Q1） |
+| `src/robomme_hard/env_record_wrapper/hard_specs.py` | `SCHEMA`(/2)、`SCHEMA_V7`(/3)、`SCHEMAS`、`V7_TIERS`、`V7_XHARD4_ONLY`、`V7_SEED_OFFSET`、`load_specs_v7`、`_check_layout_parent`、`validate_specs` 的 /2 /3 分支、`IDENTITY_KEYS_BY_SCHEMA` 的 /2 /3 项、`seed_rule_for`／`SEED_PROFILES` 的 v5／v7 项；`V8_CELLS`／`_v8_cells`（先把 `_v9_cells` 里对它的循环与集合断言改成直接用档位表）及 `CELL_TABLES["v8"]` | `/4` 读写校验、V9 格表、seed 偏移、`TIER_MAX_STEPS`（归 Oracle 计划，本计划不动） |
 | `src/robomme_hard/env_record_wrapper/hard_builder.py` | `layout_parent` 透传与 v7 注释 | 只读 `/4` 的现行逻辑 |
 | `src/robomme_hard/robomme_env/utils/episode_spec.py` | `SPEC_KIND_LAYERED`、`NEST_RULES`、`nest_binfill_targets`、`nest_outer_arc`、`SpecRecorder` 的 layered 分支 | `native-newvalue` 全量规格（V9 现行） |
 | `BinFill.py`、`utils/unmask_swap_xhard.py`、`utils/unmask_distractor_sampler.py` | layered 判断与 `_choose_outer_arc` | 其余（V9 现行取值） |
@@ -201,7 +176,7 @@
 
 **评估侧**：按用户决定只测生成噪声，评估侧不跑真实模型。评估代码只删了 `--queue`／`--canary` 这类 V9 不传的开关分支，由第 2、3 层保证；`--v8` 主路径不改。
 
-**`TIER_MAX_STEPS`**：选 (a) 时不涉及任何运行时代码，噪声不受影响。
+**步数上限**：本计划不改任何相关运行时代码，噪声不受影响；1600／1300 的统一由 Oracle 计划负责并按该计划验收。
 
 ## 验收
 
@@ -239,7 +214,7 @@
 
 | 编号 | 问题 | 用户选择 |
 |---|---|---|
-| Q1 | 步数上限表 `TIER_MAX_STEPS`（第 1.5 节） | **保留表**：代码不动，xhard0 在流水线里继续 1300；README 写清与公开入口固定 1600 的关系；三处重复断言收成一处 |
+| Q1 | 步数上限 | **口径定死**：只在入口创建 builder 时显式传入，不再有其他选项；1600／1300 统一由 Oracle 计划确定，xhard0 为 1300；本计划不改相关代码（第一节） |
 | Q2 | V7.5 xhard0「官方路线」复核工具（`official_observer/`、`policy_replay.py`、`run_policy_replay.sh`、`step6_summary.py`、`compare.py`、`hard_regression.py xhard0-eval-parity`） | **删除**（git 历史可取回） |
 | Q3 | 名字带 v8 的现行文件和常量改中性名（第 2.4 节） | **改，等噪声基线测完再改**；格式名、键名、`V8_*` 判定行前缀不改 |
 | Q4 | 生成噪声闸门实跑：V9 43 格 × 3 局 + xhard0 16 任务 × 1 档 × 3 局 = 177 条轨迹，reset 上限 531 次，GL A40 一个占位席，噪声基线冻结之后跑 | **授权**（失败后重跑另报预算） |

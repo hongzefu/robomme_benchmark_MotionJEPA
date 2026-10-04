@@ -58,6 +58,8 @@
 | `scripts/eval-official/v8_manifest.py::check_source` | 修正仍要求192个xhard0前缀的旧假设，使其支持当前无前缀V9清单 | V9与xhard0清单分开处理，不沿用错误的旧局号 |
 | `scripts/README.md`、`src/robomme_hard/README.md` | 补两种dataset的用法、索引和边界 | 用户能明确知道如何切换及各自评哪些场景 |
 
+**步数上限在本计划统一确定（2026-10-03 自 [`1003-code-test-maintenance-todo.md`](1003-code-test-maintenance-todo.md) 移交）。** 口径定死、无其他选项：上限只在入口创建 builder 时显式传入，不按档查表、不从 episode 读；`test-hard`（xhard1～5）为 1600，`test-hard0`（xhard0）为 1300。用户原话：「把这个选项固定下来不要再有别的选项了」「把这个1600步、1300步的问题改为在…这里会进行统一的确定就是会变成XHD0变成1300步」。
+
 **xhard0只增加选择入口，保留原路径。** 本地 `episode=0..11` 对应官方原 `source_episode=3,7,…,47`；seed照抄官方test元数据，标签为 `xhard0`，真正传给环境仍是 `difficulty="hard"`。复用现有 `resolve_identity/_hard_env_kwargs`，不加入规格回注或新seed公式。旧 `XHARD0_IN_TEST_HARD` 开关保留历史兼容、默认关闭；新接口与该开关独立。
 
 实现后，示例入口这样选择：
