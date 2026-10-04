@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 """第一阶段入口：定规则 → 抽签 → 封存，只落一份 jsonl（0927 计划第一部分 §5.1；v8 方案第二部分 §2.2 第 5、6 条）。
 
-    # v7（默认 profile，只抽 xhard4 母布局，封 hard-specs/3）
-    uv run --no-sync python scripts/injection-dev/freeze_specs.py \\
-      --tier xhard4 --tasks all --candidates-per-env 30 --select 0..19 \\
-      --max-reset-attempts 60 --workers 4 --gpus 0,1 --out <新路径>/xhard4/specs.jsonl
-    # v8（按档 seed 偏移，每档一次冻结、档内逐任务独立抽，只抽该档的交付格，封 hard-specs/4）
+    # v8（默认且唯一的 profile；按档 seed 偏移，每档一次冻结、档内逐任务独立抽，只抽该档的交付格，封 hard-specs/4）
     uv run --no-sync python scripts/injection-dev/freeze_specs.py \\
       --tier xhard1 --seed-profile v8 --cells full --workers 4 --gpus 0 \\
       --out artifacts/newtask-v8/specs-frozen/xhard1/specs.jsonl
@@ -15,13 +11,14 @@
 
 - ①定规则：``_extract.build_sampling``（``--pkg`` 默认 robomme_hard）；②抽签：``_draw.draw_task``（只 reset）；
   ③封存：``_freeze.freeze(schema=...)`` → ``--out``（排他发布，唯一落盘文件）。
-- v8 的格表 ``--cells``：``full``（表 2 的 43 格）、``smoke``（2b 冒烟 7 格各 1 局）、``shard1``～``shard4``
-  （按任务切的四片）或格表 JSON 路径（``{"Task@tier": 局数, ...}``）；本档的任务集合与逐格配额都取自格表。
+- 格表 ``--cells``：``full``（V8 表 2 的 43 格）、``smoke``（V8 2b 冒烟 7 格各 1 局）、``v9shard1``、``v9smoke``
+  或格表 JSON 路径（``{"Task@tier": 局数, ...}``）；本档的任务集合与逐格配额都取自格表。
 - v8 逐任务参数：``--candidates-per-env TASK=N,...``（也接受全局整数）；``--select TASK=a..b,...``（也接受全局
   写法；默认每任务 ``0..配额-1``）；``--task-max-reset-attempts TASK[@TIER]=N,...``（优先于 ``--max-reset-attempts``；
   都不给时每格默认 ⌈候选数 ÷ 接受率 × 1.5⌉，接受率见 ``_freeze.V8_DRAW_ACCEPT``）。
 - ``--dry-run``：只打印逐格候选数与 reset 上限（``FREEZE_CELL`` 每格一行 + ``FREEZE_PLAN`` 合计），不起环境、不写盘。
 - ``--self-check``：跑完后以 ``find -newer`` 快照差集核对本次只写出一个文件 → ``FREEZE_ONLY_JSONL``。
+- v7 profile（xhard4 母布局、封 ``hard-specs/3``）与 ``--whitelist`` 已于维护计划 W2 删除。
 - 中断即整批重抽，重抽次数计入预算（P3）。
 """
 
@@ -29,7 +26,6 @@ from __future__ import annotations
 
 import argparse
 import datetime
-import hashlib
 import importlib
 import multiprocessing as mp
 import os
@@ -48,8 +44,8 @@ from robomme_hard.env_record_wrapper import hard_specs  # noqa: E402
 from robomme_hard.env_record_wrapper.hard_specs import SpecsError  # noqa: E402
 
 RECOVERY_RULE = {"rule": "V4 全部不开 fail recover（用户 2026-09-22）"}
-#: --tier 合法值：v7 四档 ∪ v8 五档（v8 不经全局 TIERS 拒绝 xhard5）
-TIER_CHOICES = tuple(dict.fromkeys((*hard_specs.TIERS, *hard_specs.V8_TIERS)))
+#: --tier 合法值：v8 五档（不经全局 TIERS 拒绝 xhard5）
+TIER_CHOICES = tuple(hard_specs.V8_TIERS)
 
 
 def _snapshot(root: Path, since: float) -> set[str]:
@@ -154,19 +150,16 @@ def plan_v8(tier: str, cells: dict[tuple[str, str], int], tasks_arg: str, candid
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--tier", required=True, choices=TIER_CHOICES)
-    parser.add_argument("--tasks", default="all", help="v7：all＝16 任务；v8：all＝格表在本档的全部任务")
+    parser.add_argument("--tasks", default="all", help="all＝格表在本档的全部任务，或逗号分隔的任务名")
     parser.add_argument("--candidates-per-env", default=None,
-                        help="全局整数或 TASK=N,...（v7 缺省 10；v8 缺省按候选表 §2.2 第 6 条）")
+                        help="全局整数或 TASK=N,...（缺省按候选表 §2.2 第 6 条）")
     parser.add_argument("--select", default="default",
-                        help="v7：default（0,3,6）、逗号索引或 a..b；v8：default（每任务 0..配额-1）、全局写法或 TASK=a..b,...")
-    parser.add_argument("--seed-profile", default="v7", choices=("v7", "v8"),
-                        help="v7（默认）：四档同 offset 14e6，xhard4 母布局（hard-specs/3）；"
-                             "v8：按档 seed 偏移、各档布局独立抽（hard-specs/4）")
-    parser.add_argument("--cells", default="full", help="v8 格表：full／smoke／shard1..shard4；V9：v9shard1／v9smoke；或格表 JSON 路径")
-    parser.add_argument("--whitelist", default=str(hard_specs.PACKAGED_SPECS_ROOT / "layout_whitelist.json"),
-                        help="v7：布局白名单（其 sha256 写进 header.layout_rule）")
+                        help="default（每任务 0..配额-1）、全局写法（逗号索引或 a..b）或 TASK=a..b,...")
+    parser.add_argument("--seed-profile", default="v8", choices=("v8",),
+                        help="v8（默认且唯一）：按档 seed 偏移、各档布局独立抽（hard-specs/4）")
+    parser.add_argument("--cells", default="full", help="格表：full／smoke（V8）；v9shard1／v9smoke（V9）；或格表 JSON 路径")
     parser.add_argument("--max-reset-attempts", type=int, default=None,
-                        help="每任务 reset 总预算（v7 缺省 30；v8 缺省每格 ⌈候选数 ÷ 接受率 × 1.5⌉）")
+                        help="每任务 reset 总预算（缺省每格 ⌈候选数 ÷ 接受率 × 1.5⌉）")
     parser.add_argument("--task-max-reset-attempts", default=None, help="TASK[@TIER]=N,...（优先于 --max-reset-attempts）")
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--gpus", default=None)
@@ -179,41 +172,23 @@ def main() -> int:
     args = parser.parse_args()
 
     out = Path(args.out)
-    v8 = args.seed_profile == "v8"
-    if v8:
-        if args.tier not in hard_specs.V8_TIERS:
-            raise SystemExit(f"v8 只认档位 {hard_specs.V8_TIERS}")
-        cells = _rollout.resolve_cells(args.cells)
-        plan = plan_v8(args.tier, cells, args.tasks, args.candidates_per_env, args.select, args.max_reset_attempts,
-                       args.task_max_reset_attempts)
-        tasks = plan["tasks"]
-        for task in tasks:
-            print(f"FREEZE_CELL tier={args.tier} task={task} quota={plan['quota'][task]} "
-                  f"candidates={plan['candidates'][task]} spare={plan['candidates'][task] - plan['quota'][task]} "
-                  f"accept={_freeze.V8_DRAW_ACCEPT.get(task, _freeze.V8_DRAW_ACCEPT_DEFAULT)} "
-                  f"reset_cap={plan['reset_caps'][task]} select={_rollout.compact_range(plan['select'][task])} "
-                  f"quota_by_way={_freeze.format_quota_by_way(_freeze.default_quota_by_way(task, args.tier, plan['quota'][task]))}",
-                  flush=True)
-        print(f"FREEZE_PLAN profile=v8 tier={args.tier} cells={args.cells} tasks={len(tasks)} "
-              f"quota={sum(plan['quota'].values())} candidates={sum(plan['candidates'].values())} "
-              f"reset_budget<={sum(plan['reset_caps'].values())} workers={args.workers} pkg={args.pkg} out={out}",
+    if args.tier not in hard_specs.V8_TIERS:
+        raise SystemExit(f"v8 只认档位 {hard_specs.V8_TIERS}")
+    cells = _rollout.resolve_cells(args.cells)
+    plan = plan_v8(args.tier, cells, args.tasks, args.candidates_per_env, args.select, args.max_reset_attempts,
+                   args.task_max_reset_attempts)
+    tasks = plan["tasks"]
+    for task in tasks:
+        print(f"FREEZE_CELL tier={args.tier} task={task} quota={plan['quota'][task]} "
+              f"candidates={plan['candidates'][task]} spare={plan['candidates'][task] - plan['quota'][task]} "
+              f"accept={_freeze.V8_DRAW_ACCEPT.get(task, _freeze.V8_DRAW_ACCEPT_DEFAULT)} "
+              f"reset_cap={plan['reset_caps'][task]} select={_rollout.compact_range(plan['select'][task])} "
+              f"quota_by_way={_freeze.format_quota_by_way(_freeze.default_quota_by_way(task, args.tier, plan['quota'][task]))}",
               flush=True)
-    else:
-        if args.cells != "full":
-            raise SystemExit("--cells 只用于 --seed-profile v8")
-        tasks = list(hard_specs.ALL_TASKS) if args.tasks == "all" else args.tasks.split(",")
-        if args.tier != "xhard4":
-            raise SystemExit("v7 只在 xhard4 上抽母布局；xhard1～3 由 derive_specs.py 派生（0928 方案第二部分 §1.4）")
-        if args.candidates_per_env is not None and "=" in str(args.candidates_per_env):
-            raise SystemExit("v7 的 --candidates-per-env 只接受全局整数")
-        candidates_v7 = 10 if args.candidates_per_env is None else int(args.candidates_per_env)
-        select = _freeze.parse_select(args.select)
-        max_reset = 30 if args.max_reset_attempts is None else args.max_reset_attempts
-        by_task = _draw.parse_task_max_reset_attempts(args.task_max_reset_attempts, args.tier)
-        budget = sum(by_task.get(t, max_reset) for t in tasks)
-        print(f"FREEZE_PLAN tier={args.tier} tasks={len(tasks)} candidates_per_env={candidates_v7} "
-              f"select={list(select)} reset_budget<={len(tasks)}x{max_reset}={budget} "
-              f"workers={args.workers} pkg={args.pkg} out={out}", flush=True)
+    print(f"FREEZE_PLAN profile=v8 tier={args.tier} cells={args.cells} tasks={len(tasks)} "
+          f"quota={sum(plan['quota'].values())} candidates={sum(plan['candidates'].values())} "
+          f"reset_budget<={sum(plan['reset_caps'].values())} workers={args.workers} pkg={args.pkg} out={out}",
+          flush=True)
     seed_rule = hard_specs.seed_rule_for(args.tier, args.seed_profile)
     if out.exists():
         raise SystemExit(f"{out} 已存在，禁止覆盖")
@@ -222,14 +197,9 @@ def main() -> int:
     started = time.time()
     sampling = _extract.build_sampling(tasks, pkg=args.pkg, release=args.release)
     samplings = {task: sampling["tasks"][task] for task in tasks}
-    if v8:
-        rows, stats = draw_rows_by_task(tasks, samplings, plan["candidates"], plan["reset_caps"], args.workers,
-                                        _draw.parse_gpus(args.gpus), difficulty=args.tier, seed_rule=seed_rule,
-                                        pkg=args.pkg)
-    else:
-        rows, stats = _draw.draw_rows(tasks, samplings, candidates_v7, max_reset, args.workers,
-                                      _draw.parse_gpus(args.gpus), difficulty=args.tier, seed_rule=seed_rule,
-                                      pkg=args.pkg, max_reset_attempts_by_task=by_task)
+    rows, stats = draw_rows_by_task(tasks, samplings, plan["candidates"], plan["reset_caps"], args.workers,
+                                    _draw.parse_gpus(args.gpus), difficulty=args.tier, seed_rule=seed_rule,
+                                    pkg=args.pkg)
     parts = {
         "difficulty": args.tier, "tasks": tasks, "seed_rule": seed_rule, "sampling_config": samplings,
         "recovery_rule": RECOVERY_RULE, "identity_source": "formula",
@@ -238,13 +208,7 @@ def main() -> int:
                        "hard_fingerprint": hard_specs.hard_fingerprint(), "env_package": args.pkg,
                        "frozen_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")},
     }
-    if v8:
-        header, spec_rows = _freeze.freeze(rows, parts, plan["select"], plan["candidates"],
-                                           schema=hard_specs.SCHEMA_V8)
-    else:
-        parts["layout_rule"] = {"mode": "shared", "parent_tier": "xhard4",
-                                "whitelist_sha256": hashlib.sha256(Path(args.whitelist).read_bytes()).hexdigest()}
-        header, spec_rows = _freeze.freeze(rows, parts, select, candidates_v7, schema=hard_specs.SCHEMA_V7)
+    header, spec_rows = _freeze.freeze(rows, parts, plan["select"], plan["candidates"], schema=hard_specs.SCHEMA_V8)
     _freeze.write_jsonl_exclusive(out, [header, *spec_rows])
     print(f"FREEZE_DONE rows={len(spec_rows)} selected={sum(r['selected'] for r in spec_rows)} "
           f"reset_attempted={stats['attempted']} identity={header['identity_sha256'][:12]} out={out}", flush=True)

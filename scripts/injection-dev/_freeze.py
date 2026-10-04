@@ -1,15 +1,13 @@
 """第一阶段 ③封存：按完整选签函数选正式局，算 ``spec_sha256``／``identity_sha256``／``delivery_sha256``，排他落盘。
 
 选签逻辑由 ``scripts/parity/v4_specs.py`` 的 ``stratified_select`` / ``_movecube_way`` / ``freeze`` 搬来，语义不变：
-默认按 index（0/3/6）选正式局；MoveCube 在新值档按运动方式分层（每种 way 取编号最小的候选，不足按 index 补齐）。
+按 ``select`` 给出的 index 选正式局；MoveCube 在新值档按运动方式分层（每种 way 取编号最小的候选，不足按 index 补齐）。
 与原实现的差别：输入是内存里的抽签行、输出是 ``(header, rows)``；首次落盘用
 ``os.link`` 排他发布（目标已存在就原子失败，不用会静默覆盖的 ``os.replace``）。
 
-schema 由调用方显式传入（v8 方案第二部分 §2.2 第 2 条：不再按 header 有无 ``layout_rule`` 推断）：
+schema 由调用方显式传入，且只接受 ``hard-specs/4``（``/2`` 单档与 ``/3`` v7 母布局两支已于维护计划 W2 删除）：
 
-* ``hard-specs/2``：旧单档形态，``select`` 为全局索引元组、``delivery_per_cell`` 为整数；
-* ``hard-specs/3``（v7）：/2 + header ``layout_rule``（调用方给出 shared 规则）+ 行 ``layout_parent``（母布局为 null）；
-* ``hard-specs/4``（v8）：每档一次冻结、档内逐任务独立抽；``select`` 为 ``{task: 索引元组}``（逐格配额 = 元组长度），
+* ``hard-specs/4``（v8／v9）：每档一次冻结、档内逐任务独立抽；``select`` 为 ``{task: 索引元组}``（逐格配额 = 元组长度），
   header 的 ``select_rule``／``per_env``／``delivery_per_cell`` 都是逐任务字典，``layout_rule`` 固定 independent、
   ``exec_cap`` 固定 ``V8_EXEC_CAP``，行 ``layout_parent`` 为 null。
 """
@@ -28,10 +26,8 @@ import _common  # noqa: F401  路径设置
 from robomme_hard.env_record_wrapper import hard_specs  # noqa: E402
 from robomme_hard.env_record_wrapper.hard_specs import SpecsError  # noqa: E402
 
-DEFAULT_SELECT = (0, 3, 6)
 MOVECUBE_WAYS = (0, 1, 2)  # MoveCube.py::self.ways：peg_push / gripper_push / grasp_putdown
 
-_FOUR = ("xhard1", "xhard2", "xhard3", "xhard4")
 _TWO = ("xhard1", "xhard2")
 #: v8 逐格候选数默认表（v8 方案第二部分 §2.2 第 6 条）：每格候选数 = ⌈局数 ÷ (1 − 生成失败率)⌉ + 余量；
 #: 抽签拒绝率只放大 reset 次数、不改候选数。合计 1425（首轮 1070 + 递补上限 355）。
@@ -41,7 +37,8 @@ V8_DEFAULT_CANDIDATES: dict[tuple[str, str], int] = {
     ("BinFill", "xhard1"): 57, ("BinFill", "xhard2"): 57,
     ("PickXtimes", "xhard1"): 22, ("PickXtimes", "xhard2"): 22, ("PickXtimes", "xhard3"): 21,
     **{(task, tier): 13 for task in ("SwingXtimes", "StopCube") for tier in hard_specs.V8_TIERS},
-    **{(task, tier): 26 for task in ("VideoUnmask", "ButtonUnmask") for tier in _FOUR},
+    **{(task, tier): 26 for task in ("VideoUnmask", "ButtonUnmask")
+       for tier in ("xhard1", "xhard2", "xhard3", "xhard4")},
     **{(task, tier): 52 for task in ("VideoUnmaskSwap", "ButtonUnmaskSwap", "VideoPlaceButton", "VideoPlaceOrder",
                                      "PickHighlight", "VideoRepick") for tier in _TWO},
     **{(task, tier): n for task in ("RouteStick", "PatternLock")
@@ -173,9 +170,7 @@ def _select_by_way_quota(task: str, difficulty: str, ok_rows: list[dict[str, Any
 
 
 def parse_select(text: str) -> tuple[int, ...]:
-    """``default``（0,3,6）、逗号分隔的候选 index，或 ``a..b`` 闭区间（v7：``0..19``）。"""
-    if text == "default":
-        return DEFAULT_SELECT
+    """逗号分隔的候选 index，或 ``a..b`` 闭区间（``parse_select_by_task`` 的全局写法）。"""
     if ".." in text:
         lo, _, hi = text.partition("..")
         return tuple(range(int(lo), int(hi) + 1))
@@ -225,45 +220,36 @@ def parse_int_by_task(text: str | None, tasks, default: dict[str, int], label: s
     return out
 
 
-def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DEFAULT_SELECT,
+def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select,
            candidates_per_env: int | dict[str, int] = 10, *,
            schema: str, quota_by_way: dict[str, dict[int, int] | None] | None = None,
            expected_cells: dict[tuple[str, str], int] | None = None) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """纯函数：抽签行 → ``(header, rows)``。``schema`` 必须显式给出（``hard-specs/2``、``/3`` 或 ``/4``）。
+    """纯函数：抽签行 → ``(header, rows)``。``schema`` 必须显式给出且只能是 ``hard-specs/4``。
 
     ``header_parts`` 必含 ``difficulty tasks seed_rule sampling_config recovery_rule identity_source run_id draw_stats
-    provenance``；``/3`` 另须带 ``layout_rule``（母布局行 ``layout_parent`` 为 null），``/2``、``/4`` 不得带
-    （``/4`` 的 ``layout_rule`` 固定为 ``V8_LAYOUT_RULE``、``exec_cap`` 固定为 ``V8_EXEC_CAP``，由本函数写入）。
+    provenance``，不得带 ``layout_rule``（``/4`` 的 ``layout_rule`` 固定为 ``V8_LAYOUT_RULE``、``exec_cap`` 固定为
+    ``V8_EXEC_CAP``，由本函数写入）。
 
     ``/4``：``select`` 为 ``{task: 索引元组}``（也接受全局元组，按每任务同一组索引展开），逐格配额 = 元组长度；
     某任务成功候选选不满配额即拒绝；header ``select_rule[task]`` 写实际选中的 episode 列表（MoveCube 分层后
     可能不是 ``0..n-1``）、``per_env[task]`` 写成功候选数、``delivery_per_cell[task]`` 写配额；
     逐任务的尝试数、初选与请求候选数写进 ``draw_stats.freeze_per_env``（不进签）。
 
-    ``quota_by_way``（只对 /4）：``{task: {way: 配额}}``；缺省 None 时逐任务取 ``default_quota_by_way``（只有 V9 的
+    ``quota_by_way``：``{task: {way: 配额}}``；缺省 None 时逐任务取 ``default_quota_by_way``（只有 V9 的
     MoveCube xhard4 配额 50 才启用 17／17／16，V7／V8 不受影响）。启用时打印 ``FREEZE_WAYS`` 一行（逐方式配额与
     逐方式候选数），并把两者写进 ``draw_stats.freeze_per_env[task]``（不进签）；某方式候选不足即抛错。
-    ``expected_cells``（只对 /4）：封签后校验用的配额上限格表，缺省按本档逐任务配额 ``resolve_cell_table`` 取
+    ``expected_cells``：封签后校验用的配额上限格表，缺省按本档逐任务配额 ``resolve_cell_table`` 取
     （V8 配额落 V8_CELLS，V9 的 MoveCube 50 落 V9_CELLS）。"""
-    if schema not in hard_specs.SCHEMAS:
-        raise SpecsError(f"未知 schema {schema!r}，只支持 {hard_specs.SCHEMAS}")
+    if schema != hard_specs.SCHEMA_V8:
+        raise SpecsError(f"未知 schema {schema!r}，只支持 {hard_specs.SCHEMA_V8}")
     difficulty, seed_rule = header_parts["difficulty"], header_parts["seed_rule"]
-    v7 = schema == hard_specs.SCHEMA_V7
-    v8 = schema == hard_specs.SCHEMA_V8
-    if v7 and "layout_rule" not in header_parts:
-        raise SpecsError("hard-specs/3 须在 header_parts 里给出 layout_rule")
-    if not v7 and "layout_rule" in header_parts:
-        raise SpecsError(f"{schema} 不接受调用方给的 layout_rule（/4 固定 independent，/2 无此键）")
-    # /2、/3 的档位沿用全局 TIERS（与其校验分支一致）；/4 按 V8_TIERS，不经全局 TIERS 拒绝 xhard5
-    if difficulty not in (hard_specs.V8_TIERS if v8 else hard_specs.TIERS):
+    if "layout_rule" in header_parts:
+        raise SpecsError(f"{schema} 不接受调用方给的 layout_rule（固定 independent）")
+    # 按 V8_TIERS，不经全局 TIERS 拒绝 xhard5
+    if difficulty not in hard_specs.V8_TIERS:
         raise SpecsError(f"未知档位 {difficulty}（{schema}）")
     tasks = list(header_parts["tasks"])
-    if v8:
-        select_by = {task: tuple(select[task] if isinstance(select, dict) else select) for task in tasks}
-    else:
-        if isinstance(select, dict):
-            raise SpecsError(f"{schema} 只接受全局 select 元组")
-        select_by = {task: tuple(select) for task in tasks}
+    select_by = {task: tuple(select[task] if isinstance(select, dict) else select) for task in tasks}
     rows, per_env = [], {}
     for task in tasks:
         ok_rows = []
@@ -281,16 +267,14 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DE
         if [r["episode"] for r in ok_rows] != list(range(len(ok_rows))):
             raise SpecsError(f"{task} 的成功候选编号不连续")
         quota = len(select_by[task])
-        ways = None
-        if v8:
-            ways = default_quota_by_way(task, difficulty, quota) if quota_by_way is None else quota_by_way.get(task)
+        ways = default_quota_by_way(task, difficulty, quota) if quota_by_way is None else quota_by_way.get(task)
         if ways is not None:
             have = candidates_by_way(ok_rows)
             print(f"FREEZE_WAYS task={task} tier={difficulty} quota_by_way={format_quota_by_way(ways)} "
                   f"candidates_by_way={format_quota_by_way({w: len(have.get(w, [])) for w in MOVECUBE_WAYS})} "
                   f"no_way={len(have.get(None, []))}", flush=True)
-        chosen = stratified_select(task, difficulty, ok_rows, select_by[task], quota if v8 else None, ways)
-        if v8 and len(chosen) != quota:
+        chosen = stratified_select(task, difficulty, ok_rows, select_by[task], quota, ways)
+        if len(chosen) != quota:
             raise SpecsError(f"{task}/{difficulty} 成功候选 {len(ok_rows)} 个，选不满配额 {quota}"
                              f"（select={list(select_by[task])}，选中 {chosen}）")
         per_env[task] = {"attempted": sum(1 for r in drafts if r["task"] == task), "candidates": len(ok_rows),
@@ -306,26 +290,20 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DE
                 "episode": row["episode"], "seed": row["seed"], "attempt": row["attempt"],
                 "spec": row["spec"], "spec_sha256": row["spec_sha256"],
                 "selected": flag, "tried": False, "initial_selected": flag, "rollout": None,
-                **({"layout_parent": None} if (v7 or v8) else {}),
+                "layout_parent": None,
             })
     draw_stats = copy.deepcopy(header_parts["draw_stats"])
-    if v8:
-        requested = candidates_per_env if isinstance(candidates_per_env, dict) else {t: candidates_per_env for t in tasks}
-        draw_stats = {**draw_stats, "freeze_per_env": {
-            task: {**per_env[task], "candidates_requested": int(requested[task])} for task in tasks}}
-        header_per_env: Any = {task: per_env[task]["candidates"] for task in tasks}
-        select_rule: Any = {task: list(per_env[task]["initial_selected"]) for task in tasks}
-        delivery_per_cell: Any = {task: len(select_by[task]) for task in tasks}
-    else:
-        header_per_env = per_env
-        select_rule = {"indices": list(select), "movecube": "新值档按运动方式分层（MOVECUBE_WAYS）",
-                       "candidates_per_env": candidates_per_env}
-        delivery_per_cell = len(select)
+    requested = candidates_per_env if isinstance(candidates_per_env, dict) else {t: candidates_per_env for t in tasks}
+    draw_stats = {**draw_stats, "freeze_per_env": {
+        task: {**per_env[task], "candidates_requested": int(requested[task])} for task in tasks}}
+    header_per_env: Any = {task: per_env[task]["candidates"] for task in tasks}
+    select_rule: Any = {task: list(per_env[task]["initial_selected"]) for task in tasks}
+    delivery_per_cell: Any = {task: len(select_by[task]) for task in tasks}
     header = {
         "record": "header",
         "schema": schema,
-        **({"layout_rule": copy.deepcopy(header_parts["layout_rule"])} if v7 else {}),
-        **({"layout_rule": dict(hard_specs.V8_LAYOUT_RULE), "exec_cap": hard_specs.V8_EXEC_CAP} if v8 else {}),
+        "layout_rule": dict(hard_specs.V8_LAYOUT_RULE),
+        "exec_cap": hard_specs.V8_EXEC_CAP,
         "difficulty": difficulty,
         "tasks": tasks,
         "per_env": header_per_env,
@@ -343,7 +321,7 @@ def freeze(drafts: list[dict[str, Any]], header_parts: dict[str, Any], select=DE
     }
     header["identity_sha256"] = hard_specs.identity_sha256(header, rows)
     header["delivery_sha256"] = hard_specs.delivery_sha256(rows)
-    if v8 and expected_cells is None:
+    if expected_cells is None:
         expected_cells = hard_specs.resolve_cell_table({(task, difficulty): delivery_per_cell[task] for task in tasks})
     hard_specs.validate_specs(header, rows, expected_cells=expected_cells)
     return header, rows

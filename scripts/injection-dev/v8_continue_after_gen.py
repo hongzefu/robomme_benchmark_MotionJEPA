@@ -1,75 +1,41 @@
 #!/usr/bin/env python3
-"""v8 gen1 之后的接续脚本：核验最终报告 → 守卫 → 建站 → 浏览器检查 → 通知（v8 方案第二部分 §2.4.4、§2.12 S2-D）。
+"""V9 建站脚本：身份清单 → 目录 → 子目标帧数 → 起服务 → 浏览器检查（v9 方案 §2.4.2 第 8 步、§2.4.4 阶段 4c）。
 
-AGENTS.md P4 的落地：不只听「完成行」，而是读取并核验 gen1 聚合产物 ``delivery.json``（``v8-delivery/1``）；
-守卫判定行全部 PASS 才建站；任一 FAIL 停在报告、写通知事件、不建站。每步写心跳文件，供独立的
-``v8_watchdog.py`` 按 mtime 判停更（本脚本自身崩溃或卡死时由 watchdog 报出，不靠本脚本自报）。
+维护计划 W2 起只保留「只建站」路径：原 V8 gen1 专用的等报告（``wait_report``）、报告核验（``report``）、三个守卫
+（``delivery_set``／``tier_values``／``step_headroom``）、心跳文件与配套看门狗脚本、3b 前的身份清单合成
+都已删除；交付与守卫由生成侧（``generate_h5.py`` 聚合与 ``hard_regression.py``）各自验收，本脚本不再重复。
+``--site-only`` 仍接受（与历史命令兼容），行为恒为只建站，收尾行带 ``site_only=1``。
 
 步骤（按序；``--cmd STEP=…`` 可替换任一步的命令，测试用假命令替换浏览器检查器等）：
 
-1. ``wait_report``：等 ``--delivery`` 出现（``--wait-timeout`` 秒内；给了 ``--gen-log`` 时还要等到 ``EXIT_CODE=`` 行
-   且为 0）。超时 → FAIL（「完成行超时未到」）。
-2. ``report``：核 ``delivery.json``——``schema == v8-delivery/1``、``exec_cap == 1600``、``specs_root`` 与 ``--specs-root``
-   为同一路径、``cells_table`` 与 ``--cells`` 格表相等、``counts`` 的计数键**显式存在**且为非负整数（零值也必须写出，
-   不用 ``.get(k, 0)`` 兜底）、``line`` 以 ``V8_DELIVERY_SET=PASS``（或 V9 同名 ``V9_DELIVERY_SET=PASS``）开头且 ``total=`` 等于 ``counts.delivered`` 与
-   ``len(rows)``、``failed_cells == 0``。
-3. ``delivery_set``：``hard_regression.py delivery-set`` → ``V8_DELIVERY_SET``／``V8_SEED_DISJOINT``／
-   ``V8_LAYOUT_INDEPENDENT`` 三行 PASS，且 ``total=`` 与报告一致。
-4. ``tier_values``：``hard_regression.py tier-values`` → ``V8_TIER_VALUES=PASS``。
-5. ``step_headroom``：``hard_regression.py step-headroom --delivery … --pool … --xhard0 …`` → ``V8_STEP_CAP=PASS``。
-   未给 ``--xhard0-steps`` 时改带 ``--skip-xhard0``，该步记 **INFO**（不冒充 PASS）：默认就此停下不建站，
-   ``--allow-xhard0-info`` 时继续建站但最终判定也只能是 ``V8_CONTINUE=INFO``。
-6. ``identities``：给了 ``--identities`` 就用它；否则在 ``--work-dir`` 下合成身份清单（见下）。
-7. ``catalog``：``site/v8_site_catalog.py`` → ``V8_SITE_CATALOG=PASS``。
-8. ``subgoals``：``site/v8_subgoal_lengths.py`` → ``V8_SUBGOALS=PASS``。
-9. ``serve``：起服务前探端口占用（``--port 0`` 由系统分配）；``site/v8_site.py`` 打出 ``V8_SITE_READY`` 视为就绪。
-10. ``site_check``／``oracle_check``：两个浏览器检查器 → ``V8_SITE=PASS``、``V8_ORACLE_BROWSER=PASS``。
-11. ``stop_serve``：finally 中收掉服务进程组（SIGTERM → 5 秒 → SIGKILL）；SIGTERM／SIGHUP／SIGINT 同样走 finally。
+1. ``identities``：``--identities`` 给出的现成身份清单（必填，如 4b 导出的 ``eval-identities-992.jsonl``）。
+2. ``catalog``：``site/v8_site_catalog.py`` → ``V8_SITE_CATALOG=PASS``。
+3. ``subgoals``：``site/v8_subgoal_lengths.py`` → ``V8_SUBGOALS=PASS``。
+4. ``serve``：起服务前探端口占用（``--port 0`` 由系统分配）；``site/v8_site.py`` 打出 ``V8_SITE_READY`` 视为就绪。
+5. ``site_check``／``oracle_check``：两个浏览器检查器 → ``V8_SITE=PASS``、``V8_ORACLE_BROWSER=PASS``。
+6. ``stop_serve``：finally 中收掉服务进程组（SIGTERM → 5 秒 → SIGKILL）；SIGTERM／SIGHUP／SIGINT 同样走 finally。
 
-**身份清单（3b 前可用的做法）**：``export_eval_identities.py`` 须在 3b 换包后跑，而 gen1 验收后即建站（不等 3b）。
-未给 ``--identities`` 时，本脚本合成 ``<work-dir>/eval-identities-<n>.jsonl``：v8 新值局取 ``delivery.json`` 的
-``rows``（task／tier／seed／candidate），xhard0 取 ``--xhard0-manifest``（缺省 ``scripts/configs/newtask-v7/
-xhard0_manifest.json`` 的 192 行；也接受 ``manifest-H.jsonl`` 形态）的 task／seed／episode（记为 ``source_episode``）；
-``round``／``shard`` 置空，``episode`` 按 (tier, task, seed) 排序编号。站点 catalog 只按 (tier, task, seed) 对账，
-不依赖 builder 的 episode 编号；总数仍由 catalog 按格表核（``sum(格表) + 16 × 12``：V8 1262、V9 992）。合成文件已存在时
-只在内容逐字节相同时复用。
+**格表**（v9 方案 §2.1 S1-E）：``--cells full``／``v8``（缺省，``V8_CELLS``）｜``v9``（``V9_CELLS``）｜
+``{"Task/tier": n}`` JSON 文件。期望格数由格表推出；非 V8 完整表时写 ``<work-dir>/cells.json`` 传给 catalog
+（``--cells-json``）。
 
-**格表**（v9 方案 §2.1 S1-E）：``--cells full``／``v8``（缺省，``V8_CELLS``，V8 行为不变）｜``v9``（``V9_CELLS``）｜
-``{"Task/tier": n}`` JSON 文件。局数、期望格数一律由格表推出；非 V8 完整表时写 ``<work-dir>/cells.json`` 传给守卫与
-catalog（``--cells-json``），不依赖 ``EXPECTED_CELLS``，阶段 3b 切换前后行为相同。守卫判定行 ``V8_*`` 与 ``V9_*`` 同名
-等价（S1-C 按格表版本出 ``V9_DELIVERY_SET`` 等）。
+**V9 建站**：``--site-dir`` 指向 V9 独立目录（如 ``artifacts/newtask-v9/site``，已有本轮产物时按 progress 指纹复用，
+非空且无可复用记录即 FAIL，不覆盖）；``--eval-reuse <V8 site-eval 目录>`` ``--reused <reused.json>``
+``--eval-new <V9 评估运行目录>`` 原样透传给 catalog（复用 720 + 新评 80），``--port`` 是服务端口并透传给总表检查器，
+检查器在 V8 行之外再出 ``V9_SITE=PASS cells=59 missing=0 eval_reused=… eval_new=… eval_empty=0 port=…``（期望复用数取
+``reused.json`` 的 ``count``，期望新评数 = 格表合计 − 复用数），该行也是本步必需判定行。
 
-**V9 建站（阶段 4c，§2.4.2 第 8 步、§2.4.4）**：``--site-dir`` 指向 V9 独立目录（如 ``artifacts/newtask-v9/site``，
-已有本轮产物时按 progress／report 指纹复用，非空且无可复用记录即 FAIL，不覆盖）；``--eval-reuse <V8 site-eval 目录>``
-``--reused <reused.json>`` ``--eval-new <V9 评估运行目录>`` 原样透传给 catalog（复用 720 + 新评 80），``--port`` 是服务
-端口并透传给总表检查器，检查器在 V8 行之外再出 ``V9_SITE=PASS cells=59 missing=0 eval_reused=… eval_new=… eval_empty=0
-port=…``（期望复用数取 ``reused.json`` 的 ``count``，期望新评数 = 格表合计 − 复用数），该行也是本步必需判定行。
-``--site-only``：3b 已跑过全部守卫、4c 只建站时用——跳过 ``wait_report``／``report``／三个守卫（记 ``SKIP``），必须
-给 ``--identities``（4b 导出的 ``eval-identities-992.jsonl``），收尾行追加 ``site_only=1``。
+**产物**（全部在 ``--work-dir``）：``progress.json``（已完成步骤，供崩溃后续行）、``logs/<step>.log``、``report.json``
+（schema ``v8-continue-report/1``：每步判定行原文、退出码、耗时；以 ``os.link`` 独占写入，从不覆盖）。
+事件日志（``--event-log``，缺省 ``<work-dir>/events.log``，只追加）逐步写 ``V8_CONTINUE_STEP step=<名> status=<PASS|FAIL> …``，
+失败写 ``P4_NOTIFY=FAIL step=<名> reason=…``，收尾写 ``V8_CONTINUE=PASS|FAIL step=<名> …``（stdout 同样打印）。
 
-**产物**（全部在 ``--work-dir``）：``heartbeat.json``（加锁成功后立即写一次本轮心跳，覆盖上一轮遗留；之后每步、
-每 ``--beat-s`` 秒与子进程每行输出时原子替换；拒绝执行（退出码 2）时记 ``status=aborted``；
-``step``／``status``／``ts``／``epoch``／``pid``／``child_pid``／``server_pid``／``counts``，计数键显式写零）、
-``progress.json``（已完成步骤，供崩溃后续行）、``logs/<step>.log``、``report.json``（schema
-``v8-continue-report/1``：每步判定行原文、退出码、耗时；以 ``os.link`` 独占写入，从不覆盖）。
-事件日志（``--event-log``，缺省 ``<work-dir>/events.log``，与 watchdog 共用、只追加）逐步写
-``V8_CONTINUE_STEP step=<名> status=<PASS|FAIL|INFO|SKIP> …``，失败写 ``P4_NOTIFY=FAIL step=<名> reason=…``，
-收尾写 ``V8_CONTINUE=PASS|FAIL|INFO step=<名> …``（stdout 同样打印）。
-
-**重复调用（同一完成事件重复到达）**：``report.json`` 已存在 → 先核 schema、输入指纹（delivery.json 的 sha256、
-各输入路径、格表）与完整性（每步都有记录、有收尾行），全部相符才复用：不重跑任何步骤、不覆盖任何文件，
+**重复调用**：``report.json`` 已存在 → 先核 schema、输入指纹与完整性，全部相符才复用：不重跑任何步骤、不覆盖任何文件，
 重打一行带 ``reused=1`` 的 ``V8_CONTINUE``，退出码与原报告一致；指纹不符 → 拒绝（退出码 2），换新 ``--work-dir``。
 没有报告但有 ``progress.json``（上次中途崩溃）→ 只跑未完成步骤（已 PASS 的步骤核其产物 sha256 后复用）。
 同一 ``--work-dir`` 用 ``flock`` 互斥，第二个并发实例直接退出（防重复派发）。
 
-退出码：0 = PASS，1 = FAIL，3 = INFO，2 = 参数／报告身份冲突，130 = 被信号中断（不写 report.json，可续行）。
-
-主检出仓库根执行（gen1 rsync 回 /data 并 ``aggregate --rebase`` 之后；完整命令见 S2-D 交回的运行手册）::
-
-    uv run --no-sync python scripts/injection-dev/v8_continue_after_gen.py \\
-      --delivery artifacts/newtask-v8/gen1/delivery.local.json --specs-root artifacts/newtask-v8/specs-root \\
-      --xhard0-steps artifacts/newtask-v7/parity/h5/H-xhard0 --work-dir artifacts/newtask-v8/continue \\
-      --site-dir artifacts/newtask-v8/site --port 8090
+退出码：0 = PASS，1 = FAIL，2 = 参数／报告身份冲突，130 = 被信号中断（不写 report.json，可续行）。
 
 V9 阶段 4c（评估完成后只建站）::
 
@@ -102,46 +68,23 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SITE = REPO_ROOT / "scripts/injection-dev/site"
-HARD_REGRESSION = REPO_ROOT / "scripts/parity/hard_regression.py"
 DEFAULT_XHARD0_GEN = REPO_ROOT / "artifacts/newtask-v7/site-media/xhard0-gen"
-DEFAULT_XHARD0_MANIFEST = REPO_ROOT / "scripts/configs/newtask-v7/xhard0_manifest.json"
 
 REPORT_SCHEMA = "v8-continue-report/1"
-HEARTBEAT_SCHEMA = "v8-continue-heartbeat/1"
 PROGRESS_SCHEMA = "v8-continue-progress/1"
-DELIVERY_SCHEMA = "v8-delivery/1"
-EXEC_CAP = 1600
-#: delivery.json ``counts`` 必须显式写出的键（与 S2-B ``_rollout.V8_TOTAL_COUNT_KEYS`` 同一清单，零值也写）
-DELIVERY_COUNT_KEYS = ("expected", "candidates", "tried", "delivered", "failed", "exec_over_cap", "backfills",
-                       "infra_retries", "spares_left", "pending", "bad_h5", "exhausted_cells", "pending_cells",
-                       "failed_cells")
-#: 心跳与报告的计数键（全部显式写零）
-COUNT_KEYS = ("steps_done", "steps_failed", "steps_info", "steps_reused", "delivered", "failed", "exec_over_cap",
-              "filtered", "backfills", "infra_retries")
-STEPS = ("wait_report", "report", "delivery_set", "tier_values", "step_headroom", "identities", "catalog", "subgoals",
-         "serve", "site_check", "oracle_check", "stop_serve")
-GUARD_STEPS = ("delivery_set", "tier_values", "step_headroom")
+#: 报告与进度的计数键（全部显式写零）
+COUNT_KEYS = ("steps_done", "steps_failed", "steps_reused", "delivered")
+STEPS = ("identities", "catalog", "subgoals", "serve", "site_check", "oracle_check", "stop_serve")
 #: 每步必须出现的判定行名（取最后一次出现）
 EXPECT = {
-    "delivery_set": ("V8_DELIVERY_SET", "V8_SEED_DISJOINT", "V8_LAYOUT_INDEPENDENT"),
-    "tier_values": ("V8_TIER_VALUES",),
-    "step_headroom": ("V8_STEP_CAP",),
     "catalog": ("V8_SITE_CATALOG",),
     "subgoals": ("V8_SUBGOALS",),
     "site_check": ("V8_SITE",),
     "oracle_check": ("V8_ORACLE_BROWSER",),
 }
-#: 守卫判定行的 V9 同名（S1-C 按格表版本输出 V9_*）：两者等价，记在 V8 名下
-VERDICT_ALIASES = {"V8_DELIVERY_SET": "V9_DELIVERY_SET", "V8_SEED_DISJOINT": "V9_SEED_DISJOINT",
-                   "V8_LAYOUT_INDEPENDENT": "V9_LAYOUT_INDEPENDENT", "V8_TIER_VALUES": "V9_TIER_VALUES",
-                   "V8_STEP_CAP": "V9_STEP_CAP"}
 READY_RE = re.compile(r"^V8_SITE_READY\b.*\bport=(\d+)")
-#: 缺省命令模板：``{名}`` 逐 token 替换；``@pool``／``@xhard0_args``／``@cells_json_args`` 展开为多个 token
+#: 缺省命令模板：``{名}`` 逐 token 替换；``@cells_json_args``／``@eval_args``／``@v9_expect_args`` 展开为多个 token
 DEFAULT_CMDS = {
-    "delivery_set": ["{python}", "{hard_regression}", "delivery-set", "--specs-root", "{specs_root}", "--cells", "{cells}"],
-    "tier_values": ["{python}", "{hard_regression}", "tier-values", "--specs-root", "{specs_root}", "--cells", "{cells}"],
-    "step_headroom": ["{python}", "{hard_regression}", "step-headroom", "--delivery", "{delivery}", "--pool", "@pool",
-                      "@xhard0_args"],
     "catalog": ["{python}", "{site}/v8_site_catalog.py", "--specs-root", "{specs_root}", "--delivery", "{delivery}",
                 "--identities", "{identities}", "--xhard0-gen", "{xhard0_gen}", "--path-base", "{path_base}",
                 "@cells_json_args", "@eval_args", "--out", "{site_dir}"],
@@ -156,8 +99,7 @@ DEFAULT_CMDS = {
                      "--base", "{base}", "--port", "{port_actual}", "--shots", "{shots}/oracle", "--delivery", "{delivery}",
                      "--expect-cells", "{expect_cells}", "@v9_expect_args"],
 }
-DEFAULT_TIMEOUTS = {"delivery_set": 1800, "tier_values": 1800, "step_headroom": 3600, "catalog": 1800,
-                    "subgoals": 3600, "serve": 120, "site_check": 1800, "oracle_check": 1800}
+DEFAULT_TIMEOUTS = {"catalog": 1800, "subgoals": 3600, "serve": 120, "site_check": 1800, "oracle_check": 1800}
 
 
 class Interrupted(Exception):
@@ -199,7 +141,7 @@ def write_json_exclusive(path: Path, payload: Any) -> None:
 
 
 def append_line(path: Path, line: str) -> None:
-    """事件日志只追加；一次 ``os.write``（O_APPEND）写整行，与 watchdog 并发追加不交错。"""
+    """事件日志只追加；一次 ``os.write``（O_APPEND）写整行，并发追加不交错。"""
     fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
     try:
         os.write(fd, (line.rstrip("\n") + "\n").encode("utf-8"))
@@ -207,20 +149,14 @@ def append_line(path: Path, line: str) -> None:
         os.close(fd)
 
 
-def parse_kv(line: str) -> dict[str, str]:
-    return dict(m.groups() for m in re.finditer(r"(\w+)=(\S+)", line))
-
-
 def verdict_lines(lines: list[str], names: tuple[str, ...]) -> dict[str, str | None]:
-    """每个判定行名取最后一次出现的原文（``NAME=PASS|FAIL|INFO`` 开头，``V8_SITE`` 不会误配 ``V8_SITE_READY``）；
-    ``VERDICT_ALIASES`` 里的 V9 同名行记在 V8 名下。"""
+    """每个判定行名取最后一次出现的原文（``NAME=PASS|FAIL|INFO`` 开头，``V8_SITE`` 不会误配 ``V8_SITE_READY``）。"""
     out: dict[str, str | None] = {name: None for name in names}
     for raw in lines:
         line = raw.strip()
         for name in names:
-            for alias in (name, VERDICT_ALIASES.get(name)):
-                if alias and re.match(rf"^{re.escape(alias)}=(PASS|FAIL|INFO)\b", line):
-                    out[name] = line
+            if re.match(rf"^{re.escape(name)}=(PASS|FAIL|INFO)\b", line):
+                out[name] = line
     return out
 
 
@@ -257,47 +193,10 @@ def parse_cells_arg(spec: str, full: dict[tuple[str, str], int],
     return cells
 
 
-def delivery_cells_table(delivery: dict) -> dict[tuple[str, str], int] | None:
-    table = delivery.get("cells_table")
-    if not isinstance(table, dict):
-        return None
-    out = {}
-    for key, n in table.items():
-        task, sep, tier = str(key).partition("@")
-        if not sep:
-            return None
-        out[(task, tier)] = n
-    return out
-
-
-def load_xhard0_rows(path: Path) -> list[dict]:
-    """xhard0 192 局：``xhard0_manifest.json``（``rows``）或 ``manifest-H.jsonl`` 形态（每行 task／seed／episode）。"""
-    text = path.read_text(encoding="utf-8")
-    if path.suffix == ".jsonl":
-        rows = [json.loads(t) for t in text.splitlines() if t.strip()]
-    else:
-        payload = json.loads(text)
-        rows = payload["rows"] if isinstance(payload, dict) else payload
-    return [{"task": r["task"], "seed": int(r["seed"]), "source_episode": r.get("episode")} for r in rows]
-
-
-def synth_identities(delivery: dict, xhard0_rows: list[dict]) -> list[dict]:
-    """3b 前的身份清单：v8 行取 delivery.rows，xhard0 行取 xhard0 清单；``episode`` 按 (tier, task, seed) 编号。"""
-    rows = [{"candidate": int(r["candidate"]), "episode": None, "round": None, "seed": int(r["seed"]), "shard": None,
-             "source_episode": None, "task": r["task"], "tier": r["tier"]} for r in delivery["rows"]]
-    rows += [{"candidate": None, "episode": None, "round": None, "seed": r["seed"], "shard": None,
-              "source_episode": r["source_episode"], "task": r["task"], "tier": "xhard0"} for r in xhard0_rows]
-    rows.sort(key=lambda r: (r["tier"], r["task"], r["seed"]))
-    for i, row in enumerate(rows):
-        row["episode"] = i
-    return rows
-
-
 class Runner:
     def __init__(self, args: argparse.Namespace):
         self.args = args
         self.work = Path(args.work_dir)
-        self.heartbeat = Path(args.heartbeat) if args.heartbeat else self.work / "heartbeat.json"
         self.event_log = Path(args.event_log) if args.event_log else self.work / "events.log"
         self.report_path = self.work / "report.json"
         self.progress_path = self.work / "progress.json"
@@ -308,27 +207,11 @@ class Runner:
         self.status = "running"
         self.child: subprocess.Popen | None = None
         self.server: subprocess.Popen | None = None
-        self.last_beat = 0.0
-        self.seq = 0
         self.base: str | None = None
         self.prev_steps: dict[str, dict] = {}
         self.vars: dict[str, Any] = {}
 
-    # ── 心跳、事件、进度 ───────────────────────────────────────────
-
-    def beat(self, *, force: bool = False) -> None:
-        now = time.time()
-        if not force and now - self.last_beat < 1.0:
-            return
-        self.last_beat = now
-        self.seq += 1
-        write_json_atomic(self.heartbeat, {
-            "schema": HEARTBEAT_SCHEMA, "step": self.step, "status": self.status, "ts": now_iso(), "epoch": now,
-            "seq": self.seq, "pid": os.getpid(),
-            "child_pid": self.child.pid if self.child and self.child.poll() is None else None,
-            "server_pid": self.server.pid if self.server and self.server.poll() is None else None,
-            "report": str(self.report_path), "counts": dict(self.counts),
-        })
+    # ── 事件、进度 ─────────────────────────────────────────────
 
     def event(self, line: str) -> None:
         print(line, flush=True)
@@ -351,10 +234,7 @@ class Runner:
             self.counts["steps_done"] += 1
         elif status == "FAIL":
             self.counts["steps_failed"] += 1
-        elif status == "INFO":
-            self.counts["steps_info"] += 1
         self.status = status.lower()
-        self.beat(force=True)
         self.save_progress()
         self.event(f"V8_CONTINUE_STEP step={step} status={status} rc={rc} elapsed_s={entry['elapsed_s']:.1f}"
                    + (f" reused=1" if reused else "") + (f" reason={reason}" if reason else ""))
@@ -366,11 +246,7 @@ class Runner:
         template = self.vars["cmd_overrides"].get(step, DEFAULT_CMDS[step])
         out: list[str] = []
         for token in template:
-            if token == "@pool":
-                out += self.vars["pool"]
-            elif token == "@xhard0_args":
-                out += (["--xhard0", self.vars["xhard0_steps"]] if self.vars["xhard0_steps"] else ["--skip-xhard0"])
-            elif token == "@cells_json_args":
+            if token == "@cells_json_args":
                 out += (["--cells-json", self.vars["cells_json"]] if self.vars["cells_json"] else [])
             elif token == "@eval_args":
                 out += self.vars["eval_args"]
@@ -381,7 +257,7 @@ class Runner:
         return out
 
     def run_child(self, step: str, argv: list[str], timeout: float) -> tuple[int | None, list[str], str | None, Path]:
-        """跑一步子进程（独立进程组），逐行落 ``logs/<step>.log`` 并回显；子进程活着时每 ``--beat-s`` 秒心跳。"""
+        """跑一步子进程（独立进程组），逐行落 ``logs/<step>.log`` 并回显。"""
         log = self.logs / f"{step}.log"
         lines: list[str] = []
         env = dict(os.environ, PYTHONUNBUFFERED="1")
@@ -390,7 +266,6 @@ class Runner:
             handle.flush()
             self.child = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=REPO_ROOT,
                                           env=env, start_new_session=True)
-            self.beat(force=True)
             fd = self.child.stdout.fileno()
             sel = selectors.DefaultSelector()
             sel.register(fd, selectors.EVENT_READ)
@@ -409,17 +284,14 @@ class Runner:
 
             try:
                 while True:
-                    # 至多 1 秒醒一次查子进程是否已退出；心跳按 --beat-s 节奏写
-                    events = sel.select(timeout=min(1.0, self.args.beat_s, max(0.05, deadline - time.time())))
+                    # 至多 1 秒醒一次查子进程是否已退出
+                    events = sel.select(timeout=min(1.0, max(0.05, deadline - time.time())))
                     if events:
                         chunk = os.read(fd, 65536)
                         if not chunk:
                             break
                         take(chunk)
-                        self.beat()
                     else:
-                        if time.time() - self.last_beat >= self.args.beat_s:
-                            self.beat(force=True)
                         if self.child.poll() is not None:
                             # 子进程已退出、管道却被遗留的孙进程占着：先非阻塞读尽管道里剩下的数据再退出，不丢判定行
                             os.set_blocking(fd, False)
@@ -452,7 +324,6 @@ class Runner:
 
     def run_step(self, step: str) -> dict:
         self.step, self.status = step, "running"
-        self.beat(force=True)
         started = time.time()
         rc, lines, reason, log = self.run_child(step, self.command(step), self.vars["timeouts"][step])
         found = verdict_lines(lines, self.vars.get("expect", EXPECT)[step])
@@ -467,148 +338,26 @@ class Runner:
             status, reason = "FAIL", "line_missing:" + ",".join(missing)
         not_pass = [name for name, line in found.items() if line and verdict_of(line) != "PASS"]
         if status == "PASS" and not_pass:
-            info_ok = (step == "step_headroom" and not self.vars["xhard0_steps"] and not_pass == ["V8_STEP_CAP"]
-                       and verdict_of(found["V8_STEP_CAP"]) == "INFO")
-            status, reason = ("INFO", "xhard0_skipped") if info_ok else ("FAIL", "verdict:" + ",".join(not_pass))
-        if status in ("PASS", "INFO") and step == "delivery_set":
-            total = parse_kv(found["V8_DELIVERY_SET"]).get("total")
-            if total is None or int(total) != self.counts["delivered"]:
-                status, reason = "FAIL", f"total_mismatch:guard={total},report={self.counts['delivered']}"
-        if step == "step_headroom" and found["V8_STEP_CAP"]:
-            filtered = parse_kv(found["V8_STEP_CAP"]).get("filtered")
-            if filtered is not None and filtered.isdigit():
-                self.counts["filtered"] = int(filtered)
+            status, reason = "FAIL", "verdict:" + ",".join(not_pass)
         return self.record(step, status, rc=rc, lines=kept, elapsed=time.time() - started, reason=reason, log=log)
 
     # ── 各步 ──────────────────────────────────────────────────────
 
-    def wait_report(self) -> dict:
-        self.step, self.status = "wait_report", "running"
-        started = time.time()
-        delivery, gen_log = Path(self.args.delivery), self.args.gen_log
-        deadline = started + self.args.wait_timeout
-        while True:
-            self.beat()
-            exit_line = None
-            if gen_log and Path(gen_log).is_file():
-                exit_line = next((l for l in reversed(Path(gen_log).read_text(errors="replace").splitlines())
-                                  if l.startswith("EXIT_CODE=")), None)
-            parsed = False
-            if delivery.is_file():
-                try:  # 写到一半／不完整的 JSON 视为未就绪，继续等
-                    json.loads(delivery.read_text(encoding="utf-8"))
-                    parsed = True
-                except (OSError, ValueError):
-                    parsed = False
-            if parsed and (not gen_log or exit_line):
-                lines = [f"delivery={delivery}"] + ([exit_line] if exit_line else [])
-                if exit_line and exit_line.strip() != "EXIT_CODE=0":
-                    return self.record("wait_report", "FAIL", lines=lines, elapsed=time.time() - started,
-                                       reason=f"gen_{exit_line.strip()}")
-                return self.record("wait_report", "PASS", lines=lines, elapsed=time.time() - started)
-            if time.time() >= deadline:
-                what = ("delivery.json" if not delivery.is_file() else
-                        "delivery.json可解析内容" if not parsed else "EXIT_CODE行")
-                return self.record("wait_report", "FAIL", elapsed=time.time() - started,
-                                   reason=f"timeout_{int(self.args.wait_timeout)}s:{what}未出现",
-                                   lines=[f"delivery={delivery} exists={int(delivery.is_file())}"])
-            time.sleep(min(self.args.poll_s, max(0.05, deadline - time.time())))
-
-    def check_report(self) -> dict:
-        self.step, self.status = "report", "running"
-        self.beat(force=True)
-        started = time.time()
-        problems: list[str] = []
-        try:
-            delivery = json.loads(Path(self.args.delivery).read_text(encoding="utf-8"))
-        except (OSError, ValueError) as exc:
-            return self.record("report", "FAIL", elapsed=time.time() - started, reason=f"unreadable:{type(exc).__name__}")
-        if not isinstance(delivery, dict):
-            return self.record("report", "FAIL", elapsed=time.time() - started, reason="not_object")
-        if delivery.get("schema") != DELIVERY_SCHEMA:
-            problems.append(f"schema={delivery.get('schema')!r}")
-        if delivery.get("exec_cap") != EXEC_CAP:
-            problems.append(f"exec_cap={delivery.get('exec_cap')!r}")
-        if real(delivery.get("specs_root")) != real(self.args.specs_root):
-            problems.append(f"specs_root_mismatch:{delivery.get('specs_root')}")
-        table = delivery_cells_table(delivery)
-        if table != self.vars["cells_table"]:
-            problems.append("cells_table_mismatch" if table is not None else "cells_table_absent")
-        counts = delivery.get("counts")
-        if not isinstance(counts, dict):
-            counts = {}
-            problems.append("counts_absent")
-        absent = [k for k in DELIVERY_COUNT_KEYS if k not in counts]
-        bad = [k for k in DELIVERY_COUNT_KEYS if k in counts and not (isinstance(counts[k], int) and counts[k] >= 0)]
-        if absent:
-            problems.append("count_keys_absent:" + ",".join(absent))
-        if bad:
-            problems.append("count_keys_bad:" + ",".join(bad))
-        rows = delivery.get("rows") if isinstance(delivery.get("rows"), list) else None
-        if rows is None:
-            problems.append("rows_absent")
-        line = delivery.get("line") if isinstance(delivery.get("line"), str) else ""
-        if not re.match(r"^V[89]_DELIVERY_SET=PASS\b", line):
-            problems.append("line_not_pass" if line else "line_absent")
-        total = parse_kv(line).get("total")
-        if line and (total is None or not total.isdigit() or int(total) != counts.get("delivered")
-                     or rows is None or int(total) != len(rows)):
-            problems.append(f"total_mismatch:line={total},counts={counts.get('delivered')},"
-                            f"rows={None if rows is None else len(rows)}")
-        if "failed_cells" in counts and counts["failed_cells"] != 0:  # 缺键已计入 count_keys_absent，不兜底为 0
-            problems.append(f"failed_cells={counts['failed_cells']}")
-        for key in ("delivered", "failed", "exec_over_cap", "backfills", "infra_retries"):
-            if isinstance(counts.get(key), int):
-                self.counts[key] = counts[key]
-        self.vars["delivery_obj"] = delivery
-        lines = [line] if line else []
-        lines.append("counts=" + json.dumps({k: counts.get(k, "ABSENT") for k in DELIVERY_COUNT_KEYS},
-                                            ensure_ascii=False, separators=(",", ":")))
-        status = "FAIL" if problems else "PASS"
-        return self.record("report", status, lines=lines, elapsed=time.time() - started,
-                           reason=";".join(problems)[:600] if problems else None)
-
     def identities(self) -> dict:
+        """只认 ``--identities`` 给出的现成清单（3b 前的合成路径已删）。"""
         self.step, self.status = "identities", "running"
-        self.beat(force=True)
         started = time.time()
-        if self.args.identities:
-            path = Path(self.args.identities)
-            if not path.is_file():
-                return self.record("identities", "FAIL", elapsed=time.time() - started, reason=f"missing:{path}")
-            self.vars["identities"] = str(path)
-            n = sum(1 for t in path.read_text(encoding="utf-8").splitlines() if t.strip())
-            return self.record("identities", "PASS", elapsed=time.time() - started,
-                               lines=[f"IDENTITIES source=given rows={n} path={path}"],
-                               extra={"sha256": sha256_file(path), "source": "given"})
-        try:
-            x0 = load_xhard0_rows(Path(self.args.xhard0_manifest))
-            rows = synth_identities(self.vars["delivery_obj"], x0)
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            return self.record("identities", "FAIL", elapsed=time.time() - started,
-                               reason=f"synth_error:{type(exc).__name__}:{exc}"[:300])
-        text = "".join(json.dumps(r, sort_keys=True) + "\n" for r in rows)
-        path = self.work / f"eval-identities-{len(rows)}.jsonl"
-        if path.exists():
-            if path.read_text(encoding="utf-8") != text:
-                return self.record("identities", "FAIL", elapsed=time.time() - started,
-                                   reason=f"exists_differs:{path}")
-            reused = True
-        else:
-            with open(path, "x", encoding="utf-8") as handle:
-                handle.write(text)
-            reused = False
+        path = Path(self.args.identities)
+        if not path.is_file():
+            return self.record("identities", "FAIL", elapsed=time.time() - started, reason=f"missing:{path}")
         self.vars["identities"] = str(path)
-        n_x0 = sum(r["tier"] == "xhard0" for r in rows)
+        n = sum(1 for t in path.read_text(encoding="utf-8").splitlines() if t.strip())
         return self.record("identities", "PASS", elapsed=time.time() - started,
-                           lines=[f"IDENTITIES source=synthesized rows={len(rows)} v8={len(rows) - n_x0} xhard0={n_x0} "
-                                  f"existing_reused={int(reused)} path={path}"],
-                           extra={"sha256": sha256_file(path), "source": "synthesized",
-                                  "xhard0_manifest": real(self.args.xhard0_manifest)})
+                           lines=[f"IDENTITIES source=given rows={n} path={path}"],
+                           extra={"sha256": sha256_file(path), "source": "given"})
 
     def serve(self) -> dict:
         self.step, self.status = "serve", "running"
-        self.beat(force=True)
         started = time.time()
         host, port = self.args.host, int(self.args.port)
         if port and port_busy(host, port):
@@ -625,7 +374,6 @@ class Runner:
         handle.close()
         deadline = started + self.vars["timeouts"]["serve"]
         while True:
-            self.beat()
             with open(log, "rb") as reader:
                 reader.seek(offset)
                 text = reader.read().decode("utf-8", "replace")
@@ -678,11 +426,6 @@ class Runner:
         self.step = step
         if step == "identities":
             self.vars["identities"] = prev["path_used"]
-        if step == "step_headroom":
-            for line in prev.get("lines", []):
-                kv = parse_kv(line)
-                if re.match(r"^V[89]_STEP_CAP=", line) and kv.get("filtered", "").isdigit():
-                    self.counts["filtered"] = int(kv["filtered"])
         extra = {k: v for k, v in prev.items() if k not in ("step", "status", "rc", "lines", "elapsed_s", "reason",
                                                              "log", "reused", "ended")}
         return self.record(step, prev["status"], rc=prev.get("rc"), lines=prev.get("lines"), elapsed=0.0,
@@ -693,10 +436,7 @@ class Runner:
 
     def finish(self, verdict: str, step: str, reason: str | None, site_built: bool, reused: bool = False) -> int:
         final = (f"V8_CONTINUE={verdict} step={step} steps={len(self.steps)} site={'built' if site_built else 'not_built'} "
-                 f"delivered={self.counts['delivered']} filtered={self.counts['filtered']} "
-                 f"exec_over_cap={self.counts['exec_over_cap']} backfills={self.counts['backfills']} "
-                 f"infra_retries={self.counts['infra_retries']} reused={int(reused)}"
-                 + (" site_only=1" if self.args.site_only else "")
+                 f"delivered={self.counts['delivered']} reused={int(reused)} site_only=1"
                  + (f" reason={reason}" if reason else "") + f" report={self.report_path}")
         report = {"schema": REPORT_SCHEMA, "fingerprint": self.fingerprint, "verdict": verdict, "final_step": step,
                   "reason": reason, "site_built": site_built, "site_dir": real(self.args.site_dir),
@@ -704,39 +444,21 @@ class Runner:
                   "final_line": final, "ended": now_iso(), "exit_code": EXIT_CODES[verdict]}
         self.step, self.status = step, "done"
         write_json_exclusive(self.report_path, report)
-        self.beat(force=True)
         if verdict != "PASS":
             self.event(f"P4_NOTIFY={verdict} step={step} reason={reason} report={self.report_path}")
         self.event(final)
         return EXIT_CODES[verdict]
 
-    def skip_guards(self) -> None:
-        """``--site-only``：3b 已验过交付与守卫，4c 只建站；前五步记 SKIP（不冒充 PASS），交付行数照实记进计数。"""
+    def count_delivered(self) -> None:
+        """交付行数照实记进计数（交付与守卫由生成侧验收，本脚本只读行数）。"""
         try:
             rows = json.loads(Path(self.args.delivery).read_text(encoding="utf-8")).get("rows")
             self.counts["delivered"] = len(rows) if isinstance(rows, list) else 0
         except (OSError, ValueError, AttributeError):
             self.counts["delivered"] = 0
-        for name in ("wait_report", "report", *GUARD_STEPS):
-            self.step = name
-            self.record(name, "SKIP", reason="site_only", lines=[f"SITE_ONLY delivery={self.args.delivery}"])
 
     def run(self) -> int:
-        steps_order = [("wait_report", self.wait_report), ("report", self.check_report)]
-        steps_order += [(s, lambda s=s: self.run_step(s)) for s in GUARD_STEPS]
-        if self.args.site_only:
-            self.skip_guards()
-            steps_order = []
-        for name, fn in steps_order:
-            if name in ("wait_report", "report") or not self.reusable(name):
-                entry = fn()
-            else:
-                entry = self.reuse(name)
-            if entry["status"] == "FAIL":
-                return self.finish("FAIL", name, entry["reason"], False)
-        info = self.steps.get("step_headroom", {}).get("status") == "INFO"
-        if info and not self.args.allow_xhard0_info:
-            return self.finish("INFO", "step_headroom", "xhard0_skipped_site_not_built", False)
+        self.count_delivered()
         site = Path(self.args.site_dir)
         if not self.reusable("catalog") and site.exists() and any(site.iterdir()):
             self.step = "catalog"
@@ -775,11 +497,10 @@ class Runner:
                         return self.finish("FAIL", name, entry["reason"], False)
             finally:
                 self.stop_serve()
-        verdict = "INFO" if info else "PASS"
-        return self.finish(verdict, "done", "xhard0_skipped" if info else None, True)
+        return self.finish("PASS", "done", None, True)
 
 
-EXIT_CODES = {"PASS": 0, "FAIL": 1, "INFO": 3}
+EXIT_CODES = {"PASS": 0, "FAIL": 1}
 
 
 def _group_alive(pgid: int) -> bool:
@@ -840,32 +561,20 @@ def cells_help() -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--delivery", required=True, help="生成聚合产物 delivery.json（v8-delivery/1；V9 为 assemble 写出的清单）")
-    ap.add_argument("--specs-root", required=True, help="/4 规格根（须与 delivery.json 的 specs_root 为同一路径）")
+    ap.add_argument("--delivery", required=True, help="交付清单 delivery.json（V9 为 assemble 写出的清单；只读行数并透传 catalog）")
+    ap.add_argument("--specs-root", required=True, help="/4 规格根（透传 catalog／subgoals）")
     ap.add_argument("--cells", default="full", help=cells_help())
-    ap.add_argument("--work-dir", required=True, help="心跳、进度、日志、报告目录（同一完成事件复用同一目录）")
+    ap.add_argument("--work-dir", required=True, help="进度、日志、报告目录（同一次建站复用同一目录）")
     ap.add_argument("--site-dir", required=True,
                     help="站点输出目录（V8 artifacts/newtask-v8/site、V9 artifacts/newtask-v9/site；首次须不存在或为空，"
                          "已有本轮产物时按指纹复用）")
     ap.add_argument("--site-only", action="store_true",
-                    help="只建站：跳过 wait_report／report／三个守卫（记 SKIP），须给 --identities（V9 阶段 4c）")
+                    help="只建站（与历史命令兼容；W2 起恒为只建站，可省略）")
     ap.add_argument("--eval-reuse", default=None, help="透传 catalog：V8 站点目录（artifacts/newtask-v8/site-eval）")
     ap.add_argument("--reused", default=None, help="透传 catalog：S1-F 产出的 reused.json（复用集合唯一依据）")
     ap.add_argument("--eval-new", default=None, help="透传 catalog：V9 新评运行目录（结构同 V8 评估运行）")
-    ap.add_argument("--event-log", default=None, help="事件日志（缺省 <work-dir>/events.log；与 watchdog 共用）")
-    ap.add_argument("--heartbeat", default=None, help="心跳文件（缺省 <work-dir>/heartbeat.json）")
-    ap.add_argument("--gen-log", default=None, help="可选：生成日志，须出现 EXIT_CODE=0 才算完成")
-    ap.add_argument("--wait-timeout", type=float, default=0.0, help="等报告出现的秒数（缺省 0 = 必须已存在）")
-    ap.add_argument("--poll-s", type=float, default=5.0, help="等报告时的轮询间隔秒")
-    ap.add_argument("--beat-s", type=float, default=30.0, help="子进程运行期间的心跳间隔秒（须小于 watchdog 阈值）")
-    ap.add_argument("--pool", nargs="+", default=None, help="step-headroom 的 --pool（缺省 = --specs-root）")
-    ap.add_argument("--xhard0-steps", default=None,
-                    help="step-headroom 的 --xhard0 来源（如 artifacts/newtask-v7/parity/h5/H-xhard0）；不给则该步 INFO")
-    ap.add_argument("--allow-xhard0-info", action="store_true",
-                    help="step-headroom 为 INFO 时仍建站（最终判定 V8_CONTINUE=INFO，不出 PASS）")
-    ap.add_argument("--identities", default=None, help="现成身份清单；不给则在 work-dir 合成（3b 前）")
-    ap.add_argument("--xhard0-manifest", default=str(DEFAULT_XHARD0_MANIFEST),
-                    help="合成身份清单的 xhard0 来源（xhard0_manifest.json 或 manifest-H.jsonl）")
+    ap.add_argument("--event-log", default=None, help="事件日志（缺省 <work-dir>/events.log）")
+    ap.add_argument("--identities", required=True, help="现成身份清单（如 eval-identities-992.jsonl）")
     ap.add_argument("--xhard0-gen", default=str(DEFAULT_XHARD0_GEN), help="v7 已渲染的 xhard0 生成视频目录")
     ap.add_argument("--path-base", default=str(REPO_ROOT), help="catalog／subgoals 的 --path-base")
     ap.add_argument("--media-root", default=str(REPO_ROOT / "artifacts"), help="站点服务媒体白名单根")
@@ -877,7 +586,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--step-timeout", action="append", default=[], metavar="STEP=SECONDS",
                     help=f"覆盖单步超时（缺省 {DEFAULT_TIMEOUTS}）")
     ap.add_argument("--cmd", action="append", default=[], metavar="STEP=COMMAND",
-                    help="替换某步命令（shlex 切分；可用 {python} {delivery} {base} {shots} 等占位与 @pool 等展开）")
+                    help="替换某步命令（shlex 切分；可用 {python} {delivery} {base} {shots} 等占位与 @eval_args 等展开）")
     return ap
 
 
@@ -886,12 +595,10 @@ def fingerprint_of(args: argparse.Namespace, cells: dict, overrides: dict) -> di
     return {
         "delivery": real(delivery), "delivery_sha256": sha256_file(delivery) if delivery.is_file() else None,
         "specs_root": real(args.specs_root), "cells": {f"{t}/{tier}": n for (t, tier), n in sorted(cells.items())},
-        "site_dir": real(args.site_dir), "xhard0_steps": real(args.xhard0_steps), "xhard0_gen": real(args.xhard0_gen),
-        "identities": real(args.identities), "xhard0_manifest": real(args.xhard0_manifest),
-        "allow_xhard0_info": bool(args.allow_xhard0_info), "cmd_overrides": {k: v for k, v in sorted(overrides.items())},
-        "pool": [real(p) for p in (args.pool or [args.specs_root])], "path_base": real(args.path_base),
+        "site_dir": real(args.site_dir), "xhard0_gen": real(args.xhard0_gen), "identities": real(args.identities),
+        "cmd_overrides": {k: v for k, v in sorted(overrides.items())}, "path_base": real(args.path_base),
         "media_root": real(args.media_root), "workers": int(args.workers), "host": args.host, "port": int(args.port),
-        **({"site_only": True} if args.site_only else {}),
+        "site_only": True,
         **({"eval_reuse": real(args.eval_reuse), "reused": real(args.reused),
             "reused_sha256": sha256_file(Path(args.reused)) if args.reused and Path(args.reused).is_file() else None,
             "eval_new": real(args.eval_new)} if (args.eval_reuse or args.reused or args.eval_new) else {}),
@@ -909,12 +616,6 @@ def main(argv: list[str] | None = None) -> int:
     except BlockingIOError:
         print(f"V8_CONTINUE_BUSY work_dir={work} reason=another_instance_running", flush=True)
         return 2
-    # 加锁成功后立即写本轮心跳：覆盖上一轮遗留的 aborted／过期心跳，watchdog 据 mtime 与 pid 认本轮
-    hb_path = Path(args.heartbeat) if args.heartbeat else work / "heartbeat.json"
-    write_json_atomic(hb_path, {"schema": HEARTBEAT_SCHEMA, "step": "init", "status": "starting", "ts": now_iso(),
-                                "epoch": time.time(), "seq": 0, "pid": os.getpid(), "child_pid": None,
-                                "server_pid": None, "report": str(work / "report.json"),
-                                "counts": {key: 0 for key in COUNT_KEYS}})
     C = load_catalog_module()
     H = C.load_hard_specs()
     cells = parse_cells_arg(args.cells, dict(H.V8_CELLS), dict(H.V9_CELLS))
@@ -923,8 +624,6 @@ def main(argv: list[str] | None = None) -> int:
     preflight = None
     if v9_eval and not (args.eval_reuse and args.reused):
         preflight = "v9_eval_needs_eval_reuse_and_reused"
-    elif args.site_only and not args.identities:
-        preflight = "site_only_needs_identities"
     eval_args: list[str] = []
     v9_expect_args: list[str] = []
     if v9_eval and preflight is None:
@@ -950,9 +649,8 @@ def main(argv: list[str] | None = None) -> int:
     runner = Runner(args)
     full = cells == dict(H.V8_CELLS)
     def refuse(step: str) -> int:
-        """拒绝执行（参数／报告身份冲突）：心跳记 aborted，watchdog 立即报出而不是等停更。"""
+        """拒绝执行（参数／报告身份冲突）：退出码 2。"""
         runner.step, runner.status = step, "aborted"
-        runner.beat(force=True)
         return 2
 
     if preflight is not None:
@@ -969,14 +667,13 @@ def main(argv: list[str] | None = None) -> int:
             return refuse("preflight")
     runner.fingerprint = fingerprint_of(args, cells, {k: shlex.join(v) for k, v in overrides.items()})
     runner.vars = {
-        "python": sys.executable, "hard_regression": str(HARD_REGRESSION), "site": str(SITE), "repo": str(REPO_ROOT),
+        "python": sys.executable, "site": str(SITE), "repo": str(REPO_ROOT),
         "delivery": str(args.delivery), "specs_root": str(args.specs_root),
         "cells": "full" if full else str(cells_json), "cells_json": None if full else str(cells_json),
-        "cells_table": cells, "pool": list(args.pool or [str(args.specs_root)]), "xhard0_steps": args.xhard0_steps,
-        "xhard0_gen": str(args.xhard0_gen), "path_base": str(args.path_base), "site_dir": str(args.site_dir),
+        "cells_table": cells, "xhard0_gen": str(args.xhard0_gen), "path_base": str(args.path_base), "site_dir": str(args.site_dir),
         "media_root": str(args.media_root), "workers": str(args.workers), "host": args.host, "port": str(args.port),
         "shots": str(args.shots or work / "shots"), "work_dir": str(work), "base": "",
-        "expect_cells": str(len(cells) + len(H.ALL_TASKS)), "identities": str(args.identities or ""),
+        "expect_cells": str(len(cells) + len(H.ALL_TASKS)), "identities": str(args.identities),
         "cmd_overrides": overrides, "timeouts": timeouts, "eval_args": eval_args, "v9_expect_args": v9_expect_args,
     }
     if v9_eval:  # V9 复用模式：总表检查器另出 V9_SITE 行，也是该步必需判定行
@@ -1010,7 +707,6 @@ def main(argv: list[str] | None = None) -> int:
             return refuse("resume")
         runner.step, runner.status = str(old.get("final_step")), "done"
         runner.counts = {key: old["counts"][key] for key in COUNT_KEYS}
-        runner.beat(force=True)
         runner.event(old["final_line"].replace(" reused=0", " reused=1"))
         return int(old["exit_code"])
 
@@ -1034,13 +730,11 @@ def main(argv: list[str] | None = None) -> int:
     for sig in (signal.SIGTERM, signal.SIGHUP, signal.SIGINT):
         signal.signal(sig, on_signal)
     runner.event(f"V8_CONTINUE_START pid={os.getpid()} work_dir={work} delivery={args.delivery} "
-                 f"heartbeat={runner.heartbeat} resume={int(bool(runner.prev_steps))}")
-    runner.beat(force=True)
+                 f"resume={int(bool(runner.prev_steps))}")
     try:
         return runner.run()
     except Interrupted as exc:
         runner.status = "aborted"
-        runner.beat(force=True)
         runner.save_progress()
         runner.event(f"V8_CONTINUE_ABORT step={runner.step} signal={exc.signum} report=absent（可续行）")
         return 130

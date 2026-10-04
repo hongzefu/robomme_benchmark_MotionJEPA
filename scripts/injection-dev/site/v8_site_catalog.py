@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""v8 逐局站点目录（v8 方案第一部分 §2.2 站点行、第二部分 §2.2 第 9 条、§2.8 第 16 条）。
+"""逐局站点目录（v8 方案第一部分 §2.2 站点行、第二部分 §2.2 第 9 条、§2.8 第 16 条；V9 复用）。
 
-与 ``v7_site_catalog.py`` 同形态（``tasks[].tiers[tier].episodes[]``），页面 ``v8_site.html`` 与 v7 布局逐一一致；
-差别只在数据来源与评估位：
+目录形态 ``tasks[].tiers[tier].episodes[]``，页面 ``v8_site.html``。维护计划 W2 起删除 V8 单次评估运行分支
+（``--eval-run``／``--xhard0-eval``）：评估位只走 V9 复用口径（``--eval-reuse``／``--reused``／``--eval-new``），不给评估
+来源时全部记「未评估」。数据来源：
 
 - **新值局**（xhard1～5，43 格 1070 局）：身份与配置取 v8 规格根（``<specs-root>/<tier>/specs.jsonl``，
   ``hard-specs/4``，经 ``hard_specs.load_specs_v8`` 校验），h5 与执行步取生成产物 ``delivery.json``
@@ -14,16 +15,6 @@
   ``h5_sha256``、``env_module``、可选 ``video``（绝对路径）。缺 ``exec_steps``／``frames`` 即 FAIL。
 - **xhard0**（16 任务 × 12 局）：复用 v7 已渲染的 ``site-media/xhard0-gen``（``manifest-{H,O}.jsonl``，0 次渲染），
   新入口 H／旧入口 O 两行，与 v7 相同。
-- **评估**（2026-10-02 起接入，用户「把所有的结果放在8081端口」）：
-  - xhard1～5：V8 双模型评估运行 ``--eval-run``（``artifacts/v8-evaluation/<run_name>``）——每身份唯一权威终态取
-    ``nfs-records/run/sNN/<smvla|mme>/<pol>.ledger.jsonl`` 的 ``accept`` 行所指结果行（不按最后一条），步数取
-    ``exec_steps``、上限取 ``effective_max_steps``；视频取 ``site-media/manifest.jsonl``（``v8_eval_transcode.py``
-    把 FFV1 录像展开重复帧后转成的 H.264 mp4）。逐格成败数与 ``report/report.json`` 的 ``per_policy.<p>.cells`` 核对。
-  - xhard0：V8 阶段 3′ 两路线评估 ``--xhard0-eval``（``artifacts/newtask-v8/xhard0-eval``）——hard 路线
-    （``robomme_hard``）记 ``new``、官方路线记 ``old``，同一身份取最后一个终态行；只有 MME-VLA 录了视频
-    （``<route>/mme/sN/videos/``），SimpleMemVLA 当时不录（``VIDEO_DIR=`` 为空），评估位只给结局与步数。
-    两路线结局不同记 ``flip``。
-  - 策略 ID 映射：评估侧 ``smvla``／``mme`` → 页面 ``simplememvla``／``mmevla``。
 - **配置**：每局从规格行 ``spec.objects``／``spec.actions`` 按 ``DIMS`` 抽取表 1 的维度值（不写死数值），
   逐格汇总取值集合；``TABLE1`` 是表 1 的参照值，只用来核对（``config_mismatch``），不进页面。
 - **身份清单**：``eval-identities-<n>.jsonl``（S2-B ``export_eval_identities.py`` 产出），总数一律由格表推出
@@ -32,7 +23,8 @@
   ``EXPECTED_CELLS``，所以阶段 3b 切换前后结果相同）；``--cells-json`` 给子表时优先于 ``--cells``。``--cells v9`` 且未显式
   给 ``--specs-root``／``--delivery``／``--identities`` 时取 V9 缺省路径（``V9_DEFAULT_SOURCES``）。
 - **V9 评估复用**（v9 方案第一部分 §1 第 7 条、第二部分 §2.4.2 第 8 步、§2.5 R-3）：``--eval-reuse <V8 site-eval 目录>``
-  ``--reused <reused.json>`` ``[--eval-new <V9 评估运行目录>]`` 三者一起用，与 ``--eval-run``／``--xhard0-eval`` 互斥：
+  ``--reused <reused.json>`` ``[--eval-new <V9 评估运行目录>]`` 三者一起用（评估侧策略 ``smvla``／``mme`` → 页面
+  ``simplememvla``／``mmevla``）：
   - 复用集合**只认** ``reused.json``（S1-F ``v8_manifest.py --exclude-evaluated`` 产出，schema ``v9-eval-reused/1``）；
     V8 ``site-eval/catalog.json`` 没有 ``spec_sha256``，不单独当复用依据。逐行核：``reused.json`` 的 ``v8_manifest``
     文件 sha256 等于 ``v8_manifest_sha256``，该行 ``v8_key`` 在 V8 manifest 里存在且四元组 (task, tier, seed,
@@ -54,13 +46,6 @@
 gen_failed=<n> eval_filled=<n> eval_media=<n> eval_unevaluated=<n> flip=<n> rate_mismatch=<n> config_mismatch=0
 media=<n> problems=<n>``；V9 复用模式另在行尾追加 ``eval_reused=<n> eval_new=<n> eval_empty=<n> eval_x0_reused=<n>
 reuse_sha_mismatch=<n> reuse_identity_mismatch=<n> reuse_missing=<n> new_sha_mismatch=<n>``。
-
-    uv run --no-sync python scripts/injection-dev/site/v8_site_catalog.py \\
-      --specs-root artifacts/newtask-v8/specs-root --delivery artifacts/newtask-v8/gen1/delivery.json \\
-      --identities artifacts/newtask-v8/eval-identities-1262.jsonl \\
-      --xhard0-gen artifacts/newtask-v7/site-media/xhard0-gen \\
-      --eval-run artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01 \\
-      --xhard0-eval artifacts/newtask-v8/xhard0-eval --out artifacts/newtask-v8/site-eval
 
     # V9（阶段 4c）：800 + 192 = 992 局，720 复用 V8 评估 + 80 新评
     uv run --no-sync python scripts/injection-dev/site/v8_site_catalog.py --cells v9 \\
@@ -110,8 +95,6 @@ DEFAULT_SOURCES = {
     "gen_videos": None,
     "path_base": REPO_ROOT,
     "cells_json": None,
-    "eval_run": None,      # 正式：artifacts/v8-evaluation/v8-two-policy-gl10-20261002-01
-    "xhard0_eval": None,   # 正式：artifacts/newtask-v8/xhard0-eval
     "eval_reuse": None,    # V9：V8 站点目录 artifacts/newtask-v8/site-eval（catalog.json + media-private.json）
     "reused": None,        # V9：S1-F 产出的 reused.json（v9-eval-reused/1），复用集合的唯一依据
     "eval_new": None,      # V9：新 80 局的评估运行目录（结构同 V8 评估运行）
@@ -128,7 +111,6 @@ SITE_CATALOG_SCHEMA = "v8-site-catalog/1"
 #: V9 复用模式的逐局计数键（判定行尾追加，零值也写）
 V9_COUNT_KEYS = ("eval_reused", "eval_new", "eval_empty", "eval_x0_reused", "reuse_sha_mismatch",
                  "reuse_identity_mismatch", "reuse_missing", "new_sha_mismatch")
-NO_VIDEO_X0_SMVLA = "SimpleMemVLA 的 xhard0 评估（V8 阶段 3′）当时未录视频，只有结局与步数。"
 
 
 # ── 表 1 维度：从规格行抽值（不写死数值）──────────────────────────────────
@@ -339,7 +321,7 @@ def expected_identities(cells: dict[tuple[str, str], int], n_tasks: int = len(NA
 
 
 def load_eval_run(run: Path) -> tuple[dict, dict, dict]:
-    """V8 双模型评估运行：返回 (按身份的权威结果行, 按 (策略, key) 的转码 mp4, report.json)。
+    """评估运行（V9 新评 ``--eval-new``，目录结构同 V8 双模型评估运行）：返回 (按身份的权威结果行, 按 (策略, key) 的转码 mp4, report.json)。
 
     权威结果 = 账本 ``accept`` 行的 ``accepted_attempt_id`` 所指结果行；身份键 (tier, task, seed)，值 {页面策略 ID: 行}。"""
     run = Path(run)
@@ -368,33 +350,6 @@ def load_eval_run(run: Path) -> tuple[dict, dict, dict]:
                 media[(EVAL_POLICY[r["policy"]], r["key"])] = r["mp4"]
     report = json.loads((run / "report/report.json").read_text(encoding="utf-8"))
     return dict(out), media, report
-
-
-def load_xhard0_eval(root: Path) -> dict:
-    """V8 阶段 3′：(task, seed) → {"new"|"old": {页面策略 ID: 行（MME 带 local_video）}}；同一身份取最后一个终态行。"""
-    root = Path(root)
-    out: dict[tuple, dict] = defaultdict(lambda: {"new": {}, "old": {}})
-    for route, entry in (("hard", "new"), ("official", "old")):
-        patterns = {"simplememvla": [str(root / route / "smvla/*.jsonl")],
-                    "mmevla": [str(root / route / "mme/s*/*/ckpt*/seed*/episodes.jsonl")]}
-        for pid, pats in patterns.items():
-            final: dict[tuple, dict] = {}
-            for path in sorted(p for pat in pats for p in glob.glob(pat)):
-                for row in jsonl(Path(path)):
-                    if row.get("status") not in FINAL:
-                        continue
-                    if pid == "mmevla" and row.get("video"):  # 官方路线：记录写 NFS 原路径，本机副本在 sN/videos/ 同名
-                        shard_dir = Path(path).parents[3]
-                        row = dict(row, local_video=str(shard_dir / "videos" / Path(row["video"]).name))
-                    elif pid == "mmevla" and row.get("episode") is not None:
-                        # hard 路线：记录不写视频路径，文件在 episodes.jsonl 同目录 videos/，名为 <task>_ep<episode>_<status>_<goal>_hard.mp4
-                        hits = sorted((Path(path).parent / "videos").glob(f"{row['task']}_ep{int(row['episode'])}_*.mp4"))
-                        if len(hits) == 1 and f"_{row['status']}_" in hits[0].name:
-                            row = dict(row, local_video=str(hits[0]))
-                    final[(row["task"], int(row["seed"]))] = row
-            for key, row in final.items():
-                out[key][entry][pid] = row
-    return dict(out)
 
 
 # ── V9 评估复用（--eval-reuse / --reused / --eval-new）────────────────────
@@ -649,18 +604,13 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
     v9 = bool(src.get("eval_reuse") or src.get("reused") or src.get("eval_new"))
     if v9 and not (src.get("eval_reuse") and src.get("reused")):
         raise ValueError("V9 复用模式须同时给 --eval-reuse 与 --reused（复用集合只认 reused.json）")
-    if v9 and (src.get("eval_run") or src.get("xhard0_eval")):
-        raise ValueError("--eval-reuse/--reused/--eval-new 与 --eval-run/--xhard0-eval 互斥")
-    has_eval = bool(src.get("eval_run")) or v9
+    has_eval = v9
     if v9:
         reused, reused_meta = load_reused(src["reused"], path_base)
         v8_eps, v8_x0, v8_media, v8_eval = load_site_eval(src["eval_reuse"])
         ev_rows, ev_media, ev_report = load_eval_run(src["eval_new"]) if src.get("eval_new") else ({}, {}, {})
         for k in V9_COUNT_KEYS:
             counts[k] += 0
-    else:
-        ev_rows, ev_media, ev_report = load_eval_run(src["eval_run"]) if has_eval else ({}, {}, {})
-    x0_eval = load_xhard0_eval(src["xhard0_eval"]) if src.get("eval_run") and src.get("xhard0_eval") else {}
 
     # 身份清单
     idents = jsonl(src["identities"])
@@ -729,32 +679,6 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                     counts["eval_x0_reused"] += 1
                 except (OSError, ValueError) as exc:
                     problems.append(f"xhard0 评估复用失败 {task}/{seed}：{exc}")
-        if tier == "xhard0" and has_eval and not v9:
-            ep["eval_source"] = "V8 阶段 3′ xhard0 两路线评估（新入口 = hard 路线，旧入口 = 官方路线）"
-            ep["eval"]["old"] = {}
-            ep["flip"] = {}
-            rec = x0_eval.get((task, seed), {"new": {}, "old": {}})
-            for p, _ in POLICIES:
-                for entry in ("new", "old"):
-                    row = rec[entry].get(p)
-                    if row is None:
-                        problems.append(f"xhard0 {entry} {p} 缺评估记录 {task}/{seed}")
-                        counts["eval_unevaluated"] += 1
-                        continue
-                    item = {"status": row["status"], "steps": row.get("steps"), "max_steps": row.get("max_steps")}
-                    if p == "mmevla":
-                        try:
-                            item["media"] = media.add(f"eval/{entry}/{p}/{tier}/{task}/{seed}", Path(row["local_video"]))
-                            counts["eval_media"] += 1
-                        except (OSError, ValueError, KeyError) as exc:
-                            problems.append(f"xhard0 {entry} {p} 视频不可用 {task}/{seed}：{exc}")
-                    else:
-                        item["no_video"] = NO_VIDEO_X0_SMVLA
-                    ep["eval"][entry][p] = item
-                    counts["eval_filled"] += 1
-                a, b = (ep["eval"]["new"].get(p) or {}).get("status"), (ep["eval"]["old"].get(p) or {}).get("status")
-                ep["flip"][p] = a is not None and b is not None and a != b
-                counts["flip"] += ep["flip"][p]
         if tier != "xhard0":
             row = gen.get(key)
             spec = spec_rows.get(key)
@@ -788,27 +712,6 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                                 counts, problems, path_base)
             if note is not None:
                 empties.append(f"评估置空 {task}/{tier}/seed {seed}：{note}")
-        if tier != "xhard0" and has_eval and not v9:
-            ep["eval_source"] = f"V8 双模型评估 {Path(src['eval_run']).name}（执行段 1600 步严格截断）"
-            for p, _ in POLICIES:
-                row = ev_rows.get(key, {}).get(p)
-                if row is None:
-                    problems.append(f"{p} 缺评估权威结果 {key}")
-                    counts["eval_unevaluated"] += 1
-                    continue
-                item = {"status": row["status"], "steps": row.get("exec_steps"),
-                        "max_steps": row.get("effective_max_steps") or row.get("max_steps")}
-                mp4 = ev_media.get((p, row["key"]))
-                if mp4 is None:
-                    problems.append(f"{p} 缺评估视频 {row['key']}")
-                else:
-                    try:
-                        item["media"] = media.add(f"eval/new/{p}/{tier}/{task}/{seed}", resolve(mp4, path_base))
-                        counts["eval_media"] += 1
-                    except (OSError, ValueError) as exc:
-                        problems.append(f"{p} 评估视频不可用 {row['key']}：{exc}")
-                ep["eval"]["new"][p] = item
-                counts["eval_filled"] += 1
         cells[(task, tier)].append(ep)
 
     if v9:
@@ -837,7 +740,7 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
             if tier == "xhard0":
                 rates["old"] = {p: dict(Counter(ep["eval"]["old"][p]["status"] for ep in eps if p in ep["eval"].get("old", {})))
                                 for p, _ in POLICIES}
-            elif v9:
+            else:
                 # 复用部分的数字是 V8 当时跑的（V8 report 按 V8 格局数统计，不再逐格对账）；新评部分与新评 report.json 对账
                 for pol, p in EVAL_POLICY.items():
                     got = dict(Counter(ep["eval"]["new"][p]["status"] for ep in eps
@@ -848,14 +751,6 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
                     if want != got:
                         counts["rate_mismatch"] += 1
                         problems.append(f"{p} {task}/{tier} 新评成败数与新评 report.json 不符：{got} vs {want}")
-            else:
-                for pol, p in EVAL_POLICY.items():
-                    want = ev_report["per_policy"][pol]["cells"].get(f"{task}@{tier}", {})
-                    want = {k: want.get(k, 0) for k in FINAL if want.get(k)}
-                    got = {k: v for k, v in rates["new"][p].items() if v}
-                    if want != got:
-                        counts["rate_mismatch"] += 1
-                        problems.append(f"{p} {task}/{tier} 成败数与 report.json 不符：{got} vs {want}")
             entry = {"episodes": eps, "rates": rates}
             _fill_config(entry, task, tier, eps)
             tiers[tier] = entry
@@ -878,11 +773,8 @@ def build_catalog(src: dict) -> tuple[dict, dict, dict]:
         "schema": SITE_CATALOG_SCHEMA,
         "tiers": list(TIERS),
         "policies": [{"id": p, "label": label} for p, label in POLICIES],
-        "eval": eval_head if v9 else ({"status": "evaluated", "run": Path(src["eval_run"]).name,
-                  "summary": {EVAL_POLICY[pol]: {"success": sum(c.get("success", 0) for c in ev_report["per_policy"][pol]["cells"].values()),
-                                                 "denominator": ev_report["per_policy"][pol]["denominator"]}
-                              for pol in EVAL_POLICY}}
-                 if has_eval else {"status": "unevaluated", "reason": "未提供评估来源（--eval-run），评估位显示「未评估」。"}),
+        "eval": eval_head if v9 else {"status": "unevaluated",
+                                      "reason": "未提供评估来源（--eval-reuse／--reused），评估位显示「未评估」。"},
         "tasks": tasks,
         "notes": {
             "eval": "xhard1～5：V8 双模型评估（2026-10-02，十张 A40，SimpleMemVLA 官方权重与 MME-VLA perceptual-framesamp-modul/79999，"
