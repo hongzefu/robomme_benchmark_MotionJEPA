@@ -1,0 +1,119 @@
+{
+  "note": "T8b 评估块的具名植入：非受保护源码（scripts/eval-official）的植入全部在隔离副本（worktree 拷贝）里做，主检出与 worktree 不改；只跑非 slow 的本目录用例，「新增失败」为该植入下失败的用例数；M13／M16／M17 的评估部分为计划植入清单编号，F2／F3 为生产小修的回归牙齿，T8b-K* 为本块自加。",
+  "mutants": [
+    {
+      "id": "M13a",
+      "target": "scripts/eval-official/mme_client.py::run_loop",
+      "method": "隔离副本把 `resp = client.reset()` 换成 `resp = {\"reset_finished\": True}`（不向策略发 reset）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_abA_third_episode_identical_to_first[mme]"
+      ],
+      "result": "KILLED（新增失败 1 个）"
+    },
+    {
+      "id": "M13b",
+      "target": "scripts/eval-official/smvla_client.py::run_episode",
+      "method": "隔离副本把 `reply = call(\"reset\", ...)` 换成 `reply = {}`（不向 server 发 reset）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_abA_third_episode_identical_to_first[smvla]"
+      ],
+      "result": "KILLED（新增失败 1 个）"
+    },
+    {
+      "id": "M16a",
+      "target": "scripts/eval-official/env_client.py::SeatRunner.run_one",
+      "method": "隔离副本把步数到顶分支的 status=\"timeout\" 改成 \"fail\"（timeout 记成 fail）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_seat_runner_to_report[mme-cap_timeout]",
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_cap_timeout_never_steps_past_cap[mme]"
+      ],
+      "result": "KILLED（新增失败 4 个）"
+    },
+    {
+      "id": "M16b",
+      "target": "scripts/eval-official/env_client.py::AttemptLedger.is_final",
+      "method": "隔离副本把最终结局集合从 TERMINAL_STATUSES 改成 (success, timeout)（fail 被当成可重试）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_seat_runner_to_report[mme-fail]",
+        "tests/pipeline/eval/test_policy_clients.py::test_ordinary_failure_is_not_retried[mme-fail]"
+      ],
+      "result": "KILLED（新增失败 7 个）"
+    },
+    {
+      "id": "M16c",
+      "target": "scripts/eval-official/mme_client.py::INFRA_MARKERS",
+      "method": "隔离副本在基础设施标记表里加 \"Error\"（普通失败按基础设施重试）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_seat_runner_to_report[mme-step_error]",
+        "tests/pipeline/eval/test_policy_clients.py::test_mme_env_exception_becomes_error_without_infra"
+      ],
+      "result": "KILLED（新增失败 4 个）"
+    },
+    {
+      "id": "M17a",
+      "target": "scripts/eval-official/eval_report.py::build_report",
+      "method": "隔离副本把 per_policy.denominator 从 len(mkeys) 改成 len(an[\"rows\"])（分母改用结果行数）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_seat_runner_to_report[mme-step_infra_retry]",
+        "tests/pipeline/eval/test_eval_report.py::test_denominator_is_manifest_not_result_rows"
+      ],
+      "result": "KILLED（新增失败 6 个）"
+    },
+    {
+      "id": "M17b",
+      "target": "scripts/eval-official/eval_report.py::build_report",
+      "method": "隔离副本把 outcomes 从显式六键改成 dict(Counter)（零计数键缺失）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_seat_runner_to_report[mme-success]",
+        "tests/pipeline/eval/test_eval_report.py::test_clean_report_rates_and_outcome_keys"
+      ],
+      "result": "KILLED（新增失败 47 个）"
+    },
+    {
+      "id": "F3",
+      "target": "scripts/eval-official/eval_report.py::build_reuse",
+      "method": "隔离副本把 800 局总表逐格对 V9_CELLS 的比较改成 if False（回到只核总数）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_eval_report.py::test_v9_total_table_matches_v9_cells[one_moved]"
+      ],
+      "result": "KILLED（新增失败 1 个）"
+    },
+    {
+      "id": "F2",
+      "target": "scripts/eval-official/eval_manifest.py::check_source",
+      "method": "隔离副本把 xhard0 期望改回写死 16 × XHARD0_PER_TASK（不随开关）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_eval_manifest.py::test_export_feeds_manifest[xhard0_off]",
+        "tests/pipeline/eval/test_eval_manifest.py::test_switch_mismatch_rejected_at_source_step[True-False]"
+      ],
+      "result": "KILLED（新增失败 4 个）"
+    },
+    {
+      "id": "T8b-K1",
+      "target": "scripts/eval-official/env_client.py::SeatRunner.run_identities_v8",
+      "method": "隔离副本把基础设施错误后立即重试的条件改成 if False（不重试）",
+      "expected_failing": [
+        "tests/pipeline/eval/test_seat_runner_e2e.py::test_infra_retry_reruns_same_identity_once[mme]"
+      ],
+      "result": "KILLED（新增失败 8 个）"
+    },
+    {
+      "id": "T8b-K2",
+      "target": "scripts/eval-official/smvla_client.py::hard_bound",
+      "method": "隔离副本把决策上限的 +2 改成 +3",
+      "expected_failing": [
+        "tests/pipeline/eval/test_policy_clients.py::test_smvla_decision_budget_hand_computed"
+      ],
+      "result": "KILLED（新增失败 1 个）"
+    },
+    {
+      "id": "T8b-K3",
+      "target": "scripts/eval-official/eval_report.py::build_report",
+      "method": "隔离副本删掉「清单行数 ≠ expect_total」的核对",
+      "expected_failing": [
+        "tests/pipeline/eval/test_eval_report.py::test_manifest_header_negatives"
+      ],
+      "result": "KILLED（新增失败 1 个）"
+    }
+  ]
+}
