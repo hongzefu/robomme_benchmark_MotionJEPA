@@ -187,6 +187,17 @@
   - 翻转重跑上限 20 条（每局最多 2 次）；
   - 合计 197 条，reset 上限按每条 3 次计 `197 × 3 = 591`。
   - **另需你确认**：AGENTS 第 4 条要求先做冒烟，即 V9、xhard0 各 1 局，共 2 条、reset 6。这会让合计变成 199 条、reset 597，比你选定时看到的数多 2 条。
+- **边生成边判定，只回传有问题的局**（用户 2026-10-03 原话：「现在每次都要回传Turbo的Data能否不用回传?直接现场计算计算完了有问题的再回传。」「是否可以每次一边生成一边计算SHA256。」「要生成完了统一计算就是async的去做。」——按「不要等生成完了统一算，要异步地边生成边算」理解）：
+  - **sha 本来就是边生成边算的**：`hard_parity.py generate` 里的 `Mover` 是一个后台线程，每 5 秒扫一次各轮的 `results.partial.jsonl`。某一局一完成，它就在节点上算这局 h5 的 sha256，写一行 `identities.jsonl`，打印 `EPISODE_DONE … sha=<前 12 位>`。这时其他 worker 还在继续生成，所以已经是异步的。现在缺的只是「拿这个 sha 当场和参照比」这一步。
+  - **新增 `generate --expect-ref <参照文件>`**（G 块）：`Mover.handle` 算完 sha 后立刻查参照里这一局的期望，在同一行 `identities.jsonl` 写入 `verdict`。
+    - `match`：稳定局 sha 与基线相同，或确定性失败局失败且 sha 相同。直接删掉节点 `/tmp` 里的 h5 和 mp4，**不复制到 NFS**。这份字节本机和 HF 上都已经有了。
+    - `jitter_info`：已知抖动局。照常复制到 NFS，供报告使用。
+    - `flip`：期望不符，也包括稳定局生成失败。照常复制到 NFS 并核对 sha，同时追加一行到 `flips.jsonl`（格式可直接作为 `--identities` 使用），打印 `EPISODE_FLIP <tier>/<task>/<seed>`。
+  - **当场就能看到**：Monitor 盯 `EPISODE_FLIP`，第一局翻转出现就会通知，不用等 37 分钟跑完。生成结束时，翻转清单已经现成，紧接着就在 GL 上起重跑。重跑同样带 `--expect-ref`、边跑边判定。
+  - **生成本身一字不改**：仿真、worker、运行器都不动，只改生成后的搬运线程，所以被测的生成路径与基线相同。没给 `--expect-ref` 时，行为与现在完全一样。
+  - **收尾判定很快**：`gen-regress check` 读 `identities.jsonl` 里已经写好的 sha 与 verdict 汇总出判定行，不重读 h5，在 GL 登录节点或占位作业里秒级完成。`noise_run.py ship --finalize` 相应改成认 `verdict=match` 的局「按设计不复制」，不算 missing。
+  - **只回传翻转局**：`hard_pull.py --identities <flips.jsonl>` 只拉这些局（首跑和重跑的 h5、mp4），以及各遍的 `results.jsonl`、`identities.jsonl`、`summary.json`、来源报告。到本机后与 a 遍 h5 跑 `compare_h5`，区分「结构不同」和「走了另一条轨迹」，并给出分叉步。没有翻转时只拉报告，约几 MB。NFS 上本来就只有翻转局，判定落档后逐目录列名删除。
+  - **不会漏判**：结构不同只需要对翻转局判。sha 相同的局与基线逐字节相同，结构必然相同。
 - **FAIL 时**：不改参照、不改判据。按翻转局所属任务定位到是哪块改动导致，回退或修好那一块后重跑。重跑预算另报。
 
 ## 四、测试彻底重构
@@ -260,7 +271,7 @@
 | 6 个失败消失、日常门禁够快 | 第 4.5 节日常命令 | 门禁可信且在预算内 | `MAINT_CORE=PASS failed=0 wall_s=<实测>`（≤120） |
 | 流水线测试通过 | `pytest tests/pipeline -q` | 评估与生成流水线不受影响 | `MAINT_PIPELINE=PASS failed=0` |
 | 收集无错误 | `pytest --collect-only -q` | 不再扫 `third_party/` | `MAINT_COLLECT=PASS errors=0` |
-| 生成结果没变 | `noise_gate.py gen-regress`（首跑 + 翻转重跑） | 改后代码生成的 177 局逐局与基线相同，或翻转已被认定为噪声 | `GEN_REGRESS=PASS set=v9 n=129 match=<n> jitter_info=1 flip=<n> noise=<≤2> regress=0 unstable=0 structural=0 unknown=0`；xhard0 同格式 `noise=<≤1>` |
+| 生成结果没变 | `noise_gate.py gen-regress`（GL 现场按 sha 判定首跑与翻转重跑；只把翻转局回传到本机做结构细分） | 改后代码生成的 177 局逐局与基线相同，或翻转已被认定为噪声 | `GEN_REGRESS=PASS set=v9 n=129 match=<n> jitter_info=1 flip=<n> noise=<≤2> regress=0 unstable=0 structural=0 unknown=0`；xhard0 同格式 `noise=<≤1>` |
 
 ## 六、步骤
 
@@ -332,7 +343,11 @@
 - `gen-regress check --ref scripts/configs/noise-ref-20261003.json --set {v9,xhard0} --new <新跑根> [--rerun <重跑根> ...] --out <jsonl> --rerun-identities-out <jsonl>`
   - 首跑时不给 `--rerun`。有翻转就输出 `GEN_REGRESS=NEED_RERUN flip=<n>`，并把翻转局写成 `hard_parity.py generate --identities` 可直接用的格式；
   - 给了 `--rerun` 时，按第 3.2 节定性，打印最终判定行；
-  - 结构判定复用 `compare_h5`，对照 a 遍 h5。
+  - 默认读各遍 `identities.jsonl` 里由 `Mover` 边生成边写的 sha 与 `verdict`（不重读 h5），在 GL 上秒级出判定行；翻转局类别先写 `flip_pending`；
+  - `--local-ref-root artifacts/noise-baseline/gen`（只在本机给）：对已回传的翻转局复用 `compare_h5` 对照 a 遍 h5，把 `flip_pending` 细分为 `structural`／`diverge`／`gen_fail`；
+- `scripts/parity/hard_pull.py` 加 `--identities <jsonl>`：只拉清单里的局目录与各遍顶层报告文件（不传时行为不变）。
+- `scripts/parity/hard_parity.py`：`generate` 加 `--expect-ref`；`Mover.__init__` 载入参照，`Mover.handle` 在算出 sha 后写 `verdict`，`match` 时删本地大文件而不调 `_ship`，`flip` 时追加 `flips.jsonl` 并打印 `EPISODE_FLIP`；不给参数时代码路径不变。测试用假 `results.partial.jsonl` 与假 h5 覆盖 match／jitter_info／flip／失败局四种。
+- `scripts/parity/noise_run.py ship --finalize`：`verdict=match` 的局不要求有 `SHIPPED`。
 - 删除第 2.5 节所列子命令与函数；`selftest` 同步删掉对应自检项。
 - 测试：`tests/lightweight/test_noise_gate.py` 加合成夹具六情形，阶段 6 由 T2 移到 `tests/parity/`。
 
@@ -353,10 +368,10 @@
 
 | 编号 | 目标 | 可写集合 | 禁触 | 依赖／合并顺序 | 验收（worktree 内，CPU） | 资源 |
 |---|---|---|---|---|---|---|
-| G | 逐局闸门 + 参照文件 + 噪声工具瘦身 | `scripts/parity/noise_gate.py`、`noise_run.py`、`noise_run_gl.sh`、`scripts/configs/noise-ref-20261003.json`（新）、`tests/lightweight/test_noise_gate.py`、`test_noise_run_wrapper.py` | `artifacts/noise-baseline/`（只读）、他块文件、`v8_manifest.py`／`v8_report.py` 内容 | 阶段 2，与 W1～W3 并行，第 1 个合并 | `pytest tests/lightweight/test_noise_gate.py tests/lightweight/test_noise_run_wrapper.py -q`；`gen-regress build-ref` 打印 `NOISE_REF=PASS …`（读主检出的 `artifacts/noise-baseline/gen`，绝对路径只读） | CPU，读约 170G |
+| G | 逐局闸门 + 参照文件 + 噪声工具瘦身 | `scripts/parity/noise_gate.py`、`noise_run.py`、`noise_run_gl.sh`、`scripts/configs/noise-ref-20261003.json`（新）、`scripts/parity/hard_pull.py`（只加 `--identities`）、`scripts/parity/hard_parity.py` 的 `Mover` 类与 `generate` 参数段（只加 `--expect-ref`）、`tests/lightweight/test_noise_gate.py`、`test_noise_run_wrapper.py`、`hard_pull` 的测试 | `artifacts/noise-baseline/`（只读）、他块文件、`v8_manifest.py`／`v8_report.py` 内容 | 阶段 2，与 W1、W2 并行，第 1 个合并 | `pytest tests/lightweight/test_noise_gate.py tests/lightweight/test_noise_run_wrapper.py -q`；`gen-regress build-ref` 打印 `NOISE_REF=PASS …`（读主检出的 `artifacts/noise-baseline/gen`，绝对路径只读） | CPU，读约 170G |
 | W1 | eval-official 清理 | `scripts/eval-official/` 下第 2.2、2.3 节所列文件（不含改名）；只测这些被删代码的测试文件 | 噪声工具；`run_v8_gl.sh`、`v8_report.py` 内容；他块文件 | 阶段 3 并行，第 2 个合并 | `pytest tests/lightweight/test_eval_official_env_client.py tests/lightweight/test_v8_eval_client.py tests/lightweight/test_v8_eval_manifest.py -q` | CPU |
 | W2 | injection-dev 清理 | `scripts/injection-dev/` 下第 2.2、2.3 节所列文件（含 `eval_video_mover.py`、`site/v7_*`、`site/v8_site_catalog.py`）及对应测试 | 同上 | 阶段 3 并行，第 3 个合并 | `test_v8_delivery_flow`、`test_v8_site_catalog`、`test_hard_state_machine`、`test_v9_subset_specs` 定向 | CPU |
-| W3 | parity 历史分支 | `scripts/parity/hard_regression.py`、`hard_parity.py` 中第 2.3 节所列分支；`test_v8_regression_cmds.py`、`test_hard_parity*.py`、`test_v7_whitelist_semantics.py`；`tests/fixtures/v7_specs_sample/`、`_shared/v7_specs_fixture.py` | `env-digest` 三件套、`delivery_index`、`generate --tier v9|xhard0`、噪声工具 | 阶段 3 并行，第 4 个合并 | 上述测试，并确认 `test_env_digest_compare`、`test_gate_set`、`test_noise_gate` 不受影响 | CPU |
+| W3 | parity 历史分支 | `scripts/parity/hard_regression.py`、`hard_parity.py` 中第 2.3 节所列分支（基于 G 合入后的版本）；`test_v8_regression_cmds.py`、`test_hard_parity*.py`、`test_v7_whitelist_semantics.py`；`tests/fixtures/v7_specs_sample/`、`_shared/v7_specs_fixture.py` | `env-digest` 三件套、`delivery_index`、`generate --tier v9|xhard0`、噪声工具 | 阶段 3，**等 G 合入后再派**（与 G 共用 `hard_parity.py`，同一文件不并行写），第 4 个合并 | 上述测试，并确认 `test_env_digest_compare`、`test_gate_set`、`test_noise_gate` 不受影响 | CPU |
 | W4 | 包内 V7 清理 | `src/robomme_hard/` 中第 2.2、2.3 节所列；对应的 `test_v7_*`、`test_v8_specs_schema` | 交付规格五份、`TIER_MAX_STEPS` | 阶段 4，W1～W3 合入后派 | `test_v9_packaged_800`、`test_hard_builder_xhard0`、`test_xhard0_native`、各任务 xhard 测试 | CPU |
 | R | 改名 | 第 2.4 节所列文件及全部引用点（含噪声工具路径常量、`site/*` 的 importlib 字符串、测试 import、`docs/1003-noise-baseline.md` 第七节路径） | 格式名、键名、判定行前缀 | 阶段 5 | 全部 CPU 测试 + `MAINT_NO_LEGACY` | CPU |
 | T1 | 单元／契约／官方对齐测试重构 | `tests/unit/`、`tests/contract/`、`tests/upstream/`、`tests/conftest.py`、`tests/_shared/`；对照表（落 `docs/validation/maintenance-regress-<日期>/nodeid-map-T1.md`） | `tests/pipeline/`、`tests/gpu/`、`tests/parity/`、生产代码 | 阶段 6，与 T2 并行 | 第 4.5 节日常命令（只含 T1 目录部分） | CPU |
@@ -406,15 +421,20 @@ done
 # 克隆切到合并后 HEAD（每条 git 单独执行）：git -C <NFS克隆> fetch；git -C <NFS克隆> checkout <HEAD sha>
 # 身份清单：uv run --no-sync python scripts/parity/gate_set.py export --set {v9,xhard0} --kind generate --out <文件>
 # 生成：与 docs/1003-noise-baseline.md 第七节相同，--pass rg-v9 / rg-x0，--attempts 129／48，--resets 387／144，--retries 0
-# 拉回：uv run --no-sync python scripts/parity/hard_pull.py --stage <NFS>/gen --dest artifacts/maint-regress --segments rg-v9,rg-x0
-uv run --no-sync python scripts/parity/noise_gate.py gen-regress check --ref scripts/configs/noise-ref-20261003.json \
-  --set v9 --new artifacts/maint-regress/rg-v9 --out artifacts/maint-regress/rg-v9.regress.jsonl \
-  --rerun-identities-out artifacts/maint-regress/rg-v9.rerun.jsonl
-# 若 NEED_RERUN：用 rerun.jsonl 作 --identities 生成 rg-v9-r1、rg-v9-r2（--attempts=翻转数），再加 --rerun 两个根重判
-# 收尾：按清单 scancel 自己的两个 JobID；NFS 暂存按「产物搬回 /data、NFS 不留大文件」删除，逐目录列名
+# 生成命令末尾加 --expect-ref <克隆>/scripts/configs/noise-ref-20261003.json，边生成边判定；Monitor 另盯 EPISODE_FLIP
+# 生成结束、ship --finalize 之后汇总（GL，占位作业内辅助步骤，不带 --gpu_cmode=shared）：
+srun --jobid=<占位作业> --overlap --ntasks=1 <克隆>/.venv/bin/python <克隆>/scripts/parity/noise_gate.py gen-regress check \
+  --ref <克隆>/scripts/configs/noise-ref-20261003.json --set v9 --new <NFS>/gen/rg-v9 \
+  --out <NFS>/regress/rg-v9.regress.jsonl --rerun-identities-out <NFS>/regress/rg-v9.rerun.jsonl
+# 若 NEED_RERUN：rerun.jsonl（= flips.jsonl）作 --identities 在 GL 生成 rg-v9-r1、rg-v9-r2（同样带 --expect-ref），再加 --rerun 两个根汇总
+# 只回传翻转局（无翻转时只拉报告）：
+uv run --no-sync python scripts/parity/hard_pull.py --stage <NFS>/gen --dest artifacts/maint-regress \
+  --segments rg-v9,rg-v9-r1,rg-v9-r2 --identities <NFS>/regress/rg-v9.rerun.jsonl
+# 本机细分翻转类别：gen-regress check … --new artifacts/maint-regress/rg-v9 --rerun … --local-ref-root artifacts/noise-baseline/gen
+# 收尾：按清单 scancel 自己的两个 JobID；判定行与 regress jsonl 拷进留档后，NFS 暂存逐目录列名删除（不跨运行 glob）
 ```
 
-Monitor 过滤词：`NOISE_RUN_START|EXIT_CODE=|RUN_FRESH=|BUDGET=|NO RECORD|reset 拒绝|svulkan2|EXCLUSIVE|RRT|Traceback|Error`，每份日志各挂一个。
+Monitor 过滤词：`EPISODE_FLIP|NOISE_RUN_START|EXIT_CODE=|RUN_FRESH=|BUDGET=|NO RECORD|reset 拒绝|svulkan2|EXCLUSIVE|RRT|Traceback|Error`，每份日志各挂一个。
 
 ## 六、风险登记
 
