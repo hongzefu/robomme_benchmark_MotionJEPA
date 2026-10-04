@@ -63,6 +63,8 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 **第 1 步：本机预检**
 
 - 每个模型的每条路线在本机跑通 1 局，测 CPU 内存峰值、显存峰值、单局耗时。
+- 确认步数上限：xhard0 是 1300、V9 是 1600。既核对每条路线从启动命令到 builder、到发给模型的数值，也各用 1 局不加载模型的空动作跑到顶，看实际停在第几步。
+- 确认每条路线（含原侧）每局都存下了压缩视频，能完整解码，帧数与步数对得上。
 - 任何一条路线报错，修好重跑通过后才上集群。
 - 内存超出席位规格就按实测值申请；显存超过 A40 的 48 GB 就停下交用户。
 
@@ -106,7 +108,7 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 | 项目 | 判据 |
 |---|---|
 | 接线 | 两个数据集不串、默认 V9 不变；步数只来自启动命令；本机短测通过 |
-| 预检 | 每条路线跑通 1 局，有内存、显存、耗时数字 |
+| 预检 | 每条路线跑通 1 局，有内存、显存、耗时数字；步数上限实测为 xhard0 1300、V9 1600；每条路线的压缩视频存在且可解码 |
 | 第一档 | 两个集合都 `GEN_REGRESS=PASS` |
 | 第二档 | 两侧身份齐全，差异表生成；判定为 `INFO` |
 | 第三档 | 每个模型 800 局都有唯一终态，无缺失、无重复；视频齐全可解码 |
@@ -240,7 +242,7 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 |---|---|
 | 源码 | 子模块 `third_party/PonderPounce` @ `723df357…`，服务环境在该目录 `uv sync --frozen`（其 `uv.lock` 即可复现面） |
 | 新 `scripts/eval-official/pp_client.py` | 新侧。`run_episode(session, identity, conn_info, recorder)`；用 `vla_eval.connection.Connection(url, timeout=300.0)`，顺序与 `SyncEpisodeRunner` 一致；观测由 `session` 的原始观测按 `make_obs` 同样规则打包；动作取 `actions[0][:8]`。`EPISODE_START` 带 `{"task": {"name","env_id","episode_idx"}, "recording": {"sid": <固定>, "eid": <固定>, "eval_id": "", "db_path": ""}}` |
-| 新 `scripts/eval-official/pp_official_runner.py` | 原侧。独立进程，只导入官方 `robomme`（同 1.3 的断言）；`RoboMMEBenchmark.configure_render("gpu")` → `RoboMMEBenchmark(tasks=[task], action_space="joint_angle", max_steps=1300)` → 对分片里每个 `source_episode` 调 `SyncEpisodeRunner().run_episode(bench, {**t, "episode_idx": ep}, conn, max_steps=1300, recorder=<固定 sid 的记录器>)`；外围自己处理 `TimeoutError`、`ConnectionClosed`、`RuntimeError` 并 `reconnect` |
+| 新 `scripts/eval-official/pp_official_runner.py` | 原侧。独立进程，只导入官方 `robomme`（同 1.3 的断言）；`RoboMMEBenchmark.configure_render("gpu")` → `RoboMMEBenchmark(tasks=[task], action_space="joint_angle", max_steps=1300)` → 对分片里每个 `source_episode` 调 `SyncEpisodeRunner().run_episode(bench, {**t, "episode_idx": ep}, conn, max_steps=1300, recorder=<固定 sid 的记录器>)`；外围自己处理 `TimeoutError`、`ConnectionClosed`、`RuntimeError` 并 `reconnect`；`SyncEpisodeRunner` 在不带录制库时不出视频，本驱动在外围委托包住 `bench.reset`／`bench.step`，把每步的 `front_rgb_list[-1]` 与腕部画面交给 `trace_writer` 记哈希并写成压缩视频 |
 | 固定 `sid` | xhard0：`<task>|<source_episode>|<seed>`；V9：`<task>|<tier>|<seed>`。两侧各起自己的服务进程，同一 `sid` 在一个进程内只用一次，保证 `n=0`；基础设施重试前重启服务 |
 | 步数 | xhard0 两侧都是恰好 1300 个动作（它的官方行为）；V9 `--max-steps 1600 --strict-cap` |
 | 渲染 | 两侧都用 GPU 渲染，与本仓库其他模型一致；与论文的 CPU 渲染设置不同，报告里写明成绩不能直接对照论文数字 |
@@ -292,6 +294,8 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 | 新 `scripts/eval-official/trace_writer.py` | 每局一个 `trace.jsonl`：每步 `{step, front_sha256, wrist_sha256, state(float32×8 的 hex), action(float32×8 的 hex), subgoal, terminated, truncated, status}`，首行含演示帧数与各帧哈希。原侧与新侧驱动都调用它；哈希在画面进入编码器之前计算 |
 | 新 `scripts/eval-official/gate2_compare.py` | 读两侧 `trace.jsonl` 与结果行，按 `(task, source_episode, seed)` 配对；输出逐身份表：是否同终态、首个分叉步、分叉类型（画面／状态／文本／动作／停止步）。判定行 `GATE2=INFO policy=… compared=192 same_terminal=<n> identical_trace=<n> first_diverge_{obs,state,text,action}=<n> missing=0`。两侧身份不齐为 `GATE2=INCOMPLETE`。Astra 模式只比终态与子任务序列 |
 | 新 `scripts/eval-official/model_eval_report.py` | 汇总各模型、各数据集、各入口的覆盖与成功率（按任务、按档），并入第二档差异与预算账本；判定行 `MODEL_EVAL_REPORT=PASS sets=<n> …`、`EVAL_BUDGET=PASS attempts<=… resets<=…` |
+| 新 `scripts/eval-official/cap_probe.py` | 预检用，不加载任何模型。对给定 `--dataset`、`--max-steps`、任务与局号建 builder（`--official` 时用官方 builder 与 `dataset="test"`），先打印 `builder.max_steps_without_demonstration`（应为 `max_steps + 2`），再按所选循环口径用「保持当前关节位置」的动作一直走到结束，报告实际执行步数与终态。口径：`--loop strict` 为 `EnvSession` 加 `step_cap`；`--loop mme` 为官方 `count > max_steps`；`--loop range` 为 `range(max_steps)`。判定行 `STEP_CAP=PASS dataset=… max_steps=… builder_cap=… loop=… exec_steps=… status=timeout` |
+| 新 `scripts/eval-official/video_check.py` | 对一个结果目录逐局检查：恰有一个 mp4、`ffprobe` 编码为 h264、完整解码无错、帧数与该局记录的步数（加演示帧数，按各路线的录制口径）一致、节点与 NFS 上没有残留的原始帧。判定行 `VIDEO_SAVED=PASS route=… episodes=… missing=0 decode_fail=0 frame_mismatch=0 raw_left=0 bytes=…` |
 | 新 `scripts/eval-official/resource_probe.py` | 预检用。单个常驻进程，每秒读一次给定 PID 的进程树 `/proc/<pid>/status` 里的 `VmRSS`、`VmHWM`，以及 `nvidia-smi --query-compute-apps=pid,used_memory --format=csv -i <指定卡>`；输出 `PREFLIGHT=PASS route=… rss_peak_gb=… vram_peak_mb=… episode_s=… cpu_cores_used=…` |
 
 ### 1.8 主会话自做
@@ -316,7 +320,7 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 | S4 | PonderPounce | 新 `pp_client.py`、`pp_official_runner.py`；新 `tests/pipeline/evalx/pp/` | S2 | 3 | 假服务下新客户端与 `SyncEpisodeRunner` 的消息序列逐帧相同；`PP_PROTOCOL=PASS frames_diff=0 order_diff=0` |
 | S5 | Astra | 新 `astra_hard_runner.py`、`run_astra.sh`；新 `tests/pipeline/evalx/astra/` | S1 | 3 | 规划、监视、VLA 全部替身，零外联；`ASTRA_WIRING=PASS api_calls=0 builder_dataset_ok=1` |
 | S6 | 启动脚本与转码 | `run_seat.sh`、`run_eval_gl.sh`、新 `run_official_hard.sh`、`pair_seat.sh`；`tests/pipeline/eval/test_seat_scripts.py`、`seat_fake_engine.py` | S2～S5 的参数名 | 4 | `bash -n` 四个脚本；`-m slow tests/pipeline/eval/test_seat_scripts.py`；`EVAL_WIRING=PASS routes=<n> dataset_mismatch=0 variant_mismatch=0` |
-| S7 | 轨迹、对比、报告、探针 | 新 `trace_writer.py`、`gate2_compare.py`、`model_eval_report.py`、`resource_probe.py`；新 `tests/pipeline/evalx/report/` | S3～S5 的轨迹字段 | 5 | 夹具覆盖缺身份、重复、动作改 1 bit、画面哈希改变；`GATE2_SELFTEST=PASS` |
+| S7 | 轨迹、对比、报告、探针 | 新 `trace_writer.py`、`gate2_compare.py`、`model_eval_report.py`、`resource_probe.py`、`cap_probe.py`、`video_check.py`；新 `tests/pipeline/evalx/report/` | S3～S5 的轨迹字段 | 5 | 夹具覆盖缺身份、重复、动作改 1 bit、画面哈希改变；`GATE2_SELFTEST=PASS` |
 
 共享文件裁决：`env_client.py` 只归 S2；两个现有启动器只归 S6；`trace_writer.py` 归 S7，S3～S5 先按 1.7 的字段约定写调用，S7 合入后由主会话核对；各块新增的契约条目写在自己目录的 `contracts.delta.json`，由主会话并入总表。每块合并按 `CLAUDE.md`「计划执行模式」做合并前审查与合并后审查。
 
@@ -345,11 +349,15 @@ V9 的 800 局 = `3任务×2档×17 + 3任务×1档×16 + 2任务×5档×10 + 2�
 | GroundSG + QwenVL | 同上 | 3 局 |
 | PonderPounce | 同上，另加「不装加速内核」1 局 | 4 局 |
 | Astra | 原侧 1 局、新侧 1 局；失败可追加，合计 ≤6 局 | 已批 |
+| 步数到顶 | `cap_probe.py`：`test-hard0` 1300 一局、`test-hard` 1600 一局 | 2 局，不加载模型 |
 
 - 任务选 `VideoUnmask`（Astra 同）；V9 取 xhard1。本机两张卡，非 Astra 的路线一次并行两条。
 - 每条路线由 `resource_probe.py` 采样，记录服务进程、客户端进程各自与合计的内存峰值、显存峰值、单局耗时。
 - 判读：内存峰值 × 1.25 向上取整为该模型的 `--mem` 需求；显存峰值超过 44 GB 视为单张 A40 放不下。席位规格 = 各单卡模型需求的最大值。
-- 预检全部通过后输出 `PREFLIGHT_SUMMARY=PASS routes=<n> failed=0`，并给出席位规格与分配表。
+- **步数上限核对**（每条路线都做）：从日志与结果行取四处数值并要求相等——启动命令的 `--max-steps`、builder 的 `max_steps_without_demonstration - 2`、发给模型侧的上限（GroundSG 官方 `Args.max_steps`、PonderPounce 驱动循环的 `max_steps`、Astra 的 `--max-steps`）、结果行的 `max_steps`。xhard0 的路线必须全是 1300，V9 的路线必须全是 1600，且 V9 路线 `strict_cap=true`、xhard0 路线 `strict_cap=false`。判定行 `STEP_CAP_WIRING=PASS route=… launch=… builder=… policy=… recorded=…`。
+- **步数到顶实测**：`cap_probe.py --dataset test-hard0 --max-steps 1300 --loop mme` 预期执行 1301 步后记超时（GroundSG 官方循环的行为）；`--loop range` 预期恰好 1300 步（PonderPounce、Astra 的行为）；`cap_probe.py --dataset test-hard --max-steps 1600 --loop strict` 预期恰好 1600 步、第 1601 次不进环境。两种 xhard0 口径在同一局里先后判定，不多跑。实测与预期不符即停，不上集群。
+- **视频核对**（每条路线都做，含三个模型的原侧与 Astra）：预检每局结束后跑 `video_check.py`，`VIDEO_SAVED=PASS` 才算该路线通过；同时记录每局视频字节数，用来复核总量估算。
+- 预检全部通过后输出 `PREFLIGHT_SUMMARY=PASS routes=<n> failed=0 step_cap_ok=1 video_ok=1`，并给出席位规格与分配表。
 
 ## 五、闸门与运行手册
 
@@ -390,6 +398,7 @@ sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=
 **通用**
 
 - GL 上的长任务在登录节点 tmux 里以 `launch_seat.sh` 形式启动（会话名前缀 `sgev-`），日志 `tee` 落盘并以 `EXIT_CODE=` 结尾；每份日志各挂一个监听，过滤词含 `EXIT_CODE=`、`RUN_BLOCKED`、`INFRA`、`svulkan2`、`EXCLUSIVE`、`Traceback`、`CUDA`。同时在跑的长 ssh 不超过 9 条。
+- 每个席位起跑时打印并核对 `--dataset` 与 `--max-steps` 的配对（`test-hard0`↔1300、`test-hard`↔1600），不符即 `RUN_BLOCKED reason=step_cap_pairing`；这是启动参数的一致性检查，不是按档查表。每席收尾跑 `video_check.py`。
 - 只有干活的 `srun` 带 `--gpu_cmode=shared`；跨 job 的 `srun` 先清 `SLURM_*` 变量。
 - 本机常驻 `eval_video_mover.py` 把压缩视频与结果搬回 `artifacts/sg-evaluation/<run>/`，两端 sha256 相同才删 NFS 源。
 - 从第一档起跑到全部结束，执行副本的 HEAD 冻结；文档改动在起跑前提交完。
@@ -402,13 +411,14 @@ sbatch --account=chaijy2 --partition=spgpu --nodes=1 --ntasks-per-node=1 --gres=
 | 第一档 smoke 与重跑 | 2 + ≤20 | 22 | 66 |
 | 本机预检（非 Astra） | GroundSG 2 模型 × 3 局 + PonderPounce 4 局 | 10 | 20 |
 | 本机预检（Astra） | ≤6 局 | 6 | 12 |
+| 本机步数到顶 | 2 个数据集 × 1 局，不加载模型 | 2 | 4 |
 | GL smoke（非 Astra） | 3 模型 × 3 路线 × 1 局 | 9 | 18 |
 | 第二档 | 3 模型 × 2 侧 × 16 任务 × 1 档 × 12 局 | 1152 | 2304 |
 | 第三档 | 3 模型 × 800 局（乘式见第一部分） | 2400 | 4800 |
 | Astra 第二档 | 2 侧 × 16 任务 × 1 档 × 1 局 | 32 | 64 |
 | Astra V9 连通 | 1 局 | 1 | 2 |
 | 基础设施重试 | 非 Astra 每模型 ≤10 次；Astra 0 | 30 | 60 |
-| **合计** | | **3839** | **7877** |
+| **合计** | | **3841** | **7881** |
 
 评估每局按 build 与 reset 各 1 次计；正式成绩 3552 局（GroundSG 两组与 PonderPounce 各 1184）外加 Astra 32 局。正常 fail／timeout 不重试；smoke 不进正式分母；账本持久化，重启不重新获得额度。用户确认本计划即视为对本表一次性授权；超出本表的任何运行先停下申请。
 
