@@ -387,15 +387,23 @@
     "source": [
       "scripts/eval-official/mme_client.py"
     ],
-    "symbol": "make_recording_client（真实 openpi 客户端子类）、relay、transport_check",
-    "oracle": "—",
-    "positive": "未覆盖",
-    "negative": "未覆盖",
-    "boundaries": "贯通用例把 make_recording_client 换成协议替身；真实 MME websocket 客户端与中继／传输核对子命令尚无用例",
-    "nodeids": [],
+    "symbol": "make_recording_client（真实 openpi 客户端子类）、cmd_relay（relay 子命令）、transport_check／cmd_transport_check（transport-check 子命令）、payload_digest／response_digest／summarize_timing、run_episode",
+    "oracle": "回环端口上的假 MME server（openpi msgpack_numpy 收发，动作为 rng(k) 的 50×8）＋生产中继＋真实 RecordingClient＋EnvSession（假 builder）；帧数、消息数、执行动作与计时由假环境与假 server 手算",
+    "positive": "执行段 h=OBS_HORIZON、success_at=2h+8：决策 3 次、策略 reset 1 次，执行动作逐位等于 server 前 h 行；中继每方向逐条记 sha 与载荷摘要；transport_check mismatch=0、frames=reset 帧+2h+3×2、messages=15、exec_actions=2h+8；transport-check 子命令 --conn 0 打印 TRANSPORT=PASS、退出 0；计时汇总各 kind 条数与 server 毫秒字段一致",
+    "negative": "c2s／s2c sha 篡改、少一条回包、执行动作与模型行不符、多一条执行动作、prompt 被改、add_buffer 帧与 env 不符、infer 观测与 env 不符，每种都被测出并给出对应 note；--conn 1（中继为空）→ TRANSPORT=FAIL、退出 1；server 回字符串 → 整局 error、非基础设施、记 error_text 事件；中继对非 msgpack 二进制记 decode_error 且原样转发",
+    "boundaries": "只有 1 条 infer 时第 2／3 次计时为 None、稳态退化为全体；infer 未成功往返不进计时；文本帧不解包",
+    "nodeids": [
+      "tests/pipeline/eval/test_mme_transport.py::test_real_client_through_relay_transport_check_passes",
+      "tests/pipeline/eval/test_mme_transport.py::test_transport_check_detects_each_tamper",
+      "tests/pipeline/eval/test_mme_transport.py::test_server_error_text_becomes_error_not_infra",
+      "tests/pipeline/eval/test_mme_transport.py::test_relay_logs_decode_error_for_non_msgpack",
+      "tests/pipeline/eval/test_mme_transport.py::test_payload_and_response_digest_kinds",
+      "tests/pipeline/eval/test_mme_transport.py::test_sha_accepts_bytes_str_and_arrays",
+      "tests/pipeline/eval/test_mme_transport.py::test_summarize_timing_hand_computed"
+    ],
     "resource": "cpu-loopback",
     "mutants": [],
-    "status": "planned"
+    "status": "verified"
   },
   {
     "id": "C13-16",
@@ -416,6 +424,36 @@
       "tests/pipeline/eval/test_eval_video_mover.py::test_report_catches_tamper_and_absent_move_record"
     ],
     "resource": "cpu-ffmpeg-subprocess（slow）",
+    "mutants": [],
+    "status": "verified"
+  },
+  {
+    "id": "C13-17",
+    "domain": "C13",
+    "source": [
+      "scripts/eval-official/smvla_server.py"
+    ],
+    "symbol": "smvla_server 进程内：sha256_file／array_sha／frame_sha、make_closures、reseed／rng_digest、SMVLAPolicyHost.new_episode/observe/infer/warmup、_handler（内存假 websocket）、enable_det、main、cmd_serve、_git_head、_setup_paths",
+    "oracle": "模型三件换 CPU 替身（host 用 object.__new__ 构造，其余方法真实）；_handler 喂真实 msgpack 字节，req_sha 由 hashlib 独立算；cmd_serve 的 host 与 asyncio.run 换替身（scripts 侧临时 patch）",
+    "positive": "相机键映射与状态归一化；每局重设后随机状态回到纯净参照；_handler 依次回 metadata、reset（rng_matches_ref）、observe 逐帧指纹、infer 决策序号 0/1，第二局 reset 后序号归零、缓冲清空；cmd_serve 指纹相符时预热、落 metadata、起 server",
+    "negative": "未知消息键、reset 前 observe／infer、推理异常 → 回 error 后关闭且不再处理后续消息；对端断开不回 error；CUBLAS_WORKSPACE_CONFIG 未设 → enable_det 拒绝；固定环境变量未生效 → main 拒绝；config.json 指纹不符 → 退出 2、不起 server；array_sha 同字节不同 dtype／形状指纹不同",
+    "boundaries": "预热不消耗随机数时 rng_consumed_by_warmup 如实为 False；startup_s 在 metadata 落盘之后才补；资源守卫下 CUDA 不可用、不出 torch_cuda 摘要",
+    "nodeids": [
+      "tests/pipeline/eval/test_smvla_server_units.py::test_fingerprints_hand_computed",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_git_head_and_setup_paths",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_make_closures_maps_camera_keys_and_normalizes_state",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_reseed_restores_reference_digest",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_warmup_reports_consumption_and_restoration",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_observe_and_infer_on_real_host_methods",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_handler_dispatch_and_req_sha",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_handler_error_reply_then_close",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_handler_returns_quietly_when_peer_closes_during_send",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_enable_det_requires_cublas_env",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_main_refuses_without_fixed_env",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_main_parses_serve_args",
+      "tests/pipeline/eval/test_smvla_server_units.py::test_cmd_serve_config_sha_gate_and_metadata"
+    ],
+    "resource": "cpu",
     "mutants": [],
     "status": "verified"
   },
