@@ -315,6 +315,86 @@
    "contracts": [
     "C15.14"
    ]
+  },
+  {
+   "id": "FX-1",
+   "target": "scripts/parity/hard_regression.py::_pre_state_name_only",
+   "method": "撤回修复 1：不再要求键集合确实不同，同键互换取值又被当成仅改名",
+   "patch": [
+    {
+     "file": "scripts/parity/hard_regression.py",
+     "old": "    return _state_names(a) != _state_names(b) and _name_agnostic(a) == _name_agnostic(b)\n",
+     "new": "    return _name_agnostic(a) == _name_agnostic(b)\n"
+    }
+   ],
+   "expect_fail": [
+    "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_同键互换取值是真差异_FAIL",
+    "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_同样的左右对调出现在未声明任务_真差异",
+    "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_仅改名判定辅助_正例与负例"
+   ],
+   "contracts": [
+    "C15.08"
+   ]
+  },
+  {
+   "id": "FX-1b",
+   "target": "scripts/parity/hard_regression.py::_pre_state_name_only",
+   "method": "声明映射分支失效：BUS 已声明的左右按钮对调不再认作改名（真实闸门会翻 FAIL）",
+   "patch": [
+    {
+     "file": "scripts/parity/hard_regression.py",
+     "old": "    if renames and _apply_renames(a, renames) == b:",
+     "new": "    if False and renames and _apply_renames(a, renames) == b:"
+    }
+   ],
+   "expect_fail": [
+    "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_已声明的BUS左右按钮对调_记name_only",
+    "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_仅改名判定辅助_正例与负例"
+   ],
+   "contracts": [
+    "C15.08"
+   ]
+  },
+  {
+   "id": "FX-2",
+   "target": "scripts/parity/noise_gate.py::regress_check",
+   "method": "撤回修复 2：任一启动记录缺 host 时静默跳过同一节点核对",
+   "patch": [
+    {
+     "file": "scripts/parity/noise_gate.py",
+     "old": "        lacking = [label for label, h in host_of.items() if not h]\n        if lacking:",
+     "new": "        lacking = [label for label, h in host_of.items() if not h]\n        if lacking and False:"
+    },
+    {
+     "file": "scripts/parity/noise_gate.py",
+     "old": "        elif len(set(host_of.values())) != 1:",
+     "new": "        elif None not in host_of.values() and len(set(host_of.values())) != 1:"
+    }
+   ],
+   "expect_fail": [
+    "tests/pipeline/parity/test_gen_regress.py::test_任一启动记录缺host_本遍无效_不静默放过"
+   ],
+   "contracts": [
+    "C15.05"
+   ]
+  },
+  {
+   "id": "FX-3",
+   "target": "scripts/parity/hard_regression.py::_xhard0_reset_verdict",
+   "method": "撤回修复 3：期望局数写回 16 × 每任务局数",
+   "patch": [
+    {
+     "file": "scripts/parity/hard_regression.py",
+     "old": "    ok = not det and len(rows) == n_tasks * per_task",
+     "new": "    ok = not det and len(rows) == 16 * per_task"
+    }
+   ],
+   "expect_fail": [
+    "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_期望局数随任务清单长度变化"
+   ],
+   "contracts": [
+    "C15.08"
+   ]
   }
  ]
 }

@@ -502,6 +502,32 @@ def test_第二次跑换节点或缺局_本遍无效(ng, base, tmp_path):
                          rerun_new=tmp_path / "h" / "final" / "new2-v9")
 
 
+@pytest.mark.parametrize("who", ["first", "new2", "old"])
+def test_任一启动记录缺host_本遍无效_不静默放过(ng, base, tmp_path, who):
+    """「第二次跑与首跑同一节点」只能在三份启动记录都写了 host 时核对；任一份缺 host 即判 INVALID
+    （原因写 missing_host），不得把无法核对当成通过。"""
+    first = F.first_run_lines(base["ref"], "v9", overrides={20: X})
+    res1 = run_check(ng, base, tmp_path / "probe", "v9", first)
+    assert res1["verdict"] == "NEED_RERUN", res1["line"]
+    seeds = [r["seed"] for r in res1["rerun"]]
+    new2 = rerun_lines(base, "v9", seeds, {20: {}})
+    old = rerun_lines(base, "v9", seeds, {20: X})
+    hosts = {who: None} if who != "first" else {"new2": "gl1001", "old": "gl1001"}
+    res = run_check(ng, base, tmp_path / "final", "v9", first, rerun=(new2, old, hosts),
+                    host=None if who == "first" else "gl1001")
+    assert res["verdict"] == "INVALID", res["line"]
+    assert sum("missing_host" in x for x in res["invalid"]) == 1, res["invalid"]
+
+
+def test_缺workers或缺GPU字段_本遍无效(ng, base, tmp_path):
+    """跑法前提的 workers／gpu 字段缺失（null）同样判 INVALID，不静默放过。"""
+    lines = F.first_run_lines(base["ref"], "v9")
+    res = run_check(ng, base, tmp_path / "w", "v9", lines, first_launch={"workers": None})
+    assert res["verdict"] == "INVALID" and any("workers=None" in x for x in res["invalid"])
+    res = run_check(ng, base, tmp_path / "g", "v9", lines, first_launch={"gpu": None})
+    assert res["verdict"] == "INVALID" and any("GPU=None" in x for x in res["invalid"])
+
+
 def test_逐局报告列齐_只列问题局陪跑局与抖动局(ng, base, tmp_path):
     (jseed,) = seeds_of(base, "v9", "jitter")
     res, _ = _rerun_case(ng, base, tmp_path, "v9", {20: (X, X, {})})

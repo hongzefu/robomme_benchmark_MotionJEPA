@@ -110,7 +110,7 @@
     "symbol": "noise_gate.regress_check 首跑（GEN_REGRESS PASS／NEED_RERUN／INVALID／FAIL）",
     "oracle": "布局表推出的 match／jitter／flip 计数；陪跑局顺序手写（同档优先、相邻档按身份顺序）",
     "positive": "全部复现基线 PASS 判定行逐字相等；抖动局三种结果只报告",
-    "negative": "稳定局失败或字节不同、确定性失败局变成功或占位不同、交换身份；非 A40、workers 不符、缺启动记录、缺局、参照外身份 → INVALID；重复、基础设施失败、成功无 sha、h5_error、Mover 记录 verdict 与重算不一致 → FAIL",
+    "negative": "稳定局失败或字节不同、确定性失败局变成功或占位不同、交换身份；非 A40、workers 不符、workers／GPU 字段缺失、缺启动记录、缺局、参照外身份 → INVALID；重复、基础设施失败、成功无 sha、h5_error、Mover 记录 verdict 与重算不一致 → FAIL",
     "boundaries": "翻转数恰为 FLIP_RERUN_MAX 进第二次跑、多一局直接 FAIL；陪跑局只取首跑 match 的稳定局",
     "nodeids": [
       "tests/pipeline/parity/test_gen_regress.py::test_首跑全部复现基线_PASS",
@@ -121,6 +121,7 @@
       "tests/pipeline/parity/test_gen_regress.py::test_交换两个身份的产物_总数不变也判翻转",
       "tests/pipeline/parity/test_gen_regress.py::test_翻转数等于上限仍进第二次跑_超过上限直接FAIL",
       "tests/pipeline/parity/test_gen_regress.py::test_跑法前提不满足_本遍无效INVALID",
+      "tests/pipeline/parity/test_gen_regress.py::test_缺workers或缺GPU字段_本遍无效",
       "tests/pipeline/parity/test_gen_regress.py::test_原因不明一局即FAIL_不进第二次跑",
       "tests/pipeline/parity/test_gen_regress.py::test_遗漏身份用重复行补齐_既缺局又重复",
       "tests/pipeline/parity/test_gen_regress.py::test_陪跑局重跑原因不明不影响判定_翻转局原因不明FAIL",
@@ -146,7 +147,7 @@
     "symbol": "noise_gate.regress_check 第二次跑四格定性、episodes_markdown",
     "oracle": "细则 3.2 四格表手写成参数化用例；逐局报告列名按细则 3.2 手写",
     "positive": "噪声（改后回到基线）在上限内 PASS；确定性失败局回到同一失败判噪声",
-    "negative": "回归、环境变了、每次都不同 → FAIL；噪声超上限一局 → FAIL；翻转局重跑原因不明 → FAIL；换节点或缺局 → INVALID",
+    "negative": "回归、环境变了、每次都不同 → FAIL；噪声超上限一局 → FAIL；翻转局重跑原因不明 → FAIL；换节点或缺局 → INVALID；三份启动记录任一缺 host → INVALID（missing_host），不静默放过",
     "boundaries": "噪声上限 v9／xhard0 各自在上限处 PASS、超一局 FAIL；陪跑局异基线只报告不计数",
     "nodeids": [
       "tests/pipeline/parity/test_gen_regress.py::test_四格定性",
@@ -155,13 +156,15 @@
       "tests/pipeline/parity/test_gen_regress.py::test_陪跑局不参与判定_只报告",
       "tests/pipeline/parity/test_gen_regress.py::test_陪跑局重跑原因不明不影响判定_翻转局原因不明FAIL",
       "tests/pipeline/parity/test_gen_regress.py::test_第二次跑换节点或缺局_本遍无效",
+      "tests/pipeline/parity/test_gen_regress.py::test_任一启动记录缺host_本遍无效_不静默放过",
       "tests/pipeline/parity/test_gen_regress.py::test_逐局报告列齐_只列问题局陪跑局与抖动局"
     ],
     "resource": "cpu",
     "mutants": [
       "T6-G1",
       "T6-G2",
-      "T6-G4"
+      "T6-G4",
+      "FX-2"
     ],
     "status": "verified"
   },
@@ -226,21 +229,31 @@
     ],
     "symbol": "hard_regression.cmd_xhard0_reset_parity/_xhard0_reset_verdict",
     "oracle": "手写探针结果（替身 _run_probe），逐字段改一处",
-    "positive": "两侧逐位相同 PASS；仅改名记 name_only",
-    "negative": "seed／make_kwargs／包装链／task_goal／choices／演示前状态任一不同、官方难度名不是 hard、局数多或少 → FAIL",
-    "boundaries": "演示层差异只报告；合并上一轮时本轮任务整段替换；同键互换取值被判 name_only（现状记录、已报告风险）",
+    "positive": "两侧逐位相同 PASS；确有实体改名（键集合不同、去名后多重集相同）记 name_only；XHARD0_DECLARED_RENAMES 声明的 BUS 左右按钮对调按映射改名后逐键相等记 name_only",
+    "negative": "seed／make_kwargs／包装链／task_goal／choices／演示前状态任一不同、官方难度名不是 hard、局数多或少 → FAIL；键集合相同的同键互换（未声明任务，或 BUS 声明对调之外另有互换）、改名同时取值也变 → 计 det_diff、FAIL",
+    "boundaries": "演示层差异只报告；合并上一轮时本轮任务整段替换；期望局数 = 任务清单长度 × 每任务局数（不写死 16），shape 段随之写 <任务数>x1x<每任务局数>",
     "nodeids": [
       "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_两侧逐位相同_PASS",
       "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_确定性层任一字段不同即FAIL",
       "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_官方侧难度名不是hard也算不一致",
       "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_演示前状态只是实体改名_记name_only不计差异",
-      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_现状记录_同键互换取值也被当成仅改名",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_同键互换取值是真差异_FAIL",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_已声明的BUS左右按钮对调_记name_only",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_同样的左右对调出现在未声明任务_真差异",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_BUS声明对调之外另有同键互换_真差异",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_改名同时取值也变_是真差异_FAIL",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_仅改名判定辅助_正例与负例",
       "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_演示层差异只报告",
       "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_局数不齐即FAIL_合并上一轮补齐后PASS",
-      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_判定函数_局数多一局也FAIL"
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_判定函数_局数多一局也FAIL",
+      "tests/pipeline/parity/test_xhard0_reset_verdict.py::test_期望局数随任务清单长度变化"
     ],
     "resource": "cpu",
-    "mutants": [],
+    "mutants": [
+      "FX-1",
+      "FX-1b",
+      "FX-3"
+    ],
     "status": "verified"
   },
   {
