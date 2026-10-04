@@ -200,6 +200,31 @@
 
 阶段 2c 出红时：`RESET_SNAPSHOT` 已过而某个新测试红，优先怀疑测试期望写错；确认是生产代码问题的，回到清理块修，修完重跑 1c。
 
+### 实施结果（2026-10-04，追加；原计划不改写）
+
+执行范围 12.383～12.419（`81e9dea8`..`64da6d8d`），分支 `newtaskRelease-taskV9`，全部已 push。本轮的用户指令原话见各合并提交的 body；其中「不要再问我了尽可能一口气做到底做完了明天早上再来问我按照美国多亩时间来计算。」之后，凡无法自决的事项一律记进待定清单，不阻塞后续步骤。
+
+| 阶段 | 实测判定行 | 提交 |
+|---|---|---|
+| 0 | `RESET_SWEEP=PASS cells=59 ok=59` | 12.379 |
+| 0b | 计划登记的 5 个旧 worktree 已删；`git worktree list` 现只剩主检出 | — |
+| 1a／1b | 七块清理（W1、F、W2、G、W3、W4、R）每块 `PRE_MERGE_REVIEW=PASS`；`UPSTREAM_GUARD=PASS`；`MAINT_SPECS=PASS changed=0`；`MAINT_NO_LEGACY=PASS code_hits=0`；`MAINT_DEAD_BRANCH` 由各清理块审查逐文件给出（均 findings=0）；`ls -1 scripts/*.py` 仍恰好四个入口 | 12.383～12.397 |
+| 1a | `NOISE_REF=PASS sets=2 v9=stable:128,known_fail:0,jitter:1 xhard0=stable:46,known_fail:2,jitter:0 … mismatches=0 partial=0 sha=5119e2ac71ca` | 12.387 |
+| 1c | `RESET_SNAPSHOT=PASS cells=59 same=59 frame_sha_same=59` | 12.398 |
+| 2a～2c | 日常门禁 `2716 passed, 4 skipped in 126.22s`，`TEST_RESOURCE=PASS native_reset=0 gpu_init=0 weights=0 network=0 violations=0 not_verified=4`；慢测试 `598 passed, 1 skipped in 175.73s`；`TEST_SIM=PASS cells=59 official=1 failed=0`；`TEST_INVENTORY=PASS unclassified=0 stale=0 exempt=14`；`TEST_CONTRACTS=FAIL entries=184 verified=166 conditional=13 blocked=3 planned=2 missing=0 pending=2`；`TEST_MUTATION=PASS seeded=107 caught=107 survived=0 not_executable=1 not_applied=0 no_recipe=0 baseline_fail=0 repo_changed=0`；`TEST_COVERAGE=PASS`（各分区现状 → 新值见 [`docs/validation/test-redesign-20261003/README.md`](docs/validation/test-redesign-20261003/README.md)「重构后实测」） | 12.389～12.419 |
+| 3a | `HF_VERIFY=PASS objects=1893 sha_match=1893 size_equal=1893 missing=0 extra=0`（公开 bucket `HongzeFu/robomme-hard-v9-noise-baseline`；私有额度已满，经用户同意改传公开 bucket；首次上传有 1 个对象损坏，已重传并复核） | 12.408 |
+| 3b | xhard0：`GEN_REGRESS=PASS set=xhard0 n=48 match=48 …`；V9：`GEN_REGRESS=FAIL set=v9 n=129 match=127 jitter=1 flip=1 … noise=0 regression=0 env_changed=1`（MoveCube xhard4 seed 23400200：新旧代码在同一节点逐字节相同，与基线自第 376 步起分叉；按计划交用户裁决，见待定 D7，参照与判据都未改） | 12.413 |
+| 4 | 噪声基线文档第六、七节已改；`AGENTS.md`「覆盖第 4 条」已改；待定 C1／C2 已结案；P1 不变（仍是四入口） | 12.416 |
+
+两条判定行没过，原因都是有意保留，没有放宽判据：
+- `TEST_CONTRACTS=FAIL`：pending 还剩 2 条。C14-14 对应用户裁决不修的挑战接口缺陷（待定 D4）；T3-C02-task-order 是默认任务列表顺序还没有字面值断言。
+- V9 的 `GEN_REGRESS=FAIL`：env_changed=1，待用户裁决（D7）。
+
+与计划的偏离：
+- 分配表之外补派了 6 块：T10（C08.02／C09.02 补缺）、FX（三处闸门误判修复）、P（审查建议收尾）、T12／T13（2c 收尾）、T14（植入执行器，计划原写主会话自做）、T15（覆盖率首测时 parity 分区 61.9% 低于现状 63.5%，补对拍与评估客户端契约测试）。
+- 生产代码在计划外改了两处：12.403 修生成器回读 h5 与 Mover 的竞态；12.393 收紧上游守卫的 shim 判据。
+- 本轮新增的待定项有 D4～D7。Q16 仍待定。
+
 ## 八、子代理分工与合并（简述）
 
 **第一步七块，改生产代码**：G 管噪声工具与参照文件；W1 管 `scripts/eval-official/`；W2 管 `scripts/injection-dev/`；W3 管 `scripts/parity/` 的历史分支；W4 管 `src/robomme_hard/`；R 做改名；F 做生产小修。G、W1、W2、F 的文件互不相交，一起派；W3 与 G 共用 `hard_parity.py`，等 G 合入再派；W4 要删的常量在 W1～W3 的文件里还有人用，最后派；R 等前面全部合入。
