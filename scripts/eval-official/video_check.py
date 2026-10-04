@@ -162,7 +162,10 @@ def check(rows: list[dict], root: Path, args, tools: FFTools) -> dict:
     counts["duplicate"] = sum(1 for v in claimed.values() if v > 1)
     for par in parents:
         if par.is_dir():
-            counts["orphan"] += sum(1 for c in par.iterdir() if c.is_dir() and c not in claimed)
+            # 发布用的隐藏中转目录（如 run_eval_gl／run_official_hard 的 .incoming/）为空时不算孤儿；
+            # 非空说明发布未完成，照常记 orphan
+            counts["orphan"] += sum(1 for c in par.iterdir() if c.is_dir() and c not in claimed
+                                    and not (c.name.startswith(".") and not any(c.iterdir())))
     for extra in args.raw_root or []:
         counts["raw_left"] += len(raw_files(Path(extra), tuple(args.raw_glob)))
     counts["key_mismatch"] = counts["orphan"] + counts["duplicate"]

@@ -91,6 +91,17 @@ def test_each_failure_kind_counted(tmp_path, capsys):
     assert d3.exists()
 
 
+def test_empty_hidden_staging_dir_is_not_orphan(tmp_path, capsys):
+    root = tmp_path / "root"
+    d1 = _ep(root, 1)
+    (d1.parent / ".incoming").mkdir()                # 发布完成后留下的空中转目录：不算孤儿
+    rc, line = _run(tmp_path, [_row(1)], capsys=capsys)
+    assert rc == 0 and line.endswith("key_mismatch=0")
+    (d1.parent / ".incoming" / "half").mkdir()       # 中转目录非空：发布未完成，记 orphan
+    rc, line = _run(tmp_path, [_row(1)], capsys=capsys)
+    assert rc == 1 and line.endswith("key_mismatch=1")
+
+
 def test_duplicate_rows_and_rules(tmp_path, capsys):
     root = tmp_path / "root"
     _ep(root, 1)
