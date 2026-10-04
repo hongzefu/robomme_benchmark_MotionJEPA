@@ -6,6 +6,7 @@ xhard0 开关打开时 192 局官方路线清单按贪心均衡切片（手算�
 from __future__ import annotations
 
 import json
+import os
 from collections import Counter
 from pathlib import Path
 
@@ -35,10 +36,16 @@ def delivered():
     return _delivered_rows()
 
 
+def isolate_specs_root_env(mp) -> None:
+    """main 会把 --specs-root 写进进程环境。``delenv(raising=False)`` 在变量本不存在时不登记，单用它会让写入泄漏
+    到后续用例；先 setenv（登记原状：存在则记原值、不存在则记「不存在」）再 delenv，用例结束即复原。"""
+    mp.setenv(H.SPECS_ROOT_ENV, "t7-placeholder")
+    mp.delenv(H.SPECS_ROOT_ENV)
+
+
 @pytest.fixture
 def env(monkeypatch):
-    # main 会把 --specs-root 写进进程环境；delenv 先登记原状，用例结束自动复原
-    monkeypatch.delenv(H.SPECS_ROOT_ENV, raising=False)
+    isolate_specs_root_env(monkeypatch)
     return monkeypatch
 
 
@@ -127,3 +134,15 @@ def test_check_rows_negatives():
     ok, facts = E.check_rows(good + [{"task": "BinFill", "tier": "xhard1", "seed": 3}], [], cells)
     assert not ok and facts["cell_mismatch"] == 1  # 表外格也计
     assert not E.check_rows(good, [{"task": "StopCube"}], cells)[0]  # 开关关时官方行必须为 0
+
+
+def test_specs_root_env_restored_after_main(delivered, tmp_path, capsys):
+    # 夹具的复原效果本身：在独立的 MonkeyPatch 上下文里跑 main，退出上下文后环境变量回到调用前（不依赖用例顺序）
+    before = os.environ.get(H.SPECS_ROOT_ENV)
+    with pytest.MonkeyPatch.context() as mp:
+        isolate_specs_root_env(mp)
+        assert E.main(["--specs-root", str(PACKAGED), "--delivery", str(_write(tmp_path / "d.json", delivered)),
+                       "--out", str(tmp_path / "ids.jsonl")]) == 0
+        assert os.environ[H.SPECS_ROOT_ENV] == str(PACKAGED.resolve())  # main 确实写了
+    assert os.environ.get(H.SPECS_ROOT_ENV) == before
+    capsys.readouterr()

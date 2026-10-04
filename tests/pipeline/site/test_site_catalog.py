@@ -299,7 +299,8 @@ def test_semantic_main_fails_on_missing_note(tmp_path, capsys):
     doc = {"episodes": {"VideoUnmask": SG_DOC["episodes"]["VideoUnmask"]}}
     (tmp_path / "subgoals.json").write_text(json.dumps(doc))
     assert SEM.main(["--site-dir", str(tmp_path)]) == 0
-    assert json.loads((tmp_path / "semantic.json").read_text())["schema"] == "v8-semantic/1"
+    # semantic_diff 没有单独的 schema 常量：以生产 build 产出的 schema 为准（不在测试里写字面值）
+    assert json.loads((tmp_path / "semantic.json").read_text())["schema"] == SEM.build({"episodes": {}})[0]["schema"]
 
 
 def test_norm_goal_erases_parameters_only():

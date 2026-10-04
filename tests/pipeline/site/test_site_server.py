@@ -136,8 +136,15 @@ def _whitelist(site_dir: Path, mapping: dict):
     (site_dir / "media-private.json").write_text(json.dumps(mapping), encoding="utf-8")
 
 
-@pytest.mark.parametrize("case", ["outside", "symlink_out", "not_mp4", "relative", "bad_id", "missing"])
-def test_whitelist_construction_rejects(tmp_path, case):
+@pytest.mark.parametrize("case, exc, needle", [
+    ("outside", ValueError, "不是产物根内的MP4文件"),
+    ("symlink_out", ValueError, "不是产物根内的MP4文件"),
+    ("not_mp4", ValueError, "不是产物根内的MP4文件"),
+    ("relative", ValueError, "必须是绝对路径"),
+    ("bad_id", ValueError, "媒体ID格式不符"),
+    ("missing", FileNotFoundError, "nope.mp4"),
+])
+def test_whitelist_construction_rejects(tmp_path, case, exc, needle):
     info = make_site(tmp_path / "root")
     outside = tmp_path / "outside.mp4"
     outside.write_bytes(MP4)
@@ -159,7 +166,7 @@ def test_whitelist_construction_rejects(tmp_path, case):
     elif case == "missing":
         mapping["x"] = str(info["root"] / "media" / "nope.mp4")
     _whitelist(info["site"], mapping)
-    with pytest.raises((ValueError, OSError)):
+    with pytest.raises(exc, match=needle):
         SERVER.create_server("127.0.0.1", 0, site_dir=info["site"], media_root=info["root"], html_path=HTML)
 
 

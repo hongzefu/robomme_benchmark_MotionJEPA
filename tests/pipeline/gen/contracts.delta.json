@@ -359,7 +359,8 @@
       "tests/pipeline/gen/test_eval_identities.py::test_v9_requires_delivery",
       "tests/pipeline/gen/test_eval_identities.py::test_xhard0_switch_on_adds_official_route",
       "tests/pipeline/gen/test_eval_identities.py::test_balance_greedy_by_hand",
-      "tests/pipeline/gen/test_eval_identities.py::test_check_rows_negatives"
+      "tests/pipeline/gen/test_eval_identities.py::test_check_rows_negatives",
+      "tests/pipeline/gen/test_eval_identities.py::test_specs_root_env_restored_after_main"
     ],
     "resource": "cpu",
     "mutants": [

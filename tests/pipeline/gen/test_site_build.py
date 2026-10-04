@@ -36,6 +36,8 @@ for path in a.write:
     with open(path, "w") as fh:
         fh.write(a.name + "\n")
 if a.term_parent_if and os.path.exists(a.term_parent_if):
+    with open(a.term_parent_if + ".pid", "w") as fh:
+        fh.write(str(os.getpid()))
     os.kill(os.getppid(), signal.SIGTERM)
     time.sleep(30)
 if a.serve:
@@ -187,6 +189,10 @@ def test_second_instance_on_same_work_dir_is_refused(world, capsys):
 def test_sigterm_mid_check_resumes_only_unfinished_steps(world, capsys):
     world.flag.write_text("1")
     assert SB.main(world.argv()) == 130
+    # 发出 SIGTERM 后仍在 sleep 的假检查器（独立进程组，组号 = 其 pid）已被收掉
+    oracle_pid = int(Path(str(world.flag) + ".pid").read_text())
+    with pytest.raises(ProcessLookupError):
+        os.killpg(oracle_pid, 0)
     work = world.root / "work"
     assert not (work / "report.json").exists()
     progress = json.loads((work / "progress.json").read_text())
