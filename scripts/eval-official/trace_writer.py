@@ -7,7 +7,8 @@ S7 合入时补全实现与测试，签名与字段名不改。第二档对比�
 
 - ``header``（恰好一行，第一行）：``route``、``identity``（task / source_episode / seed / tier / dataset 等，
   由调用方给出）、``max_steps``、``schema``。
-- ``demo``（恰好一行，紧随 header；无演示时 ``frames=0``）：演示帧数、逐帧 front／wrist 画面 sha256、
+- ``demo``（恰好一行，在首个 step 之前；其前只允许 header／request／response／history——GroundSG 官方循环先 reset 策略再取初始观测，
+  故 request 行可先于 demo；无演示时 ``frames=0``）：演示帧数、逐帧 front／wrist 画面 sha256、
   演示阶段的状态与文本。
 - ``request``：发给模型的每次请求（GroundSG 的 ``reset``／``add_buffer``／``infer``，PonderPounce 的每个协议帧，
   Astra 的规划／监视请求）规范化字节的 sha256 与字节数、``step``（发生在第几步之前）。
@@ -24,7 +25,7 @@ S7 补充（只加不改）：
 
 - ``canonical_bytes(obj)``：把请求对象（dict／list／数组／标量混合）规范化成确定的字节，供调用方在没有现成
   序列化字节时传给 ``log_request``；数组按原始 dtype、shape 与 sha256 表示，不先转 float32。
-- ``validate_trace(rows)``：行序与结构自检（header 首行、demo 紧随且唯一、end 末行且唯一、step 从 1 连续、
+- ``validate_trace(rows)``：行序与结构自检（header 首行、demo 唯一且在首个 step 之前、end 末行且唯一、step 从 1 连续、
   ``end.exec_steps`` 等于最后一步），返回问题列表，空列表即合规。
 - ``find_traces(root)``、``subgoal_sequence(rows)``：供 ``gate2_compare.py`` 使用。
 - ``TraceWriter`` 在 ``close`` 之后再写任何行会抛 ``RuntimeError``（避免收尾后的迟到写入悄悄丢失）。
@@ -198,8 +199,10 @@ def validate_trace(rows: list[dict]) -> list[str]:
         problems.append(f"header 行数 {kinds.count('header')}")
     if kinds.count("demo") != 1:
         problems.append(f"demo 行数 {kinds.count('demo')}")
-    elif len(kinds) < 2 or kinds[1] != "demo":
-        problems.append("demo 不紧随 header")
+    else:
+        i = kinds.index("demo")
+        if any(k not in ("header", "request", "response", "history") for k in kinds[1:i]):
+            problems.append("demo 不在首个 step 之前")
     if kinds.count("end") != 1 or kinds[-1] != "end":
         problems.append("end 不是唯一末行")
     steps = [int(r["step"]) for r in rows if r.get("kind") == "step"]

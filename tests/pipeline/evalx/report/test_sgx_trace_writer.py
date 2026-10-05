@@ -99,5 +99,7 @@ def test_validate_trace_reports_structure_problems():
     bad_exec = [*good[:-1], {"kind": "end", "exec_steps": 5}]
     assert "end.exec_steps 与最后一步不符" in t.validate_trace(bad_exec)
     assert t.validate_trace([]) == ["空轨迹"]
-    assert "demo 不紧随 header" in t.validate_trace([good[0], good[2], good[1], good[3], good[4]])
+    assert "demo 不在首个 step 之前" in t.validate_trace([good[0], good[2], good[1], good[3], good[4]])
+    # GroundSG 官方循环先 reset 策略再取初始观测：request 先于 demo 合规（12.454）
+    assert t.validate_trace([good[0], {"kind": "request", "step": 0}, good[1], *good[2:]]) == []
     assert json.dumps(good)  # 夹具本身可序列化

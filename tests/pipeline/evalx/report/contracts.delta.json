@@ -8,7 +8,7 @@
     "symbol": "TraceWriter / image_sha256 / array_record / bytes_record / read_trace / canonical_bytes / validate_trace / find_traces / subgoal_sequence（每局 trace.jsonl）",
     "oracle": "计划 1.7 字段约定；夹具手写数组与画面，哈希期望用 hashlib 直接对原始字节算",
     "positive": "header→demo→request/response/history/step→end 行序与字段逐项等于手写期望；数组按原始 dtype/shape 哈希（float64 与 float32 同值哈希不同）；canonical_bytes 与键序无关；validate_trace 对合规轨迹返回空",
-    "negative": "动作改 1 bit 哈希改变；close 后再写抛 RuntimeError；with 块内异常以 status=error、terminal_reason=exception:<类型> 收尾；step 断号、end 缺失、exec_steps 不符、demo 不紧随 header 均被 validate_trace 报出；gate2_compare 对动作改 1 bit、画面哈希改变判分叉（见 C13-SG-GATE2）",
+    "negative": "动作改 1 bit 哈希改变；close 后再写抛 RuntimeError；with 块内异常以 status=error、terminal_reason=exception:<类型> 收尾；step 断号、end 缺失、exec_steps 不符、demo 不在首个 step 之前（其前只许 header／request／response／history）均被 validate_trace 报出；gate2_compare 对动作改 1 bit、画面哈希改变判分叉（见 C13-SG-GATE2）",
     "boundaries": "只覆盖 trace 字段，不覆盖视频字节；相邻浮点（只差最后一位）规范化字节不同",
     "nodeids": [
       "tests/pipeline/evalx/report/test_sgx_trace_writer.py::test_row_order_and_fields",
