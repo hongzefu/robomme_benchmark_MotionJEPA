@@ -266,6 +266,23 @@ def test_main_v9_full_mode(tmp_path, monkeypatch, capsys, inputs):
     assert all(set(r) == set(em.SHARD_ROW_KEYS) for p in shards for r in p)
 
 
+def test_main_v9_full_rejects_shifted_builder_episodes(tmp_path, monkeypatch, capsys, inputs):
+    """身份清单局号整体 +12（导出时 XHARD0_IN_TEST_HARD 开、评估时关）：写分片前即 FAIL stage=builder，不留产物。"""
+    em = F.eval_manifest()
+    _switch(monkeypatch, export_on=False, manifest_on=False)
+    ident_path, _ = _export(tmp_path, inputs["delivery"], "shift")
+    rows = [json.loads(x) for x in ident_path.read_text(encoding="utf-8").splitlines() if x.strip()]
+    shifted = tmp_path / "shifted.jsonl"
+    shifted.write_text("".join(json.dumps({**r, "episode": r["episode"] + 12}) + "\n" for r in rows), encoding="utf-8")
+    out = tmp_path / "shift-out"
+    capsys.readouterr()
+    rc = em.main(["--mode", "v9-full", "--identities", str(shifted), "--delivery", str(inputs["delivery"]),
+                  "--out-dir", str(out)])
+    v = F.verdict(capsys.readouterr().out.splitlines(), "EVAL_SHARDS")
+    assert rc == 1 and v[""] == "FAIL" and v["stage"] == "builder"
+    assert not (out / "manifest.json").exists()
+
+
 @pytest.mark.parametrize("argv", [["--mode", "v9-full", "--out-dir", "o"],
                                   ["--out-dir", "o", "--identities", "i", "--delivery", "d"],
                                   ["--mode", "hard0", "--out-dir", "o", "--identities", "i"],

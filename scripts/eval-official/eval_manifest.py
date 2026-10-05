@@ -403,9 +403,44 @@ def split_shards(rows: list[dict], shards: int) -> list[list[dict]]:
     return parts
 
 
-def build_v9_full(identities: Path, delivery_path: Path, shards: int) -> tuple[dict, list[list[dict]]]:
-    """V9 全量：第 1～4 步之后不剔除已评身份，全部执行行（V9 即 43 格 800 局）切片。返回 (manifest, parts)。"""
+def v9_builder(task: str):
+    """test-hard 的真实 builder（开关 XHARD0_IN_TEST_HARD 按当前进程取值；评估客户端默认关）。"""
+    from robomme_hard.env_record_wrapper import BenchmarkEnvBuilder
+
+    return BenchmarkEnvBuilder(task, dataset="test-hard")
+
+
+def verify_builder_episodes(rows: list[dict], builder_factory=None) -> None:
+    """逐行用 builder 解析 ``builder_episode``，核对 tier／seed／candidate／spec_sha256 与身份行一致。
+
+    身份清单的 ``episode`` 字段依导出时的 ``XHARD0_IN_TEST_HARD`` 开关而定（开时每任务前 12 局是 xhard0，V9 局号整体 +12）；
+    与评估客户端所用 builder 的开关不一致时，局号会整体错位，客户端只能在开跑后以 IDENTITY_MISMATCH 拦下（2026-10-05 GL 实测）。
+    这里在写分片前就拦住：任一行不符即 ManifestError(stage=builder)。"""
+    make = builder_factory or v9_builder
+    builders: dict = {}
+    bad: list[str] = []
+    for r in rows:
+        b = builders.get(r["task"]) or builders.setdefault(r["task"], make(r["task"]))
+        try:
+            x = b.resolve_identity(int(r["builder_episode"]))
+        except (KeyError, IndexError, ValueError):  # 局号越界（如整体错位后超出该任务局数）同样计为不符
+            bad.append(f"{r['key']}@{r['builder_episode']}(越界)")
+            continue
+        got = (x.get("tier"), int(x["seed"]), x.get("candidate"), x.get("spec_sha256"))
+        want = (r["tier"], int(r["seed"]), r.get("candidate"), r.get("spec_sha256"))
+        if got != want:
+            bad.append(f"{r['key']}@{r['builder_episode']}")
+    if bad:
+        raise ManifestError("builder", f"builder 解析与身份行不符 {len(bad)} 行，例 {bad[:3]}（身份清单导出时的 "
+                            f"XHARD0_IN_TEST_HARD 开关与当前不一致？）", total=len(rows), mismatch=len(bad))
+
+
+def build_v9_full(identities: Path, delivery_path: Path, shards: int,
+                  builder_factory=None) -> tuple[dict, list[list[dict]]]:
+    """V9 全量：第 1～4 步之后不剔除已评身份，全部执行行（V9 即 43 格 800 局）切片；写分片前逐行用 builder 核对局号。
+    返回 (manifest, parts)。"""
     _, cells_table, rows, dropped = v9_exec_rows(identities, delivery_path)
+    verify_builder_episodes(rows, builder_factory)
     parts = split_shards(rows, shards)
     order = {k: i for i, k in enumerate(cells_table)}
     cells: dict[str, int] = defaultdict(int)
