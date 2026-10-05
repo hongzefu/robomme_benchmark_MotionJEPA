@@ -127,7 +127,9 @@ class TraceIndex:
     def lookup(self, row: dict) -> Path | None:
         if row.get("trace_path"):
             p = Path(row["trace_path"])
-            return p if p.exists() else None
+            if p.exists():
+                return p
+            # 结果行记的是节点本地路径（如 /tmp/<run>/…），轨迹发布到 NFS／本机 media 后本地副本已删：退回按身份索引查
         cands = self.by_ident.get(ident_of(row), [])
         if len(cands) <= 1:
             return cands[0][0] if cands else None

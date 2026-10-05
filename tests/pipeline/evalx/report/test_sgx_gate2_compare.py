@@ -45,6 +45,14 @@ def test_identical_sides(tmp_path):
                            "first_diverge_obs=0 first_diverge_state=0 first_diverge_text=0 first_diverge_action=0 missing=0")
 
 
+def test_stale_node_local_trace_path_falls_back_to_index(tmp_path):
+    # 原侧结果行记的是节点本地路径（发布后已删）：仍须按身份索引找到轨迹，不得判 missing_trace
+    orig = _side(tmp_path, "orig", trace_path=str(tmp_path / "gone" / "trace.jsonl"))
+    res = _run(tmp_path, orig, _side(tmp_path, "new"), expect_total=4)
+    s = res["summary"]
+    assert s["missing_trace"] == 0 and s["identical_trace"] == 4 and s["verdict"] == "INFO"
+
+
 def test_action_one_bit_and_frame_hash(tmp_path):
     mut = {IDS[0]: {"action_bit": 4}, IDS[1]: {"front": 2}}
     res = _run(tmp_path, _side(tmp_path, "orig"), _side(tmp_path, "new", mut))
