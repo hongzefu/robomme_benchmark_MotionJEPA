@@ -126,13 +126,13 @@ def test_unknown_is_error_and_does_not_stop_seat(tmp_path, variant):
     r2 = side.run(F.identity(source_episode=7, builder_episode=1, seed=510700))
     assert (r1["status"], r1["error"], r1["infra"], r1["steps"]) == ("error", "success_flag=unknown", False, 10)
     assert (r2["status"], r2["steps"]) == ("success", 20)
-    for r in (r1, r2):
+    # 官方 episode_id 用短编号 <source_episode>a<attempt>（12.453：长 episode_tag 使叠字视频文件名超 255 字节）
+    for r, eid in ((r1, "3a1"), (r2, "7a1")):
         tdir = Path(r["trace_path"]).parent
         assert not (tdir / "qwen-tmp").exists() and not (tdir / "official-video").exists()
         logs = sorted(p.name for p in tdir.glob("*_QwenVL_log.jsonl"))
         if variant == F.QWENVL:
-            tag = tdir.name
-            assert logs == [f"ep{tag}_QwenVL_log.jsonl"] and r["qwen_log"] == str(tdir / logs[0])
+            assert logs == [f"ep{eid}_QwenVL_log.jsonl"] and r["qwen_log"] == str(tdir / logs[0])
             assert all(json.loads(x)["messages"] for x in (tdir / logs[0]).read_text().splitlines())
         else:
             assert logs == [] and r["qwen_log"] is None

@@ -299,15 +299,31 @@ def map_flag(flag: str) -> tuple[str, str | None]:
 # ── 新侧 runner 适配 ────────────────────────────────────────────────────────
 
 
+def official_episode_id(identity: dict, episode_tag: str) -> str:
+    """交给官方循环的短局号：``<source_episode>a<attempt>``（V9 无源局号时取 builder_episode），如 ``3a1``。
+
+    与原侧官方 ``EnvRunner.episode_id``（源局号整数）同量级，避免叠字视频文件名超过 255 字节。"""
+    src = identity.get("source_episode")
+    if src is None:
+        src = identity.get("builder_episode")
+    att = episode_tag.rsplit(".a", 1)[1] if ".a" in episode_tag else "1"
+    return f"{src}a{att}"
+
+
 class SessionRunner:
     """官方 ``EnvRunner`` 的接口，委托到 ``EnvSession``。``get_init_obs``／``step`` 与官方逐行同式。"""
 
-    def __init__(self, session: Any, episode_tag: str, pack_state: Callable, tap: EpisodeTap):
+    def __init__(self, session: Any, episode_tag: str, pack_state: Callable, tap: EpisodeTap,
+                 official_episode_id: str | None = None):
         self._session = session
         self._pack_state = pack_state
         self._tap = tap
         self.env_id = session.task
-        self.episode_id = episode_tag
+        # 交给官方循环的 episode_id：官方 eval.py 用它拼叠字视频文件名
+        # ``{env_id}_ep{episode_id}_{flag}_{task_goal}_{difficulty}.mp4``，任务目标文本很长（如 SwingXtimes）时
+        # 用 episode_tag（``<key>.a<n>``）会超过文件名 255 字节上限、ffmpeg 打不开输出而 Broken pipe；
+        # 故改用短编号 ``official_episode_id``，本仓库自己的目录、Qwen 临时目录、轨迹仍按 episode_tag。
+        self.episode_id = official_episode_id or episode_tag
         self.task_goal: str = ""
         self.info: dict | None = None
         self.last_exception: BaseException | None = None
@@ -482,7 +498,8 @@ def run_episode(session, identity: dict, conn_info: dict, recorder) -> dict:
     trace = (trace_writer.TraceWriter(tpath, route=f"mmesg/{variant}/new", identity=ident, max_steps=max_steps)
              if tpath is not None else None)
     tap = EpisodeTap(trace)
-    runner = SessionRunner(session, tag, ctx["defs"]["pack_state"], tap)
+    runner = SessionRunner(session, tag, ctx["defs"]["pack_state"], tap,
+                           official_episode_id=official_episode_id(identity, tag))
     scratch, own_scratch = episode_scratch(conn_info.get("trace_dir"))
     archive_dir = tpath.parent if tpath is not None else None
     try:
